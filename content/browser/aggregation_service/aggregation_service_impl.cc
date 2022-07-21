@@ -26,7 +26,7 @@
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/storage_partition_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "content/public/browser/storage_partition.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -120,13 +120,14 @@ AggregationServiceImpl::GetStorage() {
   return storage_;
 }
 
-void AggregationServiceImpl::ClearData(base::Time delete_begin,
-                                       base::Time delete_end,
-                                       base::OnceClosure done) {
-  storage_.AsyncCall(&AggregationServiceStorage::ClearPublicKeysFetchedBetween)
-      .WithArgs(delete_begin, delete_end)
+void AggregationServiceImpl::ClearData(
+    base::Time delete_begin,
+    base::Time delete_end,
+    StoragePartition::StorageKeyMatcherFunction filter,
+    base::OnceClosure done) {
+  storage_.AsyncCall(&AggregationServiceStorage::ClearDataBetween)
+      .WithArgs(delete_begin, delete_end, std::move(filter))
       .Then(std::move(done));
-  // TODO(crbug.com/1340053): Clear stored report requests as well.
 }
 
 void AggregationServiceImpl::ScheduleReport(

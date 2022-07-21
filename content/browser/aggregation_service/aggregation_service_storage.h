@@ -11,6 +11,7 @@
 
 #include "base/types/strong_alias.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -50,12 +51,6 @@ class AggregationServiceStorage {
   // Clears the stored public keys for `url`.
   virtual void ClearPublicKeys(const GURL& url) = 0;
 
-  // Clears the stored public keys that were fetched between `delete_begin` and
-  // `delete_end` time (inclusive). Null times are treated as unbounded lower or
-  // upper range.
-  virtual void ClearPublicKeysFetchedBetween(base::Time delete_begin,
-                                             base::Time delete_end) = 0;
-
   // Clears the stored public keys that expire no later than `delete_end`
   // (inclusive).
   virtual void ClearPublicKeysExpiredBy(base::Time delete_end) = 0;
@@ -84,6 +79,19 @@ class AggregationServiceStorage {
 
   // TODO(crbug.com/1340042): Add a method to randomly delay all reports in the
   // past (for startup and coming online).
+
+  // == Joint methods =====
+
+  // Clears the stored public keys that were fetched between and the report
+  // requests that were stored between `delete_begin` and `delete_end` time
+  // (inclusive). Null times are treated as unbounded lower or upper range.  If
+  // `!filter.is_null()`, requests with a reporting origin that does *not* match
+  // the `filter` are retained (i.e. not cleared); `filter` does not affect
+  // public key deletion.
+  virtual void ClearDataBetween(
+      base::Time delete_begin,
+      base::Time delete_end,
+      StoragePartition::StorageKeyMatcherFunction filter) = 0;
 };
 
 }  // namespace content

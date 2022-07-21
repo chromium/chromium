@@ -8,10 +8,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -24,6 +26,7 @@
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -248,7 +251,7 @@ TEST_F(AggregationServiceStorageSqlTest, ReplacePublicKeys) {
 }
 
 TEST_F(AggregationServiceStorageSqlTest,
-       ClearPublicKeysFetchedBetween_RangeDeleted) {
+       ClearDataBetween_PublicKeyRangeDeleted) {
   OpenDatabase();
 
   GURL url_1("https://a.com/keys");
@@ -275,15 +278,19 @@ TEST_F(AggregationServiceStorageSqlTest,
       keys_2, storage_->GetPublicKeys(url_2)));
 
   base::Time now = clock_.Now();
-  storage_->ClearPublicKeysFetchedBetween(now - base::Days(5),
-                                          now - base::Days(1));
+  storage_->ClearDataBetween(
+      now - base::Days(5), now - base::Days(1),
+      // The filter should be ignored.
+      base::BindLambdaForTesting(
+          [](const blink::StorageKey& storage_key) { return false; }));
 
   EXPECT_TRUE(storage_->GetPublicKeys(url_1).empty());
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
       keys_2, storage_->GetPublicKeys(url_2)));
 }
 
-TEST_F(AggregationServiceStorageSqlTest, ClearAllPublicKeys_AllDeleted) {
+TEST_F(AggregationServiceStorageSqlTest,
+       ClearAllDataWithFilter_PublicKeysAllDeleted) {
   OpenDatabase();
 
   GURL url_1("https://a.com/keys");
@@ -309,7 +316,45 @@ TEST_F(AggregationServiceStorageSqlTest, ClearAllPublicKeys_AllDeleted) {
   EXPECT_TRUE(aggregation_service::PublicKeysEqual(
       keys_2, storage_->GetPublicKeys(url_2)));
 
-  storage_->ClearPublicKeysFetchedBetween(base::Time(), base::Time::Max());
+  storage_->ClearDataBetween(
+      base::Time(), base::Time::Max(),
+      // The filter should be ignored.
+      base::BindLambdaForTesting(
+          [](const blink::StorageKey& storage_key) { return false; }));
+
+  EXPECT_TRUE(storage_->GetPublicKeys(url_1).empty());
+  EXPECT_TRUE(storage_->GetPublicKeys(url_2).empty());
+}
+
+TEST_F(AggregationServiceStorageSqlTest,
+       ClearAllDataWithoutFilter_AllPublicKeysDeleted) {
+  OpenDatabase();
+
+  GURL url_1("https://a.com/keys");
+  std::vector<PublicKey> keys_1{
+      aggregation_service::GenerateKey("abcd").public_key,
+      aggregation_service::GenerateKey("bcde").public_key};
+  storage_->SetPublicKeys(url_1,
+                          PublicKeyset(keys_1, /*fetch_time=*/clock_.Now(),
+                                       /*expiry_time=*/base::Time::Max()));
+
+  clock_.Advance(base::Days(1));
+
+  GURL url_2("https://b.com/keys");
+  std::vector<PublicKey> keys_2{
+      aggregation_service::GenerateKey("abcd").public_key,
+      aggregation_service::GenerateKey("efgh").public_key};
+  storage_->SetPublicKeys(url_2,
+                          PublicKeyset(keys_2, /*fetch_time=*/clock_.Now(),
+                                       /*expiry_time=*/base::Time::Max()));
+
+  EXPECT_TRUE(aggregation_service::PublicKeysEqual(
+      keys_1, storage_->GetPublicKeys(url_1)));
+  EXPECT_TRUE(aggregation_service::PublicKeysEqual(
+      keys_2, storage_->GetPublicKeys(url_2)));
+
+  storage_->ClearDataBetween(base::Time(), base::Time::Max(),
+                             base::NullCallback());
 
   EXPECT_TRUE(storage_->GetPublicKeys(url_1).empty());
   EXPECT_TRUE(storage_->GetPublicKeys(url_2).empty());
@@ -608,6 +653,91 @@ TEST_F(AggregationServiceStorageSqlTest,
       storage_->NextReportTimeAfter(kExampleTime + base::Hours(1)).has_value());
   EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
             3u);
+}
+
+TEST_F(AggregationServiceStorageSqlTest,
+       ClearAllDataWithoutFilter_AllRequestsDeleted) {
+  OpenDatabase();
+
+  storage_->StoreRequest(aggregation_service::CreateExampleRequest());
+  storage_->StoreRequest(aggregation_service::CreateExampleRequest());
+
+  EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
+            2u);
+
+  storage_->ClearDataBetween(base::Time(), base::Time(), base::NullCallback());
+
+  EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
+            0u);
+}
+
+TEST_F(AggregationServiceStorageSqlTest,
+       ClearDataBetween_RequestsTimeRangeDeleted) {
+  OpenDatabase();
+
+  const base::Time kExampleTime = base::Time::FromJavaTime(1652984901234);
+
+  clock_.SetNow(kExampleTime);
+  storage_->StoreRequest(aggregation_service::CreateExampleRequest());
+
+  clock_.Advance(base::Hours(1));
+  storage_->StoreRequest(aggregation_service::CreateExampleRequest());
+
+  clock_.Advance(base::Hours(1));
+  storage_->StoreRequest(aggregation_service::CreateExampleRequest());
+
+  EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
+            3u);
+
+  // As the times are inclusive, this should delete the first two requests.
+  storage_->ClearDataBetween(kExampleTime, kExampleTime + base::Hours(1),
+                             base::NullCallback());
+
+  std::vector<AggregationServiceStorage::RequestAndId> stored_reports =
+      storage_->GetRequestsReportingOnOrBefore(base::Time::Max());
+  ASSERT_EQ(stored_reports.size(), 1u);
+
+  // Only the last request should be left. Request IDs start from 1.
+  EXPECT_EQ(stored_reports[0].id, AggregationServiceStorage::RequestId(3));
+}
+
+TEST_F(AggregationServiceStorageSqlTest,
+       ClearDataAllTimesWithFilter_OnlyRequestsSpecifiedAreDeleted) {
+  const url::Origin reporting_origins[] = {
+      url::Origin::Create(GURL("https://a.example")),
+      url::Origin::Create(GURL("https://b.example")),
+      url::Origin::Create(GURL("https://c.example"))};
+
+  OpenDatabase();
+
+  for (const url::Origin& reporting_origin : reporting_origins) {
+    AggregatableReportRequest example_request =
+        aggregation_service::CreateExampleRequest();
+    AggregatableReportSharedInfo shared_info =
+        example_request.shared_info().Clone();
+    shared_info.reporting_origin = reporting_origin;
+    storage_->StoreRequest(
+        AggregatableReportRequest::Create(example_request.payload_contents(),
+                                          std::move(shared_info))
+            .value());
+  }
+
+  EXPECT_EQ(storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).size(),
+            3u);
+
+  storage_->ClearDataBetween(
+      base::Time::Min(), base::Time::Max(),
+      base::BindLambdaForTesting(
+          [&reporting_origins](const blink::StorageKey& storage_key) {
+            return storage_key != blink::StorageKey(reporting_origins[2]);
+          }));
+
+  std::vector<AggregationServiceStorage::RequestAndId> stored_reports =
+      storage_->GetRequestsReportingOnOrBefore(base::Time::Max());
+  ASSERT_EQ(stored_reports.size(), 1u);
+
+  // Only the last request should be left. Request IDs start from 1.
+  EXPECT_EQ(stored_reports[0].id, AggregationServiceStorage::RequestId(3));
 }
 
 TEST_F(AggregationServiceStorageSqlInMemoryTest,

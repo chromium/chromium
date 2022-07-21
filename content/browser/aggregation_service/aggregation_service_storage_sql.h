@@ -14,6 +14,7 @@
 #include "base/thread_annotations.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/storage_partition.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -57,8 +58,6 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   std::vector<PublicKey> GetPublicKeys(const GURL& url) override;
   void SetPublicKeys(const GURL& url, const PublicKeyset& keyset) override;
   void ClearPublicKeys(const GURL& url) override;
-  void ClearPublicKeysFetchedBetween(base::Time delete_begin,
-                                     base::Time delete_end) override;
   void ClearPublicKeysExpiredBy(base::Time delete_end) override;
   void StoreRequest(AggregatableReportRequest request) override;
   void DeleteRequest(AggregationServiceStorage::RequestId request_id) override;
@@ -66,6 +65,10 @@ class CONTENT_EXPORT AggregationServiceStorageSql
       base::Time strictly_after_time) override;
   std::vector<AggregationServiceStorage::RequestAndId>
   GetRequestsReportingOnOrBefore(base::Time not_after_time) override;
+  void ClearDataBetween(
+      base::Time delete_begin,
+      base::Time delete_end,
+      StoragePartition::StorageKeyMatcherFunction filter) override;
 
   void set_ignore_errors_for_testing(bool ignore_for_testing)
       VALID_CONTEXT_REQUIRED(sequence_checker_) {
@@ -115,8 +118,32 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   bool ClearPublicKeysByUrlId(int64_t url_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  // Clears the stored public keys that were fetched between `delete_begin` and
+  // `delete_end` time (inclusive). Null times are treated as unbounded lower or
+  // upper range.
+  void ClearPublicKeysFetchedBetween(base::Time delete_begin,
+                                     base::Time delete_end)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // Clears all stored public keys.
   void ClearAllPublicKeys() VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Deletes the stored request with the given report ID.
+  bool DeleteRequestImpl(RequestId request_id)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Clears the report requests that were stored between `delete_begin` and
+  // `delete_end` time (inclusive). Null times are treated as unbounded lower or
+  // upper range. If `!filter.is_null()`, only requests with reporting origins
+  // matching the `filter` are cleared.
+  void ClearRequestsStoredBetween(
+      base::Time delete_begin,
+      base::Time delete_end,
+      StoragePartition::StorageKeyMatcherFunction filter)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Clears all stored report requests;
+  void ClearAllRequests() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Initializes the database if necessary, and returns whether the database is
   // open. `creation_policy` indicates whether the database should be created if

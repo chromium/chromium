@@ -2547,7 +2547,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     // TODO(crbug.com/1286173): Consider adding aggregation service origins to
     // `CookiesTreeModel`.
     aggregation_service->ClearData(
-        begin, end,
+        begin, end, filter,
         CreateTaskCompletionClosure(TracingDataType::kAggregationService));
   }
 

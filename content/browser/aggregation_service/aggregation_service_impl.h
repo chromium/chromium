@@ -18,6 +18,7 @@
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -71,6 +72,7 @@ class CONTENT_EXPORT AggregationServiceImpl
                   SendCallback callback) override;
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,
+                 StoragePartition::StorageKeyMatcherFunction filter,
                  base::OnceClosure done) override;
   void ScheduleReport(AggregatableReportRequest report_request) override;
 

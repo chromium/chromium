@@ -26,6 +26,7 @@
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/proto/aggregatable_report.pb.h"
 #include "content/browser/aggregation_service/public_key.h"
+#include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -33,6 +34,7 @@
 #include "sql/transaction.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -248,23 +250,9 @@ void AggregationServiceStorageSql::ClearPublicKeys(const GURL& url) {
 void AggregationServiceStorageSql::ClearPublicKeysFetchedBetween(
     base::Time delete_begin,
     base::Time delete_end) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
-    return;
-
-  // Treat null times as unbounded lower or upper range. This is used by
-  // browsing data remover.
-  if (delete_begin.is_null())
-    delete_begin = base::Time::Min();
-
-  if (delete_end.is_null())
-    delete_end = base::Time::Max();
-
-  if (delete_begin.is_min() && delete_end.is_max()) {
-    ClearAllPublicKeys();
-    return;
-  }
+  DCHECK(!delete_begin.is_null());
+  DCHECK(!delete_end.is_null());
+  DCHECK(!delete_begin.is_min() || !delete_end.is_max());
 
   sql::Transaction transaction(&db_);
   if (!transaction.Begin())
@@ -456,6 +444,10 @@ void AggregationServiceStorageSql::DeleteRequest(
   if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
     return;
 
+  DeleteRequestImpl(request_id);
+}
+
+bool AggregationServiceStorageSql::DeleteRequestImpl(RequestId request_id) {
   static constexpr char kDeleteRequestSql[] =
       "DELETE FROM report_requests WHERE request_id=?";
 
@@ -464,7 +456,7 @@ void AggregationServiceStorageSql::DeleteRequest(
 
   delete_request_statement.BindInt64(0, request_id.value());
 
-  delete_request_statement.Run();
+  return delete_request_statement.Run();
 }
 
 absl::optional<base::Time> AggregationServiceStorageSql::NextReportTimeAfter(
@@ -526,6 +518,82 @@ AggregationServiceStorageSql::GetRequestsReportingOnOrBefore(
     return {};
 
   return result;
+}
+
+void AggregationServiceStorageSql::ClearDataBetween(
+    base::Time delete_begin,
+    base::Time delete_end,
+    StoragePartition::StorageKeyMatcherFunction filter) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
+    return;
+
+  // Treat null times as unbounded lower or upper range. This is used by
+  // browsing data remover.
+  if (delete_begin.is_null())
+    delete_begin = base::Time::Min();
+
+  if (delete_end.is_null())
+    delete_end = base::Time::Max();
+
+  if (delete_begin.is_min() && delete_end.is_max()) {
+    ClearAllPublicKeys();
+
+    if (filter.is_null()) {
+      ClearAllRequests();
+      return;
+    }
+  } else {
+    ClearPublicKeysFetchedBetween(delete_begin, delete_end);
+  }
+
+  ClearRequestsStoredBetween(delete_begin, delete_end, filter);
+}
+
+void AggregationServiceStorageSql::ClearRequestsStoredBetween(
+    base::Time delete_begin,
+    base::Time delete_end,
+    StoragePartition::StorageKeyMatcherFunction filter) {
+  DCHECK(!delete_begin.is_null());
+  DCHECK(!delete_end.is_null());
+  DCHECK(!delete_begin.is_min() || !delete_end.is_max() || !filter.is_null());
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin())
+    return;
+
+  static constexpr char kSelectRequestsToDeleteSql[] =
+      "SELECT request_id,reporting_origin FROM report_requests "
+      "WHERE creation_time BETWEEN ? AND ?";
+  sql::Statement select_requests_to_delete_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectRequestsToDeleteSql));
+  select_requests_to_delete_statement.BindTime(0, delete_begin);
+  select_requests_to_delete_statement.BindTime(1, delete_end);
+
+  while (select_requests_to_delete_statement.Step()) {
+    url::Origin reporting_origin = url::Origin::Create(
+        GURL(select_requests_to_delete_statement.ColumnString(1)));
+    if (filter.is_null() || filter.Run(blink::StorageKey(reporting_origin))) {
+      if (!DeleteRequestImpl(
+              RequestId(select_requests_to_delete_statement.ColumnInt64(0)))) {
+        return;
+      }
+    }
+  }
+
+  if (!select_requests_to_delete_statement.Succeeded())
+    return;
+
+  transaction.Commit();
+}
+
+void AggregationServiceStorageSql::ClearAllRequests() {
+  static constexpr char kClearAllRequests[] = "DELETE FROM report_requests";
+  sql::Statement select_requests_to_delete_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kClearAllRequests));
+
+  select_requests_to_delete_statement.Run();
 }
 
 void AggregationServiceStorageSql::HandleInitializationFailure(

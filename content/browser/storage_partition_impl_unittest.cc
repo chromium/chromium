@@ -550,6 +550,7 @@ class MockAggregationService : public AggregationServiceImpl {
               ClearData,
               (base::Time delete_begin,
                base::Time delete_end,
+               StoragePartition::StorageKeyMatcherFunction filter,
                base::OnceClosure done),
               (override));
 };
@@ -2074,51 +2075,98 @@ TEST_F(StoragePartitionImplTest, RemoveAggregationServiceData) {
   const uint32_t kTestQuotaClearMask =
       StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL;
   const auto kTestOrigin = GURL("https://example.com");
+  const auto kOtherOrigin = GURL("https://example.net");
   const auto kBeginTime = base::Time() + base::Hours(1);
   const auto kEndTime = base::Time() + base::Hours(2);
   const auto invoke_callback =
       [](base::Time delete_begin, base::Time delete_end,
+         StoragePartition::StorageKeyMatcherFunction filter,
          base::OnceClosure done) { std::move(done).Run(); };
+  const auto is_test_origin_valid =
+      [&kTestOrigin](
+          content::StoragePartition::StorageKeyMatcherFunction filter) {
+        return filter.Run(blink::StorageKey(url::Origin::Create(kTestOrigin)));
+      };
+  const auto is_other_origin_valid =
+      [&kOtherOrigin](
+          content::StoragePartition::StorageKeyMatcherFunction filter) {
+        return filter.Run(blink::StorageKey(url::Origin::Create(kOtherOrigin)));
+      };
+  const auto is_filter_null =
+      [&](content::StoragePartition::StorageKeyMatcherFunction filter) {
+        return filter.is_null();
+      };
 
   // Verify that each of the StoragePartition interfaces for clearing origin
   // based data calls aggregation service appropriately.
+  EXPECT_CALL(
+      *aggregation_service_ptr,
+      ClearData(
+          base::Time(), base::Time::Max(),
+          testing::AllOf(testing::Truly(is_test_origin_valid),
+                         testing::Not(testing::Truly(is_other_origin_valid))),
+          testing::_))
+      .WillOnce(invoke_callback);
+  {
+    base::RunLoop run_loop;
+    partition->ClearDataForOrigin(kTestClearMask, kTestQuotaClearMask,
+                                  kTestOrigin, run_loop.QuitClosure());
+    run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(aggregation_service_ptr);
+  }
+
+  EXPECT_CALL(
+      *aggregation_service_ptr,
+      ClearData(
+          kBeginTime, kEndTime,
+          testing::AllOf(testing::Truly(is_test_origin_valid),
+                         testing::Not(testing::Truly(is_other_origin_valid))),
+          testing::_))
+      .WillOnce(testing::Invoke(invoke_callback));
+  {
+    base::RunLoop run_loop;
+    partition->ClearData(kTestClearMask, kTestQuotaClearMask,
+                         blink::StorageKey(url::Origin::Create(kTestOrigin)),
+                         kBeginTime, kEndTime, run_loop.QuitClosure());
+    run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(aggregation_service_ptr);
+  }
+
+  EXPECT_CALL(
+      *aggregation_service_ptr,
+      ClearData(
+          kBeginTime, kEndTime,
+          testing::AllOf(testing::Truly(is_test_origin_valid),
+                         testing::Not(testing::Truly(is_other_origin_valid))),
+          testing::_))
+      .WillOnce(testing::Invoke(invoke_callback));
+  {
+    base::RunLoop run_loop;
+    partition->ClearData(
+        kTestClearMask, kTestQuotaClearMask,
+        base::BindLambdaForTesting([&](const blink::StorageKey& storage_key,
+                                       storage::SpecialStoragePolicy* policy) {
+          return storage_key ==
+                 blink::StorageKey(url::Origin::Create(kTestOrigin));
+        }),
+        /*cookie_deletion_filter=*/nullptr,
+        /*perform_storage_cleanup=*/false, kBeginTime, kEndTime,
+        run_loop.QuitClosure());
+    run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(aggregation_service_ptr);
+  }
 
   EXPECT_CALL(*aggregation_service_ptr,
-              ClearData(base::Time(), base::Time::Max(), testing::_))
+              ClearData(kBeginTime, kEndTime, testing::Truly(is_filter_null),
+                        testing::_))
       .WillOnce(testing::Invoke(invoke_callback));
-  base::RunLoop run_loop;
-  partition->ClearDataForOrigin(kTestClearMask, kTestQuotaClearMask,
-                                kTestOrigin, run_loop.QuitClosure());
-  run_loop.Run();
-  testing::Mock::VerifyAndClearExpectations(aggregation_service_ptr);
-
-  EXPECT_CALL(*aggregation_service_ptr,
-              ClearData(kBeginTime, kEndTime, testing::_))
-      .WillOnce(testing::Invoke(invoke_callback));
-  partition->ClearData(kTestClearMask, kTestQuotaClearMask,
-                       blink::StorageKey(url::Origin::Create(kTestOrigin)),
-                       kBeginTime, kEndTime, base::DoNothing());
-  testing::Mock::VerifyAndClearExpectations(aggregation_service_ptr);
-
-  EXPECT_CALL(*aggregation_service_ptr,
-              ClearData(kBeginTime, kEndTime, testing::_))
-      .WillOnce(testing::Invoke(invoke_callback));
-  partition->ClearData(
-      kTestClearMask, kTestQuotaClearMask,
-      base::BindLambdaForTesting([&](const blink::StorageKey& storage_key,
-                                     storage::SpecialStoragePolicy* policy) {
-        return storage_key ==
-               blink::StorageKey(url::Origin::Create(kTestOrigin));
-      }),
-      /*cookie_deletion_filter=*/nullptr, /*perform_storage_cleanup=*/false,
-      kBeginTime, kEndTime, base::DoNothing());
-  testing::Mock::VerifyAndClearExpectations(aggregation_service_ptr);
-
-  EXPECT_CALL(*aggregation_service_ptr,
-              ClearData(kBeginTime, kEndTime, testing::_))
-      .WillOnce(testing::Invoke(invoke_callback));
-  partition->ClearData(kTestClearMask, kTestQuotaClearMask, blink::StorageKey(),
-                       kBeginTime, kEndTime, base::DoNothing());
+  {
+    base::RunLoop run_loop;
+    partition->ClearData(kTestClearMask, kTestQuotaClearMask,
+                         blink::StorageKey(), kBeginTime, kEndTime,
+                         run_loop.QuitClosure());
+    run_loop.Run();
+  }
 }
 
 // https://crbug.com/1221382
