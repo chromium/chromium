@@ -37,6 +37,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
@@ -604,6 +605,7 @@ class PrivateNetworkAccessBrowserTestBlockFromPrivate
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
                 features::kPrivateNetworkAccessRespectPreflightResults,
+                network::features::kNetworkServiceMemoryCache,
             },
             {}) {}
 };
@@ -619,6 +621,7 @@ class PrivateNetworkAccessBrowserTestBlockFromUnknown
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromUnknown,
                 features::kPrivateNetworkAccessRespectPreflightResults,
+                network::features::kNetworkServiceMemoryCache,
             },
             {}) {}
 };
@@ -634,6 +637,7 @@ class PrivateNetworkAccessBrowserTestBlockNavigations
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
                 features::kBlockInsecurePrivateNetworkRequestsForNavigations,
                 features::kPrivateNetworkAccessRespectPreflightResults,
+                network::features::kNetworkServiceMemoryCache,
             },
             {}) {}
 };
@@ -647,6 +651,7 @@ class PrivateNetworkAccessBrowserTestNoPreflights
       : PrivateNetworkAccessBrowserTestBase(
             {
                 features::kBlockInsecurePrivateNetworkRequests,
+                network::features::kNetworkServiceMemoryCache,
             },
             {
                 features::kPrivateNetworkAccessSendPreflights,
@@ -663,6 +668,7 @@ class PrivateNetworkAccessBrowserTestRespectPreflightResults
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kPrivateNetworkAccessRespectPreflightResults,
+                network::features::kNetworkServiceMemoryCache,
             },
             {}) {}
 };
@@ -676,6 +682,7 @@ class PrivateNetworkAccessBrowserTestForWorkers
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kPrivateNetworkAccessForWorkers,
+                network::features::kNetworkServiceMemoryCache,
             },
             {}) {}
 };
@@ -691,6 +698,7 @@ class PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kPrivateNetworkAccessRespectPreflightResults,
                 features::kPrivateNetworkAccessForWorkers,
+                network::features::kNetworkServiceMemoryCache,
             },
             {}) {}
 };
@@ -707,6 +715,7 @@ class PrivateNetworkAccessBrowserTestNoBlocking
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
                 features::kBlockInsecurePrivateNetworkRequestsForNavigations,
                 features::kPrivateNetworkAccessSendPreflights,
+                network::features::kNetworkServiceMemoryCache,
             }) {}
 };
 

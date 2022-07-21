@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "net/base/transport_info.h"
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -36,6 +37,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCacheWriter {
       std::string cache_key,
       net::URLRequest* request,
       mojom::RequestDestination request_destination,
+      const net::TransportInfo& transport_info,
       const mojom::URLResponseHeadPtr& response_head);
 
   ~NetworkServiceMemoryCacheWriter();
@@ -64,6 +66,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCacheWriter {
 
   mojom::RequestDestination request_destination_;
 
+  const net::TransportInfo transport_info_;
   mojom::URLResponseHeadPtr response_head_;
   std::vector<unsigned char> received_data_;
 };

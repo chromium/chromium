@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/load_states.h"
 #include "net/base/network_delegate.h"
+#include "net/base/transport_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 #include "services/network/keepalive_statistics_recorder.h"
@@ -58,7 +59,6 @@ namespace net {
 class HttpResponseHeaders;
 class IPEndPoint;
 struct RedirectInfo;
-struct TransportInfo;
 class URLRequestContext;
 }  // namespace net
 
@@ -569,6 +569,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   base::WeakPtr<NetworkServiceMemoryCache> memory_cache_;
   std::unique_ptr<NetworkServiceMemoryCacheWriter> memory_cache_writer_;
+  // Passed to `memory_cache_writer_`. Do not use other purposes.
+  net::TransportInfo transport_info_;
 
   bool first_auth_attempt_ = true;
 

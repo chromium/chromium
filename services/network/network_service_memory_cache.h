@@ -28,6 +28,7 @@ class HttpVaryData;
 class NetLogWithSource;
 class NetworkIsolationKey;
 class URLRequest;
+struct TransportInfo;
 }  // namespace net
 
 namespace network {
@@ -62,6 +63,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
   std::unique_ptr<NetworkServiceMemoryCacheWriter> MaybeCreateWriter(
       net::URLRequest* url_request,
       mojom::RequestDestination request_destination,
+      const net::TransportInfo& transport_info,
       const mojom::URLResponseHeadPtr& response);
 
   // Stores an HTTP response into `this`. Called when a writer finished reading
@@ -70,6 +72,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
                      const URLLoaderCompletionStatus& status,
                      mojom::RequestDestination request_destination,
                      const net::HttpVaryData& vary_data,
+                     const net::TransportInfo& transport_info,
                      mojom::URLResponseHeadPtr response_head,
                      std::vector<unsigned char> data);
 
@@ -77,9 +80,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceMemoryCache {
   // The returned cache key is valid only for the current call stack. It must be
   // used synchronously.
   absl::optional<std::string> CanServe(
+      uint32_t load_options,
       const ResourceRequest& resource_request,
       const net::NetworkIsolationKey& network_isolation_key,
-      const CrossOriginEmbedderPolicy& cross_origin_embedder_policy);
+      const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      const mojom::ClientSecurityState* client_security_state);
 
   // Creates and starts a custom URLLoader that serves a response from the
   // in-memory cache, instead of creating a network::URLLoader. Must be called

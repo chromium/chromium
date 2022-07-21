@@ -255,8 +255,9 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
       net::URLRequest* url_request,
       const mojom::URLResponseHeadPtr& response_head) {
     std::unique_ptr<NetworkServiceMemoryCacheWriter> writer =
-        memory_cache().MaybeCreateWriter(
-            url_request, mojom::RequestDestination::kDocument, response_head);
+        memory_cache().MaybeCreateWriter(url_request,
+                                         mojom::RequestDestination::kDocument,
+                                         net::TransportInfo(), response_head);
     return writer.get() != nullptr;
   }
 
@@ -279,7 +280,9 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
       const net::NetworkIsolationKey& network_isolation_key,
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy) {
     return memory_cache()
-        .CanServe(request, network_isolation_key, cross_origin_embedder_policy)
+        .CanServe(mojom::kURLLoadOptionNone, request, network_isolation_key,
+                  cross_origin_embedder_policy,
+                  /*client_security_state=*/nullptr)
         .has_value();
   }
 
@@ -767,7 +770,9 @@ TEST_F(NetworkServiceMemoryCacheTest, UpdateStoredCache) {
                                                  /*frame_site=*/site);
 
   absl::optional<std::string> cache_key = memory_cache().CanServe(
-      request, network_isolation_key, CrossOriginEmbedderPolicy());
+      mojom::kURLLoadOptionNone, request, network_isolation_key,
+      CrossOriginEmbedderPolicy(),
+      /*client_security_state=*/nullptr);
   ASSERT_TRUE(cache_key.has_value());
   mojom::URLResponseHeadPtr response =
       memory_cache().GetResponseHeadForTesting(*cache_key);

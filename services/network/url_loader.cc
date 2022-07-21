@@ -1241,6 +1241,7 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
                            const net::TransportInfo& info,
                            net::CompletionOnceCallback callback) {
   DCHECK_EQ(url_request, url_request_.get());
+  transport_info_ = info;
 
   // Now that the request endpoint's address has been resolved, check if
   // this request should be blocked per Private Network Access.
@@ -1557,7 +1558,7 @@ void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {
   // TODO(https://crbug.com/1339708): In-memory cache should support DevTools.
   if (memory_cache_ && !devtools_request_id().has_value()) {
     memory_cache_writer_ = memory_cache_->MaybeCreateWriter(
-        url_request_.get(), request_destination_, response_);
+        url_request_.get(), request_destination_, transport_info_, response_);
   }
 
   ContinueOnResponseStarted();

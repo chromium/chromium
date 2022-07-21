@@ -18,6 +18,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/mime_sniffer.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/transport_info.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_request_info.h"
@@ -30,11 +31,14 @@
 #include "services/network/network_context.h"
 #include "services/network/network_service_memory_cache_url_loader.h"
 #include "services/network/network_service_memory_cache_writer.h"
+#include "services/network/private_network_access_checker.h"
 #include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/url_loader.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -153,6 +157,20 @@ bool CheckCrossOriginReadBlocking(const ResourceRequest& resource_request,
   return decision == corb::ResponseAnalyzer::Decision::kAllow;
 }
 
+bool CheckPrivateNetworkAccess(
+    uint32_t load_options,
+    const ResourceRequest& resource_request,
+    const mojom::ClientSecurityState* client_security_state,
+    const net::TransportInfo& transport_info) {
+  mojom::URLLoaderFactoryParams factory_params;
+  if (client_security_state)
+    factory_params.client_security_state = client_security_state->Clone();
+  PrivateNetworkAccessChecker checker(resource_request, &factory_params,
+                                      load_options);
+  PrivateNetworkAccessCheckResult result = checker.Check(transport_info);
+  return !PrivateNetworkAccessCheckResultToCorsError(result).has_value();
+}
+
 // Checks whether Vary header in the cached response only has headers that the
 // in-memory cache can handle.
 bool VaryHasSupportedHeadersOnly(
@@ -221,10 +239,12 @@ bool MatchVaryHeader(const ResourceRequest& resource_request,
 
 struct NetworkServiceMemoryCache::Entry {
   Entry(const net::HttpVaryData& vary_data,
+        const net::TransportInfo& transport_info,
         mojom::URLResponseHeadPtr response_head,
         scoped_refptr<base::RefCountedBytes> content,
         int64_t encoded_body_length)
       : vary_data(vary_data),
+        transport_info(transport_info),
         response_head(std::move(response_head)),
         content(std::move(content)),
         encoded_body_length(encoded_body_length) {}
@@ -237,6 +257,7 @@ struct NetworkServiceMemoryCache::Entry {
   Entry& operator=(const Entry&) = delete;
 
   net::HttpVaryData vary_data;
+  net::TransportInfo transport_info;
   mojom::URLResponseHeadPtr response_head;
   scoped_refptr<base::RefCountedBytes> content;
   int64_t encoded_body_length;
@@ -275,6 +296,7 @@ std::unique_ptr<NetworkServiceMemoryCacheWriter>
 NetworkServiceMemoryCache::MaybeCreateWriter(
     net::URLRequest* url_request,
     mojom::RequestDestination request_destination,
+    const net::TransportInfo& transport_info,
     const mojom::URLResponseHeadPtr& response) {
   DCHECK(url_request);
 
@@ -338,7 +360,8 @@ NetworkServiceMemoryCache::MaybeCreateWriter(
 
   return std::make_unique<NetworkServiceMemoryCacheWriter>(
       weak_ptr_factory_.GetWeakPtr(), GetNextTraceId(), max_per_entry_bytes_,
-      std::move(*cache_key), url_request, request_destination, response);
+      std::move(*cache_key), url_request, request_destination, transport_info,
+      response);
 }
 
 void NetworkServiceMemoryCache::StoreResponse(
@@ -346,6 +369,7 @@ void NetworkServiceMemoryCache::StoreResponse(
     const URLLoaderCompletionStatus& status,
     mojom::RequestDestination request_destination,
     const net::HttpVaryData& vary_data,
+    const net::TransportInfo& transport_info,
     mojom::URLResponseHeadPtr response_head,
     std::vector<unsigned char> data) {
   DCHECK_GE(max_per_entry_bytes_, data.size());
@@ -393,18 +417,20 @@ void NetworkServiceMemoryCache::StoreResponse(
 
   scoped_refptr<base::RefCountedBytes> content =
       base::RefCountedBytes::TakeVector(&data);
-  auto entry =
-      std::make_unique<Entry>(vary_data, std::move(response_head),
-                              std::move(content), status.encoded_body_length);
+  auto entry = std::make_unique<Entry>(
+      vary_data, transport_info, std::move(response_head), std::move(content),
+      status.encoded_body_length);
   entries_.Put(cache_key, std::move(entry));
 
   ShrinkToTotalBytes();
 }
 
 absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
+    uint32_t load_options,
     const ResourceRequest& resource_request,
     const net::NetworkIsolationKey& network_isolation_key,
-    const CrossOriginEmbedderPolicy& cross_origin_embedder_policy) {
+    const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    const mojom::ClientSecurityState* client_security_state) {
   // TODO(https://crbug.com/1339708): Support automatically assigned network
   // isolation key for request from browsers. See comments in
   // CorsURLLoaderFactory::CorsURLLoaderFactory.
@@ -435,6 +461,12 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
   auto it = entries_.Peek(*cache_key);
   if (it == entries_.end()) {
     RecordEntryStatus(EntryStatus::kNotInCache);
+    return absl::nullopt;
+  }
+
+  if (!CheckPrivateNetworkAccess(load_options, resource_request,
+                                 client_security_state,
+                                 it->second->transport_info)) {
     return absl::nullopt;
   }
 
