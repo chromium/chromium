@@ -909,17 +909,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Webapp.Update.ManifestUpdateResult.DefaultApp"
-    enum="WebAppManifestUpdateResult" expires_after="M102">
-  <owner>alancutter@chromium.org</owner>
-  <owner>tsergeant@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Identical to Webapp.Update.ManifestUpdateResult but restricted to just
-    default installed web apps.
-  </summary>
-</histogram>
-
 <histogram name="WebApp.UrlHandling.DialogState"
     enum="WebAppUrlHandlingDialogState" expires_after="2022-06-25">
   <owner>mek@chromium.org</owner>

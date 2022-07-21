@@ -177,12 +177,6 @@ void ManifestUpdateManager::NotifyResult(const GURL& url,
   // will hit it).
   if (result != ManifestUpdateResult::kNoAppInScope) {
     base::UmaHistogramEnumeration("Webapp.Update.ManifestUpdateResult", result);
-    if (app_id.has_value() &&
-        registrar_->HasExternalAppWithInstallSource(
-            app_id.value(), ExternalInstallSource::kExternalDefault)) {
-      base::UmaHistogramEnumeration(
-          "Webapp.Update.ManifestUpdateResult.DefaultApp", result);
-    }
   }
   if (result_callback_for_testing_)
     std::move(result_callback_for_testing_).Run(url, result);
