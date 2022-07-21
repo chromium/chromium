@@ -70,17 +70,15 @@ source_set("cast_runner_core") {
     "cast/pending_cast_component.cc",
     "cast/pending_cast_component.h",
   ]
-  data = [
-    "cast/data/receiver.html",
-    rebase_path(
-        "//components/cast/named_message_port_connector/named_message_port_connector.js"),
-  ]
+  data = [ rebase_path(
+          "//components/cast/named_message_port_connector/named_message_port_connector.js") ]
   deps = [
     "//base",
     "//components/cast/common:constants",
     "//components/cast/message_port",
     "//components/cast/named_message_port_connector:named_message_port_connector",
     "//components/fuchsia_component_support",
+    "//fuchsia_web/cast_streaming",
     "//fuchsia_web/runners/common/modular",
 
     # TODO(crbug.com/852834): Remove this dependency when
