@@ -3212,7 +3212,6 @@ const CSSValue* FontSynthesisWeight::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  DCHECK(RuntimeEnabledFeatures::FontSynthesisEnabled());
   return CSSIdentifierValue::Create(
       style.GetFontDescription().GetFontSynthesisWeight());
 }
@@ -3221,7 +3220,6 @@ const CSSValue* FontSynthesisStyle::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  DCHECK(RuntimeEnabledFeatures::FontSynthesisEnabled());
   return CSSIdentifierValue::Create(
       style.GetFontDescription().GetFontSynthesisStyle());
 }
@@ -3230,7 +3228,6 @@ const CSSValue* FontSynthesisSmallCaps::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  DCHECK(RuntimeEnabledFeatures::FontSynthesisEnabled());
   return CSSIdentifierValue::Create(
       style.GetFontDescription().GetFontSynthesisSmallCaps());
 }

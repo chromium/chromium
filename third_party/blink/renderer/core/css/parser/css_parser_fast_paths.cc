@@ -1184,13 +1184,10 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kFontOpticalSizing:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
     case CSSPropertyID::kFontSynthesisWeight:
-      DCHECK(RuntimeEnabledFeatures::FontSynthesisEnabled());
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
     case CSSPropertyID::kFontSynthesisStyle:
-      DCHECK(RuntimeEnabledFeatures::FontSynthesisEnabled());
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
     case CSSPropertyID::kFontSynthesisSmallCaps:
-      DCHECK(RuntimeEnabledFeatures::FontSynthesisEnabled());
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
     case CSSPropertyID::kWebkitFontSmoothing:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||

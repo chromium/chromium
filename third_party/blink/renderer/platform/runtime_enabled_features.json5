@@ -1110,10 +1110,6 @@
       // a Chromium level feature.
     },
     {
-      name: "FontSynthesis",
-      status: "stable",
-    },
-    {
       name: "ForcedColors",
       status: "stable",
     },
