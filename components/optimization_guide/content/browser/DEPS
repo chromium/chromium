@@ -4,6 +4,7 @@ include_rules = [
   "+components/google/core",
   "+components/history/core/browser",
   "+components/keyed_service/core",
+  "+components/no_state_prefetch/browser",
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
   "+components/search_engines",

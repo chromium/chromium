@@ -223,7 +223,8 @@ class PageContentAnnotationsWebContentsObserverTest
 
     PageContentAnnotationsWebContentsObserver::CreateForWebContents(
         web_contents(), page_content_annotations_service_.get(),
-        template_url_service_.get(), optimization_guide_decider_.get());
+        template_url_service_.get(), optimization_guide_decider_.get(),
+        /*no_state_prefetch_manager=*/nullptr);
 
     // Overwrite Google base URL.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(

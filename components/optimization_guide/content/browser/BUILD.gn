@@ -36,6 +36,7 @@ static_library("browser") {
     "//components/google/core/common",
     "//components/history/core/browser",
     "//components/keyed_service/core",
+    "//components/no_state_prefetch/browser",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/content/mojom:mojo_interfaces",

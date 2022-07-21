@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/rand_util.h"
@@ -500,7 +501,7 @@ void PageContentAnnotationsService::OnURLQueried(
 
   base::TimeDelta min_magnitude_between_visits = base::TimeDelta::Max();
   bool did_store_content_annotations = false;
-  for (const auto& visit_for_url : url_result.visits) {
+  for (const auto& visit_for_url : base::Reversed(url_result.visits)) {
     if (visit.nav_entry_timestamp != visit_for_url.visit_time) {
       base::TimeDelta magnitude_between_visits =
           (visit.nav_entry_timestamp - visit_for_url.visit_time).magnitude();

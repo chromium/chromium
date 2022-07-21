@@ -16,6 +16,10 @@ namespace content {
 class NavigationHandle;
 }  // namespace content
 
+namespace prerender {
+class NoStatePrefetchManager;
+}  // namespace prerender
+
 namespace optimization_guide {
 
 enum class OptimizationGuideDecision;
@@ -43,7 +47,8 @@ class PageContentAnnotationsWebContentsObserver
       content::WebContents* web_contents,
       PageContentAnnotationsService* page_content_annotations_service,
       TemplateURLService* template_url_service,
-      OptimizationGuideDecider* optimization_guide_decider);
+      OptimizationGuideDecider* optimization_guide_decider,
+      prerender::NoStatePrefetchManager* no_state_prefetch_manager);
 
  private:
   friend class content::WebContentsUserData<
@@ -69,6 +74,9 @@ class PageContentAnnotationsWebContentsObserver
 
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<OptimizationGuideDecider> optimization_guide_decider_;
+
+  // Not owned. Guaranteed to outlive |this|.
+  raw_ptr<prerender::NoStatePrefetchManager> no_state_prefetch_manager_;
 
   base::WeakPtrFactory<PageContentAnnotationsWebContentsObserver>
       weak_ptr_factory_{this};
