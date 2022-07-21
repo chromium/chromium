@@ -10,7 +10,7 @@ from blinkpy.tool.commands.rebaseline_unittest import BaseTestCase
 
 
 class _FakeOptimizer(BaselineOptimizer):
-    def read_results_by_directory(self, baseline_name):
+    def read_results_by_directory(self, test_name, baseline_name):
         if baseline_name.endswith('txt'):
             return {'web_tests/passes/text.html': '123456'}
         return {}
