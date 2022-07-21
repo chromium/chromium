@@ -464,8 +464,8 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
                                  bluetooth_adapter::kConnectDevice);
 
     dbus::MessageWriter writer(&method_call);
-    base::Value::Dict dict;
-    dict.Set(bluetooth_device::kAddressProperty, address);
+    base::DictionaryValue dict;
+    dict.SetStringKey(bluetooth_device::kAddressProperty, address);
     if (address_type) {
       std::string address_type_value;
       switch (*address_type) {
@@ -479,7 +479,8 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
           NOTREACHED();
           break;
       };
-      dict.Set(bluetooth_device::kAddressTypeProperty, address_type_value);
+      dict.SetStringKey(bluetooth_device::kAddressTypeProperty,
+                        address_type_value);
     }
     dbus::AppendValueData(&writer, dict);
 
