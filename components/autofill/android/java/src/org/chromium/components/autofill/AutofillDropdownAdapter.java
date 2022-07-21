@@ -90,8 +90,16 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
             // For refreshed layout, ignore the return value as we don't need to adjust the height
             // of the view.
             populateItemTagView(item, layout);
+            // Set the visibility of the start/end icons.
+            layout.findViewById(R.id.start_dropdown_icon)
+                    .setVisibility(item.isIconAtStart() ? View.VISIBLE : View.GONE);
+            layout.findViewById(R.id.end_dropdown_icon)
+                    .setVisibility(item.isIconAtStart() ? View.GONE : View.VISIBLE);
             ImageView iconView =
-                    populateIconView((ImageView) layout.findViewById(R.id.end_dropdown_icon), item);
+                    populateIconView((ImageView) (item.isIconAtStart()
+                                                     ? layout.findViewById(R.id.start_dropdown_icon)
+                                                     : layout.findViewById(R.id.end_dropdown_icon)),
+                            item);
             if (iconView != null) {
                 iconView.setLayoutParams(getSizeParamsForIconView(iconView, item));
             }
@@ -188,8 +196,10 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
         ImageView iconViewEnd = (ImageView) layout.findViewById(R.id.end_dropdown_icon);
         if (item.isIconAtStart()) {
             iconViewEnd.setVisibility(View.GONE);
+            iconViewStart.setVisibility(View.VISIBLE);
         } else {
             iconViewStart.setVisibility(View.GONE);
+            iconViewEnd.setVisibility(View.VISIBLE);
         }
 
         ImageView iconView =

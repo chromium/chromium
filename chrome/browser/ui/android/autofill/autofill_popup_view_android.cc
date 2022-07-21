@@ -107,7 +107,7 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
         base::android::ConvertUTF16ToJavaString(env, suggestion.offer_label);
     Java_AutofillPopupBridge_addToAutofillSuggestionArray(
         env, data_array, i, value, label, item_tag, android_icon_id,
-        /*icon_at_start=*/false, suggestion.frontend_id, is_deletable,
+        suggestion.is_icon_at_start, suggestion.frontend_id, is_deletable,
         is_label_multiline, /*isLabelBold*/ false,
         url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));
   }

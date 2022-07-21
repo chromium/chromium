@@ -131,6 +131,10 @@ struct Suggestion {
   // The url for the custom icon. This is used by android to fetch the image as
   // android does not support gfx::Image directly.
   GURL custom_icon_url;
+
+  // On Android, the icon can be at the start of the suggestion before the label
+  // or at the end of the label.
+  bool is_icon_at_start = false;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // TODO(crbug.com/1019660): Identify icons with enum instead of strings.

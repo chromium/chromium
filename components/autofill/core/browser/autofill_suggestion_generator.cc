@@ -409,7 +409,10 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     if (image)
       suggestion.custom_icon = *image;
   }
-
+#if BUILDFLAG(IS_ANDROID)
+  // The card art icon should always be shown at the start of the suggestion.
+  suggestion.is_icon_at_start = true;
+#endif  // BUILDFLAG(IS_ANDROID)
   return suggestion;
 }
 
