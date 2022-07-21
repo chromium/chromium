@@ -161,7 +161,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter size
 [Worker]     method constructor
 [Worker] interface CropTarget
-[Worker]     static method fromElement
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker] interface Crypto
