@@ -9,6 +9,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
@@ -1588,7 +1589,8 @@ base::Time FakeTimeNow() {
 
 class TimeOriginSyncTest : public testing::Test {};
 
-TEST_F(TimeOriginSyncTest, TimeOriginStableWhenSystemClockChanges) {
+// Test is flaky on all platforms: https://crbug.com/1346004
+TEST_F(TimeOriginSyncTest, DISABLED_TimeOriginStableWhenSystemClockChanges) {
   base::subtle::ScopedTimeClockOverrides clock_overrides(&FakeTimeNow, nullptr,
                                                          nullptr);
   base::TimeTicks before = base::TimeTicks::Now();
