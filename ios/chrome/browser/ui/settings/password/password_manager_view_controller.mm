@@ -156,6 +156,13 @@ bool IsFaviconEnabled() {
       password_manager::features::kEnableFaviconForPasswords);
 }
 
+// Returns true if settings (e.g., "Offer To Save Passwords") should be visible
+// in this UI, or false if they should be behind a link to a submenu.
+bool ShouldShowSettingsUI() {
+  return !base::FeatureList::IsEnabled(
+      password_manager::features::kIOSPasswordUISplit);
+}
+
 }  // namespace
 
 // TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
@@ -518,36 +525,38 @@ bool IsFaviconEnabled() {
 
   TableViewModel* model = self.tableViewModel;
 
-  // Save passwords switch and manage account message. Only show this section
-  // when the searchController is not active.
-  if (!self.navigationItem.searchController.active) {
-    [model addSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
+  if (ShouldShowSettingsUI()) {
+    // Save passwords switch and manage account message. Only show this section
+    // when the searchController is not active.
+    if (!self.navigationItem.searchController.active) {
+      [model addSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
 
-    if (_browserState->GetPrefs()->IsManagedPreference(
-            password_manager::prefs::kCredentialsEnableService)) {
-      // TODO(crbug.com/1082827): observe the managing status of the pref.
-      // Show managed settings UI when the pref is managed by the policy.
-      _managedSavePasswordItem = [self managedSavePasswordItem];
-      [model addItem:_managedSavePasswordItem
-          toSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
-    } else {
-      _savePasswordsItem = [self savePasswordsItem];
-      [model addItem:_savePasswordsItem
-          toSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
+      if (_browserState->GetPrefs()->IsManagedPreference(
+              password_manager::prefs::kCredentialsEnableService)) {
+        // TODO(crbug.com/1082827): observe the managing status of the pref.
+        // Show managed settings UI when the pref is managed by the policy.
+        _managedSavePasswordItem = [self managedSavePasswordItem];
+        [model addItem:_managedSavePasswordItem
+            toSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
+      } else {
+        _savePasswordsItem = [self savePasswordsItem];
+        [model addItem:_savePasswordsItem
+            toSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
+      }
+
+      _manageAccountLinkItem = [self manageAccountLinkItem];
+      [model setHeader:_manageAccountLinkItem
+          forSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
     }
 
-    _manageAccountLinkItem = [self manageAccountLinkItem];
-    [model setHeader:_manageAccountLinkItem
-        forSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
+    // Passwords in other apps.
+    [model addSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
+    if (!_passwordsInOtherAppsItem) {
+      _passwordsInOtherAppsItem = [self passwordsInOtherAppsItem];
+    }
+    [model addItem:_passwordsInOtherAppsItem
+        toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
   }
-
-  // Passwords in other apps.
-  [model addSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
-  if (!_passwordsInOtherAppsItem) {
-    _passwordsInOtherAppsItem = [self passwordsInOtherAppsItem];
-  }
-  [model addItem:_passwordsInOtherAppsItem
-      toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
 
   // Password check.
   [model addSectionWithIdentifier:SectionIdentifierPasswordCheck];
@@ -624,6 +633,11 @@ bool IsFaviconEnabled() {
                                           withRowAnimation:
                                               (UITableViewRowAnimation)
                                                   rowAnimation {
+  // Ignore these updates if this surface is not being used as the settings UI.
+  // This ensures the related content is never added (or re-added) to the menu.
+  if (!ShouldShowSettingsUI()) {
+    return;
+  }
   OnDeviceEncryptionState oldState = self.onDeviceEncryptionStateInModel;
   OnDeviceEncryptionState newState = [self.delegate onDeviceEncryptionState];
   if (newState == oldState) {
@@ -1221,52 +1235,65 @@ bool IsFaviconEnabled() {
   TableViewModel* model = self.tableViewModel;
   [self.tableView
       performBatchUpdates:^{
-        // Add "Save Password Switch" section.
-        [model insertSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch
-                                   atIndex:0];
-        [model setHeader:_manageAccountLinkItem
-            forSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
-        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0]
-                      withRowAnimation:UITableViewRowAnimationTop];
-        if (_savePasswordsItem) {
-          [model addItem:_savePasswordsItem
-              toSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
-        } else {
-          [model addItem:_managedSavePasswordItem
-              toSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
+        int sectionIndex = 0;
+        NSMutableArray<NSIndexPath*>* rowsIndexPaths =
+            [[NSMutableArray alloc] init];
+
+        if (ShouldShowSettingsUI()) {
+          // Add "Save Password Switch" section.
+          [model
+              insertSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch
+                                  atIndex:sectionIndex];
+          [model setHeader:_manageAccountLinkItem
+              forSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
+          [self.tableView
+                insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+              withRowAnimation:UITableViewRowAnimationTop];
+          if (_savePasswordsItem) {
+            [model addItem:_savePasswordsItem
+                toSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
+          } else {
+            [model addItem:_managedSavePasswordItem
+                toSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
+          }
+          NSInteger switchSection = [model
+              sectionForSectionIdentifier:SectionIdentifierSavePasswordsSwitch];
+          [rowsIndexPaths
+              addObject:[NSIndexPath indexPathForRow:0
+                                           inSection:switchSection]];
+          sectionIndex++;
+
+          // Add "Password in other app" section.
+          [model
+              insertSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps
+                                  atIndex:sectionIndex];
+          NSInteger otherAppSection =
+              [model sectionForSectionIdentifier:
+                         SectionIdentifierPasswordsInOtherApps];
+
+          [self.tableView
+                insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+              withRowAnimation:UITableViewRowAnimationTop];
+          [model addItem:_passwordsInOtherAppsItem
+              toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
+          [rowsIndexPaths
+              addObject:[NSIndexPath indexPathForRow:0
+                                           inSection:otherAppSection]];
+
+          [self.tableView insertRowsAtIndexPaths:rowsIndexPaths
+                                withRowAnimation:UITableViewRowAnimationTop];
+          sectionIndex++;
         }
-        NSInteger switchSection = [model
-            sectionForSectionIdentifier:SectionIdentifierSavePasswordsSwitch];
-        NSMutableArray<NSIndexPath*>* rowsIndexPaths = [NSMutableArray
-            arrayWithObjects:[NSIndexPath indexPathForRow:0
-                                                inSection:switchSection],
-                             nil];
-
-        // Add "Password in other app" section.
-        [model insertSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps
-                                   atIndex:1];
-        NSInteger otherAppSection = [model
-            sectionForSectionIdentifier:SectionIdentifierPasswordsInOtherApps];
-
-        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:1]
-                      withRowAnimation:UITableViewRowAnimationTop];
-        [model addItem:_passwordsInOtherAppsItem
-            toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
-        [rowsIndexPaths
-            addObject:[NSIndexPath indexPathForRow:0
-                                         inSection:otherAppSection]];
-
-        [self.tableView insertRowsAtIndexPaths:rowsIndexPaths
-                              withRowAnimation:UITableViewRowAnimationTop];
 
         // Add "Password check" section.
         [model insertSectionWithIdentifier:SectionIdentifierPasswordCheck
-                                   atIndex:2];
+                                   atIndex:sectionIndex];
         NSInteger checkSection =
             [model sectionForSectionIdentifier:SectionIdentifierPasswordCheck];
 
-        [self.tableView insertSections:[NSIndexSet indexSetWithIndex:2]
-                      withRowAnimation:UITableViewRowAnimationTop];
+        [self.tableView
+              insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+            withRowAnimation:UITableViewRowAnimationTop];
         [model addItem:_passwordProblemsItem
             toSectionWithIdentifier:SectionIdentifierPasswordCheck];
         [model addItem:_checkForProblemsItem
