@@ -6,8 +6,10 @@
 
 #import "base/callback.h"
 #import "base/check.h"
+#import "base/files/file_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
 #import "ios/web/download/download_result.h"
 #import "ios/web/web_view/error_translation_util.h"
 #import "net/base/net_errors.h"
@@ -15,6 +17,35 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// Helper to get the size of file at `file_path`. Returns -1 in case of error.
+int64_t FileSizeForFileAtPath(base::FilePath file_path) {
+  int64_t file_size = 0;
+  if (!base::GetFileSize(file_path, &file_size))
+    return -1;
+
+  return file_size;
+}
+
+// Helper to invoke the download complete callback after getting the file
+// size.
+void DownloadDidFinishWithSize(
+    NativeDownloadTaskProgressCallback progress_callback,
+    NativeDownloadTaskCompleteCallback complete_callback,
+    int64_t file_size) {
+  if (file_size != -1 && !progress_callback.is_null()) {
+    progress_callback.Run(
+        /* bytes_received */ file_size, /* total_bytes */ file_size,
+        /* fraction_completed */ 1.0);
+  }
+
+  web::DownloadResult download_result(net::OK);
+  std::move(complete_callback).Run(download_result);
+}
+
+}  // anonymous namespace
 
 @interface DownloadNativeTaskBridge ()
 
@@ -181,10 +212,22 @@
 - (void)downloadDidFinish:(WKDownload*)download API_AVAILABLE(ios(15)) {
   [self stopObservingDownloadProgress];
   if (!_completeCallback.is_null()) {
-    _progressCallback.Reset();
-
-    web::DownloadResult download_result(net::OK);
-    std::move(_completeCallback).Run(download_result);
+    // The method -downloadDidFinish: will be called as soon as the
+    // download completes, even before the NSProgress item may have
+    // been updated.
+    //
+    // To prevent truncating the downloaded file, get the real size
+    // of the file from the disk and call `_progressCallback` first
+    // before calling `_completeCallback`.
+    //
+    // See https://crbug.com/1346030 for examples of truncation.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+        base::BindOnce(
+            &FileSizeForFileAtPath,
+            base::FilePath(base::SysNSStringToUTF8(_urlForDownload.path))),
+        base::BindOnce(&DownloadDidFinishWithSize, std::move(_progressCallback),
+                       std::move(_completeCallback)));
   }
 }
 
