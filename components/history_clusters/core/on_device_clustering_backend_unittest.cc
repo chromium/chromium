@@ -4,6 +4,7 @@
 
 #include "components/history_clusters/core/on_device_clustering_backend.h"
 
+#include "base/containers/flat_set.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -135,7 +136,8 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
   void SetUp() override {
     clustering_backend_ = std::make_unique<OnDeviceClusteringBackend>(
         /*entity_metadata_provider=*/nullptr, &test_site_engagement_provider_,
-        /*optimization_guide_decider_=*/nullptr);
+        /*optimization_guide_decider_=*/nullptr,
+        /*mid_blocklist_=*/base::flat_set<std::string>({"blockedentity"}));
   }
 
   void TearDown() override { clustering_backend_.reset(); }
@@ -567,13 +569,56 @@ class OnDeviceClusteringWithAllTheBackendsTest
     clustering_backend_ = std::make_unique<OnDeviceClusteringBackend>(
         entity_metadata_provider_.get(),
         /*engagement_score_provider=*/nullptr,
-        optimization_guide_decider_.get());
+        optimization_guide_decider_.get(),
+        /*mid_blocklist_=*/base::flat_set<std::string>({"blockedentity"}));
   }
 
  private:
   std::unique_ptr<TestEntityMetadataProvider> entity_metadata_provider_;
   std::unique_ptr<TestOptimizationGuideDecider> optimization_guide_decider_;
 };
+
+TEST_F(OnDeviceClusteringWithAllTheBackendsTest, EntityOnMidBlocklist) {
+  base::HistogramTester histogram_tester;
+  std::vector<history::AnnotatedVisit> visits;
+
+  // Visit 2 refers to visit 1 and will be clustered. Visit 3 refers to a
+  // missing visit and should be considered as in its own cluster.
+  // Goal is to test the mid blocklist
+  history::AnnotatedVisit visit =
+      testing::CreateDefaultAnnotatedVisit(1, GURL("https://github.com/"));
+  visit.content_annotations.model_annotations.entities = {
+      {"blockedentity", 100}};
+  visits.push_back(visit);
+
+  history::AnnotatedVisit visit2 =
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/"));
+  visit2.referring_visit_of_redirect_chain_start = 1;
+  visit2.content_annotations.model_annotations.entities = {{"unblocked", 100}};
+  // Set the visit duration to be 2x the default so it has the same duration
+  // after |visit| and |visit4| are deduped.
+  visit2.visit_row.visit_duration = base::Seconds(20);
+  visits.push_back(visit2);
+
+  // This visit has a different title and shouldn't be grouped with the others.
+  history::AnnotatedVisit visit3 = testing::CreateDefaultAnnotatedVisit(
+      10, GURL("https://nonexistentreferrer.com/"));
+  visit3.referring_visit_of_redirect_chain_start = 6;
+  visit3.content_annotations.model_annotations.entities = {{"irrelevant", 100}};
+  visits.push_back(visit3);
+
+  std::vector<history::Cluster> result_clusters =
+      ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
+
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.ClusterSize.Min", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.ClusterSize.Max", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.NumKeywordsPerCluster.Min", 3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.NumKeywordsPerCluster.Max", 3, 1);
+}
 
 TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
        DedupeSimilarUrlSameSearchQuery) {

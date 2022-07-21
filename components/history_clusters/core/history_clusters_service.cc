@@ -69,7 +69,7 @@ HistoryClustersService::HistoryClustersService(
 
   backend_ = std::make_unique<OnDeviceClusteringBackend>(
       entity_metadata_provider, engagement_score_provider,
-      optimization_guide_decider);
+      optimization_guide_decider, JourneysMidBlocklist());
 }
 
 HistoryClustersService::~HistoryClustersService() = default;
