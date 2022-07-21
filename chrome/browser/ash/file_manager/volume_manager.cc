@@ -717,16 +717,11 @@ void VolumeManager::Initialize() {
   // Subscribe to FileSystemProviderService and register currently mounted
   // volumes for the profile.
   if (file_system_provider_service_) {
-    using ash::file_system_provider::ProvidedFileSystemInfo;
-    file_system_provider_service_->AddObserver(this);
-
-    std::vector<ProvidedFileSystemInfo> file_system_info_list =
-        file_system_provider_service_->GetProvidedFileSystemInfoList();
-    for (auto& info : file_system_info_list) {
-      std::unique_ptr<Volume> volume =
-          Volume::CreateForProvidedFileSystem(info, MOUNT_CONTEXT_AUTO);
-      DoMountEvent(chromeos::MOUNT_ERROR_NONE, std::move(volume));
-    }
+    auto restore_provided_file_systems =
+        base::BindOnce(&VolumeManager::RestoreProvidedFileSystems,
+                       weak_ptr_factory_.GetWeakPtr());
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, std::move(restore_provided_file_systems));
   }
 
   // Subscribe to Profile Preference change.
@@ -1251,6 +1246,21 @@ void VolumeManager::OnRenameEvent(
       return;
   }
   NOTREACHED();
+}
+
+void VolumeManager::RestoreProvidedFileSystems() {
+  using ash::file_system_provider::ProvidedFileSystemInfo;
+
+  DCHECK(file_system_provider_service_);
+  file_system_provider_service_->AddObserver(this);
+
+  std::vector<ProvidedFileSystemInfo> file_system_info_list =
+      file_system_provider_service_->GetProvidedFileSystemInfoList();
+  for (const auto& file_system_info : file_system_info_list) {
+    OnProvidedFileSystemMount(file_system_info,
+                              ash::file_system_provider::MOUNT_CONTEXT_RESTORE,
+                              base::File::FILE_OK);
+  }
 }
 
 void VolumeManager::OnProvidedFileSystemMount(

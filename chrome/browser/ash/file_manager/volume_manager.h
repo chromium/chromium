@@ -528,6 +528,7 @@ class VolumeManager : public KeyedService,
   }
 
  private:
+  void RestoreProvidedFileSystems();
   void OnDiskMountManagerRefreshed(bool success);
   void OnStorageMonitorInitialized();
   void DoAttachMtpStorage(const storage_monitor::StorageInfo& info,
