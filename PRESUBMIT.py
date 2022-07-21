@@ -3593,9 +3593,10 @@ def _CheckAndroidTestAnnotationUsage(input_api, output_api):
 
 def _CheckAndroidNewMdpiAssetLocation(input_api, output_api):
     """Checks if MDPI assets are placed in a correct directory."""
-    file_filter = lambda f: (f.LocalPath().endswith('.png') and
-                             ('/res/drawable/' in f.LocalPath() or
-                              '/res/drawable-ldrtl/' in f.LocalPath()))
+    file_filter = lambda f: (f.LocalPath().endswith(
+        '.png') and ('/res/drawable/'.replace('/', input_api.os_path.sep) in f.
+                     LocalPath() or '/res/drawable-ldrtl/'.replace(
+                         '/', input_api.os_path.sep) in f.LocalPath()))
     errors = []
     for f in input_api.AffectedFiles(include_deletes=False,
                                      file_filter=file_filter):
