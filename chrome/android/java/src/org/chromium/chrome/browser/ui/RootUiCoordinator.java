@@ -1223,13 +1223,7 @@ public class RootUiCoordinator
                     mActivityLifecycleDispatcher, mToolbarManager, mAppMenuDelegate,
                     mActivity.getWindow().getDecorView(),
                     mActivity.getWindow().getDecorView().findViewById(R.id.menu_anchor_stub),
-                    () -> {
-                        View coord = mActivity.findViewById(R.id.coordinator);
-                        int[] location = new int[2];
-                        coord.getLocationInWindow(location);
-                        return new Rect(location[0], location[1], location[0] + coord.getWidth(),
-                                location[1] + coord.getHeight());
-                    });
+                    this::getAppRectInWindow);
             AppMenuCoordinatorFactory.setExceptionReporter(
                     (throwable)
                             -> ChromePureJavaExceptionReporter.reportJavaException(
@@ -1240,6 +1234,15 @@ public class RootUiCoordinator
 
             mAppMenuSupplier.set(mAppMenuCoordinator);
         }
+    }
+
+    /**
+     * Returns {@link Rect} that represents the app client area the app menu should fit in.
+     */
+    protected Rect getAppRectInWindow() {
+        Rect appRect = new Rect();
+        mActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(appRect);
+        return appRect;
     }
 
     private void hideAppMenu() {
