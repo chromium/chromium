@@ -59680,8 +59680,6 @@ from previous Chrome versions.
   <int value="589394614" label="OmniboxSuggestionButtonRow:enabled"/>
   <int value="589924262" label="CryptAuthV2DeviceActivityStatus:enabled"/>
   <int value="592050831" label="disable-slimming-paint"/>
-  <int value="592414224"
-      label="OmniboxTrendingZeroPrefixSuggestionsOnNTP:enabled"/>
   <int value="593707592" label="disable-network-portal-notification"/>
   <int value="594756372" label="MyFilesVolume:disabled"/>
   <int value="595168244" label="NotificationExpansionAnimation:enabled"/>
@@ -60410,8 +60408,6 @@ from previous Chrome versions.
   <int value="1055116004" label="AllowTouchpadHapticClickSettings:enabled"/>
   <int value="1057014709" label="EnforceTLS13Downgrade:enabled"/>
   <int value="1057709415" label="DeprecateAltBasedSixPack:disabled"/>
-  <int value="1057741107"
-      label="OmniboxTrendingZeroPrefixSuggestionsOnNTP:disabled"/>
   <int value="1057887829" label="AutofillScanThemeDialog:disabled"/>
   <int value="1059007599" label="enable-gpu-appcontainer"/>
   <int value="1059157909"

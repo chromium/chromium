@@ -1333,12 +1333,6 @@ const FeatureEntry::FeatureVariation kMaxZeroSuggestMatchesVariations[] = {
     {"15", kMaxZeroSuggestMatches15, std::size(kMaxZeroSuggestMatches15),
      nullptr}};
 
-const FeatureEntry::FeatureVariation
-    kOmniboxTrendingZeroPrefixSuggestionsOnNTPVariations[] = {
-        {"Signed-in Users", {}, 0, "t4693175"},
-        {"Signed-out Users", {}, 0, "t4693176"},
-        {"All Users", {}, 0, "t4693177"}};
-
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches4[] = {
@@ -5176,15 +5170,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxFuzzyUrlSuggestionsName,
      flag_descriptions::kOmniboxFuzzyUrlSuggestionsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxFuzzyUrlSuggestions)},
-
-    {"omnibox-trending-zero-prefix-suggestions-on-ntp",
-     flag_descriptions::kOmniboxTrendingZeroPrefixSuggestionsOnNTPName,
-     flag_descriptions::kOmniboxTrendingZeroPrefixSuggestionsOnNTPDescription,
-     kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox::kOmniboxTrendingZeroPrefixSuggestionsOnNTP,
-         kOmniboxTrendingZeroPrefixSuggestionsOnNTPVariations,
-         "OmniboxBundledExperimentV1")},
 
     {"omnibox-zero-suggest-prefetching",
      flag_descriptions::kOmniboxZeroSuggestPrefetchingName,

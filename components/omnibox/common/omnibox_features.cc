@@ -103,7 +103,7 @@ const base::Feature kAdjustLocalHistoryZeroSuggestRelevanceScore{
     "AdjustLocalHistoryZeroSuggestRelevanceScore",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable on-clobber (i.e., when the user clears the whole omnibox text)
+// Enables on-clobber (i.e., when the user clears the whole omnibox text)
 // zero-prefix suggestions on the Open Web, that are contextual to the current
 // URL. Will only work if user is signed-in and syncing, or is otherwise
 // eligible to send the current page URL to the suggest server.
@@ -111,12 +111,12 @@ const base::Feature kClobberTriggersContextualWebZeroSuggest{
     "OmniboxClobberTriggersContextualWebZeroSuggest",
     enabled_by_default_desktop_only};
 
-// Enable on-clobber (i.e., when the user clears the whole omnibox text)
+// Enables on-clobber (i.e., when the user clears the whole omnibox text)
 // zero-prefix suggestions on the SRP.
 const base::Feature kClobberTriggersSRPZeroSuggest{
     "OmniboxClobberTriggersSRPZeroSuggest", enabled_by_default_desktop_only};
 
-// Enable on-focus zero-prefix suggestions on the Open Web, that are contextual
+// Enables on-focus zero-prefix suggestions on the Open Web, that are contextual
 // to the current URL. Will only work if user is signed-in and syncing, or is
 // otherwise eligible to send the current page URL to the suggest server.
 const base::Feature kFocusTriggersContextualWebZeroSuggest{
@@ -127,6 +127,11 @@ const base::Feature kFocusTriggersContextualWebZeroSuggest{
 const base::Feature kFocusTriggersSRPZeroSuggest{
     "OmniboxFocusTriggersSRPZeroSuggest", enabled_by_default_android_only};
 
+// Revamps how local search history is extracted and processed for generating
+// zero-prefix and prefix suggestions.
+extern const base::Feature kLocalHistorySuggestRevamp{
+    "LocalHistorySuggestRevamp", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Used to adjust the age threshold since the last visit in order to consider a
 // normalized keyword search term as a zero-prefix suggestion. If disabled, the
 // default value of 60 days for Desktop and 7 days for Android and iOS is used.
@@ -135,18 +140,10 @@ const base::Feature kFocusTriggersSRPZeroSuggest{
 const base::Feature kOmniboxLocalZeroSuggestAgeThreshold{
     "OmniboxLocalZeroSuggestAgeThreshold", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Used to enable/disable remote zero-prefix suggestions on the NTP
-// (Omnibox and NTP realbox). Enabling this feature permits the code to issue
-// suggestions request to the server on the new tab page for users who decided
-// not to sign in.
-const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP{
+// Enables on-focus zero-prefix suggestions on the NTP for signed-out users.
+const base::Feature kZeroSuggestOnNTPForSignedOutUsers{
     "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
     enabled_by_default_desktop_android};
-
-// Revamps how local search history is extracted and processed for generating
-// zero-prefix and prefix suggestions.
-extern const base::Feature kLocalHistorySuggestRevamp{
-    "LocalHistorySuggestRevamp", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables prefetching of the zero prefix suggestions for eligible users on NTP.
 const base::Feature kZeroSuggestPrefetching{"ZeroSuggestPrefetching",

@@ -1926,12 +1926,6 @@ const char kOmniboxRemoveSuggestionHeaderChevronName[] =
 const char kOmniboxRemoveSuggestionHeaderChevronDescription[] =
     "Remove the chevron on the right side of omnibox suggestion search header.";
 
-const char kOmniboxTrendingZeroPrefixSuggestionsOnNTPName[] =
-    "Omnibox Trending Zero Prefix Suggestions";
-const char kOmniboxTrendingZeroPrefixSuggestionsOnNTPDescription[] =
-    "Enables trending zero prefix suggestions for users with no or "
-    "insufficient search history.";
-
 const char kOmniboxZeroSuggestPrefetchingName[] =
     "Omnibox Zero Prefix Suggestion Prefetching";
 const char kOmniboxZeroSuggestPrefetchingDescription[] =

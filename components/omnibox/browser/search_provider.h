@@ -88,7 +88,7 @@ class SearchProvider : public BaseSearchProvider,
  private:
   friend class AutocompleteProviderTest;
   friend class BaseSearchProviderTest;
-  FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, CanSendURL);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, CanSendRequestWithURL);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest,
                            DontInlineAutocompleteAsynchronously);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, NavigationInline);

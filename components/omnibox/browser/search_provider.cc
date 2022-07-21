@@ -968,9 +968,9 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
     return nullptr;
 
   // Send the current page URL if user setting and URL requirements are met.
-  if (CanSendURL(input.current_url(), suggest_url, template_url,
-                 input.current_page_classification(), search_terms_data,
-                 client(), true)) {
+  if (CanSendRequestWithURL(input.current_url(), suggest_url, template_url,
+                            input.current_page_classification(),
+                            search_terms_data, client(), true)) {
     search_term_args.current_page_url = input.current_url().spec();
     // Create the suggest URL again with the current page URL.
     suggest_url = GURL(template_url->suggestions_url_ref().ReplaceSearchTerms(

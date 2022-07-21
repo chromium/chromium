@@ -42,6 +42,8 @@ bool MatchTypeAndContentsAreEqual(const AutocompleteMatch& lhs,
 
 }  // namespace
 
+using OEP = metrics::OmniboxEventProto;
+
 // SuggestionDeletionHandler -------------------------------------------------
 
 // This class handles making requests to the server in order to delete
@@ -224,7 +226,6 @@ void BaseSearchProvider::AppendSuggestClientToAdditionalQueryParams(
 // static
 bool BaseSearchProvider::IsNTPPage(
     metrics::OmniboxEventProto::PageClassification classification) {
-  using OEP = metrics::OmniboxEventProto;
   return (classification == OEP::NTP) ||
          (classification == OEP::OBSOLETE_INSTANT_NTP) ||
          (classification == OEP::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS) ||
@@ -237,11 +238,96 @@ bool BaseSearchProvider::IsNTPPage(
 // static
 bool BaseSearchProvider::IsSearchResultsPage(
     metrics::OmniboxEventProto::PageClassification classification) {
-  using OEP = metrics::OmniboxEventProto;
   return (classification ==
           OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT) ||
          (classification ==
           OEP::SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT);
+}
+
+// static
+bool BaseSearchProvider::CanSendPageURLInRequest(const GURL& page_url) {
+  return page_url.is_valid() && (page_url.scheme() == url::kHttpScheme ||
+                                 page_url.scheme() == url::kHttpsScheme);
+}
+
+// static
+bool BaseSearchProvider::CanSendRequest(
+    const GURL& suggest_url,
+    const TemplateURL* template_url,
+    const SearchTermsData& search_terms_data,
+    const AutocompleteProviderClient* client) {
+  // Make sure we are sending the suggest request through a cryptographically
+  // secure channel to prevent exposing the current page URL or personalized
+  // results without encryption.
+  if (!suggest_url.is_valid() || !suggest_url.SchemeIsCryptographic()) {
+    return false;
+  }
+
+  // Don't run if in incognito mode.
+  if (client->IsOffTheRecord()) {
+    return false;
+  }
+
+  // Don't run if we can't get preferences or search suggest is not enabled.
+  if (!client->SearchSuggestEnabled()) {
+    return false;
+  }
+
+  // Only make the request if we know that the provider supports zero-suggest
+  // requests. (Currently only the prepopulated Google provider supports it.)
+  if (template_url == nullptr ||
+      !template_url->SupportsReplacement(search_terms_data) ||
+      template_url->GetEngineType(search_terms_data) != SEARCH_ENGINE_GOOGLE) {
+    return false;
+  }
+
+  return true;
+}
+
+// static
+bool BaseSearchProvider::CanSendRequestWithURL(
+    const GURL& current_page_url,
+    const GURL& suggest_url,
+    const TemplateURL* template_url,
+    metrics::OmniboxEventProto::PageClassification page_classification,
+    const SearchTermsData& search_terms_data,
+    const AutocompleteProviderClient* client,
+    bool sending_search_terms) {
+  if (!CanSendRequest(suggest_url, template_url, search_terms_data, client)) {
+    return false;
+  }
+
+  // Don't bother sending the URL of an NTP page; it's not useful.  The server
+  // already gets equivalent information in the form of the current page
+  // classification.
+  if (IsNTPPage(page_classification)) {
+    return false;
+  }
+
+  // Only allow valid HTTP or HTTPS URLs.
+  if (!CanSendPageURLInRequest(current_page_url)) {
+    return false;
+  }
+
+  // If URL data collection is off, forbid sending the current page URL to the
+  // suggest endpoint - unless both of these hold:
+  //  * The suggest endpoint and current page must be same-origin. In that
+  //    case, the suggest endpoint could have already logged the current URL
+  //    when the user accessed it from the server.
+  //  * The search terms must be empty. When the user is typing new search
+  //    terms, Chrome should not leak to the endpoint which tab the user is
+  //    looking at. On-focus suggest requests don't contain a query.
+  if (!client->IsPersonalizedUrlDataCollectionActive()) {
+    bool safe_to_send_url_without_data_collection_active =
+        url::IsSameOriginWith(current_page_url, suggest_url) &&
+        !sending_search_terms;
+
+    if (!safe_to_send_url_without_data_collection_active) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 void BaseSearchProvider::DeleteMatch(const AutocompleteMatch& match) {
@@ -402,71 +488,6 @@ std::u16string BaseSearchProvider::GetFillIntoEdit(
   fill_into_edit.append(suggest_result.suggestion());
 
   return fill_into_edit;
-}
-
-// static
-bool BaseSearchProvider::CanSendURL(
-    const GURL& current_page_url,
-    const GURL& suggest_url,
-    const TemplateURL* template_url,
-    metrics::OmniboxEventProto::PageClassification page_classification,
-    const SearchTermsData& search_terms_data,
-    AutocompleteProviderClient* client,
-    bool sending_search_terms) {
-  // Make sure we are sending the suggest request through a cryptographically
-  // secure channel to prevent exposing the current page URL or personalized
-  // results without encryption.
-  if (!suggest_url.SchemeIsCryptographic())
-    return false;
-
-  // Don't run if in incognito mode.
-  if (client->IsOffTheRecord())
-    return false;
-
-  // Don't run if we can't get preferences or search suggest is not enabled.
-  if (!client->SearchSuggestEnabled())
-    return false;
-
-  // Only make the request if we know that the provider supports sending zero
-  // suggest. (Currently only the prepopulated Google provider supports it.)
-  if (template_url == nullptr ||
-      !template_url->SupportsReplacement(search_terms_data) ||
-      template_url->GetEngineType(search_terms_data) != SEARCH_ENGINE_GOOGLE)
-    return false;
-
-  if (!current_page_url.is_valid())
-    return false;
-
-  // Don't bother sending the URL of an NTP page; it's not useful.  The server
-  // already gets equivalent information in the form of the current page
-  // classification.
-  if (IsNTPPage(page_classification))
-    return false;
-
-  // Only allow HTTP URLs or HTTPS URLs.
-  const bool scheme_allowed = (current_page_url.scheme() == url::kHttpScheme) ||
-                              (current_page_url.scheme() == url::kHttpsScheme);
-  if (!scheme_allowed)
-    return false;
-
-  // If URL data collection is off, forbid sending the current page URL to the
-  // suggest endpoint - unless both of these hold:
-  //  * The suggest endpoint and current page must be same-origin. In that
-  //    case, the suggest endpoint could have already logged the current URL
-  //    when the user accessed it from the server.
-  //  * The search terms must be empty. When the user is typing new search
-  //    terms, Chrome should not leak to the endpoint which tab the user is
-  //    looking at. On-focus suggest requests don't contain a query.
-  if (!client->IsPersonalizedUrlDataCollectionActive()) {
-    bool safe_to_send_url_without_data_collection_active =
-        url::IsSameOriginWith(current_page_url, suggest_url) &&
-        !sending_search_terms;
-
-    if (!safe_to_send_url_without_data_collection_active)
-      return false;
-  }
-
-  return true;
 }
 
 void BaseSearchProvider::SetDeletionURL(const std::string& deletion_url,

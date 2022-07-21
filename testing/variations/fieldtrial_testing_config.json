@@ -6069,21 +6069,6 @@
             ]
         }
     ],
-    "NtpZPSForUnauthenticatedUsersAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "AndroidExperiments",
-                    "enable_features": [
-                        "OmniboxTrendingZeroPrefixSuggestionsOnNTP"
-                    ]
-                }
-            ]
-        }
-    ],
     "OffsetParentNewSpecBehaviorKillswitch": [
         {
             "platforms": [

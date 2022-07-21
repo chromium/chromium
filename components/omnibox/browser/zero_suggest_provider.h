@@ -56,6 +56,29 @@ class ZeroSuggestProvider : public BaseSearchProvider {
     REMOTE_SEND_URL,
   };
 
+  // Returns the type of results that should be generated for the given context.
+  // If `bypass_request_eligibility_checks` is false, checks whether the
+  // external conditions for REMOTE_NO_URL and REMOTE_SEND_URL variants are met;
+  // Logs eligibility UMA metrics, if applicable. Must be called exactly once
+  // with `bypass_request_eligibility_checks` set to false,
+  // otherwise the meaning of the metrics being logged would change.
+  // This method is static to avoid depending on the provider state.
+  static ResultType TypeOfResultToRun(const AutocompleteProviderClient* client,
+                                      const AutocompleteInput& input,
+                                      bool bypass_request_eligibility_checks);
+
+  // Called on Start(), confirms whether zero-prefix suggestions are allowed in
+  // the given context and logs eligibility UMA metrics. `result_type_to_run`
+  // must not be nullptr. It will be set to the result type that should be
+  // generated for the given context.
+  // Must be called exactly once, on Start(), otherwise the meaning of the
+  // the metrics being logged would change.
+  // This method is static to avoid depending on the provider state.
+  static bool AllowZeroPrefixSuggestions(
+      const AutocompleteProviderClient* client,
+      const AutocompleteInput& input,
+      ResultType* result_type_to_run);
+
   // Creates and returns an instance of this provider.
   static ZeroSuggestProvider* Create(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener);
@@ -86,13 +109,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ZeroSuggestProviderTest,
-                           AllowZeroSuggestSuggestions);
-  FRIEND_TEST_ALL_PREFIXES(ZeroSuggestProviderTest, TypeOfResultToRun);
-  FRIEND_TEST_ALL_PREFIXES(ZeroSuggestProviderTest,
-                           TypeOfResultToRunForContextualWeb);
-  FRIEND_TEST_ALL_PREFIXES(ZeroSuggestProviderTest,
-                           TestStartWillStopForSomeInput);
   ZeroSuggestProvider(AutocompleteProviderClient* client,
                       AutocompleteProviderListener* listener);
 
@@ -154,26 +170,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // An empty result set in the response will clear |matches_| and return true.
   bool ConvertResponseToAutocompleteMatches(
       std::unique_ptr<base::Value> response);
-
-  // Whether zero suggest suggestions are allowed in the given context.
-  // Invoked early, confirms all the external conditions for ZeroSuggest are
-  // met.
-  //
-  // TODO(tommycli): Combine this method with `TypeOfResultToRun()`. Currently,
-  // the logic to turn on and off requests by flags is split between these two
-  // functions, so the reader has to look in two places.
-  bool AllowZeroSuggestSuggestions(const AutocompleteInput& input) const;
-
-  // Returns the type of results that should be generated for the current
-  // context.
-  // Logs UMA metrics. Should be called exactly once, on Start(), otherwise the
-  // meaning of the data logged would change.
-  //
-  // This method is static for testability and to avoid depending on the
-  // provider state.
-  static ResultType TypeOfResultToRun(AutocompleteProviderClient* client,
-                                      const AutocompleteInput& input,
-                                      const GURL& suggest_url);
 
   // The result type that is currently being processed by provider.
   // When the provider is not running, the result type is set to NONE.
