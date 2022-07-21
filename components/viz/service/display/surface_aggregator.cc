@@ -45,6 +45,7 @@
 #include "components/viz/service/surfaces/surface_client.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "ui/gfx/geometry/angle_conversions.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/overlay_transform_utils.h"
 
@@ -393,7 +394,7 @@ void SurfaceAggregator::AddSurfaceDamageToDamageList(
     if (RenderPassNeedsFullDamage(resolved_frame->GetRootRenderPassData())) {
       damage_rect = resolved_frame->GetOutputRect();
     } else {
-      damage_rect = resolved_frame->GetSurfaceDamage(false);
+      damage_rect = resolved_frame->GetSurfaceDamage();
     }
   }
 
@@ -1516,7 +1517,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   // accumulated from all quads in the surface, and needs to be expanded by any
   // pixel-moving backdrop filter in the render pass if intersecting. Transform
   // this damage into the local space of the render pass for this purpose.
-  gfx::Rect surface_root_rp_damage = resolved_frame.GetSurfaceDamage(true);
+  gfx::Rect surface_root_rp_damage = resolved_frame.GetSurfaceDamage();
   if (!surface_root_rp_damage.IsEmpty()) {
     gfx::Transform root_to_target_transform(
         gfx::Transform::kSkipInitialization);
@@ -1534,6 +1535,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   // with the current quad when needed.
   for (const DrawQuad* quad : base::Reversed(resolved_pass.prewalk_quads())) {
     gfx::Rect quad_damage_rect;
+    gfx::Rect quad_target_space_damage_rect;
     if (quad->material == DrawQuad::Material::kSurfaceContent) {
       const auto* surface_quad = SurfaceDrawQuad::MaterialCast(quad);
       ResolvedFrameData* child_resolved_frame =
@@ -1707,6 +1709,18 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
               .has_damage_from_contributing_content) {
         resolved_pass.aggregation().has_damage_from_contributing_content = true;
       }
+    } else {
+      // If this the next frame in sequence from last aggregation then per quad
+      // damage_rects are valid so add them here. If not, either this is the
+      // same frame as last aggregation and there is no damage OR there is
+      // already full damage for the surface.
+      if (resolved_frame.IsNextFrameSinceLastAggregation()) {
+        auto& damage_rect = GetOptionalDamageRectFromQuad(quad);
+        DCHECK(damage_rect.has_value());
+        // The DrawQuad `damage_rect` is already in the render pass coordinate
+        // space instead of quad rect coordinate space.
+        quad_target_space_damage_rect = damage_rect.value();
+      }
     }
 
     // Clip the quad damage to the quad visible before converting back to
@@ -1720,14 +1734,18 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       // needed. Ignore tiny errors to avoid artificially inflating the
       // damage due to floating point math.
       constexpr float kEpsilon = 0.001f;
-      gfx::Rect rect_in_target_space =
+      quad_target_space_damage_rect =
           cc::MathUtil::MapEnclosingClippedRectIgnoringError(
               quad->shared_quad_state->quad_to_target_transform,
               quad_damage_rect, kEpsilon);
+    }
+
+    if (!quad_target_space_damage_rect.IsEmpty()) {
       if (quad->shared_quad_state->clip_rect) {
-        rect_in_target_space.Intersect(*quad->shared_quad_state->clip_rect);
+        quad_target_space_damage_rect.Intersect(
+            *quad->shared_quad_state->clip_rect);
       }
-      damage_rect.Union(rect_in_target_space);
+      damage_rect.Union(quad_target_space_damage_rect);
     }
   }
 
@@ -1801,7 +1819,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
     parent_pass->aggregation().embedded_passes.insert(&root_resolved_pass);
   }
 
-  gfx::Rect damage_rect = resolved_frame.GetSurfaceDamage(true);
+  gfx::Rect damage_rect = resolved_frame.GetSurfaceDamage();
 
   // Avoid infinite recursion by adding current surface to
   // |referenced_surfaces_|.

@@ -7499,6 +7499,68 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RenderPassHasPerQuadDamage) {
   }
 }
 
+// Check GetRectDamage() handles per quad damage correctly.
+TEST_F(SurfaceAggregatorValidSurfaceTest, NonRootRenderPassWithPerQuadDamage) {
+  constexpr gfx::Rect root_damage_rect(70, 70, 10, 10);
+  constexpr gfx::Rect quad_damage_rect(10, 10, 20, 20);
+  constexpr gfx::Size child_pass_size(50, 50);
+
+  gfx::Transform quad_transform;
+  quad_transform.Scale(2.0, 2.0);
+  quad_transform.Translate(10.0, 10.0);
+
+  CompositorRenderPassList root_passes;
+  root_passes.push_back(
+      RenderPassBuilder(CompositorRenderPassId{1}, child_pass_size)
+          .AddSolidColorQuad(gfx::Rect(child_pass_size), SkColors::kRed)
+          .AddTextureQuad(gfx::Rect(20, 20), ResourceId(1))
+          .SetQuadToTargetTransform(quad_transform)
+          .SetQuadDamageRect(quad_damage_rect)
+          .Build());
+  root_passes.push_back(
+      RenderPassBuilder(CompositorRenderPassId{2}, kSurfaceSize)
+          .SetDamageRect(root_damage_rect)
+          .AddSolidColorQuad(gfx::Rect(kSurfaceSize), SkColors::kRed)
+          .AddRenderPassQuad(gfx::Rect(child_pass_size),
+                             CompositorRenderPassId{1})
+          .SetQuadToTargetTranslation(20, 20)
+          .Build());
+  {
+    root_sink_->SubmitCompositorFrame(
+        root_surface_id_.local_surface_id(),
+        MakeCompositorFrame(CopyRenderPasses(root_passes)));
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+    // First aggregation always has full damage.
+    ASSERT_EQ(aggregated_frame.render_pass_list.size(), 2u);
+    EXPECT_EQ(aggregated_frame.render_pass_list[1]->damage_rect,
+              gfx::Rect(kSurfaceSize));
+  }
+
+  {
+    root_sink_->SubmitCompositorFrame(
+        root_surface_id_.local_surface_id(),
+        MakeCompositorFrame(CopyRenderPasses(root_passes)));
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+    // Second aggregation a new CompositorFrame was submitted. The final damage
+    // is the quad damage (30, 30 20x20) unioned with surface damage (70,70
+    // 10x10).
+    ASSERT_EQ(aggregated_frame.render_pass_list.size(), 2u);
+    EXPECT_EQ(aggregated_frame.render_pass_list[1]->damage_rect,
+              gfx::Rect(30, 30, 50, 50));
+  }
+
+  {
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+    // Third aggregation the active CompositorFrame for the root surface hasn't
+    // changed so both surface damage and per quad damage is empty.
+    ASSERT_EQ(aggregated_frame.render_pass_list.size(), 2u);
+    EXPECT_EQ(aggregated_frame.render_pass_list[1]->damage_rect, gfx::Rect());
+  }
+}
+
 // Tests that quads outside the damage rect are not ignored for cached render
 // pass.
 TEST_F(SurfaceAggregatorPartialSwapTest, NotIgnoreOutsideForCachedRenderPass) {
