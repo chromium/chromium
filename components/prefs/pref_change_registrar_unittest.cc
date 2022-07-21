@@ -158,21 +158,6 @@ TEST_F(ObserveSetOfPreferencesTest, IsObserved) {
   EXPECT_FALSE(pref_set->IsObserved(kApplicationLocale));
 }
 
-TEST_F(ObserveSetOfPreferencesTest, IsManaged) {
-  std::unique_ptr<PrefChangeRegistrar> pref_set(CreatePrefChangeRegistrar());
-  EXPECT_FALSE(pref_set->IsManaged());
-  pref_service_->SetManagedPref(kHomePage,
-                                std::make_unique<Value>("http://crbug.com"));
-  EXPECT_TRUE(pref_set->IsManaged());
-  pref_service_->SetManagedPref(kHomePageIsNewTabPage,
-                                std::make_unique<Value>(true));
-  EXPECT_TRUE(pref_set->IsManaged());
-  pref_service_->RemoveManagedPref(kHomePage);
-  EXPECT_TRUE(pref_set->IsManaged());
-  pref_service_->RemoveManagedPref(kHomePageIsNewTabPage);
-  EXPECT_FALSE(pref_set->IsManaged());
-}
-
 TEST_F(ObserveSetOfPreferencesTest, Observe) {
   using testing::_;
   using testing::Mock;

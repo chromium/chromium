@@ -71,16 +71,6 @@ bool PrefChangeRegistrar::IsObserved(const std::string& pref) {
   return observers_.find(pref) != observers_.end();
 }
 
-bool PrefChangeRegistrar::IsManaged() {
-  for (ObserverMap::const_iterator it = observers_.begin();
-       it != observers_.end(); ++it) {
-    const PrefService::Preference* pref = service_->FindPreference(it->first);
-    if (pref && pref->IsManaged())
-      return true;
-  }
-  return false;
-}
-
 void PrefChangeRegistrar::OnPreferenceChanged(PrefService* service,
                                               const std::string& pref) {
   if (IsObserved(pref))
