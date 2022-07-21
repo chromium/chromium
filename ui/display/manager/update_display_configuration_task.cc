@@ -47,6 +47,7 @@ UpdateDisplayConfigurationTask::UpdateDisplayConfigurationTask(
     int power_flags,
     RefreshRateThrottleState refresh_rate_throttle_state,
     bool force_configure,
+    ConfigurationType configuration_type,
     ResponseCallback callback)
     : delegate_(delegate),
       layout_manager_(layout_manager),
@@ -55,6 +56,7 @@ UpdateDisplayConfigurationTask::UpdateDisplayConfigurationTask(
       power_flags_(power_flags),
       refresh_rate_throttle_state_(refresh_rate_throttle_state),
       force_configure_(force_configure),
+      configuration_type_(configuration_type),
       callback_(std::move(callback)),
       requesting_displays_(false) {
   delegate_->AddObserver(this);
@@ -123,10 +125,8 @@ void UpdateDisplayConfigurationTask::EnterState(
     return;
   }
   if (!requests.empty()) {
-    // TODO(b:238361145) Plumb seamless modeset for refresh rate throttle
-    // changes.
     configure_task_ = std::make_unique<ConfigureDisplaysTask>(
-        delegate_, requests, std::move(callback));
+        delegate_, requests, std::move(callback), configuration_type_);
     configure_task_->Run();
   } else {
     VLOG(2) << "No displays";

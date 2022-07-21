@@ -265,6 +265,24 @@ TEST_F(ScreenManagerTest, CheckWithValidController) {
   EXPECT_TRUE(controller->HasCrtc(drm_, kPrimaryCrtc));
 }
 
+TEST_F(ScreenManagerTest, CheckWithSeamlessModeset) {
+  InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+
+  screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
+
+  ScreenManager::ControllerConfigsList controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, kPrimaryCrtc, kPrimaryConnector,
+      GetPrimaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
+  screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable,
+      display::kCommitModeset | display::kSeamlessModeset);
+
+  EXPECT_EQ(drm_->get_commit_modeset_count(), 0);
+  EXPECT_EQ(drm_->get_seamless_modeset_count(), 1);
+}
+
 TEST_F(ScreenManagerTest, CheckWithInvalidBounds) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
 

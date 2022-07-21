@@ -119,9 +119,10 @@ class ScreenManager {
       uint32_t crtc);
 
   bool TestAndSetPreferredModifiers(
-      const ControllerConfigsList& controllers_params);
-  bool TestAndSetLinearModifier(
-      const ControllerConfigsList& controllers_params);
+      const ControllerConfigsList& controllers_params,
+      bool is_seamless_modeset);
+  bool TestAndSetLinearModifier(const ControllerConfigsList& controllers_params,
+                                bool is_seamless_modeset);
   // Setting the Preferred modifiers that passed from one of the Modeset Test
   // functions. The preferred modifiers are used in Modeset.
   void SetPreferredModifiers(
@@ -130,9 +131,11 @@ class ScreenManager {
   // The planes used for modesetting can have overlays beside the primary, test
   // if we can modeset with them. If not, return false to indicate that we must
   // only use the primary plane.
-  bool TestModesetWithOverlays(const ControllerConfigsList& controllers_params);
+  bool TestModesetWithOverlays(const ControllerConfigsList& controllers_params,
+                               bool is_seamless_modeset);
   bool Modeset(const ControllerConfigsList& controllers_params,
-               bool can_modeset_with_overlays);
+               bool can_modeset_with_overlays,
+               bool is_seamless_modeset);
 
   // Configures a display controller to be enabled. The display controller is
   // identified by (|crtc|, |connector|) and the controller is to be modeset

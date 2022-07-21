@@ -14,6 +14,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/manager/display_manager_export.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/display/types/native_display_observer.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -69,9 +70,11 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
 
   using ResponseCallback = base::OnceCallback<void(Status)>;
 
-  ConfigureDisplaysTask(NativeDisplayDelegate* delegate,
-                        const std::vector<DisplayConfigureRequest>& requests,
-                        ResponseCallback callback);
+  ConfigureDisplaysTask(
+      NativeDisplayDelegate* delegate,
+      const std::vector<DisplayConfigureRequest>& requests,
+      ResponseCallback callback,
+      ConfigurationType configuration_type = kConfigurationTypeFull);
 
   ConfigureDisplaysTask(const ConfigureDisplaysTask&) = delete;
   ConfigureDisplaysTask& operator=(const ConfigureDisplaysTask&) = delete;
@@ -129,6 +132,10 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
 
   // Holds the next configuration request to attempt modeset.
   std::vector<DisplayConfigureRequest> requests_;
+
+  // Whether this request should be seamless or not (i.e. should a full modeset
+  // be permitted or not).
+  const ConfigurationType configuration_type_;
 
   // A queue of display requests grouped by their
   // |requests_[index]->display->base_connector_id()|. These request groups are

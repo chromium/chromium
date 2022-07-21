@@ -349,6 +349,14 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // otherwise.
   bool ShouldRunConfigurationTask() const;
 
+  // Returns true if there are pending configuration changes that should be done
+  // seamlessly.
+  bool HasPendingSeamlessConfiguration() const;
+
+  // Returns true if there are pending configuration changes that require a full
+  // modeset.
+  bool HasPendingFullConfiguration() const;
+
   // Helper functions which will call the callbacks in
   // |in_progress_configuration_callbacks_| and
   // |queued_configuration_callbacks_| and clear the lists after. |success| is

@@ -231,9 +231,11 @@ DisplayConfigureRequest::DisplayConfigureRequest(DisplaySnapshot* display,
 ConfigureDisplaysTask::ConfigureDisplaysTask(
     NativeDisplayDelegate* delegate,
     const std::vector<DisplayConfigureRequest>& requests,
-    ResponseCallback callback)
+    ResponseCallback callback,
+    ConfigurationType configuration_type)
     : delegate_(delegate),
       requests_(requests),
+      configuration_type_(configuration_type),
       callback_(std::move(callback)),
       task_status_(SUCCESS) {
   delegate_->AddObserver(this);
@@ -270,10 +272,13 @@ void ConfigureDisplaysTask::Run() {
       is_first_attempt ? &ConfigureDisplaysTask::OnFirstAttemptConfigured
                        : &ConfigureDisplaysTask::OnRetryConfigured;
 
+  uint32_t modeset_flags = display::kTestModeset | display::kCommitModeset;
+  if (configuration_type_ == kConfigurationTypeSeamless)
+    modeset_flags |= display::kSeamlessModeset;
   delegate_->Configure(
       config_requests,
       base::BindOnce(on_configured, weak_ptr_factory_.GetWeakPtr()),
-      display::kTestModeset | display::kCommitModeset);
+      modeset_flags);
 }
 
 void ConfigureDisplaysTask::OnConfigurationChanged() {}

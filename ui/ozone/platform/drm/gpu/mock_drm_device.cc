@@ -37,13 +37,17 @@ struct _drmModeAtomicReq {
 };
 
 namespace ui {
-
 namespace {
 
 constexpr uint32_t kTestModesetFlags =
     DRM_MODE_ATOMIC_TEST_ONLY | DRM_MODE_ATOMIC_ALLOW_MODESET;
 
 constexpr uint32_t kCommitModesetFlags = DRM_MODE_ATOMIC_ALLOW_MODESET;
+
+// Seamless modeset is defined by the lack of DRM_MODE_ATOMIC_ALLOW_MODESET.
+// This also happens to be the same set of flags as would be used for a
+// pageflip, or other atomic property changes that do not require modesetting.
+constexpr uint32_t kSeamlessModesetFlags = 0;
 
 template <class Object>
 Object* DrmAllocator() {
@@ -478,12 +482,20 @@ bool MockDrmDevice::CommitPropertiesInternal(
     uint32_t crtc_count,
     scoped_refptr<PageFlipRequest> page_flip_request) {
   commit_count_++;
-  if (flags == kTestModesetFlags)
-    ++test_modeset_count_;
-  else if (flags == kCommitModesetFlags)
-    ++commit_modeset_count_;
+  const bool test_only = flags & DRM_MODE_ATOMIC_TEST_ONLY;
+  switch (flags) {
+    case kTestModesetFlags:
+      ++test_modeset_count_;
+      break;
+    case kCommitModesetFlags:
+      ++commit_modeset_count_;
+      break;
+    case kSeamlessModesetFlags:
+      ++seamless_modeset_count_;
+      break;
+  }
 
-  if ((flags & kCommitModesetFlags && !set_crtc_expectation_) ||
+  if ((!test_only && !set_crtc_expectation_) ||
       (flags & DRM_MODE_ATOMIC_NONBLOCK && !commit_expectation_)) {
     return false;
   }
@@ -517,7 +529,7 @@ bool MockDrmDevice::CommitPropertiesInternal(
   if (page_flip_request)
     callbacks_.push(page_flip_request->AddPageFlip());
 
-  if (flags & DRM_MODE_ATOMIC_TEST_ONLY)
+  if (test_only)
     return true;
 
   // Only update values if not testing.

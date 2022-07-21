@@ -40,6 +40,7 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
       int power_flags,
       RefreshRateThrottleState refresh_rate_throttle_state,
       bool force_configure,
+      ConfigurationType configuration_type,
       ResponseCallback callback);
 
   UpdateDisplayConfigurationTask(const UpdateDisplayConfigurationTask&) =
@@ -103,6 +104,10 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
   RefreshRateThrottleState refresh_rate_throttle_state_;
 
   bool force_configure_;
+
+  // Whether the configuration task should be done without blanking the
+  // displays.
+  const ConfigurationType configuration_type_;
 
   // Used to signal that the task has finished.
   ResponseCallback callback_;

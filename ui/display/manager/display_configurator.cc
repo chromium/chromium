@@ -765,7 +765,7 @@ void DisplayConfigurator::ForceInitialConfigure() {
       native_display_delegate_.get(), layout_manager_.get(),
       requested_display_state_, GetRequestedPowerState(),
       kSetDisplayPowerForceProbe, kRefreshRateThrottleDisabled,
-      /*force_configure=*/true,
+      /*force_configure=*/true, kConfigurationTypeFull,
       base::BindOnce(&DisplayConfigurator::OnConfigured,
                      weak_ptr_factory_.GetWeakPtr()));
   configuration_task_->Run();
@@ -1026,13 +1026,18 @@ void DisplayConfigurator::RunPendingConfiguration() {
     CallAndClearQueuedCallbacks(true);
     return;
   }
+  ConfigurationType configuration_type = kConfigurationTypeFull;
+  if (!HasPendingFullConfiguration()) {
+    DCHECK(HasPendingSeamlessConfiguration());
+    configuration_type = kConfigurationTypeSeamless;
+  }
 
   configuration_task_ = std::make_unique<UpdateDisplayConfigurationTask>(
       native_display_delegate_.get(), layout_manager_.get(),
       requested_display_state_, pending_power_state_, pending_power_flags_,
       pending_refresh_rate_throttle_state_.value_or(
           kRefreshRateThrottleDisabled),
-      force_configure_,
+      force_configure_, configuration_type,
       base::BindOnce(&DisplayConfigurator::OnConfigured,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -1105,6 +1110,10 @@ void DisplayConfigurator::UpdatePowerState(
 }
 
 bool DisplayConfigurator::ShouldRunConfigurationTask() const {
+  return HasPendingSeamlessConfiguration() || HasPendingFullConfiguration();
+}
+
+bool DisplayConfigurator::HasPendingFullConfiguration() const {
   if (force_configure_)
     return true;
 
@@ -1117,11 +1126,12 @@ bool DisplayConfigurator::ShouldRunConfigurationTask() const {
   if (has_pending_power_state_)
     return true;
 
-  // Schedule if there is a pending request to change the refresh rate.
-  if (pending_refresh_rate_throttle_state_)
-    return true;
-
   return false;
+}
+
+bool DisplayConfigurator::HasPendingSeamlessConfiguration() const {
+  // Schedule if there is a pending request to change the refresh rate.
+  return pending_refresh_rate_throttle_state_.has_value();
 }
 
 void DisplayConfigurator::CallAndClearInProgressCallbacks(bool success) {
