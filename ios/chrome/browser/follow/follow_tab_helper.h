@@ -111,6 +111,10 @@ class FollowTabHelper : public web::WebStateObserver,
   // Used to update the follow menu item.
   __weak id<FollowMenuUpdater> follow_menu_updater_ = nil;
 
+  // The recommended rss url of the current website. Nil if
+  // the site is not recommended.
+  NSURL* recommended_rss_url_ = nil;
+
   base::CancelableTaskTracker history_task_tracker_;
   base::WeakPtrFactory<FollowTabHelper> weak_ptr_factory_{this};
 

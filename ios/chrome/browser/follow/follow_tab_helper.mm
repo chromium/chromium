@@ -158,17 +158,6 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
   }
 
   // Show follow in-product help (IPH) if eligible.
-
-  // Do not show follow IPH if:
-  // 1. The site is not recommended;
-  // 2. The IPH was shown too recently.
-  if (!ios::GetChromeBrowserProvider()
-           .GetFollowProvider()
-           ->GetRecommendedStatus(web_page_urls) ||
-      !IsFollowIPHShownFrequencyEligible()) {
-    return;
-  }
-
   feature_engagement::Tracker* feature_engagement_tracker =
       feature_engagement::TrackerFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
@@ -176,6 +165,18 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
   // not fulfilled. Ex. Do not show more than 5 Follow IPHs per week.
   if (!feature_engagement_tracker->WouldTriggerHelpUI(
           feature_engagement::kIPHFollowWhileBrowsingFeature)) {
+    return;
+  }
+
+  recommended_rss_url_ = ios::GetChromeBrowserProvider()
+                             .GetFollowProvider()
+                             ->GetRecommendedSiteURL(web_page_urls);
+
+  // Do not show follow IPH if:
+  // 1. The site is not recommended;
+  // 2. The IPH was shown too recently.
+  if (!recommended_rss_url_ ||
+      !IsFollowIPHShownFrequencyEligible(recommended_rss_url_)) {
     return;
   }
 
@@ -252,6 +253,7 @@ void FollowTabHelper::UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls) {
 void FollowTabHelper::PresentFollowIPH() {
   DCHECK(follow_iph_presenter_);
   [follow_iph_presenter_ presentFollowWhileBrowsingIPH];
+  StoreFollowIPHPresentingTime(recommended_rss_url_);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(FollowTabHelper)

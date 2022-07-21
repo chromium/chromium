@@ -17,6 +17,11 @@ bool FollowProvider::GetRecommendedStatus(
   return false;
 }
 
+NSURL* FollowProvider::GetRecommendedSiteURL(
+    FollowWebPageURLs* follow_web_page_urls) {
+  return nil;
+}
+
 NSArray<FollowedWebChannel*>* FollowProvider::GetFollowedWebChannels() {
   return nil;
 }

@@ -20,6 +20,8 @@ FollowActionState GetFollowActionState(web::WebState* webState);
 #pragma mark - For Follow IPH
 // Returns true if the time between the last time a Follow IPH was shown and now
 // is long enough for another Follow IPH appearance.
-bool IsFollowIPHShownFrequencyEligible();
+bool IsFollowIPHShownFrequencyEligible(NSURL* RSSLink);
+// Stores the Follow IPH presenting time for website with `RSSLink`.
+void StoreFollowIPHPresentingTime(NSURL* RSSLink);
 
 #endif  // IOS_CHROME_BROWSER_FOLLOW_FOLLOW_UTIL_H_
