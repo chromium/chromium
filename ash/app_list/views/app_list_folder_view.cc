@@ -1102,6 +1102,10 @@ void AppListFolderView::UpdatePreferredBounds() {
   }
 }
 
+void AppListFolderView::UpdateShadowForVirtualKeyboard() {
+  shadow_->SetContentBounds(background_view_->layer()->bounds());
+}
+
 int AppListFolderView::GetYOffsetForFolder() {
   auto* const keyboard_controller = keyboard::KeyboardUIController::Get();
   if (!keyboard_controller->IsEnabled())

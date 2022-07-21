@@ -1992,7 +1992,19 @@ int AppListView::GetScreenBottom() const {
 int AppListView::GetCurrentAppListHeight() const {
   if (!GetWidget())
     return delegate_->GetShelfSize();
-  return GetScreenBottom() - GetWidget()->GetWindowBoundsInScreen().y();
+
+  int current_height =
+      GetScreenBottom() - GetWidget()->GetWindowBoundsInScreen().y();
+
+  // App list may be translated on fullscreen when the Virtual Keyboard is
+  // showing, effectively moving the app list bounds upwards. Current height
+  // needs to account for this translation.
+  if (offset_to_show_folder_with_onscreen_keyboard_) {
+    current_height +=
+        GetWidget()->GetNativeView()->transform().To2dTranslation().y();
+  }
+
+  return current_height;
 }
 
 float AppListView::GetAppListTransitionProgress(int flags) const {
@@ -2248,12 +2260,18 @@ void AppListView::OnScreenKeyboardShown(bool shown) {
         GetAppsContainerView()->app_list_folder_view()->GetYOffsetForFolder();
     if (folder_offset != 0) {
       OffsetYPositionOfAppList(folder_offset);
+      GetAppsContainerView()
+          ->app_list_folder_view()
+          ->UpdateShadowForVirtualKeyboard();
       offset_to_show_folder_with_onscreen_keyboard_ = true;
     }
   } else if (offset_to_show_folder_with_onscreen_keyboard_) {
     // If the keyboard is closing or a folder isn't being shown, reset
     // the app list's position
     OffsetYPositionOfAppList(0);
+    GetAppsContainerView()
+        ->app_list_folder_view()
+        ->UpdateShadowForVirtualKeyboard();
     offset_to_show_folder_with_onscreen_keyboard_ = false;
   }
 

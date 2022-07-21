@@ -137,6 +137,10 @@ class ASH_EXPORT AppListFolderView
   // Virtual keyboard
   int GetYOffsetForFolder();
 
+  // Force the folder `shadow_` to recalculate bounds after a virtual keyboard
+  // repositioned the view.
+  void UpdateShadowForVirtualKeyboard();
+
   // Returns true if this view's child views are in animation for opening or
   // closing the folder.
   bool IsAnimationRunning() const;

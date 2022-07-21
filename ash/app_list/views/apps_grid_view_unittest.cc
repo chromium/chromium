@@ -43,6 +43,8 @@
 #include "ash/app_list/views/search_result_tile_item_view.h"
 #include "ash/app_list/views/suggestion_chip_container_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
@@ -54,6 +56,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
+#include "ash/style/system_shadow.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/layer_animation_stopped_waiter.h"
 #include "ash/utility/haptics_tracking_test_input_controller.h"
@@ -1453,6 +1456,47 @@ TEST_P(AppsGridViewClamshellTest, RemoveItemsInFolderShouldUpdateBounds) {
 }
 
 TEST_P(AppsGridViewClamshellTest, AddItemsToFolderShouldUpdateBounds) {
+  // Populate two folders with different number of apps.
+  AppListFolderItem* folder_1 = model_->CreateAndPopulateFolderWithApps(2);
+  model_->CreateAndPopulateFolderWithApps(4);
+
+  // Record the bounds of the folder view with 4 items in it.
+  AppsGridView* items_grid_view = app_list_folder_view()->items_grid_view();
+  test_api_->PressItemAt(1);
+  EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  gfx::Rect two_rows_folder_view = items_grid_view->GetBoundsInScreen();
+  app_list_folder_view()->CloseFolderPage();
+
+  // Record the bounds of the folder view with 2 items in it and keep the folder
+  // view open for further testing.
+  test_api_->PressItemAt(0);
+  EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  gfx::Rect one_row_folder_view = items_grid_view->GetBoundsInScreen();
+  EXPECT_NE(one_row_folder_view.size(), two_rows_folder_view.size());
+
+  // Add an item to the folder so that there are two rows in the folder view.
+  model_->AddItemToFolder(model_->CreateItem("Extra 1"), folder_1->id());
+  EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  items_grid_view->GetWidget()->LayoutRootViewIfNecessary();
+  EXPECT_EQ(items_grid_view->GetBoundsInScreen().size(),
+            two_rows_folder_view.size());
+  app_list_folder_view()->CloseFolderPage();
+
+  // Create a folder with a full page of apps. Add an item to the folder should
+  // not change the size of the folder view.
+  AppListFolderItem* folder_full =
+      model_->CreateAndPopulateFolderWithApps(kMaxItemsPerFolderPage);
+  test_api_->PressItemAt(2);
+  EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  gfx::Rect full_folder_view = items_grid_view->GetBoundsInScreen();
+
+  model_->AddItemToFolder(model_->CreateItem("Extra 2"), folder_full->id());
+  EXPECT_EQ(items_grid_view->GetBoundsInScreen().size(),
+            full_folder_view.size());
+  app_list_folder_view()->CloseFolderPage();
+}
+
+TEST_P(AppsGridViewClamshellAndTabletTest, AddItemsToFolderShouldUpdateBounds) {
   // Populate two folders with different number of apps.
   AppListFolderItem* folder_1 = model_->CreateAndPopulateFolderWithApps(2);
   model_->CreateAndPopulateFolderWithApps(4);
@@ -5898,6 +5942,64 @@ TEST_P(AppsGridViewClamshellTest,
       GetItemViewInAppsGridAt(0, folder_apps_grid_view());
   SimulateRightClickOrLongPressAt(item_view->GetBoundsInScreen().CenterPoint());
   EXPECT_FALSE(app_list_folder_view()->folder_header_view()->HasTextFocus());
+}
+
+TEST_P(AppsGridViewTabletTest, ChangeFolderNameShouldUpdateShadows) {
+  SetVirtualKeyboardEnabled(true);
+
+  const int kMaxAppsInGrid = test_api_->TilesPerPage(0);
+  model_->PopulateApps(kMaxAppsInGrid - 1);
+  UpdateLayout();
+
+  // Create a folder on the second row with kMaxItemsInFolder to be big enough
+  // to displace the apps grid bounds on keyboard shown. Open the folder.
+  model_->CreateAndPopulateFolderWithApps(kMaxItemsInFolder);
+  test_api_->PressItemAt(kMaxAppsInGrid - 1);
+  EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  gfx::Rect initial_folder_bounds =
+      folder_apps_grid_view()->GetBoundsInScreen();
+  gfx::Rect initial_shadow =
+      app_list_folder_view()->shadow()->GetContentBounds();
+  views::View::ConvertRectToScreen(app_list_folder_view(), &initial_shadow);
+
+  // Show the virtual keyboard. The grid view should displace with the folder
+  // and shadow bounds.
+  auto* keyboard_controller = keyboard::KeyboardUIController::Get();
+  keyboard_controller->ShowKeyboard(false);
+  ASSERT_TRUE(keyboard::WaitUntilShown());
+
+  gfx::Rect folder_bounds_with_keyboard =
+      folder_apps_grid_view()->GetBoundsInScreen();
+  gfx::Rect shadow_with_keyboard =
+      app_list_folder_view()->shadow()->GetContentBounds();
+  views::View::ConvertRectToScreen(app_list_folder_view(),
+                                   &shadow_with_keyboard);
+
+  EXPECT_NE(initial_folder_bounds, folder_bounds_with_keyboard);
+  EXPECT_NE(initial_shadow, shadow_with_keyboard);
+
+  // Start typing to change the folder name. The folder and shadow bounds must
+  // stay unchanged from previous step.
+  views::Textfield* folder_header =
+      app_list_folder_view()->folder_header_view()->GetFolderNameViewForTest();
+  folder_header->RequestFocus();
+  ASSERT_TRUE(folder_header->HasFocus());
+  const std::u16string folder_name = folder_header->GetText();
+
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_A);
+  // Force app list to Update Layout to catch potential crashes.
+  UpdateLayout();
+
+  EXPECT_NE(folder_name, folder_header->GetText());
+
+  gfx::Rect folder_bounds_after_type =
+      folder_apps_grid_view()->GetBoundsInScreen();
+  gfx::Rect shadow_after_type =
+      app_list_folder_view()->shadow()->GetContentBounds();
+  views::View::ConvertRectToScreen(app_list_folder_view(), &shadow_after_type);
+
+  EXPECT_EQ(folder_bounds_with_keyboard, folder_bounds_after_type);
+  EXPECT_EQ(shadow_with_keyboard, shadow_after_type);
 }
 
 }  // namespace test
