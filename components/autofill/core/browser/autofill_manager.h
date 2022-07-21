@@ -10,10 +10,12 @@
 #include <string>
 #include <vector>
 
-#include "base/cancelable_callback.h"
+#include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -105,6 +107,7 @@ class AutofillManager
     return client_;
   }
 
+  // Returns a WeakPtr to the leaf class.
   virtual base::WeakPtr<AutofillManager> GetWeakPtr() = 0;
 
   // May return nullptr.
@@ -403,11 +406,13 @@ class AutofillManager
   virtual bool ShouldParseForms(const std::vector<FormData>& forms) = 0;
 
   // Invoked before parsing the forms.
+  // TODO(crbug.com/1309848): Rename to some consistent scheme, e.g.,
+  // OnBeforeParsedForm().
   virtual void OnBeforeProcessParsedForms() = 0;
 
   // Invoked when the given |form| has been processed to the given
   // |form_structure|.
-  virtual void OnFormProcessed(const FormData& form,
+  virtual void OnFormProcessed(const FormData& form_data,
                                const FormStructure& form_structure) = 0;
   // Invoked after all forms have been processed, |form_types| is a set of
   // FormType found.
@@ -419,6 +424,40 @@ class AutofillManager
   size_t FindCachedFormsBySignature(
       FormSignature form_signature,
       std::vector<FormStructure*>* form_structures) const;
+
+  // Parses multiple forms in one go. The function proceeds in three stages:
+  //
+  // 1. Turn (almost) every FormData into a FormStructure.
+  // 2. Run DetermineHeuristicTypes() on all FormStructures.
+  // 3. Update the cache member variable `form_structures_` and call `callback`.
+  //
+  // Step 1 runs synchronously on the main thread.
+  // Step 2 runs asynchronously on a worker task.
+  // Step 3 runs again on the main thread.
+  //
+  // There are two conditions under which a FormData is skipped in Step 1:
+  // - if the overall number exceeds `kAutofillManagerMaxFormCacheSize`;
+  // - if the form should not be parsed according to ShouldParseForms().
+  //
+  // TODO(crbug.com/1309848): Add unit tests.
+  // TODO(crbug.com/1345089): Eliminate either the ParseFormsAsync() or
+  // ParseFormAsync(). There are a few possible directions:
+  // - Let ParseFormAync() wrap the FormData in a vector, call
+  //   ParseFormsAsync(), and then unwrap the vector again.
+  // - Let OnFormsSeen() take a single FormData. That simplifies also
+  //   ContentAutofillDriver and ContentAutofillRouter a bit, but then the
+  //   AutofillDownloadManager needs to collect forms to send a batch query.
+  // - Let all other events take a FormGlobalId instead of a FormData and fire
+  //   OnFormsSeen() before these events if necessary.
+  void ParseFormsAsync(
+      const std::vector<FormData>& forms,
+      base::OnceCallback<void(AutofillManager&, const std::vector<FormData>&)>
+          callback);
+
+  // Parses a single form analogously to ParseFormsAsync().
+  void ParseFormAsync(
+      const FormData& form,
+      base::OnceCallback<void(AutofillManager&, const FormData&)> callback);
 
   // Parses the |form| with the server data retrieved from the |cached_form|
   // (if any). Returns nullptr if the form should not be parsed. Otherwise, adds
@@ -489,6 +528,15 @@ class AutofillManager
 
   // Observers that listen to updates of this instance.
   base::ObserverList<Observer> observers_;
+
+  // DetermineHeuristicTypes() should only be run on the `parsing_task_runner_`.
+  // The reply will be called on the main thread and should be a no-op if this
+  // AutofillManager has been destroyed or reset; to detect this, the reply
+  // should take a WeakPtr from `parsing_weak_ptr_factory_`.
+  scoped_refptr<base::SequencedTaskRunner> parsing_task_runner_ =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_VISIBLE});
+  base::WeakPtrFactory<AutofillManager> parsing_weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

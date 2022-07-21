@@ -214,7 +214,7 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
         query_id, suggestions, /*autoselect_first_suggestion=*/false);
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;

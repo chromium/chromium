@@ -114,7 +114,7 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
   FormData form_;
   FormFieldData field_;
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;
   std::unique_ptr<TouchToFillDelegateImpl> touch_to_fill_delegate_;

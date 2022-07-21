@@ -437,6 +437,13 @@ const base::FeatureParam<std::string> kAutofillParsingPatternActiveSource{
 const base::Feature kAutofillPageLanguageDetection{
     "AutofillPageLanguageDetection", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, AutofillManager::ParseForm() isn't called synchronously.
+// Instead, all incoming events parse the form asynchronously and proceed
+// afterwards.
+// TODO(crbug.com/1309848) Remove once launched.
+const base::Feature kAutofillParseAsync{"AutofillParseAsync",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If the feature is enabled, FormTracker's probable-form-submission detection
 // is disabled and replaced with browser-side detection.
 // TODO(crbug/1117451): Remove once it works.

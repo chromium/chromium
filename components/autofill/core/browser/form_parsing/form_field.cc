@@ -49,6 +49,15 @@ constexpr bool IsEmpty(const char16_t* s) {
 }  // namespace
 
 // static
+bool FormField::MatchesPattern(const base::StringPiece16& input,
+                               const base::StringPiece16& pattern,
+                               std::vector<std::u16string>* groups) {
+  static base::NoDestructor<AutofillRegexes> g_autofill_regexes(
+      ThreadSafe(true));
+  return g_autofill_regexes->MatchesPattern(input, pattern, groups);
+}
+
+// static
 FieldCandidatesMap FormField::ParseFormFields(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     const LanguageCode& page_language,

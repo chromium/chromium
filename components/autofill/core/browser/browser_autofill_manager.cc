@@ -1485,9 +1485,12 @@ void BrowserAutofillManager::SetDataList(
 
 void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
     const FormData& form) {
-  FormStructure* cached_form = FindCachedFormByRendererId(form.global_id());
-
-  FormStructure* form_structure = ParseForm(form, cached_form);
+  FormStructure* form_structure = FindCachedFormByRendererId(form.global_id());
+  if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
+    // If AutofillParseAsync is enabled, the form has just been parsed
+    // asynchronously if necessary.
+    form_structure = ParseForm(form, form_structure);
+  }
   if (!form_structure)
     return;
 
@@ -2183,6 +2186,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
   return suggestions;
 }
 
+// TODO(crbug.com/1309848) Eliminate and replace with a listener?
+// Should we do the same with all the other BrowserAutofillManager events?
 void BrowserAutofillManager::OnBeforeProcessParsedForms() {
   has_parsed_forms_ = true;
 

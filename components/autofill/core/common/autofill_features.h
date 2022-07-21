@@ -153,6 +153,8 @@ extern const base::FeatureParam<int>
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillPageLanguageDetection;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillParseAsync;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillParsingPatternProvider;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<std::string>
