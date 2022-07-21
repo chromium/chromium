@@ -89,7 +89,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        ::features::IsAccessibilityOSSettingsVisibilityEnabled()
            ? mojom::kDisplayAndMagnificationSubpagePath
            : mojom::kManageAccessibilitySubpagePath,
-       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kDockedMagnifier,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kDockedMagnifier},
@@ -153,7 +153,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        ::features::IsAccessibilityOSSettingsVisibilityEnabled()
            ? mojom::kKeyboardAndTextInputSubpagePath
            : mojom::kManageAccessibilitySubpagePath,
-       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kOnScreenKeyboard,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kOnScreenKeyboard}},
@@ -171,7 +171,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        ::features::IsAccessibilityOSSettingsVisibilityEnabled()
            ? mojom::kKeyboardAndTextInputSubpagePath
            : mojom::kManageAccessibilitySubpagePath,
-       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kDictation,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kDictation},
@@ -183,7 +183,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        ::features::IsAccessibilityOSSettingsVisibilityEnabled()
            ? mojom::kDisplayAndMagnificationSubpagePath
            : mojom::kManageAccessibilitySubpagePath,
-       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kContrast,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kHighContrastMode},
@@ -213,7 +213,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        ::features::IsAccessibilityOSSettingsVisibilityEnabled()
            ? mojom::kCursorAndTouchpadSubpagePath
            : mojom::kManageAccessibilitySubpagePath,
-       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kAutoclick,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAutoClickWhenCursorStops},
@@ -223,7 +223,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        ::features::IsAccessibilityOSSettingsVisibilityEnabled()
            ? mojom::kTextToSpeechPagePath
            : mojom::kManageAccessibilitySubpagePath,
-       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kSelectToSpeak,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kSelectToSpeak}},
@@ -250,7 +250,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        ::features::IsAccessibilityOSSettingsVisibilityEnabled()
            ? mojom::kDisplayAndMagnificationSubpagePath
            : mojom::kManageAccessibilitySubpagePath,
-       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kFullscreenMagnifier,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kFullscreenMagnifier},
@@ -261,7 +261,7 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        ::features::IsAccessibilityOSSettingsVisibilityEnabled()
            ? mojom::kKeyboardAndTextInputSubpagePath
            : mojom::kManageAccessibilitySubpagePath,
-       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultIcon::kSwitchAccess,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kEnableSwitchAccess}},

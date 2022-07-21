@@ -676,6 +676,10 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:audio';
       case SearchResultIcon.kAuthKey:
         return 'os-settings:auth-key';
+      case SearchResultIcon.kAutoclick:
+        return 'os-settings:autoclick';
+      case SearchResultIcon.kSwitchAccess:
+        return 'os-settings:switch-access';
       case SearchResultIcon.kAvatar:
         return 'cr:person';
       case SearchResultIcon.kBluetooth:
@@ -688,10 +692,16 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:chromevox';
       case SearchResultIcon.kClock:
         return 'os-settings:access-time';
+      case SearchResultIcon.kContrast:
+        return 'os-settings:contrast';
       case SearchResultIcon.kDeveloperTags:
         return 'os-settings:developer-tags';
+      case SearchResultIcon.kDictation:
+        return 'os-settings:dictation';
       case SearchResultIcon.kDisplay:
         return 'os-settings:display';
+      case SearchResultIcon.kDockedMagnifier:
+        return 'os-settings:docked-magnifier';
       case SearchResultIcon.kDrive:
         return 'os-settings:google-drive';
       case SearchResultIcon.kEthernet:
@@ -700,6 +710,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:fingerprint';
       case SearchResultIcon.kFolder:
         return 'os-settings:folder-outline';
+      case SearchResultIcon.kFullscreenMagnifier:
+        return 'os-settings:fullscreen-magnifier';
       case SearchResultIcon.kGlobe:
         return 'os-settings:language';
       case SearchResultIcon.kGooglePlay:
@@ -722,6 +734,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:mouse';
       case SearchResultIcon.kNearbyShare:
         return 'os-settings:nearby-share';
+      case SearchResultIcon.kOnScreenKeyboard:
+        return 'os-settings:on-screen-keyboard';
       case SearchResultIcon.kPaintbrush:
         return 'os-settings:paint-brush';
       case SearchResultIcon.kPenguin:
@@ -736,6 +750,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:print';
       case SearchResultIcon.kReset:
         return 'os-settings:restore';
+      case SearchResultIcon.kSelectToSpeak:
+        return 'os-settings:select-to-speak';
       case SearchResultIcon.kShield:
         return 'cr:security';
       case SearchResultIcon.kStartup:
