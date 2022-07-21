@@ -180,11 +180,6 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   void SetRootItemPosition(AppListItem* item,
                            const syncer::StringOrdinal& new_position);
 
-  // Sets the default icon and the icon's associated color data.
-  void SetItemDefaultIconAndColor(AppListItem* item,
-                                  const gfx::ImageSkia& icon,
-                                  const IconColor& icon_color);
-
   // Used to initiate updates on app list items from the ash side.
   AppListModelDelegate* const delegate_;
 

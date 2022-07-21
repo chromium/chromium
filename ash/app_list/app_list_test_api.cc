@@ -421,14 +421,24 @@ bool AppListTestApi::HasApp(const std::string& app_id) {
 
 std::u16string AppListTestApi::GetAppListItemViewName(
     const std::string& item_id) {
+  AppListItemView* item_view = GetTopLevelItemViewFromId(item_id);
+  if (!item_view)
+    return u"";
+
+  return item_view->title()->GetText();
+}
+
+AppListItemView* AppListTestApi::GetTopLevelItemViewFromId(
+    const std::string& item_id) {
   views::ViewModelT<AppListItemView>* view_model =
       GetTopLevelAppsGridView()->view_model();
   for (size_t i = 0; i < view_model->view_size(); ++i) {
     AppListItemView* app_list_item_view = view_model->view_at(i);
     if (app_list_item_view->item()->id() == item_id)
-      return app_list_item_view->title()->GetText();
+      return app_list_item_view;
   }
-  return u"";
+
+  return nullptr;
 }
 
 std::vector<std::string> AppListTestApi::GetTopLevelViewIdList() {
