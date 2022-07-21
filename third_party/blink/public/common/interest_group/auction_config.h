@@ -42,9 +42,6 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     NonSharedParams& operator=(const NonSharedParams&);
     NonSharedParams& operator=(NonSharedParams&&);
 
-    // Provided for testing.
-    bool operator==(const NonSharedParams& other) const;
-
     // Owners of interest groups allowed to participate in the auction.
     absl::optional<std::vector<url::Origin>> interest_group_buyers;
 
@@ -90,9 +87,6 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
 
   AuctionConfig& operator=(const AuctionConfig&);
   AuctionConfig& operator=(AuctionConfig&&);
-
-  // Provided for testing.
-  bool operator==(const AuctionConfig& other) const;
 
   // Seller running the auction.
   url::Origin seller;

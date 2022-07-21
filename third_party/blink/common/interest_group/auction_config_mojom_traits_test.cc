@@ -19,6 +19,29 @@
 
 namespace blink {
 
+bool operator==(const AuctionConfig::NonSharedParams& a,
+                const AuctionConfig::NonSharedParams& b) {
+  return std::tie(a.interest_group_buyers, a.auction_signals, a.seller_signals,
+                  a.seller_timeout, a.per_buyer_signals, a.per_buyer_timeouts,
+                  a.all_buyers_timeout, a.per_buyer_group_limits,
+                  a.all_buyers_group_limit, a.component_auctions) ==
+         std::tie(b.interest_group_buyers, b.auction_signals, b.seller_signals,
+                  b.seller_timeout, b.per_buyer_signals, b.per_buyer_timeouts,
+                  b.all_buyers_timeout, b.per_buyer_group_limits,
+                  b.all_buyers_group_limit, b.component_auctions);
+}
+
+bool operator==(const AuctionConfig& a, const AuctionConfig& b) {
+  return std::tie(a.seller, a.decision_logic_url, a.trusted_scoring_signals_url,
+                  a.non_shared_params, a.seller_experiment_group_id,
+                  a.all_buyer_experiment_group_id,
+                  a.per_buyer_experiment_group_ids) ==
+         std::tie(b.seller, b.decision_logic_url, b.trusted_scoring_signals_url,
+                  b.non_shared_params, b.seller_experiment_group_id,
+                  b.all_buyer_experiment_group_id,
+                  b.per_buyer_experiment_group_ids);
+}
+
 namespace {
 
 // Creates a minimal valid AuctionConfig, with a seller and the passed in
@@ -70,8 +93,12 @@ bool SerializeAndDeserialize(const AuctionConfig& auction_config) {
       mojo::test::SerializeAndDeserialize<blink::mojom::AuctionAdConfig>(
           auction_config, auction_config_clone);
 
-  if (success)
+  if (success) {
     EXPECT_EQ(auction_config, auction_config_clone);
+    // This *should* be implied by the above, but let's check...
+    EXPECT_EQ(auction_config.non_shared_params,
+              auction_config_clone.non_shared_params);
+  }
   return success;
 }
 
