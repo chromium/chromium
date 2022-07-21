@@ -490,6 +490,10 @@ extern const base::FeatureParam<bool>
 // providers whose suggestions are pending have their old matches copied over.
 extern const base::FeatureParam<bool>
     kAutocompleteStabilityDontCopyDoneProviders;
+// Begin async providers before sync providers so their async requests can
+// happen in parallel. This effects only the search, history_url, document, and
+// on device head providers.
+extern const base::FeatureParam<bool> kAutocompleteStabilityAsyncProvidersFirst;
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 

@@ -296,6 +296,47 @@ AutocompleteController::AutocompleteController(
       search_service_worker_signal_sent_(false),
       template_url_service_(provider_client_->GetTemplateURLService()) {
   provider_types &= ~OmniboxFieldTrial::GetDisabledProviderTypes();
+
+  if (OmniboxFieldTrial::kAutocompleteStabilityAsyncProvidersFirst.Get()) {
+    // Providers run in the order they're added. Run these async providers 1st
+    // so their async requests can be kicked off before waiting a few
+    // milliseconds for the other sync providers to complete.
+
+    if (provider_types & AutocompleteProvider::TYPE_SEARCH) {
+      search_provider_ = new SearchProvider(provider_client_.get(), this);
+      providers_.push_back(search_provider_.get());
+    }
+    // Providers run in the order they're added.  Add `HistoryURLProvider` after
+    // `SearchProvider` because:
+    // - `SearchProvider` synchronously queries the history database's
+    //   keyword_search_terms and url table.
+    // - `HistoryUrlProvider` schedules a background task that also accesses the
+    //    history database.
+    // If both db accesses happen concurrently, TSan complains. So put
+    // `HistoryURLProvider` later to make sure that `SearchProvider` is done
+    // doing its thing by the time the `HistoryURLProvider` task runs. (And hope
+    // that it completes before `AutocompleteController::Start()` is called the
+    // next time.)
+    if (provider_types & AutocompleteProvider::TYPE_HISTORY_URL) {
+      history_url_provider_ =
+          new HistoryURLProvider(provider_client_.get(), this);
+      if (provider_types & AutocompleteProvider::TYPE_HISTORY_URL)
+        providers_.push_back(history_url_provider_.get());
+    }
+    if (provider_types & AutocompleteProvider::TYPE_DOCUMENT) {
+      document_provider_ =
+          DocumentProvider::Create(provider_client_.get(), this);
+      providers_.push_back(document_provider_.get());
+    }
+    if (provider_types & AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
+      on_device_head_provider_ =
+          OnDeviceHeadProvider::Create(provider_client_.get(), this);
+      if (on_device_head_provider_) {
+        providers_.push_back(on_device_head_provider_.get());
+      }
+    }
+  }
+
   if (provider_types & AutocompleteProvider::TYPE_BOOKMARK) {
     bookmark_provider_ = new BookmarkProvider(provider_client_.get());
     providers_.push_back(bookmark_provider_.get());
@@ -310,27 +351,28 @@ AutocompleteController::AutocompleteController(
     keyword_provider_ = new KeywordProvider(provider_client_.get(), this);
     providers_.push_back(keyword_provider_.get());
   }
-  if (provider_types & AutocompleteProvider::TYPE_SEARCH) {
-    search_provider_ = new SearchProvider(provider_client_.get(), this);
-    providers_.push_back(search_provider_.get());
-  }
-  // It's important that the HistoryURLProvider gets added after SearchProvider:
-  // AutocompleteController::Start() calls each providers' Start() function
-  // synchronously in the order they're in providers_.
-  // - SearchProvider::Start() synchronously queries the history database's
-  //   keyword_search_terms and url table.
-  // - HistoryUrlProvider::Start schedules a background task that also accesses
-  //   the history database.
-  // If both db accesses happen concurrently, TSan complains.
-  // So put HistoryURLProvider later to make sure that SearchProvider is done
-  // doing its thing by the time the HistoryURLProvider task runs.
-  // (And hope that it completes before AutocompleteController::Start() is
-  // called the next time.)
-  if (provider_types & AutocompleteProvider::TYPE_HISTORY_URL) {
-    history_url_provider_ =
-        new HistoryURLProvider(provider_client_.get(), this);
-    if (provider_types & AutocompleteProvider::TYPE_HISTORY_URL)
-      providers_.push_back(history_url_provider_.get());
+  if (!OmniboxFieldTrial::kAutocompleteStabilityAsyncProvidersFirst.Get()) {
+    if (provider_types & AutocompleteProvider::TYPE_SEARCH) {
+      search_provider_ = new SearchProvider(provider_client_.get(), this);
+      providers_.push_back(search_provider_.get());
+    }
+    // Providers run in the order they're added.  Add `HistoryURLProvider` after
+    // `SearchProvider` because:
+    // - `SearchProvider` synchronously queries the history database's
+    //   keyword_search_terms and url table.
+    // - `HistoryUrlProvider` schedules a background task that also accesses the
+    //    history database.
+    // If both db accesses happen concurrently, TSan complains. So put
+    // `HistoryURLProvider` later to make sure that `SearchProvider` is done
+    // doing its thing by the time the `HistoryURLProvider` task runs. (And hope
+    // that it completes before `AutocompleteController::Start()` is called the
+    // next time.)
+    if (provider_types & AutocompleteProvider::TYPE_HISTORY_URL) {
+      history_url_provider_ =
+          new HistoryURLProvider(provider_client_.get(), this);
+      if (provider_types & AutocompleteProvider::TYPE_HISTORY_URL)
+        providers_.push_back(history_url_provider_.get());
+    }
   }
   if (provider_types & AutocompleteProvider::TYPE_SHORTCUTS)
     providers_.push_back(new ShortcutsProvider(provider_client_.get()));
@@ -353,15 +395,18 @@ AutocompleteController::AutocompleteController(
     providers_.push_back(
         new ZeroSuggestVerbatimMatchProvider(provider_client_.get()));
   }
-  if (provider_types & AutocompleteProvider::TYPE_DOCUMENT) {
-    document_provider_ = DocumentProvider::Create(provider_client_.get(), this);
-    providers_.push_back(document_provider_.get());
-  }
-  if (provider_types & AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
-    on_device_head_provider_ =
-        OnDeviceHeadProvider::Create(provider_client_.get(), this);
-    if (on_device_head_provider_) {
-      providers_.push_back(on_device_head_provider_.get());
+  if (!OmniboxFieldTrial::kAutocompleteStabilityAsyncProvidersFirst.Get()) {
+    if (provider_types & AutocompleteProvider::TYPE_DOCUMENT) {
+      document_provider_ =
+          DocumentProvider::Create(provider_client_.get(), this);
+      providers_.push_back(document_provider_.get());
+    }
+    if (provider_types & AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
+      on_device_head_provider_ =
+          OnDeviceHeadProvider::Create(provider_client_.get(), this);
+      if (on_device_head_provider_) {
+        providers_.push_back(on_device_head_provider_.get());
+      }
     }
   }
   if (provider_types & AutocompleteProvider::TYPE_CLIPBOARD) {
