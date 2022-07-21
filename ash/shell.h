@@ -96,6 +96,7 @@ class AshFocusRules;
 class AshTouchTransformController;
 class AssistantControllerImpl;
 class AutoclickController;
+class AutozoomControllerImpl;
 class BackGestureEventHandler;
 class BacklightsForcedOffSetter;
 class BluetoothDeviceStatusUiHandler;
@@ -372,6 +373,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   AutoclickController* autoclick_controller() {
     return autoclick_controller_.get();
+  }
+  AutozoomControllerImpl* autozoom_controller() {
+    return autozoom_controller_.get();
   }
   BacklightsForcedOffSetter* backlights_forced_off_setter() {
     return backlights_forced_off_setter_.get();
@@ -794,6 +798,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   scoped_refptr<dbus::Bus> dbus_bus_;
   std::unique_ptr<AshDBusServices> ash_dbus_services_;
   std::unique_ptr<AssistantControllerImpl> assistant_controller_;
+  std::unique_ptr<AutozoomControllerImpl> autozoom_controller_;
   std::unique_ptr<BacklightsForcedOffSetter> backlights_forced_off_setter_;
   std::unique_ptr<BrightnessControlDelegate> brightness_control_delegate_;
   std::unique_ptr<CalendarController> calendar_controller_;

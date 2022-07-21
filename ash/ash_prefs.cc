@@ -29,6 +29,7 @@
 #include "ash/shelf/shelf_controller.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/bluetooth/bluetooth_power_controller.h"
+#include "ash/system/camera/autozoom_controller_impl.h"
 #include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/gesture_education/gesture_education_notification_controller.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
@@ -70,6 +71,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   AccessibilityControllerImpl::RegisterProfilePrefs(registry);
   AppListControllerImpl::RegisterProfilePrefs(registry);
   AssistantControllerImpl::RegisterProfilePrefs(registry);
+  AutozoomControllerImpl::RegisterProfilePrefs(registry);
   AmbientController::RegisterProfilePrefs(registry);
   if (!ash::features::IsBluetoothRevampEnabled())
     BluetoothPowerController::RegisterProfilePrefs(registry);

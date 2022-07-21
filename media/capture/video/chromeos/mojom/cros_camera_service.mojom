@@ -46,9 +46,13 @@ enum CameraPrivacySwitchState {
   OFF = 2,
 };
 
-// CameraAutoZoomState indicates the state of the camera autozoom feature.
+// CameraAutoFramingState indicates the state of the camera autozoom feature.
+// Note that this enum is saved into user prefs, so enum values should not be
+// reordered, deleted or repurposed.
+[Stable, Extensible]
 enum CameraAutoFramingState {
   // Auto framing is disabled.
+  [Default]
   OFF = 0,
 
   // Auto framing is enabled and set to single person mode.

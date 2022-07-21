@@ -30,6 +30,8 @@ CAPTURE_EXPORT extern const base::Feature kDisableCameraFrameRotationAtSource;
 
 }  // namespace features
 
+CAPTURE_EXPORT bool ShouldEnableAutoFraming();
+
 }  // namespace media
 
 #endif  // MEDIA_CAPTURE_VIDEO_CHROMEOS_VIDEO_CAPTURE_FEATURES_CHROMEOS_H_

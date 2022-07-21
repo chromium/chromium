@@ -23,6 +23,7 @@
 #include "ash/system/bluetooth/bluetooth_feature_pod_controller_legacy.h"
 #include "ash/system/bluetooth/unified_bluetooth_detailed_view_controller.h"
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
+#include "ash/system/camera/autozoom_feature_pod_controller.h"
 #include "ash/system/cast/cast_feature_pod_controller.h"
 #include "ash/system/cast/unified_cast_detailed_view_controller.h"
 #include "ash/system/dark_mode/dark_mode_feature_pod_controller.h"
@@ -68,6 +69,7 @@
 #include "base/metrics/user_metrics.h"
 #include "components/prefs/pref_service.h"
 #include "media/base/media_switches.h"
+#include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/compositor/compositor.h"
 #include "ui/display/screen.h"
@@ -545,6 +547,9 @@ void UnifiedSystemTrayController::InitFeaturePods() {
     AddFeaturePodItem(std::make_unique<DarkModeFeaturePodController>(this));
   if (base::FeatureList::IsEnabled(features::kShelfParty))
     AddFeaturePodItem(std::make_unique<ShelfPartyFeaturePodController>());
+
+  if (media::ShouldEnableAutoFraming())
+    AddFeaturePodItem(std::make_unique<AutozoomFeaturePodController>());
 
   // If you want to add a new feature pod item, add here.
 

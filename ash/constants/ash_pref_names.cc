@@ -1054,6 +1054,10 @@ const char kShowPostRebootNotification[] = "ash.show_post_reboot_notification";
 const char kPersonalizationKeyboardBacklightColor[] =
     "ash.personalization.keyboard_backlight_color";
 
+// Integer pref corresponding to the autozoom state, the value should be one of
+// cros::mojom::CameraAutoFramingState.
+const char kAutozoomState[] = "ash.camera.autozoom_state";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

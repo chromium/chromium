@@ -482,6 +482,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowPostRebootNotification[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kPersonalizationKeyboardBacklightColor[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAutozoomState[];
+
 }  // namespace prefs
 }  // namespace ash
 

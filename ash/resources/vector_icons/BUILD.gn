@@ -425,6 +425,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "two_files.icon",
     "undo.icon",
     "unified_menu_accessibility.icon",
+    "unified_menu_autozoom.icon",
     "unified_menu_battery_alert.icon",
     "unified_menu_battery_alert_outline.icon",
     "unified_menu_battery_alert_outline_mask.icon",

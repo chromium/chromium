@@ -239,6 +239,8 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   base::UnguessableToken GetTokenForTrustedClient(
       cros::mojom::CameraClientType type);
 
+  void SetAutoFramingState(cros::mojom::CameraAutoFramingState state);
+
  private:
   friend struct base::DefaultSingletonTraits<CameraHalDispatcherImpl>;
   // Allow the test to construct the class directly.
@@ -295,6 +297,9 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       const base::UnguessableToken& auth_token,
       RegisterSensorClientWithTokenCallback callback);
 
+  void SetAutoFramingStateOnProxyThread(
+      cros::mojom::CameraAutoFramingState state);
+
   void StopOnProxyThread();
 
   TokenManager* GetTokenManagerForTesting();
@@ -340,6 +345,9 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   base::Lock sw_privacy_switch_lock_;
   cros::mojom::CameraPrivacySwitchState current_sw_privacy_switch_state_
       GUARDED_BY(sw_privacy_switch_lock_);
+
+  cros::mojom::CameraAutoFramingState current_auto_framing_state_ =
+      cros::mojom::CameraAutoFramingState::OFF;
 
   scoped_refptr<base::ObserverListThreadSafe<CameraPrivacySwitchObserver>>
       privacy_switch_observers_ GUARDED_BY(privacy_switch_lock_);
