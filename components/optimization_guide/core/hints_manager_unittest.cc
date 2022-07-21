@@ -802,9 +802,25 @@ TEST_F(HintsManagerTest, ProcessHintsWithInvalidPref) {
   }
 }
 
+TEST_F(HintsManagerTest,
+       OnNavigationStartOrRedirectNoTypesRegisteredShouldNotLoadHint) {
+  base::HistogramTester histogram_tester;
+  InitializeWithDefaultConfig("3.0.0.0");
+
+  auto navigation_data = CreateTestNavigationData(url_with_hints(), {});
+
+  base::RunLoop run_loop;
+  CallOnNavigationStartOrRedirect(navigation_data.get(),
+                                  run_loop.QuitClosure());
+  run_loop.Run();
+
+  histogram_tester.ExpectTotalCount("OptimizationGuide.LoadedHint.Result", 0);
+}
+
 TEST_F(HintsManagerTest, OnNavigationStartOrRedirectWithHint) {
   base::HistogramTester histogram_tester;
   InitializeWithDefaultConfig("3.0.0.0");
+  hints_manager()->RegisterOptimizationTypes({proto::LITE_PAGE_REDIRECT});
 
   auto navigation_data = CreateTestNavigationData(url_with_hints(), {});
 
@@ -820,6 +836,7 @@ TEST_F(HintsManagerTest, OnNavigationStartOrRedirectWithHint) {
 TEST_F(HintsManagerTest, OnNavigationStartOrRedirectNoHint) {
   base::HistogramTester histogram_tester;
   InitializeWithDefaultConfig("3.0.0.0");
+  hints_manager()->RegisterOptimizationTypes({proto::LITE_PAGE_REDIRECT});
 
   auto navigation_data =
       CreateTestNavigationData(GURL("https://notinhints.com"), {});
@@ -836,6 +853,7 @@ TEST_F(HintsManagerTest, OnNavigationStartOrRedirectNoHint) {
 TEST_F(HintsManagerTest, OnNavigationStartOrRedirectNoHost) {
   base::HistogramTester histogram_tester;
   InitializeWithDefaultConfig("3.0.0.0");
+  hints_manager()->RegisterOptimizationTypes({proto::LITE_PAGE_REDIRECT});
 
   auto navigation_data = CreateTestNavigationData(GURL("blargh"), {});
 
@@ -1380,6 +1398,8 @@ TEST_F(HintsManagerTest, CanApplyOptimizationAndPopulatesAnyMetadata) {
 TEST_F(HintsManagerTest, CanApplyOptimizationNoMatchingPageHint) {
   InitializeWithDefaultConfig("1.0.0.0");
 
+  hints_manager()->RegisterOptimizationTypes({proto::NOSCRIPT});
+
   auto navigation_data =
       CreateTestNavigationData(GURL("https://somedomain.org/nomatch"), {});
   base::RunLoop run_loop;
@@ -1387,7 +1407,6 @@ TEST_F(HintsManagerTest, CanApplyOptimizationNoMatchingPageHint) {
                                   run_loop.QuitClosure());
   run_loop.Run();
 
-  hints_manager()->RegisterOptimizationTypes({proto::NOSCRIPT});
   OptimizationTypeDecision optimization_type_decision =
       hints_manager()->CanApplyOptimization(navigation_data->navigation_url(),
                                             proto::NOSCRIPT,

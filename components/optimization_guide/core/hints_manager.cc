@@ -1453,6 +1453,13 @@ void HintsManager::OnNavigationStartOrRedirect(
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (registered_optimization_types_.empty()) {
+    // Do not attempt to load anything since we have nothing we need to get data
+    // for.
+    std::move(callback).Run();
+    return;
+  }
+
   LoadHintForURL(navigation_data->navigation_url(), std::move(callback));
 
   if (switches::DisableFetchingHintsAtNavigationStartForTesting()) {
