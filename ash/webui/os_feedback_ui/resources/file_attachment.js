@@ -62,6 +62,13 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
     this.selectedFile_ = null;
 
     /**
+     * The name of the file selected
+     * @type {string}
+     * @protected
+     */
+    this.selectedFileName_;
+
+    /**
      * Url of the selected image.
      * @type {string}
      */
@@ -180,7 +187,7 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
       return;
     }
     this.selectedFile_ = file;
-    this.getElement_('#selectedFileName').textContent = file.name;
+    this.selectedFileName_ = file.name;
     this.getElement_('#selectFileCheckbox').checked = true;
 
     // Add a preview image when selected file is image type.

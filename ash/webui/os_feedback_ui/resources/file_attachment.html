@@ -91,7 +91,7 @@
 <div id="replaceFileContainer" hidden="[[!hasSelectedAFile_]]">
   <input type="checkbox" id="selectFileCheckbox">
   <div id="replaceFileInfo">
-    <div id="selectedFileName" class="overflow-text"></div>
+    <div id="selectedFileName" class="overflow-text">[[selectedFileName_]]</div>
     <button id="replaceFileLabel" class="file-input"
         on-click="handleOpenFileInputClick_">
       [[i18n('replaceFileLabel')]]
@@ -106,14 +106,13 @@
   </iron-icon>
   <span id="errorMessage">[[i18n('fileTooBigErrorMessage')]]</span>
 </cr-toast>
-<!-- TODO(longbowei): Locolize strings in cr-dialog -->
 <cr-dialog id="selectedImageDialog">
   <div id="modalDialogTitle" slot="title">
     <cr-icon-button id="closeDialogButton" class="icon-arrow-back"
         on-click="handleSelectedImageDialogCloseClick_"
-        title="Image">
+        title="[[selectedFileName_]]">
     </cr-icon-button>
-    <span>Image</span>
+    <span id="modalDialogTitleText">[[selectedFileName_]]</span>
   </div>
   <div slot="body">
     <img src="[[selectedImageUrl_]]" class="image-preview">

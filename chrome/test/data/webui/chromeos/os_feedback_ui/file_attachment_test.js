@@ -270,6 +270,9 @@ export function fileAttachmentTestSuite() {
     page.setSelectedFileForTesting(fakeImageFile);
     await flushTasks();
 
+    // The selected file name is set properly.
+    assertEquals('fake.png', getElementContent('#selectedFileName'));
+
     // The selectedFileImage should have an url when file is image type.
     const imageUrl = getElement('#selectedFileImage').src;
     assertTrue(imageUrl.length > 0);
@@ -286,6 +289,19 @@ export function fileAttachmentTestSuite() {
   // focus on the close dialog icon button.
   test('selectedImagePreviewDialog', async () => {
     await initializePage();
+    const fakeData = [12, 11, 99];
+
+    /** @type {!File} */
+    const fakeImageFile = /** @type {!File} */ ({
+      name: 'fake.png',
+      type: 'image/png',
+      size: MAX_ATTACH_FILE_SIZE,
+      arrayBuffer: async () => {
+        return new Uint8Array(fakeData).buffer;
+      },
+    });
+
+    page.setSelectedFileForTesting(fakeImageFile);
     page.selectedImageUrl_ = fakeImageUrl;
     assertEquals(fakeImageUrl, getElement('#selectedFileImage').src);
 
@@ -299,6 +315,9 @@ export function fileAttachmentTestSuite() {
     const imageClickPromise = eventToPromise('click', imageButton);
     imageButton.click();
     await imageClickPromise;
+
+    // The preview dialog's title should be set properly.
+    assertEquals('fake.png', getElementContent('#modalDialogTitleText'));
 
     // The preview dialog's close icon button is visible now.
     assertTrue(isVisible(closeDialogButton));
