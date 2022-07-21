@@ -5779,6 +5779,87 @@ TEST_F(AppsGridViewTest, PulsingBlocksShowDuringAppListSync) {
   EXPECT_EQ(0u, GetPulsingBlocksModel().view_size());
 }
 
+// Tests that the pulsing blocks animation runs with the productivity launcher.
+TEST_P(AppsGridViewClamshellAndTabletTest,
+       PulsingBlocksAnimationOnFiringAnimationTimer) {
+  model_->PopulateApps(3);
+  UpdateLayout();
+  EXPECT_EQ(0u, GetPulsingBlocksModel().view_size());
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // For scrolling app list, the "page size" is very large, so cap the number of
+  // pulsing blocks to the size of the tablet mode page (~20 items).
+  const size_t tiles_per_page =
+      SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
+  model_->SetStatus(AppListModelStatus::kStatusSyncing);
+  UpdateLayout();
+  ASSERT_EQ(tiles_per_page - 3, GetPulsingBlocksModel().view_size());
+
+  PulsingBlockView* pulsing_block_view = GetPulsingBlocksModel().view_at(0);
+
+  EXPECT_FALSE(pulsing_block_view->IsAnimating());
+  EXPECT_TRUE(pulsing_block_view->FireAnimationTimerForTest());
+  EXPECT_TRUE(pulsing_block_view->IsAnimating());
+
+  // Set the model status as normal to avoid the test hanging due to the
+  // pulsing blocks animation.
+  model_->SetStatus(AppListModelStatus::kStatusNormal);
+  EXPECT_EQ(0u, GetPulsingBlocksModel().view_size());
+}
+
+// Verify that as new app items get synced into the app list, newer items slowly
+// fade in place of a placeholder.
+TEST_F(AppsGridViewBubbleTest, AppIconSubtitutesPulsingBlockView) {
+  model_->PopulateApps(3);
+  UpdateLayout();
+  EXPECT_EQ(0u, GetPulsingBlocksModel().view_size());
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // For scrolling app list, the "page size" is very large, so cap the number of
+  // pulsing blocks to the size of the tablet mode page (~20 items).
+  const size_t tiles_per_page =
+      SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
+  model_->SetStatus(AppListModelStatus::kStatusSyncing);
+  UpdateLayout();
+  ASSERT_EQ(tiles_per_page - 3, GetPulsingBlocksModel().view_size());
+
+  PulsingBlockView* pulsing_block_view = GetPulsingBlocksModel().view_at(0);
+
+  EXPECT_TRUE(pulsing_block_view->FireAnimationTimerForTest());
+  EXPECT_TRUE(pulsing_block_view->IsAnimating());
+
+  gfx::Rect placeholder_bounds = pulsing_block_view->GetBoundsInScreen();
+
+  // Add another app to simulate a synced app.
+  model_->PopulateApps(1);
+  UpdateLayout();
+
+  // The number of pulsing blocks will be decreased by one in order for the
+  // incoming app to fade in its place.
+  ASSERT_EQ(tiles_per_page - 4, GetPulsingBlocksModel().view_size());
+
+  AppListItemView* item_view = GetItemViewInTopLevelGrid(3);
+
+  ASSERT_TRUE(item_view->layer());
+  EXPECT_TRUE(item_view->layer()->GetAnimator()->is_animating());
+  EXPECT_EQ(1.0f, item_view->layer()->GetTargetOpacity());
+
+  LayerAnimationStoppedWaiter animation_waiter;
+  animation_waiter.Wait(item_view->layer());
+
+  // The new item should be placed at the first placeholder bounds.
+  EXPECT_EQ(placeholder_bounds, item_view->GetBoundsInScreen());
+
+  // Set the model status as normal to avoid the test hanging due to the
+  // pulsing blocks animation.
+  model_->SetStatus(AppListModelStatus::kStatusNormal);
+  EXPECT_EQ(0u, GetPulsingBlocksModel().view_size());
+}
+
 // Tests that right clicking an app will remove focus from other apps within the
 // apps grid. See https://crbug.com/1146365.
 TEST_P(AppsGridViewClamshellTest, VerifyFocusRemovedWhenLeftClickingOtherApp) {

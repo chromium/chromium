@@ -15,7 +15,7 @@ class Size;
 
 namespace ash {
 
-// PulsingBlockView shows a pulsing white block via layer animation.
+// PulsingBlockView shows a pulsing white circle via layer animation.
 class PulsingBlockView : public views::View {
  public:
   // Constructs a PulsingBlockView of |size|. Starts the pulsing animation after
@@ -31,8 +31,13 @@ class PulsingBlockView : public views::View {
   const char* GetClassName() const override;
   void OnThemeChanged() override;
 
-  // Schedules the animation again from the beginning.
-  void ResetAnimation();
+  // Returns true if the view has a layer animator attached and is currently
+  // running.
+  bool IsAnimating();
+
+  // Starts the animation by immediately firing `start_delay_timer`. Returns
+  // false if the timer was not running.
+  bool FireAnimationTimerForTest();
 
  private:
   void OnStartDelayTimer();

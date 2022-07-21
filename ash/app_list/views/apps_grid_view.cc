@@ -331,6 +331,7 @@ AppsGridView::~AppsGridView() {
   MaybeAbortWholeGridAnimation();
 
   view_model_.Clear();
+  pulsing_blocks_model_.Clear();
   RemoveAllChildViews();
 
   // `OnBoundsAnimatorDone`, which uses `bounds_animator_`, is called on

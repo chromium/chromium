@@ -169,4 +169,22 @@ void PulsingBlockView::OnPaint(gfx::Canvas* canvas) {
   canvas->FillRect(rect, kBlockColor);
 }
 
+bool PulsingBlockView::IsAnimating() {
+  views::View* animating_view =
+      ash::features::IsLauncherPulsingBlocksRefreshEnabled()
+          ? background_color_view_
+          : this;
+  return animating_view->layer()
+             ? animating_view->layer()->GetAnimator()->is_animating()
+             : false;
+}
+
+bool PulsingBlockView::FireAnimationTimerForTest() {
+  if (!start_delay_timer_.IsRunning())
+    return false;
+
+  start_delay_timer_.FireNow();
+  return true;
+}
+
 }  // namespace ash
