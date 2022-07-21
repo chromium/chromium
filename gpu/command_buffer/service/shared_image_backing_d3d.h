@@ -197,10 +197,12 @@ class GPU_GLES2_EXPORT SharedImageBackingD3D
   // Set if this backing corresponds to the back buffer of |swap_chain_|.
   const bool is_back_buffer_;
 
-  // If external_image_ exists, it means Dawn produced the D3D12 side of the
+  // If an external image exists, it means Dawn produced the D3D12 side of the
   // D3D11 texture created by ID3D12Device::OpenSharedHandle.
 #if BUILDFLAG(USE_DAWN)
-  std::unique_ptr<dawn::native::d3d12::ExternalImageDXGI> external_image_;
+  base::flat_map<WGPUDevice,
+                 std::unique_ptr<dawn::native::d3d12::ExternalImageDXGI>>
+      dawn_external_images_;
 #endif  // BUILDFLAG(USE_DAWN)
 
   // Staging texture used for copy to/from shared memory GMB.
