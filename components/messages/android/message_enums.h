@@ -109,6 +109,7 @@ enum class MessageIdentifier {
   TRANSLATE = 29,
   OFFER_NOTIFICATION = 30,
   EXTERNAL_NAVIGATION = 31,
+  FRAMEBUST_BLOCKED = 32,
 
   // Insert new values before this line.
   COUNT

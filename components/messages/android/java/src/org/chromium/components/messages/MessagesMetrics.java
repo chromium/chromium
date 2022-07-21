@@ -145,6 +145,8 @@ public class MessagesMetrics {
                 return "OfferNotification";
             case MessageIdentifier.EXTERNAL_NAVIGATION:
                 return "ExternalNavigation";
+            case MessageIdentifier.FRAMEBUST_BLOCKED:
+                return "FramebustBlocked";
             case MessageIdentifier.INVALID_MESSAGE:
                 return "InvalidMessage";
             default:

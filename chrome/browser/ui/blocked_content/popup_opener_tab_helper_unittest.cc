@@ -24,9 +24,9 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/blocked_content/list_item_position.h"
+#include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/blocked_content/popup_tracker.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
-#include "components/infobars/content/content_infobar_manager.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
@@ -42,7 +42,9 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
+#include "chrome/browser/android/framebust_intervention/framebust_blocked_delegate_android.h"
 #include "components/infobars/android/infobar_android.h"
+#include "components/messages/android/mock_message_dispatcher_bridge.h"
 #else
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #endif
@@ -70,11 +72,22 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
     blocked_content::PopupOpenerTabHelper::CreateForWebContents(
         web_contents(), &raw_clock_,
         HostContentSettingsMapFactory::GetForProfile(profile()));
-    infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
         std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
             web_contents()));
+    blocked_content::PopupBlockerTabHelper::CreateForWebContents(
+        web_contents());
+#if BUILDFLAG(IS_ANDROID)
+    message_dispatcher_bridge_.SetMessagesEnabledForEmbedder(true);
+    messages::MessageDispatcherBridge::SetInstanceForTesting(
+        &message_dispatcher_bridge_);
+    blocked_content::FramebustBlockedMessageDelegate::CreateForWebContents(
+        web_contents());
+    framebust_blocked_message_delegate_ =
+        blocked_content::FramebustBlockedMessageDelegate::FromWebContents(
+            web_contents());
+#endif
 #if !BUILDFLAG(IS_ANDROID)
     FramebustBlockTabHelper::CreateForWebContents(web_contents());
 #endif
@@ -88,6 +101,9 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     popups_.clear();
+#if BUILDFLAG(IS_ANDROID)
+    messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
+#endif
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -122,11 +138,28 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
+#if BUILDFLAG(IS_ANDROID)
+  messages::MessageWrapper* message_wrapper() {
+    return framebust_blocked_message_delegate_->message_for_testing();
+  }
+#endif
+
+  void expect_message() {
+#if BUILDFLAG(IS_ANDROID)
+    EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage)
+        .WillOnce(testing::Return(true));
+#endif
+  }
+
  private:
   base::HistogramTester histogram_tester_;
   base::SimpleTestTickClock raw_clock_;
-
   std::vector<std::unique_ptr<content::WebContents>> popups_;
+#if BUILDFLAG(IS_ANDROID)
+  messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
+  raw_ptr<blocked_content::FramebustBlockedMessageDelegate>
+      framebust_blocked_message_delegate_;
+#endif
 };
 
 TEST_F(PopupOpenerTabHelperTest, LogVisibleTime) {
@@ -413,25 +446,9 @@ class BlockTabUnderTest : public PopupOpenerTabHelperTest {
 
   ~BlockTabUnderTest() override = default;
 
-  infobars::InfoBarAndroid* GetInfoBar() {
-#if BUILDFLAG(IS_ANDROID)
-    auto* manager =
-        infobars::ContentInfoBarManager::FromWebContents(web_contents());
-    if (!manager->infobar_count())
-      return nullptr;
-    EXPECT_EQ(1u, manager->infobar_count());
-    infobars::InfoBarAndroid* infobar =
-        static_cast<infobars::InfoBarAndroid*>(manager->infobar_at(0));
-    EXPECT_TRUE(infobar);
-    return infobar;
-#else
-    return nullptr;
-#endif  // BUILDFLAG(IS_ANDROID)
-  }
-
   void ExpectUIShown(bool shown) {
 #if BUILDFLAG(IS_ANDROID)
-    EXPECT_EQ(shown, !!GetInfoBar());
+    EXPECT_EQ(shown, !!message_wrapper());
 #else
     EXPECT_EQ(shown, FramebustBlockTabHelper::FromWebContents(web_contents())
                          ->HasBlockedUrls());
@@ -455,6 +472,7 @@ TEST_F(BlockTabUnderTest, SimpleTabUnder_IsBlocked) {
   EXPECT_TRUE(NavigateAndCommitWithoutGesture(GURL("https://first.test/")));
   SimulatePopup();
   const GURL blocked_url("https://example.test/");
+  expect_message();
   EXPECT_FALSE(NavigateAndCommitWithoutGesture(blocked_url));
   ExpectUIShown(true);
 }
@@ -508,6 +526,7 @@ TEST_F(BlockTabUnderTest, TabUnderCrossOriginRedirect_IsBlocked) {
   simulator->Start();
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             simulator->GetLastThrottleCheckResult());
+  expect_message();
   simulator->Redirect(blocked_url);
   EXPECT_EQ(content::NavigationThrottle::CANCEL,
             simulator->GetLastThrottleCheckResult());
@@ -524,6 +543,7 @@ TEST_F(BlockTabUnderTest, TabUnderWithLongWait_IsBlocked) {
   // we always classify as a tab-under.
   raw_clock()->Advance(base::Days(10));
 
+  expect_message();
   const GURL blocked_url("https://example.test/");
   EXPECT_FALSE(NavigateAndCommitWithoutGesture(blocked_url));
   ExpectUIShown(true);
@@ -554,6 +574,7 @@ TEST_F(BlockTabUnderTest, MultipleRedirectAttempts_AreBlocked) {
   SimulatePopup();
 
   const GURL blocked_url("https://example.test/");
+  expect_message();
   EXPECT_FALSE(NavigateAndCommitWithoutGesture(blocked_url));
   ExpectUIShown(true);
   EXPECT_FALSE(NavigateAndCommitWithoutGesture(blocked_url));
@@ -595,13 +616,12 @@ TEST_F(BlockTabUnderTest, ClickThroughAction) {
   SimulatePopup();
 
   // Populate two blocked URLs in the UI.
+  expect_message();
   const GURL blocked_url("https://example.test/");
   EXPECT_FALSE(NavigateAndCommitWithoutGesture(blocked_url));
   EXPECT_FALSE(NavigateAndCommitWithoutGesture(blocked_url));
 #if BUILDFLAG(IS_ANDROID)
-  infobars::InfoBarAndroid* infobar = GetInfoBar();
-  base::android::JavaParamRef<jobject> jobj(nullptr);
-  infobar->OnLinkClicked(nullptr /* env */, jobj);
+  message_wrapper()->HandleActionClick(base::android::AttachCurrentThread());
 #else
   FramebustBlockTabHelper* framebust =
       FramebustBlockTabHelper::FromWebContents(web_contents());
@@ -656,6 +676,7 @@ TEST_F(BlockTabUnderTest, LogsToConsole) {
       content::RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
 
   EXPECT_EQ(0u, messages.size());
+  expect_message();
   EXPECT_FALSE(NavigateAndCommitWithoutGesture(blocked_url));
   ExpectUIShown(true);
 

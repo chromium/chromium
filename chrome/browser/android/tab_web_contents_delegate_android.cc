@@ -19,6 +19,7 @@
 #include "base/rand_util.h"
 #include "chrome/android/chrome_jni_headers/TabWebContentsDelegateAndroidImpl_jni.h"
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
+#include "chrome/browser/android/framebust_intervention/framebust_blocked_delegate_android.h"
 #include "chrome/browser/android/hung_renderer_infobar_delegate.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
@@ -37,12 +38,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/ui/android/infobars/framebust_block_infobar.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/interventions/framebust_block_message_delegate.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
@@ -122,17 +121,25 @@ infobars::InfoBar* FindHungRendererInfoBar(
   return nullptr;
 }
 
-void ShowFramebustBlockInfobarInternal(content::WebContents* web_contents,
+void ShowFramebustBlockMessageInternal(content::WebContents* web_contents,
                                        const GURL& url) {
   auto intervention_outcome =
-      [](FramebustBlockMessageDelegate::InterventionOutcome outcome) {
+      [](blocked_content::FramebustBlockedMessageDelegate::InterventionOutcome
+             outcome) {
         UMA_HISTOGRAM_ENUMERATION("WebCore.Framebust.InterventionOutcome",
                                   outcome);
       };
-  FramebustBlockInfoBar::Show(
-      web_contents,
-      std::make_unique<FramebustBlockMessageDelegate>(
-          web_contents, url, base::BindOnce(intervention_outcome)));
+  blocked_content::FramebustBlockedMessageDelegate::CreateForWebContents(
+      web_contents);
+  blocked_content::FramebustBlockedMessageDelegate*
+      framebust_blocked_message_delegate =
+          blocked_content::FramebustBlockedMessageDelegate::FromWebContents(
+              web_contents);
+  framebust_blocked_message_delegate->ShowMessage(
+      url,
+      HostContentSettingsMapFactory::GetForProfile(
+          web_contents->GetBrowserContext()),
+      base::BindOnce(intervention_outcome));
 }
 
 }  // anonymous namespace
@@ -429,7 +436,7 @@ void TabWebContentsDelegateAndroid::OnDidBlockNavigation(
     const GURL& blocked_url,
     const GURL& initiator_url,
     blink::mojom::NavigationBlockedReason reason) {
-  ShowFramebustBlockInfobarInternal(web_contents, blocked_url);
+  ShowFramebustBlockMessageInternal(web_contents, blocked_url);
 }
 
 void TabWebContentsDelegateAndroid::UpdateUserGestureCarryoverInfo(
@@ -667,5 +674,5 @@ void JNI_TabWebContentsDelegateAndroidImpl_ShowFramebustBlockInfoBar(
   GURL url(base::android::ConvertJavaStringToUTF16(env, java_url));
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
-  ShowFramebustBlockInfobarInternal(web_contents, url);
+  ShowFramebustBlockMessageInternal(web_contents, url);
 }

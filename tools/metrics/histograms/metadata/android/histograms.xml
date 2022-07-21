@@ -94,6 +94,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".ChromeSurvey"/>
   <variant name=".DownloadProgress"/>
   <variant name=".ExternalNavigation"/>
+  <variant name=".FramebustBlocked"/>
   <variant name=".GeneratedPasswordSaved"/>
   <variant name=".InstallableAmbientBadge"/>
   <variant name=".InstantApps"/>

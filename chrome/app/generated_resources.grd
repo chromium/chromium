@@ -12086,18 +12086,22 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </if>
 
     <!-- Framebust / Blocked Redirection intervention message -->
-    <if expr="not is_android">
-      <!-- Android strings are declared in android_chrome_strings.grd. -->
-      <message name="IDS_REDIRECT_BLOCKED_MESSAGE" desc="The message stating that a redirect (noun) was blocked on this page. This will be followed on a separate line with the address the user was being redirected to.">
-        Redirect blocked:
-      </message>
-      <message name="IDS_REDIRECT_BLOCKED_TITLE" desc="The short message stating that a redirect (noun) was blocked on this page. Same as IDS_REDIRECT_BLOCKED_SHORT_MESSAGE but without the period.">
-         Redirect blocked
-      </message>
-      <message name="IDS_REDIRECT_BLOCKED_TOOLTIP" desc="Tooltip text that appears when the user hovers over the &quot;Redirect blocked&quot; icon in the address bar. It means that a redirect (noun) was blocked by Chrome on this page.">
-         Redirect blocked on this page.
-      </message>
-    </if>
+    <!-- Android strings are declared in android_chrome_strings.grd. -->
+    <message name="IDS_REDIRECT_BLOCKED_MESSAGE" desc="The message stating that a redirect (noun) was blocked on this page. This will be followed on a separate line with the address the user was being redirected to.">
+      Redirect blocked:
+    </message>
+    <message name="IDS_REDIRECT_BLOCKED_TITLE" desc="The short message stating that a redirect (noun) was blocked on this page. Same as IDS_REDIRECT_BLOCKED_SHORT_MESSAGE but without the period.">
+        Redirect blocked
+    </message>
+    <message name="IDS_REDIRECT_BLOCKED_TOOLTIP" desc="Tooltip text that appears when the user hovers over the &quot;Redirect blocked&quot; icon in the address bar. It means that a redirect (noun) was blocked by Chrome on this page.">
+        Redirect blocked on this page.
+    </message>
+    <message name="IDS_ALWAYS_ALLOW_REDIRECTS" desc="The message button text allowing a user to always allow redirects (noun) after they were blocked on this page.">
+      Always allow
+    </message>
+    <message name="IDS_OPEN_REDIRECT" desc="Dropdown menu button that allows a user to go to the redirected page once, but continue blocking subsequent attempts on the site.">
+      Open Anyway
+    </message>
 
     <!-- Windows 10 toast strings -->
     <if expr="is_win">

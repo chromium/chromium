@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.infobar;
 
-import static junit.framework.Assert.assertEquals;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -16,25 +14,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.test.ScreenShooter;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.components.infobars.InfoBar;
-import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -81,98 +72,6 @@ public class InfoBarAppearanceTest {
                         sActivityTestRule.getActivity().getActivityTab());
             });
         }
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"InfoBars", "UiCatalogue"})
-    @DisabledTest(message = "https://crbug.com/1133772")
-    public void testFramebustBlockInfoBar() throws Exception {
-        FramebustBlockInfoBar infobar = new FramebustBlockInfoBar("http://very.evil.biz");
-        captureMiniAndRegularInfobar(infobar);
-    }
-
-    @Test
-    @MediumTest
-    @Feature("InfoBars")
-    public void testFramebustBlockInfoBarOverriding() {
-        String url1 = "http://very.evil.biz/";
-        String url2 = "http://other.evil.biz/";
-        List<InfoBar> infobars;
-        FramebustBlockInfoBar infoBar;
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { TabTestUtils.showFramebustBlockInfobarForTesting(mTab, url1); });
-        infobars = sActivityTestRule.getInfoBarContainer().getInfoBarsForTesting();
-        assertEquals(1, infobars.size());
-        infoBar = (FramebustBlockInfoBar) infobars.get(0);
-        assertEquals(url1, infoBar.getBlockedUrl());
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { TabTestUtils.showFramebustBlockInfobarForTesting(mTab, url2); });
-        infobars = sActivityTestRule.getInfoBarContainer().getInfoBarsForTesting();
-        assertEquals(1, infobars.size());
-        infoBar = (FramebustBlockInfoBar) infobars.get(0);
-        assertEquals(url2, infoBar.getBlockedUrl());
-    }
-
-    @Test
-    @MediumTest
-    @Feature("InfoBars")
-    public void testFramebustBlockInfoBarUrlTapped() throws TimeoutException {
-        String url = "http://very.evil.biz";
-
-        CallbackHelper callbackHelper = new CallbackHelper();
-        EmptyTabObserver navigationWaiter = new EmptyTabObserver() {
-            @Override
-            public void onDidStartNavigation(Tab tab, NavigationHandle navigation) {
-                callbackHelper.notifyCalled();
-            }
-        };
-        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(navigationWaiter));
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { TabTestUtils.showFramebustBlockInfobarForTesting(mTab, url); });
-        FramebustBlockInfoBar infoBar =
-                (FramebustBlockInfoBar) sActivityTestRule.getInfoBarContainer()
-                        .getInfoBarsForTesting()
-                        .get(0);
-
-        TestThreadUtils.runOnUiThreadBlocking(infoBar::onLinkClicked); // Once to expand the infobar
-        assertEquals(0, callbackHelper.getCallCount());
-
-        TestThreadUtils.runOnUiThreadBlocking(infoBar::onLinkClicked); // Now to navigate
-        callbackHelper.waitForCallback(0);
-
-        CriteriaHelper.pollUiThread(
-                () -> InfoBarContainer.get(mTab).getInfoBarsForTesting().isEmpty());
-    }
-
-    @Test
-    @MediumTest
-    @Feature("InfoBars")
-    public void testFramebustBlockInfoBarButtonTapped() {
-        String url = "http://very.evil.biz";
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { TabTestUtils.showFramebustBlockInfobarForTesting(mTab, url); });
-        FramebustBlockInfoBar infoBar =
-                (FramebustBlockInfoBar) sActivityTestRule.getInfoBarContainer()
-                        .getInfoBarsForTesting()
-                        .get(0);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> infoBar.onButtonClicked(true));
-        CriteriaHelper.pollUiThread(
-                () -> InfoBarContainer.get(mTab).getInfoBarsForTesting().isEmpty());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"InfoBars", "UiCatalogue"})
-    public void testFramebustBlockInfoBarWithLongMessages() throws Exception {
-        FramebustBlockInfoBar infobar = new FramebustBlockInfoBar("https://someverylonglink"
-                + "thatwilldefinitelynotfitevenwhenremovingthefilepath.com/somemorestuff");
-        captureMiniAndRegularInfobar(infobar);
     }
 
     @Test

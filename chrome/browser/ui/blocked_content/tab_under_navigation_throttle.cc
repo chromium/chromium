@@ -42,8 +42,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/android/infobars/framebust_block_infobar.h"
-#include "chrome/browser/ui/interventions/framebust_block_message_delegate.h"
+#include "chrome/browser/android/framebust_intervention/framebust_blocked_delegate_android.h"
 #else
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #endif
@@ -60,7 +59,8 @@ void LogAction(TabUnderNavigationThrottle::Action action) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-typedef FramebustBlockMessageDelegate::InterventionOutcome InterventionOutcome;
+typedef blocked_content::FramebustBlockedMessageDelegate::InterventionOutcome
+    InterventionOutcome;
 
 TabUnderNavigationThrottle::Action GetActionForOutcome(
     InterventionOutcome outcome) {
@@ -207,9 +207,17 @@ void TabUnderNavigationThrottle::ShowUI() {
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
   const GURL& url = navigation_handle()->GetURL();
 #if BUILDFLAG(IS_ANDROID)
-  FramebustBlockInfoBar::Show(
-      web_contents, std::make_unique<FramebustBlockMessageDelegate>(
-                        web_contents, url, base::BindOnce(&LogOutcome)));
+  blocked_content::FramebustBlockedMessageDelegate::CreateForWebContents(
+      web_contents);
+  blocked_content::FramebustBlockedMessageDelegate*
+      framebust_blocked_message_delegate =
+          blocked_content::FramebustBlockedMessageDelegate::FromWebContents(
+              web_contents);
+  framebust_blocked_message_delegate->ShowMessage(
+      url,
+      HostContentSettingsMapFactory::GetForProfile(
+          web_contents->GetBrowserContext()),
+      base::BindOnce(&LogOutcome));
 #else
   if (auto* tab_helper =
           FramebustBlockTabHelper::FromWebContents(web_contents)) {
