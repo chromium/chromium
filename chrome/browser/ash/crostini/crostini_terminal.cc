@@ -39,6 +39,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/url_util.h"
@@ -234,7 +235,7 @@ void LaunchTerminalWithUrl(Profile* profile,
 void LaunchTerminalWithIntent(
     Profile* profile,
     int64_t display_id,
-    apps::mojom::IntentPtr intent,
+    apps::IntentPtr intent,
     base::OnceCallback<void(bool, const std::string&)> callback) {
   // Look for vm_name and container_name in intent->extras, and for backcompat
   // reasons default to the original crostini container if nothing is specified.
@@ -244,8 +245,8 @@ void LaunchTerminalWithIntent(
   // need it though so leave it as unknown.
   guest_id.vm_type = guest_os::VmType::UNKNOWN;
   std::string settings_profile;
-  if (intent && intent->extras.has_value()) {
-    for (const auto& extra : intent->extras.value()) {
+  if (intent && !intent->extras.empty()) {
+    for (const auto& extra : intent->extras) {
       if (extra.first == "vm_name") {
         guest_id.vm_name = extra.second;
       } else if (extra.first == "container_name") {
@@ -284,8 +285,8 @@ void LaunchTerminalWithIntent(
 
   // Use first file (if any) as cwd.
   std::string cwd;
-  if (intent && intent->files && intent->files->size()) {
-    GURL gurl = intent->files.value()[0]->url;
+  if (intent && !intent->files.empty()) {
+    GURL gurl = intent->files[0]->url;
     storage::ExternalMountPoints* mount_points =
         storage::ExternalMountPoints::GetSystemInstance();
     storage::FileSystemURL url = mount_points->CrackURL(
@@ -621,7 +622,7 @@ bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
   if (!shortcut_value || *shortcut_value != kShortcutValueTerminal) {
     return false;
   }
-  apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
+  auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView);
   intent->extras = ExtrasFromShortcutId(std::move(*shortcut));
   LaunchTerminalWithIntent(profile, display_id, std::move(intent),
                            base::DoNothing());

@@ -10,6 +10,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/values.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/display/types/display_constants.h"
@@ -137,7 +138,7 @@ void LaunchTerminalWithUrl(Profile* profile,
 void LaunchTerminalWithIntent(
     Profile* profile,
     int64_t display_id,
-    apps::mojom::IntentPtr intent,
+    apps::IntentPtr intent,
     base::OnceCallback<void(bool success, const std::string& msg)> callback);
 
 // Launches the terminal settings popup window.

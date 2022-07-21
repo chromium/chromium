@@ -886,7 +886,7 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
     int64_t display_id =
         window_info ? window_info->display_id : display::kInvalidDisplayId;
     crostini::LaunchTerminalWithIntent(
-        profile_, display_id, std::move(intent),
+        profile_, display_id, apps::ConvertMojomIntentToIntent(intent),
         base::BindOnce(
             [](apps::mojom::Publisher::LaunchAppWithIntentCallback callback,
                bool success, const std::string& failure_reason) {

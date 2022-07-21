@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
@@ -404,7 +405,7 @@ void CrostiniHandler::OnCanDisableArcAdbSideloading(
       power_manager::REQUEST_RESTART_FOR_USER, "disable adb sideloading");
 }
 
-void CrostiniHandler::LaunchTerminal(apps::mojom::IntentPtr intent) {
+void CrostiniHandler::LaunchTerminal(apps::IntentPtr intent) {
   crostini::LaunchTerminalWithIntent(
       profile_, display::Screen::GetScreen()->GetPrimaryDisplay().id(),
       std::move(intent), base::DoNothing());
@@ -714,7 +715,7 @@ void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {
   crostini::CrostiniManager::GetForProfile(profile_)
       ->RestartCrostiniWithOptions(container_id, std::move(options),
                                    base::DoNothing());
-  apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
+  auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView);
   intent->extras = container_id.ToMap();
 
   // The Terminal will be added as an observer to the above restart.

@@ -174,7 +174,7 @@ void CrostiniApps::LaunchAppWithIntent(const std::string& app_id,
   crostini::LaunchCrostiniAppWithIntent(
       profile_, app_id,
       window_info ? window_info->display_id : display::kInvalidDisplayId,
-      std::move(intent), /*args=*/{},
+      ConvertMojomIntentToIntent(intent), /*args=*/{},
       base::BindOnce(
           [](LaunchAppWithIntentCallback callback, bool success,
              const std::string& failure_reason) {

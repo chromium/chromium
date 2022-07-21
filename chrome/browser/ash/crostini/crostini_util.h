@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -96,7 +96,7 @@ void LaunchCrostiniAppWithIntent(
     Profile* profile,
     const std::string& app_id,
     int64_t display_id,
-    apps::mojom::IntentPtr intent,
+    apps::IntentPtr intent,
     const std::vector<LaunchArg>& args = {},
     CrostiniSuccessCallback callback = base::DoNothing());
 

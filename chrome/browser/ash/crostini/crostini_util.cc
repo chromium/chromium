@@ -277,7 +277,7 @@ void LaunchCrostiniAppImpl(
 void LaunchCrostiniAppWithIntent(Profile* profile,
                                  const std::string& app_id,
                                  int64_t display_id,
-                                 apps::mojom::IntentPtr intent,
+                                 apps::IntentPtr intent,
                                  const std::vector<LaunchArg>& args,
                                  CrostiniSuccessCallback callback) {
   // Policies can change under us, and crostini may now be forbidden.

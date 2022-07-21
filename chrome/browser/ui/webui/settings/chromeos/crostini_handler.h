@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/services/app_service/public/cpp/intent.h"
 
 class Profile;
 
@@ -82,7 +83,7 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   void OnCanDisableArcAdbSideloading(bool can_change_adb_sideloading);
   // Launch the Crostini terminal, with |intent| specifying any non-default
   // container id.
-  void LaunchTerminal(apps::mojom::IntentPtr intent);
+  void LaunchTerminal(apps::IntentPtr intent);
   // Handle a request for showing the container upgrade view.
   void HandleRequestContainerUpgradeView(const base::Value::List& args);
   // Callback of HandleQueryArcAdbRequest.
