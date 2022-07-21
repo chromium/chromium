@@ -47,7 +47,6 @@ struct FieldDataDescription {
   absl::optional<bool> is_autofilled;
   absl::optional<url::Origin> origin;
   std::vector<SelectOption> select_options = {};
-  FieldPropertiesMask properties_mask = 0;
 };
 
 // Attributes provided to the test form.

@@ -107,8 +107,7 @@ int TestBrowserAutofillManager::GetPackedCreditCardID(int credit_card_id) {
 void TestBrowserAutofillManager::AddSeenForm(
     const FormData& form,
     const std::vector<ServerFieldType>& heuristic_types,
-    const std::vector<ServerFieldType>& server_types,
-    bool preserve_values_in_form_structure) {
+    const std::vector<ServerFieldType>& server_types) {
   std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>
       all_heuristic_types;
 
@@ -119,24 +118,21 @@ void TestBrowserAutofillManager::AddSeenForm(
         return {{GetActivePatternSource(), type}};
       });
 
-  AddSeenForm(form, all_heuristic_types, server_types,
-              preserve_values_in_form_structure);
+  AddSeenForm(form, all_heuristic_types, server_types);
 }
 
 void TestBrowserAutofillManager::AddSeenForm(
     const FormData& form,
     const std::vector<std::vector<std::pair<PatternSource, ServerFieldType>>>&
         heuristic_types,
-    const std::vector<ServerFieldType>& server_types,
-    bool preserve_values_in_form_structure) {
-  FormData form_with_empty_fields = form;
-  for (auto& field : form_with_empty_fields.fields) {
+    const std::vector<ServerFieldType>& server_types) {
+  FormData empty_form = form;
+  for (auto& field : empty_form.fields) {
     field.value = std::u16string();
   }
 
   std::unique_ptr<TestFormStructure> form_structure =
-      std::make_unique<TestFormStructure>(
-          preserve_values_in_form_structure ? form : form_with_empty_fields);
+      std::make_unique<TestFormStructure>(empty_form);
   form_structure->SetFieldTypes(heuristic_types, server_types);
   form_structure->identify_sections_for_testing();
   AddSeenFormStructure(std::move(form_structure));
