@@ -1388,7 +1388,7 @@ const base::Feature kShelfParty{"ShelfParty",
 // Enables Shelf Palm Rejection in tablet mode by defining a pixel offset for
 // the swipe gesture to show the extended hotseat. Limited to certain apps.
 const base::Feature kShelfPalmRejectionSwipeOffset{
-    "ShelfPalmRejectionSwipeOffset", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ShelfPalmRejectionSwipeOffset", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables the new shimless rma flow.
 const base::Feature kShimlessRMAFlow{"ShimlessRMAFlow",
