@@ -90,9 +90,9 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   bool IsNameBeingModified() const;
 
   // To prevent duplications when saving a desk multiple times, check if there's
-  // an existing saved desk that shares the same name as current active desk, if
-  // so, remove auto added number.
-  void MaybeRemoveNameNumber();
+  // an existing saved desk that shares the same name as the `saved_desk_name`.
+  // If so, remove auto added number.
+  void MaybeRemoveNameNumber(const std::u16string& saved_desk_name);
   // Show replace dialog when found a name duplication.
   void MaybeShowReplaceDialog(ash::DeskTemplateType type,
                               const base::GUID& uuid);

@@ -283,19 +283,19 @@ bool SavedDeskItemView::IsNameBeingModified() const {
   return name_view_->HasFocus();
 }
 
-void SavedDeskItemView::MaybeRemoveNameNumber() {
-  // When there are existing matched Desk name and Template name (ie.
+void SavedDeskItemView::MaybeRemoveNameNumber(
+    const std::u16string& saved_desk_name) {
+  // When there is a matched `saved_desk_name` and existing Template name (ie.
   // "Desk 1"), creating a new template from "Desk 1" will get auto generated
-  // template name from the frontend as "Desk 1 (1)", to prevent template
-  // duplication, we show the template view name to be "Desk 1" by removing name
-  // number, save template under such name will call out template replace
-  // dialog.
+  // template name from the frontend as "Desk 1 (1)". To prevent template
+  // duplication, we show the template view name to be "Desk 1" by removing the
+  // appended name number. Saving the template under the new name will trigger
+  // the template replace dialog.
   if (saved_desk_util::GetSavedDeskPresenter()->FindOtherEntryWithName(
-          DesksController::Get()->active_desk()->name(), desk_template().type(),
-          uuid())) {
+          saved_desk_name, desk_template().type(), uuid())) {
     // Replace the name number.
-    name_view_->SetTemporaryName(DesksController::Get()->active_desk()->name());
-    name_view_->SetViewName(DesksController::Get()->active_desk()->name());
+    name_view_->SetTemporaryName(saved_desk_name);
+    name_view_->SetViewName(saved_desk_name);
   }
 }
 

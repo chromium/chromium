@@ -4059,4 +4059,60 @@ TEST_F(DeskSaveAndRecallTest, DeleteSaveAndRecallRecordsMetric) {
   histogram_tester.ExpectTotalCount(kDeleteSaveAndRecallHistogramName, 1);
 }
 
+// Tests that we no longer pull the comparison for the desk names from the
+// currently active desk. Regression test for https://crbug.com/1344915.
+TEST_F(DeskSaveAndRecallTest, SaveDeskWithDuplicateName) {
+  UpdateDisplay("800x600");
+
+  constexpr char16_t kDefaultDeskName[] = u"Desk 1";
+  constexpr char16_t kNewDeskName[] = u"Save for later";
+
+  // Verify that we have one desk. If there is only a single desk when saving, a
+  // new desk will be created.
+  DesksController* desks_controller = DesksController::Get();
+  EXPECT_EQ(1ul, desks_controller->desks().size());
+  EXPECT_EQ(kDefaultDeskName, desks_controller->active_desk()->name());
+
+  auto save_and_check = [this](const char16_t* name) {
+    // Create a test window that we release immediately as it will be closed
+    // automatically by the code under test.
+    CreateAppWindow().release();
+
+    // Open overview and save the desk.
+    ToggleOverview();
+    ClickOnView(
+        GetSaveDeskForLaterButtonForRoot(Shell::Get()->GetPrimaryRootWindow()));
+    WaitForDesksTemplatesUI();
+
+    // Expect that the last added template item name view has focus, and verify
+    // that we have a saved desk with the expected `name`.
+    OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+    SavedDeskNameView* name_view = GetItemViewFromTemplatesGrid(0)->name_view();
+    EXPECT_TRUE(overview_grid->IsTemplateNameBeingModified());
+    EXPECT_TRUE(name_view->HasFocus());
+    EXPECT_TRUE(name_view->HasSelection());
+    EXPECT_EQ(name, name_view->GetText());
+  };
+
+  // Save the currently active desk which has the default name "Desk 1".
+  save_and_check(kDefaultDeskName);
+
+  // Exit overview.
+  ToggleOverview();
+
+  // Expect we have only one desk, and rename the active desk to "Save for
+  // later".
+  EXPECT_EQ(1ul, desks_controller->desks().size());
+  const_cast<Desk*>(desks_controller->active_desk())
+      ->SetName(kNewDeskName, /*set_by_user=*/true);
+
+  // Verify that the desk is saved correctly, and that the name is not replaced
+  // by the active desk name.
+  save_and_check(kNewDeskName);
+
+  // Verify the active desk is now named "Desk 1".
+  EXPECT_EQ(1ul, desks_controller->desks().size());
+  EXPECT_EQ(kDefaultDeskName, desks_controller->active_desk()->name());
+}
+
 }  // namespace ash

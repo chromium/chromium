@@ -1010,9 +1010,11 @@ bool OverviewSession::IsWindowActiveWindowBeforeOverview(
   return window == active_window_before_overview_;
 }
 
-void OverviewSession::ShowDesksTemplatesGrids(bool was_zero_state,
-                                              const base::GUID& item_to_focus,
-                                              aura::Window* const root_window) {
+void OverviewSession::ShowDesksTemplatesGrids(
+    bool was_zero_state,
+    const base::GUID& item_to_focus,
+    const std::u16string& saved_desk_name,
+    aura::Window* const root_window) {
   if (Shell::Get()->tablet_mode_controller()->InTabletMode() ||
       IsShowingDesksTemplatesGrid()) {
     return;
@@ -1030,7 +1032,8 @@ void OverviewSession::ShowDesksTemplatesGrids(bool was_zero_state,
   // Only ask for all entries if it is the first time creating the grid widgets.
   // Otherwise, add or update the entries one at a time.
   if (created_grid_widgets)
-    saved_desk_presenter_->GetAllEntries(item_to_focus, root_window);
+    saved_desk_presenter_->GetAllEntries(item_to_focus, saved_desk_name,
+                                         root_window);
   UpdateNoWindowsWidgetOnEachGrid();
 
   UpdateAccessibilityFocus();
@@ -1304,7 +1307,8 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
 
       DCHECK(!grid_list_.empty());
       ShowDesksTemplatesGrids(grid_list_[0]->desks_bar_view()->IsZeroState(),
-                              base::GUID(), Shell::GetPrimaryRootWindow());
+                              base::GUID(), /*saved_desk_name=*/u"",
+                              Shell::GetPrimaryRootWindow());
       break;
 #else
       return;

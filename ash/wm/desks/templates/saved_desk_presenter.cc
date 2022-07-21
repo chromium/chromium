@@ -64,7 +64,8 @@ SavedDeskPresenter::SavedDeskPresenter(OverviewSession* overview_session)
 
   auto* desk_model = GetDeskModel();
   desk_model_observation_.Observe(desk_model);
-  GetAllEntries(base::GUID(), Shell::GetPrimaryRootWindow());
+  GetAllEntries(base::GUID(), /*saved_desk_name=*/u"",
+                Shell::GetPrimaryRootWindow());
 
   should_show_templates_ui_ =
       !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
@@ -136,11 +137,12 @@ void SavedDeskPresenter::UpdateDesksTemplatesUI() {
 }
 
 void SavedDeskPresenter::GetAllEntries(const base::GUID& item_to_focus,
+                                       const std::u16string& saved_desk_name,
                                        aura::Window* const root_window) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->GetAllEntries(base::BindOnce(
       &SavedDeskPresenter::OnGetAllEntries, weak_ptr_factory_.GetWeakPtr(),
-      item_to_focus, root_window));
+      item_to_focus, saved_desk_name, root_window));
 }
 
 void SavedDeskPresenter::DeleteEntry(
@@ -201,6 +203,8 @@ void SavedDeskPresenter::SaveOrUpdateDeskTemplate(
   else
     RecordWindowAndTabCountHistogram(*desk_template);
 
+  const auto saved_desk_name = desk_template->template_name();
+
   // While we still find duplicate names iterate the duplicate number. i.e.
   // if there are 4 duplicates of some template name then this iterates until
   // the current template will be named 5.
@@ -222,7 +226,7 @@ void SavedDeskPresenter::SaveOrUpdateDeskTemplate(
       std::move(desk_template),
       base::BindOnce(&SavedDeskPresenter::OnAddOrUpdateEntry,
                      weak_ptr_factory_.GetWeakPtr(), is_update, root_window,
-                     std::move(desk_template_clone)));
+                     std::move(desk_template_clone), saved_desk_name));
 }
 
 void SavedDeskPresenter::OnDeskModelDestroying() {
@@ -241,6 +245,7 @@ void SavedDeskPresenter::EntriesRemovedRemotely(
 
 void SavedDeskPresenter::OnGetAllEntries(
     const base::GUID& item_to_focus,
+    const std::u16string& saved_desk_name,
     aura::Window* const root_window,
     desks_storage::DeskModel::GetAllEntriesStatus status,
     const std::vector<const DeskTemplate*>& entries) {
@@ -262,7 +267,7 @@ void SavedDeskPresenter::OnGetAllEntries(
       if (!item_view)
         continue;
 
-      item_view->MaybeRemoveNameNumber();
+      item_view->MaybeRemoveNameNumber(saved_desk_name);
       if (library_view->GetWidget()->GetNativeWindow()->GetRootWindow() ==
           root_window) {
         item_view->name_view()->RequestFocus();
@@ -383,6 +388,7 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
     bool was_update,
     aura::Window* const root_window,
     std::unique_ptr<DeskTemplate> desk_template,
+    const std::u16string& saved_desk_name,
     desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
   RecordAddOrUpdateTemplateStatusHistogram(status);
 
@@ -418,10 +424,11 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
     if (!was_update) {
       // Shows the grid if it was hidden. This will not call `GetAllEntries`.
       overview_session_->ShowDesksTemplatesGrids(is_zero_state, base::GUID(),
+                                                 /*saved_desk_name=*/u"",
                                                  root_window);
       if (SavedDeskItemView* item_view =
               library_view->GetItemForUUID(desk_template->uuid())) {
-        item_view->MaybeRemoveNameNumber();
+        item_view->MaybeRemoveNameNumber(saved_desk_name);
         item_view->name_view()->RequestFocus();
       }
     }
@@ -432,7 +439,7 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
     // This will update the templates button and save as desks button too. This
     // will call `GetAllEntries`.
     overview_session_->ShowDesksTemplatesGrids(
-        is_zero_state, desk_template->uuid(), root_window);
+        is_zero_state, desk_template->uuid(), saved_desk_name, root_window);
   }
 
   if (!was_update) {

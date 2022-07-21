@@ -295,6 +295,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // `item_to_focus` on the display associated with `root_window`.
   void ShowDesksTemplatesGrids(bool was_zero_state,
                                const base::GUID& item_to_focus,
+                               const std::u16string& saved_desk_name,
                                aura::Window* const root_window);
 
   void HideDesksTemplatesGrids();

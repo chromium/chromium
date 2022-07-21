@@ -54,8 +54,10 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   void UpdateDesksTemplatesUI();
 
   // Calls the DeskModel to get all the template entries, with a callback to
-  // `OnGetAllEntries`.
+  // `OnGetAllEntries`. `saved_desk_name` is used for the name overwrite nudge
+  // for duplicate desk names.
   void GetAllEntries(const base::GUID& item_to_focus,
+                     const std::u16string& saved_desk_name,
                      aura::Window* const root_window);
 
   // Calls the DeskModel to delete the saved desk with the provided `uuid`. Will
@@ -97,6 +99,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   // Callback ran after querying the model for a list of entries. This function
   // also contains logic for updating the UI.
   void OnGetAllEntries(const base::GUID& item_to_focus,
+                       const std::u16string& saved_desk_name,
                        aura::Window* const root_window,
                        desks_storage::DeskModel::GetAllEntriesStatus status,
                        const std::vector<const DeskTemplate*>& entries);
@@ -128,6 +131,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
       bool was_update,
       aura::Window* const root_window,
       std::unique_ptr<DeskTemplate> desk_template,
+      const std::u16string& saved_desk_name,
       desks_storage::DeskModel::AddOrUpdateEntryStatus status);
 
   // Helper functions for updating the UI.
