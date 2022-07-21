@@ -266,16 +266,21 @@ export function fileAttachmentTestSuite() {
         return new Uint8Array(fakeData).buffer;
       },
     });
-    // getImageUrl_ should return an url when file is image type.
-    const imageUrl = await page.getImageUrl_(fakeImageFile);
+
+    page.setSelectedFileForTesting(fakeImageFile);
+    await flushTasks();
+
+    // The selectedFileImage should have an url when file is image type.
+    const imageUrl = getElement('#selectedFileImage').src;
     assertTrue(imageUrl.length > 0);
     // There should be a preview image.
     page.selectedImageUrl_ = imageUrl;
     const selectedImage = getElement('#selectedFileImage');
     assertTrue(!!selectedImage.src);
     assertEquals(imageUrl, selectedImage.src);
+    assertEquals(
+        'Preview fake.png', getElement('#selectedImageButton').ariaLabel);
   });
-
 
   // Test that clicking the image will open preview dialog and set the
   // focus on the close dialog icon button.

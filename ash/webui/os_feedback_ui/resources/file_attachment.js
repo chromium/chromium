@@ -123,6 +123,7 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
    * Get the image url when uploaded file is image type.
    * @param {!File} file
    * @return {!Promise<string>}
+   * @private
    */
   async getImageUrl_(file) {
     const fileDataBuffer = await file.arrayBuffer();
@@ -186,9 +187,12 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
     if (file.type.startsWith('image/')) {
       this.getImageUrl_(file).then((imageUrl) => {
         this.selectedImageUrl_ = imageUrl;
+        this.$.selectedImageButton.ariaLabel =
+            this.i18n('previewImageAriaLabel', file.name);
       });
     } else {
       this.selectedImageUrl_ = '';
+      this.$.selectedImageButton.ariaLabel = '';
     }
   }
 
