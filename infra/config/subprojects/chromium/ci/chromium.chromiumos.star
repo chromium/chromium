@@ -698,6 +698,9 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    # This builder build 2 chrome(Ash and Lacros), so it need
+    # more time.
+    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(
