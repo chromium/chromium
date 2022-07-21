@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/core/paint/replaced_painter.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
@@ -21,6 +23,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -163,6 +166,24 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
                                                         layout_replaced_);
     layout_replaced_.PaintReplaced(content_paint_state.GetPaintInfo(),
                                    content_paint_state.PaintOffset());
+
+    if (layout_replaced_.BelongsToElementChangingOverflowBehaviour() &&
+        !layout_replaced_.ClipsToContentBox() &&
+        layout_replaced_.HasVisualOverflow()) {
+      UseCounter::Count(layout_replaced_.GetDocument(),
+                        WebFeature::kReplacedElementPaintedWithOverflow);
+
+      auto overflow_size = layout_replaced_.PhysicalVisualOverflowRect().size;
+      auto overflow_area = overflow_size.width * overflow_size.height;
+
+      auto content_size = layout_replaced_.Size();
+      auto content_area = content_size.Width() * content_size.Height();
+
+      DCHECK_GT(overflow_area, content_area);
+      UMA_HISTOGRAM_COUNTS_100000(
+          "Blink.Overflow.ReplacedElementAreaOutsideContentRect",
+          (overflow_area - content_area).ToInt());
+    }
   }
 
   if (layout_replaced_.StyleRef().Visibility() == EVisibility::kVisible &&

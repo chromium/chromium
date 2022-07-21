@@ -70,6 +70,7 @@ enum class DeprecationIssueType {
   kNotificationPermissionRequestedIframe,
   kObsoleteWebRtcCipherSuite,
   kOpenWebDatabaseInsecureContext,
+  kOverflowVisibleOnReplacedElement,
   kPictureSourceSrc,
   kPrefixedCancelAnimationFrame,
   kPrefixedRequestAnimationFrame,

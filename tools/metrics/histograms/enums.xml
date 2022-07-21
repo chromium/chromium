@@ -40441,8 +40441,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3896" label="WebBluetoothManufacturerDataFilter"/>
   <int value="3897" label="SanitizerAPIGetConfig"/>
   <int value="3898" label="SanitizerAPIGetDefaultConfig"/>
-  <int value="3899" label="ComputePressureObserver_Constructor"/>
-  <int value="3900" label="ComputePressureObserver_Observe"/>
+  <int value="3899" label="PressureObserver_Constructor"/>
+  <int value="3900" label="PressureObserver_Observe"/>
   <int value="3901" label="OBSOLETE_ComputePressureObserver_Stop"/>
   <int value="3902" label="WebAppWindowControlsOverlay"/>
   <int value="3903" label="PaymentRequestShowWithoutGestureOrToken"/>
@@ -40739,9 +40739,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4181" label="BluetoothDeviceForget"/>
   <int value="4182" label="TopicsAPI_BrowsingTopics_Method"/>
   <int value="4183" label="BlockingAttributeRenderToken"/>
-  <int value="4184" label="ComputePressureObserver_Unobserve"/>
-  <int value="4185" label="ComputePressureObserver_Disconnect"/>
-  <int value="4186" label="ComputePressureObserver_TakeRecords"/>
+  <int value="4184" label="PressureObserver_Unobserve"/>
+  <int value="4185" label="PressureObserver_Disconnect"/>
+  <int value="4186" label="PressureObserver_TakeRecords"/>
   <int value="4187" label="PrivacySandboxAdsAPIs"/>
   <int value="4188" label="Fledge"/>
   <int value="4189" label="ElementShowPopup"/>
@@ -40871,6 +40871,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4308" label="SendBeaconWithFormData"/>
   <int value="4309" label="SendBeaconWithURLSearchParams"/>
   <int value="4310" label="SendBeaconWithUSVString"/>
+  <int value="4311" label="ReplacedElementPaintedWithOverflow"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

@@ -2126,6 +2126,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Overflow.ReplacedElementAreaOutsideContentRect"
+    units="pixels" expires_after="2022-12-01">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>vmpstr@chromium.org</owner>
+  <summary>
+    Computes the area of img, video or canvas elements which is painted outside
+    the content rect if 'overflow' property is respected on these elements.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Paint.PaintArtifactCompositorUpdateReason"
     enum="PaintArtifactCompositorUpdateReason" expires_after="2022-12-01">
   <owner>pdr@chromium.org</owner>

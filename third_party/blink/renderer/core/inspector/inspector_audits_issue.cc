@@ -536,6 +536,10 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
       type = protocol::Audits::DeprecationIssueTypeEnum::
           OpenWebDatabaseInsecureContext;
       break;
+    case DeprecationIssueType::kOverflowVisibleOnReplacedElement:
+      type = protocol::Audits::DeprecationIssueTypeEnum::
+          OverflowVisibleOnReplacedElement;
+      break;
     case DeprecationIssueType::kPictureSourceSrc:
       type = protocol::Audits::DeprecationIssueTypeEnum::PictureSourceSrc;
       break;

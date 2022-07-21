@@ -247,6 +247,9 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kNavigateEventRestoreScroll:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kNavigateEventRestoreScroll);
+    case WebFeature::kExplicitOverflowVisibleOnReplacedElement:
+      return DeprecationInfo::WithTranslation(
+          feature, DeprecationIssueType::kOverflowVisibleOnReplacedElement);
     default:
       return DeprecationInfo::NotDeprecated(feature);
   }

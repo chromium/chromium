@@ -2804,6 +2804,15 @@ static void ClearAncestorScrollAnchors(LayoutObject* layout_object) {
   }
 }
 
+bool LayoutObject::BelongsToElementChangingOverflowBehaviour() const {
+  auto* element = DynamicTo<Element>(GetNode());
+  if (!element)
+    return false;
+
+  return IsA<HTMLVideoElement>(element) || IsA<HTMLCanvasElement>(element) ||
+         IsA<HTMLImageElement>(element);
+}
+
 void LayoutObject::StyleDidChange(StyleDifference diff,
                                   const ComputedStyle* old_style) {
   NOT_DESTROYED();
@@ -2855,13 +2864,17 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
   // changing the behavior regardless of the counts. Likewise, embedded content
   // will remain clipped regardless of the overflow: visible behvaior change.
   // Note for this reason we exclude SVG and embedded content from the counts.
-  if (IsLayoutReplaced() && !IsSVG() && !IsLayoutEmbeddedContent()) {
+  if (BelongsToElementChangingOverflowBehaviour()) {
     if ((StyleRef().HasExplicitOverflowXVisible() &&
          StyleRef().OverflowX() == EOverflow::kVisible) ||
         (StyleRef().HasExplicitOverflowYVisible() &&
          StyleRef().OverflowY() == EOverflow::kVisible)) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kExplicitOverflowVisibleOnReplacedElement);
+
+      Deprecation::CountDeprecation(
+          GetDocument().GetExecutionContext(),
+          WebFeature::kExplicitOverflowVisibleOnReplacedElement);
       if (!StyleRef().ObjectPropertiesPreventReplacedOverflow()) {
         UseCounter::Count(
             GetDocument(),
