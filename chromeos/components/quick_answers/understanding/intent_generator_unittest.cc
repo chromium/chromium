@@ -38,6 +38,12 @@ TextLanguagePtr DefaultLanguage() {
   return TextLanguage::New("en", /* confidence */ 1);
 }
 
+std::vector<TextLanguagePtr> DefaultLanguages() {
+  std::vector<TextLanguagePtr> languages;
+  languages.push_back(DefaultLanguage());
+  return languages;
+}
+
 class FakeSpellChecker : public SpellChecker {
  public:
   FakeSpellChecker(
@@ -83,7 +89,9 @@ class IntentGeneratorTest : public QuickAnswersTestBase {
         base::BindOnce(&IntentGeneratorTest::IntentGeneratorTestCallback,
                        base::Unretained(this)));
 
-    QuickAnswersState::Get()->set_use_text_annotator_for_testing();
+    fake_quick_answers_state()->set_use_text_annotator_for_testing();
+    fake_quick_answers_state()->set_application_locale("en");
+    fake_quick_answers_state()->set_preferred_languages("en");
   }
 
   void TearDown() override {
@@ -106,8 +114,7 @@ class IntentGeneratorTest : public QuickAnswersTestBase {
   void UseFakeServiceConnection(
       const std::vector<TextAnnotationPtr>& annotations =
           std::vector<TextAnnotationPtr>(),
-      const std::vector<TextLanguagePtr>& languages =
-          std::vector<TextLanguagePtr>()) {
+      const std::vector<TextLanguagePtr>& languages = DefaultLanguages()) {
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_service_connection_);
     chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
@@ -253,9 +260,7 @@ TEST_F(IntentGeneratorTest, TranslationIntentTextLengthAboveThreshold) {
 
 TEST_F(IntentGeneratorTest, TranslationIntentWithAnnotation) {
   QuickAnswersRequest request;
-  request.selected_text = "unfathomable";
-  fake_quick_answers_state()->set_application_locale("es");
-  fake_quick_answers_state()->set_preferred_languages("es");
+  request.selected_text = "prueba";
 
   // Create the test annotations.
   std::vector<TextEntityPtr> entities;
@@ -264,14 +269,14 @@ TEST_F(IntentGeneratorTest, TranslationIntentWithAnnotation) {
       1.0,                                     // Confidence score.
       TextEntityData::NewNumericValue(0.0)));  // Data extracted.
 
-  auto dictionary_annotation = TextAnnotation::New(0,   // Start offset.
-                                                   12,  // End offset.
+  auto dictionary_annotation = TextAnnotation::New(0,  // Start offset.
+                                                   6,  // End offset.
                                                    std::move(entities));
 
   std::vector<TextAnnotationPtr> annotations;
   annotations.push_back(dictionary_annotation->Clone());
   std::vector<TextLanguagePtr> languages;
-  languages.push_back(DefaultLanguage());
+  languages.push_back(TextLanguage::New("es", /* confidence */ 1));
   UseFakeServiceConnection(annotations, languages);
 
   intent_generator_->GenerateIntent(request);
@@ -281,7 +286,7 @@ TEST_F(IntentGeneratorTest, TranslationIntentWithAnnotation) {
   // Should generate dictionary intent which is prioritized against
   // translation.
   EXPECT_EQ(IntentType::kDictionary, intent_info_.intent_type);
-  EXPECT_EQ("unfathomable", intent_info_.intent_text);
+  EXPECT_EQ("prueba", intent_info_.intent_text);
 }
 
 TEST_F(IntentGeneratorTest, TranslationIntentDeviceLanguageNotSet) {
@@ -484,6 +489,41 @@ TEST_F(IntentGeneratorTest, TextAnnotationUnitIntentExtraCharsAboveThreshold) {
   // above the threshold.
   EXPECT_EQ(IntentType::kUnknown, intent_info_.intent_type);
   EXPECT_EQ("23 cm", intent_info_.intent_text);
+}
+
+TEST_F(IntentGeneratorTest, TextAnnotationNonEnglishLanguage) {
+  fake_quick_answers_state()->set_application_locale("es");
+  fake_quick_answers_state()->set_preferred_languages("es");
+
+  std::unique_ptr<QuickAnswersRequest> quick_answers_request =
+      std::make_unique<QuickAnswersRequest>();
+  quick_answers_request->selected_text = "unfathomable";
+
+  // Create the test annotations.
+  std::vector<TextEntityPtr> entities;
+  entities.emplace_back(TextEntity::New(
+      "dictionary",                            // Entity name.
+      1.0,                                     // Confidence score.
+      TextEntityData::NewNumericValue(0.0)));  // Data extracted.
+
+  auto dictionary_annotation = TextAnnotation::New(0,   // Start offset.
+                                                   12,  // End offset.
+                                                   std::move(entities));
+
+  std::vector<TextAnnotationPtr> annotations;
+  annotations.push_back(dictionary_annotation->Clone());
+  std::vector<TextLanguagePtr> languages;
+  languages.push_back(TextLanguage::New("en", /* confidence */ 1));
+  UseFakeServiceConnection(annotations, languages);
+
+  intent_generator_->GenerateIntent(*quick_answers_request);
+
+  FlushForTesting();
+
+  // Should not generate dictionary intent since English is not device language
+  // or preferred language. Should fallback to translation intent.
+  EXPECT_EQ(IntentType::kTranslation, intent_info_.intent_type);
+  EXPECT_EQ("unfathomable", intent_info_.intent_text);
 }
 
 TEST_F(IntentGeneratorTest, TextAnnotationIntentNoAnnotation) {

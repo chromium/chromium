@@ -41,6 +41,8 @@ constexpr int kDefinitionIntentAndSelectionLengthDiffThreshold = 2;
 // Set of invalid characters for definition annonations.
 constexpr char kInvalidCharactersSet[] = "()[]{}<>_&|!";
 
+constexpr char kEnglishLanguage[] = "en";
+
 const std::map<std::string, IntentType>& GetIntentTypeMap() {
   static base::NoDestructor<std::map<std::string, IntentType>> kIntentTypeMap(
       {{"unit", IntentType::kUnit}, {"dictionary", IntentType::kDictionary}});
@@ -93,10 +95,31 @@ IntentType RewriteIntent(const std::string& selected_text,
   return intent;
 }
 
+bool IsPreferredLanguage(const std::string& detected_language) {
+  auto preferred_languages_list =
+      base::SplitString(QuickAnswersState::Get()->preferred_languages(), ",",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  for (const std::string& locale : preferred_languages_list) {
+    if (l10n_util::GetLanguage(locale) == detected_language)
+      return true;
+  }
+  return false;
+}
+
 // TODO(b/169370175): There is an issue with text classifier that
 // concatenated words are annotated as definitions. Before we switch to v2
 // model, skip such kind of queries for definition annotation for now.
 bool ShouldSkipDefinition(const std::string& text) {
+  // Skip definition annotations if English is not device language or user
+  // preferred language (Currently the text classifier only works with English
+  // words).
+  auto device_language =
+      l10n_util::GetLanguage(QuickAnswersState::Get()->application_locale());
+  if (device_language != kEnglishLanguage &&
+      !IsPreferredLanguage(kEnglishLanguage))
+    return true;
+
   DCHECK(text.length());
   // Skip the query for definition annotation if the selected text contains
   // capitalized characters in the middle and not all capitalized.
@@ -112,18 +135,6 @@ bool ShouldSkipDefinition(const std::string& text) {
   if (text.find_first_of(kInvalidCharactersSet) != std::string::npos)
     return true;
 
-  return false;
-}
-
-bool IsPreferredLanguage(const std::string& detected_language) {
-  auto preferred_languages_list =
-      base::SplitString(QuickAnswersState::Get()->preferred_languages(), ",",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  for (const std::string& locale : preferred_languages_list) {
-    if (l10n_util::GetLanguage(locale) == detected_language)
-      return true;
-  }
   return false;
 }
 
@@ -214,8 +225,9 @@ void IntentGenerator::CheckSpellingCallback(const QuickAnswersRequest& request,
                         QuickAnswersState::Get()->application_locale(),
                         language));
 
-    // Record intent source type for dictionary intent.
+    // Record intent source type and language for dictionary intent.
     RecordDictionaryIntentSource(DictionaryIntentSource::kHunspell);
+    RecordDictionaryIntentLanguage(language);
     return;
   }
 
@@ -283,9 +295,13 @@ void IntentGenerator::AnnotationCallback(
               RewriteIntent(request.selected_text, entity_str, it->second),
               QuickAnswersState::Get()->application_locale()));
 
-      // Record intent source type for dictionary intent.
-      if (it->second == IntentType::kDictionary)
+      // Record intent source type and language for dictionary intent.
+      if (it->second == IntentType::kDictionary) {
         RecordDictionaryIntentSource(DictionaryIntentSource::kTextClassifier);
+        // Record the English language since currently the text classifier only
+        // works with English words.
+        RecordDictionaryIntentLanguage(kEnglishLanguage);
+      }
       return;
     }
   }

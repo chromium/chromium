@@ -116,6 +116,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="QuickAnswers.DictionaryIntent.Language" enum="LanguageName"
+    expires_after="2023-07-01">
+  <owner>updowndota@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For Quick answers fetch, records the query text language of dictionary
+    intent generated on device. ChromeOS only.
+  </summary>
+</histogram>
+
 <histogram name="QuickAnswers.DictionaryIntent.Source"
     enum="QuickAnswersDictionaryIntentSource" expires_after="2023-07-01">
   <owner>updowndota@chromium.org</owner>

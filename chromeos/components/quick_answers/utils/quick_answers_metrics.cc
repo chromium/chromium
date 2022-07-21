@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "components/language/core/browser/language_usage_metrics.h"
 
 namespace quick_answers {
 
@@ -26,6 +27,8 @@ const char kQuickAnswersTtsEngineEvent[] =
     "QuickAnswers.TextToSpeech.EngineEvent";
 const char kQuickAnswersDictionaryIntentSource[] =
     "QuickAnswers.DictionaryIntent.Source";
+const char kQuickAnswersDictionaryIntentLanguage[] =
+    "QuickAnswers.DictionaryIntent.Language";
 const char kQuickAnswersNetworkError[] = "QuickAnswers.NetworkError.IntentType";
 const char kQuickAnswersNetworkResponseCode[] =
     "QuickAnswers.NetworkError.ResponseCode";
@@ -151,6 +154,12 @@ void RecordTtsEngineEvent(TtsEngineEvent event) {
 
 void RecordDictionaryIntentSource(DictionaryIntentSource source) {
   base::UmaHistogramEnumeration(kQuickAnswersDictionaryIntentSource, source);
+}
+
+void RecordDictionaryIntentLanguage(const std::string& language) {
+  base::UmaHistogramSparse(
+      kQuickAnswersDictionaryIntentLanguage,
+      language::LanguageUsageMetrics::ToLanguageCodeHash(language));
 }
 
 }  // namespace quick_answers

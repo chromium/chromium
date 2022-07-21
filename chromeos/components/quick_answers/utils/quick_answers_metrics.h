@@ -75,6 +75,9 @@ void RecordTtsEngineEvent(TtsEngineEvent event);
 // Record the source type of dictionary intent.
 void RecordDictionaryIntentSource(DictionaryIntentSource source);
 
+// Record the query language of dictionary intent.
+void RecordDictionaryIntentLanguage(const std::string& language);
+
 }  // namespace quick_answers
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_UTILS_QUICK_ANSWERS_METRICS_H_

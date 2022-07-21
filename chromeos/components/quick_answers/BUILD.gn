@@ -59,6 +59,7 @@ source_set("quick_answers") {
     "//chromeos/services/machine_learning/public/mojom",
     "//chromeos/strings:strings_grit",
     "//components/account_id",
+    "//components/language/core/browser",
     "//components/prefs:prefs",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
