@@ -2171,7 +2171,7 @@ bool RenderFrameHostImpl::IsDescendantOfWithinFrameTree(
   return false;
 }
 
-bool RenderFrameHostImpl::IsFencedFrameRoot() {
+bool RenderFrameHostImpl::IsFencedFrameRoot() const {
   return fenced_frame_status_ == FencedFrameStatus::kFencedFrameRoot;
 }
 
@@ -4039,8 +4039,6 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
 
 absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
     bool is_anonymous) {
-  absl::optional<base::UnguessableToken> nonce;
-
   // If it's an anonymous frame tree, use its nonce even if it's within a fenced
   // frame tree to maintain the guarantee that an anonymous frame tree has
   // a unique nonce. Otherwise, use the fenced frame nonce for fenced frames.
@@ -4049,13 +4047,19 @@ absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
   // cannot make the same guarantee that MPArch will, and therefore the shadow
   // DOM version and will lead to the anonymous iframe nonce being used
   // (crbug.com/1249865).
+  // The nonce was moved from PageImpl to RenderFrameHostImpl to fix
+  // crbug.com/1287458. In the case of an anonymous iframe embedded in a fenced
+  // frame, we get the anonymous_iframes_nonce of the fenced frame root to
+  // prevent anonymous iframes embedded inside a fenced frame from sharing nonce
+  // with anonymous iframes outside the fenced frame.
   if (is_anonymous) {
-    nonce = GetPage().anonymous_iframes_nonce();
-  } else {
-    nonce = frame_tree_node_->fenced_frame_nonce();
+    RenderFrameHostImpl* main_rfh = this;
+    while (main_rfh->parent_ && !main_rfh->IsFencedFrameRoot()) {
+      main_rfh = main_rfh->parent_;
+    }
+    return main_rfh->anonymous_iframes_nonce();
   }
-
-  return nonce;
+  return frame_tree_node_->fenced_frame_nonce();
 }
 
 blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
@@ -11801,6 +11805,12 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // document.
   DCHECK(!navigation_request->IsSameDocument());
   DCHECK(!navigation_request->IsPageActivation());
+
+  // The nonce to use in anonymous iframe is a page scoped attribute. So it
+  // needs to change every time the top-level document change.
+  // TODO(https://crbug.com1287458): Once the ShadowDom implementation of
+  // FencedFrame is gone, move this attribute back to PageImpl.
+  anonymous_iframes_nonce_ = base::UnguessableToken::Create();
 
   ResetPermissionsPolicy();
 

@@ -126,10 +126,6 @@ class CONTENT_EXPORT PageImpl : public Page {
     return last_main_document_source_id_;
   }
 
-  const base::UnguessableToken& anonymous_iframes_nonce() const {
-    return anonymous_iframes_nonce_;
-  }
-
   // Sets the start time of the prerender activation navigation for this page.
   // TODO(falken): Plumb NavigationRequest to
   // RenderFrameHostManager::CommitPending and remove this.
@@ -256,11 +252,6 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Stores information from the main frame's renderer that needs to be shared
   // with OOPIF renderers.
   blink::mojom::TextAutosizerPageInfo text_autosizer_page_info_;
-
-  // Nonce to be used for initializing the storage key and the network isolation
-  // key of anonymous iframes which are children of this page's document.
-  const base::UnguessableToken anonymous_iframes_nonce_ =
-      base::UnguessableToken::Create();
 
   // Prerender2: The start time of the activation navigation for prerendering,
   // which is passed to the renderer process, and will be accessible in the

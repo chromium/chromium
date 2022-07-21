@@ -5919,7 +5919,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   // An anonymous document has a storage key with a nonce.
   EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
   base::UnguessableToken anonymous_nonce =
-      current_frame_host()->GetPage().anonymous_iframes_nonce();
+      current_frame_host()->anonymous_iframes_nonce();
   EXPECT_EQ(anonymous_nonce,
             child->current_frame_host()->storage_key().nonce().value());
 
@@ -6021,7 +6021,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
 
   EXPECT_TRUE(child_b->current_frame_host()->storage_key().nonce().has_value());
   base::UnguessableToken anonymous_nonce_b =
-      current_frame_host()->GetPage().anonymous_iframes_nonce();
+      current_frame_host()->anonymous_iframes_nonce();
   EXPECT_NE(anonymous_nonce, anonymous_nonce_b);
   EXPECT_EQ(anonymous_nonce_b,
             child_b->current_frame_host()->storage_key().nonce().value());

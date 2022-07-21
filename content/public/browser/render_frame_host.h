@@ -327,7 +327,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // <fencedframe> element, if the frame is not the top-level <fencedframe>
   // itself. That is, this will return false for all <iframes> nested under a
   // <fencedframe>.
-  virtual bool IsFencedFrameRoot() = 0;
+  virtual bool IsFencedFrameRoot() const = 0;
 
   // Fenced frames (meta-bug https://crbug.com/1111084):
   // Returns true if `this` was loaded in a <fencedframe> element directly or if

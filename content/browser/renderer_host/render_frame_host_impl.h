@@ -349,7 +349,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   PageImpl& GetPage() override;
   bool IsInPrimaryMainFrame() override;
   RenderFrameHostImpl* GetOutermostMainFrame() override;
-  bool IsFencedFrameRoot() override;
+  bool IsFencedFrameRoot() const override;
   bool IsNestedWithinFencedFrame() const override;
   void ForEachRenderFrameHost(FrameIterationCallback on_frame) override;
   void ForEachRenderFrameHost(
@@ -681,6 +681,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // not.
   bool was_loaded_from_load_data_with_base_url() const {
     return renderer_url_info_.was_loaded_from_load_data_with_base_url;
+  }
+
+  const base::UnguessableToken& anonymous_iframes_nonce() const {
+    DCHECK(is_main_frame() || IsFencedFrameRoot());
+    return anonymous_iframes_nonce_;
   }
 
   // Saves the URLs and other URL-related information used in the renderer.
@@ -4304,6 +4309,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Emit a DumpWithoutCrashing() when |this| is deleted and this flag is reset.
   bool check_deletion_for_bug_1276535_ = false;
+
+  // Nonce to be used for initializing the storage key and the network isolation
+  // key of anonymous iframes which are children of this page's document.
+  // TODO(https://crbug.com/1287458): Once the ShadowDom implementation of
+  // FencedFrame is gone, move this attribute back to PageImpl. See also:
+  // https://crbug.com/1262022
+  base::UnguessableToken anonymous_iframes_nonce_ =
+      base::UnguessableToken::Create();
 
   // BrowserInterfaceBroker implementation through which this
   // RenderFrameHostImpl exposes document-scoped Mojo services to the currently
