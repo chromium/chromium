@@ -1000,6 +1000,8 @@ source_set("ash") {
     "file_manager/io_task_controller.h",
     "file_manager/io_task_util.cc",
     "file_manager/io_task_util.h",
+    "file_manager/office_task_selection_helper.cc",
+    "file_manager/office_task_selection_helper.h",
     "file_manager/open_util.cc",
     "file_manager/open_util.h",
     "file_manager/open_with_browser.cc",

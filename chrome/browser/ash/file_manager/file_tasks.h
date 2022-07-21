@@ -226,6 +226,9 @@ struct FullTaskDescriptor {
   bool is_file_extension_match;
 };
 
+// Returns true if the `task` is the generic task for Office files handling.
+bool IsHandleOfficeTask(const FullTaskDescriptor& task);
+
 // Update the default file handler for the given sets of suffixes and MIME
 // types.
 void UpdateDefaultTask(PrefService* pref_service,
