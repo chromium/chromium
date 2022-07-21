@@ -134,13 +134,13 @@ scoped_refptr<EncodedFormData> EncodedFormData::DeepCopy() const {
         form_data->elements_.UncheckedAppend(FormDataElement(e.data_));
         break;
       case FormDataElement::kEncodedFile:
-        form_data->elements_.UncheckedAppend(FormDataElement(
-            e.filename_.IsolatedCopy(), e.file_start_, e.file_length_,
-            e.expected_file_modification_time_));
+        form_data->elements_.UncheckedAppend(
+            FormDataElement(e.filename_, e.file_start_, e.file_length_,
+                            e.expected_file_modification_time_));
         break;
       case FormDataElement::kEncodedBlob:
-        form_data->elements_.UncheckedAppend(FormDataElement(
-            e.blob_uuid_.IsolatedCopy(), e.optional_blob_data_handle_));
+        form_data->elements_.UncheckedAppend(
+            FormDataElement(e.blob_uuid_, e.optional_blob_data_handle_));
         break;
       case FormDataElement::kDataPipe:
         mojo::PendingRemote<network::mojom::blink::DataPipeGetter>

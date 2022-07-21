@@ -66,8 +66,6 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
 
   scoped_refptr<EncodedFormData> copy = original->DeepCopy();
 
-  // Check that contents are copied (compare the copy with expected values).
-  const Vector<FormDataElement>& original_elements = original->Elements();
   const Vector<FormDataElement>& copy_elements = copy->Elements();
   ASSERT_EQ(3ul, copy_elements.size());
 
@@ -97,22 +95,10 @@ TEST_F(EncodedFormDataTest, DeepCopy) {
   // Check pointers are different, i.e. deep-copied.
   ASSERT_NE(original.get(), copy.get());
 
-  for (wtf_size_t i = 0; i < 3; ++i) {
-    if (copy_elements[i].filename_.Impl()) {
-      EXPECT_NE(original_elements[i].filename_.Impl(),
-                copy_elements[i].filename_.Impl());
-      EXPECT_TRUE(copy_elements[i].filename_.Impl()->HasOneRef());
-    }
-
-    if (copy_elements[i].blob_uuid_.Impl()) {
-      EXPECT_NE(original_elements[i].blob_uuid_.Impl(),
-                copy_elements[i].blob_uuid_.Impl());
-      EXPECT_TRUE(copy_elements[i].blob_uuid_.Impl()->HasOneRef());
-    }
-
-    // m_optionalBlobDataHandle is not checked, because BlobDataHandle is
-    // ThreadSafeRefCounted.
-  }
+  // m_optionalBlobDataHandle is not checked, because BlobDataHandle is
+  // ThreadSafeRefCounted.
+  // filename_ and blob_uuid_ are now thread safe, so they don't need a
+  // deep copy.
 }
 
 }  // namespace
