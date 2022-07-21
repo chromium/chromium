@@ -305,7 +305,7 @@ const base::Feature kClosePopupWithEscape{"OmniboxClosePopupWithEscape",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kBlurWithEscape{"OmniboxBlurWithEscape",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, adds a "starter pack" of @history, @bookmarks, and @settings
 // scopes to Site Search/Keyword Mode.
