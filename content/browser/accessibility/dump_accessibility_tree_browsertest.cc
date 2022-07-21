@@ -723,7 +723,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-describedby.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+// TODO(crbug.com/1344894): disabled on UIA
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestExceptUIA,
                        AccessibilityAriaDescribedByUpdates) {
   RunAriaTest(FILE_PATH_LITERAL("aria-describedby-updates.html"));
 }
