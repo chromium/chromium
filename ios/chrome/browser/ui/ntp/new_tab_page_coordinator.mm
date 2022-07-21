@@ -683,7 +683,7 @@ namespace {
 }
 
 - (BOOL)isFollowingFeedAvailable {
-  return IsWebChannelsEnabled() &&
+  return IsWebChannelsEnabled() && self.authService &&
          self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
 }
 
