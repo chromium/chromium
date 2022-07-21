@@ -23,6 +23,11 @@ PrefetchType::PrefetchType(const PrefetchType& prefetch_type) = default;
 PrefetchType& PrefetchType::operator=(const PrefetchType& prefetch_type) =
     default;
 
+void PrefetchType::SetProxyBypassedForTest() {
+  DCHECK(use_prefetch_proxy_);
+  proxy_bypassed_for_testing_ = true;
+}
+
 bool operator==(const PrefetchType& prefetch_type_1,
                 const PrefetchType& prefetch_type_2) {
   return std::tie(prefetch_type_1.use_isolated_network_context_,

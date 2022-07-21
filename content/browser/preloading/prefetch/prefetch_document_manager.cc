@@ -9,6 +9,7 @@
 
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -90,6 +91,14 @@ void PrefetchDocumentManager::ProcessCandidates(
   auto new_end = std::remove_if(candidates.begin(), candidates.end(),
                                 should_process_entry);
   candidates.erase(new_end, candidates.end());
+
+  if (const auto& host_to_bypass = PrefetchBypassProxyForHost()) {
+    for (auto& [prefetch_url, prefetch_type] : prefetches) {
+      if (prefetch_type.IsProxyRequired() &&
+          prefetch_url.host() == *host_to_bypass)
+        prefetch_type.SetProxyBypassedForTest();
+    }
+  }
 
   for (const auto& prefetch : prefetches) {
     PrefetchUrl(prefetch.first, prefetch.second, devtools_observer);

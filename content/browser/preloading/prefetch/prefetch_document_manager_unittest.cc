@@ -137,7 +137,6 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   // document.
   PrefetchDocumentManager::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame())
       ->ProcessCandidates(candidates, /*devtools_observer=*/nullptr);
-  ;
 
   // Check that the candidates that should be prefetched were sent to
   // |PrefetchService|.

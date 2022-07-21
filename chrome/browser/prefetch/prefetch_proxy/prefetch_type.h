@@ -25,7 +25,7 @@ class PrefetchType {
 
   // Whether this prefetch should bypass the proxy even though it would need to
   // be proxied for anonymity. For use in test automation only.
-  bool IsProxyBypassedForTest() const { return proxy_bypassed_for_test_; }
+  bool IsProxyBypassedForTesting() const { return proxy_bypassed_for_testing_; }
 
   void SetProxyBypassedForTest();
 
@@ -44,7 +44,7 @@ class PrefetchType {
   bool use_isolated_network_context_;
   bool use_prefetch_proxy_;
   bool can_prefetch_subresources_;
-  bool proxy_bypassed_for_test_ = false;
+  bool proxy_bypassed_for_testing_ = false;
 };
 
 bool operator==(const PrefetchType& prefetch_type_1,

@@ -45,5 +45,19 @@ TEST_F(PrefetchTypeTest, ComparePrefetchTypes) {
   EXPECT_TRUE(prefetch_type1 != prefetch_type4);
 }
 
+TEST_F(PrefetchTypeTest, WptProxyTest) {
+  PrefetchType prefetch_types[] = {{/*isolated*/ true, /*use_proxy*/ true},
+                                   {/*isolated*/ true, /*use_proxy*/ true},
+                                   {/*isolated*/ true, /*use_proxy*/ false},
+                                   {/*isolated*/ false, /*use_proxy*/ false}};
+  for (auto& prefetch_type : prefetch_types) {
+    EXPECT_FALSE(prefetch_type.IsProxyBypassedForTesting());
+    if (prefetch_type.IsProxyRequired()) {
+      prefetch_type.SetProxyBypassedForTest();
+      EXPECT_TRUE(prefetch_type.IsProxyBypassedForTesting());
+    }
+  }
+}
+
 }  // namespace
 }  // namespace content

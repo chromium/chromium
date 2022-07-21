@@ -25,6 +25,12 @@ class CONTENT_EXPORT PrefetchType {
     return use_isolated_network_context_;
   }
 
+  // Whether this prefetch should bypass the proxy even though it would need to
+  // be proxied for anonymity. For use in test automation only.
+  bool IsProxyBypassedForTesting() const { return proxy_bypassed_for_testing_; }
+
+  void SetProxyBypassedForTest();
+
   // Whether prefetches of this type need to use the Prefetch Proxy.
   bool IsProxyRequired() const { return use_prefetch_proxy_; }
 
@@ -34,6 +40,7 @@ class CONTENT_EXPORT PrefetchType {
 
   bool use_isolated_network_context_;
   bool use_prefetch_proxy_;
+  bool proxy_bypassed_for_testing_ = false;
 };
 
 CONTENT_EXPORT bool operator==(const PrefetchType& prefetch_type_1,

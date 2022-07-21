@@ -132,6 +132,15 @@ bool PrefetchServiceHTMLOnly() {
       features::kPrefetchUseContentRefactor, "html_only", false);
 }
 
+absl::optional<std::string> PrefetchBypassProxyForHost() {
+  absl::optional<std::string> value;
+  auto val_str = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      "bypass-prefetch-proxy-for-host");
+  if (val_str.size())
+    value = std::move(val_str);
+  return value;
+}
+
 base::TimeDelta PrefetchCacheableDuration() {
   return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
       features::kPrefetchUseContentRefactor, "cacheable_duration", 300));

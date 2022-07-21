@@ -284,7 +284,8 @@ crbug.com/1302831 [ Win10.20h2 ] external/wpt/html/browsers/browsing-the-web/bac
 # These tests require the experimental speculative prefetch feature, and requires extra switches to enable content implementation of speculation rules prefetch.
 # This expectation and the virtual suite can be removed once that is enabled by default.
 crbug.com/1343590 external/wpt/speculation-rules/prefetch/* [ Skip ]
-crbug.com/1343590 virtual/prefetch/external/wpt/speculation-rules/prefetch/* [ Skip ]
+crbug.com/1343590 virtual/prefetch/external/wpt/speculation-rules/prefetch/* [ Pass ]
+crbug.com/1343590 virtual/prefetch/external/wpt/speculation-rules/prefetch/redirect-url.https.html [ Failure ]
 crbug.com/1343590 http/tests/inspector-protocol/prefetch/* [ Skip ]
 crbug.com/1343590 virtual/prefetch/http/tests/inspector-protocol/prefetch/* [ Pass ]
 

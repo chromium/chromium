@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -63,6 +64,10 @@ bool PrefetchStartsSpareRenderer();
 // alive. If this value is zero or less, the service will keep the prefetch
 // forever.
 base::TimeDelta PrefetchContainerLifetimeInPrefetchService();
+
+// Retrieves a host for which the prefetch proxy should be bypassed for testing
+// purposes.
+CONTENT_EXPORT absl::optional<std::string> PrefetchBypassProxyForHost();
 
 // Whether only prefetched resources with a text/html MIME type should be used.
 // If this is false, there is no MIME type restriction.

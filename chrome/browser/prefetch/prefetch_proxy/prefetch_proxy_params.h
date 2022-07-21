@@ -138,8 +138,8 @@ bool PrefetchProxyUseIndividualNetworkContextsForEachPrefetch();
 // Whether the PrefetchProxy code can handle non-private prefetches.
 bool PrefetchProxySupportNonPrivatePrefetches();
 
-// Whether the PrefetchProxy should bypass using proxy for a specific host for
-// test purposes.
+// Retrieves a host for which the prefetch proxy should be bypassed for testing
+// purposes.
 absl::optional<std::string> PrefetchProxyBypassProxyForHost();
 
 // Whether only prefetched resources with a text/html MIME type should be used.

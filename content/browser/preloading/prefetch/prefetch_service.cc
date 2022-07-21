@@ -249,7 +249,8 @@ void PrefetchService::CheckEligibilityOfPrefetch(
                 prefetch_container->GetURL().HostNoBrackets())
           : net::IsHostnameNonUnique(
                 prefetch_container->GetURL().HostNoBrackets());
-  if (prefetch_container->GetPrefetchType().IsProxyRequired() &&
+  if (!prefetch_container->GetPrefetchType().IsProxyBypassedForTesting() &&
+      prefetch_container->GetPrefetchType().IsProxyRequired() &&
       is_host_non_unique) {
     std::move(result_callback)
         .Run(prefetch_container, false,
@@ -275,6 +276,7 @@ void PrefetchService::CheckEligibilityOfPrefetch(
   }
 
   if (prefetch_container->GetPrefetchType().IsProxyRequired() &&
+      !prefetch_container->GetPrefetchType().IsProxyBypassedForTesting() &&
       (!prefetch_proxy_configurator_ ||
        !prefetch_proxy_configurator_->IsPrefetchProxyAvailable())) {
     std::move(result_callback)
@@ -736,8 +738,9 @@ void PrefetchService::OnPrefetchComplete(
 
     // Verifies that the request was made using the prefetch proxy if required,
     // or made directly if the proxy was not required.
-    DCHECK(!head->proxy_server.is_direct() ==
-           prefetch_container->GetPrefetchType().IsProxyRequired());
+    DCHECK(prefetch_container->GetPrefetchType().IsProxyBypassedForTesting() ||
+           !head->proxy_server.is_direct() ==
+               prefetch_container->GetPrefetchType().IsProxyRequired());
 
     HandlePrefetchedResponse(prefetch_container, isolation_info,
                              std::move(head), std::move(body));

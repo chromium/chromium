@@ -14,10 +14,10 @@ TEST(PrefetchProxyPrefetchTypeTest, WptProxyTest) {
       {/*isolated*/ true, /*use_proxy*/ false, /*subresources*/ false},
       {/*isolated*/ false, /*use_proxy*/ false, /*subresources*/ false}};
   for (auto& prefetch_type : prefetch_types) {
-    EXPECT_FALSE(prefetch_type.IsProxyBypassedForTest());
+    EXPECT_FALSE(prefetch_type.IsProxyBypassedForTesting());
     if (prefetch_type.IsProxyRequired()) {
       prefetch_type.SetProxyBypassedForTest();
-      EXPECT_TRUE(prefetch_type.IsProxyBypassedForTest());
+      EXPECT_TRUE(prefetch_type.IsProxyBypassedForTesting());
     }
   }
 }

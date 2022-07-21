@@ -118,10 +118,10 @@ void ChromeSpeculationHostDelegate::ProcessCandidates(
                                 should_process_entry);
   candidates.erase(new_end, candidates.end());
 
-  if (const auto& bypass_for_host = PrefetchProxyBypassProxyForHost()) {
+  if (const auto& host_to_bypass = PrefetchProxyBypassProxyForHost()) {
     for (auto& [prefetch_url, prefetch_type] : prefetches) {
       if (prefetch_type.IsProxyRequired() &&
-          prefetch_url.host() == *bypass_for_host)
+          prefetch_url.host() == *host_to_bypass)
         prefetch_type.SetProxyBypassedForTest();
     }
   }

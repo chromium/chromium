@@ -32,7 +32,7 @@ PrefetchType& PrefetchType::operator=(const PrefetchType& prefetch_type) =
 
 void PrefetchType::SetProxyBypassedForTest() {
   DCHECK(use_prefetch_proxy_);
-  proxy_bypassed_for_test_ = true;
+  proxy_bypassed_for_testing_ = true;
 }
 
 bool operator==(const PrefetchType& prefetch_type_1,
@@ -40,11 +40,11 @@ bool operator==(const PrefetchType& prefetch_type_1,
   return std::tie(prefetch_type_1.use_isolated_network_context_,
                   prefetch_type_1.use_prefetch_proxy_,
                   prefetch_type_1.can_prefetch_subresources_,
-                  prefetch_type_1.proxy_bypassed_for_test_) ==
+                  prefetch_type_1.proxy_bypassed_for_testing_) ==
          std::tie(prefetch_type_2.use_isolated_network_context_,
                   prefetch_type_2.use_prefetch_proxy_,
                   prefetch_type_2.can_prefetch_subresources_,
-                  prefetch_type_2.proxy_bypassed_for_test_);
+                  prefetch_type_2.proxy_bypassed_for_testing_);
 }
 
 bool operator!=(const PrefetchType& prefetch_type_1,
