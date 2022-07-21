@@ -124,6 +124,11 @@ CompositorGpuThread::GetSharedContextState() {
   attribs.angle_context_virtualization_group_number =
       gl::AngleContextVirtualizationGroup::kDrDc;
 
+  // Compositor thread context doesn't need access textures and semaphores
+  // created with other contexts.
+  attribs.global_texture_share_group = false;
+  attribs.global_semaphore_share_group = false;
+
   // Create a new gl context. Note that this gl context is not part of same
   // share group which gpu main thread uses. Hence this context does not share
   // GL resources with the contexts created on gpu main thread.
