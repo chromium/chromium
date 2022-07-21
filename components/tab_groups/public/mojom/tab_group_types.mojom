@@ -6,8 +6,9 @@ module tab_groups.mojom;
 
 // The color Id associated with a given Tab Group. Maps to
 // tab_groups::TabGroupColorId in components/tab_groups/tab_group_color.h.
+[Stable, Extensible]
 enum Color {
-  kGrey,
+  [Default] kGrey,
   kBlue,
   kRed,
   kYellow,
