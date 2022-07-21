@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/search/games/game_provider.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
@@ -12,9 +13,11 @@
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
 #include "chrome/browser/apps/app_discovery_service/result.h"
+#include "chrome/browser/ui/app_list/search/search_features.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +26,7 @@
 namespace app_list {
 namespace {
 
+using ::base::test::ScopedFeatureList;
 using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
 
@@ -42,13 +46,18 @@ apps::Result MakeAppsResult(const std::u16string& title) {
 
 }  // namespace
 
-// Parameterized by feature ProductivityLauncher.
+// Parameterized by the ItemSuggest "enabled_override" parameter.
 class GameProviderTest : public testing::Test,
                          public testing::WithParamInterface<bool> {
  public:
   GameProviderTest() {
-    feature_list_.InitWithFeatureState(ash::features::kProductivityLauncher,
-                                       GetParam());
+    bool enabled_override = GetParam();
+    std::vector<ScopedFeatureList::FeatureAndParams> enabled_features = {
+        {ash::features::kProductivityLauncher, {}},
+        {search_features::kLauncherGameSearch,
+         {{"enabled_override", enabled_override ? "true" : "false"}}}};
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                std::vector<base::Feature>());
   }
 
  protected:
@@ -84,7 +93,7 @@ class GameProviderTest : public testing::Test,
     search_controller_->StartSearch(query);
   }
 
-  base::test::ScopedFeatureList feature_list_;
+  ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   ::test::TestAppListControllerDelegate list_controller_;
   std::unique_ptr<TestSearchController> search_controller_;
@@ -109,6 +118,29 @@ TEST_P(GameProviderTest, SearchResultsMatchQuery) {
   EXPECT_THAT(LastResults(), UnorderedElementsAre(Title(u"First Title"),
                                                   Title(u"Second Title"),
                                                   Title(u"Third Title")));
+}
+
+TEST_P(GameProviderTest, Policy) {
+  SetUpTestingIndex();
+
+  // Results should exist if Suggested Content is enabled.
+  profile_->GetPrefs()->SetBoolean(chromeos::prefs::kSuggestedContentEnabled,
+                                   true);
+  StartSearch(u"first");
+  Wait();
+  EXPECT_THAT(LastResults(), ElementsAre(Title(u"First Title")));
+
+  // If Suggested Content is disabled, only show results if the override is on.
+  profile_->GetPrefs()->SetBoolean(chromeos::prefs::kSuggestedContentEnabled,
+                                   false);
+  StartSearch(u"first");
+  Wait();
+  bool enabled_override = GetParam();
+  if (enabled_override) {
+    EXPECT_THAT(LastResults(), ElementsAre(Title(u"First Title")));
+  } else {
+    EXPECT_TRUE(LastResults().empty());
+  }
 }
 
 }  // namespace app_list
