@@ -826,7 +826,7 @@ ConfiguredProxyResolutionService::CreateWithoutProxyResolver(
 
 // static
 std::unique_ptr<ConfiguredProxyResolutionService>
-ConfiguredProxyResolutionService::CreateFixed(
+ConfiguredProxyResolutionService::CreateFixedForTest(
     const ProxyConfigWithAnnotation& pc) {
   // TODO(eroman): This isn't quite right, won't work if |pc| specifies
   //               a PAC script.
@@ -837,13 +837,13 @@ ConfiguredProxyResolutionService::CreateFixed(
 
 // static
 std::unique_ptr<ConfiguredProxyResolutionService>
-ConfiguredProxyResolutionService::CreateFixed(
+ConfiguredProxyResolutionService::CreateFixedForTest(
     const std::string& proxy,
     const NetworkTrafficAnnotationTag& traffic_annotation) {
   ProxyConfig proxy_config;
   proxy_config.proxy_rules().ParseFromString(proxy);
   ProxyConfigWithAnnotation annotated_config(proxy_config, traffic_annotation);
-  return ConfiguredProxyResolutionService::CreateFixed(annotated_config);
+  return ConfiguredProxyResolutionService::CreateFixedForTest(annotated_config);
 }
 
 // static

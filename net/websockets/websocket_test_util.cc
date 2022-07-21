@@ -257,8 +257,9 @@ void WebSocketTestURLRequestContextHost::AddSSLSocketDataProvider(
 void WebSocketTestURLRequestContextHost::SetProxyConfig(
     const std::string& proxy_rules) {
   DCHECK(!url_request_context_);
-  auto proxy_resolution_service = ConfiguredProxyResolutionService::CreateFixed(
-      proxy_rules, TRAFFIC_ANNOTATION_FOR_TESTS);
+  auto proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          proxy_rules, TRAFFIC_ANNOTATION_FOR_TESTS);
   url_request_context_builder_->set_proxy_resolution_service(
       std::move(proxy_resolution_service));
 }

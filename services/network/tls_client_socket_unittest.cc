@@ -87,7 +87,7 @@ class TLSClientSocketTestBase {
     }
     if (configure_proxy) {
       context_builder->set_proxy_resolution_service(
-          net::ConfiguredProxyResolutionService::CreateFixed(
+          net::ConfiguredProxyResolutionService::CreateFixedForTest(
               "http://proxy:8080", TRAFFIC_ANNOTATION_FOR_TESTS));
     }
     url_request_context_ = context_builder->Build();

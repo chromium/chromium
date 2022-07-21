@@ -4188,7 +4188,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
   config.proxy_rules().ParseFromString("foopy1:8080");
   config.set_auto_detect(false);
 
-  auto service = ConfiguredProxyResolutionService::CreateFixed(
+  auto service = ConfiguredProxyResolutionService::CreateFixedForTest(
       ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS));
 
   // A normal request should use the proxy.

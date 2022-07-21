@@ -532,7 +532,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectDirect) {
 TEST_F(HttpStreamFactoryTest, PreconnectHttpProxy) {
   for (const auto& test : kTests) {
     SpdySessionDependencies session_deps(
-        ConfiguredProxyResolutionService::CreateFixed(
+        ConfiguredProxyResolutionService::CreateFixedForTest(
             "http_proxy", TRAFFIC_ANNOTATION_FOR_TESTS));
     std::unique_ptr<HttpNetworkSession> session(
         SpdySessionDependencies::SpdyCreateSession(&session_deps));
@@ -558,7 +558,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectHttpProxy) {
 TEST_F(HttpStreamFactoryTest, PreconnectSocksProxy) {
   for (const auto& test : kTests) {
     SpdySessionDependencies session_deps(
-        ConfiguredProxyResolutionService::CreateFixed(
+        ConfiguredProxyResolutionService::CreateFixedForTest(
             "socks4://socks_proxy:1080", TRAFFIC_ANNOTATION_FOR_TESTS));
     std::unique_ptr<HttpNetworkSession> session(
         SpdySessionDependencies::SpdyCreateSession(&session_deps));
@@ -993,7 +993,7 @@ TEST_F(HttpStreamFactoryTest, UsePreConnectIfNoZeroRTT) {
     GURL url = GURL("https://www.google.com");
 
     SpdySessionDependencies session_deps(
-        ConfiguredProxyResolutionService::CreateFixed(
+        ConfiguredProxyResolutionService::CreateFixedForTest(
             "http_proxy", TRAFFIC_ANNOTATION_FOR_TESTS));
 
     // Setup params to disable preconnect, but QUIC doesn't 0RTT.
@@ -1387,7 +1387,7 @@ TEST_F(HttpStreamFactoryTest, RequestHttpStreamOverSSL) {
 
 TEST_F(HttpStreamFactoryTest, RequestHttpStreamOverProxy) {
   SpdySessionDependencies session_deps(
-      ConfiguredProxyResolutionService::CreateFixed(
+      ConfiguredProxyResolutionService::CreateFixedForTest(
           "myproxy:8888", TRAFFIC_ANNOTATION_FOR_TESTS));
 
   StaticSocketDataProvider socket_data;
@@ -1524,7 +1524,7 @@ TEST_F(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStreamOverSSL) {
 
 TEST_F(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStreamOverProxy) {
   SpdySessionDependencies session_deps(
-      ConfiguredProxyResolutionService::CreateFixed(
+      ConfiguredProxyResolutionService::CreateFixedForTest(
           "myproxy:8888", TRAFFIC_ANNOTATION_FOR_TESTS));
 
   MockRead reads[] = {

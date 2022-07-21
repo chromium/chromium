@@ -201,9 +201,9 @@ class NET_EXPORT ConfiguredProxyResolutionService
 
   // Convenience methods that creates a proxy service using the
   // specified fixed settings.
-  static std::unique_ptr<ConfiguredProxyResolutionService> CreateFixed(
+  static std::unique_ptr<ConfiguredProxyResolutionService> CreateFixedForTest(
       const ProxyConfigWithAnnotation& pc);
-  static std::unique_ptr<ConfiguredProxyResolutionService> CreateFixed(
+  static std::unique_ptr<ConfiguredProxyResolutionService> CreateFixedForTest(
       const std::string& proxy,
       const NetworkTrafficAnnotationTag& traffic_annotation);
 

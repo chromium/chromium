@@ -726,7 +726,7 @@ class URLRequestTest : public PlatformTest, public WithTaskEnvironment {
 
   static std::unique_ptr<ConfiguredProxyResolutionService>
   CreateFixedProxyResolutionService(const std::string& proxy) {
-    return ConfiguredProxyResolutionService::CreateFixed(
+    return ConfiguredProxyResolutionService::CreateFixedForTest(
         proxy, TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 
