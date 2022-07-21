@@ -367,10 +367,6 @@ class MetricsService : public base::HistogramFlattener {
   // profiler data, as well as incremental stability-related metrics.
   void PrepareInitialMetricsLog();
 
-  // Reads, increments and then sets the specified long preference that is
-  // stored as a string.
-  void IncrementLongPrefsValue(const char* path);
-
   // Creates a new MetricsLog instance with the given |log_type|.
   std::unique_ptr<MetricsLog> CreateLog(MetricsLog::LogType log_type);
 

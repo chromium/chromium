@@ -937,11 +937,6 @@ void MetricsService::PrepareInitialMetricsLog() {
   state_ = SENDING_LOGS;
 }
 
-void MetricsService::IncrementLongPrefsValue(const char* path) {
-  int64_t value = local_state_->GetInt64(path);
-  local_state_->SetInt64(path, value + 1);
-}
-
 void MetricsService::RegisterMetricsProvider(
     std::unique_ptr<MetricsProvider> provider) {
   DCHECK_EQ(CONSTRUCTED, state_);
