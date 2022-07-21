@@ -85,9 +85,11 @@ std::string UIThreadSearchTermsData::GetSuggestClient(
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
       BrowserThread::CurrentlyOn(BrowserThread::UI));
 #if BUILDFLAG(IS_ANDROID)
-  // Android does not send non-searchbox suggest requests from NTP at this time.
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE ?
-      "chrome" : "chrome-omni";
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+    return non_searchbox_ntp ? "chrome-android-search-resumption-module"
+                             : "chrome";
+  }
+  return "chrome-omni";
 #else
   return "chrome-omni";
 #endif
@@ -98,8 +100,9 @@ std::string UIThreadSearchTermsData::GetSuggestRequestIdentifier(
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
       BrowserThread::CurrentlyOn(BrowserThread::UI));
 #if BUILDFLAG(IS_ANDROID)
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE)
-    return "chrome-mobile-ext-ansg";
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+    return non_searchbox_ntp ? std::string() : "chrome-mobile-ext-ansg";
+  }
 #endif
   return "chrome-ext-ansg";
 }
