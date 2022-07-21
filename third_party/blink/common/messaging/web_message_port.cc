@@ -152,11 +152,8 @@ bool WebMessagePort::PostMessage(Message&& message) {
   // Build the message.
   // TODO(chrisha): Finally kill off MessagePortChannel, once
   // MessagePortDescriptor more thoroughly plays that role.
-  blink::TransferableMessage transferable_message;
-  transferable_message.owned_encoded_message =
-      blink::EncodeStringMessage(message.data);
-  transferable_message.encoded_message =
-      transferable_message.owned_encoded_message;
+  blink::TransferableMessage transferable_message =
+      blink::EncodeWebMessagePayload(WebMessagePayload(message.data));
   transferable_message.ports =
       blink::MessagePortChannel::CreateFromHandles(std::move(ports));
 
@@ -228,8 +225,14 @@ bool WebMessagePort::Accept(mojo::Message* mojo_message) {
 
   // Decode the string portion of the message.
   Message message;
-  if (!blink::DecodeStringMessage(transferable_message.encoded_message,
-                                  &message.data)) {
+  absl::optional<WebMessagePayload> optional_payload =
+      blink::DecodeToWebMessagePayload(transferable_message);
+  if (!optional_payload)
+    return false;
+  auto& payload = optional_payload.value();
+  if (auto* str = absl::get_if<std::u16string>(&payload)) {
+    message.data = std::move(*str);
+  } else {
     return false;
   }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "content/public/browser/browser_thread.h"
@@ -43,12 +44,37 @@ IN_PROC_BROWSER_TEST_F(MessagePortProviderBrowserTest, PostMessage) {
       base::UTF8ToUTF16(message));
 
   // Verify that the message was received (and had the expected payload).
-  std::string expected_test_reply;
-  expected_test_reply += '"';
-  expected_test_reply += source_origin;
-  expected_test_reply += ':';
-  expected_test_reply += message;
-  expected_test_reply += '"';
+  std::string expected_test_reply =
+      base::StrCat({"\"", source_origin, ":", message, "\""});
+  std::string actual_test_reply;
+  EXPECT_TRUE(msg_queue.WaitForMessage(&actual_test_reply));
+  EXPECT_EQ(expected_test_reply, actual_test_reply);
+}
+
+IN_PROC_BROWSER_TEST_F(MessagePortProviderBrowserTest, PostArrayBufferMessage) {
+  // Listen for a message.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      onmessage = function(e) {
+          domAutomationController.send(e.origin + ':' +
+            new Uint8Array(e.data).join());
+      } )"));
+
+  // Post a message.
+  const std::string target_origin(url.DeprecatedGetOriginAsURL().spec());
+  const std::string source_origin("https://source.origin.com");
+  const std::vector<uint8_t> message = {0x01, 0x02, 0x03, 0x04};
+  DOMMessageQueue msg_queue(shell()->web_contents());
+  MessagePortProvider::PostMessageToFrame(
+      shell()->web_contents()->GetPrimaryPage(),
+      base::UTF8ToUTF16(source_origin), base::UTF8ToUTF16(target_origin),
+      message);
+
+  // Verify that the message was received (and had the expected payload).
+  std::string expected_test_reply =
+      base::StrCat({"\"", source_origin, ":1,2,3,4\""});
   std::string actual_test_reply;
   EXPECT_TRUE(msg_queue.WaitForMessage(&actual_test_reply));
   EXPECT_EQ(expected_test_reply, actual_test_reply);

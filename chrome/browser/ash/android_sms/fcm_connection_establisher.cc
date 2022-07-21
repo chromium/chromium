@@ -135,10 +135,8 @@ void FcmConnectionEstablisher::ProcessMessageQueue() {
 
 void FcmConnectionEstablisher::SendInFlightMessage() {
   const PendingServiceWorkerMessage& message = in_flight_message_->message;
-  blink::TransferableMessage msg;
-  msg.owned_encoded_message = blink::EncodeStringMessage(
+  blink::TransferableMessage msg = blink::EncodeWebMessagePayload(
       base::UTF8ToUTF16(GetMessageStringForType(message.message_type)));
-  msg.encoded_message = msg.owned_encoded_message;
 
   PA_LOG(VERBOSE) << "Dispatching message " << message.message_type;
   message.service_worker_context->StartServiceWorkerAndDispatchMessage(

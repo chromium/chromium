@@ -31,7 +31,7 @@ void PostMessageToFrameInternal(
     Page& page,
     const std::u16string& source_origin,
     const std::u16string& target_origin,
-    const std::u16string& data,
+    const blink::WebMessagePayload& data,
     std::vector<blink::MessagePortDescriptor> ports) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -41,9 +41,7 @@ void PostMessageToFrameInternal(
   for (auto& port : ports)
     channels.emplace_back(MessagePortChannel(std::move(port)));
 
-  blink::TransferableMessage message;
-  message.owned_encoded_message = blink::EncodeStringMessage(data);
-  message.encoded_message = message.owned_encoded_message;
+  blink::TransferableMessage message = blink::EncodeWebMessagePayload(data);
   message.ports = std::move(channels);
 
   RenderFrameHostImpl* rfh =
@@ -68,7 +66,7 @@ void MessagePortProvider::PostMessageToFrame(
     Page& page,
     const std::u16string& source_origin,
     const std::u16string& target_origin,
-    const std::u16string& data) {
+    const blink::WebMessagePayload& data) {
   PostMessageToFrameInternal(page, source_origin, target_origin, data,
                              std::vector<blink::MessagePortDescriptor>());
 }

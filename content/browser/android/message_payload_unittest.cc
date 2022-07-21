@@ -14,9 +14,7 @@ namespace {
 
 TEST(MessagePayloadTest, SelfTest_String) {
   std::u16string string = u"Hello";
-  blink::TransferableMessage message;
-  message.owned_encoded_message = blink::EncodeStringMessage(string);
-  message.encoded_message = message.owned_encoded_message;
+  blink::TransferableMessage message = blink::EncodeWebMessagePayload(string);
 
   auto generated_message =
       android::CreateTransferableMessageFromJavaMessagePayload(
