@@ -162,6 +162,18 @@ public class CrashFileManagerTest {
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
+    public void testReadyForUploadForFirstTime() {
+        Assert.assertTrue(CrashFileManager.isReadyUploadForFirstTime(
+                new File(mTestRule.getCrashDir(), "foo.try0")));
+        Assert.assertFalse(CrashFileManager.isReadyUploadForFirstTime(
+                new File(mTestRule.getCrashDir(), "foo.try1")));
+        Assert.assertFalse(CrashFileManager.isReadyUploadForFirstTime(
+                new File(mTestRule.getCrashDir(), "foo")));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
     public void testCrashFileManagerWithNull() {
         try {
             new CrashFileManager(null);

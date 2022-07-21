@@ -35,6 +35,11 @@ import java.io.File;
 
     @Override
     protected void uploadMinidump(File minidump) {
+        // The minidump file will only be ready for upload if PureJavaExceptionReporter attached
+        // logcat successfully, WebView should upload it even if attaching logcat was failed.
+        if (!CrashFileManager.isReadyUploadForFirstTime(minidump)) {
+            CrashFileManager.trySetReadyForUpload(minidump);
+        }
         CrashUploadUtil.scheduleNewJob(ContextUtils.getApplicationContext());
     }
 

@@ -214,6 +214,13 @@ public class CrashFileManager {
     }
 
     /**
+     * @return True iff the provided File was ready be uploaded for the first time.
+     */
+    public static boolean isReadyUploadForFirstTime(File fileToUpload) {
+        return fileToUpload.getName().contains(READY_FOR_UPLOAD_SUFFIX);
+    }
+
+    /**
      * Attempts to rename the given file to mark it as a forced upload. This is useful for allowing
      * users to manually initiate previously skipped uploads.
      *
