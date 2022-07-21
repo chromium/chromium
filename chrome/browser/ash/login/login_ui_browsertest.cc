@@ -534,18 +534,22 @@ class SshWarningTest : public OobeBaseTest,
   };
 
   void SetUpOnMainThread() override {
-    auto scoped_test_client = std::make_unique<TestDebugDaemonClient>();
-    test_client_ = scoped_test_client.get();
+    test_client_ = std::make_unique<TestDebugDaemonClient>();
     test_client_->set_flags(
         GetParam() ? debugd::DevFeatureFlag::DEV_FEATURE_SSH_SERVER_CONFIGURED
                    : debugd::DevFeatureFlag::DEV_FEATURES_DISABLED);
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-        std::move(scoped_test_client));
+    DebugDaemonClient::SetInstanceForTest(test_client_.get());
     OobeBaseTest::SetUpOnMainThread();
   }
 
+  void TearDownOnMainThread() override {
+    test_client_.reset();
+    DebugDaemonClient::SetInstanceForTest(nullptr);
+    OobeBaseTest::TearDownOnMainThread();
+  }
+
  protected:
-  TestDebugDaemonClient* test_client_ = nullptr;
+  std::unique_ptr<TestDebugDaemonClient> test_client_;
 };
 
 IN_PROC_BROWSER_TEST_P(SshWarningTest, VisibilityOnGaia) {

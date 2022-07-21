@@ -19,7 +19,6 @@
 namespace chromeos {
 
 static DBusThreadManager* g_dbus_thread_manager = nullptr;
-static DBusThreadManagerSetter* g_setter = nullptr;
 
 DBusThreadManager::DBusThreadManager()
     : clients_browser_(
@@ -30,22 +29,15 @@ DBusThreadManager::~DBusThreadManager() {
   clients_browser_.reset();
 }
 
-// Returns a client that is set via DBusThreadManagerSetter when available.
-#define RETURN_DBUS_CLIENT(name)      \
-  return (g_setter && g_setter->name) \
-             ? g_setter->name.get()   \
-             : (clients_browser_ ? clients_browser_->name.get() : nullptr)
-
+// TODO(jamescook): Delete this method after migrating callers.
 DebugDaemonClient* DBusThreadManager::GetDebugDaemonClient() {
-  RETURN_DBUS_CLIENT(debug_daemon_client_);
+  return DebugDaemonClient::Get();
 }
 
 EasyUnlockClient* DBusThreadManager::GetEasyUnlockClient() {
   return clients_browser_ ? clients_browser_->easy_unlock_client_.get()
                           : nullptr;
 }
-
-#undef RETURN_DBUS_CLIENT
 
 void DBusThreadManager::InitializeClients() {
   // Some clients call DBusThreadManager::Get() during initialization.
@@ -72,13 +64,6 @@ void DBusThreadManager::Initialize() {
 }
 
 // static
-DBusThreadManagerSetter* DBusThreadManager::GetSetterForTesting() {
-  if (!g_setter)
-    g_setter = new DBusThreadManagerSetter();
-  return g_setter;
-}
-
-// static
 bool DBusThreadManager::IsInitialized() {
   return !!g_dbus_thread_manager;
 }
@@ -95,9 +80,6 @@ void DBusThreadManager::Shutdown() {
   g_dbus_thread_manager = nullptr;
   delete dbus_thread_manager;
 
-  delete g_setter;
-  g_setter = nullptr;
-
   VLOG(1) << "DBusThreadManager Shutdown completed";
 }
 
@@ -106,15 +88,6 @@ DBusThreadManager* DBusThreadManager::Get() {
   CHECK(g_dbus_thread_manager)
       << "DBusThreadManager::Get() called before Initialize()";
   return g_dbus_thread_manager;
-}
-
-DBusThreadManagerSetter::DBusThreadManagerSetter() = default;
-
-DBusThreadManagerSetter::~DBusThreadManagerSetter() = default;
-
-void DBusThreadManagerSetter::SetDebugDaemonClient(
-    std::unique_ptr<DebugDaemonClient> client) {
-  debug_daemon_client_ = std::move(client);
 }
 
 }  // namespace chromeos

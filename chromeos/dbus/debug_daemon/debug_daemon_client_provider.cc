@@ -17,7 +17,7 @@ namespace chromeos {
 DebugDaemonClientProvider::DebugDaemonClientProvider()
     : dbus_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock()})),
-      debug_daemon_client_(DebugDaemonClient::Create()) {
+      debug_daemon_client_(DebugDaemonClient::CreateInstance()) {
   dbus::Bus::Options dbus_options;
   dbus_options.bus_type = dbus::Bus::SYSTEM;
   dbus_options.connection_type = dbus::Bus::PRIVATE;

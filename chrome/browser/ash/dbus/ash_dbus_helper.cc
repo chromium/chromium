@@ -74,6 +74,7 @@
 #include "chromeos/ash/components/hibernate/buildflags.h"  // ENABLE_HIBERNATE
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
@@ -152,6 +153,7 @@ void InitializeDBus() {
   InitializeDBusClient<CryptohomeMiscClient>(bus);
   InitializeDBusClient<CryptohomePkcs11Client>(bus);
   InitializeDBusClient<CupsProxyClient>(bus);
+  InitializeDBusClient<DebugDaemonClient>(bus);
   InitializeDBusClient<chromeos::DlcserviceClient>(bus);
   InitializeDBusClient<chromeos::DlpClient>(bus);
   InitializeDBusClient<FederatedClient>(bus);
@@ -293,6 +295,7 @@ void ShutdownDBus() {
   FederatedClient::Shutdown();
   chromeos::DlcserviceClient::Shutdown();
   chromeos::DlpClient::Shutdown();
+  DebugDaemonClient::Shutdown();
   CupsProxyClient::Shutdown();
   CryptohomePkcs11Client::Shutdown();
   CryptohomeMiscClient::Shutdown();

@@ -42,6 +42,22 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
     : public DBusClient,
       public base::trace_event::TracingAgent {
  public:
+  // Returns the global instance if initialized. May return null.
+  static DebugDaemonClient* Get();
+
+  // Creates and initializes the global instance. |bus| must not be null.
+  static void Initialize(dbus::Bus* bus);
+
+  // Creates and initializes a fake global instance.
+  static void InitializeFake();
+
+  // Sets a temporary instance for testing. Overrides the existing
+  // global instance, if any.
+  static void SetInstanceForTest(DebugDaemonClient* client);
+
+  // Destroys the global instance if it has been initialized.
+  static void Shutdown();
+
   DebugDaemonClient(const DebugDaemonClient&) = delete;
   DebugDaemonClient& operator=(const DebugDaemonClient&) = delete;
 
@@ -325,17 +341,16 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   virtual void PacketCaptureStartSignalReceived(dbus::Signal* signal) = 0;
   virtual void PacketCaptureStopSignalReceived(dbus::Signal* signal) = 0;
 
-  // Factory function, creates a new instance and returns ownership.
-  // For normal usage, access the singleton via DBusThreadManager::Get().
-  static std::unique_ptr<DebugDaemonClient> Create();
-
  protected:
-  // For calling Init() in initiating a DebugDaemonClient instance for private
-  // connections.
+  // For creating a second instance of DebugDaemonClient on another thread for
+  // private connections.
   friend class DebugDaemonClientProvider;
 
-  // Create() should be used instead.
+  // Initialize() should be used instead.
   DebugDaemonClient();
+
+  // See DebugDaemonClientProvider for details.
+  static std::unique_ptr<DebugDaemonClient> CreateInstance();
 };
 
 }  // namespace chromeos

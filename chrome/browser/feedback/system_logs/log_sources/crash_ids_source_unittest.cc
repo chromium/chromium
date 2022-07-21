@@ -11,6 +11,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #endif
 
@@ -62,8 +63,8 @@ TEST(CrashIdsSourceTest, CallsCrashSender) {
   content::BrowserTaskEnvironment task_environment;
 
   chromeos::DBusThreadManager::Initialize();
-  chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-      std::make_unique<TestDebugDaemonClient>());
+  TestDebugDaemonClient test_debug_client;
+  chromeos::DebugDaemonClient::SetInstanceForTest(&test_debug_client);
 
   CrashIdsSource source;
   source.SetUploadListForTesting(new StubUploadList());
@@ -74,6 +75,7 @@ TEST(CrashIdsSourceTest, CallsCrashSender) {
 
   EXPECT_EQ(1, fake_debug_client()->upload_crashes_called());
 
+  chromeos::DebugDaemonClient::SetInstanceForTest(nullptr);
   chromeos::DBusThreadManager::Shutdown();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

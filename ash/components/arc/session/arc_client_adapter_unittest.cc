@@ -13,7 +13,7 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -32,13 +32,13 @@ class ArcClientAdapterTest : public testing::Test,
 
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-        std::make_unique<chromeos::FakeDebugDaemonClient>());
+    chromeos::DebugDaemonClient::InitializeFake();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ash::UpstartClient::InitializeFake();
   }
   void TearDown() override {
     ash::ConciergeClient::Shutdown();
+    chromeos::DebugDaemonClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

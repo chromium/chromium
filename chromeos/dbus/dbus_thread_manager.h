@@ -16,7 +16,6 @@ namespace chromeos {
 
 // Style Note: Clients are sorted by names.
 class DBusClientsBrowser;
-class DBusThreadManagerSetter;
 class DebugDaemonClient;
 class EasyUnlockClient;
 
@@ -33,13 +32,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   // This will initialize real or fake DBusClients depending on command-line
   // arguments and whether this process runs in a ChromeOS environment.
   static void Initialize();
-
-  // Returns a DBusThreadManagerSetter instance that allows tests to replace
-  // individual D-Bus clients with their own implementations. The returned
-  // object will be destroyed in DBusThreadManager::Shutdown(). This method
-  // can be called before calling DBusThreadManager::Initialize() which is
-  // useful for browser tests, but does NOT initialize the manager itself.
-  static DBusThreadManagerSetter* GetSetterForTesting();
 
   // Returns true if DBusThreadManager has been initialized. Call this to
   // avoid initializing + shutting down DBusThreadManager more than once.
@@ -70,23 +62,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
 
   // Owns the clients.
   std::unique_ptr<DBusClientsBrowser> clients_browser_;
-};
-
-// TODO(jamescook): Replace these with FooClient::InitializeForTesting().
-class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManagerSetter {
- public:
-  void SetDebugDaemonClient(std::unique_ptr<DebugDaemonClient> client);
-
- private:
-  friend class DBusThreadManager;
-
-  DBusThreadManagerSetter();
-  DBusThreadManagerSetter(const DBusThreadManagerSetter&) = delete;
-  const DBusThreadManagerSetter& operator=(const DBusThreadManagerSetter&) =
-      delete;
-  ~DBusThreadManagerSetter();
-
-  std::unique_ptr<DebugDaemonClient> debug_daemon_client_;
 };
 
 }  // namespace chromeos

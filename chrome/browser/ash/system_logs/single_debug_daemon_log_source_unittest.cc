@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,11 +31,13 @@ class SingleDebugDaemonLogSourceTest : public ::testing::Test {
     // Since no debug daemon will be available during a unit test, use
     // FakeDebugDaemonClient to provide dummy DebugDaemonClient functionality.
     chromeos::DBusThreadManager::Initialize();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-        std::make_unique<chromeos::FakeDebugDaemonClient>());
+    chromeos::DebugDaemonClient::InitializeFake();
   }
 
-  void TearDown() override { chromeos::DBusThreadManager::Shutdown(); }
+  void TearDown() override {
+    chromeos::DebugDaemonClient::Shutdown();
+    chromeos::DBusThreadManager::Shutdown();
+  }
 
  protected:
   SysLogsSourceCallback fetch_callback() {

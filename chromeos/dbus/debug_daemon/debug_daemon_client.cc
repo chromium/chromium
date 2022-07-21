@@ -32,6 +32,7 @@
 #include "base/trace_event/trace_config.h"
 #include "chromeos/dbus/common/pipe_reader.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -50,6 +51,12 @@ const int kBigLogsDBusTimeoutMS = 120 * 1000;
 // crash_sender could take a while to run if the network connection is slow, so
 // wait up to 20 seconds for it.
 const int kCrashSenderTimeoutMS = 20 * 1000;
+
+// NOTE: This does not use the typical pattern of a single `g_instance` variable
+// due to browser_tests that need to temporarily override the existing instance
+// with a specialized subclass.
+DebugDaemonClient* g_instance = nullptr;
+DebugDaemonClient* g_instance_for_test = nullptr;
 
 // A self-deleting object that wraps the pipe reader operations for reading the
 // big feedback logs. It will delete itself once the pipe stream has been
@@ -128,8 +135,6 @@ DbusLibraryError DbusLibraryErrorFromString(
   return it != error_string_map->end() ? it->second
                                        : DbusLibraryError::kGenericError;
 }
-
-}  // namespace
 
 // The DebugDaemonClient implementation used in production.
 class DebugDaemonClientImpl : public DebugDaemonClient {
@@ -708,7 +713,6 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     observers_.RemoveObserver(observer);
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     debugdaemon_proxy_ =
         bus->GetObjectProxy(debugd::kDebugdServiceName,
@@ -1108,12 +1112,48 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   base::WeakPtrFactory<DebugDaemonClientImpl> weak_ptr_factory_{this};
 };
 
+}  // namespace
+
+// static
+DebugDaemonClient* DebugDaemonClient::Get() {
+  if (g_instance_for_test)
+    return g_instance_for_test;
+  return g_instance;
+}
+
+// static
+void DebugDaemonClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  CHECK(!g_instance);
+  g_instance = new DebugDaemonClientImpl();
+  g_instance->Init(bus);
+}
+
+// static
+void DebugDaemonClient::InitializeFake() {
+  CHECK(!g_instance);
+  g_instance = new FakeDebugDaemonClient();
+  g_instance->Init(nullptr);
+}
+
+// static
+void DebugDaemonClient::SetInstanceForTest(DebugDaemonClient* client) {
+  g_instance_for_test = client;
+}
+
+// static
+void DebugDaemonClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+  g_instance = nullptr;
+}
+
 DebugDaemonClient::DebugDaemonClient() = default;
 
 DebugDaemonClient::~DebugDaemonClient() = default;
 
 // static
-std::unique_ptr<DebugDaemonClient> DebugDaemonClient::Create() {
+std::unique_ptr<DebugDaemonClient> DebugDaemonClient::CreateInstance() {
   return std::make_unique<DebugDaemonClientImpl>();
 }
 

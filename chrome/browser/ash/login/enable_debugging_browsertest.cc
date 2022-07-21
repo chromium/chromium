@@ -29,6 +29,7 @@
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/prefs/pref_service.h"
@@ -187,12 +188,17 @@ class EnableDebuggingTestBase : public OobeBaseTest {
     // enable-debugging UI.
     command_line->AppendSwitch(switches::kDisableHIDDetectionOnOOBEForTesting);
   }
-  void SetUpInProcessBrowserTestFixture() override {
-    debug_daemon_client_ = new TestDebugDaemonClient;
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-        std::unique_ptr<DebugDaemonClient>(debug_daemon_client_));
 
+  void SetUpInProcessBrowserTestFixture() override {
     OobeBaseTest::SetUpInProcessBrowserTestFixture();
+    debug_daemon_client_ = std::make_unique<TestDebugDaemonClient>();
+    DebugDaemonClient::SetInstanceForTest(debug_daemon_client_.get());
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    DebugDaemonClient::SetInstanceForTest(nullptr);
+    debug_daemon_client_.reset();
+    OobeBaseTest::TearDownInProcessBrowserTestFixture();
   }
 
   void InvokeEnableDebuggingScreen() {
@@ -234,7 +240,7 @@ class EnableDebuggingTestBase : public OobeBaseTest {
     test::OobeJS().ExpectVisiblePath(kPasswordNote);
   }
 
-  TestDebugDaemonClient* debug_daemon_client_ = nullptr;
+  std::unique_ptr<TestDebugDaemonClient> debug_daemon_client_;
 };
 
 class EnableDebuggingDevTest : public EnableDebuggingTestBase {
@@ -369,19 +375,11 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, WaitForDebugDaemon) {
   test::OobeJS().ExpectVisiblePath(kRemoveProtectionDialog);
 }
 
-class EnableDebuggingNonDevTest : public EnableDebuggingTestBase {
- public:
-  EnableDebuggingNonDevTest() = default;
-
-  void SetUpInProcessBrowserTestFixture() override {
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-        std::unique_ptr<DebugDaemonClient>(new FakeDebugDaemonClient));
-    EnableDebuggingTestBase::SetUpInProcessBrowserTestFixture();
-  }
-};
+// Uses the base class setup, with a TestDebugDaemonClient.
+using EnableDebuggingTest = EnableDebuggingTestBase;
 
 // Try to show enable debugging dialog, we should see error screen here.
-IN_PROC_BROWSER_TEST_F(EnableDebuggingNonDevTest, NoShowInNonDevMode) {
+IN_PROC_BROWSER_TEST_F(EnableDebuggingTest, NoShowInNonDevMode) {
   test::OobeJS().ExpectHidden(kDebuggingScreenId);
   InvokeEnableDebuggingScreen();
   test::OobeJS().CreateVisibilityWaiter(true, kErrorDialog)->Wait();

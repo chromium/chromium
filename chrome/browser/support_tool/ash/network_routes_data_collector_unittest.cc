@@ -19,6 +19,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "components/feedback/pii_types.h"
 #include "components/feedback/redaction_tool.h"
@@ -171,17 +172,19 @@ class NetworkRoutesDataCollectorTest : public ::testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     chromeos::DBusThreadManager::Initialize();
-    std::unique_ptr<chromeos::FakeDebugDaemonClient> fake_debug_daemon_client =
-        std::make_unique<chromeos::FakeDebugDaemonClient>();
-    fake_debug_daemon_client->SetRoutesForTesting(fake_routes);
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-        std::move(fake_debug_daemon_client));
+    chromeos::DebugDaemonClient::InitializeFake();
+    static_cast<chromeos::FakeDebugDaemonClient*>(
+        chromeos::DebugDaemonClient::Get())
+        ->SetRoutesForTesting(fake_routes);
   }
 
   void TearDown() override {
     if (!temp_dir_.IsValid())
       return;
     EXPECT_TRUE(temp_dir_.Delete());
+
+    chromeos::DebugDaemonClient::Shutdown();
+    chromeos::DBusThreadManager::Shutdown();
   }
 
  protected:

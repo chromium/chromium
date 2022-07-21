@@ -53,6 +53,7 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
@@ -351,8 +352,9 @@ class ArcVmClientAdapterTest : public testing::Test,
 
     // Create and set new fake clients every time to reset clients' status.
     chromeos::DBusThreadManager::Initialize();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-        std::make_unique<TestDebugDaemonClient>());
+    test_debug_daemon_client_ = std::make_unique<TestDebugDaemonClient>();
+    chromeos::DebugDaemonClient::SetInstanceForTest(
+        test_debug_daemon_client_.get());
     TestConciergeClient::Initialize();
     ash::UpstartClient::InitializeFake();
   }
@@ -362,6 +364,8 @@ class ArcVmClientAdapterTest : public testing::Test,
 
   ~ArcVmClientAdapterTest() override {
     ash::ConciergeClient::Shutdown();
+    chromeos::DebugDaemonClient::SetInstanceForTest(nullptr);
+    test_debug_daemon_client_.reset();
     chromeos::DBusThreadManager::Shutdown();
   }
 
@@ -642,9 +646,8 @@ class ArcVmClientAdapterTest : public testing::Test,
     return static_cast<TestConciergeClient*>(ash::ConciergeClient::Get());
   }
 
-  TestDebugDaemonClient* GetTestDebugDaemonClient() {
-    return static_cast<TestDebugDaemonClient*>(
-        chromeos::DBusThreadManager::Get()->GetDebugDaemonClient());
+  TestDebugDaemonClient* test_debug_daemon_client() {
+    return test_debug_daemon_client_.get();
   }
 
   TestArcVmBootNotificationServer* boot_notification_server() {
@@ -698,6 +701,7 @@ class ArcVmClientAdapterTest : public testing::Test,
   std::unique_ptr<FakeAppHost> app_host_;
   std::unique_ptr<FakeAppInstance> app_instance_;
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
+  std::unique_ptr<TestDebugDaemonClient> test_debug_daemon_client_;
 };
 
 // Tests that SetUserInfo() doesn't crash.
@@ -956,8 +960,8 @@ TEST_F(ArcVmClientAdapterTest, StopArcInstance_WithLogBackup_BackupFailed) {
   StartMiniArc();
   UpgradeArc(true);
 
-  EXPECT_FALSE(GetTestDebugDaemonClient()->backup_arc_bug_report_called());
-  GetTestDebugDaemonClient()->set_backup_arc_bug_report_result(false);
+  EXPECT_FALSE(test_debug_daemon_client()->backup_arc_bug_report_called());
+  test_debug_daemon_client()->set_backup_arc_bug_report_result(false);
 
   adapter()->StopArcInstance(/*on_shutdown=*/false, /*should_backup_log=*/true);
   run_loop()->RunUntilIdle();
@@ -971,7 +975,7 @@ TEST_F(ArcVmClientAdapterTest, StopArcInstance_WithLogBackup_BackupFailed) {
   SendVmStoppedSignal(vm_tools::concierge::STOP_VM_REQUESTED);
   run_loop()->Run();
 
-  EXPECT_TRUE(GetTestDebugDaemonClient()->backup_arc_bug_report_called());
+  EXPECT_TRUE(test_debug_daemon_client()->backup_arc_bug_report_called());
   // ..and that calls ArcInstanceStopped.
   ASSERT_TRUE(is_system_shutdown().has_value());
   EXPECT_FALSE(is_system_shutdown().value());

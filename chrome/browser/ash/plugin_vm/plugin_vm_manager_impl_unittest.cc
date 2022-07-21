@@ -32,6 +32,7 @@
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -54,6 +55,7 @@ class PluginVmManagerImplTest : public testing::Test {
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
+    chromeos::DebugDaemonClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     ash::VmPluginDispatcherClient::InitializeFake();
     testing_profile_ = std::make_unique<TestingProfile>();
@@ -95,6 +97,7 @@ class PluginVmManagerImplTest : public testing::Test {
     testing_profile_.reset();
     ash::VmPluginDispatcherClient::Shutdown();
     ash::SeneschalClient::Shutdown();
+    chromeos::DebugDaemonClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ash::ChunneldClient::Shutdown();

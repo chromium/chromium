@@ -15,7 +15,6 @@ class Bus;
 
 namespace chromeos {
 
-class DebugDaemonClient;
 class EasyUnlockClient;
 class FwupdClient;
 
@@ -38,9 +37,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
 
  private:
   friend class DBusThreadManager;
-  friend class DBusThreadManagerSetter;
 
-  std::unique_ptr<DebugDaemonClient> debug_daemon_client_;
   std::unique_ptr<EasyUnlockClient> easy_unlock_client_;
   std::unique_ptr<FwupdClient> fwupd_client_;
 };

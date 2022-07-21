@@ -12,7 +12,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,27 +25,19 @@ namespace cros_healthd = ::ash::cros_healthd;
 class ProbeServiceTest : public testing::Test {
  public:
   void SetUp() override {
-    auto fake_debugd_client = std::make_unique<FakeDebugDaemonClient>();
-    fake_debugd_client_ = fake_debugd_client.get();
-
     chromeos::DBusThreadManager::Initialize();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-        std::move(fake_debugd_client));
-
+    chromeos::DebugDaemonClient::InitializeFake();
     cros_healthd::FakeCrosHealthd::Initialize();
   }
 
   void TearDown() override {
     cros_healthd::FakeCrosHealthd::Shutdown();
+    chromeos::DebugDaemonClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 
   health::mojom::ProbeServiceProxy* probe_service() const {
     return remote_probe_service_.get();
-  }
-
-  FakeDebugDaemonClient* fake_debugd_client() const {
-    return fake_debugd_client_;
   }
 
  private:
@@ -55,8 +47,6 @@ class ProbeServiceTest : public testing::Test {
   std::unique_ptr<ash::health::mojom::ProbeService> probe_service_{
       ProbeService::Factory::Create(
           remote_probe_service_.BindNewPipeAndPassReceiver())};
-
-  FakeDebugDaemonClient* fake_debugd_client_ = nullptr;
 };
 
 // Tests that ProbeTelemetryInfo requests telemetry info in cros_healthd and

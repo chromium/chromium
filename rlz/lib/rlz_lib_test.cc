@@ -53,6 +53,7 @@
 #include "base/cxx17_backports.h"
 #include "base/files/important_file_writer.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "rlz/chromeos/lib/rlz_value_store_chromeos.h"
 #endif
@@ -1078,14 +1079,19 @@ TEST_F(RlzLibTest, LockAcquistionSucceedsButStoreFileCannotBeCreated) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
+class ScopedTestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
  public:
-  TestDebugDaemonClient() = default;
+  ScopedTestDebugDaemonClient() {
+    chromeos::DebugDaemonClient::SetInstanceForTest(this);
+  }
 
-  TestDebugDaemonClient(const TestDebugDaemonClient&) = delete;
-  TestDebugDaemonClient& operator=(const TestDebugDaemonClient&) = delete;
+  ScopedTestDebugDaemonClient(const ScopedTestDebugDaemonClient&) = delete;
+  ScopedTestDebugDaemonClient& operator=(const ScopedTestDebugDaemonClient&) =
+      delete;
 
-  ~TestDebugDaemonClient() override = default;
+  ~ScopedTestDebugDaemonClient() override {
+    chromeos::DebugDaemonClient::SetInstanceForTest(nullptr);
+  }
 
   int num_set_rlz_ping_sent() const { return num_set_rlz_ping_sent_; }
 
@@ -1106,10 +1112,8 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
 };
 
 TEST_F(RlzLibTest, SetRlzPingSent) {
-  TestDebugDaemonClient* debug_daemon_client = new TestDebugDaemonClient;
   chromeos::DBusThreadManager::Initialize();
-  chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
-      std::unique_ptr<chromeos::DebugDaemonClient>(debug_daemon_client));
+  auto debug_daemon_client = std::make_unique<ScopedTestDebugDaemonClient>();
   const char* kPingResponse =
       "stateful-events: CAF\r\n"
       "crc32: 3BB2FEAE\r\n";
@@ -1128,6 +1132,7 @@ TEST_F(RlzLibTest, SetRlzPingSent) {
       rlz_lib::ParsePingResponse(rlz_lib::TOOLBAR_NOTIFIER, kPingResponse));
   EXPECT_EQ(debug_daemon_client->num_set_rlz_ping_sent(),
             1 + rlz_lib::RlzValueStoreChromeOS::kMaxRetryCount);
+  debug_daemon_client.reset();
   chromeos::DBusThreadManager::Shutdown();
 }
 

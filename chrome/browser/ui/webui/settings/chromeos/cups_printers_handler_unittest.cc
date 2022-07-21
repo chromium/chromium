@@ -199,8 +199,9 @@ TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
   DBusThreadManager::Initialize();
   ConciergeClient::InitializeFake(
       /*fake_cicerone_client=*/nullptr);
+  DebugDaemonClient::InitializeFake();
 
-  DebugDaemonClient* client = DBusThreadManager::Get()->GetDebugDaemonClient();
+  DebugDaemonClient* client = DebugDaemonClient::Get();
   client->CupsAddAutoConfiguredPrinter("testprinter1", "fakeuri",
                                        base::BindOnce(&AddedPrinter));
 
@@ -225,6 +226,7 @@ TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
   EXPECT_FALSE(expected);
 
   profile_.reset();
+  DebugDaemonClient::Shutdown();
   ConciergeClient::Shutdown();
   DBusThreadManager::Shutdown();
 }
