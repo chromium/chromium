@@ -155,7 +155,7 @@ void PasswordCheckManager::OnEditCredential(
                            credential.signon_realm, is_using_account_store),
       &saved_passwords_presenter_,
       base::BindOnce(&PasswordCheckManager::OnEditUIDismissed,
-                     base::Unretained(this)),
+                     weak_ptr_factory_.GetWeakPtr()),
       context, settings_launcher);
 }
 
@@ -359,7 +359,7 @@ void PasswordCheckManager::RefreshScripts() {
   }
   ResetPrecondition(kScriptsCachePrewarmed);
   password_script_fetcher_->RefreshScriptsIfNecessary(base::BindOnce(
-      &PasswordCheckManager::OnScriptsFetched, base::Unretained(this)));
+      &PasswordCheckManager::OnScriptsFetched, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PasswordCheckManager::OnScriptsFetched() {
