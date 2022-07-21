@@ -223,7 +223,13 @@ Surface* GetTargetSurfaceForLocatedEvent(
 
   // Create a clone of the event as targeter may update it during the
   // search.
-  auto cloned = ui::Event::Clone(*original_event);
+  // TODO(crbug.com/1346400): `ui::Event::Clone` doesn't support all types.
+  // Fix it and remove event type check.
+  auto cloned =
+      original_event->type() == ui::ET_DROP_TARGET_EVENT
+          ? std::make_unique<ui::DropTargetEvent>(
+                *static_cast<const ui::DropTargetEvent*>(original_event))
+          : ui::Event::Clone(*original_event);
   ui::LocatedEvent* event = cloned->AsLocatedEvent();
 
   while (true) {
