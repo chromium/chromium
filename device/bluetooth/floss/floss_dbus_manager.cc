@@ -23,7 +23,6 @@ namespace floss {
 
 namespace {
 FlossDBusManager* g_floss_dbus_manager = nullptr;
-FlossDBusThreadManager* g_floss_dbus_thread_manager = nullptr;
 }  // namespace
 
 const int FlossDBusManager::kInvalidAdapter = -1;
@@ -66,12 +65,8 @@ void FlossDBusManager::Initialize(dbus::Bus* system_bus) {
   CHECK(!g_floss_dbus_manager);
 
   VLOG(1) << "FlossDBusManager about to initialize thread manager";
-  FlossDBusThreadManager::Initialize();
 
-  // |system_bus| is unused and we re-use the system bus connection created by
-  // FlossDBusThreadManager.
-  CreateGlobalInstance(FlossDBusThreadManager::Get()->GetSystemBus(),
-                       /*use_stubs=*/false);
+  CreateGlobalInstance(system_bus, /*use_stubs=*/false);
 }
 
 void FlossDBusManager::InitializeFake() {
@@ -211,61 +206,6 @@ void FlossDBusManagerSetter::SetFlossManagerClient(
 void FlossDBusManagerSetter::SetFlossAdapterClient(
     std::unique_ptr<FlossAdapterClient> client) {
   FlossDBusManager::Get()->client_bundle_->adapter_client_ = std::move(client);
-}
-
-FlossDBusThreadManager::FlossDBusThreadManager() {
-  base::Thread::Options thread_options;
-  thread_options.message_pump_type = base::MessagePumpType::IO;
-  dbus_thread_ = std::make_unique<base::Thread>("Floss D-Bus thread");
-  dbus_thread_->StartWithOptions(std::move(thread_options));
-
-  // Create the connection to the system bus.
-  dbus::Bus::Options system_bus_options;
-  system_bus_options.bus_type = dbus::Bus::SYSTEM;
-  system_bus_options.connection_type = dbus::Bus::PRIVATE;
-  system_bus_options.dbus_task_runner = dbus_thread_->task_runner();
-  system_bus_ = base::MakeRefCounted<dbus::Bus>(system_bus_options);
-}
-
-FlossDBusThreadManager::~FlossDBusThreadManager() {
-  // Shut down the bus. During the browser shutdown, it's ok to shut down
-  // the bus synchronously.
-  system_bus_->ShutdownOnDBusThreadAndBlock();
-
-  // Stop the D-Bus thread.
-  dbus_thread_->Stop();
-
-  if (!g_floss_dbus_thread_manager)
-    return;  // Called from Shutdown() or local test instance.
-
-  // There should never be both a global instance and a local instance.
-  CHECK(this == g_floss_dbus_thread_manager);
-}
-
-dbus::Bus* FlossDBusThreadManager::GetSystemBus() {
-  return system_bus_.get();
-}
-
-// static
-void FlossDBusThreadManager::Initialize() {
-  CHECK(!g_floss_dbus_thread_manager);
-  g_floss_dbus_thread_manager = new FlossDBusThreadManager();
-}
-
-// static
-void FlossDBusThreadManager::Shutdown() {
-  // Ensure that we only shutdown FlossDBusThreadManager once.
-  CHECK(g_floss_dbus_thread_manager);
-  delete g_floss_dbus_thread_manager;
-  g_floss_dbus_thread_manager = nullptr;
-  DVLOG(1) << "FlossDBusThreadManager Shutdown completed";
-}
-
-// static
-FlossDBusThreadManager* FlossDBusThreadManager::Get() {
-  CHECK(g_floss_dbus_thread_manager)
-      << "FlossDBusThreadManager::Get() called before Initialize()";
-  return g_floss_dbus_thread_manager;
 }
 
 FlossClientBundle::FlossClientBundle(bool use_stubs) : use_stubs_(use_stubs) {
