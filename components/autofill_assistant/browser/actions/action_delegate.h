@@ -60,6 +60,7 @@ class GenericUserInterfaceProto;
 class FormProto;
 class FormProto_Result;
 class InfoBox;
+class PromptQrCodeScanProto;
 class UserAction;
 class UserData;
 class UserModel;
@@ -410,6 +411,16 @@ class ActionDelegate {
       std::unique_ptr<FormProto> form,
       base::RepeatingCallback<void(const FormProto_Result*)> changed_callback,
       base::OnceCallback<void(const ClientStatus&)> cancel_callback) = 0;
+
+  // Show QR Code Scan UI to the user. |callback| should be invoked with the
+  // scanned result or absl::nullopt and an appropriate client status.
+  virtual void ShowQrCodeScanUi(
+      std::unique_ptr<PromptQrCodeScanProto> qr_code_scan,
+      base::OnceCallback<void(const ClientStatus&,
+                              const absl::optional<ValueProto>&)> callback) = 0;
+
+  // Clears the QR Code Scan Ui.
+  virtual void ClearQrCodeScanUi() = 0;
 
   // Force showing the UI if no UI is shown. This is useful when executing a
   // direct action which realizes it needs to interact with the user. Once

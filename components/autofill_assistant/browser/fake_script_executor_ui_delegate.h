@@ -68,6 +68,12 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
       std::unique_ptr<FormProto> form,
       base::RepeatingCallback<void(const FormProto::Result*)> changed_callback,
       base::OnceCallback<void(const ClientStatus&)> cancel_callback) override;
+  void ShowQrCodeScanUi(
+      std::unique_ptr<PromptQrCodeScanProto> qr_code_scan,
+      base::OnceCallback<void(const ClientStatus&,
+                              const absl::optional<ValueProto>&)> callback)
+      override;
+  void ClearQrCodeScanUi() override;
   void SetExpandSheetForPromptAction(bool expand) override;
   void SetGenericUi(
       std::unique_ptr<GenericUserInterfaceProto> generic_ui,
@@ -111,6 +117,8 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
     return interrupt_notification_history_;
   }
 
+  bool IsShowingQrCodeScanUi() { return show_qr_code_scan_ui_; }
+
  private:
   std::string status_message_;
   std::string tts_message_;
@@ -128,6 +136,7 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
   bool expand_or_collapse_updated_ = false;
   bool expand_or_collapse_value_ = false;
   bool expand_sheet_for_prompt_ = true;
+  bool show_qr_code_scan_ui_ = false;
   std::unique_ptr<GenericUserInterfaceProto> persistent_generic_ui_;
   std::vector<InterruptNotification> interrupt_notification_history_;
 };

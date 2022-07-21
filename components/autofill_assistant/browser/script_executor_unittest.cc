@@ -2348,6 +2348,16 @@ TEST_F(ScriptExecutorTest, CollectUserData) {
             UserDataEventField::NONE);
 }
 
+TEST_F(ScriptExecutorTest, ShowQrCodeScanUi) {
+  executor_->ShowQrCodeScanUi(
+      std::make_unique<PromptQrCodeScanProto>(PromptQrCodeScanProto()),
+      base::DoNothing());
+  EXPECT_TRUE(ui_delegate_.IsShowingQrCodeScanUi());
+
+  executor_->ClearQrCodeScanUi();
+  EXPECT_FALSE(ui_delegate_.IsShowingQrCodeScanUi());
+}
+
 TEST_F(ScriptExecutorTest, MustUseBackendData) {
   delegate_.SetMustUseBackendData(true);
   EXPECT_TRUE(executor_->MustUseBackendData());

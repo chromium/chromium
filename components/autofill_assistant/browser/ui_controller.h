@@ -93,6 +93,12 @@ class UiController : public ScriptExecutorUiDelegate,
       std::unique_ptr<FormProto> form,
       base::RepeatingCallback<void(const FormProto::Result*)> changed_callback,
       base::OnceCallback<void(const ClientStatus&)> cancel_callback) override;
+  void ShowQrCodeScanUi(
+      std::unique_ptr<PromptQrCodeScanProto> qr_code_scan,
+      base::OnceCallback<void(const ClientStatus&,
+                              const absl::optional<ValueProto>&)> callback)
+      override;
+  void ClearQrCodeScanUi() override;
   void SetGenericUi(
       std::unique_ptr<GenericUserInterfaceProto> generic_ui,
       base::OnceCallback<void(const ClientStatus&)> end_action_callback,
@@ -151,6 +157,8 @@ class UiController : public ScriptExecutorUiDelegate,
   void OnTtsButtonClicked() override;
   void SetAdditionalValue(const std::string& client_memory_key,
                           const ValueProto& value) override;
+  void OnQrCodeScanFinished(const ClientStatus& status,
+                            const absl::optional<ValueProto>& value) override;
   ConfigureBottomSheetProto::PeekMode GetPeekMode() override;
   BottomSheetState GetBottomSheetState() override;
   void SetBottomSheetState(BottomSheetState state) override;
@@ -164,6 +172,7 @@ class UiController : public ScriptExecutorUiDelegate,
   void RemoveObserver(const UiControllerObserver* observer) override;
   bool ShouldPromptActionExpandSheet() const override;
   BasicInteractions* GetBasicInteractions() override;
+  const PromptQrCodeScanProto* GetPromptQrCodeScanProto() const override;
   const GenericUserInterfaceProto* GetGenericUiProto() const override;
   const GenericUserInterfaceProto* GetPersistentGenericUiProto() const override;
   void OnKeyboardVisibilityChanged(bool visible) override;
@@ -323,6 +332,12 @@ class UiController : public ScriptExecutorUiDelegate,
   bool tts_enabled_ = false;
   std::unique_ptr<AutofillAssistantTtsController> tts_controller_;
   TtsButtonState tts_button_state_ = TtsButtonState::DEFAULT;
+
+  // Only set during a PromptQrCodeScanAction.
+  std::unique_ptr<PromptQrCodeScanProto> qr_code_scan_;
+  base::OnceCallback<void(const ClientStatus&,
+                          const absl::optional<ValueProto>&)>
+      qr_code_scan_callback_;
 
   // Only set during a ShowGenericUiAction.
   std::unique_ptr<GenericUserInterfaceProto> generic_user_interface_;

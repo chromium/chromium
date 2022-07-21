@@ -47,6 +47,8 @@ class MockUiControllerObserver : public UiControllerObserver {
   MOCK_METHOD0(OnCollapseBottomSheet, void());
   MOCK_METHOD2(OnFormChanged,
                void(const FormProto* form, const FormProto::Result* result));
+  MOCK_METHOD1(OnQrCodeScanUiChanged,
+               void(const PromptQrCodeScanProto* qr_code_scan));
   MOCK_METHOD1(OnGenericUserInterfaceChanged,
                void(const GenericUserInterfaceProto* generic_ui));
   MOCK_METHOD1(OnPersistentGenericUserInterfaceChanged,

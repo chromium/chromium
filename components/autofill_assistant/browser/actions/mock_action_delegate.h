@@ -175,6 +175,12 @@ class MockActionDelegate : public ActionDelegate {
            base::RepeatingCallback<void(const FormProto::Result*)>
                changed_callback,
            base::OnceCallback<void(const ClientStatus&)> cancel_callback));
+  MOCK_METHOD2(ShowQrCodeScanUi,
+               void(std::unique_ptr<PromptQrCodeScanProto> qr_code_scan,
+                    base::OnceCallback<void(const ClientStatus&,
+                                            const absl::optional<ValueProto>&)>
+                        callback));
+  MOCK_METHOD0(ClearQrCodeScanUi, void());
   MOCK_CONST_METHOD0(GetUserModel, UserModel*());
   MOCK_METHOD1(WaitForWindowHeightChange,
                void(base::OnceCallback<void(const ClientStatus&)> callback));

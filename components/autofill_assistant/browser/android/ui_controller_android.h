@@ -19,6 +19,7 @@
 #include "components/autofill_assistant/browser/android/assistant_header_delegate.h"
 #include "components/autofill_assistant/browser/android/assistant_header_model.h"
 #include "components/autofill_assistant/browser/android/assistant_overlay_delegate.h"
+#include "components/autofill_assistant/browser/android/assistant_qr_code_native_delegate.h"
 #include "components/autofill_assistant/browser/android/dependencies_android.h"
 #include "components/autofill_assistant/browser/chip.h"
 #include "components/autofill_assistant/browser/details.h"
@@ -136,6 +137,8 @@ class UiControllerAndroid : public EmptyControllerObserver,
   void OnCollapseBottomSheet() override;
   void OnFormChanged(const FormProto* form,
                      const FormProto::Result* result) override;
+  void OnQrCodeScanUiChanged(
+      const PromptQrCodeScanProto* qr_code_scan) override;
   void OnGenericUserInterfaceChanged(
       const GenericUserInterfaceProto* generic_ui) override;
   void OnPersistentGenericUserInterfaceChanged(
@@ -150,6 +153,10 @@ class UiControllerAndroid : public EmptyControllerObserver,
   // Called by AssistantHeaderDelegate:
   void OnHeaderFeedbackButtonClicked();
   void OnTtsButtonClicked();
+
+  // Called by AssistantQrCodeDelegate.
+  void OnQrCodeScanFinished(const ClientStatus& status,
+                            const absl::optional<ValueProto>& value);
 
   // Called by AssistantGenericUiDelegate:
   void OnViewEvent(const EventHandler::EventKey& key);
@@ -250,6 +257,7 @@ class UiControllerAndroid : public EmptyControllerObserver,
   base::android::ScopedJavaLocalRef<jobject> GetDetailsModel();
   base::android::ScopedJavaLocalRef<jobject> GetInfoBoxModel();
   base::android::ScopedJavaLocalRef<jobject> GetCollectUserDataModel();
+  base::android::ScopedJavaLocalRef<jobject> GetQrCodeCameraScanWrapperModel();
   base::android::ScopedJavaLocalRef<jobject> GetFormModel();
   base::android::ScopedJavaLocalRef<jobject> GetGenericUiModel();
   base::android::ScopedJavaLocalRef<jobject> GetPersistentGenericUiModel();
@@ -319,6 +327,8 @@ class UiControllerAndroid : public EmptyControllerObserver,
   OverlayState overlay_state_ = OverlayState::FULL;
 
   std::unique_ptr<AssistantHeaderModel> header_model_;
+
+  std::unique_ptr<AssistantQrCodeNativeDelegate> qr_code_native_delegate_;
 
   base::WeakPtrFactory<UiControllerAndroid> weak_ptr_factory_{this};
 };

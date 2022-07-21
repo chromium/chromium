@@ -124,6 +124,11 @@ class UiDelegate {
   virtual void SetAdditionalValue(const std::string& client_memory_key,
                                   const ValueProto& value) = 0;
 
+  // Called when QR Code Scan Action is finished.
+  virtual void OnQrCodeScanFinished(
+      const ClientStatus& status,
+      const absl::optional<ValueProto>& value) = 0;
+
   // Peek mode state and whether it was changed automatically last time.
   virtual ConfigureBottomSheetProto::PeekMode GetPeekMode() = 0;
 
@@ -167,6 +172,9 @@ class UiDelegate {
 
   // Whether the sheet should be auto expanded when entering the prompt state.
   virtual bool ShouldPromptActionExpandSheet() const = 0;
+
+  // Get PromptQrCodeScanProto, if any.
+  virtual const PromptQrCodeScanProto* GetPromptQrCodeScanProto() const = 0;
 
   // The generic user interface to show, if any.
   virtual const GenericUserInterfaceProto* GetGenericUiProto() const = 0;

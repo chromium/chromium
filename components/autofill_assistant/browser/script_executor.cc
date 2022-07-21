@@ -716,6 +716,17 @@ bool ScriptExecutor::SetForm(
                                std::move(cancel_callback));
 }
 
+void ScriptExecutor::ShowQrCodeScanUi(
+    std::unique_ptr<PromptQrCodeScanProto> qr_code_scan,
+    base::OnceCallback<void(const ClientStatus&,
+                            const absl::optional<ValueProto>&)> callback) {
+  ui_delegate_->ShowQrCodeScanUi(std::move(qr_code_scan), std::move(callback));
+}
+
+void ScriptExecutor::ClearQrCodeScanUi() {
+  ui_delegate_->ClearQrCodeScanUi();
+}
+
 void ScriptExecutor::RequireUI() {
   delegate_->RequireUI();
 }
