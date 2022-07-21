@@ -265,6 +265,7 @@ enum APIPermissionID {
   kEnterpriseRemoteApps = 239,
   kOffscreen = 240,
   kSidePanel = 241,
+  kDownloadsUi = 242,
 
   // Add new entries at the end of the enum and be sure to update the
   // "ExtensionPermission3" enum in tools/metrics/histograms/enums.xml

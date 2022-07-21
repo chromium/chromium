@@ -114,6 +114,10 @@ const char kTooManyListeners[] =
     "Each extension may have at most one "
     "onDeterminingFilename listener between all of its renderer execution "
     "contexts.";
+const char kUiDisabled[] = "Another extension has disabled the download UI";
+const char kUiPermission[] =
+    "downloads.setUiOptions requires the "
+    "\"downloads.ui\" permission";
 const char kUnexpectedDeterminer[] = "Unexpected determineFilename call";
 const char kUserGesture[] = "User gesture required";
 
@@ -441,7 +445,7 @@ bool ShouldExport(const DownloadItem& download_item) {
 
 // Set |manager| to the on-record DownloadManager, and |incognito_manager| to
 // the off-record DownloadManager if one exists and is requested via
-// |include_incognito|. This should work regardless of whether |profile| is
+// |include_incognito|. This should work regardless of whether |context| is
 // original or incognito.
 void GetManagers(content::BrowserContext* context,
                  bool include_incognito,
@@ -456,6 +460,40 @@ void GetManagers(content::BrowserContext* context,
             ->GetDownloadManager();
   } else {
     *incognito_manager = NULL;
+  }
+}
+
+// Set |service| to the on-record DownloadCoreService, |incognito_service| to
+// the off-record DownloadCoreService if one exists and is requested via
+// |include_incognito|. This should work regardless of whether |context| is
+// original or incognito.
+void GetDownloadCoreServices(content::BrowserContext* context,
+                             bool include_incognito,
+                             DownloadCoreService** service,
+                             DownloadCoreService** incognito_service) {
+  DownloadManager* manager = nullptr;
+  DownloadManager* incognito_manager = nullptr;
+  GetManagers(context, include_incognito, &manager, &incognito_manager);
+  if (manager) {
+    *service = DownloadCoreServiceFactory::GetForBrowserContext(
+        manager->GetBrowserContext());
+  }
+  if (incognito_manager) {
+    *incognito_service = DownloadCoreServiceFactory::GetForBrowserContext(
+        incognito_manager->GetBrowserContext());
+  }
+}
+
+void MaybeSetShelfEnabled(DownloadCoreService* service,
+                          DownloadCoreService* incognito_service,
+                          const Extension* extension,
+                          bool enabled) {
+  if (service) {
+    service->GetExtensionEventRouter()->SetShelfEnabled(extension, enabled);
+  }
+  if (incognito_service) {
+    incognito_service->GetExtensionEventRouter()->SetShelfEnabled(extension,
+                                                                  enabled);
   }
 }
 
@@ -490,6 +528,7 @@ enum DownloadsFunctionName {
   DOWNLOADS_FUNCTION_SHOW_DEFAULT_FOLDER = 13,
   DOWNLOADS_FUNCTION_SET_SHELF_ENABLED = 14,
   DOWNLOADS_FUNCTION_DETERMINE_FILENAME = 15,
+  DOWNLOADS_FUNCTION_SET_UI_OPTIONS = 16,
   // Insert new values here, not at the beginning.
   DOWNLOADS_FUNCTION_LAST
 };
@@ -1462,24 +1501,13 @@ ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
   }
 
   RecordApiFunctions(DOWNLOADS_FUNCTION_SET_SHELF_ENABLED);
-  DownloadManager* manager = NULL;
-  DownloadManager* incognito_manager = NULL;
-  GetManagers(browser_context(), include_incognito_information(), &manager,
-              &incognito_manager);
-  DownloadCoreService* service = NULL;
-  DownloadCoreService* incognito_service = NULL;
-  if (manager) {
-    service = DownloadCoreServiceFactory::GetForBrowserContext(
-        manager->GetBrowserContext());
-    service->GetExtensionEventRouter()->SetShelfEnabled(extension(),
-                                                        params->enabled);
-  }
-  if (incognito_manager) {
-    incognito_service = DownloadCoreServiceFactory::GetForBrowserContext(
-        incognito_manager->GetBrowserContext());
-    incognito_service->GetExtensionEventRouter()->SetShelfEnabled(
-        extension(), params->enabled);
-  }
+  DownloadCoreService* service = nullptr;
+  DownloadCoreService* incognito_service = nullptr;
+  GetDownloadCoreServices(browser_context(), include_incognito_information(),
+                          &service, &incognito_service);
+
+  MaybeSetShelfEnabled(service, incognito_service, extension(),
+                       params->enabled);
 
   BrowserList* browsers = BrowserList::GetInstance();
   if (browsers) {
@@ -1496,9 +1524,55 @@ ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
   }
 
   if (params->enabled &&
-      ((manager && !service->IsShelfEnabled()) ||
-       (incognito_manager && !incognito_service->IsShelfEnabled()))) {
+      ((service && !service->IsShelfEnabled()) ||
+       (incognito_service && !incognito_service->IsShelfEnabled()))) {
     return RespondNow(Error(download_extension_errors::kShelfDisabled));
+  }
+
+  return RespondNow(NoArguments());
+}
+
+DownloadsSetUiOptionsFunction::DownloadsSetUiOptionsFunction() = default;
+
+DownloadsSetUiOptionsFunction::~DownloadsSetUiOptionsFunction() = default;
+
+ExtensionFunction::ResponseAction DownloadsSetUiOptionsFunction::Run() {
+  std::unique_ptr<downloads::SetUiOptions::Params> params(
+      downloads::SetUiOptions::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+  const downloads::UiOptions& options = params->options;
+  if (!extension()->permissions_data()->HasAPIPermission(
+          APIPermissionID::kDownloadsUi)) {
+    return RespondNow(Error(download_extension_errors::kUiPermission));
+  }
+
+  RecordApiFunctions(DOWNLOADS_FUNCTION_SET_UI_OPTIONS);
+  DownloadCoreService* service = nullptr;
+  DownloadCoreService* incognito_service = nullptr;
+  GetDownloadCoreServices(browser_context(), include_incognito_information(),
+                          &service, &incognito_service);
+
+  MaybeSetShelfEnabled(service, incognito_service, extension(),
+                       options.enabled);
+
+  BrowserList* browsers = BrowserList::GetInstance();
+  if (browsers) {
+    for (auto* browser : *browsers) {
+      DownloadCoreService* current_service =
+          DownloadCoreServiceFactory::GetForBrowserContext(browser->profile());
+      if (((current_service == service) ||
+           (current_service == incognito_service)) &&
+          browser->window()->IsDownloadShelfVisible() &&
+          !current_service->IsShelfEnabled()) {
+        browser->window()->GetDownloadShelf()->Close();
+      }
+    }
+  }
+
+  if (options.enabled &&
+      ((service && !service->IsShelfEnabled()) ||
+       (incognito_service && !incognito_service->IsShelfEnabled()))) {
+    return RespondNow(Error(download_extension_errors::kUiDisabled));
   }
 
   return RespondNow(NoArguments());

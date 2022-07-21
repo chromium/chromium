@@ -413,6 +413,12 @@ namespace downloads {
     [legalValues=(16,32)] long? size;
   };
 
+  // Encapsulates a change in the download UI.
+  [inline_doc] dictionary UiOptions {
+    // Enable or disable the download UI.
+    boolean enabled;
+  };
+
   callback DownloadCallback = void(long downloadId);
   callback SearchCallback = void(DownloadItem[] results);
   callback EraseCallback = void(long[] erasedIds);
@@ -534,6 +540,18 @@ namespace downloads {
     // $(ref:runtime.lastError). Requires the <code>"downloads.shelf"</code>
     // permission in addition to the <code>"downloads"</code> permission.
     static void setShelfEnabled(boolean enabled);
+
+    // Change the download UI of every window associated with the current
+    // browser profile. As long as at least one extension has set
+    // $(ref:UiOptions.enabled) to false, the download UI will be hidden.
+    // Setting $(ref:UiOptions.enabled) to true while at least one other
+    // extension has disabled it will return an error through
+    // $(ref:runtime.lastError). Requires the <code>"downloads.ui"</code>
+    // permission in addition to the <code>"downloads"</code> permission.
+    // |options|: Encapsulate a change to the download UI.
+    // |callback|: Called when the UI update is completed.
+    [supportsPromises] static void setUiOptions(UiOptions options,
+                                                optional NullCallback callback);
   };
 
   interface Events {

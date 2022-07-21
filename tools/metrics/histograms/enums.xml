@@ -27555,6 +27555,7 @@ Called by update_document_policy_enum.py.-->
   <int value="13" label="show_default_folder"/>
   <int value="14" label="set_shelf_enabled"/>
   <int value="15" label="determine_filename"/>
+  <int value="16" label="set_ui_options"/>
 </enum>
 
 <enum name="DownloadImageType">
@@ -35168,6 +35169,7 @@ Called by update_extension_histograms.py.-->
   <int value="1687" label="SIDEPANEL_SETOPTIONS"/>
   <int value="1688" label="ENTERPRISEREPORTINGPRIVATE_GETFILESYSTEMINFO"/>
   <int value="1689" label="FILEMANAGERPRIVATE_GETDRIVEQUOTAMETADATA"/>
+  <int value="1690" label="DOWNLOADS_SETUIOPTIONS"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -35799,6 +35801,7 @@ Called by update_extension_permission.py.-->
   <int value="239" label="kEnterpriseRemoteApps"/>
   <int value="240" label="kOffscreen"/>
   <int value="241" label="kSidePanel"/>
+  <int value="242" label="kDownloadsUi"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

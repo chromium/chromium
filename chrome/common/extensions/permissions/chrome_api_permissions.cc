@@ -41,6 +41,7 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kDownloads, "downloads"},
     {APIPermissionID::kDownloadsOpen, "downloads.open"},
     {APIPermissionID::kDownloadsShelf, "downloads.shelf"},
+    {APIPermissionID::kDownloadsUi, "downloads.ui"},
     {APIPermissionID::kIdentity, "identity"},
     {APIPermissionID::kIdentityEmail, "identity.email"},
     {APIPermissionID::kExperimental, "experimental",

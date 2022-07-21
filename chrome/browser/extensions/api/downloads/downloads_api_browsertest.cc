@@ -4599,6 +4599,21 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 // TODO(benjhayden) Test that the shelf is shown for download() both with and
 // without a WebContents.
 
+IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
+                       DownloadExtensionTest_SetUiOptions) {
+  LoadExtension("downloads_split");
+  EXPECT_TRUE(RunFunction(new DownloadsSetUiOptionsFunction(),
+                          R"([{"enabled": false}])"));
+  EXPECT_FALSE(DownloadCoreServiceFactory::GetForBrowserContext(
+                   current_browser()->profile())
+                   ->IsShelfEnabled());
+  EXPECT_TRUE(RunFunction(new DownloadsSetUiOptionsFunction(),
+                          R"([{"enabled": true}])"));
+  EXPECT_TRUE(DownloadCoreServiceFactory::GetForBrowserContext(
+                  current_browser()->profile())
+                  ->IsShelfEnabled());
+}
+
 void OnDangerPromptCreated(DownloadDangerPrompt* prompt) {
   prompt->InvokeActionForTesting(DownloadDangerPrompt::ACCEPT);
 }

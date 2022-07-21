@@ -262,6 +262,10 @@
     "channel": "stable",
     "extension_types": ["extension"]
   },
+  "downloads.ui": {
+    "channel": "stable",
+    "extension_types": ["extension"]
+  },
   "enterprise.deviceAttributes": [{
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],

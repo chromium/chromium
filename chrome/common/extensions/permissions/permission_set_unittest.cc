@@ -752,6 +752,7 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kDiagnostics);
   skip.insert(APIPermissionID::kDns);
   skip.insert(APIPermissionID::kDownloadsShelf);
+  skip.insert(APIPermissionID::kDownloadsUi);
   skip.insert(APIPermissionID::kFontSettings);
   skip.insert(APIPermissionID::kFullscreen);
   skip.insert(APIPermissionID::kGcm);

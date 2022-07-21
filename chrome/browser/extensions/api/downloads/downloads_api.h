@@ -299,6 +299,21 @@ class DownloadsSetShelfEnabledFunction : public ExtensionFunction {
   ~DownloadsSetShelfEnabledFunction() override;
 };
 
+class DownloadsSetUiOptionsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("downloads.setUiOptions", DOWNLOADS_SETUIOPTIONS)
+  DownloadsSetUiOptionsFunction();
+
+  DownloadsSetUiOptionsFunction(const DownloadsSetUiOptionsFunction&) = delete;
+  DownloadsSetUiOptionsFunction& operator=(
+      const DownloadsSetUiOptionsFunction&) = delete;
+
+  ResponseAction Run() override;
+
+ protected:
+  ~DownloadsSetUiOptionsFunction() override;
+};
+
 class DownloadsGetFileIconFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("downloads.getFileIcon", DOWNLOADS_GETFILEICON)
