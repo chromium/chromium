@@ -21,6 +21,8 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
+#import "ios/chrome/browser/ui/open_in/open_in_activity_delegate.h"
+#import "ios/chrome/browser/ui/open_in/open_in_activity_view_controller.h"
 #import "ios/chrome/browser/ui/open_in/open_in_controller_testing.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -171,7 +173,8 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 
 }  // anonymous namespace
 
-@interface OpenInController () <CRWWebViewScrollViewProxyObserver> {
+@interface OpenInController () <CRWWebViewScrollViewProxyObserver,
+                                OpenInActivityDelegate> {
   // AlertCoordinator for showing an alert if no applications were found to open
   // the current document.
   AlertCoordinator* _alertCoordinator;
@@ -230,7 +233,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   GURL _documentURL;
 
   // Controller for opening documents in other applications.
-  UIActivityViewController* activityViewController;
+  OpenInActivityViewController* activityViewController;
 
   // Toolbar overlay to be displayed on tap.
   OpenInToolbar* _openInToolbar;
@@ -498,19 +501,9 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   if (!_webState)
     return;
 
-  NSArray* customActions = @[ fileURL ];
-  NSArray* activities = nil;
-
   activityViewController =
-      [[UIActivityViewController alloc] initWithActivityItems:customActions
-                                        applicationActivities:activities];
-
-  // Set completion callback.
-  __weak OpenInController* weakSelf = self;
-  activityViewController.completionWithItemsHandler =
-      ^(NSString*, BOOL, NSArray*, NSError*) {
-        [weakSelf completedPresentOpenInMenuForFileAtURL:fileURL];
-      };
+      [[OpenInActivityViewController alloc] initWithURL:fileURL];
+  activityViewController.delegate = self;
 
   // UIActivityViewController is presented in a popover on iPad.
   activityViewController.popoverPresentationController.sourceView =
@@ -606,7 +599,12 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   return _openInToolbar;
 }
 
-#pragma mark -
+#pragma mark - OpenInActivityDelegate
+
+- (void)openInActivityWillDisappearForFileAtURL:(NSURL*)fileURL {
+  [self completedPresentOpenInMenuForFileAtURL:fileURL];
+}
+
 #pragma mark File management
 
 - (void)urlLoadDidComplete:(const base::FilePath&)filePath {
