@@ -388,8 +388,8 @@ class ExtensionDownloadsEventRouter
 
   ~ExtensionDownloadsEventRouter() override;
 
-  void SetShelfEnabled(const extensions::Extension* extension, bool enabled);
-  bool IsShelfEnabled() const;
+  void SetUiEnabled(const extensions::Extension* extension, bool enabled);
+  bool IsUiEnabled() const;
 
   // Called by ChromeDownloadManagerDelegate during the filename determination
   // process, allows extensions to change the item's target filename. If no
@@ -430,7 +430,7 @@ class ExtensionDownloadsEventRouter
 
   raw_ptr<Profile> profile_;
   download::AllDownloadItemNotifier notifier_;
-  std::set<const extensions::Extension*> shelf_disabling_extensions_;
+  std::set<const extensions::Extension*> ui_disabling_extensions_;
 
   base::Time last_checked_removal_;
 

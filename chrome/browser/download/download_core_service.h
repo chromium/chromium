@@ -74,9 +74,9 @@ class DownloadCoreService : public KeyedService {
   virtual void SetDownloadHistoryForTesting(
       std::unique_ptr<DownloadHistory> download_history) {}
 
-  // Returns false if at least one extension has disabled the shelf, true
+  // Returns false if at least one extension has disabled the UI, true
   // otherwise.
-  virtual bool IsShelfEnabled() = 0;
+  virtual bool IsDownloadUiEnabled() = 0;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_CORE_SERVICE_H_
