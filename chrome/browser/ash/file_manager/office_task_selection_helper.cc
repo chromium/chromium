@@ -67,6 +67,7 @@ std::string OfficeTaskSelectionHelper::ExtensionToWebDriveOfficeActionId(
 // the entries are outside Drive, or the empty string if no candidate can be
 // set. Returns whether a candidate was found.
 bool OfficeTaskSelectionHelper::SetCandidateActionId() {
+  bool not_on_drive = false;
   for (const auto& entry : entries) {
     const std::string extension =
         base::FilePath(entry.path.Extension()).AsUTF8Unsafe();
@@ -88,10 +89,13 @@ bool OfficeTaskSelectionHelper::SetCandidateActionId() {
       DCHECK(candidate_office_action_id_.empty() ||
              candidate_office_action_id_ == kActionIdUploadOfficeToDrive);
       candidate_office_action_id_ = kActionIdUploadOfficeToDrive;
-      // Record the "Not on Drive" Web Drive Office metric.
-      UMA_HISTOGRAM_ENUMERATION(kWebDriveOfficeMetricName,
-                                WebDriveOfficeTaskResult::NOT_ON_DRIVE);
+      not_on_drive = true;
     }
+  }
+  if (not_on_drive) {
+    // Record the "Not on Drive" Web Drive Office metric.
+    UMA_HISTOGRAM_ENUMERATION(kWebDriveOfficeMetricName,
+                              WebDriveOfficeTaskResult::NOT_ON_DRIVE);
   }
   return !candidate_office_action_id_.empty();
 }
@@ -105,22 +109,29 @@ void OfficeTaskSelectionHelper::AdjustTasks() {
     return;
   }
 
-  // Remove Web Drive Office action if Web Drive Office is disabled.
-  if (IsCandidateWebDriveOffice() &&
-      !ash::features::IsFilesWebDriveOfficeEnabled()) {
-    UMA_HISTOGRAM_ENUMERATION(kWebDriveOfficeMetricName,
-                              WebDriveOfficeTaskResult::FLAG_DISABLED);
+  // If the Upload to Drive flag is disabled, invalidate Upload to Drive.
+  if (!ash::features::IsUploadOfficeToCloudEnabled() &&
+      IsCandidateUploadOfficeToDrive()) {
     InvalidateCandidate();
     EndAdjustTasks();
     return;
   }
 
-  // Remove Upload to Drive action if its flag is disabled.
-  if (IsCandidateUploadOfficeToDrive() &&
-      !ash::features::IsUploadOfficeToCloudEnabled()) {
-    InvalidateCandidate();
-    EndAdjustTasks();
-    return;
+  // If the Web Drive Office flag is disabled, invalidate Web Drive Office, and
+  // also Upload to Drive which is dependent on Web Drive Office.
+  if (!ash::features::IsFilesWebDriveOfficeEnabled()) {
+    if (IsCandidateWebDriveOffice()) {
+      UMA_HISTOGRAM_ENUMERATION(kWebDriveOfficeMetricName,
+                                WebDriveOfficeTaskResult::FLAG_DISABLED);
+      InvalidateCandidate();
+      EndAdjustTasks();
+      return;
+    }
+    if (IsCandidateUploadOfficeToDrive()) {
+      InvalidateCandidate();
+      EndAdjustTasks();
+      return;
+    }
   }
 
   // Disable Office file handling if Drive is Offline.

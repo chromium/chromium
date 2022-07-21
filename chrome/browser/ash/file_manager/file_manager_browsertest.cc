@@ -2150,6 +2150,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableWebDriveOffice()
             .EnableUploadOfficeToCloud()
             .FilesSwa(),
+        TestCase("uploadToDriveRequiresWebDriveOfficeEnabled")
+            .EnableUploadOfficeToCloud(),
+        TestCase("uploadToDriveRequiresWebDriveOfficeEnabled")
+            .EnableUploadOfficeToCloud()
+            .FilesSwa(),
         TestCase("openMultipleOfficeWordFromDrive").EnableWebDriveOffice(),
         TestCase("openMultipleOfficeWordFromDrive")
             .EnableWebDriveOffice()
