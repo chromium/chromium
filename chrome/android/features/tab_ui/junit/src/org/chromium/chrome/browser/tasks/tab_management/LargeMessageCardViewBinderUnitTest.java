@@ -154,14 +154,14 @@ public class LargeMessageCardViewBinderUnitTest {
     @Test
     @SmallTest
     public void updateIconWidth() {
-        mModel.set(MessageCardViewProperties.ICON_WIDTH, FAKE_ICON_WIDTH);
+        mModel.set(MessageCardViewProperties.ICON_WIDTH_IN_PIXELS, FAKE_ICON_WIDTH);
         verify(mMockLargeCardView, times(1)).updateIconWidth(FAKE_ICON_WIDTH);
     }
 
     @Test
     @SmallTest
     public void updateIconHeight() {
-        mModel.set(MessageCardViewProperties.ICON_HEIGHT, FAKE_ICON_HEIGHT);
+        mModel.set(MessageCardViewProperties.ICON_HEIGHT_IN_PIXELS, FAKE_ICON_HEIGHT);
         verify(mMockLargeCardView, times(1)).updateIconHeight(FAKE_ICON_HEIGHT);
     }
 

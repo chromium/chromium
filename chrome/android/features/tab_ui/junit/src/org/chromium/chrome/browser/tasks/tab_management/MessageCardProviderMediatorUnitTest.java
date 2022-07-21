@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,6 +45,9 @@ public class MessageCardProviderMediatorUnitTest {
 
     @Mock
     private Context mContext;
+
+    @Mock
+    private Resources mResourcesMock;
 
     @Mock
     private TabSuggestionMessageService.TabSuggestionMessageData mTabSuggestionMessageData;
@@ -350,6 +355,16 @@ public class MessageCardProviderMediatorUnitTest {
 
     @Test
     public void buildModel_ForIncognitoReauthPromoMessage() {
+        final int height = 1;
+        final int width = 2;
+        when(mResourcesMock.getDimensionPixelSize(
+                     R.dimen.incognito_reauth_promo_message_icon_height))
+                .thenReturn(height);
+        when(mResourcesMock.getDimensionPixelSize(
+                     R.dimen.incognito_reauth_promo_message_icon_width))
+                .thenReturn(width);
+        when(mContext.getResources()).thenReturn(mResourcesMock);
+
         enqueueMessageItem(MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE, -1);
 
         PropertyModel model =
@@ -359,6 +374,11 @@ public class MessageCardProviderMediatorUnitTest {
                         .model;
         Assert.assertEquals(MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
                 model.get(MessageCardViewProperties.MESSAGE_TYPE));
+        verify(mResourcesMock, times(1))
+                .getDimensionPixelSize(R.dimen.incognito_reauth_promo_message_icon_height);
+        verify(mResourcesMock, times(1))
+                .getDimensionPixelSize(R.dimen.incognito_reauth_promo_message_icon_width);
+        verify(mContext, times(2)).getResources();
     }
 
     @Test

@@ -24,7 +24,6 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -234,6 +233,8 @@ class LargeMessageCardView extends FrameLayout {
                 mDescription, isIncognito, /*isLargeMessageCard=*/true);
         MessageCardViewUtils.setActionButtonTextAppearance(
                 mActionButton, isIncognito, /*isLargeMessageCard=*/true);
+        MessageCardViewUtils.setActionButtonBackgroundColor(
+                mActionButton, isIncognito, /*isLargeMessageCard=*/true);
         MessageCardViewUtils.setSecondaryActionButtonColor(mSecondaryActionButton, isIncognito);
         MessageCardViewUtils.setCloseButtonTint(mCloseButton, isIncognito);
     }
@@ -244,10 +245,10 @@ class LargeMessageCardView extends FrameLayout {
      * TODO(crbug.com/1227656): Confirm with UX, whether large message card can follow a general
      * icon size for all clients. If so, then remove this method.
      *
-     * @param width The desired width to set.
+     * @param widthInPixels The desired width in pixels to set.
      */
-    void updateIconWidth(int width) {
-        mIcon.getLayoutParams().width = ViewUtils.dpToPx(mContext, width);
+    void updateIconWidth(int widthInPixels) {
+        mIcon.getLayoutParams().width = widthInPixels;
     }
 
     /**
@@ -256,10 +257,10 @@ class LargeMessageCardView extends FrameLayout {
      * TODO(crbug.com/1227656): Confirm with UX, whether large message card can follow a general
      * icon size for all clients. If so, then remove this method.
      *
-     * @param height The desired height to set.
+     * @param heightInPixels The desired height in pixels to set.
      */
-    void updateIconHeight(int height) {
-        mIcon.getLayoutParams().height = ViewUtils.dpToPx(mIcon.getContext(), height);
+    void updateIconHeight(int heightInPixels) {
+        mIcon.getLayoutParams().height = heightInPixels;
     }
 
     /**

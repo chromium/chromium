@@ -54,10 +54,10 @@ class LargeMessageCardViewBinder {
                     model.get(MessageCardViewProperties.IS_CLOSE_BUTTON_VISIBLE));
         } else if (MessageCardViewProperties.IS_INCOGNITO == propertyKey) {
             itemView.updateMessageCardColor(model.get(MessageCardViewProperties.IS_INCOGNITO));
-        } else if (MessageCardViewProperties.ICON_WIDTH == propertyKey) {
-            itemView.updateIconWidth(model.get(MessageCardViewProperties.ICON_WIDTH));
-        } else if (MessageCardViewProperties.ICON_HEIGHT == propertyKey) {
-            itemView.updateIconHeight(model.get(MessageCardViewProperties.ICON_HEIGHT));
+        } else if (MessageCardViewProperties.ICON_WIDTH_IN_PIXELS == propertyKey) {
+            itemView.updateIconWidth(model.get(MessageCardViewProperties.ICON_WIDTH_IN_PIXELS));
+        } else if (MessageCardViewProperties.ICON_HEIGHT_IN_PIXELS == propertyKey) {
+            itemView.updateIconHeight(model.get(MessageCardViewProperties.ICON_HEIGHT_IN_PIXELS));
         }
     }
 

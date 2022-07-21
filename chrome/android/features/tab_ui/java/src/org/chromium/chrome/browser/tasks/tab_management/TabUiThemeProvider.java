@@ -501,11 +501,26 @@ public class TabUiThemeProvider {
      * mode.
      *
      * @param isIncognito Whether the text appearance is used for incognito mode.
-     * @return The text appearance for the message card action button.
+     * @return The appearance for the message card action button text.
      */
     public static int getLargeMessageCardActionButtonTextAppearance(boolean isIncognito) {
-        return isIncognito ? R.style.TextAppearance_Button_Text_Blue_Dark
+        return isIncognito ? R.style.TextAppearance_Button_Text_Filled_Baseline_Dark
                            : R.style.TextAppearance_Button_Text_Filled;
+    }
+
+    /**
+     * Returns the color for the large message card action button based on the
+     * incognito mode.
+     *
+     * @param context The {@link Context} to use to fetch the resources.
+     * @param isIncognito Whether the color is used for incognito mode.
+     *
+     * @return The {@link ColorInt} to set for the large message card action button.
+     */
+    public static @ColorInt int getLargeMessageCardActionButtonColor(
+            Context context, boolean isIncognito) {
+        return isIncognito ? context.getColor(R.color.filled_button_bg_color_light)
+                           : context.getColor(R.color.filled_button_bg_color);
     }
 
     /**

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.res.ColorStateList;
 import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -46,7 +47,7 @@ public class MessageCardViewUtils {
     }
 
     /**
-     * Set text appearance for action button.
+     * Set appearance for action button.
      *
      * @param actionButton The button whose text appearance we want to modify.
      * @param isIncognito Whether the text appearance is used for incognito mode.
@@ -62,6 +63,23 @@ public class MessageCardViewUtils {
     }
 
     /**
+     * Set background color for action button.
+     *
+     * @param actionButton The button whose background color we want to modify.
+     * @param isIncognito Whether the background color is used for incognito mode.
+     */
+    public static void setActionButtonBackgroundColor(
+            ButtonCompat actionButton, boolean isIncognito, boolean isLargeMessageCard) {
+        if (!isLargeMessageCard) {
+            assert false : "Currently not supported.";
+            return;
+        }
+        actionButton.setButtonColor(
+                ColorStateList.valueOf(TabUiThemeProvider.getLargeMessageCardActionButtonColor(
+                        actionButton.getContext(), isIncognito)));
+    }
+
+    /**
      * Set text appearance for secondary action button.
      *
      * @param secondaryActionButton The button whose text appearance we want to modify.
@@ -72,18 +90,6 @@ public class MessageCardViewUtils {
         secondaryActionButton.setTextColor(
                 TabUiThemeProvider.getMessageCardSecondaryActionButtonColor(
                         secondaryActionButton.getContext(), isIncognito));
-    }
-
-    /**
-     * Set background color for action button.
-     *
-     * @param actionButton The button whose background color we want to modify.
-     * @param isIncognito Whether the background color is used for incognito mode.
-     */
-    public static void setActionButtonBackgroundColor(
-            ButtonCompat actionButton, boolean isIncognito) {
-        actionButton.setButtonColor(TabUiThemeProvider.getToggleActionButtonCheckedDrawableTintList(
-                actionButton.getContext(), isIncognito));
     }
 
     /**

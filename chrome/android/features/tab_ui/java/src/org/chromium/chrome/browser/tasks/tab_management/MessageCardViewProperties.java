@@ -78,9 +78,9 @@ class MessageCardViewProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_ICON_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableIntPropertyKey ICON_WIDTH =
+    public static final PropertyModel.WritableIntPropertyKey ICON_WIDTH_IN_PIXELS =
             new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableIntPropertyKey ICON_HEIGHT =
+    public static final PropertyModel.WritableIntPropertyKey ICON_HEIGHT_IN_PIXELS =
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_INCOGNITO =
             new PropertyModel.WritableBooleanPropertyKey();
@@ -101,7 +101,7 @@ class MessageCardViewProperties {
             MESSAGE_IDENTIFIER, ICON_PROVIDER, UI_ACTION_PROVIDER, UI_DISMISS_ACTION_PROVIDER,
             SECONDARY_ACTION_BUTTON_CLICK_HANDLER, MESSAGE_SERVICE_ACTION_PROVIDER,
             MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER, DISMISS_BUTTON_CONTENT_DESCRIPTION,
-            SHOULD_KEEP_AFTER_REVIEW, IS_CLOSE_BUTTON_VISIBLE, IS_ICON_VISIBLE, ICON_WIDTH,
-            ICON_HEIGHT, CARD_TYPE, CARD_ALPHA, IS_INCOGNITO, TITLE_TEXT,
-            MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE, PRICE_DROP};
+            SHOULD_KEEP_AFTER_REVIEW, IS_CLOSE_BUTTON_VISIBLE, IS_ICON_VISIBLE,
+            ICON_WIDTH_IN_PIXELS, ICON_HEIGHT_IN_PIXELS, CARD_TYPE, CARD_ALPHA, IS_INCOGNITO,
+            TITLE_TEXT, MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE, PRICE_DROP};
 }

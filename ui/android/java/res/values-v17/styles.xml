@@ -223,6 +223,11 @@
        <item name="android:textSize">@dimen/text_size_small</item>
     </style>
 
+    <!-- Blue Non Adaptive button text styles -->
+    <style name="TextAppearance.Button.Text.Filled.Baseline.Dark" parent="TextAppearance.TextAccentMediumThick">
+        <item name="android:textColor">@color/default_text_color_on_accent1_dark</item>
+    </style>
+
     <!-- Blue Non Adaptive Text Styles -->
     <style name="TextAppearance.TextMedium.Blue.Baseline.Light" parent="TextAppearance.TextMedium">
         <item name="android:textColor">@color/default_icon_color_blue_light</item>

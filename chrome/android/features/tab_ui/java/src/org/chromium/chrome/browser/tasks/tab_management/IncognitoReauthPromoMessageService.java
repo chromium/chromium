@@ -59,6 +59,14 @@ public class IncognitoReauthPromoMessageService extends MessageService {
             mReviewActionProvider = reviewActionProvider;
             mDismissActionProvider = dismissActionProvider;
         }
+
+        MessageCardView.ReviewActionProvider getReviewActionProvider() {
+            return mReviewActionProvider;
+        }
+
+        MessageCardView.DismissActionProvider getDismissActionProvider() {
+            return mDismissActionProvider;
+        }
     }
 
     private final @NonNull Profile mProfile;
