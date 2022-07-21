@@ -403,8 +403,8 @@ void GPUQueue::WriteTextureImpl(GPUImageCopyTexture* destination,
   // the data from 0 to offset would be copied over as well).
   const void* data_ptr =
       static_cast<const uint8_t*>(data) + dawn_data_layout.offset;
-  dawn_data_layout.offset = 0;
   data_size -= dawn_data_layout.offset;
+  dawn_data_layout.offset = 0;
 
   // Compute a tight upper bound of the number of bytes to send for this
   // WriteTexture. This can be 0 for some cases that produce validation errors,
