@@ -13,12 +13,18 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 
+class PrefService;
+
 // Temporary surface-value storage to estimate the Reid score of specified
 // surface set.
 class PrivacyBudgetReidScoreEstimator {
  public:
+  // `state_settings` and `pref_service` pointees must outlive `this`.
   explicit PrivacyBudgetReidScoreEstimator(
-      const IdentifiabilityStudyGroupSettings& state_settings);
+      const IdentifiabilityStudyGroupSettings* state_settings,
+      PrefService* pref_service);
+
+  void Init();
 
   PrivacyBudgetReidScoreEstimator(const PrivacyBudgetReidScoreEstimator&) =
       delete;
@@ -31,6 +37,8 @@ class PrivacyBudgetReidScoreEstimator {
   // If found, it updates its value to the token sent.
   void ProcessForReidScore(blink::IdentifiableSurface surface,
                            blink::IdentifiableToken token);
+
+  void ResetPersistedState();
 
  private:
   // ReidBlockStorage is a helper class which stores a list of surfaces
@@ -64,8 +72,10 @@ class PrivacyBudgetReidScoreEstimator {
     std::vector<blink::IdentifiableToken> GetValues() const;
 
     // Returns the key to be used for reporting the synthetic surface
-    // corresponding to this Reid block. Can be called only if full.
-    blink::IdentifiableSurface reid_surface_key() const;
+    // corresponding to this Reid block.
+    blink::IdentifiableSurface reid_surface_key() const {
+      return reid_surface_key_;
+    }
 
     // Can be called only if full.
     uint64_t salt_range() const;
@@ -103,11 +113,22 @@ class PrivacyBudgetReidScoreEstimator {
     blink::IdentifiableSurface reid_surface_key_;
   };
 
+  // Compute the hash for estimating the REID score.
+  uint64_t ComputeHashForReidScore(const ReidBlockStorage& reid_block);
+
+  void WriteReportedReidBlocksToPrefs() const;
+
   // Keeps track of the blocks for which we want to compute the Reid score.
   std::list<ReidBlockStorage> surface_blocks_;
 
-  // Compute the hash for estimating the REID score.
-  uint64_t ComputeHashForReidScore(const ReidBlockStorage& reid_block);
+  // Keeps track of the Reid blocks which where already reported.
+  IdentifiableSurfaceList already_reported_reid_blocks_;
+
+  // `settings_` pointee must outlive `this`.
+  raw_ptr<const IdentifiabilityStudyGroupSettings> settings_;
+
+  // `pref_service_` pointee must outlive `this`. Used for persistent state.
+  raw_ptr<PrefService> pref_service_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_PRIVACY_BUDGET_PRIVACY_BUDGET_UKM_ENTRY_FILTER_H_
+#endif  // CHROME_BROWSER_PRIVACY_BUDGET_PRIVACY_BUDGET_REID_SCORE_ESTIMATOR_H_

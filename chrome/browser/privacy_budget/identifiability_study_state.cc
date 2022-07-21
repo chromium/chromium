@@ -66,7 +66,8 @@ IdentifiabilityStudyState::IdentifiabilityStudyState(PrefService* pref_service)
               // bigger than 0.
               : 1,
           kMesaDistributionRatio),
-      reid_estimator_(PrivacyBudgetReidScoreEstimator(settings_)) {
+      reid_estimator_(
+          PrivacyBudgetReidScoreEstimator(&settings_, pref_service)) {
   InitializeGlobalStudySettings();
   InitFromPrefs();
 }
@@ -342,6 +343,8 @@ void IdentifiabilityStudyState::ResetInMemoryState() {
 
 void IdentifiabilityStudyState::ResetPersistedState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  reid_estimator_.ResetPersistedState();
+
   ResetInMemoryState();
 
   pref_service_->ClearPref(prefs::kPrivacyBudgetSeenSurfaces);
@@ -504,6 +507,8 @@ void IdentifiabilityStudyState::InitFromPrefs() {
     ResetPersistedState();
     return;
   }
+
+  reid_estimator_.Init();
 
   if (settings_.IsUsingAssignedBlockSampling()) {
     InitStateForAssignedBlockSampling();

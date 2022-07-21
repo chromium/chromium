@@ -8,7 +8,10 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/rand_util.h"
+#include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
+#include "chrome/common/privacy_budget/field_trial_param_conversions.h"
 #include "chrome/common/privacy_budget/types.h"
+#include "components/prefs/pref_service.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -115,26 +118,33 @@ double PrivacyBudgetReidScoreEstimator::ReidBlockStorage::noise_probability()
   return noise_probability_;
 }
 
-blink::IdentifiableSurface
-PrivacyBudgetReidScoreEstimator::ReidBlockStorage::reid_surface_key() const {
-  DCHECK(Full());
-  return reid_surface_key_;
-}
-
 PrivacyBudgetReidScoreEstimator::PrivacyBudgetReidScoreEstimator(
-    const IdentifiabilityStudyGroupSettings& state_settings) {
-  if (!state_settings.IsUsingReidScoreEstimator())
+    const IdentifiabilityStudyGroupSettings* state_settings,
+    PrefService* pref_service)
+    : settings_(state_settings), pref_service_(pref_service) {}
+
+void PrivacyBudgetReidScoreEstimator::Init() {
+  if (!settings_->IsUsingReidScoreEstimator())
     return;
 
-  for (size_t i = 0; i < state_settings.reid_blocks().size(); ++i) {
+  already_reported_reid_blocks_ =
+      DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceList>(
+          pref_service_->GetString(prefs::kPrivacyBudgetReportedReidBlocks));
+
+  surface_blocks_.clear();
+  for (size_t i = 0; i < settings_->reid_blocks().size(); ++i) {
     // All the vectors below have the same size. This is enforced by
     // `IdentifiabilityStudyGroupSettings`.
-    surface_blocks_.emplace_back(
-        /*surface_list=*/state_settings.reid_blocks()[i],
-        /*salt_range=*/state_settings.reid_blocks_salts_ranges()[i],
-        /*number_of_bits=*/state_settings.reid_blocks_bits()[i],
+    ReidBlockStorage block(
+        /*surface_list=*/settings_->reid_blocks()[i],
+        /*salt_range=*/settings_->reid_blocks_salts_ranges()[i],
+        /*number_of_bits=*/settings_->reid_blocks_bits()[i],
         /*noise_probability=*/
-        state_settings.reid_blocks_noise_probabilities()[i]);
+        settings_->reid_blocks_noise_probabilities()[i]);
+    if (!base::Contains(already_reported_reid_blocks_,
+                        block.reid_surface_key())) {
+      surface_blocks_.emplace_back(std::move(block));
+    }
   }
 }
 
@@ -143,6 +153,7 @@ PrivacyBudgetReidScoreEstimator::~PrivacyBudgetReidScoreEstimator() = default;
 void PrivacyBudgetReidScoreEstimator::ProcessForReidScore(
     blink::IdentifiableSurface surface,
     blink::IdentifiableToken token) {
+  bool at_least_one_reported_block = false;
   for (auto block_itr = surface_blocks_.begin();
        block_itr != surface_blocks_.end();) {
     block_itr->Record(surface, token);
@@ -157,15 +168,30 @@ void PrivacyBudgetReidScoreEstimator::ProcessForReidScore(
           FROM_HERE, base::BindOnce(&ReportHashForReidScore,
                                     block_itr->reid_surface_key(), reid_hash));
 
-      // Remove this block from the list, since we want to report a hash for a
-      // block only once.
+      // Remove this block from the map, and store the information in the
+      // PrefService, since we want to report a hash for a block only once.
+      DCHECK(!base::Contains(already_reported_reid_blocks_,
+                             block_itr->reid_surface_key()));
+      already_reported_reid_blocks_.push_back(block_itr->reid_surface_key());
       // Note: The returned `block_itr` points to the next element in the
       // vector.
       block_itr = surface_blocks_.erase(block_itr);
+
+      at_least_one_reported_block = true;
     } else {
       ++block_itr;
     }
   }
+
+  if (at_least_one_reported_block)
+    WriteReportedReidBlocksToPrefs();
+}
+
+void PrivacyBudgetReidScoreEstimator::WriteReportedReidBlocksToPrefs() const {
+  DCHECK(!already_reported_reid_blocks_.empty());
+  pref_service_->SetString(
+      prefs::kPrivacyBudgetReportedReidBlocks,
+      EncodeIdentifiabilityFieldTrialParam(already_reported_reid_blocks_));
 }
 
 uint64_t PrivacyBudgetReidScoreEstimator::ComputeHashForReidScore(
@@ -192,4 +218,11 @@ uint64_t PrivacyBudgetReidScoreEstimator::ComputeHashForReidScore(
   uint64_t needed_bits = reid_hash & mask;
   // Return salt in the left 32 bits and Reid b-bits hash in the right 32 bits.
   return ((salt << 32) | needed_bits);
+}
+
+void PrivacyBudgetReidScoreEstimator::ResetPersistedState() {
+  pref_service_->ClearPref(prefs::kPrivacyBudgetReportedReidBlocks);
+  already_reported_reid_blocks_.clear();
+  surface_blocks_.clear();
+  Init();
 }
