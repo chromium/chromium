@@ -227,7 +227,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   bool IsNotificationIndicatorShownForTest() const;
   GridDelegate* grid_delegate_for_test() { return grid_delegate_; }
-  const gfx::ImageSkia& icon_image_for_test() const { return icon_image_; }
 
   AppListMenuModelAdapter* item_menu_model_adapter() const {
     return item_menu_model_adapter_.get();
