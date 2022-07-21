@@ -6517,7 +6517,7 @@
   {
     "name": "web-feed-ios",
     "owners": [ "adamta", "sczs", "tinazwang" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 107
   },
   {
     "name": "web-feed-onboarding",
