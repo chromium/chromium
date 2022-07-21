@@ -2760,6 +2760,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_TRY_AGAIN_BUTTON" desc="Default text for Try Again button used to retry an action.">
         Try again
       </message>
+      <message name="IDS_SHIMLESS_RMA_DONE_BUTTON" desc="Default text for Done button when action is completed for closing a dialog.">
+        Done
+      </message>
       <!-- Exit dialog -->
       <message name="IDS_SHIMLESS_RMA_EXIT_DIALOG_TITLE" translateable="false" desc="Title for the exit dialog.">
         Exit repair?
@@ -3009,6 +3012,9 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_SHUTDOWN_BUTTON" desc="Label for the button in the battery cutoff countdown dialog that shuts down the device and cuts off the battery immediately">
         Shut down
+      </message>
+      <message name="IDS_SHIMLESS_RMA_LOGS_SAVE_SUCCESS" desc="The text telling the user that saving the logs to a external USB was successful and showing them the saved file location.">
+        Saved to "<ph name="FILE_LOCATION">$1<ex>/USB/Home/MyFiles</ex></ph>"
       </message>
       <!-- Powerwash dialog -->
       <message name="IDS_SHIMLESS_RMA_POWERWASH_DIALOG_TITLE" desc="Title for the powerwash dialog displayed on the repair complete page and on the restock page">

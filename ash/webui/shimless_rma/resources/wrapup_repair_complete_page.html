@@ -144,6 +144,16 @@
     padding-inline-end: 8px;
     width: 20px;
   }
+
+  #logSaveAttemptButtonContainer {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #logSavedIconText {
+    align-items: center;
+  }
 </style>
 
 <base-page>
@@ -227,13 +237,27 @@
   <div slot="body">
     <div class="log">[[log_]]</div>
   </div>
-  <div class="dialog-footer" slot="button-container">
+  <div class="dialog-footer" slot="button-container"
+      hidden="[[!shouldShowSaveToUsbButton_(usbLogState_)]]">
     <cr-button id="closeLogDialogButton" on-click="onCancelClick_">
       [[i18n('rmaLogsCancelButtonText')]]
     </cr-button>
     <cr-button id="saveLogDialogButton" class="text-button action-button"
         on-click="onSaveLogClick_">
       [[i18n('rmaLogsSaveToUsbButtonText')]]
+    </cr-button>
+  </div>
+  <div id="logSaveAttemptButtonContainer" class="dialog-footer"
+        slot="button-container"
+        hidden="[[!shouldShowLogSaveAttemptContainer_(usbLogState_)]]">
+    <div id="logSavedIconText">
+      <iron-icon id="verificationIcon" icon="shimless-icon:check"
+          class="small-icon">
+      </iron-icon>
+      [[logSavedStatusText_]]
+    </div>
+    <cr-button id="logSaveDoneDialogButton" class="text-button action-button">
+      [[i18n('doneButtonLabel')]]
     </cr-button>
   </div>
 </cr-dialog>

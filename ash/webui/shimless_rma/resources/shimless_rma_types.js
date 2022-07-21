@@ -346,3 +346,8 @@ export const Network = chromeos.networkConfig.mojom.NetworkStateProperties;
  * @typedef {ash.shimlessRma.mojom.ShutdownMethod}
  */
 export const ShutdownMethod = ash.shimlessRma.mojom.ShutdownMethod;
+
+/**
+ * @typedef {{savePath: mojoBase.mojom.FilePath, error: RmadErrorCode}}
+ */
+export let SaveLogResponse;

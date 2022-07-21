@@ -6,11 +6,11 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
-import {ShutdownMethod} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {RmadErrorCode, ShutdownMethod} from 'chrome://shimless-rma/shimless_rma_types.js';
 import {WrapupRepairCompletePage} from 'chrome://shimless-rma/wrapup_repair_complete_page.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
+import {flushTasks, isVisible} from '../../test_util.js';
 
 export function wrapupRepairCompletePageTest() {
   /**
@@ -343,10 +343,23 @@ export function wrapupRepairCompletePageTest() {
       return resolver.promise;
     };
 
+    // Open the logs dialog.
+    await clickButton('#rmaLogButton');
+    assertTrue(
+        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
+
+    // Attempt to save the logs.
     await clickButton('#saveLogDialogButton');
+    resolver.resolve({savePath: 'save/path', error: RmadErrorCode.kOk});
     await flushTasks();
 
     assertEquals(1, callCount);
+
+    // The save log button should be replaced by the done button.
+    assertFalse(
+        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
+    assertTrue(isVisible(
+        component.shadowRoot.querySelector('#logSaveDoneDialogButton')));
   });
 
   test('BatteryCutButtonDisabledByDefault', async () => {
