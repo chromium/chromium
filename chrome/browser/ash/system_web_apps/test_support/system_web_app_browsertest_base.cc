@@ -24,11 +24,7 @@
 
 namespace ash {
 
-SystemWebAppBrowserTestBase::SystemWebAppBrowserTestBase(bool install_mock) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::EnableSystemWebAppsInLacrosForTesting();
-#endif
-}
+SystemWebAppBrowserTestBase::SystemWebAppBrowserTestBase(bool install_mock) {}
 
 SystemWebAppBrowserTestBase::~SystemWebAppBrowserTestBase() = default;
 
@@ -78,8 +74,6 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
   // normal scenarios, no code path should trigger this.
   DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       browser()->profile()));
-
-  DCHECK(web_app::AreSystemWebAppsSupported());
 
   if (!params.launch_files.empty()) {
     // SWA browser tests bypass the code in `WebAppPublisherHelper` that fills
@@ -136,7 +130,6 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchAppWithoutWaiting(
 
 GURL SystemWebAppBrowserTestBase::GetStartUrl(
     const apps::AppLaunchParams& params) {
-  DCHECK(web_app::AreSystemWebAppsSupported());
   return params.override_url.is_valid()
              ? params.override_url
              : web_app::WebAppProvider::GetForLocalAppsUnchecked(

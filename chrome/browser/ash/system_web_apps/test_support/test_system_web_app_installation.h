@@ -56,13 +56,11 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   bool ShouldAllowScriptsToCloseWindows() const override;
   absl::optional<SystemWebAppBackgroundTaskInfo> GetTimerInfo() const override;
   gfx::Rect GetDefaultBounds(Browser* browser) const override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   Browser* LaunchAndNavigateSystemWebApp(
       Profile* profile,
       web_app::WebAppProvider* provider,
       const GURL& url,
       const apps::AppLaunchParams& params) const override;
-#endif
   bool IsAppEnabled() const override;
   bool IsUrlInSystemAppScope(const GURL& url) const override;
   bool PreferManifestBackgroundColor() const override;

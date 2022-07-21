@@ -8,19 +8,37 @@
 #include <utility>
 #include <vector>
 
+#include "ash/public/cpp/app_menu_constants.h"
+#include "ash/public/cpp/shelf_item_delegate.h"
+#include "ash/public/cpp/shelf_model.h"
+#include "ash/shell.h"
+#include "ash/wm/window_util.h"
 #include "base/callback_helpers.h"
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/crosapi/url_handler_ash.h"
+#include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
+#include "chrome/browser/ash/web_applications/os_url_handler_system_web_app_info.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -31,6 +49,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
@@ -38,39 +57,16 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/display/screen.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/app_menu_constants.h"
-#include "ash/public/cpp/shelf_item_delegate.h"
-#include "ash/public/cpp/shelf_model.h"
-#include "ash/shell.h"
-#include "ash/wm/window_util.h"
-#include "base/run_loop.h"
-#include "base/scoped_observation.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crosapi/url_handler_ash.h"
-#include "chrome/browser/ash/login/login_manager_test.h"
-#include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/login/ui/user_adding_screen.h"
-#include "chrome/browser/ash/web_applications/os_url_handler_system_web_app_info.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
-#include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
-#include "chrome/common/webui_url_constants.h"
-#include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "content/public/test/test_utils.h"
 #include "ui/wm/public/activation_change_observer.h"  // nogncheck
 #include "ui/wm/public/activation_client.h"           // nogncheck
-#endif
 
 namespace web_app {
 
@@ -79,9 +75,6 @@ class SystemWebAppLinkCaptureBrowserTest
  public:
   SystemWebAppLinkCaptureBrowserTest()
       : SystemWebAppManagerBrowserTest(/*install_mock*/ false) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    EnableSystemWebAppsInLacrosForTesting();
-#endif
     maybe_installation_ =
         ash::TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation();
   }
@@ -108,7 +101,6 @@ class SystemWebAppLinkCaptureBrowserTest
       ash::SystemWebAppType::SETTINGS;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                        OmniboxTypeURLAndNavigate) {
   WaitForTestSystemAppInstall();
@@ -147,14 +139,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, OmniboxPasteAndGo) {
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
 
-// This test is flaky on MacOS with ASAN or DBG. https://crbug.com/1173317
-#if BUILDFLAG(IS_MAC) && (defined(ADDRESS_SANITIZER) || !defined(NDEBUG))
-#define MAYBE_AnchorLinkClick DISABLED_AnchorLinkClick
-#else
-#define MAYBE_AnchorLinkClick AnchorLinkClick
-#endif  // BUILDFLAG(IS_MAC) && (defined(ADDRESS_SANITIZER) || !defined(NDEBUG))
-IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
-                       MAYBE_AnchorLinkClick) {
+IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, AnchorLinkClick) {
   WaitForTestSystemAppInstall();
 
   GURL kInitiatingChromeUrl = GURL(chrome::kChromeUIAboutURL);
@@ -479,7 +464,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class SystemWebAppManagerWindowSizeControlsTest
     : public ash::SystemWebAppManagerBrowserTest {
@@ -516,7 +500,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWindowSizeControlsTest,
   EXPECT_FALSE(app_browser->create_params().can_maximize);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Use LoginManagerTest here instead of SystemWebAppManagerBrowserTest, because
 // it's less complicated to add SWA to LoginManagerTest than adding multi-logins
 // to SWA browsertest.
@@ -698,9 +681,6 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
   }
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 using SystemWebAppLaunchProfileBrowserTest =
     ash::SystemWebAppManagerBrowserTest;
 
@@ -790,9 +770,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileGuestSessionBrowserTest,
 
   EXPECT_TRUE(FindSystemWebAppBrowser(startup_profile, GetMockAppType()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 using SystemWebAppLaunchOmniboxNavigateBrowsertest =
     ash::SystemWebAppManagerBrowserTest;
 
@@ -816,9 +794,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchOmniboxNavigateBrowsertest,
       *web_app::WebAppTabHelper::GetAppId(web_contents),
       *ash::GetAppIdForSystemWebApp(browser()->profile(), GetMockAppType()));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // A one shot observer which waits for an activation of any window.
 class TestActivationObserver : public wm::ActivationChangeObserver {
@@ -955,8 +930,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests,
   EXPECT_EQ(u"ChromeOS-URLs", ash::window_util::GetActiveWindow()->GetTitle());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 class SystemWebAppManagerCloseFromScriptsTest
     : public ash::SystemWebAppManagerBrowserTest {
  public:
@@ -1025,7 +998,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShouldNotCloseFromScriptsTest,
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 class SystemWebAppNewWindowMenuItemTest
     : public ash::SystemWebAppManagerBrowserTest {
  public:
@@ -1144,28 +1116,21 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppNewWindowMenuItemTest,
 
   EXPECT_EQ(2U, GetSystemWebAppBrowserCount(maybe_installation_->GetType()));
 }
-#endif
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppLinkCaptureBrowserTest);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppLaunchProfileBrowserTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(
     SystemWebAppLaunchProfileGuestSessionBrowserTest);
-#endif
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerWindowSizeControlsTest);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     SystemWebAppLaunchOmniboxNavigateBrowsertest);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerCloseFromScriptsTest);
@@ -1173,12 +1138,10 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerShouldNotCloseFromScriptsTest);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppNewWindowMenuItemTest);
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppOpenInAshFromLacrosTests);
-#endif
+
 }  // namespace web_app

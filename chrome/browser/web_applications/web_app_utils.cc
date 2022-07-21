@@ -73,8 +73,6 @@ namespace web_app {
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool g_enable_system_web_apps_in_lacros_for_testing = false;
-
 // Denotes whether user web apps may be installed on profiles other than the
 // main profile. This may be modified by SkipMainProfileCheckForTesting().
 bool g_skip_main_profile_check_for_testing = false;
@@ -207,14 +205,6 @@ bool AreWebAppsUserInstallable(Profile* profile) {
 #endif
   return AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&
          !profile->IsOffTheRecord();
-}
-
-bool AreSystemWebAppsSupported() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!g_enable_system_web_apps_in_lacros_for_testing)
-    return false;
-#endif
-  return true;
 }
 
 content::BrowserContext* GetBrowserContextForWebApps(
@@ -447,10 +437,6 @@ bool IsWebAppsCrosapiEnabled() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void EnableSystemWebAppsInLacrosForTesting() {
-  g_enable_system_web_apps_in_lacros_for_testing = true;
-}
-
 void SkipMainProfileCheckForTesting() {
   g_skip_main_profile_check_for_testing = true;
 }

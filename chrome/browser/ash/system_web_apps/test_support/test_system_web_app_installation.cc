@@ -168,7 +168,6 @@ gfx::Rect UnittestingSystemAppDelegate::GetDefaultBounds(
   return gfx::Rect();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 Browser* UnittestingSystemAppDelegate::LaunchAndNavigateSystemWebApp(
     Profile* profile,
     web_app::WebAppProvider* provider,
@@ -181,7 +180,6 @@ Browser* UnittestingSystemAppDelegate::LaunchAndNavigateSystemWebApp(
   return SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(profile, provider,
                                                              url, params);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool UnittestingSystemAppDelegate::IsAppEnabled() const {
   return is_app_enabled;

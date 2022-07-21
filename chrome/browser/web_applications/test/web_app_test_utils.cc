@@ -320,7 +320,8 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
 }
 
 std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
-                                           const uint32_t seed) {
+                                           const uint32_t seed,
+                                           bool allow_system_source) {
   RandomHelper random(seed);
 
   const std::string seed_str = base::NumberToString(seed);
@@ -342,7 +343,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   std::vector<WebAppManagement::Type> management_types;
 
   // Generate all possible permutations of field values in a random way:
-  if (AreSystemWebAppsSupported() && random.next_bool()) {
+  if (allow_system_source && random.next_bool()) {
     app->AddSource(WebAppManagement::kSystem);
     management_types.push_back(WebAppManagement::kSystem);
   }

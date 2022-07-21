@@ -11,6 +11,18 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "ash/webui/camera_app_ui/url_constants.h"
+#include "ash/webui/connectivity_diagnostics/url_constants.h"
+#include "ash/webui/firmware_update_ui/url_constants.h"
+#include "ash/webui/help_app_ui/url_constants.h"
+#include "ash/webui/media_app_ui/url_constants.h"
+#include "ash/webui/os_feedback_ui/url_constants.h"
+#include "ash/webui/personalization_app/personalization_app_url_constants.h"
+#include "ash/webui/shimless_rma/url_constants.h"
+#include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -25,51 +37,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/manifest_update_manager.h"
-#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
-#include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_utils.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
-#include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
-#include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/generated_resources.h"
-#include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
-#include "components/version_info/version_info.h"
-#include "components/webapps/browser/install_result_code.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/url_data_source.h"
-#include "content/public/common/content_switches.h"
-#include "content/public/common/url_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/web_preferences/web_preferences.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
-#include "url/origin.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/app_list/internal_app_id_constants.h"
-#include "ash/webui/camera_app_ui/url_constants.h"
-#include "ash/webui/connectivity_diagnostics/url_constants.h"
-#include "ash/webui/firmware_update_ui/url_constants.h"
-#include "ash/webui/help_app_ui/url_constants.h"
-#include "ash/webui/media_app_ui/url_constants.h"
-#include "ash/webui/os_feedback_ui/url_constants.h"
-#include "ash/webui/personalization_app/personalization_app_url_constants.h"
-#include "ash/webui/shimless_rma/url_constants.h"
-#include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "chrome/browser/ash/web_applications/camera_app/camera_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/ash/web_applications/connectivity_diagnostics_system_web_app_info.h"
@@ -91,14 +58,43 @@
 #include "chrome/browser/ash/web_applications/shimless_rma_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/shortcut_customization_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/terminal_system_web_app_info.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/manifest_update_manager.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"  // nogncheck
+#include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
+#include "components/version_info/version_info.h"
+#include "components/webapps/browser/install_result_code.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/url_data_source.h"
+#include "content/public/common/content_switches.h"
+#include "content/public/common/url_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
+#include "url/origin.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ash/web_applications/demo_mode_web_app_info.h"
 #include "chrome/browser/ash/web_applications/sample_system_web_app_info.h"
 #endif  // !defined(OFFICIAL_BUILD)
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace ash {
 
@@ -109,7 +105,6 @@ namespace {
 const int kInstallFailureAttempts = 3;
 
 SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::vector<std::unique_ptr<SystemWebAppDelegate>> info_vec;
   // TODO(crbug.com/1051229): Currently unused, will be hooked up
   // post-migration. We're making delegates for everything, and will then use
@@ -156,9 +151,6 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
     }
   }
   return delegate_map;
-#else
-  return {};
-#endif
 }
 
 bool HasSystemWebAppScheme(const GURL& url) {
@@ -252,18 +244,12 @@ SystemWebAppManager::~SystemWebAppManager() {
 
 // static
 SystemWebAppManager* SystemWebAppManager::Get(Profile* profile) {
-  if (!web_app::AreSystemWebAppsSupported())
-    return nullptr;
-
   return GetForLocalAppsUnchecked(profile);
 }
 
 // static
 web_app::WebAppProvider* SystemWebAppManager::GetWebAppProvider(
     Profile* profile) {
-  if (!web_app::AreSystemWebAppsSupported())
-    return nullptr;
-
   return web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
 }
 
@@ -378,17 +364,11 @@ void SystemWebAppManager::Start() {
     UpdateLastAttemptedInfo();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   const auto& disabled_system_apps =
       web_app_policy_manager_->GetDisabledSystemWebApps();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   for (const auto& app : system_app_delegates_) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     bool is_disabled = base::Contains(disabled_system_apps, app.first);
-#else
-    bool is_disabled = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     install_options_list.push_back(CreateInstallOptionsForSystemApp(
         app.first, *app.second, should_force_install_apps, is_disabled));
   }
@@ -529,9 +509,8 @@ SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
   if (!delegate->ShouldCaptureNavigations())
     return absl::nullopt;
 
-    // TODO(crbug://1051229): Expand ShouldCaptureNavigation to take a GURL, and
-    // move this into the camera one.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug://1051229): Expand ShouldCaptureNavigation to take a GURL, and
+  // move this into the camera one.
   if (type == SystemWebAppType::CAMERA) {
     GURL::Replacements replacements;
     replacements.ClearQuery();
@@ -539,7 +518,6 @@ SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
     if (url.ReplaceComponents(replacements).spec() != kChromeUICameraAppMainURL)
       return absl::nullopt;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return type;
 }

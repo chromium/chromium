@@ -36,7 +36,9 @@ std::unique_ptr<WebApp> CreateWebApp(
     const GURL& start_url = GURL("https://example.com/path"),
     WebAppManagement::Type source_type = WebAppManagement::kSync);
 
-std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url, uint32_t seed);
+std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
+                                           uint32_t seed,
+                                           bool allow_system_source = true);
 
 void TestAcceptDialogCallback(
     content::WebContents* initiator_web_contents,

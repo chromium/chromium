@@ -66,12 +66,7 @@ bool SystemWebAppManagerFactory::ServiceIsCreatedWithBrowserContext() const {
 
 content::BrowserContext* SystemWebAppManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  // System Web Apps are only available in Ash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return web_app::GetBrowserContextForWebApps(context);
-#else
-  return nullptr;
-#endif
 }
 
 void SystemWebAppManagerFactory::RegisterProfilePrefs(

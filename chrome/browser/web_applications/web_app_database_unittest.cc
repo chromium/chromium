@@ -150,14 +150,20 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
   std::vector<AppId> apps_to_delete;
   Registry expected_registry;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool allow_system_source = true;
+#else
+  bool allow_system_source = false;
+#endif
+
   for (int i = 0; i < num_apps; ++i) {
     std::unique_ptr<WebApp> app =
-        test::CreateRandomWebApp(base_url, /*seed=*/i);
+        test::CreateRandomWebApp(base_url, /*seed=*/i, allow_system_source);
     apps_to_delete.push_back(app->app_id());
     apps_to_create.push_back(std::move(app));
 
     std::unique_ptr<WebApp> expected_app =
-        test::CreateRandomWebApp(base_url, /*seed=*/i);
+        test::CreateRandomWebApp(base_url, /*seed=*/i, allow_system_source);
     expected_registry.emplace(expected_app->app_id(), std::move(expected_app));
   }
 

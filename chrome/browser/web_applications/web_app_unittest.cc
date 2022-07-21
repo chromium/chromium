@@ -244,10 +244,6 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
 }
 
 TEST(WebAppTest, SampleAppAsDebugValue) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EnableSystemWebAppsInLacrosForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   EXPECT_EQ(base::JSONReader::Read(R"JSON({
    "!app_id": "eajjdjobhihlgobdfaehiiheinneagde",
    "!name": "Name1234",

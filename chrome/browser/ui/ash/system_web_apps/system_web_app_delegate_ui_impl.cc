@@ -74,12 +74,10 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   if (!web_contents || web_contents->GetURL() != url ||
       GetType() == SystemWebAppType::HELP) {
     NavigateParams nav_params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(crbug.com/1308961): Migrate to use PWA pinned home tab when ready.
     if (ShouldPinTab(url)) {
       nav_params.tabstrip_add_types |= TabStripModel::ADD_PINNED;
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     web_contents =
         web_app::NavigateWebAppUsingParams(params.app_id, nav_params);
     started_new_navigation = true;

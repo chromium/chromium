@@ -1250,24 +1250,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
-enum class SystemWebAppsInLacrosParam {
-  kDisabled = 0,
-  kEnabled = 1,
-};
+using WebAppRegistrarLacrosTest = WebAppTest;
 
-class WebAppRegistrarLacrosTest
-    : public WebAppTest,
-      public testing::WithParamInterface<SystemWebAppsInLacrosParam> {
- public:
-  WebAppRegistrarLacrosTest() {
-    if (GetParam() == SystemWebAppsInLacrosParam::kEnabled) {
-      EnableSystemWebAppsInLacrosForTesting();
-    }
-  }
-  ~WebAppRegistrarLacrosTest() override = default;
-};
-
-TEST_P(WebAppRegistrarLacrosTest, SourceSupported) {
+TEST_F(WebAppRegistrarLacrosTest, SwaSourceNotSupported) {
   const GURL example_url("https://example.com/my-app/start");
   const GURL swa_url("chrome://swa/start");
   const GURL uninstalling_url("https://example.com/uninstalling/start");
@@ -1301,21 +1286,13 @@ TEST_P(WebAppRegistrarLacrosTest, SourceSupported) {
   EXPECT_TRUE(registrar.GetAppUserDisplayMode(example_id).has_value());
   EXPECT_EQ(registrar.CountUserInstalledApps(), 1);
 
-  if (GetParam() == SystemWebAppsInLacrosParam::kEnabled) {
-    EXPECT_EQ(CountApps(registrar.GetApps()), 2);
+  // System web apps are managed by Ash, excluded in Lacros
+  // WebAppRegistrar.
+  EXPECT_EQ(CountApps(registrar.GetApps()), 1);
 
-    EXPECT_EQ(registrar.FindAppWithUrlInScope(swa_url), swa_id);
-    EXPECT_EQ(registrar.GetAppScope(swa_id), GURL("chrome://swa/"));
-    EXPECT_TRUE(registrar.GetAppUserDisplayMode(swa_id).has_value());
-  } else {
-    // System web apps are managed by Ash, excluded in Lacros
-    // WebAppRegistrar.
-    EXPECT_EQ(CountApps(registrar.GetApps()), 1);
-
-    EXPECT_FALSE(registrar.FindAppWithUrlInScope(swa_url).has_value());
-    EXPECT_TRUE(registrar.GetAppScope(swa_id).is_empty());
-    EXPECT_FALSE(registrar.GetAppUserDisplayMode(swa_id).has_value());
-  }
+  EXPECT_FALSE(registrar.FindAppWithUrlInScope(swa_url).has_value());
+  EXPECT_TRUE(registrar.GetAppScope(swa_id).is_empty());
+  EXPECT_FALSE(registrar.GetAppUserDisplayMode(swa_id).has_value());
 
   EXPECT_FALSE(registrar.FindAppWithUrlInScope(uninstalling_url).has_value());
   EXPECT_EQ(registrar.GetAppScope(uninstalling_id),
@@ -1324,11 +1301,6 @@ TEST_P(WebAppRegistrarLacrosTest, SourceSupported) {
   EXPECT_FALSE(base::Contains(registrar.GetAppIds(), uninstalling_id));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebAppRegistrarLacrosTest,
-    ::testing::Values(SystemWebAppsInLacrosParam::kDisabled,
-                      SystemWebAppsInLacrosParam::kEnabled));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace web_app

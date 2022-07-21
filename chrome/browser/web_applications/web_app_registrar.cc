@@ -44,7 +44,7 @@ bool WebAppSourceSupported(const WebApp& web_app) {
     return false;
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (web_app.IsSystemApp() && !AreSystemWebAppsSupported())
+  if (web_app.IsSystemApp())
     return false;
 #endif
   return true;

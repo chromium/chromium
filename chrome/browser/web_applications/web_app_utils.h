@@ -60,8 +60,6 @@ const char kDarkModeThemeColor[] = "dark_mode_theme_color";
 bool AreWebAppsEnabled(const Profile* profile);
 // Is user allowed to install web apps from UI:
 bool AreWebAppsUserInstallable(Profile* profile);
-// Can system web apps be installed:
-bool AreSystemWebAppsSupported();
 
 // Get BrowserContext to use for a WebApp KeyedService creation.
 content::BrowserContext* GetBrowserContextForWebApps(
@@ -179,10 +177,6 @@ bool IsWebAppsCrosapiEnabled();
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Enables System Web Apps so we can test SWA features in Lacros, even we don't
-// have actual SWAs in Lacros.
-void EnableSystemWebAppsInLacrosForTesting();
-
 // Allow user web apps on profiles other than the main profile.
 void SkipMainProfileCheckForTesting();
 #endif
