@@ -81,8 +81,8 @@ class AttributionStorage {
           AttributionReport::ReportType::kEventLevel,
           AttributionReport::ReportType::kAggregatableAttribution}) = 0;
 
-  // Returns the first report time strictly after current time.
-  virtual absl::optional<base::Time> GetNextReportTime() = 0;
+  // Returns the first report time strictly after `time`.
+  virtual absl::optional<base::Time> GetNextReportTime(base::Time time) = 0;
 
   // Returns the reports with the given IDs. This call is logically const, and
   // does not modify the underlying storage.

@@ -112,7 +112,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       AttributionReport::ReportTypes report_types = {
           AttributionReport::ReportType::kEventLevel,
           AttributionReport::ReportType::kAggregatableAttribution}) override;
-  absl::optional<base::Time> GetNextReportTime() override;
+  absl::optional<base::Time> GetNextReportTime(base::Time time) override;
   std::vector<AttributionReport> GetReports(
       const std::vector<AttributionReport::Id>& ids) override;
   std::vector<StoredSource> GetActiveSources(int limit = -1) override;
