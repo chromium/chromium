@@ -26,6 +26,7 @@
 #include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
 #include "components/autofill_assistant/browser/service/service_request_sender_local_impl.h"
 #include "components/autofill_assistant/browser/service/simple_url_loader_factory.h"
+#include "components/autofill_assistant/browser/starter_heuristic_configs/finch_starter_heuristic_config.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/trigger_scripts/dynamic_trigger_conditions.h"
 #include "components/autofill_assistant/browser/trigger_scripts/static_trigger_conditions.h"
@@ -65,6 +66,20 @@ const char kTriggeredSyntheticTrial[] = "AutofillAssistantTriggered";
 const char kEnabledGroupName[] = "Enabled";
 const char kExperimentsSyntheticTrial[] = "AutofillAssistantExperimentsTrial";
 
+// String parameter containing the JSON-encoded parameter dictionary.
+const char kUrlHeuristicParametersKey[] = "json_parameters";
+// The 5 URL heuristics features that are defined for future use cases.
+constexpr base::FeatureParam<std::string> kUrlHeuristicParams1{
+    &features::kAutofillAssistantUrlHeuristic1, kUrlHeuristicParametersKey, ""};
+constexpr base::FeatureParam<std::string> kUrlHeuristicParams2{
+    &features::kAutofillAssistantUrlHeuristic2, kUrlHeuristicParametersKey, ""};
+constexpr base::FeatureParam<std::string> kUrlHeuristicParams3{
+    &features::kAutofillAssistantUrlHeuristic3, kUrlHeuristicParametersKey, ""};
+constexpr base::FeatureParam<std::string> kUrlHeuristicParams4{
+    &features::kAutofillAssistantUrlHeuristic4, kUrlHeuristicParametersKey, ""};
+constexpr base::FeatureParam<std::string> kUrlHeuristicParams5{
+    &features::kAutofillAssistantUrlHeuristic5, kUrlHeuristicParametersKey, ""};
+
 // Creates a service request sender that communicates with a remote endpoint.
 std::unique_ptr<ServiceRequestSender> CreateRpcTriggerScriptRequestSender(
     content::BrowserContext* browser_context,
@@ -82,15 +97,6 @@ bool IsTriggerScriptContext(const TriggerContext& trigger_context) {
   return trigger_context.GetScriptParameters()
       .GetRequestsTriggerScript()
       .value_or(false);
-}
-
-// The heuristic is shared across all instances and initialized on first use. As
-// such, we do not support updating the heuristic while Chrome is running.
-const scoped_refptr<StarterHeuristic> GetOrCreateStarterHeuristic() {
-  static const base::NoDestructor<scoped_refptr<StarterHeuristic>>
-      starter_heuristic(
-          [] { return base::MakeRefCounted<StarterHeuristic>(); }());
-  return *starter_heuristic;
 }
 
 // The cache of failed trigger script fetches is shared across all instances and
@@ -174,8 +180,21 @@ Starter::Starter(content::WebContents* web_contents,
       platform_delegate_(platform_delegate),
       ukm_recorder_(ukm_recorder),
       runtime_manager_(runtime_manager),
-      starter_heuristic_(GetOrCreateStarterHeuristic()),
-      tick_clock_(tick_clock) {}
+      starter_heuristic_(base::MakeRefCounted<StarterHeuristic>()),
+      tick_clock_(tick_clock) {
+  heuristic_configs_.emplace_back(
+      std::make_unique<LegacyStarterHeuristicConfig>());
+  heuristic_configs_.emplace_back(
+      std::make_unique<FinchStarterHeuristicConfig>(kUrlHeuristicParams1));
+  heuristic_configs_.emplace_back(
+      std::make_unique<FinchStarterHeuristicConfig>(kUrlHeuristicParams2));
+  heuristic_configs_.emplace_back(
+      std::make_unique<FinchStarterHeuristicConfig>(kUrlHeuristicParams3));
+  heuristic_configs_.emplace_back(
+      std::make_unique<FinchStarterHeuristicConfig>(kUrlHeuristicParams4));
+  heuristic_configs_.emplace_back(
+      std::make_unique<FinchStarterHeuristicConfig>(kUrlHeuristicParams5));
+}
 
 Starter::~Starter() = default;
 
@@ -372,18 +391,10 @@ void Starter::Init() {
       platform_delegate_->GetFeatureModuleInstalled();
   bool prev_fetch_trigger_scripts_on_navigation =
       fetch_trigger_scripts_on_navigation_;
-  // Note: the feature flag must be the last thing tested in this if-statement,
-  // to avoid tagging tabs that otherwise don't qualify for in-cct triggering,
-  // which leads to pollution of our metrics.
-  fetch_trigger_scripts_on_navigation_ =
-      proactive_help_setting_enabled && msbb_setting_enabled &&
-      (!platform_delegate_->GetIsWebLayer() ||
-       platform_delegate_->GetIsLoggedIn()) &&
-      ((is_custom_tab_ && platform_delegate_->GetIsTabCreatedByGSA() &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillAssistantInCCTTriggering)) ||
-       (!is_custom_tab_ && base::FeatureList::IsEnabled(
-                               features::kAutofillAssistantInTabTriggering)));
+
+  starter_heuristic_->InitFromHeuristicConfigs(heuristic_configs_,
+                                               platform_delegate_.get());
+  fetch_trigger_scripts_on_navigation_ = starter_heuristic_->HasConditionSets();
 
   // If there is a pending startup, re-check that the settings are still
   // allowing the startup to proceed. If not, cancel the startup.

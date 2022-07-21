@@ -11,6 +11,8 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
+#include "components/autofill_assistant/browser/starter_heuristic_configs/starter_heuristic_config.h"
+#include "components/autofill_assistant/browser/starter_platform_delegate.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_matcher_factory.h"
 #include "url/gurl.h"
@@ -27,6 +29,16 @@ class StarterHeuristic : public base::RefCountedThreadSafe<StarterHeuristic> {
   StarterHeuristic(const StarterHeuristic&) = delete;
   StarterHeuristic& operator=(const StarterHeuristic&) = delete;
 
+  // (Re-)initializes this starter heuristic from the given set of configs and
+  // the current client state.
+  void InitFromHeuristicConfigs(
+      const std::vector<std::unique_ptr<StarterHeuristicConfig>>& configs,
+      StarterPlatformDelegate* platform_delegate);
+
+  // Returns true if at least one condition set is available. There is no point
+  // in running the heuristic otherwise.
+  bool HasConditionSets() const;
+
   // Runs the heuristic against |url| and invokes the callback with all matching
   // intents.
   //
@@ -40,6 +52,19 @@ class StarterHeuristic : public base::RefCountedThreadSafe<StarterHeuristic> {
  private:
   friend class base::RefCountedThreadSafe<StarterHeuristic>;
   friend class StarterHeuristicTest;
+
+  // Corresponds to a particular heuristic config. Used to map URL matcher IDs
+  // to the originating heuristic config without having to take ownership of
+  // or otherwise directly interacting with those configs.
+  struct HeuristicConfigEntry {
+    HeuristicConfigEntry(const std::string& intent,
+                         const base::flat_set<std::string>& denylisted_domains);
+    HeuristicConfigEntry(const HeuristicConfigEntry&);
+    ~HeuristicConfigEntry();
+    std::string intent;
+    base::flat_set<std::string> denylisted_domains;
+  };
+
   ~StarterHeuristic();
 
   // Initializes the heuristic from the heuristic trial parameters. If there is
@@ -50,20 +75,17 @@ class StarterHeuristic : public base::RefCountedThreadSafe<StarterHeuristic> {
   void InitFromTrialParams();
 
   // Runs the heuristic against |url|. Returns all matching intents.
-  base::flat_set<std::string> IsHeuristicMatch(const GURL& url) const;
-
-  // The set of denylisted domains that will always return false before
-  // considering any of the intent heuristics.
-  base::flat_set<std::string> denylisted_domains_;
+  base::flat_set<std::string> IsHeuristicMatch(
+      const GURL& url,
+      base::flat_map<base::MatcherStringPattern::ID, HeuristicConfigEntry>
+          copied_matcher_id_to_config_map) const;
 
   // The URL matcher containing one URLMatcherConditionSet per supported intent.
-  url_matcher::URLMatcher url_matcher_;
+  std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
 
-  // Arbitrary mapping of matcher IDs to intent strings. This mapping is built
-  // dynamically to allow the heuristic to work on intents that are otherwise
-  // unknown to the client.
-  base::flat_map<base::MatcherStringPattern::ID, std::string>
-      matcher_id_to_intent_map_;
+  // Arbitrary mapping of matcher IDs to heuristic configs.
+  base::flat_map<base::MatcherStringPattern::ID, HeuristicConfigEntry>
+      matcher_id_to_config_map_;
 };
 
 }  // namespace autofill_assistant

@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_STARTER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
@@ -21,6 +22,8 @@
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/starter_heuristic.h"
+#include "components/autofill_assistant/browser/starter_heuristic_configs/legacy_starter_heuristic_config.h"
+#include "components/autofill_assistant/browser/starter_heuristic_configs/starter_heuristic_config.h"
 #include "components/autofill_assistant/browser/starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/startup_util.h"
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script_coordinator.h"
@@ -197,6 +200,7 @@ class Starter : public content::WebContentsObserver,
   // from the command line and intended only for debugging and testing.
   ImplicitTriggeringDebugParametersProto implicit_triggering_debug_parameters_;
 
+  std::vector<std::unique_ptr<StarterHeuristicConfig>> heuristic_configs_;
   bool waiting_for_onboarding_ = false;
   bool waiting_for_deeplink_navigation_ = false;
   bool is_custom_tab_ = false;
@@ -206,7 +210,7 @@ class Starter : public content::WebContentsObserver,
   bool fetch_trigger_scripts_on_navigation_ = false;
   std::unique_ptr<TriggerContext> pending_trigger_context_;
   std::unique_ptr<TriggerScriptCoordinator> trigger_script_coordinator_;
-  const scoped_refptr<StarterHeuristic> starter_heuristic_;
+  scoped_refptr<StarterHeuristic> starter_heuristic_;
   const raw_ptr<const base::TickClock> tick_clock_;
   base::OnceCallback<void(bool success,
                           absl::optional<GURL> url,
