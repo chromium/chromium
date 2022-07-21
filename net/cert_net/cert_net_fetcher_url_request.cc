@@ -691,8 +691,9 @@ void CertNetFetcherURLRequest::AsyncCertNetFetcherURLRequest::Fetch(
     return;
   }
 
-  job = new Job(std::move(request_params), this);
-  jobs_[job] = base::WrapUnique(job);
+  auto new_job = std::make_unique<Job>(std::move(request_params), this);
+  job = new_job.get();
+  jobs_[job] = std::move(new_job);
   // Attach the request before calling StartURLRequest; this ensures that the
   // request will get signalled if StartURLRequest completes the job
   // synchronously.

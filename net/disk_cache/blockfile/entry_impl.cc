@@ -1577,7 +1577,9 @@ uint32_t EntryImpl::GetEntryFlags() {
   return entry_.Data()->flags;
 }
 
-void EntryImpl::GetData(int index, char** buffer, Addr* address) {
+void EntryImpl::GetData(int index,
+                        std::unique_ptr<char[]>* buffer,
+                        Addr* address) {
   DCHECK(backend_.get());
   if (user_buffers_[index].get() && user_buffers_[index]->Size() &&
       !user_buffers_[index]->Start()) {
@@ -1585,8 +1587,8 @@ void EntryImpl::GetData(int index, char** buffer, Addr* address) {
     int data_len = entry_.Data()->data_size[index];
     if (data_len <= user_buffers_[index]->Size()) {
       DCHECK(!user_buffers_[index]->Start());
-      *buffer = new char[data_len];
-      memcpy(*buffer, user_buffers_[index]->Data(), data_len);
+      *buffer = std::make_unique<char[]>(data_len);
+      memcpy(buffer->get(), user_buffers_[index]->Data(), data_len);
       return;
     }
   }

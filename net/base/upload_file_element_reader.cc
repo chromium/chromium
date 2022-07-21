@@ -238,18 +238,19 @@ int UploadFileElementReader::DoGetFileInfo(int result) {
 
   next_state_ = State::GET_FILE_INFO_COMPLETE;
 
-  base::File::Info* owned_file_info = new base::File::Info;
+  auto file_info = std::make_unique<base::File::Info>();
+  auto* file_info_ptr = file_info.get();
   result = file_stream_->GetFileInfo(
-      owned_file_info,
+      file_info_ptr,
       base::BindOnce(
           [](base::WeakPtr<UploadFileElementReader> weak_this,
-             base::File::Info* file_info, int result) {
+             std::unique_ptr<base::File::Info> file_info, int result) {
             if (!weak_this)
               return;
             weak_this->file_info_ = *file_info;
             weak_this->OnIOComplete(result);
           },
-          weak_ptr_factory_.GetWeakPtr(), base::Owned(owned_file_info)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(file_info)));
   // GetFileInfo() can't succeed synchronously.
   DCHECK_NE(result, OK);
   return result;

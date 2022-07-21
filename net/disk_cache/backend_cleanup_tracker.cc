@@ -49,8 +49,9 @@ scoped_refptr<BackendCleanupTracker> BackendCleanupTracker::TryCreate(
       all_trackers->map.insert(
           std::pair<base::FilePath, BackendCleanupTracker*>(path, nullptr));
   if (insert_result.second) {
-    insert_result.first->second = new BackendCleanupTracker(path);
-    return insert_result.first->second;
+    auto tracker = base::WrapRefCounted(new BackendCleanupTracker(path));
+    insert_result.first->second = tracker.get();
+    return tracker;
   } else {
     insert_result.first->second->AddPostCleanupCallbackImpl(
         std::move(retry_closure));

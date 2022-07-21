@@ -16,7 +16,7 @@ namespace disk_cache {
 // This class provides support for simple maps of bits.
 class NET_EXPORT_PRIVATE Bitmap {
  public:
-  Bitmap() : map_(nullptr), num_bits_(0), array_size_(0), alloc_(false) {}
+  Bitmap();
 
   // This constructor will allocate on a uint32_t boundary. If |clear_bits| is
   // false, the bitmap bits will not be initialized.
@@ -129,10 +129,10 @@ class NET_EXPORT_PRIVATE Bitmap {
   // stored in the same word, and len < kIntBits.
   void SetWordBits(int start, int len, bool value);
 
-  raw_ptr<uint32_t> map_;  // The bitmap.
-  int num_bits_;          // The upper bound of the bitmap.
-  int array_size_;        // The physical size (in uint32s) of the bitmap.
-  bool alloc_;            // Whether or not we allocated the memory.
+  int num_bits_ = 0;    // The upper bound of the bitmap.
+  int array_size_ = 0;  // The physical size (in uint32s) of the bitmap.
+  std::unique_ptr<uint32_t[]> allocated_map_;  // The allocated data.
+  raw_ptr<uint32_t> map_ = nullptr;            // The bitmap.
 };
 
 }  // namespace disk_cache

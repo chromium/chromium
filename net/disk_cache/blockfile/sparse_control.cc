@@ -77,7 +77,7 @@ class ChildrenDeleter
 
   // Two ways of deleting the children: if we have the children map, use Start()
   // directly, otherwise pass the data address to ReadData().
-  void Start(char* buffer, int len);
+  void Start(std::unique_ptr<char[]> buffer, int len);
   void ReadData(disk_cache::Addr address, int len);
 
  private:
@@ -95,19 +95,18 @@ class ChildrenDeleter
 
 // This is the callback of the file operation.
 void ChildrenDeleter::OnFileIOComplete(int bytes_copied) {
-  char* buffer = buffer_.release();
-  Start(buffer, bytes_copied);
+  Start(std::move(buffer_), bytes_copied);
 }
 
-void ChildrenDeleter::Start(char* buffer, int len) {
-  buffer_.reset(buffer);
+void ChildrenDeleter::Start(std::unique_ptr<char[]> buffer, int len) {
+  buffer_ = std::move(buffer);
   if (len < static_cast<int>(sizeof(disk_cache::SparseData)))
     return Release();
 
   // Just copy the information from |buffer|, delete |buffer| and start deleting
   // the child entries.
   disk_cache::SparseData* data =
-      reinterpret_cast<disk_cache::SparseData*>(buffer);
+      reinterpret_cast<disk_cache::SparseData*>(buffer_.get());
   signature_ = data->header.signature;
 
   int num_bits = (len - sizeof(disk_cache::SparseHeader)) * 8;
@@ -375,7 +374,7 @@ void SparseControl::DeleteChildren(EntryImpl* entry) {
   if (map_len > kMaxMapSize || map_len % 4)
     return;
 
-  char* buffer;
+  std::unique_ptr<char[]> buffer;
   Addr address;
   entry->GetData(kSparseIndex, &buffer, &address);
   if (!buffer && !address.is_initialized())
@@ -391,8 +390,8 @@ void SparseControl::DeleteChildren(EntryImpl* entry) {
 
   if (buffer) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ChildrenDeleter::Start, deleter, buffer, data_len));
+        FROM_HERE, base::BindOnce(&ChildrenDeleter::Start, deleter,
+                                  std::move(buffer), data_len));
   } else {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,

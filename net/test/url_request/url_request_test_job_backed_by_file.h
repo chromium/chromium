@@ -104,11 +104,11 @@ class URLRequestTestJobBackedByFile : public URLRequestJob {
   };
 
   // Fetches file info on a background thread.
-  static void FetchMetaInfo(const base::FilePath& file_path,
-                            FileMetaInfo* meta_info);
+  static std::unique_ptr<FileMetaInfo> FetchMetaInfo(
+      const base::FilePath& file_path);
 
   // Callback after fetching file info on a background thread.
-  void DidFetchMetaInfo(const FileMetaInfo* meta_info);
+  void DidFetchMetaInfo(std::unique_ptr<FileMetaInfo> meta_info);
 
   // Callback after opening file on a background thread.
   void DidOpen(int result);

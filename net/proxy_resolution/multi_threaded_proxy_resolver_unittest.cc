@@ -188,10 +188,11 @@ class BlockableProxyResolverFactory : public ProxyResolverFactory {
                           std::unique_ptr<ProxyResolver>* result,
                           CompletionOnceCallback callback,
                           std::unique_ptr<Request>* request) override {
-    BlockableProxyResolver* resolver = new BlockableProxyResolver;
-    result->reset(resolver);
+    auto resolver = std::make_unique<BlockableProxyResolver>();
+    BlockableProxyResolver* resolver_ptr = resolver.get();
+    *result = std::move(resolver);
     base::AutoLock lock(lock_);
-    resolvers_.push_back(resolver);
+    resolvers_.push_back(resolver_ptr);
     script_data_.push_back(script_data);
     return OK;
   }

@@ -3986,8 +3986,8 @@ class URLRequestTestHTTP : public URLRequestTest {
   void HTTPUploadDataOperationTest(const std::string& method) {
     const int kMsgSize = 20000;  // multiple of 10
     const int kIterations = 50;
-    char* uploadBytes = new char[kMsgSize + 1];
-    char* ptr = uploadBytes;
+    auto uploadBytes = std::make_unique<char[]>(kMsgSize + 1);
+    char* ptr = uploadBytes.get();
     char marker = 'a';
     for (int idx = 0; idx < kMsgSize / 10; idx++) {
       memcpy(ptr, "----------", 10);
@@ -4008,7 +4008,7 @@ class URLRequestTestHTTP : public URLRequestTest {
           TRAFFIC_ANNOTATION_FOR_TESTS));
       r->set_method(method.c_str());
 
-      r->set_upload(CreateSimpleUploadData(uploadBytes));
+      r->set_upload(CreateSimpleUploadData(uploadBytes.get()));
 
       r->Start();
       EXPECT_TRUE(r->is_pending());
@@ -4019,9 +4019,9 @@ class URLRequestTestHTTP : public URLRequestTest {
           << "request failed. Error: " << d.request_status();
 
       EXPECT_FALSE(d.received_data_before_response());
-      EXPECT_EQ(uploadBytes, d.data_received());
+      EXPECT_EQ(base::StringPiece(uploadBytes.get(), kMsgSize),
+                d.data_received());
     }
-    delete[] uploadBytes;
   }
 
   HttpTestServer* http_test_server() { return &test_server_; }

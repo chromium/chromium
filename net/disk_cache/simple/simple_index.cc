@@ -213,12 +213,13 @@ void SimpleIndex::Initialize(base::Time cache_mtime) {
   }
 #endif
 
-  SimpleIndexLoadResult* load_result = new SimpleIndexLoadResult();
-  std::unique_ptr<SimpleIndexLoadResult> load_result_scoped(load_result);
-  base::OnceClosure reply =
+  auto load_result = std::make_unique<SimpleIndexLoadResult>();
+  auto* load_result_ptr = load_result.get();
+  index_file_->LoadIndexEntries(
+      cache_mtime,
       base::BindOnce(&SimpleIndex::MergeInitializingSet, AsWeakPtr(),
-                     std::move(load_result_scoped));
-  index_file_->LoadIndexEntries(cache_mtime, std::move(reply), load_result);
+                     std::move(load_result)),
+      load_result_ptr);
 }
 
 void SimpleIndex::SetMaxSize(uint64_t max_bytes) {

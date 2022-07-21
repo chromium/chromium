@@ -5,6 +5,7 @@
 #include "net/ssl/threaded_ssl_private_key.h"
 
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
@@ -17,10 +18,11 @@ namespace net {
 
 namespace {
 
-void DoCallback(const base::WeakPtr<ThreadedSSLPrivateKey>& key,
-                SSLPrivateKey::SignCallback callback,
-                std::vector<uint8_t>* signature,
-                Error error) {
+void DoCallback(
+    const base::WeakPtr<ThreadedSSLPrivateKey>& key,
+    SSLPrivateKey::SignCallback callback,
+    std::tuple<Error, std::unique_ptr<std::vector<uint8_t>>> result) {
+  auto [error, signature] = std::move(result);
   if (!key)
     return;
   std::move(callback).Run(error, *signature);
@@ -36,10 +38,12 @@ class ThreadedSSLPrivateKey::Core
 
   ThreadedSSLPrivateKey::Delegate* delegate() { return delegate_.get(); }
 
-  Error Sign(uint16_t algorithm,
-             base::span<const uint8_t> input,
-             std::vector<uint8_t>* signature) {
-    return delegate_->Sign(algorithm, input, signature);
+  std::tuple<Error, std::unique_ptr<std::vector<uint8_t>>> Sign(
+      uint16_t algorithm,
+      base::span<const uint8_t> input) {
+    auto signature = std::make_unique<std::vector<uint8_t>>();
+    auto error = delegate_->Sign(algorithm, input, signature.get());
+    return std::make_tuple(error, std::move(signature));
   }
 
  private:
@@ -66,14 +70,12 @@ std::vector<uint16_t> ThreadedSSLPrivateKey::GetAlgorithmPreferences() {
 void ThreadedSSLPrivateKey::Sign(uint16_t algorithm,
                                  base::span<const uint8_t> input,
                                  SSLPrivateKey::SignCallback callback) {
-  std::vector<uint8_t>* signature = new std::vector<uint8_t>;
   base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
       base::BindOnce(&ThreadedSSLPrivateKey::Core::Sign, core_, algorithm,
-                     std::vector<uint8_t>(input.begin(), input.end()),
-                     base::Unretained(signature)),
+                     std::vector<uint8_t>(input.begin(), input.end())),
       base::BindOnce(&DoCallback, weak_factory_.GetWeakPtr(),
-                     std::move(callback), base::Owned(signature)));
+                     std::move(callback)));
 }
 
 ThreadedSSLPrivateKey::~ThreadedSSLPrivateKey() = default;

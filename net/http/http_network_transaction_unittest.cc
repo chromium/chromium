@@ -3042,14 +3042,15 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthWithAddressChange) {
   request.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  MockHostResolver* resolver = new MockHostResolver();
+  auto resolver = std::make_unique<MockHostResolver>();
+  auto* resolver_ptr = resolver.get();
   session_deps_.net_log = net::NetLog::Get();
-  session_deps_.host_resolver.reset(resolver);
+  session_deps_.host_resolver = std::move(resolver);
   std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
 
-  resolver->rules()->ClearRules();
-  resolver->rules()->AddRule("www.example.org", "127.0.0.1");
+  resolver_ptr->rules()->ClearRules();
+  resolver_ptr->rules()->AddRule("www.example.org", "127.0.0.1");
 
   MockWrite data_writes1[] = {
       MockWrite("GET / HTTP/1.1\r\n"
@@ -3114,8 +3115,8 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthWithAddressChange) {
   ASSERT_FALSE(endpoint.address().empty());
   EXPECT_EQ("127.0.0.1:80", endpoint.ToString());
 
-  resolver->rules()->ClearRules();
-  resolver->rules()->AddRule("www.example.org", "127.0.0.2");
+  resolver_ptr->rules()->ClearRules();
+  resolver_ptr->rules()->AddRule("www.example.org", "127.0.0.2");
 
   TestCompletionCallback callback2;
 
@@ -6459,10 +6460,10 @@ TEST_F(HttpNetworkTransactionTest, ProxyHostResolutionFailure) {
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixed(
           "https://proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  MockHostResolver* resolver = new MockHostResolver();
+  auto resolver = std::make_unique<MockHostResolver>();
   resolver->rules()->AddSimulatedTimeoutFailure("proxy");
   session_deps_.net_log = net::NetLog::Get();
-  session_deps_.host_resolver.reset(resolver);
+  session_deps_.host_resolver = std::move(resolver);
   std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
   TestCompletionCallback callback;
