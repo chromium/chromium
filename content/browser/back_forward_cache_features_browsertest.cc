@@ -3535,7 +3535,7 @@ IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest, OrientationCached) {
 // alpha=1. While on the b-page it captures 3 more events. If the a-page is
 // still receiving events it should receive one or more of these. Finally it
 // resets the reasing back to have alpha=0 and navigates back to the a-page and
-// catpures 3 more events and verifies that all events on the a-page have
+// captures 3 more events and verifies that all events on the a-page have
 // alpha=1.
 IN_PROC_BROWSER_TEST_F(SensorBackForwardCacheBrowserTest,
                        SensorPausedWhileCached) {
