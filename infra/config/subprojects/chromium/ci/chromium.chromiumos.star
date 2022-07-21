@@ -700,7 +700,8 @@ ci.builder(
     reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
     # This builder build 2 chrome(Ash and Lacros), so it need
     # more time.
-    execution_timeout = 4 * time.hour,
+    # TODO(crbug.com/1345687) We should reduce this timeout.
+    execution_timeout = 6 * time.hour,
 )
 
 ci.builder(
