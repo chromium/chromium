@@ -320,16 +320,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 
 // Tests that the device starts, captures a frame, and then gracefully
 // errors-out because the WebContents is destroyed before the device is stopped.
-// TODO the test is flaky on Mac. See https://crbug.com/1345663.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ErrorsOutWhenWebContentsIsDestroyed \
-  DISABLED_ErrorsOutWhenWebContentsIsDestroyed
-#else
-#define MAYBE_ErrorsOutWhenWebContentsIsDestroyed \
-  ErrorsOutWhenWebContentsIsDestroyed
-#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       MAYBE_ErrorsOutWhenWebContentsIsDestroyed) {
+                       ErrorsOutWhenWebContentsIsDestroyed) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -350,14 +342,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 
 // Tests that capture is re-targetted when the render view of a WebContents
 // changes.
-// TODO the test is flaky on Mac. See https://crbug.com/1345663.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ChangesTargettedRenderView DISABLED_ChangesTargettedRenderView
-#else
-#define MAYBE_ChangesTargettedRenderView ChangesTargettedRenderView
-#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       MAYBE_ChangesTargettedRenderView) {
+                       ChangesTargettedRenderView) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -429,14 +415,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTestAura,
 
 // Tests that capture is re-targetted when a renderer crash is followed by a
 // reload. Regression test for http://crbug.com/916332.
-// TODO the test is flaky on Mac. See https://crbug.com/1345663.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_RecoversAfterRendererCrash DISABLED_RecoversAfterRendererCrash
-#else
-#define MAYBE_RecoversAfterRendererCrash RecoversAfterRendererCrash
-#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       MAYBE_RecoversAfterRendererCrash) {
+                       RecoversAfterRendererCrash) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -465,14 +445,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 // Tests that the device stops delivering frames while suspended. When resumed,
 // any content changes that occurred during the suspend should cause a new frame
 // to be delivered, to ensure the client is up-to-date.
-// TODO the test is flaky on Mac. See https://crbug.com/1345663.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SuspendsAndResumes DISABLED_SuspendsAndResumes
-#else
-#define MAYBE_SuspendsAndResumes SuspendsAndResumes
-#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       MAYBE_SuspendsAndResumes) {
+                       SuspendsAndResumes) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -506,15 +480,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 
 // Tests that the device delivers refresh frames when asked, while the source
 // content is not changing.
-// TODO the test is flaky on Mac. See https://crbug.com/1345663.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DeliversRefreshFramesUponRequest \
-  DISABLED_DeliversRefreshFramesUponRequest
-#else
-#define MAYBE_DeliversRefreshFramesUponRequest DeliversRefreshFramesUponRequest
-#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       MAYBE_DeliversRefreshFramesUponRequest) {
+                       DeliversRefreshFramesUponRequest) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
