@@ -1427,7 +1427,7 @@ class ScrollTimelineForTest : public ScrollTimeline {
       : ScrollTimeline(document,
                        ScrollTimeline::ReferenceType::kSource,
                        scroll_source,
-                       ScrollTimeline::kVertical),
+                       ScrollDirection::kVertical),
         invalidated_(false) {}
   void Invalidate() override {
     ScrollTimeline::Invalidate();

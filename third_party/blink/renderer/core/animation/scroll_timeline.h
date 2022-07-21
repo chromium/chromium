@@ -39,7 +39,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
  public:
   using ScrollOffsets = cc::ScrollTimeline::ScrollOffsets;
 
-  enum ScrollDirection {
+  enum class ScrollDirection {
     kBlock,
     kInline,
     kHorizontal,

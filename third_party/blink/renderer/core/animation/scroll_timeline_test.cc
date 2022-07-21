@@ -76,7 +76,7 @@ class TestScrollTimeline : public ScrollTimeline {
       : ScrollTimeline(document,
                        ScrollTimeline::ReferenceType::kSource,
                        source,
-                       ScrollTimeline::kVertical),
+                       ScrollDirection::kVertical),
         next_service_scheduled_(false) {
     SnapshotState();
   }
@@ -174,7 +174,7 @@ TEST_F(ScrollTimelineTest, AttachOrDetachAnimationWithNullSource) {
   // documentElement from the document.
   Element* scroll_source = nullptr;
   Persistent<ScrollTimeline> scroll_timeline = ScrollTimeline::Create(
-      &GetDocument(), scroll_source, ScrollTimeline::kBlock);
+      &GetDocument(), scroll_source, ScrollTimeline::ScrollDirection::kBlock);
 
   // Sanity checks.
   ASSERT_EQ(scroll_timeline->source(), nullptr);

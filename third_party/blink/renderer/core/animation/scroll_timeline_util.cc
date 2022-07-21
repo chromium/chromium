@@ -52,9 +52,9 @@ CompositorScrollTimeline::ScrollDirection ConvertOrientation(
     ScrollTimeline::ScrollDirection orientation,
     const ComputedStyle* style) {
   // Easy cases; physical is always physical.
-  if (orientation == ScrollTimeline::kHorizontal)
+  if (orientation == ScrollTimeline::ScrollDirection::kHorizontal)
     return CompositorScrollTimeline::ScrollRight;
-  if (orientation == ScrollTimeline::kVertical)
+  if (orientation == ScrollTimeline::ScrollDirection::kVertical)
     return CompositorScrollTimeline::ScrollDown;
 
   // Harder cases; first work out which axis is which, and then for each check
@@ -69,7 +69,7 @@ CompositorScrollTimeline::ScrollDirection ConvertOrientation(
   // direction: ltr;
   bool is_ltr_direction = style ? style->IsLeftToRightDirection() : true;
 
-  if (orientation == ScrollTimeline::kBlock) {
+  if (orientation == ScrollTimeline::ScrollDirection::kBlock) {
     if (is_horizontal_writing_mode) {
       // For horizontal writing mode, block is vertical. The starting edge is
       // always the top.
@@ -81,7 +81,7 @@ CompositorScrollTimeline::ScrollDirection ConvertOrientation(
                                          : CompositorScrollTimeline::ScrollLeft;
   }
 
-  DCHECK_EQ(orientation, ScrollTimeline::kInline);
+  DCHECK_EQ(orientation, ScrollTimeline::ScrollDirection::kInline);
   if (is_horizontal_writing_mode) {
     // For horizontal writing mode, inline is horizontal. The starting edge
     // depends on the directionality.
