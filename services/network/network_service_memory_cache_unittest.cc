@@ -559,6 +559,16 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_DisableCache) {
   ASSERT_FALSE(CanServeFromMemoryCache(request));
 }
 
+TEST_F(NetworkServiceMemoryCacheTest, CanServe_FromServiceWorker) {
+  ResourceRequest request = CreateRequest("/cacheable");
+  StoreResponseToMemoryCache(request);
+
+  // TODO(https://crbug.com/1346152): Support service worker originated
+  // requests and change the expectation.
+  request.originated_from_service_worker = true;
+  ASSERT_FALSE(CanServeFromMemoryCache(request));
+}
+
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_ValidateCache) {
   ResourceRequest request = CreateRequest("/cacheable");
   request.load_flags |= net::LOAD_VALIDATE_CACHE;

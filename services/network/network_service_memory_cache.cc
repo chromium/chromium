@@ -84,7 +84,8 @@ enum class EntryStatus {
   kUsed = 2,
   kVaryMismatch = 3,
   kBlockedByRequestHeaders = 4,
-  kMaxValue = kBlockedByRequestHeaders,
+  kBlockedServiceWorkerOriginatedRequest = 5,
+  kMaxValue = kBlockedServiceWorkerOriginatedRequest,
 };
 
 void RecordEntryStatus(EntryStatus result) {
@@ -461,6 +462,15 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
   auto it = entries_.Peek(*cache_key);
   if (it == entries_.end()) {
     RecordEntryStatus(EntryStatus::kNotInCache);
+    return absl::nullopt;
+  }
+
+  // A service worker may be activated after this method and may want to
+  // intercept the request.
+  // TODO(https://crbug.com/1346152): Support service worker originated
+  // requests.
+  if (resource_request.originated_from_service_worker) {
+    RecordEntryStatus(EntryStatus::kBlockedServiceWorkerOriginatedRequest);
     return absl::nullopt;
   }
 
