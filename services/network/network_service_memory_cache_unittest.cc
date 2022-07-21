@@ -145,6 +145,52 @@ std::unique_ptr<net::test_server::HttpResponse> CorbCheckHandler(
   return nullptr;
 }
 
+// Used in NetworkServiceMemoryCacheWithFactoryOverrideTest.
+class TestURLLoaderFactory : public mojom::URLLoaderFactory {
+ public:
+  explicit TestURLLoaderFactory(
+      mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
+    receivers_.Add(this, std::move(receiver));
+  }
+
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<mojom::URLLoader> receiver,
+      int32_t request_id,
+      uint32_t options,
+      const ResourceRequest& resource_request,
+      mojo::PendingRemote<mojom::URLLoaderClient> pending_client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override {
+    url_loader_receivers_.Add(&noop_loader_, std::move(receiver));
+
+    mojo::Remote<mojom::URLLoaderClient> client(std::move(pending_client));
+    mojom::URLResponseHeadPtr response_head = CreateCacheableURLResponseHead();
+    client->OnReceiveResponse(std::move(response_head), /*body=*/{});
+    client->OnComplete(URLLoaderCompletionStatus(net::OK));
+  }
+  void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override {
+    receivers_.Add(this, std::move(receiver));
+  }
+
+ private:
+  class NoopURLLoader : public mojom::URLLoader {
+   public:
+    void FollowRedirect(
+        const std::vector<std::string>& removed_headers,
+        const net::HttpRequestHeaders& modified_headers,
+        const net::HttpRequestHeaders& modified_cors_exempt_headers,
+        const absl::optional<GURL>& new_url) override {}
+    void SetPriority(net::RequestPriority priority,
+                     int32_t intra_priority_value) override {}
+    void PauseReadingBodyFromNet() override {}
+    void ResumeReadingBodyFromNet() override {}
+  };
+
+  NoopURLLoader noop_loader_;
+  mojo::ReceiverSet<mojom::URLLoaderFactory> receivers_;
+  mojo::ReceiverSet<mojom::URLLoader> url_loader_receivers_;
+};
+
 }  // namespace
 
 class NetworkServiceMemoryCacheTest : public testing::Test {
@@ -192,6 +238,14 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
     factory_params->process_id = kProcessId;
     factory_params->request_initiator_origin_lock =
         url::Origin::Create(test_server_.base_url());
+    if (HasFactoryOverride()) {
+      factory_params->factory_override = mojom::URLLoaderFactoryOverride::New();
+      mojo::PendingRemote<mojom::URLLoaderFactory> factory_remote;
+      overriding_factory_ = std::make_unique<TestURLLoaderFactory>(
+          factory_remote.InitWithNewPipeAndPassReceiver());
+      factory_params->factory_override->overriding_factory =
+          std::move(factory_remote);
+    }
 
     url::Origin test_server_origin =
         url::Origin::Create(test_server_.base_url());
@@ -286,6 +340,8 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
         .has_value();
   }
 
+  virtual bool HasFactoryOverride() const { return false; }
+
  private:
   std::unique_ptr<net::test_server::HttpResponse> CacheableOrRedirectHandler(
       const net::test_server::HttpRequest& request) {
@@ -321,6 +377,14 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
   mojo::Remote<mojom::URLLoaderFactory> cors_url_loader_factory_remote_;
 
   cors::OriginAccessList origin_access_list_;
+
+  std::unique_ptr<TestURLLoaderFactory> overriding_factory_;
+};
+
+class NetworkServiceMemoryCacheWithFactoryOverrideTest
+    : public NetworkServiceMemoryCacheTest {
+ public:
+  bool HasFactoryOverride() const override { return true; }
 };
 
 TEST_F(NetworkServiceMemoryCacheTest,
@@ -556,16 +620,6 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_DisableCache) {
   ResourceRequest request = CreateRequest("/cacheable");
   request.load_flags |= net::LOAD_DISABLE_CACHE;
 
-  ASSERT_FALSE(CanServeFromMemoryCache(request));
-}
-
-TEST_F(NetworkServiceMemoryCacheTest, CanServe_FromServiceWorker) {
-  ResourceRequest request = CreateRequest("/cacheable");
-  StoreResponseToMemoryCache(request);
-
-  // TODO(https://crbug.com/1346152): Support service worker originated
-  // requests and change the expectation.
-  request.originated_from_service_worker = true;
   ASSERT_FALSE(CanServeFromMemoryCache(request));
 }
 
@@ -1081,6 +1135,14 @@ TEST_F(NetworkServiceMemoryCacheTest, InvalidateOnNonSafeMethod) {
 
   LoaderPair pair = CreateLoaderAndStart(request2);
   pair.client->RunUntilResponseReceived();
+
+  ASSERT_FALSE(CanServeFromMemoryCache(request));
+}
+
+TEST_F(NetworkServiceMemoryCacheWithFactoryOverrideTest,
+       MemoryCacheShouldNotBeUsed) {
+  ResourceRequest request = CreateRequest(base::StringPrintf("/cacheable"));
+  StoreResponseToMemoryCache(request);
 
   ASSERT_FALSE(CanServeFromMemoryCache(request));
 }

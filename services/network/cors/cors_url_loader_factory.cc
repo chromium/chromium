@@ -302,7 +302,8 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
         origin_access_list_, context_->cors_preflight_controller(),
         context_->cors_exempt_header_list(),
         GetAllowAnyCorsExemptHeaderForBrowser(),
-        context_->cors_non_wildcard_request_headers_support(), isolation_info_,
+        context_->cors_non_wildcard_request_headers_support(),
+        HasFactoryOverride(!!factory_override_), isolation_info_,
         std::move(devtools_observer), client_security_state_.get(),
         context_->GetMemoryCache(), cross_origin_embedder_policy_);
     auto* raw_loader = loader.get();

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -35,6 +36,8 @@ class NetworkServiceMemoryCache;
 namespace cors {
 
 class OriginAccessList;
+
+using HasFactoryOverride = base::StrongAlias<class HasFactoryOverrideTag, bool>;
 
 // Wrapper class that adds cross-origin resource sharing capabilities
 // (https://fetch.spec.whatwg.org/#http-cors-protocol), delegating requests as
@@ -66,6 +69,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       const base::flat_set<std::string>* allowed_exempt_headers,
       bool allow_any_cors_exempt_header,
       NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
+      HasFactoryOverride has_factory_override,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       const mojom::ClientSecurityState* factory_client_security_state,
@@ -261,6 +265,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   const bool allow_any_cors_exempt_header_;
 
   const NonWildcardRequestHeadersSupport non_wildcard_request_headers_support_;
+  const HasFactoryOverride has_factory_override_;
 
   net::IsolationInfo isolation_info_;
 
