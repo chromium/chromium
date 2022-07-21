@@ -675,11 +675,11 @@ void VolumeManager::Initialize() {
     return;
   }
 
-  if (!fusebox_mounter_.get())
+  if (!fusebox_mounter_)
     fusebox_mounter_.reset(FuseBoxMounter::Create());
   // The fusebox_mounter_ is enabled by a chrome flag: Create() will return
   // nullptr if the flag is disabled. Check it before attempting to Mount.
-  if (fusebox_mounter_.get())
+  if (fusebox_mounter_)
     fusebox_mounter_->Mount(disk_mount_manager_);
 
   const base::FilePath localVolume =
@@ -786,7 +786,8 @@ void VolumeManager::Shutdown() {
       session_manager->RemoveObserver(this);
   }
 
-  if (fusebox_mounter_.get())
+  // The fusebox_mounter_ is enabled by a chrome flag.
+  if (fusebox_mounter_)
     fusebox_mounter_->Unmount(disk_mount_manager_);
 }
 
@@ -1298,7 +1299,7 @@ void VolumeManager::OnProvidedFileSystemMount(
   DoMountEvent(mount_error, std::move(volume));
 
   // The fusebox_mounter_ is enabled by a chrome flag.
-  if (!fusebox_mounter_.get())
+  if (!fusebox_mounter_)
     return;
 
   // The FSP is not added to chrome::storage if mounting failed.
@@ -1376,7 +1377,7 @@ void VolumeManager::OnProvidedFileSystemUnmount(
   DoUnmountEvent(mount_error, *volume);
 
   // The fusebox_mounter_ is enabled by a chrome flag.
-  if (!fusebox_mounter_.get())
+  if (!fusebox_mounter_)
     return;
 
   // Get FSP chrome::storage |fsid| and fusebox daemon |subdir|.
@@ -1574,7 +1575,7 @@ void VolumeManager::DoAttachMtpStorage(
   DoMountEvent(chromeos::MOUNT_ERROR_NONE, std::move(volume));
 
   // The fusebox_mounter_ is enabled by a chrome flag.
-  if (!fusebox_mounter_.get())
+  if (!fusebox_mounter_)
     return;
 
   // Get the FileSystemURL of the MTP storage device.
@@ -1644,7 +1645,7 @@ void VolumeManager::OnRemovableStorageDetached(
                        fsid));
 
     // The fusebox_mounter_ is enabled by a chrome flag.
-    if (!fusebox_mounter_.get())
+    if (!fusebox_mounter_)
       return;
 
     // Unmount the fusebox MTP storage device in files app.
