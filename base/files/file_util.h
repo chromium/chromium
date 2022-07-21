@@ -372,8 +372,7 @@ BASE_EXPORT bool CreateTemporaryDirInDir(const FilePath& base_dir,
 
 // Creates a directory, as well as creating any parent directories, if they
 // don't exist. Returns 'true' on successful creation, or if the directory
-// already exists. On most systems, the created directories are only readable by
-// the current user. But on ChromeOS, they are also world-traversable.
+// already exists.  The directory is only readable by the current user.
 // Returns true on success, leaving *error unchanged.
 // Returns false on failure and sets *error appropriately, if it is non-NULL.
 BASE_EXPORT bool CreateDirectoryAndGetError(const FilePath& full_path,
