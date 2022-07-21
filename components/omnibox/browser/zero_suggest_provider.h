@@ -87,8 +87,8 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // AutocompleteProvider:
-  void Start(const AutocompleteInput& input, bool minimal_changes) override;
   void StartPrefetch(const AutocompleteInput& input) override;
+  void Start(const AutocompleteInput& input, bool minimal_changes) override;
   void Stop(bool clear_cached_results,
             bool due_to_user_inactivity) override;
   void DeleteMatch(const AutocompleteMatch& match) override;
@@ -117,12 +117,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   ZeroSuggestProvider(const ZeroSuggestProvider&) = delete;
   ZeroSuggestProvider& operator=(const ZeroSuggestProvider&) = delete;
 
-  // Called by Start() or StartPrefetch() with the appropriate arguments.
-  // Contains the implementation to start a request for suggestions.
-  void Start(const AutocompleteInput& input,
-             bool minimal_changes,
-             bool is_prefetch);
-
   // BaseSearchProvider:
   const TemplateURL* GetTemplateURL(bool is_keyword) const override;
   const AutocompleteInput GetInput(bool is_keyword) const override;
@@ -130,28 +124,38 @@ class ZeroSuggestProvider : public BaseSearchProvider {
       const SearchSuggestionParser::SuggestResult& result) const override;
   void RecordDeletionResult(bool success) override;
 
-  // Called when the network request for suggestions has completed.
-  // `is_prefetch` is bound to this callback and indicates if the request is a
-  // prefetch one.
-  void OnURLLoadComplete(bool is_prefetch,
+  // Called when the non-prefetch network request has completed.
+  // `result_type` is bound to this callback and indicate the result type being
+  // received in this callback.
+  void OnURLLoadComplete(ResultType result_type,
                          const network::SimpleURLLoader* source,
                          std::unique_ptr<std::string> response_body);
+  // Called when the prefetch network request has completed.
+  // `input` and `result_type` are bound to this callback. The former is the
+  // input the request was made for and the latter indicates the result type
+  // being received in this callback.
+  void OnPrefetchURLLoadComplete(const AutocompleteInput& input,
+                                 ResultType result_type,
+                                 const network::SimpleURLLoader* source,
+                                 std::unique_ptr<std::string> response_body);
 
   // Called when the remote response is received. Stores the response json in
   // the user prefs, if successfully parsed and if applicable based on
-  // |result_type_running_|.
+  // |result_type|.
   //
   // Returns the successfully parsed response if it is eligible to be converted
   // to |matches_| or nullptr otherwise.
   std::unique_ptr<base::Value> StoreRemoteResponse(
       const std::string& response_json,
+      const AutocompleteInput& input,
+      ResultType result_type,
       bool is_prefetch);
 
   // Called on Start().
   //
   // Returns the response stored in the user prefs, if applicable based on
-  // |result_type_running_| or nullptr otherwise.
-  std::unique_ptr<base::Value> ReadStoredResponse();
+  // |result_type| or nullptr otherwise.
+  std::unique_ptr<base::Value> ReadStoredResponse(ResultType result_type);
 
   // Returns an AutocompleteMatch for a navigational suggestion |navigation|.
   AutocompleteMatch NavigationToMatch(
@@ -171,20 +175,22 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   bool ConvertResponseToAutocompleteMatches(
       std::unique_ptr<base::Value> response);
 
-  // The result type that is currently being processed by provider.
-  // When the provider is not running, the result type is set to NONE.
-  ResultType result_type_running_;
+  // The result type that is currently being retrieved and processed for
+  // non-prefetch requests.
+  // Set in Start() and used in Stop() for logging purposes.
+  ResultType result_type_running_{NONE};
 
-  // The user's input for which a suggestion fetch is pending.
+  // The input for which suggestions are being retrieved and processed for both
+  // prefetch and non-prefetch requests.
+  // Set in Start() and StartPrefetch() and used in GetInput() for parsing the
+  // response.
   AutocompleteInput input_;
 
-  // Loader used to retrieve results.
+  // Loader used to retrieve results for non-prefetch requests.
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
-  // Like `AutocompleteProvider::done_`, but for prefetch requests. Used for
-  // metrics when the provider is stopped. `done_` and `prefetch_done_` should
-  // never both be true, a `Start()` request stops ongoing requests.
-  bool prefetch_done_;
+  // Loader used to retrieve results for prefetch requests.
+  std::unique_ptr<network::SimpleURLLoader> prefetch_loader_;
 
   // The list of experiment stats corresponding to |matches_|.
   SearchSuggestionParser::ExperimentStatsV2s experiment_stats_v2s_;

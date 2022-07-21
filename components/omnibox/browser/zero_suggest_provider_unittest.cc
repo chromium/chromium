@@ -693,22 +693,17 @@ TEST_F(ZeroSuggestProviderTest,
   GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX);
 
   provider_->Start(input, false);
-  // Given that this is a purely synchronous provider run, the running result
-  // type should have been set to NONE.
-  ASSERT_EQ(ZeroSuggestProvider::NONE,
+  ASSERT_EQ(ZeroSuggestProvider::REMOTE_NO_URL,
             provider_->GetResultTypeRunningForTesting());
+  EXPECT_TRUE(provider_->done());
+  EXPECT_TRUE(provider_->matches().empty());
 
   // There should be no pending network requests, given that asynchronous logic
   // has been explicitly disabled (`omit_asynchronous_matches_ == true`).
   ASSERT_FALSE(test_loader_factory()->IsPending(suggest_url.spec()));
-  EXPECT_TRUE(provider_->done());
-  EXPECT_TRUE(provider_->matches().empty());
 
-  // Expect the provider to have not populated the results cache, given that
-  // no asynchronous network requests should have been sent to the suggestions
-  // service.
-  PrefService* prefs = client_->GetPrefs();
-  EXPECT_EQ("", prefs->GetString(omnibox::kZeroSuggestCachedResults));
+  // Expect the provider not to have notified the provider listener.
+  EXPECT_FALSE(provider_did_notify_);
 }
 
 TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
@@ -867,8 +862,6 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
     AutocompleteInput input = PrefetchingInputForNTP();
     provider_->StartPrefetch(input);
     EXPECT_TRUE(provider_->done());
-    ASSERT_EQ(ZeroSuggestProvider::REMOTE_NO_URL,
-              provider_->GetResultTypeRunningForTesting());
 
     // Expect the results to be empty.
     ASSERT_EQ(0U, provider_->matches().size());

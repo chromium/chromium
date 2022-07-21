@@ -175,6 +175,23 @@ bool AllowRemoteNoURL(const AutocompleteProviderClient* client) {
          (!check_authentication_state || client->IsAuthenticated());
 }
 
+// Returns a sanitized copy of |input|. For zero-suggest, input is expected to
+// empty, as it is checked against the suggest response which always has an
+// empty query. If those don't match, the response is dropped. Ensures the input
+// text is empty. However copies over the URL. Zero-suggest on Web/SRP on Mobile
+// relies on the URL to be set.
+// TODO(crbug.com/1344004): Find out if the other fields also need to be set.
+AutocompleteInput GetSanitizedInput(const AutocompleteInput& input,
+                                    const AutocompleteProviderClient* client) {
+  AutocompleteInput sanitized_input(u"", input.current_page_classification(),
+                                    client->GetSchemeClassifier());
+  sanitized_input.set_current_url(input.current_url());
+  sanitized_input.set_current_title(input.current_title());
+  sanitized_input.set_prevent_inline_autocomplete(true);
+  sanitized_input.set_allow_exact_keyword_match(false);
+  return sanitized_input;
+}
+
 }  // namespace
 
 // static
@@ -274,18 +291,44 @@ void ZeroSuggestProvider::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                std::string());
 }
 
+void ZeroSuggestProvider::StartPrefetch(const AutocompleteInput& input) {
+  TRACE_EVENT0("omnibox", "ZeroSuggestProvider::StartPrefetch");
+
+  ResultType result_type;
+  if (!AllowZeroPrefixSuggestions(client(), input, &result_type)) {
+    return;
+  }
+
+  // Do not start a request if async requests are disallowed.
+  if (input.omit_asynchronous_matches()) {
+    return;
+  }
+
+  if (prefetch_loader_) {
+    LogEvent(Event::kRequestInvalidated, result_type, /*is_prefetch=*/true);
+  }
+
+  // Create a loader for the request and take ownership of it.
+  TemplateURLRef::SearchTermsArgs search_terms_args;
+  search_terms_args.page_classification = input.current_page_classification();
+  search_terms_args.focus_type = input.focus_type();
+  search_terms_args.current_page_url = result_type == REMOTE_SEND_URL
+                                           ? input.current_url().spec()
+                                           : std::string();
+  prefetch_loader_ =
+      client()
+          ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
+          ->StartSuggestionsRequest(
+              search_terms_args, client()->GetTemplateURLService(),
+              base::BindOnce(&ZeroSuggestProvider::OnPrefetchURLLoadComplete,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             GetSanitizedInput(input, client()), result_type));
+
+  LogEvent(Event::kRequestSent, result_type, /*is_prefetch=*/true);
+}
+
 void ZeroSuggestProvider::Start(const AutocompleteInput& input,
                                 bool minimal_changes) {
-  Start(input, minimal_changes, /*is_prefetch=*/false);
-}
-
-void ZeroSuggestProvider::StartPrefetch(const AutocompleteInput& input) {
-  Start(input, /*minimal_changes=*/false, /*is_prefetch=*/true);
-}
-
-void ZeroSuggestProvider::Start(const AutocompleteInput& input,
-                                bool minimal_changes,
-                                bool is_prefetch) {
   TRACE_EVENT0("omnibox", "ZeroSuggestProvider::Start");
   Stop(true, false);
 
@@ -298,52 +341,38 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
   set_field_trial_triggered(false);
   set_field_trial_triggered_in_session(false);
 
-  TemplateURLRef::SearchTermsArgs search_terms_args;
-  search_terms_args.page_classification = input.current_page_classification();
-  search_terms_args.focus_type = input.focus_type();
-  GURL suggest_url = RemoteSuggestionsService::EndpointUrl(
-      search_terms_args, client()->GetTemplateURLService());
-  if (!suggest_url.is_valid())
-    return;
-
-  if (is_prefetch) {
-    prefetch_done_ = false;
-  } else {
-    done_ = false;
-
-    // Prefetching is only meant to update the stored response with a fresh
-    // response. It is unnecessary to convert it to the displayed matches when
-    // prefetching; as they will get cleared on the next call to `Start()`.
-    auto response_data = ReadStoredResponse();
-    if (response_data) {
-      if (ConvertResponseToAutocompleteMatches(std::move(response_data))) {
-        LogEvent(Event::KCachedResponseConvertedToMatches, result_type_running_,
-                 is_prefetch);
-      }
+  // Convert the stored response to |matches_|, if applicable.
+  auto response_data = ReadStoredResponse(result_type_running_);
+  if (response_data) {
+    if (ConvertResponseToAutocompleteMatches(std::move(response_data))) {
+      LogEvent(Event::KCachedResponseConvertedToMatches, result_type_running_,
+               /*is_prefetch=*/false);
     }
   }
 
+  // Do not start a request if async requests are disallowed.
   if (input.omit_asynchronous_matches()) {
-    // Asynchronous provider logic should only be omitted during non-prefetch
-    // ZPS requests.
-    DCHECK(!is_prefetch);
-    Stop(true, false);
     return;
   }
 
+  done_ = false;
+
+  // Create a loader for the request and take ownership of it.
+  TemplateURLRef::SearchTermsArgs search_terms_args;
+  search_terms_args.page_classification = input.current_page_classification();
+  search_terms_args.focus_type = input.focus_type();
   search_terms_args.current_page_url = result_type_running_ == REMOTE_SEND_URL
                                            ? input.current_url().spec()
                                            : std::string();
-  loader_ =
-      client()
-          ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
-          ->StartSuggestionsRequest(
-              search_terms_args, client()->GetTemplateURLService(),
-              base::BindOnce(&ZeroSuggestProvider::OnURLLoadComplete,
-                             weak_ptr_factory_.GetWeakPtr(), is_prefetch));
+  loader_ = client()
+                ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
+                ->StartSuggestionsRequest(
+                    search_terms_args, client()->GetTemplateURLService(),
+                    base::BindOnce(&ZeroSuggestProvider::OnURLLoadComplete,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   result_type_running_));
 
-  LogEvent(Event::kRequestSent, result_type_running_,
-           /*is_prefetch=*/!prefetch_done_);
+  LogEvent(Event::kRequestSent, result_type_running_, /*is_prefetch=*/false);
 }
 
 void ZeroSuggestProvider::Stop(bool clear_cached_results,
@@ -352,11 +381,9 @@ void ZeroSuggestProvider::Stop(bool clear_cached_results,
 
   if (loader_) {
     LogEvent(Event::kRequestInvalidated, result_type_running_,
-             /*is_prefetch=*/!prefetch_done_);
+             /*is_prefetch=*/false);
+    loader_.reset();
   }
-  loader_.reset();
-  prefetch_done_ = true;
-  result_type_running_ = NONE;
 
   if (clear_cached_results) {
     experiment_stats_v2s_.clear();
@@ -389,8 +416,7 @@ void ZeroSuggestProvider::ResetSession() {
 
 ZeroSuggestProvider::ZeroSuggestProvider(AutocompleteProviderClient* client,
                                          AutocompleteProviderListener* listener)
-    : BaseSearchProvider(AutocompleteProvider::TYPE_ZERO_SUGGEST, client),
-      result_type_running_(NONE) {
+    : BaseSearchProvider(AutocompleteProvider::TYPE_ZERO_SUGGEST, client) {
   AddListener(listener);
 }
 
@@ -403,19 +429,7 @@ const TemplateURL* ZeroSuggestProvider::GetTemplateURL(bool is_keyword) const {
 }
 
 const AutocompleteInput ZeroSuggestProvider::GetInput(bool is_keyword) const {
-  // In zero-suggest, input is expected to empty, as it is checked against the
-  // suggest response which always has an empty query. If those don't match,
-  // the response is dropped. Ensure the input text is empty. However copy
-  // over the URL. on-focus zero-suggest on Web/SRP on Mobile relies on the
-  // URL to be set.
-  AutocompleteInput input(std::u16string(),
-                          input_.current_page_classification(),
-                          client()->GetSchemeClassifier());
-  input.set_current_url(input_.current_url());
-  input.set_current_title(input_.current_title());
-  input.set_prevent_inline_autocomplete(true);
-  input.set_allow_exact_keyword_match(false);
-  return input;
+  return GetSanitizedInput(input_, client());
 }
 
 bool ZeroSuggestProvider::ShouldAppendExtraParams(
@@ -435,10 +449,10 @@ void ZeroSuggestProvider::RecordDeletionResult(bool success) {
 }
 
 void ZeroSuggestProvider::OnURLLoadComplete(
-    bool is_prefetch,
+    ResultType result_type,
     const network::SimpleURLLoader* source,
     std::unique_ptr<std::string> response_body) {
-  DCHECK(!done_ || !prefetch_done_);
+  DCHECK(!done_);
   DCHECK_EQ(loader_.get(), source);
 
   std::unique_ptr<base::Value> response_data = nullptr;
@@ -448,35 +462,56 @@ void ZeroSuggestProvider::OnURLLoadComplete(
       (source->ResponseInfo() && source->ResponseInfo()->headers &&
        source->ResponseInfo()->headers->response_code() == 200);
   if (response_received) {
-    LogEvent(Event::kRemoteResponseReceived, result_type_running_, is_prefetch);
-    response_data = StoreRemoteResponse(SearchSuggestionParser::ExtractJsonData(
-                                            source, std::move(response_body)),
-                                        is_prefetch);
+    LogEvent(Event::kRemoteResponseReceived, result_type,
+             /*is_prefetch=*/false);
+    response_data =
+        StoreRemoteResponse(SearchSuggestionParser::ExtractJsonData(
+                                source, std::move(response_body)),
+                            GetInput(/*is_keyword=*/false), result_type,
+                            /*is_prefetch=*/false);
   }
 
-  // Prefetching is only meant to update the stored response with a fresh
-  // response. It is unnecessary to convert the prefetched response to the
-  // displayed matches; as they will get cleared on the next call to `Start()`.
-  const bool matches_updated = response_data && !is_prefetch;
-  if (matches_updated) {
+  // Convert the response to |matches_|, if applicable.
+  if (response_data) {
     if (ConvertResponseToAutocompleteMatches(std::move(response_data))) {
-      LogEvent(Event::kRemoteResponseConvertedToMatches, result_type_running_,
-               is_prefetch);
+      LogEvent(Event::kRemoteResponseConvertedToMatches, result_type,
+               /*is_prefetch=*/false);
     }
   }
 
   loader_.reset();
-  prefetch_done_ = true;
   done_ = true;
-  result_type_running_ = NONE;
 
   // Do not notify the provider listener for prefetch requests.
-  if (!is_prefetch)
-    NotifyListeners(matches_updated);
+  NotifyListeners(!!response_data);
+}
+
+void ZeroSuggestProvider::OnPrefetchURLLoadComplete(
+    const AutocompleteInput& input,
+    ResultType result_type,
+    const network::SimpleURLLoader* source,
+    std::unique_ptr<std::string> response_body) {
+  DCHECK_EQ(prefetch_loader_.get(), source);
+
+  const bool response_received =
+      response_body && source->NetError() == net::OK &&
+      (source->ResponseInfo() && source->ResponseInfo()->headers &&
+       source->ResponseInfo()->headers->response_code() == 200);
+  if (response_received) {
+    LogEvent(Event::kRemoteResponseReceived, result_type, /*is_prefetch=*/true);
+    StoreRemoteResponse(SearchSuggestionParser::ExtractJsonData(
+                            source, std::move(response_body)),
+                        input, result_type,
+                        /*is_prefetch=*/true);
+  }
+
+  prefetch_loader_.reset();
 }
 
 std::unique_ptr<base::Value> ZeroSuggestProvider::StoreRemoteResponse(
     const std::string& response_json,
+    const AutocompleteInput& input,
+    ResultType result_type,
     bool is_prefetch) {
   if (response_json.empty()) {
     return nullptr;
@@ -489,16 +524,18 @@ std::unique_ptr<base::Value> ZeroSuggestProvider::StoreRemoteResponse(
   }
 
   SearchSuggestionParser::Results results;
-  if (!ParseSuggestResults(*response_data, kDefaultZeroSuggestRelevance,
-                           /*is_keyword_result=*/false, &results)) {
+  if (!SearchSuggestionParser::ParseSuggestResults(
+          *response_data, GetSanitizedInput(input, client()),
+          client()->GetSchemeClassifier(), kDefaultZeroSuggestRelevance,
+          /*is_keyword_result=*/false, &results)) {
     return nullptr;
   }
 
   // Store the valid response only if running the REMOTE_NO_URL variant.
-  if (result_type_running_ == REMOTE_NO_URL) {
+  if (result_type == REMOTE_NO_URL) {
     client()->GetPrefs()->SetString(omnibox::kZeroSuggestCachedResults,
                                     response_json);
-    LogEvent(Event::kRemoteResponseCached, result_type_running_, is_prefetch);
+    LogEvent(Event::kRemoteResponseCached, result_type, is_prefetch);
   }
 
   // For display stability reasons, update the displayed results with the remote
@@ -514,9 +551,10 @@ std::unique_ptr<base::Value> ZeroSuggestProvider::StoreRemoteResponse(
   return nullptr;
 }
 
-std::unique_ptr<base::Value> ZeroSuggestProvider::ReadStoredResponse() {
+std::unique_ptr<base::Value> ZeroSuggestProvider::ReadStoredResponse(
+    ResultType result_type) {
   // Use the stored response only if running the REMOTE_NO_URL variant.
-  if (result_type_running_ != REMOTE_NO_URL) {
+  if (result_type != REMOTE_NO_URL) {
     return nullptr;
   }
 
