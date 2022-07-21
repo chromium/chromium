@@ -68,14 +68,17 @@ void EnterpriseAuthenticationAppLinkPolicyHandler::ApplyPolicySettings(
   if (!value)
     return;
 
-  std::vector<base::Value> filtered_values;
+  base::Value::List filtered_values;
   for (const auto& entry : value->GetList()) {
     const std::string* url = entry.FindStringKey("url");
     if (ValidatePolicyEntry(url))
-      filtered_values.emplace_back(*url);
+      filtered_values.Append(*url);
   }
-  if (filtered_values.size() > policy::kMaxUrlFiltersPerPolicy)
-    filtered_values.resize(policy::kMaxUrlFiltersPerPolicy);
+  if (filtered_values.size() > policy::kMaxUrlFiltersPerPolicy) {
+    filtered_values.erase(
+        filtered_values.begin() + policy::kMaxUrlFiltersPerPolicy,
+        filtered_values.end());
+  }
 
   prefs->SetValue(pref_path_, base::Value(std::move(filtered_values)));
 }
