@@ -500,5 +500,9 @@ fuzzer_test("cors_fuzzer") {
 
 fuzzer_test("client_hints_fuzzer") {
   sources = [ "client_hints_fuzzer.cc" ]
-  deps = [ ":cpp" ]
+  deps = [
+    ":cpp",
+    "//base",
+    "//base:i18n",
+  ]
 }
