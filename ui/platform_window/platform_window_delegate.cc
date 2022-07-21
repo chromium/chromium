@@ -44,7 +44,7 @@ void PlatformWindowDelegate::OnOcclusionStateChanged(
     PlatformWindowOcclusionState occlusion_state) {}
 
 absl::optional<OwnedWindowAnchor>
-PlatformWindowDelegate::GetOwnedWindowAnchorAndRectInDIP() {
+PlatformWindowDelegate::GetOwnedWindowAnchorAndRectInPx() {
   return absl::nullopt;
 }
 
