@@ -17,26 +17,38 @@
 
 namespace chromeos {
 
-absl::optional<std::string> ReadStartupData() {
+namespace {
+
+absl::optional<std::string> ReadStartupDataFromCmdlineSwitch(
+    base::StringPiece cmdline_switch) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kCrosStartupDataFD))
+  if (!command_line->HasSwitch(cmdline_switch))
     return absl::nullopt;
 
   int raw_fd = 0;
-  if (!base::StringToInt(
-          command_line->GetSwitchValueASCII(switches::kCrosStartupDataFD),
-          &raw_fd)) {
-    LOG(ERROR) << "Unrecognizable value for --" << switches::kCrosStartupDataFD;
+  if (!base::StringToInt(command_line->GetSwitchValueASCII(cmdline_switch),
+                         &raw_fd)) {
+    LOG(ERROR) << "Unrecognizable value for --" << cmdline_switch;
     return absl::nullopt;
   }
   base::ScopedFILE file(fdopen(raw_fd, "r"));
   std::string content;
   if (!base::ReadStreamToString(file.get(), &content)) {
-    LOG(ERROR) << "Failed to read startup data";
+    LOG(ERROR) << "Failed to read startup (--" << cmdline_switch << ") data";
     return absl::nullopt;
   }
 
   return absl::make_optional(std::move(content));
+}
+
+}  // namespace
+
+absl::optional<std::string> ReadStartupData() {
+  return ReadStartupDataFromCmdlineSwitch(switches::kCrosStartupDataFD);
+}
+
+absl::optional<std::string> ReadPostLoginData() {
+  return ReadStartupDataFromCmdlineSwitch(switches::kCrosPostLoginDataFD);
 }
 
 base::ScopedFD CreateMemFDFromBrowserInitParams(

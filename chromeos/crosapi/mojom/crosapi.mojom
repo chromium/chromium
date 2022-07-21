@@ -841,8 +841,10 @@ enum OpenUrlFrom {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// NOTE: These parameters are accessed via the BrowserParamsProxy wrapper class.
-// Please update the methods of that class when adding new parameters here.
+// IMPORTANT NOTE: These parameters are accessed via the BrowserParamsProxy
+// wrapper class. Please update the methods of that class when adding new
+// parameters here. If a new parameter is added and its value is only known after
+// the user has logged in, please update BrowserPostLoginParams as well.
 //
 // Next version: 51
 // Next id: 51
@@ -1165,6 +1167,115 @@ struct BrowserInitParams {
   // either rootfs or stateful.
   [MinVersion=50]
   LacrosSelection lacros_selection@50;
+};
+
+// BrowserPostLoginParams is the subset of parameters in BrowserInitParams
+// that is only known after the user has successfully logged in.
+//
+// When lacros-chrome is pre-launched at login screen, the subset of
+// BrowserInitParams which is already available is by ash-chrome at
+// that time. The rest is passed after login via this structure.
+//
+// Next version: 1
+// Next id: 19
+[Stable]
+struct BrowserPostLoginParams {
+  // Type of the ash-chrome session at the browser startup time.
+  SessionType session_type@0;
+
+  // Default directories on the system.
+  // Added in M89.
+  DefaultPaths? default_paths@1;
+
+  // Device Account's obfuscated Gaia id, if present.
+  // This is null for older versions of ash, for Active Directory sessions,
+  // Guest sessions, Managed Guest sessions, Demo mode, and Kiosks.
+  // Added in M89.
+  // Deprecated in M91. Use `device_account` (field id 16)  instead.
+  // TODO(crbug.com/1195865): Remove this in M93.
+  string? device_account_gaia_id@2;
+
+  // Primary user ID hash. Used to set CROS_USER_ID_HASH env var in crosh.
+  // Do not use this to construct paths, use DefaultPaths for that purpose.
+  string? cros_user_id_hash@3;
+
+  // Policy blob of the device account. If present, it's a managed account with
+  // policy data. If empty, it's unmanaged account. If absent, an error occurred
+  // while loading policy data. The format is serialized PolicyFetchResponse
+  // object. See components/policy/proto/device_management_backend.proto for
+  // details.
+  array<uint8>? device_account_policy@4;
+
+  // Timestamp (seconds since epoch in UTC) at which last device account policy
+  // fetch was attempted.
+  uint64 last_policy_fetch_attempt_timestamp@5;
+
+  // Defines which windows or tabs to restore on launch.
+  InitialBrowserAction initial_browser_action@6;
+
+  // The account used to sign into Chrome OS. This may be a Gaia account or a
+  // Microsoft Active Directory account. This field will be null for
+  // Guest sessions, Managed Guest sessions, Demo mode, and Kiosks.
+  // Note that this is different from the concept of a Primary Account in the
+  // browser. A user may not be signed into a Lacros browser Profile, or may be
+  // signed into a browser Profile with an account which is different from the
+  // account which they used to sign into the device - aka Device Account.
+  // Note: Do NOT use the email id of an account as an identifier. Use
+  // `AccountKey` - which has the necessary and sufficient information to
+  // identify an account.
+  // Added in M91.
+  Account? device_account@7;
+
+  // Whether the lacros web apps is enabled in ash-chrome. When this flag is on
+  // the ash-chrome will interact with web apps publishing from lacros-chrome
+  // instead of ash-chrome.
+  // Added in M92.
+  bool web_apps_enabled@8;
+
+  // When this flag is |true|, Lacros is the primary browser and Ash is the
+  // secondary backup.
+  // When this flag is |false|, Lacros is a secondary browser.
+  // This flag should be deprecated before a full launch of Lacros, as it relies
+  // on the assumption that Ash is always available as a browser.
+  bool standalone_browser_is_primary@9;
+
+  // Specifies what requests the startup_urls.
+  // This can be effective only when startup_urls is specified.
+  // Added in M100.
+  OpenUrlFrom startup_urls_from@10;
+
+  // URLs to be opened at the beginning. This works only when
+  // initial_browser_action == OpenWindowWithUrls.
+  // Added in M96.
+  array<url.mojom.Url>? startup_urls@11;
+
+  // When this flag is |true|, Lacros is the only browser.
+  bool standalone_browser_is_only_browser@12;
+
+  // When this flag is set, lacros will publish chrome apps to the app service.
+  bool publish_chrome_apps@13;
+
+  // When this flag is set, lacros will publish hosted apps to the app service.
+  bool publish_hosted_apps@14;
+
+  // Component (i.e. chrome extensions) policy for the device account.
+  // Maps `PolicyNamespace` representing an extension to the JSON policy
+  // value for that extension.
+  map<crosapi.mojom.PolicyNamespace, mojo_base.mojom.Value>? device_account_component_policy@15;
+
+  // Tells lacros whether the currently logged in user is the device owner.
+  bool is_current_user_device_owner@16;
+
+  // When this is set to true, Lacros will not mux extension app ids. The
+  // original reason for muxing was to avoid collision between lacros and ash
+  // apps with the same id. This is no longer possible with the extension keep
+  // list feature. This parameter is structured so that if ash is too old to
+  // support this feature, the default value of false maintains pre-existing
+  // behavior.
+  bool do_not_mux_extension_app_ids@17;
+
+  // When this flag is set to true, Lacros tts support feature will be enabled.
+  bool enable_lacros_tts_support@18;
 };
 
 // Parameters to specify OpenUrl behavior.

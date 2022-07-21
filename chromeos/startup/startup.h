@@ -20,6 +20,12 @@ namespace chromeos {
 COMPONENT_EXPORT(CHROMEOS_STARTUP)
 absl::optional<std::string> ReadStartupData();
 
+// Reads the post-login data. The FD to be read for the startup data should be
+// specified via the kCrosPostLoginDataFD command line flag. This function
+// consumes the FD, so this must not be called twice in a process.
+COMPONENT_EXPORT(CHROMEOS_STARTUP)
+absl::optional<std::string> ReadPostLoginData();
+
 // Creates a memory backed file containing the serialized |params|,
 // and returns its FD.
 COMPONENT_EXPORT(CHROMEOS_STARTUP)
