@@ -1896,7 +1896,6 @@
     },
     {
       name: "PrivateNetworkAccessPermissionPrompt",
-      status: "test",
     },
     {
       name: "PushMessaging",

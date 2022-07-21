@@ -1376,7 +1376,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter referrer
 [Worker]     getter referrerPolicy
 [Worker]     getter signal
-[Worker]     getter targetAddressSpace
 [Worker]     getter url
 [Worker]     method arrayBuffer
 [Worker]     method blob

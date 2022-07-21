@@ -376,6 +376,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"PendingBeaconAPI", blink::features::kPendingBeaconAPI},
           {"PrefersColorSchemeClientHintHeader",
            blink::features::kPrefersColorSchemeClientHintHeader},
+          {"PrivateNetworkAccessPermissionPrompt",
+           blink::features::kPrivateNetworkAccessPermissionPrompt},
           {"FirstPartySets", features::kFirstPartySets},
           {"QuickIntensiveWakeUpThrottlingAfterLoading",
            blink::features::kQuickIntensiveWakeUpThrottlingAfterLoading},

@@ -8,6 +8,12 @@
     ]
   },
   {
+    "prefix": "pna-permission",
+    "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
+    "bases": ["external/wpt/fetch/private-network-access"],
+    "args": ["--enable-features=PrivateNetworkAccessPermissionPrompt"]
+  },
+  {
     "prefix": "disable-accept-language-header",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/navigation/language"],
