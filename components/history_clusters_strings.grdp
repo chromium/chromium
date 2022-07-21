@@ -70,4 +70,8 @@
   <message name="IDS_HISTORY_CLUSTERS_SEARCH_YOUR_JOURNEYS" desc="A label for the hint text for the search box in Chrome Journeys." formatter_data="android_java">
     Search your Journeys
   </message>
+  <message name="IDS_HISTORY_CLUSTERS_N_MATCHES" desc="A label for the number of matching clusters for a given label." formatter_data="android_java">
+   {NUM_MATCHES, plural,
+        =1 {# match} other {# matches}}
+  </message>
 </grit-part>

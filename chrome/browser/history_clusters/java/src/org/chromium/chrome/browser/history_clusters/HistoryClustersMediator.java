@@ -47,7 +47,9 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 class HistoryClustersMediator extends RecyclerView.OnScrollListener implements SearchDelegate {
@@ -79,6 +81,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private ListItem mClearBrowsingDataItem;
     private QueryState mQueryState = QueryState.forQueryless();
     private final HistoryClustersMetricsLogger mMetricsLogger;
+    private Map<String, PropertyModel> mLabelToModelMap = new LinkedHashMap<>();
 
     /**
      * Create a new HistoryClustersMediator.
@@ -134,7 +137,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     // SearchDelegate implementation.
     @Override
     public void onSearchTextChanged(String query) {
-        mModelList.clear();
+        resetModel();
         startQuery(query);
     }
 
@@ -166,7 +169,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mQueryState = queryState;
         mToolbarModel.set(HistoryClustersToolbarProperties.QUERY_STATE, queryState);
         if (!queryState.isSearching()) {
-            mModelList.clear();
+            resetModel();
             startQuery(mQueryState.getQuery());
         }
     }
@@ -267,7 +270,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         }
         mDelegate.removeMarkedItems();
 
-        mModelList.clear();
+        resetModel();
         startQuery(mQueryState.getQuery());
     }
 
@@ -282,6 +285,39 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         boolean isQueryLess = !mQueryState.isSearching();
         if (isQueryLess) {
             ensureHeaders();
+            for (Map.Entry<String, Integer> entry : result.getLabelCounts().entrySet()) {
+                // Check if label exists in the model already
+                // If not, create a new entry
+                String rawLabel = entry.getKey();
+                PropertyModel existingModel = mLabelToModelMap.get(rawLabel);
+                if (existingModel == null) {
+                    existingModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
+                    mLabelToModelMap.put(rawLabel, existingModel);
+                    Drawable journeysDrawable =
+                            AppCompatResources.getDrawable(mContext, R.drawable.ic_journeys);
+                    existingModel.set(
+                            HistoryClustersItemProperties.ICON_DRAWABLE, journeysDrawable);
+                    existingModel.set(HistoryClustersItemProperties.DIVIDER_VISIBLE, true);
+                    existingModel.set(HistoryClustersItemProperties.TITLE,
+                            getQuotedLabelFromRawLabel(rawLabel, result.getClusters()));
+                    ListItem clusterItem = new ListItem(ItemType.CLUSTER, existingModel);
+                    mModelList.add(clusterItem);
+                    existingModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
+                            (v)
+                                    -> setQueryState(QueryState.forQuery(
+                                            rawLabel, mDelegate.getSearchEmptyString())));
+                    existingModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, null);
+                }
+                existingModel.set(HistoryClustersItemProperties.LABEL,
+                        mResources.getQuantityString(R.plurals.history_clusters_n_matches,
+                                entry.getValue(), entry.getValue()));
+            }
+
+            if (result.canLoadMore() && !result.isContinuation()) {
+                continueQuery("");
+            }
+
+            return;
         }
 
         for (HistoryCluster cluster : result.getClusters()) {
@@ -294,15 +330,6 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             clusterModel.set(HistoryClustersItemProperties.DIVIDER_VISIBLE, isQueryLess);
             ListItem clusterItem = new ListItem(ItemType.CLUSTER, clusterModel);
             mModelList.add(clusterItem);
-            if (isQueryLess) {
-                clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
-                        (v)
-                                -> setQueryState(QueryState.forQuery(
-                                        cluster.getRawLabel(), mDelegate.getSearchEmptyString())));
-                clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, null);
-                clusterModel.set(HistoryClustersItemProperties.LABEL, null);
-                continue;
-            }
 
             List<ListItem> visitsAndRelatedSearches =
                     new ArrayList<>(cluster.getVisits().size() + 1);
@@ -363,6 +390,22 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             clusterModel.set(
                     HistoryClustersItemProperties.LABEL, getTimeString(cluster.getTimestamp()));
         }
+    }
+
+    private void resetModel() {
+        mModelList.clear();
+        mLabelToModelMap.clear();
+    }
+
+    private String getQuotedLabelFromRawLabel(String rawLabel, List<HistoryCluster> clusters) {
+        for (HistoryCluster cluster : clusters) {
+            if (cluster.getRawLabel().equals(rawLabel)) {
+                return cluster.getLabel();
+            }
+        }
+
+        // This shouldn't happen, but the unquoted label is a graceful fallback in case it does.
+        return rawLabel;
     }
 
     private void ensureHeaders() {

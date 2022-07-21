@@ -24,6 +24,8 @@ namespace history_clusters {
 
 class HistoryClustersService;
 
+using LabelCount = std::pair<std::u16string, size_t>;
+
 // This object encapsulates the results of a query to HistoryClustersService.
 // It manages fetching more pages from the clustering backend as the user
 // scrolls down.
@@ -54,15 +56,12 @@ class QueryClustersState {
   // Used to request another batch of clusters of the same query.
   void LoadNextBatchOfClusters(ResultCallback callback);
 
-  // Use these together to iterate through the list of raw labels in the same
-  // order as the clusters are ordered. The counts can be fetched by inputting
-  // the labels into the map as keys - but note, this only counts the number
-  // of label instances seen SO FAR, not necessarily in all of History.
-  const std::vector<std::u16string>& unique_raw_labels() {
-    return unique_raw_labels_;
-  }
-  const std::map<std::u16string, size_t>& raw_label_counts() {
-    return raw_label_counts_;
+  // The list of raw labels in the same order as the clusters are ordered
+  // alongside the number of occurrences so far. The counts can be fetched by
+  // inputting the labels into the map as keys - but note, this only counts the
+  // number of label instances seen SO FAR, not necessarily in all of History.
+  const std::vector<LabelCount>& raw_label_counts_so_far() {
+    return raw_label_counts_so_far_;
   }
 
  private:
@@ -97,16 +96,11 @@ class QueryClustersState {
   // The string query the user entered into the searchbox.
   const std::string query_;
 
-  // The de-duplicated list of raw labels we've seen so far, in the same order
-  // as the clusters themselves were provided. This is only computed if `query`
-  // is empty. For non-empty `query`, this will be an empty list.
-  std::vector<std::u16string> unique_raw_labels_;
-  // Counts the number of instances of each raw label we've seen. Note that
-  // the value will always be an integer 1 or above. This is also used for our
-  // internal uniqueness test. Note: this only counts the number of raw labels
-  // of this string seen SO FAR, so unless we iterate through ALL the clusters,
-  // this number may be smaller than the total number in History.
-  std::map<std::u16string, size_t> raw_label_counts_;
+  // The de-duplicated list of raw labels we've seen so far and their number of
+  // occurrences, in the same order as the clusters themselves were provided.
+  // This is only computed if `query` is empty. For non-empty `query`, this will
+  // be an empty list.
+  std::vector<LabelCount> raw_label_counts_so_far_;
 
   // The continuation params used to track where the last query left off and
   // query for the "next page".

@@ -285,20 +285,18 @@ TEST_F(QueryClustersStateTest, UniqueRawLabels) {
   auto result = InjectRawClustersAndAwaitPostProcessing(
       &state, {cluster1, cluster2, cluster4}, {});
   ASSERT_EQ(result.cluster_batch.size(), 3U);
-  EXPECT_THAT(state.unique_raw_labels(),
-              ElementsAre(u"rawlabel1", u"rawlabel2"));
-  EXPECT_EQ(state.raw_label_counts().at(u"rawlabel1"), 2U);
-  EXPECT_EQ(state.raw_label_counts().at(u"rawlabel2"), 1U);
+  EXPECT_THAT(state.raw_label_counts_so_far(),
+              ElementsAre(std::make_pair(u"rawlabel1", 2),
+                          std::make_pair(u"rawlabel2", 1)));
 
   // Test updating an existing count, and adding new ones after that.
   result =
       InjectRawClustersAndAwaitPostProcessing(&state, {cluster5, cluster3}, {});
   ASSERT_EQ(result.cluster_batch.size(), 2U);
-  EXPECT_THAT(state.unique_raw_labels(),
-              ElementsAre(u"rawlabel1", u"rawlabel2", u"rawlabel3"));
-  EXPECT_EQ(state.raw_label_counts().at(u"rawlabel1"), 2U);
-  EXPECT_EQ(state.raw_label_counts().at(u"rawlabel2"), 2U);
-  EXPECT_EQ(state.raw_label_counts().at(u"rawlabel3"), 1U);
+  EXPECT_THAT(state.raw_label_counts_so_far(),
+              ElementsAre(std::make_pair(u"rawlabel1", 2),
+                          std::make_pair(u"rawlabel2", 2),
+                          std::make_pair(u"rawlabel3", 1)));
 }
 
 }  // namespace history_clusters

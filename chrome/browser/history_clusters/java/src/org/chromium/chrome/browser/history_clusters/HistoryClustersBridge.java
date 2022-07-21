@@ -17,6 +17,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @JNINamespace("history_clusters")
@@ -69,10 +70,18 @@ public class HistoryClustersBridge {
     }
 
     @CalledByNative
-    static HistoryClustersResult buildClusterResult(
-            HistoryCluster[] clusters, String query, boolean canLoadMore, boolean isContinuation) {
+    static HistoryClustersResult buildClusterResult(HistoryCluster[] clusters,
+            String[] uniqueRawLabels, int[] labelCounts, String query, boolean canLoadMore,
+            boolean isContinuation) {
+        assert uniqueRawLabels.length == labelCounts.length;
+        LinkedHashMap<String, Integer> labelCountsMap = new LinkedHashMap<>();
+        for (int i = 0; i < uniqueRawLabels.length; i++) {
+            labelCountsMap.put(uniqueRawLabels[i], labelCounts[i]);
+        }
+
         List<HistoryCluster> clustersList = Arrays.asList(clusters);
-        return new HistoryClustersResult(clustersList, query, canLoadMore, isContinuation);
+        return new HistoryClustersResult(
+                clustersList, labelCountsMap, query, canLoadMore, isContinuation);
     }
 
     @CalledByNative

@@ -29,6 +29,8 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.common.collect.ImmutableMap;
+
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -71,6 +73,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -248,12 +251,17 @@ public class HistoryClustersMediatorTest {
                 new ArrayList<>(), 123L, Collections.emptyList());
         mCluster3 = new HistoryCluster(Arrays.asList(mVisit4), "\"label3\"", "label3",
                 new ArrayList<>(), 789L, Collections.EMPTY_LIST);
-        mHistoryClustersResultWithQuery = new HistoryClustersResult(
-                Arrays.asList(mCluster1, mCluster2), "query", true, false);
-        mHistoryClustersFollowupResultWithQuery =
-                new HistoryClustersResult(Arrays.asList(mCluster3), "query", false, true);
+        mHistoryClustersResultWithQuery =
+                new HistoryClustersResult(Arrays.asList(mCluster1, mCluster2),
+                        new LinkedHashMap<>(ImmutableMap.of("label", 1)), "query", true, false);
+        mHistoryClustersFollowupResultWithQuery = new HistoryClustersResult(
+                Arrays.asList(mCluster3),
+                new LinkedHashMap<>(ImmutableMap.of("label", 1, "hostname.com", 1, "label3", 1)),
+                "query", false, true);
         mHistoryClustersResultEmptyQuery =
-                new HistoryClustersResult(Arrays.asList(mCluster1, mCluster2), "", false, false);
+                new HistoryClustersResult(Arrays.asList(mCluster1, mCluster2),
+                        new LinkedHashMap<>(ImmutableMap.of("label", 1, "hostname.com", 1)), "",
+                        false, false);
     }
 
     @Test
@@ -318,8 +326,9 @@ public class HistoryClustersMediatorTest {
 
         ListItem item = mModelList.get(3);
         PropertyModel model = item.model;
-        assertTrue(model.getAllSetProperties().containsAll(Arrays.asList(
-                HistoryClustersItemProperties.CLICK_HANDLER, HistoryClustersItemProperties.TITLE)));
+        assertTrue(model.getAllSetProperties().containsAll(
+                Arrays.asList(HistoryClustersItemProperties.CLICK_HANDLER,
+                        HistoryClustersItemProperties.TITLE, HistoryClustersItemProperties.LABEL)));
     }
 
     @Test
@@ -496,6 +505,7 @@ public class HistoryClustersMediatorTest {
         doReturn(secondPromise).when(mBridge).loadMoreClusters("query");
         doReturn(3).when(mLayoutManager).findLastVisibleItemPosition();
 
+        mMediator.setQueryState(QueryState.forQuery("query", ""));
         mMediator.startQuery("query");
         fulfillPromise(promise, mHistoryClustersResultWithQuery);
 

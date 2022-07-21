@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ActivityScenario;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.common.collect.ImmutableMap;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -64,6 +65,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -205,7 +207,8 @@ public class HistoryClustersCoordinatorTest {
                 new ArrayList<>(), mGurl2, 123L, new ArrayList<>());
         mCluster = new HistoryCluster(Arrays.asList(mVisit1, mVisit2), "\"label\"", "label",
                 Collections.emptyList(), 123L, Arrays.asList("pugs", "terriers"));
-        mClusterResult = new HistoryClustersResult(Arrays.asList(mCluster), "dogs", false, false);
+        mClusterResult = new HistoryClustersResult(Arrays.asList(mCluster),
+                new LinkedHashMap<>(ImmutableMap.of("label", 1)), "dogs", false, false);
 
         mActivityScenario =
                 ActivityScenario.launch(ChromeTabbedActivity.class).onActivity(activity -> {

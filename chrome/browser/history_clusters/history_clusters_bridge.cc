@@ -177,11 +177,23 @@ void HistoryClustersBridge::ClustersQueryDone(
   }
   ScopedJavaLocalRef<jclass> cluster_type = base::android::GetClass(
       env, "org/chromium/chrome/browser/history_clusters/HistoryCluster");
+  std::vector<std::u16string> unique_raw_labels;
+  std::vector<int> label_counts;
+  if (query_clusters_state_->query().empty()) {
+    for (const auto& label_entry :
+         query_clusters_state_->raw_label_counts_so_far()) {
+      unique_raw_labels.push_back(label_entry.first);
+      label_counts.push_back(label_entry.second);
+    }
+  }
+
   const ScopedJavaLocalRef<jobject>& j_result =
       Java_HistoryClustersBridge_buildClusterResult(
           env,
           base::android::ToTypedJavaArrayOfObjects(env, j_clusters,
                                                    cluster_type),
+          base::android::ToJavaArrayOfStrings(env, unique_raw_labels),
+          base::android::ToJavaIntArray(env, label_counts),
           base::android::ConvertUTF8ToJavaString(env, query), can_load_more,
           is_continuation);
   base::android::RunObjectCallbackAndroid(j_callback, j_result);
