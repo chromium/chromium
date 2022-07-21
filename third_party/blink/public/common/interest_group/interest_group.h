@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_INTEREST_GROUP_INTEREST_GROUP_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_INTEREST_GROUP_INTEREST_GROUP_H_
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -94,7 +95,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<std::string> user_bidding_signals;
   absl::optional<std::vector<InterestGroup::Ad>> ads, ad_components;
 
-  static_assert(__LINE__ == 97, R"(
+  static_assert(__LINE__ == 98, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class
@@ -121,6 +122,26 @@ See crrev.com/c/3517534 for an example (adding the priority field), and also
 remember to update bidder_worklet.cc too.
 )");
 };
+
+// A unique identifier for interest groups.
+struct InterestGroupKey {
+  InterestGroupKey(url::Origin o, std::string n)
+      : owner(std::move(o)), name(std::move(n)) {}
+  inline bool operator<(const InterestGroupKey& other) const {
+    return owner != other.owner ? owner < other.owner : name < other.name;
+  }
+  inline bool operator==(const InterestGroupKey& other) const {
+    return owner == other.owner && name == other.name;
+  }
+  url::Origin owner;
+  std::string name;
+};
+
+// A set of interest groups, identified by owner and name. Used to log which
+// interest groups bid in an auction. A sets is used to avoid double-counting
+// interest groups that bid in multiple components auctions in a component
+// auction.
+using InterestGroupSet = std::set<InterestGroupKey>;
 
 }  // namespace blink
 

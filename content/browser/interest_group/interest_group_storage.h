@@ -60,32 +60,27 @@ class CONTENT_EXPORT InterestGroupStorage {
   void JoinInterestGroup(const blink::InterestGroup& group,
                          const GURL& main_frame_joining_url);
   // Remove the interest group if it exists.
-  void LeaveInterestGroup(const url::Origin& owner,
-                          const std::string& name,
+  void LeaveInterestGroup(const blink::InterestGroupKey& group_key,
                           const url::Origin& main_frame);
   // Updates the interest group `name` of `owner` with the populated fields of
   // `update`.
   //
   // If it fails for any reason (e.g., the interest group does not exist, or the
   // data in `update` is not valid), returns false.
-  bool UpdateInterestGroup(const url::Origin& owner,
-                           const std::string& name,
+  bool UpdateInterestGroup(const blink::InterestGroupKey& group_key,
                            InterestGroupUpdate update);
   // Report that updating of the interest group with owner `owner` and name
   // `name` failed. With the exception of parse failures, the rate limit
   // duration for failed updates is shorter than for those that succeed -- for
   // successes, UpdateInterestGroup() automatically updates the rate limit
   // duration.
-  void ReportUpdateFailed(const url::Origin& owner,
-                          const std::string& name,
+  void ReportUpdateFailed(const blink::InterestGroupKey& group_key,
                           bool parse_failure);
-  // Adds an entry to the bidding history for this interest group.
-  void RecordInterestGroupBid(const url::Origin& owner,
-                              const std::string& name);
+  // Adds an entry to the bidding history for these interest groups.
+  void RecordInterestGroupBids(const blink::InterestGroupSet& group);
   // Adds an entry to the win history for this interest group. `ad_json` is a
   // piece of opaque data to identify the winning ad.
-  void RecordInterestGroupWin(const url::Origin& owner,
-                              const std::string& name,
+  void RecordInterestGroupWin(const blink::InterestGroupKey& group_key,
                               const std::string& ad_json);
   // Records the K-anonymity data for an interest group owner/name combination.
   void UpdateInterestGroupNameKAnonymity(
@@ -100,8 +95,7 @@ class CONTENT_EXPORT InterestGroupStorage {
                           const absl::optional<base::Time>& update_sent_time);
   // Gets a single interest group.
   absl::optional<StorageInterestGroup> GetInterestGroup(
-      const url::Origin& owner,
-      const std::string& name);
+      const blink::InterestGroupKey& group_key);
   // Gets a list of all interest group owners. Each owner will only appear
   // once.
   std::vector<url::Origin> GetAllInterestGroupOwners();
@@ -129,8 +123,7 @@ class CONTENT_EXPORT InterestGroupStorage {
   void DeleteInterestGroupData(
       StoragePartition::StorageKeyMatcherFunction storage_key_matcher);
   // Update the interest group priority.
-  void SetInterestGroupPriority(const url::Origin& owner,
-                                const std::string& name,
+  void SetInterestGroupPriority(const blink::InterestGroupKey& group_key,
                                 double priority);
 
   std::vector<StorageInterestGroup> GetAllInterestGroupsUnfilteredForTesting();

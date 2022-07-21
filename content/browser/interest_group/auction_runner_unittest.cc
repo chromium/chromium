@@ -60,7 +60,7 @@ using auction_worklet::TestDevToolsAgentClient;
 namespace content {
 namespace {
 
-using InterestGroupKey = AuctionRunner::InterestGroupKey;
+using InterestGroupKey = blink::InterestGroupKey;
 using PostAuctionSignals = AuctionRunner::PostAuctionSignals;
 using blink::mojom::ReportingDestination;
 
@@ -1560,12 +1560,14 @@ class AuctionRunnerTest : public testing::Test,
             bidder.interest_group, bidder.interest_group.owner.GetURL());
       }
       for (int i = 0; i < bidder.bidding_browser_signals->bid_count; i++) {
-        interest_group_manager_->RecordInterestGroupBid(
-            bidder.interest_group.owner, bidder.interest_group.name);
+        interest_group_manager_->RecordInterestGroupBids(
+            {blink::InterestGroupKey(bidder.interest_group.owner,
+                                     bidder.interest_group.name)});
       }
       for (const auto& prev_win : bidder.bidding_browser_signals->prev_wins) {
         interest_group_manager_->RecordInterestGroupWin(
-            bidder.interest_group.owner, bidder.interest_group.name,
+            InterestGroupKey(bidder.interest_group.owner,
+                             bidder.interest_group.name),
             prev_win->ad_json);
         // Add some time between interest group wins, so that they'll be added
         // to the database in the order they appear. Their times will *not*

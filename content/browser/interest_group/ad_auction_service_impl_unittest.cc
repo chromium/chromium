@@ -1990,6 +1990,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
 "ads": [{"renderUrl": "https://example.com/new_render"
         }]
 })");
+  blink::InterestGroupKey originA_group_key(kOriginA, kInterestGroupName);
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.daily_update_url = kUpdateUrlA;
@@ -2006,9 +2007,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   // Register 2 bids and a win.
-  manager_->RecordInterestGroupBid(kOriginA, kInterestGroupName);
-  manager_->RecordInterestGroupBid(kOriginA, kInterestGroupName);
-  manager_->RecordInterestGroupWin(kOriginA, kInterestGroupName, "{}");
+  manager_->RecordInterestGroupBids(blink::InterestGroupSet{originA_group_key});
+  manager_->RecordInterestGroupBids(blink::InterestGroupSet{originA_group_key});
+  manager_->RecordInterestGroupWin(originA_group_key, "{}");
 
   std::vector<StorageInterestGroup> prev_groups =
       GetInterestGroupsForOwner(kOriginA);

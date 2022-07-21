@@ -116,8 +116,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Same as CheckPermissionsAndJoinInterestGroup(), except for a leave
   // operation.
   void CheckPermissionsAndLeaveInterestGroup(
-      const url::Origin& owner,
-      const std::string& name,
+      const blink::InterestGroupKey& group_key,
       const url::Origin& main_frame,
       const url::Origin& frame_origin,
       const net::NetworkIsolationKey& network_isolation_key,
@@ -131,8 +130,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // record for this interest group is created.
   void JoinInterestGroup(blink::InterestGroup group, const GURL& joining_url);
   // Remove the interest group if it exists.
-  void LeaveInterestGroup(const url::Origin& owner,
-                          const std::string& name,
+  void LeaveInterestGroup(const blink::InterestGroupKey& group_key,
                           const url::Origin& main_frame);
   // Loads all interest groups owned by `owner`, then updates their definitions
   // by fetching their `dailyUpdateUrl`. Interest group updates that fail to
@@ -154,13 +152,15 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // updated at the same time.
   void set_max_parallel_updates_for_testing(int max_parallel_updates);
   // Adds an entry to the bidding history for this interest group.
-  void RecordInterestGroupBid(const url::Origin& owner,
-                              const std::string& name);
+  void RecordInterestGroupBids(const blink::InterestGroupSet& groups);
   // Adds an entry to the win history for this interest group. `ad_json` is a
   // piece of opaque data to identify the winning ad.
-  void RecordInterestGroupWin(const ::url::Origin& owner,
-                              const std::string& name,
+  void RecordInterestGroupWin(const blink::InterestGroupKey& group_key,
                               const std::string& ad_json);
+  // Gets a single interest group.
+  void GetInterestGroup(
+      const blink::InterestGroupKey& group_key,
+      base::OnceCallback<void(absl::optional<StorageInterestGroup>)> callback);
   // Gets a single interest group.
   void GetInterestGroup(
       const url::Origin& owner,
@@ -192,8 +192,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   // Update the interest group priority.
-  void SetInterestGroupPriority(const url::Origin& owner,
-                                const std::string& name,
+  void SetInterestGroupPriority(const blink::InterestGroupKey& group,
                                 double priority);
 
   // Clears the InterestGroupPermissionsChecker's cache of the results of
@@ -274,8 +273,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       blink::mojom::AdAuctionService::JoinInterestGroupCallback callback,
       bool can_join);
   void OnLeaveInterestGroupPermissionsChecked(
-      const url::Origin& owner,
-      const std::string& name,
+      const blink::InterestGroupKey& group_key,
       const url::Origin& main_frame,
       bool report_result_only,
       blink::mojom::AdAuctionService::LeaveInterestGroupCallback callback,
@@ -304,8 +302,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // success or failure.
   //
   // To be called only by `update_manager_`.
-  void UpdateInterestGroup(const url::Origin& owner,
-                           const std::string& name,
+  void UpdateInterestGroup(const blink::InterestGroupKey& group_key,
                            InterestGroupUpdate update,
                            base::OnceCallback<void(bool)> callback);
 
@@ -313,8 +310,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // for parse failure.
   //
   // To be called only by `update_manager_`.
-  void ReportUpdateFailed(const url::Origin& owner,
-                          const std::string& name,
+  void ReportUpdateFailed(const blink::InterestGroupKey& group_key,
                           bool parse_failure);
   void NotifyInterestGroupAccessed(
       InterestGroupObserverInterface::AccessType type,

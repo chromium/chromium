@@ -106,7 +106,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   void OnAuctionComplete(
       RunAdAuctionCallback callback,
       AuctionRunner* auction,
-      absl::optional<AuctionRunner::InterestGroupKey> winning_group_id,
+      absl::optional<blink::InterestGroupKey> winning_group_id,
       absl::optional<GURL> render_url,
       std::vector<GURL> ad_component_urls,
       std::vector<GURL> report_urls,

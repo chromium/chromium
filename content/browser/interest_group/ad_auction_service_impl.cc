@@ -126,7 +126,7 @@ void AdAuctionServiceImpl::LeaveInterestGroup(
       ContentBrowserClient::InterestGroupApiOperation::kLeave, owner);
 
   GetInterestGroupManager().CheckPermissionsAndLeaveInterestGroup(
-      owner, name, main_frame_origin_, origin(),
+      blink::InterestGroupKey(owner, name), main_frame_origin_, origin(),
       GetFrame()->GetNetworkIsolationKey(), report_result_only,
       *GetFrameURLLoaderFactory(), std::move(callback));
 }
@@ -177,7 +177,8 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
   }
 
   GetInterestGroupManager().LeaveInterestGroup(
-      auction_data->interest_group_owner(), auction_data->interest_group_name(),
+      blink::InterestGroupKey(auction_data->interest_group_owner(),
+                              auction_data->interest_group_name()),
       main_frame_origin_);
 }
 
@@ -450,7 +451,7 @@ bool AdAuctionServiceImpl::IsInterestGroupAPIAllowed(
 void AdAuctionServiceImpl::OnAuctionComplete(
     RunAdAuctionCallback callback,
     AuctionRunner* auction,
-    absl::optional<AuctionRunner::InterestGroupKey> winning_group_id,
+    absl::optional<blink::InterestGroupKey> winning_group_id,
     absl::optional<GURL> render_url,
     std::vector<GURL> ad_component_urls,
     std::vector<GURL> report_urls,

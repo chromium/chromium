@@ -395,7 +395,7 @@ void AuctionRunner::Auction::ClosePipes() {
 }
 
 void AuctionRunner::Auction::GetInterestGroupsThatBid(
-    InterestGroupSet& interest_groups) const {
+    blink::InterestGroupSet& interest_groups) const {
   if (!all_bids_scored_)
     return;
 
@@ -936,7 +936,8 @@ void AuctionRunner::Auction::OnGenerateBidComplete(
 
   if (has_set_priority) {
     interest_group_manager_->SetInterestGroupPriority(
-        state->bidder.interest_group.owner, state->bidder.interest_group.name,
+        blink::InterestGroupKey(state->bidder.interest_group.owner,
+                                state->bidder.interest_group.name),
         set_priority);
   }
 
@@ -1755,12 +1756,9 @@ void AuctionRunner::OnLoadInterestGroupsComplete(bool success) {
 }
 
 void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
-  InterestGroupSet interest_groups_that_bid;
+  blink::InterestGroupSet interest_groups_that_bid;
   auction_.GetInterestGroupsThatBid(interest_groups_that_bid);
-  for (const auto& interest_group : interest_groups_that_bid) {
-    interest_group_manager_->RecordInterestGroupBid(interest_group.owner,
-                                                    interest_group.name);
-  }
+  interest_group_manager_->RecordInterestGroupBids(interest_groups_that_bid);
   if (!success) {
     FailAuction();
     return;
@@ -1793,18 +1791,18 @@ void AuctionRunner::OnReportingPhaseComplete(bool success) {
                            auction_.top_bid()->bid->render_url.spec().c_str());
   }
 
-  interest_group_manager_->RecordInterestGroupWin(
-      auction_.top_bid()->bid->interest_group->owner,
-      auction_.top_bid()->bid->interest_group->name, ad_metadata);
+  DCHECK(auction_.top_bid()->bid->interest_group);
+  const blink::InterestGroup& winning_group =
+      *auction_.top_bid()->bid->interest_group;
+  blink::InterestGroupKey winning_group_key(
+      {winning_group.owner, winning_group.name});
+
+  interest_group_manager_->RecordInterestGroupWin(winning_group_key,
+                                                  ad_metadata);
 
   std::vector<GURL> debug_win_report_urls;
   std::vector<GURL> debug_loss_report_urls;
   auction_.TakeDebugReportUrls(debug_win_report_urls, debug_loss_report_urls);
-
-  DCHECK(auction_.top_bid()->bid->interest_group);
-  const blink::InterestGroup& winning_group =
-      *auction_.top_bid()->bid->interest_group;
-  InterestGroupKey winning_group_key({winning_group.owner, winning_group.name});
 
   UpdateInterestGroupsPostAuction();
 
