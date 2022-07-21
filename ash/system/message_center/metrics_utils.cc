@@ -4,6 +4,7 @@
 
 #include "ash/system/message_center/metrics_utils.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -469,6 +470,10 @@ void LogClosedByClearAll(const std::string& notification_id) {
 }
 
 void LogNotificationAdded(const std::string& notification_id) {
+  // TODO(kradtke): refactor on CL to reuse `FindNotificationById`
+  // https://chromium-review.googlesource.com/c/chromium/src/+/3774436
+  LogSystemNotificationAdded(notification_id);
+
   auto* notification =
       message_center::MessageCenter::Get()->FindVisibleNotificationById(
           notification_id);
@@ -484,6 +489,36 @@ void LogNotificationAdded(const std::string& notification_id) {
 
   base::UmaHistogramEnumeration("Ash.NotificationView.NotificationAdded.Type",
                                 notification_view_type.value());
+}
+
+void LogSystemNotificationAdded(const std::string& notification_id) {
+  auto* notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          notification_id);
+  if (!notification)
+    return;
+
+  if (notification->notifier_id().type !=
+      message_center::NotifierType::SYSTEM_COMPONENT) {
+    return;
+  }
+
+  if (notification->notifier_id().catalog_name ==
+          NotificationCatalogName::kNone ||
+      notification->notifier_id().catalog_name ==
+          NotificationCatalogName::kTestCatalogName) {
+    return;
+  }
+
+  if (!notification->pinned()) {
+    base::UmaHistogramEnumeration(
+        "Ash.NotifierFramework.SystemNotification.Added",
+        notification->notifier_id().catalog_name);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Ash.NotifierFramework.PinnedSystemNotification.Added",
+        notification->notifier_id().catalog_name);
+  }
 }
 
 void LogNotificationsShownInFirstMinute(int count) {

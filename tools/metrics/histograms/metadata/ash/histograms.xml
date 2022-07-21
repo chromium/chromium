@@ -3174,7 +3174,7 @@ chromium-metrics-reviews@google.com.
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
     Tracks the number of times a specific toast is shown to users. This metric
-    is recorded every time a new toast is shown.
+    is recorded every time a toast is shown.
   </summary>
 </histogram>
 
@@ -3185,6 +3185,22 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time a toast spends in queue before it's shown on screen.
   </summary>
+</histogram>
+
+<histogram
+    name="Ash.NotifierFramework.{UnpinnedOrPinned}SystemNotification.Added"
+    enum="NotificationCatalogName" expires_after="2023-01-10">
+  <owner>kradtke@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Tracks the number of times a specific system notification is added to the
+    notification list. This metric is recorded every time the
+    `OnNotificationAdded` event is triggered for a system notification.
+  </summary>
+  <token key="UnpinnedOrPinned">
+    <variant name=""/>
+    <variant name="Pinned"/>
+  </token>
 </histogram>
 
 <histogram base="true" name="Ash.Overview.AnimationSmoothness.Close" units="%"

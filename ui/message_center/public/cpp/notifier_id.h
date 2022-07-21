@@ -15,7 +15,7 @@
 #include "ui/message_center/public/cpp/message_center_public_export.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/notifier_catalogs.h"
 #endif
 
@@ -70,7 +70,7 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT NotifierId {
   // The identifier of the app notifier. Empty if it's WEB_PAGE.
   std::string id;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Identifier for CrOS system notifications.
   ash::NotificationCatalogName catalog_name;
 #endif

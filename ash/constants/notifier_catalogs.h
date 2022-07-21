@@ -8,7 +8,8 @@
 namespace ash {
 
 // A living catalog that registers notifications.
-// Current values should not be renumbered or removed.
+// Current values should not be renumbered or removed. Please keep in sync with
+// "NotificationCatalogName" in tools/metrics/histograms/enums.xml.
 // To deprecate comment out the entry.
 enum class NotificationCatalogName {
   kNone = 0,

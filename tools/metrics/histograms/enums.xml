@@ -70058,6 +70058,162 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Disabled"/>
 </enum>
 
+<enum name="NotificationCatalogName">
+<!-- Defined in ash/constants/notifier_catalogs.h -->
+
+  <int value="0" label="None"/>
+  <int value="1" label="Test Catalog Name"/>
+  <int value="2" label="Management Transition"/>
+  <int value="3" label="Authpolicy Credentials Error"/>
+  <int value="4" label="Unauthorized Battery"/>
+  <int value="5" label="Non Wilco Charger"/>
+  <int value="6" label="Incompatible Dock"/>
+  <int value="7" label="Dock Error"/>
+  <int value="8" label="Dock Display Error"/>
+  <int value="9" label="Dock Thunderbolt Error"/>
+  <int value="10" label="Wilco Low Power Charger"/>
+  <int value="11" label="Deprecated Accelerator"/>
+  <int value="12" label="Shortcuts Changed"/>
+  <int value="13" label="Docked Magnifier Enabled"/>
+  <int value="14" label="High Contrast Enabled"/>
+  <int value="15" label="Full Screen Magnifier Enabled"/>
+  <int value="16" label="Accessibility Feature Disabled"/>
+  <int value="17" label="Display Error"/>
+  <int value="18" label="Display Change"/>
+  <int value="19" label="Dual Role"/>
+  <int value="20" label="EOL"/>
+  <int value="21" label="Pending EOL"/>
+  <int value="22" label="Hats"/>
+  <int value="23" label="Kerberos Ticket Expiry"/>
+  <int value="24" label="Mobile Data"/>
+  <int value="25" label="Multi Device"/>
+  <int value="26" label="Network Out Of Credits"/>
+  <int value="27" label="Network Connection Error"/>
+  <int value="28" label="Network VPN Connection Lost"/>
+  <int value="29" label="Network Cellular Activated"/>
+  <int value="30" label="Network Activation Error"/>
+  <int value="31" label="Password Expiry"/>
+  <int value="32" label="Device Account Signin Error"/>
+  <int value="33" label="Secondary Account Signin Error"/>
+  <int value="34" label="Sync Error"/>
+  <int value="35" label="Tether Potential Hotspot"/>
+  <int value="36" label="Tether Setup Required"/>
+  <int value="37" label="Tether Connection Error"/>
+  <int value="38" label="Screen Time Limit Updated"/>
+  <int value="39" label="Bedtime Updated"/>
+  <int value="40" label="Time Limit Override"/>
+  <int value="41" label="Screen Time Limit"/>
+  <int value="42" label="Bedtime Limit"/>
+  <int value="43" label="TPM Firmware Update"/>
+  <int value="44" label="U2F"/>
+  <int value="45" label="Release Notes"/>
+  <int value="46" label="SMS"/>
+  <int value="47" label="Assistant Notification"/>
+  <int value="48" label="Fast Pair"/>
+  <int value="49" label="Power Notifier"/>
+  <int value="50" label="Battery Notifier"/>
+  <int value="51" label="Microphone Mute"/>
+  <int value="52" label="Cast"/>
+  <int value="53" label="Session Length Timeout"/>
+  <int value="54" label="Locale Update"/>
+  <int value="55" label="Tracing"/>
+  <int value="56" label="Pcie Billboard Device"/>
+  <int value="57" label="Pcie Limited Performance"/>
+  <int value="58" label="Pcie Guest Mode"/>
+  <int value="59" label="Pcie Peripheral Blocked"/>
+  <int value="60" label="Detachable Base Requires Update"/>
+  <int value="61" label="Detachable Base Pairing Notification"/>
+  <int value="62" label="Firmware Update"/>
+  <int value="63" label="Peripheral Battery"/>
+  <int value="64" label="Bluetooth Pairing Request"/>
+  <int value="65" label="Bluetooth Paired Device"/>
+  <int value="66" label="Cellular Setup"/>
+  <int value="67" label="Screen Security"/>
+  <int value="68" label="Wifi Toggle"/>
+  <int value="69" label="USB Peripheral Invalid Dp Cable"/>
+  <int value="70" label="USB Peripheral Invalid USB4 Valid TBT Cable"/>
+  <int value="71" label="USB Peripheral Invalid USB4 Cable"/>
+  <int value="72" label="USB Peripheral Invalid TBT Cable"/>
+  <int value="73" label="USB Peripheral Speed Limiting Cable"/>
+  <int value="74" label="Gesture Education"/>
+  <int value="75" label="Update"/>
+  <int value="76" label="Arc Snapshot Reboot"/>
+  <int value="77" label="Phone Hub Tether Failed"/>
+  <int value="78" label="Caps Lock"/>
+  <int value="79" label="Night Light"/>
+  <int value="80" label="Plugin VM Uninstaller"/>
+  <int value="81" label="TPM Auto Update"/>
+  <int value="82" label="It2Me Confirmation"/>
+  <int value="83" label="HPS Notify"/>
+  <int value="84" label="Nearby Share"/>
+  <int value="85" label="Update Required"/>
+  <int value="86" label="File System Provider"/>
+  <int value="87" label="Easy Unlock Chromebook Added"/>
+  <int value="88" label="Easy Unlock Pairing Change"/>
+  <int value="89" label="Easy Unlock Pairing Change Applied"/>
+  <int value="90" label="Easy Unlock Smart Lock Sign In Removed"/>
+  <int value="91" label="System Proxy"/>
+  <int value="92" label="Dlp Policy"/>
+  <int value="93" label="Packet Capture"/>
+  <int value="94" label="Eche App Retry Connection"/>
+  <int value="95" label="Eche App Inactivity"/>
+  <int value="96" label="Eche App From Web Without Button"/>
+  <int value="97" label="Eche App Screen Lock"/>
+  <int value="98" label="Accessibility"/>
+  <int value="99" label="Projector"/>
+  <int value="100" label="Website Approval"/>
+  <int value="101" label="Arc Migration Guide"/>
+  <int value="102" label="Borealis Context"/>
+  <int value="103" label="Arc Provision"/>
+  <int value="104" label="Usb Printer"/>
+  <int value="105" label="Cups Print Job"/>
+  <int value="106" label="Arc Boot Error"/>
+  <int value="107" label="Device Command Reset"/>
+  <int value="108" label="Crostini Low Disk"/>
+  <int value="109" label="Screen Capture"/>
+  <int value="110" label="Low Disk"/>
+  <int value="111" label="Event Rewriter Deprecation"/>
+  <int value="112" label="VM Camera Mic"/>
+  <int value="113" label="Security Token"/>
+  <int value="114" label="Crostini Export Import"/>
+  <int value="115" label="Lacros Cannot Launch"/>
+  <int value="116" label="Request File System"/>
+  <int value="117" label="Network Portal Detector"/>
+  <int value="118" label="Crostini Package"/>
+  <int value="119" label="Crostini Upgrade Available"/>
+  <int value="120" label="Full Restore"/>
+  <int value="121" label="Adb Sideloading Disallowed"/>
+  <int value="122" label="Adb Sideloading Powerwash Planned"/>
+  <int value="123" label="Adb Sideloading Powerwash On Reboot"/>
+  <int value="124" label="App Time"/>
+  <int value="125" label="Cros USB Detector"/>
+  <int value="126" label="Powerwash Request"/>
+  <int value="127" label="Powerwash Request Error"/>
+  <int value="128" label="Camera Privacy Switch"/>
+  <int value="129" label="Auto Launch"/>
+  <int value="130" label="Password Change"/>
+  <int value="131" label="Announcement Notification"/>
+  <int value="132" label="Web Usb"/>
+  <int value="133" label="Background Crash"/>
+  <int value="134" label="Download Notification"/>
+  <int value="135" label="Adaptive Charging"/>
+  <int value="136" label="Managed Sim Lock"/>
+  <int value="137" label="Spoken Feedback Enabled"/>
+  <int value="138" label="Braille Display Connected"/>
+  <int value="139" label="Spoken Feedback Braille Enabled"/>
+  <int value="140" label="Switch Access Enabled"/>
+  <int value="141" label="Speech Recognition Files Downloaded"/>
+  <int value="142" label="Speech Recognition Files Failed"/>
+  <int value="143" label="Low Power Charger"/>
+  <int value="144" label="Low Power Adapter"/>
+  <int value="145" label="TPM Autoupdate Planned"/>
+  <int value="146" label="TPM Autoupdate On Reboot"/>
+  <int value="147" label="Privacy Indicators"/>
+  <int value="148" label="Tailored Security Disabled"/>
+  <int value="149" label="Tailored Security Enabled"/>
+  <int value="150" label="Tailored Security Promotion"/>
+</enum>
+
 <enum name="NotificationDatabaseStatus">
   <int value="0" label="OK"/>
   <int value="1" label="Not found error"/>

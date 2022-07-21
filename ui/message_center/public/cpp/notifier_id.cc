@@ -9,7 +9,13 @@
 
 namespace message_center {
 
+#if BUILDFLAG(IS_CHROMEOS)
+NotifierId::NotifierId()
+    : type(NotifierType::SYSTEM_COMPONENT),
+      catalog_name(ash::NotificationCatalogName::kNone) {}
+#else
 NotifierId::NotifierId() : type(NotifierType::SYSTEM_COMPONENT) {}
+#endif  // IS_CHROMEOS
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 NotifierId::NotifierId(NotifierType type,
@@ -50,6 +56,13 @@ bool NotifierId::operator==(const NotifierId& other) const {
 
   if (type == NotifierType::WEB_PAGE)
     return url == other.url;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (type == NotifierType::SYSTEM_COMPONENT &&
+      catalog_name != other.catalog_name) {
+    return false;
+  }
+#endif
 
   return id == other.id;
 }
