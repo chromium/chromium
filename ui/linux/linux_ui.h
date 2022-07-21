@@ -17,11 +17,11 @@
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/animation/animation_settings_provider_linux.h"
 
 // The main entrypoint into Linux toolkit specific code. GTK/QT code should only
 // be executed behind this interface.
+
+using SkColor = uint32_t;
 
 namespace aura {
 class Window;
@@ -59,8 +59,7 @@ class WindowFrameProvider;
 
 // Adapter class with targets to render like different toolkits. Set by any
 // project that wants to do linux desktop native rendering.
-class COMPONENT_EXPORT(LINUX_UI) LinuxUi
-    : public gfx::AnimationSettingsProviderLinux {
+class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
  public:
   using UseSystemThemeCallback =
       base::RepeatingCallback<bool(aura::Window* window)>;
@@ -84,7 +83,7 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi
 
   LinuxUi(const LinuxUi&) = delete;
   LinuxUi& operator=(const LinuxUi&) = delete;
-  ~LinuxUi() override;
+  virtual ~LinuxUi();
 
   // Sets the dynamically loaded singleton that draws the desktop native UI.
   // Returns the old instance if any.
@@ -227,6 +226,9 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi
       int* style_out,
       int* weight_out,
       gfx::FontRenderParams* params_out) const = 0;
+
+  // Indicates if animations are enabled by the toolkit.
+  virtual bool AnimationsEnabled() const = 0;
 
  protected:
   struct CmdLineArgs {

@@ -45,14 +45,8 @@ component("animation") {
     sources += [ "animation_win.cc" ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [ "animation_linux.cc" ]
-  }
-  if (is_linux || is_chromeos) {
-    sources += [
-      "animation_settings_provider_linux.cc",
-      "animation_settings_provider_linux.h",
-    ]
   }
 
   if (!is_android) {
@@ -84,6 +78,10 @@ component("animation") {
 
   if (is_android) {
     deps += [ "//ui/gfx:gfx_jni_headers" ]
+  }
+
+  if (is_linux) {
+    deps += [ "//ui/linux:linux_ui" ]
   }
 
   defines = [ "ANIMATION_IMPLEMENTATION" ]

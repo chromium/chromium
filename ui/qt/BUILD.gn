@@ -89,7 +89,6 @@ component("qt") {
     ":qt_interface",
     "//base",
     "//printing/buildflags",
-    "//skia",
     "//ui/base/ime/linux",
     "//ui/color",
     "//ui/color:mixers",
@@ -99,6 +98,7 @@ component("qt") {
     "//ui/shell_dialogs",
     "//ui/views",
   ]
+  public_deps = [ "//skia" ]
 
   sources = [
     "qt_ui.cc",

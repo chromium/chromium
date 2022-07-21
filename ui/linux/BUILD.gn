@@ -26,15 +26,8 @@ component("linux_ui") {
     "linux_ui_delegate_stub.cc",
     "status_icon_linux.cc",
   ]
-  deps = [
-    "//base",
-    "//build:chromecast_buildflags",
-    "//ui/gfx/animation",
-  ]
-  public_deps = [
-    "//printing/buildflags",
-    "//skia",
-  ]
+  deps = [ "//base" ]
+  public_deps = [ "//printing/buildflags" ]
 }
 
 source_set("linux_ui_impl") {
@@ -43,6 +36,7 @@ source_set("linux_ui_impl") {
   public_deps = [ ":linux_ui" ]
   deps = [
     "//base",
+    "//skia",
     "//ui/gfx",
     "//ui/native_theme",
     "//ui/shell_dialogs",

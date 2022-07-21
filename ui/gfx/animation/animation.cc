@@ -82,8 +82,8 @@ int Animation::CurrentValueBetween(int start, int target) const {
 
 gfx::Rect Animation::CurrentValueBetween(const gfx::Rect& start_bounds,
                                          const gfx::Rect& target_bounds) const {
-  return Tween::RectValueBetween(
-      GetCurrentValue(), start_bounds, target_bounds);
+  return Tween::RectValueBetween(GetCurrentValue(), start_bounds,
+                                 target_bounds);
 }
 
 void Animation::SetContainer(AnimationContainer* container) {
@@ -112,8 +112,8 @@ bool Animation::ShouldRenderRichAnimation() {
          RichAnimationRenderMode::FORCE_ENABLED;
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS) || \
+    BUILDFLAG(IS_FUCHSIA)
 // static
 bool Animation::ShouldRenderRichAnimationImpl() {
   return true;
@@ -137,7 +137,7 @@ void Animation::UpdatePrefersReducedMotion() {
   prefers_reduced_motion_ = false;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) ||
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 
 // static
