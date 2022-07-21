@@ -77,6 +77,7 @@
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
+#include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
@@ -157,6 +158,7 @@ void InitializeDBus() {
   InitializeDBusClient<DebugDaemonClient>(bus);
   InitializeDBusClient<chromeos::DlcserviceClient>(bus);
   InitializeDBusClient<chromeos::DlpClient>(bus);
+  InitializeDBusClient<EasyUnlockClient>(bus);
   InitializeDBusClient<FederatedClient>(bus);
   InitializeDBusClient<FuseBoxReverseClient>(bus);
   InitializeDBusClient<chromeos::FwupdClient>(bus);
@@ -296,6 +298,7 @@ void ShutdownDBus() {
   chromeos::FwupdClient::Shutdown();
   FuseBoxReverseClient::Shutdown();
   FederatedClient::Shutdown();
+  EasyUnlockClient::Shutdown();
   chromeos::DlcserviceClient::Shutdown();
   chromeos::DlpClient::Shutdown();
   DebugDaemonClient::Shutdown();

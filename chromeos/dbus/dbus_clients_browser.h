@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_DBUS_DBUS_CLIENTS_BROWSER_H_
 #define CHROMEOS_DBUS_DBUS_CLIENTS_BROWSER_H_
 
-#include <memory>
-
 #include "base/component_export.h"
 
 namespace dbus {
@@ -15,12 +13,7 @@ class Bus;
 
 namespace chromeos {
 
-class EasyUnlockClient;
-
-// Owns D-Bus clients.
-// TODO(jamescook): Rename this class. "Browser" refers to the browser process
-// versus ash process distinction from the mustash project, which was cancelled
-// in 2019.
+// TODO(jamescook): Delete this class. http://crbug.com/647367
 class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
  public:
   // Creates real implementations if |use_real_clients| is true and fakes
@@ -33,11 +26,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
   ~DBusClientsBrowser();
 
   void Initialize(dbus::Bus* system_bus);
-
- private:
-  friend class DBusThreadManager;
-
-  std::unique_ptr<EasyUnlockClient> easy_unlock_client_;
 };
 
 }  // namespace chromeos

@@ -12,7 +12,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/dbus_clients_browser.h"
-#include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 
 namespace chromeos {
@@ -26,11 +25,6 @@ DBusThreadManager::DBusThreadManager()
 DBusThreadManager::~DBusThreadManager() {
   // Delete all D-Bus clients before shutting down the system bus.
   clients_browser_.reset();
-}
-
-EasyUnlockClient* DBusThreadManager::GetEasyUnlockClient() {
-  return clients_browser_ ? clients_browser_->easy_unlock_client_.get()
-                          : nullptr;
 }
 
 void DBusThreadManager::InitializeClients() {

@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
 #include "crypto/encryptor.h"
 #include "crypto/random.h"
@@ -85,7 +84,6 @@ class EasyUnlockCreateKeysOperation::ChallengeCreator {
   std::string ec_public_key_;
   std::string esk_;
 
-  // Owned by DBusThreadManager
   EasyUnlockClient* easy_unlock_client_;
 
   base::WeakPtrFactory<ChallengeCreator> weak_ptr_factory_{this};
@@ -102,7 +100,7 @@ EasyUnlockCreateKeysOperation::ChallengeCreator::ChallengeCreator(
       tpm_pub_key_(tpm_pub_key),
       device_(device),
       callback_(std::move(callback)),
-      easy_unlock_client_(DBusThreadManager::Get()->GetEasyUnlockClient()) {}
+      easy_unlock_client_(EasyUnlockClient::Get()) {}
 
 EasyUnlockCreateKeysOperation::ChallengeCreator::~ChallengeCreator() {}
 

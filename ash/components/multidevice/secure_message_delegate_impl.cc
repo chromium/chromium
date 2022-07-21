@@ -7,7 +7,6 @@
 #include "ash/components/multidevice/logging/logging.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -71,7 +70,7 @@ void SecureMessageDelegateImpl::Factory::SetFactoryForTesting(
 SecureMessageDelegateImpl::Factory::~Factory() = default;
 
 SecureMessageDelegateImpl::SecureMessageDelegateImpl()
-    : dbus_client_(chromeos::DBusThreadManager::Get()->GetEasyUnlockClient()) {}
+    : dbus_client_(chromeos::EasyUnlockClient::Get()) {}
 
 SecureMessageDelegateImpl::~SecureMessageDelegateImpl() {}
 

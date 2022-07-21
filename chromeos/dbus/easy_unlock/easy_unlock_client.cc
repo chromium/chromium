@@ -11,7 +11,8 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
+#include "base/check.h"
+#include "chromeos/dbus/easy_unlock/fake_easy_unlock_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -21,6 +22,8 @@
 namespace chromeos {
 
 namespace {
+
+EasyUnlockClient* g_instance = nullptr;
 
 // Reads array of bytes from a dbus message reader and converts it to string.
 std::string PopResponseData(dbus::MessageReader* reader) {
@@ -39,8 +42,7 @@ void AppendStringAsByteArray(const std::string& data,
                              data.length());
 }
 
-// The EasyUnlockClient used in production (and returned by
-// EasyUnlockClient::Create).
+// The EasyUnlockClient used in production.
 class EasyUnlockClientImpl : public EasyUnlockClient {
  public:
   EasyUnlockClientImpl() : proxy_(nullptr) {}
@@ -134,7 +136,6 @@ class EasyUnlockClientImpl : public EasyUnlockClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
- protected:
   void Init(dbus::Bus* bus) override {
     proxy_ = bus->GetObjectProxy(
         easy_unlock::kEasyUnlockServiceName,
@@ -191,13 +192,36 @@ EasyUnlockClient::UnwrapSecureMessageOptions::UnwrapSecureMessageOptions() =
 EasyUnlockClient::UnwrapSecureMessageOptions::~UnwrapSecureMessageOptions() =
     default;
 
-EasyUnlockClient::EasyUnlockClient() = default;
-
-EasyUnlockClient::~EasyUnlockClient() = default;
+// static
+EasyUnlockClient* EasyUnlockClient::Get() {
+  return g_instance;
+}
 
 // static
-std::unique_ptr<EasyUnlockClient> EasyUnlockClient::Create() {
-  return std::make_unique<EasyUnlockClientImpl>();
+void EasyUnlockClient::Initialize(dbus::Bus* bus) {
+  CHECK(bus);
+  (new EasyUnlockClientImpl())->Init(bus);
+}
+
+// static
+void EasyUnlockClient::InitializeFake() {
+  (new FakeEasyUnlockClient())->Init(nullptr);
+}
+
+// static
+void EasyUnlockClient::Shutdown() {
+  CHECK(g_instance);
+  delete g_instance;
+}
+
+EasyUnlockClient::EasyUnlockClient() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+EasyUnlockClient::~EasyUnlockClient() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 }  // namespace chromeos
