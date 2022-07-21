@@ -3820,6 +3820,26 @@
             ]
         }
     ],
+    "EnablePDPMetricsUSDesktopIOS": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShoppingPDPMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableSsePathForCopyLCharsX86": [
         {
             "platforms": [
