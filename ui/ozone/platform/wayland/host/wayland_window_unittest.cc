@@ -2302,7 +2302,7 @@ TEST_P(WaylandWindowTest, PopupPassesDefaultAnchorInformation) {
   MockWaylandPlatformWindowDelegate menu_window_delegate;
   EXPECT_CALL(menu_window_delegate, GetMenuType())
       .WillOnce(Return(MenuType::kRootMenu));
-  EXPECT_CALL(menu_window_delegate, GetOwnedWindowAnchorAndRectInDIP())
+  EXPECT_CALL(menu_window_delegate, GetOwnedWindowAnchorAndRectInPx())
       .WillOnce(Return(absl::nullopt));
   gfx::Rect menu_window_bounds(gfx::Point(439, 46),
                                menu_window_positioner.size);
@@ -2382,7 +2382,7 @@ TEST_P(WaylandWindowTest, PopupPassesSetAnchorInformation) {
       OwnedWindowAnchorPosition::kBottomRight,
       OwnedWindowAnchorGravity::kBottomLeft,
       OwnedWindowConstraintAdjustment::kAdjustmentFlipY};
-  EXPECT_CALL(menu_window_delegate, GetOwnedWindowAnchorAndRectInDIP())
+  EXPECT_CALL(menu_window_delegate, GetOwnedWindowAnchorAndRectInPx())
       .WillOnce(Return(anchor));
   gfx::Rect menu_window_bounds(gfx::Point(176, 74),
                                menu_window_positioner.size);
@@ -2405,7 +2405,7 @@ TEST_P(WaylandWindowTest, PopupPassesSetAnchorInformation) {
             OwnedWindowAnchorGravity::kBottomRight,
             OwnedWindowConstraintAdjustment::kAdjustmentFlipY |
                 OwnedWindowConstraintAdjustment::kAdjustmentFlipX};
-  EXPECT_CALL(nested_menu_window_delegate, GetOwnedWindowAnchorAndRectInDIP())
+  EXPECT_CALL(nested_menu_window_delegate, GetOwnedWindowAnchorAndRectInPx())
       .WillOnce(Return(anchor));
   gfx::Rect nested_menu_window_bounds(gfx::Point(492, 157),
                                       nested_menu_window_positioner.size);
