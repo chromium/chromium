@@ -273,6 +273,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Variations.PolicyRestriction"
     enum="VariationsRestrictionPolicyValues" expires_after="2022-04-30">
+  <obsolete>
+    This histogram is not interesting anymore but it is still used by test code
+    to verify that the respective log is properly applied so it will be kept in
+    the code even if not collected by the server anymore. TODO(crbug/1345624):
+    Clean this dependency up and remove the histogram.
+  </obsolete>
   <owner>pastarmovj@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
