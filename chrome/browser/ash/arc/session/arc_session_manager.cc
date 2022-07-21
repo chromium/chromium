@@ -34,6 +34,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_demo_mode_delegate_impl.h"
 #include "chrome/browser/ash/arc/arc_migration_guide_notification.h"
+#include "chrome/browser/ash/arc/arc_mount_provider.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/arc_ui_availability_reporter.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/ash/arc/policy/arc_android_management_checker.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/policy/handlers/powerwash_requirements_checker.h"
@@ -938,15 +940,33 @@ void ArcSessionManager::OnBackgroundAndroidManagementCheckedForTesting(
 void ArcSessionManager::OnVmStarted(
     const vm_tools::concierge::VmStartedSignal& vm_signal) {
   // When an ARCVM starts, store the vm info.
-  if (vm_signal.name() == kArcVmName)
+  if (vm_signal.name() == kArcVmName) {
     vm_info_ = vm_signal.vm_info();
+
+    if (base::FeatureList::IsEnabled(kEnableVirtioBlkForData)) {
+      arcvm_mount_provider_id_ =
+          absl::optional<guest_os::GuestOsMountProviderRegistry::Id>(
+              guest_os::GuestOsService::GetForProfile(profile())
+                  ->MountProviderRegistry()
+                  ->Register(std::make_unique<ArcMountProvider>(
+                      profile(), vm_info_->cid())));
+    }
+  }
 }
 
 void ArcSessionManager::OnVmStopped(
     const vm_tools::concierge::VmStoppedSignal& vm_signal) {
   // When an ARCVM stops, clear the stored vm info.
-  if (vm_signal.name() == kArcVmName)
+  if (vm_signal.name() == kArcVmName) {
     vm_info_ = absl::nullopt;
+
+    if (arcvm_mount_provider_id_.has_value()) {
+      guest_os::GuestOsService::GetForProfile(profile())
+          ->MountProviderRegistry()
+          ->Unregister(*arcvm_mount_provider_id_);
+      arcvm_mount_provider_id_.reset();
+    }
+  }
 }
 
 const absl::optional<vm_tools::concierge::VmInfo>&

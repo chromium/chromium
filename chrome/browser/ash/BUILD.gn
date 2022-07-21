@@ -213,6 +213,8 @@ source_set("ash") {
     "arc/arc_migration_constants.h",
     "arc/arc_migration_guide_notification.cc",
     "arc/arc_migration_guide_notification.h",
+    "arc/arc_mount_provider.cc",
+    "arc/arc_mount_provider.h",
     "arc/arc_optin_uma.cc",
     "arc/arc_optin_uma.h",
     "arc/arc_support_host.cc",

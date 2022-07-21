@@ -2731,6 +2731,7 @@ source_set("unit_tests") {
     "../ash/arc/app_shortcuts/arc_app_shortcuts_request_unittest.cc",
     "../ash/arc/arc_demo_mode_delegate_impl_unittest.cc",
     "../ash/arc/arc_migration_guide_notification_unittest.cc",
+    "../ash/arc/arc_mount_provider_unittest.cc",
     "../ash/arc/arc_support_host_unittest.cc",
     "../ash/arc/arc_ui_availability_reporter_unittest.cc",
     "../ash/arc/arc_util_unittest.cc",

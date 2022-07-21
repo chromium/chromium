@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/arc/session/adb_sideloading_availability_delegate_impl.h"
 #include "chrome/browser/ash/arc/session/arc_app_id_provider_impl.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/policy/arc/android_management_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -493,6 +494,9 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   base::OneShotTimer wait_for_policy_timer_;
 
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
+
+  absl::optional<guest_os::GuestOsMountProviderRegistry::Id>
+      arcvm_mount_provider_id_;
 
   // Must be the last member.
   base::WeakPtrFactory<ArcSessionManager> weak_ptr_factory_{this};
