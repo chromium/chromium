@@ -55,7 +55,7 @@ public class ContextualPageActionController {
             // navigations. Also handle chrome:// URLs if not already handled.
             mCurrentTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
                 @Override
-                public void onPageLoadFinished(Tab tab, GURL url) {
+                public void didFirstVisuallyNonEmptyPaint(Tab tab) {
                     if (tab != null) maybeShowContextualPageAction();
                 }
             }, this::activeTabChanged);
