@@ -65,12 +65,15 @@ typedef void (^ProceduralBlockWithSnoozeAction)(
 // Initializes the presenter with a Default BubbleViewType. `text` is the text
 // displayed by the bubble. `arrowDirection` is the direction the bubble's arrow
 // is pointing. `alignment` is the position of the arrow on the bubble.
+// `isLongDurationBubble` is YES if the bubble presenting time is longer.
 // `dismissalCallback` is a block invoked when the bubble is dismissed (manual
 // and automatic dismissal). `dismissalCallback` is optional.
-- (instancetype)initWithText:(NSString*)text
-              arrowDirection:(BubbleArrowDirection)arrowDirection
-                   alignment:(BubbleAlignment)alignment
-           dismissalCallback:(ProceduralBlockWithSnoozeAction)dismissalCallback;
+- (instancetype)initDefaultBubbleWithText:(NSString*)text
+                           arrowDirection:(BubbleArrowDirection)arrowDirection
+                                alignment:(BubbleAlignment)alignment
+                     isLongDurationBubble:(BOOL)isLongDurationBubble
+                        dismissalCallback:
+                            (ProceduralBlockWithSnoozeAction)dismissalCallback;
 
 - (instancetype)init NS_UNAVAILABLE;
 

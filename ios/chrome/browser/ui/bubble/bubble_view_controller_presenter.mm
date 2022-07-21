@@ -18,6 +18,9 @@ namespace {
 
 // How long, in seconds, the bubble is visible on the screen.
 const NSTimeInterval kBubbleVisibilityDuration = 5.0;
+// How long, in seconds, the long duration bubble is visible on the screen. Ex.
+// Follow in-product help(IPH) bubble.
+const NSTimeInterval kBubbleVisibilityLongDuration = 8.0;
 // How long, in seconds, the user should be considered engaged with the bubble
 // after the bubble first becomes visible.
 const NSTimeInterval kBubbleEngagementDuration = 30.0;
@@ -68,6 +71,8 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 @property(nonatomic, assign) BubbleAlignment alignment;
 // The type of the bubble view's content.
 @property(nonatomic, assign, readonly) BubbleViewType bubbleType;
+// YES if the bubble should present longer.
+@property(nonatomic, assign) BOOL isLongDurationBubble;
 // Whether the bubble view controller is presented or dismissed.
 @property(nonatomic, assign, getter=isPresenting) BOOL presenting;
 // The block invoked when the bubble is dismissed (both via timer and via tap).
@@ -138,11 +143,13 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   return self;
 }
 
-- (instancetype)initWithText:(NSString*)text
-              arrowDirection:(BubbleArrowDirection)arrowDirection
-                   alignment:(BubbleAlignment)alignment
-           dismissalCallback:
-               (ProceduralBlockWithSnoozeAction)dismissalCallback {
+- (instancetype)initDefaultBubbleWithText:(NSString*)text
+                           arrowDirection:(BubbleArrowDirection)arrowDirection
+                                alignment:(BubbleAlignment)alignment
+                     isLongDurationBubble:(BOOL)isLongDurationBubble
+                        dismissalCallback:
+                            (ProceduralBlockWithSnoozeAction)dismissalCallback {
+  self.isLongDurationBubble = isLongDurationBubble;
   return [self initWithText:text
                       title:nil
                       image:nil
@@ -184,7 +191,9 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   [parentView addGestureRecognizer:self.swipeRecognizer];
 
   self.bubbleDismissalTimer = [NSTimer
-      scheduledTimerWithTimeInterval:kBubbleVisibilityDuration
+      scheduledTimerWithTimeInterval:self.isLongDurationBubble
+                                         ? kBubbleVisibilityLongDuration
+                                         : kBubbleVisibilityDuration
                               target:self
                             selector:@selector(bubbleDismissalTimerFired:)
                             userInfo:nil

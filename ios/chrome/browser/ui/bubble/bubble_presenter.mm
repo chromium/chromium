@@ -535,10 +535,12 @@ bubblePresenterForFeature:(const base::Feature&)feature
       };
 
   BubbleViewControllerPresenter* bubbleViewControllerPresenter =
-      [[BubbleViewControllerPresenter alloc] initWithText:text
-                                           arrowDirection:direction
-                                                alignment:alignment
-                                        dismissalCallback:dismissalCallback];
+      [[BubbleViewControllerPresenter alloc]
+          initDefaultBubbleWithText:text
+                     arrowDirection:direction
+                          alignment:alignment
+               isLongDurationBubble:[self isLongDurationBubble:feature]
+                  dismissalCallback:dismissalCallback];
 
   return bubbleViewControllerPresenter;
 }
@@ -550,6 +552,13 @@ bubblePresenterForFeature:(const base::Feature&)feature
     return;
   feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
       ->DismissedWithSnooze(feature, snoozeAction);
+}
+
+// Returns YES if the bubble for `feature` has a long duration.
+- (BOOL)isLongDurationBubble:(const base::Feature&)feature {
+  // Display follow iph bubble with long duration.
+  return feature.name ==
+         feature_engagement::kIPHFollowWhileBrowsingFeature.name;
 }
 
 @end
