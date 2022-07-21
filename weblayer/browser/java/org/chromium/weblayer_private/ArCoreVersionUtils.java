@@ -15,9 +15,9 @@ import org.chromium.base.annotations.JNINamespace;
 
 @JNINamespace("weblayer")
 class ArCoreVersionUtils {
-    // Corresponds to V1.22. Must be updated if the arcore version in
+    // Corresponds to V1.32. Must be updated if the arcore version in
     // //third_party/arcore-android-sdk-client is rolled.
-    private static final int MIN_APK_VERSION = 202940000;
+    private static final int MIN_APK_VERSION = 221020000;
 
     private static final String AR_CORE_PACKAGE = "com.google.ar.core";
     private static final String METADATA_KEY_MIN_APK_VERSION = "com.google.ar.core.min_apk_version";

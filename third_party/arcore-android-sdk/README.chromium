@@ -24,6 +24,7 @@ The LICENSE file is taken from
  * https://github.com/google-ar/arcore-unity-sdk/blob/master/LICENSE
 
 Changes:
+2022-07-11 - Upgrade test-apks/arcore_current.apk to v1.32.
 2021-06-19 - Upgrade test-apks/arcore_current.apk to v1.25.
 2021-02-19 - Upgrade test-apks/arcore_current.apk to v1.23.
 2021-02-01 - Upgrade SDK to v1.22.
