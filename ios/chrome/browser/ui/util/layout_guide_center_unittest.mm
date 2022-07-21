@@ -153,3 +153,29 @@ TEST_F(LayoutGuideCenterTest, HashTableWeakReference) {
   // the elements are released.
   EXPECT_EQ(weak_layout_guide, nil);
 }
+
+// Checks that if `referenceView:underName:` is called twice with the same
+// arguments, there are no changes
+TEST_F(LayoutGuideCenterTest, TestReferenceViewNoChangesIfSameView) {
+  CGRect rect = CGRectMake(10, 20, 30, 40);
+  UIView* reference_view = [[UIView alloc] initWithFrame:rect];
+  [center_ referenceView:reference_view underName:@"view"];
+
+  // Override reference_view's cr_onWindowCoordinatesChanged to later verify
+  // that it hasn't changed.
+  __block BOOL windowCoordinatesChangedCalled = NO;
+  reference_view.cr_onWindowCoordinatesChanged = ^(UIView* view) {
+    windowCoordinatesChangedCalled = YES;
+  };
+
+  UIView* view = [[UIView alloc] init];
+  reference_view.cr_onWindowCoordinatesChanged(view);
+  EXPECT_TRUE(windowCoordinatesChangedCalled);
+  windowCoordinatesChangedCalled = NO;
+
+  // Re-reference reference_view. This should not change the view's
+  // cr_onWindowCoordinatesChanged block.
+  [center_ referenceView:reference_view underName:@"view"];
+  reference_view.cr_onWindowCoordinatesChanged(view);
+  EXPECT_TRUE(windowCoordinatesChangedCalled);
+}

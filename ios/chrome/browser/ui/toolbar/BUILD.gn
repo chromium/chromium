@@ -53,6 +53,8 @@ source_set("toolbar") {
     "//ios/chrome/browser/ui/icons:infobar_icons",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/location_bar",
+    "//ios/chrome/browser/ui/main:layout_guide_scene_agent",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/ntp:util",

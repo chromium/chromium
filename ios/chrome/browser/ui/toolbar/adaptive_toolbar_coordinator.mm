@@ -15,6 +15,9 @@
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/ui/main/layout_guide_scene_agent.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator+subclassing.h"
@@ -41,6 +44,8 @@
 @property(nonatomic, strong) ToolbarMediator* mediator;
 // Actions handler for the toolbar buttons.
 @property(nonatomic, strong) ToolbarButtonActionsHandler* actionHandler;
+// The layout guide center to use to coordinate views.
+@property(nonatomic, readonly) LayoutGuideCenter* layoutGuideCenter;
 
 @end
 
@@ -64,6 +69,7 @@
       self.browser->GetBrowserState()->IsOffTheRecord()
           ? UIUserInterfaceStyleDark
           : UIUserInterfaceStyleUnspecified;
+  self.viewController.layoutGuideCenter = self.layoutGuideCenter;
 
   self.mediator = [[ToolbarMediator alloc] init];
   self.mediator.incognito = self.browser->GetBrowserState()->IsOffTheRecord();
@@ -88,6 +94,18 @@
 }
 
 #pragma mark - Properties
+
+- (LayoutGuideCenter*)layoutGuideCenter {
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  LayoutGuideSceneAgent* layoutGuideSceneAgent =
+      [LayoutGuideSceneAgent agentFromScene:sceneState];
+  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+    return layoutGuideSceneAgent.incognitoLayoutGuideCenter;
+  } else {
+    return layoutGuideSceneAgent.layoutGuideCenter;
+  }
+}
 
 - (void)setLongPressDelegate:(id<PopupMenuLongPressDelegate>)longPressDelegate {
   _longPressDelegate = longPressDelegate;

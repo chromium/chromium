@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_component_options.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 
+@class LayoutGuideCenter;
 @class ToolbarConfiguration;
 
 // UIButton subclass used as a Toolbar component.
@@ -30,6 +31,8 @@
 // rotations. Any view constrained to them is expected to be dismissed on such
 // events.
 @property(nonatomic, strong) GuideName* guideName;
+// The layout guide center for this button.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 // Whether this button is spotlighted, having a light gray background. This
 // state should not be used in the same time as the selected state.
 @property(nonatomic, assign) BOOL spotlighted;

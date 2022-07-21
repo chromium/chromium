@@ -22,9 +22,12 @@ class LayoutGuideCenter: NSObject {
   /// References a view under a specific `name`.
   @objc(referenceView:underName:)
   func reference(view referenceView: UIView?, under name: String) {
-    if let oldReferenceView = referenceViews.object(forKey: name as NSString) {
-      oldReferenceView.cr_onWindowCoordinatesChanged = nil
+    let oldReferenceView = referenceViews.object(forKey: name as NSString)
+    // Early return if `referenceView` is already set.
+    if referenceView == oldReferenceView {
+      return
     }
+    oldReferenceView?.cr_onWindowCoordinatesChanged = nil
     referenceViews.setObject(referenceView, forKey: name as NSString)
     updateGuides(named: name)
     // Schedule updates to the matching layout guides when the reference view

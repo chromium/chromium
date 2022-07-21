@@ -85,12 +85,14 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
            object:nil];
   [self makeViewAccessibilityTraitsContainer];
 
-  // Adds the layout guide to the buttons.
+  // Add the layout guide names to the buttons.
   self.view.toolsMenuButton.guideName = kToolsMenuGuide;
   self.view.tabGridButton.guideName = kTabSwitcherGuide;
   self.view.openNewTabButton.guideName = kNewTabButtonGuide;
   self.view.forwardButton.guideName = kForwardButtonGuide;
   self.view.backButton.guideName = kBackButtonGuide;
+
+  [self addLayoutGuideCenterToButtons];
 
   // Add navigation popup menu triggers.
   if (UseSymbols()) {
@@ -134,6 +136,14 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
 
 - (ToolbarToolsMenuButton*)toolsMenuButton {
   return self.view.toolsMenuButton;
+}
+
+- (void)setLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter {
+  _layoutGuideCenter = layoutGuideCenter;
+
+  if (self.isViewLoaded) {
+    [self addLayoutGuideCenterToButtons];
+  }
 }
 
 #pragma mark - ToolbarConsumer
@@ -454,6 +464,14 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
                     [weakSelf.menuProvider menuForButtonOfType:buttonType];
               }];
   [button addAction:action forControlEvents:UIControlEventMenuActionTriggered];
+}
+
+- (void)addLayoutGuideCenterToButtons {
+  self.view.toolsMenuButton.layoutGuideCenter = self.layoutGuideCenter;
+  self.view.tabGridButton.layoutGuideCenter = self.layoutGuideCenter;
+  self.view.openNewTabButton.layoutGuideCenter = self.layoutGuideCenter;
+  self.view.forwardButton.layoutGuideCenter = self.layoutGuideCenter;
+  self.view.backButton.layoutGuideCenter = self.layoutGuideCenter;
 }
 
 @end

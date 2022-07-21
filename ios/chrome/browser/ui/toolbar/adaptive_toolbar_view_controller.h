@@ -15,6 +15,7 @@
 @protocol AdaptiveToolbarMenusProvider;
 @class AdaptiveToolbarViewController;
 @protocol BrowserCommands;
+@class LayoutGuideCenter;
 @protocol OmniboxCommands;
 @protocol PopupMenuCommands;
 @protocol PopupMenuLongPressDelegate;
@@ -33,6 +34,8 @@
 
 // Button factory.
 @property(nonatomic, strong) ToolbarButtonFactory* buttonFactory;
+// Layout Guide Center.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 // Omnibox commands handler for the ViewController.
 @property(nonatomic, weak) id<OmniboxCommands> omniboxCommandsHandler;
 // Popup menu commands handler for the ViewController.
