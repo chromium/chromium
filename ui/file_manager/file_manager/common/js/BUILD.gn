@@ -344,11 +344,11 @@ js_library("xfm") {
 js_library("trash") {
   deps = [
     ":files_app_entry_types",
+    ":metrics",
     ":util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/webui/resources/js:assert.m",
   ]
 }
 

@@ -5,10 +5,11 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-import {mountGuest} from '../../common/js/api.js';
 
+import {mountGuest} from '../../common/js/api.js';
 import {AsyncUtil} from '../../common/js/async_util.js';
 import {metrics} from '../../common/js/metrics.js';
+import {createTrashReaders} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -438,6 +439,47 @@ export class GuestOsMounter extends ContentScanner {
           // TODO(crbug/1293229): Strings
           constants.CROSTINI_CONNECT_ERR, error));
     }
+    return;
+  }
+}
+
+/**
+ * Read all the Trash directories for content.
+ */
+export class TrashContentScanner extends ContentScanner {
+  /**
+   * @param {!VolumeManager} volumeManager Identifies the underlying filesystem.
+   */
+  constructor(volumeManager) {
+    super();
+
+    this.readers_ = createTrashReaders(volumeManager);
+  }
+
+  /**
+   * Scan all the trash directories for content.
+   * @override
+   */
+  async scan(
+      entriesCallback, successCallback, errorCallback,
+      invalidateCache = false) {
+    const readEntries = (idx) => {
+      if (this.readers_.length === idx) {
+        // All Trash directories have been read.
+        successCallback();
+        return;
+      }
+      this.readers_[idx].readEntries(entries => {
+        if (this.cancelled_) {
+          errorCallback(util.createDOMError(util.FileError.ABORT_ERR));
+          return;
+        }
+
+        entriesCallback(entries);
+        readEntries(idx + 1);
+      }, errorCallback);
+    };
+    readEntries(0);
     return;
   }
 }

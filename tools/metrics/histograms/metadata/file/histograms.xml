@@ -747,6 +747,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.TrashFiles.{RootType}" units="units"
+    expires_after="2023-02-28">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Recorded when the Trash directory is loaded and all files for the {RootType}
+    are entirely read.
+  </summary>
+  <token key="RootType">
+    <variant name="crostini"/>
+    <variant name="downloads"/>
+    <variant name="drive"/>
+  </token>
+</histogram>
+
 <histogram name="FileBrowser.ViewingFileType" enum="ViewFileType"
     expires_after="M108">
   <owner>simmonsjosh@google.com</owner>

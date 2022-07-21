@@ -19,13 +19,12 @@
  * TrashEntry combines both files for display.
  */
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {CombinedReaders, FakeEntryImpl} from './files_app_entry_types.js';
-import {str, util} from './util.js';
+import {FakeEntryImpl} from './files_app_entry_types.js';
+import {metrics} from './metrics.js';
+import {str} from './util.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
@@ -471,6 +470,10 @@ class TrashDirectoryReader {
       }
     }
     success(result);
+
+    // Record the amount of files seen for this particularly directory reader.
+    metrics.recordMediumCount(
+        /*name=*/ `TrashFiles.${this.config_.volumeType}`, result.length);
   }
 
   /** @override */
@@ -491,17 +494,20 @@ export class TrashRootEntry extends FakeEntryImpl {
     super('Trash', VolumeManagerCommon.RootType.TRASH);
     this.volumeManager_ = volumeManager;
   }
+}
 
-  /** @override */
-  createReader() {
-    const readers = [];
-    TrashConfig.CONFIG.forEach(c => {
-      const info =
-          this.volumeManager_.getCurrentProfileVolumeInfo(c.volumeType);
-      if (info && info.fileSystem) {
-        readers.push(new TrashDirectoryReader(info.fileSystem, c));
-      }
-    });
-    return new CombinedReaders(readers);
-  }
+/**
+ * Returns all the Trash directory readers.
+ * @param {!VolumeManager} volumeManager
+ * @returns {!Array<DirectoryReader>} Trash directory readers combined.
+ */
+export function createTrashReaders(volumeManager) {
+  const readers = [];
+  TrashConfig.CONFIG.forEach(c => {
+    const info = volumeManager.getCurrentProfileVolumeInfo(c.volumeType);
+    if (info && info.fileSystem) {
+      readers.push(new TrashDirectoryReader(info.fileSystem, c));
+    }
+  });
+  return readers;
 }

@@ -7,7 +7,8 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {startIOTask} from '../../common/js/api.js';
 import {AsyncUtil} from '../../common/js/async_util.js';
 import {FileOperationError, FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
-import {TrashEntry, TrashRootEntry} from '../../common/js/trash.js';
+import {CombinedReaders} from '../../common/js/files_app_entry_types.js';
+import {createTrashReaders, TrashEntry} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {xfm} from '../../common/js/xfm.js';
@@ -542,8 +543,7 @@ export class FileOperationManagerImpl {
       return;
     }
 
-    const root = new TrashRootEntry(this.volumeManager_);
-    const reader = root.createReader();
+    const reader = new CombinedReaders(createTrashReaders(this.volumeManager_));
     const onRead = (entries) => {
       if (entries.length > 0) {
         this.deleteEntries(entries, /*permanentlyDelete=*/ true);

@@ -24,7 +24,7 @@ import {changeDirectory} from '../../state/actions.js';
 import {getStore} from '../../state/store.js';
 
 import {constants} from './constants.js';
-import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, DriveSearchContentScanner, FileFilter, FileListContext, GuestOsMounter, LocalSearchContentScanner, MediaViewContentScanner, RecentContentScanner} from './directory_contents.js';
+import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, DriveSearchContentScanner, FileFilter, FileListContext, GuestOsMounter, LocalSearchContentScanner, MediaViewContentScanner, RecentContentScanner, TrashContentScanner} from './directory_contents.js';
 import {FileListModel} from './file_list_model.js';
 import {FileWatcher} from './file_watcher.js';
 import {MetadataModel} from './metadata/metadata_model.js';
@@ -1528,6 +1528,12 @@ export class DirectoryModel extends EventTarget {
     if (entry.rootType == VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT) {
       return () => {
         return new ContentScanner();
+      };
+    }
+    if (util.isTrashEnabled() &&
+        entry.rootType == VolumeManagerCommon.RootType.TRASH) {
+      return () => {
+        return new TrashContentScanner(this.volumeManager_);
       };
     }
     if (query && canUseDriveSearch) {
