@@ -14,6 +14,19 @@
 
 using version_info::Channel;
 
+namespace {
+// Tests lists for Combo Squatting. Some of these entries are intended to test
+// for various edge cases and aren't realistic for production.
+const char* const kBrandNames[] = {"google", "youtube", "sample", "example",
+                                   "vice"};
+const char* const kPopularKeywords[] = {"online", "login",   "account",
+                                        "ample",  "service", "test"};
+const ComboSquattingParams kComboSquattingParams{
+    kBrandNames, std::size(kBrandNames), kPopularKeywords,
+    std::size(kPopularKeywords)};
+
+}  // namespace
+
 std::string TargetEmbeddingTypeToString(TargetEmbeddingType type) {
   switch (type) {
     case TargetEmbeddingType::kNone:
@@ -588,63 +601,68 @@ TEST(LookalikeUrlUtilTest, IsHeuristicEnabledForHostname) {
       "example3.com", Channel::BETA));
 }
 
+class ComboSquattingTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    SetComboSquattingParamsForTesting(kComboSquattingParams);
+  }
+  void TearDown() override { ResetComboSquattingParamsForTesting(); }
+};
+
 // Test for Combo Squatting check of domains.
-TEST(CombosquattingTest, IsComboSquatting) {
+TEST_F(ComboSquattingTest, IsComboSquatting) {
   const struct TestCase {
     const char* domain;
     const char* expected_suggested_domain;
     bool expected_result;
   } kTestCases[] = {
-      // Not Combo Squatting (CSQ)
-      {"google.com", "google.com", false},
-      {"youtube.ca", "youtube.ca", false},
+      // Not Combo Squatting (CSQ).
+      {"google.com", "", false},
+      {"youtube.ca", "", false},
 
       // Not CSQ, contains subdomains.
-      {"login.google.com", "login.google.com", false},
+      {"login.google.com", "", false},
 
-      // Not CSQ, non registrable domains
+      // Not CSQ, non registrable domains.
       {"google-login.test", "", false},
 
-      // CSQ with "-"
+      // CSQ with "-".
       {"google-online.com", "google.com", true},
 
-      // CSQ with more than one keyword with "-"
+      // CSQ with more than one keyword (login, online) with "-".
       {"google-login-online.com", "google.com", true},
 
-      // CSQ with one keyword and one random word with "-"
-      {"one-youtube-online.com", "youtube.com", true},
+      // CSQ with one keyword (online) and one random word (one) with "-".
+      {"one-sample-online.com", "sample.com", true},
 
-      // Not CSQ, with a keyword as TLD.
-      // I think TLD should be a valid TLD which we don't have in the keywords
-      // now.
-      {"www.youtube.test", "", false},
+      // Not CSQ, with a keyword (test) as TLD.
+      {"www.example.test", "", false},
 
-      // CSQ with more than one brand with "-"
+      // CSQ with more than one brand (google, youtube) with "-".
       {"google-youtube-account.com", "google.com", true},
 
-      // CSQ without separator
-      {"loginyoutube.com", "youtube.com", true},
+      // CSQ without separator.
+      {"loginsample.com", "sample.com", true},
 
-      // CSQ but in allowlist
-      // TODO(crbug.com/1341023): We will use one of the allowlists here.
-      //{"googleusercontent.com", false},
+      // Not CSQ with a keyword (ample) inside brand name (sample).
+      {"sample.com", "", false},
 
-      // TODO(crbug.com/1341323): Should define a list of brand names and
-      // keywords for testing in future cls.
+      // Current version of the heuristic cannot flag this kind of CSQ
+      // with a keyword (ample) inside brand name (sample) and as an added
+      // keyword to the domain.
+      {"sample-ample.com", "", false},
 
-      // Not CSQ with a keyword inside brand name
-      // TODO(crbug.com/1341323): Should find one brand name with this
-      // condition.
+      // CSQ with more than one keyword (account, online) without separator.
+      {"accountexampleonline.com", "example.com", true},
 
-      // CSQ with a keyword inside brand name and as an added keyword to the
-      // domain
-      // TODO(crbug.com/1341323): Should find a domain with this condition.
-
-      // CSQ with more than one keyword without separator.
-      {"signinyoutubeonline.com", "youtube.com", true},
-
-      // CSQ with one keyword and one random word without "-"
+      // CSQ with one keyword (login) and one random word (one) without "-".
       {"oneyoutubelogin.com", "youtube.com", true},
+
+      // Not CSQ, google is a public TLD.
+      {"online.google", "", false},
+
+      // Not CSQ, brand name (vice) is part of keyword (service).
+      {"keyservice.com", "", false},
   };
   for (const TestCase& test_case : kTestCases) {
     auto navigated =

@@ -118,6 +118,13 @@ const char* kPopularKeywordsforCSQ[] = {
     "account", "activate", "active",   "admin", "login",
     "online",  "password", "security", "signin"};
 
+ComboSquattingParams* GetComboSquattingParams() {
+  static ComboSquattingParams params{
+      kBrandNamesforCSQ, std::size(kBrandNamesforCSQ), kPopularKeywordsforCSQ,
+      std::size(kPopularKeywordsforCSQ)};
+  return &params;
+}
+
 bool SkeletonsMatch(const url_formatter::Skeletons& skeletons1,
                     const url_formatter::Skeletons& skeletons2) {
   DCHECK(!skeletons1.empty());
@@ -1192,28 +1199,42 @@ bool IsHeuristicEnabledForHostname(
   return false;
 }
 
+void SetComboSquattingParamsForTesting(const ComboSquattingParams& params) {
+  *GetComboSquattingParams() = params;
+}
+
+void ResetComboSquattingParamsForTesting() {
+  ComboSquattingParams* params = GetComboSquattingParams();
+  *params = {kBrandNamesforCSQ, std::size(kBrandNamesforCSQ),
+             kPopularKeywordsforCSQ, std::size(kPopularKeywordsforCSQ)};
+}
+
 bool IsComboSquatting(const DomainInfo& navigated_domain,
                       std::string* matched_domain) {
   // TODO(crbug.com/1341023): We should check the domain in allowlist once we
   // start getting metrics in future iterations.
-
+  ComboSquattingParams* combo_squatting_params = GetComboSquattingParams();
   // Check if the domain has any brand name and any popular keyword.
-  for (auto* const brand : kBrandNamesforCSQ) {
-    if (navigated_domain.domain_and_registry.find(brand) != std::string::npos &&
-        navigated_domain.domain_and_registry.size() != strlen(brand)) {
-      for (auto* const keyword : kPopularKeywordsforCSQ) {
-        if (navigated_domain.domain_and_registry.find(keyword) !=
-                std::string::npos &&
-            std::string(brand).find(keyword) == std::string::npos &&
-            std::string(keyword).find(brand) == std::string::npos) {
-          // TODO(crbug.com/1341320): In future cls we will compute a better
-          // suggestion for each domain.
-          *matched_domain = std::string(brand) + ".com";
-          return true;
-        }
+  for (size_t i = 0; i < combo_squatting_params->num_brand_names; i++) {
+    auto* const brand = combo_squatting_params->brand_names[i];
+    if (!(navigated_domain.domain_without_registry.find(brand) !=
+              std::string::npos &&
+          navigated_domain.domain_without_registry.size() != strlen(brand))) {
+      continue;
+    }
+
+    for (size_t j = 0; j < combo_squatting_params->num_popular_keywords; j++) {
+      auto* const keyword = combo_squatting_params->popular_keywords[j];
+      if (navigated_domain.domain_without_registry.find(keyword) !=
+              std::string::npos &&
+          std::string(brand).find(keyword) == std::string::npos &&
+          std::string(keyword).find(brand) == std::string::npos) {
+        // TODO(crbug.com/1341320): In future cls we will compute a better
+        // suggestion for each domain.
+        *matched_domain = std::string(brand) + ".com";
+        return true;
       }
     }
   }
-  *matched_domain = navigated_domain.hostname;
   return false;
 }
