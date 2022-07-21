@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "services/device/compute_pressure/core_times.h"
 #include "services/device/compute_pressure/cpu_probe.h"
 #include "services/device/compute_pressure/pressure_sample.h"
 #include "services/device/compute_pressure/procfs_stat_cpu_parser.h"
@@ -44,8 +45,7 @@ class CpuProbeLinux : public CpuProbe {
   //
   // For most systems, the cores listed in /proc/stat are static. However, it is
   // theoretically possible for cores to go online and offline.
-  void InitializeCore(int core_index,
-                      const ProcfsStatCpuParser::CoreTimes& initial_core_times);
+  void InitializeCore(int core_index, const CoreTimes& initial_core_times);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -53,8 +53,7 @@ class CpuProbeLinux : public CpuProbe {
   ProcfsStatCpuParser stat_parser_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Most recent per-core times from /proc/stat.
-  std::vector<ProcfsStatCpuParser::CoreTimes> last_core_times_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<CoreTimes> last_core_times_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   PressureSample last_sample_ GUARDED_BY_CONTEXT(sequence_checker_);
 };

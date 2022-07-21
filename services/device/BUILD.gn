@@ -309,6 +309,7 @@ source_set("tests") {
 
   if (is_linux || is_chromeos) {
     sources += [
+      "compute_pressure/core_times_unittest.cc",
       "compute_pressure/cpu_probe_linux_unittest.cc",
       "compute_pressure/procfs_stat_cpu_parser_unittest.cc",
     ]

@@ -26,6 +26,8 @@ source_set("compute_pressure") {
 
   if (is_linux || is_chromeos) {
     sources += [
+      "core_times.cc",
+      "core_times.h",
       "cpu_probe_linux.cc",
       "cpu_probe_linux.h",
       "procfs_stat_cpu_parser.cc",

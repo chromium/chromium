@@ -40,15 +40,14 @@ void CpuProbeLinux::Update() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   stat_parser_.Update();
-  const std::vector<ProcfsStatCpuParser::CoreTimes>& core_times =
-      stat_parser_.core_times();
+  const std::vector<CoreTimes>& core_times = stat_parser_.core_times();
 
   double utilization_sum = 0.0;
   int utilization_cores = 0;
   for (size_t i = 0; i < core_times.size(); ++i) {
     DCHECK_GE(last_core_times_.size(), i);
 
-    const ProcfsStatCpuParser::CoreTimes& current_core_times = core_times[i];
+    const CoreTimes& current_core_times = core_times[i];
 
     if (last_core_times_.size() == i) {
       InitializeCore(static_cast<int>(i), current_core_times);
@@ -79,9 +78,8 @@ PressureSample CpuProbeLinux::LastSample() {
   return last_sample_;
 }
 
-void CpuProbeLinux::InitializeCore(
-    int core_index,
-    const ProcfsStatCpuParser::CoreTimes& initial_core_times) {
+void CpuProbeLinux::InitializeCore(int core_index,
+                                   const CoreTimes& initial_core_times) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(core_index, 0);
   DCHECK_EQ(last_core_times_.size(), static_cast<size_t>(core_index));
