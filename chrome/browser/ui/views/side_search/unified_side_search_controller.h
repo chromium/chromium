@@ -74,10 +74,6 @@ class UnifiedSideSearchController
   // Creates a string representing the side search side panel's hosted content.
   std::u16string GetSideSearchName() const;
 
-  // Clears the side contents for the currently active tab in this browser
-  // window and the view in the side search registry.
-  void ClearSideContentsCache();
-
   // Updates side panel's availability from SideSearchTabContentsHelper.
   void UpdateSidePanel();
 

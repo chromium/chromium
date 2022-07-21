@@ -161,6 +161,10 @@ void SideSearchSideContentsHelper::LoadURL(const GURL& url) {
   has_loaded_url_ = true;
 }
 
+content::WebContents* SideSearchSideContentsHelper::GetTabWebContents() {
+  return delegate_->GetTabWebContents();
+}
+
 void SideSearchSideContentsHelper::SetDelegate(Delegate* delegate) {
   DCHECK(!delegate_);
   delegate_ = delegate;

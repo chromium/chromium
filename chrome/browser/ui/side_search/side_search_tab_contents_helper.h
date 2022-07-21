@@ -72,6 +72,7 @@ class SideSearchTabContentsHelper
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
       const content::OpenURLParams& params) override;
+  content::WebContents* GetTabWebContents() override;
 
   // content::WebContentsObserver:
   void DidStartNavigation(

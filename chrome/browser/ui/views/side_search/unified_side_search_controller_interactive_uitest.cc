@@ -447,3 +447,32 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
   ActivateTabAt(browser(), 3);
   EXPECT_EQ(nullptr, coordinator->GetCurrentSidePanelEntryForTesting());
 }
+
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1340387): Test is flaky on Mac.
+#define MAYBE_CloseSidePanelShouldClearCache \
+  DISABLED_CloseSidePanelShouldClearCache
+#else
+#define MAYBE_CloseSidePanelShouldClearCache CloseSidePanelShouldClearCache
+#endif
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test, MAYBE_CloseSidePanelShouldClearCache) {
+  auto* browser_view = BrowserViewFor(browser());
+  NavigateActiveTab(browser(), GetMatchingSearchUrl());
+  NavigateActiveTab(browser(), GetNonMatchingUrl());
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  NotifyButtonClick(browser());
+  EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
+            browser_view->side_panel_coordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->id());
+
+  // When side panel is open,  side panel web contents is present.
+  auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_NE(nullptr, tab_contents_helper->side_panel_contents_for_testing());
+
+  browser_view->side_panel_coordinator()->Close();
+
+  // When side panel is closed, side panel web contents is destroyed.
+  EXPECT_EQ(nullptr, tab_contents_helper->side_panel_contents_for_testing());
+}

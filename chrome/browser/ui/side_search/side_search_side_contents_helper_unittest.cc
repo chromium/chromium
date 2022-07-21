@@ -41,6 +41,7 @@ class MockSideContentsDelegate : public SideSearchSideContentsHelper::Delegate {
     last_search_url_ = url;
   }
   void SidePanelProcessGone() override {}
+  content::WebContents* GetTabWebContents() override { return nullptr; }
 
   const GURL& tab_contents_url() const { return tab_contents_url_; }
 

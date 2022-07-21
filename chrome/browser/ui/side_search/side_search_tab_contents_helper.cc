@@ -58,6 +58,10 @@ bool SideSearchTabContentsHelper::HandleKeyboardEvent(
   return delegate_ ? delegate_->HandleKeyboardEvent(source, event) : false;
 }
 
+content::WebContents* SideSearchTabContentsHelper::GetTabWebContents() {
+  return web_contents();
+}
+
 content::WebContents* SideSearchTabContentsHelper::OpenURLFromTab(
     content::WebContents* source,
     const content::OpenURLParams& params) {

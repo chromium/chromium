@@ -21,14 +21,30 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 
+namespace {
+class SideSearchWebView : public views::WebView {
+ public:
+  using WebView::WebView;
+
+  ~SideSearchWebView() override {
+    if (!web_contents())
+      return;
+    auto* side_contents_helper =
+        SideSearchSideContentsHelper::FromWebContents(web_contents());
+    if (!side_contents_helper)
+      return;
+    auto* helper = SideSearchTabContentsHelper::FromWebContents(
+        side_contents_helper->GetTabWebContents());
+    if (helper)
+      helper->ClearSidePanelContents();
+  }
+};
+}  // namespace
+
 UnifiedSideSearchController::UnifiedSideSearchController(
     content::WebContents* web_contents)
     : content::WebContentsUserData<UnifiedSideSearchController>(*web_contents) {
   Observe(web_contents);
-
-  // Update the state of the side panel to catch cases where we switch to a tab
-  // where the panel should be hidden (or vise versa).
-  UpdateSidePanel();
 }
 
 UnifiedSideSearchController::~UnifiedSideSearchController() {
@@ -88,7 +104,7 @@ std::unique_ptr<views::View> UnifiedSideSearchController::GetSideSearchView() {
   auto* browser_view = GetBrowserView();
   DCHECK(browser_view);
   auto side_search_view =
-      std::make_unique<views::WebView>(browser_view->GetProfile());
+      std::make_unique<SideSearchWebView>(browser_view->GetProfile());
   side_search_view->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -143,7 +159,6 @@ void UnifiedSideSearchController::OpenSidePanel() {
         helper->MaybeRecordDurationSidePanelAvailableToFirstOpen();
     }
   }
-  UpdateSidePanel();
 }
 
 void UnifiedSideSearchController::CloseSidePanel(
@@ -152,33 +167,11 @@ void UnifiedSideSearchController::CloseSidePanel(
   if (browser_view) {
     browser_view->side_panel_coordinator()->Close();
   }
-  UpdateSidePanel();
-
-  // Clear the side contents for the currently active tab.
-  ClearSideContentsCache();
 }
 
 BrowserView* UnifiedSideSearchController::GetBrowserView() const {
   auto* browser = chrome::FindBrowserWithWebContents(web_contents());
   return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
-}
-
-void UnifiedSideSearchController::ClearSideContentsCache() {
-  auto* browser_view = GetBrowserView();
-  if (!browser_view)
-    return;
-  DCHECK(!browser_view->side_panel_coordinator()->IsSidePanelShowing());
-  auto* registry = SidePanelRegistry::Get(web_contents());
-  if (!registry)
-    return;
-  auto* current_entry =
-      registry->GetEntryForId(SidePanelEntry::Id::kSideSearch);
-  if (current_entry)
-    current_entry->ClearCachedView();
-
-  auto* helper = SideSearchTabContentsHelper::FromWebContents(web_contents());
-  if (helper)
-    helper->ClearSidePanelContents();
 }
 
 void UnifiedSideSearchController::UpdateSidePanel() {

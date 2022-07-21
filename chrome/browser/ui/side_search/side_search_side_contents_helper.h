@@ -49,6 +49,9 @@ class SideSearchSideContentsHelper
     virtual content::WebContents* OpenURLFromTab(
         content::WebContents* source,
         const content::OpenURLParams& params);
+
+    // Get the WebContents of the associated tab.
+    virtual content::WebContents* GetTabWebContents() = 0;
   };
 
   // Will call MaybeRecordMetricsPerJourney().
@@ -80,6 +83,9 @@ class SideSearchSideContentsHelper
   // Loads the `url` in the side contents, applying any additional headers as
   // necessary. Also calls MaybeRecordMetricsPerJourney().
   void LoadURL(const GURL& url);
+
+  // Get the WebContents of the associated tab.
+  content::WebContents* GetTabWebContents();
 
   // Called to set the tab contents associated with this side panel contents.
   // The tab contents will always outlive this helper and its associated side
