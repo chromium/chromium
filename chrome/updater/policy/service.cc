@@ -179,7 +179,8 @@ bool PolicyService::QueryPolicy(
   if (!status.effective_policy())
     return false;
 
-  *result = status.effective_policy().value().policy;
+  if (result)
+    *result = status.effective_policy().value().policy;
   if (policy_status)
     *policy_status = status;
   return true;
@@ -205,7 +206,8 @@ bool PolicyService::QueryAppPolicy(
   if (!status.effective_policy())
     return false;
 
-  *result = status.effective_policy().value().policy;
+  if (result)
+    *result = status.effective_policy().value().policy;
   if (policy_status)
     *policy_status = status;
   return true;

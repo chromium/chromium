@@ -324,6 +324,149 @@ interface IPolicyStatus : IDispatch {
       [out, retval] VARIANT_BOOL* rollback_allowed);
 };
 
+// IPolicyStatusValue represents the managed state of a single Google Update
+// policy. It contains the current source and value, as well as if any conflicts
+// exist with that policy.
+[
+  object,
+  dual,
+  uuid(IPOLICYSTATUSVALUE_IID),
+  helpstring("IPolicyStatusValue Interface"),
+  pointer_default(unique)
+]
+interface IPolicyStatusValue : IDispatch {
+  [propget] HRESULT source([out, retval] BSTR*);
+  [propget] HRESULT value([out, retval] BSTR*);
+  [propget] HRESULT hasConflict([out, retval] VARIANT_BOOL* has_conflict);
+  [propget] HRESULT conflictSource([out, retval] BSTR*);
+  [propget] HRESULT conflictValue([out, retval] BSTR*);
+}
+
+// IPolicyStatus2 exposes the following:
+// * properties for Google Update that includes Global Update state, such as the
+//   Version of the Updater, the Time that Updates were checked for last.
+// * A way to refresh the latest policies from the DM Server.
+// * the managed state of Omaha policies. Each policy returns an
+//   IPolicyStatusValue that can be queried for the current source and value, as
+//   well as if any conflicts exist with that policy.
+//   IPolicyStatusValue is implemented by an object that marshals itself by
+//   value. To get the "current" value, the policy needs to be queried fresh.
+[
+  object,
+  dual,
+  uuid(IPOLICYSTATUS2_IID),
+  helpstring("IPolicyStatus2 Interface"),
+  pointer_default(unique)
+]
+interface IPolicyStatus2 : IDispatch {
+  // Global Update Status.
+
+  // Returns the running version of the Updater. For instance, 1.3.35.454.
+  [propget] HRESULT updaterVersion([out, retval] BSTR* version);
+
+  // Returns the last time that the Updater successfully checked for updates.
+  [propget] HRESULT lastCheckedTime([out, retval] DATE* last_checked);
+
+  // DM policy cache refresh.
+
+  // Gets the latest policies from the DM Server.
+  HRESULT refreshPolicies();
+
+  // Global Update Policies
+
+  // Returns the time interval between update checks in minutes.
+  // 0 indicates updates are disabled.
+  [propget] HRESULT lastCheckPeriodMinutes(
+      [out, retval] IPolicyStatusValue** value);
+
+  // For domain-joined machines, returns the suppressed times if any, and also
+  // checks the current time against the times that updates are suppressed.
+  // Updates are suppressed if the current time falls between the start time and
+  // the duration.
+  // The duration does not account for daylight savings time. For instance, if
+  // the start time is 22:00 hours, and with a duration of 8 hours, the updates
+  // will be suppressed for 8 hours regardless of whether daylight savings time
+  // changes happen in between.
+  [propget] HRESULT updatesSuppressedTimes(
+      [out] IPolicyStatusValue** value,
+      VARIANT_BOOL* are_updates_suppressed);
+
+  // Returns the value of the "DownloadPreference" group policy or an
+  // empty string if the group policy does not exist, the policy is unknown, or
+  // an error happened.
+  [propget] HRESULT downloadPreferenceGroupPolicy(
+      [out, retval] IPolicyStatusValue** value);
+
+  // Gets the total disk size limit for cached packages. When this limit is hit,
+  // packages may be deleted from oldest until total size is below the limit.
+  [propget] HRESULT packageCacheSizeLimitMBytes(
+      [out, retval] IPolicyStatusValue** value);
+
+  // Gets the package cache life limit. If a cached package is older than this
+  // limit, it may be deleted.
+  [propget] HRESULT packageCacheExpirationTimeDays(
+      [out, retval] IPolicyStatusValue** value);
+
+  // Gets the proxy policy values.
+  [propget] HRESULT proxyMode([out, retval] IPolicyStatusValue** value);
+  [propget] HRESULT proxyPacUrl([out, retval] IPolicyStatusValue** value);
+  [propget] HRESULT proxyServer([out, retval] IPolicyStatusValue** value);
+
+  // Application Update Policies
+
+  // Returns 1 if installation of the specified app is allowed.
+  // Otherwise, returns 0.
+  [propget] HRESULT effectivePolicyForAppInstalls(
+      [in] BSTR app_id,
+      [out, retval] IPolicyStatusValue** value);
+
+  // Returns 1 if updates of the specified app is allowed.
+  // Otherwise, returns one of 0 (Disabled), 2 (ManualUpdatesOnly), or
+  // 3 (AutomaticUpdatesOnly).
+  [propget] HRESULT effectivePolicyForAppUpdates(
+      [in] BSTR app_id,
+      [out, retval] IPolicyStatusValue** value);
+
+  // Returns the target version prefix for the app, if the machine is joined to
+  // a domain and has the corresponding policy set.
+  // Examples:
+  // * "" (or not configured): update to latest version available.
+  // * "55.": update to any minor version of 55 (e.g. 55.24.34 or 55.60.2).
+  // * "55.2.": update to any minor version of 55.2 (e.g. 55.2.34 or 55.2.2).
+  // * "55.24.34": update to this specific version only.
+  [propget] HRESULT targetVersionPrefix(
+      [in] BSTR app_id,
+      [out, retval] IPolicyStatusValue** value);
+
+  // Returns whether the RollbackToTargetVersion policy has been set for the
+  // app. If RollbackToTargetVersion is set, the TargetVersionPrefix policy
+  // governs the version to rollback clients with higher versions to.
+  [propget] HRESULT isRollbackToTargetVersionAllowed(
+      [in] BSTR app_id, [out, retval] IPolicyStatusValue** value);
+
+  // Returns the target channel for the app, if the machine is joined to a
+  // domain and has the corresponding policy set.
+  [propget] HRESULT targetChannel([in] BSTR app_id,
+                                  [out, retval] IPolicyStatusValue** value);
+};
+
+// IPolicyStatus3 exposes everything IPolicyStatus2 does, and in addition,
+// exposes the forceInstallApps policy.
+[
+  object,
+  dual,
+  uuid(IPOLICYSTATUS3_IID),
+  helpstring("IPolicyStatus3 Interface"),
+  pointer_default(unique)
+]
+interface IPolicyStatus3 : IPolicyStatus2 {
+  // Global Update Policies
+
+  [propget] HRESULT forceInstallApps([in] VARIANT_BOOL is_machine,
+                                     [out, retval] IPolicyStatusValue** value);
+};
+
+
 [
   object,
   oleautomation,
@@ -398,6 +541,9 @@ library UpdaterLegacyLib {
   interface IAppWeb;
   interface IAppCommandWeb;
   interface IPolicyStatus;
+  interface IPolicyStatus2;
+  interface IPolicyStatus3;
+  interface IPolicyStatusValue;
   interface IProcessLauncher;
   interface IProcessLauncher2;
 };

@@ -22,6 +22,8 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -34,9 +36,11 @@
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/app_command_runner.h"
 #include "chrome/updater/win/scoped_handle.h"
@@ -65,6 +69,27 @@ absl::optional<std::wstring> StringFromVariant(const VARIANT& source) {
   }
 
   return {};
+}
+
+template <typename T>
+std::string GetStringFromValue(const T& value) {
+  return value;
+}
+
+template <>
+std::string GetStringFromValue(const int& value) {
+  return base::NumberToString(value);
+}
+
+template <>
+std::string GetStringFromValue(const bool& value) {
+  return value ? "true" : "false";
+}
+
+template <>
+std::string GetStringFromValue(const updater::UpdatesSuppressedTimes& value) {
+  return base::StringPrintf("%d, %d, %d", value.start_hour_,
+                            value.start_minute_, value.duration_minute_);
 }
 
 }  // namespace
@@ -810,6 +835,197 @@ STDMETHODIMP PolicyStatusImpl::get_isRollbackToTargetVersionAllowed(
   return S_OK;
 }
 
+STDMETHODIMP PolicyStatusImpl::get_updaterVersion(BSTR* version) {
+  DCHECK(version);
+
+  *version = base::win::ScopedBstr(kUpdaterVersionUtf16).Release();
+  return S_OK;
+}
+
+// TODO(crbug.com/1293203): Implement this method.
+STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
+  DCHECK(last_checked);
+
+  return E_NOTIMPL;
+}
+
+// TODO(crbug.com/1293203): Implement this method.
+STDMETHODIMP PolicyStatusImpl::refreshPolicies() {
+  return E_NOTIMPL;
+}
+
+STDMETHODIMP PolicyStatusImpl::get_lastCheckPeriodMinutes(
+    IPolicyStatusValue** value) {
+  DCHECK(value);
+
+  PolicyStatus<int> policy_status;
+  if (!policy_service_->GetLastCheckPeriodMinutes(&policy_status, nullptr))
+    return E_FAIL;
+
+  return PolicyStatusValueImpl::Create(policy_status, value);
+}
+
+STDMETHODIMP PolicyStatusImpl::get_updatesSuppressedTimes(
+    IPolicyStatusValue** value,
+    VARIANT_BOOL* are_updates_suppressed) {
+  DCHECK(value);
+  DCHECK(are_updates_suppressed);
+
+  UpdatesSuppressedTimes updates_suppressed_times;
+  PolicyStatus<UpdatesSuppressedTimes> policy_status;
+  if (!policy_service_->GetUpdatesSuppressedTimes(&policy_status,
+                                                  &updates_suppressed_times) ||
+      !updates_suppressed_times.valid()) {
+    return E_FAIL;
+  }
+
+  base::Time::Exploded now;
+  base::Time::Now().LocalExplode(&now);
+  *are_updates_suppressed =
+      updates_suppressed_times.contains(now.hour, now.minute) ? VARIANT_TRUE
+                                                              : VARIANT_FALSE;
+
+  return PolicyStatusValueImpl::Create(policy_status, value);
+}
+
+STDMETHODIMP PolicyStatusImpl::get_downloadPreferenceGroupPolicy(
+    IPolicyStatusValue** value) {
+  DCHECK(value);
+
+  PolicyStatus<std::string> policy_status;
+  if (!policy_service_->GetDownloadPreferenceGroupPolicy(&policy_status,
+                                                         nullptr)) {
+    return E_FAIL;
+  }
+
+  return PolicyStatusValueImpl::Create(policy_status, value);
+}
+
+STDMETHODIMP PolicyStatusImpl::get_packageCacheSizeLimitMBytes(
+    IPolicyStatusValue** value) {
+  DCHECK(value);
+
+  PolicyStatus<int> policy_status;
+  if (!policy_service_->GetPackageCacheSizeLimitMBytes(&policy_status,
+                                                       nullptr)) {
+    return E_FAIL;
+  }
+
+  return PolicyStatusValueImpl::Create(policy_status, value);
+}
+
+STDMETHODIMP PolicyStatusImpl::get_packageCacheExpirationTimeDays(
+    IPolicyStatusValue** value) {
+  DCHECK(value);
+
+  PolicyStatus<int> policy_status;
+  if (!policy_service_->GetPackageCacheExpirationTimeDays(&policy_status,
+                                                          nullptr)) {
+    return E_FAIL;
+  }
+
+  return PolicyStatusValueImpl::Create(policy_status, value);
+}
+
+// TODO(crbug.com/1293203): Implement this method.
+STDMETHODIMP PolicyStatusImpl::get_proxyMode(IPolicyStatusValue** value) {
+  DCHECK(value);
+
+  return E_NOTIMPL;
+}
+
+// TODO(crbug.com/1293203): Implement this method.
+STDMETHODIMP PolicyStatusImpl::get_proxyPacUrl(IPolicyStatusValue** value) {
+  DCHECK(value);
+
+  return E_NOTIMPL;
+}
+
+// TODO(crbug.com/1293203): Implement this method.
+STDMETHODIMP PolicyStatusImpl::get_proxyServer(IPolicyStatusValue** value) {
+  DCHECK(value);
+
+  return E_NOTIMPL;
+}
+
+STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppInstalls(
+    BSTR app_id,
+    IPolicyStatusValue** value) {
+  DCHECK(value);
+
+  PolicyStatus<int> policy_status;
+  if (!policy_service_->GetEffectivePolicyForAppInstalls(
+          base::WideToASCII(app_id), &policy_status, nullptr)) {
+    return E_FAIL;
+  }
+
+  return PolicyStatusValueImpl::Create(policy_status, value);
+}
+
+STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppUpdates(
+    BSTR app_id,
+    IPolicyStatusValue** value) {
+  DCHECK(value);
+
+  PolicyStatus<int> policy_status;
+  if (!policy_service_->GetEffectivePolicyForAppUpdates(
+          base::WideToASCII(app_id), &policy_status, nullptr)) {
+    return E_FAIL;
+  }
+
+  return PolicyStatusValueImpl::Create(policy_status, value);
+}
+
+STDMETHODIMP PolicyStatusImpl::get_targetVersionPrefix(
+    BSTR app_id,
+    IPolicyStatusValue** value) {
+  DCHECK(value);
+
+  PolicyStatus<std::string> policy_status;
+  if (!policy_service_->GetTargetVersionPrefix(base::WideToASCII(app_id),
+                                               &policy_status, nullptr)) {
+    return E_FAIL;
+  }
+
+  return PolicyStatusValueImpl::Create(policy_status, value);
+}
+
+STDMETHODIMP PolicyStatusImpl::get_isRollbackToTargetVersionAllowed(
+    BSTR app_id,
+    IPolicyStatusValue** value) {
+  DCHECK(value);
+
+  PolicyStatus<bool> policy_status;
+  if (!policy_service_->IsRollbackToTargetVersionAllowed(
+          base::WideToASCII(app_id), &policy_status, nullptr)) {
+    return E_FAIL;
+  }
+
+  return PolicyStatusValueImpl::Create(policy_status, value);
+}
+
+STDMETHODIMP PolicyStatusImpl::get_targetChannel(BSTR app_id,
+                                                 IPolicyStatusValue** value) {
+  DCHECK(value);
+
+  PolicyStatus<std::string> policy_status;
+  if (!policy_service_->GetTargetChannel(base::WideToASCII(app_id),
+                                         &policy_status, nullptr)) {
+    return E_FAIL;
+  }
+
+  return PolicyStatusValueImpl::Create(policy_status, value);
+}
+
+// TODO(crbug.com/1293203): Implement this method.
+STDMETHODIMP PolicyStatusImpl::get_forceInstallApps(
+    VARIANT_BOOL is_machine,
+    IPolicyStatusValue** value) {
+  DCHECK(value);
+
+  return E_NOTIMPL;
+}
+
 // TODO(crbug.com/1344200): Implement the IDispatch methods.
 STDMETHODIMP PolicyStatusImpl::GetTypeInfoCount(UINT*) {
   return E_NOTIMPL;
@@ -835,6 +1051,106 @@ STDMETHODIMP PolicyStatusImpl::Invoke(DISPID,
                                       VARIANT*,
                                       EXCEPINFO*,
                                       UINT*) {
+  return E_NOTIMPL;
+}
+
+PolicyStatusValueImpl::PolicyStatusValueImpl() = default;
+PolicyStatusValueImpl::~PolicyStatusValueImpl() = default;
+
+template <typename T>
+HRESULT PolicyStatusValueImpl::Create(
+    const T& value,
+    IPolicyStatusValue** policy_status_value) {
+  return Microsoft::WRL::MakeAndInitialize<PolicyStatusValueImpl>(
+      policy_status_value,
+      value.effective_policy() ? value.effective_policy()->source : "",
+      value.effective_policy()
+          ? GetStringFromValue(value.effective_policy()->policy)
+          : "",
+      value.conflict_policy() != absl::nullopt,
+      value.conflict_policy() ? value.conflict_policy()->source : "",
+      value.conflict_policy()
+          ? GetStringFromValue(value.conflict_policy()->policy)
+          : "");
+}
+
+HRESULT PolicyStatusValueImpl::RuntimeClassInitialize(
+    const std::string& source,
+    const std::string& value,
+    bool has_conflict,
+    const std::string& conflict_source,
+    const std::string& conflict_value) {
+  source_ = base::ASCIIToWide(source);
+  value_ = base::ASCIIToWide(value);
+  has_conflict_ = has_conflict ? VARIANT_TRUE : VARIANT_FALSE;
+  conflict_source_ = base::ASCIIToWide(conflict_source);
+  conflict_value_ = base::ASCIIToWide(conflict_value);
+
+  return S_OK;
+}
+
+// IPolicyStatusValue.
+STDMETHODIMP PolicyStatusValueImpl::get_source(BSTR* source) {
+  DCHECK(source);
+
+  *source = base::win::ScopedBstr(source_).Release();
+  return S_OK;
+}
+
+STDMETHODIMP PolicyStatusValueImpl::get_value(BSTR* value) {
+  DCHECK(value);
+
+  *value = base::win::ScopedBstr(value_).Release();
+  return S_OK;
+}
+
+STDMETHODIMP PolicyStatusValueImpl::get_hasConflict(
+    VARIANT_BOOL* has_conflict) {
+  DCHECK(has_conflict);
+
+  *has_conflict = has_conflict_;
+  return S_OK;
+}
+
+STDMETHODIMP PolicyStatusValueImpl::get_conflictSource(BSTR* conflict_source) {
+  DCHECK(conflict_source);
+
+  *conflict_source = base::win::ScopedBstr(conflict_source_).Release();
+  return S_OK;
+}
+
+STDMETHODIMP PolicyStatusValueImpl::get_conflictValue(BSTR* conflict_value) {
+  DCHECK(conflict_value);
+
+  *conflict_value = base::win::ScopedBstr(conflict_value_).Release();
+  return S_OK;
+}
+
+// TODO(crbug.com/1344200): Implement the IDispatch methods.
+STDMETHODIMP PolicyStatusValueImpl::GetTypeInfoCount(UINT*) {
+  return E_NOTIMPL;
+}
+
+STDMETHODIMP PolicyStatusValueImpl::GetTypeInfo(UINT, LCID, ITypeInfo**) {
+  return E_NOTIMPL;
+}
+
+STDMETHODIMP PolicyStatusValueImpl::GetIDsOfNames(REFIID,
+                                                  LPOLESTR*,
+                                                  UINT,
+                                                  LCID,
+                                                  DISPID*) {
+  return E_NOTIMPL;
+}
+
+STDMETHODIMP PolicyStatusValueImpl::Invoke(DISPID,
+                                           REFIID,
+                                           LCID,
+                                           WORD,
+                                           DISPPARAMS*,
+                                           VARIANT*,
+                                           EXCEPINFO*,
+                                           UINT*) {
   return E_NOTIMPL;
 }
 

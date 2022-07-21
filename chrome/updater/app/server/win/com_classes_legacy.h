@@ -298,6 +298,8 @@ class PolicyStatusImpl
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
           IPolicyStatus,
+          IPolicyStatus2,
+          IPolicyStatus3,
           IDispatch> {
  public:
   PolicyStatusImpl();
@@ -306,8 +308,8 @@ class PolicyStatusImpl
 
   HRESULT RuntimeClassInitialize();
 
-  // IPolicyStatus. See `updater_legacy_idl.template` for the description of the
-  // properties below.
+  // IPolicyStatus/IPolicyStatus2/IPolicyStatus3. See
+  // `updater_legacy_idl.template` for the description of the properties below.
   IFACEMETHODIMP get_lastCheckPeriodMinutes(DWORD* minutes) override;
   IFACEMETHODIMP get_updatesSuppressedTimes(
       DWORD* start_hour,
@@ -325,6 +327,38 @@ class PolicyStatusImpl
   IFACEMETHODIMP get_isRollbackToTargetVersionAllowed(
       BSTR app_id,
       VARIANT_BOOL* rollback_allowed) override;
+  IFACEMETHODIMP get_updaterVersion(BSTR* version) override;
+  IFACEMETHODIMP get_lastCheckedTime(DATE* last_checked) override;
+  IFACEMETHODIMP refreshPolicies() override;
+  IFACEMETHODIMP get_lastCheckPeriodMinutes(
+      IPolicyStatusValue** value) override;
+  IFACEMETHODIMP get_updatesSuppressedTimes(
+      IPolicyStatusValue** value,
+      VARIANT_BOOL* are_updates_suppressed) override;
+  IFACEMETHODIMP get_downloadPreferenceGroupPolicy(
+      IPolicyStatusValue** value) override;
+  IFACEMETHODIMP get_packageCacheSizeLimitMBytes(
+      IPolicyStatusValue** value) override;
+  IFACEMETHODIMP get_packageCacheExpirationTimeDays(
+      IPolicyStatusValue** value) override;
+  IFACEMETHODIMP get_proxyMode(IPolicyStatusValue** value) override;
+  IFACEMETHODIMP get_proxyPacUrl(IPolicyStatusValue** value) override;
+  IFACEMETHODIMP get_proxyServer(IPolicyStatusValue** value) override;
+  IFACEMETHODIMP get_effectivePolicyForAppInstalls(
+      BSTR app_id,
+      IPolicyStatusValue** value) override;
+  IFACEMETHODIMP get_effectivePolicyForAppUpdates(
+      BSTR app_id,
+      IPolicyStatusValue** value) override;
+  IFACEMETHODIMP get_targetVersionPrefix(BSTR app_id,
+                                         IPolicyStatusValue** value) override;
+  IFACEMETHODIMP get_isRollbackToTargetVersionAllowed(
+      BSTR app_id,
+      IPolicyStatusValue** value) override;
+  IFACEMETHODIMP get_targetChannel(BSTR app_id,
+                                   IPolicyStatusValue** value) override;
+  IFACEMETHODIMP get_forceInstallApps(VARIANT_BOOL is_machine,
+                                      IPolicyStatusValue** value) override;
 
   // Overrides for IDispatch.
   IFACEMETHODIMP GetTypeInfoCount(UINT* type_info_count) override;
@@ -349,6 +383,66 @@ class PolicyStatusImpl
   ~PolicyStatusImpl() override;
 
   scoped_refptr<PolicyService> policy_service_;
+};
+
+// This class implements the legacy Omaha3 IPolicyStatusValue interface. Each
+// instance stores a single updater policy returned by the properties in
+// IPolicyStatus2 and IPolicyStatus3.
+class PolicyStatusValueImpl
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IPolicyStatusValue,
+          IDispatch> {
+ public:
+  PolicyStatusValueImpl();
+  PolicyStatusValueImpl(const PolicyStatusValueImpl&) = delete;
+  PolicyStatusValueImpl& operator=(const PolicyStatusValueImpl&) = delete;
+
+  template <typename T>
+  static HRESULT Create(const T& value,
+                        IPolicyStatusValue** policy_status_value);
+
+  HRESULT RuntimeClassInitialize(const std::string& source,
+                                 const std::string& value,
+                                 bool has_conflict,
+                                 const std::string& conflict_source,
+                                 const std::string& conflict_value);
+
+  // IPolicyStatusValue. See `updater_legacy_idl.template` for the
+  // description of the properties below.
+  IFACEMETHODIMP get_source(BSTR* source) override;
+  IFACEMETHODIMP get_value(BSTR* value) override;
+  IFACEMETHODIMP get_hasConflict(VARIANT_BOOL* has_conflict) override;
+  IFACEMETHODIMP get_conflictSource(BSTR* conflict_source) override;
+  IFACEMETHODIMP get_conflictValue(BSTR* conflict_value) override;
+
+  // Overrides for IDispatch.
+  IFACEMETHODIMP GetTypeInfoCount(UINT* type_info_count) override;
+  IFACEMETHODIMP GetTypeInfo(UINT type_info_index,
+                             LCID locale_id,
+                             ITypeInfo** type_info) override;
+  IFACEMETHODIMP GetIDsOfNames(REFIID iid,
+                               LPOLESTR* names_to_be_mapped,
+                               UINT count_of_names_to_be_mapped,
+                               LCID locale_id,
+                               DISPID* dispatch_ids) override;
+  IFACEMETHODIMP Invoke(DISPID dispatch_id,
+                        REFIID iid,
+                        LCID locale_id,
+                        WORD flags,
+                        DISPPARAMS* dispatch_parameters,
+                        VARIANT* result,
+                        EXCEPINFO* exception_info,
+                        UINT* arg_error_index) override;
+
+ private:
+  ~PolicyStatusValueImpl() override;
+
+  std::wstring source_;
+  std::wstring value_;
+  VARIANT_BOOL has_conflict_;
+  std::wstring conflict_source_;
+  std::wstring conflict_value_;
 };
 
 }  // namespace updater
