@@ -26,6 +26,7 @@
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device_management_backend.pb.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !BUILDFLAG(IS_ANDROID)

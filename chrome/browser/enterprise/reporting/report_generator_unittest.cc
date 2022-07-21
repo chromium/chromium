@@ -25,6 +25,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_task_environment.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

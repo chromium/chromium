@@ -50,6 +50,7 @@
 #include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"

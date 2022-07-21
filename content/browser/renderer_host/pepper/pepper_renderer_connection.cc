@@ -353,8 +353,7 @@ void PepperRendererConnection::OpenChannelToPepperPlugin(
   }
 
   plugin_service_->OpenChannelToPpapiPlugin(
-      render_process_id_, embedder_origin, path, profile_data_directory_,
-      origin_lock,
+      render_process_id_, path, profile_data_directory_, origin_lock,
       new OpenChannelToPpapiPluginCallback(this, std::move(callback)));
 }
 

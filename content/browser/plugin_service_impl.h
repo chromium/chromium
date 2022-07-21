@@ -87,7 +87,6 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   // is NULL. Must be called on the IO thread.
   PpapiPluginProcessHost* FindOrStartPpapiPluginProcess(
       int render_process_id,
-      const url::Origin& embedder_origin,
       const base::FilePath& plugin_path,
       const base::FilePath& profile_data_directory,
       const absl::optional<url::Origin>& origin_lock);
@@ -96,7 +95,6 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   // a new plugin process if necessary.  This must be called on the IO thread
   // or else a deadlock can occur.
   void OpenChannelToPpapiPlugin(int render_process_id,
-                                const url::Origin& embedder_origin,
                                 const base::FilePath& plugin_path,
                                 const base::FilePath& profile_data_directory,
                                 const absl::optional<url::Origin>& origin_lock,

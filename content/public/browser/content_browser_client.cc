@@ -1260,14 +1260,6 @@ bool ContentBrowserClient::CanEnterFullscreenWithoutUserActivation() {
   return false;
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-bool ContentBrowserClient::ShouldAllowPluginCreation(
-    const url::Origin& embedder_origin,
-    const content::PepperPluginInfo& plugin_info) {
-  return true;
-}
-#endif
-
 #if BUILDFLAG(ENABLE_VR)
 XrIntegrationClient* ContentBrowserClient::GetXrIntegrationClient() {
   return nullptr;

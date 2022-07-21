@@ -86,8 +86,7 @@ class PluginServiceImplBrowserTest : public ContentBrowserTest {
 
     PluginServiceImpl* service = PluginServiceImpl::GetInstance();
     service->OpenChannelToPpapiPlugin(
-        /*render_process_id=*/0, /*embedder_origin=*/url::Origin(),
-        plugin_path_, profile_dir_, origin, client);
+        /*render_process_id=*/0, plugin_path_, profile_dir_, origin, client);
     client->WaitForQuit();
     client->SetRunLoop(nullptr);
   }

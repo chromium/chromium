@@ -45,7 +45,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
@@ -240,7 +239,6 @@ class XrIntegrationClient;
 struct GlobalRenderFrameHostId;
 struct GlobalRequestID;
 struct OpenURLParams;
-struct PepperPluginInfo;
 struct Referrer;
 struct ServiceWorkerVersionBaseInfo;
 struct SocketPermissionRequest;
@@ -2149,14 +2147,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // entering fullscreen. For example, it is used in layout tests to allow
   // fullscreen when mock screen orientation changes.
   virtual bool CanEnterFullscreenWithoutUserActivation();
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // Returns true if |embedder_origin| is allowed to embed a plugin described by
-  // |plugin_info|.  This method allows restricting some internal plugins (like
-  // Chrome's PDF plugin) to specific origins.
-  virtual bool ShouldAllowPluginCreation(const url::Origin& embedder_origin,
-                                         const PepperPluginInfo& plugin_info);
-#endif
 
 #if BUILDFLAG(ENABLE_VR)
   // Allows the embedder to provide mechanisms to integrate with WebXR

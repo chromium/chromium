@@ -123,7 +123,6 @@ int PluginServiceImpl::CountPpapiPluginProcessesForProfile(
 
 PpapiPluginProcessHost* PluginServiceImpl::FindOrStartPpapiPluginProcess(
     int render_process_id,
-    const url::Origin& embedder_origin,
     const base::FilePath& plugin_path,
     const base::FilePath& profile_data_directory,
     const absl::optional<url::Origin>& origin_lock) {
@@ -139,12 +138,6 @@ PpapiPluginProcessHost* PluginServiceImpl::FindOrStartPpapiPluginProcess(
   if (!info) {
     VLOG(1) << "Unable to find ppapi plugin registration for: "
             << plugin_path.MaybeAsASCII();
-    return nullptr;
-  }
-
-  // Validate that |embedder_origin| is allowed to embed the plugin.
-  if (!GetContentClient()->browser()->ShouldAllowPluginCreation(embedder_origin,
-                                                                *info)) {
     return nullptr;
   }
 
@@ -173,14 +166,12 @@ PpapiPluginProcessHost* PluginServiceImpl::FindOrStartPpapiPluginProcess(
 
 void PluginServiceImpl::OpenChannelToPpapiPlugin(
     int render_process_id,
-    const url::Origin& embedder_origin,
     const base::FilePath& plugin_path,
     const base::FilePath& profile_data_directory,
     const absl::optional<url::Origin>& origin_lock,
     PpapiPluginProcessHost::PluginClient* client) {
   PpapiPluginProcessHost* plugin_host = FindOrStartPpapiPluginProcess(
-      render_process_id, embedder_origin, plugin_path, profile_data_directory,
-      origin_lock);
+      render_process_id, plugin_path, profile_data_directory, origin_lock);
   if (plugin_host) {
     plugin_host->OpenChannelToPlugin(client);
   } else {
