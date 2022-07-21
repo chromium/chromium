@@ -60,6 +60,32 @@ bool SavedDeviceRegistry::DeleteAccountKey(const std::string& mac_address) {
   return true;
 }
 
+bool SavedDeviceRegistry::DeleteAccountKey(
+    const std::vector<uint8_t>& account_key) {
+  PrefService* pref_service =
+      QuickPairBrowserDelegate::Get()->GetActivePrefService();
+  if (!pref_service) {
+    QP_LOG(WARNING) << __func__ << ": No user pref service available.";
+    return false;
+  }
+
+  const base::Value::Dict& saved_devices =
+      pref_service->GetValueDict(kFastPairSavedDevicesPref);
+  std::string encoded_key = base::Base64Encode(account_key);
+  for (const auto it : saved_devices) {
+    const std::string* value = it.second.GetIfString();
+    DictionaryPrefUpdate update(pref_service, kFastPairSavedDevicesPref);
+    if (value && *value == encoded_key) {
+      DictionaryPrefUpdate update(pref_service, kFastPairSavedDevicesPref);
+      return update->RemoveKey(it.first);
+    }
+  }
+  QP_LOG(WARNING) << __func__
+                  << ": Failed to delete account key record from prefs: "
+                     "account key not found";
+  return false;
+}
+
 absl::optional<const std::vector<uint8_t>> SavedDeviceRegistry::GetAccountKey(
     const std::string& mac_address) {
   PrefService* pref_service =

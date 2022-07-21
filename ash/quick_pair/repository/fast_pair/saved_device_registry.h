@@ -34,9 +34,13 @@ class SavedDeviceRegistry {
   void SaveAccountKey(const std::string& mac_address,
                       const std::vector<uint8_t>& account_key);
 
-  // Deletes the |mac_address| -> account key record from prefs. Returns true
-  // on success, false on failure.
+  // Deletes the |mac_address| -> account key record from prefs based on
+  // |mac address|. Returns true on success, false on failure.
   bool DeleteAccountKey(const std::string& mac_address);
+
+  // Deletes the mac address -> |account_key| record from prefs based on
+  // |account_key|. Returns true on success, false on failure.
+  bool DeleteAccountKey(const std::vector<uint8_t>& account_key);
 
   // Retrieves an account key from disk if available, otherwise returns an
   // empty vector.
