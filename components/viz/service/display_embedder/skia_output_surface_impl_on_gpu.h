@@ -493,6 +493,9 @@ class SkiaOutputSurfaceImplOnGpu
 
   absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
       output_surface_plane_;
+  // Overlays are saved when ScheduleOverlays() is called, then passed to
+  // |output_device_| in PostSubmit().
+  SkiaOutputSurface::OverlayList overlays_;
 
   // Micro-optimization to get to issuing GPU SwapBuffers as soon as possible.
   std::vector<sk_sp<SkDeferredDisplayList>> destroy_after_swap_;

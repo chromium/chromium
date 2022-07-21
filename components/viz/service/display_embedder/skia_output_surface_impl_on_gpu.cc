@@ -1607,20 +1607,7 @@ void SkiaOutputSurfaceImplOnGpu::ReleaseImageContexts(
 
 void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays) {
-  TRACE_EVENT1("viz", "SkiaOutputSurfaceImplOnGpu::ScheduleOverlays",
-               "num_overlays", overlays.size());
-
-  constexpr base::TimeDelta kHistogramMinTime = base::Microseconds(5);
-  constexpr base::TimeDelta kHistogramMaxTime = base::Milliseconds(16);
-  constexpr int kHistogramTimeBuckets = 50;
-  base::TimeTicks start_time = base::TimeTicks::Now();
-
-  output_device_->ScheduleOverlays(std::move(overlays));
-
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Gpu.OutputSurface.ScheduleOverlaysUs",
-      base::TimeTicks::Now() - start_time, kHistogramMinTime, kHistogramMaxTime,
-      kHistogramTimeBuckets);
+  overlays_ = std::move(overlays);
 }
 
 void SkiaOutputSurfaceImplOnGpu::SetEnableDCLayers(bool enable) {
@@ -2015,6 +2002,23 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
         output_surface_plane_->damage_rect = frame->sub_buffer_rect;
     }
 
+    if (overlays_.size()) {
+      TRACE_EVENT1("viz", "SkiaOutputDevice->ScheduleOverlays()",
+                   "num_overlays", overlays_.size());
+
+      constexpr base::TimeDelta kHistogramMinTime = base::Microseconds(5);
+      constexpr base::TimeDelta kHistogramMaxTime = base::Milliseconds(16);
+      constexpr int kHistogramTimeBuckets = 50;
+      base::TimeTicks start_time = base::TimeTicks::Now();
+
+      output_device_->ScheduleOverlays(std::move(overlays_));
+
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Gpu.OutputSurface.ScheduleOverlaysUs",
+          base::TimeTicks::Now() - start_time, kHistogramMinTime,
+          kHistogramMaxTime, kHistogramTimeBuckets);
+    }
+
     output_device_->SetViewportSize(frame->size);
     output_device_->SchedulePrimaryPlane(output_surface_plane_);
 
@@ -2038,8 +2042,9 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
     }
   }
 
-  // Reset the primary plane information even on skipped swap.
+  // Reset the overlay plane information even on skipped swap.
   output_surface_plane_.reset();
+  overlays_.clear();
 
   destroy_after_swap_.clear();
   context_state_->UpdateSkiaOwnedMemorySize();
