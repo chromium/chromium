@@ -45,7 +45,6 @@
 #define NOTIFY_RETURN_ON_FAILURE(cond, log, ret) \
   do {                                           \
     if (cond) {                                  \
-      SetState(kError);                          \
       MEDIA_LOG(ERROR, media_log.get()) << log;  \
       NotifyError(kPlatformFailureError);        \
       return ret;                                \
@@ -256,15 +255,6 @@ class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
   std::vector<uint8_t> data_;
 };
 
-struct MediaFoundationVideoEncodeAccelerator::PendingInput {
-  PendingInput(scoped_refptr<media::VideoFrame> frame, bool force_keyframe)
-      : frame(std::move(frame)), force_keyframe(force_keyframe) {}
-  ~PendingInput() {}
-
-  scoped_refptr<media::VideoFrame> frame;
-  bool force_keyframe;
-};
-
 struct MediaFoundationVideoEncodeAccelerator::BitstreamBufferRef {
   BitstreamBufferRef() = delete;
 
@@ -292,7 +282,6 @@ MediaFoundationVideoEncodeAccelerator::MediaFoundationVideoEncodeAccelerator(
           gpu_preferences.enable_media_foundation_vea_on_windows7),
       disable_dynamic_framerate_update_(
           gpu_workarounds.disable_dynamic_video_encode_framerate_update),
-      state_(kUninitialized),
       frame_rate_(kMaxFrameRateNumerator / kMaxFrameRateDenominator),
       bitrate_(Bitrate::ConstantBitrate(kDefaultTargetBitrate)),
       input_required_(false),
@@ -309,7 +298,7 @@ MediaFoundationVideoEncodeAccelerator::
     ~MediaFoundationVideoEncodeAccelerator() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(async_callback_ref_.IsOne());
+
   DCHECK(!encoder_task_weak_factory_.HasWeakPtrs());
 }
 
@@ -546,11 +535,6 @@ void MediaFoundationVideoEncodeAccelerator::EncoderInitializeTask(
         hr, "Couldn't set ProcessMessage MFT_MESSAGE_SET_D3D_MANAGER", );
   }
 
-  hr = encoder_->QueryInterface(IID_PPV_ARGS(&event_generator_));
-  NOTIFY_RETURN_ON_HR_FAILURE(hr, "Couldn't get event generator", );
-
-  event_generator_->BeginGetEvent(this, nullptr);
-
   // Start the asynchronous processing model
   hr = encoder_->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, 0);
   NOTIFY_RETURN_ON_HR_FAILURE(
@@ -561,6 +545,13 @@ void MediaFoundationVideoEncodeAccelerator::EncoderInitializeTask(
   hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, 0);
   NOTIFY_RETURN_ON_HR_FAILURE(
       hr, "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_START_OF_STREAM", );
+  hr = encoder_->QueryInterface(IID_PPV_ARGS(&event_generator_));
+  NOTIFY_RETURN_ON_HR_FAILURE(hr, "Couldn't get event generator", );
+
+  main_client_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&Client::RequireBitstreamBuffers, main_client_,
+                                kNumInputBuffers, input_visible_size_,
+                                bitstream_buffer_size_));
 
   VideoEncoderInfo encoder_info;
   encoder_info.implementation_name = "MediaFoundationVideoEncodeAccelerator";
@@ -947,30 +938,57 @@ void MediaFoundationVideoEncodeAccelerator::EncodeTask(
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(encode_sequence_checker_);
 
+  bool input_delivered = false;
   HRESULT hr = E_FAIL;
-  if (state_ != kEncoding) {
-    DVLOG(3) << "Abandon input frame for video encoder.";
+  if (input_required_) {
+    // Hardware MFT is waiting for this coming input.
+    hr = ProcessInput(std::move(frame), force_keyframe);
+    if (FAILED(hr)) {
+      NotifyError(kPlatformFailureError);
+      RETURN_ON_HR_FAILURE(hr, "Couldn't encode", );
+    }
+
+    DVLOG(3) << "Sent for encode " << hr;
+    input_delivered = true;
+    input_required_ = false;
+  } else {
+    Microsoft::WRL::ComPtr<IMFMediaEvent> media_event;
+    hr = event_generator_->GetEvent(MF_EVENT_FLAG_NO_WAIT, &media_event);
+    if (FAILED(hr)) {
+      DLOG(WARNING) << "Abandoned input frame for video encoder.";
+      return;
+    }
+
+    MediaEventType event_type;
+    hr = media_event->GetType(&event_type);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Failed to get the type of media event.";
+      return;
+    }
+
+    // Always deliver the current input into HMFT.
+    if (event_type == METransformNeedInput) {
+      hr = ProcessInput(std::move(frame), force_keyframe);
+      if (FAILED(hr)) {
+        NotifyError(kPlatformFailureError);
+        RETURN_ON_HR_FAILURE(hr, "Couldn't encode", );
+      }
+
+      DVLOG(3) << "Sent for encode " << hr;
+      input_delivered = true;
+    } else if (event_type == METransformHaveOutput) {
+      ProcessOutput();
+      input_delivered =
+          TryToDeliverInputFrame(std::move(frame), force_keyframe);
+    }
+  }
+
+  if (!input_delivered) {
+    DLOG(ERROR) << "Failed to deliver input frame to video encoder";
     return;
   }
 
-  pending_input_queue_.push_back(
-      PendingInput(std::move(frame), force_keyframe));
-
-  // Before the first time |input_required_| is toggled on, the
-  // HMFT is not yet ready receiving inputs.
-  if (input_required_) {
-    PendingInput pending_input = pending_input_queue_.front();
-    pending_input_queue_.pop_front();
-    hr = ProcessInput(std::move(pending_input.frame),
-                      pending_input.force_keyframe);
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to encode pending frame.";
-      SetState(kError);
-      NotifyError(kPlatformFailureError);
-      return;
-    }
-    input_required_ = false;
-  }
+  TryToReturnBitstreamBuffer();
 }
 
 HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
@@ -1323,87 +1341,89 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   BitstreamBufferMetadata md(size, keyframe, timestamp);
   if (codec_ == VideoCodec::kH264 && temporalScalableCoding())
     md.h264.emplace().temporal_idx = temporal_id;
-
   main_client_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Client::BitstreamBufferReady, main_client_,
                                 buffer_ref->id, md));
 }
 
-void MediaFoundationVideoEncodeAccelerator::OnInitCompleted() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encode_sequence_checker_);
+bool MediaFoundationVideoEncodeAccelerator::TryToDeliverInputFrame(
+    scoped_refptr<VideoFrame> frame,
+    bool force_keyframe) {
+  bool input_delivered = false;
+  Microsoft::WRL::ComPtr<IMFMediaEvent> media_event;
+  MediaEventType event_type;
+  do {
+    HRESULT hr =
+        event_generator_->GetEvent(MF_EVENT_FLAG_NO_WAIT, &media_event);
+    if (FAILED(hr)) {
+      break;
+    }
 
-  DVLOG(3) << "Encoder is ready to accept input.";
-  SetState(kEncoding);
+    hr = media_event->GetType(&event_type);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Failed to get the type of media event.";
+      break;
+    }
+
+    switch (event_type) {
+      case METransformHaveOutput: {
+        ProcessOutput();
+        continue;
+      }
+      case METransformNeedInput: {
+        hr = ProcessInput(std::move(frame), force_keyframe);
+        if (FAILED(hr)) {
+          NotifyError(kPlatformFailureError);
+          RETURN_ON_HR_FAILURE(hr, "Couldn't encode", false);
+        }
+
+        DVLOG(3) << "Sent for encode " << hr;
+        return true;
+      }
+      default:
+        break;
+    }
+  } while (true);
+
+  return input_delivered;
 }
 
-void MediaFoundationVideoEncodeAccelerator::MediaEventHandler(
-    MediaEventType event_type) {
-  DVLOG(3) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encode_sequence_checker_);
-
-  // Not necessary to acquire lock for destroy_initiated_ as
-  // only encoder thread updates it.
-  if (in_shutdown_) {
-    DVLOG(3) << "Ignoring events from MFT during shutdown.";
-    return;
-  }
-  DCHECK(event_generator_);
-
-  // |input_required_| needs to be reset to false on events except
-  // METransformNeedInput. Otherwise next ProcessInput() will fail
-  // with MF_E_NOTACCEPTING.
-  input_required_ = false;
-  switch (event_type) {
-    case METransformNeedInput: {
-      if (state_ == kUninitialized) {
-        SetState(kInitializing);
-        // HMFT is not ready for receiving inputs until the first
-        // METransformNeedInput event is published.
-        main_client_task_runner_->PostTaskAndReply(
-            FROM_HERE,
-            base::BindOnce(&Client::RequireBitstreamBuffers, main_client_,
-                           kNumInputBuffers, input_visible_size_,
-                           bitstream_buffer_size_),
-            base::BindOnce(
-                &MediaFoundationVideoEncodeAccelerator::OnInitCompleted,
-                encoder_weak_ptr_));
-        input_required_ = true;
-      } else if (state_ == kEncoding) {
-        // If there're already pending inputs in queue, that needs to
-        // be handled here immediately.
-        if (!pending_input_queue_.empty()) {
-          PendingInput pending_input = pending_input_queue_.front();
-          pending_input_queue_.pop_front();
-          HRESULT hr = ProcessInput(std::move(pending_input.frame),
-                                    pending_input.force_keyframe);
-          if (FAILED(hr)) {
-            DLOG(ERROR) << "Failed to encode pending frame.";
-            SetState(kError);
-            NotifyError(kPlatformFailureError);
-            return;
-          }
-        } else {
-          input_required_ = true;
-        }
+void MediaFoundationVideoEncodeAccelerator::TryToReturnBitstreamBuffer() {
+  // Try to fetch the encoded frame in time.
+  bool output_processed = false;
+  do {
+    Microsoft::WRL::ComPtr<IMFMediaEvent> media_event;
+    MediaEventType event_type;
+    HRESULT hr =
+        event_generator_->GetEvent(MF_EVENT_FLAG_NO_WAIT, &media_event);
+    if (FAILED(hr)) {
+      if (!output_processed) {
+        continue;
       } else {
-        // We have recovered from a stream restart.
-        SetState(kEncoding);
-        input_required_ = true;
+        break;
       }
+    }
+
+    hr = media_event->GetType(&event_type);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Failed to get the type of media event.";
       break;
     }
-    case METransformHaveOutput: {
-      ProcessOutput();
-      break;
+
+    switch (event_type) {
+      case METransformHaveOutput: {
+        ProcessOutput();
+        output_processed = true;
+        break;
+      }
+      case METransformNeedInput: {
+        input_required_ = true;
+        continue;
+      }
+      default:
+        break;
     }
-    case METransformDrainComplete: {
-      RestartStream();
-      break;
-    }
-    default:
-      break;
-  }
-  event_generator_->BeginGetEvent(this, nullptr);
+  } while (true);
 }
 
 void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBufferTask(
@@ -1462,13 +1482,46 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
                              framerate, 1);
     RETURN_ON_HR_FAILURE(hr, "Couldn't set frame rate for input type", );
 
+    // Some HMFTs will reject output type change with MF_E_INVALIDTYPE due
+    // to temporary mismatch between output/input media types, so we always
+    // clear the input/output media types before reconfiguring them
+    // dynamically.
     hr = encoder_->ProcessMessage(MFT_MESSAGE_COMMAND_DRAIN, 0);
     RETURN_ON_HR_FAILURE(
         hr, "Couldn't process message MFT_MESSAGE_COMMAND_DRAIN", );
 
-    // Stop queueing frames until METransformNeedInput is received. Stream
-    // will be restarted after draining complete.
-    SetState(kDraining);
+    DrainPendingOutputs();
+
+    hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, 0);
+    RETURN_ON_HR_FAILURE(
+        hr, "Couldn't process message MFT_MESSAGE_NOTIFY_END_OF_STREAM", );
+
+    hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, 0);
+    RETURN_ON_HR_FAILURE(
+        hr, "Couldn't process message MFT_MESSAGE_NOTIFY_END_STREAMING", );
+
+    hr = encoder_->SetInputType(input_stream_id_, nullptr, 0);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't clear input media type.", );
+
+    hr = encoder_->SetOutputType(output_stream_id_, nullptr, 0);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't clear ouput media type.", );
+
+    hr = encoder_->SetOutputType(output_stream_id_,
+                                 imf_output_media_type_.Get(), 0);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set output media type", );
+
+    hr = encoder_->SetInputType(input_stream_id_, imf_input_media_type_.Get(),
+                                0);
+    RETURN_ON_HR_FAILURE(hr, "Couldn't set input media type", );
+
+    hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, 0);
+    RETURN_ON_HR_FAILURE(
+        hr, "Couldn't process message MFT_MESSAGE_NOTIFY_BEGIN_STREAMING", );
+
+    hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, 0);
+    RETURN_ON_HR_FAILURE(
+        hr, "Couldn't process message MFT_MESSAGE_NOTIFY_START_OF_STREAM", );
+
     frame_rate_ = framerate;
   }
 
@@ -1492,58 +1545,10 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
   }
 }
 
-void MediaFoundationVideoEncodeAccelerator::RestartStream() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encode_sequence_checker_);
-  HRESULT hr = S_OK;
-
-  hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, 0);
-  RETURN_ON_HR_FAILURE(
-      hr, "Couldn't process message MFT_MESSAGE_NOTIFY_END_OF_STREAM", );
-
-  hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, 0);
-  RETURN_ON_HR_FAILURE(
-      hr, "Couldn't process message MFT_MESSAGE_NOTIFY_END_STREAMING", );
-
-  // Some HMFTs will reject output type change with MF_E_INVALIDTYPE due
-  // to temporary mismatch between output/input media types, so we always
-  // clear the input/output media types before reconfiguring them
-  // dynamically.
-  hr = encoder_->SetInputType(input_stream_id_, nullptr, 0);
-  RETURN_ON_HR_FAILURE(hr, "Couldn't clear input media type.", );
-
-  hr = encoder_->SetOutputType(output_stream_id_, nullptr, 0);
-  RETURN_ON_HR_FAILURE(hr, "Couldn't clear ouput media type.", );
-
-  hr = encoder_->SetOutputType(output_stream_id_, imf_output_media_type_.Get(),
-                               0);
-  RETURN_ON_HR_FAILURE(hr, "Couldn't set output media type", );
-
-  hr = encoder_->SetInputType(input_stream_id_, imf_input_media_type_.Get(), 0);
-  RETURN_ON_HR_FAILURE(hr, "Couldn't set input media type", );
-
-  hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, 0);
-  RETURN_ON_HR_FAILURE(
-      hr, "Couldn't process message MFT_MESSAGE_NOTIFY_BEGIN_STREAMING", );
-
-  hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, 0);
-  RETURN_ON_HR_FAILURE(
-      hr, "Couldn't process message MFT_MESSAGE_NOTIFY_START_OF_STREAM", );
-}
-
-void MediaFoundationVideoEncodeAccelerator::SetState(State state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(encode_sequence_checker_);
-
-  DVLOG(3) << "Setting state to: " << state;
-  state_ = state;
-}
-
 void MediaFoundationVideoEncodeAccelerator::DestroyTask() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(encode_sequence_checker_);
-  {
-    base::AutoLock lock(destroy_lock_);
-    in_shutdown_ = true;
-  }
+
   // Cancel all encoder thread callbacks.
   encoder_task_weak_factory_.InvalidateWeakPtrs();
 
@@ -1551,9 +1556,10 @@ void MediaFoundationVideoEncodeAccelerator::DestroyTask() {
 }
 
 void MediaFoundationVideoEncodeAccelerator::ReleaseEncoderResources() {
-  bitstream_buffer_queue_.clear();
-  pending_input_queue_.clear();
-  encoder_output_queue_.clear();
+  while (!bitstream_buffer_queue_.empty())
+    bitstream_buffer_queue_.pop_front();
+  while (!encoder_output_queue_.empty())
+    encoder_output_queue_.pop_front();
 
   if (activate_.Get() != nullptr) {
     activate_->ShutdownObject();
@@ -1730,66 +1736,22 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DScaling(
   return hr;
 }
 
-HRESULT MediaFoundationVideoEncodeAccelerator::GetParameters(DWORD* pdwFlags,
-                                                             DWORD* pdwQueue) {
-  // Implementation of this method is optional.
-  return E_NOTIMPL;
-}
-
-HRESULT MediaFoundationVideoEncodeAccelerator::Invoke(
-    IMFAsyncResult* pAsyncResult) {
-  HRESULT hr = S_OK;
+void MediaFoundationVideoEncodeAccelerator::DrainPendingOutputs() {
   Microsoft::WRL::ComPtr<IMFMediaEvent> media_event;
-  MediaEventType event_type = MEUnknown;
 
-  {
-    // Prevent event fetching on MFT shutdown.
-    base::AutoLock lock(destroy_lock_);
-    if (in_shutdown_) {
-      DVLOG(3) << "Ignoring events from MFT during shutdown.";
-      return S_OK;
+  while ((SUCCEEDED(
+      event_generator_->GetEvent(MF_EVENT_FLAG_NO_WAIT, &media_event)))) {
+    MediaEventType event_type;
+    HRESULT hr = media_event->GetType(&event_type);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Failed to get the type of media event.";
+      continue;
     }
-    DCHECK(event_generator_);
-    hr = event_generator_->EndGetEvent(pAsyncResult, &media_event);
-  }
 
-  if (SUCCEEDED(hr)) {
-    // Get event type.
-    hr = media_event->GetType(&event_type);
-
-    if (SUCCEEDED(hr)) {
-      hr = media_event->GetStatus(&hr);
-      if (SUCCEEDED(hr)) {
-        if (encoder_thread_task_runner_->BelongsToCurrentThread()) {
-          MediaEventHandler(event_type);
-        } else {
-          encoder_thread_task_runner_->PostTask(
-              FROM_HERE,
-              base::BindOnce(
-                  &MediaFoundationVideoEncodeAccelerator::MediaEventHandler,
-                  encoder_weak_ptr_, event_type));
-        }
-      }
+    if (event_type == METransformHaveOutput) {
+      ProcessOutput();
     }
   }
-
-  return hr;
-}
-
-ULONG MediaFoundationVideoEncodeAccelerator::AddRef() {
-  return async_callback_ref_.Increment();
-}
-
-ULONG MediaFoundationVideoEncodeAccelerator::Release() {
-  DCHECK(!async_callback_ref_.IsOne());
-  return async_callback_ref_.Decrement() ? 1 : 0;
-}
-
-HRESULT MediaFoundationVideoEncodeAccelerator::QueryInterface(REFIID riid,
-                                                              void** ppv) {
-  static const QITAB qit[] = {
-      QITABENT(MediaFoundationVideoEncodeAccelerator, IMFAsyncCallback), {0}};
-  return QISearch(this, qit, riid, ppv);
 }
 
 }  // namespace media
