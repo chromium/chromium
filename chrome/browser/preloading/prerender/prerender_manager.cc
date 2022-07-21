@@ -182,7 +182,7 @@ class PrerenderManager::SearchPrerenderTask {
       return;
     }
 
-    if (SearchPrefetchUpgradeToPrerenderIsEnabled()) {
+    if (prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled()) {
       search_prefetch_service->OnPrerenderedRequestUsed(
           prerendered_search_terms_, web_contents.GetLastCommittedURL());
       return;
@@ -433,7 +433,7 @@ void PrerenderManager::StartPrerenderSearchSuggestion(
 void PrerenderManager::StartPrerenderSearchResult(
     const std::u16string& search_terms,
     const GURL& prerendering_url) {
-  DCHECK(SearchPrefetchUpgradeToPrerenderIsEnabled());
+  DCHECK(prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled());
 
   // If the caller does not want to prerender a new result, this does not need
   // to do anything.

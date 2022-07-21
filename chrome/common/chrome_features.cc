@@ -1158,6 +1158,17 @@ const base::Feature kOmniboxTriggerForPrerender2{
 
 const base::Feature kSupportSearchSuggestionForPrerender2{
     "SupportSearchSuggestionForPrerender2", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<SearchSuggestionPrerenderImplementationType>::Option
+    search_suggestion_implementation_types[] = {
+        {SearchSuggestionPrerenderImplementationType::kUsePrefetch,
+         "use_prefetch"},
+        {SearchSuggestionPrerenderImplementationType::kIgnorePrefetch,
+         "ignore_prefetch"}};
+const base::FeatureParam<SearchSuggestionPrerenderImplementationType>
+    kSearchSuggestionPrerenderImplementationTypeParam{
+        &kSupportSearchSuggestionForPrerender2, "implementation_type",
+        SearchSuggestionPrerenderImplementationType::kIgnorePrefetch,
+        &search_suggestion_implementation_types};
 
 // Enables omnibox trigger no state prefetch. Only one of
 // kOmniboxTriggerForPrerender2 or kOmniboxTriggerForNoStatePrefetch can be

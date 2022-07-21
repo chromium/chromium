@@ -797,6 +797,13 @@ extern const base::Feature kOmniboxTriggerForPrerender2;
 // when blink::features::Prerender2 is enabled.
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSupportSearchSuggestionForPrerender2;
+enum class SearchSuggestionPrerenderImplementationType {
+  kUsePrefetch,
+  kIgnorePrefetch,
+};
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<SearchSuggestionPrerenderImplementationType>
+    kSearchSuggestionPrerenderImplementationTypeParam;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kOmniboxTriggerForNoStatePrefetch;

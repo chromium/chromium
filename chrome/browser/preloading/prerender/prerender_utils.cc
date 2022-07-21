@@ -31,4 +31,14 @@ bool ShouldUpdateCacheEntryManually() {
   return base::FeatureList::IsEnabled(kHidePrefetchParameter);
 }
 
+bool SearchPrefetchUpgradeToPrerenderIsEnabled() {
+  DCHECK(IsSearchSuggestionPrerenderEnabled());
+  switch (features::kSearchSuggestionPrerenderImplementationTypeParam.Get()) {
+    case features::SearchSuggestionPrerenderImplementationType::kUsePrefetch:
+      return true;
+    case features::SearchSuggestionPrerenderImplementationType::kIgnorePrefetch:
+      return false;
+  }
+}
+
 }  // namespace prerender_utils

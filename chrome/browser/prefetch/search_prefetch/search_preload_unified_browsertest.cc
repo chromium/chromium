@@ -64,12 +64,14 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest {
             &SearchPreloadUnifiedBrowserTest::GetActiveWebContents,
             base::Unretained(this))) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSupportSearchSuggestionForPrerender2, {}},
-         {kSearchPrefetchServicePrefetching,
-          {{"max_attempts_per_caching_duration", "3"},
-           {"cache_size", "1"},
-           {"device_memory_threshold_MB", "0"}}},
-         {kSearchPrefetchUpgradeToPrerender, {}}},
+        {
+            {features::kSupportSearchSuggestionForPrerender2,
+             {{"implementation_type", "use_prefetch"}}},
+            {kSearchPrefetchServicePrefetching,
+             {{"max_attempts_per_caching_duration", "3"},
+              {"cache_size", "1"},
+              {"device_memory_threshold_MB", "0"}}},
+        },
         /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders});
   }
 
@@ -853,12 +855,14 @@ class HTTPCacheSearchPreloadUnifiedBrowserTest
  public:
   HTTPCacheSearchPreloadUnifiedBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSupportSearchSuggestionForPrerender2, {}},
-         {kSearchPrefetchServicePrefetching,
-          {{"max_attempts_per_caching_duration", "3"},
-           {"cache_size", "4"},
-           {"device_memory_threshold_MB", "0"}}},
-         {kSearchPrefetchUpgradeToPrerender, {}}},
+        {
+            {features::kSupportSearchSuggestionForPrerender2,
+             {{"implementation_type", "use_prefetch"}}},
+            {kSearchPrefetchServicePrefetching,
+             {{"max_attempts_per_caching_duration", "3"},
+              {"cache_size", "4"},
+              {"device_memory_threshold_MB", "0"}}},
+        },
         // Disable BackForwardCache to ensure that the page is not restored from
         // the cache.
         /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders,

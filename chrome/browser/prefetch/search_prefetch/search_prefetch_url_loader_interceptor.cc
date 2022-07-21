@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
+#include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -48,7 +48,8 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   // RenderFrameHost to be attached to another node, and we should avoid
   // relying on this dependency.
   bool can_activate_for_prerender =
-      SearchPrefetchUpgradeToPrerenderIsEnabled() &&
+      prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
+      prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled() &&
       tentative_resource_request.is_outermost_main_frame &&
       web_contents->IsPrerenderedFrame(frame_tree_node_id);
 

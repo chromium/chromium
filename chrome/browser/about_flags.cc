@@ -693,6 +693,19 @@ const FeatureEntry::FeatureVariation
          kFencedFramesImplementationTypeMPArch,
          std::size(kFencedFramesImplementationTypeMPArch), nullptr}};
 
+const FeatureEntry::FeatureParam kSearchSuggestionPrerenderUsingPrefetch[] = {
+    {"implementation_type", "use_prefetch"}};
+const FeatureEntry::FeatureParam kSearchSuggestionPrerenderIgnoringPrefetch[] =
+    {{"implementation_type", "ignore_prefetch"}};
+
+const FeatureEntry::FeatureVariation
+    kSearchSuggsetionPrerenderTypeVariations[] = {
+        {"use prefetched request", kSearchSuggestionPrerenderUsingPrefetch,
+         std::size(kSearchSuggestionPrerenderUsingPrefetch), nullptr},
+        {"ignore prefetched request",
+         kSearchSuggestionPrerenderIgnoringPrefetch,
+         std::size(kSearchSuggestionPrerenderIgnoringPrefetch), nullptr}};
+
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kCloseTabSuggestionsStale_Immediate[] = {
     {"baseline_tab_suggestions", "true"},
@@ -7673,7 +7686,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSupportSearchSuggestionForPrerender2Name,
      flag_descriptions::kSupportSearchSuggestionForPrerender2Description,
      kOsAll,
-     FEATURE_VALUE_TYPE(features::kSupportSearchSuggestionForPrerender2)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         features::kSupportSearchSuggestionForPrerender2,
+         kSearchSuggsetionPrerenderTypeVariations,
+         "SearchSuggestionPrerender")},
 
     {"chrome-labs", flag_descriptions::kChromeLabsName,
      flag_descriptions::kChromeLabsDescription, kOsDesktop,

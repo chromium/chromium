@@ -317,14 +317,14 @@ void SearchPrefetchService::AddCacheEntryForPrerender(
 
   // We do not need this method while running the search prefetch/prerender
   // unification experiment.
-  DCHECK(!SearchPrefetchUpgradeToPrerenderIsEnabled());
+  DCHECK(!prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled());
   AddCacheEntry(updated_prerendered_url, prerendering_url);
 }
 
 void SearchPrefetchService::OnPrerenderedRequestUsed(
     const std::u16string& search_terms,
     const GURL& navigation_url) {
-  DCHECK(SearchPrefetchUpgradeToPrerenderIsEnabled());
+  DCHECK(prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled());
 
   auto request_it = prefetches_.find(search_terms);
   DCHECK(request_it != prefetches_.end());
@@ -502,7 +502,8 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
   if (!web_contents)
     return;
   for (const auto& match : result) {
-    if (SearchPrefetchUpgradeToPrerenderIsEnabled()) {
+    if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
+        prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled()) {
       if (!ShouldPrefetch(match))
         continue;
       CoordinatePrefetchWithPrerender(match, web_contents,

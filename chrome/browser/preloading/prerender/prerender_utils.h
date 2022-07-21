@@ -31,6 +31,9 @@ bool IsSearchSuggestionPrerenderEnabled();
 
 bool ShouldUpdateCacheEntryManually();
 
+// Whether supporting upgrading a prefetch response to prerender page.
+bool SearchPrefetchUpgradeToPrerenderIsEnabled();
+
 }  // namespace prerender_utils
 
 #endif  // CHROME_BROWSER_PRELOADING_PRERENDER_PRERENDER_UTILS_H_
