@@ -413,18 +413,16 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
 
   LookalikeUrlMatchType match_type =
       first_is_lookalike ? first_match_type : last_match_type;
-  if (match_type == LookalikeUrlMatchType::kCharacterSwapSiteEngagement ||
-      match_type == LookalikeUrlMatchType::kCharacterSwapTop500) {
+
+  // TODO(crbug.com/1344981): Once the Combo Squatting heuristic is fully
+  // launched, this console message should be removed.
+  if (match_type == LookalikeUrlMatchType::kComboSquatting) {
     GURL lookalike_url = first_is_lookalike ? first_url : last_url;
 
     navigation_handle()->GetRenderFrameHost()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
-        base::StringPrintf(
-            "Chrome has determined that %s could be fake or fraudulent.\n\n"
-            "Future Chrome versions will show a warning on this domain name. "
-            "If you believe this is shown in error please visit "
-            "https://g.co/chrome/lookalike-warnings",
-            lookalike_url.host().c_str()));
+        lookalikes::GetConsoleMessage(lookalike_url,
+                                      /*is_new_heuristic=*/true));
   }
 
   RecordUMAFromMatchType(match_type);

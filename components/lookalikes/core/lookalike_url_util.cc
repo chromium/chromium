@@ -20,6 +20,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
@@ -42,6 +43,19 @@ const char kHistogramName[] = "NavigationSuggestion.Event2";
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kLookalikeWarningAllowlistDomains);
+}
+
+std::string GetConsoleMessage(const GURL& lookalike_url,
+                              bool is_new_heuristic) {
+  const char* const kNewHeuristicMessage =
+      "Future Chrome versions will show a warning on this domain name.\n";
+  return base::StringPrintf(
+      "Chrome has determined that %s could be fake or fraudulent.\n\n"
+      "%s"
+      "If you believe this is shown in error please visit "
+      "https://g.co/chrome/lookalike-warnings",
+      lookalike_url.host().c_str(),
+      is_new_heuristic ? kNewHeuristicMessage : "");
 }
 
 }  // namespace lookalikes

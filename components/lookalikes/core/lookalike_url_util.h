@@ -23,6 +23,12 @@ extern const char kHistogramName[];
 
 // Register applicable preferences with the provided registry.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+// Returns the console message to be shown in devtools when a URL is flagged by
+// a lookalike heuristic. If is_new_heuristic is true, the message is for a new
+// heuristic that's not fully launched and it has an extra line about future
+// behavior of Chrome.
+std::string GetConsoleMessage(const GURL& lookalike_url, bool is_new_heuristic);
 }
 
 using LookalikeTargetAllowlistChecker =

@@ -308,11 +308,8 @@ void ReputationWebContentsObserver::HandleReputationCheckResult(
   if (!called_from_visibility_check) {
     web_contents()->GetPrimaryMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
-        base::StringPrintf(
-            "Chrome has determined that %s could be fake or fraudulent.\n\n"
-            "If you believe this is shown in error please visit "
-            "https://g.co/chrome/lookalike-warnings",
-            result.url.host().c_str()));
+        lookalikes::GetConsoleMessage(result.url,
+                                      /*is_new_heuristic=*/false));
   }
 
   if (!base::FeatureList::IsEnabled(
