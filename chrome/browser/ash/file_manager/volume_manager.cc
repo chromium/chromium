@@ -690,7 +690,7 @@ void VolumeManager::Initialize() {
   DoMountEvent(chromeos::MOUNT_ERROR_NONE,
                Volume::CreateForDownloads(localVolume));
 
-  // Asyncrhonously record the disk usage for the downloads path
+  // Asynchronously record the disk usage for the downloads path.
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
