@@ -12,7 +12,6 @@
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/playlist.h"
 #include "media/formats/hls/tags.h"
-#include "media/formats/hls/types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 

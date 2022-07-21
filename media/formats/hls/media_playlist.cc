@@ -8,8 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/check.h"
-#include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -87,6 +85,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
   absl::optional<XMediaSequenceTag> media_sequence_tag;
   absl::optional<XDiscontinuitySequenceTag> discontinuity_sequence_tag;
   std::vector<MediaSegment> segments;
+  scoped_refptr<MediaSegment::InitializationSegment> initialization_segment;
 
   types::DecimalInteger discontinuity_sequence_number = 0;
 
@@ -224,7 +223,33 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
           break;
         }
         case MediaPlaylistTagName::kXMap: {
-          // TODO(crbug.com/1266991): Integrate the EXT-X-MAP tag.
+          auto result =
+              XMapTag::Parse(*tag, common_state.variable_dict, sub_buffer);
+          if (result.has_error()) {
+            return std::move(result).error();
+          }
+          auto value = std::move(result).value();
+
+          // Resolve the URI against the playlist URI
+          auto resource_uri = uri.Resolve(value.uri.Str());
+          if (!resource_uri.is_valid()) {
+            return ParseStatusCode::kInvalidUri;
+          }
+
+          // Extract the byte range
+          absl::optional<types::ByteRange> byte_range;
+          if (value.byte_range.has_value()) {
+            // Safari defaults byte range offset to 0, do that here as well.
+            byte_range = types::ByteRange::Validate(
+                value.byte_range->length, value.byte_range->offset.value_or(0));
+            if (!byte_range.has_value()) {
+              return ParseStatusCode::kByteRangeInvalid;
+            }
+          }
+
+          initialization_segment =
+              base::MakeRefCounted<MediaSegment::InitializationSegment>(
+                  std::move(resource_uri), byte_range);
           break;
         }
         case MediaPlaylistTagName::kXMediaSequence: {
@@ -360,8 +385,8 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
 
     segments.emplace_back(inf_tag->duration, media_sequence_number,
                           discontinuity_sequence_number, std::move(segment_uri),
-                          byterange, bitrate, discontinuity_tag.has_value(),
-                          gap_tag.has_value());
+                          initialization_segment, byterange, bitrate,
+                          discontinuity_tag.has_value(), gap_tag.has_value());
 
     // Reset per-segment tags
     inf_tag.reset();

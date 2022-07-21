@@ -928,6 +928,72 @@ TEST(HlsMediaPlaylistTest, XIFramesOnlyTag) {
   builder.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
 }
 
+TEST(HlsMediaPlaylistTest, XMapTag) {
+  MediaPlaylistTestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
+
+  // The EXT-X-MAP tag must be valid
+  for (base::StringPiece x : {"", "BYTERANGE=\"10\"", "URI=foo.ts"}) {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-MAP:", x);
+    fork.ExpectError(ParseStatusCode::kMalformedTag);
+  }
+
+  // The EXT-X-MAP tag only applies to subsequent elements
+  builder.AppendLine("#EXTINF:9.2,\t");
+  builder.AppendLine("foo1.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasDuration, base::Seconds(9.2));
+  builder.ExpectSegment(HasUri, GURL("http://localhost/foo1.ts"));
+  builder.ExpectSegment(HasInitializationSegment, nullptr);
+
+  builder.AppendLine("#EXT-X-MAP:URI=\"init1.ts\"");
+  auto init1 = base::MakeRefCounted<MediaSegment::InitializationSegment>(
+      GURL("http://localhost/init1.ts"), absl::nullopt);
+
+  builder.AppendLine("#EXTINF:9.2,\t");
+  builder.AppendLine("foo2.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasDuration, base::Seconds(9.2));
+  builder.ExpectSegment(HasUri, GURL("http://localhost/foo2.ts"));
+  builder.ExpectSegment(HasInitializationSegment, init1);
+
+  builder.AppendLine("#EXTINF:9.2,\t");
+  builder.AppendLine("foo3.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasDuration, base::Seconds(9.2));
+  builder.ExpectSegment(HasUri, GURL("http://localhost/foo3.ts"));
+  builder.ExpectSegment(HasInitializationSegment, init1);
+
+  // Consecutive EXT-X-MAP tags are tolerated
+  builder.AppendLine("#EXT-X-MAP:URI=\"init2.ts\"");
+  builder.AppendLine("#EXT-X-MAP:URI=\"init3.ts\",BYTERANGE=\"10@0\"");
+  auto init3 = base::MakeRefCounted<MediaSegment::InitializationSegment>(
+      GURL("http://localhost/init3.ts"),
+      types::ByteRange::Validate(10, 0).value());
+
+  builder.AppendLine("#EXTINF:9.2,\t");
+  builder.AppendLine("foo4.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasDuration, base::Seconds(9.2));
+  builder.ExpectSegment(HasUri, GURL("http://localhost/foo4.ts"));
+  builder.ExpectSegment(HasInitializationSegment, init3);
+
+  // If the BYTERANGE offset is not specified, it defaults to 0 (even if the
+  // previous, initialization segment is a byterange of the same resource)
+  builder.AppendLine("#EXT-X-MAP:URI=\"init3.ts\",BYTERANGE=\"10\"");
+
+  builder.AppendLine("#EXTINF:9.2,\t");
+  builder.AppendLine("foo5.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasDuration, base::Seconds(9.2));
+  builder.ExpectSegment(HasUri, GURL("http://localhost/foo5.ts"));
+  builder.ExpectSegment(HasInitializationSegment, init3);
+
+  builder.ExpectOk();
+}
+
 TEST(HlsMediaPlaylistTest, XMediaSequenceTag) {
   MediaPlaylistTestBuilder builder;
   builder.AppendLine("#EXTM3U");

@@ -195,6 +195,35 @@ inline void HasUri(GURL uri,
   EXPECT_EQ(segment.GetUri(), uri) << from.ToString();
 }
 
+// Checks that the latest media segment's media initialization segment is
+// equivalent to the given value.
+inline void HasInitializationSegment(
+    scoped_refptr<MediaSegment::InitializationSegment> expected,
+    const base::Location& from,
+    const MediaSegment& segment) {
+  auto actual = segment.GetInitializationSegment();
+  if (actual && expected) {
+    EXPECT_EQ(actual->GetUri(), expected->GetUri()) << from.ToString();
+
+    if (actual->GetByteRange() && expected->GetByteRange()) {
+      EXPECT_EQ(actual->GetByteRange()->GetOffset(),
+                expected->GetByteRange()->GetOffset())
+          << from.ToString();
+      EXPECT_EQ(actual->GetByteRange()->GetLength(),
+                expected->GetByteRange()->GetLength())
+          << from.ToString();
+      EXPECT_EQ(actual->GetByteRange()->GetEnd(),
+                expected->GetByteRange()->GetEnd())
+          << from.ToString();
+    } else {
+      EXPECT_FALSE(actual->GetByteRange() || expected->GetByteRange())
+          << from.ToString();
+    }
+  } else {
+    EXPECT_FALSE(actual || expected) << from.ToString();
+  }
+}
+
 // Checks that the latest media segment has the given byte range.
 inline void HasByteRange(absl::optional<types::ByteRange> range,
                          const base::Location& from,
