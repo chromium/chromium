@@ -1540,8 +1540,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.FormSubmission.PerProfileType"
-    enum="BrowserProfileType" expires_after="2022-08-02">
-  <owner>sideyilmaz@chromium.org</owner>
+    enum="BrowserProfileType" expires_after="2023-02-02">
+  <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
     This histogram records the browser profile type when a password form is
