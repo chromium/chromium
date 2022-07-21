@@ -2128,6 +2128,10 @@ const char kPageInfoMoreAboutThisPageDescription[] =
     "Enable the 'More about this page' link in the 'From the web' section of "
     "page info.";
 
+const char kPageInfoHideSiteSettingsName[] = "Page info hide site settings";
+const char kPageInfoHideSiteSettingsDescription[] =
+    "Hides site settings row in the page info menu.";
+
 const char kPageInfoHistoryDesktopName[] = "Page info history";
 const char kPageInfoHistoryDesktopDescription[] =
     "Enable a history section in the page info.";

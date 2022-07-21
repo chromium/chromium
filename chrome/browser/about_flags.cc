@@ -7103,14 +7103,22 @@ const FeatureEntry kFeatureEntries[] = {
          page_info::kPageInfoDiscoverability,
          kPageInfoDiscoverabilityTimeoutVariations,
          "kPageInfoDiscoverabilityTimeoutVariations")},
+#endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"page-info-hide-site-settings",
+     flag_descriptions::kPageInfoHideSiteSettingsName,
+     flag_descriptions::kPageInfoHideSiteSettingsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(page_info::kPageInfoHideSiteSettings)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
     {"page-info-history", flag_descriptions::kPageInfoHistoryName,
      flag_descriptions::kPageInfoHistoryDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(page_info::kPageInfoHistory)},
     {"page-info-store-info", flag_descriptions::kPageInfoStoreInfoName,
      flag_descriptions::kPageInfoStoreInfoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(page_info::kPageInfoStoreInfo)},
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
