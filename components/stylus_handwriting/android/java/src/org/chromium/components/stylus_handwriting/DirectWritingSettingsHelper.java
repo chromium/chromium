@@ -23,11 +23,8 @@ class DirectWritingSettingsHelper {
     private static final String HONEYBOARD_SERVICE_PKG_NAME =
             DirectWritingConstants.SERVICE_PKG_NAME + "/.service.HoneyBoardService";
 
-    // TODO(mahesh.ma): Remove this once feature is enabled and configurable setting is created.
-    private static final boolean FORCE_DISABLE_FEATURE = true;
-
     static boolean isEnabled(Context context) {
-        return !FORCE_DISABLE_FEATURE && isHoneyboardDefault(context) && isFeatureEnabled(context);
+        return isHoneyboardDefault(context) && isFeatureEnabled(context);
     }
 
     /**
