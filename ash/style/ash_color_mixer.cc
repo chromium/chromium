@@ -8,6 +8,7 @@
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/temp_palette.h"
 #include "ash/system/tray/tray_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -142,13 +143,113 @@ void RemapLegacySemanticColors(ui::ColorMixer& mixer) {
       cros_tokens::kCrosSysAppBase1};
 }
 
+// Adds the dynamic color palette tokens based on user_color. This is the base
+// palette so it is independent of ColorMode.
+void AddRefPalette(ui::ColorMixer& mixer,
+                   const ui::ColorProviderManager::Key& key) {
+  // TODO(skau): Before this launches, make sure this is always populated.
+  SkColor seed_color = key.user_color.value_or(gfx::kGoogleBlue400);
+
+  // TODO(skau): Replace with official implementation when available.
+  ToneMap tone_map = GetTempPalette(seed_color);
+
+  mixer[cros_tokens::kCrosRefPrimary0] = {tone_map.primary[Luma::k0]};
+  mixer[cros_tokens::kCrosRefPrimary10] = {tone_map.primary[Luma::k10]};
+  mixer[cros_tokens::kCrosRefPrimary20] = {tone_map.primary[Luma::k20]};
+  mixer[cros_tokens::kCrosRefPrimary30] = {tone_map.primary[Luma::k30]};
+  mixer[cros_tokens::kCrosRefPrimary40] = {tone_map.primary[Luma::k40]};
+  mixer[cros_tokens::kCrosRefPrimary50] = {tone_map.primary[Luma::k50]};
+  mixer[cros_tokens::kCrosRefPrimary60] = {tone_map.primary[Luma::k60]};
+  mixer[cros_tokens::kCrosRefPrimary70] = {tone_map.primary[Luma::k70]};
+  mixer[cros_tokens::kCrosRefPrimary80] = {tone_map.primary[Luma::k80]};
+  mixer[cros_tokens::kCrosRefPrimary90] = {tone_map.primary[Luma::k90]};
+  mixer[cros_tokens::kCrosRefPrimary95] = {tone_map.primary[Luma::k95]};
+  mixer[cros_tokens::kCrosRefPrimary99] = {tone_map.primary[Luma::k99]};
+  mixer[cros_tokens::kCrosRefPrimary100] = {tone_map.primary[Luma::k100]};
+
+  mixer[cros_tokens::kCrosRefSecondary0] = {tone_map.secondary[Luma::k0]};
+  mixer[cros_tokens::kCrosRefSecondary10] = {tone_map.secondary[Luma::k10]};
+  mixer[cros_tokens::kCrosRefSecondary20] = {tone_map.secondary[Luma::k20]};
+  mixer[cros_tokens::kCrosRefSecondary30] = {tone_map.secondary[Luma::k30]};
+  mixer[cros_tokens::kCrosRefSecondary40] = {tone_map.secondary[Luma::k40]};
+  mixer[cros_tokens::kCrosRefSecondary50] = {tone_map.secondary[Luma::k50]};
+  mixer[cros_tokens::kCrosRefSecondary60] = {tone_map.secondary[Luma::k60]};
+  mixer[cros_tokens::kCrosRefSecondary70] = {tone_map.secondary[Luma::k70]};
+  mixer[cros_tokens::kCrosRefSecondary80] = {tone_map.secondary[Luma::k80]};
+  mixer[cros_tokens::kCrosRefSecondary90] = {tone_map.secondary[Luma::k90]};
+  mixer[cros_tokens::kCrosRefSecondary95] = {tone_map.secondary[Luma::k95]};
+  mixer[cros_tokens::kCrosRefSecondary99] = {tone_map.secondary[Luma::k99]};
+  mixer[cros_tokens::kCrosRefSecondary100] = {tone_map.secondary[Luma::k100]};
+
+  mixer[cros_tokens::kCrosRefTertiary0] = {tone_map.tertiary[Luma::k0]};
+  mixer[cros_tokens::kCrosRefTertiary10] = {tone_map.tertiary[Luma::k10]};
+  mixer[cros_tokens::kCrosRefTertiary20] = {tone_map.tertiary[Luma::k20]};
+  mixer[cros_tokens::kCrosRefTertiary30] = {tone_map.tertiary[Luma::k30]};
+  mixer[cros_tokens::kCrosRefTertiary40] = {tone_map.tertiary[Luma::k40]};
+  mixer[cros_tokens::kCrosRefTertiary50] = {tone_map.tertiary[Luma::k50]};
+  mixer[cros_tokens::kCrosRefTertiary60] = {tone_map.tertiary[Luma::k60]};
+  mixer[cros_tokens::kCrosRefTertiary70] = {tone_map.tertiary[Luma::k70]};
+  mixer[cros_tokens::kCrosRefTertiary80] = {tone_map.tertiary[Luma::k80]};
+  mixer[cros_tokens::kCrosRefTertiary90] = {tone_map.tertiary[Luma::k90]};
+  mixer[cros_tokens::kCrosRefTertiary95] = {tone_map.tertiary[Luma::k95]};
+  mixer[cros_tokens::kCrosRefTertiary99] = {tone_map.tertiary[Luma::k99]};
+  mixer[cros_tokens::kCrosRefTertiary100] = {tone_map.tertiary[Luma::k100]};
+
+  mixer[cros_tokens::kCrosRefError0] = {tone_map.error[Luma::k0]};
+  mixer[cros_tokens::kCrosRefError10] = {tone_map.error[Luma::k10]};
+  mixer[cros_tokens::kCrosRefError20] = {tone_map.error[Luma::k20]};
+  mixer[cros_tokens::kCrosRefError30] = {tone_map.error[Luma::k30]};
+  mixer[cros_tokens::kCrosRefError40] = {tone_map.error[Luma::k40]};
+  mixer[cros_tokens::kCrosRefError50] = {tone_map.error[Luma::k50]};
+  mixer[cros_tokens::kCrosRefError60] = {tone_map.error[Luma::k60]};
+  mixer[cros_tokens::kCrosRefError70] = {tone_map.error[Luma::k70]};
+  mixer[cros_tokens::kCrosRefError80] = {tone_map.error[Luma::k80]};
+  mixer[cros_tokens::kCrosRefError90] = {tone_map.error[Luma::k90]};
+  mixer[cros_tokens::kCrosRefError95] = {tone_map.error[Luma::k95]};
+  mixer[cros_tokens::kCrosRefError99] = {tone_map.error[Luma::k99]};
+  mixer[cros_tokens::kCrosRefError100] = {tone_map.error[Luma::k100]};
+
+  mixer[cros_tokens::kCrosRefNeutral0] = {tone_map.neutral1[Luma::k0]};
+  mixer[cros_tokens::kCrosRefNeutral10] = {tone_map.neutral1[Luma::k10]};
+  mixer[cros_tokens::kCrosRefNeutral20] = {tone_map.neutral1[Luma::k20]};
+  mixer[cros_tokens::kCrosRefNeutral30] = {tone_map.neutral1[Luma::k30]};
+  mixer[cros_tokens::kCrosRefNeutral40] = {tone_map.neutral1[Luma::k40]};
+  mixer[cros_tokens::kCrosRefNeutral50] = {tone_map.neutral1[Luma::k50]};
+  mixer[cros_tokens::kCrosRefNeutral60] = {tone_map.neutral1[Luma::k60]};
+  mixer[cros_tokens::kCrosRefNeutral70] = {tone_map.neutral1[Luma::k70]};
+  mixer[cros_tokens::kCrosRefNeutral80] = {tone_map.neutral1[Luma::k80]};
+  mixer[cros_tokens::kCrosRefNeutral90] = {tone_map.neutral1[Luma::k90]};
+  mixer[cros_tokens::kCrosRefNeutral95] = {tone_map.neutral1[Luma::k95]};
+  mixer[cros_tokens::kCrosRefNeutral99] = {tone_map.neutral1[Luma::k99]};
+  mixer[cros_tokens::kCrosRefNeutral100] = {tone_map.neutral1[Luma::k100]};
+
+  mixer[cros_tokens::kCrosRefNeutralvariant0] = {tone_map.neutral2[Luma::k0]};
+  mixer[cros_tokens::kCrosRefNeutralvariant10] = {tone_map.neutral2[Luma::k10]};
+  mixer[cros_tokens::kCrosRefNeutralvariant20] = {tone_map.neutral2[Luma::k20]};
+  mixer[cros_tokens::kCrosRefNeutralvariant30] = {tone_map.neutral2[Luma::k30]};
+  mixer[cros_tokens::kCrosRefNeutralvariant40] = {tone_map.neutral2[Luma::k40]};
+  mixer[cros_tokens::kCrosRefNeutralvariant50] = {tone_map.neutral2[Luma::k50]};
+  mixer[cros_tokens::kCrosRefNeutralvariant60] = {tone_map.neutral2[Luma::k60]};
+  mixer[cros_tokens::kCrosRefNeutralvariant70] = {tone_map.neutral2[Luma::k70]};
+  mixer[cros_tokens::kCrosRefNeutralvariant80] = {tone_map.neutral2[Luma::k80]};
+  mixer[cros_tokens::kCrosRefNeutralvariant90] = {tone_map.neutral2[Luma::k90]};
+  mixer[cros_tokens::kCrosRefNeutralvariant95] = {tone_map.neutral2[Luma::k95]};
+  mixer[cros_tokens::kCrosRefNeutralvariant99] = {tone_map.neutral2[Luma::k99]};
+  mixer[cros_tokens::kCrosRefNeutralvariant100] = {
+      tone_map.neutral2[Luma::k100]};
+}
+
 }  // namespace
 
 void AddCrosStylesColorMixer(ui::ColorProvider* provider,
                              const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
   bool dark_mode = key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
-  cros_tokens::AddCrosRefColorsToMixer(mixer, dark_mode);
+  if (ash::features::IsJellyEnabled()) {
+    AddRefPalette(mixer, key);
+  } else {
+    cros_tokens::AddCrosRefColorsToMixer(mixer, dark_mode);
+  }
   cros_tokens::AddCrosSysColorsToMixer(mixer, dark_mode);
 
   // TODO(b/234400002): Remove legacy colors once all usages are cleaned up.
