@@ -5599,6 +5599,11 @@ const char kSchedulerConfigurationConservative[] =
 const char kSchedulerConfigurationPerformance[] =
     "Enables Hyper-Threading on relevant CPUs.";
 
+const char kMediaDynamicCgroupName[] = "Media Dynamic Cgroup";
+const char kMediaDynamicCgroupDescription[] =
+    "Dynamic Cgroup allows tasks from media workload to be consolidated on "
+    "limited cpuset";
+
 const char kShowBluetoothDebugLogToggleName[] =
     "Show Bluetooth debug log toggle";
 const char kShowBluetoothDebugLogToggleDescription[] =

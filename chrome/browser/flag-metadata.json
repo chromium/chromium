@@ -2504,6 +2504,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "enable-media-dynamic-cgroup",
+    "owners": [ "erin.park@intel.com", "youssefesmat" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-media-foundation-clear",
     "owners": [
       "wicarr@microsoft.com"

@@ -2903,6 +2903,21 @@
             ]
         }
     ],
+    "CrOSLateBootMediaDynamicCgroup": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootMediaDynamicCgroup"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootSchedTrace": [
         {
             "platforms": [

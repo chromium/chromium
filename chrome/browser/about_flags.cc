@@ -9001,10 +9001,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kStylusWritingToInputDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kStylusWritingToInput)},
 #endif  // BUILDFLAG(IS_ANDROID)
-        // NOTE: Adding a new flag requires adding a corresponding entry to enum
-        // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
-        // Histograms" in tools/metrics/histograms/README.md (run the
-        // AboutFlagsHistogramTest unit test to verify this process).
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-media-dynamic-cgroup", flag_descriptions::kMediaDynamicCgroupName,
+     flag_descriptions::kMediaDynamicCgroupDescription, kOsCrOS,
+     PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootMediaDynamicCgroup")},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+    // NOTE: Adding a new flag requires adding a corresponding entry to enum
+    // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
+    // Histograms" in tools/metrics/histograms/README.md (run the
+    // AboutFlagsHistogramTest unit test to verify this process).
 };
 
 class FlagsStateSingleton : public flags_ui::FlagsState::Delegate {
