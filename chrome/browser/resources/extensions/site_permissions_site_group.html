@@ -1,7 +1,7 @@
 <style include="cr-shared-style cr-icons shared-style">
   #etld-row {
     align-items: center;
-    border-bottom: var(--cr-separator-line);
+    /* border-bottom: var(--cr-separator-line); */
     display: flex;
     height: var(--cr-section-two-line-min-height);
   }
@@ -25,7 +25,7 @@
 
   .site-row {
     align-items: center;
-    border-bottom: var(--cr-separator-line);
+    /* border-top: var(--cr-separator-line); */
     display: flex;
     height: var(--cr-section-min-height);
   }
@@ -48,7 +48,7 @@
     flex-shrink: 0;
   }
 </style>
-<div id="etld-row">
+<div id="etld-row" class$="[[getClassForIndex_(listIndex)]]">
   <div class="site-favicon"
       style$="background-image:[[getEtldOrSiteFaviconUrl_(data)]]"></div>
   <div id="etld-and-subtext">
@@ -60,16 +60,32 @@
         expanded="{{expanded_}}">
     </cr-expand-button>
   </template>
+  <template is="dom-if" if="[[!isExpandable_]]">
+    <cr-icon-button class="subpage-arrow" id="edit-one-site-button"
+        on-click="onEditSiteClick_">
+    </cr-icon-button>
+  </template>
 </div>
 <div id="sites-list" hidden$="[[!expanded_]]">
   <template is="dom-repeat" items="[[data.sites]]">
-    <div class="site-row">
+    <div class="site-row hr">
       <div class="site-favicon"
           style$="background-image:[[getFaviconUrl_(item.site)]]"></div>
       <div class="site-and-subtext">
         <span class="site">[[item.site]]</span>
         <span class="site-subtext">[[getSiteSubtext_(item.siteList)]]</span>
       </div>
+      <cr-icon-button class="subpage-arrow" on-click="onEditSiteInListClick_">
+      </cr-icon-button>
     </div>
   </template>
 </div>
+
+<template is="dom-if" if="[[showEditSitePermissionsDialog_]]" restamp>
+  <site-permissions-edit-permissions-dialog
+      delegate="[[delegate]]"
+      site="[[siteToEdit_.site]]"
+      original-site-set="[[siteToEdit_.siteList]]"
+      on-close="onEditSitePermissionsDialogClose_">
+  </site-permissions-edit-permissions-dialog>
+</template>

@@ -45,9 +45,15 @@ export class ExtensionsSitePermissionsBySiteElement extends PolymerElement {
   private siteGroups_: chrome.developerPrivate.SiteGroup[];
 
   override ready() {
-    // TODO(crbug.com/1253673): Observe for changes in user specified sites and
-    // extension host permissions.
+    // TODO(crbug.com/1253673): Observe for changes in extension host
+    // permissions.
     super.ready();
+    this.refreshUserAndExtensionSites_();
+    this.delegate.getUserSiteSettingsChangedTarget().addListener(
+        this.refreshUserAndExtensionSites_.bind(this));
+  }
+
+  private refreshUserAndExtensionSites_() {
     this.delegate.getUserAndExtensionSitesByEtld().then(sites => {
       this.siteGroups_ = sites;
     });

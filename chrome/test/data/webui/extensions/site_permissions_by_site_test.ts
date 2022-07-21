@@ -85,4 +85,27 @@ suite('SitePermissionsBySite', function() {
             'site-permissions-site-group');
     assertEquals(2, sitePermissionGroups.length);
   });
+
+  test('extension and user sites update when event is fired', async function() {
+    await delegate.whenCalled('getUserAndExtensionSitesByEtld');
+    flush();
+    delegate.resetResolver('getUserAndExtensionSitesByEtld');
+    delegate.siteGroups = [{
+      etldPlusOne: 'random.com',
+      sites: [{
+        siteList: chrome.developerPrivate.UserSiteSet.RESTRICTED,
+        site: 'http://www.random.com',
+      }],
+    }];
+
+    delegate.userSiteSettingsChangedTarget.callListeners(
+        {permittedSites: [], restrictedSites: ['http://www.random.com']});
+    await delegate.whenCalled('getUserAndExtensionSitesByEtld');
+    flush();
+
+    const sitePermissionGroups =
+        element.shadowRoot!.querySelectorAll<HTMLElement>(
+            'site-permissions-site-group');
+    assertEquals(1, sitePermissionGroups.length);
+  });
 });

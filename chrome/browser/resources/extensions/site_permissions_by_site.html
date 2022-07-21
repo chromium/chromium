@@ -21,7 +21,8 @@
     </div>
     <div id="site-groups">
       <template is="dom-repeat" items="[[siteGroups_]]">
-        <site-permissions-site-group data="[[item]]">
+        <site-permissions-site-group data="[[item]]" delegate="[[delegate]]"
+            list-index="[[index]]">
         </site-permissions-site-group>
       </template>
     </div>

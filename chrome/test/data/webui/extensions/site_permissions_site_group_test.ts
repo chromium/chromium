@@ -104,4 +104,72 @@ suite('SitePermissionsSiteGroupElement', function() {
     assertFalse(isVisible(
         element.shadowRoot!.querySelector<HTMLElement>('cr-expand-button')));
   });
+
+  test(
+      'clicking the arrow for a single site shows dialog for that site',
+      async function() {
+        element.data = {
+          etldPlusOne: 'example.com',
+          sites: [{
+            siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
+            site: 'https://a.example.com',
+          }],
+        };
+        flush();
+
+        const editSiteButton = element.shadowRoot!.querySelector<HTMLElement>(
+            '#edit-one-site-button');
+        assertTrue(isVisible(editSiteButton));
+
+        editSiteButton!.click();
+        flush();
+
+        const dialog = element.shadowRoot!.querySelector(
+            'site-permissions-edit-permissions-dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.$.dialog.open);
+        assertEquals('https://a.example.com', dialog.site);
+        assertEquals(
+            chrome.developerPrivate.UserSiteSet.PERMITTED,
+            dialog.originalSiteSet);
+      });
+
+  test(
+      'clicking the arrow for an expanded site shows dialog for that site',
+      async function() {
+        element.data = {
+          etldPlusOne: 'google.ca',
+          sites: [
+            {
+              siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
+              site: 'https://images.google.ca',
+            },
+            {
+              siteList: chrome.developerPrivate.UserSiteSet.RESTRICTED,
+              site: 'http://google.ca',
+            },
+          ],
+        };
+        flush();
+
+        element.shadowRoot!.querySelector<HTMLElement>(
+                               'cr-expand-button')!.click();
+        flush();
+
+        const editSiteButtons =
+            element.shadowRoot!.querySelectorAll<HTMLElement>('cr-icon-button');
+        assertEquals(2, editSiteButtons.length);
+
+        editSiteButtons[1]!.click();
+        flush();
+
+        const dialog = element.shadowRoot!.querySelector(
+            'site-permissions-edit-permissions-dialog');
+        assertTrue(!!dialog);
+        assertTrue(dialog.$.dialog.open);
+        assertEquals('http://google.ca', dialog.site);
+        assertEquals(
+            chrome.developerPrivate.UserSiteSet.RESTRICTED,
+            dialog.originalSiteSet);
+      });
 });
