@@ -64,6 +64,7 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -77,91 +78,101 @@ using content::WebContents;
 
 namespace extensions {
 
+const char kIsPrerender2DisabledKey[] = "extensions.prerender2.browsercontext";
+
 namespace {
 
-// User data key for caching if bfcache is disabled.
-const char kIsBFCacheDisabledKey[] = "extensions.backforward.browsercontext";
-
 bool AreAllExtensionsAllowedForBFCache() {
-  // If back forward cache is disabled, indicate we accept everything.
-  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled())
-    return true;
-
   static base::FeatureParam<bool> all_extensions_allowed(
       &features::kBackForwardCache, "all_extensions_allowed", true);
   return all_extensions_allowed.Get();
 }
 
 std::string BlockedExtensionListForBFCache() {
-  // If back forward cache is disabled, indicate nothing is blocked.
-  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled())
-    return std::string();
-
   static base::FeatureParam<std::string> extensions_blocked(
       &features::kBackForwardCache, "blocked_extensions", "");
   return extensions_blocked.Get();
+}
+
+bool AreAllExtensionsAllowedForPrerender2(content::WebContents* web_contents) {
+  static base::FeatureParam<bool> all_extensions_allowed(
+      &blink::features::kPrerender2, "all_extensions_allowed", true);
+  return all_extensions_allowed.Get();
+}
+
+std::string BlockedExtensionListForPrerender2(
+    content::WebContents* web_contents) {
+  static base::FeatureParam<std::string> extensions_blocked(
+      &blink::features::kPrerender2, "blocked_extensions", "");
+  return extensions_blocked.Get();
+}
+
+// Check `enabled_extensions` if any of them are specified in the
+// `blocked_extensions` or not.
+bool ProcessDisabledExtensions(const std::string& feature,
+                               const ExtensionSet& enabled_extensions,
+                               content::BrowserContext* context,
+                               bool all_allowed,
+                               const std::string& blocked_extensions) {
+  // If we allow all extensions and there aren't any blocked, then just return.
+  if (all_allowed && blocked_extensions.empty())
+    return false;
+
+  std::vector<std::string> blocked_extensions_list =
+      base::SplitString(blocked_extensions, ",", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+
+  // Compute whether we need to disable it.
+  bool disabled_feature = false;
+  for (const auto& extension : enabled_extensions) {
+    // Skip component extensions, apps, themes, shared modules and the google
+    // docs pre-installed extension.
+    if (Manifest::IsComponentLocation(extension->location()) ||
+        extension->is_app() || extension->is_theme() ||
+        extension->is_shared_module() ||
+        extension->id() == extension_misc::kDocsOfflineExtensionId) {
+      continue;
+    }
+    if (util::IsExtensionVisibleToContext(*extension, context)) {
+      // If we are allowing all extensions with a block filter set, and this
+      // extension is not in it then continue.
+      if (all_allowed &&
+          !base::Contains(blocked_extensions_list, extension->id())) {
+        continue;
+      }
+
+      VLOG(1) << "Disabled " << feature << " due to " << extension->short_name()
+              << "," << extension->id();
+      disabled_feature = true;
+      // TODO(dtapuska): Early termination disabled for now to capture VLOG(1)
+      // break;
+    }
+  }
+
+  return disabled_feature;
 }
 
 void DisableBackForwardCacheIfNecessary(
     const ExtensionSet& enabled_extensions,
     content::BrowserContext* context,
     content::NavigationHandle* navigation_handle) {
-  bool all_allowed = AreAllExtensionsAllowedForBFCache();
-  std::string blocked_extensions = BlockedExtensionListForBFCache();
+  // User data key for caching if bfcache is disabled.
+  static const char kIsBFCacheDisabledKey[] =
+      "extensions.backforward.browsercontext";
 
-  // If we allow all extensions for bfcache and there aren't any blocked, then
-  // just return.
-  if (all_allowed && blocked_extensions.empty())
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ||
+      context->GetUserData(kIsBFCacheDisabledKey)) {
     return;
-
-  // We shouldn't have blocked extensions if `all_allowed` is false.
-  DCHECK(blocked_extensions.empty() || all_allowed);
-
-  bool disable_bfcache = false;
-  // If the user data exists we know we are disabled.
-  if (context->GetUserData(kIsBFCacheDisabledKey)) {
-    disable_bfcache = true;
-  } else {
-    std::vector<std::string> blocked_extensions_list =
-        base::SplitString(blocked_extensions, ",", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
-
-    // Compute whether we need to disable it.
-    for (const auto& extension : enabled_extensions) {
-      // Skip component extensions, apps, themes, shared modules and the google
-      // docs pre-installed extension.
-      if (Manifest::IsComponentLocation(extension->location()) ||
-          extension->is_app() || extension->is_theme() ||
-          extension->is_shared_module() ||
-          extension->id() == extension_misc::kDocsOfflineExtensionId) {
-        continue;
-      }
-      if (util::IsExtensionVisibleToContext(*extension, context)) {
-        // If we are allowing all extensions with a block filter set, and this
-        // extension is not in it then continue.
-        if (all_allowed &&
-            !base::Contains(blocked_extensions_list, extension->id())) {
-          continue;
-        }
-
-        VLOG(1) << "Disabled bfcache due to " << extension->short_name() << ","
-                << extension->id();
-        if (!disable_bfcache) {
-          // Set a user data key indicating we've disabled disabled bfcache for
-          // this context.
-          context->SetUserData(
-              kIsBFCacheDisabledKey,
-              std::make_unique<base::SupportsUserData::Data>());
-          disable_bfcache = true;
-        }
-
-        // TODO(dtapuska): Early termination disabled for now to capture VLOG(1)
-        // break;
-      }
-    }
   }
 
-  if (disable_bfcache) {
+  if (ProcessDisabledExtensions("bfcache", enabled_extensions, context,
+                                AreAllExtensionsAllowedForBFCache(),
+                                BlockedExtensionListForBFCache())) {
+    // Set a user data key indicating we've disabled bfcache for this
+    // context.
+    context->SetUserData(kIsBFCacheDisabledKey,
+                         std::make_unique<base::SupportsUserData::Data>());
+
     // We do not care if GetPreviousRenderFrameHostId returns a reused
     // RenderFrameHost since disabling the cache multiple times has no side
     // effects.
@@ -169,6 +180,28 @@ void DisableBackForwardCacheIfNecessary(
         navigation_handle->GetPreviousRenderFrameHostId(),
         back_forward_cache::DisabledReason(
             back_forward_cache::DisabledReasonId::kExtensions));
+  }
+}
+
+// TODO(https://crbug.com/1344511): Current code is overly complex and circular;
+// TabHelper sets a bit on the WebContents so that the WebContents can call into
+// the Browser so that the Browser can check the bit that was set by TabHelper.
+// Instead, 1) Having extensions code directly disable Prerender2 on a
+// WebContents (just expose a DisablePrerender2 method), or 2) Having the
+// browser code just ask extensions if Prerender2 should be enabled (and
+// avoiding setting any bit on the WebContents).
+// See also Devlin's comment on patchset 10 at https://crrev.com/c/3762942.
+void UpdatePrerender2DisabledKey(const ExtensionSet& enabled_extensions,
+                                 content::WebContents* web_contents) {
+  if (ProcessDisabledExtensions(
+          "prerender2", enabled_extensions, web_contents->GetBrowserContext(),
+          AreAllExtensionsAllowedForPrerender2(web_contents),
+          BlockedExtensionListForPrerender2(web_contents))) {
+    web_contents->GetBrowserContext()->SetUserData(
+        kIsPrerender2DisabledKey,
+        std::make_unique<base::SupportsUserData::Data>());
+  } else {
+    web_contents->GetBrowserContext()->RemoveUserData(kIsPrerender2DisabledKey);
   }
 }
 
@@ -406,6 +439,11 @@ void TabHelper::OnExtensionLoaded(content::BrowserContext* browser_context,
   // Clear the back forward cache for the associated tab to accommodate for any
   // side effects of loading/unloading the extension.
   web_contents()->GetController().GetBackForwardCache().Flush();
+
+  // Update a setting to disable Prerender2 based on loaded Extensions.
+  UpdatePrerender2DisabledKey(
+      ExtensionRegistry::Get(browser_context)->enabled_extensions(),
+      web_contents());
 }
 
 void TabHelper::OnExtensionUnloaded(content::BrowserContext* browser_context,
@@ -414,6 +452,12 @@ void TabHelper::OnExtensionUnloaded(content::BrowserContext* browser_context,
   // Clear the back forward cache for the associated tab to accommodate for any
   // side effects of loading/unloading the extension.
   web_contents()->GetController().GetBackForwardCache().Flush();
+
+  // Update a setting to disable Prerender2 based on loaded Extensions.
+  UpdatePrerender2DisabledKey(
+      ExtensionRegistry::Get(browser_context)->enabled_extensions(),
+      web_contents());
+
   if (!extension_app_)
     return;
   if (extension == extension_app_)

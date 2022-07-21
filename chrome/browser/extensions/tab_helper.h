@@ -38,6 +38,8 @@ namespace extensions {
 class ExtensionActionRunner;
 class Extension;
 
+extern const char kIsPrerender2DisabledKey[];
+
 // Per-tab extension helper. Also handles non-extension apps.
 class TabHelper : public content::WebContentsObserver,
                   public ExtensionFunctionDispatcher::Delegate,
