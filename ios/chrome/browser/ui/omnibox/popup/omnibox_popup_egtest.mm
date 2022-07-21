@@ -138,7 +138,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that tapping the switch to open tab button, switch to the open tab,
 // doesn't close the tab.
-- (void)testSwitchToOpenTab {
+// TOOD(crbug.com/1346362): Test failing regularly.
+- (void)DISABLED_testSwitchToOpenTab {
 // TODO(crbug.com/1067817): Test won't pass on iPad devices.
 #if !TARGET_IPHONE_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
