@@ -358,7 +358,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
 
   const std::string debug_label =
       "SharedImage_Texture2D" + CreateLabelForSharedImageUsage(usage);
-  d3d11_device_->SetPrivateData(WKPDID_D3DDebugObjectName, debug_label.length(),
+  d3d11_texture->SetPrivateData(WKPDID_D3DDebugObjectName, debug_label.length(),
                                 debug_label.c_str());
 
   Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
