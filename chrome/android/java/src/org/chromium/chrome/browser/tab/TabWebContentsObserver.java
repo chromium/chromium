@@ -16,7 +16,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
-import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
@@ -235,8 +234,6 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             mTab.updateTitle(title);
         }
 
-        // The string passed is safe since it is class and method name.
-        @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
         @Override
         public void didStartNavigation(NavigationHandle navigation) {
             if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()) {
@@ -245,42 +242,23 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) {
-                TabObserver observer = observers.next();
-                String s = "TabWebContentsObserver::didStartNavigation observer:"
-                        + observer.getClass().getName();
-                try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
-                    observer.onDidStartNavigation(mTab, navigation);
-                }
+                observers.next().onDidStartNavigation(mTab, navigation);
             }
         }
 
         @Override
-        // The string passed is safe since it is class and method name.
-        @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
         public void didRedirectNavigation(NavigationHandle navigation) {
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) {
-                TabObserver observer = observers.next();
-                String s = "TabWebContentsObserver::didRedirectNavigation observer:"
-                        + observer.getClass().getName();
-                try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
-                    observer.onDidRedirectNavigation(mTab, navigation);
-                }
+                observers.next().onDidRedirectNavigation(mTab, navigation);
             }
         }
 
         @Override
-        // The string passed is safe since it is class and method name.
-        @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
         public void didFinishNavigation(NavigationHandle navigation) {
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) {
-                TabObserver observer = observers.next();
-                String s = "TabWebContentsObserver::didFinishNavigation.onDidFinishNavigation "
-                        + "observer:" + observer.getClass().getName();
-                try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
-                    observer.onDidFinishNavigation(mTab, navigation);
-                }
+                observers.next().onDidFinishNavigation(mTab, navigation);
             }
 
             if (navigation.errorCode() != NetError.OK) {
@@ -303,13 +281,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
                 observers.rewind();
                 while (observers.hasNext()) {
-                    TabObserver observer = observers.next();
-                    String s = "TabWebContentsObserver::didFinishNavigation.onUrlUpdated "
-                            + "observer:" + observer.getClass().getName();
-                    try (TraceEvent e =
-                                    TraceEvent.scoped(s, "scroll jank observer investigation")) {
-                        observer.onUrlUpdated(mTab);
-                    }
+                    observers.next().onUrlUpdated(mTab);
                 }
             }
 
@@ -327,17 +299,10 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
-        // The string passed is safe since it is class and method name.
-        @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
         public void didFirstVisuallyNonEmptyPaint() {
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) {
-                TabObserver observer = observers.next();
-                String s = "TabWebContentsObserver::didFirstVisuallyNonEmptyPaint observer:"
-                        + observer.getClass().getName();
-                try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
-                    observer.didFirstVisuallyNonEmptyPaint(mTab);
-                }
+                observers.next().didFirstVisuallyNonEmptyPaint(mTab);
             }
         }
 

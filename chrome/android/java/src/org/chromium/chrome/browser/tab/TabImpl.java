@@ -597,17 +597,11 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     @Override
-    // The string passed is safe since it is class and method name.
-    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     public void stopLoading() {
         if (isLoading()) {
             RewindableIterator<TabObserver> observers = getTabObservers();
             while (observers.hasNext()) {
-                TabObserver observer = observers.next();
-                String s = "TabImpl::stopLoading observer:" + observer.getClass().getName();
-                try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
-                    observer.onPageLoadFinished(this, getUrl());
-                }
+                observers.next().onPageLoadFinished(this, getUrl());
             }
         }
         if (getWebContents() != null) getWebContents().stop();
@@ -1025,33 +1019,19 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      * @param toDifferentDocument Whether this navigation will transition between
      * documents (i.e., not a fragment navigation or JS History API call).
      */
-    // The string passed is safe since it is class and method name.
-    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     void onLoadStarted(boolean toDifferentDocument) {
         if (toDifferentDocument) mIsLoading = true;
-        for (TabObserver observer : mObservers) {
-            String s = "TabImpl::onLoadStarted observer:" + observer.getClass().getName();
-            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
-                observer.onLoadStarted(this, toDifferentDocument);
-            }
-        }
+        for (TabObserver observer : mObservers) observer.onLoadStarted(this, toDifferentDocument);
     }
 
     /**
      * Called when a navigation completes and no other navigation is in progress.
      */
-    // The string passed is safe since it is class and method name.
-    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     void onLoadStopped() {
         // mIsLoading should only be false if this is a same-document navigation.
         boolean toDifferentDocument = mIsLoading;
         mIsLoading = false;
-        for (TabObserver observer : mObservers) {
-            String s = "TabImpl::onLoadStopped observer:" + observer.getClass().getName();
-            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
-                observer.onLoadStopped(this, toDifferentDocument);
-            }
-        }
+        for (TabObserver observer : mObservers) observer.onLoadStopped(this, toDifferentDocument);
     }
 
     void handleRendererResponsiveStateChanged(boolean isResponsive) {
@@ -1067,16 +1047,11 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      * Called when a page has started loading.
      * @param validatedUrl URL being loaded.
      */
-    // The string passed is safe since it is class and method name.
-    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     void didStartPageLoad(GURL validatedUrl) {
         updateTitle();
         if (mIsRendererUnresponsive) handleRendererResponsiveStateChanged(true);
         for (TabObserver observer : mObservers) {
-            String s = "TabImpl::didStartPageLoad observer:" + observer.getClass().getName();
-            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
-                observer.onPageLoadStarted(this, validatedUrl);
-            }
+            observer.onPageLoadStarted(this, validatedUrl);
         }
     }
 
@@ -1084,17 +1059,10 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      * Called when a page has finished loading.
      * @param url URL that was loaded.
      */
-    // The string passed is safe since it is class and method name.
-    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     void didFinishPageLoad(GURL url) {
         updateTitle();
 
-        for (TabObserver observer : mObservers) {
-            String s = "TabImpl::didFinishPageLoad observer:" + observer.getClass().getName();
-            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
-                observer.onPageLoadFinished(this, url);
-            }
-        }
+        for (TabObserver observer : mObservers) observer.onPageLoadFinished(this, url);
         mIsBeingRestored = false;
     }
 
@@ -1126,15 +1094,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      * Notify the observers that the load progress has changed.
      * @param progress The current percentage of progress.
      */
-    // The string passed is safe since it is class and method name.
-    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     void notifyLoadProgress(float progress) {
-        for (TabObserver observer : mObservers) {
-            String s = "TabImpl::notifyLoadProgress observer:" + observer.getClass().getName();
-            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
-                observer.onLoadProgressChanged(this, progress);
-            }
-        }
+        for (TabObserver observer : mObservers) observer.onLoadProgressChanged(this, progress);
     }
 
     /**
@@ -1216,15 +1177,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     /**
      * Calls onContentChanged on all TabObservers and updates accessibility visibility.
      */
-    // The string passed is safe since it is class and method name.
-    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     void notifyContentChanged() {
-        for (TabObserver observer : mObservers) {
-            String s = "TabImpl::notifyContentChanged observer:" + observer.getClass().getName();
-            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
-                observer.onContentChanged(this);
-            }
-        }
+        for (TabObserver observer : mObservers) observer.onContentChanged(this);
     }
 
     void updateThemeColor(int themeColor) {
@@ -1492,29 +1446,17 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         }
     }
 
-    // The string passed is safe since it is class and method name.
-    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     private void notifyPageTitleChanged() {
         RewindableIterator<TabObserver> observers = getTabObservers();
         while (observers.hasNext()) {
-            TabObserver observer = observers.next();
-            String s = "TabImpl::notifyPageTitleChanged observer:" + observer.getClass().getName();
-            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
-                observer.onTitleUpdated(this);
-            }
+            observers.next().onTitleUpdated(this);
         }
     }
 
-    // The string passed is safe since it is class and method name.
-    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
     private void notifyFaviconChanged() {
         RewindableIterator<TabObserver> observers = getTabObservers();
         while (observers.hasNext()) {
-            TabObserver observer = observers.next();
-            String s = "TabImpl::notifyFaviconChanged observer:" + observer.getClass().getName();
-            try (TraceEvent e = TraceEvent.scoped(s, "scroll jank observer investigation")) {
-                observer.onFaviconUpdated(this, null);
-            }
+            observers.next().onFaviconUpdated(this, null);
         }
     }
 
