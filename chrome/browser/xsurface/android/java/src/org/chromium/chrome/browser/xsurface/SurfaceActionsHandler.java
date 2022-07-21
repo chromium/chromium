@@ -114,4 +114,11 @@ public interface SurfaceActionsHandler {
      * Attempts to follow or unfollow a WebFeed.
      */
     default void updateWebFeedFollowState(WebFeedFollowUpdate update) {}
+
+    /**
+     * Navigates a new tab in group to a particular URL.
+     * @param url The url for which to navigate.
+     * @param actionSourceView The View from which the user tap originated. May be null.
+     */
+    default void navigateNewTabInGroup(String url, View actionSourceView) {}
 }
