@@ -649,14 +649,26 @@ FileManagerPrivateGetSizeStatsFunction::Run() {
     return RespondNow(
         Error("GetSizeStats: volume with ID * not found", params->volume_id));
 
-  // For fusebox volumes, get the underlying (aka original) volume.
+  // For fusebox volumes, get the underlying (aka regular) volume.
   const auto fusebox = base::StringPiece(file_manager::util::kFuseBox);
   if (base::StartsWith(volume->file_system_type(), fusebox)) {
-    auto volume_id = params->volume_id.substr(fusebox.length());
+    std::string volume_id = params->volume_id;
+
+    if (volume->type() == file_manager::VOLUME_TYPE_MTP) {
+      volume_id = volume_id.substr(fusebox.length());
+    } else if (volume->type() == file_manager::VOLUME_TYPE_PROVIDED) {
+      // NB: FileManagerPrivate.GetSizeStats is not called by files app JS
+      // because regular PROVIDED volumes do not support size stats.
+      volume_manager->ConvertFuseBoxFSPVolumeIdToFSPIfNeeded(&volume_id);
+    } else {
+      // TODO(crbug.com/1292825): add VOLUME_TYPE_DOCUMENTS_PROVIDER.
+    }
+
     volume = volume_manager->FindVolumeById(volume_id);
-    if (!volume.get())
+    if (!volume.get()) {
       return RespondNow(
           Error("GetSizeStats: volume with ID * not found", volume_id));
+    }
   }
 
   if (volume->type() == file_manager::VOLUME_TYPE_MTP) {
