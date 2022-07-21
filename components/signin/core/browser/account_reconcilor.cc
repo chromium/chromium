@@ -23,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -45,6 +46,13 @@ using signin::ConsentLevel;
 using signin_metrics::AccountReconcilorState;
 
 namespace {
+
+#if BUILDFLAG(ENABLE_MIRROR)
+// Number of seconds to wait before trying to force another reconciliation
+// cycle. The value roughly represents the 95 percentile success rate of
+// `Signin.Reconciler.Duration.UpTo3mins.Success` histogram.
+const int kForcedReconciliationWaitTimeInSeconds = 15;
+#endif  // BUILDFLAG(ENABLE_MIRROR)
 
 // Returns a copy of |accounts| without the unverified accounts.
 std::vector<gaia::ListedAccount> FilterUnverifiedAccounts(
@@ -633,6 +641,38 @@ void AccountReconcilor::ScheduleStartReconcileIfChromeAccountsChanged() {
     SetState(AccountReconcilorState::ACCOUNT_RECONCILOR_ERROR);
   }
 }
+
+#if BUILDFLAG(ENABLE_MIRROR)
+void AccountReconcilor::ForceReconcile() {
+  if (state_ ==
+      signin_metrics::AccountReconcilorState::ACCOUNT_RECONCILOR_INACTIVE) {
+    VLOG(1) << "Ignoring ForceReconcile request because AccountReconcilor is "
+               "inactive";
+    return;
+  }
+
+  if (!is_reconcile_started_ &&
+      (state_ ==
+           signin_metrics::AccountReconcilorState::ACCOUNT_RECONCILOR_OK ||
+       state_ ==
+           signin_metrics::AccountReconcilorState::ACCOUNT_RECONCILOR_ERROR)) {
+    // Reconcilor is not running. Force start it.
+    StartReconcile(Trigger::kForcedReconcile);
+    return;
+  }
+
+  // For all other cases, wait for some time and retry forcing a reconciliation.
+  // Note that we cannot simply rely on the current reconciliation cycle because
+  // `kForcedReconcile` is handled differently by `StartReconcile` - it leads to
+  // ListAccounts being ignored - something that doesn't happen in a regular
+  // reconciliation cycle.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AccountReconcilor::ForceReconcile,
+                     weak_factory_.GetWeakPtr()),
+      base::Seconds(kForcedReconciliationWaitTimeInSeconds));
+}
+#endif  // BUILDFLAG(ENABLE_MIRROR)
 
 bool AccountReconcilor::IsIdentityManagerReady() {
   return identity_manager_->AreRefreshTokensLoaded();

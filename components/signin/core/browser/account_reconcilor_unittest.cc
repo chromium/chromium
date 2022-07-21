@@ -62,6 +62,11 @@ using testing::_;
 
 namespace {
 
+#if BUILDFLAG(ENABLE_MIRROR)
+// This should match the variable in the .cc file.
+const int kForcedReconciliationWaitTimeInSeconds = 15;
+#endif  // BUILDFLAG(ENABLE_MIRROR)
+
 // An AccountReconcilorDelegate that records all calls (Spy pattern).
 class SpyReconcilorDelegate : public signin::AccountReconcilorDelegate {
  public:
@@ -2136,6 +2141,124 @@ TEST_F(AccountReconcilorMirrorTest, Lock) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(reconcilor->is_reconcile_started_);
 }
+
+#if BUILDFLAG(ENABLE_MIRROR)
+TEST_F(AccountReconcilorTest, ForceReconcileEarlyExitsForInactiveReconcilor) {
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  ASSERT_TRUE(reconcilor);
+  ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_INACTIVE,
+            reconcilor->GetState());
+
+  reconcilor->ForceReconcile();
+  EXPECT_EQ(signin_metrics::ACCOUNT_RECONCILOR_INACTIVE,
+            reconcilor->GetState());
+  EXPECT_FALSE(reconcilor->is_reconcile_started_);
+}
+
+TEST_F(AccountReconcilorMirrorTest,
+       ForceReconcileImmediatelyStartsForIdleReconcilor) {
+  // Get the reconcilor to an OK (signin_metrics::ACCOUNT_RECONCILOR_OK) state.
+  AccountInfo account_info = ConnectProfileToAccount("user@gmail.com");
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  ASSERT_TRUE(reconcilor);
+  signin::SetListAccountsResponseOneAccount(
+      account_info.email, account_info.gaia, &test_url_loader_factory_);
+  std::vector<CoreAccountId> accounts_to_send = {account_info.account_id};
+  const signin::MultiloginParameters params(
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
+      accounts_to_send);
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  reconcilor->SetState(signin_metrics::ACCOUNT_RECONCILOR_OK);
+  ASSERT_FALSE(reconcilor->is_reconcile_started_);
+
+  // Now try to force a reconcile.
+  reconcilor->ForceReconcile();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(signin_metrics::ACCOUNT_RECONCILOR_RUNNING, reconcilor->GetState());
+  EXPECT_TRUE(reconcilor->is_reconcile_started_);
+}
+
+TEST_F(AccountReconcilorMirrorTest,
+       ForceReconcileImmediatelyStartsForErroredOutReconcilor) {
+  // Get the reconcilor to an error state.
+  AccountInfo account_info = ConnectProfileToAccount("user@gmail.com");
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  ASSERT_TRUE(reconcilor);
+  signin::SetListAccountsResponseOneAccount(
+      account_info.email, account_info.gaia, &test_url_loader_factory_);
+  std::vector<CoreAccountId> accounts_to_send = {account_info.account_id};
+  const signin::MultiloginParameters params(
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
+      accounts_to_send);
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+  reconcilor->SetState(signin_metrics::ACCOUNT_RECONCILOR_ERROR);
+  ASSERT_FALSE(reconcilor->is_reconcile_started_);
+
+  // Now try to force a reconcile.
+  reconcilor->ForceReconcile();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(signin_metrics::ACCOUNT_RECONCILOR_RUNNING, reconcilor->GetState());
+  EXPECT_TRUE(reconcilor->is_reconcile_started_);
+}
+
+TEST_F(AccountReconcilorMirrorTest,
+       ForceReconcileSchedulesReconciliationIfReconcilorIsAlreadyRunning) {
+  AccountInfo account_info = ConnectProfileToAccount("user@gmail.com");
+  identity_test_env()->WaitForRefreshTokensLoaded();
+  const CoreAccountId account_id = account_info.account_id;
+
+  // Do NOT set a ListAccounts response. We do not want reconciliation to finish
+  // immediately.
+  std::vector<CoreAccountId> accounts_to_send = {account_id};
+  const signin::MultiloginParameters params(
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
+      accounts_to_send);
+  EXPECT_CALL(*GetMockReconcilor(), PerformSetCookiesAction(params));
+
+  AccountReconcilor* reconcilor = GetMockReconcilor();
+  ASSERT_TRUE(reconcilor);
+
+  // Schedule a regular reconciliation cycle. This will eventually end up in a
+  // noop because the accounts in cookie match the Primary Account in Chrome.
+  reconcilor->StartReconcile(AccountReconcilor::Trigger::kInitialized);
+  ASSERT_EQ(signin_metrics::ACCOUNT_RECONCILOR_RUNNING, reconcilor->GetState());
+  ASSERT_TRUE(reconcilor->is_reconcile_started_);
+
+  // Immediately force a reconciliation. This should cause a forced
+  // reconciliation to be tried later in
+  // `kForcedReconciliationWaitTimeInSeconds` seconds.
+  reconcilor->ForceReconcile();
+
+  // Now set the account in cookie as the Primary Account in Chrome. This will
+  // unblock the regular (`AccountReconcilor::Trigger::kInitialized`)
+  // reconciliation cycle.
+  signin::SetListAccountsResponseOneAccount(
+      /*email=*/account_info.email, /*gaia_id=*/account_info.gaia,
+      /*test_url_loader_factory=*/&test_url_loader_factory_);
+  // This forced reconciliation attempt should also be blocked since
+  // test_url_loader_factory_ will itself post a task to wake up pending
+  // requests.
+  task_environment()->FastForwardBy(
+      base::Seconds(kForcedReconciliationWaitTimeInSeconds));
+  base::RunLoop().RunUntilIdle();
+
+  // Give the queued forced reconciliation cycle a chance to actually run.
+  task_environment()->FastForwardBy(
+      base::Seconds(kForcedReconciliationWaitTimeInSeconds));
+  base::RunLoop().RunUntilIdle();
+
+  // Indirectly test through histograms that the forced reconciliation cycle was
+  // actually run.
+  histogram_tester()->ExpectBucketCount(
+      AccountReconcilor::kOperationHistogramName,
+      AccountReconcilor::Operation::kMultilogin, 1);
+  histogram_tester()->ExpectUniqueSample(
+      AccountReconcilor::kTriggerMultiloginHistogramName,
+      AccountReconcilor::Trigger::kForcedReconcile, 1);
+  histogram_tester()->ExpectTotalCount(
+      AccountReconcilor::kTriggerMultiloginHistogramName, 1);
+}
+#endif  // BUILDFLAG(ENABLE_MIRROR)
 
 // Checks that an "invalid" Gaia account can be refreshed in place, without
 // performing a full logout.
