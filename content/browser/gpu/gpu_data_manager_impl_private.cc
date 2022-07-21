@@ -1118,12 +1118,9 @@ void GpuDataManagerImplPrivate::UpdateOverlayInfo(
 
 void GpuDataManagerImplPrivate::UpdateDXGIInfo(
     gfx::mojom::DXGIInfoPtr dxgi_info) {
-  // Calling out into HDRProxy::GotResult may end up re-entering us via
-  // GpuDataManagerImpl::OnDisplayRemoved/OnDisplayAdded. Both of these
-  // take the owner's lock. To avoid recursive locks, we PostTask
-  // HDRProxy::GotResult so that it runs outside of the lock.
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&HDRProxy::GotResult, std::move(dxgi_info)));
+  // This is running on the main thread;
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  HDRProxy::GotResult(std::move(dxgi_info));
 }
 
 void GpuDataManagerImplPrivate::UpdateDxDiagNodeRequestStatus(
