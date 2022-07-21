@@ -42,6 +42,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/touchui/touch_selection_controller_impl.h"
 #include "ui/views/widget/root_view.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -61,6 +62,25 @@
 namespace views::test {
 
 namespace {
+
+template <class T>
+class UniqueWidgetPtrT : public views::UniqueWidgetPtr {
+ public:
+  UniqueWidgetPtrT() = default;
+  UniqueWidgetPtrT(std::unique_ptr<T> widget)  // NOLINT
+      : views::UniqueWidgetPtr(std::move(widget)) {}
+  UniqueWidgetPtrT(UniqueWidgetPtrT&&) = default;
+  UniqueWidgetPtrT& operator=(UniqueWidgetPtrT&&) = default;
+  ~UniqueWidgetPtrT() = default;
+
+  T& operator*() const {
+    return static_cast<T&>(views::UniqueWidgetPtr::operator*());
+  }
+  T* operator->() const {
+    return static_cast<T*>(views::UniqueWidgetPtr::operator->());
+  }
+  T* get() const { return static_cast<T*>(views::UniqueWidgetPtr::get()); }
+};
 
 // A View that closes the Widget and exits the current message-loop when it
 // receives a mouse-release event.
@@ -517,9 +537,9 @@ TEST_F(WidgetTestInteractive, CheckResizeControllerEvents) {
 // Test view focus restoration when a widget is deactivated and re-activated.
 TEST_F(WidgetTestInteractive, ViewFocusOnWidgetActivationChanges) {
   WidgetAutoclosePtr widget1(CreateTopLevelPlatformWidget());
-  View* view1 = new View;
+  View* view1 =
+      widget1->GetContentsView()->AddChildView(std::make_unique<View>());
   view1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  widget1->GetContentsView()->AddChildView(view1);
 
   WidgetAutoclosePtr widget2(CreateTopLevelPlatformWidget());
   View* view2a = new View;
@@ -765,33 +785,33 @@ class WidgetActivationTest : public Widget {
 // Tests whether the widget only becomes active when the underlying window
 // is really active.
 TEST_F(WidgetTestInteractive, WidgetNotActivatedOnFakeActivationMessages) {
-  WidgetActivationTest widget1;
+  UniqueWidgetPtrT widget1 = std::make_unique<WidgetActivationTest>();
   Widget::InitParams init_params =
       CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  init_params.native_widget = new DesktopNativeWidgetAura(&widget1);
+  init_params.native_widget = new DesktopNativeWidgetAura(widget1.get());
   init_params.bounds = gfx::Rect(0, 0, 200, 200);
-  widget1.Init(std::move(init_params));
-  widget1.Show();
-  EXPECT_EQ(true, widget1.active());
+  widget1->Init(std::move(init_params));
+  widget1->Show();
+  EXPECT_EQ(true, widget1->active());
 
-  WidgetActivationTest widget2;
-  init_params.native_widget = new DesktopNativeWidgetAura(&widget2);
-  widget2.Init(std::move(init_params));
-  widget2.Show();
-  EXPECT_EQ(true, widget2.active());
-  EXPECT_EQ(false, widget1.active());
+  UniqueWidgetPtrT widget2 = std::make_unique<WidgetActivationTest>();
+  init_params = CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  init_params.native_widget = new DesktopNativeWidgetAura(widget2.get());
+  widget2->Init(std::move(init_params));
+  widget2->Show();
+  EXPECT_EQ(true, widget2->active());
+  EXPECT_EQ(false, widget1->active());
 
-  HWND win32_native_window1 = HWNDForWidget(&widget1);
+  HWND win32_native_window1 = HWNDForWidget(widget1.get());
   EXPECT_TRUE(::IsWindow(win32_native_window1));
 
   ::SendMessage(win32_native_window1, WM_NCACTIVATE, 1, 0);
-  EXPECT_EQ(false, widget1.active());
-  EXPECT_EQ(true, widget2.active());
+  EXPECT_EQ(false, widget1->active());
+  EXPECT_EQ(true, widget2->active());
 
   ::SetActiveWindow(win32_native_window1);
-  EXPECT_EQ(true, widget1.active());
-  EXPECT_EQ(false, widget2.active());
+  EXPECT_EQ(true, widget1->active());
+  EXPECT_EQ(false, widget2->active());
 }
 
 // On Windows if we create a fullscreen window on a thread, then it affects the
@@ -799,42 +819,41 @@ TEST_F(WidgetTestInteractive, WidgetNotActivatedOnFakeActivationMessages) {
 // this we reduce the bounds of a fullscreen window by 1px when it loses
 // activation. This test verifies the same.
 TEST_F(WidgetTestInteractive, FullscreenBoundsReducedOnActivationLoss) {
-  Widget widget1;
+  UniqueWidgetPtr widget1 = std::make_unique<Widget>();
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-  params.native_widget = new DesktopNativeWidgetAura(&widget1);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  widget1.Init(std::move(params));
-  widget1.SetBounds(gfx::Rect(0, 0, 200, 200));
-  widget1.Show();
+  params.native_widget = new DesktopNativeWidgetAura(widget1.get());
+  widget1->Init(std::move(params));
+  widget1->SetBounds(gfx::Rect(0, 0, 200, 200));
+  widget1->Show();
 
-  widget1.Activate();
+  widget1->Activate();
   RunPendingMessages();
   EXPECT_EQ(::GetActiveWindow(),
-            widget1.GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+            widget1->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
 
-  widget1.SetFullscreen(true);
-  EXPECT_TRUE(widget1.IsFullscreen());
+  widget1->SetFullscreen(true);
+  EXPECT_TRUE(widget1->IsFullscreen());
   // Ensure that the StopIgnoringPosChanges task in HWNDMessageHandler runs.
   // This task is queued when a widget becomes fullscreen.
   RunPendingMessages();
   EXPECT_EQ(::GetActiveWindow(),
-            widget1.GetNativeWindow()->GetHost()->GetAcceleratedWidget());
-  gfx::Rect fullscreen_bounds = widget1.GetWindowBoundsInScreen();
+            widget1->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  gfx::Rect fullscreen_bounds = widget1->GetWindowBoundsInScreen();
 
-  Widget widget2;
-  params.native_widget = new DesktopNativeWidgetAura(&widget2);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  widget2.Init(std::move(params));
-  widget2.SetBounds(gfx::Rect(0, 0, 200, 200));
-  widget2.Show();
+  UniqueWidgetPtr widget2 = std::make_unique<Widget>();
+  params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.native_widget = new DesktopNativeWidgetAura(widget2.get());
+  widget2->Init(std::move(params));
+  widget2->SetBounds(gfx::Rect(0, 0, 200, 200));
+  widget2->Show();
 
-  widget2.Activate();
+  widget2->Activate();
   RunPendingMessages();
   EXPECT_EQ(::GetActiveWindow(),
-            widget2.GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+            widget2->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
 
   gfx::Rect fullscreen_bounds_after_activation_loss =
-      widget1.GetWindowBoundsInScreen();
+      widget1->GetWindowBoundsInScreen();
 
   // After deactivation loss the bounds of the fullscreen widget should be
   // reduced by 1px.
@@ -842,44 +861,40 @@ TEST_F(WidgetTestInteractive, FullscreenBoundsReducedOnActivationLoss) {
                 fullscreen_bounds_after_activation_loss.height(),
             1);
 
-  widget1.Activate();
+  widget1->Activate();
   RunPendingMessages();
   EXPECT_EQ(::GetActiveWindow(),
-            widget1.GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+            widget1->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
 
   gfx::Rect fullscreen_bounds_after_activate =
-      widget1.GetWindowBoundsInScreen();
+      widget1->GetWindowBoundsInScreen();
 
   // After activation the bounds of the fullscreen widget should be restored.
   EXPECT_EQ(fullscreen_bounds, fullscreen_bounds_after_activate);
-
-  widget1.CloseNow();
-  widget2.CloseNow();
 }
 
 // Ensure the window rect and client rects are correct with a window that was
 // maximized.
 TEST_F(WidgetTestInteractive, FullscreenMaximizedWindowBounds) {
-  Widget widget;
+  UniqueWidgetPtr widget = std::make_unique<Widget>();
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-  params.native_widget = new DesktopNativeWidgetAura(&widget);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  widget.set_frame_type(Widget::FrameType::kForceCustom);
-  widget.Init(std::move(params));
-  widget.SetBounds(gfx::Rect(0, 0, 200, 200));
-  widget.Show();
+  params.native_widget = new DesktopNativeWidgetAura(widget.get());
+  widget->set_frame_type(Widget::FrameType::kForceCustom);
+  widget->Init(std::move(params));
+  widget->SetBounds(gfx::Rect(0, 0, 200, 200));
+  widget->Show();
 
-  widget.Maximize();
-  EXPECT_TRUE(widget.IsMaximized());
+  widget->Maximize();
+  EXPECT_TRUE(widget->IsMaximized());
 
-  widget.SetFullscreen(true);
-  EXPECT_TRUE(widget.IsFullscreen());
-  EXPECT_FALSE(widget.IsMaximized());
+  widget->SetFullscreen(true);
+  EXPECT_TRUE(widget->IsFullscreen());
+  EXPECT_FALSE(widget->IsMaximized());
   // Ensure that the StopIgnoringPosChanges task in HWNDMessageHandler runs.
   // This task is queued when a widget becomes fullscreen.
   RunPendingMessages();
 
-  aura::WindowTreeHost* host = widget.GetNativeWindow()->GetHost();
+  aura::WindowTreeHost* host = widget->GetNativeWindow()->GetHost();
   HWND hwnd = host->GetAcceleratedWidget();
 
   HMONITOR monitor = ::MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
@@ -889,22 +904,20 @@ TEST_F(WidgetTestInteractive, FullscreenMaximizedWindowBounds) {
   ASSERT_TRUE(::GetMonitorInfo(monitor, &monitor_info));
 
   gfx::Rect monitor_bounds(monitor_info.rcMonitor);
-  gfx::Rect window_bounds = widget.GetWindowBoundsInScreen();
+  gfx::Rect window_bounds = widget->GetWindowBoundsInScreen();
   gfx::Rect client_area_bounds = host->GetBoundsInPixels();
 
   EXPECT_EQ(window_bounds, monitor_bounds);
   EXPECT_EQ(monitor_bounds, client_area_bounds);
 
   // Setting not fullscreen should return it to maximized.
-  widget.SetFullscreen(false);
-  EXPECT_FALSE(widget.IsFullscreen());
-  EXPECT_TRUE(widget.IsMaximized());
+  widget->SetFullscreen(false);
+  EXPECT_FALSE(widget->IsFullscreen());
+  EXPECT_TRUE(widget->IsMaximized());
 
   client_area_bounds = host->GetBoundsInPixels();
   EXPECT_TRUE(monitor_bounds.Contains(client_area_bounds));
   EXPECT_NE(monitor_bounds, client_area_bounds);
-
-  widget.CloseNow();
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -918,17 +931,16 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
       focus_listener.focus_changes();
 
   // Create a top level widget.
-  Widget top_level_widget;
+  UniqueWidgetPtr top_level_widget = std::make_unique<Widget>();
   Widget::InitParams init_params =
       CreateParams(Widget::InitParams::TYPE_WINDOW);
   init_params.show_state = ui::SHOW_STATE_NORMAL;
   gfx::Rect initial_bounds(0, 0, 500, 500);
   init_params.bounds = initial_bounds;
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  top_level_widget.Init(std::move(init_params));
-  ShowSync(&top_level_widget);
+  top_level_widget->Init(std::move(init_params));
+  ShowSync(top_level_widget.get());
 
-  gfx::NativeView top_level_native_view = top_level_widget.GetNativeView();
+  gfx::NativeView top_level_native_view = top_level_widget->GetNativeView();
   ASSERT_FALSE(focus_listener.focus_changes().empty());
   EXPECT_EQ(1u, focus_changes.size());
   EXPECT_EQ(top_level_native_view, focus_changes[0]);
@@ -938,7 +950,7 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
   dialog_delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
 
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
-      dialog_delegate.release(), nullptr, top_level_widget.GetNativeView());
+      dialog_delegate.release(), nullptr, top_level_widget->GetNativeView());
   modal_dialog_widget->SetBounds(gfx::Rect(100, 100, 200, 200));
 
   // Note the dialog widget doesn't need a ShowSync. Since it is modal, it gains
@@ -953,33 +965,34 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
 #if BUILDFLAG(IS_MAC)
   // Window modal dialogs on Mac are "sheets", which animate to close before
   // activating their parent widget.
-  views::test::WidgetActivationWaiter waiter(&top_level_widget, true);
+  views::test::WidgetActivationWaiter waiter(top_level_widget.get(), true);
   modal_dialog_widget->Close();
   waiter.Wait();
 #else
-  modal_dialog_widget->CloseNow();
+  views::test::WidgetDestroyedWaiter waiter(modal_dialog_widget);
+  modal_dialog_widget->Close();
+  waiter.Wait();
 #endif
 
   ASSERT_EQ(5u, focus_changes.size());
   EXPECT_EQ(gfx::kNullNativeView, focus_changes[3]);
   EXPECT_EQ(top_level_native_view, focus_changes[4]);
 
-  top_level_widget.CloseNow();
+  top_level_widget->Close();
   WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(&focus_listener);
 }
 #endif
 
 TEST_F(DesktopWidgetTestInteractive, CanActivateFlagIsHonored) {
-  Widget widget;
+  UniqueWidgetPtr widget = std::make_unique<Widget>();
   Widget::InitParams init_params =
       CreateParams(Widget::InitParams::TYPE_WINDOW);
   init_params.bounds = gfx::Rect(0, 0, 200, 200);
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   init_params.activatable = Widget::InitParams::Activatable::kNo;
-  widget.Init(std::move(init_params));
+  widget->Init(std::move(init_params));
 
-  widget.Show();
-  EXPECT_FALSE(widget.IsActive());
+  widget->Show();
+  EXPECT_FALSE(widget->IsActive());
 }
 
 #if defined(USE_AURA)
@@ -1022,41 +1035,37 @@ TEST_F(WidgetTestInteractive, DisableViewDoesNotActivateWidget) {
 #endif  // !BUILDFLAG(IS_WIN)
 
   // Create first widget and view, activate the widget, and focus the view.
-  Widget widget1;
+  UniqueWidgetPtr widget1 = std::make_unique<Widget>();
   Widget::InitParams params1 = CreateParams(Widget::InitParams::TYPE_POPUP);
-  params1.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params1.activatable = Widget::InitParams::Activatable::kYes;
-  widget1.Init(std::move(params1));
+  widget1->Init(std::move(params1));
 
-  View* view1 = new View();
+  View* view1 = widget1->GetRootView()->AddChildView(std::make_unique<View>());
   view1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  widget1.GetRootView()->AddChildView(view1);
 
-  widget1.Show();
-  ActivateSync(&widget1);
+  widget1->Show();
+  ActivateSync(widget1.get());
 
-  FocusManager* focus_manager1 = widget1.GetFocusManager();
+  FocusManager* focus_manager1 = widget1->GetFocusManager();
   ASSERT_TRUE(focus_manager1);
   focus_manager1->SetFocusedView(view1);
   EXPECT_EQ(view1, focus_manager1->GetFocusedView());
 
   // Create second widget and view, activate the widget, and focus the view.
-  Widget widget2;
+  UniqueWidgetPtr widget2 = std::make_unique<Widget>();
   Widget::InitParams params2 = CreateParams(Widget::InitParams::TYPE_POPUP);
-  params2.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params2.activatable = Widget::InitParams::Activatable::kYes;
-  widget2.Init(std::move(params2));
+  widget2->Init(std::move(params2));
 
-  View* view2 = new View();
+  View* view2 = widget2->GetRootView()->AddChildView(std::make_unique<View>());
   view2->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  widget2.GetRootView()->AddChildView(view2);
 
-  widget2.Show();
-  ActivateSync(&widget2);
-  EXPECT_TRUE(widget2.IsActive());
-  EXPECT_FALSE(widget1.IsActive());
+  widget2->Show();
+  ActivateSync(widget2.get());
+  EXPECT_TRUE(widget2->IsActive());
+  EXPECT_FALSE(widget1->IsActive());
 
-  FocusManager* focus_manager2 = widget2.GetFocusManager();
+  FocusManager* focus_manager2 = widget2->GetFocusManager();
   ASSERT_TRUE(focus_manager2);
   focus_manager2->SetFocusedView(view2);
   EXPECT_EQ(view2, focus_manager2->GetFocusedView());
@@ -1065,8 +1074,8 @@ TEST_F(WidgetTestInteractive, DisableViewDoesNotActivateWidget) {
   // activated.
   view1->SetEnabled(false);
   EXPECT_NE(view1, focus_manager1->GetFocusedView());
-  EXPECT_FALSE(widget1.IsActive());
-  EXPECT_TRUE(widget2.IsActive());
+  EXPECT_FALSE(widget1->IsActive());
+  EXPECT_TRUE(widget2->IsActive());
 }
 
 TEST_F(WidgetTestInteractive, ShowCreatesActiveWindow) {
@@ -1140,13 +1149,12 @@ TEST_F(WidgetTestInteractive, WidgetShouldBeActiveWhenShow) {
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
 TEST_F(WidgetTestInteractive, InactiveWidgetDoesNotGrabActivation) {
-  WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
+  UniqueWidgetPtr widget = base::WrapUnique(CreateTopLevelPlatformWidget());
   ShowSync(widget.get());
   EXPECT_EQ(GetWidgetShowState(widget.get()), ui::SHOW_STATE_NORMAL);
 
-  WidgetAutoclosePtr widget2(new Widget());
+  UniqueWidgetPtr widget2 = std::make_unique<Widget>();
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget2->Init(std::move(params));
   widget2->Show();
   RunPendingMessagesForActiveStatusChange();
@@ -1459,36 +1467,36 @@ class WidgetCaptureTest : public DesktopWidgetTestInteractive {
   // Verifies Widget::SetCapture() results in updating native capture along with
   // invoking the right Widget function.
   void TestCapture(bool use_desktop_native_widget) {
-    CaptureLostState capture_state1;
-    CaptureLostTrackingWidget widget1(&capture_state1);
-    InitPlatformWidget(&widget1, use_desktop_native_widget);
-    widget1.Show();
+    UniqueWidgetPtrT widget1 =
+        std::make_unique<CaptureLostTrackingWidget>(capture_state1_.get());
+    InitPlatformWidget(widget1.get(), use_desktop_native_widget);
+    widget1->Show();
 
-    CaptureLostState capture_state2;
-    CaptureLostTrackingWidget widget2(&capture_state2);
-    InitPlatformWidget(&widget2, use_desktop_native_widget);
-    widget2.Show();
+    UniqueWidgetPtrT widget2 =
+        std::make_unique<CaptureLostTrackingWidget>(capture_state2_.get());
+    InitPlatformWidget(widget2.get(), use_desktop_native_widget);
+    widget2->Show();
 
     // Set capture to widget2 and verity it gets it.
-    widget2.SetCapture(widget2.GetRootView());
-    EXPECT_FALSE(widget1.HasCapture());
-    EXPECT_TRUE(widget2.HasCapture());
-    EXPECT_FALSE(capture_state1.GetAndClearGotCaptureLost());
-    EXPECT_FALSE(capture_state2.GetAndClearGotCaptureLost());
+    widget2->SetCapture(widget2->GetRootView());
+    EXPECT_FALSE(widget1->HasCapture());
+    EXPECT_TRUE(widget2->HasCapture());
+    EXPECT_FALSE(capture_state1_->GetAndClearGotCaptureLost());
+    EXPECT_FALSE(capture_state2_->GetAndClearGotCaptureLost());
 
     // Set capture to widget1 and verify it gets it.
-    widget1.SetCapture(widget1.GetRootView());
-    EXPECT_TRUE(widget1.HasCapture());
-    EXPECT_FALSE(widget2.HasCapture());
-    EXPECT_FALSE(capture_state1.GetAndClearGotCaptureLost());
-    EXPECT_TRUE(capture_state2.GetAndClearGotCaptureLost());
+    widget1->SetCapture(widget1->GetRootView());
+    EXPECT_TRUE(widget1->HasCapture());
+    EXPECT_FALSE(widget2->HasCapture());
+    EXPECT_FALSE(capture_state1_->GetAndClearGotCaptureLost());
+    EXPECT_TRUE(capture_state2_->GetAndClearGotCaptureLost());
 
     // Release and verify no one has it.
-    widget1.ReleaseCapture();
-    EXPECT_FALSE(widget1.HasCapture());
-    EXPECT_FALSE(widget2.HasCapture());
-    EXPECT_TRUE(capture_state1.GetAndClearGotCaptureLost());
-    EXPECT_FALSE(capture_state2.GetAndClearGotCaptureLost());
+    widget1->ReleaseCapture();
+    EXPECT_FALSE(widget1->HasCapture());
+    EXPECT_FALSE(widget2->HasCapture());
+    EXPECT_TRUE(capture_state1_->GetAndClearGotCaptureLost());
+    EXPECT_FALSE(capture_state2_->GetAndClearGotCaptureLost());
   }
 
   void InitPlatformWidget(Widget* widget, bool use_desktop_native_widget) {
@@ -1499,9 +1507,25 @@ class WidgetCaptureTest : public DesktopWidgetTestInteractive {
         use_desktop_native_widget
             ? nullptr
             : CreatePlatformNativeWidgetImpl(widget, kDefault, nullptr);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     widget->Init(std::move(params));
   }
+
+ protected:
+  void SetUp() override {
+    DesktopWidgetTestInteractive::SetUp();
+    capture_state1_ = std::make_unique<CaptureLostState>();
+    capture_state2_ = std::make_unique<CaptureLostState>();
+  }
+
+  void TearDown() override {
+    capture_state1_.reset();
+    capture_state2_.reset();
+    DesktopWidgetTestInteractive::TearDown();
+  }
+
+ private:
+  std::unique_ptr<CaptureLostState> capture_state1_;
+  std::unique_ptr<CaptureLostState> capture_state2_;
 };
 
 // See description in TestCapture().
@@ -1549,6 +1573,7 @@ TEST_F(WidgetCaptureTest, DestroyWithCapture_Close) {
   EXPECT_TRUE(capture_state.GetAndClearGotCaptureLost());
 }
 
+// TODO(kylixrd): Remove this test once Widget ownership is normalized.
 TEST_F(WidgetCaptureTest, DestroyWithCapture_WidgetOwnsNativeWidget) {
   Widget widget;
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
@@ -1562,32 +1587,31 @@ TEST_F(WidgetCaptureTest, DestroyWithCapture_WidgetOwnsNativeWidget) {
 
 // Test that no state is set if capture fails.
 TEST_F(WidgetCaptureTest, FailedCaptureRequestIsNoop) {
-  Widget widget;
+  UniqueWidgetPtr widget = std::make_unique<Widget>();
   Widget::InitParams params =
       CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect(400, 400);
-  widget.Init(std::move(params));
+  widget->Init(std::move(params));
 
-  MouseView* mouse_view1 = new MouseView;
-  MouseView* mouse_view2 = new MouseView;
   auto contents_view = std::make_unique<View>();
-  contents_view->AddChildView(mouse_view1);
-  contents_view->AddChildView(mouse_view2);
-  widget.SetContentsView(std::move(contents_view));
+  MouseView* mouse_view1 =
+      contents_view->AddChildView(std::make_unique<MouseView>());
+  MouseView* mouse_view2 =
+      contents_view->AddChildView(std::make_unique<MouseView>());
+  widget->SetContentsView(std::move(contents_view));
 
   mouse_view1->SetBounds(0, 0, 200, 400);
   mouse_view2->SetBounds(200, 0, 200, 400);
 
   // Setting capture should fail because |widget| is not visible.
-  widget.SetCapture(mouse_view1);
-  EXPECT_FALSE(widget.HasCapture());
+  widget->SetCapture(mouse_view1);
+  EXPECT_FALSE(widget->HasCapture());
 
-  widget.Show();
-  ui::test::EventGenerator generator(GetRootWindow(&widget),
-                                     widget.GetNativeWindow());
+  widget->Show();
+  ui::test::EventGenerator generator(GetRootWindow(widget.get()),
+                                     widget->GetNativeWindow());
   generator.set_current_screen_location(
-      widget.GetClientAreaBoundsInScreen().CenterPoint());
+      widget->GetClientAreaBoundsInScreen().CenterPoint());
   generator.PressLeftButton();
 
   EXPECT_FALSE(mouse_view1->pressed());
@@ -1799,37 +1823,33 @@ TEST_F(WidgetCaptureTest, MAYBE_SystemModalWindowReleasesCapture) {
   WidgetFocusManager::GetInstance()->AddFocusChangeListener(&focus_listener);
 
   // Create a top level widget.
-  Widget top_level_widget;
+  UniqueWidgetPtr top_level_widget = std::make_unique<Widget>();
   Widget::InitParams init_params =
       CreateParams(Widget::InitParams::TYPE_WINDOW);
   init_params.show_state = ui::SHOW_STATE_NORMAL;
   gfx::Rect initial_bounds(0, 0, 500, 500);
   init_params.bounds = initial_bounds;
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  top_level_widget.Init(std::move(init_params));
-  ShowSync(&top_level_widget);
+  top_level_widget->Init(std::move(init_params));
+  ShowSync(top_level_widget.get());
 
   ASSERT_FALSE(focus_listener.focus_changes().empty());
-  EXPECT_EQ(top_level_widget.GetNativeView(),
+  EXPECT_EQ(top_level_widget->GetNativeView(),
             focus_listener.focus_changes().back());
 
-  EXPECT_FALSE(top_level_widget.HasCapture());
-  top_level_widget.SetCapture(nullptr);
-  EXPECT_TRUE(top_level_widget.HasCapture());
+  EXPECT_FALSE(top_level_widget->HasCapture());
+  top_level_widget->SetCapture(nullptr);
+  EXPECT_TRUE(top_level_widget->HasCapture());
 
   // Create a modal dialog.
   auto dialog_delegate = std::make_unique<DialogDelegateView>();
   dialog_delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
 
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
-      dialog_delegate.release(), nullptr, top_level_widget.GetNativeView());
+      dialog_delegate.release(), nullptr, top_level_widget->GetNativeView());
   modal_dialog_widget->SetBounds(gfx::Rect(100, 100, 200, 200));
   ShowSync(modal_dialog_widget);
 
-  EXPECT_FALSE(top_level_widget.HasCapture());
-
-  modal_dialog_widget->CloseNow();
-  top_level_widget.CloseNow();
+  EXPECT_FALSE(top_level_widget->HasCapture());
   WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(&focus_listener);
 }
 
@@ -1846,32 +1866,30 @@ TEST_F(WidgetCaptureTest, MAYBE_SystemModalWindowReleasesCapture) {
 // mouse events when a different widget grabs capture. Except for Windows,
 // which does not send a synthetic mouse exit.
 TEST_F(WidgetCaptureTest, MAYBE_MouseExitOnCaptureGrab) {
-  Widget widget1;
+  UniqueWidgetPtr widget1 = std::make_unique<Widget>();
   Widget::InitParams params1 =
       CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params1.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  widget1.Init(std::move(params1));
+  widget1->Init(std::move(params1));
   MouseView* mouse_view1 =
-      widget1.SetContentsView(std::make_unique<MouseView>());
-  widget1.Show();
-  widget1.SetBounds(gfx::Rect(300, 300));
+      widget1->SetContentsView(std::make_unique<MouseView>());
+  widget1->Show();
+  widget1->SetBounds(gfx::Rect(300, 300));
 
-  Widget widget2;
+  UniqueWidgetPtr widget2 = std::make_unique<Widget>();
   Widget::InitParams params2 =
       CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params2.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  widget2.Init(std::move(params2));
-  widget2.Show();
-  widget2.SetBounds(gfx::Rect(400, 0, 300, 300));
+  widget2->Init(std::move(params2));
+  widget2->Show();
+  widget2->SetBounds(gfx::Rect(400, 0, 300, 300));
 
-  ui::test::EventGenerator generator(GetRootWindow(&widget1));
+  ui::test::EventGenerator generator(GetRootWindow(widget1.get()));
   generator.set_current_screen_location(gfx::Point(100, 100));
   generator.MoveMouseBy(0, 0);
 
   EXPECT_EQ(1, mouse_view1->EnteredCalls());
   EXPECT_EQ(0, mouse_view1->ExitedCalls());
 
-  widget2.SetCapture(nullptr);
+  widget2->SetCapture(nullptr);
   EXPECT_EQ(0, mouse_view1->EnteredCalls());
   // On Windows, Chrome doesn't synthesize a separate mouse exited event.
   // Instead, it uses ::TrackMouseEvent to get notified of the mouse leaving.
@@ -1916,18 +1934,17 @@ class CaptureOnActivationObserver : public WidgetObserver {
 // Test that setting capture on widget activation of a non-toplevel widget
 // (e.g. a bubble on Linux) succeeds.
 TEST_F(WidgetCaptureTest, SetCaptureToNonToplevel) {
-  Widget toplevel;
+  UniqueWidgetPtr toplevel = std::make_unique<Widget>();
   Widget::InitParams toplevel_params =
       CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  toplevel_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  toplevel.Init(std::move(toplevel_params));
-  toplevel.Show();
+  toplevel->Init(std::move(toplevel_params));
+  toplevel->Show();
 
-  Widget* child = new Widget;
+  UniqueWidgetPtr child = std::make_unique<Widget>();
   Widget::InitParams child_params =
       CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  child_params.parent = toplevel.GetNativeView();
-  child_params.context = toplevel.GetNativeWindow();
+  child_params.parent = toplevel->GetNativeView();
+  child_params.context = toplevel->GetNativeWindow();
   child->Init(std::move(child_params));
 
   CaptureOnActivationObserver observer;
@@ -1983,39 +2000,37 @@ class MouseEventTrackingWidget : public Widget {
 // on Windows that it is correctly processed by the widget that doesn't have
 // capture. This behavior is not desired on OSes other than Windows.
 TEST_F(WidgetCaptureTest, MouseEventDispatchedToRightWindow) {
-  MouseEventTrackingWidget widget1;
+  UniqueWidgetPtrT widget1 = std::make_unique<MouseEventTrackingWidget>();
   Widget::InitParams params1 =
       CreateParams(views::Widget::InitParams::TYPE_WINDOW);
-  params1.native_widget = new DesktopNativeWidgetAura(&widget1);
-  params1.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  widget1.Init(std::move(params1));
-  widget1.Show();
+  params1.native_widget = new DesktopNativeWidgetAura(widget1.get());
+  widget1->Init(std::move(params1));
+  widget1->Show();
 
-  MouseEventTrackingWidget widget2;
+  UniqueWidgetPtrT widget2 = std::make_unique<MouseEventTrackingWidget>();
   Widget::InitParams params2 =
       CreateParams(views::Widget::InitParams::TYPE_WINDOW);
-  params2.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params2.native_widget = new DesktopNativeWidgetAura(&widget2);
-  widget2.Init(std::move(params2));
-  widget2.Show();
+  params2.native_widget = new DesktopNativeWidgetAura(widget2.get());
+  widget2->Init(std::move(params2));
+  widget2->Show();
 
   // Set capture to widget2 and verity it gets it.
-  widget2.SetCapture(widget2.GetRootView());
-  EXPECT_FALSE(widget1.HasCapture());
-  EXPECT_TRUE(widget2.HasCapture());
+  widget2->SetCapture(widget2->GetRootView());
+  EXPECT_FALSE(widget1->HasCapture());
+  EXPECT_TRUE(widget2->HasCapture());
 
-  widget1.GetAndClearGotMouseEvent();
-  widget2.GetAndClearGotMouseEvent();
+  widget1->GetAndClearGotMouseEvent();
+  widget2->GetAndClearGotMouseEvent();
   // Send a mouse event to the RootWindow associated with |widget1|. Even though
   // |widget2| has capture, |widget1| should still get the event.
   ui::MouseEvent mouse_event(ui::ET_MOUSE_EXITED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
   ui::EventDispatchDetails details =
-      widget1.GetNativeWindow()->GetHost()->GetEventSink()->OnEventFromSource(
+      widget1->GetNativeWindow()->GetHost()->GetEventSink()->OnEventFromSource(
           &mouse_event);
   ASSERT_FALSE(details.dispatcher_destroyed);
-  EXPECT_TRUE(widget1.GetAndClearGotMouseEvent());
-  EXPECT_FALSE(widget2.GetAndClearGotMouseEvent());
+  EXPECT_TRUE(widget1->GetAndClearGotMouseEvent());
+  EXPECT_FALSE(widget2->GetAndClearGotMouseEvent());
 }
 #endif  // BUILDFLAG(IS_WIN)
 
