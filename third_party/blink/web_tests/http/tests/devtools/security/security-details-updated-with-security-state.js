@@ -40,13 +40,84 @@
   request3.setSecurityDetails(securityDetails);
   SecurityTestRunner.dispatchRequestFinished(request3);
 
+  // Add a request with both keyExchange and keyExchangeGroup (TLS 1.2 ECDHE), and with empty MAC (an AEAD cipher).
+  const request4 = SDK.NetworkRequest.create(0, 'https://ecdhe.foo.test/foo2.jpg', 'https://ecdhe.foo.test', 0, 0, null);
+  request4.setSecurityState(Protocol.Security.SecurityState.Secure);
+  securityDetails = {};
+  securityDetails.protocol = 'TLS 1.2';
+  securityDetails.keyExchange = 'ECDSA_RSA';
+  securityDetails.keyExchangeGroup = 'X25519';
+  securityDetails.cipher = 'AES-128-GCM';
+  securityDetails.mac = '';
+  securityDetails.serverSignatureAlgorithm = 0x0804;  // rsa_pss_rsae_sha256
+  securityDetails.subjectName = 'ecdhe.foo.test';
+  securityDetails.sanList = ['ecdhe.foo.test'];
+  securityDetails.issuer = 'Super CA';
+  securityDetails.validFrom = 1490000000;
+  securityDetails.validTo = 2000000000;
+  securityDetails.CertificateId = 0;
+  securityDetails.signedCertificateTimestampList = [];
+  securityDetails.certificateTransparencyCompliance = Protocol.Network.CertificateTransparencyCompliance.Unknown;
+  request4.setSecurityDetails(securityDetails);
+  SecurityTestRunner.dispatchRequestFinished(request4);
+
+  // Add a request with only keyExchangeGroup (TLS 1.3).
+  const request5 = SDK.NetworkRequest.create(0, 'https://tls13.foo.test/foo2.jpg', 'https://tls13.foo.test', 0, 0, null);
+  request5.setSecurityState(Protocol.Security.SecurityState.Secure);
+  securityDetails = {};
+  securityDetails.protocol = 'TLS 1.3';
+  securityDetails.keyExchange = '';
+  securityDetails.keyExchangeGroup = 'X25519';
+  securityDetails.cipher = 'AES-128-GCM';
+  securityDetails.mac = '';
+  securityDetails.serverSignatureAlgorithm = 0x0804;  // rsa_pss_rsae_sha256
+  securityDetails.subjectName = 'tls13.foo.test';
+  securityDetails.sanList = ['tls13.foo.test'];
+  securityDetails.issuer = 'Super CA';
+  securityDetails.validFrom = 1490000000;
+  securityDetails.validTo = 2000000000;
+  securityDetails.CertificateId = 0;
+  securityDetails.signedCertificateTimestampList = [];
+  securityDetails.certificateTransparencyCompliance = Protocol.Network.CertificateTransparencyCompliance.Unknown;
+  request5.setSecurityDetails(securityDetails);
+  SecurityTestRunner.dispatchRequestFinished(request5);
+
+  // Add a request with ECH.
+  const request6 = SDK.NetworkRequest.create(0, 'https://ech.foo.test/foo2.jpg', 'https://ech.foo.test', 0, 0, null);
+  request6.setSecurityState(Protocol.Security.SecurityState.Secure);
+  securityDetails = {};
+  securityDetails.protocol = 'TLS 1.3';
+  securityDetails.keyExchange = '';
+  securityDetails.keyExchangeGroup = 'X25519';
+  securityDetails.cipher = 'AES-128-GCM';
+  securityDetails.mac = '';
+  securityDetails.serverSignatureAlgorithm = 0x0804;  // rsa_pss_rsae_sha256
+  securityDetails.encryptedClientHello = true;
+  securityDetails.subjectName = 'ech.foo.test';
+  securityDetails.sanList = ['ech.foo.test'];
+  securityDetails.issuer = 'Super CA';
+  securityDetails.validFrom = 1490000000;
+  securityDetails.validTo = 2000000000;
+  securityDetails.CertificateId = 0;
+  securityDetails.signedCertificateTimestampList = [];
+  securityDetails.certificateTransparencyCompliance = Protocol.Network.CertificateTransparencyCompliance.Unknown;
+  request6.setSecurityDetails(securityDetails);
+  SecurityTestRunner.dispatchRequestFinished(request6);
+
   TestRunner.addResult('Sidebar Origins --------------------------------');
   SecurityTestRunner.dumpSecurityPanelSidebarOrigins();
 
-  Security.SecurityPanel.instance().sidebarTree.elementsByOrigin.get('https://foo.test').select();
-
-  TestRunner.addResult('Origin view ------------------------------------');
-  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance().visibleView.contentElement);
+  const origins = [
+      "https://foo.test",
+      "https://ecdhe.foo.test",
+      "https://tls13.foo.test",
+      "https://ech.foo.test",
+  ];
+  for (const origin of origins) {
+    Security.SecurityPanel.instance().sidebarTree.elementsByOrigin.get(origin).select();
+    TestRunner.addResult('Origin view (' + origin + ') ' + '-'.repeat(33 - origin.length));
+    TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance().visibleView.contentElement);
+  }
 
   TestRunner.completeTest();
 })();

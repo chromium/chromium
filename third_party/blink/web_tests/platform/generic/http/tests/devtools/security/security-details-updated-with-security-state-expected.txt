@@ -23,6 +23,66 @@ https
 <SPAN >
 foo.test
 </SPAN>
+<SPAN >
+    <SPAN class=url-scheme-secure >
+https
+    </SPAN>
+    <SPAN class=url-scheme-separator >
+://
+    </SPAN>
+    <SPAN >
+ecdhe.foo.test
+    </SPAN>
+</SPAN>
+<SPAN class=url-scheme-secure >
+https
+</SPAN>
+<SPAN class=url-scheme-separator >
+://
+</SPAN>
+<SPAN >
+ecdhe.foo.test
+</SPAN>
+<SPAN >
+    <SPAN class=url-scheme-secure >
+https
+    </SPAN>
+    <SPAN class=url-scheme-separator >
+://
+    </SPAN>
+    <SPAN >
+tls13.foo.test
+    </SPAN>
+</SPAN>
+<SPAN class=url-scheme-secure >
+https
+</SPAN>
+<SPAN class=url-scheme-separator >
+://
+</SPAN>
+<SPAN >
+tls13.foo.test
+</SPAN>
+<SPAN >
+    <SPAN class=url-scheme-secure >
+https
+    </SPAN>
+    <SPAN class=url-scheme-separator >
+://
+    </SPAN>
+    <SPAN >
+ech.foo.test
+    </SPAN>
+</SPAN>
+<SPAN class=url-scheme-secure >
+https
+</SPAN>
+<SPAN class=url-scheme-separator >
+://
+</SPAN>
+<SPAN >
+ech.foo.test
+</SPAN>
 Group: Unknown / canceled
 <SPAN >
     <SPAN class=url-scheme-unknown >
@@ -44,7 +104,7 @@ https
 <SPAN >
 bar.test
 </SPAN>
-Origin view ------------------------------------
+Origin view (https://foo.test) -----------------
 <DIV class=widget vbox security-origin-view slot=insertion-point-main >
     <DIV class=title-section >
         <DIV class=title-section-header role=heading aria-level=1 >
@@ -76,30 +136,30 @@ View requests in Network Panel
 Connection
         </DIV>
         <TABLE class=details-table >
-            <DIV class=details-table-row >
-                <DIV >
+            <TR class=details-table-row >
+                <TD >
 Protocol
-                </DIV>
-                <DIV >
+                </TD>
+                <TD >
 TLS 1.2
-                </DIV>
-            </DIV>
-            <DIV class=details-table-row >
-                <DIV >
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
 Key exchange
-                </DIV>
-                <DIV >
+                </TD>
+                <TD >
 Key_Exchange
-                </DIV>
-            </DIV>
-            <DIV class=details-table-row >
-                <DIV >
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
 Cipher
-                </DIV>
-                <DIV >
+                </TD>
+                <TD >
 Cypher with Mac
-                </DIV>
-            </DIV>
+                </TD>
+            </TR>
         </TABLE>
     </DIV>
     <DIV class=origin-view-section >
@@ -107,19 +167,19 @@ Cypher with Mac
 Certificate
         </DIV>
         <TABLE class=details-table >
-            <DIV class=details-table-row >
-                <DIV >
+            <TR class=details-table-row >
+                <TD >
 Subject
-                </DIV>
-                <DIV >
+                </TD>
+                <TD >
 foo.test
-                </DIV>
-            </DIV>
-            <DIV class=details-table-row >
-                <DIV >
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
 SAN
-                </DIV>
-                <DIV >
+                </TD>
+                <TD >
                     <DIV >
                         <SPAN class=san-entry >
 foo.test
@@ -128,41 +188,430 @@ foo.test
 *.test
                         </SPAN>
                     </DIV>
-                </DIV>
-            </DIV>
-            <DIV class=details-table-row >
-                <DIV >
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
 Valid from
-                </DIV>
-                <DIV >
+                </TD>
+                <TD >
 Mon, 20 Mar 2017 08:53:20 GMT
-                </DIV>
-            </DIV>
-            <DIV class=details-table-row >
-                <DIV >
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
 Valid until
-                </DIV>
-                <DIV >
+                </TD>
+                <TD >
 Wed, 18 May 2033 03:33:20 GMT
-                </DIV>
-            </DIV>
-            <DIV class=details-table-row >
-                <DIV >
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
 Issuer
-                </DIV>
-                <DIV >
+                </TD>
+                <TD >
 Super CA
-                </DIV>
-            </DIV>
-            <DIV class=details-table-row >
-                <DIV >
-                </DIV>
-                <DIV >
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+                </TD>
+                <TD >
                     <BUTTON class=origin-button text-button type=button role=button >
 Open full certificate details
                     </BUTTON>
-                </DIV>
-            </DIV>
+                </TD>
+            </TR>
+        </TABLE>
+    </DIV>
+</DIV>
+Origin view (https://ecdhe.foo.test) -----------
+<DIV class=widget vbox security-origin-view slot=insertion-point-main >
+    <DIV class=title-section >
+        <DIV class=title-section-header role=heading aria-level=1 >
+Origin
+        </DIV>
+        <DIV class=origin-display >
+            <SPAN class=security-property security-property-secure >
+            </SPAN>
+            <SPAN >
+                <SPAN class=url-scheme-secure >
+https
+                </SPAN>
+                <SPAN class=url-scheme-separator >
+://
+                </SPAN>
+                <SPAN >
+ecdhe.foo.test
+                </SPAN>
+            </SPAN>
+        </DIV>
+        <DIV class=view-network-button >
+            <BUTTON class=text-button type=button role=link >
+View requests in Network Panel
+            </BUTTON>
+        </DIV>
+    </DIV>
+    <DIV class=origin-view-section >
+        <DIV class=origin-view-section-title role=heading aria-level=2 >
+Connection
+        </DIV>
+        <TABLE class=details-table >
+            <TR class=details-table-row >
+                <TD >
+Protocol
+                </TD>
+                <TD >
+TLS 1.2
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Key exchange
+                </TD>
+                <TD >
+ECDSA_RSA with X25519
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Server signature
+                </TD>
+                <TD >
+RSA-PSS with SHA-256
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Cipher
+                </TD>
+                <TD >
+AES-128-GCM
+                </TD>
+            </TR>
+        </TABLE>
+    </DIV>
+    <DIV class=origin-view-section >
+        <DIV class=origin-view-section-title role=heading aria-level=2 >
+Certificate
+        </DIV>
+        <TABLE class=details-table >
+            <TR class=details-table-row >
+                <TD >
+Subject
+                </TD>
+                <TD >
+ecdhe.foo.test
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+SAN
+                </TD>
+                <TD >
+                    <DIV >
+                        <SPAN class=san-entry >
+ecdhe.foo.test
+                        </SPAN>
+                    </DIV>
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Valid from
+                </TD>
+                <TD >
+Mon, 20 Mar 2017 08:53:20 GMT
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Valid until
+                </TD>
+                <TD >
+Wed, 18 May 2033 03:33:20 GMT
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Issuer
+                </TD>
+                <TD >
+Super CA
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+                </TD>
+                <TD >
+                    <BUTTON class=origin-button text-button type=button role=button >
+Open full certificate details
+                    </BUTTON>
+                </TD>
+            </TR>
+        </TABLE>
+    </DIV>
+</DIV>
+Origin view (https://tls13.foo.test) -----------
+<DIV class=widget vbox security-origin-view slot=insertion-point-main >
+    <DIV class=title-section >
+        <DIV class=title-section-header role=heading aria-level=1 >
+Origin
+        </DIV>
+        <DIV class=origin-display >
+            <SPAN class=security-property security-property-secure >
+            </SPAN>
+            <SPAN >
+                <SPAN class=url-scheme-secure >
+https
+                </SPAN>
+                <SPAN class=url-scheme-separator >
+://
+                </SPAN>
+                <SPAN >
+tls13.foo.test
+                </SPAN>
+            </SPAN>
+        </DIV>
+        <DIV class=view-network-button >
+            <BUTTON class=text-button type=button role=link >
+View requests in Network Panel
+            </BUTTON>
+        </DIV>
+    </DIV>
+    <DIV class=origin-view-section >
+        <DIV class=origin-view-section-title role=heading aria-level=2 >
+Connection
+        </DIV>
+        <TABLE class=details-table >
+            <TR class=details-table-row >
+                <TD >
+Protocol
+                </TD>
+                <TD >
+TLS 1.3
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Key exchange
+                </TD>
+                <TD >
+X25519
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Server signature
+                </TD>
+                <TD >
+RSA-PSS with SHA-256
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Cipher
+                </TD>
+                <TD >
+AES-128-GCM
+                </TD>
+            </TR>
+        </TABLE>
+    </DIV>
+    <DIV class=origin-view-section >
+        <DIV class=origin-view-section-title role=heading aria-level=2 >
+Certificate
+        </DIV>
+        <TABLE class=details-table >
+            <TR class=details-table-row >
+                <TD >
+Subject
+                </TD>
+                <TD >
+tls13.foo.test
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+SAN
+                </TD>
+                <TD >
+                    <DIV >
+                        <SPAN class=san-entry >
+tls13.foo.test
+                        </SPAN>
+                    </DIV>
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Valid from
+                </TD>
+                <TD >
+Mon, 20 Mar 2017 08:53:20 GMT
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Valid until
+                </TD>
+                <TD >
+Wed, 18 May 2033 03:33:20 GMT
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Issuer
+                </TD>
+                <TD >
+Super CA
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+                </TD>
+                <TD >
+                    <BUTTON class=origin-button text-button type=button role=button >
+Open full certificate details
+                    </BUTTON>
+                </TD>
+            </TR>
+        </TABLE>
+    </DIV>
+</DIV>
+Origin view (https://ech.foo.test) -------------
+<DIV class=widget vbox security-origin-view slot=insertion-point-main >
+    <DIV class=title-section >
+        <DIV class=title-section-header role=heading aria-level=1 >
+Origin
+        </DIV>
+        <DIV class=origin-display >
+            <SPAN class=security-property security-property-secure >
+            </SPAN>
+            <SPAN >
+                <SPAN class=url-scheme-secure >
+https
+                </SPAN>
+                <SPAN class=url-scheme-separator >
+://
+                </SPAN>
+                <SPAN >
+ech.foo.test
+                </SPAN>
+            </SPAN>
+        </DIV>
+        <DIV class=view-network-button >
+            <BUTTON class=text-button type=button role=link >
+View requests in Network Panel
+            </BUTTON>
+        </DIV>
+    </DIV>
+    <DIV class=origin-view-section >
+        <DIV class=origin-view-section-title role=heading aria-level=2 >
+Connection
+        </DIV>
+        <TABLE class=details-table >
+            <TR class=details-table-row >
+                <TD >
+Protocol
+                </TD>
+                <TD >
+TLS 1.3
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Key exchange
+                </TD>
+                <TD >
+X25519
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Server signature
+                </TD>
+                <TD >
+RSA-PSS with SHA-256
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Cipher
+                </TD>
+                <TD >
+AES-128-GCM
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Encrypted ClientHello
+                </TD>
+                <TD >
+enabled
+                </TD>
+            </TR>
+        </TABLE>
+    </DIV>
+    <DIV class=origin-view-section >
+        <DIV class=origin-view-section-title role=heading aria-level=2 >
+Certificate
+        </DIV>
+        <TABLE class=details-table >
+            <TR class=details-table-row >
+                <TD >
+Subject
+                </TD>
+                <TD >
+ech.foo.test
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+SAN
+                </TD>
+                <TD >
+                    <DIV >
+                        <SPAN class=san-entry >
+ech.foo.test
+                        </SPAN>
+                    </DIV>
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Valid from
+                </TD>
+                <TD >
+Mon, 20 Mar 2017 08:53:20 GMT
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Valid until
+                </TD>
+                <TD >
+Wed, 18 May 2033 03:33:20 GMT
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+Issuer
+                </TD>
+                <TD >
+Super CA
+                </TD>
+            </TR>
+            <TR class=details-table-row >
+                <TD >
+                </TD>
+                <TD >
+                    <BUTTON class=origin-button text-button type=button role=button >
+Open full certificate details
+                    </BUTTON>
+                </TD>
+            </TR>
         </TABLE>
     </DIV>
 </DIV>
