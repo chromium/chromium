@@ -94,7 +94,8 @@ TEST_F(LaunchUtilsTest, UseIntentFullUrlInLaunchParams) {
   auto disposition = WindowOpenDisposition::NEW_WINDOW;
 
   const GURL url = GURL("https://example.com/?query=1#frag");
-  auto intent = apps_util::CreateIntentFromUrl(url);
+  auto intent =
+      std::make_unique<apps::Intent>(apps_util::kIntentActionView, url);
 
   auto params = apps::CreateAppLaunchParamsForIntent(
       app_id, apps::GetEventFlags(disposition, true),
@@ -108,14 +109,14 @@ TEST_F(LaunchUtilsTest, UseIntentFullUrlInLaunchParams) {
 TEST_F(LaunchUtilsTest, IntentFilesAreCopiedToLaunchParams) {
   auto disposition = WindowOpenDisposition::NEW_WINDOW;
 
-  std::vector<apps::mojom::IntentFilePtr> files;
-  auto file = apps::mojom::IntentFile::New();
+  std::vector<apps::IntentFilePtr> files;
   std::string file_path = "filesystem:http://foo.com/test/foo.txt";
-  file->url = GURL(file_path);
+  auto file = std::make_unique<apps::IntentFile>(GURL(file_path));
   EXPECT_TRUE(file->url.is_valid());
   file->mime_type = "text/plain";
   files.push_back(std::move(file));
-  auto intent = apps_util::CreateViewIntentFromFiles(std::move(files));
+  auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView,
+                                               std::move(files));
 
   auto params = apps::CreateAppLaunchParamsForIntent(
       app_id, apps::GetEventFlags(disposition, true),

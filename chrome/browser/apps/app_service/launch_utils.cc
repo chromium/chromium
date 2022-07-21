@@ -24,7 +24,6 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/browser/extension_registry.h"
@@ -188,20 +187,20 @@ Browser* CreateBrowserWithNewTabPage(Profile* profile) {
 AppLaunchParams CreateAppIdLaunchParamsWithEventFlags(
     const std::string& app_id,
     int event_flags,
-    apps::LaunchSource launch_source,
+    LaunchSource launch_source,
     int64_t display_id,
-    apps::LaunchContainer fallback_container) {
+    LaunchContainer fallback_container) {
   WindowOpenDisposition raw_disposition =
       ui::DispositionFromEventFlags(event_flags);
 
-  apps::LaunchContainer container;
+  LaunchContainer container;
   WindowOpenDisposition disposition;
   if (raw_disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
       raw_disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
-    container = apps::LaunchContainer::kLaunchContainerTab;
+    container = LaunchContainer::kLaunchContainerTab;
     disposition = raw_disposition;
   } else if (raw_disposition == WindowOpenDisposition::NEW_WINDOW) {
-    container = apps::LaunchContainer::kLaunchContainerWindow;
+    container = LaunchContainer::kLaunchContainerWindow;
     disposition = raw_disposition;
   } else {
     // Look at preference to find the right launch container.  If no preference
@@ -213,13 +212,13 @@ AppLaunchParams CreateAppIdLaunchParamsWithEventFlags(
                          display_id);
 }
 
-apps::AppLaunchParams CreateAppLaunchParamsForIntent(
+AppLaunchParams CreateAppLaunchParamsForIntent(
     const std::string& app_id,
     int32_t event_flags,
-    apps::LaunchSource launch_source,
+    LaunchSource launch_source,
     int64_t display_id,
-    apps::LaunchContainer fallback_container,
-    apps::mojom::IntentPtr&& intent,
+    LaunchContainer fallback_container,
+    IntentPtr&& intent,
     Profile* profile) {
   auto params = CreateAppIdLaunchParamsWithEventFlags(
       app_id, event_flags, launch_source, display_id, fallback_container);
@@ -231,9 +230,9 @@ apps::AppLaunchParams CreateAppLaunchParamsForIntent(
   // On Lacros, the caller of this function attaches the intent files to the
   // AppLaunchParams.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (intent->files.has_value()) {
+  if (!intent->files.empty()) {
     std::vector<GURL> file_urls;
-    for (const auto& intent_file : *intent->files) {
+    for (const auto& intent_file : intent->files) {
       if (intent_file->url.SchemeIsFile()) {
         DCHECK(file_urls.empty());
         break;
@@ -250,62 +249,61 @@ apps::AppLaunchParams CreateAppLaunchParamsForIntent(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  params.intent = ConvertMojomIntentToIntent(intent);
+  params.intent = std::move(intent);
 
   return params;
 }
 
-extensions::AppLaunchSource GetAppLaunchSource(
-    apps::LaunchSource launch_source) {
+extensions::AppLaunchSource GetAppLaunchSource(LaunchSource launch_source) {
   switch (launch_source) {
-    case apps::LaunchSource::kUnknown:
-    case apps::LaunchSource::kFromAppListGrid:
-    case apps::LaunchSource::kFromAppListGridContextMenu:
-    case apps::LaunchSource::kFromAppListQuery:
-    case apps::LaunchSource::kFromAppListQueryContextMenu:
-    case apps::LaunchSource::kFromAppListRecommendation:
-    case apps::LaunchSource::kFromParentalControls:
-    case apps::LaunchSource::kFromShelf:
-    case apps::LaunchSource::kFromLink:
-    case apps::LaunchSource::kFromOmnibox:
-    case apps::LaunchSource::kFromOtherApp:
-    case apps::LaunchSource::kFromSharesheet:
+    case LaunchSource::kUnknown:
+    case LaunchSource::kFromAppListGrid:
+    case LaunchSource::kFromAppListGridContextMenu:
+    case LaunchSource::kFromAppListQuery:
+    case LaunchSource::kFromAppListQueryContextMenu:
+    case LaunchSource::kFromAppListRecommendation:
+    case LaunchSource::kFromParentalControls:
+    case LaunchSource::kFromShelf:
+    case LaunchSource::kFromLink:
+    case LaunchSource::kFromOmnibox:
+    case LaunchSource::kFromOtherApp:
+    case LaunchSource::kFromSharesheet:
       return extensions::AppLaunchSource::kSourceAppLauncher;
-    case apps::LaunchSource::kFromMenu:
+    case LaunchSource::kFromMenu:
       return extensions::AppLaunchSource::kSourceContextMenu;
-    case apps::LaunchSource::kFromKeyboard:
+    case LaunchSource::kFromKeyboard:
       return extensions::AppLaunchSource::kSourceKeyboard;
-    case apps::LaunchSource::kFromFileManager:
+    case LaunchSource::kFromFileManager:
       return extensions::AppLaunchSource::kSourceFileHandler;
-    case apps::LaunchSource::kFromChromeInternal:
-    case apps::LaunchSource::kFromReleaseNotesNotification:
-    case apps::LaunchSource::kFromFullRestore:
-    case apps::LaunchSource::kFromSmartTextContextMenu:
-    case apps::LaunchSource::kFromDiscoverTabNotification:
+    case LaunchSource::kFromChromeInternal:
+    case LaunchSource::kFromReleaseNotesNotification:
+    case LaunchSource::kFromFullRestore:
+    case LaunchSource::kFromSmartTextContextMenu:
+    case LaunchSource::kFromDiscoverTabNotification:
       return extensions::AppLaunchSource::kSourceChromeInternal;
-    case apps::LaunchSource::kFromInstalledNotification:
+    case LaunchSource::kFromInstalledNotification:
       return extensions::AppLaunchSource::kSourceInstalledNotification;
-    case apps::LaunchSource::kFromTest:
+    case LaunchSource::kFromTest:
       return extensions::AppLaunchSource::kSourceTest;
-    case apps::LaunchSource::kFromArc:
+    case LaunchSource::kFromArc:
       return extensions::AppLaunchSource::kSourceArc;
-    case apps::LaunchSource::kFromManagementApi:
+    case LaunchSource::kFromManagementApi:
       return extensions::AppLaunchSource::kSourceManagementApi;
-    case apps::LaunchSource::kFromKiosk:
+    case LaunchSource::kFromKiosk:
       return extensions::AppLaunchSource::kSourceKiosk;
-    case apps::LaunchSource::kFromCommandLine:
+    case LaunchSource::kFromCommandLine:
       return extensions::AppLaunchSource::kSourceCommandLine;
-    case apps::LaunchSource::kFromBackgroundMode:
+    case LaunchSource::kFromBackgroundMode:
       return extensions::AppLaunchSource::kSourceBackground;
-    case apps::LaunchSource::kFromNewTabPage:
+    case LaunchSource::kFromNewTabPage:
       return extensions::AppLaunchSource::kSourceNewTabPage;
-    case apps::LaunchSource::kFromIntentUrl:
+    case LaunchSource::kFromIntentUrl:
       return extensions::AppLaunchSource::kSourceIntentUrl;
-    case apps::LaunchSource::kFromOsLogin:
+    case LaunchSource::kFromOsLogin:
       return extensions::AppLaunchSource::kSourceRunOnOsLogin;
-    case apps::LaunchSource::kFromProtocolHandler:
+    case LaunchSource::kFromProtocolHandler:
       return extensions::AppLaunchSource::kSourceProtocolHandler;
-    case apps::LaunchSource::kFromUrlHandler:
+    case LaunchSource::kFromUrlHandler:
       return extensions::AppLaunchSource::kSourceUrlHandler;
   }
 }
@@ -385,7 +383,7 @@ arc::mojom::WindowInfoPtr MakeArcWindowInfo(
 
 #if BUILDFLAG(IS_CHROMEOS)
 crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
-    const apps::AppLaunchParams& params,
+    const AppLaunchParams& params,
     Profile* profile) {
   auto crosapi_params = crosapi::mojom::LaunchParams::New();
 
@@ -431,10 +429,10 @@ crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
   return crosapi_params;
 }
 
-apps::AppLaunchParams ConvertCrosapiToLaunchParams(
+AppLaunchParams ConvertCrosapiToLaunchParams(
     const crosapi::mojom::LaunchParamsPtr& crosapi_params,
     Profile* profile) {
-  apps::AppLaunchParams params(
+  AppLaunchParams params(
       crosapi_params->app_id,
       ConvertCrosapiToAppServiceLaunchContainer(crosapi_params->container),
       ConvertWindowOpenDispositionFromCrosapi(crosapi_params->disposition),
@@ -459,16 +457,16 @@ apps::AppLaunchParams ConvertCrosapiToLaunchParams(
 }
 
 crosapi::mojom::LaunchParamsPtr CreateCrosapiLaunchParamsWithEventFlags(
-    apps::AppServiceProxy* proxy,
+    AppServiceProxy* proxy,
     const std::string& app_id,
     int event_flags,
-    apps::LaunchSource launch_source,
+    LaunchSource launch_source,
     int64_t display_id) {
   WindowMode window_mode = WindowMode::kUnknown;
-  proxy->AppRegistryCache().ForOneApp(
-      app_id, [&window_mode](const apps::AppUpdate& update) {
-        window_mode = update.WindowMode();
-      });
+  proxy->AppRegistryCache().ForOneApp(app_id,
+                                      [&window_mode](const AppUpdate& update) {
+                                        window_mode = update.WindowMode();
+                                      });
   auto launch_params = apps::CreateAppIdLaunchParamsWithEventFlags(
       app_id, event_flags, launch_source, display_id,
       /*fallback_container=*/

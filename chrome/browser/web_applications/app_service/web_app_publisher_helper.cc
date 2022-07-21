@@ -1552,7 +1552,7 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
       apps::ConvertMojomLaunchSourceToLaunchSource(launch_source), display_id,
       ConvertDisplayModeToAppLaunchContainer(
           registrar().GetAppEffectiveDisplayMode(app_id)),
-      std::move(intent), profile_);
+      apps::ConvertMojomIntentToIntent(intent), profile_);
   if (is_file_handling_launch) {
     LaunchAppWithFilesCheckingUserPermission(app_id, std::move(params),
                                              std::move(callback));

@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 #include "ui/base/window_open_disposition.h"
@@ -55,21 +56,20 @@ Browser* CreateBrowserWithNewTabPage(Profile* profile);
 AppLaunchParams CreateAppIdLaunchParamsWithEventFlags(
     const std::string& app_id,
     int event_flags,
-    apps::LaunchSource source,
+    LaunchSource source,
     int64_t display_id,
-    apps::LaunchContainer fallback_container);
+    LaunchContainer fallback_container);
 
-apps::AppLaunchParams CreateAppLaunchParamsForIntent(
+AppLaunchParams CreateAppLaunchParamsForIntent(
     const std::string& app_id,
     int32_t event_flags,
-    apps::LaunchSource source,
+    LaunchSource source,
     int64_t display_id,
-    apps::LaunchContainer fallback_container,
-    apps::mojom::IntentPtr&& intent,
+    LaunchContainer fallback_container,
+    IntentPtr&& intent,
     Profile* profile);
 
-extensions::AppLaunchSource GetAppLaunchSource(
-    apps::LaunchSource launch_source);
+extensions::AppLaunchSource GetAppLaunchSource(LaunchSource launch_source);
 
 // Returns event flag for |disposition|. If |prefer_container|
 // is true, |disposition| will be ignored. Otherwise, an event flag based on
@@ -101,21 +101,21 @@ arc::mojom::WindowInfoPtr MakeArcWindowInfo(
 // This is needed because we cannot use traits to convert Intent at the moment,
 // After that is done, this can be moved to the mojom type traits.
 crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
-    const apps::AppLaunchParams& params,
+    const AppLaunchParams& params,
     Profile* profile);
 
 // Helper to convert crosapi::mojom::LaunchParams to apps::AppLaunchParams.
 // This is needed because we cannot use traits to convert Intent at the moment,
 // After that is done, this can be moved to the mojom type traits.
-apps::AppLaunchParams ConvertCrosapiToLaunchParams(
+AppLaunchParams ConvertCrosapiToLaunchParams(
     const crosapi::mojom::LaunchParamsPtr& crosapi_params,
     Profile* profile);
 
 crosapi::mojom::LaunchParamsPtr CreateCrosapiLaunchParamsWithEventFlags(
-    apps::AppServiceProxy* proxy,
+    AppServiceProxy* proxy,
     const std::string& app_id,
     int event_flags,
-    apps::LaunchSource launch_source,
+    LaunchSource launch_source,
     int64_t display_id);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
