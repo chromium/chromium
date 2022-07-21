@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/strings/grit/components_strings.h"
@@ -50,7 +49,7 @@ U2FNotification::U2FNotification() {}
 U2FNotification::~U2FNotification() {}
 
 void U2FNotification::Check() {
-  DBusThreadManager::Get()->GetDebugDaemonClient()->GetU2fFlags(base::BindOnce(
+  DebugDaemonClient::Get()->GetU2fFlags(base::BindOnce(
       &U2FNotification::CheckStatus, weak_factory_.GetWeakPtr()));
 }
 
@@ -145,14 +144,14 @@ void U2FNotification::OnNotificationClick(
     }
     case ButtonIndex::kReset: {
       // Add the user_keys flag.
-      DBusThreadManager::Get()->GetDebugDaemonClient()->GetU2fFlags(
+      DebugDaemonClient::Get()->GetU2fFlags(
           base::BindOnce([](absl::optional<std::set<std::string>> flags) {
             if (!flags) {
               LOG(ERROR) << "Failed to get U2F flags.";
               return;
             }
             flags->insert(debugd::u2f_flags::kUserKeys);
-            DBusThreadManager::Get()->GetDebugDaemonClient()->SetU2fFlags(
+            DebugDaemonClient::Get()->SetU2fFlags(
                 *flags, base::BindOnce([](bool result) {
                   if (!result) {
                     LOG(ERROR) << "Failed to set U2F flags.";

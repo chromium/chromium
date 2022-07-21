@@ -45,7 +45,7 @@ class CrOSSystemTracingSession {
     }
 
     base::trace_event::TraceConfig trace_config(config);
-    debug_daemon_ = chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
+    debug_daemon_ = chromeos::DebugDaemonClient::Get();
     if (!trace_config.IsSystraceEnabled() || !debug_daemon_) {
       if (callback)
         std::move(callback).Run(/*success=*/false);

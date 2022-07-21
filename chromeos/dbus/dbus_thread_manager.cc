@@ -12,7 +12,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/dbus_clients_browser.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 
@@ -27,11 +26,6 @@ DBusThreadManager::DBusThreadManager()
 DBusThreadManager::~DBusThreadManager() {
   // Delete all D-Bus clients before shutting down the system bus.
   clients_browser_.reset();
-}
-
-// TODO(jamescook): Delete this method after migrating callers.
-DebugDaemonClient* DBusThreadManager::GetDebugDaemonClient() {
-  return DebugDaemonClient::Get();
 }
 
 EasyUnlockClient* DBusThreadManager::GetEasyUnlockClient() {

@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/telemetry_extension/probe_service_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -63,9 +62,7 @@ void ProbeService::ProbeTelemetryInfo(
 }
 
 void ProbeService::GetOemData(GetOemDataCallback callback) {
-  chromeos::DebugDaemonClient* debugd_client =
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
-  debugd_client->GetLog(
+  chromeos::DebugDaemonClient::Get()->GetLog(
       kOemDataLogName,
       base::BindOnce(
           [](GetOemDataCallback callback,

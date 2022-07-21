@@ -37,7 +37,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 #include "chrome/common/chrome_switches.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
@@ -161,8 +161,7 @@ void BrowserProcessPlatformPart::InitializeSchedulerConfigurationManager() {
   DCHECK(!scheduler_configuration_manager_);
   scheduler_configuration_manager_ =
       std::make_unique<ash::SchedulerConfigurationManager>(
-          chromeos::DBusThreadManager::Get()->GetDebugDaemonClient(),
-          g_browser_process->local_state());
+          chromeos::DebugDaemonClient::Get(), g_browser_process->local_state());
 }
 
 void BrowserProcessPlatformPart::ShutdownSchedulerConfigurationManager() {

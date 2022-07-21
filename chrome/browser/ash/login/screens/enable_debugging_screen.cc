@@ -14,7 +14,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
@@ -95,9 +94,7 @@ void EnableDebuggingScreen::HandleLearnMore() {
 
 void EnableDebuggingScreen::HandleRemoveRootFSProtection() {
   UpdateUIState(EnableDebuggingScreenView::UI_STATE_WAIT);
-  chromeos::DebugDaemonClient* client =
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
-  client->RemoveRootfsVerification(
+  DebugDaemonClient::Get()->RemoveRootfsVerification(
       base::BindOnce(&EnableDebuggingScreen::OnRemoveRootfsVerification,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -136,9 +133,7 @@ void EnableDebuggingScreen::OnCryptohomeDaemonAvailabilityChecked(
     return;
   }
 
-  chromeos::DebugDaemonClient* client =
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
-  client->WaitForServiceToBeAvailable(base::BindOnce(
+  DebugDaemonClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
       &EnableDebuggingScreen::OnDebugDaemonServiceAvailabilityChecked,
       weak_ptr_factory_.GetWeakPtr()));
 }
@@ -154,9 +149,7 @@ void EnableDebuggingScreen::OnDebugDaemonServiceAvailabilityChecked(
   }
 
   // Check the status of debugging features.
-  chromeos::DebugDaemonClient* client =
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
-  client->QueryDebuggingFeatures(
+  DebugDaemonClient::Get()->QueryDebuggingFeatures(
       base::BindOnce(&EnableDebuggingScreen::OnQueryDebuggingFeatures,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -187,9 +180,7 @@ void EnableDebuggingScreen::OnQueryDebuggingFeatures(bool success,
 
 void EnableDebuggingScreen::HandleSetup(const std::string& password) {
   UpdateUIState(EnableDebuggingScreenView::UI_STATE_WAIT);
-  chromeos::DebugDaemonClient* client =
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
-  client->EnableDebuggingFeatures(
+  DebugDaemonClient::Get()->EnableDebuggingFeatures(
       password,
       base::BindOnce(&EnableDebuggingScreen::OnEnableDebuggingFeatures,
                      weak_ptr_factory_.GetWeakPtr()));

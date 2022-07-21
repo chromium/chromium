@@ -7,7 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics.h"
 #include "chrome/browser/ash/net/network_health/network_health.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 
 namespace ash {
 namespace network_health {
@@ -19,7 +19,7 @@ NetworkHealthService::NetworkHealthService() {
   network_health_ = std::make_unique<NetworkHealth>();
   network_diagnostics_ =
       std::make_unique<network_diagnostics::NetworkDiagnostics>(
-          chromeos::DBusThreadManager::Get()->GetDebugDaemonClient());
+          chromeos::DebugDaemonClient::Get());
 }
 
 mojo::PendingRemote<mojom::NetworkHealthService>

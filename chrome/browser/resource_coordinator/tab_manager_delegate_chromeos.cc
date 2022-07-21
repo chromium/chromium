@@ -42,7 +42,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chromeos/ash/components/memory/pressure/system_memory_pressure_evaluator.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
@@ -525,7 +525,7 @@ bool TabManagerDelegate::KillTab(LifecycleUnit* lifecycle_unit,
 }
 
 chromeos::DebugDaemonClient* TabManagerDelegate::GetDebugDaemonClient() {
-  return chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
+  return chromeos::DebugDaemonClient::Get();
 }
 
 void TabManagerDelegate::LowMemoryKillImpl(

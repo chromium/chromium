@@ -16,7 +16,6 @@ namespace chromeos {
 
 // Style Note: Clients are sorted by names.
 class DBusClientsBrowser;
-class DebugDaemonClient;
 class EasyUnlockClient;
 
 // THIS CLASS IS BEING DEPRECATED. See README.md for guidelines and
@@ -47,7 +46,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   // pointers after DBusThreadManager has been shut down.
   // TODO(jamescook): Replace this with calls to FooClient::Get().
   // http://crbug.com/647367
-  DebugDaemonClient* GetDebugDaemonClient();
   EasyUnlockClient* GetEasyUnlockClient();
 
  private:

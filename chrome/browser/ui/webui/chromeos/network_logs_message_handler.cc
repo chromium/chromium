@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "content/public/browser/web_contents.h"
@@ -184,7 +183,7 @@ void NetworkLogsMessageHandler::OnSetShillDebugging(
   std::string callback_id = list[0].GetString();
   std::string subsystem = list[1].GetString();
   AllowJavascript();
-  chromeos::DBusThreadManager::Get()->GetDebugDaemonClient()->SetDebugMode(
+  chromeos::DebugDaemonClient::Get()->SetDebugMode(
       subsystem,
       base::BindOnce(&NetworkLogsMessageHandler::OnSetShillDebuggingCompleted,
                      weak_factory_.GetWeakPtr(), callback_id));

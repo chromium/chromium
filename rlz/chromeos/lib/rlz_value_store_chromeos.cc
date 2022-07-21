@@ -137,7 +137,7 @@ void SetRlzPingSent(int retry_count) {
     return;
   }
 
-  chromeos::DBusThreadManager::Get()->GetDebugDaemonClient()->SetRlzPingSent(
+  chromeos::DebugDaemonClient::Get()->SetRlzPingSent(
       base::BindOnce(&OnSetRlzPingSent, retry_count + 1));
 }
 

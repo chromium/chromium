@@ -54,11 +54,6 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
   int upload_crashes_called_ = 0;
 };
 
-TestDebugDaemonClient* fake_debug_client() {
-  return static_cast<TestDebugDaemonClient*>(
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient());
-}
-
 TEST(CrashIdsSourceTest, CallsCrashSender) {
   content::BrowserTaskEnvironment task_environment;
 
@@ -69,11 +64,11 @@ TEST(CrashIdsSourceTest, CallsCrashSender) {
   CrashIdsSource source;
   source.SetUploadListForTesting(new StubUploadList());
 
-  EXPECT_EQ(0, fake_debug_client()->upload_crashes_called());
+  EXPECT_EQ(0, test_debug_client.upload_crashes_called());
 
   source.Fetch(base::BindOnce([](std::unique_ptr<SystemLogsResponse>) {}));
 
-  EXPECT_EQ(1, fake_debug_client()->upload_crashes_called());
+  EXPECT_EQ(1, test_debug_client.upload_crashes_called());
 
   chromeos::DebugDaemonClient::SetInstanceForTest(nullptr);
   chromeos::DBusThreadManager::Shutdown();

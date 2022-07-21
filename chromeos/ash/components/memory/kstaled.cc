@@ -10,7 +10,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 
 namespace ash {
@@ -66,7 +65,7 @@ void InitializeKstaled() {
   }
 
   chromeos::DebugDaemonClient* debugd_client =
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
+      chromeos::DebugDaemonClient::Get();
   DCHECK(debugd_client);
 
   debugd_client->SetKstaledRatio(static_cast<uint8_t>(feature_ratio),

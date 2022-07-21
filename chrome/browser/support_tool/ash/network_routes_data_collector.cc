@@ -21,7 +21,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/support_tool/data_collector.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/feedback/pii_types.h"
 #include "components/feedback/redaction_tool.h"
@@ -98,7 +97,7 @@ void NetworkRoutesDataCollector::CollectDataAndDetectPII(
     scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   chromeos::DebugDaemonClient* debugd_client =
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
+      chromeos::DebugDaemonClient::Get();
   // We will call DebugDaemonClient::GetRoutes twice to get IPv4 and IPv6 routes
   // in separate calls.
   size_t get_routes_calls = 2;

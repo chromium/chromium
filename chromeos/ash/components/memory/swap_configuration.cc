@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 
 namespace ash {
@@ -110,7 +109,7 @@ void ConfigureMinFilelistIfEnabled() {
   }
 
   chromeos::DebugDaemonClient* debugd_client =
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
+      chromeos::DebugDaemonClient::Get();
   CHECK(debugd_client);
 
   int min_mb = kCrOSMinFilelistMb.Get();
@@ -130,7 +129,7 @@ void ConfigureRamVsSwapWeightIfEnabled() {
     return;
 
   chromeos::DebugDaemonClient* debugd_client =
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
+      chromeos::DebugDaemonClient::Get();
   CHECK(debugd_client);
 
   int swap_weight = kCrOSRamVsSwapWeight.Get();
@@ -152,7 +151,7 @@ void ConfigureExtraFreeIfEnabled() {
     return;
 
   chromeos::DebugDaemonClient* debugd_client =
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
+      chromeos::DebugDaemonClient::Get();
   CHECK(debugd_client);
 
   int extra_free = kCrOSExtraFreeMb.Get();

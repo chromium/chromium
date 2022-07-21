@@ -38,7 +38,6 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #endif
 
@@ -161,7 +160,7 @@ void CrashesDOMHandler::HandleRequestCrashes(const base::Value::List& args) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void CrashesDOMHandler::HandleRequestUploads(const base::Value::List& args) {
   chromeos::DebugDaemonClient* debugd_client =
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
+      chromeos::DebugDaemonClient::Get();
   DCHECK(debugd_client);
 
   debugd_client->UploadCrashes(base::BindOnce([](bool success) {

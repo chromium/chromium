@@ -24,7 +24,6 @@
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -136,8 +135,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
 
     PRINTER_LOG(DEBUG) << printer.make_and_model()
                        << " Attempting autoconf setup";
-    auto* client = DBusThreadManager::Get()->GetDebugDaemonClient();
-    client->CupsAddAutoConfiguredPrinter(
+    DebugDaemonClient::Get()->CupsAddAutoConfiguredPrinter(
         printer.id(), printer.uri().GetNormalized(true /*always_print_port*/),
         base::BindOnce(&PrinterConfigurerImpl::OnAddedPrinter,
                        weak_factory_.GetWeakPtr(), printer,
@@ -164,10 +162,8 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
   void AddPrinter(const Printer& printer,
                   const std::string& ppd_contents,
                   PrinterSetupCallback cb) {
-    auto* client = DBusThreadManager::Get()->GetDebugDaemonClient();
-
     PRINTER_LOG(EVENT) << printer.make_and_model() << " Manual printer setup";
-    client->CupsAddManuallyConfiguredPrinter(
+    DebugDaemonClient::Get()->CupsAddManuallyConfiguredPrinter(
         printer.id(), printer.uri().GetNormalized(true /*always_print_port*/),
         ppd_contents,
         base::BindOnce(&PrinterConfigurerImpl::OnAddedPrinter,

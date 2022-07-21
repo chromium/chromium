@@ -6,7 +6,6 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/login/localized_values_builder.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
@@ -23,16 +22,12 @@ void OnDebugServiceAvailable(
                             debugd::DevFeatureFlag::DEV_FEATURES_DISABLED);
     return;
   }
-  chromeos::DebugDaemonClient* client =
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
-  client->QueryDebuggingFeatures(std::move(callback));
+  DebugDaemonClient::Get()->QueryDebuggingFeatures(std::move(callback));
 }
 
 void QueryDebuggingFeatures(
     DebugDaemonClient::QueryDevFeaturesCallback callback) {
-  chromeos::DebugDaemonClient* client =
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
-  client->WaitForServiceToBeAvailable(
+  DebugDaemonClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(&OnDebugServiceAvailable, std::move(callback)));
 }
 

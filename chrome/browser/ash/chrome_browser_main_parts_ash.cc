@@ -214,6 +214,7 @@
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/dbus/constants/cryptohome_key_delegate_constants.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -804,8 +805,8 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
 
   SystemProxyManager::Initialize(g_browser_process->local_state());
 
-  debugd_notification_handler_ = std::make_unique<DebugdNotificationHandler>(
-      DBusThreadManager::Get()->GetDebugDaemonClient());
+  debugd_notification_handler_ =
+      std::make_unique<DebugdNotificationHandler>(DebugDaemonClient::Get());
 
   return ChromeBrowserMainPartsLinux::PreMainMessageLoopRun();
 }

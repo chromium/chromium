@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/webui/settings/chromeos/server_printer_url_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/printing/ppd_line_reader.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -445,10 +444,9 @@ void CupsPrintersHandler::HandleRemoveCupsPrinter(
   // Printer is deleted here.  Do not access after this line.
   printers_manager_->RemoveSavedPrinter(printer_id);
 
-  DebugDaemonClient* client = DBusThreadManager::Get()->GetDebugDaemonClient();
-  client->CupsRemovePrinter(printer_id,
-                            base::BindOnce(&OnRemovedPrinter, protocol),
-                            base::DoNothing());
+  DebugDaemonClient::Get()->CupsRemovePrinter(
+      printer_id, base::BindOnce(&OnRemovedPrinter, protocol),
+      base::DoNothing());
 }
 
 void CupsPrintersHandler::HandleGetPrinterInfo(const base::Value::List& args) {
