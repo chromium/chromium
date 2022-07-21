@@ -134,8 +134,9 @@ class OverlayPopupAdViolationBrowserTestWithoutEnforcement
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(https://crbug.com/1344280): Test is flaky.
 IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTestWithoutEnforcement,
-                       OverlayPopupAd_NoAdInterventionTriggered) {
+                       DISABLED_OverlayPopupAd_NoAdInterventionTriggered) {
   base::HistogramTester histogram_tester;
 
   GURL url = embedded_test_server()->GetURL(
