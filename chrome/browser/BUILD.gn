@@ -3973,6 +3973,8 @@ static_library("browser") {
       "new_tab_page/modules/task_module/task_module_service_factory.h",
       "new_tab_page/modules/task_module/time_format_util.cc",
       "new_tab_page/modules/task_module/time_format_util.h",
+      "new_tab_page/new_tab_page_util.cc",
+      "new_tab_page/new_tab_page_util.h",
       "new_tab_page/one_google_bar/one_google_bar_data.cc",
       "new_tab_page/one_google_bar/one_google_bar_data.h",
       "new_tab_page/one_google_bar/one_google_bar_loader.h",

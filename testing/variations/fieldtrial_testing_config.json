@@ -3207,8 +3207,7 @@
                         "NtpChromeCartModule",
                         "NtpDriveModule",
                         "NtpModulesLoadTimeoutMilliseconds",
-                        "NtpPhotosModule",
-                        "NtpRecipeTasksModule"
+                        "NtpPhotosModule"
                     ],
                     "disable_features": [
                         "NtpShoppingTasksModule"

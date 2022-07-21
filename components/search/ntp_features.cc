@@ -146,7 +146,7 @@ const base::Feature kNtpFeedModule{"NtpFeedModule",
 
 // If enabled, recipe tasks module will be shown.
 const base::Feature kNtpRecipeTasksModule{"NtpRecipeTasksModule",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, SafeBrowsing module will be shown to a target user.
 const base::Feature kNtpSafeBrowsingModule{"NtpSafeBrowsingModule",

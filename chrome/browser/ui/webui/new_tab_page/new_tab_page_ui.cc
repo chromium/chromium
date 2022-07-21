@@ -22,6 +22,7 @@
 #include "chrome/browser/new_tab_page/modules/feed/feed_handler.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos_handler.h"
 #include "chrome/browser/new_tab_page/modules/task_module/task_module_handler.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -96,7 +97,6 @@ const std::pair<const char*, const base::Feature&> kModuleFeatures[] = {
 #if !defined(OFFICIAL_BUILD)
     {"dummyModulesEnabled", ntp_features::kNtpDummyModules},
 #endif
-    {"recipeTasksModuleEnabled", ntp_features::kNtpRecipeTasksModule},
     {"chromeCartModuleEnabled", ntp_features::kNtpChromeCartModule},
     {"photosModuleEnabled", ntp_features::kNtpPhotosModule},
     {"feedModuleEnabled", ntp_features::kNtpFeedModule},
@@ -437,7 +437,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
     source->AddBoolean(nameFeature.first,
                        base::FeatureList::IsEnabled(nameFeature.second));
   }
-
+  source->AddBoolean("recipeTasksModuleEnabled", IsRecipeTasksModuleEnabled());
   source->AddString("photosModuleCustomArtWork",
                     base::GetFieldTrialParamValueByFeature(
                         ntp_features::kNtpPhotosModuleCustomizedOptInArtWork,
@@ -826,6 +826,7 @@ void NewTabPageUI::OnLoad() {
   for (const auto& nameFeature : kModuleFeatures) {
     anyModuleEnabled |= base::FeatureList::IsEnabled(nameFeature.second);
   }
+  anyModuleEnabled |= IsRecipeTasksModuleEnabled();
   // Only enable modules if account credentials are available as most modules
   // won't have data to render otherwise. We can override this behavior with the
   // "--signed-out-ntp-modules" command line switch, e.g. to allow modules in
