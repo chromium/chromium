@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "ui/aura/aura_export.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/events/event_target.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
@@ -113,9 +114,14 @@ class AURA_EXPORT Env : public ui::EventTarget,
   ui::GestureRecognizer* gesture_recognizer() {
     return gesture_recognizer_.get();
   }
-
   void SetGestureRecognizer(
       std::unique_ptr<ui::GestureRecognizer> gesture_recognizer);
+
+  // The `fallback` parameter allows callers of this API to specify a
+  // value to be returned in the case of a missing touch state.
+  gfx::Point GetLastPointerPoint(ui::mojom::DragEventSource event_source,
+                                 aura::Window* window,
+                                 absl::optional<gfx::Point> fallback);
 
   // Get WindowOcclusionTracker instance. Create one if not yet created.
   WindowOcclusionTracker* GetWindowOcclusionTracker();

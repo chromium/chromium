@@ -14,12 +14,14 @@
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env_input_state_controller.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/input_state_lookup.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/event_target_iterator.h"
 #include "ui/events/gestures/gesture_recognizer_impl.h"
@@ -150,6 +152,33 @@ void Env::SetLastMouseLocation(const gfx::Point& last_mouse_location) {
 void Env::SetGestureRecognizer(
     std::unique_ptr<ui::GestureRecognizer> gesture_recognizer) {
   gesture_recognizer_ = std::move(gesture_recognizer);
+}
+
+gfx::Point Env::GetLastPointerPoint(ui::mojom::DragEventSource event_source,
+                                    Window* window,
+                                    absl::optional<gfx::Point> fallback) {
+  if (event_source == ui::mojom::DragEventSource::kTouch && is_touch_down()) {
+    DCHECK(window);
+    DCHECK(window->GetRootWindow());
+    gfx::PointF touch_point_f;
+    bool got_touch_point = gesture_recognizer()->GetLastTouchPointForTarget(
+        window, &touch_point_f);
+    if (got_touch_point) {
+      Window* root = window->GetRootWindow();
+      DCHECK(root);
+      DCHECK(root->GetRootWindow());
+      DCHECK(aura::client::GetScreenPositionClient(root->GetRootWindow()));
+      client::GetScreenPositionClient(root->GetRootWindow())
+          ->ConvertPointToScreen(root, &touch_point_f);
+      return gfx::ToFlooredPoint(touch_point_f);
+    }
+    // Fallback when touch state is lost. See http://crbug.com/1162541.
+    if (fallback)
+      return *fallback;
+  }
+
+  // TODO(https://crbug.com/1338746): Use last_mouse_location_.
+  return display::Screen::GetScreen()->GetCursorScreenPoint();
 }
 
 WindowOcclusionTracker* Env::GetWindowOcclusionTracker() {

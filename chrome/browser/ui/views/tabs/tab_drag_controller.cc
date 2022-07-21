@@ -2338,28 +2338,18 @@ Browser* TabDragController::CreateBrowserForDrag(
 
 gfx::Point TabDragController::GetCursorScreenPoint() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (event_source_ == EVENT_SOURCE_TOUCH &&
-      aura::Env::GetInstance()->is_touch_down()) {
-    views::Widget* widget = GetAttachedBrowserWidget();
-    DCHECK(widget);
-    aura::Window* widget_window = widget->GetNativeWindow();
-    DCHECK(widget_window->GetRootWindow());
-    gfx::PointF touch_point_f;
-    bool got_touch_point =
-        widget->GetGestureRecognizer()->GetLastTouchPointForTarget(
-            widget_window, &touch_point_f);
-    if (got_touch_point) {
-      gfx::Point touch_point = gfx::ToFlooredPoint(touch_point_f);
-      wm::ConvertPointToScreen(widget_window->GetRootWindow(), &touch_point);
-      return touch_point;
-    }
-
-    // Fallback when touch state is lost. See http://crbug.com/1162541
-    return last_point_in_screen_;
-  }
-#endif
-
+  views::Widget* widget = GetAttachedBrowserWidget();
+  DCHECK(widget);
+  aura::Window* widget_window = widget->GetNativeWindow();
+  DCHECK(widget_window->GetRootWindow());
+  auto event_source = event_source_ == EVENT_SOURCE_MOUSE
+                          ? ui::mojom::DragEventSource::kMouse
+                          : ui::mojom::DragEventSource::kTouch;
+  return aura::Env::GetInstance()->GetLastPointerPoint(
+      event_source, widget_window, /*fallback=*/last_point_in_screen_);
+#else
   return display::Screen::GetScreen()->GetCursorScreenPoint();
+#endif
 }
 
 gfx::Vector2d TabDragController::GetWindowOffset(
