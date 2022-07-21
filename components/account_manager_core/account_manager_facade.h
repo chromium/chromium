@@ -138,7 +138,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
   // The returned object should not outlive `AccountManagerFacade` itself.
   virtual std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const AccountKey& account,
-      const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer) = 0;
 
   // Adds or updates an account programmatically without user interaction.

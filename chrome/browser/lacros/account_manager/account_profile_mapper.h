@@ -109,7 +109,6 @@ class AccountProfileMapper
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const base::FilePath& profile_path,
       const account_manager::AccountKey& account,
-      const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer);
 
   // Returns the whole map of accounts per profile. An empty path is used as the

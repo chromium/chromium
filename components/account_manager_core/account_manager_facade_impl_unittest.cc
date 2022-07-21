@@ -46,7 +46,6 @@ using ::testing::WithArgs;
 
 constexpr char kTestAccountEmail[] = "test@gmail.com";
 constexpr char kAnotherTestAccountEmail[] = "another_test@gmail.com";
-constexpr char kFakeOAuthConsumerName[] = "fake-oauth-consumer-name";
 constexpr char kFakeClientId[] = "fake-client-id";
 constexpr char kFakeClientSecret[] = "fake-client-secret";
 constexpr char kFakeAccessToken[] = "fake-access-token";
@@ -612,8 +611,7 @@ TEST_F(AccountManagerFacadeImplTest,
   EXPECT_CALL(consumer, OnGetTokenFailure(Eq(error)));
 
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
-      account_manager_facade->CreateAccessTokenFetcher(
-          account.key, kFakeOAuthConsumerName, &consumer);
+      account_manager_facade->CreateAccessTokenFetcher(account.key, &consumer);
 
   access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
   base::RunLoop().RunUntilIdle();
@@ -635,8 +633,7 @@ TEST_F(AccountManagerFacadeImplTest,
   MockOAuthConsumer consumer;
 
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
-      account_manager_facade->CreateAccessTokenFetcher(
-          account.key, kFakeOAuthConsumerName, &consumer);
+      account_manager_facade->CreateAccessTokenFetcher(account.key, &consumer);
   EXPECT_FALSE(account_manager_facade->IsInitialized());
   access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
   EXPECT_CALL(consumer,
@@ -660,8 +657,7 @@ TEST_F(AccountManagerFacadeImplTest,
   EXPECT_CALL(consumer, OnGetTokenFailure(Eq(error)));
 
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
-      account_manager_facade->CreateAccessTokenFetcher(
-          account.key, kFakeOAuthConsumerName, &consumer);
+      account_manager_facade->CreateAccessTokenFetcher(account.key, &consumer);
   access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
   account_manager().ClearReceivers();
   base::RunLoop().RunUntilIdle();
@@ -685,8 +681,7 @@ TEST_F(AccountManagerFacadeImplTest, AccessTokenFetchSucceeds) {
                         Eq(kFakeAccessToken))));
 
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
-      account_manager_facade->CreateAccessTokenFetcher(
-          account.key, kFakeOAuthConsumerName, &consumer);
+      account_manager_facade->CreateAccessTokenFetcher(account.key, &consumer);
   access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
   base::RunLoop().RunUntilIdle();
 }
@@ -707,8 +702,7 @@ TEST_F(AccountManagerFacadeImplTest, AccessTokenFetchErrorResponse) {
   EXPECT_CALL(consumer, OnGetTokenFailure(Eq(error)));
 
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
-      account_manager_facade->CreateAccessTokenFetcher(
-          account.key, kFakeOAuthConsumerName, &consumer);
+      account_manager_facade->CreateAccessTokenFetcher(account.key, &consumer);
   access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
   base::RunLoop().RunUntilIdle();
 }
@@ -820,8 +814,7 @@ TEST_F(AccountManagerFacadeImplTest,
                   Field(&OAuth2AccessTokenConsumer::TokenResponse::access_token,
                         Eq(kFakeAccessToken))));
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
-      account_manager_facade->CreateAccessTokenFetcher(
-          account.key, kFakeOAuthConsumerName, &consumer);
+      account_manager_facade->CreateAccessTokenFetcher(account.key, &consumer);
   // Expect 0 disconnections in the default state.
   EXPECT_EQ(0, histogram_tester().GetTotalSum(
                    kMojoDisconnectionsAccountManagerAccessTokenFetcherRemote));
@@ -858,8 +851,7 @@ TEST_F(AccountManagerFacadeImplTest,
 
   MockOAuthConsumer consumer;
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
-      account_manager_facade->CreateAccessTokenFetcher(
-          account.key, kFakeOAuthConsumerName, &consumer);
+      account_manager_facade->CreateAccessTokenFetcher(account.key, &consumer);
   // Expect 0 disconnections in the default state.
   EXPECT_EQ(0, histogram_tester().GetTotalSum(
                    kMojoDisconnectionsAccountManagerAccessTokenFetcherRemote));

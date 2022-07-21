@@ -76,7 +76,6 @@ class ProfileAccountManager : public KeyedService,
   void ShowManageAccountsSettings() override;
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const account_manager::AccountKey& account,
-      const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer) override;
   void UpsertAccountForTesting(const account_manager::Account& account,
                                const std::string& token_value) override;

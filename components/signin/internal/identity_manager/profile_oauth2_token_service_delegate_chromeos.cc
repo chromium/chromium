@@ -185,7 +185,7 @@ ProfileOAuth2TokenServiceDelegateChromeOS::CreateAccessTokenFetcher(
       account_manager::AccountKey{
           account_tracker_service_->GetAccountInfo(account_id).gaia,
           account_manager::AccountType::kGaia} /* account_key */,
-      consumer->GetConsumerName(), consumer);
+      consumer);
 }
 
 // Note: This method should use the same logic for filtering accounts as

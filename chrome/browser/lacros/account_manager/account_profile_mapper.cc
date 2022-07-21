@@ -110,7 +110,6 @@ std::unique_ptr<OAuth2AccessTokenFetcher>
 AccountProfileMapper::CreateAccessTokenFetcher(
     const base::FilePath& profile_path,
     const account_manager::AccountKey& account,
-    const std::string& oauth_consumer_name,
     OAuth2AccessTokenConsumer* consumer) {
   // TODO(https://crbug.com/1226045): Create a fetcher that can wait on
   // initialization of the class.
@@ -120,8 +119,7 @@ AccountProfileMapper::CreateAccessTokenFetcher(
         GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP));
   }
 
-  return account_manager_facade_->CreateAccessTokenFetcher(
-      account, oauth_consumer_name, consumer);
+  return account_manager_facade_->CreateAccessTokenFetcher(account, consumer);
 }
 
 void AccountProfileMapper::GetAccountsMap(MapAccountsCallback callback) {

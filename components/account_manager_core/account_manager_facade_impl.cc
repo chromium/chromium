@@ -141,12 +141,11 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
  public:
   AccessTokenFetcher(AccountManagerFacadeImpl* account_manager_facade_impl,
                      const account_manager::AccountKey& account_key,
-                     const std::string& oauth_consumer_name,
                      OAuth2AccessTokenConsumer* consumer)
       : OAuth2AccessTokenFetcher(consumer),
         account_manager_facade_impl_(account_manager_facade_impl),
         account_key_(account_key),
-        oauth_consumer_name_(oauth_consumer_name) {}
+        oauth_consumer_name_(consumer->GetConsumerName()) {}
 
   AccessTokenFetcher(const AccessTokenFetcher&) = delete;
   AccessTokenFetcher& operator=(const AccessTokenFetcher&) = delete;
@@ -441,7 +440,6 @@ void AccountManagerFacadeImpl::ShowManageAccountsSettings() {
 std::unique_ptr<OAuth2AccessTokenFetcher>
 AccountManagerFacadeImpl::CreateAccessTokenFetcher(
     const AccountKey& account,
-    const std::string& oauth_consumer_name,
     OAuth2AccessTokenConsumer* consumer) {
   if (!account_manager_remote_ ||
       remote_version_ <
@@ -455,8 +453,7 @@ AccountManagerFacadeImpl::CreateAccessTokenFetcher(
   }
 
   auto access_token_fetcher = std::make_unique<AccessTokenFetcher>(
-      /*account_manager_facade_impl=*/this, account, oauth_consumer_name,
-      consumer);
+      /*account_manager_facade_impl=*/this, account, consumer);
   RunAfterInitializationSequence(access_token_fetcher->UnblockTokenRequest());
   RunOnAccountManagerRemoteDisconnection(
       access_token_fetcher->AccountManagerRemoteDisconnectionClosure());

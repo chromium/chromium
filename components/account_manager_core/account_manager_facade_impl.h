@@ -68,7 +68,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   void ShowManageAccountsSettings() override;
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const AccountKey& account,
-      const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer) override;
   void UpsertAccountForTesting(const Account& account,
                                const std::string& token_value) override;

@@ -56,9 +56,7 @@ class MockAccountManagerFacade : public account_manager::AccountManagerFacade {
   MOCK_METHOD(void, ShowManageAccountsSettings, (), (override));
   MOCK_METHOD(std::unique_ptr<OAuth2AccessTokenFetcher>,
               CreateAccessTokenFetcher,
-              (const AccountKey&,
-               const std::string&,
-               OAuth2AccessTokenConsumer*),
+              (const AccountKey&, OAuth2AccessTokenConsumer*),
               (override));
   MOCK_METHOD(void,
               UpsertAccountForTesting,

@@ -5,7 +5,6 @@
 #include "chrome/browser/lacros/account_manager/profile_account_manager.h"
 
 #include "base/check.h"
-#include "base/containers/flat_set.h"
 #include "base/notreached.h"
 #include "components/account_manager_core/account.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -93,10 +92,9 @@ void ProfileAccountManager::ShowManageAccountsSettings() {
 std::unique_ptr<OAuth2AccessTokenFetcher>
 ProfileAccountManager::CreateAccessTokenFetcher(
     const account_manager::AccountKey& account,
-    const std::string& oauth_consumer_name,
+
     OAuth2AccessTokenConsumer* consumer) {
-  return mapper_->CreateAccessTokenFetcher(profile_path_, account,
-                                           oauth_consumer_name, consumer);
+  return mapper_->CreateAccessTokenFetcher(profile_path_, account, consumer);
 }
 
 void ProfileAccountManager::UpsertAccountForTesting(
