@@ -1,12 +1,12 @@
 (async function(testRunner) {
-  const {dp} = await testRunner.startBlank(
+  const {dp, session} = await testRunner.startBlank(
       `Tests DOMStorage functionality with storageKey\n`);
 
   await dp.DOMStorage.enable();
   await dp.Page.enable();
 
   const addedPromise = dp.DOMStorage.onceDomStorageItemAdded();
-  window.localStorage.setItem("testKey", "testItem");
+  session.evaluate('window.localStorage.setItem("testKey", "testItem")');
   const event = await addedPromise;
   const storageId = event.params.storageId;
 

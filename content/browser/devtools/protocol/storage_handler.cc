@@ -378,13 +378,8 @@ Response StorageHandler::GetStorageKeyForFrame(
   return Response::Success();
 }
 
-void StorageHandler::ClearDataForOrigin(
-    const std::string& origin,
-    const std::string& storage_types,
-    std::unique_ptr<ClearDataForOriginCallback> callback) {
-  if (!storage_partition_)
-    return callback->sendFailure(Response::InternalError());
-
+namespace {
+uint32_t GetRemoveDataMask(const std::string& storage_types) {
   std::vector<std::string> types = base::SplitString(
       storage_types, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   std::unordered_set<std::string> set(types.begin(), types.end());
@@ -409,6 +404,18 @@ void StorageHandler::ClearDataForOrigin(
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS;
   if (set.count(Storage::StorageTypeEnum::All))
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_ALL;
+  return remove_mask;
+}
+}  // namespace
+
+void StorageHandler::ClearDataForOrigin(
+    const std::string& origin,
+    const std::string& storage_types,
+    std::unique_ptr<ClearDataForOriginCallback> callback) {
+  if (!storage_partition_)
+    return callback->sendFailure(Response::InternalError());
+
+  uint32_t remove_mask = GetRemoveDataMask(storage_types);
 
   if (!remove_mask) {
     return callback->sendFailure(
@@ -420,6 +427,29 @@ void StorageHandler::ClearDataForOrigin(
       blink::StorageKey(url::Origin::Create(GURL(origin))), base::Time(),
       base::Time::Max(),
       base::BindOnce(&ClearDataForOriginCallback::sendSuccess,
+                     std::move(callback)));
+}
+
+void StorageHandler::ClearDataForStorageKey(
+    const std::string& storage_key,
+    const std::string& storage_types,
+    std::unique_ptr<ClearDataForStorageKeyCallback> callback) {
+  if (!storage_partition_)
+    return callback->sendFailure(Response::InternalError());
+
+  uint32_t remove_mask = GetRemoveDataMask(storage_types);
+
+  if (!remove_mask) {
+    return callback->sendFailure(
+        Response::InvalidParams("No valid storage type specified"));
+  }
+
+  absl::optional<blink::StorageKey> key =
+      blink::StorageKey::Deserialize(storage_key);
+  storage_partition_->ClearData(
+      remove_mask, StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, *key,
+      base::Time(), base::Time::Max(),
+      base::BindOnce(&ClearDataForStorageKeyCallback::sendSuccess,
                      std::move(callback)));
 }
 

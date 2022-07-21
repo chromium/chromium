@@ -49,6 +49,10 @@ class StorageHandler : public DevToolsDomainHandler,
       const std::string& origin,
       const std::string& storage_types,
       std::unique_ptr<ClearDataForOriginCallback> callback) override;
+  void ClearDataForStorageKey(
+      const std::string& storage_key,
+      const std::string& storage_types,
+      std::unique_ptr<ClearDataForStorageKeyCallback> callback) override;
   void GetUsageAndQuota(
       const String& origin,
       std::unique_ptr<GetUsageAndQuotaCallback> callback) override;

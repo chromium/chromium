@@ -2684,7 +2684,7 @@ domain DOM
       array of NodeId nodeIds
 
   # Returns NodeIds of current top layer elements.
-  # Top layer is rendered closest to the user within a viewport, therefore its elements always 
+  # Top layer is rendered closest to the user within a viewport, therefore its elements always
   # appear on top of all other content.
   experimental command getTopLayerElements
     returns
@@ -8989,6 +8989,14 @@ experimental domain Storage
     parameters
       # Security origin.
       string origin
+      # Comma separated list of StorageType to clear.
+      string storageTypes
+
+  # Clears storage for storage key.
+  command clearDataForStorageKey
+    parameters
+      # Storage key.
+      string storageKey
       # Comma separated list of StorageType to clear.
       string storageTypes
 
