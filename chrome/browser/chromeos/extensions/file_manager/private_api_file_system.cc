@@ -1675,14 +1675,6 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
     }
   }
 
-  std::vector<std::string> restore_paths;
-  if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash) &&
-      params->params.restore_paths) {
-    for (const auto& path : *params->params.restore_paths) {
-      restore_paths.emplace_back(path);
-    }
-  }
-
   std::unique_ptr<file_manager::io_task::IOTask> task;
   switch (type.value()) {
     case file_manager::io_task::OperationType::kCopy:
@@ -1712,12 +1704,8 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
       }
     case file_manager::io_task::OperationType::kRestore:
       if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
-        if (source_urls.size() != restore_paths.size()) {
-          return RespondNow(Error("Invalid number of restore paths"));
-        }
         task = std::make_unique<file_manager::io_task::RestoreIOTask>(
-            std::move(source_urls), std::move(restore_paths), profile,
-            file_system_context,
+            std::move(source_urls), profile, file_system_context,
             /*base_path=*/base::FilePath());
         break;
       } else {

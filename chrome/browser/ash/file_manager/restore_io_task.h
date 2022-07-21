@@ -11,6 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
+#include "chromeos/ash/components/trash_service/public/cpp/trash_service.h"
+#include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -31,7 +34,6 @@ namespace io_task {
 class RestoreIOTask : public IOTask {
  public:
   RestoreIOTask(std::vector<storage::FileSystemURL> file_urls,
-                std::vector<std::string> restore_paths,
                 Profile* profile,
                 scoped_refptr<storage::FileSystemContext> file_system_context,
                 const base::FilePath base_path);
@@ -45,6 +47,10 @@ class RestoreIOTask : public IOTask {
  private:
   // Finalises the RestoreIOTask with the `state`.
   void Complete(State state);
+
+  void OnGotFile(chromeos::trash_service::ParseTrashInfoCallback callback,
+                 size_t idx,
+                 base::File file);
 
   // Ensure the metadata file conforms to the following:
   //   - Has a .trashinfo suffix
@@ -62,8 +68,11 @@ class RestoreIOTask : public IOTask {
   // actually exists. In the event the file path has been removed, recreate it.
   void EnsureParentRestorePathExists(
       size_t idx,
+      const base::FilePath& trash_parent_path,
       const base::FilePath& trashed_file_location,
-      const base::FilePath& absolute_restore_path);
+      base::File::Error status,
+      const base::FilePath& restore_path,
+      base::Time deletion_date);
 
   void OnParentRestorePathExists(size_t idx,
                                  const base::FilePath& trashed_file_location,
@@ -107,14 +116,13 @@ class RestoreIOTask : public IOTask {
   // A map containing paths which are enabled for trashing.
   TrashPathsMap enabled_trash_locations_;
 
-  // The list of paths to restore each item to. These are strings which are
-  // relative to each of the trash parent paths and all contain a leading "/"
-  // character.
-  std::vector<std::string> restore_paths_;
-
   // Stores the id of the restore operation if one is in progress. Used so the
   // restore can be cancelled.
   absl::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
+
+  // Holds the connection open to the `TrashService`. This is a sandboxed
+  // process that performs parsing of the trashinfo files.
+  mojo::Remote<chromeos::trash_service::mojom::TrashService> trash_service_;
 
   ProgressCallback progress_callback_;
   CompleteCallback complete_callback_;

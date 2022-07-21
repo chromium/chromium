@@ -5,8 +5,11 @@
 #include "chrome/browser/ash/file_manager/restore_io_task.h"
 
 #include "base/callback.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_piece.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task_util.h"
@@ -31,18 +34,20 @@ base::File::Error CreateNestedPath(
   return base::File::FILE_OK;
 }
 
+base::File GetReadOnlyFileFromPath(const base::FilePath& path) {
+  return base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+}
+
 }  // namespace
 
 RestoreIOTask::RestoreIOTask(
     std::vector<storage::FileSystemURL> file_urls,
-    std::vector<std::string> restore_paths,
     Profile* profile,
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const base::FilePath base_path)
     : file_system_context_(file_system_context),
       profile_(profile),
-      base_path_(base_path),
-      restore_paths_(restore_paths) {
+      base_path_(base_path) {
   progress_.state = State::kQueued;
   progress_.type = OperationType::kRestore;
   progress_.bytes_transferred = 0;
@@ -72,24 +77,22 @@ void RestoreIOTask::Execute(IOTask::ProgressCallback progress_callback,
   progress_callback_ = std::move(progress_callback);
   complete_callback_ = std::move(complete_callback);
 
-  // The list of restore paths is passed as metadata to the RestoreIOTask and
-  // thus is a 1:1 mapping of storage::FileSystemURL to the final restore path.
-  // This path still has to be validated and represents a relative (to the
-  // source filesystem) path to move the file to.
-  if (restore_paths_.size() != progress_.sources.size()) {
-    Complete(State::kError);
-    return;
-  }
-
   enabled_trash_locations_ =
       GenerateEnabledTrashLocationsForProfile(profile_, base_path_);
   progress_.state = State::kInProgress;
+
+  auto trash_pending_remote = chromeos::trash_service::LaunchTrashService();
+  trash_service_ = mojo::Remote<chromeos::trash_service::mojom::TrashService>(
+      std::move(trash_pending_remote));
+  trash_service_.set_disconnect_handler(base::BindOnce(
+      &RestoreIOTask::Complete, weak_ptr_factory_.GetWeakPtr(), State::kError));
 
   ValidateTrashInfo(0);
 }
 
 // Calls the completion callback for the task. `progress_` should not be
-// accessed after calling this.
+// accessed after calling this. If the `trash_service_` is disconnected, it will
+// end up here so avoid accessing `trash_service_` here.
 void RestoreIOTask::Complete(State state) {
   progress_.state = state;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -151,36 +154,64 @@ void RestoreIOTask::OnTrashedFileExists(
     return;
   }
 
-  // The leading character is "/", which needs to be removed to ensure it can be
-  // appended to the parent path.
-  // TODO(b/231830250): Remove this once the UI trashing logic has been enabled
-  // to conform to having no leading "/" character.
-  if (!restore_paths_[idx].empty() &&
-      base::StartsWith(restore_paths_[idx], "/",
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    restore_paths_[idx].erase(0, 1);
-  }
+  auto complete_callback = base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&RestoreIOTask::EnsureParentRestorePathExists,
+                     weak_ptr_factory_.GetWeakPtr(), idx, trash_parent_path,
+                     trashed_file_location));
 
-  // The path to restore is expected to be relative to the source filesystem
-  // (the previous condition enforces this) and not have any references to it's
-  // parent (i.e. no ".." path traversals).
-  base::FilePath restore_path(restore_paths_[idx]);
-  if (restore_path.empty() || restore_path.IsAbsolute() ||
-      restore_path.ReferencesParent()) {
-    progress_.sources[idx].error = base::File::FILE_ERROR_INVALID_OPERATION;
+  base::FilePath trashinfo_path =
+      (base_path_.empty())
+          ? progress_.sources[idx].url.path()
+          : base_path_.Append(progress_.sources[idx].url.path());
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&GetReadOnlyFileFromPath, trashinfo_path),
+      base::BindOnce(&RestoreIOTask::OnGotFile, weak_ptr_factory_.GetWeakPtr(),
+                     std::move(complete_callback), idx));
+}
+
+void RestoreIOTask::OnGotFile(
+    chromeos::trash_service::ParseTrashInfoCallback callback,
+    size_t idx,
+    base::File file) {
+  if (!file.IsValid()) {
+    LOG(ERROR) << "Supplied file is not valid: " << file.error_details();
+    progress_.sources[idx].error = file.error_details();
     Complete(State::kError);
     return;
   }
-
-  base::FilePath absolute_restore_path = trash_parent_path.Append(restore_path);
-  EnsureParentRestorePathExists(idx, trashed_file_location,
-                                absolute_restore_path);
+  trash_service_->ParseTrashInfoFile(std::move(file), std::move(callback));
 }
 
 void RestoreIOTask::EnsureParentRestorePathExists(
     size_t idx,
+    const base::FilePath& trash_parent_path,
     const base::FilePath& trashed_file_location,
-    const base::FilePath& absolute_restore_path) {
+    base::File::Error status,
+    const base::FilePath& restore_path,
+    base::Time deletion_date) {
+  if (status != base::File::FILE_OK) {
+    progress_.sources[idx].error = status;
+    Complete(State::kError);
+    return;
+  }
+
+  if (restore_path.empty() ||
+      restore_path.value()[0] != base::FilePath::kSeparators[0]) {
+    progress_.sources[idx].error = base::File::FILE_ERROR_INVALID_URL;
+    Complete(State::kError);
+    return;
+  }
+
+  // Remove the leading "/" character to make the restore path relative from the
+  // known trash parent path.
+  base::StringPiece relative_path =
+      base::StringPiece(restore_path.value()).substr(1);
+  base::FilePath absolute_restore_path =
+      trash_parent_path.Append(relative_path);
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&CreateNestedPath, absolute_restore_path.DirName()),

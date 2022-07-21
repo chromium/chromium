@@ -726,7 +726,6 @@ chrome.fileManagerPrivate.GetVolumeRootOptions;
  * @typedef {{
  *   destinationFolder: (DirectoryEntry|undefined),
  *   password: (string|undefined),
- *   restorePaths: (Array<string>|undefined),
  * }}
  */
 chrome.fileManagerPrivate.IOTaskParams;
