@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+
 namespace blink {
 
 PaintPropertyChangeType TransformPaintPropertyNode::State::ComputeChange(
@@ -66,6 +68,14 @@ PaintPropertyChangeType TransformPaintPropertyNode::State::ComputeChange(
     return origin_changed
                ? PaintPropertyChangeType::kChangedOnlySimpleValues
                : PaintPropertyChangeType::kChangedOnlyCompositedValues;
+  }
+
+  if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled() &&
+      direct_compositing_reasons & CompositingReason::kStickyPosition) {
+    // The compositor handles sticky offset changes automatically.
+    DCHECK(transform_and_origin.ChangePreserves2dAxisAlignment(
+        other.transform_and_origin));
+    return PaintPropertyChangeType::kChangedOnlyCompositedValues;
   }
 
   if (matrix_changed && !transform_and_origin.ChangePreserves2dAxisAlignment(

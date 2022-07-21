@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -488,6 +489,27 @@ TEST_F(PaintPropertyNodeTest,
 
   EXPECT_TRUE(transform.child1->Changed(
       PaintPropertyChangeType::kChangedOnlySimpleValues, *transform.root));
+
+  ResetAllChanged();
+  ExpectUnchangedState();
+}
+
+TEST_F(PaintPropertyNodeTest, StickyTranslationChange) {
+  ScopedScrollUpdateOptimizationsForTest scroll_optimizations(true);
+
+  ResetAllChanged();
+  ExpectUnchangedState();
+  TransformPaintPropertyNode::State state{gfx::Vector2dF()};
+  state.direct_compositing_reasons = CompositingReason::kStickyPosition;
+  // Change compositing reasons only.
+  EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyNonRerasterValues,
+            transform.child1->Update(*transform.ancestor, std::move(state)));
+
+  // Change sticky translation.
+  TransformPaintPropertyNode::State state1{gfx::Vector2dF(10, 20)};
+  state1.direct_compositing_reasons = CompositingReason::kStickyPosition;
+  EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyCompositedValues,
+            transform.child1->Update(*transform.ancestor, std::move(state1)));
 
   ResetAllChanged();
   ExpectUnchangedState();

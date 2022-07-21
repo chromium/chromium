@@ -79,6 +79,14 @@ bool ShouldUseInfiniteCullRect(const PaintLayer& layer,
       return true;
     }
 
+    // This avoids cull rect change of composited sticky elements on scroll.
+    if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled() &&
+        properties->StickyTranslation() &&
+        properties->StickyTranslation()
+            ->RequiresCompositingForStickyPosition()) {
+      return true;
+    }
+
     // Cull rect mapping doesn't work under perspective in some cases.
     // See http://crbug.com/887558 for details.
     if (properties->Perspective()) {

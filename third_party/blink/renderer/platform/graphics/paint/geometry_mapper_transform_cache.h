@@ -116,6 +116,7 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   }
 
   bool has_fixed() const { return has_fixed_; }
+  bool has_sticky() const { return has_sticky_; }
 
  private:
   friend class GeometryMapperTransformCacheTest;
@@ -195,21 +196,23 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   struct PlaneRootTransform {
     TransformationMatrix to_plane_root;
     TransformationMatrix from_plane_root;
-    const TransformPaintPropertyNode* plane_root;
-    bool has_animation;
+    const TransformPaintPropertyNode* plane_root = nullptr;
+    bool has_animation = false;
   };
   std::unique_ptr<PlaneRootTransform> plane_root_transform_;
 
   struct ScreenTransform {
     TransformationMatrix to_screen;
     TransformationMatrix projection_from_screen;
-    bool projection_from_screen_is_valid;
-    bool has_animation;
+    bool projection_from_screen_is_valid = false;
+    bool has_animation = false;
   };
   std::unique_ptr<ScreenTransform> screen_transform_;
 
   // Whether or not there is a fixed position transform to the root.
   bool has_fixed_ = false;
+  // Whether or not there is a sticky translation to the root.
+  bool has_sticky_ = false;
 
   unsigned cache_generation_ = s_global_generation - 1;
 };

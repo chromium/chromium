@@ -57,6 +57,7 @@ class GeometryMapperTest : public testing::Test,
   absl::optional<TransformationMatrix> expected_transform;
   FloatClipRect expected_clip;
   bool expected_clip_has_transform_animation = false;
+  bool expected_clip_has_sticky_transform = false;
   gfx::RectF expected_transformed_rect;
 };
 
@@ -130,10 +131,12 @@ void GeometryMapperTest::CheckCachedClip() {
   EXPECT_CLIP_RECT_EQ(expected_clip, cached_clip->clip_rect);
   EXPECT_EQ(expected_clip_has_transform_animation,
             cached_clip->has_transform_animation);
+  EXPECT_EQ(expected_clip_has_sticky_transform,
+            cached_clip->has_sticky_transform);
 }
 
 // See the data fields of GeometryMapperTest for variables that will be used in
-// this macro.
+// this function.
 void GeometryMapperTest::CheckMappings() {
   CheckLocalToAncestorVisualRect();
   CheckLocalToAncestorClipRect();
@@ -558,6 +561,31 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithClipBeforeAnimatingTransform) {
   CheckMappings();
 }
 
+TEST_P(GeometryMapperTest, ExpandVisualRectWithClipBeforeSticky) {
+  ScopedScrollUpdateOptimizationsForTest scroll_optimizations(true);
+
+  expected_transform = TransformationMatrix().Translate(0, 100);
+  auto transform = CreateTransform(t0(), *expected_transform, gfx::Point3F(),
+                                   CompositingReason::kStickyPosition);
+  auto clip = CreateClip(c0(), *transform, FloatRoundedRect(10, 10, 50, 50));
+  local_state.SetClip(*clip);
+  local_state.SetTransform(*transform);
+
+  input_rect = gfx::RectF(0, 0, 100, 100);
+  expected_visual_rect = FloatClipRect(input_rect);
+  expected_visual_rect.Intersect(clip->LayoutClipRect());
+  expected_visual_rect.Map(*expected_transform);
+  // The clip has sticky transform, so it doesn't apply to the visual rect.
+  expected_visual_rect_expanded_for_compositing = InfiniteLooseFloatClipRect();
+  EXPECT_FALSE(expected_visual_rect.IsTight());
+  expected_clip = clip->LayoutClipRect();
+  expected_clip.Map(*expected_transform);
+  EXPECT_FALSE(expected_clip.IsTight());
+  expected_clip_has_sticky_transform = true;
+  expected_transformed_rect = expected_transform->MapRect(input_rect);
+  CheckMappings();
+}
+
 TEST_P(GeometryMapperTest, ClipAfterTransform) {
   expected_transform = TransformationMatrix().Rotate(45);
   auto transform = CreateTransform(t0(), *expected_transform);
@@ -598,6 +626,31 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithClipAfterAnimatingTransform) {
   CheckMappings();
 }
 
+TEST_P(GeometryMapperTest, ExpandVisualRectWithClipAfterSticky) {
+  ScopedScrollUpdateOptimizationsForTest scroll_optimizations(true);
+
+  expected_transform = TransformationMatrix().Translate(0, 100);
+  auto transform = CreateTransform(t0(), *expected_transform, gfx::Point3F(),
+                                   CompositingReason::kStickyPosition);
+  auto clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
+  local_state.SetClip(*clip);
+  local_state.SetTransform(*transform);
+
+  input_rect = gfx::RectF(0, 0, 100, 100);
+  expected_transformed_rect = expected_transform->MapRect(input_rect);
+  expected_visual_rect = FloatClipRect(input_rect);
+  expected_visual_rect.Map(*expected_transform);
+  expected_visual_rect.Intersect(clip->LayoutClipRect());
+  EXPECT_FALSE(expected_visual_rect.IsTight());
+  expected_clip = clip->LayoutClipRect();
+  EXPECT_TRUE(expected_clip.IsTight());
+  // The visual rect is expanded first to infinity because of the sticky
+  // transform, then clipped by the clip.
+  expected_visual_rect_expanded_for_compositing = expected_clip;
+  expected_visual_rect_expanded_for_compositing->ClearIsTight();
+  CheckMappings();
+}
+
 TEST_P(GeometryMapperTest, TwoClipsWithTransformBetween) {
   auto clip1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
   expected_transform = TransformationMatrix().Rotate(45);
@@ -623,12 +676,13 @@ TEST_P(GeometryMapperTest, TwoClipsWithTransformBetween) {
   // to ancestor space.
   expected_visual_rect.Intersect(expected_clip);
   EXPECT_FALSE(expected_visual_rect.IsTight());
-
   CheckMappings();
 }
 
 TEST_P(GeometryMapperTest,
        ExpandVisualRectWithTwoClipsWithAnimatingTransformBetween) {
+  ScopedScrollUpdateOptimizationsForTest scroll_optimizations(true);
+
   auto clip1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
   expected_transform = TransformationMatrix().Rotate(45);
   auto transform = CreateAnimatingTransform(t0(), *expected_transform);
@@ -651,6 +705,38 @@ TEST_P(GeometryMapperTest,
   EXPECT_FALSE(expected_visual_rect.IsTight());
   // The visual rect is expanded to infinity because of the transform animation,
   // then clipped by clip1. clip2 doesn't apply because it's below the animating
+  // transform.
+  expected_visual_rect_expanded_for_compositing = clip1->LayoutClipRect();
+  expected_visual_rect_expanded_for_compositing->ClearIsTight();
+  CheckMappings();
+}
+
+TEST_P(GeometryMapperTest, ExpandVisualRectWithTwoClipsWithStickyBetween) {
+  ScopedScrollUpdateOptimizationsForTest scroll_optimizations(true);
+
+  auto clip1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
+  expected_transform = TransformationMatrix().Translate(0, 100);
+  auto transform = CreateTransform(t0(), *expected_transform, gfx::Point3F(),
+                                   CompositingReason::kStickyPosition);
+  auto clip2 =
+      CreateClip(*clip1, *transform, FloatRoundedRect(10, 10, 200, 200));
+  local_state.SetClip(*clip2);
+  local_state.SetTransform(*transform);
+
+  input_rect = gfx::RectF(0, 0, 100, 100);
+  expected_transformed_rect = expected_transform->MapRect(input_rect);
+
+  expected_clip = clip2->LayoutClipRect();
+  expected_clip.Map(*expected_transform);
+  expected_clip.Intersect(clip1->LayoutClipRect());
+  EXPECT_FALSE(expected_clip.IsTight());
+  expected_clip_has_sticky_transform = true;
+  expected_visual_rect = FloatClipRect(input_rect);
+  expected_visual_rect.Map(*expected_transform);
+  expected_visual_rect.Intersect(expected_clip);
+  EXPECT_FALSE(expected_visual_rect.IsTight());
+  // The visual rect is expanded to infinity because of the sticky transform,
+  // then clipped by clip1. clip2 doesn't apply because it's below the sticky
   // transform.
   expected_visual_rect_expanded_for_compositing = clip1->LayoutClipRect();
   expected_visual_rect_expanded_for_compositing->ClearIsTight();

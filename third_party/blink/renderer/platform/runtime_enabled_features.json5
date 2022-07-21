@@ -2053,6 +2053,9 @@
       status: "stable",
     },
     {
+      name: "ScrollUpdateOptimizations",
+    },
+    {
       name: "SecureContextFixForSharedWorkers",
       status: "experimental",
     },

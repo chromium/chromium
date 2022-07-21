@@ -6829,6 +6829,52 @@ TEST_P(PaintPropertyTreeBuilderTest, SimpleScrollChangeDoesNotCausePacUpdate) {
 }
 
 TEST_P(PaintPropertyTreeBuilderTest,
+       SimpleStickyTranslationChangeDoesNotCausePacUpdate) {
+  ScopedScrollUpdateOptimizationsForTest scroll_optimizations(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>::webkit-scrollbar { width: 0; height: 0 }</style>
+    <!-- position: relative and z-index: 1 are needed to make the scroller a
+     stacking context (otherwise scroll of a non-stacking-context containing
+     stacked descendant would cause PAC update).
+     TODO(wangxianzhu): Remove them when fixing crbug.com/1310586. -->
+    <div id="scroller" style="width: 200px; height: 200px; overflow: scroll;
+                              background: blue; position: relative; z-index: 1">
+      <div style="height: 300px"></div>
+      <div id="target" style="position: sticky; bottom: 0; height: 20px"></div>
+    </div>
+  )HTML");
+
+  auto* pac = GetDocument().View()->GetPaintArtifactCompositor();
+  ASSERT_TRUE(pac);
+
+  auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  auto* sticky_translation = properties->StickyTranslation();
+  ASSERT_TRUE(sticky_translation);
+  EXPECT_EQ(gfx::Vector2dF(0, -120), sticky_translation->Translation2D());
+
+  auto* property_trees = GetChromeClient().layer_tree_host()->property_trees();
+  const auto* cc_transform_node =
+      property_trees->transform_tree().FindNodeFromElementId(
+          sticky_translation->GetCompositorElementId());
+  ASSERT_TRUE(cc_transform_node);
+  // We don't push the sticky offset to cc.
+  EXPECT_EQ(gfx::Vector2dF(), cc_transform_node->local.To2dTranslation());
+
+  GetDocument().getElementById("scroller")->setScrollTop(200);
+  UpdateAllLifecyclePhasesExceptPaint();
+
+  EXPECT_EQ(gfx::Vector2dF(), sticky_translation->Translation2D());
+  EXPECT_FALSE(pac->NeedsUpdate());
+  EXPECT_EQ(gfx::Vector2dF(), cc_transform_node->local.To2dTranslation());
+  EXPECT_TRUE(property_trees->transform_tree().needs_update());
+  EXPECT_TRUE(cc_transform_node->transform_changed);
+
+  UpdateAllLifecyclePhasesForTest();
+}
+
+TEST_P(PaintPropertyTreeBuilderTest,
        NonCompositedTransformChangeCausesPacUpdate) {
   SetBodyInnerHTML(R"HTML(
     <style>

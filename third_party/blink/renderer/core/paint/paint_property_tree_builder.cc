@@ -748,8 +748,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
         }
       }
 
-      // TODO(crbug.com/1117658): Implement direct update of StickyTranslation
-      // when we have maximum overlap for sticky elements.
       OnUpdateTransform(properties_->UpdateStickyTranslation(
           *context_.current.transform, std::move(state)));
     } else {

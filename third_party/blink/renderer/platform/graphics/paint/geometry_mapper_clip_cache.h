@@ -54,7 +54,9 @@ class PLATFORM_EXPORT GeometryMapperClipCache {
     const FloatClipRect clip_rect;
     // Whether there is any transform animation between the transform space
     // of the associated clip node and |clip_and_transform|.
-    const bool has_transform_animation;
+    const bool has_transform_animation = false;
+    // Similarly, for sticky transform.
+    const bool has_sticky_transform = false;
   };
 
   // Returns the clip visual rect  of the owning
