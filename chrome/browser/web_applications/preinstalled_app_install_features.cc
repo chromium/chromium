@@ -72,7 +72,7 @@ const base::Feature kDefaultCalculatorWebApp{"DefaultCalculatorWebApp",
 // users.
 const base::Feature kAllowDefaultWebAppMigrationForChromeOsManagedUsers{
     "AllowDefaultWebAppMigrationForChromeOsManagedUsers",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables installing the Cursive app on devices with a built-in stylus-capable
 // screen.
