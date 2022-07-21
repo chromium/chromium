@@ -16,6 +16,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/hid_delegate.h"
 #include "content/public/common/content_client.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -350,9 +351,14 @@ TEST_P(HidServiceTest, OpenAndCloseHidConnection) {
   CheckWebContentsHidServiceConnectedState(service_creation_type, false);
 }
 
-// This test is disabled because it fails on the "linux-bfcache-rel" bot.
-// TODO(https://crbug.com/1232841): Re-enable this test.
-TEST_F(HidServiceRenderFrameHostTest, DISABLED_OpenAndNavigateCrossOrigin) {
+TEST_F(HidServiceRenderFrameHostTest, OpenAndNavigateCrossOrigin) {
+  // The test assumes the previous page gets deleted after navigation,
+  // disconnecting the device. Disable back/forward cache to ensure that it
+  // doesn't get preserved in the cache.
+  // TODO(crbug.com/1346021): Integrate WebHID with bfcache and remove this.
+  DisableBackForwardCacheForTesting(web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
   NavigateAndCommit(GURL(kTestUrl));
 
   mojo::Remote<blink::mojom::HidService> service;
