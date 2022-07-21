@@ -643,7 +643,7 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
     EXPECT_NE(base::StringPrintf(
                   kAndroid, version_info::GetMajorVersionNumber().c_str(), ""),
               GetUserAgent());
-    EXPECT_NE(content::GetUnifiedPlatform().c_str(),
+    EXPECT_NE(content::GetUnifiedPlatformForTesting().c_str(),
               GetUserAgentPlatformOsCpu(GetUserAgent()));
   }
 
@@ -675,11 +675,12 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
        blink::features::kForceMajorVersionInMinorPositionInUserAgent},
       {});
   {
-    EXPECT_EQ(base::StringPrintf("Mozilla/5.0 (%s) AppleWebKit/537.36 (KHTML, "
-                                 "like Gecko) Chrome/%s.%s.0.0 Safari/537.36",
-                                 content::GetUnifiedPlatform().c_str(), "99",
-                                 version_info::GetMajorVersionNumber().c_str()),
-              GetUserAgent());
+    EXPECT_EQ(
+        base::StringPrintf("Mozilla/5.0 (%s) AppleWebKit/537.36 (KHTML, "
+                           "like Gecko) Chrome/%s.%s.0.0 Safari/537.36",
+                           content::GetUnifiedPlatformForTesting().c_str(),
+                           "99", version_info::GetMajorVersionNumber().c_str()),
+        GetUserAgent());
   }
 
   // Ensure that the ForceMajorVersionToMinorPosition policy is applied even
@@ -706,7 +707,7 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
 // phase 5.
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_NE(GetUserAgent(), GetReducedUserAgent());
-  EXPECT_NE(content::GetUnifiedPlatform().c_str(),
+  EXPECT_NE(content::GetUnifiedPlatformForTesting().c_str(),
             GetUserAgentPlatformOsCpu(GetUserAgent()));
 #else
   EXPECT_EQ(GetUserAgent(), GetReducedUserAgent());

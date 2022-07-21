@@ -13,24 +13,6 @@
 
 namespace content {
 
-namespace frozen_user_agent_strings {
-
-const char kTemplate[] =
-    "Mozilla/5.0 (%s) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s.0.0.0 "
-#if BUILDFLAG(IS_ANDROID)
-    "%s"
-#endif
-    "Safari/537.36";
-
-const char kUnifiedPlatformAndroid[] = "Linux; Android 10; K";
-const char kUnifiedPlatformCrOS[] = "X11; CrOS x86_64 14541.0.0";
-const char kUnifiedPlatformFuchsia[] = "Fuchsia";
-const char kUnifiedPlatformLinux[] = "X11; Linux x86_64";
-const char kUnifiedPlatformMacOS[] = "Macintosh; Intel Mac OS X 10_15_7";
-const char kUnifiedPlatformWindows[] = "Windows NT 10.0; Win64; x64";
-
-}  // namespace frozen_user_agent_strings
-
 enum class IncludeAndroidBuildNumber { Include, Exclude };
 enum class IncludeAndroidModel { Include, Exclude };
 
@@ -77,9 +59,10 @@ CONTENT_EXPORT std::string GetOSVersion(
 CONTENT_EXPORT std::string GetReducedUserAgent(bool mobile,
                                                std::string major_version);
 
-// Helper function to return the <unifiedPlatform> token of a reduced
-// User-Agent header
-CONTENT_EXPORT std::string GetUnifiedPlatform();
+// TODO(crbug.com/1257310): Remove this after user agent reduction phase 5 and
+// --force-major-version-to-minor is removed.
+// Return the <unifiedPlatform> token of a reduced User-Agent header.
+CONTENT_EXPORT std::string GetUnifiedPlatformForTesting();
 
 // Helper function to generate a full user agent string from a short
 // product name.

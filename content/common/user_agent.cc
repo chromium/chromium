@@ -29,6 +29,13 @@ namespace content {
 
 namespace {
 
+const char kFrozenUserAgentTemplate[] =
+    "Mozilla/5.0 (%s) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s.0.0.0 "
+#if BUILDFLAG(IS_ANDROID)
+    "%s"
+#endif
+    "Safari/537.36";
+
 std::string GetUserAgentPlatform() {
 #if BUILDFLAG(IS_WIN)
   return "";
@@ -45,24 +52,28 @@ std::string GetUserAgentPlatform() {
 #endif
 }
 
-}  // namespace
-
 std::string GetUnifiedPlatform() {
 #if BUILDFLAG(IS_ANDROID)
-  return frozen_user_agent_strings::kUnifiedPlatformAndroid;
+  return "Linux; Android 10; K";
 #elif BUILDFLAG(IS_CHROMEOS)
-  return frozen_user_agent_strings::kUnifiedPlatformCrOS;
+  return "X11; CrOS x86_64 14541.0.0";
 #elif BUILDFLAG(IS_MAC)
-  return frozen_user_agent_strings::kUnifiedPlatformMacOS;
+  return "Macintosh; Intel Mac OS X 10_15_7";
 #elif BUILDFLAG(IS_WIN)
-  return frozen_user_agent_strings::kUnifiedPlatformWindows;
+  return "Windows NT 10.0; Win64; x64";
 #elif BUILDFLAG(IS_FUCHSIA)
-  return frozen_user_agent_strings::kUnifiedPlatformFuchsia;
+  return "Fuchsia";
 #elif BUILDFLAG(IS_LINUX)
-  return frozen_user_agent_strings::kUnifiedPlatformLinux;
+  return "X11; Linux x86_64";
 #else
 #error Unsupported platform
 #endif
+}
+
+}  // namespace
+
+std::string GetUnifiedPlatformForTesting() {
+  return GetUnifiedPlatform();
 }
 
 // Inaccurately named for historical reasons
@@ -284,10 +295,10 @@ std::string GetReducedUserAgent(bool mobile, std::string major_version) {
   device_compat = mobile ? "Mobile " : "";
 #endif
   std::string user_agent =
-      base::StringPrintf(frozen_user_agent_strings::kTemplate,
-                         GetUnifiedPlatform().c_str(), major_version.c_str()
+      base::StringPrintf(kFrozenUserAgentTemplate, GetUnifiedPlatform().c_str(),
+                         major_version.c_str()
 #if BUILDFLAG(IS_ANDROID)
-                                                           ,
+                             ,
                          device_compat.c_str()
 #endif
       );
