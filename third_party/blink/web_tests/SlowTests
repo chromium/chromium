@@ -820,3 +820,8 @@ crbug.com/1300811 [ Debug Mac ] animations/interpolation/webkit-column-width-int
 crbug.com/1300811 [ Debug Linux ] animations/interpolation/webkit-column-width-interpolation.html [ Slow ]
 
 crbug.com/1228246 http/tests/inspector-protocol/network-fetch-content-with-error-status-code.js [ Slow ]
+crbug.com/1228246 http/tests/inspector-protocol/network/disable-interception-midway.js [ Slow ]
+crbug.com/1228246 http/tests/inspector-protocol/fetch/request-paused-network-id-cors.js [ Slow ]
+crbug.com/1228246 http/tests/inspector-protocol/fetch/fetch-cors-preflight-sw.js [ Slow ]
+crbug.com/1228246 http/tests/inspector-protocol/network/request-interception-patterns.js [ Slow ]
+crbug.com/1228246 http/tests/inspector-protocol/fetch/disable-with-response-in-flight.js [ Slow ]
