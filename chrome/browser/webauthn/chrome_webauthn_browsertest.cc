@@ -98,8 +98,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
 
   static constexpr char kPageFile[] = "page.html";
 
-  std::vector<base::Value> resources;
-  resources.emplace_back(std::string(kPageFile));
+  base::Value::List resources;
+  resources.Append(std::string(kPageFile));
   static constexpr char kContents[] = R"(
 <html>
   <head>

@@ -1347,8 +1347,8 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
 
   static constexpr char kPageFile[] = "page.html";
 
-  std::vector<base::Value> resources;
-  resources.emplace_back(std::string(kPageFile));
+  base::Value::List resources;
+  resources.Append(kPageFile);
   constexpr char kContents[] = R"(
   <html>
     <head>

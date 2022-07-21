@@ -8,6 +8,7 @@
 #include <initializer_list>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
@@ -113,15 +114,15 @@ class ExtensionBuilder {
   // Can be used in conjuction with ListBuilder and DictionaryBuilder for more
   // complex types.
   template <typename T>
-  ExtensionBuilder& SetManifestKey(base::StringPiece key, T value) {
-    SetManifestKeyImpl(key, base::Value(value));
+  ExtensionBuilder& SetManifestKey(base::StringPiece key, T&& value) {
+    SetManifestKeyImpl(key, base::Value(std::forward<T>(value)));
     return *this;
   }
   template <typename T>
   ExtensionBuilder& SetManifestPath(
       std::initializer_list<base::StringPiece> path,
-      T value) {
-    SetManifestPathImpl(path, base::Value(value));
+      T&& value) {
+    SetManifestPathImpl(path, base::Value(std::forward<T>(value)));
     return *this;
   }
   // Specializations for unique_ptr<> to allow passing unique_ptr<base::Value>.
