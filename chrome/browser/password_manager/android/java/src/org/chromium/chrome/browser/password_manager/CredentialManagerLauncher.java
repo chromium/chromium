@@ -20,6 +20,8 @@ public interface CredentialManagerLauncher {
      * These values are persisted to logs. Entries should not be renumbered and
      * numeric values should never be reused. They should be kept in sync with the enum values
      * in enums.xml.
+     * TODO(crbug.com/1345232): These error codes are also used by PasswordCheckup, consider moving
+     * out of this class.
      */
     @IntDef({CredentialManagerError.NO_CONTEXT, CredentialManagerError.NO_ACCOUNT_NAME,
             CredentialManagerError.API_ERROR, CredentialManagerError.UNCATEGORIZED,

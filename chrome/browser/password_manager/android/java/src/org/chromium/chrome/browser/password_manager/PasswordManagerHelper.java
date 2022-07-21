@@ -38,7 +38,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** A helper class for showing PasswordSettings. */
+/**
+ * A helper class for showing PasswordSettings.
+ * TODO(crbug.com/1345232): Split up this class
+ **/
 public class PasswordManagerHelper {
     // Key for the argument with which PasswordsSettings will be launched. The value for
     // this argument should be part of the ManagePasswordsReferrer enum, which contains
@@ -95,8 +98,6 @@ public class PasswordManagerHelper {
     private static final String LOADING_DIALOG_PASSWORD_CHECKUP_HISTOGRAM =
             "PasswordManager.ModalLoadingDialog.PasswordCheckup.Outcome";
 
-    private static PasswordCheckupClientMetricsRecorder sPasswordCheckupMetricsRecorderForTesting;
-
     /**
      *  The identifier of the loading dialog outcome.
      *
@@ -128,17 +129,15 @@ public class PasswordManagerHelper {
      * @param context used to show the UI to manage passwords.
      */
     public static void showPasswordSettings(Context context, @ManagePasswordsReferrer int referrer,
-            SettingsLauncher settingsLauncher, CredentialManagerLauncher credentialManagerLauncher,
-            SyncService syncService,
+            SettingsLauncher settingsLauncher, SyncService syncService,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         RecordHistogram.recordEnumeratedHistogram("PasswordManager.ManagePasswordsReferrer",
                 referrer, ManagePasswordsReferrer.MAX_VALUE + 1);
 
-        if (credentialManagerLauncher != null && canUseUpmCheckup()) {
+        if (canUseUpm()) {
             LoadingModalDialogCoordinator loadingDialogCoordinator =
                     LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
-            launchTheCredentialManager(
-                    referrer, credentialManagerLauncher, syncService, loadingDialogCoordinator);
+            launchTheCredentialManager(referrer, syncService, loadingDialogCoordinator);
             return;
         }
 
@@ -148,22 +147,45 @@ public class PasswordManagerHelper {
                 context, PASSWORD_SETTINGS_CLASS, fragmentArgs));
     }
 
-    // TODO(crbug.com/1327294): Make sure we rely on the same util in all places that need
-    // to check whether UPM can be used (for password check as well as for all other cases that
-    // share the same preconditions, e.g. launching the credential manager).
-    public static boolean canUseUpmCheckup() {
+    /**
+     * Checks the availability and status of the UPM feature.
+     * All clients should check this before trying to use UPM methods.
+     * Checks for the UPM to be anabled and downstream backend to be available.
+     *
+     * TODO(crbug.com/1327294): Make sure we rely on the same util in all places that need
+     * to check whether UPM can be used (for password check as well as for all other cases that
+     * share the same preconditions, e.g. launching the credential manager).
+     *
+     * TODO(crbug.com/1345232): pass syncService and prefService instances as parameters
+     *
+     * @return True if Unified Password Manager can be use, false otherwise.
+     */
+    public static boolean canUseUpm() {
         SyncService syncService = SyncService.get();
         PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        // TODO(crbug.com/1327578): Remove isUpdateNeeded() check after adding update
+        // dialog.
         return PasswordManagerHelper.usesUnifiedPasswordManagerUI() && syncService != null
                 && hasChosenToSyncPasswords(syncService)
                 && !prefService.getBoolean(
-                        Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS);
+                        Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS)
+                && PasswordManagerBackendSupportHelper.getInstance().isBackendPresent()
+                && !PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded();
     }
 
+    /**
+     * Launches the Password Checkup UI from Google Play Services.
+     *
+     * @param context used to show the loading dialog.
+     * @param referrer the place that requested to show the UI.
+     * @param syncService the service to query about the sync status.
+     * @param modalDialogManagerSupplier The supplier of the ModalDialogManager to be used by
+     *         loading dialog.
+     */
     public static void showPasswordCheckup(Context context, @PasswordCheckReferrer int referrer,
-            PasswordCheckupClientHelper checkupClient, SyncService syncService,
+            SyncService syncService,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
-        if (!usesUnifiedPasswordManagerUI()) return;
+        assert canUseUpm();
 
         Optional<String> account = hasChosenToSyncPasswords(syncService)
                 ? Optional.of(CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()))
@@ -172,7 +194,7 @@ public class PasswordManagerHelper {
         LoadingModalDialogCoordinator loadingDialogCoordinator =
                 LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
 
-        launchPasswordCheckup(referrer, checkupClient, account, loadingDialogCoordinator);
+        launchPasswordCheckup(referrer, account, loadingDialogCoordinator);
     }
 
     /**
@@ -180,19 +202,23 @@ public class PasswordManagerHelper {
      * PasswordSpecifics then saves it to the ChromeSync module.
      *
      * @param referrer the place that requested to start a check.
-     * @param checkupClient the {@link PasswordCheckupClientHelper} instance to launch the checkup
-     *         with.
      * @param accountName the account name that is syncing passwords. If no value was provided local
      *         account will be used
      * @param successCallback callback called when password check finishes successfully
      * @param failureCallback callback called if password check encountered an error
      */
     public static void runPasswordCheckupInBackground(@PasswordCheckReferrer int referrer,
-            PasswordCheckupClientHelper checkupClient, Optional<String> accountName,
-            Callback<Void> successCallback, Callback<Exception> failureCallback) {
+            Optional<String> accountName, Callback<Void> successCallback,
+            Callback<Exception> failureCallback) {
+        assert canUseUpm();
+
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(
                         PasswordCheckOperation.RUN_PASSWORD_CHECKUP);
+
+        PasswordCheckupClientHelper checkupClient =
+                PasswordCheckupClientHelperFactory.getInstance().createHelper();
+
         checkupClient.runPasswordCheckupInBackground(referrer, accountName,
                 result
                 -> {
@@ -209,19 +235,23 @@ public class PasswordManagerHelper {
      * Asynchronously returns the number of breached credentials for the provided account.
      *
      * @param referrer the place that requested number of breached credentials.
-     * @param checkupClient the {@link PasswordCheckupClientHelper} instance to request the count
-     *         with.
      * @param accountName the account name that is syncing passwords. If no value was provided local
      *         account will be used.
      * @param successCallback callback called with the number of breached passwords.
      * @param failureCallback callback called if encountered an error.
      */
     public static void getBreachedCredentialsCount(@PasswordCheckReferrer int referrer,
-            PasswordCheckupClientHelper checkupClient, Optional<String> accountName,
-            Callback<Integer> successCallback, Callback<Exception> failureCallback) {
+            Optional<String> accountName, Callback<Integer> successCallback,
+            Callback<Exception> failureCallback) {
+        assert canUseUpm();
+
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(
                         PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT);
+
+        PasswordCheckupClientHelper checkupClient =
+                PasswordCheckupClientHelperFactory.getInstance().createHelper();
+
         checkupClient.getBreachedCredentialsCount(referrer, accountName,
                 result
                 -> {
@@ -310,9 +340,11 @@ public class PasswordManagerHelper {
 
     @VisibleForTesting
     static void launchTheCredentialManager(@ManagePasswordsReferrer int referrer,
-            CredentialManagerLauncher credentialManagerLauncher, SyncService syncService,
-            LoadingModalDialogCoordinator loadingDialogCoordinator) {
-        if (!hasChosenToSyncPasswords(syncService)) return;
+            SyncService syncService, LoadingModalDialogCoordinator loadingDialogCoordinator) {
+        assert canUseUpm();
+
+        CredentialManagerLauncher credentialManagerLauncher =
+                CredentialManagerLauncherFactory.getInstance().createLauncher();
 
         loadingDialogCoordinator.show();
 
@@ -331,15 +363,16 @@ public class PasswordManagerHelper {
     }
 
     @VisibleForTesting
-    static void launchPasswordCheckup(@PasswordCheckReferrer int referrer,
-            PasswordCheckupClientHelper checkupClient, Optional<String> account,
+    static void launchPasswordCheckup(@PasswordCheckReferrer int referrer, Optional<String> account,
             LoadingModalDialogCoordinator loadingDialogCoordinator) {
-        assert checkupClient != null;
+        assert canUseUpm();
 
         loadingDialogCoordinator.show();
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(
                         (PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT));
+        PasswordCheckupClientHelper checkupClient =
+                PasswordCheckupClientHelperFactory.getInstance().createHelper();
         checkupClient.getPasswordCheckupIntent(referrer, account,
                 (intent)
                         -> {

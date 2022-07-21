@@ -33,16 +33,11 @@ public class PasswordCheckupLauncher {
             WindowAndroid windowAndroid, @PasswordCheckReferrer int passwordCheckReferrer) {
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
 
-        if (PasswordManagerHelper.canUseUpmCheckup()) {
-            PasswordCheckupClientHelper checkupHelper =
-                    PasswordCheckupClientHelperFactory.getInstance().createHelper();
-            if (checkupHelper != null) {
-                PasswordManagerHelper.showPasswordCheckup(windowAndroid.getContext().get(),
-                        passwordCheckReferrer,
-                        PasswordCheckupClientHelperFactory.getInstance().createHelper(),
-                        SyncService.get(), getModalDialogManagerSupplier(windowAndroid));
-                return;
-            }
+        if (PasswordManagerHelper.canUseUpm()) {
+            PasswordManagerHelper.showPasswordCheckup(windowAndroid.getContext().get(),
+                    passwordCheckReferrer, SyncService.get(),
+                    getModalDialogManagerSupplier(windowAndroid));
+            return;
         }
 
         PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl())

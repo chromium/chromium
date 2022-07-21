@@ -26,11 +26,8 @@ import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
-import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher;
-import org.chromium.chrome.browser.password_manager.CredentialManagerLauncherFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
-import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
@@ -77,8 +74,6 @@ class SafetyCheckMediator
     private SyncConsentActivityLauncher mSigninLauncher;
     /** Async logic for password check. */
     private boolean mShowSafePasswordState;
-    /** Helper for password check. TODO(crbug.com/1315267): Move this into a new class. */
-    private PasswordCheckupClientHelper mPasswordCheckupHelper;
     /** Password store bridge. TODO(crbug.com/1315267): Move this into a new class. */
     private PasswordStoreBridge mPasswordStoreBridge;
     private boolean mPasswordsLoaded;
@@ -164,14 +159,12 @@ class SafetyCheckMediator
      * @param client An updates client.
      * @param settingsLauncher An instance of the {@link SettingsLauncher} implementation.
      * @param signinLauncher An instance implementing {@SigninActivityLauncher}.
-     * @param passwordCheckupHelper An instance of the {@link PasswordCheckupClientHelper}.
      * @param modalDialogManagerSupplier A supplier for the {@link ModalDialogManager}.
      */
     public SafetyCheckMediator(PropertyModel model, SafetyCheckUpdatesDelegate client,
             SettingsLauncher settingsLauncher, SyncConsentActivityLauncher signinLauncher,
-            PasswordCheckupClientHelper passwordCheckupHelper,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
-        this(model, client, settingsLauncher, signinLauncher, passwordCheckupHelper, new Handler());
+        this(model, client, settingsLauncher, signinLauncher, new Handler());
         mPasswordStoreBridge = new PasswordStoreBridge();
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
@@ -179,21 +172,19 @@ class SafetyCheckMediator
     @VisibleForTesting
     SafetyCheckMediator(PropertyModel model, SafetyCheckUpdatesDelegate client,
             SettingsLauncher settingsLauncher, SyncConsentActivityLauncher signinLauncher,
-            PasswordCheckupClientHelper passwordCheckupHelper, PasswordStoreBridge bridge,
-            Handler handler) {
-        this(model, client, settingsLauncher, signinLauncher, passwordCheckupHelper, handler);
+            PasswordStoreBridge bridge, Handler handler) {
+        this(model, client, settingsLauncher, signinLauncher, handler);
         mPasswordStoreBridge = bridge;
     }
 
     SafetyCheckMediator(PropertyModel model, SafetyCheckUpdatesDelegate client,
             SettingsLauncher settingsLauncher, SyncConsentActivityLauncher signinLauncher,
-            PasswordCheckupClientHelper passwordCheckupHelper, Handler handler) {
+            Handler handler) {
         mModel = model;
         mUpdatesClient = client;
         mSettingsLauncher = settingsLauncher;
         mSigninLauncher = signinLauncher;
         mHandler = handler;
-        mPasswordCheckupHelper = passwordCheckupHelper;
         mPreferenceManager = SharedPreferencesManager.getInstance();
         // Set the listener for clicking the updates element.
         mModel.set(SafetyCheckProperties.UPDATES_CLICK_LISTENER,
@@ -386,7 +377,7 @@ class SafetyCheckMediator
     /** Cancels any pending callbacks and registered observers.  */
     public void destroy() {
         cancelCallbacks();
-        if (mPasswordCheckupHelper == null) {
+        if (!PasswordManagerHelper.canUseUpm()) {
             // Refresh the ref without creating a new one.
             PasswordCheck passwordCheck = PasswordCheckFactory.getPasswordCheckInstance();
             if (passwordCheck != null) {
@@ -394,7 +385,6 @@ class SafetyCheckMediator
                 passwordCheck.removeObserver(this);
             }
         } else {
-            mPasswordCheckupHelper = null;
             mPasswordStoreBridge.removeObserver(this);
             mPasswordStoreBridge.destroy();
         }
@@ -469,7 +459,7 @@ class SafetyCheckMediator
     private void determinePasswordStateOnLoadComplete() {
         // Nothing is blocked on data load, so ignore the load.
         if (mLoadStage == PasswordCheckLoadStage.IDLE) return;
-        if (mPasswordCheckupHelper == null) {
+        if (!PasswordManagerHelper.canUseUpm()) {
             // If something is blocked, that means the passwords check is being observed. At this
             // point, no further events need to be observed.
             PasswordCheckFactory.getOrCreate(mSettingsLauncher).removeObserver(this);
@@ -543,26 +533,21 @@ class SafetyCheckMediator
                         SafetyCheckInteractions.PASSWORDS_MANAGE,
                         SafetyCheckInteractions.MAX_VALUE + 1);
                 // Open the Password Check UI.
-                if (mPasswordCheckupHelper == null) {
+                if (!PasswordManagerHelper.canUseUpm()) {
                     PasswordCheckFactory.getOrCreate(mSettingsLauncher)
                             .showUi(p.getContext(), PasswordCheckReferrer.SAFETY_CHECK);
                 } else {
                     PasswordManagerHelper.showPasswordCheckup(p.getContext(),
-                            PasswordCheckReferrer.SAFETY_CHECK, mPasswordCheckupHelper,
-                            SyncService.get(), mModalDialogManagerSupplier);
+                            PasswordCheckReferrer.SAFETY_CHECK, SyncService.get(),
+                            mModalDialogManagerSupplier);
                 }
                 return true;
             };
         } else {
             listener = (p) -> {
-                // Open the Password Manager.
-                CredentialManagerLauncher credentialManagerLauncher =
-                        PasswordManagerHelper.usesUnifiedPasswordManagerUI()
-                        ? CredentialManagerLauncherFactory.getInstance().createLauncher()
-                        : null;
                 PasswordManagerHelper.showPasswordSettings(p.getContext(),
-                        ManagePasswordsReferrer.SAFETY_CHECK, mSettingsLauncher,
-                        credentialManagerLauncher, SyncService.get(), mModalDialogManagerSupplier);
+                        ManagePasswordsReferrer.SAFETY_CHECK, mSettingsLauncher, SyncService.get(),
+                        mModalDialogManagerSupplier);
                 return true;
             };
         }
@@ -581,7 +566,7 @@ class SafetyCheckMediator
     private void fetchPasswordsAndBreachedCredentials() {
         mLeaksLoaded = false;
         mPasswordsLoaded = false;
-        if (mPasswordCheckupHelper == null) {
+        if (!PasswordManagerHelper.canUseUpm()) {
             // Reset the status of the password disk loads. If it's loaded, PasswordCheck will
             // invoke the callbacks again (the |callImmediatelyIfReady| argument to |addObserver| is
             // true).
@@ -592,7 +577,7 @@ class SafetyCheckMediator
         mPasswordStoreBridge.addObserver(this, true);
         WeakReference<SafetyCheckMediator> weakRef = new WeakReference(this);
         PasswordManagerHelper.getBreachedCredentialsCount(PasswordCheckReferrer.SAFETY_CHECK,
-                mPasswordCheckupHelper, getSyncingAccount(),
+                getSyncingAccount(),
                 count
                 -> {
                     SafetyCheckMediator mediator = weakRef.get();
@@ -609,7 +594,7 @@ class SafetyCheckMediator
     private void checkPasswords() {
         mLoadStage = PasswordCheckLoadStage.IDLE;
 
-        if (mPasswordCheckupHelper == null) {
+        if (!PasswordManagerHelper.canUseUpm()) {
             // Start observing the password check events (including data loads).
             PasswordCheckFactory.getOrCreate(mSettingsLauncher).addObserver(this, false);
             // This indicates that the results of the initial data load should not be applied even
@@ -620,7 +605,7 @@ class SafetyCheckMediator
 
         WeakReference<SafetyCheckMediator> weakRef = new WeakReference(this);
         PasswordManagerHelper.runPasswordCheckupInBackground(PasswordCheckReferrer.SAFETY_CHECK,
-                mPasswordCheckupHelper, getSyncingAccount(),
+                getSyncingAccount(),
                 unused
                 -> {
                     SafetyCheckMediator mediator = weakRef.get();
@@ -635,7 +620,7 @@ class SafetyCheckMediator
     }
 
     private boolean hasSavedPasswords() {
-        if (mPasswordCheckupHelper == null) {
+        if (!PasswordManagerHelper.canUseUpm()) {
             return PasswordCheckFactory.getOrCreate(mSettingsLauncher).getSavedPasswordsCount() > 0;
         }
         return mPasswordStoreBridge.getPasswordStoreCredentialsCount() > 0;
@@ -665,7 +650,7 @@ class SafetyCheckMediator
 
         WeakReference<SafetyCheckMediator> weakRef = new WeakReference(this);
         PasswordManagerHelper.getBreachedCredentialsCount(PasswordCheckReferrer.SAFETY_CHECK,
-                mPasswordCheckupHelper, getSyncingAccount(),
+                getSyncingAccount(),
                 count
                 -> {
                     SafetyCheckMediator mediator = weakRef.get();

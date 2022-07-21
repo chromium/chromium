@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,16 +38,22 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper;
+import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
+import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
+import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckMediator.SafetyCheckInteractions;
@@ -57,6 +64,11 @@ import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.sync.ModelType;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -76,6 +88,8 @@ public class SafetyCheckMediatorTest {
             "Settings.SafetyCheck.SafeBrowsingResult";
     private static final String SAFETY_CHECK_UPDATES_RESULT_HISTOGRAM =
             "Settings.SafetyCheck.UpdatesResult";
+
+    private static final String TEST_EMAIL_ADDRESS = "test@example.com";
 
     @Rule
     public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
@@ -103,6 +117,12 @@ public class SafetyCheckMediatorTest {
     private PasswordCheckupClientHelper mPasswordCheckupHelper;
     @Mock
     private PasswordStoreBridge mPasswordStoreBridge;
+    @Mock
+    private PrefService mPrefService;
+    @Mock
+    private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock
+    private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
 
     private SafetyCheckMediator mMediator;
 
@@ -124,6 +144,11 @@ public class SafetyCheckMediatorTest {
     public SafetyCheckMediatorTest(boolean useNewApi) {
         mUseNewApi = useNewApi;
         ContextUtils.initApplicationContextForTests(ApplicationProvider.getApplicationContext());
+        if (useNewApi) {
+            Features.getInstance().enable(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID);
+        } else {
+            Features.getInstance().disable(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID);
+        }
     }
 
     private void setPasswordCheckResult(boolean hasError) {
@@ -223,22 +248,47 @@ public class SafetyCheckMediatorTest {
                         anyInt(), any(), any(Callback.class), any(Callback.class));
     }
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
+    private void configureMockSyncService() {
         SyncService mockSyncService = Mockito.mock(SyncService.class);
         SyncService.overrideForTests(mockSyncService);
-        Mockito.when(mockSyncService.isSyncFeatureEnabled()).thenReturn(false);
+        when(mockSyncService.isSyncFeatureEnabled()).thenReturn(true);
+        when(mockSyncService.isEngineInitialized()).thenReturn(true);
+        when(mockSyncService.hasSyncConsent()).thenReturn(true);
+        when(mockSyncService.getChosenDataTypes())
+                .thenReturn(CollectionUtil.newHashSet(ModelType.PASSWORDS));
+        when(mockSyncService.getAccountInfo())
+                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
+    }
+
+    @Before
+    public void setUp() throws PasswordCheckBackendException {
+        MockitoAnnotations.initMocks(this);
+        configureMockSyncService();
+
+        PasswordManagerBackendSupportHelper.setInstanceForTesting(mBackendSupportHelperMock);
+        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
+        when(mBackendSupportHelperMock.isUpdateNeeded()).thenReturn(false);
+
         mJniMocker.mock(SafetyCheckBridgeJni.TEST_HOOKS, mSafetyCheckBridge);
         Profile.setLastUsedProfileForTesting(mProfile);
+
+        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+        when(mPrefService.getBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS))
+                .thenReturn(false);
+
         mModel = SafetyCheckProperties.createSafetyCheckModel();
         if (mUseNewApi) {
+            PasswordCheckupClientHelperFactory mockPasswordCheckFactory =
+                    mock(PasswordCheckupClientHelperFactory.class);
+            when(mockPasswordCheckFactory.createHelper()).thenReturn(mPasswordCheckupHelper);
+            PasswordCheckupClientHelperFactory.setFactoryForTesting(mockPasswordCheckFactory);
             mMediator = new SafetyCheckMediator(mModel, mUpdatesDelegate, mSettingsLauncher,
-                    mSigninLauncher, mPasswordCheckupHelper, mPasswordStoreBridge, mHandler);
+                    mSigninLauncher, mPasswordStoreBridge, mHandler);
         } else {
             PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
-            mMediator = new SafetyCheckMediator(mModel, mUpdatesDelegate, mSettingsLauncher,
-                    mSigninLauncher, null, null, mHandler);
+            mMediator = new SafetyCheckMediator(
+                    mModel, mUpdatesDelegate, mSettingsLauncher, mSigninLauncher, null, mHandler);
         }
 
         // Execute any delayed tasks immediately.
