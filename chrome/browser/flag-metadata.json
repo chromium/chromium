@@ -2947,6 +2947,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-tailored-security-desktop-notice",
+    "owners": ["jacastro@chromium.org", "chrome-counter-abuse-alerts@google.com"],
+    "expiry_milestone": 107
+  },
+  {
     "name": "enable-tflite-language-detection",
     "owners": [ "sophiechang", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 110

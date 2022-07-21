@@ -1529,6 +1529,9 @@ extern const char kTabSearchFuzzySearchDescription[];
 extern const char kTabStripImprovementsAndroidName[];
 extern const char kTabStripImprovementsAndroidDescription[];
 
+extern const char kTailoredSecurityDesktopNoticeName[];
+extern const char kTailoredSecurityDesktopNoticeDescription[];
+
 extern const char kTFLiteLanguageDetectionName[];
 extern const char kTFLiteLanguageDetectionDescription[];
 
