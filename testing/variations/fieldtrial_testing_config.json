@@ -5172,6 +5172,27 @@
             ]
         }
     ],
+    "InMemoryCache": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableBoth",
+                    "enable_features": [
+                        "InMemoryCodeCache",
+                        "NetworkServiceMemoryCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "IncludeBackgroundSVGInLCP": [
         {
             "platforms": [
