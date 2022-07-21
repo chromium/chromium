@@ -54,6 +54,7 @@ CWVSyncError CWVConvertGoogleServiceAuthErrorStateToCWVSyncError(
       return CWVSyncErrorUnexpectedServiceResponse;
     // The following errors are unexpected on iOS.
     case GoogleServiceAuthError::SERVICE_ERROR:
+    case GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
     case GoogleServiceAuthError::NUM_STATES:
       NOTREACHED();
       return CWVSyncErrorNone;

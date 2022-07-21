@@ -195,6 +195,11 @@ void ProfileOAuth2TokenServiceDelegate::UpdateAuthError(
   if (error.IsTransientError())
     return;
 
+  // Scope errors are only relevant to the scope set of the request and it does
+  // not imply that the account is in an error state.
+  if (error.IsScopePersistentError())
+    return;
+
   auto it = errors_.find(account_id);
   if (error.state() == GoogleServiceAuthError::NONE) {
     if (it == errors_.end())

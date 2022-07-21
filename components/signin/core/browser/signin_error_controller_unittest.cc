@@ -157,7 +157,9 @@ TEST(SigninErrorControllerTest, AuthStatusEnumerateAllErrors) {
       GoogleServiceAuthError::SERVICE_UNAVAILABLE,
       GoogleServiceAuthError::REQUEST_CANCELED,
       GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE,
-      GoogleServiceAuthError::SERVICE_ERROR};
+      GoogleServiceAuthError::SERVICE_ERROR,
+      GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR,
+  };
   static_assert(
       std::size(table) == GoogleServiceAuthError::NUM_STATES -
                               GoogleServiceAuthError::kDeprecatedStateCount,
@@ -166,8 +168,8 @@ TEST(SigninErrorControllerTest, AuthStatusEnumerateAllErrors) {
   for (GoogleServiceAuthError::State state : table) {
     GoogleServiceAuthError error(state);
 
-    if (error.IsTransientError())
-      continue;  // Only persistent errors or non-errors are reported.
+    if (error.IsTransientError() || error.IsScopePersistentError())
+      continue;  // Only non scope persistent errors or non-errors are reported.
 
     identity_test_env.UpdatePersistentErrorOfRefreshTokenForAccount(
         test_account_id, error);

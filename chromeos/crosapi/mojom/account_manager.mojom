@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 10
+// Next MinVersion: 11
 
 module crosapi.mojom;
 
@@ -42,7 +42,7 @@ struct Account {
 
 // See google_apis/gaia/google_service_auth_error.h
 // Currently sent from ash to lacros.
-// Next value: 14.
+// Next value: 15.
 [Stable]
 struct GoogleServiceAuthError {
   [Stable, Extensible]
@@ -61,6 +61,7 @@ struct GoogleServiceAuthError {
     kUnexpectedServiceResponse = 11,
     kServiceError = 12,
     // DEPRECATED kWebLoginRequired = 13,
+    [MinVersion=10] kScopeLimitedUnrecoverableError = 14,
   };
 
   // Next value: 4.

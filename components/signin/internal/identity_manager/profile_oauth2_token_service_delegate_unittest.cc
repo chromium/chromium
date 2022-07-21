@@ -73,6 +73,7 @@ const GoogleServiceAuthError::State table[] = {
     GoogleServiceAuthError::REQUEST_CANCELED,
     GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE,
     GoogleServiceAuthError::SERVICE_ERROR,
+    GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR,
 };
 
 TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthError_PersistenErrors) {
@@ -86,7 +87,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthError_PersistenErrors) {
 
   for (GoogleServiceAuthError::State state : table) {
     GoogleServiceAuthError error(state);
-    if (!error.IsPersistentError())
+    if (!error.IsPersistentError() || error.IsScopePersistentError())
       continue;
 
     EXPECT_CALL(observer_, OnAuthErrorChanged(account_id, error)).Times(1);
@@ -128,6 +129,26 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthError_TransientErrors) {
     EXPECT_EQ(delegate_.BackOffError(), error);
     testing::Mock::VerifyAndClearExpectations(&observer_);
   }
+}
+
+TEST_F(ProfileOAuth2TokenServiceDelegateTest,
+       UpdateAuthError_ScopePersistenErrors) {
+  const CoreAccountId account_id("account_id");
+  delegate_.UpdateCredentials(account_id, "refresh_token");
+  GoogleServiceAuthError error(
+      GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR);
+
+  // Scope persistent errors are not persisted or notified as it does not imply
+  // that the account is in an error state but the error is only relevant to
+  // the scope set requested in the access token request.
+  EXPECT_CALL(observer_, OnAuthErrorChanged(account_id, error)).Times(0);
+
+  delegate_.UpdateAuthError(account_id, error);
+  EXPECT_EQ(delegate_.GetAuthError(account_id),
+            GoogleServiceAuthError::AuthErrorNone());
+  // Backoff only used for transient errors.
+  EXPECT_EQ(delegate_.BackoffEntry()->failure_count(), 0);
+  testing::Mock::VerifyAndClearExpectations(&observer_);
 }
 
 TEST_F(ProfileOAuth2TokenServiceDelegateTest,

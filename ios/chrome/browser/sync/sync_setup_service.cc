@@ -149,6 +149,7 @@ SyncSetupService::SyncServiceState SyncSetupService::GetSyncServiceState() {
       break;
     // The following errors are unexpected on iOS.
     case GoogleServiceAuthError::SERVICE_ERROR:
+    case GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
     // Conventional value for counting the states, never used.
     case GoogleServiceAuthError::NUM_STATES:
       NOTREACHED() << "Unexpected Auth error ("

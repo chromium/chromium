@@ -87,6 +87,8 @@ crosapi::mojom::GoogleServiceAuthError::State ToMojoGoogleServiceAuthErrorState(
       return cm::GoogleServiceAuthError::State::kUnexpectedServiceResponse;
     case GoogleServiceAuthError::State::SERVICE_ERROR:
       return cm::GoogleServiceAuthError::State::kServiceError;
+    case GoogleServiceAuthError::State::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
+      return cm::GoogleServiceAuthError::State::kScopeLimitedUnrecoverableError;
     case GoogleServiceAuthError::State::NUM_STATES:
       NOTREACHED();
       return cm::GoogleServiceAuthError::State::kNone;
@@ -239,6 +241,9 @@ absl::optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
     case cm::GoogleServiceAuthError::State::kRequestCanceled:
       return GoogleServiceAuthError(
           GoogleServiceAuthError::State::REQUEST_CANCELED);
+    case cm::GoogleServiceAuthError::State::kScopeLimitedUnrecoverableError:
+      return GoogleServiceAuthError(
+          GoogleServiceAuthError::State::SCOPE_LIMITED_UNRECOVERABLE_ERROR);
     default:
       LOG(WARNING) << "Unknown crosapi::mojom::GoogleServiceAuthError::State: "
                    << mojo_error->state;

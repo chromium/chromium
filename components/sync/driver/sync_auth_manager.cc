@@ -544,6 +544,7 @@ void SyncAuthManager::AccessTokenFetched(
       break;
     case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
     case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
+    case GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
       DLOG(ERROR) << "Unexpected persistent error: " << error.ToString();
       SetLastAuthError(error);
       break;

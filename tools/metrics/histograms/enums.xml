@@ -46266,6 +46266,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="11" label="UNEXPECTED_SERVICE_RESPONSE"/>
   <int value="12" label="SERVICE_ERROR"/>
   <int value="13" label="WEB_LOGIN_REQUIRED (deprecated)"/>
+  <int value="14" label="SCOPE_LIMITED_UNRECOVERABLE_ERROR"/>
 </enum>
 
 <enum name="GoogleUpdateAfterItemClickedActions">

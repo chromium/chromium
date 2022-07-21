@@ -109,6 +109,7 @@ bool GoogleServiceAuthError::IsValid(State state) {
     case REQUEST_CANCELED:
     case UNEXPECTED_SERVICE_RESPONSE:
     case SERVICE_ERROR:
+    case SCOPE_LIMITED_UNRECOVERABLE_ERROR:
       return true;
     case NUM_STATES:
       return false;
@@ -157,6 +158,9 @@ std::string GoogleServiceAuthError::ToString() const {
     case SERVICE_ERROR:
       return base::StringPrintf("Service responded with error: '%s'",
                                 error_message_.c_str());
+    case SCOPE_LIMITED_UNRECOVERABLE_ERROR:
+      return base::StringPrintf("Service responded with error: '%s'",
+                                error_message_.c_str());
     case NUM_STATES:
       NOTREACHED();
       return std::string();
@@ -166,6 +170,10 @@ std::string GoogleServiceAuthError::ToString() const {
 bool GoogleServiceAuthError::IsPersistentError() const {
   if (state_ == GoogleServiceAuthError::NONE) return false;
   return !IsTransientError();
+}
+
+bool GoogleServiceAuthError::IsScopePersistentError() const {
+  return state_ == GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR;
 }
 
 bool GoogleServiceAuthError::IsTransientError() const {

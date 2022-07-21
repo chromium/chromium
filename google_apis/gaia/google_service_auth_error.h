@@ -78,8 +78,12 @@ class GoogleServiceAuthError {
     // The password is valid but web login is required to get a token.
     // WEB_LOGIN_REQUIRED = 13,
 
+    // Indicates the service responded with an error that is bound to the scopes
+    // that are in the request.
+    SCOPE_LIMITED_UNRECOVERABLE_ERROR = 14,
+
     // The number of known error states.
-    NUM_STATES = 14,
+    NUM_STATES = 15,
   };
 
   static constexpr size_t kDeprecatedStateCount = 6;
@@ -149,9 +153,22 @@ class GoogleServiceAuthError {
   // Returns a message describing the error.
   std::string ToString() const;
 
-  // Check if this is error may go away simply by trying again.  Except for the
-  // NONE case, these are mutually exclusive.
+  // In contrast to transient errors, errors in this category imply that
+  // authentication shouldn't simply be retried. The error can be:
+  // - User recoverable: persistent error that can be fixed by user action
+  // (e.g. Sign in).
+  // - Scope error: persistent error that is bound to the scopes in the access
+  // token request and can't be fixed by user action.
   bool IsPersistentError() const;
+
+  // Persistent error that is bound to the scopes in the access
+  // token request and can't be fixed by user action. Authentication should not
+  // be retried.
+  bool IsScopePersistentError() const;
+
+  // Check if this is error may go away simply by trying again.
+  // Except for the NONE case, errors are either transient or persistent but not
+  // both.
   bool IsTransientError() const;
 
  private:
