@@ -98,7 +98,7 @@ void DownloadShelf::ShowDownload(DownloadUIModel::DownloadUIModelPtr download) {
     return;
 
   if (!DownloadCoreServiceFactory::GetForBrowserContext(download->profile())
-           ->IsDownloadUiEnabled())
+           ->IsShelfEnabled())
     return;
 
   Unhide();

@@ -114,10 +114,6 @@ DownloadBubbleUIController::DownloadBubbleUIController(Browser* browser)
 
 DownloadBubbleUIController::~DownloadBubbleUIController() = default;
 
-void DownloadBubbleUIController::HideDownloadUi() {
-  display_controller_->HideToolbarButton();
-}
-
 bool DownloadBubbleUIController::MaybeAddOfflineItem(const OfflineItem& item,
                                                      bool is_new) {
   if (profile_->IsOffTheRecord() != item.is_off_the_record)

@@ -82,9 +82,6 @@ class DownloadDisplayController
   // Called from bubble controller when an item is deleted.
   virtual void OnRemovedItem(const ContentId& id);
 
-  // Asks `display_` to hide the toolbar button. Does nothing if the toolbar
-  // button is already hidden.
-  void HideToolbarButton();
   // Asks `display_` to hide the toolbar button details. Does nothing if the
   // details are already hidden.
   void HideBubble();
@@ -121,6 +118,9 @@ class DownloadDisplayController
   // Asks `display_` to show the toolbar button. Does nothing if the toolbar
   // button is already showing.
   void ShowToolbarButton();
+  // Asks `display_` to hide the toolbar button. Does nothing if the toolbar
+  // button is already hidden.
+  void HideToolbarButton();
 
   // Based on the information from `download_manager_`, updates the icon state
   // of the `display_`.

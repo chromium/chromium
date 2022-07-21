@@ -89,12 +89,6 @@ class DownloadBubbleUIController
   // on when the scheduled time arrives.
   void ScheduleCancelForEphemeralWarning(const std::string& guid);
 
-  // Force the controller to hide the download UI entirely, including the bubble
-  // and the toolbar icon. This function should only be called if the event is
-  // triggered outside of normal download events that are not listened by
-  // observers.
-  void HideDownloadUi();
-
   // Returns the DownloadDisplayController. Should always return a valid
   // controller.
   DownloadDisplayController* GetDownloadDisplayController() {

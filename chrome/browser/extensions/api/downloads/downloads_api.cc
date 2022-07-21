@@ -33,8 +33,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/download/bubble/download_bubble_controller.h"
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_danger_prompt.h"
@@ -486,16 +484,16 @@ void GetDownloadCoreServices(content::BrowserContext* context,
   }
 }
 
-void MaybeSetUiEnabled(DownloadCoreService* service,
-                       DownloadCoreService* incognito_service,
-                       const Extension* extension,
-                       bool enabled) {
+void MaybeSetShelfEnabled(DownloadCoreService* service,
+                          DownloadCoreService* incognito_service,
+                          const Extension* extension,
+                          bool enabled) {
   if (service) {
-    service->GetExtensionEventRouter()->SetUiEnabled(extension, enabled);
+    service->GetExtensionEventRouter()->SetShelfEnabled(extension, enabled);
   }
   if (incognito_service) {
-    incognito_service->GetExtensionEventRouter()->SetUiEnabled(extension,
-                                                               enabled);
+    incognito_service->GetExtensionEventRouter()->SetShelfEnabled(extension,
+                                                                  enabled);
   }
 }
 
@@ -1508,39 +1506,26 @@ ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
   GetDownloadCoreServices(browser_context(), include_incognito_information(),
                           &service, &incognito_service);
 
-  MaybeSetUiEnabled(service, incognito_service, extension(), params->enabled);
-
-  bool is_bubble_enabled = download::IsDownloadBubbleEnabled(
-      Profile::FromBrowserContext(browser_context()));
+  MaybeSetShelfEnabled(service, incognito_service, extension(),
+                       params->enabled);
 
   BrowserList* browsers = BrowserList::GetInstance();
   if (browsers) {
-    for (auto* browser : *browsers) {
+    for (auto iter = browsers->begin(); iter != browsers->end(); ++iter) {
+      const Browser* browser = *iter;
       DownloadCoreService* current_service =
           DownloadCoreServiceFactory::GetForBrowserContext(browser->profile());
-      // The following code is to hide the download UI explicitly if the UI is
-      // set to disabled.
-      bool match_current_service = (current_service == service) ||
-                                   (current_service == incognito_service);
-      if (!match_current_service || current_service->IsDownloadUiEnabled()) {
-        continue;
-      }
-      // Calling this API affects the download bubble as well, so extensions
-      // using this API is still compatible with the new download bubble. This
-      // API will eventually be deprecated (replaced by the SetUiOptions API
-      // below).
-      if (is_bubble_enabled &&
-          browser->window()->GetDownloadBubbleUIController()) {
-        browser->window()->GetDownloadBubbleUIController()->HideDownloadUi();
-      } else if (browser->window()->IsDownloadShelfVisible()) {
+      if (((current_service == service) ||
+           (current_service == incognito_service)) &&
+          browser->window()->IsDownloadShelfVisible() &&
+          !current_service->IsShelfEnabled())
         browser->window()->GetDownloadShelf()->Close();
-      }
     }
   }
 
   if (params->enabled &&
-      ((service && !service->IsDownloadUiEnabled()) ||
-       (incognito_service && !incognito_service->IsDownloadUiEnabled()))) {
+      ((service && !service->IsShelfEnabled()) ||
+       (incognito_service && !incognito_service->IsShelfEnabled()))) {
     return RespondNow(Error(download_extension_errors::kShelfDisabled));
   }
 
@@ -1567,35 +1552,26 @@ ExtensionFunction::ResponseAction DownloadsSetUiOptionsFunction::Run() {
   GetDownloadCoreServices(browser_context(), include_incognito_information(),
                           &service, &incognito_service);
 
-  MaybeSetUiEnabled(service, incognito_service, extension(), options.enabled);
-
-  bool is_bubble_enabled = download::IsDownloadBubbleEnabled(
-      Profile::FromBrowserContext(browser_context()));
+  MaybeSetShelfEnabled(service, incognito_service, extension(),
+                       options.enabled);
 
   BrowserList* browsers = BrowserList::GetInstance();
   if (browsers) {
     for (auto* browser : *browsers) {
       DownloadCoreService* current_service =
           DownloadCoreServiceFactory::GetForBrowserContext(browser->profile());
-      // The following code is to hide the download UI explicitly if the UI is
-      // set to disabled.
-      bool match_current_service = (current_service == service) ||
-                                   (current_service == incognito_service);
-      if (!match_current_service || current_service->IsDownloadUiEnabled()) {
-        continue;
-      }
-      if (is_bubble_enabled &&
-          browser->window()->GetDownloadBubbleUIController()) {
-        browser->window()->GetDownloadBubbleUIController()->HideDownloadUi();
-      } else if (browser->window()->IsDownloadShelfVisible()) {
+      if (((current_service == service) ||
+           (current_service == incognito_service)) &&
+          browser->window()->IsDownloadShelfVisible() &&
+          !current_service->IsShelfEnabled()) {
         browser->window()->GetDownloadShelf()->Close();
       }
     }
   }
 
   if (options.enabled &&
-      ((service && !service->IsDownloadUiEnabled()) ||
-       (incognito_service && !incognito_service->IsDownloadUiEnabled()))) {
+      ((service && !service->IsShelfEnabled()) ||
+       (incognito_service && !incognito_service->IsShelfEnabled()))) {
     return RespondNow(Error(download_extension_errors::kUiDisabled));
   }
 
@@ -1681,19 +1657,19 @@ void ExtensionDownloadsEventRouter::
       SetDetermineFilenameTimeoutSecondsForTesting(s);
 }
 
-void ExtensionDownloadsEventRouter::SetUiEnabled(const Extension* extension,
-                                                 bool enabled) {
-  auto iter = ui_disabling_extensions_.find(extension);
-  if (iter == ui_disabling_extensions_.end()) {
+void ExtensionDownloadsEventRouter::SetShelfEnabled(const Extension* extension,
+                                                    bool enabled) {
+  auto iter = shelf_disabling_extensions_.find(extension);
+  if (iter == shelf_disabling_extensions_.end()) {
     if (!enabled)
-      ui_disabling_extensions_.insert(extension);
+      shelf_disabling_extensions_.insert(extension);
   } else if (enabled) {
-    ui_disabling_extensions_.erase(extension);
+    shelf_disabling_extensions_.erase(extension);
   }
 }
 
-bool ExtensionDownloadsEventRouter::IsUiEnabled() const {
-  return ui_disabling_extensions_.empty();
+bool ExtensionDownloadsEventRouter::IsShelfEnabled() const {
+  return shelf_disabling_extensions_.empty();
 }
 
 // The method by which extensions hook into the filename determination process
@@ -2034,9 +2010,9 @@ void ExtensionDownloadsEventRouter::OnExtensionUnloaded(
     const Extension* extension,
     UnloadedExtensionReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto iter = ui_disabling_extensions_.find(extension);
-  if (iter != ui_disabling_extensions_.end())
-    ui_disabling_extensions_.erase(iter);
+  auto iter = shelf_disabling_extensions_.find(extension);
+  if (iter != shelf_disabling_extensions_.end())
+    shelf_disabling_extensions_.erase(iter);
 }
 
 void ExtensionDownloadsEventRouter::CheckForHistoryFilesRemoval() {
