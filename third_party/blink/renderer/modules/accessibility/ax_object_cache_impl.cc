@@ -280,6 +280,13 @@ bool IsTextRelevantForAccessibility(const LayoutText& layout_text) {
   const Node* node = layout_text.GetNode();
   DCHECK(node);  // Anonymous text is processed earlier, doesn't reach here.
 
+#if DCHECK_IS_ON()
+  DCHECK(node->GetDocument().Lifecycle().GetState() >=
+         DocumentLifecycle::kAfterPerformLayout)
+      << "Unclean document at lifecycle "
+      << node->GetDocument().Lifecycle().ToString();
+#endif
+
   // Ignore empty text.
   if (layout_text.HasEmptyText())
     return false;
@@ -809,7 +816,9 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
   return result;
 }
 
-AXObject* AXObjectCacheImpl::GetWithoutInvalidation(const Node* node) {
+AXObject* AXObjectCacheImpl::GetWithoutInvalidation(
+    const Node* node,
+    bool allow_display_locking_invalidation) {
   if (!node)
     return nullptr;
 
@@ -824,8 +833,15 @@ AXObject* AXObjectCacheImpl::GetWithoutInvalidation(const Node* node) {
   DCHECK(!HashTraits<AXID>::IsDeletedValue(layout_id));
   if (layout_id) {
     auto it = objects_.find(layout_id);
-    if (it != objects_.end())
+    if (it != objects_.end()) {
+      if (allow_display_locking_invalidation && IsDisplayLocked(node)) {
+        // Change from AXLayoutObject -> AXNodeObject.
+        // The node is in a display locked subtree, but we've previously put it
+        // in the cache with its layout object.
+        Invalidate(layout_object->GetDocument(), layout_id);
+      }
       return it->value;
+    }
     return nullptr;
   }
 
@@ -834,15 +850,31 @@ AXObject* AXObjectCacheImpl::GetWithoutInvalidation(const Node* node) {
   DCHECK(!HashTraits<AXID>::IsDeletedValue(node_id));
   if (node_id) {
     auto it = objects_.find(node_id);
-    if (it != objects_.end())
+    if (it != objects_.end()) {
+      if (allow_display_locking_invalidation && layout_object &&
+          !IsDisplayLocked(node)) {
+        // Change from AXNodeObject -> AXLayoutObject.
+        // Has a layout object but no layout_id, meaning that when the AXObject
+        // was originally created only for Node*, the LayoutObject* didn't exist
+        // yet. This can happen if an AXNodeObject is created for a node that's
+        // not laid out, but later something changes and it gets a layoutObject
+        // (like if it's reparented). It's also possible the layout object
+        // changed.
+        Invalidate(layout_object->GetDocument(), node_id);
+      }
       return it->value;
+    }
   }
+
   return nullptr;
 }
 
 AXObject* AXObjectCacheImpl::Get(const Node* node) {
   if (!node)
     return nullptr;
+
+  if (has_been_disposed_)
+    return GetWithoutInvalidation(node);
 
   LayoutObject* layout_object = node->GetLayoutObject();
 

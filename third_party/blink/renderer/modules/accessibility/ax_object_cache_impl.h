@@ -238,9 +238,13 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* Get(const Node*);
   AXObject* Get(const LayoutObject*);
 
-  // Get an AXObject* without any potential side effects, such as queuing up an
-  // invalidation for objects that need to be removed or replaced.
-  AXObject* GetWithoutInvalidation(const Node* node);
+  // Get an AXObject* without making any calls into layout that could be
+  // dangerous during an unclean layout phase.
+  // Also will not do invalidations from display locking changes, unless the
+  // caller passes in true for allow_display_locking_invalidation.
+  AXObject* GetWithoutInvalidation(
+      const Node* node,
+      bool allow_display_locking_invalidation = false);
 
   // Return true if the object is still part of the tree, meaning that ancestors
   // exist or can be repaired all the way to the root.

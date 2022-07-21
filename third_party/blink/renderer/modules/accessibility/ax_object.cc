@@ -5209,7 +5209,12 @@ void AXObject::ClearChildren() const {
        child_node;
        child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
     // Get the child object that should be detached from this parent.
-    AXObject* ax_child_from_node = AXObjectCache().Get(child_node);
+    // Do not invalidate from layout, because it nay be  unsafe to check layout
+    // at this time. However, do allow invalidations if an object changes its
+    // display locking (content-visibility: auto) status, as this may be the
+    // only chance to do that, and it's safe to do now.
+    AXObject* ax_child_from_node =
+        AXObjectCache().GetWithoutInvalidation(child_node, true);
     if (ax_child_from_node &&
         ax_child_from_node->CachedParentObject() == this) {
       // Check current parent first. It may be owned by another node.
