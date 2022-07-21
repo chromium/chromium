@@ -12,12 +12,6 @@
 // a Website, etc. This also manages feed background refresh.
 // TODO(crbug.com/1344866): Coordinate background tasks when more are added.
 @interface FeedAppAgent : SceneObservingAppAgent
-// Registers handler for the background refresh task. According to
-// documentation, this must complete before the end of
-// `applicationDidFinishLaunching`.
-// TODO(crbug.com/1343695): Do not call this until it is protected by a build
-// flag.
-- (void)registerBackgroundRefreshTask;
 @end
 
 #endif  // IOS_CHROME_APP_FEED_APP_AGENT_H_

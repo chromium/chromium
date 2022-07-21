@@ -18,16 +18,6 @@
 
 @implementation FeedAppAgent
 
-- (void)registerBackgroundRefreshTask {
-  __weak FeedAppAgent* weakSelf = self;
-  [BGTaskScheduler.sharedScheduler
-      registerForTaskWithIdentifier:kFeedBackgroundRefreshTaskIdentifier
-                         usingQueue:nil
-                      launchHandler:^(BGTask* task) {
-                        [weakSelf handleBackgroundRefreshTask:task];
-                      }];
-}
-
 #pragma mark - AppStateObserver
 
 - (void)appState:(AppState*)appState
@@ -72,6 +62,21 @@
   return nil;
 }
 
+// Registers handler for the background refresh task. According to
+// documentation, this must complete before the end of
+// `applicationDidFinishLaunching`.
+- (void)registerBackgroundRefreshTask {
+  // TODO(crbug.com/1343695): Do not call this until Info.plist is modified.
+  DCHECK(TRUE);
+  __weak FeedAppAgent* weakSelf = self;
+  [BGTaskScheduler.sharedScheduler
+      registerForTaskWithIdentifier:kFeedBackgroundRefreshTaskIdentifier
+                         usingQueue:nil
+                      launchHandler:^(BGTask* task) {
+                        [weakSelf handleBackgroundRefreshTask:task];
+                      }];
+}
+
 // Schedules a background refresh task with an earliest begin date in the
 // future. The OS limits to 1 refresh task at any time, and a new request will
 // replace a previous request. Tasks are only executed in the background.
@@ -80,29 +85,42 @@
 // including other files. The OS only allows one fetch task at a time.
 // Eventually, background fetches should be managed by a central manager.
 - (void)scheduleBackgroundRefresh {
-  DCHECK(IsFeedBackgroundRefreshEnabled());
-  if (![self feedServiceIfAvailable]) {
+  // Do not DCHECK IsFeedBackgroundRefreshEnabled() because it is also called
+  // from the background task handler, and the value could have changed during a
+  // cold start.
+  if (!IsFeedBackgroundRefreshEnabled() || ![self feedServiceIfAvailable]) {
     return;
   }
   BGAppRefreshTaskRequest* request = [[BGAppRefreshTaskRequest alloc]
       initWithIdentifier:kFeedBackgroundRefreshTaskIdentifier];
-  // TODO(crbug.com/1343695): Use DiscoverFeedService to set the earliest begin
-  // date on the request. This ensures that any task scheduling from anywhere
-  // sets the correct earliest begin date. Error in scheduling is intentionally
-  // not handled since the fallback is that the user will just refresh in the
-  // foreground.
+  request.earliestBeginDate =
+      [self feedServiceIfAvailable]->GetEarliestBackgroundRefreshBeginDate();
+  // Error in scheduling is intentionally not handled since the fallback is that
+  // the user will just refresh in the foreground.
+  // TODO(crbug.com/1343695): Consider logging error in histogram.
   [BGTaskScheduler.sharedScheduler submitTaskRequest:request error:nil];
 }
 
 // This method is called when the app is in the background.
 - (void)handleBackgroundRefreshTask:(BGTask*)task {
-  DCHECK(IsFeedBackgroundRefreshEnabled());
-  if (![self feedServiceIfAvailable]) {
+  // Do not DCHECK IsFeedBackgroundRefreshEnabled() because the value could have
+  // changed during a cold start.
+  if (!IsFeedBackgroundRefreshEnabled() || ![self feedServiceIfAvailable]) {
     return;
   }
-  // TODO(crbug.com/1343695): Use DiscoverFeedService to refresh the feed. Then
-  // mark the task completed or failed. Also set a task expiration handler.
-  [task setTaskCompletedWithSuccess:NO];
+  if (IsRecurringBackgroundRefreshScheduleEnabled()) {
+    [self scheduleBackgroundRefresh];
+  }
+  task.expirationHandler = ^{
+    if ([self feedServiceIfAvailable]) {
+      // There would be no refresh task to stop if there is no feed service
+      // available.
+      [self feedServiceIfAvailable]->HandleBackgroundRefreshTaskExpiration();
+    }
+  };
+  [self feedServiceIfAvailable]->PerformBackgroundRefreshes(^(BOOL success) {
+    [task setTaskCompletedWithSuccess:success];
+  });
 }
 
 @end
