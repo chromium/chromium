@@ -21,6 +21,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -95,6 +96,12 @@ class WebApps : public apps::PublisherBase,
               int32_t event_flags,
               apps::LaunchSource launch_source,
               apps::WindowInfoPtr window_info) override;
+  void LaunchAppWithIntent(const std::string& app_id,
+                           int32_t event_flags,
+                           apps::IntentPtr intent,
+                           apps::LaunchSource launch_source,
+                           apps::WindowInfoPtr window_info,
+                           base::OnceCallback<void(bool)> callback);
   void LaunchAppWithParams(apps::AppLaunchParams&& params,
                            apps::LaunchCallback callback) override;
   void LaunchShortcut(const std::string& app_id,

@@ -144,6 +144,17 @@ void WebApps::Launch(const std::string& app_id,
                             std::move(window_info));
 }
 
+void WebApps::LaunchAppWithIntent(const std::string& app_id,
+                                  int32_t event_flags,
+                                  apps::IntentPtr intent,
+                                  apps::LaunchSource launch_source,
+                                  apps::WindowInfoPtr window_info,
+                                  base::OnceCallback<void(bool)> callback) {
+  publisher_helper().LaunchAppWithIntent(app_id, event_flags, std::move(intent),
+                                         launch_source, std::move(window_info),
+                                         std::move(callback));
+}
+
 void WebApps::LaunchAppWithParams(apps::AppLaunchParams&& params,
                                   apps::LaunchCallback callback) {
   publisher_helper().LaunchAppWithParams(std::move(params));
@@ -191,9 +202,11 @@ void WebApps::LaunchAppWithIntent(const std::string& app_id,
                                   apps::mojom::LaunchSource launch_source,
                                   apps::mojom::WindowInfoPtr window_info,
                                   LaunchAppWithIntentCallback callback) {
-  publisher_helper().LaunchAppWithIntent(app_id, event_flags, std::move(intent),
-                                         launch_source, std::move(window_info),
-                                         std::move(callback));
+  publisher_helper().LaunchAppWithIntent(
+      app_id, event_flags, apps::ConvertMojomIntentToIntent(intent),
+      apps::ConvertMojomLaunchSourceToLaunchSource(launch_source),
+      apps::ConvertMojomWindowInfoToWindowInfo(window_info),
+      std::move(callback));
 }
 
 void WebApps::SetPermission(const std::string& app_id,

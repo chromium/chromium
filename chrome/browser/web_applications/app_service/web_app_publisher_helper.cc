@@ -71,7 +71,6 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
-#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
@@ -870,10 +869,10 @@ void WebAppPublisherHelper::LaunchAppWithFiles(
 void WebAppPublisherHelper::LaunchAppWithIntent(
     const std::string& app_id,
     int32_t event_flags,
-    apps::mojom::IntentPtr intent,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info,
-    apps::mojom::Publisher::LaunchAppWithIntentCallback callback) {
+    apps::IntentPtr intent,
+    apps::LaunchSource launch_source,
+    apps::WindowInfoPtr window_info,
+    base::OnceCallback<void(bool)> callback) {
   CHECK(intent);
 
   if (IsShuttingDown()) {
@@ -886,10 +885,10 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
     int64_t display_id =
         window_info ? window_info->display_id : display::kInvalidDisplayId;
     crostini::LaunchTerminalWithIntent(
-        profile_, display_id, apps::ConvertMojomIntentToIntent(intent),
+        profile_, display_id, std::move(intent),
         base::BindOnce(
-            [](apps::mojom::Publisher::LaunchAppWithIntentCallback callback,
-               bool success, const std::string& failure_reason) {
+            [](base::OnceCallback<void(bool)> callback, bool success,
+               const std::string& failure_reason) {
               if (!success) {
                 LOG(WARNING) << "Launch terminal failed: " << failure_reason;
               }
@@ -904,14 +903,13 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
       app_id, event_flags, std::move(intent), launch_source,
       window_info ? window_info->display_id : display::kInvalidDisplayId,
       base::BindOnce(
-          [](apps::mojom::Publisher::LaunchAppWithIntentCallback
-                 success_callback,
-             apps::mojom::LaunchSource launch_source,
+          [](base::OnceCallback<void(bool)> success_callback,
+             apps::LaunchSource launch_source,
              const std::vector<content::WebContents*>& web_contentses) {
 // TODO(crbug.com/1214763): Set ArcWebContentsData for Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
             for (content::WebContents* web_contents : web_contentses) {
-              if (launch_source == apps::mojom::LaunchSource::kFromArc) {
+              if (launch_source == apps::LaunchSource::kFromArc) {
                 // Add a flag to remember this tab originated in the ARC
                 // context.
                 web_contents->SetUserData(
@@ -1540,19 +1538,18 @@ const WebApp* WebAppPublisherHelper::GetWebApp(const AppId& app_id) const {
 void WebAppPublisherHelper::LaunchAppWithIntentImpl(
     const std::string& app_id,
     int32_t event_flags,
-    apps::mojom::IntentPtr intent,
-    apps::mojom::LaunchSource launch_source,
+    apps::IntentPtr intent,
+    apps::LaunchSource launch_source,
     int64_t display_id,
     base::OnceCallback<void(const std::vector<content::WebContents*>&)>
         callback) {
-  bool is_file_handling_launch = intent->files && !intent->files->empty() &&
-                                 !apps_util::IsShareIntent(intent);
+  bool is_file_handling_launch =
+      intent && !intent->files.empty() && !intent->IsShareIntent();
   auto params = apps::CreateAppLaunchParamsForIntent(
-      app_id, event_flags,
-      apps::ConvertMojomLaunchSourceToLaunchSource(launch_source), display_id,
+      app_id, event_flags, launch_source, display_id,
       ConvertDisplayModeToAppLaunchContainer(
           registrar().GetAppEffectiveDisplayMode(app_id)),
-      apps::ConvertMojomIntentToIntent(intent), profile_);
+      std::move(intent), profile_);
   if (is_file_handling_launch) {
     LaunchAppWithFilesCheckingUserPermission(app_id, std::move(params),
                                              std::move(callback));
