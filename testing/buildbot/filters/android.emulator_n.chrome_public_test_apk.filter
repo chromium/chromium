@@ -1,0 +1,11 @@
+# TODO(crbug/1280257)
+-org.chromium.chrome.browser.tasks.tab_management.TabSuggestionMessageCardTest.closeTabSuggestionReviewedAndDismissed
+
+# TODO(crbug/1231259)
+-org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessoryIntegrationTest.testFillsSuggestionOnClick
+
+# TODO(crbug/1345499)
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
+
+# TODO(crbug/1345504)
+-org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
