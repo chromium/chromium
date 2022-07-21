@@ -38,7 +38,6 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/common/content_switches.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/switches.h"
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 
@@ -651,44 +650,34 @@ int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
   const bool enable_cfv2 =
       base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kEnableCFv2);
 
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless)) {
-    if (enable_cfv2) {
-      // Configure Ozone to create top-level Views via GraphicalPresenter.
-      element_manager_ = std::make_unique<ElementManagerImpl>(
-          base::ComponentContextForProcess()->outgoing().get(),
-          base::BindRepeating(&NotifyNewBrowserWindow));
-      use_graphical_presenter_ =
-          std::make_unique<UseGraphicalPresenter>(element_manager_.get());
+  if (enable_cfv2) {
+    // Configure Ozone to create top-level Views via GraphicalPresenter.
+    element_manager_ = std::make_unique<ElementManagerImpl>(
+        base::ComponentContextForProcess()->outgoing().get(),
+        base::BindRepeating(&NotifyNewBrowserWindow));
+    use_graphical_presenter_ =
+        std::make_unique<UseGraphicalPresenter>(element_manager_.get());
 
-      // Ensure that the browser process remains live until the first browser
-      // window is opened by an ElementManager request. The browser will then
-      // terminate itself as soon as the last browser window is closed, or it
-      // is explicitly terminated by the Component Framework (see below).
-      // TODO(crbug.com/1314718): Integrate with the Framework to coordinate
-      // teardown, to avoid risk of in-flight requests being dropped.
-      keep_alive_ = std::make_unique<ScopedKeepAlive>(
-          KeepAliveOrigin::BROWSER_PROCESS_FUCHSIA,
-          KeepAliveRestartOption::ENABLED);
-      BrowserList::AddObserver(this);
-    } else {
-      // Register the ViewProvider API.
-      view_provider_ = std::make_unique<ViewProviderRouter>(
-          std::make_unique<ViewProviderScenic>(),
-          std::make_unique<ViewProviderFlatland>());
-    }
+    // Ensure that the browser process remains live until the first browser
+    // window is opened by an ElementManager request. The browser will then
+    // terminate itself as soon as the last browser window is closed, or it
+    // is explicitly terminated by the Component Framework (see below).
+    // TODO(crbug.com/1314718): Integrate with the Framework to coordinate
+    // teardown, to avoid risk of in-flight requests being dropped.
+    keep_alive_ = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::BROWSER_PROCESS_FUCHSIA,
+        KeepAliveRestartOption::ENABLED);
+    BrowserList::AddObserver(this);
+  } else {
+    // Register the ViewProvider API.
+    view_provider_ = std::make_unique<ViewProviderRouter>(
+        std::make_unique<ViewProviderScenic>(),
+        std::make_unique<ViewProviderFlatland>());
   }
 
-  // We should only call ServerFromStartupInfo() when the browser is running as
-  // a stand-alone component.
-  if (!is_integration_test()) {
-    zx_status_t status =
-        base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
-    ZX_CHECK(status == ZX_OK, status);
-  }
-
-  // Publish the fuchsia.process.lifecycle.Lifecycle service to allow graceful
-  // teardown. If this is an integration test then graceful shutdown is not
-  // required.
+  // Browser tests run in TestLauncher sub-processes, which do not have
+  // some of the startup handles provided by the ELF runner when running as
+  // a component in production, so disable features that require them.
   if (!is_integration_test()) {
     if (enable_cfv2) {
       // chrome::ExitIgnoreUnloadHandlers() will perform a graceful shutdown,
@@ -704,6 +693,15 @@ int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
       lifecycle_ =
           std::make_unique<base::ProcessLifecycle>(std::move(quit_closure));
     }
+
+    // Take the outgoing-directory channel request from the startup handles,
+    // and start serving requests over it (e.g. for outgoing services, Inspect
+    // data, etc). This is not possible (see above), in browser tests,
+    // where TestComponentContextForProcess() should be used to reach the
+    // outgoing directory if necessary.
+    zx_status_t status =
+        base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
+    ZX_CHECK(status == ZX_OK, status);
   }
 
   return ChromeBrowserMainParts::PreMainMessageLoopRun();
