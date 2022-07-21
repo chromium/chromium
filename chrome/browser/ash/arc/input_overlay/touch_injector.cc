@@ -177,6 +177,9 @@ void TouchInjector::UnRegisterEventRewriter() {
     return;
   DispatchTouchCancelEvent();
   observation_.Reset();
+  // Need reset pending input bind if it is unregistered in edit mode.
+  for (auto& action : actions_)
+    action->ResetPendingBind();
 }
 
 void TouchInjector::Update() {

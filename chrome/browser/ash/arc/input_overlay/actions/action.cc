@@ -237,10 +237,15 @@ void Action::BindPending() {
 void Action::CancelPendingBind(const gfx::RectF& content_bounds) {
   if (!pending_binding_)
     return;
+  pending_binding_.reset();
+
   DCHECK(action_view_);
   if (!action_view_)
     return;
   action_view_->SetViewContent(BindingOption::kCurrent, content_bounds);
+}
+
+void Action::ResetPendingBind() {
   pending_binding_.reset();
 }
 

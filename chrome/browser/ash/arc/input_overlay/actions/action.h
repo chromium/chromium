@@ -94,6 +94,7 @@ class Action {
   void BindPending();
   // Cancel |pending_binding_|.
   void CancelPendingBind(const gfx::RectF& content_bounds);
+  void ResetPendingBind();
 
   // Restore the input binding back to the original binding.
   void RestoreToDefault(const gfx::RectF& content_bounds);
