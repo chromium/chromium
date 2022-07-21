@@ -4841,6 +4841,11 @@
           'has_native_resultdb_integration',
         ],
       },
+      'gold_common_pytype': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
       'gpu_pytype': {
         'mixins': [
           'has_native_resultdb_integration',

@@ -9,14 +9,17 @@ Examples:
 * What the continuous integration system is
 """
 
-# pylint: disable=useless-object-inheritance
-
+import argparse
 import logging
+import optparse
 import os
+from typing import Union
+
+ParsedCmdArgs = Union[argparse.Namespace, optparse.Values]
 
 
-class SkiaGoldProperties(object):
-  def __init__(self, args):
+class SkiaGoldProperties():
+  def __init__(self, args: ParsedCmdArgs):
     """Abstract class to validate and store properties related to Skia Gold.
 
     Args:
@@ -35,54 +38,54 @@ class SkiaGoldProperties(object):
 
     self._InitializeProperties(args)
 
-  def IsTryjobRun(self):
+  def IsTryjobRun(self) -> bool:
     return self.issue is not None
 
   @property
-  def continuous_integration_system(self):
+  def continuous_integration_system(self) -> str:
     return self._continuous_integration_system or 'buildbucket'
 
   @property
-  def code_review_system(self):
+  def code_review_system(self) -> str:
     return self._code_review_system or 'gerrit'
 
   @property
-  def git_revision(self):
+  def git_revision(self) -> str:
     return self._GetGitRevision()
 
   @property
-  def issue(self):
+  def issue(self) -> int:
     return self._issue
 
   @property
-  def job_id(self):
+  def job_id(self) -> str:
     return self._job_id
 
   @property
-  def local_pixel_tests(self):
+  def local_pixel_tests(self) -> bool:
     return self._IsLocalRun()
 
   @property
-  def local_png_directory(self):
+  def local_png_directory(self) -> str:
     return self._local_png_directory
 
   @property
-  def no_luci_auth(self):
+  def no_luci_auth(self) -> bool:
     return self._no_luci_auth
 
   @property
-  def patchset(self):
+  def patchset(self) -> int:
     return self._patchset
 
   @property
-  def bypass_skia_gold_functionality(self):
+  def bypass_skia_gold_functionality(self) -> bool:
     return self._bypass_skia_gold_functionality
 
   @staticmethod
-  def _GetGitOriginMainHeadSha1():
+  def _GetGitOriginMainHeadSha1() -> str:
     raise NotImplementedError()
 
-  def _GetGitRevision(self):
+  def _GetGitRevision(self) -> str:
     if not self._git_revision:
       # Automated tests should always pass the revision, so assume we're on
       # a workstation and try to get the local origin/master HEAD.
@@ -96,7 +99,7 @@ class SkiaGoldProperties(object):
       self._git_revision = revision
     return self._git_revision
 
-  def _IsLocalRun(self):
+  def _IsLocalRun(self) -> bool:
     if self._local_pixel_tests is None:
       # Look for the presence of the SWARMING_SERVER environment variable as a
       # heuristic to determine whether we're running on a workstation or a bot.
@@ -112,7 +115,7 @@ class SkiaGoldProperties(object):
     return self._local_pixel_tests
 
   @staticmethod
-  def AddCommandLineArguments(parser):
+  def AddCommandLineArguments(parser: argparse.ArgumentParser) -> None:
     """ Add command line arguments to an ArgumentParser instance
 
     Args:
@@ -136,7 +139,7 @@ class SkiaGoldProperties(object):
                         type=str,
                         help='Continuous integration system')
 
-  def _InitializeProperties(self, args):
+  def _InitializeProperties(self, args: ParsedCmdArgs) -> None:
     if hasattr(args, 'local_pixel_tests'):
       # If not set, will be automatically determined later if needed.
       self._local_pixel_tests = args.local_pixel_tests

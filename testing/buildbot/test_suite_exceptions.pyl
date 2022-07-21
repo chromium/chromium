@@ -2157,6 +2157,11 @@
       'Linux ChromiumOS MSan Focal',
     ],
   },
+  'gold_common_pytype': {
+    'remove_from': [
+      'linux-code-coverage',
+    ],
+  },
   'gpu_process_launch_tests': {
     # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
     # exception once there is enough capacity to run these tests.

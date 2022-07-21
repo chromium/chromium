@@ -922,6 +922,11 @@
     "label": "//:gn_all",
     "type": "additional_compile_target",
   },
+  "gold_common_pytype": {
+    "label": "//build:gold_common_pytype",
+    "script": "//build/skia_gold_common/run_pytype.py",
+    "type": "script",
+  },
   "google_apis_unittests": {
     "label": "//google_apis:google_apis_unittests",
     "type": "console_test_launcher",

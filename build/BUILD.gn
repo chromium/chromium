@@ -56,6 +56,14 @@ buildflag_header("chromeos_buildflags") {
   ]
 }
 
+group("gold_common_pytype") {
+  testonly = true
+
+  data = [ "//build/skia_gold_common/" ]
+
+  data_deps = [ "//testing:pytype_dependencies" ]
+}
+
 if (is_chromeos) {
   process_version("version_metadata") {
     sources = [ "//chrome/VERSION" ]

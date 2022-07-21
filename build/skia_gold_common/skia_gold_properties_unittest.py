@@ -23,7 +23,9 @@ createSkiaGoldArgs = unittest_utils.createSkiaGoldArgs
 class SkiaGoldPropertiesInitializationTest(unittest.TestCase):
   """Tests that SkiaGoldProperties initializes (or doesn't) when expected."""
 
-  def verifySkiaGoldProperties(self, instance, expected):
+  def verifySkiaGoldProperties(
+      self, instance: skia_gold_properties.SkiaGoldProperties,
+      expected: dict) -> None:
     self.assertEqual(instance._local_pixel_tests,
                      expected.get('local_pixel_tests'))
     self.assertEqual(instance._no_luci_auth, expected.get('no_luci_auth'))
@@ -38,54 +40,55 @@ class SkiaGoldPropertiesInitializationTest(unittest.TestCase):
     self.assertEqual(instance._bypass_skia_gold_functionality,
                      expected.get('bypass_skia_gold_functionality'))
 
-  def test_initializeSkiaGoldAttributes_unsetLocal(self):
+  def test_initializeSkiaGoldAttributes_unsetLocal(self) -> None:
     args = createSkiaGoldArgs()
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.verifySkiaGoldProperties(sgp, {})
 
-  def test_initializeSkiaGoldAttributes_explicitLocal(self):
+  def test_initializeSkiaGoldAttributes_explicitLocal(self) -> None:
     args = createSkiaGoldArgs(local_pixel_tests=True)
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.verifySkiaGoldProperties(sgp, {'local_pixel_tests': True})
 
-  def test_initializeSkiaGoldAttributes_explicitNonLocal(self):
+  def test_initializeSkiaGoldAttributes_explicitNonLocal(self) -> None:
     args = createSkiaGoldArgs(local_pixel_tests=False)
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.verifySkiaGoldProperties(sgp, {'local_pixel_tests': False})
 
-  def test_initializeSkiaGoldAttributes_explicitNoLuciAuth(self):
+  def test_initializeSkiaGoldAttributes_explicitNoLuciAuth(self) -> None:
     args = createSkiaGoldArgs(no_luci_auth=True)
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.verifySkiaGoldProperties(sgp, {'no_luci_auth': True})
 
-  def test_initializeSkiaGoldAttributes_explicitCrs(self):
+  def test_initializeSkiaGoldAttributes_explicitCrs(self) -> None:
     args = createSkiaGoldArgs(code_review_system='foo')
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.verifySkiaGoldProperties(sgp, {'code_review_system': 'foo'})
 
-  def test_initializeSkiaGoldAttributes_explicitCis(self):
+  def test_initializeSkiaGoldAttributes_explicitCis(self) -> None:
     args = createSkiaGoldArgs(continuous_integration_system='foo')
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.verifySkiaGoldProperties(sgp, {'continuous_integration_system': 'foo'})
 
-  def test_initializeSkiaGoldAttributes_bypassExplicitTrue(self):
+  def test_initializeSkiaGoldAttributes_bypassExplicitTrue(self) -> None:
     args = createSkiaGoldArgs(bypass_skia_gold_functionality=True)
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.verifySkiaGoldProperties(sgp, {'bypass_skia_gold_functionality': True})
 
-  def test_initializeSkiaGoldAttributes_explicitGitRevision(self):
+  def test_initializeSkiaGoldAttributes_explicitGitRevision(self) -> None:
     args = createSkiaGoldArgs(git_revision='a')
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.verifySkiaGoldProperties(sgp, {'git_revision': 'a'})
 
-  def test_initializeSkiaGoldAttributes_tryjobArgsIgnoredWithoutRevision(self):
+  def test_initializeSkiaGoldAttributes_tryjobArgsIgnoredWithoutRevision(
+      self) -> None:
     args = createSkiaGoldArgs(gerrit_issue=1,
                               gerrit_patchset=2,
                               buildbucket_id=3)
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.verifySkiaGoldProperties(sgp, {})
 
-  def test_initializeSkiaGoldAttributes_tryjobArgs(self):
+  def test_initializeSkiaGoldAttributes_tryjobArgs(self) -> None:
     args = createSkiaGoldArgs(git_revision='a',
                               gerrit_issue=1,
                               gerrit_patchset=2,
@@ -99,14 +102,14 @@ class SkiaGoldPropertiesInitializationTest(unittest.TestCase):
             'buildbucket_id': 3
         })
 
-  def test_initializeSkiaGoldAttributes_tryjobMissingPatchset(self):
+  def test_initializeSkiaGoldAttributes_tryjobMissingPatchset(self) -> None:
     args = createSkiaGoldArgs(git_revision='a',
                               gerrit_issue=1,
                               buildbucket_id=3)
     with self.assertRaises(RuntimeError):
       skia_gold_properties.SkiaGoldProperties(args)
 
-  def test_initializeSkiaGoldAttributes_tryjobMissingBuildbucket(self):
+  def test_initializeSkiaGoldAttributes_tryjobMissingBuildbucket(self) -> None:
     args = createSkiaGoldArgs(git_revision='a',
                               gerrit_issue=1,
                               gerrit_patchset=2)
@@ -117,24 +120,24 @@ class SkiaGoldPropertiesInitializationTest(unittest.TestCase):
 class SkiaGoldPropertiesCalculationTest(unittest.TestCase):
   """Tests that SkiaGoldProperties properly calculates certain properties."""
 
-  def testLocalPixelTests_determineTrue(self):
+  def testLocalPixelTests_determineTrue(self) -> None:
     args = createSkiaGoldArgs()
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     with mock.patch.dict(os.environ, {}, clear=True):
       self.assertTrue(sgp.local_pixel_tests)
 
-  def testLocalPixelTests_determineFalse(self):
+  def testLocalPixelTests_determineFalse(self) -> None:
     args = createSkiaGoldArgs()
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     with mock.patch.dict(os.environ, {'SWARMING_SERVER': ''}, clear=True):
       self.assertFalse(sgp.local_pixel_tests)
 
-  def testIsTryjobRun_noIssue(self):
+  def testIsTryjobRun_noIssue(self) -> None:
     args = createSkiaGoldArgs()
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.assertFalse(sgp.IsTryjobRun())
 
-  def testIsTryjobRun_issue(self):
+  def testIsTryjobRun_issue(self) -> None:
     args = createSkiaGoldArgs(git_revision='a',
                               gerrit_issue=1,
                               gerrit_patchset=2,
@@ -142,12 +145,12 @@ class SkiaGoldPropertiesCalculationTest(unittest.TestCase):
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.assertTrue(sgp.IsTryjobRun())
 
-  def testGetGitRevision_revisionSet(self):
+  def testGetGitRevision_revisionSet(self) -> None:
     args = createSkiaGoldArgs(git_revision='a')
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.assertEqual(sgp.git_revision, 'a')
 
-  def testGetGitRevision_findValidRevision(self):
+  def testGetGitRevision_findValidRevision(self) -> None:
     args = createSkiaGoldArgs(local_pixel_tests=True)
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     with mock.patch.object(skia_gold_properties.SkiaGoldProperties,
@@ -158,13 +161,13 @@ class SkiaGoldPropertiesCalculationTest(unittest.TestCase):
       # Should be cached.
       self.assertEqual(sgp._git_revision, expected)
 
-  def testGetGitRevision_noExplicitOnBot(self):
+  def testGetGitRevision_noExplicitOnBot(self) -> None:
     args = createSkiaGoldArgs(local_pixel_tests=False)
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     with self.assertRaises(RuntimeError):
       _ = sgp.git_revision
 
-  def testGetGitRevision_findEmptyRevision(self):
+  def testGetGitRevision_findEmptyRevision(self) -> None:
     args = createSkiaGoldArgs(local_pixel_tests=True)
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     with mock.patch.object(skia_gold_properties.SkiaGoldProperties,
@@ -173,7 +176,7 @@ class SkiaGoldPropertiesCalculationTest(unittest.TestCase):
       with self.assertRaises(RuntimeError):
         _ = sgp.git_revision
 
-  def testGetGitRevision_findMalformedRevision(self):
+  def testGetGitRevision_findMalformedRevision(self) -> None:
     args = createSkiaGoldArgs(local_pixel_tests=True)
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     with mock.patch.object(skia_gold_properties.SkiaGoldProperties,
