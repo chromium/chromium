@@ -2226,11 +2226,11 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "cachesize": "512",
-                        "impl": "3"
+                        "impl": "4"
                     },
                     "enable_features": [
-                        "CertVerifierBuiltin"
+                        "CertVerifierBuiltin",
+                        "ChromeRootStoreUsed"
                     ]
                 }
             ]
