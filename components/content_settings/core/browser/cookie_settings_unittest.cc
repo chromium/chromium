@@ -115,10 +115,8 @@ class CookieSettingsTest : public testing::Test {
 
  protected:
   bool ShouldDeleteCookieOnExit(const std::string& domain, bool is_https) {
-    ContentSettingsForOneType settings;
-    cookie_settings_->GetCookieSettings(&settings);
-    return cookie_settings_->ShouldDeleteCookieOnExit(settings, domain,
-                                                      is_https);
+    return cookie_settings_->ShouldDeleteCookieOnExit(
+        cookie_settings_->GetCookieSettings(), domain, is_https);
   }
 
   // There must be a valid ThreadTaskRunnerHandle in HostContentSettingsMap's

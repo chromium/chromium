@@ -310,8 +310,6 @@ std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
   if (!IsPrivacySandboxEnabled())
     return {};
 
-  ContentSettingsForOneType cookie_settings;
-  cookie_settings_->GetCookieSettings(&cookie_settings);
   std::vector<GURL> allowed_parties;
   for (const auto& party : auction_parties) {
     if (IsPrivacySandboxEnabledForContext(party, top_frame_origin)) {

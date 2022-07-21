@@ -80,11 +80,10 @@ class CookieSettings : public CookieSettingsBase,
   ContentSetting GetDefaultCookieSetting(std::string* provider_id) const;
 
   // Returns all patterns with a non-default cookie setting, mapped to their
-  // actual settings, in the precedence order of the setting rules. |settings|
-  // must be a non-nullptr outparam.
+  // actual settings, in the precedence order of the setting rules.
   //
   // This may be called on any thread.
-  void GetCookieSettings(ContentSettingsForOneType* settings) const;
+  ContentSettingsForOneType GetCookieSettings() const;
 
   // Sets the default content setting (CONTENT_SETTING_ALLOW,
   // CONTENT_SETTING_BLOCK, or CONTENT_SETTING_SESSION_ONLY) for cookies.

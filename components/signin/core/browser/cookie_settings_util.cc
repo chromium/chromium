@@ -23,8 +23,7 @@ bool SettingsDeleteSigninCookiesOnExit(
     const content_settings::CookieSettings* cookie_settings) {
   GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
   GURL google_url = GaiaUrls::GetInstance()->google_url();
-  ContentSettingsForOneType settings;
-  cookie_settings->GetCookieSettings(&settings);
+  ContentSettingsForOneType settings = cookie_settings->GetCookieSettings();
 
   return !cookie_settings ||
          cookie_settings->ShouldDeleteCookieOnExit(

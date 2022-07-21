@@ -55,10 +55,11 @@ ContentSetting CookieSettings::GetDefaultCookieSetting(
       ContentSettingsType::COOKIES, provider_id);
 }
 
-void CookieSettings::GetCookieSettings(
-    ContentSettingsForOneType* settings) const {
+ContentSettingsForOneType CookieSettings::GetCookieSettings() const {
+  ContentSettingsForOneType settings;
   host_content_settings_map_->GetSettingsForOneType(
-      ContentSettingsType::COOKIES, settings);
+      ContentSettingsType::COOKIES, &settings);
+  return settings;
 }
 
 void CookieSettings::RegisterProfilePrefs(
