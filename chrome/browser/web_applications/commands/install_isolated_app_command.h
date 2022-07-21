@@ -13,10 +13,15 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+
+class GURL;
 
 namespace web_app {
 class WebAppUrlLoader;
 class WebAppDataRetriever;
+
+enum class WebAppUrlLoaderResult;
 
 enum class InstallIsolatedAppCommandResult {
   kOk,
@@ -43,6 +48,13 @@ class InstallIsolatedAppCommand : public WebAppCommand {
  private:
   void ReportFailure();
   void Report(bool success);
+
+  void OnLoadUrl(WebAppUrlLoaderResult result);
+  void OnCheckInstallabilityAndRetrieveManifest(
+      blink::mojom::ManifestPtr opt_manifest,
+      const GURL& manifest_url,
+      bool valid_manifest_for_web_app,
+      bool is_installable);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

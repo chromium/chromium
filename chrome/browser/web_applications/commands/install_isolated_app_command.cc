@@ -16,6 +16,9 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
@@ -63,12 +66,56 @@ void InstallIsolatedAppCommand::Start() {
   url_loader_.LoadUrl(
       url, shared_web_contents(),
       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
+      base::BindOnce(&InstallIsolatedAppCommand::OnLoadUrl, weak_this_));
+}
+
+void InstallIsolatedAppCommand::OnLoadUrl(WebAppUrlLoaderResult result) {
+  if (!IsUrlLoadingResultSuccess(result)) {
+    ReportFailure();
+    return;
+  }
+
+  data_retriever_->CheckInstallabilityAndRetrieveManifest(
+      shared_web_contents(),
+      /*bypass_service_worker_check=*/false,
       base::BindOnce(
-          [](base::WeakPtr<InstallIsolatedAppCommand> self,
-             WebAppUrlLoader::Result url_loading_result) {
-            self->Report(IsUrlLoadingResultSuccess(url_loading_result));
-          },
+          &InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest,
           weak_this_));
+}
+
+void InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest(
+    blink::mojom::ManifestPtr opt_manifest,
+    const GURL& manifest_url,
+    bool valid_manifest_for_web_app,
+    bool is_installable) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!is_installable) {
+    ReportFailure();
+    return;
+  }
+
+  // See |WebAppDataRetriever::CheckInstallabilityCallback| documentation for
+  // details.
+  DCHECK(valid_manifest_for_web_app)
+      << "must be true when |is_installable| is true.";
+
+  if (!opt_manifest) {
+    ReportFailure();
+    return;
+  }
+
+  // See |WebAppDataRetriever::CheckInstallabilityCallback| documentation for
+  // details.
+  DCHECK(!blink::IsEmptyManifest(opt_manifest))
+      << "must not be empty when manifest is present.";
+
+  // See |WebAppDataRetriever::CheckInstallabilityCallback| documentation for
+  // details.
+  DCHECK(!manifest_url.is_empty())
+      << "must not be empty if manifest is not empty.";
+
+  Report(/*success=*/true);
 }
 
 void InstallIsolatedAppCommand::OnSyncSourceRemoved() {

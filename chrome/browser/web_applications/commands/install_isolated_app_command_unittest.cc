@@ -84,11 +84,34 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
       std::unique_ptr<WebAppDataRetriever> data_retriever = nullptr) {
     base::test::TestFuture<InstallIsolatedAppCommandResult> test_future;
     auto command = CreateCommand(url, test_future.GetCallback());
-    if (data_retriever != nullptr) {
-      command->SetDataRetrieverForTesting(std::move(data_retriever));
-    }
+    command->SetDataRetrieverForTesting(data_retriever != nullptr
+                                            ? std::move(data_retriever)
+                                            : CreateDefaultDataRetriever());
     ScheduleCommand(std::move(command));
     return test_future.Get();
+  }
+
+  static std::unique_ptr<FakeDataRetriever> CreateDefaultDataRetriever() {
+    std::unique_ptr<FakeDataRetriever> fake_data_retriever =
+        std::make_unique<FakeDataRetriever>();
+
+    fake_data_retriever->SetManifest(
+        /*manifest=*/CreateDefaultManifest(), /*is_installable=*/true,
+        /*manifest_url=*/CreateDefaultManifestURL());
+    return fake_data_retriever;
+  }
+
+  static blink::mojom::ManifestPtr CreateDefaultManifest() {
+    auto manifest = blink::mojom::Manifest::New();
+    manifest->start_url = GURL{"http://test.com/"},
+    manifest->scope = GURL{"http://test.com/scope"},
+    manifest->display = DisplayMode::kStandalone;
+    manifest->short_name = u"Manifest Name";
+    return manifest;
+  }
+
+  static GURL CreateDefaultManifestURL() {
+    return GURL{"http://defaul-non-empty-url.com/manifest.json"};
   }
 
   TestingProfile* profile() const { return profile_.get(); }
@@ -171,10 +194,53 @@ TEST_F(InstallIsolatedAppCommandTest, SuccessWhenAppIsInstallable) {
 
   std::unique_ptr<FakeDataRetriever> fake_data_retriever =
       std::make_unique<FakeDataRetriever>();
+  fake_data_retriever->SetManifest(
+      /*manifest=*/CreateDefaultManifest(), /*is_installable=*/true,
+      /*manifest_url=*/CreateDefaultManifestURL());
 
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
                              std::move(fake_data_retriever)),
               IsInstallationOk());
+}
+
+TEST_F(InstallIsolatedAppCommandTest,
+       InstallationFailsWhenAppIsNotInstallable) {
+  SetPrepareForLoadResultLoaded();
+
+  ExpectLoadedForURL("http://test-url-example.com");
+
+  std::unique_ptr<FakeDataRetriever> fake_data_retriever =
+      std::make_unique<FakeDataRetriever>();
+
+  auto manifest = blink::mojom::Manifest::New();
+  fake_data_retriever->SetManifest(
+      std::move(manifest),
+      /*is_installable=*/false,
+      /*manifest_url=*/
+      GURL{"http://test-url-example.com/manifest.json"});
+
+  EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
+                             std::move(fake_data_retriever)),
+              Not(IsInstallationOk()));
+}
+
+TEST_F(InstallIsolatedAppCommandTest,
+       InstallationFailsWhenAppIsInstallableButManifestIsNull) {
+  SetPrepareForLoadResultLoaded();
+
+  ExpectLoadedForURL("http://test-url-example.com");
+
+  std::unique_ptr<FakeDataRetriever> fake_data_retriever =
+      std::make_unique<FakeDataRetriever>();
+
+  fake_data_retriever->SetManifest(
+      /*manifest=*/nullptr,
+      /*is_installable=*/true,
+      /*manifest_url=*/CreateDefaultManifestURL());
+
+  EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
+                             std::move(fake_data_retriever)),
+              Not(IsInstallationOk()));
 }
 
 }  // namespace
