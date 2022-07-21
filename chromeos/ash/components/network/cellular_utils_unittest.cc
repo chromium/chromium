@@ -11,7 +11,7 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -60,4 +60,4 @@ TEST_F(CellularUtilsTest, GetCurrentEuiccPath) {
   EXPECT_EQ(kTestEuiccPath2, GetCurrentEuiccPath()->value());
 }
 
-}  // namespace chromeos
+}  // namespace ash

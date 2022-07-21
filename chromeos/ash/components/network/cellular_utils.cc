@@ -16,7 +16,7 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/network/cellular_esim_profile.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -170,4 +170,4 @@ absl::optional<dbus::ObjectPath> GetCurrentEuiccPath() {
   return use_second_euicc ? euicc_paths[1] : euicc_paths[0];
 }
 
-}  // namespace chromeos
+}  // namespace ash

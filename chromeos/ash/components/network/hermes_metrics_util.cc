@@ -6,8 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 
-namespace chromeos {
-namespace hermes_metrics {
+namespace ash::hermes_metrics {
 
 void LogInstallViaQrCodeResult(HermesResponseStatus status) {
   base::UmaHistogramEnumeration("Network.Cellular.ESim.InstallViaQrCode.Result",
@@ -39,5 +38,4 @@ void LogRequestPendingProfilesResult(HermesResponseStatus status) {
       "Network.Cellular.ESim.RequestPendingProfiles.Result", status);
 }
 
-}  // namespace hermes_metrics
-}  // namespace chromeos
+}  // namespace ash::hermes_metrics

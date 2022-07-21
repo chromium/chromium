@@ -40,8 +40,8 @@ void SimpleGeolocationProvider::RequestGeolocation(
     SimpleGeolocationRequest::ResponseCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  auto cell_vector = std::make_unique<chromeos::CellTowerVector>();
-  auto wifi_vector = std::make_unique<chromeos::WifiAccessPointVector>();
+  auto cell_vector = std::make_unique<CellTowerVector>();
+  auto wifi_vector = std::make_unique<WifiAccessPointVector>();
 
   // Mostly necessary for testing and rare cases where NetworkHandler is not
   // initialized: in that case, calls to Get() will fail.

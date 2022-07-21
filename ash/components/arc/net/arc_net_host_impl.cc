@@ -1066,8 +1066,7 @@ void ArcNetHostImpl::TranslateEapCredentialsToDictWithCertID(
     dict.SetStringKey(
         shill::kEapCertIdProperty,
         base::StringPrintf("%i:%s", slot_id.value(), cert_id.value().c_str()));
-    dict.SetStringKey(shill::kEapPinProperty,
-                      chromeos::client_cert::kDefaultTPMPin);
+    dict.SetStringKey(shill::kEapPinProperty, ash::client_cert::kDefaultTPMPin);
   }
 
   if (cred->subject_match.has_value()) {

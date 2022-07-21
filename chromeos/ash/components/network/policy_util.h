@@ -8,16 +8,14 @@
 #include <string>
 
 #include "base/component_export.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_profile.h"
 
 namespace base {
 class Value;
 }
 
-namespace chromeos {
-
-struct NetworkProfile;
-
-namespace policy_util {
+namespace ash::policy_util {
 
 // This fake credential contains a random postfix which is extremely unlikely to
 // be used by any user. Used to determine saved but unknown credential
@@ -74,8 +72,11 @@ const std::string* GetIccidFromONC(const base::Value& onc_config);
 // If there is no SMDPAddress, returns nullptr.
 const std::string* GetSMDPAddressFromONC(const base::Value& onc_config);
 
-}  // namespace policy_util
+}  // namespace ash::policy_util
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace policy_util = ::ash::policy_util;
+}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_POLICY_UTIL_H_

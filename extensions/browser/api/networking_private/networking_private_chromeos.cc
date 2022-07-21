@@ -338,7 +338,7 @@ void NetworkingPrivateChromeOS::GetState(const std::string& guid,
   }
 
   base::Value network_properties =
-      chromeos::network_util::TranslateNetworkStateToONC(network_state);
+      ash::network_util::TranslateNetworkStateToONC(network_state);
   AppendThirdPartyProviderName(&network_properties);
 
   std::move(success_callback).Run(std::move(network_properties));
@@ -493,8 +493,8 @@ void NetworkingPrivateChromeOS::GetNetworks(
           ? NetworkTypePattern::EthernetOrEthernetEAP()
           : ash::onc::NetworkTypePatternFromOncType(network_type);
   base::Value network_properties_list =
-      chromeos::network_util::TranslateNetworkListToONC(
-          pattern, configured_only, visible_only, limit);
+      ash::network_util::TranslateNetworkListToONC(pattern, configured_only,
+                                                   visible_only, limit);
 
   for (auto& value : network_properties_list.GetList()) {
     base::DictionaryValue* network_dict = nullptr;
@@ -705,7 +705,7 @@ void NetworkingPrivateChromeOS::GetDeviceStateList(
   std::unique_ptr<DeviceStateList> device_state_list(new DeviceStateList);
   for (const chromeos::DeviceState* device : devices) {
     std::string onc_type =
-        chromeos::network_util::TranslateShillTypeToONC(device->type());
+        ash::network_util::TranslateShillTypeToONC(device->type());
     AppendDeviceState(onc_type, device, device_state_list.get());
     technologies_found.insert(onc_type);
   }

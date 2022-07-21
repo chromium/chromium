@@ -24,9 +24,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
-
-namespace policy_util {
+namespace ash::policy_util {
 
 const char kFakeCredential[] = "FAKE_CREDENTIAL_VPaJDV9x";
 
@@ -420,6 +418,4 @@ const std::string* GetSMDPAddressFromONC(const base::Value& onc_config) {
   return smdp_address;
 }
 
-}  // namespace policy_util
-
-}  // namespace chromeos
+}  // namespace ash::policy_util

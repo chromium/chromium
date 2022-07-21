@@ -65,7 +65,7 @@ void NetworkingAttributesAsh::GetNetworkDetails(
 
   mojom::NetworkDetailsPtr details = mojom::NetworkDetails::New();
   details->mac_address =
-      chromeos::network_util::FormattedMacAddress(device->mac_address());
+      ash::network_util::FormattedMacAddress(device->mac_address());
   net::IPAddress ipv4_address;
   if (ipv4_address.AssignFromIPLiteral(
           device->GetIpAddressByType(shill::kTypeIPv4))) {

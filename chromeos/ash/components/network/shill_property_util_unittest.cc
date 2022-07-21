@@ -11,7 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 class ShillPropertyUtilTest : public testing::Test {
  public:
@@ -64,4 +64,4 @@ TEST_F(ShillPropertyUtilTest, MACRandomizationOn) {
   EXPECT_EQ(GetPolicyFromSource(::onc::ONCSource::ONC_SOURCE_UNKNOWN),
             shill::kWifiRandomMacPolicyPersistentRandom);
 }
-}  // namespace chromeos
+}  // namespace ash

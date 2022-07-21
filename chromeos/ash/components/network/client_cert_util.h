@@ -19,9 +19,7 @@ namespace base {
 class Value;
 }
 
-namespace chromeos {
-
-namespace client_cert {
+namespace ash::client_cert {
 
 COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kDefaultTPMPin[];
 
@@ -181,16 +179,19 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void SetResolvedCertInOnc(const ResolvedCert& resolved_cert,
                           base::Value& network_config);
 
-}  // namespace client_cert
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::client_cert {
-using ::chromeos::client_cert::ConfigType;
-using ::chromeos::client_cert::GetPkcs11AndSlotIdFromEapCertId;
-using ::chromeos::client_cert::SetEmptyShillProperties;
-using ::chromeos::client_cert::SetShillProperties;
 }  // namespace ash::client_cert
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::client_cert {
+using ::ash::client_cert::ClientCertConfig;
+using ::ash::client_cert::ConfigType;
+using ::ash::client_cert::GetClientCertFromShillProperties;
+using ::ash::client_cert::kDefaultTPMPin;
+using ::ash::client_cert::OncToClientCertConfig;
+using ::ash::client_cert::ResolvedCert;
+using ::ash::client_cert::SetEmptyShillProperties;
+using ::ash::client_cert::SetResolvedCertInOnc;
+using ::ash::client_cert::SetShillProperties;
+}  // namespace chromeos::client_cert
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_CLIENT_CERT_UTIL_H_

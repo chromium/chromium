@@ -23,9 +23,7 @@
 #include "chromeos/components/onc/onc_utils.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
-
-namespace shill_property_util {
+namespace ash::shill_property_util {
 
 namespace {
 
@@ -402,6 +400,4 @@ bool IsLoggableShillProperty(const std::string& key) {
   return s_skip_properties->count(key) == 0;
 }
 
-}  // namespace shill_property_util
-
-}  // namespace chromeos
+}  // namespace ash::shill_property_util

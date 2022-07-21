@@ -12,10 +12,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-using chromeos::CellularScanResult;
-using chromeos::network_util::NetmaskToPrefixLength;
-using chromeos::network_util::ParseCellularScanResults;
-using chromeos::network_util::PrefixLengthToNetmask;
+using ::ash::CellularScanResult;
+using ::ash::network_util::NetmaskToPrefixLength;
+using ::ash::network_util::ParseCellularScanResults;
+using ::ash::network_util::PrefixLengthToNetmask;
 
 typedef testing::Test NetworkUtilTest;
 

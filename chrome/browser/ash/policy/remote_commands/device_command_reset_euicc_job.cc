@@ -68,7 +68,7 @@ DeviceCommandResetEuiccJob::CreateTimedResetMemorySuccessCallback(
 
 void DeviceCommandResetEuiccJob::RunImpl(CallbackWithResult succeeded_callback,
                                          CallbackWithResult failed_callback) {
-  absl::optional<dbus::ObjectPath> euicc_path = chromeos::GetCurrentEuiccPath();
+  absl::optional<dbus::ObjectPath> euicc_path = ash::GetCurrentEuiccPath();
   if (!euicc_path) {
     SYSLOG(ERROR) << "No current EUICC. Unable to reset EUICC";
     RunResultCallback(std::move(failed_callback));

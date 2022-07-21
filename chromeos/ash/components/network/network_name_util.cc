@@ -15,9 +15,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
-
-namespace network_name_util {
+namespace ash::network_name_util {
 
 absl::optional<std::string> GetESimProfileName(
     CellularESimProfileHandler* cellular_esim_profile_handler,
@@ -75,5 +73,4 @@ std::string GetNetworkName(
   return network_state->name();
 }
 
-}  // namespace network_name_util
-}  // namespace chromeos
+}  // namespace ash::network_name_util

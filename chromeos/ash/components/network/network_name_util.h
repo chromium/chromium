@@ -8,14 +8,13 @@
 #include <string>
 
 #include "base/component_export.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_state.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-class NetworkState;
-class CellularESimProfileHandler;
-
-namespace network_name_util {
+namespace ash::network_name_util {
 
 // Returns eSIM profile name for  a given |network_state|.
 // Returns null if |cellular_esim_profile_handler| is null, or network is not
@@ -34,7 +33,12 @@ std::string GetNetworkName(
     CellularESimProfileHandler* cellular_esim_profile_handler,
     const NetworkState* network_state);
 
-}  // namespace network_name_util
-}  // namespace chromeos
+}  // namespace ash::network_name_util
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::network_name_util {
+using ::ash::network_name_util::GetESimProfileName;
+using ::ash::network_name_util::GetNetworkName;
+}  // namespace chromeos::network_name_util
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_NAME_UTIL_H_

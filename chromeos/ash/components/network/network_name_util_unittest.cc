@@ -20,7 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -129,4 +129,4 @@ TEST_F(NetworkNameUtilTest, NameComesFromHermes) {
   EXPECT_EQ(name, kTestProfileName);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -25,7 +25,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 WifiAccessPoint::WifiAccessPoint()
     : signal_strength(0),
@@ -289,4 +289,4 @@ std::string TranslateShillTypeToONC(const std::string& shill_type) {
 }
 
 }  // namespace network_util
-}  // namespace chromeos
+}  // namespace ash

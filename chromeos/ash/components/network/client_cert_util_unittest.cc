@@ -10,7 +10,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos::client_cert {
+namespace ash::client_cert {
 
 TEST(ClientCertUtilTest, GetPkcs11AndSlotIdFromEapCertId_Ok) {
   int slot_id = -1000;
@@ -698,4 +698,4 @@ TEST(ClientCertUtilTest, NoCert) {
        })"));
 }
 
-}  // namespace chromeos::client_cert
+}  // namespace ash::client_cert

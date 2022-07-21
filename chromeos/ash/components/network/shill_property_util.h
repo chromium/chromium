@@ -9,17 +9,15 @@
 #include <string>
 
 #include "base/component_export.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_ui_data.h"
 #include "components/onc/onc_constants.h"
 
 namespace base {
 class Value;
 }
 
-namespace chromeos {
-
-class NetworkUIData;
-
-namespace shill_property_util {
+namespace ash::shill_property_util {
 
 // Sets the |ssid| in |properties|.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
@@ -95,16 +93,11 @@ bool DoIdentifyingPropertiesMatch(const base::Value& new_properties,
 // be relied upon).
 bool IsLoggableShillProperty(const std::string& key);
 
-}  // namespace shill_property_util
+}  // namespace ash::shill_property_util
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when this file is moved to ash.
-namespace ash {
-namespace shill_property_util {
-using ::chromeos::shill_property_util::GetSSIDFromProperties;
-using ::chromeos::shill_property_util::SetSSID;
-}  // namespace shill_property_util
-}  // namespace ash
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace shill_property_util = ::ash::shill_property_util;
+}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_SHILL_PROPERTY_UTIL_H_

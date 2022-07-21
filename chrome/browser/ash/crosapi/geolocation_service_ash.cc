@@ -29,7 +29,7 @@ void DoWifiScanTaskOnNetworkHandlerThread(
     return;
   }
 
-  chromeos::WifiAccessPointVector access_points;
+  ash::WifiAccessPointVector access_points;
   int64_t age_ms = 0;
   if (!geolocation_handler->GetWifiAccessPoints(&access_points, &age_ms)) {
     std::move(callback).Run(true, false, base::TimeDelta(),

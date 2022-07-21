@@ -8,8 +8,7 @@
 #include "base/component_export.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 
-namespace chromeos {
-namespace hermes_metrics {
+namespace ash::hermes_metrics {
 
 void COMPONENT_EXPORT(CHROMEOS_NETWORK)
     LogInstallViaQrCodeResult(HermesResponseStatus status);
@@ -29,13 +28,11 @@ void COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void COMPONENT_EXPORT(CHROMEOS_NETWORK)
     LogRequestPendingProfilesResult(HermesResponseStatus status);
 
-}  // namespace hermes_metrics
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::hermes_metrics {
-using ::chromeos::hermes_metrics::LogInstallPendingProfileResult;
-using ::chromeos::hermes_metrics::LogRequestPendingProfilesResult;
 }  // namespace ash::hermes_metrics
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace hermes_metrics = ::ash::hermes_metrics;
+}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_HERMES_METRICS_UTIL_H_

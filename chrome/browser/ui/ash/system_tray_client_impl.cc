@@ -664,7 +664,7 @@ void SystemTrayClientImpl::ShowNetworkSettingsHelper(
     page += base::EscapeUrlEncodedData(network_state->name(), true);
     page += "&type=";
     page += base::EscapeUrlEncodedData(
-        chromeos::network_util::TranslateShillTypeToONC(network_state->type()),
+        ash::network_util::TranslateShillTypeToONC(network_state->type()),
         true);
     page += "&settingId=";
     page += base::NumberToString(static_cast<int32_t>(
