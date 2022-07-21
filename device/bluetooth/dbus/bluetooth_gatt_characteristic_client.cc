@@ -105,7 +105,8 @@ class BluetoothGattCharacteristicClientImpl
 
     // Append empty option dict
     dbus::MessageWriter writer(&method_call);
-    dbus::AppendValueData(&writer, base::Value::Dict());
+    base::DictionaryValue dict;
+    dbus::AppendValueData(&writer, dict);
 
     object_proxy->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -136,11 +137,12 @@ class BluetoothGattCharacteristicClientImpl
     writer.AppendArrayOfBytes(value.data(), value.size());
 
     // Append option dict
-    base::Value::Dict dict;
+    base::DictionaryValue dict;
     if (!type_option.empty()) {
       // NB: the "type" option was added in BlueZ 5.51. Older versions of BlueZ
       // will ignore this option.
-      dict.Set(bluetooth_gatt_characteristic::kOptionType, type_option);
+      dict.SetStringKey(bluetooth_gatt_characteristic::kOptionType,
+                        type_option);
     }
     dbus::AppendValueData(&writer, dict);
 
@@ -170,7 +172,8 @@ class BluetoothGattCharacteristicClientImpl
     dbus::MessageWriter writer(&method_call);
     writer.AppendArrayOfBytes(value.data(), value.size());
 
-    dbus::AppendValueData(&writer, base::Value::Dict());
+    base::DictionaryValue dict;
+    dbus::AppendValueData(&writer, dict);
 
     object_proxy->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
