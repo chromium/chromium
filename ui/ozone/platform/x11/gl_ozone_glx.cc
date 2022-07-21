@@ -90,7 +90,7 @@ void GLOzoneGLX::ShutdownGL(gl::GLDisplay* display) {
 }
 
 bool GLOzoneGLX::CanImportNativePixmap() {
-  return gl::GLImageGLXNativePixmap::CanImportNativePixmap();
+  return false;
 }
 
 std::unique_ptr<NativePixmapGLBinding> GLOzoneGLX::ImportNativePixmap(

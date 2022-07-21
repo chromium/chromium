@@ -45,10 +45,7 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
     return GLOzoneEGL::InitializeStaticGLBindings(implementation);
   }
 
-  bool CanImportNativePixmap() override {
-    return gl::GLSurfaceEGL::GetGLDisplayEGL()
-        ->ext->b_EGL_NOK_texture_from_pixmap;
-  }
+  bool CanImportNativePixmap() override { return false; }
 
   // This implementation is used when ANGLE supports pixmaps through
   // eglCreatePixmapSurface and exposes it through EGL extension
