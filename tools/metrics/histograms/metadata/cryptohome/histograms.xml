@@ -786,6 +786,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.TimeToUSSLoadPersisted" units="ms"
+    expires_after="2023-04-01">
+  <owner>thomascedeno@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The amount of time cryptohome spends reading persistent storage to populate
+    an encrypted USS container flatbuffer, or the time
+    UserSecretStash::LoadPersisted() takes to complete. The metric is emitted
+    during user authentication in cryptohome, when an AuthFactor must be
+    authenticated and UserSecretStash must read the corresponding USS file.
+  </summary>
+</histogram>
+
+<histogram name="Cryptohome.TimeToUSSPersist" units="ms"
+    expires_after="2023-04-01">
+  <owner>thomascedeno@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    The amount of time cryptohome spends writing the USS container flatbuffer to
+    persistent storage. This metric records the time UserSecretStash::Persist()
+    takes to complete. The metric is emitted when a user adds, removes or
+    updates a means of authentication or AuthFactor. Manipulating an AuthFactor
+    requires UserSecretStash to write to the corresponding USS file.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.TpmResults" enum="CryptohomeTpmResults"
     expires_after="2022-10-30">
   <owner>afakhry@chromium.org</owner>
