@@ -2364,10 +2364,6 @@
       status: "experimental",
     },
     {
-      name: "UnderlineOffsetThickness",
-      status: "stable",
-    },
-    {
       name: "UnexposedTaskIds",
     },
     // This is a reverse OT used for a phased deprecation, on desktop

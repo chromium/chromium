@@ -4574,7 +4574,6 @@
     },
     {
       name: "text-decoration-thickness",
-      runtime_flag: "UnderlineOffsetThickness",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       include_paths: ["third_party/blink/renderer/core/style/text_decoration_thickness.h"],
       inherited: true,
@@ -4692,7 +4691,6 @@
       field_template: "<length>",
       default_value: "Length()",
       name_for_methods: "TextUnderlineOffset",
-      runtime_flag: "UnderlineOffsetThickness",
       converter: "ConvertTextUnderlineOffset",
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
