@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager_dispatcher.h"
+#include "chrome/browser/ash/borealis/borealis_launch_options.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 #include "chrome/browser/ash/borealis/borealis_shutdown_monitor.h"
@@ -29,7 +30,6 @@
 #include "components/exo/shell_surface_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/display/test/test_screen.h"
 
 namespace borealis {
 
@@ -39,7 +39,6 @@ class BorealisContextTest : public testing::Test,
   BorealisContextTest()
       : new_window_provider_(std::make_unique<ash::TestNewWindowDelegate>()) {
     profile_ = std::make_unique<TestingProfile>();
-    display::Screen::SetScreenInstance(&test_screen_);
     borealis_disk_manager_dispatcher_ =
         std::make_unique<BorealisDiskManagerDispatcher>();
     borealis_shutdown_monitor_ =
@@ -83,7 +82,6 @@ class BorealisContextTest : public testing::Test,
 
  protected:
   content::BrowserTaskEnvironment task_env_;
-  display::test::TestScreen test_screen_;
   std::unique_ptr<borealis::BorealisContext> borealis_context_;
   std::unique_ptr<TestingProfile> profile_;
   BorealisServiceFake* service_fake_;
@@ -160,6 +158,12 @@ TEST_F(BorealisContextTest, MainAppHasSelfActivationPermission) {
 }
 
 TEST_F(BorealisContextTest, NormalAppDoesNotHaveSelfActivationPermission) {
+  // We need to prevent the system from trying to pop up a feedback form in this
+  // test, it causes a crash.
+  BorealisLaunchOptions::Options opts;
+  opts.feedback_forms = false;
+  borealis_context_->set_launch_options(opts);
+
   CreateFakeApp(profile_.get(), "some_app", "borealis/123");
   std::unique_ptr<ScopedTestWindow> window = MakeAndTrackWindow(
       "org.chromium.borealis.wmclass.some_app", borealis_window_manager_.get());
