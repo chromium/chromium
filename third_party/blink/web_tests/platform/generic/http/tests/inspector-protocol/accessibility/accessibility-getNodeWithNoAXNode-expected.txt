@@ -1,5 +1,9 @@
 Tests that node without AXNode reports accessibility values.
 {
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
     domNode : head
     ignored : true
     ignoredReasons : [

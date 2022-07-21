@@ -1,6 +1,10 @@
 Tests name sources in invisible nodes.
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 110
+    }
     domNode : div#link1
     ignored : false
     name : {
@@ -47,6 +51,10 @@ Tests name sources in invisible nodes.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     domNode : input#input2
     ignored : false
     name : {
@@ -172,6 +180,10 @@ Tests name sources in invisible nodes.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     domNode : input#input3
     ignored : false
     name : {
@@ -357,6 +369,10 @@ Tests name sources in invisible nodes.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     domNode : input#input4
     ignored : false
     name : {
@@ -482,6 +498,10 @@ Tests name sources in invisible nodes.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button1
     ignored : false
     name : {
@@ -566,6 +586,10 @@ Tests name sources in invisible nodes.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button2
     ignored : false
     name : {
@@ -650,6 +674,10 @@ Tests name sources in invisible nodes.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button3
     ignored : false
     name : {
@@ -734,6 +762,10 @@ Tests name sources in invisible nodes.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button#button4
     ignored : false
     name : {
@@ -818,6 +850,10 @@ Tests name sources in invisible nodes.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 170
+    }
     domNode : input#input5
     ignored : false
     name : {

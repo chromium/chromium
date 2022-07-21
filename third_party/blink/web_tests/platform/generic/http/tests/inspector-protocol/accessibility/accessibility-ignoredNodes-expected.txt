@@ -5,6 +5,10 @@ RootWebArea
   *none
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
     domNode : html
     ignored : true
     ignoredReasons : [
@@ -24,6 +28,10 @@ RootWebArea
         *img
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 99
+    }
     domNode : svg
     ignored : false
     name : {
@@ -65,6 +73,10 @@ RootWebArea
       *none
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
     domNode : div
     ignored : true
     ignoredReasons : [
@@ -92,6 +104,10 @@ RootWebArea
         *none
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
     domNode : div
     ignored : true
     ignoredReasons : [
@@ -121,6 +137,10 @@ RootWebArea
       *none
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
     domNode : ol
     ignored : true
     ignoredReasons : [
@@ -147,6 +167,10 @@ RootWebArea
       *none
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
     domNode : li
     ignored : true
     ignoredReasons : [
@@ -173,6 +197,10 @@ RootWebArea
         StaticText "Div in list isn't presentational"
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 88
+    }
     domNode : div
     ignored : false
     name : {
@@ -210,6 +238,10 @@ RootWebArea
         StaticText "Content within label refers to label container"
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 104
+    }
     domNode : label
     ignored : false
     name : {
@@ -247,6 +279,10 @@ RootWebArea
         *none
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
     domNode : span
     ignored : true
     ignoredReasons : [
@@ -273,6 +309,10 @@ RootWebArea
       *none
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
     domNode : div
     ignored : true
     ignoredReasons : [
@@ -300,6 +340,10 @@ RootWebArea
         *none
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
     domNode : span
     ignored : true
     ignoredReasons : [
@@ -325,6 +369,10 @@ RootWebArea
       *none
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
     domNode : canvas
     ignored : true
     ignoredReasons : [
@@ -350,6 +398,10 @@ RootWebArea
       *none
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
     domNode : canvas
     ignored : true
     ignoredReasons : [
@@ -379,6 +431,10 @@ RootWebArea
           menuitem "they are grandchildren"
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 137
+    }
     domNode : select
     ignored : false
     name : {
@@ -453,6 +509,10 @@ RootWebArea
           *menuitem "Options should be"
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 127
+    }
     domNode : option
     ignored : false
     name : {
@@ -506,6 +566,10 @@ RootWebArea
       *none
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
     domNode : button
     ignored : true
     ignoredReasons : [
@@ -532,6 +596,10 @@ RootWebArea
         *none
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
     domNode : button
     ignored : true
     ignoredReasons : [
@@ -563,6 +631,10 @@ RootWebArea
         StaticText "should not be ignored"
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 88
+    }
     domNode : span
     ignored : false
     name : {
@@ -609,6 +681,10 @@ RootWebArea
       *none
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
     domNode : div
     ignored : true
     ignoredReasons : [
@@ -635,6 +711,10 @@ RootWebArea
         StaticText "summary element without details parent is ignored"
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 88
+    }
     description : {
         type : computedString
         value : summary element without details parent is ignored
@@ -676,6 +756,10 @@ RootWebArea
         StaticText "Ignored parent shouldn't cause descendant to be missing from the tree"
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : button
     ignored : false
     name : {

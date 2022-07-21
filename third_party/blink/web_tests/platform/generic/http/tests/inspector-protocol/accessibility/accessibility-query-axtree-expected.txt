@@ -5,6 +5,10 @@ dump both an ignored and an unignored axnode
 {
     backendDOMNodeId : <number>
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 96
+    }
     ignored : false
     name : {
         sources : [
@@ -51,6 +55,10 @@ dump both an ignored and an unignored axnode
 {
     backendDOMNodeId : <number>
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 158
+    }
     ignored : false
     name : {
         sources : [
@@ -77,6 +85,10 @@ dump both an ignored and an unignored axnode
 {
     backendDOMNodeId : <number>
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 101
+    }
     ignored : false
     nodeId : <string>
     parentId : <string>
@@ -90,6 +102,10 @@ dump both an ignored and an unignored axnode
 {
     backendDOMNodeId : <number>
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 96
+    }
     ignored : true
     ignoredReasons : [
         [0] : {
@@ -114,6 +130,10 @@ dump both an ignored and an unignored axnode
 {
     backendDOMNodeId : <number>
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 158
+    }
     ignored : true
     ignoredReasons : [
         [0] : {
@@ -143,6 +163,10 @@ dump both an ignored and an unignored axnode
 {
     backendDOMNodeId : <number>
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 158
+    }
     ignored : true
     ignoredReasons : [
         [0] : {

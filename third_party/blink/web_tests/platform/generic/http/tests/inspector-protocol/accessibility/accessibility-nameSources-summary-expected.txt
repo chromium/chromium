@@ -1,6 +1,10 @@
 Tests name sources in details and summary.
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 37
+    }
     domNode : summary#summary2
     ignored : false
     name : {
@@ -53,6 +57,10 @@ Tests name sources in details and summary.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 37
+    }
     description : {
         type : computedString
         value : summary3-title
@@ -114,6 +122,10 @@ Tests name sources in details and summary.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 37
+    }
     description : {
         type : computedString
         value : summary4-contents
@@ -184,6 +196,10 @@ Tests name sources in details and summary.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 37
+    }
     description : {
         type : computedString
         value : summary5-contents

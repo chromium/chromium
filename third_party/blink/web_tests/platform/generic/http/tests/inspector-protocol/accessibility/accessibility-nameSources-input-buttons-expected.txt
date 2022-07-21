@@ -1,6 +1,10 @@
 Tests name sources in input[type=button].
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : input#button1
     ignored : false
     name : {
@@ -57,6 +61,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : input#button2
     ignored : false
     name : {
@@ -123,6 +131,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     description : {
         type : computedString
         value : button-title3
@@ -197,6 +209,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : input#button4
     ignored : false
     name : {
@@ -257,6 +273,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : input#button5
     ignored : false
     name : {
@@ -341,6 +361,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : input#button6
     ignored : false
     name : {
@@ -425,6 +449,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     description : {
         type : computedString
         value : button-value7
@@ -521,6 +549,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     description : {
         type : computedString
         value : button-value8
@@ -614,6 +646,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     description : {
         type : computedString
         value : button-value9
@@ -736,6 +772,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : input#submit1
     ignored : false
     name : {
@@ -797,6 +837,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : input#submit2
     ignored : false
     name : {
@@ -863,6 +907,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     description : {
         type : computedString
         value : submit-title
@@ -932,6 +980,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : input#reset1
     ignored : false
     name : {
@@ -993,6 +1045,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : input#image-input1
     ignored : false
     name : {
@@ -1075,6 +1131,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : input#image-input2
     ignored : false
     name : {
@@ -1163,6 +1223,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : input#image-input3
     ignored : false
     name : {
@@ -1256,6 +1320,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : input#image-input4
     ignored : false
     name : {
@@ -1353,6 +1421,10 @@ Tests name sources in input[type=button].
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : input#image-input5
     ignored : false
     name : {

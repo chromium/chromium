@@ -1,6 +1,10 @@
 Tests accessibility values in modal dialog.
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 35
+    }
     domNode : dialog#modal
     ignored : false
     name : {
@@ -46,6 +50,10 @@ Tests accessibility values in modal dialog.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 9
+    }
     domNode : div
     ignored : false
     name : {
@@ -80,6 +88,10 @@ Tests accessibility values in modal dialog.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 35
+    }
     domNode : div
     ignored : false
     name : {
@@ -118,6 +130,10 @@ Tests accessibility values in modal dialog.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 35
+    }
     domNode : div
     ignored : false
     name : {
@@ -156,6 +172,10 @@ Tests accessibility values in modal dialog.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 3
+    }
     domNode : div
     ignored : false
     name : {
@@ -194,6 +214,10 @@ Tests accessibility values in modal dialog.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 0
+    }
     domNode : dialog
     ignored : true
     ignoredReasons : [
@@ -214,6 +238,10 @@ Tests accessibility values in modal dialog.
 }
 {
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 35
+    }
     domNode : dialog
     ignored : false
     name : {

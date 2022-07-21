@@ -5,6 +5,10 @@ getRootAXNode for main frame:
 {
     backendDOMNodeId : <number>
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 144
+    }
     frameId : <string>
     ignored : false
     name : {
@@ -48,6 +52,10 @@ getRootAXNode for iframe:
 {
     backendDOMNodeId : <number>
     childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 144
+    }
     frameId : <string>
     ignored : false
     name : {

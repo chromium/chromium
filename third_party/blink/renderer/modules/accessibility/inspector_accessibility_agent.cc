@@ -483,12 +483,20 @@ void FillSparseAttributes(AXObject& ax_object,
   return;
 }
 
+// Creates a role name value that is easy to read by developers. This function
+// reduces the granularity of the role and uses ARIA role strings when possible.
 std::unique_ptr<AXValue> CreateRoleNameValue(ax::mojom::Role role) {
   bool is_internal = false;
   const String& role_name = AXObject::RoleName(role, &is_internal);
   const auto& value_type =
       is_internal ? AXValueTypeEnum::InternalRole : AXValueTypeEnum::Role;
   return CreateValue(role_name, value_type);
+}
+
+// Creates an integer role value that is fixed over releases, is not lossy, and
+// is more suitable for machine learning models or automation.
+std::unique_ptr<AXValue> CreateInternalRoleValue(ax::mojom::Role role) {
+  return CreateValue(static_cast<int>(role), AXValueTypeEnum::InternalRole);
 }
 
 }  // namespace
@@ -623,6 +631,7 @@ InspectorAccessibilityAgent::BuildProtocolAXNodeForDOMNodeWithNoAXNode(
           .build();
   ax::mojom::blink::Role role = ax::mojom::blink::Role::kNone;
   ignored_node_object->setRole(CreateRoleNameValue(role));
+  ignored_node_object->setChromeRole(CreateInternalRoleValue(role));
   auto ignored_reason_properties =
       std::make_unique<protocol::Array<AXProperty>>();
   ignored_reason_properties->emplace_back(
@@ -677,6 +686,7 @@ InspectorAccessibilityAgent::BuildProtocolAXNodeForIgnoredAXObject(
           .build();
   ax::mojom::blink::Role role = ax::mojom::blink::Role::kNone;
   ignored_node_object->setRole(CreateRoleNameValue(role));
+  ignored_node_object->setChromeRole(CreateInternalRoleValue(role));
 
   if (force_name_and_role) {
     // Compute accessible name and sources and attach to protocol node:
@@ -686,6 +696,8 @@ InspectorAccessibilityAgent::BuildProtocolAXNodeForIgnoredAXObject(
         CreateValue(computed_name, AXValueTypeEnum::ComputedString);
     ignored_node_object->setName(std::move(name));
     ignored_node_object->setRole(CreateRoleNameValue(ax_object.RoleValue()));
+    ignored_node_object->setChromeRole(
+        CreateInternalRoleValue(ax_object.RoleValue()));
   }
 
   // Compute and attach reason for node to be ignored:
@@ -712,6 +724,7 @@ InspectorAccessibilityAgent::BuildProtocolAXNodeForUnignoredAXObject(
   ui::AXNodeData node_data;
   ax_object.Serialize(&node_data, ui::kAXModeComplete);
   node_object->setRole(CreateRoleNameValue(node_data.role));
+  node_object->setChromeRole(CreateInternalRoleValue(node_data.role));
   FillLiveRegionProperties(ax_object, node_data, *(properties.get()));
   FillGlobalStates(ax_object, node_data, *(properties.get()));
   FillWidgetProperties(ax_object, node_data, *(properties.get()));
