@@ -97,6 +97,7 @@ generate_grd("build_trusted_grd") {
     "annotator/annotator_embedder_impl.js",
     "annotator/trusted/trusted_annotator_comm_factory.js",
     "app/trusted/trusted_app_comm_factory.js",
+    "communication/annotator_browser_proxy.js",
     "communication/projector_browser_proxy.js",
     "app/embedder.html",
     "app/embedder.css",
