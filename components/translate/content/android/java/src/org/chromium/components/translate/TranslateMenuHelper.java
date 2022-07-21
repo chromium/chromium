@@ -5,8 +5,10 @@
 package org.chromium.components.translate;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
+import android.util.Size;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +21,10 @@ import android.widget.ListPopupWindow;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
+import org.chromium.base.supplier.Supplier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +35,9 @@ import java.util.List;
 public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
     private final TranslateMenuListener mMenuListener;
     private final TranslateOptions mOptions;
+
+    // App area in Window where the popup menu should be placed.
+    private final Supplier<Rect> mAppRect;
 
     private ContextThemeWrapper mContextWrapper;
     private TranslateMenuAdapter mAdapter;
@@ -48,13 +56,15 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
     }
 
     public TranslateMenuHelper(Context context, View anchorView, TranslateOptions options,
-            TranslateMenuListener itemListener, boolean isIncognito, boolean isSourceLangUnknown) {
+            TranslateMenuListener itemListener, boolean isIncognito, boolean isSourceLangUnknown,
+            @NonNull Supplier<Rect> appRect) {
         mContextWrapper = new ContextThemeWrapper(context, R.style.OverflowMenuThemeOverlay);
         mAnchorView = anchorView;
         mOptions = options;
         mMenuListener = itemListener;
         mIsIncognito = isIncognito;
         mIsSourceLangUnknown = isSourceLangUnknown;
+        mAppRect = appRect;
     }
 
     // Helper method for deciding if a language should be skipped from the list
@@ -175,17 +185,46 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
             mAdapter.refreshMenu(menuType);
         }
 
+        Size menuSize = null;
+        Point anchor = getLocationInWindow(mAnchorView);
+        Rect appRect = mAppRect.get();
         if (menuType == TranslateMenu.MENU_OVERFLOW) {
             // Use measured width when it is a overflow menu.
+            menuSize = measureMenuSize(mAdapter, 0);
             Rect bgPadding = new Rect();
             mPopup.getBackground().getPadding(bgPadding);
-            int measuredWidth = measureMenuWidth(mAdapter) + bgPadding.left + bgPadding.right;
+            int measuredWidth = menuSize.getWidth() + bgPadding.left + bgPadding.right;
             mPopup.setWidth((maxWidth > 0 && measuredWidth > maxWidth) ? maxWidth : measuredWidth);
         } else {
             // Use fixed width otherwise.
             int popupWidth = mContextWrapper.getResources().getDimensionPixelSize(
                     R.dimen.infobar_translate_menu_width);
             mPopup.setWidth(popupWidth);
+
+            // Measure the height manually only if needed.
+            if (appRect != null) {
+                menuSize = measureMenuSize(mAdapter, anchor.y + mAnchorView.getHeight());
+            }
+        }
+
+        // Set the popup's position and height manually without relying on the inner logic of
+        // PopupWindow, if the app client area in Window is given.
+        if (appRect != null) {
+            // Move the menu back into the screen if it is clipped on the side.
+            int clipWidth = anchor.x + mPopup.getWidth() - appRect.width();
+            if (clipWidth > 0) mPopup.setHorizontalOffset(-clipWidth);
+
+            int appHeight = appRect.height();
+            assert menuSize != null;
+            int menuHeight = menuSize.getHeight();
+            if (anchor.y + menuHeight > appHeight) {
+                // Menu should fit between (top - anchorView). In such case, specify the menu
+                // height explicitly to keep PopupWindow from computing the height/vertical
+                // position which can be wrong.
+                menuHeight = Math.min(menuHeight, anchor.y + mAnchorView.getHeight());
+                mPopup.setHeight(menuHeight);
+                mPopup.setVerticalOffset(-menuHeight);
+            }
         }
 
         // When layout is RTL, set the horizontal offset to align the menu with the left side of the
@@ -202,12 +241,27 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
         }
     }
 
-    private int measureMenuWidth(TranslateMenuAdapter adapter) {
+    private static Point getLocationInWindow(View view) {
+        int[] loc = new int[2];
+        view.getLocationInWindow(loc);
+        return new Point(loc[0], loc[1]);
+    }
+
+    /**
+     * Measure the menu dimension.
+     * @param adapter {@link TranslateMenuAdapter} providing views.
+     * @param maxHeight Maximum height of the menu. 0 to measure all items. Otherwise measuring is
+     *        is stopped when the accumulated height goes over the maximum to avoid a performance
+     *        issue that can happen when measuring the height of a very long menu.
+     * @return {@link Size} of the menu.
+     */
+    private Size measureMenuSize(TranslateMenuAdapter adapter, int maxHeight) {
         final int widthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
         final int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
 
         final int count = adapter.getCount();
         int width = 0;
+        int height = 0;
         int itemType = 0;
         View itemView = null;
         for (int i = 0; i < count; i++) {
@@ -219,8 +273,14 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
             itemView = adapter.getView(i, itemView, null);
             itemView.measure(widthMeasureSpec, heightMeasureSpec);
             width = Math.max(width, itemView.getMeasuredWidth());
+            height += itemView.getMeasuredHeight();
+
+            // No need to loop further if the height is already bigger than the maximum. Can stop
+            // computing |width| as well, since |maxHeight| is only used for language lists which
+            // are fixed with.
+            if (maxHeight > 0 && height >= maxHeight) break;
         }
-        return width;
+        return new Size(width, height);
     }
 
     @Override
