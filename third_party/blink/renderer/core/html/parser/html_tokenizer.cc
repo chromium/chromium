@@ -1668,21 +1668,26 @@ String HTMLTokenizer::BufferedCharacters() const {
 }
 
 void HTMLTokenizer::UpdateStateFor(const String& tag_name) {
-  if (ThreadSafeMatch(tag_name, html_names::kTextareaTag) ||
-      ThreadSafeMatch(tag_name, html_names::kTitleTag))
-    SetState(HTMLTokenizer::kRCDATAState);
-  else if (ThreadSafeMatch(tag_name, html_names::kPlaintextTag))
-    SetState(HTMLTokenizer::kPLAINTEXTState);
-  else if (ThreadSafeMatch(tag_name, html_names::kScriptTag))
-    SetState(HTMLTokenizer::kScriptDataState);
-  else if (ThreadSafeMatch(tag_name, html_names::kStyleTag) ||
-           ThreadSafeMatch(tag_name, html_names::kIFrameTag) ||
-           ThreadSafeMatch(tag_name, html_names::kXmpTag) ||
-           ThreadSafeMatch(tag_name, html_names::kNoembedTag) ||
-           ThreadSafeMatch(tag_name, html_names::kNoframesTag) ||
-           (ThreadSafeMatch(tag_name, html_names::kNoscriptTag) &&
-            options_.scripting_flag))
-    SetState(HTMLTokenizer::kRAWTEXTState);
+  auto state = SpeculativeStateForTag(AtomicString(tag_name));
+  if (state)
+    SetState(*state);
+}
+
+absl::optional<HTMLTokenizer::State> HTMLTokenizer::SpeculativeStateForTag(
+    const AtomicString& tag_name) const {
+  if (tag_name == html_names::kTextareaTag || tag_name == html_names::kTitleTag)
+    return HTMLTokenizer::kRCDATAState;
+  if (tag_name == html_names::kPlaintextTag)
+    return HTMLTokenizer::kPLAINTEXTState;
+  if (tag_name == html_names::kScriptTag)
+    return HTMLTokenizer::kScriptDataState;
+  if (tag_name == html_names::kStyleTag || tag_name == html_names::kIFrameTag ||
+      tag_name == html_names::kXmpTag || tag_name == html_names::kNoembedTag ||
+      tag_name == html_names::kNoframesTag ||
+      (tag_name == html_names::kNoscriptTag && options_.scripting_flag)) {
+    return HTMLTokenizer::kRAWTEXTState;
+  }
+  return absl::nullopt;
 }
 
 inline bool HTMLTokenizer::TemporaryBufferIs(const String& expected_string) {

@@ -29,6 +29,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
@@ -142,7 +143,12 @@ class CORE_EXPORT HTMLTokenizer {
     return temporary_buffer_.size() ? temporary_buffer_.size() + 2 : 0;
   }
 
-  // Updates the tokenizer's state according to the given tag name. This is
+  // Potentially sets the tokenizer state for the given tag name. Specifically
+  // the state is set if SpeculativeStateForTag() returns a value, see it for
+  // details and caveats.
+  void UpdateStateFor(const String& tag_name);
+
+  // Returns the tokenizer state for the given tag name. This is
   // an approximation of how the tree builder would update the tokenizer's
   // state. This method is useful for approximating HTML tokenization. To
   // get exactly the correct tokenization, you need the real tree builder.
@@ -156,7 +162,9 @@ class CORE_EXPORT HTMLTokenizer {
   //  * CDATA sections in foreign content will be tokenized as bogus comments
   //    instead of as character tokens.
   //
-  void UpdateStateFor(const String& tag_name);
+  // The return value is empty if a state change is not necessary.
+  absl::optional<State> SpeculativeStateForTag(
+      const AtomicString& tag_name) const;
 
   bool ForceNullCharacterReplacement() const {
     return force_null_character_replacement_;
