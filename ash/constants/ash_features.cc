@@ -146,7 +146,7 @@ const base::Feature kArcFuseBoxFileSharing{"ArcFuseBoxFileSharing",
 
 // Controls whether to enable support for ARC Input Overlay.
 const base::Feature kArcInputOverlay{"ArcInputOverlay",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable support for ARC ADB sideloading for managed
 // accounts and/or devices.
