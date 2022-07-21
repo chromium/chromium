@@ -22,7 +22,7 @@ bool CoalescedTasks::UniqueTimeTicks::operator<(
 }
 
 bool CoalescedTasks::QueueDelayedTask(base::TimeTicks task_time,
-                                      std::unique_ptr<webrtc::QueuedTask> task,
+                                      absl::AnyInvocable<void() &&> task,
                                       base::TimeTicks scheduled_time) {
   DCHECK_GE(scheduled_time, task_time);
   base::AutoLock auto_lock(lock_);
@@ -40,7 +40,7 @@ void CoalescedTasks::RunScheduledTasks(
     base::TimeTicks scheduled_time,
     PrepareRunTaskCallback prepare_run_task_callback,
     FinalizeRunTaskCallback finalize_run_task_callback) {
-  std::vector<std::unique_ptr<webrtc::QueuedTask>> ready_tasks;
+  std::vector<absl::AnyInvocable<void() &&>> ready_tasks;
   {
     base::AutoLock auto_lock(lock_);
     // `scheduled_time` is no longer scheduled.
@@ -66,9 +66,7 @@ void CoalescedTasks::RunScheduledTasks(
       task_start_timestamp = prepare_run_task_callback.Run();
     }
 
-    if (!ready_task->Run()) {
-      ready_task.release();
-    }
+    std::move(ready_task)();
 
     if (finalize_run_task_callback) {
       finalize_run_task_callback.Run(std::move(task_start_timestamp));

@@ -13,7 +13,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/api/task_queue/task_queue_test.h"
-#include "third_party/webrtc/rtc_base/task_utils/to_queued_task.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
 #include "third_party/webrtc_overrides/test/metronome_like_task_queue_test.h"
 

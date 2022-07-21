@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/webrtc/rtc_base/task_utils/to_queued_task.h"
 
 namespace blink {
 
@@ -37,15 +36,15 @@ TEST(CoalescedTasksTest, TaskRunInOrder) {
   base::TimeTicks scheduled_time = now + base::Milliseconds(10);
 
   CoalescedTasks coalesced_tasks;
-  coalesced_tasks.QueueDelayedTask(
-      now + base::Milliseconds(5),
-      webrtc::ToQueuedTask(second_callback.AsStdFunction()), scheduled_time);
-  coalesced_tasks.QueueDelayedTask(
-      now + base::Milliseconds(1),
-      webrtc::ToQueuedTask(first_callback.AsStdFunction()), scheduled_time);
-  coalesced_tasks.QueueDelayedTask(
-      now + base::Milliseconds(9),
-      webrtc::ToQueuedTask(third_callback.AsStdFunction()), scheduled_time);
+  coalesced_tasks.QueueDelayedTask(now + base::Milliseconds(5),
+                                   second_callback.AsStdFunction(),
+                                   scheduled_time);
+  coalesced_tasks.QueueDelayedTask(now + base::Milliseconds(1),
+                                   first_callback.AsStdFunction(),
+                                   scheduled_time);
+  coalesced_tasks.QueueDelayedTask(now + base::Milliseconds(9),
+                                   third_callback.AsStdFunction(),
+                                   scheduled_time);
   coalesced_tasks.RunScheduledTasks(scheduled_time);
 
   EXPECT_THAT(run_tasks, ElementsAre("first", "second", "third"));
@@ -72,18 +71,15 @@ TEST(CoalescedTasksTest, OnlyReadyTasksRun) {
   base::TimeTicks second_scheduled_time = now + base::Milliseconds(20);
 
   CoalescedTasks coalesced_tasks;
-  coalesced_tasks.QueueDelayedTask(
-      now + base::Milliseconds(11),
-      webrtc::ToQueuedTask(third_callback.AsStdFunction()),
-      second_scheduled_time);
-  coalesced_tasks.QueueDelayedTask(
-      now + base::Milliseconds(9),
-      webrtc::ToQueuedTask(first_callback.AsStdFunction()),
-      first_scheduled_time);
-  coalesced_tasks.QueueDelayedTask(
-      now + base::Milliseconds(10),
-      webrtc::ToQueuedTask(second_callback.AsStdFunction()),
-      first_scheduled_time);
+  coalesced_tasks.QueueDelayedTask(now + base::Milliseconds(11),
+                                   third_callback.AsStdFunction(),
+                                   second_scheduled_time);
+  coalesced_tasks.QueueDelayedTask(now + base::Milliseconds(9),
+                                   first_callback.AsStdFunction(),
+                                   first_scheduled_time);
+  coalesced_tasks.QueueDelayedTask(now + base::Milliseconds(10),
+                                   second_callback.AsStdFunction(),
+                                   first_scheduled_time);
 
   coalesced_tasks.RunScheduledTasks(first_scheduled_time);
   EXPECT_THAT(run_tasks, ElementsAre("first", "second"));
@@ -104,44 +100,37 @@ TEST(CoalescedTasksTest, QueueDelayedTaskReturnsTrueWhenSchedulingIsNeeded) {
 
   CoalescedTasks coalesced_tasks;
   // `second_scheduled_time` needs to be scheduled.
-  EXPECT_TRUE(coalesced_tasks.QueueDelayedTask(
-      second_scheduled_time,
-      webrtc::ToQueuedTask(dummy_callback.AsStdFunction()),
-      second_scheduled_time));
+  EXPECT_TRUE(coalesced_tasks.QueueDelayedTask(second_scheduled_time,
+                                               dummy_callback.AsStdFunction(),
+                                               second_scheduled_time));
   // `second_scheduled_time` does not need to be scheduled multiple times.
-  EXPECT_FALSE(coalesced_tasks.QueueDelayedTask(
-      second_scheduled_time,
-      webrtc::ToQueuedTask(dummy_callback.AsStdFunction()),
-      second_scheduled_time));
+  EXPECT_FALSE(coalesced_tasks.QueueDelayedTask(second_scheduled_time,
+                                                dummy_callback.AsStdFunction(),
+                                                second_scheduled_time));
   // `first_scheduled_time` needs to be scheduled.
-  EXPECT_TRUE(coalesced_tasks.QueueDelayedTask(
-      first_scheduled_time,
-      webrtc::ToQueuedTask(dummy_callback.AsStdFunction()),
-      first_scheduled_time));
+  EXPECT_TRUE(coalesced_tasks.QueueDelayedTask(first_scheduled_time,
+                                               dummy_callback.AsStdFunction(),
+                                               first_scheduled_time));
   // `first_scheduled_time` does not need to be scheduled multiple times.
-  EXPECT_FALSE(coalesced_tasks.QueueDelayedTask(
-      first_scheduled_time,
-      webrtc::ToQueuedTask(dummy_callback.AsStdFunction()),
-      first_scheduled_time));
+  EXPECT_FALSE(coalesced_tasks.QueueDelayedTask(first_scheduled_time,
+                                                dummy_callback.AsStdFunction(),
+                                                first_scheduled_time));
 
   coalesced_tasks.RunScheduledTasks(first_scheduled_time);
   // `first_scheduled_time` is no longer scheduled, so this returns true.
-  EXPECT_TRUE(coalesced_tasks.QueueDelayedTask(
-      first_scheduled_time,
-      webrtc::ToQueuedTask(dummy_callback.AsStdFunction()),
-      first_scheduled_time));
+  EXPECT_TRUE(coalesced_tasks.QueueDelayedTask(first_scheduled_time,
+                                               dummy_callback.AsStdFunction(),
+                                               first_scheduled_time));
   // `second_scheduled_time` is still scheduled.
-  EXPECT_FALSE(coalesced_tasks.QueueDelayedTask(
-      second_scheduled_time,
-      webrtc::ToQueuedTask(dummy_callback.AsStdFunction()),
-      second_scheduled_time));
+  EXPECT_FALSE(coalesced_tasks.QueueDelayedTask(second_scheduled_time,
+                                                dummy_callback.AsStdFunction(),
+                                                second_scheduled_time));
 
   coalesced_tasks.RunScheduledTasks(second_scheduled_time);
   // `second_scheduled_time` is no longer scheduled, so this returns true.
-  EXPECT_TRUE(coalesced_tasks.QueueDelayedTask(
-      second_scheduled_time,
-      webrtc::ToQueuedTask(dummy_callback.AsStdFunction()),
-      second_scheduled_time));
+  EXPECT_TRUE(coalesced_tasks.QueueDelayedTask(second_scheduled_time,
+                                               dummy_callback.AsStdFunction(),
+                                               second_scheduled_time));
 
   coalesced_tasks.Clear();
 }
@@ -174,8 +163,7 @@ TEST(CoalescedTasksTest, PrepareAndFinalizeCallbacks) {
 
   base::TimeTicks now;
   CoalescedTasks coalesced_tasks;
-  coalesced_tasks.QueueDelayedTask(
-      now, webrtc::ToQueuedTask(task_callback.AsStdFunction()), now);
+  coalesced_tasks.QueueDelayedTask(now, task_callback.AsStdFunction(), now);
   coalesced_tasks.RunScheduledTasks(now, prepare_callback, finalize_callback);
 
   EXPECT_THAT(run_tasks, ElementsAre("prepare", "task", "finalize"));

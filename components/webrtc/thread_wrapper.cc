@@ -331,16 +331,16 @@ void ThreadWrapper::PostTaskInternal(const rtc::Location& posted_from,
   }
 }
 
-void ThreadWrapper::PostTask(std::unique_ptr<webrtc::QueuedTask> task) {
+void ThreadWrapper::PostTask(absl::AnyInvocable<void() &&> task) {
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ThreadWrapper::RunTaskQueueTask, weak_ptr_,
                                 std::move(task)));
 }
 
-void ThreadWrapper::PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
-                                    uint32_t milliseconds) {
+void ThreadWrapper::PostDelayedTask(absl::AnyInvocable<void() &&> task,
+                                    TimeDelta delay) {
   base::TimeTicks target_time =
-      base::TimeTicks::Now() + base::Milliseconds(milliseconds);
+      base::TimeTicks::Now() + base::Microseconds(delay.us());
   // Coalesce low precision tasks onto the metronome.
   base::TimeTicks snapped_target_time =
       blink::MetronomeSource::TimeSnappedToNextTick(target_time);
@@ -355,10 +355,10 @@ void ThreadWrapper::PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
 }
 
 void ThreadWrapper::PostDelayedHighPrecisionTask(
-    std::unique_ptr<webrtc::QueuedTask> task,
-    uint32_t milliseconds) {
+    absl::AnyInvocable<void() &&> task,
+    webrtc::TimeDelta delay) {
   base::TimeTicks target_time =
-      base::TimeTicks::Now() + base::Milliseconds(milliseconds);
+      base::TimeTicks::Now() + base::Microseconds(delay.us());
   task_runner_->PostDelayedTaskAt(
       base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
       base::BindOnce(&ThreadWrapper::RunTaskQueueTask, weak_ptr_,
@@ -379,15 +379,11 @@ absl::optional<base::TimeTicks> ThreadWrapper::PrepareRunTask() {
   return task_start_timestamp;
 }
 
-void ThreadWrapper::RunTaskQueueTask(std::unique_ptr<webrtc::QueuedTask> task) {
+void ThreadWrapper::RunTaskQueueTask(absl::AnyInvocable<void() &&> task) {
   absl::optional<base::TimeTicks> task_start_timestamp = PrepareRunTask();
 
-  // Follow QueuedTask::Run() semantics: delete if it returns true, release
-  // otherwise.
-  if (task->Run())
-    task.reset();
-  else
-    task.release();
+  std::move(task)();
+  task = nullptr;
 
   FinalizeRunTask(std::move(task_start_timestamp));
 }

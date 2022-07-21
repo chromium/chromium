@@ -15,7 +15,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/webrtc/api/task_queue/queued_task.h"
 #include "third_party/webrtc/api/task_queue/task_queue_base.h"
 
 namespace blink {
@@ -47,12 +46,17 @@ class FakeTaskQueue : public webrtc::TaskQueueBase {
 
   void Delete() override { NOTREACHED(); }
 
-  void PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
-                       uint32_t milliseconds) override {
+  void PostDelayedTask(absl::AnyInvocable<void() &&> task,
+                       webrtc::TimeDelta delay) override {
     NOTREACHED();
   }
 
-  void PostTask(std::unique_ptr<webrtc::QueuedTask> task) override {
+  void PostDelayedHighPrecisionTask(absl::AnyInvocable<void() &&> task,
+                                    webrtc::TimeDelta delay) override {
+    NOTREACHED();
+  }
+
+  void PostTask(absl::AnyInvocable<void() &&> task) override {
     last_task_ = std::move(task);
     if (!retain_tasks_)
       PostLastTask();
@@ -60,14 +64,14 @@ class FakeTaskQueue : public webrtc::TaskQueueBase {
 
   void PostLastTask() {
     if (last_task_) {
-      PostOnRunner(FROM_HERE,
-                   base::BindOnce(
-                       [](FakeTaskQueue* thiz,
-                          std::unique_ptr<webrtc::QueuedTask> task) {
-                         if (!task->Run())
-                           task.release();
-                       },
-                       base::Unretained(this), std::move(last_task_)));
+      PostOnRunner(
+          FROM_HERE,
+          base::BindOnce(
+              [](FakeTaskQueue* thiz, absl::AnyInvocable<void() &&> task) {
+                webrtc::TaskQueueBase::CurrentTaskQueueSetter setter(thiz);
+                std::move(task)();
+              },
+              base::Unretained(this), std::move(last_task_)));
     }
   }
 
@@ -85,7 +89,7 @@ class FakeTaskQueue : public webrtc::TaskQueueBase {
  private:
   const bool retain_tasks_;
   scoped_refptr<base::SequencedTaskRunner> runner_;
-  std::unique_ptr<webrtc::QueuedTask> last_task_;
+  absl::AnyInvocable<void() &&> last_task_;
 };
 
 class FakeTickListener : public webrtc::Metronome::TickListener {

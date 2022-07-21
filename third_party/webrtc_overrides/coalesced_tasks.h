@@ -12,8 +12,8 @@
 #include "base/callback.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/functional/any_invocable.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/webrtc/api/task_queue/queued_task.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 
 namespace blink {
@@ -37,7 +37,7 @@ class RTC_EXPORT CoalescedTasks {
   // `scheduled_time`. In this case, the caller is responsible for scheduling a
   // call to RunScheduledTasks() at `scheduled_time`.
   bool QueueDelayedTask(base::TimeTicks task_time,
-                        std::unique_ptr<webrtc::QueuedTask> task,
+                        absl::AnyInvocable<void() &&> task,
                         base::TimeTicks scheduled_time);
   // Run all queued tasks up to and including `scheduled_time`. If multiple
   // tasks were queued onto the same `scheduled_time` they will execute in order
@@ -68,7 +68,7 @@ class RTC_EXPORT CoalescedTasks {
   base::Lock lock_;
   std::set<base::TimeTicks> scheduled_ticks_ GUARDED_BY(lock_);
   uint64_t next_unique_id_ GUARDED_BY(lock_) = 0;
-  std::map<UniqueTimeTicks, std::unique_ptr<webrtc::QueuedTask>> delayed_tasks_
+  std::map<UniqueTimeTicks, absl::AnyInvocable<void() &&>> delayed_tasks_
       GUARDED_BY(lock_);
 };
 

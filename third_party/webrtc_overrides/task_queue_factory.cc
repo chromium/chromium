@@ -13,8 +13,10 @@
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/functional/any_invocable.h"
 #include "third_party/webrtc/api/task_queue/task_queue_base.h"
 #include "third_party/webrtc/api/task_queue/task_queue_factory.h"
+#include "third_party/webrtc/api/units/time_delta.h"
 #include "third_party/webrtc_overrides/coalesced_tasks.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
 
@@ -26,18 +28,18 @@ class WebRtcTaskQueue : public webrtc::TaskQueueBase {
 
   // webrtc::TaskQueueBase implementation.
   void Delete() override;
-  void PostTask(std::unique_ptr<webrtc::QueuedTask> task) override;
-  void PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
-                       uint32_t milliseconds) override;
-  void PostDelayedHighPrecisionTask(std::unique_ptr<webrtc::QueuedTask> task,
-                                    uint32_t milliseconds) override;
+  void PostTask(absl::AnyInvocable<void() &&> task) override;
+  void PostDelayedTask(absl::AnyInvocable<void() &&> task,
+                       webrtc::TimeDelta delay) override;
+  void PostDelayedHighPrecisionTask(absl::AnyInvocable<void() &&> task,
+                                    webrtc::TimeDelta delay) override;
 
  private:
   // Runs a single PostTask-task.
   static void MaybeRunTask(WebRtcTaskQueue* task_queue,
                            scoped_refptr<base::RefCountedData<bool>> is_active,
-                           std::unique_ptr<webrtc::QueuedTask> task);
-  void RunTask(std::unique_ptr<webrtc::QueuedTask> task);
+                           absl::AnyInvocable<void() &&> task);
+  void RunTask(absl::AnyInvocable<void() &&> task);
   // Runs all ready PostDelayedTask-tasks that have been scheduled to run at
   // |scheduled_time_now|.
   static void MaybeRunCoalescedTasks(
@@ -75,7 +77,7 @@ void WebRtcTaskQueue::Delete() {
   delete this;
 }
 
-void WebRtcTaskQueue::PostTask(std::unique_ptr<webrtc::QueuedTask> task) {
+void WebRtcTaskQueue::PostTask(absl::AnyInvocable<void() &&> task) {
   // Delete() ensures there are no in-flight tasks at destruction, so passing an
   // unretained pointer to |this| is safe.
   task_runner_->PostTask(
@@ -87,17 +89,15 @@ void WebRtcTaskQueue::PostTask(std::unique_ptr<webrtc::QueuedTask> task) {
 void WebRtcTaskQueue::MaybeRunTask(
     WebRtcTaskQueue* task_queue,
     scoped_refptr<base::RefCountedData<bool>> is_active,
-    std::unique_ptr<webrtc::QueuedTask> task) {
+    absl::AnyInvocable<void() &&> task) {
   if (!is_active->data)
     return;
   task_queue->RunTask(std::move(task));
 }
 
-void WebRtcTaskQueue::RunTask(std::unique_ptr<webrtc::QueuedTask> task) {
+void WebRtcTaskQueue::RunTask(absl::AnyInvocable<void() &&> task) {
   CurrentTaskQueueSetter set_current(this);
-  if (!task->Run()) {
-    task.release();
-  }
+  std::move(task)();
 }
 
 // static
@@ -111,10 +111,10 @@ void WebRtcTaskQueue::MaybeRunCoalescedTasks(
   task_queue->coalesced_tasks_.RunScheduledTasks(scheduled_time_now);
 }
 
-void WebRtcTaskQueue::PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
-                                      uint32_t milliseconds) {
+void WebRtcTaskQueue::PostDelayedTask(absl::AnyInvocable<void() &&> task,
+                                      webrtc::TimeDelta delay) {
   base::TimeTicks target_time =
-      base::TimeTicks::Now() + base::Milliseconds(milliseconds);
+      base::TimeTicks::Now() + base::Microseconds(delay.us());
   base::TimeTicks snapped_target_time =
       MetronomeSource::TimeSnappedToNextTick(target_time);
   // Queue to run the delayed task at |snapped_target_time|. If the snapped time
@@ -132,10 +132,10 @@ void WebRtcTaskQueue::PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
 }
 
 void WebRtcTaskQueue::PostDelayedHighPrecisionTask(
-    std::unique_ptr<webrtc::QueuedTask> task,
-    uint32_t milliseconds) {
+    absl::AnyInvocable<void() &&> task,
+    webrtc::TimeDelta delay) {
   base::TimeTicks target_time =
-      base::TimeTicks::Now() + base::Milliseconds(milliseconds);
+      base::TimeTicks::Now() + base::Microseconds(delay.us());
   // The posted task might outlive |this|, but access to |this| is guarded by
   // the ref-counted |is_active_| flag.
   task_runner_->PostDelayedTaskAt(

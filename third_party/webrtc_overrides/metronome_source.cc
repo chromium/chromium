@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/webrtc/api/metronome/metronome.h"
-#include "third_party/webrtc/rtc_base/task_utils/to_queued_task.h"
+#include "third_party/webrtc/api/task_queue/pending_task_safety_flag.h"
 
 namespace blink {
 
@@ -51,7 +51,7 @@ struct HandleWithCancelation {
 void InvokeOnTickOnWebRtcTaskQueue(
     webrtc::Metronome::TickListener* listener,
     rtc::scoped_refptr<webrtc::PendingTaskSafetyFlag> task_safety) {
-  listener->OnTickTaskQueue()->PostTask(webrtc::ToQueuedTask(
+  listener->OnTickTaskQueue()->PostTask(webrtc::SafeTask(
       std::move(task_safety), [listener] { listener->OnTick(); }));
 }
 
