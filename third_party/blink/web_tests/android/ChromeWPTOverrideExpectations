@@ -319,7 +319,6 @@ crbug.com/1050754 external/wpt/IndexedDB/key-generators/reading-autoincrement-st
 crbug.com/1050754 external/wpt/IndexedDB/key-generators/reading-autoincrement-store.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/IndexedDB/transaction-abort-generator-revert.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/WebCryptoAPI/historical.any.sharedworker.html [ Failure ]
-crbug.com/1050754 external/wpt/WebIDL/ecmascript-binding/global-immutable-prototype.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/accelerometer/Accelerometer.https.html [ Failure ]
 crbug.com/1050754 external/wpt/animation-worklet/inactive-timeline.https.html [ Timeout ]
 crbug.com/1050754 external/wpt/animation-worklet/scroll-timeline-writing-modes.https.html [ Failure ]
