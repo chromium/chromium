@@ -31,6 +31,8 @@ class UnifiedCastDetailedViewController : public DetailedViewController {
   views::View* CreateView() override;
   std::u16string GetAccessibleName() const override;
 
+  CastDetailedView* get_cast_detailed_view_for_testing() { return view_; }
+
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 

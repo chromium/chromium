@@ -183,24 +183,17 @@ void AccessCodeCastIntegrationBrowserTest::SetUpOnMainThread() {
 }
 
 void AccessCodeCastIntegrationBrowserTest::SetUpPrimaryAccountWithHostedDomain(
-    signin::ConsentLevel consent_level) {
+    signin::ConsentLevel consent_level,
+    Profile* profile) {
+  ASSERT_TRUE(identity_test_environment_);
   // Ensure that the stub user is signed in.
-  CoreAccountInfo account_info =
-      identity_test_environment_->MakePrimaryAccountAvailable(
-          user_manager::kStubUserEmail, consent_level);
+  identity_test_environment_->MakePrimaryAccountAvailable(
+      user_manager::kStubUserEmail, consent_level);
 
   identity_test_environment_->SetAutomaticIssueOfAccessTokens(true);
 
-  ASSERT_EQ(account_info.email, user_manager::kStubUserEmail);
-
-  identity_test_environment_->SimulateSuccessfulFetchOfAccountInfo(
-      account_info.account_id, account_info.email, account_info.gaia,
-      "foo_school.com", "full_name", "given_name", "locale",
-      "http://picture.example.com/picture.jpg");
-
-  ASSERT_TRUE(
-      AccessCodeCastSinkServiceFactory::GetForProfile(browser()->profile()));
-  AccessCodeCastSinkServiceFactory::GetForProfile(browser()->profile())
+  ASSERT_TRUE(AccessCodeCastSinkServiceFactory::GetForProfile(profile));
+  AccessCodeCastSinkServiceFactory::GetForProfile(profile)
       ->SetIdentityManagerForTesting(
           identity_test_environment_->identity_manager());
 
@@ -423,15 +416,19 @@ void AccessCodeCastIntegrationBrowserTest::UpdateSinks(
 }
 
 void AccessCodeCastIntegrationBrowserTest::ExpectStartRouteCallFromTabMirroring(
-    const std::string& sink_name) {
-  MediaSource media_source = MediaSource::ForTab(
-      sessions::SessionTabHelper::IdForTab(web_contents()).id());
-  auto* router = static_cast<TestMediaRouter*>(
-      media_router::MediaRouterFactory::GetInstance()->GetApiForBrowserContext(
-          browser()->profile()));
-  EXPECT_CALL(*router,
-              CreateRouteInternal(media_source.id(), sink_name, _,
-                                  web_contents(), _, base::Seconds(60), false));
+    const std::string& sink_name,
+    const std::string& media_source_id,
+    content::WebContents* web_contents,
+    base::TimeDelta timeout,
+    media_router::MockMediaRouter* media_router) {
+  if (!media_router) {
+    media_router = static_cast<TestMediaRouter*>(
+        media_router::MediaRouterFactory::GetInstance()
+            ->GetApiForBrowserContext(browser()->profile()));
+  }
+  EXPECT_CALL(*media_router,
+              CreateRouteInternal(media_source_id, sink_name, _, web_contents,
+                                  _, timeout, false));
 }
 
 }  // namespace media_router

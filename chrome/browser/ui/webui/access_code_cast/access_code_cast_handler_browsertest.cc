@@ -8,6 +8,7 @@
 #include "base/win/windows_version.h"
 #endif
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_router {
@@ -29,7 +30,8 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
 
   // This tests that if the network is not present (we are not connected to the
   // internet), we will see a server error in the access code dialog box.
-  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSync);
+  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSync,
+                                      browser()->profile());
 
   auto* dialog_contents = ShowDialog();
   SetAccessCode("abcdef", dialog_contents);
@@ -79,11 +81,17 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
 
   EnableAccessCodeCasting();
 
-  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSync);
+  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSync,
+                                      browser()->profile());
 
   auto* dialog_contents = ShowDialog();
   SetAccessCode("abcdef", dialog_contents);
-  ExpectStartRouteCallFromTabMirroring("cast:<1234>");
+  ExpectStartRouteCallFromTabMirroring(
+      "cast:<1234>",
+      MediaSource::ForTab(
+          sessions::SessionTabHelper::IdForTab(web_contents()).id())
+          .id(),
+      web_contents());
 
   PressSubmitAndWaitForClose(dialog_contents);
 }
@@ -100,7 +108,8 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
 
   // This tests that an account that does not have Sync enabled will throw a
   // generic error.
-  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSignin);
+  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSignin,
+                                      browser()->profile());
 
   auto* dialog_contents = ShowDialog();
   SetAccessCode("abcdef", dialog_contents);

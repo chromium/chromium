@@ -20,6 +20,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/mojo_web_ui_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/media_router/browser/media_router.h"
@@ -39,7 +40,8 @@ namespace media_router {
 
 // Base class that generates an access code cast dialog and all objects that are
 // required for interacting with the dialog.
-class AccessCodeCastIntegrationBrowserTest : public InProcessBrowserTest {
+class AccessCodeCastIntegrationBrowserTest
+    : public MixinBasedInProcessBrowserTest {
  public:
   AccessCodeCastIntegrationBrowserTest();
   ~AccessCodeCastIntegrationBrowserTest() override;
@@ -51,7 +53,8 @@ class AccessCodeCastIntegrationBrowserTest : public InProcessBrowserTest {
 
   // Makes user signed-in with the stub account's email and sets the
   // |consent_level| for that account.
-  void SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel consent_level);
+  void SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel consent_level,
+                                           Profile* profile);
 
   void EnableAccessCodeCasting();
 
@@ -96,7 +99,12 @@ class AccessCodeCastIntegrationBrowserTest : public InProcessBrowserTest {
   void UpdateSinks(const std::vector<MediaSink>& sinks,
                    const std::vector<url::Origin>& origins);
 
-  void ExpectStartRouteCallFromTabMirroring(const std::string& sink_name);
+  void ExpectStartRouteCallFromTabMirroring(
+      const std::string& sink_name,
+      const std::string& media_source_id,
+      content::WebContents* web_contents,
+      base::TimeDelta timeout = base::Seconds(60),
+      media_router::MockMediaRouter* media_router = nullptr);
   void ValidateAndReleaseCastMediaSinkServiceImpl();
 
  protected:

@@ -32,6 +32,10 @@ class CastDetailedView : public TrayDetailedView,
   // views::View:
   const char* GetClassName() const override;
 
+  views::View* get_add_access_code_device_for_testing() {
+    return add_access_code_device_;
+  }
+
  private:
   void CreateItems();
 
