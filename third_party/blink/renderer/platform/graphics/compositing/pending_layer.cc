@@ -424,14 +424,14 @@ void PendingLayer::DecompositeTransforms(Vector<PendingLayer>& pending_layers) {
          !node->IsRoot() && !can_be_decomposited.Contains(node);
          node = &node->Parent()->Unalias()) {
       if (!node->IsIdentityOr2DTranslation() || node->ScrollNode() ||
-          node->GetStickyConstraint() ||
-          node->IsAffectedByOuterViewportBoundsDelta() ||
           node->HasDirectCompositingReasonsOtherThan3dTransform() ||
           !node->FlattensInheritedTransformSameAsParent() ||
           !node->BackfaceVisibilitySameAsParent()) {
         mark_not_decompositable(*node);
         break;
       }
+      DCHECK(!node->GetStickyConstraint());
+      DCHECK(!node->IsAffectedByOuterViewportBoundsDelta());
       can_be_decomposited.insert(node, true);
     }
 

@@ -679,6 +679,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
       const auto& box_model = To<LayoutBoxModelObject>(object_);
       TransformPaintPropertyNode::State state{
           gfx::Vector2dF(box_model.StickyPositionOffset())};
+      state.direct_compositing_reasons =
+          full_context_.direct_compositing_reasons &
+          CompositingReason::kStickyPosition;
       // TODO(wangxianzhu): Not using GetCompositorElementId() here because
       // sticky elements don't work properly under multicol for now, to keep
       // consistency with CompositorElementIdFromUniqueObjectId() below.
@@ -690,55 +693,59 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
       state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
 
-      const auto* layout_constraint = box_model.StickyConstraints();
-      DCHECK(layout_constraint);
-      const auto* scroll_container_properties =
-          layout_constraint->containing_scroll_container_layer
-              ->GetLayoutObject()
-              .FirstFragment()
-              .PaintProperties();
-      // A scroll node is only created if an object can be scrolled manually,
-      // while sticky position attaches to anything that clips overflow.
-      // No need to (actually can't) setup composited sticky constraint if
-      // the clipping ancestor we attach to doesn't have a scroll node.
-      bool scroll_container_scrolls =
-          scroll_container_properties &&
-          scroll_container_properties->Scroll() == context_.current.scroll;
-      if (scroll_container_scrolls) {
-        auto constraint = std::make_unique<CompositorStickyConstraint>();
-        constraint->is_anchored_left = layout_constraint->is_anchored_left;
-        constraint->is_anchored_right = layout_constraint->is_anchored_right;
-        constraint->is_anchored_top = layout_constraint->is_anchored_top;
-        constraint->is_anchored_bottom = layout_constraint->is_anchored_bottom;
+      if (state.direct_compositing_reasons) {
+        const auto* layout_constraint = box_model.StickyConstraints();
+        DCHECK(layout_constraint);
+        const auto* scroll_container_properties =
+            layout_constraint->containing_scroll_container_layer
+                ->GetLayoutObject()
+                .FirstFragment()
+                .PaintProperties();
+        // A scroll node is only created if an object can be scrolled manually,
+        // while sticky position attaches to anything that clips overflow.
+        // No need to (actually can't) setup composited sticky constraint if
+        // the clipping ancestor we attach to doesn't have a scroll node.
+        bool scroll_container_scrolls =
+            scroll_container_properties &&
+            scroll_container_properties->Scroll() == context_.current.scroll;
+        if (scroll_container_scrolls) {
+          auto constraint = std::make_unique<CompositorStickyConstraint>();
+          constraint->is_anchored_left = layout_constraint->is_anchored_left;
+          constraint->is_anchored_right = layout_constraint->is_anchored_right;
+          constraint->is_anchored_top = layout_constraint->is_anchored_top;
+          constraint->is_anchored_bottom =
+              layout_constraint->is_anchored_bottom;
 
-        constraint->left_offset = layout_constraint->left_offset.ToFloat();
-        constraint->right_offset = layout_constraint->right_offset.ToFloat();
-        constraint->top_offset = layout_constraint->top_offset.ToFloat();
-        constraint->bottom_offset = layout_constraint->bottom_offset.ToFloat();
-        constraint->constraint_box_rect =
-            gfx::RectF(layout_constraint->constraining_rect);
-        constraint->scroll_container_relative_sticky_box_rect = gfx::RectF(
-            layout_constraint->scroll_container_relative_sticky_box_rect);
-        constraint->scroll_container_relative_containing_block_rect =
-            gfx::RectF(layout_constraint
-                           ->scroll_container_relative_containing_block_rect);
-        if (const PaintLayer* sticky_box_shifting_ancestor =
-                layout_constraint->nearest_sticky_layer_shifting_sticky_box) {
-          constraint->nearest_element_shifting_sticky_box =
-              CompositorElementIdFromUniqueObjectId(
-                  sticky_box_shifting_ancestor->GetLayoutObject().UniqueId(),
-                  CompositorElementIdNamespace::kStickyTranslation);
+          constraint->left_offset = layout_constraint->left_offset.ToFloat();
+          constraint->right_offset = layout_constraint->right_offset.ToFloat();
+          constraint->top_offset = layout_constraint->top_offset.ToFloat();
+          constraint->bottom_offset =
+              layout_constraint->bottom_offset.ToFloat();
+          constraint->constraint_box_rect =
+              gfx::RectF(layout_constraint->constraining_rect);
+          constraint->scroll_container_relative_sticky_box_rect = gfx::RectF(
+              layout_constraint->scroll_container_relative_sticky_box_rect);
+          constraint->scroll_container_relative_containing_block_rect =
+              gfx::RectF(layout_constraint
+                             ->scroll_container_relative_containing_block_rect);
+          if (const PaintLayer* sticky_box_shifting_ancestor =
+                  layout_constraint->nearest_sticky_layer_shifting_sticky_box) {
+            constraint->nearest_element_shifting_sticky_box =
+                CompositorElementIdFromUniqueObjectId(
+                    sticky_box_shifting_ancestor->GetLayoutObject().UniqueId(),
+                    CompositorElementIdNamespace::kStickyTranslation);
+          }
+          if (const PaintLayer* containing_block_shifting_ancestor =
+                  layout_constraint
+                      ->nearest_sticky_layer_shifting_containing_block) {
+            constraint->nearest_element_shifting_containing_block =
+                CompositorElementIdFromUniqueObjectId(
+                    containing_block_shifting_ancestor->GetLayoutObject()
+                        .UniqueId(),
+                    CompositorElementIdNamespace::kStickyTranslation);
+          }
+          state.sticky_constraint = std::move(constraint);
         }
-        if (const PaintLayer* containing_block_shifting_ancestor =
-                layout_constraint
-                    ->nearest_sticky_layer_shifting_containing_block) {
-          constraint->nearest_element_shifting_containing_block =
-              CompositorElementIdFromUniqueObjectId(
-                  containing_block_shifting_ancestor->GetLayoutObject()
-                      .UniqueId(),
-                  CompositorElementIdNamespace::kStickyTranslation);
-        }
-        state.sticky_constraint = std::move(constraint);
       }
 
       // TODO(crbug.com/1117658): Implement direct update of StickyTranslation
@@ -2976,9 +2983,11 @@ static bool IsLayoutShiftRoot(const LayoutObject& object,
   if (properties->TransformIsolationNode())
     return true;
   if (auto* offset_translation = properties->PaintOffsetTranslation()) {
-    if (offset_translation->RequiresCompositingForScrollDependentPosition())
+    if (offset_translation->RequiresCompositingForFixedPosition())
       return true;
   }
+  if (auto* sticky_translation = properties->StickyTranslation())
+    return true;
   if (properties->OverflowClip())
     return true;
   return false;

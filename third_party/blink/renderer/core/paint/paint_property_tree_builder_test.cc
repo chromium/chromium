@@ -6415,6 +6415,8 @@ TEST_P(PaintPropertyTreeBuilderTest, StickyConstraintChain) {
 
   const auto* outer_properties = PaintPropertiesForElement("outer");
   ASSERT_TRUE(outer_properties && outer_properties->StickyTranslation());
+  EXPECT_TRUE(outer_properties->StickyTranslation()
+                  ->RequiresCompositingForStickyPosition());
   EXPECT_EQ(gfx::Vector2dF(0, 60),
             outer_properties->StickyTranslation()->Translation2D());
   ASSERT_NE(nullptr,
@@ -6429,6 +6431,8 @@ TEST_P(PaintPropertyTreeBuilderTest, StickyConstraintChain) {
 
   const auto* middle_properties = PaintPropertiesForElement("middle");
   ASSERT_TRUE(middle_properties && middle_properties->StickyTranslation());
+  EXPECT_TRUE(middle_properties->StickyTranslation()
+                  ->RequiresCompositingForStickyPosition());
   EXPECT_EQ(gfx::Vector2dF(0, 15),
             middle_properties->StickyTranslation()->Translation2D());
   ASSERT_NE(nullptr,
@@ -6443,6 +6447,8 @@ TEST_P(PaintPropertyTreeBuilderTest, StickyConstraintChain) {
 
   const auto* inner_properties = PaintPropertiesForElement("inner");
   ASSERT_TRUE(inner_properties && inner_properties->StickyTranslation());
+  EXPECT_TRUE(inner_properties->StickyTranslation()
+                  ->RequiresCompositingForStickyPosition());
   EXPECT_EQ(gfx::Vector2dF(0, 20),
             inner_properties->StickyTranslation()->Translation2D());
   ASSERT_NE(nullptr,
@@ -6457,9 +6463,9 @@ TEST_P(PaintPropertyTreeBuilderTest, StickyConstraintChain) {
                 ->nearest_element_shifting_containing_block);
 }
 
-TEST_P(PaintPropertyTreeBuilderTest, NonScrollableSticky) {
+TEST_P(PaintPropertyTreeBuilderTest, StickyUnderOverflowHidden) {
   // This test verifies the property tree builder applies sticky offset
-  // correctly when the clipping container cannot be scrolled, and
+  // correctly when the scroll container cannot be manually scrolled, and
   // does not emit sticky constraints.
   SetBodyInnerHTML(R"HTML(
     <div id="scroller" style="overflow:hidden; width:300px; height:200px;">
@@ -6478,6 +6484,10 @@ TEST_P(PaintPropertyTreeBuilderTest, NonScrollableSticky) {
 
   const auto* outer_properties = PaintPropertiesForElement("outer");
   ASSERT_TRUE(outer_properties && outer_properties->StickyTranslation());
+  // We still composite the element for better performance programmatic scroll
+  // offset animation.
+  EXPECT_TRUE(outer_properties->StickyTranslation()
+                  ->RequiresCompositingForStickyPosition());
   EXPECT_EQ(gfx::Vector2dF(0, 60),
             outer_properties->StickyTranslation()->Translation2D());
   EXPECT_EQ(nullptr,
@@ -6485,6 +6495,8 @@ TEST_P(PaintPropertyTreeBuilderTest, NonScrollableSticky) {
 
   const auto* middle_properties = PaintPropertiesForElement("middle");
   ASSERT_TRUE(middle_properties && middle_properties->StickyTranslation());
+  EXPECT_TRUE(middle_properties->StickyTranslation()
+                  ->RequiresCompositingForStickyPosition());
   EXPECT_EQ(gfx::Vector2dF(0, 15),
             middle_properties->StickyTranslation()->Translation2D());
   EXPECT_EQ(nullptr,
@@ -6492,6 +6504,52 @@ TEST_P(PaintPropertyTreeBuilderTest, NonScrollableSticky) {
 
   const auto* inner_properties = PaintPropertiesForElement("inner");
   ASSERT_TRUE(inner_properties && inner_properties->StickyTranslation());
+  EXPECT_TRUE(inner_properties->StickyTranslation()
+                  ->RequiresCompositingForStickyPosition());
+  EXPECT_EQ(gfx::Vector2dF(0, 20),
+            inner_properties->StickyTranslation()->Translation2D());
+  EXPECT_EQ(nullptr,
+            inner_properties->StickyTranslation()->GetStickyConstraint());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, StickyUnderScrollerWithoutOverflow) {
+  // This test verifies the property tree builder applies sticky offset
+  // correctly when the scroll container doesn't have overflow, and does not
+  // emit compositing reasons or sticky constraints.
+  SetBodyInnerHTML(R"HTML(
+    <div id="scroller" style="overflow:scroll; width:300px; height:400px;">
+      <div id="outer" style="position:sticky; top:10px;">
+        <div style="height:300px;">
+          <span id="middle" style="position:sticky; top:25px;">
+            <span id="inner" style="position:sticky; top:45px;"></span>
+          </span>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  const auto* outer_properties = PaintPropertiesForElement("outer");
+  ASSERT_TRUE(outer_properties && outer_properties->StickyTranslation());
+  EXPECT_FALSE(outer_properties->StickyTranslation()
+                   ->RequiresCompositingForStickyPosition());
+  EXPECT_EQ(gfx::Vector2dF(0, 10),
+            outer_properties->StickyTranslation()->Translation2D());
+  EXPECT_EQ(nullptr,
+            outer_properties->StickyTranslation()->GetStickyConstraint());
+
+  const auto* middle_properties = PaintPropertiesForElement("middle");
+  ASSERT_TRUE(middle_properties && middle_properties->StickyTranslation());
+  EXPECT_FALSE(middle_properties->StickyTranslation()
+                   ->RequiresCompositingForStickyPosition());
+  EXPECT_EQ(gfx::Vector2dF(0, 15),
+            middle_properties->StickyTranslation()->Translation2D());
+  EXPECT_EQ(nullptr,
+            middle_properties->StickyTranslation()->GetStickyConstraint());
+
+  const auto* inner_properties = PaintPropertiesForElement("inner");
+  ASSERT_TRUE(inner_properties && inner_properties->StickyTranslation());
+  EXPECT_FALSE(inner_properties->StickyTranslation()
+                   ->RequiresCompositingForStickyPosition());
   EXPECT_EQ(gfx::Vector2dF(0, 20),
             inner_properties->StickyTranslation()->Translation2D());
   EXPECT_EQ(nullptr,
