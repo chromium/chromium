@@ -1,0 +1,38 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("helper") {
+  public = [ "secure_enclave_helper.h" ]
+
+  sources = [
+    "secure_enclave_helper.cc",
+    "secure_enclave_helper_impl.h",
+    "secure_enclave_helper_impl.mm",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [ "//third_party/boringssl" ]
+
+  frameworks = [
+    "CoreFoundation.framework",
+    "CryptoTokenKit.framework",
+    "Foundation.framework",
+    "Security.framework",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public = [ "mock_secure_enclave_helper.h" ]
+
+  sources = [ "mock_secure_enclave_helper.cc" ]
+
+  frameworks = [ "Security.framework" ]
+
+  public_deps = [
+    ":helper",
+    "//testing/gmock",
+  ]
+}
