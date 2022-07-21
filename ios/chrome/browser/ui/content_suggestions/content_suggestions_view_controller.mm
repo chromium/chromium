@@ -542,7 +542,7 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
     self.trendingQueryViews = [NSMutableArray array];
   }
 
-  if ([configs count] < kMaxTrendingQueries) {
+  if ((int)[configs count] < kMaxTrendingQueries) {
     // No Trending Queries to show. Remove module.
     [self.trendingQueriesContainingView removeFromSuperview];
     [self.trendingQueriesModuleContainer removeFromSuperview];

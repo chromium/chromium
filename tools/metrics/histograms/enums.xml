@@ -51216,6 +51216,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Return to Recent Tab tile"/>
   <int value="3" label="Feed Card"/>
   <int value="4" label="Fake Omnibox"/>
+  <int value="5" label="Trending Queries"/>
 </enum>
 
 <enum name="iOSCredentialIdentityStoreErrorForReporting">
@@ -95686,6 +95687,18 @@ Full version information for the fingerprint enum values:
   <int value="8"
       label="Manual translation Context Menu, after page was already
              translated"/>
+</enum>
+
+<enum name="TrendingQueryIndex">
+  <summary>
+    Index of a trending query view on the new tab page. This is only an enum so
+    that the dashboard won't produce misleading statistics like averages.
+  </summary>
+  <int value="0" label="0"/>
+  <int value="1" label="1"/>
+  <int value="2" label="2"/>
+  <int value="3" label="3"/>
+  <int value="4" label="kMaxValue"/>
 </enum>
 
 <enum name="TrendingTileEvent">

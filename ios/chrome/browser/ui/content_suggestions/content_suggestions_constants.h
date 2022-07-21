@@ -33,6 +33,8 @@ extern NSString* const
 extern const CGFloat kMostVisitedBottomMargin;
 
 // Maximum number of Trending Queries shown.
-extern const NSUInteger kMaxTrendingQueries;
+// If the value of this constant is updated, please also update the
+// TrendingQueryIndex enum so it can capture a higher max value.
+const int kMaxTrendingQueries = 4;
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_CONSTANTS_H_

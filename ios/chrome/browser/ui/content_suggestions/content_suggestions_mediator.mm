@@ -9,6 +9,7 @@
 #import "base/bind.h"
 #import "base/callback.h"
 #import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -487,6 +488,10 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }
 
 - (void)loadSuggestedQuery:(QuerySuggestionConfig*)config {
+  UMA_HISTOGRAM_ENUMERATION("IOS.TrendingQueries", config.index,
+                            kMaxTrendingQueries);
+  [self.NTPMetrics recordContentSuggestionsActionForType:
+                       IOSContentSuggestionsActionType::kTrendingQuery];
   UrlLoadParams params = UrlLoadParams::InCurrentTab(config.URL);
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
@@ -555,7 +560,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (void)suggestionsReceived:(std::vector<QuerySuggestion>)suggestions {
   self.trendingQueries = [NSMutableArray array];
-  NSUInteger index = 0;
+  int index = 0;
   for (QuerySuggestion query : suggestions) {
     if (index == kMaxTrendingQueries) {
       break;

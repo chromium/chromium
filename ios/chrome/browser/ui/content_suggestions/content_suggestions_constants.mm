@@ -20,5 +20,3 @@ NSString* const kContentSuggestionsShortcutsAccessibilityIdentifierPrefix =
     @"contentSuggestionsShortcutsAccessibilityIdentifierPrefix";
 
 const CGFloat kMostVisitedBottomMargin = 13;
-
-const NSUInteger kMaxTrendingQueries = 4;

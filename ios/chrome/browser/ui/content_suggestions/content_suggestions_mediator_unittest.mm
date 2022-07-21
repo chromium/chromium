@@ -281,15 +281,25 @@ TEST_F(ContentSuggestionsMediatorTest,
   OCMExpect([consumer_ setTrendingQueriesWithConfigs:@[]]);
   [mediator_ suggestionsReceived:std::vector<QuerySuggestion>()];
 
+  int index = 1;
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnNTP",
+      IOSContentSuggestionsActionType::kTrendingQuery, 0);
+  histogram_tester_->ExpectUniqueSample("IOS.TrendingQueries", index, 0);
+
   // Test that the mediator loads the URL in the config passed into
   // loadSuggestedQuery:.
   GURL url = GURL("http://chromium.org");
   QuerySuggestionConfig* config = [[QuerySuggestionConfig alloc] init];
-  config.index = 1;
+  config.index = index;
   config.URL = url;
   [mediator_ loadSuggestedQuery:config];
   EXPECT_EQ(url, url_loader_->last_params.web_params.url);
   EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
       ui::PAGE_TRANSITION_AUTO_BOOKMARK,
       url_loader_->last_params.web_params.transition_type));
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnNTP",
+      IOSContentSuggestionsActionType::kTrendingQuery, 1);
+  histogram_tester_->ExpectUniqueSample("IOS.TrendingQueries", index, 1);
 }

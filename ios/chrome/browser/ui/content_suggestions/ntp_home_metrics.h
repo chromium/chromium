@@ -30,7 +30,8 @@ enum class IOSContentSuggestionsActionType {
   kReturnToRecentTab = 2,
   kFeedCard = 3,
   kFakebox = 4,
-  kMaxValue = kFakebox,
+  kTrendingQuery = 5,
+  kMaxValue = kTrendingQuery,
 };
 
 // Metrics recorder for the action used to potentially leave the NTP.
