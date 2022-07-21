@@ -6687,7 +6687,7 @@ static_library("browser") {
     deps += [
       "//chrome/common/printing",
       "//components/printing/browser",
-      "//components/printing/browser/print_to_pdf",
+      "//components/printing/browser/headless",
       "//components/printing/common:mojo_interfaces",
       "//components/services/print_compositor/public/cpp",
       "//components/services/print_compositor/public/mojom",

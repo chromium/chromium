@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PRINTING_BROWSER_PRINT_TO_PDF_PDF_PRINT_MANAGER_H_
-#define COMPONENTS_PRINTING_BROWSER_PRINT_TO_PDF_PDF_PRINT_MANAGER_H_
+#ifndef COMPONENTS_PRINTING_BROWSER_HEADLESS_HEADLESS_PRINT_MANAGER_H_
+#define COMPONENTS_PRINTING_BROWSER_HEADLESS_HEADLESS_PRINT_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -20,19 +20,23 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "printing/print_settings.h"
 
-namespace print_to_pdf {
+namespace headless {
 
-class PdfPrintManager : public printing::PrintManager,
-                        public content::WebContentsUserData<PdfPrintManager> {
+// Minimalistic PrintManager implemementation intended for use with Headless
+// Chrome. It shortcuts most of the methods exposing only PrintToPdf()
+// functionality.
+class HeadlessPrintManager
+    : public printing::PrintManager,
+      public content::WebContentsUserData<HeadlessPrintManager> {
  public:
   using PrintToPdfCallback =
-      base::OnceCallback<void(PdfPrintResult,
+      base::OnceCallback<void(print_to_pdf::PdfPrintResult,
                               scoped_refptr<base::RefCountedMemory>)>;
 
-  ~PdfPrintManager() override;
+  ~HeadlessPrintManager() override;
 
-  PdfPrintManager(const PdfPrintManager&) = delete;
-  PdfPrintManager& operator=(const PdfPrintManager&) = delete;
+  HeadlessPrintManager(const HeadlessPrintManager&) = delete;
+  HeadlessPrintManager& operator=(const HeadlessPrintManager&) = delete;
 
   static void BindPrintManagerHost(
       mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
@@ -45,9 +49,9 @@ class PdfPrintManager : public printing::PrintManager,
                   PrintToPdfCallback callback);
 
  private:
-  friend class content::WebContentsUserData<PdfPrintManager>;
+  friend class content::WebContentsUserData<HeadlessPrintManager>;
 
-  explicit PdfPrintManager(content::WebContents* web_contents);
+  explicit HeadlessPrintManager(content::WebContents* web_contents);
 
   void OnDidPrintWithParams(printing::mojom::PrintWithParamsResultPtr result);
 
@@ -83,7 +87,7 @@ class PdfPrintManager : public printing::PrintManager,
 #endif
 
   void Reset();
-  void ReleaseJob(PdfPrintResult result);
+  void ReleaseJob(print_to_pdf::PdfPrintResult result);
 
   raw_ptr<content::RenderFrameHost> printing_rfh_ = nullptr;
   PrintToPdfCallback callback_;
@@ -92,6 +96,6 @@ class PdfPrintManager : public printing::PrintManager,
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-}  // namespace print_to_pdf
+}  // namespace headless
 
-#endif  // COMPONENTS_PRINTING_BROWSER_PRINT_TO_PDF_PDF_PRINT_MANAGER_H_
+#endif  // COMPONENTS_PRINTING_BROWSER_HEADLESS_HEADLESS_PRINT_MANAGER_H_

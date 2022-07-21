@@ -8,7 +8,6 @@
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
-#include "components/printing/browser/print_to_pdf/pdf_print_result.h"
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
@@ -90,7 +89,7 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
 
   bool return_as_stream = transfer_mode.fromMaybe("") ==
                           Page::PrintToPDF::TransferModeEnum::ReturnAsStream;
-  print_to_pdf::PdfPrintManager::FromWebContents(web_contents_.get())
+  HeadlessPrintManager::FromWebContents(web_contents_.get())
       ->PrintToPdf(
           web_contents_->GetPrimaryMainFrame(), page_ranges.fromMaybe(""),
           std::move(absl::get<printing::mojom::PrintPagesParamsPtr>(

@@ -16,7 +16,8 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
-#include "components/printing/browser/print_to_pdf/pdf_print_manager.h"
+#include "components/printing/browser/headless/headless_print_manager.h"
+#include "components/printing/browser/print_to_pdf/pdf_print_result.h"
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
 namespace content {

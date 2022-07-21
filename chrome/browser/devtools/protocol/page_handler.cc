@@ -7,7 +7,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
-#include "components/printing/browser/print_to_pdf/pdf_print_result.h"
 #include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -220,8 +219,8 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
       transfer_mode.fromMaybe("") ==
       protocol::Page::PrintToPDF::TransferModeEnum::ReturnAsStream;
 
-  if (auto* print_manager =
-          print_to_pdf::PdfPrintManager::FromWebContents(web_contents_.get())) {
+  if (auto* print_manager = headless::HeadlessPrintManager::FromWebContents(
+          web_contents_.get())) {
     print_manager->PrintToPdf(
         web_contents_->GetPrimaryMainFrame(), page_ranges.fromMaybe(""),
         std::move(absl::get<printing::mojom::PrintPagesParamsPtr>(

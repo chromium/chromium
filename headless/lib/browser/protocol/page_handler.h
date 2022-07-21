@@ -12,7 +12,7 @@
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
-#include "components/printing/browser/print_to_pdf/pdf_print_manager.h"
+#include "components/printing/browser/headless/headless_print_manager.h"
 #include "components/printing/browser/print_to_pdf/pdf_print_result.h"
 #include "headless/public/headless_export.h"
 #endif

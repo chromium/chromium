@@ -112,7 +112,7 @@
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/browser/printing/print_view_manager_basic.h"
-#include "components/printing/browser/print_to_pdf/pdf_print_manager.h"
+#include "components/printing/browser/headless/headless_print_manager.h"
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "chrome/browser/printing/print_view_manager.h"
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -581,7 +581,7 @@ void ChromeContentBrowserClient::
            mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
                receiver) {
           if (headless::IsChromeNativeHeadless()) {
-            print_to_pdf::PdfPrintManager::BindPrintManagerHost(
+            headless::HeadlessPrintManager::BindPrintManagerHost(
                 std::move(receiver), render_frame_host);
           } else {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)

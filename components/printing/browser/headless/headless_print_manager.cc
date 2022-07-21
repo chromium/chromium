@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/printing/browser/print_to_pdf/pdf_print_manager.h"
+#include "components/printing/browser/headless/headless_print_manager.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "build/build_config.h"
-#include "components/printing/browser/print_to_pdf/pdf_print_result.h"
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_range.h"
@@ -18,51 +17,41 @@
 #include "mojo/public/cpp/bindings/message.h"
 #endif
 
-namespace print_to_pdf {
+using print_to_pdf::PageRangeError;
+using print_to_pdf::PdfPrintResult;
+
+namespace headless {
 
 namespace {
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-constexpr char kInvalidUpdatePrintSettingsCall[] =
-    "Invalid UpdatePrintSettings Call";
-constexpr char kInvalidSetupScriptedPrintPreviewCall[] =
-    "Invalid SetupScriptedPrintPreview Call";
-constexpr char kInvalidShowScriptedPrintPreviewCall[] =
-    "Invalid ShowScriptedPrintPreview Call";
-constexpr char kInvalidRequestPrintPreviewCall[] =
-    "Invalid RequestPrintPreview Call";
-constexpr char kInvalidCheckForCancelCall[] = "Invalid CheckForCancel Call";
-#endif
-
-#if BUILDFLAG(ENABLE_TAGGED_PDF)
-constexpr char kInvalidSetAccessibilityTreeCall[] =
-    "Invalid SetAccessibilityTree Call";
+constexpr char kUnexpectedPrintManagerCall[] = "Unexpected Print Manager call";
 #endif
 
 }  // namespace
 
-PdfPrintManager::PdfPrintManager(content::WebContents* web_contents)
+HeadlessPrintManager::HeadlessPrintManager(content::WebContents* web_contents)
     : printing::PrintManager(web_contents),
-      content::WebContentsUserData<PdfPrintManager>(*web_contents) {}
+      content::WebContentsUserData<HeadlessPrintManager>(*web_contents) {}
 
-PdfPrintManager::~PdfPrintManager() = default;
+HeadlessPrintManager::~HeadlessPrintManager() = default;
 
 // static
-void PdfPrintManager::BindPrintManagerHost(
+void HeadlessPrintManager::BindPrintManagerHost(
     mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost> receiver,
     content::RenderFrameHost* rfh) {
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents)
     return;
 
-  auto* print_manager = PdfPrintManager::FromWebContents(web_contents);
+  auto* print_manager = HeadlessPrintManager::FromWebContents(web_contents);
   if (!print_manager)
     return;
 
   print_manager->BindReceiver(std::move(receiver), rfh);
 }
 
-void PdfPrintManager::PrintToPdf(
+void HeadlessPrintManager::PrintToPdf(
     content::RenderFrameHost* rfh,
     const std::string& page_ranges,
     printing::mojom::PrintPagesParamsPtr print_pages_params,
@@ -82,7 +71,7 @@ void PdfPrintManager::PrintToPdf(
   }
 
   absl::variant<printing::PageRanges, PageRangeError> parsed_ranges =
-      TextPageRangesToPageRanges(page_ranges);
+      print_to_pdf::TextPageRangesToPageRanges(page_ranges);
   if (absl::holds_alternative<PageRangeError>(parsed_ranges)) {
     PdfPrintResult print_result;
     switch (absl::get<PageRangeError>(parsed_ranges)) {
@@ -107,11 +96,11 @@ void PdfPrintManager::PrintToPdf(
   // in the base class. If we're gone, mojo will discard the callback.
   GetPrintRenderFrame(rfh)->PrintWithParams(
       std::move(print_pages_params),
-      base::BindOnce(&PdfPrintManager::OnDidPrintWithParams,
+      base::BindOnce(&HeadlessPrintManager::OnDidPrintWithParams,
                      base::Unretained(this)));
 }
 
-void PdfPrintManager::OnDidPrintWithParams(
+void HeadlessPrintManager::OnDidPrintWithParams(
     printing::mojom::PrintWithParamsResultPtr result) {
   if (result->is_failure_reason()) {
     switch (result->get_failure_reason()) {
@@ -138,13 +127,13 @@ void PdfPrintManager::OnDidPrintWithParams(
   ReleaseJob(PdfPrintResult::PRINT_SUCCESS);
 }
 
-void PdfPrintManager::GetDefaultPrintSettings(
+void HeadlessPrintManager::GetDefaultPrintSettings(
     GetDefaultPrintSettingsCallback callback) {
   DLOG(ERROR) << "Scripted print is not supported";
   std::move(callback).Run(printing::mojom::PrintParams::New());
 }
 
-void PdfPrintManager::ScriptedPrint(
+void HeadlessPrintManager::ScriptedPrint(
     printing::mojom::ScriptedPrintParamsPtr params,
     ScriptedPrintCallback callback) {
   auto default_param = printing::mojom::PrintPagesParams::New();
@@ -153,64 +142,52 @@ void PdfPrintManager::ScriptedPrint(
   std::move(callback).Run(std::move(default_param));
 }
 
-void PdfPrintManager::ShowInvalidPrinterSettingsError() {
+void HeadlessPrintManager::ShowInvalidPrinterSettingsError() {
   ReleaseJob(PdfPrintResult::INVALID_PRINTER_SETTINGS);
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-void PdfPrintManager::UpdatePrintSettings(
+void HeadlessPrintManager::UpdatePrintSettings(
     int32_t cookie,
     base::Value::Dict job_settings,
     UpdatePrintSettingsCallback callback) {
-  // UpdatePrintSettingsCallback() should never be called on
-  // PdfPrintManager, since it is only triggered by Print Preview.
-  mojo::ReportBadMessage(kInvalidUpdatePrintSettingsCall);
+  mojo::ReportBadMessage(kUnexpectedPrintManagerCall);
 }
 
-void PdfPrintManager::SetupScriptedPrintPreview(
+void HeadlessPrintManager::SetupScriptedPrintPreview(
     SetupScriptedPrintPreviewCallback callback) {
-  // SetupScriptedPrintPreview() should never be called on
-  // PdfPrintManager, since it is only triggered by Print Preview.
-  mojo::ReportBadMessage(kInvalidSetupScriptedPrintPreviewCall);
+  mojo::ReportBadMessage(kUnexpectedPrintManagerCall);
 }
 
-void PdfPrintManager::ShowScriptedPrintPreview(bool source_is_modifiable) {
-  // ShowScriptedPrintPreview() should never be called on
-  // PdfPrintManager, since it is only triggered by Print Preview.
-  mojo::ReportBadMessage(kInvalidShowScriptedPrintPreviewCall);
+void HeadlessPrintManager::ShowScriptedPrintPreview(bool source_is_modifiable) {
+  mojo::ReportBadMessage(kUnexpectedPrintManagerCall);
 }
 
-void PdfPrintManager::RequestPrintPreview(
+void HeadlessPrintManager::RequestPrintPreview(
     printing::mojom::RequestPrintPreviewParamsPtr params) {
-  // RequestPrintPreview() should never be called on PdfPrintManager,
-  // since it is only triggered by Print Preview.
-  mojo::ReportBadMessage(kInvalidRequestPrintPreviewCall);
+  mojo::ReportBadMessage(kUnexpectedPrintManagerCall);
 }
 
-void PdfPrintManager::CheckForCancel(int32_t preview_ui_id,
-                                     int32_t request_id,
-                                     CheckForCancelCallback callback) {
-  // CheckForCancel() should never be called on PdfPrintManager, since it
-  // is only triggered by Print Preview.
-  mojo::ReportBadMessage(kInvalidCheckForCancelCall);
+void HeadlessPrintManager::CheckForCancel(int32_t preview_ui_id,
+                                          int32_t request_id,
+                                          CheckForCancelCallback callback) {
+  mojo::ReportBadMessage(kUnexpectedPrintManagerCall);
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 #if BUILDFLAG(ENABLE_TAGGED_PDF)
-void PdfPrintManager::SetAccessibilityTree(
+void HeadlessPrintManager::SetAccessibilityTree(
     int32_t cookie,
     const ui::AXTreeUpdate& accessibility_tree) {
-  // SetAccessibilityTree() should never be called on PdfPrintManager,
-  // since it is only triggered by Print Preview.
-  mojo::ReportBadMessage(kInvalidSetAccessibilityTreeCall);
+  mojo::ReportBadMessage(kUnexpectedPrintManagerCall);
 }
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-void PdfPrintManager::PdfWritingDone(int page_count) {}
+void HeadlessPrintManager::PdfWritingDone(int page_count) {}
 #endif
 
-void PdfPrintManager::RenderFrameDeleted(
+void HeadlessPrintManager::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   PrintManager::RenderFrameDeleted(render_frame_host);
 
@@ -226,13 +203,13 @@ void PdfPrintManager::RenderFrameDeleted(
   Reset();
 }
 
-void PdfPrintManager::Reset() {
+void HeadlessPrintManager::Reset() {
   printing_rfh_ = nullptr;
   callback_.Reset();
   data_.clear();
 }
 
-void PdfPrintManager::ReleaseJob(PdfPrintResult result) {
+void HeadlessPrintManager::ReleaseJob(PdfPrintResult result) {
   if (!callback_) {
     DLOG(ERROR) << "ReleaseJob is called when callback_ is null. Check whether "
                    "ReleaseJob is called more than once.";
@@ -254,6 +231,6 @@ void PdfPrintManager::ReleaseJob(PdfPrintResult result) {
   Reset();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PdfPrintManager);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(HeadlessPrintManager);
 
-}  // namespace print_to_pdf
+}  // namespace headless

@@ -267,7 +267,10 @@ static_library("devtools") {
       ]
     }
     if (enable_basic_printing) {
-      deps += [ "//components/printing/browser/print_to_pdf" ]
+      deps += [
+        "//components/printing/browser/headless",
+        "//components/printing/browser/print_to_pdf",
+      ]
     }
     sources += rebase_path(_protocol_generated, ".", target_gen_dir)
   }

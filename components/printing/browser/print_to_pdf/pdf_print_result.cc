@@ -4,8 +4,6 @@
 
 #include "components/printing/browser/print_to_pdf/pdf_print_result.h"
 
-#include "base/notreached.h"
-
 namespace print_to_pdf {
 
 std::string PdfPrintResultToString(PdfPrintResult result) {
