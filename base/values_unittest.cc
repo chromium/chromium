@@ -2394,15 +2394,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_FALSE(main_dict.GetListWithoutPathExpansion("dict", nullptr));
   EXPECT_TRUE(main_dict.GetListWithoutPathExpansion("list", nullptr));
   EXPECT_FALSE(main_dict.GetListWithoutPathExpansion("DNE", nullptr));
-
-  EXPECT_FALSE(main_list.GetDictionary(0, nullptr));
-  EXPECT_FALSE(main_list.GetDictionary(1, nullptr));
-  EXPECT_FALSE(main_list.GetDictionary(2, nullptr));
-  EXPECT_FALSE(main_list.GetDictionary(3, nullptr));
-  EXPECT_FALSE(main_list.GetDictionary(4, nullptr));
-  EXPECT_TRUE(main_list.GetDictionary(5, nullptr));
-  EXPECT_FALSE(main_list.GetDictionary(6, nullptr));
-  EXPECT_FALSE(main_list.GetDictionary(7, nullptr));
 }
 
 TEST(ValuesTest, SelfSwap) {

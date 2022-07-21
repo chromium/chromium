@@ -804,13 +804,12 @@ TEST_F(NetExportFileWriterTest, StartWithNetworkContextActive) {
   ASSERT_GE(events->GetListDeprecated().size(), 1u);
 
   // Check the URL in the params of the first event.
-  base::DictionaryValue* event;
-  EXPECT_TRUE(events->GetDictionary(0, &event));
-  base::DictionaryValue* event_params;
-  EXPECT_TRUE(event->GetDictionary("params", &event_params));
-  std::string event_url;
-  EXPECT_TRUE(event_params->GetString("url", &event_url));
-  EXPECT_EQ(test_server.GetURL(kRedirectURL), event_url);
+  base::Value::Dict* event = events->GetList()[0].GetIfDict();
+  EXPECT_TRUE(event);
+  base::Value::Dict* event_params = event->FindDict("params");
+  EXPECT_TRUE(event_params);
+  EXPECT_EQ(test_server.GetURL(kRedirectURL),
+            *(event_params->FindString("url")));
 
   block_fetch.Signal();
   run_loop2.Run();

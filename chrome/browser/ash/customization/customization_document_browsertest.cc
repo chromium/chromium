@@ -240,11 +240,13 @@ IN_PROC_BROWSER_TEST_P(CustomizationVPDTest, GetUILanguageList) {
       << "Test failed for initial_locale='" << GetParam() << "'";
 
   for (size_t i = 0; i < ui_language_list->GetListDeprecated().size(); ++i) {
-    base::DictionaryValue* language_info = NULL;
-    ASSERT_TRUE(ui_language_list->GetDictionary(i, &language_info))
+    base::Value::Dict* language_info =
+        ui_language_list->GetList()[i].GetIfDict();
+
+    ASSERT_TRUE(language_info)
         << "Test failed for initial_locale='" << GetParam() << "', i=" << i;
 
-    const std::string* value = language_info->FindStringKey("value");
+    std::string* value = language_info->FindString("value");
     ASSERT_TRUE(value) << "Test failed for initial_locale='" << GetParam()
                        << "', i=" << i;
 

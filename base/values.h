@@ -1416,15 +1416,6 @@ class BASE_EXPORT ListValue : public Value {
 
   ListValue();
 
-  // Convenience forms of `Get()`.  Modifies `out_value` (and returns true)
-  // only if the index is valid and the Value at that index can be returned
-  // in the specified form.
-  // `out_value` is optional and will only be set if non-NULL.
-  //
-  // DEPRECATED: prefer `Value::List::operator[]` + `GetIfDict()`.
-  bool GetDictionary(size_t index, const DictionaryValue** out_value) const;
-  bool GetDictionary(size_t index, DictionaryValue** out_value);
-
   // Appends a Value to the end of the list.
   // DEPRECATED: prefer `Value::List::Append()`.
   using Value::Append;

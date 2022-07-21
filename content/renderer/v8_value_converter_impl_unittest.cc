@@ -1021,9 +1021,10 @@ TEST_F(V8ValueConverterImplTest, ReuseObjects) {
     ASSERT_EQ(2u, list_result->GetListDeprecated().size());
     for (size_t i = 0; i < list_result->GetListDeprecated().size(); ++i) {
       ASSERT_FALSE(IsNull(list_result.get(), i));
-      base::DictionaryValue* dict_value = nullptr;
-      ASSERT_TRUE(list_result->GetDictionary(0u, &dict_value));
-      EXPECT_EQ("same value", GetString(dict_value, "key"));
+      base::Value::Dict* dict_value = list_result->GetList()[0].GetIfDict();
+      ;
+      ASSERT_TRUE(dict_value);
+      EXPECT_STREQ("same value", dict_value->FindString("key")->c_str());
     }
   }
 }

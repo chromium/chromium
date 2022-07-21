@@ -192,14 +192,14 @@ TEST(SessionCommandsTest, ProcessCapabilities_FirstMatch) {
   ASSERT_TRUE(result.DictEmpty());
 
   // Invalid entry
-  base::DictionaryValue* entry_ptr;
-  ASSERT_TRUE(list_ptr->GetDictionary(0, &entry_ptr));
-  entry_ptr->GetDict().Set("pageLoadStrategy", "invalid");
+  base::Value::Dict* entry_ptr = list_ptr->GetList()[0].GetIfDict();
+  ASSERT_TRUE(entry_ptr);
+  entry_ptr->Set("pageLoadStrategy", "invalid");
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kInvalidArgument, status.code());
 
   // Valid entry
-  entry_ptr->GetDict().Set("pageLoadStrategy", "eager");
+  entry_ptr->Set("pageLoadStrategy", "eager");
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_EQ(result.DictSize(), 1u);
@@ -209,9 +209,10 @@ TEST(SessionCommandsTest, ProcessCapabilities_FirstMatch) {
 
   // Multiple entries, the first one should be selected.
   list_ptr->Append(base::DictionaryValue());
-  ASSERT_TRUE(list_ptr->GetDictionary(1, &entry_ptr));
-  entry_ptr->GetDict().Set("pageLoadStrategy", "normal");
-  entry_ptr->GetDict().Set("browserName", "chrome");
+  entry_ptr = list_ptr->GetList()[1].GetIfDict();
+  ASSERT_TRUE(entry_ptr);
+  entry_ptr->Set("pageLoadStrategy", "normal");
+  entry_ptr->Set("browserName", "chrome");
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_EQ(result.DictSize(), 1u);
