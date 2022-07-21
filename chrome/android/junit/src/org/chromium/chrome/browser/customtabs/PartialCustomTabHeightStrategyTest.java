@@ -9,8 +9,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -477,6 +479,54 @@ public class PartialCustomTabHeightStrategyTest {
                 SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, DEVICE_WIDTH / 2, 1850, 0));
 
         assertTrue("Close click handler should be called.", closed[0]);
+    }
+
+    @Test
+    public void showSpinnerOnDragUpOnly() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
+
+        verify(mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+        verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+        assertEquals(1, mAttributeResults.size());
+        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
+
+        when(mSpinnerView.getVisibility()).thenReturn(View.GONE);
+
+        // Pass null because we have a mock Activity and we don't depend on the GestureDetector
+        // inside as we test MotionEvents directly.
+        PartialCustomTabHeightStrategy.PartialCustomTabHandleStrategy handleStrategy =
+                strategy.new PartialCustomTabHandleStrategy(null);
+
+        // action down
+        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, DEVICE_WIDTH / 2, 1500, 0));
+
+        // action move
+        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, DEVICE_WIDTH / 2, 1450, 0));
+
+        // Verify the spinner is visible.
+        verify(mSpinnerView, times(1)).setVisibility(View.VISIBLE);
+        when(mSpinnerView.getVisibility()).thenReturn(View.VISIBLE);
+        clearInvocations(mSpinnerView);
+
+        // action up
+        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, DEVICE_WIDTH / 2, 1400, 0));
+
+        // Wait animation to finish.
+        shadowOf(Looper.getMainLooper()).idle();
+        when(mSpinnerView.getVisibility()).thenReturn(View.GONE);
+
+        // Now the tab is full-height. Start dragging down.
+        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, DEVICE_WIDTH / 2, 500, 0));
+        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, DEVICE_WIDTH / 2, 650, 0));
+
+        // Verify the spinner remained invisible.
+        verify(mSpinnerView, times(0)).setVisibility(anyInt());
     }
 
     private void verifyWindowFlagsSet() {

@@ -131,6 +131,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     @Nullable
     private Runnable mFinishRunnable;
 
+    // Y offset when a dragging gesture starts.
+    private int mDraggingStartY;
+
     /** A callback to be called once the Custom Tab has been resized. */
     interface OnResizedCallback {
         /** The Custom Tab has been resized. */
@@ -300,6 +303,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             @Override
             public void onAnimationEnd(Animator animator) {
                 mSpinner.stop();
+                mSpinnerView.setVisibility(View.GONE);
             }
             @Override
             public void onAnimationCancel(Animator animator) {}
@@ -546,12 +550,20 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mActivity.getWindow().setAttributes(attributes);
         if (mFinishRunnable != null) return;
 
-        assert mSpinnerView != null;
-        centerSpinnerVertically((ViewGroup.LayoutParams) mSpinnerView.getLayoutParams());
+        // Show the spinner lazily, only when the tab is dragged _up_, which requires showing
+        // more area than initial state.
+        if (mStatus != HeightStatus.TRANSITION
+                && (mSpinnerView == null || mSpinnerView.getVisibility() != View.VISIBLE)
+                && y < mDraggingStartY) {
+            showSpinnerView();
+        }
+        if (mSpinnerView != null) {
+            centerSpinnerVertically((ViewGroup.LayoutParams) mSpinnerView.getLayoutParams());
+        }
     }
 
     private void onMoveStart() {
-        showSpinnerView();
+        mDraggingStartY = mActivity.getWindow().getAttributes().y;
         updateNavbarVisibility(false);
     }
 
@@ -564,10 +576,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
         // TODO(crbug.com/1328555): Look into observing a view resize event to ensure the fade
         // animation can always cover the transition artifact.
-        mSpinnerView.animate()
-                .alpha(0f)
-                .setDuration(SPINNER_FADEOUT_DURATION_MS)
-                .setListener(mSpinnerFadeoutAnimatorListener);
+        if (mSpinnerView != null && mSpinnerView.getVisibility() == View.VISIBLE) {
+            mSpinnerView.animate()
+                    .alpha(0f)
+                    .setDuration(SPINNER_FADEOUT_DURATION_MS)
+                    .setListener(mSpinnerFadeoutAnimatorListener);
+        }
         updateNavbarVisibility(true);
     }
 
