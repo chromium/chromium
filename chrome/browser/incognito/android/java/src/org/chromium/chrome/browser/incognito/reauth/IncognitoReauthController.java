@@ -102,6 +102,7 @@ public class IncognitoReauthController
     private final @NonNull TabModelSelector mTabModelSelector;
     private final @NonNull ObservableSupplier<Profile> mProfileObservableSupplier;
     private final @NonNull IncognitoReauthCoordinatorFactory mIncognitoReauthCoordinatorFactory;
+    private final boolean mIsTabbedActivity;
 
     /**
      * {@link OnBackPressedCallback} which would be added to the fullscreen dialog, to handle
@@ -148,6 +149,7 @@ public class IncognitoReauthController
         mProfileObservableSupplier = profileSupplier;
         mProfileObservableSupplier.addObserver(mProfileSupplierCallback);
         mIncognitoReauthCoordinatorFactory = incognitoReauthCoordinatorFactory;
+        mIsTabbedActivity = mIncognitoReauthCoordinatorFactory.getIsTabbedActivity();
         mBackPressInReauthFullScreenRunnable =
                 incognitoReauthCoordinatorFactory.getBackPressRunnable();
 
@@ -262,13 +264,14 @@ public class IncognitoReauthController
      */
     private void showDialogIfRequired() {
         if (mIncognitoReauthCoordinator != null) return;
-        if (mLayoutStateProvider == null) return;
+        if (mLayoutStateProvider == null && mIsTabbedActivity) return;
         if (!mIncognitoReauthPending) return;
         if (!mTabModelSelector.isIncognitoSelected()) return;
         if (mProfile == null) return;
         if (!IncognitoReauthManager.isIncognitoReauthEnabled(mProfile)) return;
 
-        boolean showFullScreen = !mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER);
+        boolean showFullScreen = !mIsTabbedActivity
+                || !mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER);
         // TODO(crbug.com/1227656): Pass the |mOnBackPressedInFullScreenReauthCallback| dependency
         // to the coordinator.
         mIncognitoReauthCoordinator =

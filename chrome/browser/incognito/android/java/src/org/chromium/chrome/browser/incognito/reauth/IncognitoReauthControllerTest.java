@@ -147,6 +147,7 @@ public class IncognitoReauthControllerTest {
         doReturn(mIncognitoReauthCoordinatorMock)
                 .when(mIncognitoReauthCoordinatorFactoryMock)
                 .createIncognitoReauthCoordinator(any(), /*showFullScreen=*/anyBoolean());
+        doReturn(true).when(mIncognitoReauthCoordinatorFactoryMock).getIsTabbedActivity();
         doNothing().when(mIncognitoReauthCoordinatorMock).show();
 
         mLayoutStateProviderOneshotSupplier = new OneshotSupplierImpl<>();

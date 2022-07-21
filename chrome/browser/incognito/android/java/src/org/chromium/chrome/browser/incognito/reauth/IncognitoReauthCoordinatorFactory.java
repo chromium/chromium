@@ -179,6 +179,13 @@ public class IncognitoReauthCoordinatorFactory {
     }
 
     /**
+     * @return True, if the re-auth is being triggered from a tabbed Activity, false otherwise.
+     */
+    boolean getIsTabbedActivity() {
+        return mIsTabbedActivity;
+    }
+
+    /**
      * @param incognitoReauthCallback The {@link IncognitoReauthCallback}
      *                               which would be executed after an authentication attempt.
      * @param showFullScreen A boolean indicating whether to show a fullscreen or tab switcher
