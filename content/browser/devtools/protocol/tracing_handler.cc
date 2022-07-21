@@ -513,17 +513,8 @@ TracingHandler::TracingHandler(DevToolsIOContext* io_context)
       return_as_stream_(false),
       gzip_compression_(false),
       buffer_usage_reporting_interval_(0) {
-  bool use_video_capture_api = true;
-#if BUILDFLAG(IS_ANDROID)
-  // Video capture API cannot be used on Android WebView.
-  if (!CompositorImpl::IsInitialized())
-    use_video_capture_api = false;
-#endif
-  if (use_video_capture_api) {
-    video_consumer_ =
-        std::make_unique<DevToolsVideoConsumer>(base::BindRepeating(
-            &TracingHandler::OnFrameFromVideoConsumer, base::Unretained(this)));
-  }
+  video_consumer_ = std::make_unique<DevToolsVideoConsumer>(base::BindRepeating(
+      &TracingHandler::OnFrameFromVideoConsumer, base::Unretained(this)));
 }
 
 TracingHandler::~TracingHandler() = default;
@@ -537,7 +528,7 @@ std::vector<TracingHandler*> TracingHandler::ForAgentHost(
 void TracingHandler::SetRenderer(int process_host_id,
                                  RenderFrameHostImpl* frame_host) {
   frame_host_ = frame_host;
-  if (!video_consumer_ || !frame_host)
+  if (!frame_host)
     return;
   video_consumer_->SetFrameSinkId(
       frame_host->GetRenderWidgetHost()->GetFrameSinkId());
@@ -954,7 +945,7 @@ void TracingHandler::OnRecordingEnabled(std::unique_ptr<StartCallback> callback,
   bool screenshot_enabled;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(
       TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"), &screenshot_enabled);
-  if (video_consumer_ && screenshot_enabled) {
+  if (screenshot_enabled) {
     // Reset number of screenshots received, each time tracing begins.
     number_of_screenshots_from_video_consumer_ = 0;
     video_consumer_->SetMinAndMaxFrameSize(kMinFrameSize, kMaxFrameSize);
@@ -1082,8 +1073,7 @@ void TracingHandler::StopTracing(
   }
   did_initiate_recording_ = false;
   g_any_agent_tracing = false;
-  if (video_consumer_)
-    video_consumer_->StopCapture();
+  video_consumer_->StopCapture();
 }
 
 bool TracingHandler::IsTracing() const {

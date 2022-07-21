@@ -45,6 +45,9 @@ class FrameSinkObserver {
   // Called when a sink has finished processing a frame.
   virtual void OnFrameSinkDidFinishFrame(const FrameSinkId& frame_sink_id,
                                          const BeginFrameArgs& args) = 0;
+
+  // Called when capturing is started for `frame_sink_id`.
+  virtual void OnCaptureStarted(const FrameSinkId& frame_sink_id) = 0;
 };
 
 }  // namespace viz

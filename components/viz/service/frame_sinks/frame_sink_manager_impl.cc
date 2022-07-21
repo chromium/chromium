@@ -683,6 +683,8 @@ void FrameSinkManagerImpl::OnCaptureStarted(const FrameSinkId& id) {
   if (captured_frame_sink_ids_.insert(id).second) {
     ClearThrottling(id);
   }
+  for (auto& observer : observer_list_)
+    observer.OnCaptureStarted(id);
 }
 
 void FrameSinkManagerImpl::OnCaptureStopped(const FrameSinkId& id) {

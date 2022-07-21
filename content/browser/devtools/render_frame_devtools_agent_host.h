@@ -24,14 +24,9 @@
 #include "ui/android/view_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-namespace cc {
-class RenderFrameMetadata;
-}
-
 namespace content {
 
 class BrowserContext;
-class DevToolsFrameTraceRecorder;
 class FencedFrame;
 class FrameTreeNode;
 class FrameAutoAttacher;
@@ -75,12 +70,6 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
       delete;
 
   static void AttachToWebContents(WebContents* web_contents);
-
-#if BUILDFLAG(IS_ANDROID)
-  static void SignalSynchronousSwapCompositorFrame(
-      RenderFrameHost* frame_host,
-      const cc::RenderFrameMetadata& frame_metadata);
-#endif
 
   FrameTreeNode* frame_tree_node() { return frame_tree_node_; }
 
@@ -158,14 +147,11 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
 
 #if BUILDFLAG(IS_ANDROID)
   device::mojom::WakeLock* GetWakeLock();
-  void SynchronousSwapCompositorFrame(
-      const cc::RenderFrameMetadata& frame_metadata);
 #endif
 
   void UpdateResourceLoaderFactories();
 
 #if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<DevToolsFrameTraceRecorder> frame_trace_recorder_;
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
 #endif
 

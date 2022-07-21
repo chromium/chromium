@@ -12,6 +12,8 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/service/display/display_scheduler.h"
+#include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/frame_sinks/frame_sink_observer.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/service/surfaces/surface_observer.h"
 
@@ -24,7 +26,8 @@ class OverlaysInfoProvider {
 };
 
 class DisplaySchedulerWebView : public viz::DisplaySchedulerBase,
-                                public viz::SurfaceObserver {
+                                public viz::SurfaceObserver,
+                                public viz::FrameSinkObserver {
  public:
   DisplaySchedulerWebView(RootFrameSink* root_frame_sink,
                           OverlaysInfoProvider* overlays_info_provider);
@@ -50,6 +53,27 @@ class DisplaySchedulerWebView : public viz::DisplaySchedulerBase,
   void OnSurfaceHasNewUncommittedFrame(
       const viz::SurfaceId& surface_id) override;
 
+  // FrameSinkObserver implementation.
+  void OnRegisteredFrameSinkId(const viz::FrameSinkId& frame_sink_id) override {
+  }
+  void OnInvalidatedFrameSinkId(
+      const viz::FrameSinkId& frame_sink_id) override {}
+  void OnCreatedCompositorFrameSink(const viz::FrameSinkId& frame_sink_id,
+                                    bool is_root) override {}
+  void OnDestroyedCompositorFrameSink(
+      const viz::FrameSinkId& frame_sink_id) override {}
+  void OnRegisteredFrameSinkHierarchy(
+      const viz::FrameSinkId& parent_frame_sink_id,
+      const viz::FrameSinkId& child_frame_sink_id) override {}
+  void OnUnregisteredFrameSinkHierarchy(
+      const viz::FrameSinkId& parent_frame_sink_id,
+      const viz::FrameSinkId& child_frame_sink_id) override {}
+  void OnFrameSinkDidBeginFrame(const viz::FrameSinkId& frame_sink_id,
+                                const viz::BeginFrameArgs& args) override {}
+  void OnFrameSinkDidFinishFrame(const viz::FrameSinkId& frame_sink_id,
+                                 const viz::BeginFrameArgs& args) override {}
+  void OnCaptureStarted(const viz::FrameSinkId& frame_sink_id) override;
+
  private:
   bool IsFrameSinkOverlayed(viz::FrameSinkId frame_sink_id);
 
@@ -65,6 +89,8 @@ class DisplaySchedulerWebView : public viz::DisplaySchedulerBase,
 
   base::ScopedObservation<viz::SurfaceManager, viz::SurfaceObserver>
       surface_manager_observation_{this};
+  base::ScopedObservation<viz::FrameSinkManagerImpl, viz::FrameSinkObserver>
+      frame_sink_manager_observation_{this};
 
   const bool use_new_invalidate_heuristic_;
 

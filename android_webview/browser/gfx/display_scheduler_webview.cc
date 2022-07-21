@@ -18,10 +18,11 @@ DisplaySchedulerWebView::DisplaySchedulerWebView(
       overlays_info_provider_(overlays_info_provider),
       use_new_invalidate_heuristic_(base::FeatureList::IsEnabled(
           features::kWebViewNewInvalidateHeuristic)) {
-  surface_manager_observation_.Observe(
-      VizCompositorThreadRunnerWebView::GetInstance()
-          ->GetFrameSinkManager()
-          ->surface_manager());
+  auto* frame_sink_manager =
+      VizCompositorThreadRunnerWebView::GetInstance()->GetFrameSinkManager();
+
+  surface_manager_observation_.Observe(frame_sink_manager->surface_manager());
+  frame_sink_manager_observation_.Observe(frame_sink_manager);
 }
 
 DisplaySchedulerWebView::~DisplaySchedulerWebView() {
@@ -114,6 +115,11 @@ void DisplaySchedulerWebView::OnSurfaceHasNewUncommittedFrame(
       !IsFrameSinkOverlayed(surface_id.frame_sink_id())) {
     root_frame_sink_->OnNewUncommittedFrame(surface_id);
   }
+}
+
+void DisplaySchedulerWebView::OnCaptureStarted(
+    const viz::FrameSinkId& frame_sink_id) {
+  root_frame_sink_->OnCaptureStarted(frame_sink_id);
 }
 
 }  // namespace android_webview

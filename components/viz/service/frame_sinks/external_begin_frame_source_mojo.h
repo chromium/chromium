@@ -71,6 +71,7 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
                                 const BeginFrameArgs& args) override;
   void OnFrameSinkDidFinishFrame(const FrameSinkId& frame_sink_id,
                                  const BeginFrameArgs& args) override;
+  void OnCaptureStarted(const FrameSinkId& frame_sink_id) override {}
 
   void MaybeProduceFrameCallback();
   void DispatchFrameCallback(const BeginFrameAck& ack);

@@ -93,6 +93,8 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   // viz::ExternalBeginFrameSourceClient overrides.
   void OnNeedsBeginFrames(bool needs_begin_frames) override;
 
+  void OnCaptureStarted(const viz::FrameSinkId& frame_sink_id);
+
  private:
   friend class base::RefCounted<RootFrameSink>;
   class ChildCompositorFrameSink;

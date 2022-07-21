@@ -2910,8 +2910,6 @@ source_set("browser") {
       "android/web_contents_observer_proxy.h",
       "contacts/contacts_provider_android.cc",
       "contacts/contacts_provider_android.h",
-      "devtools/devtools_frame_trace_recorder.cc",
-      "devtools/devtools_frame_trace_recorder.h",
       "font_unique_name_lookup/font_unique_name_lookup.cc",
       "font_unique_name_lookup/font_unique_name_lookup.h",
       "font_unique_name_lookup/font_unique_name_lookup_service.cc",

@@ -84,8 +84,6 @@ class PageHandler : public DevToolsDomainHandler,
   void SetRenderer(int process_host_id,
                    RenderFrameHostImpl* frame_host) override;
   // Instrumentation signals.
-  void OnSynchronousSwapCompositorFrame(
-      const cc::RenderFrameMetadata& frame_metadata);
   void DidAttachInterstitialPage();
   void DidDetachInterstitialPage();
   bool screencast_enabled() const { return enabled_ && screencast_enabled_; }
@@ -187,7 +185,6 @@ class PageHandler : public DevToolsDomainHandler,
 
   bool ShouldCaptureNextScreencastFrame();
   void NotifyScreencastVisibility(bool visible);
-  void InnerSwapCompositorFrame();
   void OnFrameFromVideoConsumer(scoped_refptr<media::VideoFrame> frame);
   void ScreencastFrameCaptured(
       std::unique_ptr<Page::ScreencastFrameMetadata> metadata,
@@ -239,8 +236,6 @@ class PageHandler : public DevToolsDomainHandler,
   int screencast_max_width_;
   int screencast_max_height_;
   int capture_every_nth_frame_;
-  int capture_retry_count_;
-  absl::optional<cc::RenderFrameMetadata> frame_metadata_;
   int session_id_;
   int frame_counter_;
   int frames_in_flight_;

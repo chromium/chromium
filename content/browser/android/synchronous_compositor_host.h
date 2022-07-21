@@ -145,7 +145,6 @@ class CONTENT_EXPORT SynchronousCompositorHost
   // handle blocking calls.
   bool IsReadyForSynchronousCall();
   void UpdateRootLayerStateOnClient();
-  void UpdatePresentedFrameToken(uint32_t frame_token);
 
   void SendBeginFramePaused();
   void SendBeginFrame(viz::BeginFrameArgs args);

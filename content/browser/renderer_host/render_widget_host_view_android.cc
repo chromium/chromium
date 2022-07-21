@@ -440,8 +440,6 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
   bool is_transparent = metadata.has_transparent_background;
 
   if (!using_browser_compositor_) {
-    // DevTools ScreenCast support for Android WebView.
-    last_render_frame_metadata_ = metadata;
     // Android WebView ignores transparent background.
     is_transparent = false;
   }
@@ -1263,34 +1261,6 @@ bool RenderWidgetHostViewAndroid::RequestRepaintForTesting() {
                                      absl::nullopt);
 }
 
-void RenderWidgetHostViewAndroid::FrameTokenChangedForSynchronousCompositor(
-    uint32_t frame_token,
-    const gfx::PointF& root_scroll_offset) {
-  if (!viz::FrameTokenGT(frame_token, sync_compositor_last_frame_token_))
-    return;
-  sync_compositor_last_frame_token_ = frame_token;
-
-  if (host() && frame_token) {
-    DCHECK(!using_browser_compositor_);
-    // DevTools ScreenCast support for Android WebView. Don't call this if
-    // we're currently in SynchronousCopyContents, as this can lead to
-    // redundant copies.
-    if (!in_sync_copy_contents_) {
-      RenderFrameHostImpl* frame_host =
-          RenderViewHostImpl::From(host())->GetMainRenderFrameHost();
-      if (frame_host && last_render_frame_metadata_) {
-        // Update our |root_scroll_offset|, as changes to this value do not
-        // trigger a new RenderFrameMetadata, and it may be out of date. This
-        // is needed for devtools DOM node selection.
-        cc::RenderFrameMetadata updated_metadata = *last_render_frame_metadata_;
-        updated_metadata.root_scroll_offset = root_scroll_offset;
-        RenderFrameDevToolsAgentHost::SignalSynchronousSwapCompositorFrame(
-            frame_host, updated_metadata);
-      }
-    }
-  }
-}
-
 void RenderWidgetHostViewAndroid::SetSynchronousCompositorClient(
       SynchronousCompositorClient* client) {
   synchronous_compositor_client_ = client;
@@ -1411,10 +1381,6 @@ void RenderWidgetHostViewAndroid::SynchronousCopyContents(
     const gfx::Rect& src_subrect_dip,
     const gfx::Size& dst_size_in_pixel,
     base::OnceCallback<void(const SkBitmap&)> callback) {
-  // Track that we're in this function to avoid repeatedly calling DevTools
-  // capture logic.
-  base::AutoReset<bool> in_sync_copy_contents(&in_sync_copy_contents_, true);
-
   // Note: When |src_subrect| is empty, a conversion from the view size must
   // be made instead of using |current_frame_size_|. The latter sometimes also
   // includes extra height for the toolbar UI, which is not intended for

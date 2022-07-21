@@ -432,4 +432,16 @@ void RootFrameSink::EvictChildSurface(const viz::SurfaceId& surface_id) {
   child_sink_support_->EvictSurface(surface_id);
 }
 
+void RootFrameSink::OnCaptureStarted(const viz::FrameSinkId& frame_sink_id) {
+  auto it = std::find_if(contained_surfaces_.begin(), contained_surfaces_.end(),
+                         [frame_sink_id](const viz::SurfaceId& surface_id) {
+                           return surface_id.frame_sink_id() == frame_sink_id;
+                         });
+  if (it == contained_surfaces_.end())
+    return;
+  // When a capture is started we need to force an invalidate.
+  if (client_)
+    client_->Invalidate();
+}
+
 }  // namespace android_webview
