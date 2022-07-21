@@ -487,6 +487,16 @@
       "use_goma": true
     }
   },
+  "Mac deterministic (reclient shadow)": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_stripping": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_remoteexec": true
+    }
+  },
   "Site Isolation Android": {
     "gn_args": {
       "dcheck_always_on": false,

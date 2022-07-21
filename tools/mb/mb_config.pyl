@@ -369,6 +369,7 @@
       'Mac Builder Next': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
       'Mac deterministic': 'release_bot_mac_strip_minimal_symbols',
       'Mac deterministic (dbg)': 'debug_bot',
+      'Mac deterministic (reclient shadow)': 'release_bot_mac_strip_minimal_symbols_reclient',
       'Site Isolation Android': 'android_release_bot_minimal_symbols_arm64_reclient',
       'VR Linux': 'vr_release_bot_reclient',
       'Win 10 Fast Ring': 'release_trybot_minimal_symbols_reclient',
@@ -616,6 +617,7 @@
       'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest',
       'mac-arm64-on-arm64-rel': 'mac_arm64_release_bot',
       'mac-arm64-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
+      'mac-arm64-rel (reclient shadow)': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
     },
 
     'chromium.memory': {
@@ -3372,6 +3374,10 @@
 
     'release_bot_mac_strip_minimal_symbols_arm64': [
       'release_bot', 'mac_strip', 'minimal_symbols', 'arm64',
+    ],
+
+    'release_bot_mac_strip_minimal_symbols_reclient': [
+      'release_bot_reclient', 'mac_strip', 'minimal_symbols',
     ],
 
     'release_bot_minimal_symbols': [

@@ -1964,6 +1964,20 @@ fyi_mac_builder(
 )
 
 fyi_mac_builder(
+    name = "Mac deterministic (reclient shadow)",
+    console_view_entry = consoles.console_view_entry(
+        category = "deterministic|mac",
+        short_name = "rec",
+    ),
+    cores = None,
+    executable = "recipe:swarming/deterministic_build",
+    execution_timeout = 6 * time.hour,
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = 40,
+)
+
+fyi_mac_builder(
     name = "mac-hermetic-upgrade-rel",
     console_view_entry = consoles.console_view_entry(
         category = "mac",

@@ -5211,6 +5211,11 @@
           'all',
         ],
       },
+      'mac-arm64-rel (reclient shadow)': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
       'mac11-arm64-rel-tests': {
         'mixins': [
             # Only run selected test suites on CQ. https://crbug.com/1234525.
