@@ -352,10 +352,18 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
+                       PRE_DisableThenEnablePolicy) {
+  auto* profile = browser()->profile();
+  // By the time the test runs, SystemWebAppManager already marked the app as
+  // disabled because the policy is not set. This PRE step, sets the policy so
+  // that the app is correctly enabled when the actual test runs.
+  profile->GetPrefs()->SetBoolean(GetPolicy(), true);
+}
+
 // Prevents a regression to b/230779397.
 IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest, DisableThenEnablePolicy) {
   auto* profile = browser()->profile();
-  profile->GetPrefs()->SetBoolean(GetPolicy(), true);
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();

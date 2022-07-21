@@ -3082,17 +3082,8 @@ IN_PROC_BROWSER_TEST_P(PerDeskShelfAppBrowserTest, AppMenus) {
 class FilesSystemWebAppPinnedTest : public ShelfPlatformAppBrowserTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kFilesSWA, ash::features::kEnableAllSystemWebApps}, {});
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kFilesSWA);
     ShelfPlatformAppBrowserTest::SetUp();
-  }
-
-  void WaitForSystemAppsSynchronized() {
-    base::RunLoop run_loop;
-    ash::SystemWebAppManager::Get(browser()->profile())
-        ->on_apps_synchronized()
-        .Post(FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
   }
 
  private:
@@ -3110,7 +3101,8 @@ IN_PROC_BROWSER_TEST_F(FilesSystemWebAppPinnedTest, EnterpriseMigration) {
                                  std::move(policy_value));
 
   // Ensure shelf is updated.
-  WaitForSystemAppsSynchronized();
+  ash::SystemWebAppManager::Get(browser()->profile())
+      ->InstallSystemAppsForTesting();
   web_app::WebAppProvider::GetForTest(browser()->profile())
       ->install_manager()
       .NotifyWebAppInstalledWithOsHooks(file_manager::kFileManagerSwaAppId);

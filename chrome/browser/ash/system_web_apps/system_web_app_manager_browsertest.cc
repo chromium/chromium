@@ -1139,16 +1139,6 @@ class SystemWebAppManagerInstallAllAppsBrowserTest
   }
   ~SystemWebAppManagerInstallAllAppsBrowserTest() override = default;
 
-  // Don't use WaitForTestSystemAppInstall in this test, because it artificially
-  // resets the OnAppsSynchronized signal, and starts a new synchronize request.
-  void WaitForSystemAppsSynchronized() {
-    base::RunLoop run_loop;
-    SystemWebAppManager::Get(browser()->profile())
-        ->on_apps_synchronized()
-        .Post(FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
  private:
   base::test::ScopedFeatureList features_;
 };
@@ -1163,7 +1153,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
                        BasicConsistencyCheck) {
   // Wait for apps to install before performing assertions, otherwise the test
   // might flake. See https://crbug.com/1286600#c6.
-  WaitForSystemAppsSynchronized();
+  GetManager().InstallSystemAppsForTesting();
 
   const auto& app_map = GetManager().system_app_delegates();
   ASSERT_GT(app_map.size(), 0U);
@@ -1237,13 +1227,13 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
                        PRE_Upgrade) {
-  WaitForSystemAppsSynchronized();
+  GetManager().InstallSystemAppsForTesting();
   EXPECT_GE(GetManager().system_app_delegates().size(),
             GetManager().GetAppIds().size());
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest, Upgrade) {
-  WaitForSystemAppsSynchronized();
+  GetManager().InstallSystemAppsForTesting();
   const auto& app_ids = GetManager().GetAppIds();
 
   EXPECT_EQ(GetManager().system_app_delegates().size(), app_ids.size());

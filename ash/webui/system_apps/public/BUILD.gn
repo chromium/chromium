@@ -1,0 +1,11 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# TODO(crbug.com/1321984): system_web_app_type is currently used by non-ash
+# classes. Once SystemWebAppManager is ash-only we can add the assert.
+# assert(is_chromeos_ash)
+
+source_set("system_web_app_type") {
+  sources = [ "system_web_app_type.h" ]
+}

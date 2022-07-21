@@ -219,26 +219,27 @@ SystemWebAppManager::SystemWebAppManager(Profile* profile)
           std::string(kInstallResultHistogramName) + ".Profiles." +
           web_app::GetProfileCategoryForLogging(profile)),
       pref_service_(profile_->GetPrefs()) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType)) {
-    // Always update in tests.
-    update_policy_ = UpdatePolicy::kAlwaysUpdate;
-
-    // Populate with real system apps if the test asks for it.
-    if (base::FeatureList::IsEnabled(features::kEnableAllSystemWebApps))
-      system_app_delegates_ = CreateSystemWebApps(profile_);
-
-    return;
-  }
+  // Always create delegates because many System Web App WebUIs are disabled
+  // when the delegate is not present and we need them in tests. Tests can
+  // override the list of delegates with SetSystemAppsForTesting().
+  system_app_delegates_ = CreateSystemWebApps(profile_);
 
 #if defined(OFFICIAL_BUILD)
-  // Official builds should trigger updates whenever the version number changes.
-  update_policy_ = UpdatePolicy::kOnVersionChange;
+  const bool is_official = true;
 #else
-  // Dev builds should update every launch.
-  update_policy_ = UpdatePolicy::kAlwaysUpdate;
+  const bool is_official = false;
 #endif
+  const bool is_test =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType);
 
-  system_app_delegates_ = CreateSystemWebApps(profile_);
+  if (is_test || !is_official) {
+    // Tests and non-official builds should always update.
+    update_policy_ = UpdatePolicy::kAlwaysUpdate;
+  } else {
+    // Official builds should trigger updates whenever the version number
+    // changes.
+    update_policy_ = UpdatePolicy::kOnVersionChange;
+  }
 }
 
 SystemWebAppManager::~SystemWebAppManager() {
@@ -400,6 +401,13 @@ void SystemWebAppManager::Start() {
     return;
   }
 
+  // In tests, only install System Web Apps if `InstallSystemAppsForTesting()`
+  // or `SetSystemAppsForTesting()` has been called.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType) &&
+      skip_app_installation_in_test_) {
+    install_options_list.clear();
+  }
+
   externally_managed_app_manager_->SynchronizeInstalledApps(
       std::move(install_options_list),
       web_app::ExternalInstallSource::kSystemInstalled,
@@ -415,7 +423,7 @@ void SystemWebAppManager::Shutdown() {
 void SystemWebAppManager::InstallSystemAppsForTesting() {
   on_apps_synchronized_ = std::make_unique<base::OneShotEvent>();
   on_tasks_started_ = std::make_unique<base::OneShotEvent>();
-  system_app_delegates_ = CreateSystemWebApps(profile_);
+  skip_app_installation_in_test_ = false;
   Start();
 
   // Wait for the System Web Apps to install.
@@ -546,6 +554,7 @@ void SystemWebAppManager::OnWebAppUiManagerDestroyed() {
 
 void SystemWebAppManager::SetSystemAppsForTesting(
     SystemWebAppDelegateMap system_apps) {
+  skip_app_installation_in_test_ = false;
   system_app_delegates_ = std::move(system_apps);
 }
 

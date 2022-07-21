@@ -247,6 +247,11 @@ class SystemWebAppManager : public KeyedService,
 
   UpdatePolicy update_policy_;
 
+  // We skip app installation in tests by default. Tests can trigger
+  // installation by calling `InstallSystemAppsForTesting()` or
+  // `SetSystemAppsForTesting()`.
+  bool skip_app_installation_in_test_ = true;
+
   SystemWebAppDelegateMap system_app_delegates_;
 
   const raw_ptr<PrefService> pref_service_;

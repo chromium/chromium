@@ -35,4 +35,10 @@ source_set("types") {
     "//ui/base",
     "//url",
   ]
+
+  public_deps = [
+    # TODO(crbug.com/1321984): Move to deps when users of system_web_app_type.
+    # are migrated to include the new location.
+    "//ash/webui/system_apps/public:system_web_app_type",
+  ]
 }
