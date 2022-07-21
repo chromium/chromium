@@ -271,6 +271,7 @@ void ArcInputOverlayManager::UnRegisterWindow(aura::Window* window) {
   it->second->UnRegisterEventRewriter();
   RemoveDisplayOverlayController();
   RemoveObserverFromInputMethod();
+  it->second->NotifyTextInputState(false);
   registered_top_level_window_ = nullptr;
 }
 

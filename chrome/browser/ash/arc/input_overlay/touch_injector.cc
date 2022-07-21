@@ -462,7 +462,7 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
       CleanupTouchEvents();
       display_overlay_controller_->SetDisplayMode(DisplayMode::kPreMenu);
     }
-    return DiscardEvent(continuation);
+    return SendEvent(continuation, &event);
   } else if (display_mode_ == DisplayMode::kPreMenu) {
     if (event.IsKeyEvent()) {
       auto* key_event = event.AsKeyEvent();
