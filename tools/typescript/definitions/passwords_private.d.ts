@@ -47,6 +47,36 @@ declare global {
         OTHER_ERROR = 'OTHER_ERROR',
       }
 
+      export enum ImportResultsStatus {
+        SUCCESS = 'SUCCESS',
+        IO_ERROR = 'IO_ERROR',
+        BAD_FORMAT = 'BAD_FORMAT',
+        DISMISSED = 'DISMISSED',
+      }
+
+      export enum ImportEntryStatus {
+        MISSING_PASSWORD = 'MISSING_PASSWORD',
+        MISSING_URL = 'MISSING_URL',
+        INVALID_URL = 'INVALID_URL',
+        LONG_PASSWORD = 'LONG_PASSWORD',
+        LONG_USERNAME = 'LONG_USERNAME',
+        CONFLICT_PROFILE = 'CONFLICT_PROFILE',
+        CONFLICT_ACCOUNT = 'CONFLICT_ACCOUNT',
+      }
+
+      export interface ImportEntry {
+        status: ImportEntryStatus;
+        url: string;
+        username: string;
+      }
+
+      export interface ImportResults {
+        status: ImportResultsStatus;
+        numberImported: number;
+        failedImports: ImportEntry[];
+        fileName: string;
+      }
+
       export interface UrlCollection {
         origin: string;
         shown: string;
@@ -134,7 +164,8 @@ declare global {
       export function getPasswordExceptionList(
           callback: (entries: Array<ExceptionEntry>) => void): void;
       export function movePasswordsToAccount(ids: Array<number>): void;
-      export function importPasswords(): void;
+      export function importPasswords(toStore: PasswordStoreSet,
+          callback: (results: ImportResults) => void): void;
       export function exportPasswords(callback: () => void): void;
       export function requestExportProgressStatus(
           callback: (status: ExportProgressStatus) => void): void;

@@ -264,8 +264,14 @@ var availableTests = [
   },
 
   function importPasswords() {
-    chrome.passwordsPrivate.importPasswords();
-    chrome.test.succeed();
+    let callback = function(importResults) {
+      chrome.test.assertNoLastError();
+      chrome.test.assertTrue(!!importResults);
+      chrome.test.succeed();
+    };
+    chrome.passwordsPrivate.importPasswords(
+      chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
+      callback);
   },
 
   function exportPasswords() {

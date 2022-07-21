@@ -67,6 +67,51 @@ chrome.passwordsPrivate.PasswordCheckState = {
 };
 
 /**
+ * @enum {string}
+ */
+chrome.passwordsPrivate.ImportResultsStatus = {
+  SUCCESS: 'SUCCESS',
+  IO_ERROR: 'IO_ERROR',
+  BAD_FILE_FORMAT: 'BAD_FILE_FORMAT',
+  DISMISSED: 'DISMISSED',
+};
+
+
+/**
+ * @enum {string}
+ */
+chrome.passwordsPrivate.ImportEntryStatus = {
+  MISSING_PASSWORD: 'MISSING_PASSWORD',
+  MISSING_URL: 'MISSING_URL',
+  INVALID_URL: 'INVALID_URL',
+  LONG_PASSWORD: 'LONG_PASSWORD',
+  LONG_USERNAME: 'LONG_USERNAME',
+  CONFLICT_PROFILE: 'CONFLICT_PROFILE',
+  CONFLICT_ACCOUNT: 'CONFLICT_ACCOUNT',
+};
+
+/**
+ * @typedef {{
+ *   status: chrome.passwordsPrivate.ImportEntryStatus,
+ *   url: string,
+ *   username: string
+ * }}
+ */
+chrome.passwordsPrivate.ImportEntry;
+
+
+/**
+ * @typedef {{
+ *   status: chrome.passwordsPrivate.ImportResultsStatus,
+ *   numberImported: number,
+ *   failedImports: (!Array<!chrome.passwordsPrivate.ImportEntry>),
+ *   fileName: string
+ * }}
+ */
+chrome.passwordsPrivate.ImportResults;
+
+
+/**
  * @typedef {{
  *   origin: string,
  *   shown: string,
@@ -247,8 +292,10 @@ chrome.passwordsPrivate.movePasswordsToAccount = function(ids) {};
 
 /**
  * Triggers the Password Manager password import functionality.
+ * @param {!chrome.passwordsPrivate.PasswordStoreSet} toStore
+ * @param {function(!chrome.passwordsPrivate.ImportResults): void} callback
  */
-chrome.passwordsPrivate.importPasswords = function() {};
+chrome.passwordsPrivate.importPasswords = function(toStore, callback) {};
 
 /**
  * Triggers the Password Manager password export functionality. Completion Will

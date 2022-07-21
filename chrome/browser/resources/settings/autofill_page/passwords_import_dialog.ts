@@ -45,7 +45,8 @@ export class PasswordsImportDialogElement extends PolymerElement {
    * Handler for clicking the 'chooseFile' button.
    */
   private onChooseFileClick_() {
-    this.passwordManager_.importPasswords();
+    this.passwordManager_.importPasswords(
+        chrome.passwordsPrivate.PasswordStoreSet.DEVICE);
     this.close();
   }
 

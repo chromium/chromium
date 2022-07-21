@@ -142,12 +142,14 @@ export interface PasswordManagerProxy {
       reason: chrome.passwordsPrivate.PlaintextReason): Promise<string>;
 
   /**
-   * Triggers the dialogue for importing passwords.
+   * Triggers the dialog for importing passwords.
+   * @return A promise that resolves to the import results.
    */
-  importPasswords(): void;
+  importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet):
+      Promise<chrome.passwordsPrivate.ImportResults>;
 
   /**
-   * Triggers the dialogue for exporting passwords.
+   * Triggers the dialog for exporting passwords.
    */
   exportPasswords(): Promise<void>;
 
@@ -469,8 +471,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     });
   }
 
-  importPasswords() {
-    chrome.passwordsPrivate.importPasswords();
+  importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet) {
+    return new Promise<chrome.passwordsPrivate.ImportResults>(resolve => {
+      chrome.passwordsPrivate.importPasswords(toStore, resolve);
+    });
   }
 
   exportPasswords() {

@@ -81,6 +81,12 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   };
 
   private plaintextPassword_: string = '';
+  private importResults_: chrome.passwordsPrivate.ImportResults = {
+    status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
+    numberImported: 0,
+    failedImports: [],
+    fileName: '',
+  };
   private isOptedInForAccountStorage_: boolean = false;
   private isAccountStoreDefault_: boolean = false;
   private getUrlCollectionResponse_: chrome.passwordsPrivate.UrlCollection|
@@ -420,8 +426,16 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
         'recordChangePasswordFlowStarted', insecureCredential, isManualFlow);
   }
 
-  importPasswords() {
-    this.methodCalled('importPasswords');
+  importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet) {
+    this.methodCalled('importPasswords', toStore);
+    return Promise.resolve(this.importResults_);
+  }
+
+  /**
+   * Sets the value to be returned by importPasswords.
+   */
+  setImportResults(results: chrome.passwordsPrivate.ImportResults) {
+    this.importResults_ = results;
   }
 
   exportPasswords() {

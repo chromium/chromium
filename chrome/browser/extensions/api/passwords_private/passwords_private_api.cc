@@ -183,8 +183,17 @@ ResponseAction PasswordsPrivateMovePasswordsToAccountFunction::Run() {
 
 // PasswordsPrivateImportPasswordsFunction
 ResponseAction PasswordsPrivateImportPasswordsFunction::Run() {
+  auto parameters =
+      api::passwords_private::ImportPasswords::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+  // TODO(crbug/1325290): Introduce callback for filling ImportResults with
+  // real data.
   GetDelegate(browser_context())->ImportPasswords(GetSenderWebContents());
-  return RespondNow(NoArguments());
+  api::passwords_private::ImportResults results;
+  results.status =
+      extensions::api::passwords_private::IMPORT_RESULTS_STATUS_SUCCESS;
+  return RespondNow(ArgumentList(
+      api::passwords_private::ImportPasswords::Results::Create(results)));
 }
 
 // PasswordsPrivateExportPasswordsFunction
