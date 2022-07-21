@@ -54,7 +54,8 @@ class AnimationObserver;
 //   2. Playing the animation and rendering each frame:
 //      void SampleClient::Init() {
 //        Animation animation_ = Animation(data);
-//        animation_.Start(Animation::Style::LINEAR);
+//        animation_.Start(Animation::PlaybackConfig::CreateWithStyle(
+//            Animation::Style::kLinear, *animation_));
 //      }
 //
 //      // overrides cc::CompositorAnimationObserver
@@ -72,8 +73,8 @@ class AnimationObserver;
 //        // This will seek to the 1st second of the animation and from there
 //        // play it for 5 seconds.
 //        Animation animation_ = Animation(data);
-//        animation_.Start(Seconds(1),
-//                         Seconds(5));
+//        animation_.Start(Animation::PlaybackConfig({
+//            Seconds(1), Seconds(5), Animation::Style::kLinear}));
 //      }
 //
 //      // overrides cc::CompositorAnimationObserver
@@ -93,6 +94,22 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
     kThrobbing,   // The animation plays from one time instant to another and
                   // then back. The animation plays in loop until stopped.
     kLoop         // Same as LINEAR, except the animation repeats after it ends.
+  };
+
+  struct COMPONENT_EXPORT(UI_LOTTIE) PlaybackConfig {
+    // By default, loop from the beginning of the animation to the end.
+    static PlaybackConfig CreateDefault(const Animation& animation);
+    // Play from the beginning of the animation to the end with the provided
+    // |style|.
+    static PlaybackConfig CreateWithStyle(Style style,
+                                          const Animation& animation);
+
+    // The animation will be scheduled to play from the |start_offset| to
+    // |start_offset| + |duration|. The values will be clamped so as to not go
+    // out of bounds.
+    base::TimeDelta start_offset;
+    base::TimeDelta duration;
+    Style style = Style::kLoop;
   };
 
   // |frame_data_provider| may be null if it's known that the incoming skottie
@@ -119,18 +136,10 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   // Animation controls --------------------------------------------------------
   // This is an asynchronous call that would start playing the animation on the
   // next animation step. On a successful start the |observer_| would be
-  // notified. Use this if you want to play the entire animation.
-  void Start(Style style = Style::kLoop);
-
-  // This is an asynchronous call that would start playing the animation on the
-  // next animation step. On a successful start the |observer_| would be
   // notified.
-  // The animation will be scheduled to play from the |start_offset| to
-  // |start_offset| + |duration|. The values will be clamped so as to not go out
-  // of bounds.
-  void StartSubsection(base::TimeDelta start_offset,
-                       base::TimeDelta duration,
-                       Style style = Style::kLoop);
+  //
+  // If a null |playback_config| is provided, the default one is used.
+  void Start(absl::optional<PlaybackConfig> playback_config = absl::nullopt);
 
   // Pauses the animation.
   void Pause();
@@ -152,6 +161,10 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   // * The animation has been Start()ed but a single frame has not been painted
   //   yet.
   absl::optional<float> GetCurrentProgress() const;
+
+  // Returns the currently active PlaybackConfig, or nullopt if the animation
+  // is currently Stop()ed.
+  absl::optional<PlaybackConfig> GetPlaybackConfig() const;
 
   // Paint operations ----------------------------------------------------------
   // Paints the frame of the animation for the given |timestamp| at the given
@@ -273,16 +286,11 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   // Manages the timeline for the current playing animation.
   std::unique_ptr<TimerControl> timer_control_;
 
-  // The style of animation to play.
-  Style style_ = Style::kLoop;
-
   // The current state of animation.
   PlayState state_ = PlayState::kStopped;
 
-  // The below values of scheduled_* are set when we have scheduled a play.
-  // These will be used to initialize |timer_control_|.
-  base::TimeDelta scheduled_start_offset_;
-  base::TimeDelta scheduled_duration_;
+  // The config from the most recent call to Start().
+  PlaybackConfig playback_config_;
 
   base::ObserverList<AnimationObserver> observers_;
 

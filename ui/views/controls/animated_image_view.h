@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -20,10 +21,6 @@
 
 namespace gfx {
 class Canvas;
-}
-
-namespace lottie {
-class Animation;
 }
 
 namespace ui {
@@ -61,13 +58,12 @@ class VIEWS_EXPORT AnimatedImageView : public ImageViewBase,
   // will result in stopping the current animation.
   void SetAnimatedImage(std::unique_ptr<lottie::Animation> animated_image);
 
-  // Plays the animation in loop and must only be called when this view has
+  // Plays the animation and must only be called when this view has
   // access to a widget.
-  void Play(lottie::Animation::Style style = lottie::Animation::Style::kLoop);
-  // Version of the above that mirrors lottie::Animation::StartSubsection().
-  void Play(base::TimeDelta start_offset,
-            base::TimeDelta duration,
-            lottie::Animation::Style style = lottie::Animation::Style::kLoop);
+  //
+  // If a null |playback_config| is provided, the default one is used.
+  void Play(absl::optional<lottie::Animation::PlaybackConfig> playback_config =
+                absl::nullopt);
 
   // Stops any animation and resets it to the start frame.
   void Stop();

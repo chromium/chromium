@@ -4,12 +4,15 @@
 
 #include "ui/lottie/animation.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/skottie_wrapper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -79,6 +82,23 @@ double Animation::TimerControl::GetNormalizedEndOffset() const {
   return end_offset_ / total_duration_;
 }
 
+// static
+Animation::PlaybackConfig Animation::PlaybackConfig::CreateDefault(
+    const Animation& animation) {
+  return {/*start_offset=*/base::TimeDelta(),
+          /*duration=*/animation.GetAnimationDuration(),
+          Animation::Style::kLoop};
+}
+
+// static
+Animation::PlaybackConfig Animation::PlaybackConfig::CreateWithStyle(
+    Style style,
+    const Animation& animation) {
+  PlaybackConfig config = CreateDefault(animation);
+  config.style = style;
+  return config;
+}
+
 Animation::Animation(scoped_refptr<cc::SkottieWrapper> skottie,
                      cc::SkottieColorMap color_map,
                      cc::SkottieFrameDataProvider* frame_data_provider)
@@ -139,19 +159,12 @@ gfx::Size Animation::GetOriginalSize() const {
   return gfx::ToRoundedSize(gfx::SkSizeToSizeF(skottie_->size()));
 }
 
-void Animation::Start(Style style) {
-  DCHECK_NE(state_, PlayState::kPaused);
-  DCHECK_NE(state_, PlayState::kPlaying);
-  StartSubsection(base::TimeDelta(), GetAnimationDuration(), style);
-}
-
-void Animation::StartSubsection(base::TimeDelta start_offset,
-                                base::TimeDelta duration,
-                                Style style) {
+void Animation::Start(absl::optional<PlaybackConfig> playback_config) {
   DCHECK(state_ == PlayState::kStopped || state_ == PlayState::kEnded);
-  DCHECK_LE(start_offset + duration, GetAnimationDuration());
-
-  style_ = style;
+  if (!playback_config)
+    playback_config = PlaybackConfig::CreateDefault(*this);
+  DCHECK_LE(playback_config->start_offset + playback_config->duration,
+            GetAnimationDuration());
 
   // Reset the |timer_control_| object for a new animation play.
   timer_control_.reset(nullptr);
@@ -159,8 +172,7 @@ void Animation::StartSubsection(base::TimeDelta start_offset,
   // Schedule a play for the animation and store the necessary information
   // needed to start playing.
   state_ = PlayState::kSchedulePlay;
-  scheduled_start_offset_ = start_offset;
-  scheduled_duration_ = duration;
+  playback_config_ = std::move(*playback_config);
 }
 
 void Animation::Pause() {
@@ -200,6 +212,14 @@ absl::optional<float> Animation::GetCurrentProgress() const {
   }
 }
 
+absl::optional<Animation::PlaybackConfig> Animation::GetPlaybackConfig() const {
+  if (state_ == PlayState::kStopped) {
+    return absl::nullopt;
+  } else {
+    return playback_config_;
+  }
+}
+
 void Animation::Paint(gfx::Canvas* canvas,
                       const base::TimeTicks& timestamp,
                       const gfx::Size& size) {
@@ -220,7 +240,7 @@ void Animation::Paint(gfx::Canvas* canvas,
       timer_control_->Step(timestamp);
       int new_num_cycles = timer_control_->completed_cycles();
       animation_cycle_ended = new_num_cycles != previous_num_cycles;
-      if (animation_cycle_ended && style_ == Style::kLinear)
+      if (animation_cycle_ended && playback_config_.style == Style::kLinear)
         state_ = PlayState::kEnded;
     } break;
     case PlayState::kPaused:
@@ -304,14 +324,15 @@ cc::SkottieWrapper::FrameDataFetchResult Animation::LoadImageForAsset(
 void Animation::InitTimer(const base::TimeTicks& timestamp) {
   DCHECK(!timer_control_);
   timer_control_ = std::make_unique<TimerControl>(
-      scheduled_start_offset_, scheduled_duration_, GetAnimationDuration(),
-      timestamp, style_ == Style::kThrobbing, playback_speed_);
+      playback_config_.start_offset, playback_config_.duration,
+      GetAnimationDuration(), timestamp,
+      playback_config_.style == Style::kThrobbing, playback_speed_);
 }
 
 void Animation::TryNotifyAnimationCycleEnded() const {
   DCHECK(timer_control_);
   bool inform_observer = true;
-  switch (style_) {
+  switch (playback_config_.style) {
     case Style::kLoop:
       break;
     case Style::kThrobbing:

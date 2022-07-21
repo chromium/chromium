@@ -37,6 +37,7 @@ namespace lottie {
 namespace {
 
 using ::testing::Eq;
+using ::testing::FieldsAre;
 using ::testing::FloatEq;
 using ::testing::FloatNear;
 using ::testing::IsEmpty;
@@ -215,7 +216,9 @@ class AnimationTest : public testing::Test {
 
   gfx::Canvas* canvas() { return canvas_.get(); }
 
-  Animation::Style GetStyle() const { return animation_->style_; }
+  Animation::Style GetStyle() const {
+    return animation_->playback_config_.style;
+  }
 
   Animation::PlayState GetState() const { return animation_->state_; }
 
@@ -354,7 +357,8 @@ TEST_F(AnimationTest, PlayLinearAnimation) {
   AdvanceClock(base::Milliseconds(300));
 
   EXPECT_TRUE(IsStopped());
-  animation_->Start(Animation::Style::kLinear);
+  animation_->Start(Animation::PlaybackConfig::CreateWithStyle(
+      Animation::Style::kLinear, *animation_));
   EXPECT_TRUE(IsScheduledToPlay());
   EXPECT_FALSE(observer.animation_will_start_playing());
 
@@ -400,7 +404,8 @@ TEST_F(AnimationTest, StopLinearAnimation) {
 
   AdvanceClock(base::Milliseconds(300));
 
-  animation_->Start(Animation::Style::kLinear);
+  animation_->Start(Animation::PlaybackConfig::CreateWithStyle(
+      Animation::Style::kLinear, *animation_));
 
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
   EXPECT_TRUE(IsPlaying());
@@ -428,7 +433,8 @@ TEST_F(AnimationTest, PlaySubsectionOfLinearAnimation) {
   AdvanceClock(base::Milliseconds(300));
 
   EXPECT_FALSE(observer.animation_cycle_ended());
-  animation_->StartSubsection(kStartTime, kDuration, Animation::Style::kLinear);
+  animation_->Start(Animation::PlaybackConfig(
+      {kStartTime, kDuration, Animation::Style::kLinear}));
 
   EXPECT_TRUE(IsScheduledToPlay());
   EXPECT_FALSE(observer.animation_will_start_playing());
@@ -489,7 +495,8 @@ TEST_F(AnimationTest, PausingLinearAnimation) {
 
   AdvanceClock(base::Milliseconds(200));
 
-  animation_->StartSubsection(kStartTime, kDuration, Animation::Style::kLinear);
+  animation_->Start(Animation::PlaybackConfig(
+      {kStartTime, kDuration, Animation::Style::kLinear}));
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
 
   constexpr auto kAdvance = base::Milliseconds(100);
@@ -539,7 +546,8 @@ TEST_F(AnimationTest, PlayLoopAnimation) {
   AdvanceClock(base::Milliseconds(300));
 
   EXPECT_TRUE(IsStopped());
-  animation_->Start(Animation::Style::kLoop);
+  animation_->Start(Animation::PlaybackConfig::CreateWithStyle(
+      Animation::Style::kLoop, *animation_));
   EXPECT_TRUE(IsScheduledToPlay());
   EXPECT_FALSE(observer.animation_will_start_playing());
 
@@ -586,7 +594,8 @@ TEST_F(AnimationTest, PlaySubsectionOfLoopAnimation) {
   AdvanceClock(base::Milliseconds(300));
 
   EXPECT_TRUE(IsStopped());
-  animation_->StartSubsection(kStartTime, kDuration, Animation::Style::kLoop);
+  animation_->Start(Animation::PlaybackConfig(
+      {kStartTime, kDuration, Animation::Style::kLoop}));
   EXPECT_TRUE(IsScheduledToPlay());
   EXPECT_FALSE(observer.animation_will_start_playing());
 
@@ -647,7 +656,8 @@ TEST_F(AnimationTest, PausingLoopAnimation) {
 
   AdvanceClock(base::Milliseconds(200));
 
-  animation_->StartSubsection(kStartTime, kDuration, Animation::Style::kLoop);
+  animation_->Start(Animation::PlaybackConfig(
+      {kStartTime, kDuration, Animation::Style::kLoop}));
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
 
   ASSERT_TRUE(animation_->GetCurrentProgress());
@@ -705,7 +715,8 @@ TEST_F(AnimationTest, PlayThrobbingAnimation) {
 
   AdvanceClock(base::Milliseconds(300));
 
-  animation_->Start(Animation::Style::kThrobbing);
+  animation_->Start(Animation::PlaybackConfig::CreateWithStyle(
+      Animation::Style::kThrobbing, *animation_));
   EXPECT_TRUE(IsScheduledToPlay());
   EXPECT_FALSE(observer.animation_will_start_playing());
 
@@ -765,8 +776,8 @@ TEST_F(AnimationTest, PlaySubsectionOfThrobbingAnimation) {
 
   AdvanceClock(base::Milliseconds(300));
 
-  animation_->StartSubsection(kStartTime, kDuration,
-                              Animation::Style::kThrobbing);
+  animation_->Start(Animation::PlaybackConfig(
+      {kStartTime, kDuration, Animation::Style::kThrobbing}));
   EXPECT_TRUE(IsScheduledToPlay());
   EXPECT_FALSE(observer.animation_will_start_playing());
 
@@ -849,8 +860,8 @@ TEST_F(AnimationTest, PausingThrobbingAnimation) {
 
   AdvanceClock(base::Milliseconds(200));
 
-  animation_->StartSubsection(kStartTime, kDuration,
-                              Animation::Style::kThrobbing);
+  animation_->Start(Animation::PlaybackConfig(
+      {kStartTime, kDuration, Animation::Style::kThrobbing}));
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
 
   EXPECT_TRUE(IsPlaying());
@@ -986,7 +997,8 @@ TEST_F(AnimationTest, PaintTest) {
 
   AdvanceClock(base::Milliseconds(300));
 
-  animation_->Start(Animation::Style::kLinear);
+  animation_->Start(Animation::PlaybackConfig::CreateWithStyle(
+      Animation::Style::kLinear, *animation_));
   animation_->Paint(&canvas, NowTicks(), animation_->GetOriginalSize());
 
   AdvanceClock(base::Milliseconds(50));
@@ -1015,7 +1027,8 @@ TEST_F(AnimationTest, NotifiesObserverFramePainted) {
 
   AdvanceClock(base::Milliseconds(300));
 
-  animation_->Start(Animation::Style::kLoop);
+  animation_->Start(Animation::PlaybackConfig::CreateWithStyle(
+      Animation::Style::kLoop, *animation_));
 
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
   ASSERT_TRUE(observer.last_frame_painted());
@@ -1049,7 +1062,8 @@ TEST_F(AnimationTest, SetsPlaybackSpeed) {
   AdvanceClock(base::Milliseconds(300));
 
   animation_->SetPlaybackSpeed(2);
-  animation_->Start(Animation::Style::kLinear);
+  animation_->Start(Animation::PlaybackConfig::CreateWithStyle(
+      Animation::Style::kLinear, *animation_));
 
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
   ASSERT_TRUE(animation_->GetCurrentProgress());
@@ -1081,7 +1095,8 @@ TEST_F(AnimationTest, SetsPlaybackSpeed) {
 TEST_F(AnimationWithImageAssetsTest, PaintsAnimationImagesToCanvas) {
   AdvanceClock(base::Milliseconds(300));
 
-  animation_->Start(Animation::Style::kLoop);
+  animation_->Start(Animation::PlaybackConfig::CreateWithStyle(
+      Animation::Style::kLoop, *animation_));
 
   TestSkottieFrameDataProvider::ImageAssetImpl* asset_0 =
       frame_data_provider_.GetLoadedImageAsset("image_0");
@@ -1126,7 +1141,8 @@ TEST_F(AnimationWithImageAssetsTest, PaintsAnimationImagesToCanvas) {
 TEST_F(AnimationWithImageAssetsTest, GracefullyHandlesNullImages) {
   AdvanceClock(base::Milliseconds(300));
 
-  animation_->Start(Animation::Style::kLoop);
+  animation_->Start(Animation::PlaybackConfig::CreateWithStyle(
+      Animation::Style::kLoop, *animation_));
 
   display_list_->StartPaint();
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
@@ -1146,7 +1162,8 @@ TEST_F(AnimationWithImageAssetsTest, GracefullyHandlesNullImages) {
 TEST_F(AnimationWithImageAssetsTest, LoadsCorrectFrameTimestamp) {
   AdvanceClock(base::Milliseconds(300));
 
-  animation_->Start(Animation::Style::kLoop);
+  animation_->Start(Animation::PlaybackConfig::CreateWithStyle(
+      Animation::Style::kLoop, *animation_));
 
   asset_0_->set_current_frame_data(CreateHighQualityTestFrameData());
   asset_1_->set_current_frame_data(CreateHighQualityTestFrameData());
@@ -1193,7 +1210,8 @@ TEST_F(AnimationWithImageAssetsTest, LoadsCorrectFrameTimestamp) {
 TEST_F(AnimationWithImageAssetsTest, LoadsCorrectImageScale) {
   AdvanceClock(base::Milliseconds(300));
 
-  animation_->Start(Animation::Style::kLoop);
+  animation_->Start(Animation::PlaybackConfig::CreateWithStyle(
+      Animation::Style::kLoop, *animation_));
 
   asset_0_->set_current_frame_data(CreateHighQualityTestFrameData());
 
@@ -1209,7 +1227,8 @@ TEST_F(AnimationWithImageAssetsTest, LoadsCorrectImageScale) {
 TEST_F(AnimationTest, HandlesTimeStepGreaterThanAnimationDuration) {
   AdvanceClock(base::Milliseconds(300));
 
-  animation_->Start(Animation::Style::kLoop);
+  animation_->Start(Animation::PlaybackConfig::CreateWithStyle(
+      Animation::Style::kLoop, *animation_));
 
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
 
@@ -1237,7 +1256,8 @@ class AnimationRestarter : public AnimationObserver {
 
   void AnimationCycleEnded(const Animation* animation) override {
     animation_->Stop();
-    animation_->Start(Animation::Style::kLinear);
+    animation_->Start(Animation::PlaybackConfig::CreateWithStyle(
+        Animation::Style::kLinear, *animation_));
   }
 
  private:
@@ -1250,7 +1270,8 @@ TEST_F(AnimationTest, HandlesChangingAnimationStateWithinObserverCall) {
 
   AdvanceClock(base::Milliseconds(300));
 
-  animation_->Start(Animation::Style::kLinear);
+  animation_->Start(Animation::PlaybackConfig::CreateWithStyle(
+      Animation::Style::kLinear, *animation_));
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
 
   // Advance the clock to the end of the animation.
@@ -1281,6 +1302,28 @@ TEST_F(AnimationTest, NotifiesAnimationIsDeleting) {
   animation_.reset();
   EXPECT_TRUE(observer_1.animation_is_deleted());
   EXPECT_TRUE(observer_2.animation_is_deleted());
+}
+
+TEST_F(AnimationTest, GetPlaybackConfig) {
+  EXPECT_FALSE(animation_->GetPlaybackConfig());
+  Animation::PlaybackConfig test_config = {
+      /*start_offset=*/kAnimationDuration / 4,
+      /*duration=*/kAnimationDuration / 2, Animation::Style::kThrobbing};
+  animation_->Start(test_config);
+  ASSERT_TRUE(animation_->GetPlaybackConfig());
+  EXPECT_THAT(*animation_->GetPlaybackConfig(),
+              FieldsAre(test_config.start_offset, test_config.duration,
+                        test_config.style));
+  animation_->Stop();
+  EXPECT_FALSE(animation_->GetPlaybackConfig());
+  test_config.start_offset = kAnimationDuration / 2;
+  test_config.duration = kAnimationDuration / 4;
+  test_config.style = Animation::Style::kLoop;
+  animation_->Start(test_config);
+  ASSERT_TRUE(animation_->GetPlaybackConfig());
+  EXPECT_THAT(*animation_->GetPlaybackConfig(),
+              FieldsAre(test_config.start_offset, test_config.duration,
+                        test_config.style));
 }
 
 }  // namespace lottie

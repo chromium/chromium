@@ -71,7 +71,8 @@ AmbientAnimationPlayer::AmbientAnimationPlayer(
   animation_observation_.Observe(animation);
   animation->SetPlaybackSpeed(
       AmbientUiModel::Get()->animation_playback_speed());
-  animated_image_view_->Play(lottie::Animation::Style::kLinear);
+  animated_image_view_->Play(lottie::Animation::PlaybackConfig::CreateWithStyle(
+      lottie::Animation::Style::kLinear, *animation));
 }
 
 AmbientAnimationPlayer::~AmbientAnimationPlayer() {
@@ -92,12 +93,12 @@ void AmbientAnimationPlayer::AnimationCycleEnded(
   // frame-to-frame latency at the end of other animation cycles, and there was
   // no observable difference.
   animated_image_view_->Stop();
-  animated_image_view_->Play(
-      /*start_offset=*/cycle_restart_timestamp_,
-      /*duration=*/
-      animated_image_view_->animated_image()->GetAnimationDuration() -
-          cycle_restart_timestamp_,
-      lottie::Animation::Style::kLoop);
+  animated_image_view_->Play(lottie::Animation::PlaybackConfig(
+      {/*start_offset=*/cycle_restart_timestamp_,
+       /*duration=*/
+       animated_image_view_->animated_image()->GetAnimationDuration() -
+           cycle_restart_timestamp_,
+       lottie::Animation::Style::kLoop}));
 }
 
 }  // namespace ash

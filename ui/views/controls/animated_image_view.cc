@@ -49,25 +49,24 @@ void AnimatedImageView::SetAnimatedImage(
   SchedulePaint();
 }
 
-void AnimatedImageView::Play(lottie::Animation::Style style) {
-  DCHECK(animated_image_);
-  Play(base::TimeDelta(), animated_image_->GetAnimationDuration(), style);
-}
-
-void AnimatedImageView::Play(base::TimeDelta start_offset,
-                             base::TimeDelta duration,
-                             lottie::Animation::Style style) {
+void AnimatedImageView::Play(
+    absl::optional<lottie::Animation::PlaybackConfig> playback_config) {
   DCHECK(animated_image_);
   if (state_ == State::kPlaying)
     return;
 
   state_ = State::kPlaying;
 
-  set_check_active_duration(style != lottie::Animation::Style::kLoop);
+  if (!playback_config) {
+    playback_config =
+        lottie::Animation::PlaybackConfig::CreateDefault(*animated_image_);
+  }
+  set_check_active_duration(playback_config->style !=
+                            lottie::Animation::Style::kLoop);
 
   SetCompositorFromWidget();
 
-  animated_image_->StartSubsection(start_offset, duration, style);
+  animated_image_->Start(std::move(playback_config));
 }
 
 void AnimatedImageView::Stop() {
