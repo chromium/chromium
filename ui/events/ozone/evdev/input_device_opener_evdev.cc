@@ -11,11 +11,11 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
+#include "ui/events/event_switches.h"
 #include "ui/events/ozone/evdev/event_converter_evdev_impl.h"
 #include "ui/events/ozone/evdev/gamepad_event_converter_evdev.h"
 #include "ui/events/ozone/evdev/microphone_mute_switch_event_converter_evdev.h"
 #include "ui/events/ozone/evdev/stylus_button_event_converter_evdev.h"
-#include "ui/events/ozone/evdev/switches.h"
 #include "ui/events/ozone/evdev/tablet_event_converter_evdev.h"
 #include "ui/events/ozone/evdev/touch_event_converter_evdev.h"
 
@@ -89,7 +89,7 @@ std::unique_ptr<EventConverterEvdev> CreateConverter(
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kEnableMicrophoneMuteSwitchDeviceSwitch) &&
+          switches::kEnableMicrophoneMuteSwitchDeviceSwitch) &&
       devinfo.IsMicrophoneMuteSwitchDevice()) {
     return base::WrapUnique<EventConverterEvdev>(
         new MicrophoneMuteSwitchEventConverterEvdev(

@@ -82,8 +82,6 @@ component("evdev") {
     "mouse_button_map_evdev.h",
     "stylus_button_event_converter_evdev.cc",
     "stylus_button_event_converter_evdev.h",
-    "switches.cc",
-    "switches.h",
     "tablet_event_converter_evdev.cc",
     "tablet_event_converter_evdev.h",
     "touch_evdev_debug_buffer.cc",

@@ -40,6 +40,12 @@ const char kEdgeTouchFiltering[] = "edge-touch-filtering";
 // Disable CancelAllTouches() function for the implementation on cancel single
 // touches.
 const char kDisableCancelAllTouches[] = "disable-cancel-all-touches";
+
+// Enables logic to detect microphone mute switch device state, which disables
+// internal audio input when toggled.
+constexpr char kEnableMicrophoneMuteSwitchDeviceSwitch[] =
+    "enable-microphone-mute-switch-device";
+
 #endif
 
 }  // namespace switches

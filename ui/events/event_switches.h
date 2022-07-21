@@ -21,6 +21,9 @@ EVENTS_BASE_EXPORT extern const char kPenDevices[];
 #if defined(USE_OZONE)
 EVENTS_BASE_EXPORT extern const char kEdgeTouchFiltering[];
 EVENTS_BASE_EXPORT extern const char kDisableCancelAllTouches[];
+EVENTS_BASE_EXPORT
+extern const char kEnableMicrophoneMuteSwitchDeviceSwitch[];
+
 #endif
 
 }  // namespace switches
