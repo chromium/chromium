@@ -8,7 +8,7 @@
 // time. Try not to raise this limit unless necessary. See
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
 #ifndef NACL_TC_REV
-#pragma clang max_tokens_here 600000
+#pragma clang max_tokens_here 610000
 #endif
 
 #include <string>

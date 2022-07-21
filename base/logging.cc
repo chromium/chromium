@@ -10,7 +10,7 @@
 // build time. Try not to raise this limit unless absolutely necessary. See
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
 #ifndef NACL_TC_REV
-#pragma clang max_tokens_here 470000
+#pragma clang max_tokens_here 480000
 #endif  // NACL_TC_REV
 
 #ifdef BASE_CHECK_H_
