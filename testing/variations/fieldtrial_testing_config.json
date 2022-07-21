@@ -4141,6 +4141,21 @@
             ]
         }
     ],
+    "ForceGpuMainThreadToNormalPriorityDrDc": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "ForceGpuMainThreadToNormalPriorityDrDc",
+                    "enable_features": [
+                        "ForceGpuMainThreadToNormalPriorityDrDc"
+                    ]
+                }
+            ]
+        }
+    ],
     "GMSCoreEmoji": [
         {
             "platforms": [
