@@ -30,6 +30,11 @@ extern const base::Feature kAutofillAssistantFeedbackChip;
 extern const base::Feature kAutofillAssistantLoadDFMForTriggerScripts;
 extern const base::Feature kAutofillAssistantProactiveHelp;
 extern const base::Feature kAutofillAssistantSignGetActionsRequests;
+extern const base::Feature kAutofillAssistantUrlHeuristic1;
+extern const base::Feature kAutofillAssistantUrlHeuristic2;
+extern const base::Feature kAutofillAssistantUrlHeuristic3;
+extern const base::Feature kAutofillAssistantUrlHeuristic4;
+extern const base::Feature kAutofillAssistantUrlHeuristic5;
 extern const base::Feature kAutofillAssistantUrlHeuristics;
 extern const base::Feature kAutofillAssistantVerifyGetActionsResponses;
 

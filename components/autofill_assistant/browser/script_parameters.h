@@ -24,6 +24,7 @@ class ScriptParameters {
   ~ScriptParameters();
   ScriptParameters(const ScriptParameters&) = delete;
   ScriptParameters& operator=(const ScriptParameters&) = delete;
+  ScriptParameters& operator=(ScriptParameters&&);
 
   // Merges |another| into this. Does not overwrite existing values.
   void MergeWith(const ScriptParameters& another);

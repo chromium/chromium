@@ -105,7 +105,19 @@ const base::Feature kAutofillAssistantLoadDFMForTriggerScripts{
 const base::Feature kAutofillAssistantProactiveHelp{
     "AutofillAssistantProactiveHelp", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Used to configure the start heuristics for
+// Used to configure URL heuristics for upcoming new features.
+extern const base::Feature kAutofillAssistantUrlHeuristic1{
+    "AutofillAssistantUrlHeuristic1", base::FEATURE_DISABLED_BY_DEFAULT};
+extern const base::Feature kAutofillAssistantUrlHeuristic2{
+    "AutofillAssistantUrlHeuristic2", base::FEATURE_DISABLED_BY_DEFAULT};
+extern const base::Feature kAutofillAssistantUrlHeuristic3{
+    "AutofillAssistantUrlHeuristic3", base::FEATURE_DISABLED_BY_DEFAULT};
+extern const base::Feature kAutofillAssistantUrlHeuristic4{
+    "AutofillAssistantUrlHeuristic4", base::FEATURE_DISABLED_BY_DEFAULT};
+extern const base::Feature kAutofillAssistantUrlHeuristic5{
+    "AutofillAssistantUrlHeuristic5", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Legacy URL heuristics. Used to configure the start heuristics for
 // |kAutofillAssistantInCctTriggering| and/or
 // |kAutofillAssistantInTabTriggering|.
 const base::Feature kAutofillAssistantUrlHeuristics{

@@ -115,6 +115,7 @@ ScriptParameters::ScriptParameters(
 
 ScriptParameters::ScriptParameters() = default;
 ScriptParameters::~ScriptParameters() = default;
+ScriptParameters& ScriptParameters::operator=(ScriptParameters&&) = default;
 
 void ScriptParameters::MergeWith(const ScriptParameters& another) {
   for (const auto& param : another.parameters_) {
