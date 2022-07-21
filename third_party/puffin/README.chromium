@@ -30,3 +30,6 @@ Local Modifications:
     so it will build and run cross-platform.
 - Removed dependence of libpuffpatch on libpuffdiff as the puffin patching
     service we plant to implement only requires libpuffpatch.
+- Added puffin::Status enum to help disambiguate errors from puffin::PuffPatch
+- Added puffin::ApplyPuffPatch API which allows chromium libraries to call
+    puffin::PuffPatch without having worry about UniqueStreamPtr's and Buffer's.

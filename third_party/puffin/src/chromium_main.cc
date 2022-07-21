@@ -54,8 +54,6 @@ void PrintHelp() {
                   "<input_patch_file_path>";
 }
 
-const uint64_t kDefaultPuffCacheSize = 50 * 1024 * 1024;  // 50 MB
-
 // An enum representing the type of compressed files.
 enum class FileType { kDeflate, kZlib, kGzip, kZip, kRaw, kUnknown };
 
@@ -279,10 +277,11 @@ bool ExecutePuffPatch(const string& src_file_path,
   }
   // Apply the patch. Use 50MB cache, it should be enough for most of the
   // operations.
-  if (!puffin::PuffPatch(std::move(src_stream), std::move(dst_stream),
-                         puffdiff_delta.data(), puffdiff_delta.size(),
-                         kDefaultPuffCacheSize)) {
-    LOG(ERROR) << "Unable to patch file, an unknown error occurred.";
+  auto status = puffin::PuffPatch(std::move(src_stream), std::move(dst_stream),
+                                  puffdiff_delta.data(), puffdiff_delta.size(),
+                                  puffin::kDefaultPuffCacheSize);
+  if (status != puffin::Status::P_OK) {
+    LOG(ERROR) << "Unable to patch file, failed with error: " << status << ".";
     return false;
   }
   LOG(INFO) << "File Patched successfully!";
