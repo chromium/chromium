@@ -85,12 +85,13 @@ If what devicePixelContentBox reports is incorrect the patterns will not
 align and it should be clearly visible.
 */
 
-setPattern(document.body, 0, 0);
 const wrapperElem = document.querySelector('div');
 
 const elemToDevicePixelSize = new Map();
 
 function setPatternsUsingSizeInfo(entries) {
+  setPattern(document.body, 0, 0);
+
   for (const entry of entries) {
     elemToDevicePixelSize.set(entry.target, {
       inlineSize: entry.devicePixelContentBoxSize[0].inlineSize,
@@ -114,6 +115,7 @@ function setPatternsUsingSizeInfo(entries) {
 }
 
 const observer = new ResizeObserver(setPatternsUsingSizeInfo);
+observer.observe(document.body);
 for (let numFlexItems = 2; numFlexItems < 15; ++numFlexItems) {
   const lineElem = document.createElement('div');
   lineElem.className = 'line';
