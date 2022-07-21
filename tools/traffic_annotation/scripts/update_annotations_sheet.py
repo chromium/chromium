@@ -22,6 +22,7 @@ import httplib2
 import io
 import json
 import os
+import re
 import sys
 
 from apiclient import discovery
@@ -32,6 +33,24 @@ from oauth2client.file import Storage
 from generator_utils import load_tsv_file
 
 
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+SRC_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, "../../.."))
+
+
+def GetCurrentChromeVersion():
+  with io.open(os.path.join(SRC_DIR, "chrome/VERSION")) as f:
+    contents = f.read()
+  version_parts = dict(
+      re.match(r"(\w+)=(\d+)", line).groups() for line in contents.split("\n")
+      if line)
+  return tuple(
+      int(version_parts[part]) for part in ["MAJOR", "MINOR", "BUILD", "PATCH"])
+
+
+def VersionTupleToString(version_tuple):
+  return '.'.join(map(str, version_tuple))
+
+
 class SheetEditor():
   """Loads and updates traffic annotation's sheet."""
 
@@ -40,7 +59,7 @@ class SheetEditor():
   APPLICATION_NAME = "Chrome Network Traffic Annotations Spreadsheet Updater"
 
   def __init__(self, spreadsheet_id, annotations_sheet_name,
-               changes_sheet_name, silent_change_columns,
+               chrome_version_sheet_name, silent_change_columns,
                last_update_column_name, credentials_file_path,
                client_secret_file_path, verbose):
     """ Initializes the SheetEditor. Please refer to 'PrintConfigHelp' function
@@ -51,7 +70,7 @@ class SheetEditor():
           ID of annotations spreadsheet.
       annotations_sheet_name: str
           Name of the sheet that contains the annotations.
-      changes_sheet_name: str
+      chrome_version_sheet_name: str
           Name of the sheet that contains the changes stats.
       silent_change_columns: list of str
           List of the columns whose changes are not reported in the stats.
@@ -70,7 +89,7 @@ class SheetEditor():
     print("Successfully got credential to update annotations report.")
     self.spreadsheet_id = spreadsheet_id
     self.annotations_sheet_name = annotations_sheet_name
-    self.changes_sheet_name = changes_sheet_name
+    self.chrome_version_sheet_name = chrome_version_sheet_name
     self.silent_change_columns = silent_change_columns
     self.last_update_column_name = last_update_column_name
     self.annotations_sheet_id = self._GetAnnotationsSheetId()
@@ -319,26 +338,28 @@ class SheetEditor():
           spreadsheetId=self.spreadsheet_id,
           body=batch_update_values_request_body).execute()
 
-    # Add Report Line.
-    # TODO(https://crbug.com/656607): Remove changes stat and related config.
-    if self.insert_count or self.delete_count or self.update_count:
-      value_range = "%s!A1:B1000" % self.changes_sheet_name
-      append_body = {
-          "range": value_range,
-          "majorDimension": "ROWS",
-          "values": [[self.today, self.GiveUpdateSummary()]]
-      }
-      self.service.spreadsheets().values().append(
-          spreadsheetId=self.spreadsheet_id,
-          range=value_range,
-          valueInputOption="RAW",
-          body=append_body).execute()
-
 
   def GiveUpdateSummary(self):
     return "New annotations: %s, Modified annotations: %s, " \
            "Removed annotations: %s" % (
                 self.insert_count, self.update_count, self.delete_count)
+
+
+  def UpdateChromeVersion(self, version_tuple):
+    self.service.spreadsheets().values().update(
+        spreadsheetId=self.spreadsheet_id,
+        range="%s!A1:A1" % self.chrome_version_sheet_name,
+        valueInputOption="RAW",
+        body={
+            "values": [[VersionTupleToString(version_tuple)]]
+        }).execute()
+
+  def GetChromeVersionFromSheet(self):
+    response = self.service.spreadsheets().values().get(
+        spreadsheetId=self.spreadsheet_id,
+        range="%s!A1:A1" % self.chrome_version_sheet_name).execute()
+    version_string = response["values"][0][0]
+    return tuple(int(part) for part in version_string.split('.'))
 
 
 def PrintConfigHelp():
@@ -347,10 +368,11 @@ def PrintConfigHelp():
         "  ID of annotations spreadsheet.\n"
         "annotations_sheet_name:\n"
         "  Name of the sheet that contains the annotations.\n"
-        "changes_sheet_name:\n"
-        "  Name of the sheet that contains the changes stats.\n"
+        "chrome_version_sheet_name:\n"
+        "  Name of the sheet that contains the Chrome version.\n"
         "silent_change_columns:\n"
-        "  List of the columns whose changes are not reported in the stats.\n"
+        "  List of the columns whose changes don't affect the Last Update "
+        "column.\n"
         "last_update_column_name:\n"
         "  Header of the column that keeps the latest update date.\n"
         "credentials_file_path:\n"
@@ -373,13 +395,20 @@ def main():
   parser.add_argument(
       '--verbose', action='store_true',
       help='Reports all updates.')
+  parser.add_argument('--yes',
+                      action='store_true',
+                      help='Performs all actions without confirmation.')
   parser.add_argument(
-      '--force', action='store_true',
-      help='Performs all actions without confirmation.')
+      '--force',
+      action='store_true',
+      help='Performs all actions without confirmation, regardless of the '
+      'sheet being older or newer than this version. Implies --yes.')
   parser.add_argument(
       '--config-help', action='store_true',
       help='Shows the configurations help.')
   args = parser.parse_args()
+  if args.force:
+    args.yes = True
 
   print("Updating annotations sheet.")
   if args.config_help:
@@ -397,26 +426,56 @@ def main():
     return -1
 
   sheet_editor = SheetEditor(
-      spreadsheet_id = config["spreadsheet_id"],
-      annotations_sheet_name = config["annotations_sheet_name"],
-      changes_sheet_name = config["changes_sheet_name"],
-      silent_change_columns = config["silent_change_columns"],
-      last_update_column_name = config["last_update_column_name"],
-      credentials_file_path = config.get("credentials_file_path", None),
-      client_secret_file_path = config.get("client_secret_file_path", None),
-      verbose = args.verbose)
+      spreadsheet_id=config["spreadsheet_id"],
+      annotations_sheet_name=config["annotations_sheet_name"],
+      chrome_version_sheet_name=config["chrome_version_sheet_name"],
+      silent_change_columns=config["silent_change_columns"],
+      last_update_column_name=config["last_update_column_name"],
+      credentials_file_path=config.get("credentials_file_path", None),
+      client_secret_file_path=config.get("client_secret_file_path", None),
+      verbose=args.verbose)
+
+  current_version = GetCurrentChromeVersion()
+  current_version_string = VersionTupleToString(current_version)
+  print("This is Chrome version %s" % current_version_string)
+
+  sheet_version = sheet_editor.GetChromeVersionFromSheet()
+  sheet_version_string = VersionTupleToString(sheet_version)
+  print("Sheet contains Chrome version %s" % sheet_version_string)
+
+  if sheet_version > current_version and not args.force:
+    print("Sheet is already newer than this Chrome version. Aborting.")
+    return 0
+
   if not sheet_editor.GenerateUpdates(file_content):
     print("Error generating updates for file content.")
     return -1
 
-  if sheet_editor.required_cell_updates or sheet_editor.required_row_updates:
-    print("%s" % sheet_editor.GiveUpdateSummary())
-    if not args.force:
+  main_sheet_needs_update = (sheet_editor.required_cell_updates
+                             or sheet_editor.required_row_updates)
+  version_needs_update = current_version != sheet_version
+
+  if main_sheet_needs_update or version_needs_update:
+    if main_sheet_needs_update:
+      print("%s" % sheet_editor.GiveUpdateSummary())
+    else:
+      print("No updates to annotations required.")
+
+    if current_version != sheet_version:
+      print("The '%s' sheet will be updated to '%s'." %
+            (sheet_editor.chrome_version_sheet_name, current_version_string))
+
+    if not args.yes:
       print("Proceed with update?")
       if raw_input("(Y/n): ").strip().lower() != "y":
         return -1
-    sheet_editor.ApplyUpdates()
+
+    if main_sheet_needs_update:
+      sheet_editor.ApplyUpdates()
+    if version_needs_update:
+      sheet_editor.UpdateChromeVersion(current_version)
     print("Updates applied.")
+
   else:
     print("No updates required.")
 

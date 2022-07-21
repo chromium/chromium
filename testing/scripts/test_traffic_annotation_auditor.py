@@ -23,7 +23,7 @@ from scripts import common
 WINDOWS_SHEET_CONFIG = {
   "spreadsheet_id": "1TmBr9jnf1-hrjntiVBzT9EtkINGrtoBYFMWad2MBeaY",
   "annotations_sheet_name": "Annotations",
-  "changes_sheet_name": "Changes Stats",
+  "chrome_version_sheet_name": "Chrome Version",
   "silent_change_columns": [],
   "last_update_column_name": "Last Update",
 }
@@ -32,7 +32,7 @@ WINDOWS_SHEET_CONFIG = {
 CHROMEOS_SHEET_CONFIG = {
   "spreadsheet_id": "1928goWKy6LVdF9Nl5nV1OD260YC10dHsdrnHEGdGsg8",
   "annotations_sheet_name": "Annotations",
-  "changes_sheet_name": "Changes Stats",
+  "chrome_version_sheet_name": "Chrome Version",
   "silent_change_columns": [],
   "last_update_column_name": "Last Update",
 }
@@ -105,7 +105,7 @@ def main_run(args):
         vpython_path,
         os.path.join(common.SRC_DIR, 'tools', 'traffic_annotation', 'scripts',
                    'update_annotations_sheet.py'),
-        '--force',
+        '--yes',
         '--config-file',
         config_filename,
         '--annotations-file',
