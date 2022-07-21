@@ -21,9 +21,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.core.app.ActivityScenario;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -67,11 +68,14 @@ public class AccountSelectionViewTest {
             new Account("", "", "No Subject", "", TEST_PROFILE_PIC, true);
     private static final Account BOB = new Account("Bob", "", "Bob", "", TEST_PROFILE_PIC, true);
 
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     @Mock
     private Callback<Account> mAccountCallback;
     private Runnable mAutoSignInCancelCallback;
 
-    private ActivityScenario<TestActivity> mActivityScenario;
     private Resources mResources;
     private PropertyModel mModel;
     private ModelList mSheetAccountItems;
@@ -81,9 +85,7 @@ public class AccountSelectionViewTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        mActivityScenario = ActivityScenario.launch(TestActivity.class);
-
-        mActivityScenario.onActivity(activity -> {
+        mActivityScenarioRule.getScenario().onActivity(activity -> {
             mModel = new PropertyModel.Builder(AccountSelectionProperties.ItemProperties.ALL_KEYS)
                              .build();
             mSheetAccountItems = new ModelList();

@@ -27,8 +27,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
-import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
 import com.google.android.material.tabs.TabLayout;
@@ -101,8 +101,10 @@ public class HistoryUITest {
     public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule
     public JniMocker mJniMocker = new JniMocker();
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
-    private ActivityScenario<TestActivity> mActivityScenario;
     private StubbedHistoryProvider mHistoryProvider;
     private HistoryAdapter mAdapter;
     private HistoryManager mHistoryManager;
@@ -161,8 +163,7 @@ public class HistoryUITest {
         IncognitoUtils.setEnabledForTesting(true);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         HistoryClustersBridge.setInstanceForTesting(mHistoryClustersBridge);
-        mActivityScenario = ActivityScenario.launch(TestActivity.class)
-                                    .onActivity(activity -> mActivity = activity);
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mHistoryManager = new HistoryManager(mActivity, true, mSnackbarManager, false,
                 /* Supplier<Tab>= */ null, false, null, mHistoryProvider);
         mHistoryClustersCoordinator = mHistoryManager.getHistoryClustersCoordinatorForTests();

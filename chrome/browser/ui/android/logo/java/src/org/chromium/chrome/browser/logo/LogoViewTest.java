@@ -13,11 +13,12 @@ import android.graphics.Bitmap.Config;
 import android.text.TextUtils;
 import android.view.ViewGroup.LayoutParams;
 
-import androidx.test.core.app.ActivityScenario;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -33,6 +34,10 @@ import org.chromium.ui.base.TestActivity;
 /** Instrumentation tests for {@link LogoView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class LogoViewTest {
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     @Mock
     public TemplateUrlService mTemplateUrlService;
     @Mock
@@ -43,18 +48,16 @@ public class LogoViewTest {
             "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json";
     private static final String ALT_TEXT = "Hello World!";
 
-    private ActivityScenario<TestActivity> mActivityScenario;
     private LogoView mView;
     private Bitmap mBitmap;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        mActivityScenario = ActivityScenario.launch(TestActivity.class);
         mBitmap = Bitmap.createBitmap(1, 1, Config.ALPHA_8);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
 
-        mActivityScenario.onActivity(activity -> {
+        mActivityScenarioRule.getScenario().onActivity(activity -> {
             mView = new LogoView(activity, null);
             LayoutParams params =
                     new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
