@@ -71,6 +71,7 @@ constexpr char kIdpTestOrigin[] = "https://idp.example";
 constexpr char kProviderUrl[] = "https://idp.example/";
 constexpr char kProviderUrlFull[] = "https://idp.example/fedcm.json";
 constexpr char kRpUrl[] = "https://rp.example/";
+constexpr char kRpOtherUrl[] = "https://rp.example/random/";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kCrossOriginAccountsEndpoint[] = "https://idp2.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
@@ -832,11 +833,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
-class BasicFederatedAuthRequestImplTest : public FederatedAuthRequestImplTest {
-};
-
 // Test successful FedCM request.
-TEST_F(BasicFederatedAuthRequestImplTest, SuccessfulRequest) {
+TEST_F(FederatedAuthRequestImplTest, SuccessfulRequest) {
   // Use IdpNetworkRequestManagerParamChecker to validate passed-in parameters
   // to IdpNetworkRequestManager methods.
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
@@ -851,7 +849,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, SuccessfulRequest) {
 }
 
 // Test successful manifest list fetching.
-TEST_F(BasicFederatedAuthRequestImplTest, ManifestListSuccess) {
+TEST_F(FederatedAuthRequestImplTest, ManifestListSuccess) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmManifestValidation);
 
@@ -869,7 +867,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, ManifestListSuccess) {
 }
 
 // Test the provider url is not in the manifest list.
-TEST_F(BasicFederatedAuthRequestImplTest, ManifestListNotInList) {
+TEST_F(FederatedAuthRequestImplTest, ManifestListNotInList) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmManifestValidation);
 
@@ -885,7 +883,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, ManifestListNotInList) {
 
 // Test that not having the filename in the manifest list fails
 // (kProviderUrl vs kProviderUrlFull).
-TEST_F(BasicFederatedAuthRequestImplTest, ManifestListHasNoFilename) {
+TEST_F(FederatedAuthRequestImplTest, ManifestListHasNoFilename) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmManifestValidation);
 
@@ -902,7 +900,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, ManifestListHasNoFilename) {
 }
 
 // Test that request fails if manifest is missing token endpoint.
-TEST_F(BasicFederatedAuthRequestImplTest, MissingTokenEndpoint) {
+TEST_F(FederatedAuthRequestImplTest, MissingTokenEndpoint) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.manifest.token_endpoint = "";
   RequestExpectations expectations = {
@@ -923,7 +921,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MissingTokenEndpoint) {
 }
 
 // Test that request fails if manifest is missing accounts endpoint.
-TEST_F(BasicFederatedAuthRequestImplTest, MissingAccountsEndpoint) {
+TEST_F(FederatedAuthRequestImplTest, MissingAccountsEndpoint) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.manifest.accounts_endpoint = "";
   RequestExpectations expectations = {
@@ -944,7 +942,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MissingAccountsEndpoint) {
 }
 
 // Test that client metadata endpoint is not required in manifest.
-TEST_F(BasicFederatedAuthRequestImplTest, MissingClientMetadataEndpoint) {
+TEST_F(FederatedAuthRequestImplTest, MissingClientMetadataEndpoint) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.manifest.client_metadata_endpoint = "";
   RequestExpectations expectations = {
@@ -955,7 +953,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MissingClientMetadataEndpoint) {
 
 // Test that request fails if the accounts endpoint is in a different origin
 // than identity provider.
-TEST_F(BasicFederatedAuthRequestImplTest, AccountEndpointDifferentOriginIdp) {
+TEST_F(FederatedAuthRequestImplTest, AccountEndpointDifferentOriginIdp) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.manifest.accounts_endpoint = kCrossOriginAccountsEndpoint;
   RequestExpectations expectations = {
@@ -966,7 +964,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AccountEndpointDifferentOriginIdp) {
 }
 
 // Test that request fails if accounts endpoint cannot be reached.
-TEST_F(BasicFederatedAuthRequestImplTest, AccountEndpointCannotBeReached) {
+TEST_F(FederatedAuthRequestImplTest, AccountEndpointCannotBeReached) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.accounts_response = FetchStatus::kNoResponseError;
   RequestExpectations expectations = {
@@ -978,7 +976,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AccountEndpointCannotBeReached) {
 }
 
 // Test that request fails if account endpoint response cannot be parsed.
-TEST_F(BasicFederatedAuthRequestImplTest, AccountsCannotBeParsed) {
+TEST_F(FederatedAuthRequestImplTest, AccountsCannotBeParsed) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.accounts_response = FetchStatus::kInvalidResponseError;
   RequestExpectations expectations = {
@@ -991,7 +989,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AccountsCannotBeParsed) {
 
 // Test that privacy policy URL or terms of service is not required in client
 // metadata.
-TEST_F(BasicFederatedAuthRequestImplTest,
+TEST_F(FederatedAuthRequestImplTest,
        ClientMetadataNoPrivacyPolicyOrTermsOfServiceUrl) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.client_metadata = kDefaultClientMetadata;
@@ -1001,7 +999,7 @@ TEST_F(BasicFederatedAuthRequestImplTest,
 }
 
 // Test that privacy policy URL is not required in client metadata.
-TEST_F(BasicFederatedAuthRequestImplTest, ClientMetadataNoPrivacyPolicyUrl) {
+TEST_F(FederatedAuthRequestImplTest, ClientMetadataNoPrivacyPolicyUrl) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.client_metadata = kDefaultClientMetadata;
   configuration.client_metadata.privacy_policy_url = "";
@@ -1009,7 +1007,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, ClientMetadataNoPrivacyPolicyUrl) {
 }
 
 // Test that terms of service URL is not required in client metadata.
-TEST_F(BasicFederatedAuthRequestImplTest, ClientMetadataNoTermsOfServiceUrl) {
+TEST_F(FederatedAuthRequestImplTest, ClientMetadataNoTermsOfServiceUrl) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.client_metadata = kDefaultClientMetadata;
   configuration.client_metadata.terms_of_service_url = "";
@@ -1017,7 +1015,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, ClientMetadataNoTermsOfServiceUrl) {
 }
 
 // Test that request fails if all of the endpoints in the manifest are invalid.
-TEST_F(BasicFederatedAuthRequestImplTest, AllInvalidEndpoints) {
+TEST_F(FederatedAuthRequestImplTest, AllInvalidEndpoints) {
   // Both an empty url and cross origin urls are invalid endpoints.
   MockConfiguration configuration = kConfigurationValid;
   configuration.manifest.accounts_endpoint = "https://cross-origin-1.com";
@@ -1040,7 +1038,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AllInvalidEndpoints) {
 }
 
 // Test Logout method success with multiple relying parties.
-TEST_F(BasicFederatedAuthRequestImplTest, LogoutSuccessMultiple) {
+TEST_F(FederatedAuthRequestImplTest, LogoutSuccessMultiple) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeatureWithParameters(
       features::kFedCm,
@@ -1072,7 +1070,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, LogoutSuccessMultiple) {
 }
 
 // Test Logout without session permission granted.
-TEST_F(BasicFederatedAuthRequestImplTest, LogoutWithoutPermission) {
+TEST_F(FederatedAuthRequestImplTest, LogoutWithoutPermission) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeatureWithParameters(
       features::kFedCm,
@@ -1090,7 +1088,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, LogoutWithoutPermission) {
 }
 
 // Test Logout method with an empty endpoint vector.
-TEST_F(BasicFederatedAuthRequestImplTest, LogoutNoEndpoints) {
+TEST_F(FederatedAuthRequestImplTest, LogoutNoEndpoints) {
   SetNetworkRequestManager(
       std::make_unique<TestLogoutIdpNetworkRequestManager>());
 
@@ -1100,15 +1098,13 @@ TEST_F(BasicFederatedAuthRequestImplTest, LogoutNoEndpoints) {
 }
 
 // Tests for Login State
-TEST_F(BasicFederatedAuthRequestImplTest,
-       LoginStateShouldBeSignUpForFirstTimeUser) {
+TEST_F(FederatedAuthRequestImplTest, LoginStateShouldBeSignUpForFirstTimeUser) {
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
   EXPECT_EQ(LoginState::kSignUp, displayed_accounts()[0].login_state);
 }
 
-TEST_F(BasicFederatedAuthRequestImplTest,
-       LoginStateShouldBeSignInForReturningUser) {
+TEST_F(FederatedAuthRequestImplTest, LoginStateShouldBeSignInForReturningUser) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermission(url::Origin::Create(GURL(kRpUrl)),
@@ -1120,7 +1116,7 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   EXPECT_EQ(LoginState::kSignIn, displayed_accounts()[0].login_state);
 }
 
-TEST_F(BasicFederatedAuthRequestImplTest,
+TEST_F(FederatedAuthRequestImplTest,
        LoginStateSuccessfulSignUpGrantsSharingPermission) {
   EXPECT_CALL(*mock_sharing_permission_delegate_, HasSharingPermission(_, _, _))
       .WillOnce(Return(false));
@@ -1133,7 +1129,7 @@ TEST_F(BasicFederatedAuthRequestImplTest,
               kConfigurationValid);
 }
 
-TEST_F(BasicFederatedAuthRequestImplTest,
+TEST_F(FederatedAuthRequestImplTest,
        LoginStateFailedSignUpNotGrantSharingPermission) {
   EXPECT_CALL(*mock_sharing_permission_delegate_, HasSharingPermission(_, _, _))
       .WillOnce(Return(false));
@@ -1150,7 +1146,7 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
-TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
+TEST_F(FederatedAuthRequestImplTest, AutoSignInForReturningUser) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeatureWithParameters(
       features::kFedCm,
@@ -1190,7 +1186,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
   EXPECT_EQ(displayed_accounts[0].login_state, LoginState::kSignIn);
 }
 
-TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
+TEST_F(FederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeatureWithParameters(
       features::kFedCm,
@@ -1221,7 +1217,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
   EXPECT_EQ(displayed_accounts[0].login_state, LoginState::kSignUp);
 }
 
-TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
+TEST_F(FederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeatureWithParameters(
       features::kFedCm,
@@ -1265,7 +1261,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
   EXPECT_EQ(displayed_accounts[0].login_state, LoginState::kSignIn);
 }
 
-TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
+TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   // Pretends that the sharing permission has been granted for this account.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermission(_, url::Origin::Create(GURL(kIdpTestOrigin)),
@@ -1304,7 +1300,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
 }
 
 // Test that request fails if UI is dismissed without an account being selected.
-TEST_F(BasicFederatedAuthRequestImplTest,
+TEST_F(FederatedAuthRequestImplTest,
        MetricsForUIDismissedWithoutSelectingAccount) {
   base::HistogramTester histogram_tester_;
 
@@ -1362,7 +1358,7 @@ TEST_F(BasicFederatedAuthRequestImplTest,
 }
 
 // Test that request is not completed if user ignores the UI.
-TEST_F(BasicFederatedAuthRequestImplTest, UIIsIgnored) {
+TEST_F(FederatedAuthRequestImplTest, UIIsIgnored) {
   base::HistogramTester histogram_tester_;
 
   // The UI will not be destroyed during the test.
@@ -1409,13 +1405,12 @@ TEST_F(BasicFederatedAuthRequestImplTest, UIIsIgnored) {
   EXPECT_CALL(*mock_dialog_controller(), DestructorCalled()).Times(1);
 }
 
-TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
+TEST_F(FederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
   base::HistogramTester histogram_tester;
-  // Sets the WebContents to visible
-  WebContentsImpl* web_contents_impl =
-      static_cast<WebContentsImpl*>(web_contents());
-  web_contents_impl->UpdateWebContentsVisibility(Visibility::VISIBLE);
-  ASSERT_EQ(web_contents_impl->GetVisibility(), Visibility::VISIBLE);
+  // Sets RenderFrameHost to visible
+  test_rvh()->SimulateWasShown();
+  ASSERT_EQ(test_rvh()->GetMainRenderFrameHost()->GetVisibilityState(),
+            content::PageVisibilityState::kVisible);
 
   // Pretends that the sharing permission has been granted for this account.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
@@ -1431,16 +1426,16 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
 }
 
 // Test that request fails if the web contents are hidden.
-TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
+TEST_F(FederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
   base::HistogramTester histogram_tester;
-  WebContentsImpl* web_contents_impl =
-      static_cast<WebContentsImpl*>(web_contents());
-  web_contents_impl->UpdateWebContentsVisibility(Visibility::VISIBLE);
-  ASSERT_EQ(web_contents_impl->GetVisibility(), Visibility::VISIBLE);
+  test_rvh()->SimulateWasShown();
+  ASSERT_EQ(test_rvh()->GetMainRenderFrameHost()->GetVisibilityState(),
+            content::PageVisibilityState::kVisible);
 
-  // Sets the WebContents to invisible
-  web_contents_impl->UpdateWebContentsVisibility(Visibility::HIDDEN);
-  ASSERT_NE(web_contents_impl->GetVisibility(), Visibility::VISIBLE);
+  // Sets the RenderFrameHost to invisible
+  test_rvh()->SimulateWasHidden();
+  ASSERT_NE(test_rvh()->GetMainRenderFrameHost()->GetVisibilityState(),
+            content::PageVisibilityState::kVisible);
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.customized_dialog = true;
@@ -1452,8 +1447,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.WebContentsVisible", 0, 1);
 }
 
-TEST_F(BasicFederatedAuthRequestImplTest,
-       DisabledWhenThirdPartyCookiesBlocked) {
+TEST_F(FederatedAuthRequestImplTest, DisabledWhenThirdPartyCookiesBlocked) {
   test_api_permission_delegate_->permission_override_ =
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
                      ApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED);
@@ -1469,7 +1463,7 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   ExpectRequestTokenStatusUKM(TokenStatus::kThirdPartyCookiesBlocked);
 }
 
-TEST_F(BasicFederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
+TEST_F(FederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
   test_api_permission_delegate_->permission_override_ =
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
                      ApiPermissionStatus::BLOCKED_VARIATIONS);
@@ -1484,7 +1478,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
   ExpectRequestTokenStatusUKM(TokenStatus::kDisabledInFlags);
 }
 
-TEST_F(BasicFederatedAuthRequestImplTest,
+TEST_F(FederatedAuthRequestImplTest,
        MetricsForFeatureIsDisabledNotDoubleCountedWithUnhandledRequest) {
   test_api_permission_delegate_->permission_override_ =
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
@@ -1507,7 +1501,7 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   ExpectRequestTokenStatusUKM(TokenStatus::kDisabledInFlags);
 }
 
-TEST_F(BasicFederatedAuthRequestImplTest,
+TEST_F(FederatedAuthRequestImplTest,
        MetricsForFeatureIsDisabledNotDoubleCountedWithAbortedRequest) {
   test_api_permission_delegate_->permission_override_ =
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
@@ -1532,8 +1526,7 @@ TEST_F(BasicFederatedAuthRequestImplTest,
 
 // Test that sign-in states match if IDP claims that user is signed in and
 // browser also observes that user is signed in.
-TEST_F(BasicFederatedAuthRequestImplTest,
-       MetricsForSignedInOnBothIdpAndBrowser) {
+TEST_F(FederatedAuthRequestImplTest, MetricsForSignedInOnBothIdpAndBrowser) {
   // Set browser observes user is signed in.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermission(url::Origin::Create(GURL(kRpUrl)),
@@ -1562,8 +1555,7 @@ TEST_F(BasicFederatedAuthRequestImplTest,
 
 // Test that sign-in states match if IDP claims that user is not signed in and
 // browser also observes that user is not signed in.
-TEST_F(BasicFederatedAuthRequestImplTest,
-       MetricsForNotSignedInOnBothIdpAndBrowser) {
+TEST_F(FederatedAuthRequestImplTest, MetricsForNotSignedInOnBothIdpAndBrowser) {
   // Set browser observes user is not signed in.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermission(url::Origin::Create(GURL(kRpUrl)),
@@ -1588,7 +1580,7 @@ TEST_F(BasicFederatedAuthRequestImplTest,
 
 // Test that sign-in states mismatch if IDP claims that user is signed in but
 // browser observes that user is not signed in.
-TEST_F(BasicFederatedAuthRequestImplTest, MetricsForOnlyIdpClaimedSignIn) {
+TEST_F(FederatedAuthRequestImplTest, MetricsForOnlyIdpClaimedSignIn) {
   // Set browser observes user is not signed in.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermission(url::Origin::Create(GURL(kRpUrl)),
@@ -1618,7 +1610,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForOnlyIdpClaimedSignIn) {
 
 // Test that sign-in states mismatch if IDP claims that user is not signed in
 // but browser observes that user is signed in.
-TEST_F(BasicFederatedAuthRequestImplTest, MetricsForOnlyBrowserObservedSignIn) {
+TEST_F(FederatedAuthRequestImplTest, MetricsForOnlyBrowserObservedSignIn) {
   // Set browser observes user is signed in.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermission(url::Origin::Create(GURL(kRpUrl)),
@@ -1645,7 +1637,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForOnlyBrowserObservedSignIn) {
 
 // Test that embargo is requested if the
 // IdentityRequestDialogController::ShowAccountsDialog() callback requests it.
-TEST_F(BasicFederatedAuthRequestImplTest, RequestEmbargo) {
+TEST_F(FederatedAuthRequestImplTest, RequestEmbargo) {
   RequestExpectations expectations = {
       RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
       FETCH_ENDPOINT_ALL_REQUEST_TOKEN & ~FetchedEndpoint::TOKEN};
@@ -1675,7 +1667,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, RequestEmbargo) {
 
 // Test that the embargo dismiss count is reset when the user grants consent via
 // the FedCM dialog.
-TEST_F(BasicFederatedAuthRequestImplTest, RemoveEmbargoOnUserConsent) {
+TEST_F(FederatedAuthRequestImplTest, RemoveEmbargoOnUserConsent) {
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
   EXPECT_TRUE(test_api_permission_delegate_->embargoed_origins_.empty());
@@ -1683,7 +1675,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, RemoveEmbargoOnUserConsent) {
 
 // Test that token request fails if FEDERATED_IDENTITY_API content setting is
 // disabled for the RP origin.
-TEST_F(BasicFederatedAuthRequestImplTest, ApiBlockedForOrigin) {
+TEST_F(FederatedAuthRequestImplTest, ApiBlockedForOrigin) {
   test_api_permission_delegate_->permission_override_ =
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
                      ApiPermissionStatus::BLOCKED_SETTINGS);
@@ -1696,7 +1688,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, ApiBlockedForOrigin) {
 
 // Test that token request succeeds if FEDERATED_IDENTITY_API content setting is
 // enabled for RP origin but disabled for an unrelated origin.
-TEST_F(BasicFederatedAuthRequestImplTest, ApiBlockedForUnrelatedOrigin) {
+TEST_F(FederatedAuthRequestImplTest, ApiBlockedForUnrelatedOrigin) {
   const url::Origin kUnrelatedOrigin =
       url::Origin::Create(GURL("https://rp2.example/"));
 
@@ -1748,7 +1740,7 @@ TEST_P(FederatedAuthRequestImplTestCancelConsistency, AccountNotSelected) {
 
 // Test that the request fails if user proceeds with the sign in workflow after
 // disabling the API while an existing accounts dialog is shown.
-TEST_F(BasicFederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
+TEST_F(FederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
   base::HistogramTester histogram_tester_;
 
   EXPECT_CALL(*mock_dialog_controller(),
@@ -1803,7 +1795,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
 }
 
 // Test that disclosure text is shown for first time user.
-TEST_F(BasicFederatedAuthRequestImplTest, DisclosureTextShownForFirstTimeUser) {
+TEST_F(FederatedAuthRequestImplTest, DisclosureTextShownForFirstTimeUser) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.post_request_body =
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
@@ -1814,8 +1806,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, DisclosureTextShownForFirstTimeUser) {
 }
 
 // Test that disclosure text is not shown for returning user.
-TEST_F(BasicFederatedAuthRequestImplTest,
-       DisclosureTextNotShownForReturningUser) {
+TEST_F(FederatedAuthRequestImplTest, DisclosureTextNotShownForReturningUser) {
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
               HasSharingPermission(url::Origin::Create(GURL(kRpUrl)),
@@ -1829,6 +1820,62 @@ TEST_F(BasicFederatedAuthRequestImplTest,
       "&account_id=" + std::string(kAccountId) + "&disclosure_text_shown=false";
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+}
+
+namespace {
+
+// TestIdpNetworkRequestManager subclass which runs the `account_list_task`
+// passed-in to the constructor prior to the accounts endpoint returning.
+class IdpNetworkRequestManagerAccountListTaskRunner
+    : public TestIdpNetworkRequestManager {
+ public:
+  IdpNetworkRequestManagerAccountListTaskRunner(
+      base::OnceClosure account_list_task)
+      : account_list_task_(std::move(account_list_task)) {}
+
+  IdpNetworkRequestManagerAccountListTaskRunner(
+      const IdpNetworkRequestManagerAccountListTaskRunner&) = delete;
+  IdpNetworkRequestManagerAccountListTaskRunner& operator=(
+      const IdpNetworkRequestManagerAccountListTaskRunner&) = delete;
+
+  void SendAccountsRequest(const GURL& accounts_url,
+                           const std::string& client_id,
+                           AccountsRequestCallback callback) override {
+    if (account_list_task_)
+      std::move(account_list_task_).Run();
+    TestIdpNetworkRequestManager::SendAccountsRequest(accounts_url, client_id,
+                                                      std::move(callback));
+  }
+
+ private:
+  base::OnceClosure account_list_task_;
+};
+
+void NavigateToUrl(content::WebContents* web_contents, const GURL& url) {
+  static_cast<TestWebContents*>(web_contents)
+      ->NavigateAndCommit(url, ui::PAGE_TRANSITION_LINK);
+}
+
+}  // namespace
+
+// Test that the account chooser is not shown if the page navigates prior to the
+// accounts endpoint request completing.
+TEST_F(FederatedAuthRequestImplTest, NavigateDuringAccountFetch) {
+  SetNetworkRequestManager(
+      std::make_unique<IdpNetworkRequestManagerAccountListTaskRunner>(
+          base::BindOnce(&NavigateToUrl, web_contents(), GURL(kRpOtherUrl))));
+
+  EXPECT_CALL(*mock_dialog_controller_, ShowAccountsDialog(_, _, _, _, _, _, _))
+      .Times(0);
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.customized_dialog = true;
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      /*devtools_issue_status*/ absl::nullopt,
+      FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
+          FetchedEndpoint::MANIFEST_LIST | FetchedEndpoint::ACCOUNTS};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
 }  // namespace content

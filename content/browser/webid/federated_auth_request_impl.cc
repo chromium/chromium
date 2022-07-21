@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/page_visibility_state.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "ui/accessibility/ax_mode.h"
@@ -659,10 +660,9 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kSuccess: {
-      WebContents* rp_web_contents =
-          WebContents::FromRenderFrameHost(&render_frame_host());
-      bool is_visible = rp_web_contents && (rp_web_contents->GetVisibility() ==
-                                            Visibility::VISIBLE);
+      bool is_visible = (render_frame_host().IsActive() &&
+                         render_frame_host().GetVisibilityState() ==
+                             content::PageVisibilityState::kVisible);
       RecordWebContentsVisibilityUponReadyToShowDialog(is_visible);
       // Does not show the dialog if the user has left the page. e.g. they may
       // open a new tab before browser is ready to show the dialog.
@@ -671,6 +671,9 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
                         /*should_call_callback=*/false);
         return;
       }
+
+      WebContents* rp_web_contents =
+          WebContents::FromRenderFrameHost(&render_frame_host());
 
       // Populate the accounts login state.
       for (auto& account : accounts) {
