@@ -279,6 +279,102 @@ TEST_F(RestoreIOTaskTest, ItemWithExistingConflictAreRenamed) {
   EXPECT_FALSE(base::PathExists(info_file_path));
 }
 
+class TrashServiceMojoDisconnector
+    : public chromeos::trash_service::mojom::TrashService {
+ public:
+  explicit TrashServiceMojoDisconnector(
+      mojo::PendingReceiver<chromeos::trash_service::mojom::TrashService>
+          receiver) {
+    receivers_.Add(this, std::move(receiver));
+  }
+  ~TrashServiceMojoDisconnector() override = default;
+
+  TrashServiceMojoDisconnector(const TrashServiceMojoDisconnector&) = delete;
+  TrashServiceMojoDisconnector& operator=(const TrashServiceMojoDisconnector&) =
+      delete;
+
+  // When the method is called, clear all mojo receivers. This is effectively
+  // disconnecting the mojo pipe and emulates the disconnect handler being
+  // invoked.
+  void ParseTrashInfoFile(
+      base::File trash_info_file,
+      chromeos::trash_service::ParseTrashInfoCallback callback) override {
+    receivers_.Clear();
+  }
+
+ private:
+  mojo::ReceiverSet<chromeos::trash_service::mojom::TrashService> receivers_;
+};
+
+class RestoreIOTaskDisconnectMojoTest : public TrashBaseTest {
+ public:
+  RestoreIOTaskDisconnectMojoTest() = default;
+
+  RestoreIOTaskDisconnectMojoTest(const RestoreIOTaskDisconnectMojoTest&) =
+      delete;
+  RestoreIOTaskDisconnectMojoTest& operator=(
+      const RestoreIOTaskDisconnectMojoTest&) = delete;
+
+  void SetUp() override {
+    TrashBaseTest::SetUp();
+
+    // Override the TrashService launch method to instead create an instance of
+    // our mock class which will immediately disconnect all receivers when
+    // invoked.
+    chromeos::trash_service::SetTrashServiceLaunchOverrideForTesting(
+        base::BindRepeating(
+            &RestoreIOTaskDisconnectMojoTest::CreateInProcessTrashService,
+            base::Unretained(this)));
+  }
+
+  mojo::PendingRemote<chromeos::trash_service::mojom::TrashService>
+  CreateInProcessTrashService() {
+    mojo::PendingRemote<chromeos::trash_service::mojom::TrashService> remote;
+    trash_service_test_impl_ = std::make_unique<TrashServiceMojoDisconnector>(
+        remote.InitWithNewPipeAndPassReceiver());
+    return remote;
+  }
+
+ protected:
+  // Maintains ownership fo the in-process parsing service, this is to ensure
+  // the service stays running for the duration of the test even if the mojo
+  // pipe gets disconnected.
+  std::unique_ptr<TrashServiceMojoDisconnector> trash_service_test_impl_;
+};
+
+TEST_F(RestoreIOTaskDisconnectMojoTest,
+       TrashServiceMojoDisconnectShouldCompleteWithError) {
+  EnsureTrashDirectorySetup(downloads_dir_);
+
+  std::string foo_contents = base::RandBytesAsString(kTestFileSize);
+
+  const base::FilePath trash_path = downloads_dir_.Append(kTrashFolderName);
+  const base::FilePath info_file_path =
+      trash_path.Append(kInfoFolderName).Append("foo.txt.trashinfo");
+  ASSERT_TRUE(base::WriteFile(info_file_path, foo_contents));
+  const base::FilePath files_path =
+      trash_path.Append(kFilesFolderName).Append("foo.txt");
+  ASSERT_TRUE(base::WriteFile(files_path, foo_contents));
+
+  base::RunLoop run_loop;
+  std::vector<storage::FileSystemURL> source_urls = {
+      CreateFileSystemURL(info_file_path),
+  };
+
+  base::MockRepeatingCallback<void(const ProgressStatus&)> progress_callback;
+  base::MockOnceCallback<void(ProgressStatus)> complete_callback;
+
+  EXPECT_CALL(progress_callback, Run(_)).Times(0);
+  EXPECT_CALL(complete_callback,
+              Run(Field(&ProgressStatus::state, State::kError)))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  RestoreIOTask task(source_urls, profile_.get(), file_system_context_,
+                     temp_dir_.GetPath());
+  task.Execute(progress_callback.Get(), complete_callback.Get());
+  run_loop.Run();
+}
+
 }  // namespace
 }  // namespace io_task
 }  // namespace file_manager
