@@ -158,10 +158,8 @@ AutocompleteResult::AutocompleteResult() {
 
 AutocompleteResult::~AutocompleteResult() = default;
 
-void AutocompleteResult::TransferOldMatches(
-    const AutocompleteInput& input,
-    AutocompleteResult* old_matches,
-    TemplateURLService* template_url_service) {
+void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
+                                            AutocompleteResult* old_matches) {
   // Don't transfer matches from done providers. If the match is still
   // relevant, it'll already be in `result_`, potentially with updated fields
   // that shouldn't be deduped with the out-of-date match. Otherwise, the

@@ -92,8 +92,7 @@ class AutocompleteResult {
   // Moves matches from |old_matches| to provide a consistent result set.
   // |old_matches| is mutated during this, and should not be used afterwards.
   void TransferOldMatches(const AutocompleteInput& input,
-                          AutocompleteResult* old_matches,
-                          TemplateURLService* template_url_service);
+                          AutocompleteResult* old_matches);
 
   // Adds a new set of matches to the result set.  Does not re-sort.
   void AppendMatches(const ACMatches& matches);

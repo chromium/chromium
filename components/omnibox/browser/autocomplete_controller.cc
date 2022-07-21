@@ -916,8 +916,7 @@ void AutocompleteController::UpdateResult(
   if (!done_) {
     // This conditional needs to match the conditional in Start that invokes
     // StartExpireTimer.
-    result_.TransferOldMatches(input_, &old_matches_to_reuse,
-                               template_url_service_);
+    result_.TransferOldMatches(input_, &old_matches_to_reuse);
     if (OmniboxFieldTrial::kAutocompleteStabilityPreserveDefaultAfterTransfer
             .Get()) {
       result_.SortAndCull(input_, template_url_service_,
