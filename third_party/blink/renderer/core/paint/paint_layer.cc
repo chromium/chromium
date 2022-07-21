@@ -306,6 +306,12 @@ void PaintLayer::UpdateLayerPositionRecursive() {
     UpdateLayerPosition();
   }
 
+  if (LayoutBox* box = DynamicTo<LayoutBox>(GetLayoutObject());
+      box && box->AnchorScrollContainer()) {
+    PaintLayer* scroll_container_layer = box->AnchorScrollContainer()->Layer();
+    scroll_container_layer->GetScrollableArea()->AddAnchorPositionedLayer(this);
+  }
+
   // Display-locked elements always have a PaintLayer, meaning that the
   // PaintLayer traversal won't skip locked elements. Thus, we don't have to do
   // an ancestor check, and simply skip iterating children when this element is

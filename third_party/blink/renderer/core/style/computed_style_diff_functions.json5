@@ -256,7 +256,8 @@
                 "lighting-color", "shape-rendering", "clip-rule", "fill-rule",
                 "color-interpolation", "color-interpolation-filters", "paint-order",
                 "fill", "fill-opacity", "stroke", "stroke-opacity",
-                "-internal-visited-stroke", "stroke-dashoffset", "ColorSchemeForced"],
+                "-internal-visited-stroke", "stroke-dashoffset", "ColorSchemeForced",
+                "anchor-scroll"],
         methods_to_diff: [
           {
             method: "Visibility()",
@@ -281,6 +282,10 @@
           {
             method: "AccentColorResolved()",
             field_dependencies: ["accent-color", "color"]
+          },
+          {
+            method: "AnchorScroll()",
+            field_dependencies: ["anchor-scroll"],
           }
         ],
         predicates_to_test: [

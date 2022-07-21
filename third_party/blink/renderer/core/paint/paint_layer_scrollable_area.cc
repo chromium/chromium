@@ -124,6 +124,7 @@ PaintLayerScrollableAreaRareData::PaintLayerScrollableAreaRareData() = default;
 
 void PaintLayerScrollableAreaRareData::Trace(Visitor* visitor) const {
   visitor->Trace(sticky_layers_);
+  visitor->Trace(anchor_positioned_layers_);
 }
 
 const int kResizerControlExpandRatioForTouch = 2;
@@ -541,6 +542,7 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
 
 void PaintLayerScrollableArea::InvalidatePaintForScrollOffsetChange() {
   InvalidatePaintForStickyDescendants();
+  InvalidatePaintForAnchorPositionedLayers();
 
   auto* box = GetLayoutBox();
   auto* frame_view = box->GetFrameView();
@@ -947,6 +949,7 @@ void PaintLayerScrollableArea::SetScrollOffsetUnconditionally(
 
 void PaintLayerScrollableArea::UpdateAfterLayout() {
   InvalidateAllStickyConstraints();
+  InvalidateAllAnchorPositionedLayers();
 
   bool is_horizontal_scrollbar_frozen;
   bool is_vertical_scrollbar_frozen;
@@ -2095,6 +2098,31 @@ void PaintLayerScrollableArea::InvalidatePaintForStickyDescendants() {
       DCHECK(object.StickyConstraints());
       object.StickyConstraints()->ComputeStickyOffset(ScrollPosition());
     }
+  }
+}
+
+void PaintLayerScrollableArea::AddAnchorPositionedLayer(PaintLayer* layer) {
+  auto add_result = EnsureRareData().anchor_positioned_layers_.insert(layer);
+  if (add_result.is_new_entry)
+    layer->GetLayoutObject().SetNeedsPaintPropertyUpdate();
+}
+
+void PaintLayerScrollableArea::InvalidateAllAnchorPositionedLayers() {
+  if (rare_data_)
+    rare_data_->anchor_positioned_layers_.clear();
+}
+
+void PaintLayerScrollableArea::InvalidatePaintForAnchorPositionedLayers() {
+  // If this is called during layout, anchor_positioned_layers_ may contain
+  // stale pointers. Return because we'll InvalidateAllAnchorPositionedLayers(),
+  // and we'll SetNeedsPaintPropertyUpdate() when updating anchor positioned
+  // layers.
+  if (GetLayoutBox()->NeedsLayout())
+    return;
+
+  if (PaintLayerScrollableAreaRareData* d = RareData()) {
+    for (PaintLayer* anchor_positioned_layer : d->anchor_positioned_layers_)
+      anchor_positioned_layer->GetLayoutObject().SetNeedsPaintPropertyUpdate();
   }
 }
 

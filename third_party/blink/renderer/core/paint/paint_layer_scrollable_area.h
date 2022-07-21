@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/layout/scroll_anchor.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -80,6 +81,7 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
   void Trace(Visitor* visitor) const;
 
   HeapLinkedHashSet<Member<PaintLayer>> sticky_layers_;
+  HeapHashSet<Member<PaintLayer>> anchor_positioned_layers_;
   absl::optional<cc::SnapContainerData> snap_container_data_;
   bool snap_container_data_needs_update_ = true;
   bool needs_resnap_ = false;
@@ -521,6 +523,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
   }
   void InvalidateAllStickyConstraints();
   void InvalidatePaintForStickyDescendants();
+
+  void AddAnchorPositionedLayer(PaintLayer*);
+  void InvalidateAllAnchorPositionedLayers();
+  void InvalidatePaintForAnchorPositionedLayers();
 
   uint32_t GetNonCompositedMainThreadScrollingReasons() {
     return non_composited_main_thread_scrolling_reasons_;

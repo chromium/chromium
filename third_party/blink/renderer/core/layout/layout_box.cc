@@ -799,6 +799,14 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
   if (IsCustomItem())
     GetCustomLayoutChild()->styleMap()->UpdateStyle(GetDocument(), StyleRef());
 
+  if (diff.NeedsPaintInvalidation()) {
+    if (const AtomicString& old_anchor_scroll =
+            old_style ? old_style->AnchorScroll() : g_null_atom;
+        StyleRef().AnchorScroll() != old_anchor_scroll) {
+      SetNeedsPaintPropertyUpdate();
+    }
+  }
+
   // Non-atomic inlines should be LayoutInline or LayoutText, not LayoutBox.
   DCHECK(!IsInline() || IsAtomicInlineLevel());
 }
@@ -987,8 +995,10 @@ void LayoutBox::UpdateFromStyle() {
                                ShouldApplyPaintContainment()) &&
                               RespectsCSSOverflow();
   if (should_clip_overflow != HasNonVisibleOverflow()) {
-    if (GetScrollableArea())
+    if (GetScrollableArea()) {
       GetScrollableArea()->InvalidateAllStickyConstraints();
+      GetScrollableArea()->InvalidateAllAnchorPositionedLayers();
+    }
     // The overflow clip paint property depends on whether overflow clip is
     // present so we need to update paint properties if this changes.
     SetNeedsPaintPropertyUpdate();
