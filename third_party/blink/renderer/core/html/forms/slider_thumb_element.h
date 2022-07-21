@@ -71,8 +71,8 @@ class SliderThumbElement final : public HTMLDivElement {
   bool MatchesReadWritePseudoClass() const override;
   void StartDragging();
 
-  bool
-      in_drag_mode_;  // Mouse only. Touch is handled by SliderContainerElement.
+  // Mouse only. Touch is handled by SliderContainerElement.
+  bool in_drag_mode_;
 };
 
 inline Element& SliderThumbElement::CloneWithoutAttributesAndChildren(
@@ -88,7 +88,7 @@ struct DowncastTraits<SliderThumbElement> {
 
 class SliderContainerElement final : public HTMLDivElement {
  public:
-  enum Direction {
+  enum class Direction {
     kHorizontal,
     kVertical,
     kNoMove,
@@ -112,7 +112,7 @@ class SliderContainerElement final : public HTMLDivElement {
   bool has_touch_event_handler_ = false;
   bool touch_started_ = false;
   bool touch_moved_ = false;
-  Direction sliding_direction_ = kNoMove;
+  Direction sliding_direction_ = Direction::kNoMove;
   LayoutPoint start_point_;
 };
 
