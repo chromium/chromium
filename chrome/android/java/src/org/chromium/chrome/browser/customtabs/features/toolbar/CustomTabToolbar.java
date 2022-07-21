@@ -89,9 +89,6 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * The Toolbar layout to be used for a custom tab. This is used for both phone and tablet UIs.
  */
@@ -614,9 +611,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     /**
      * Custom tab-specific implementation of the LocationBar interface.
      */
-    private class CustomTabLocationBar implements LocationBar, UrlBar.UrlBarDelegate,
-                                                  LocationBarDataProvider.Observer,
-                                                  View.OnLongClickListener {
+    @VisibleForTesting
+    class CustomTabLocationBar
+            implements LocationBar, UrlBar.UrlBarDelegate, LocationBarDataProvider.Observer,
+                       View.OnLongClickListener {
         private static final int TITLE_ANIM_DELAY_MS = 800;
         private static final int BRANDING_DELAY_MS = 1800;
 
@@ -624,6 +622,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private static final int STATE_TITLE_ONLY = 1;
         private static final int STATE_DOMAIN_AND_TITLE = 2;
         private int mState = STATE_DOMAIN_ONLY;
+
+        // Used for After branding runnables
+        private static final int KEY_UPDATE_TITLE_POST_BRANDING = 0;
+        private static final int KEY_UPDATE_URL_POST_BRANDING = 1;
+        private static final int KEY_UPDATE_ICON_POST_BRANDING = 2;
+        private static final int TOTAL_POST_BRANDING_KEYS = 3;
 
         private LocationBarDataProvider mLocationBarDataProvider;
         private Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
@@ -644,8 +648,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             }
         };
 
+        private final Runnable[] mAfterBrandingRunnables = new Runnable[TOTAL_POST_BRANDING_KEYS];
         private boolean mCurrentlyShowingBranding;
-        private List<Runnable> mAfterBrandingRunnables;
+        private boolean mBrandingStarted;
         private CallbackController mCallbackController = new CallbackController();
 
         public View getLayout() {
@@ -661,8 +666,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         public void showBranding() {
+            mBrandingStarted = true;
             mCurrentlyShowingBranding = true;
-            mAfterBrandingRunnables = new ArrayList<>();
 
             // Store the title and domain setting.
             final boolean showTitle = mState != STATE_DOMAIN_ONLY;
@@ -678,10 +683,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 mCurrentlyShowingBranding = false;
                 setUrlBarHidden(!showUrlBar);
                 setShowTitle(showTitle);
-                for (Runnable runnable : mAfterBrandingRunnables) {
-                    runnable.run();
-                }
-                mAfterBrandingRunnables.clear();
+                runAfterBrandingRunnables();
             });
             PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, hideBranding, BRANDING_DELAY_MS);
         }
@@ -860,10 +862,20 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mTitleAnimationStarter.run();
         }
 
+        private void runAfterBrandingRunnables() {
+            for (int i = 0; i < mAfterBrandingRunnables.length; i++) {
+                Runnable runnable = mAfterBrandingRunnables[i];
+                if (runnable != null) {
+                    runnable.run();
+                    mAfterBrandingRunnables[i] = null;
+                }
+            }
+        }
+
         private void updateSecurityIcon() {
             if (mState == STATE_TITLE_ONLY) return;
             if (mCurrentlyShowingBranding) {
-                mAfterBrandingRunnables.add(this::updateSecurityIcon);
+                mAfterBrandingRunnables[KEY_UPDATE_ICON_POST_BRANDING] = this::updateSecurityIcon;
                 return;
             }
 
@@ -884,7 +896,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         private void updateTitleBar() {
             if (mCurrentlyShowingBranding) {
-                mAfterBrandingRunnables.add(this::updateTitleBar);
+                mAfterBrandingRunnables[KEY_UPDATE_TITLE_POST_BRANDING] = this::updateTitleBar;
                 return;
             }
             String title = mLocationBarDataProvider.getTitle();
@@ -902,9 +914,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 // Delay the title animation until security icon animation finishes.
                 // If this is updated after branding, we don't need to wait.
                 PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, mTitleAnimationStarter,
-                        mAfterBrandingRunnables != null && mAfterBrandingRunnables.size() > 0
-                                ? 0
-                                : TITLE_ANIM_DELAY_MS);
+                        mBrandingStarted ? 0 : TITLE_ANIM_DELAY_MS);
             }
 
             mTitleBar.setText(title);
@@ -912,7 +922,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         private void updateUrlBar() {
             if (mCurrentlyShowingBranding) {
-                mAfterBrandingRunnables.add(this::updateUrlBar);
+                mAfterBrandingRunnables[KEY_UPDATE_URL_POST_BRANDING] = this::updateUrlBar;
                 return;
             }
             Tab tab = getCurrentTab();
@@ -1041,6 +1051,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 return true;
             }
             return false;
+        }
+
+        @VisibleForTesting
+        void setAnimDelegateForTesting(CustomTabToolbarAnimationDelegate animDelegate) {
+            mAnimDelegate = animDelegate;
         }
     }
 }
