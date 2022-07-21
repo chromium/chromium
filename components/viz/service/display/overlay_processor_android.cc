@@ -22,6 +22,15 @@ OverlayProcessorAndroid::OverlayProcessorAndroid(
     DisplayCompositorMemoryAndTaskController* display_controller)
     : OverlayProcessorUsingStrategy(),
       gpu_task_scheduler_(display_controller->gpu_task_scheduler()) {
+  // Promoting video to overlay with SurfaceView overlays requires recreation of
+  // main SurfaceView and Display. This leads to the situation when we
+  // consider video overlay not being efficient for the first frame after we
+  // updated SurfaceView and video gets demoted back to composition. To avoid
+  // this, we disable heuristics that filter out not efficient quads but still
+  // sort them by potential power savings.
+  prioritization_config_.changing_threshold = false;
+  prioritization_config_.damage_rate_threshold = false;
+
   // In unittests, we don't have the gpu_task_scheduler_ set up, but still want
   // to test ProcessForOverlays functionalities where we are making overlay
   // candidates correctly.
