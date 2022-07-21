@@ -3449,6 +3449,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_ATTACH_SCREENSHOT_CHECKBOX_ARIA_LABEL" desc="Aria Label for the checkbox to select the screenshot">
         Attach screenshot
       </message>
+      <message name="IDS_FEEDBACK_TOOL_PREVIEW_IMAGE_ARIA_LABEL" desc="Aria Label for the thumbnail of a screenshot or an image file">
+        Preview <ph name="PREVIEW_OBJECT">$1<ex>Screenshot</ex></ph>
+      </message>
       <message name="IDS_FEEDBACK_TOOL_USER_CONSENT_LABEL" desc="Label for checkbox indicating whether the user agrees to be contacted back.">
         We may email you for more information or updates
       </message>

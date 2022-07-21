@@ -134,7 +134,10 @@ export function shareDataPageTestSuite() {
 
     assertTrue(page.i18nExists('attachScreenshotLabel'));
     assertEquals('Screenshot', getElementContent('#screenshotCheckLabel'));
+
     assertTrue(!!getElement('#screenshotImage'));
+    assertEquals('Preview Screenshot', getElement('#imageButton').ariaLabel);
+    assertTrue(page.i18nExists('previewImageAriaLabel'));
 
     // Add file attachment element.
     assertTrue(!!getElement('file-attachment'));
