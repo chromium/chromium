@@ -1386,20 +1386,30 @@ TEST_P(AutofillProfileComparatorTest, MergeBirthdates) {
 // Checks for various scenarios for determining mergeability of profiles w.r.t.
 // the state.
 TEST_P(AutofillProfileComparatorTest, CheckStatesMergeability) {
+  // |kAutofillEnableSupportForMoreStructureInAddresses| is not compatible with
+  // AlternativeStateNameMap merging logic.
+  if (structured_addresses_enabled_)
+    return;
+
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeature(
       autofill::features::kAutofillUseAlternativeStateNameMap);
 
   autofill::test::ClearAlternativeStateNameMapForTesting();
-  autofill::test::PopulateAlternativeStateNameMapForTesting();
+  autofill::test::PopulateAlternativeStateNameMapForTesting(
+      "DE", "RandomState",
+      {{.canonical_name = "RandomState",
+        .abbreviations = {"RS"},
+        .alternative_names = {"AlternateRandomState"}}});
 
   AutofillProfile empty = CreateProfileWithAddress("", "", "", "", "", "DE");
-  AutofillProfile p1 = CreateProfileWithAddress("", "", "", "Bayern", "", "DE");
+  AutofillProfile p1 =
+      CreateProfileWithAddress("", "", "", "RandomState", "", "DE");
   AutofillProfile p2 = CreateProfileWithAddress("", "", "", "Random", "", "DE");
-  AutofillProfile p3 =
-      CreateProfileWithAddress("", "", "", "Bayern - BY - Bavaria", "", "DE");
+  AutofillProfile p3 = CreateProfileWithAddress(
+      "", "", "", "RandomState - RS - AlternateRandomState", "", "DE");
   AutofillProfile p4 =
-      CreateProfileWithAddress("", "", "", "Bavaria", "", "DE");
+      CreateProfileWithAddress("", "", "", "AlternateRandomState", "", "DE");
 
   EXPECT_TRUE(comparator_.HaveMergeableAddresses(empty, empty));
   EXPECT_TRUE(comparator_.HaveMergeableAddresses(p1, empty));
