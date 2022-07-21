@@ -6,7 +6,7 @@
  * @fileoverview An element that lists phones usable as security keys,
     optionally with a drop-down menu for editing or deleting them.
  */
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 

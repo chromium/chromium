@@ -12,7 +12,7 @@
  */
 
 import 'chrome://resources/cr_components/chromeos/network/network_icon.m.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 import './multidevice_feature_item.js';
 

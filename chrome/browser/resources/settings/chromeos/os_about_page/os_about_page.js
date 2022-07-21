@@ -13,7 +13,7 @@ import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_section.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_page_styles.css.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import '../os_icons.js';
 import '../os_reset_page/os_powerwash_dialog.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';

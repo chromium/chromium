@@ -8,7 +8,7 @@
  * information.
  */
 
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_battery_icon_percentage.js';
 
 import {BatteryType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';

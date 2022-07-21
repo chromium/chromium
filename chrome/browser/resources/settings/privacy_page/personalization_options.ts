@@ -15,7 +15,7 @@ import '../prefs/prefs.js';
 // <if expr="not chromeos_ash">
 import '../relaunch_confirmation_dialog.js';
 // </if>
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 // <if expr="not chromeos_ash">
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 

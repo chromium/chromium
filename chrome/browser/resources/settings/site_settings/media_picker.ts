@@ -8,7 +8,7 @@
  * default camera/microphone.
  */
 import 'chrome://resources/cr_elements/md_select_css.m.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';

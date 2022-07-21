@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../icons.html.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import '../site_favicon.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';

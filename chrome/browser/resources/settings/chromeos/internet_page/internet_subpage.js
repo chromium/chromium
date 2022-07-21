@@ -18,7 +18,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../os_settings_icons_css.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './cellular_networks_list.js';
 import './network_always_on_vpn.js';

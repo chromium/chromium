@@ -15,7 +15,7 @@ import '../controls/extension_controlled_indicator.js';
 import '../i18n_setup.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';

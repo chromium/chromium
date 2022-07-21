@@ -13,7 +13,7 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../../controls/settings_toggle_button.js';
 import '../../prefs/prefs.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import './nearby_share_contact_visibility_dialog.js';
 import './nearby_share_device_name_dialog.js';
 import './nearby_share_data_usage_dialog.js';

@@ -11,12 +11,12 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import './site_list_entry.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getTemplate} from './chooser_exception_list_entry.html.js';
 
+import {getTemplate} from './chooser_exception_list_entry.html.js';
 import {ChooserException} from './site_settings_prefs_browser_proxy.js';
 
 export interface ChooserExceptionListEntryElement {

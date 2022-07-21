@@ -17,7 +17,7 @@ import './search_engine_delete_confirmation_dialog.js';
 import './search_engine_edit_dialog.js';
 import './search_engines_list.js';
 import './omnibox_extension_entry.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';

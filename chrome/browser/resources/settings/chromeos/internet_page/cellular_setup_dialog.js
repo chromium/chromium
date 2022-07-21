@@ -9,7 +9,7 @@
 import 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 
 import {CellularSetupDelegate} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup_delegate.m.js';
 import {CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';

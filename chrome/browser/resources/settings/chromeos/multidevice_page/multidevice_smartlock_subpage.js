@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import './multidevice_feature_toggle.js';
 import './multidevice_radio_button.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

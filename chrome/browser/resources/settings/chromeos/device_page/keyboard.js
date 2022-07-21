@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '../../controls/settings_slider.js';
 import '../../controls/settings_toggle_button.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import '../../controls/settings_dropdown_menu.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';

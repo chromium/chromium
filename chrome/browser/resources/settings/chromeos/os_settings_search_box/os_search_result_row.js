@@ -7,7 +7,7 @@
  */
 import 'chrome://resources/cr_elements/icons.m.js';
 import '../os_icons.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';

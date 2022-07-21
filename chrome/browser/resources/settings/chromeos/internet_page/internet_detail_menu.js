@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 
 import {ESimManagerListenerBehavior, ESimManagerListenerBehaviorInterface} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_listener_behavior.m.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';

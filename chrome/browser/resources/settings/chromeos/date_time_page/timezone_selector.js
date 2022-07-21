@@ -6,7 +6,7 @@
  * @fileoverview 'timezone-selector' is the time zone selector dropdown.
  */
 
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import '../../controls/settings_dropdown_menu.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -14,7 +14,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../os_about_page/os_about_page.js';
 import '../os_settings_page/os_settings_page.js';
 import '../../prefs/prefs.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -16,7 +16,7 @@ import '../os_icons.js';
 import '../../prefs/prefs.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import './bluetooth_subpage.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';

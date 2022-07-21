@@ -16,7 +16,7 @@ import '../about_page/about_page.js';
 import '../basic_page/basic_page.js';
 import '../prefs/prefs.js';
 import '../search_settings.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';

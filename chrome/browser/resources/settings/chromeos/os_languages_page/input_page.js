@@ -17,7 +17,7 @@ import './add_spellcheck_languages_dialog.js';
 import './os_edit_dictionary_page.js';
 import '../keyboard_shortcut_banner/keyboard_shortcut_banner.js';
 import '../../controls/settings_toggle_button.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import '../../settings_page/settings_animated_pages.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';

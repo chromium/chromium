@@ -13,7 +13,7 @@ import '../controls/extension_controlled_indicator.js';
 import '../controls/settings_radio_group.js';
 import './startup_urls_page.js';
 import '../i18n_setup.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

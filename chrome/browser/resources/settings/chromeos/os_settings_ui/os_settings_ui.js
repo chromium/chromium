@@ -18,7 +18,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../os_settings_menu/os_settings_menu.js';
 import '../os_settings_main/os_settings_main.js';
 import '../os_toolbar/os_toolbar.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import '../../prefs/prefs.js';
 import '../../settings_vars.css.js';
 

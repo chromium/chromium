@@ -22,7 +22,7 @@ import '../controls/password_prompt_dialog.js';
 // </if>
 import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import '../site_favicon.js';
 import './password_list_item.js';
 import './passwords_list_handler.js';

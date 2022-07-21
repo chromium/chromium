@@ -18,7 +18,7 @@ import './display_layout.js';
 import './display_overscan_dialog.js';
 import '../settings_scheduler_slider/settings_scheduler_slider.js';
 import '../../controls/settings_slider.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 import '../../controls/settings_dropdown_menu.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';

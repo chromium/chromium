@@ -27,7 +27,7 @@
  // <if expr="not chromeos_ash">
  import '../relaunch_confirmation_dialog.js';
  // </if>
- import '../settings_shared_css.js';
+ import '../settings_shared.css.js';
  import '../settings_vars.css.js';
 
  import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';

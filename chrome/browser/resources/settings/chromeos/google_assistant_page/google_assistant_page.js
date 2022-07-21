@@ -13,7 +13,7 @@ import '../../controls/controlled_button.js';
 import '../../controls/settings_toggle_button.js';
 import '../../prefs/prefs.js';
 import '../../prefs/pref_util.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

@@ -11,7 +11,7 @@ import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../prefs/prefs.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import './disable_safebrowsing_dialog.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';

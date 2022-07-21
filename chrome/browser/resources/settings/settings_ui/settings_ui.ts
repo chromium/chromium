@@ -20,7 +20,7 @@ import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import '../icons.html.js';
 import '../settings_main/settings_main.js';
 import '../settings_menu/settings_menu.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
 import {CrContainerShadowMixin, CrContainerShadowMixinInterface} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';

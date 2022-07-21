@@ -12,7 +12,7 @@
 
 import '//resources/cr_elements/shared_style_css.m.js';
 import '../controls/settings_toggle_button.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 
 import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

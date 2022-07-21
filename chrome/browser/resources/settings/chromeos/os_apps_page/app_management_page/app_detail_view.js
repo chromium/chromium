@@ -8,7 +8,7 @@ import './arc_detail_view.js';
 import './chrome_app_detail_view.js';
 import './plugin_vm_page/plugin_vm_detail_view.js';
 import './borealis_page/borealis_detail_view.js';
-import '../../../settings_shared_css.js';
+import '../../../settings_shared.css.js';
 
 import {AppManagementUserAction, AppType} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getSelectedApp, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';

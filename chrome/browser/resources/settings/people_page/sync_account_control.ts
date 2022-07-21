@@ -16,7 +16,7 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './profile_info_browser_proxy.js';
 import '../icons.html.js';
 import '../prefs/prefs.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.m.js';
 import {assert} from '//resources/js/assert_ts.js';

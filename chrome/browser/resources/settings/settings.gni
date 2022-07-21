@@ -321,6 +321,7 @@ ts_files = web_component_files + non_web_component_files
 # Files that are passed as input to css_to_wrapper().
 css_files = [
   "settings_page_styles.css",
+  "settings_shared.css",
   "settings_vars.css",
 
   # subfolder files
@@ -337,7 +338,4 @@ foreach(f, css_files) {
 }
 
 # CSS/HTML wrapper files that are not auto-generated yet.
-css_wrapper_files_old = [
-  "settings_shared_css.ts",
-  "privacy_sandbox/icons.ts",
-]
+css_wrapper_files_old = [ "privacy_sandbox/icons.ts" ]

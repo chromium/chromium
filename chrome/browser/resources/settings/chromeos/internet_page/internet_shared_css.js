@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 const template = document.createElement('template');
 template.innerHTML = `
 <dom-module id="internet-shared" assetpath="chrome://resources/">{__html_template__}</dom-module>

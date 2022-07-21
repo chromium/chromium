@@ -10,7 +10,7 @@ import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cr
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../os_icons.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 
 import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';

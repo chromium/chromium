@@ -57,10 +57,11 @@ document.head.appendChild($_documentContainer.content);"""
 
 
 def _parse_style_line(line, metadata):
-  if not metadata['include']:
-    include_match = re.search(_INCLUDE_REGEX, line)
-    if include_match:
-      metadata['include'] = line[include_match.end():]
+  include_match = re.search(_INCLUDE_REGEX, line)
+  if include_match:
+    assert not metadata[
+        'include'], f'Found multiple "{_INCLUDE_REGEX}" lines. Only one should exist.'
+    metadata['include'] = line[include_match.end():]
 
   import_match = re.search(_IMPORT_REGEX, line)
   if import_match:

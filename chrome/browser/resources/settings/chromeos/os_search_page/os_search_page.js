@@ -15,7 +15,7 @@ import './os_search_selection_dialog.js';
 import '../../controls/extension_controlled_indicator.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 import '../google_assistant_page/google_assistant_page.js';
 import './search_subpage.js';

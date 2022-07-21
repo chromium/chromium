@@ -7,7 +7,7 @@ import '//resources/cr_elements/cr_input/cr_input.m.js';
 import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
 import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.m.js';

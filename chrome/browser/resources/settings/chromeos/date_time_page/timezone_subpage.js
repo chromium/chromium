@@ -9,7 +9,7 @@
 import '../../controls/controlled_radio_button.js';
 import '../../controls/settings_radio_group.js';
 import '../../prefs/prefs.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import './timezone_selector.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

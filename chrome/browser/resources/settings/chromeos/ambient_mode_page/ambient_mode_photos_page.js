@@ -10,7 +10,7 @@ import './album_list.js';
 import './art_album_dialog.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';

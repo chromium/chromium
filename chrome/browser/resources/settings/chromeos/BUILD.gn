@@ -467,7 +467,7 @@ preprocess_if_expr("preprocess_browser_settings_tsc") {
     "relaunch_mixin.js",
     "setting_id_param_util.js",
     "settings_page_styles.css.js",
-    "settings_shared_css.js",
+    "settings_shared.css.js",
     "settings_vars.css.js",
   ]
 

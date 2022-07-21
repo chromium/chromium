@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import '../os_icons.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

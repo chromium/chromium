@@ -14,7 +14,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import '../icons.html.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';

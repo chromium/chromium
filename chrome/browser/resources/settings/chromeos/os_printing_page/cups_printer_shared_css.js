@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 
 const template = document.createElement('template');
 template.innerHTML = `

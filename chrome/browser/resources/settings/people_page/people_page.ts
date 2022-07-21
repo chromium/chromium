@@ -20,7 +20,7 @@ import './sync_account_control.js';
 import '../icons.html.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 
 // <if expr="chromeos_ash">
 import {convertImageSequenceToPng} from 'chrome://resources/cr_elements/chromeos/cr_picture/png.js';

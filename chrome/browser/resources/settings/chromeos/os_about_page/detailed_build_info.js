@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.m.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.m.js';
 import '../../prefs/prefs.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './channel_switcher_dialog.js';
 import './consumer_auto_update_toggle_dialog.js';

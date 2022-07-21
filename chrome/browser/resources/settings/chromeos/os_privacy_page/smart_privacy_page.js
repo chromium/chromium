@@ -13,7 +13,7 @@ import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '../../controls/extension_controlled_indicator.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

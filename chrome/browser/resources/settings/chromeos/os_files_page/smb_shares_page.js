@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link_css.m.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

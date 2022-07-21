@@ -14,7 +14,7 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import './cr_checkbox_with_policy.js';
 import './shared_style.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 
 import {CrScrollableBehavior, CrScrollableBehaviorInterface} from 'chrome://resources/cr_elements/cr_scrollable_behavior.m.js';
 import {FindShortcutBehavior, FindShortcutBehaviorInterface} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';

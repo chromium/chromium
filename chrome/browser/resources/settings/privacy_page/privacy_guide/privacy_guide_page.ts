@@ -10,7 +10,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import '../../prefs/prefs.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import './privacy_guide_clear_on_exit_fragment.js';
 import './privacy_guide_completion_fragment.js';

@@ -15,7 +15,7 @@ import '../i18n_setup.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 import '../controls/password_prompt_dialog.js';
 // </if>
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import './password_edit_dialog.js';
 import './password_remove_dialog.js';
 import './passwords_shared.css.js';

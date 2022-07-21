@@ -20,7 +20,7 @@ import './change_device_language_dialog.js';
 import './os_add_languages_dialog.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '../../controls/settings_toggle_button.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';

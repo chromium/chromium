@@ -10,7 +10,7 @@
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import '../../controls/settings_slider.js';
 import '../../controls/settings_toggle_button.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import './switch_access_action_assignment_dialog.js';
 import './switch_access_setup_guide_dialog.js';
 import './switch_access_setup_guide_warning_dialog.js';

@@ -20,7 +20,7 @@ import '../os_settings_icons_css.js';
 import '../../prefs/prefs.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import './cellular_setup_dialog.js';
 import './internet_detail_menu.js';
 import './internet_detail_page.js';

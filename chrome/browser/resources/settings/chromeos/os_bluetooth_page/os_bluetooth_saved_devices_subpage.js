@@ -7,7 +7,7 @@
  * Settings subpage for managing Bluetooth saved devices.
  */
 
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

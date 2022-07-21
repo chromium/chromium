@@ -12,7 +12,7 @@ import '../../a11y_page/captions_subpage.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import './manage_a11y_page.js';
 import './text_to_speech_page.js';
 import './display_and_magnification_page.js';

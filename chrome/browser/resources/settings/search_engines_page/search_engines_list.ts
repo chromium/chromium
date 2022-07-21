@@ -7,7 +7,7 @@
  * list of search engines.
  */
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 import './search_engine_entry.js';
 

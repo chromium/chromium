@@ -7,7 +7,7 @@
  * Settings dialog is used to change a Bluetooth device nickname.
  */
 
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {getDeviceName} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';

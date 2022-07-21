@@ -15,7 +15,7 @@ import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import './shared_style.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './languages.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 
 import {CrScrollableBehavior, CrScrollableBehaviorInterface} from 'chrome://resources/cr_elements/cr_scrollable_behavior.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';

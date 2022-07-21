@@ -16,7 +16,7 @@ import './crostini_port_forwarding_add_port_dialog.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_page/settings_section.js';
 import '../../settings_page_styles.css.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';

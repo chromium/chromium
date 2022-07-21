@@ -18,7 +18,7 @@ import '../../people_page/sync_controls.js';
 import '../../people_page/sync_page.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 import './account_manager.js';
 import './fingerprint_list.js';
 import './lock_screen.js';

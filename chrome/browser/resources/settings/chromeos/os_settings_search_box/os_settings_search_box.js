@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import 'chrome://resources/js/cr/ui/focus_row.m.js';
 import 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import '../../settings_shared_css.js';
+import '../../settings_shared.css.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {assert} from 'chrome://resources/js/assert.m.js';

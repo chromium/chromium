@@ -9,9 +9,10 @@
  */
 
 import '../controls/settings_toggle_button.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {getTemplate} from './pdf_documents.html.js';
 
 class SettingsPdfDocumentsElement extends PolymerElement {

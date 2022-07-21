@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/settings_slider.js';
-import '../settings_shared_css.js';
+import '../settings_shared.css.js';
 import '../controls/settings_dropdown_menu.js';
 
 import {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
