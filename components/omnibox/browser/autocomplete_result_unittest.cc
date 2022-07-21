@@ -86,7 +86,7 @@ void PopulateAutocompleteMatchesFromTestData(const T* data,
 class AutocompleteResultTest : public testing::Test {
  public:
   struct TestData {
-    // Used to build a url for the AutocompleteMatch. The URL becomes
+    // Used to build a URL for the AutocompleteMatch. The URL becomes
     // "http://" + ('a' + |url_id|) (e.g. an ID of 2 yields "http://c").
     int url_id;
 
@@ -126,6 +126,9 @@ class AutocompleteResultTest : public testing::Test {
         AutocompleteProvider::Type::TYPE_ON_DEVICE_HEAD));
     mock_provider_list_.push_back(new FakeAutocompleteProvider(
         AutocompleteProvider::Type::TYPE_VERBATIM_MATCH));
+
+    for (const auto& provider : mock_provider_list_)
+      provider->done_ = false;
   }
   AutocompleteResultTest(const AutocompleteResultTest&) = delete;
   AutocompleteResultTest& operator=(const AutocompleteResultTest&) = delete;
@@ -663,6 +666,70 @@ TEST_F(AutocompleteResultTest, TransferOldMatchesSkipsSpecializedSuggestions) {
   ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(last, std::size(last),
                                                     current, std::size(current),
                                                     result, std::size(result)));
+}
+
+// Tests that transferred matches do not include the specialized match types.
+TEST_F(AutocompleteResultTest, TransferOldMatchesSkipDoneProviders) {
+  {
+    SCOPED_TRACE("kAutocompleteStabilityDontCopyDoneProviders enabled.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kAutocompleteStability,
+        {{OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.name,
+          "true"}});
+
+    TestData last[] = {
+        {0, 1, 500},  // Suggestion from done provider
+        {1, 2, 400},  // Suggestion for not-done provider
+    };
+    TestData current[] = {
+        {2, 3, 700},  // Suggestion from done provider
+        {3, 4, 600},  // Suggestion for not-done provider
+    };
+    TestData result[] = {
+        {2, 3, 700},
+        {3, 4, 600},
+        {1, 2, 400},
+    };
+
+    GetProvider(1)->done_ = true;
+    GetProvider(3)->done_ = true;
+
+    ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(
+        last, std::size(last), current, std::size(current), result,
+        std::size(result)));
+  }
+
+  {
+    SCOPED_TRACE("kAutocompleteStabilityDontCopyDoneProviders disabled.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kAutocompleteStability,
+        {{OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.name,
+          "false"}});
+
+    TestData last[] = {
+        {0, 1, 500},  // Suggestion from done provider
+        {1, 2, 400},  // Suggestion for not-done provider
+    };
+    TestData current[] = {
+        {2, 3, 700},  // Suggestion from done provider
+        {3, 4, 600},  // Suggestion for not-done provider
+    };
+    TestData result[] = {
+        {2, 3, 700},
+        {3, 4, 600},
+        {0, 1, 500},  // Suggestion from done provider
+        {1, 2, 400},
+    };
+
+    GetProvider(1)->done_ = true;
+    GetProvider(3)->done_ = true;
+
+    ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(
+        last, std::size(last), current, std::size(current), result,
+        std::size(result)));
+  }
 }
 
 // Tests that matches with empty destination URLs aren't treated as duplicates
@@ -1731,10 +1798,9 @@ TEST_F(AutocompleteResultTest, SortAndCullPromoteDuplicateSearchURLs) {
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(AutocompleteResultTest, SortAndCullGroupSuggestionsByType) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{omnibox::kUIExperimentMaxAutocompleteMatches,
-        {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}}},
-      {/* nothing disabled */});
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kUIExperimentMaxAutocompleteMatches,
+      {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}});
   TestData data[] = {
       {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
@@ -1772,10 +1838,9 @@ TEST_F(AutocompleteResultTest, SortAndCullGroupSuggestionsByType) {
 
 TEST_F(AutocompleteResultTest, SortAndCullKeepGroupedSuggestionsLast) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{omnibox::kUIExperimentMaxAutocompleteMatches,
-        {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}}},
-      {/* nothing disabled */});
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kUIExperimentMaxAutocompleteMatches,
+      {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}});
   TestData data[] = {
       {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
       {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
@@ -1970,10 +2035,9 @@ TEST_F(AutocompleteResultTest,
 TEST_F(AutocompleteResultTest,
        GroupSuggestionsBySearchVsURLHonorsProtectedSuggestions) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{omnibox::kUIExperimentMaxAutocompleteMatches,
-        {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "7"}}}},
-      {/* nothing disabled */});
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kUIExperimentMaxAutocompleteMatches,
+      {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "7"}});
   TestData data[] = {
       {0, 2, 400, true, {}, AutocompleteMatchType::HISTORY_TITLE},
       {1, 1, 800, false, {}, AutocompleteMatchType::CLIPBOARD_URL},

@@ -735,6 +735,10 @@ const base::FeatureParam<bool>
         &omnibox::kAutocompleteStability,
         "AutocompleteStabilityPreserveDefaultForAsyncUpdates",
         true);
+const base::FeatureParam<bool> kAutocompleteStabilityDontCopyDoneProviders(
+    &omnibox::kAutocompleteStability,
+    "AutocompleteStabilityDontCopyDoneProviders",
+    false);
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions:
 

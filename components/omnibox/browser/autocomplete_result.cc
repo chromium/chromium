@@ -162,6 +162,21 @@ void AutocompleteResult::TransferOldMatches(
     const AutocompleteInput& input,
     AutocompleteResult* old_matches,
     TemplateURLService* template_url_service) {
+  // Don't transfer matches from done providers. If the match is still
+  // relevant, it'll already be in `result_`, potentially with updated fields
+  // that shouldn't be deduped with the out-of-date match. Otherwise, the
+  // irrelevant match shouldn't be re-added. Adding outdated matches is
+  // particularly noticeable when the user types the next char before the
+  // copied matches are expired leading to outdated matches surviving multiple
+  // input changes, e.g. 'gooooooooo[oogle.com]'.
+  if (OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.Get()) {
+    old_matches->matches_.erase(
+        base::ranges::remove_if(
+            *old_matches,
+            [](const auto& old_match) { return old_match.provider->done(); }),
+        old_matches->matches_.end());
+  }
+
   if (old_matches->empty())
     return;
 

@@ -485,6 +485,11 @@ extern const base::FeatureParam<bool>
 // updates. True by default.
 extern const base::FeatureParam<bool>
     kAutocompleteStabilityPreserveDefaultForAsyncUpdates;
+// Matches from the previous input are temporarily copied to carry over the
+// suggestions until the new input's suggestions are ready. If enabled, only
+// providers whose suggestions are pending have their old matches copied over.
+extern const base::FeatureParam<bool>
+    kAutocompleteStabilityDontCopyDoneProviders;
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 

@@ -530,7 +530,7 @@ struct AutocompleteMatch {
   // Determines whether this match is allowed to be the default match by
   // comparing |input.text| and |inline_autocompletion|. Therefore,
   // |inline_autocompletion| should be set prior to invoking this method. Also
-  // Also considers trailing whitespace in the input, so the input should not be
+  // considers trailing whitespace in the input, so the input should not be
   // fixed up. May trim trailing whitespaces from |inline_autocompletion|.
   //
   // Input "x" will allow default matches "x", "xy", and "x y".
