@@ -132,4 +132,9 @@ export class Macro {
   createRunMacroResult_(isSuccess, error) {
     return {isSuccess, error};
   }
+
+  /** @return {boolean} */
+  isSmart() {
+    return false;
+  }
 }

@@ -39,4 +39,9 @@ export class SmartSelectBetweenMacro extends Macro {
     this.inputController_.selectBetween(this.startPhrase_, this.endPhrase_);
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }
+
+  /** @override */
+  isSmart() {
+    return true;
+  }
 }

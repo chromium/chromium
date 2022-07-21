@@ -8,6 +8,7 @@
  */
 
 import {InputController} from '../input_controller.js';
+import {LocaleInfo} from '../locale_info.js';
 import {DeletePrevSentMacro} from '../macros/delete_prev_sent_macro.js';
 import {HiddenMacroManager} from '../macros/hidden_macro_manager.js';
 import {InputTextViewMacro, NewLineMacro} from '../macros/input_text_view_macro.js';
@@ -39,9 +40,8 @@ class SimpleMacroFactory {
   /**
    * @param {!MacroName} macroName
    * @param {!InputController} inputController
-   * @param {boolean} isRTLLocale
    */
-  constructor(macroName, inputController, isRTLLocale) {
+  constructor(macroName, inputController) {
     if (!SimpleMacroFactory.getData_()[macroName]) {
       throw new Error(
           'Macro is not supported by SimpleMacroFactory: ' + macroName);
@@ -51,8 +51,6 @@ class SimpleMacroFactory {
     this.macroName_ = macroName;
     /** @private {!InputController} */
     this.inputController_ = inputController;
-    /** @private {boolean} */
-    this.isRTLLocale_ = isRTLLocale;
 
     /** @private {RegExp} */
     this.commandRegex_ = null;
@@ -100,24 +98,15 @@ class SimpleMacroFactory {
 
     const initialArgs = [];
     switch (this.macroName_) {
-      case MacroName.NAV_PREV_CHAR:
-      case MacroName.NAV_NEXT_CHAR:
-      case MacroName.UNSELECT_TEXT:
-      case MacroName.NAV_NEXT_WORD:
-      case MacroName.NAV_PREV_WORD:
-        initialArgs.push(this.isRTLLocale_);
-        break;
       case MacroName.NEW_LINE:
       case MacroName.DELETE_PREV_SENT:
+      case MacroName.NAV_NEXT_SENT:
+      case MacroName.NAV_PREV_SENT:
       case MacroName.SMART_DELETE_PHRASE:
       case MacroName.SMART_REPLACE_PHRASE:
       case MacroName.SMART_INSERT_BEFORE:
       case MacroName.SMART_SELECT_BTWN_INCL:
         initialArgs.push(this.inputController_);
-        break;
-      case MacroName.NAV_NEXT_SENT:
-      case MacroName.NAV_PREV_SENT:
-        initialArgs.push(this.inputController_, this.isRTLLocale_);
         break;
     }
 
@@ -128,7 +117,12 @@ class SimpleMacroFactory {
     const extractedArgs = result.slice(1);
     const finalArgs = initialArgs.concat(extractedArgs);
     const data = SimpleMacroFactory.getData_();
-    return new data[this.macroName_].build(...finalArgs);
+    const macro = new data[this.macroName_].build(...finalArgs);
+    if (macro.isSmart() && !LocaleInfo.allowSmartEditing()) {
+      return null;
+    }
+
+    return macro;
   }
 
   /**
@@ -244,12 +238,9 @@ class SimpleMacroFactory {
 
 /** A parsing strategy that utilizes SimpleMacroFactory. */
 export class SimpleParseStrategy extends ParseStrategy {
-  /**
-   * @param {!InputController} inputController
-   * @param {boolean} isRTLLocale
-   */
-  constructor(inputController, isRTLLocale) {
-    super(inputController, isRTLLocale);
+  /** @param {!InputController} inputController */
+  constructor(inputController) {
+    super(inputController);
 
     /**
      * Map of macro names to a factory for that macro.
@@ -271,9 +262,7 @@ export class SimpleParseStrategy extends ParseStrategy {
       }
 
       this.macroFactoryMap_.set(
-          name,
-          new SimpleMacroFactory(
-              name, this.getInputController(), this.getIsRTLLocale()));
+          name, new SimpleMacroFactory(name, this.getInputController()));
     }
   }
 
@@ -300,8 +289,7 @@ export class SimpleParseStrategy extends ParseStrategy {
           macros[1] :
           macros[0];
     } else if (macros.length > 2) {
-      // Unexpected, log a warning. This will cause tests to fail.
-      console.warn('Unexpected ambiguous macros found for text: ${text}.');
+      console.warn(`Unexpected ambiguous macros found for text: ${text}.`);
       return macros[0];
     }
 

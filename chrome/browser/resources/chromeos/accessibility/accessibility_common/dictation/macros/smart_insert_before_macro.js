@@ -42,4 +42,9 @@ export class SmartInsertBeforeMacro extends Macro {
     this.inputController_.insertBefore(this.insertPhrase_, this.beforePhrase_);
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }
+
+  /** @override */
+  isSmart() {
+    return true;
+  }
 }

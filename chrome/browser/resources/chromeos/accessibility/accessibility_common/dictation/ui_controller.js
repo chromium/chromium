@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {LocaleInfo} from './locale_info.js';
+
 const HintType = chrome.accessibilityPrivate.DictationBubbleHintType;
 const IconType = chrome.accessibilityPrivate.DictationBubbleIconType;
 
@@ -36,18 +38,6 @@ export class UIController {
   constructor() {
     /** @private {?number} */
     this.showHintsTimeoutId_ = null;
-
-    /** @private {boolean} */
-    this.hintsSupported_ = true;
-  }
-
-  /**
-   * Sets whether hints are supported. If hints are not
-   * supported, they will not be shown.
-   * @param {boolean} supported
-   */
-  setHintsSupported(supported) {
-    this.hintsSupported_ = supported;
   }
 
   /**
@@ -85,7 +75,8 @@ export class UIController {
         break;
     }
 
-    if (!context || !this.hintsSupported_) {
+    if (!context || !LocaleInfo.areCommandsSupported()) {
+      // Do not show hints if commands are not supported.
       return;
     }
 

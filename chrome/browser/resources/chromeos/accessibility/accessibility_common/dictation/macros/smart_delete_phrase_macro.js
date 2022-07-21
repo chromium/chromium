@@ -36,4 +36,9 @@ export class SmartDeletePhraseMacro extends Macro {
     this.inputController_.deletePhrase(this.phrase_);
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }
+
+  /** @override */
+  isSmart() {
+    return true;
+  }
 }

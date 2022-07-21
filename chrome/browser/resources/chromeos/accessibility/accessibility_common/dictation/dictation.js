@@ -4,6 +4,7 @@
 
 import {FocusHandler} from './focus_handler.js';
 import {InputController} from './input_controller.js';
+import {LocaleInfo} from './locale_info.js';
 import {HiddenMacroManager} from './macros/hidden_macro_manager.js';
 import {Macro} from './macros/macro.js';
 import {MacroName} from './macros/macro_names.js';
@@ -33,9 +34,6 @@ export class Dictation {
 
     /** @private {HiddenMacroManager} */
     this.hiddenMacroManager_ = null;
-
-    /** @private {string} */
-    this.localePref_ = '';
 
     /**
      * Whether or not Dictation is active.
@@ -86,9 +84,7 @@ export class Dictation {
         () => this.stopDictation_(/*notify=*/ true), this.focusHandler_);
     this.uiController_ = new UIController();
     this.speechParser_ = new SpeechParser(this.inputController_);
-    if (this.localePref_) {
-      this.propagateLocale_(this.localePref_);
-    }
+    this.speechParser_.refresh();
     this.hiddenMacroManager_ = new HiddenMacroManager(this.inputController_);
 
     // Set default speech recognition properties. Locale will be updated when
@@ -310,7 +306,7 @@ export class Dictation {
     this.clearInterimText_();
 
     // Record metrics.
-    this.metricsUtils_ = new MetricsUtils(type, this.localePref_);
+    this.metricsUtils_ = new MetricsUtils(type, LocaleInfo.locale);
     this.metricsUtils_.recordSpeechRecognitionStarted();
 
     this.uiController_.setState(
@@ -356,8 +352,8 @@ export class Dictation {
           if (pref.value) {
             const locale = /** @type {string} */ (pref.value);
             this.speechRecognitionOptions_.locale = locale;
-            this.localePref_ = locale;
-            this.propagateLocale_(locale);
+            LocaleInfo.locale = locale;
+            this.speechParser_.refresh();
           }
           break;
         case Dictation.SPOKEN_FEEDBACK_PREF:
@@ -502,18 +498,6 @@ export class Dictation {
   runHiddenMacroWithTwoStringArgsForTesting(name, arg1, arg2) {
     this.hiddenMacroManager_.runMacroWithTwoStringArgsForTesting(
         name, arg1, arg2);
-  }
-
-  /**
-   * @param {string} locale
-   * @private
-   */
-  propagateLocale_(locale) {
-    const commandsSupported =
-        SpeechParser.areCommandsSupported(locale, chrome.i18n.getUILanguage());
-    this.speechParser_.initialize(locale, commandsSupported);
-    this.inputController_.setLocale(locale);
-    this.uiController_.setHintsSupported(commandsSupported);
   }
 }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {EventGenerator} from '../../../common/event_generator.js';
+import {LocaleInfo} from '../locale_info.js';
 
 import {Macro, MacroError} from './macro.js';
 import {MacroName} from './macro_names.js';
@@ -69,43 +70,29 @@ export class DeletePreviousCharacterMacro extends RepeatableKeyPressMacro {
 
 /** Macro to navigate to the previous character. */
 export class NavPreviousCharMacro extends RepeatableKeyPressMacro {
-  /**
-   * @param {boolean} isRTLLocale Whether the Dictation speech recognition
-   *     locale is right-to-left.
-   * @param {number=} repeat The number of characters to move.
-   */
-  constructor(isRTLLocale, repeat = 1) {
+  /** @param {number=} repeat The number of characters to move. */
+  constructor(repeat = 1) {
     super(MacroName.NAV_PREV_CHAR, repeat);
-
-    /** @private {boolean} */
-    this.isRTLLocale_ = isRTLLocale;
   }
 
   /** @override */
   doKeyPress() {
     EventGenerator.sendKeyPress(
-        this.isRTLLocale_ ? KeyCode.RIGHT : KeyCode.LEFT);
+        LocaleInfo.isRTLLocale() ? KeyCode.RIGHT : KeyCode.LEFT);
   }
 }
 
 /** Macro to navigate to the next character. */
 export class NavNextCharMacro extends RepeatableKeyPressMacro {
-  /**
-   * @param {boolean} isRTLLocale Whether the Dictation speech recognition
-   *     locale is right-to-left.
-   * @param {number=} repeat The number of characters to move.
-   */
-  constructor(isRTLLocale, repeat = 1) {
+  /** @param {number=} repeat The number of characters to move. */
+  constructor(repeat = 1) {
     super(MacroName.NAV_NEXT_CHAR, repeat);
-
-    /** @private {boolean} */
-    this.isRTLLocale_ = isRTLLocale;
   }
 
   /** @override */
   doKeyPress() {
     EventGenerator.sendKeyPress(
-        this.isRTLLocale_ ? KeyCode.LEFT : KeyCode.RIGHT);
+        LocaleInfo.isRTLLocale() ? KeyCode.LEFT : KeyCode.RIGHT);
   }
 }
 
@@ -209,20 +196,14 @@ export class SelectAllTextMacro extends RepeatableKeyPressMacro {
 
 /** Macro to unselect text. */
 export class UnselectTextMacro extends RepeatableKeyPressMacro {
-  /**
-   * @param {boolean} isRTLLocale Whether the Dictation speech recognition
-   *     locale is right-to-left.
-   */
-  constructor(isRTLLocale) {
+  constructor() {
     super(MacroName.UNSELECT_TEXT, /*repeat=*/ 1);
-    /** @private {boolean} */
-    this.isRTLLocale_ = isRTLLocale;
   }
 
   /** @override */
   doKeyPress() {
     EventGenerator.sendKeyPress(
-        this.isRTLLocale_ ? KeyCode.LEFT : KeyCode.RIGHT);
+        LocaleInfo.isRTLLocale() ? KeyCode.LEFT : KeyCode.RIGHT);
   }
 }
 
@@ -240,42 +221,28 @@ export class DeletePrevWordMacro extends RepeatableKeyPressMacro {
 
 /** Macro to navigate to the next word. */
 export class NavNextWordMacro extends RepeatableKeyPressMacro {
-  /**
-   * @param {boolean} isRTLLocale Whether the Dictation speech recognition
-   *     locale is right-to-left.
-   * @param {number=} repeat The number of words to move.
-   */
-  constructor(isRTLLocale, repeat = 1) {
+  /** @param {number=} repeat The number of words to move. */
+  constructor(repeat = 1) {
     super(MacroName.NAV_NEXT_WORD, repeat);
-
-    /** @private {boolean} */
-    this.isRTLLocale_ = isRTLLocale;
   }
 
   /** @override */
   doKeyPress() {
     EventGenerator.sendKeyPress(
-        this.isRTLLocale_ ? KeyCode.LEFT : KeyCode.RIGHT, {ctrl: true});
+        LocaleInfo.isRTLLocale() ? KeyCode.LEFT : KeyCode.RIGHT, {ctrl: true});
   }
 }
 
 /** Macro to navigate to the previous word. */
 export class NavPrevWordMacro extends RepeatableKeyPressMacro {
-  /**
-   * @param {boolean} isRTLLocale Whether the Dictation speech recognition
-   *     locale is right-to-left.
-   * @param {number=} repeat The number of words to move.
-   */
-  constructor(isRTLLocale, repeat = 1) {
+  /** @param {number=} repeat The number of words to move. */
+  constructor(repeat = 1) {
     super(MacroName.NAV_PREV_WORD, repeat);
-
-    /** @private {boolean} */
-    this.isRTLLocale_ = isRTLLocale;
   }
 
   /** @override */
   doKeyPress() {
     EventGenerator.sendKeyPress(
-        this.isRTLLocale_ ? KeyCode.RIGHT : KeyCode.LEFT, {ctrl: true});
+        LocaleInfo.isRTLLocale() ? KeyCode.RIGHT : KeyCode.LEFT, {ctrl: true});
   }
 }

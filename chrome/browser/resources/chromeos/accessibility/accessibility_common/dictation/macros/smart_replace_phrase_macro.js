@@ -40,4 +40,9 @@ export class SmartReplacePhraseMacro extends Macro {
     this.inputController_.replacePhrase(this.deletePhrase_, this.insertPhrase_);
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }
+
+  /** @override */
+  isSmart() {
+    return true;
+  }
 }

@@ -4,6 +4,7 @@
 
 import {EditingUtil} from './editing_util.js';
 import {FocusHandler} from './focus_handler.js';
+import {LocaleInfo} from './locale_info.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
@@ -29,9 +30,6 @@ export class InputController {
 
     /** @private {?function():void} */
     this.onConnectCallback_ = null;
-
-    /** @private {?string} */
-    this.locale_ = null;
 
     this.initialize_();
   }
@@ -103,12 +101,8 @@ export class InputController {
       return;
     }
 
-    const language = this.locale_.split('-')[0];
-    const useSmartSpacingAndCapitalization =
-        InputController.SMART_SPACING_AND_CAPITALIZATION_LANGUAGES_.includes(
-            language);
     const data = this.getEditableNodeData_();
-    if (useSmartSpacingAndCapitalization && data) {
+    if (LocaleInfo.allowSmartCapAndSpacing() && data) {
       const {value, caretIndex} = data;
       text = EditingUtil.smartCapitalization(value, caretIndex, text);
       text = EditingUtil.smartSpacing(value, caretIndex, text);
@@ -279,11 +273,6 @@ export class InputController {
     node.setSelection(newCaretIndex, newCaretIndex);
   }
 
-  /** @param {string} locale */
-  setLocale(locale) {
-    this.locale_ = locale;
-  }
-
   /**
    * @param {string} value
    * @param {number} index
@@ -339,12 +328,3 @@ InputController.IME_ENGINE_ID =
  * @const
  */
 InputController.NO_ACTIVE_IME_CONTEXT_ID_ = -1;
-
-
-/**
- * The languages that are supported by smart spacing and capitalization.
- * @private {!Array<string>}
- * @const
- */
-InputController.SMART_SPACING_AND_CAPITALIZATION_LANGUAGES_ =
-    ['en', 'fr', 'it', 'de', 'es'];

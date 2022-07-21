@@ -32,4 +32,9 @@ export class DeletePrevSentMacro extends Macro {
     this.inputController_.deletePrevSentence();
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }
+
+  /** @override */
+  isSmart() {
+    return true;
+  }
 }

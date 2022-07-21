@@ -15,25 +15,15 @@ import {Macro} from '../macros/macro.js';
  * Macro.
  */
 export class ParseStrategy {
-  /**
-   * @param {!InputController} inputController
-   * @param {boolean} isRTLLocale
-   */
-  constructor(inputController, isRTLLocale) {
+  /** @param {!InputController} inputController */
+  constructor(inputController) {
     /** @private {!InputController} */
     this.inputController_ = inputController;
-    /** @private {boolean} */
-    this.isRTLLocale_ = isRTLLocale;
   }
 
   /** @return {!InputController} */
   getInputController() {
     return this.inputController_;
-  }
-
-  /** @return {boolean} */
-  getIsRTLLocale() {
-    return this.isRTLLocale_;
   }
 
   /**

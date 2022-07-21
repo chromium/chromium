@@ -11,7 +11,7 @@ import {ParseStrategy} from './parse_strategy.js';
 export class InputTextStrategy extends ParseStrategy {
   /** @param {!InputController} inputController */
   constructor(inputController) {
-    super(inputController, false);
+    super(inputController);
   }
 
   /** @override */

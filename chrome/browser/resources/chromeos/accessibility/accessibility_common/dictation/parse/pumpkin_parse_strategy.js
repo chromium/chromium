@@ -8,6 +8,7 @@
  */
 
 import {InputController} from '../input_controller.js';
+import {LocaleInfo} from '../locale_info.js';
 import {InputTextViewMacro} from '../macros/input_text_view_macro.js';
 import {ListCommandsMacro} from '../macros/list_commands_macro.js';
 import {Macro} from '../macros/macro.js';
@@ -24,12 +25,11 @@ import {PumpkinAvailability} from './pumpkin/pumpkin_availability.js';
 export class PumpkinParseStrategy extends ParseStrategy {
   /**
    * @param {!InputController} inputController
-   * @param {boolean} isRTLLocale
-   * @param {string} locale
    * @return {!Promise<!PumpkinParseStrategy>}
    */
-  static async create(inputController, isRTLLocale, locale) {
-    const instance = new PumpkinParseStrategy(inputController, isRTLLocale);
+  static async create(inputController) {
+    const locale = LocaleInfo.locale;
+    const instance = new PumpkinParseStrategy(inputController);
     if (PumpkinAvailability.usePumpkin(locale)) {
       await instance.initPumpkin_(PumpkinAvailability.LOCALES[locale]);
     }
@@ -39,11 +39,10 @@ export class PumpkinParseStrategy extends ParseStrategy {
 
   /**
    * @param {!InputController} inputController
-   * @param {boolean} isRTLLocale
    * @private
    */
-  constructor(inputController, isRTLLocale) {
-    super(inputController, isRTLLocale);
+  constructor(inputController) {
+    super(inputController);
 
     /** @private {speech.pumpkin.api.js.PumpkinTagger.PumpkinTagger} */
     this.pumpkinTagger_ = null;
@@ -180,11 +179,9 @@ export class PumpkinParseStrategy extends ParseStrategy {
       case MacroName.DELETE_PREV_CHAR:
         return new RepeatableKeyPressMacro.DeletePreviousCharacterMacro(repeat);
       case MacroName.NAV_PREV_CHAR:
-        return new RepeatableKeyPressMacro.NavPreviousCharMacro(
-            this.getIsRTLLocale(), repeat);
+        return new RepeatableKeyPressMacro.NavPreviousCharMacro(repeat);
       case MacroName.NAV_NEXT_CHAR:
-        return new RepeatableKeyPressMacro.NavNextCharMacro(
-            this.getIsRTLLocale(), repeat);
+        return new RepeatableKeyPressMacro.NavNextCharMacro(repeat);
       case MacroName.NAV_PREV_LINE:
         return new RepeatableKeyPressMacro.NavPreviousLineMacro(repeat);
       case MacroName.NAV_NEXT_LINE:
@@ -202,8 +199,7 @@ export class PumpkinParseStrategy extends ParseStrategy {
       case MacroName.SELECT_ALL_TEXT:
         return new RepeatableKeyPressMacro.SelectAllTextMacro();
       case MacroName.UNSELECT_TEXT:
-        return new RepeatableKeyPressMacro.UnselectTextMacro(
-            this.getIsRTLLocale());
+        return new RepeatableKeyPressMacro.UnselectTextMacro();
       case MacroName.LIST_COMMANDS:
         return new ListCommandsMacro();
       default:

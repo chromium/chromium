@@ -41,18 +41,16 @@ export class HiddenMacroManager {
         new DeletePrevSentMacro(this.inputController_).runMacro();
         break;
       case MacroName.NAV_NEXT_WORD:
-        new NavNextWordMacro(/*isRTLLocale=*/ false).runMacro();
+        new NavNextWordMacro().runMacro();
         break;
       case MacroName.NAV_PREV_WORD:
-        new NavPrevWordMacro(/*isRTLLocale=*/ false).runMacro();
+        new NavPrevWordMacro().runMacro();
         break;
       case MacroName.NAV_NEXT_SENT:
-        new NavNextSentMacro(this.inputController_, /*isRTLLocale=*/ false)
-            .runMacro();
+        new NavNextSentMacro(this.inputController_).runMacro();
         break;
       case MacroName.NAV_PREV_SENT:
-        new NavPrevSentMacro(this.inputController_, /*isRTLLocale=*/ false)
-            .runMacro();
+        new NavPrevSentMacro(this.inputController_).runMacro();
         break;
       default:
         throw new Error(`Cannot run macro: ${name} for testing`);
