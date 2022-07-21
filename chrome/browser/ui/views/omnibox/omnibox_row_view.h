@@ -14,6 +14,7 @@
 class OmniboxEditModel;
 class OmniboxResultView;
 class PrefService;
+enum class SuggestionGroupId;
 
 // The View that's a direct child of the OmniboxPopupContentsView, one per row.
 // This, in turn, has a child OmniboxResultView and an optional header that is
@@ -31,7 +32,8 @@ class OmniboxRowView : public views::View {
                  PrefService* pref_service);
 
   // Sets the header that appears above this row. Also shows the header.
-  void ShowHeader(int suggestion_group_id, const std::u16string& header_text);
+  void ShowHeader(SuggestionGroupId suggestion_group_id,
+                  const std::u16string& header_text);
 
   // Hides the header.
   void HideHeader();

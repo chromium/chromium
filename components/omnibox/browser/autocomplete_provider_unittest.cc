@@ -326,7 +326,7 @@ class AutocompleteProviderTest : public testing::Test {
 
   struct SuggestionGroupsTestData {
     SuggestionGroupsMap suggestion_groups_map;
-    std::vector<absl::optional<int>> suggestion_group_ids;
+    std::vector<absl::optional<SuggestionGroupId>> suggestion_group_ids;
   };
 
   struct AssistedQueryStatsTestData {
@@ -608,7 +608,9 @@ void AutocompleteProviderTest::UpdateResultsWithSuggestionGroupsTestData(
   for (auto suggestion_group_id : test_data.suggestion_group_ids) {
     AutocompleteMatch match(nullptr, relevance--, false,
                             AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED);
-    match.suggestion_group_id = suggestion_group_id;
+    if (suggestion_group_id.has_value()) {
+      match.suggestion_group_id = suggestion_group_id.value();
+    }
     matches.push_back(match);
   }
   result_.Reset();
@@ -853,24 +855,34 @@ TEST_F(AutocompleteProviderTest, ExactMatchKeywords) {
 
 // Tests that the AutocompleteResult is updated with the suggestion group
 // information and matches with group IDs are grouped and demoted correctly.
-// Also verifies that 1) suggestion group IDs without associated suggestion
-// group information are stripped away. and 2) headers are optional for groups.
-TEST_F(AutocompleteProviderTest, Headers) {
+// Also verifies that:
+// 1) headers are optional for suggestion groups.
+// 2) suggestion groups are ordered based on their priories.
+// 3) suggestion group IDs without associated suggestion group information are
+//    stripped away.
+TEST_F(AutocompleteProviderTest, SuggestionGroups) {
   ResetControllerWithKeywordAndSearchProviders();
 
-  const int kRecommendedGroupId = 1;
+  const auto kRecommendedGroupId =
+      SuggestionGroupId::kNonPersonalizedZeroSuggest1;
   const std::u16string kRecommended = u"Recommended for you";
-  const int kRecentSearchesGroupId = 2;
+  const auto kRecentSearchesGroupId =
+      SuggestionGroupId::kNonPersonalizedZeroSuggest2;
   const std::u16string kRecentSearches = u"Recent Searches";
 
   // This exists to verify that suggestion group IDs without associated
   // suggestion groups information are stripped away.
-  const int kBadSuggestionGroupId = 99;
+  const auto kBadSuggestionGroupId = SuggestionGroupId::kInvalid;
 
   {
+    // Headers are optional for suggestion groups.
     SuggestionGroupsMap suggestion_groups_map;
     suggestion_groups_map[kRecommendedGroupId].header = kRecommended;
+    suggestion_groups_map[kRecommendedGroupId].priority =
+        SuggestionGroupPriority::kRemoteZeroSuggest4;
     suggestion_groups_map[kRecentSearchesGroupId].header = u"";
+    suggestion_groups_map[kRecentSearchesGroupId].priority =
+        SuggestionGroupPriority::kRemoteZeroSuggest3;
     UpdateResultsWithSuggestionGroupsTestData({std::move(suggestion_groups_map),
                                                {
                                                    {},
@@ -896,9 +908,14 @@ TEST_F(AutocompleteProviderTest, Headers) {
               result_.GetHeaderForSuggestionGroup(kRecommendedGroupId));
   }
   {
+    // Suggestion groups are ordered based on their priories.
     SuggestionGroupsMap suggestion_groups_map;
     suggestion_groups_map[kRecommendedGroupId].header = kRecommended;
+    suggestion_groups_map[kRecommendedGroupId].priority =
+        SuggestionGroupPriority::kRemoteZeroSuggest3;
     suggestion_groups_map[kRecentSearchesGroupId].header = kRecentSearches;
+    suggestion_groups_map[kRecentSearchesGroupId].priority =
+        SuggestionGroupPriority::kRemoteZeroSuggest4;
     UpdateResultsWithSuggestionGroupsTestData({std::move(suggestion_groups_map),
                                                {
                                                    {},
@@ -912,22 +929,24 @@ TEST_F(AutocompleteProviderTest, Headers) {
 
     EXPECT_FALSE(result_.match_at(1)->suggestion_group_id.has_value());
 
-    EXPECT_EQ(kRecentSearchesGroupId,
+    EXPECT_EQ(kRecommendedGroupId,
               result_.match_at(2)->suggestion_group_id.value());
-    EXPECT_EQ(kRecentSearches,
-              result_.GetHeaderForSuggestionGroup(kRecentSearchesGroupId));
+    EXPECT_EQ(kRecommended,
+              result_.GetHeaderForSuggestionGroup(kRecommendedGroupId));
 
     EXPECT_EQ(kRecentSearchesGroupId,
               result_.match_at(3)->suggestion_group_id.value());
     EXPECT_EQ(kRecentSearches,
               result_.GetHeaderForSuggestionGroup(kRecentSearchesGroupId));
 
-    EXPECT_EQ(kRecommendedGroupId,
+    EXPECT_EQ(kRecentSearchesGroupId,
               result_.match_at(4)->suggestion_group_id.value());
-    EXPECT_EQ(kRecommended,
-              result_.GetHeaderForSuggestionGroup(kRecommendedGroupId));
+    EXPECT_EQ(kRecentSearches,
+              result_.GetHeaderForSuggestionGroup(kRecentSearchesGroupId));
   }
   {
+    // suggestion group IDs without associated suggestion group information are
+    // stripped away.
     SuggestionGroupsMap suggestion_groups_map;
     suggestion_groups_map[kRecommendedGroupId].header = kRecommended;
     suggestion_groups_map[kRecentSearchesGroupId].header = kRecentSearches;

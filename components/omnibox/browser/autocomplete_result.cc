@@ -331,19 +331,7 @@ void AutocompleteResult::SortAndCull(
   const size_t num_matches =
       CalculateNumMatches(is_zero_suggest, matches_, comparing_object);
 
-  if (base::FeatureList::IsEnabled(omnibox::kRetainSuggestionsWithHeaders)) {
-    size_t num_regular_suggestions = 0;
-    base::EraseIf(matches_,
-                  [&num_regular_suggestions, num_matches](const auto& match) {
-                    // Trim suggestions without group IDs to the given limit.
-                    if (!match.suggestion_group_id.has_value()) {
-                      num_regular_suggestions++;
-                      return num_regular_suggestions > num_matches;
-                    }
-                    // Do not trim suggestions with group IDs.
-                    return false;
-                  });
-  } else {
+  if (!is_zero_suggest) {
     matches_.resize(num_matches);
   }
 
@@ -358,6 +346,24 @@ void AutocompleteResult::SortAndCull(
   }
 
   GroupAndDemoteMatchesInGroups();
+
+  if (is_zero_suggest) {
+    if (base::FeatureList::IsEnabled(omnibox::kRetainSuggestionsWithHeaders)) {
+      size_t num_regular_suggestions = 0;
+      base::EraseIf(matches_,
+                    [&num_regular_suggestions, num_matches](const auto& match) {
+                      // Trim suggestions without group IDs to the given limit.
+                      if (!match.suggestion_group_id.has_value()) {
+                        num_regular_suggestions++;
+                        return num_regular_suggestions > num_matches;
+                      }
+                      // Do not trim suggestions with group IDs.
+                      return false;
+                    });
+    } else {
+      matches_.resize(num_matches);
+    }
+  }
 
   // Run sanity checks on the default match to make sure all the suggestions
   // are congruent with the user's input. Skip checks in these cases:
@@ -395,52 +401,50 @@ void AutocompleteResult::SortAndCull(
 }
 
 void AutocompleteResult::GroupAndDemoteMatchesInGroups() {
-  // Create a map from suggestion group ID to the index it first appears.
-  // Reserve the first spot for matches without group IDs.
-  std::map<int, int> group_id_index_map = {{kInvalidSuggestionGroupId, 0}};
-  for (auto it = matches_.begin(); it != matches_.end(); ++it) {
-    if (it->suggestion_group_id.has_value()) {
-      const int group_id = it->suggestion_group_id.value();
-
-      if (suggestion_groups_map_.find(group_id) !=
-          suggestion_groups_map_.end()) {
-        // Record suggestion group information into the additional_info field
-        // for chrome://omnibox.
-        it->RecordAdditionalInfo("group id", group_id);
-        it->RecordAdditionalInfo("group header",
-                                 GetHeaderForSuggestionGroup(group_id));
-      } else {
-        // Strip group IDs from the matches for which there is no suggestion
-        // group information. These matches should instead be treated as
-        // ordinary matches with no group IDs.
-        it->suggestion_group_id.reset();
-      }
+  bool any_matches_in_groups = false;
+  for (auto& match : *this) {
+    if (!match.suggestion_group_id.has_value()) {
+      continue;
     }
+    any_matches_in_groups = true;
 
-    int group_id = it->suggestion_group_id.value_or(kInvalidSuggestionGroupId);
-    // Use the 1-based index of the match to record the first appearance of its
-    // group ID since 0 is reserved for matches without group IDs. We are
-    // interested in the relative values of these indices only and their
-    // absolute values hardly matter.
-    int index = std::distance(matches_.begin(), it) + 1;
-    // map::insert doesn't insert the value if the map already contains the key.
-    group_id_index_map.insert(std::pair<int, int>(group_id, index));
+    const SuggestionGroupId group_id = match.suggestion_group_id.value();
+    if (suggestion_groups_map_.find(group_id) != suggestion_groups_map_.end()) {
+      // Record suggestion group information into the additional_info field
+      // for chrome://omnibox.
+      match.RecordAdditionalInfo("group id", static_cast<int>(group_id));
+      match.RecordAdditionalInfo("group header",
+                                 GetHeaderForSuggestionGroup(group_id));
+      match.RecordAdditionalInfo(
+          "group priority",
+          static_cast<int>(GetPriorityForSuggestionGroup(group_id)));
+    } else {
+      // Strip group IDs from the matches for which there is no suggestion
+      // group information. These matches should instead be treated as
+      // ordinary matches with no group IDs.
+      match.suggestion_group_id.reset();
+    }
   }
 
-  // No need to group and demote matches with group IDs if none exists.
-  if (group_id_index_map.size() == 1)
+  // No need to group and demote matches in groups if none exists.
+  if (!any_matches_in_groups) {
     return;
+  }
 
-  // Sort the matches based on the order in which their group IDs first appear
-  // while preserving the existing order of matches with the same group ID.
+  // Sort the matches based on the order in which their groups should appear
+  // while preserving the existing order of matches within the same group.
   std::stable_sort(
-      matches_.begin(), matches_.end(),
-      [&group_id_index_map](const auto& a, const auto& b) {
-        const int a_group_id =
-            a.suggestion_group_id.value_or(kInvalidSuggestionGroupId);
-        const int b_group_id =
-            b.suggestion_group_id.value_or(kInvalidSuggestionGroupId);
-        return group_id_index_map[a_group_id] < group_id_index_map[b_group_id];
+      matches_.begin(), matches_.end(), [this](const auto& a, const auto& b) {
+        // Note that matches not in a group must appear before the matches in
+        // one; thus the order of the following two early checks is important.
+        if (!b.suggestion_group_id.has_value()) {
+          return false;
+        }
+        if (!a.suggestion_group_id.has_value()) {
+          return true;
+        }
+        return GetPriorityForSuggestionGroup(a.suggestion_group_id.value()) <
+               GetPriorityForSuggestionGroup(b.suggestion_group_id.value());
       });
 }
 
@@ -956,19 +960,18 @@ AutocompleteResult::GetMatchDedupComparators() const {
 }
 
 std::u16string AutocompleteResult::GetHeaderForSuggestionGroup(
-    int suggestion_group_id) const {
+    SuggestionGroupId suggestion_group_id) const {
   const auto& it = suggestion_groups_map_.find(suggestion_group_id);
-  if (it != suggestion_groups_map_.end())
-    return it->second.header;
-  return std::u16string();
+  DCHECK(it != suggestion_groups_map_.end());
+  return it->second.header;
 }
 
 bool AutocompleteResult::IsSuggestionGroupHidden(
     PrefService* prefs,
-    int suggestion_group_id) const {
+    SuggestionGroupId suggestion_group_id) const {
   omnibox::SuggestionGroupVisibility user_preference =
       omnibox::GetUserPreferenceForSuggestionGroupVisibility(
-          prefs, suggestion_group_id);
+          prefs, static_cast<int>(suggestion_group_id));
 
   if (user_preference == omnibox::SuggestionGroupVisibility::HIDDEN)
     return true;
@@ -977,9 +980,15 @@ bool AutocompleteResult::IsSuggestionGroupHidden(
 
   DCHECK_EQ(user_preference, omnibox::SuggestionGroupVisibility::DEFAULT);
   const auto& it = suggestion_groups_map_.find(suggestion_group_id);
-  if (it != suggestion_groups_map_.end())
-    return it->second.hidden;
-  return false;
+  DCHECK(it != suggestion_groups_map_.end());
+  return it->second.hidden;
+}
+
+SuggestionGroupPriority AutocompleteResult::GetPriorityForSuggestionGroup(
+    SuggestionGroupId suggestion_group_id) const {
+  const auto& it = suggestion_groups_map_.find(suggestion_group_id);
+  DCHECK(it != suggestion_groups_map_.end());
+  return it->second.priority;
 }
 
 void AutocompleteResult::MergeSuggestionGroupsMap(

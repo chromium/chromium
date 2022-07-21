@@ -1961,7 +1961,8 @@ bool OmniboxEditModel::TriggerPopupSelectionAction(
               ? omnibox::SuggestionGroupVisibility::SHOWN
               : omnibox::SuggestionGroupVisibility::HIDDEN;
       omnibox::SetSuggestionGroupVisibility(
-          GetPrefService(), match.suggestion_group_id.value(), new_value);
+          GetPrefService(), static_cast<int>(match.suggestion_group_id.value()),
+          new_value);
       break;
     }
     case OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH:

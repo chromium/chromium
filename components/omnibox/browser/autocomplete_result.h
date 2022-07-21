@@ -113,24 +113,26 @@ class AutocompleteResult {
                    TemplateURLService* template_url_service,
                    const AutocompleteMatch* preserve_default_match = nullptr);
 
-  // Ensures that matches with a suggestion_group_id value, are grouped together
-  // at the bottom of result set based on the order in which their group IDs
-  // first appear in the result set. This is done for two reasons:
+  // Ensures that matches belonging to suggestion groups, i.e., those with a
+  // suggestion_group_id value and a corresponding suggestion group info, are
+  // grouped together at the bottom of result set based on the order in which
+  // the groups should appear in the result set. This is done for two reasons:
   //
   // 1) Certain groups of remote zero-prefix matches need to appear under a
-  // header for transparency reasons. These optional headers are uniquely
-  // identified by the group IDs. Also it is possible for zero-prefix matches
-  // from different providers (e.g., local and remote) to mix and match. Hence,
-  // after mixing and sorting the matches, we group the ones with the same
-  // group ID and demote them to the bottom of the result set to ensure, one,
-  // matches without group IDs (and thus headers) appear at the top of the
-  // result set, and two, there are no interleaving headers; whether caused by
-  // bad server data or by mixing of local and remote zero-prefix suggestions.
+  // header as specified in SuggestionGroup. SuggestionGroups are uniquely
+  // identified by the group IDs in |suggestion_groups_map_|. It is also
+  // possible for zero-prefix matches to mix and match while belonging to the
+  // same groups (e.g., bad server data or mixing of local and remote
+  // suggestions from different providers). Hence, after mixing, deduping, and
+  // sorting the matches, we group the ones with the same group ID and demote
+  // them to the bottom of the result set based on a predetermined order. This
+  // ensures matches without group IDs or SuggestionGroup to appear at the top
+  // of the result set, and two, there are no interleaving of groups or headers;
   //
   // 2) Certain groups of non-zero-prefix matches, such as those produced by the
   // HistoryClusterProvider, must appear at the bottom of the result set.
-  // Setting a group ID on those matches ensures they sink to the bottom of the
-  // result set.
+  // Specifying a group ID (and a corresponding suggestion group info) for those
+  // matches ensures that would happen.
   //
   // Called after matches are deduped and sorted and before they are culled.
   void GroupAndDemoteMatchesInGroups();
@@ -232,19 +234,26 @@ class AutocompleteResult {
   // This is only used for logging.
   std::vector<MatchDedupComparator> GetMatchDedupComparators() const;
 
-  // Gets the header string associated with |suggestion_group_id|. Returns an
-  // empty string if no suggestion group is found.
-  std::u16string GetHeaderForSuggestionGroup(int suggestion_group_id) const;
+  // Returns the header string associated with |suggestion_group_id|.
+  // DCHECKs whether |suggestion_group_id| is found in |suggestion_groups_map_|.
+  std::u16string GetHeaderForSuggestionGroup(
+      SuggestionGroupId suggestion_group_id) const;
 
   // Returns whether or not |suggestion_group_id| should be collapsed in the UI.
   // This method takes into account both the user's stored |prefs| as well as
   // the server-provided visibility hint for |suggestion_group_id|.
+  // DCHECKs whether |suggestion_group_id| is found in |suggestion_groups_map_|.
   bool IsSuggestionGroupHidden(PrefService* prefs,
-                               int suggestion_group_id) const;
+                               SuggestionGroupId suggestion_group_id) const;
+
+  // Returns the priority associated with |suggestion_group_id|.
+  // DCHECKs whether |suggestion_group_id| is found in |suggestion_groups_map_|.
+  SuggestionGroupPriority GetPriorityForSuggestionGroup(
+      SuggestionGroupId suggestion_group_id) const;
 
   // Updates |suggestion_groups_map_| with the suggestion groups information
   // from |suggeston_groups_map|. Followed by GroupAndDemoteMatchesInGroups()
-  // which sorts the matches based on the order in which their groups first
+  // which sorts the matches based on the order in which their groups should
   // appear while preserving the existing order of matches within the same
   // group.
   void MergeSuggestionGroupsMap(

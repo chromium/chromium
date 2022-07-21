@@ -108,8 +108,10 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(std::u16string text) {
   match.contents_class.push_back(
       ACMatchClassification(0, ACMatchClassification::URL));
 
-  match.suggestion_group_id = 1;
-  suggestion_groups_map_[1].MergeFrom({});
+  match.suggestion_group_id = SuggestionGroupId::kHistoryCluster;
+  // Insert a corresponding SuggestionGroup with default values in the
+  // suggestion groups map; otherwise the group ID will get dropped.
+  suggestion_groups_map_[SuggestionGroupId::kHistoryCluster];
 
   return match;
 }

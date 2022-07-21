@@ -235,6 +235,13 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
         /*relevance_from_server=*/false,
         /*input_text=*/base::ASCIIToUTF16(std::string()));
 
+    // Only provide a group ID, as the client does not know the header or the
+    // priority for SuggestionGroupId::kPersonalizedZeroSuggest. The suggestion
+    // group info will either be provided by the server (i.e., on SRP/Web) or
+    // this group ID will be dropped (i.e., on NTP).
+    suggestion.set_suggestion_group_id(
+        SuggestionGroupId::kPersonalizedZeroSuggest);
+
     AutocompleteMatch match = BaseSearchProvider::CreateSearchSuggestion(
         this, input, /*in_keyword_mode=*/false, suggestion,
         template_url_service->GetDefaultSearchProvider(),

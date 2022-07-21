@@ -106,7 +106,7 @@ class AutocompleteResultTest : public testing::Test {
     AutocompleteMatchType::Type type{AutocompleteMatchType::SEARCH_SUGGEST};
 
     // Suggestion Group ID for this suggestion
-    absl::optional<int> suggestion_group_id;
+    absl::optional<SuggestionGroupId> suggestion_group_id;
 
     // Inline autocompletion.
     std::string inline_autocompletion;
@@ -208,7 +208,9 @@ void AutocompleteResultTest::PopulateAutocompleteMatch(
   match->relevance = data.relevance;
   match->allowed_to_be_default_match = data.allowed_to_be_default_match;
   match->duplicate_matches = data.duplicate_matches;
-  match->suggestion_group_id = data.suggestion_group_id;
+  if (data.suggestion_group_id.has_value()) {
+    match->suggestion_group_id = data.suggestion_group_id.value();
+  }
   match->inline_autocompletion = base::UTF8ToUTF16(data.inline_autocompletion);
 }
 
@@ -1819,7 +1821,8 @@ TEST_F(AutocompleteResultTest, SortAndCullGroupSuggestionsByType) {
   result.AppendMatches(matches);
   result.SortAndCull(input, template_url_service_.get());
 
-  TestData expected_data[] = {
+  ASSERT_EQ(6U, AutocompleteResult::GetMaxMatches(/*is_zero_suggest=*/false));
+  const std::array<TestData, 6> expected_data{{
       // default match unmoved
       {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
       // search types
@@ -1829,207 +1832,300 @@ TEST_F(AutocompleteResultTest, SortAndCullGroupSuggestionsByType) {
       {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
       {5, 2, 1000, false, {}, AutocompleteMatchType::HISTORY_BODY},
       {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
-  };
-
-  AssertResultMatches(result, expected_data,
-                      AutocompleteResult::GetMaxMatches());
+  }};
+  AssertResultMatches(result, expected_data.begin(), expected_data.size());
 }
 #endif
 
-TEST_F(AutocompleteResultTest, SortAndCullKeepGroupedSuggestionsLast) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kUIExperimentMaxAutocompleteMatches,
-      {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}});
-  TestData data[] = {
-      {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
-      {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
-      {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
-      {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
-      {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, 2},
-      {5, 2, 1000, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, 2},
-      {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
-  };
-  ACMatches matches;
-  PopulateAutocompleteMatches(data, std::size(data), &matches);
-
-  AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-  AutocompleteResult result;
-
-  SuggestionGroupsMap suggestion_groups_map;
-  suggestion_groups_map[1].header = u"1";
-  suggestion_groups_map[2].header = u"2";
-  result.MergeSuggestionGroupsMap(suggestion_groups_map);
-  result.AppendMatches(matches);
-  result.SortAndCull(input, template_url_service_.get());
-
-  TestData expected_data[] = {
-      // default match unmoved
-      {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
-      // search types
-      {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
-      {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
-      // Group <2> is scored higher
-      {5, 2, 1000, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      // Group <1> is scored lower
-      {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-  };
-
-  AssertResultMatches(result, expected_data,
-                      AutocompleteResult::GetMaxMatches());
-}
-
-TEST_F(AutocompleteResultTest, SortAndCull_NoRetainSuggestionsWithHeaders) {
+TEST_F(AutocompleteResultTest, SortAndCull_DemoteSuggestionGroups_ExceedLimit) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {
-          /* Enabled list */
-          {omnibox::kUIExperimentMaxAutocompleteMatches,
-           {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "2"}}},  //
-      },
+      {{omnibox::kUIExperimentMaxAutocompleteMatches,
+        {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}},
+       {omnibox::kMaxZeroSuggestMatches,
+        {{OmniboxFieldTrial::kMaxZeroSuggestMatchesParam, "5"}}}},
       {{omnibox::kDynamicMaxAutocomplete,
         omnibox::kRetainSuggestionsWithHeaders}});
+
+  const auto group_1 = SuggestionGroupId::kNonPersonalizedZeroSuggest1;
+  const auto group_2 = SuggestionGroupId::kNonPersonalizedZeroSuggest2;
   TestData data[] = {
-      {1, 1, 1100, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      {2, 1, 1099, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      {3, 1, 1098, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      {4, 1, 1097, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      {5, 1, 1096, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      // Do not trip the Dynamic Max Autocomplete
-      {5, 2, 1097, false, {}, AutocompleteMatchType::HISTORY_URL},
-      {6, 1, 1095, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
-      {7, 1, 1094, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
-      {8, 1, 1093, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
-      {9, 1, 1092, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
+      {0, 4, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_1},
+      {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
+      {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_1},
+      {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
+      {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_2},
+      {5, 2, 1000, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_2},
+      {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
   };
   ACMatches matches;
   PopulateAutocompleteMatches(data, std::size(data), &matches);
 
-  AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-  AutocompleteResult result;
-
+  // Suggestion groups have SuggestionGroupPriority::kDefault priority by
+  // default.
   SuggestionGroupsMap suggestion_groups_map;
-  suggestion_groups_map[1].header = u"1";
-  suggestion_groups_map[2].header = u"2";
-  result.MergeSuggestionGroupsMap(suggestion_groups_map);
-  result.AppendMatches(matches);
-  result.SortAndCull(input, template_url_service_.get());
+  suggestion_groups_map[group_1].header = u"1";
+  suggestion_groups_map[group_2].header = u"2";
 
-  std::array<TestData, 2> expected_data{{
-      {1, 1, 1100, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      {2, 1, 1099, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-  }};
+  {
+    AutocompleteInput typed_input(u"a", metrics::OmniboxEventProto::OTHER,
+                                  TestSchemeClassifier());
+    AutocompleteResult result;
+    result.MergeSuggestionGroupsMap(suggestion_groups_map);
+    result.AppendMatches(matches);
+    result.SortAndCull(typed_input, template_url_service_.get());
 
-  AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    ASSERT_EQ(6U, AutocompleteResult::GetMaxMatches(/*is_zero_suggest=*/false));
+    const std::array<TestData, 6> expected_data{{
+        // default match unmoved
+        {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
+        // other types
+        {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
+        {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
+        // Group one is scored higher
+        {5, 2, 1000, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+        {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+        // Group two is scored lower
+        {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+    }};
+    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+  }
+  {
+    AutocompleteInput zero_prefix_input(u"", metrics::OmniboxEventProto::NTP,
+                                        TestSchemeClassifier());
+    zero_prefix_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+    AutocompleteResult result;
+    result.MergeSuggestionGroupsMap(suggestion_groups_map);
+    result.AppendMatches(matches);
+    result.SortAndCull(zero_prefix_input, template_url_service_.get());
+
+    ASSERT_EQ(5U, AutocompleteResult::GetMaxMatches(/*is_zero_suggest=*/true));
+    const std::array<TestData, 5> expected_data{{
+        // default match unmoved
+        {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
+        // other types
+        {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
+        {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
+        // Group two is scored higher
+        {5, 2, 1000, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+        {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+    }};
+    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+  }
+
+  // Set priorities that contradict the scores of the matches in groups.
+  suggestion_groups_map[group_1].priority =
+      SuggestionGroupPriority::kRemoteZeroSuggest1;
+  suggestion_groups_map[group_2].priority =
+      SuggestionGroupPriority::kRemoteZeroSuggest2;
+
+  {
+    AutocompleteInput typed_input(u"a", metrics::OmniboxEventProto::OTHER,
+                                  TestSchemeClassifier());
+    AutocompleteResult result;
+    result.MergeSuggestionGroupsMap(suggestion_groups_map);
+    result.AppendMatches(matches);
+    result.SortAndCull(typed_input, template_url_service_.get());
+
+    // typed matches are first culled, then grouped based on group IDs, and
+    // then ordered based on group priorities.
+    ASSERT_EQ(6U, AutocompleteResult::GetMaxMatches(/*is_zero_suggest=*/false));
+    const std::array<TestData, 6> expected_data{{
+        // default match unmoved
+        {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
+        // other types
+        {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
+        {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
+        // Group one has a higher priority
+        {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+        // Group two has a lower priority
+        {5, 2, 1000, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+        {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+    }};
+    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+  }
+  {
+    AutocompleteInput zero_prefix_input(u"", metrics::OmniboxEventProto::NTP,
+                                        TestSchemeClassifier());
+    zero_prefix_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+    AutocompleteResult result;
+    result.MergeSuggestionGroupsMap(suggestion_groups_map);
+    result.AppendMatches(matches);
+    result.SortAndCull(zero_prefix_input, template_url_service_.get());
+
+    // zero-prefix matches are first grouped basd on group IDs, then ordered
+    // based on group priorities, then culled.
+    ASSERT_EQ(5U, AutocompleteResult::GetMaxMatches(/*is_zero_suggest=*/true));
+    const std::array<TestData, 5> expected_data{{
+        // default match unmoved
+        {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
+        // other types
+        {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
+        {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
+        // Group <1> has a higher priority
+        {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+        {0, 4, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+    }};
+    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+  }
 }
 
 TEST_F(AutocompleteResultTest,
-       SortAndCull_RetainSuggestionsWithHeaders_NoDynamicMaxAutocomplete) {
+       SortAndCull_RetainSuggestionGroups_NoDynamicMaxAutocomplete) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {
-          /* Enabled list */
-          {omnibox::kUIExperimentMaxAutocompleteMatches,
-           {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "2"}}},  //
-          {omnibox::kRetainSuggestionsWithHeaders, {}}                   //
-      },
+      {{omnibox::kUIExperimentMaxAutocompleteMatches,
+        {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "2"}}},
+       {omnibox::kMaxZeroSuggestMatches,
+        {{OmniboxFieldTrial::kMaxZeroSuggestMatchesParam, "2"}}},
+       {omnibox::kRetainSuggestionsWithHeaders, {}}},
       {{omnibox::kDynamicMaxAutocomplete}});
+
+  const auto group_1 = SuggestionGroupId::kNonPersonalizedZeroSuggest1;
+  const auto group_2 = SuggestionGroupId::kNonPersonalizedZeroSuggest2;
   TestData data[] = {
       {1, 1, 1100, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {2, 1, 1099, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {3, 1, 1098, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {4, 1, 1097, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {5, 1, 1096, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      // Do not trip the Dynamic Max Autocomplete
       {5, 2, 1097, false, {}, AutocompleteMatchType::HISTORY_URL},
-      {6, 1, 1095, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
-      {7, 1, 1094, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
-      {8, 1, 1093, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
-      {9, 1, 1092, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
+      {6, 1, 1095, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_1},
+      {7, 1, 1094, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_2},
+      {8, 1, 1093, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_2},
+      {9, 1, 1092, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_2},
   };
   ACMatches matches;
   PopulateAutocompleteMatches(data, std::size(data), &matches);
 
-  AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-  AutocompleteResult result;
-
+  // Suggestion groups have SuggestionGroupPriority::kDefault priority by
+  // default.
   SuggestionGroupsMap suggestion_groups_map;
-  suggestion_groups_map[1].header = u"1";
-  suggestion_groups_map[2].header = u"2";
-  result.MergeSuggestionGroupsMap(suggestion_groups_map);
-  result.AppendMatches(matches);
-  result.SortAndCull(input, template_url_service_.get());
+  suggestion_groups_map[group_1].header = u"1";
+  suggestion_groups_map[group_2].header = u"2";
 
-  std::array<TestData, 6> expected_data{{
-      {1, 1, 1100, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      {2, 1, 1099, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      {6, 1, 1095, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
-      {7, 1, 1094, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
-      {8, 1, 1093, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
-      {9, 1, 1092, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
-  }};
+  {
+    AutocompleteInput typed_input(u"a", metrics::OmniboxEventProto::OTHER,
+                                  TestSchemeClassifier());
+    AutocompleteResult result;
+    result.MergeSuggestionGroupsMap(suggestion_groups_map);
+    result.AppendMatches(matches);
+    result.SortAndCull(typed_input, template_url_service_.get());
 
-  AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    // Retaining suggestion groups has no effect on typed matched.
+    ASSERT_EQ(2U, AutocompleteResult::GetMaxMatches(/*is_zero_suggest=*/false));
+    const std::array<TestData, 2> expected_data{{
+        {1, 1, 1100, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+        {2, 1, 1099, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+    }};
+    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+  }
+  {
+    AutocompleteInput zero_prefix_input(u"", metrics::OmniboxEventProto::NTP,
+                                        TestSchemeClassifier());
+    zero_prefix_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+    AutocompleteResult result;
+
+    result.MergeSuggestionGroupsMap(suggestion_groups_map);
+    result.AppendMatches(matches);
+    result.SortAndCull(zero_prefix_input, template_url_service_.get());
+
+    ASSERT_EQ(2U, AutocompleteResult::GetMaxMatches(/*is_zero_suggest=*/true));
+    const std::array<TestData, 6> expected_data{{
+        {1, 1, 1100, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+        {2, 1, 1099, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+        // Group one is scored higher
+        {6, 1, 1095, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_1},
+        // Group two is scored lower
+        {7, 1, 1094, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_2},
+        {8, 1, 1093, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_2},
+        {9, 1, 1092, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_2},
+    }};
+    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+  }
 }
 
 TEST_F(AutocompleteResultTest,
-       SortAndCull_RetainSuggestionsWithHeaders_WithDynamicMaxAutocomplete) {
+       SortAndCull_RetainSuggestionGroups_WithDynamicMaxAutocomplete) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
-      {
-          /* Enabled list */
-          {omnibox::kUIExperimentMaxAutocompleteMatches,
-           {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "2"}}},  //
-          {omnibox::kDynamicMaxAutocomplete,
-           {{OmniboxFieldTrial::kDynamicMaxAutocompleteIncreasedLimitParam,
-             "3"}}},
-          {omnibox::kRetainSuggestionsWithHeaders, {}}  //
-      },
-      {/* Disabled list */});
+      {{omnibox::kUIExperimentMaxAutocompleteMatches,
+        {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "2"}}},
+       {omnibox::kMaxZeroSuggestMatches,
+        {{OmniboxFieldTrial::kMaxZeroSuggestMatchesParam, "2"}}},
+       {omnibox::kDynamicMaxAutocomplete,
+        {{OmniboxFieldTrial::kDynamicMaxAutocompleteIncreasedLimitParam, "3"}}},
+       {omnibox::kRetainSuggestionsWithHeaders, {}}},
+      {});
+
+  const auto group_1 = SuggestionGroupId::kNonPersonalizedZeroSuggest1;
+  const auto group_2 = SuggestionGroupId::kNonPersonalizedZeroSuggest2;
   TestData data[] = {
       {1, 1, 1100, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {2, 1, 1099, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {3, 1, 1098, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {4, 1, 1097, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {5, 1, 1096, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      // Do not trip the Dynamic Max Autocomplete
       {5, 2, 1097, false, {}, AutocompleteMatchType::HISTORY_URL},
-      {6, 1, 1095, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
-      {7, 1, 1094, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 2},
-      {8, 1, 1093, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 2},
-      {9, 1, 1092, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 2},
+      {6, 1, 1095, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_1},
+      {7, 1, 1094, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_2},
+      {8, 1, 1093, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_2},
+      {9, 1, 1092, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_2},
   };
   ACMatches matches;
   PopulateAutocompleteMatches(data, std::size(data), &matches);
 
-  AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-  AutocompleteResult result;
-
+  // Set priorities that contradict the scores of the matches in groups.
   SuggestionGroupsMap suggestion_groups_map;
-  suggestion_groups_map[1].header = u"1";
-  suggestion_groups_map[2].header = u"2";
-  result.MergeSuggestionGroupsMap(suggestion_groups_map);
-  result.AppendMatches(matches);
-  result.SortAndCull(input, template_url_service_.get());
+  suggestion_groups_map[group_1].header = u"1";
+  suggestion_groups_map[group_1].priority =
+      SuggestionGroupPriority::kRemoteZeroSuggest2;
+  suggestion_groups_map[group_2].header = u"2";
+  suggestion_groups_map[group_2].priority =
+      SuggestionGroupPriority::kRemoteZeroSuggest1;
 
-  std::array<TestData, 7> expected_data{{
-      {1, 1, 1100, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      {2, 1, 1099, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      {3, 1, 1098, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
-      // Group <1> is scored higher
-      {6, 1, 1095, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 1},
-      // Group <2> is scored lower
-      {7, 1, 1094, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 2},
-      {8, 1, 1093, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 2},
-      {9, 1, 1092, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, 2},
-  }};
+  {
+    AutocompleteInput typed_input(u"a", metrics::OmniboxEventProto::OTHER,
+                                  TestSchemeClassifier());
+    AutocompleteResult result;
+    result.MergeSuggestionGroupsMap(suggestion_groups_map);
+    result.AppendMatches(matches);
+    result.SortAndCull(typed_input, template_url_service_.get());
 
-  AssertResultMatches(result, expected_data.begin(), expected_data.size());
+    // Retaining suggestion groups has no effect on typed matched.
+    ASSERT_EQ(2U, AutocompleteResult::GetMaxMatches(/*is_zero_suggest=*/false));
+    const std::array<TestData, 3> expected_data{{
+        {1, 1, 1100, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+        {2, 1, 1099, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+        {3, 1, 1098, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+    }};
+    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+  }
+  {
+    AutocompleteInput zero_prefix_input(u"", metrics::OmniboxEventProto::NTP,
+                                        TestSchemeClassifier());
+    zero_prefix_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+    AutocompleteResult result;
+
+    result.MergeSuggestionGroupsMap(suggestion_groups_map);
+    result.AppendMatches(matches);
+    result.SortAndCull(zero_prefix_input, template_url_service_.get());
+
+    // DynamicMaxAutocomplete has no effect on zero-prefix matched. The number
+    // of results not in groups is determined by the zero-suggest limit.
+    ASSERT_EQ(2U, AutocompleteResult::GetMaxMatches(/*is_zero_suggest=*/true));
+    const std::array<TestData, 6> expected_data{{
+        {1, 1, 1100, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+        {2, 1, 1099, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+        // Group two has a higher priority
+        {7, 1, 1094, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_2},
+        {8, 1, 1093, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_2},
+        {9, 1, 1092, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_2},
+        // Group one has a lower priority
+        {6, 1, 1095, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_1},
+    }};
+    AssertResultMatches(result, expected_data.begin(), expected_data.size());
+  }
 }
 
 TEST_F(AutocompleteResultTest,

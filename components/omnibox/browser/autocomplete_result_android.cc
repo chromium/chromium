@@ -99,7 +99,7 @@ ScopedJavaLocalRef<jobject> AutocompleteResult::GetOrCreateJavaObject(
 
   size_t index = 0;
   for (const auto& suggestion_group : suggestion_groups_map_) {
-    group_ids[index] = suggestion_group.first;
+    group_ids[index] = static_cast<int>(suggestion_group.first);
     group_names[index] = suggestion_group.second.header;
     group_collapsed_states[index] = suggestion_group.second.hidden;
     ++index;

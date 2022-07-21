@@ -163,10 +163,10 @@ class SearchSuggestionParser {
       return additional_query_params_;
     }
 
-    void set_suggestion_group_id(int suggestion_group_id) {
+    void set_suggestion_group_id(SuggestionGroupId suggestion_group_id) {
       suggestion_group_id_ = suggestion_group_id;
     }
-    absl::optional<int> suggestion_group_id() const {
+    absl::optional<SuggestionGroupId> suggestion_group_id() const {
       return suggestion_group_id_;
     }
 
@@ -214,9 +214,9 @@ class SearchSuggestionParser {
     // suggestion_config.proto. Used to look up the suggestion group info this
     // suggestion belong to such as the header text this suggestion must appear
     // under.
-    // Note: Use kInvalidSuggestionGroupId in place of a missing suggestion
+    // Note: Use SuggestionGroupId::kInvalid in place of a missing suggestion
     // group Id when this is to be converted to a primitive type.
-    absl::optional<int> suggestion_group_id_;
+    absl::optional<SuggestionGroupId> suggestion_group_id_;
 
     // Optional short answer to the input that produced this suggestion.
     absl::optional<SuggestionAnswer> answer_;

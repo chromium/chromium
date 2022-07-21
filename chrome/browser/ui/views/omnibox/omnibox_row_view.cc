@@ -17,6 +17,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/suggestion_group.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -86,7 +87,8 @@ class OmniboxRowView::HeaderView : public views::View {
     }
   }
 
-  void SetHeader(int suggestion_group_id, const std::u16string& header_text) {
+  void SetHeader(SuggestionGroupId suggestion_group_id,
+                 const std::u16string& header_text) {
     suggestion_group_id_ = suggestion_group_id;
     header_text_ = header_text;
 
@@ -248,7 +250,7 @@ class OmniboxRowView::HeaderView : public views::View {
   raw_ptr<views::ToggleImageButton> header_toggle_button_;
 
   // The group ID associated with this header.
-  int suggestion_group_id_ = 0;
+  SuggestionGroupId suggestion_group_id_ = SuggestionGroupId::kInvalid;
 
   // The unmodified header text for this header.
   std::u16string header_text_;
@@ -332,7 +334,7 @@ OmniboxRowView::OmniboxRowView(size_t line,
   result_view_ = AddChildView(std::move(result_view));
 }
 
-void OmniboxRowView::ShowHeader(int suggestion_group_id,
+void OmniboxRowView::ShowHeader(SuggestionGroupId suggestion_group_id,
                                 const std::u16string& header_text) {
   // Create the header (at index 0) if it doesn't exist.
   if (header_view_ == nullptr)

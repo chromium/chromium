@@ -10,6 +10,8 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
@@ -112,6 +114,38 @@ std::string FindStringKeyOrEmpty(const base::Value& value, std::string key) {
 constexpr char kTypeIntFieldNumber[] = "4";
 // The field number for the string value in ExperimentStatsV2.
 constexpr char kStringValueFieldNumber[] = "2";
+
+// Used to dynamically convert the server-provided group IDs to those known to
+// Chrome based on the 0-based index of the suggestion groups in the server
+// response.
+constexpr auto kReservedGroupIdsMap =
+    base::MakeFixedFlatMap<int, SuggestionGroupId>(
+        {{0, SuggestionGroupId::kNonPersonalizedZeroSuggest1},
+         {1, SuggestionGroupId::kNonPersonalizedZeroSuggest2},
+         {2, SuggestionGroupId::kNonPersonalizedZeroSuggest3},
+         {3, SuggestionGroupId::kNonPersonalizedZeroSuggest4},
+         {4, SuggestionGroupId::kNonPersonalizedZeroSuggest5},
+         {5, SuggestionGroupId::kNonPersonalizedZeroSuggest6},
+         {6, SuggestionGroupId::kNonPersonalizedZeroSuggest7},
+         {7, SuggestionGroupId::kNonPersonalizedZeroSuggest8},
+         {8, SuggestionGroupId::kNonPersonalizedZeroSuggest9},
+         {9, SuggestionGroupId::kNonPersonalizedZeroSuggest10}});
+
+// Used to dynamically convert the order of suggestion groups in the server
+// response to the group priorities known to Chrome based on the 0-based index
+// of the suggestion groups in the server response.
+constexpr auto kReservedGroupPrioritiesMap =
+    base::MakeFixedFlatMap<int, SuggestionGroupPriority>(
+        {{0, SuggestionGroupPriority::kRemoteZeroSuggest1},
+         {1, SuggestionGroupPriority::kRemoteZeroSuggest2},
+         {2, SuggestionGroupPriority::kRemoteZeroSuggest3},
+         {3, SuggestionGroupPriority::kRemoteZeroSuggest4},
+         {4, SuggestionGroupPriority::kRemoteZeroSuggest5},
+         {5, SuggestionGroupPriority::kRemoteZeroSuggest6},
+         {6, SuggestionGroupPriority::kRemoteZeroSuggest7},
+         {7, SuggestionGroupPriority::kRemoteZeroSuggest8},
+         {8, SuggestionGroupPriority::kRemoteZeroSuggest9},
+         {9, SuggestionGroupPriority::kRemoteZeroSuggest10}});
 
 }  // namespace
 
@@ -493,6 +527,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
   const base::Value* subtype_identifiers = nullptr;
   int prefetch_index = -1;
   int prerender_index = -1;
+  std::unordered_map<int, SuggestionGroup> parsed_suggestion_groups_map;
 
   if (root_list.size() > 4u && root_list[4].is_dict()) {
     const base::Value& extras = root_list[4];
@@ -554,7 +589,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
         for (auto it : headers->DictItems()) {
           int suggestion_group_id;
           base::StringToInt(it.first, &suggestion_group_id);
-          results->suggestion_groups_map[suggestion_group_id].header =
+          parsed_suggestion_groups_map[suggestion_group_id].header =
               base::UTF8ToUTF16(it.second.GetString());
         }
       }
@@ -562,8 +597,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
       const base::Value* hidden_group_ids = header_texts->FindListKey("h");
       if (hidden_group_ids) {
         for (const auto& value : hidden_group_ids->GetListDeprecated()) {
-          if (value.is_int())
-            results->suggestion_groups_map[value.GetInt()].hidden = true;
+          if (value.is_int()) {
+            parsed_suggestion_groups_map[value.GetInt()].hidden = true;
+          }
         }
       }
     }
@@ -610,6 +646,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
   int relevance = default_result_relevance;
   const std::u16string& trimmed_input =
       base::CollapseWhitespace(input.text(), false);
+  int last_suggestion_group_id = static_cast<int>(SuggestionGroupId::kInvalid);
+  int last_suggestion_group_index = -1;
+
   for (size_t index = 0;
        index < results_list.size() && results_list[index].is_string();
        ++index) {
@@ -752,11 +791,51 @@ bool SearchSuggestionParser::ParseSuggestResults(
           trimmed_input));
 
       if (suggestion_group_id) {
+        if (last_suggestion_group_id != *suggestion_group_id) {
+          // Remember the ID and the 0-based index of the last seen group.
+          last_suggestion_group_id = *suggestion_group_id;
+          last_suggestion_group_index++;
+        }
+
+        // Map the group ID to one known to Chrome. With an exception of the
+        // personalized suggestions whose group ID is known to Chrome, the
+        // mapping is dynamically done based on the 0-based index of the group.
+        SuggestionGroupId mapped_suggestion_group_id =
+            SuggestionGroupId::kInvalid;
+        if (*suggestion_group_id ==
+            static_cast<int>(SuggestionGroupId::kPersonalizedZeroSuggest)) {
+          mapped_suggestion_group_id =
+              SuggestionGroupId::kPersonalizedZeroSuggest;
+        } else if (base::Contains(kReservedGroupIdsMap,
+                                  last_suggestion_group_index)) {
+          mapped_suggestion_group_id =
+              kReservedGroupIdsMap.at(last_suggestion_group_index);
+        } else {
+          continue;
+        }
+
+        // Use the mapped group ID in the result.
         results->suggest_results.back().set_suggestion_group_id(
-            *suggestion_group_id);
+            mapped_suggestion_group_id);
+
+        // Use the mapped group ID to update the suggestion group info, if any.
+        // It is possible for a suggestion to specify a group ID for which there
+        // are no header or default visibility information available. Such group
+        // IDs are generally stripped away later on.
+        if (base::Contains(parsed_suggestion_groups_map,
+                           *suggestion_group_id)) {
+          results->suggestion_groups_map[mapped_suggestion_group_id].MergeFrom(
+              parsed_suggestion_groups_map[*suggestion_group_id]);
+          results->suggestion_groups_map[mapped_suggestion_group_id]
+              .original_group_id = *suggestion_group_id;
+          results->suggestion_groups_map[mapped_suggestion_group_id].priority =
+              kReservedGroupPrioritiesMap.at(last_suggestion_group_index);
+        }
       }
-      if (answer_parsed_successfully)
+
+      if (answer_parsed_successfully) {
         results->suggest_results.back().SetAnswer(answer);
+      }
     }
   }
   results->relevances_from_server = relevances != nullptr;

@@ -4,18 +4,27 @@
 
 #include "components/omnibox/browser/suggestion_group.h"
 
-// Value chosen based on SuggestionGroupIds::INVALID in suggestion_config.proto.
-const int kInvalidSuggestionGroupId = -1;
-
 void SuggestionGroup::MergeFrom(const SuggestionGroup& suggestion_group) {
+  // Only update the priority if not previously set.
+  if (priority == SuggestionGroupPriority::kDefault) {
+    priority = suggestion_group.priority;
+  }
   // Only update the header if not previously set.
   if (header.empty()) {
     header = suggestion_group.header;
+  }
+  // Only update the server group ID if not previously set and given group has
+  // a value.
+  if (!original_group_id.has_value() &&
+      suggestion_group.original_group_id.has_value()) {
+    original_group_id = *suggestion_group.original_group_id;
   }
   hidden = suggestion_group.hidden;
 }
 
 void SuggestionGroup::Clear() {
+  priority = SuggestionGroupPriority::kDefault;
   header.clear();
+  original_group_id.reset();
   hidden = false;
 }

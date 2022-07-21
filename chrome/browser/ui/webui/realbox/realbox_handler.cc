@@ -137,7 +137,8 @@ CreateSuggestionGroupsMap(const AutocompleteResult& result,
     suggestion_group->hide_group_a11y_label = l10n_util::GetStringFUTF16(
         IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON, suggestion_group->header);
 
-    result_map.emplace(pair.first, std::move(suggestion_group));
+    result_map.emplace(static_cast<int>(pair.first),
+                       std::move(suggestion_group));
   }
   return result_map;
 }
@@ -212,8 +213,8 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
                                                      description_class.style));
     }
     mojom_match->destination_url = match.destination_url;
-    mojom_match->suggestion_group_id =
-        match.suggestion_group_id.value_or(kInvalidSuggestionGroupId);
+    mojom_match->suggestion_group_id = static_cast<int>(
+        match.suggestion_group_id.value_or(SuggestionGroupId::kInvalid));
     const bool is_bookmarked =
         bookmark_model->IsBookmarked(match.destination_url);
     mojom_match->icon_url =
@@ -689,9 +690,14 @@ void RealboxHandler::ToggleSuggestionGroupIdVisibility(
   if (!autocomplete_controller_)
     return;
 
+  // It should be safe to cast |suggestion_group_id| to SuggestionGroupId type,
+  // since the group ID was originally passed to the page by the browser.
+  // TODO(crbug.com/1343512): Investigate migrating this enum to a proto enum
+  // to take advantage of its safe built-in conversion logic.
   omnibox::SuggestionGroupVisibility new_value =
       autocomplete_controller_->result().IsSuggestionGroupHidden(
-          profile_->GetPrefs(), suggestion_group_id)
+          profile_->GetPrefs(),
+          static_cast<SuggestionGroupId>(suggestion_group_id))
           ? omnibox::SuggestionGroupVisibility::SHOWN
           : omnibox::SuggestionGroupVisibility::HIDDEN;
   omnibox::SetSuggestionGroupVisibility(profile_->GetPrefs(),

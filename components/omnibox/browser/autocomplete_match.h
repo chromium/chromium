@@ -41,6 +41,8 @@ class SuggestionAnswer;
 class TemplateURL;
 class TemplateURLService;
 
+enum class SuggestionGroupId;
+
 namespace base {
 class Time;
 }  // namespace base
@@ -677,9 +679,9 @@ struct AutocompleteMatch {
   // The optional suggestion group Id. Used to look up the suggestion group info
   // such as the header text this match must appear under from ACResult.
   //
-  // If this value exists, it should always be positive and nonzero. In Java and
-  // JavaScript, -1 is used as a sentinel value, but should never occur in C++.
-  absl::optional<int> suggestion_group_id;
+  // This is converted to a primitive int type in Java and JavaScript; with -1
+  // (SuggestionGroupId::kInvalid) used as a sentinel value.
+  absl::optional<SuggestionGroupId> suggestion_group_id;
 
   // If true, UI-level code should swap the contents and description fields
   // before displaying.
