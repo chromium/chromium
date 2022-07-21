@@ -11,7 +11,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -19,6 +22,9 @@
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
+#include "content/browser/aggregation_service/aggregatable_report_scheduler.h"
+#include "content/browser/aggregation_service/aggregatable_report_sender.h"
+#include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -28,6 +34,8 @@
 #include "url/gurl.h"
 
 namespace content {
+
+// TODO(alexmt): Consider rewriting these tests using gmock.
 
 class TestAggregatableReportAssembler : public AggregatableReportAssembler {
  public:
@@ -82,10 +90,75 @@ class TestAggregatableReportSender : public AggregatableReportSender {
   std::map<int64_t, ReportSentCallback> callbacks_;
 };
 
+class TestAggregatableReportScheduler : public AggregatableReportScheduler {
+ public:
+  TestAggregatableReportScheduler(
+      AggregationServiceStorageContext* storage_context,
+      base::RepeatingCallback<
+          void(std::vector<AggregationServiceStorage::RequestAndId>)>
+          on_scheduled_report_time_reached)
+      : AggregatableReportScheduler(storage_context, base::DoNothing()),
+        on_scheduled_report_time_reached_(
+            std::move(on_scheduled_report_time_reached)) {}
+  ~TestAggregatableReportScheduler() override = default;
+
+  void ScheduleRequest(AggregatableReportRequest request) override {
+    scheduled_reports_.emplace(unique_id_counter_++, std::move(request));
+  }
+
+  void NotifyInProgressRequestSucceeded(
+      AggregationServiceStorage::RequestId request_id) override {
+    completed_requests_status_[request_id] = true;
+  }
+
+  void NotifyInProgressRequestFailed(
+      AggregationServiceStorage::RequestId request_id) override {
+    completed_requests_status_[request_id] = false;
+  }
+
+  void TriggerReportingTime(
+      std::vector<AggregationServiceStorage::RequestId> request_ids) {
+    std::vector<AggregationServiceStorage::RequestAndId> return_value;
+    for (AggregationServiceStorage::RequestId request_id : request_ids) {
+      ASSERT_TRUE(base::Contains(scheduled_reports_, request_id));
+      return_value.push_back(AggregationServiceStorage::RequestAndId{
+          .request = std::move(scheduled_reports_.at(request_id)),
+          .id = request_id});
+      scheduled_reports_.erase(request_id);
+    }
+    on_scheduled_report_time_reached_.Run(std::move(return_value));
+  }
+
+  // Returns a boolean representing whether the request was successfully
+  // completed. Returns absl::nullopt if the request has not yet completed.
+  absl::optional<bool> WasRequestSuccessful(
+      AggregationServiceStorage::RequestId request_id) {
+    if (!base::Contains(completed_requests_status_, request_id)) {
+      return absl::nullopt;
+    }
+    return completed_requests_status_[request_id];
+  }
+
+ private:
+  base::RepeatingCallback<void(
+      std::vector<AggregationServiceStorage::RequestAndId>)>
+      on_scheduled_report_time_reached_;
+  int64_t unique_id_counter_ = 1;
+  base::flat_map<AggregationServiceStorage::RequestId,
+                 AggregatableReportRequest>
+      scheduled_reports_;
+
+  // Each completed request's ID is the key, with value whether it was completed
+  // successfully.
+  base::flat_map<AggregationServiceStorage::RequestId, bool>
+      completed_requests_status_;
+};
+
 class AggregationServiceImplTest : public testing::Test {
  public:
   AggregationServiceImplTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        storage_context_(task_environment_.GetMockClock()) {
     EXPECT_TRUE(dir_.CreateUniqueTempDir());
 
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
@@ -100,10 +173,20 @@ class AggregationServiceImplTest : public testing::Test {
         std::make_unique<TestAggregatableReportSender>(url_loader_factory);
     test_sender_ = sender.get();
 
+    auto scheduler = std::make_unique<TestAggregatableReportScheduler>(
+        &storage_context_,
+        base::BindLambdaForTesting(
+            [this](std::vector<AggregationServiceStorage::RequestAndId>
+                       requests_and_ids) {
+              service_impl_->OnScheduledReportTimeReached(
+                  std::move(requests_and_ids));
+            }));
+    test_scheduler_ = scheduler.get();
+
     service_impl_ = AggregationServiceImpl::CreateForTesting(
         /*run_in_memory=*/true, dir_.GetPath(),
-        task_environment_.GetMockClock(), std::move(assembler),
-        std::move(sender));
+        task_environment_.GetMockClock(), std::move(scheduler),
+        std::move(assembler), std::move(sender));
   }
 
   void AssembleReport(AggregatableReportRequest request) {
@@ -124,9 +207,14 @@ class AggregationServiceImplTest : public testing::Test {
         }));
   }
 
+  void ScheduleReport(AggregatableReportRequest request) {
+    service()->ScheduleReport(std::move(request));
+  }
+
   AggregationServiceImpl* service() { return service_impl_.get(); }
   TestAggregatableReportAssembler* assembler() { return test_assembler_; }
   TestAggregatableReportSender* sender() { return test_sender_; }
+  TestAggregatableReportScheduler* scheduler() { return test_scheduler_; }
 
   // Returns `absl::nullopt` if no report callback has been run or if the last
   // assembly had an error.
@@ -151,8 +239,10 @@ class AggregationServiceImplTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<AggregationServiceImpl> service_impl_;
+  TestAggregationServiceStorageContext storage_context_;
   raw_ptr<TestAggregatableReportAssembler> test_assembler_ = nullptr;
   raw_ptr<TestAggregatableReportSender> test_sender_ = nullptr;
+  raw_ptr<TestAggregatableReportScheduler> test_scheduler_ = nullptr;
 
   absl::optional<AggregatableReport> last_assembled_report_;
   absl::optional<AggregationService::AssemblyStatus> last_assembly_status_;
@@ -213,6 +303,154 @@ TEST_F(AggregationServiceImplTest, SendReport) {
 
   ASSERT_TRUE(last_send_status().has_value());
   EXPECT_EQ(last_send_status().value(), AggregationService::SendStatus::kOk);
+}
+
+TEST_F(AggregationServiceImplTest, ScheduleReport_Success) {
+  AggregatableReportRequest request =
+      aggregation_service::CreateExampleRequest();
+
+  ScheduleReport(std::move(request));
+
+  // Request IDs begin at 1.
+  scheduler()->TriggerReportingTime(
+      /*request_ids=*/{AggregationServiceStorage::RequestId(1)});
+
+  std::vector<AggregatableReport::AggregationServicePayload> payloads;
+  payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
+                        /*key_id=*/"key_1",
+                        /*debug_cleartext_payload=*/absl::nullopt);
+  AggregatableReport report(std::move(payloads), "example_shared_info");
+
+  assembler()->TriggerResponse(
+      /*report_id=*/0, std::move(report),
+      AggregatableReportAssembler::AssemblyStatus::kOk);
+
+  sender()->TriggerResponse(/*report_id=*/0,
+                            AggregatableReportSender::RequestStatus::kOk);
+
+  ASSERT_TRUE(
+      scheduler()
+          ->WasRequestSuccessful(AggregationServiceStorage::RequestId(1))
+          .has_value());
+  EXPECT_TRUE(
+      scheduler()
+          ->WasRequestSuccessful(AggregationServiceStorage::RequestId(1))
+          .value());
+}
+
+TEST_F(AggregationServiceImplTest, ScheduleReport_FailedAssembly) {
+  AggregatableReportRequest request =
+      aggregation_service::CreateExampleRequest();
+
+  ScheduleReport(std::move(request));
+
+  // Request IDs begin at 1.
+  scheduler()->TriggerReportingTime(
+      /*request_ids=*/{AggregationServiceStorage::RequestId(1)});
+
+  std::vector<AggregatableReport::AggregationServicePayload> payloads;
+  payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
+                        /*key_id=*/"key_1",
+                        /*debug_cleartext_payload=*/absl::nullopt);
+  AggregatableReport report(std::move(payloads), "example_shared_info");
+
+  assembler()->TriggerResponse(
+      /*report_id=*/0, absl::nullopt,
+      AggregatableReportAssembler::AssemblyStatus::kAssemblyFailed);
+
+  ASSERT_TRUE(
+      scheduler()
+          ->WasRequestSuccessful(AggregationServiceStorage::RequestId(1))
+          .has_value());
+  EXPECT_FALSE(
+      scheduler()
+          ->WasRequestSuccessful(AggregationServiceStorage::RequestId(1))
+          .value());
+}
+
+TEST_F(AggregationServiceImplTest, ScheduleReport_FailedSending) {
+  AggregatableReportRequest request =
+      aggregation_service::CreateExampleRequest();
+
+  ScheduleReport(std::move(request));
+
+  scheduler()->TriggerReportingTime(
+      /*request_ids=*/{AggregationServiceStorage::RequestId(1)});
+
+  std::vector<AggregatableReport::AggregationServicePayload> payloads;
+  payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
+                        /*key_id=*/"key_1",
+                        /*debug_cleartext_payload=*/absl::nullopt);
+  AggregatableReport report(std::move(payloads), "example_shared_info");
+
+  assembler()->TriggerResponse(
+      /*report_id=*/0, std::move(report),
+      AggregatableReportAssembler::AssemblyStatus::kOk);
+
+  sender()->TriggerResponse(
+      /*report_id=*/0, AggregatableReportSender::RequestStatus::kNetworkError);
+
+  ASSERT_TRUE(
+      scheduler()
+          ->WasRequestSuccessful(AggregationServiceStorage::RequestId(1))
+          .has_value());
+  EXPECT_FALSE(
+      scheduler()
+          ->WasRequestSuccessful(AggregationServiceStorage::RequestId(1))
+          .value());
+}
+
+TEST_F(AggregationServiceImplTest,
+       MultipleReportsReturnedFromScheduler_Success) {
+  AggregatableReportRequest request_1 =
+      aggregation_service::CreateExampleRequest();
+  AggregatableReportRequest request_2 =
+      aggregation_service::CreateExampleRequest();
+
+  ScheduleReport(std::move(request_1));
+  ScheduleReport(std::move(request_2));
+
+  // Request IDs begin at 1.
+  scheduler()->TriggerReportingTime(
+      /*request_ids=*/{AggregationServiceStorage::RequestId(1),
+                       AggregationServiceStorage::RequestId(2)});
+
+  std::vector<AggregatableReport::AggregationServicePayload> payloads;
+  payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
+                        /*key_id=*/"key_1",
+                        /*debug_cleartext_payload=*/absl::nullopt);
+  AggregatableReport report_1(payloads, "example_shared_info");
+  AggregatableReport report_2(payloads, "example_shared_info");
+
+  assembler()->TriggerResponse(
+      /*report_id=*/0, std::move(report_1),
+      AggregatableReportAssembler::AssemblyStatus::kOk);
+  assembler()->TriggerResponse(
+      /*report_id=*/1, std::move(report_2),
+      AggregatableReportAssembler::AssemblyStatus::kOk);
+
+  sender()->TriggerResponse(/*report_id=*/0,
+                            AggregatableReportSender::RequestStatus::kOk);
+  sender()->TriggerResponse(/*report_id=*/1,
+                            AggregatableReportSender::RequestStatus::kOk);
+
+  ASSERT_TRUE(
+      scheduler()
+          ->WasRequestSuccessful(AggregationServiceStorage::RequestId(1))
+          .has_value());
+  EXPECT_TRUE(
+      scheduler()
+          ->WasRequestSuccessful(AggregationServiceStorage::RequestId(1))
+          .value());
+
+  ASSERT_TRUE(
+      scheduler()
+          ->WasRequestSuccessful(AggregationServiceStorage::RequestId(2))
+          .has_value());
+  EXPECT_TRUE(
+      scheduler()
+          ->WasRequestSuccessful(AggregationServiceStorage::RequestId(2))
+          .value());
 }
 
 }  // namespace content

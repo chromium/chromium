@@ -47,22 +47,24 @@ class CONTENT_EXPORT AggregatableReportScheduler {
       delete;
   AggregatableReportScheduler& operator=(
       const AggregatableReportScheduler& other) = delete;
-  ~AggregatableReportScheduler();
+  virtual ~AggregatableReportScheduler();
+
+  // Methods are virtual for testing.
 
   // Schedules the `request` to be assembled and sent at
   // `request.shared_info().scheduled_report_time`.
-  void ScheduleRequest(AggregatableReportRequest request);
+  virtual void ScheduleRequest(AggregatableReportRequest request);
 
   // Notifies that the request to assemble and send the report with `request_id`
   // was successfully completed. There must be an in-progress request stored
   // with that `request_id`.
-  void NotifyInProgressRequestSucceeded(
+  virtual void NotifyInProgressRequestSucceeded(
       AggregationServiceStorage::RequestId request_id);
 
   // Notifies that the request to assemble and send the report with `request_id`
   // completed unsuccessfully. There must be an in-progress request stored with
   // that `request_id`.
-  void NotifyInProgressRequestFailed(
+  virtual void NotifyInProgressRequestFailed(
       AggregationServiceStorage::RequestId request_id);
 
   // TODO(crbug.com/1340042): Implement offline and startup handling

@@ -7,7 +7,6 @@
 
 #include "content/browser/aggregation_service/aggregatable_report_assembler.h"
 #include "content/browser/aggregation_service/aggregatable_report_sender.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -62,6 +61,11 @@ class AggregationService {
   virtual void ClearData(base::Time delete_begin,
                          base::Time delete_end,
                          base::OnceClosure done) = 0;
+
+  // Schedules `report_request` to be assembled and sent at its scheduled report
+  // time. It is stored on disk (unless in incognito) until then. See the
+  // `AggregatableReportScheduler` for details.
+  virtual void ScheduleReport(AggregatableReportRequest report_request) = 0;
 };
 
 }  // namespace content
