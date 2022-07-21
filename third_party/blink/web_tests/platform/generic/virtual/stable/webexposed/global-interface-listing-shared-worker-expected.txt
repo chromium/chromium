@@ -1269,6 +1269,13 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter readable
 [Worker]     getter writable
 [Worker]     method constructor
+[Worker] interface TransformStreamDefaultController
+[Worker]     attribute @@toStringTag
+[Worker]     getter desiredSize
+[Worker]     method constructor
+[Worker]     method enqueue
+[Worker]     method error
+[Worker]     method terminate
 [Worker] interface TrustedHTML
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor

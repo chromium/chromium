@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 226 tests; 214 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 226 tests; 225 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS ReadableStreamDefaultReader includes ReadableStreamGenericReader: member names are unique
@@ -184,17 +184,17 @@ PASS TransformStream must be primary interface of new TransformStream()
 PASS Stringification of new TransformStream()
 PASS TransformStream interface: new TransformStream() must inherit property "readable" with the proper type
 PASS TransformStream interface: new TransformStream() must inherit property "writable" with the proper type
-FAIL TransformStreamDefaultController interface: existence and properties of interface object assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface object length assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface object name assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface: existence and properties of interface prototype object assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface: attribute desiredSize assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface: operation enqueue(optional any) assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface: operation error(optional any) assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController interface: operation terminate() assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
-FAIL TransformStreamDefaultController must be primary interface of self.transformStreamDefaultController assert_own_property: self does not have own property "TransformStreamDefaultController" expected property "TransformStreamDefaultController" missing
+PASS TransformStreamDefaultController interface: existence and properties of interface object
+PASS TransformStreamDefaultController interface object length
+PASS TransformStreamDefaultController interface object name
+PASS TransformStreamDefaultController interface: existence and properties of interface prototype object
+PASS TransformStreamDefaultController interface: existence and properties of interface prototype object's "constructor" property
+PASS TransformStreamDefaultController interface: existence and properties of interface prototype object's @@unscopables property
+PASS TransformStreamDefaultController interface: attribute desiredSize
+PASS TransformStreamDefaultController interface: operation enqueue(optional any)
+PASS TransformStreamDefaultController interface: operation error(optional any)
+PASS TransformStreamDefaultController interface: operation terminate()
+PASS TransformStreamDefaultController must be primary interface of self.transformStreamDefaultController
 PASS Stringification of self.transformStreamDefaultController
 PASS TransformStreamDefaultController interface: self.transformStreamDefaultController must inherit property "desiredSize" with the proper type
 PASS TransformStreamDefaultController interface: self.transformStreamDefaultController must inherit property "enqueue(optional any)" with the proper type

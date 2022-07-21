@@ -1523,6 +1523,13 @@ interface TransformStream
     getter readable
     getter writable
     method constructor
+interface TransformStreamDefaultController
+    attribute @@toStringTag
+    getter desiredSize
+    method constructor
+    method enqueue
+    method error
+    method terminate
 interface TrustedHTML
     attribute @@toStringTag
     method constructor

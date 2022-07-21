@@ -378,6 +378,13 @@ CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter readable
 CONSOLE MESSAGE:     getter writable
 CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE: interface TransformStreamDefaultController
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter desiredSize
+CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE:     method enqueue
+CONSOLE MESSAGE:     method error
+CONSOLE MESSAGE:     method terminate
 CONSOLE MESSAGE: interface WorkletGlobalScope
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method constructor
@@ -789,6 +796,13 @@ CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter readable
 CONSOLE MESSAGE:     getter writable
 CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE: interface TransformStreamDefaultController
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter desiredSize
+CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE:     method enqueue
+CONSOLE MESSAGE:     method error
+CONSOLE MESSAGE:     method terminate
 CONSOLE MESSAGE: interface WorkletGlobalScope
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method constructor
