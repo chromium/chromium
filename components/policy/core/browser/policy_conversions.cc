@@ -92,6 +92,11 @@ PolicyConversions& PolicyConversions::SetDropDefaultValues(bool enabled) {
   return *this;
 }
 
+PolicyConversions& PolicyConversions::EnableExtensionPolicies(bool enabled) {
+  extension_policies_enabled_ = enabled;
+  return *this;
+}
+
 /**
  * DictionaryPolicyConversions
  */
@@ -158,6 +163,27 @@ DictionaryPolicyConversions& DictionaryPolicyConversions::SetDropDefaultValues(
   return *this;
 }
 
+DictionaryPolicyConversions&
+DictionaryPolicyConversions::EnableExtensionPolicies(bool enabled) {
+  PolicyConversions::EnableExtensionPolicies(enabled);
+  return *this;
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+base::Value::Dict DictionaryPolicyConversions::GetExtensionPolicies() {
+  base::Value::Dict extension_policies;
+  if (client()->HasUserPolicies()) {
+    extension_policies.Set("extensionPolicies",
+                           GetExtensionPolicies(POLICY_DOMAIN_EXTENSIONS));
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  extension_policies.Set("loginScreenExtensionPolicies",
+                         GetExtensionPolicies(POLICY_DOMAIN_SIGNIN_EXTENSIONS));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return extension_policies;
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 std::string DictionaryPolicyConversions::ToJSON() {
   return client()->ConvertValueToJSON(Value(ToValueDict()));
 }
@@ -169,8 +195,9 @@ Value::Dict DictionaryPolicyConversions::ToValueDict() {
     all_policies.Set("chromePolicies", client()->GetChromePolicies());
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    all_policies.Set("extensionPolicies",
-                     GetExtensionPolicies(POLICY_DOMAIN_EXTENSIONS));
+    if (extension_policies_enabled_) {
+      all_policies.Merge(GetExtensionPolicies());
+    }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
 
@@ -178,11 +205,6 @@ Value::Dict DictionaryPolicyConversions::ToValueDict() {
   if (client()->HasUpdaterPolicies())
     all_policies.Set("updaterPolicies", client()->GetUpdaterPolicies());
 #endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
-  all_policies.Set("loginScreenExtensionPolicies",
-                   GetExtensionPolicies(POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   all_policies.Set("deviceLocalAccountPolicies",
@@ -280,6 +302,31 @@ ArrayPolicyConversions& ArrayPolicyConversions::SetDropDefaultValues(
   return *this;
 }
 
+ArrayPolicyConversions& ArrayPolicyConversions::EnableExtensionPolicies(
+    bool enabled) {
+  PolicyConversions::EnableExtensionPolicies(enabled);
+  return *this;
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+base::Value::List ArrayPolicyConversions::GetExtensionPolicies() {
+  base::Value::List policies;
+  if (client()->HasUserPolicies()) {
+    for (auto& policy :
+         client()->GetExtensionPolicies(POLICY_DOMAIN_EXTENSIONS)) {
+      policies.Append(std::move(policy));
+    }
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  for (auto& policy :
+       client()->GetExtensionPolicies(POLICY_DOMAIN_SIGNIN_EXTENSIONS)) {
+    policies.Append(std::move(policy));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return policies;
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 std::string ArrayPolicyConversions::ToJSON() {
   return client()->ConvertValueToJSON(Value(ToValueList()));
 }
@@ -300,21 +347,14 @@ Value::List ArrayPolicyConversions::ToValueList() {
     if (client()->HasUpdaterPolicies())
       all_policies.Append(GetUpdaterPolicies());
 #endif
-
+  }
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    for (auto& policy :
-         client()->GetExtensionPolicies(POLICY_DOMAIN_EXTENSIONS)) {
-      all_policies.Append(std::move(policy));
+  if (extension_policies_enabled_) {
+    for (auto& extension_policy : GetExtensionPolicies()) {
+      all_policies.Append(std::move(extension_policy));
     }
+  }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-  }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
-  for (auto& policy :
-       client()->GetExtensionPolicies(POLICY_DOMAIN_SIGNIN_EXTENSIONS)) {
-    all_policies.Append(std::move(policy));
-  }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   for (auto& device_policy : client()->GetDeviceLocalAccountPolicies())
