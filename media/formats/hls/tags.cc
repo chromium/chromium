@@ -105,6 +105,26 @@ constexpr base::StringPiece GetAttributeName(XStreamInfTagAttribute attribute) {
   return "";
 }
 
+// Attributes expected in `EXT-X-MAP` tag contents.
+// These must remain sorted alphabetically.
+enum class XMapTagAttribute {
+  kByteRange,
+  kUri,
+  kMaxValue = kUri,
+};
+
+constexpr base::StringPiece GetAttributeName(XMapTagAttribute attribute) {
+  switch (attribute) {
+    case XMapTagAttribute::kByteRange:
+      return "BYTERANGE";
+    case XMapTagAttribute::kUri:
+      return "URI";
+  }
+
+  NOTREACHED();
+  return "";
+}
+
 // Attributes expected in `EXT-X-PART` tag contents.
 // These must remain sorted alphabetically.
 enum class XPartTagAttribute {
@@ -148,7 +168,7 @@ constexpr base::StringPiece GetAttributeName(XPartInfTagAttribute attribute) {
   return "";
 }
 
-// Attributes expected in `EXT-X-SERVER-CONTROL tag contents.
+// Attributes expected in `EXT-X-SERVER-CONTROL` tag contents.
 // These must remain sorted alphabetically.
 enum class XServerControlTagAttribute {
   kCanBlockReload,
@@ -547,6 +567,57 @@ ParseStatus::Or<XGapTag> XGapTag::Parse(TagItem tag) {
 // static
 ParseStatus::Or<XIFramesOnlyTag> XIFramesOnlyTag::Parse(TagItem tag) {
   return ParseEmptyTag<XIFramesOnlyTag>(tag);
+}
+
+// static
+ParseStatus::Or<XMapTag> XMapTag::Parse(
+    TagItem tag,
+    const VariableDictionary& variable_dict,
+    VariableDictionary::SubstitutionBuffer& sub_buffer) {
+  DCHECK(tag.GetName() == ToTagName(XMapTag::kName));
+  if (!tag.GetContent().has_value()) {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  // Parse the attribute-list
+  TypedAttributeMap<XMapTagAttribute> map;
+  types::AttributeListIterator iter(*tag.GetContent());
+  auto map_result = map.FillUntilError(&iter);
+
+  if (map_result.code() != ParseStatusCode::kReachedEOF) {
+    return ParseStatus(ParseStatusCode::kMalformedTag)
+        .AddCause(std::move(map_result));
+  }
+
+  absl::optional<ResolvedSourceString> uri;
+  if (map.HasValue(XMapTagAttribute::kUri)) {
+    auto result = types::ParseQuotedString(map.GetValue(XMapTagAttribute::kUri),
+                                           variable_dict, sub_buffer);
+    if (result.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(result).error());
+    }
+
+    uri = std::move(result).value();
+  } else {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  absl::optional<types::ByteRangeExpression> byte_range;
+  if (map.HasValue(XMapTagAttribute::kByteRange)) {
+    auto result =
+        types::ParseQuotedString(map.GetValue(XMapTagAttribute::kByteRange),
+                                 variable_dict, sub_buffer)
+            .MapValue(types::ByteRangeExpression::Parse);
+    if (result.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(result).error());
+    }
+
+    byte_range = std::move(result).value();
+  }
+
+  return XMapTag{.uri = uri.value(), .byte_range = byte_range};
 }
 
 // static

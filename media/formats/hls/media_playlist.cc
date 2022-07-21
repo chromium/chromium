@@ -224,7 +224,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
           break;
         }
         case MediaPlaylistTagName::kXMap: {
-          // TODO(crbug.com/1266991): Implement the EXT-X-MAP tag.
+          // TODO(crbug.com/1266991): Integrate the EXT-X-MAP tag.
           break;
         }
         case MediaPlaylistTagName::kXMediaSequence: {

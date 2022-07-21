@@ -574,10 +574,54 @@ TEST(HlsTagsTest, ParseXKeyTag) {
 }
 
 TEST(HlsTagsTest, ParseXMapTag) {
-  RunTagIdenficationTest(ToTagName(MediaPlaylistTagName::kXMap),
-                         "#EXT-X-MAP:URI=\"foo.ts\",BYTERANGE=12@0\n",
-                         "URI=\"foo.ts\",BYTERANGE=12@0");
-  // TODO(crbug.com/1266991): Implement the EXT-X-MAP tag.
+  RunTagIdenficationTest<XMapTag>("#EXT-X-MAP:URI=\"foo.ts\",BYTERANGE=12@0\n",
+                                  "URI=\"foo.ts\",BYTERANGE=12@0");
+
+  VariableDictionary variable_dict = CreateBasicDictionary();
+  EXPECT_TRUE(variable_dict.Insert(CreateVarName("ONE"), "1"));
+  EXPECT_TRUE(variable_dict.Insert(CreateVarName("TWO"), "2"));
+  EXPECT_TRUE(variable_dict.Insert(CreateVarName("THREE"), "3"));
+  VariableDictionary::SubstitutionBuffer sub_buffer;
+
+  // The URI attribute is required
+  ErrorTest<XMapTag>(absl::nullopt, variable_dict, sub_buffer,
+                     ParseStatusCode::kMalformedTag);
+  ErrorTest<XMapTag>("", variable_dict, sub_buffer,
+                     ParseStatusCode::kMalformedTag);
+  ErrorTest<XMapTag>("BYTERANGE=12", variable_dict, sub_buffer,
+                     ParseStatusCode::kMalformedTag);
+  ErrorTest<XMapTag>("URI=foo.ts", variable_dict, sub_buffer,
+                     ParseStatusCode::kMalformedTag);
+  auto result =
+      OkTest<XMapTag>("URI=\"foo.ts\",FUTURE=PROOF", variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+
+  // The URI attribute is subject to variable substitution
+  ErrorTest<XMapTag>("URI=\"{$UNDEFINED}.ts\"", variable_dict, sub_buffer,
+                     ParseStatusCode::kMalformedTag);
+  result =
+      OkTest<XMapTag>("URI=\"{$FOO}_{$BAR}.ts\"", variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "bar_baz.ts");
+  EXPECT_EQ(result.tag.byte_range, absl::nullopt);
+
+  // Test the BYTERANGE attribute
+  ErrorTest<XMapTag>("URI=\"foo.ts\",BYTERANGE=\"{$UNDEFINED}\"", variable_dict,
+                     sub_buffer, ParseStatusCode::kMalformedTag);
+  ErrorTest<XMapTag>("URI=\"foo.ts\",BYTERANGE=\"\"", variable_dict, sub_buffer,
+                     ParseStatusCode::kMalformedTag);
+  result = OkTest<XMapTag>("URI=\"foo.ts\",BYTERANGE=\"10\"", variable_dict,
+                           sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+  EXPECT_EQ(result.tag.byte_range->length, 10u);
+  EXPECT_EQ(result.tag.byte_range->offset, absl::nullopt);
+
+  // The BYTERANGE attribute is subject to variable substitution
+  result = OkTest<XMapTag>("URI=\"foo.ts\",BYTERANGE=\"{$ONE}{$TWO}@{$THREE}\"",
+                           variable_dict, sub_buffer);
+  EXPECT_EQ(result.tag.uri.Str(), "foo.ts");
+  EXPECT_EQ(result.tag.byte_range->length, 12u);
+  EXPECT_EQ(result.tag.byte_range->offset, 3u);
 }
 
 TEST(HlsTagsTest, ParseXMediaSequenceTag) {

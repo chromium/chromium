@@ -170,6 +170,22 @@ struct MEDIA_EXPORT XIFramesOnlyTag {
   static ParseStatus::Or<XIFramesOnlyTag> Parse(TagItem);
 };
 
+// Represents the contents of the #EXT-X-MAP tag.
+struct MEDIA_EXPORT XMapTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXMap;
+  static ParseStatus::Or<XMapTag> Parse(
+      TagItem,
+      const VariableDictionary& variable_dict,
+      VariableDictionary::SubstitutionBuffer& sub_buffer);
+
+  // The URI of the resource containing the media initialization section.
+  ResolvedSourceString uri;
+
+  // This specifies a byte range into the resource containing the media
+  // initialization section.
+  absl::optional<types::ByteRangeExpression> byte_range;
+};
+
 // Represents the contents of the #EXT-X-MEDIA-SEQUENCE tag.
 struct MEDIA_EXPORT XMediaSequenceTag {
   static constexpr auto kName = MediaPlaylistTagName::kXMediaSequence;
