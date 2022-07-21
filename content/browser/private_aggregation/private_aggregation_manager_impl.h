@@ -28,7 +28,8 @@ class PrivateAggregationBudgeter;
 class PrivateAggregationHost;
 
 // UI thread class that manages the lifetime of the other classes,
-// coordinates report requests, and interfaces with other directories.
+// coordinates report requests, and interfaces with other directories. Lifetime
+// is bound to lifetime of the `StoragePartitionImpl`.
 // TODO(crbug.com/1323325): Integrate with aggregation service.
 class CONTENT_EXPORT PrivateAggregationManagerImpl
     : public PrivateAggregationManager {

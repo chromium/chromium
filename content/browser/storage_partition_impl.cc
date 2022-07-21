@@ -78,6 +78,8 @@
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/payments/payment_app_context_impl.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/private_aggregation/private_aggregation_features.h"
+#include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 #include "content/browser/push_messaging/push_messaging_context.h"
 #include "content/browser/quota/quota_context.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -1388,6 +1390,11 @@ void StoragePartitionImpl::Initialize(
     shared_storage_manager_ = std::make_unique<storage::SharedStorageManager>(
         shared_storage_path, special_storage_policy_);
   }
+
+  if (base::FeatureList::IsEnabled(kPrivateAggregationApi)) {
+    private_aggregation_manager_ =
+        std::make_unique<PrivateAggregationManagerImpl>(is_in_memory(), path);
+  }
 }
 
 void StoragePartitionImpl::OnStorageServiceDisconnected() {
@@ -1724,6 +1731,12 @@ StoragePartitionImpl::GetProtoDatabaseProviderForTesting() {
 
 storage::SharedStorageManager* StoragePartitionImpl::GetSharedStorageManager() {
   return shared_storage_manager_.get();
+}
+
+PrivateAggregationManagerImpl*
+StoragePartitionImpl::GetPrivateAggregationManager() {
+  DCHECK(initialized_);
+  return private_aggregation_manager_.get();
 }
 
 void StoragePartitionImpl::OpenLocalStorage(
