@@ -1504,7 +1504,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoCornerPresent:
       return false;
     case CSSSelector::kPseudoModal:
-      DCHECK(is_ua_rule_);
+      if (Fullscreen::IsFullscreenElement(element))
+        return true;
       if (const auto* dialog_element = DynamicTo<HTMLDialogElement>(element))
         return dialog_element->IsModal();
       return false;

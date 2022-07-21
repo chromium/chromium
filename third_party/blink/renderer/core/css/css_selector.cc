@@ -380,7 +380,6 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-list-box", CSSSelector::kPseudoListBox},
     {"-internal-media-controls-overlay-cast-button",
      CSSSelector::kPseudoWebKitCustomElement},
-    {"-internal-modal", CSSSelector::kPseudoModal},
     {"-internal-multi-select-focus", CSSSelector::kPseudoMultiSelectFocus},
     {"-internal-popup-hidden", CSSSelector::kPseudoPopupHidden},
     {"-internal-relative-anchor", CSSSelector::kPseudoRelativeAnchor},
@@ -449,6 +448,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"left", CSSSelector::kPseudoLeftPage},
     {"link", CSSSelector::kPseudoLink},
     {"marker", CSSSelector::kPseudoMarker},
+    {"modal", CSSSelector::kPseudoModal},
     {"no-button", CSSSelector::kPseudoNoButton},
     {"only-child", CSSSelector::kPseudoOnlyChild},
     {"only-of-type", CSSSelector::kPseudoOnlyOfType},
@@ -693,7 +693,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoHostHasAppearance:
     case kPseudoIsHtml:
     case kPseudoListBox:
-    case kPseudoModal:
     case kPseudoMultiSelectFocus:
     case kPseudoSpatialNavigationFocus:
     case kPseudoSpatialNavigationInterest:
@@ -747,6 +746,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoLastChild:
     case kPseudoLastOfType:
     case kPseudoLink:
+    case kPseudoModal:
     case kPseudoNoButton:
     case kPseudoNot:
     case kPseudoNthChild:

@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS :modal pseudo-class is not active with dialog.show()
-FAIL :modal pseudo-class invalidation with showModal+close assert_equals: ancestor should be green since dialog is shown modally expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
-FAIL :modal pseudo-class invalidation with showModal+remove Failed to execute 'showModal' on 'HTMLDialogElement': The element already has an 'open' attribute, and therefore cannot be opened modally.
-Harness: the test ran to completion.
-

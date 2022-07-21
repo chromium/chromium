@@ -2,15 +2,22 @@
 <meta charset="utf-8"/>
 <title>:modal pseudo-class</title>
 <link rel="author" title="Tim Nguyen" href="https://github.com/nt1m">
+<link rel="author" title="Jihwan Marc Kim" href="mailto:bluewhale.marc@gmail.com" />
 <link rel="help" href="https://drafts.csswg.org/selectors/#modal-state">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 
 <dialog id="dialog">Just another dialog.</dialog>
+<div id="container">
+	<button id="btn"/>
+</div>
 
 <script>
   setup({ single_test: true });
 
+  // dialog element test
   const dialog = document.getElementById("dialog");
   assert_false(dialog.matches(":modal"), "dialog is initially closed (does not match :modal)");
 
@@ -34,5 +41,19 @@
 
   dialog.close();
 
-  done();
+  // fullscreen element test
+  const container = document.getElementById("container");
+  const btn = document.getElementById("btn");
+
+  assert_false(container.matches(":modal"), "before requestFullscreen (does not match :modal)");
+
+  test_driver.click(btn).then(() => {
+      return container.requestFullscreen();
+    }).then(() => {
+      assert_true(container.matches(":modal"), ":fullscreen should match :modal");
+      return document.exitFullscreen();
+    }).then(() => {
+      assert_false(container.matches(":modal"), "after exitFullscreen (does not match :modal)");
+      done();
+    });
 </script>

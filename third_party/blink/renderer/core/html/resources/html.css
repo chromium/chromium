@@ -1385,7 +1385,7 @@ dialog {
     color: CanvasText;
 }
 
-dialog:-internal-modal {
+dialog:modal {
     position: fixed;
     overflow: auto;
     top: 0;
