@@ -89,6 +89,7 @@
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/public/test/url_loader_monitor.h"
@@ -4719,5 +4720,22 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiFencedFrameTest,
 INSTANTIATE_TEST_SUITE_P(ExtensionWebRequestApiFencedFrameTest,
                          ExtensionWebRequestApiFencedFrameTest,
                          testing::Bool());
+
+class ExtensionWebRequestApiPrerenderingTest
+    : public ExtensionWebRequestApiTest {
+ protected:
+  ExtensionWebRequestApiPrerenderingTest() = default;
+  ~ExtensionWebRequestApiPrerenderingTest() override = default;
+
+ private:
+  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiPrerenderingTest, Load) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(
+      RunExtensionTest("webrequest", {.page_url = "test_prerendering.html"}))
+      << message_;
+}
 
 }  // namespace extensions
