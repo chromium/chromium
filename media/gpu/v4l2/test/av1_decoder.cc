@@ -617,8 +617,8 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
     ANALYZER_ALLOW_UNUSED(reference_id);
   }
 
-  // TODO(b/228534730): add changes to prepare parameters for V4L2 AV1 stateless
-  // decoding and make VIDIOC_S_EXT_CTRLS v4l2 ioctl call
+  // TODO(b/239618516): add ext_ctrl for V4L2_CID_STATELESS_AV1_SEQUENCE
+
   struct v4l2_ctrl_av1_frame_header v4l2_frame_params = {};
 
   FillLoopFilterParams(&v4l2_frame_params.loop_filter,
@@ -648,11 +648,15 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   FillGlobalMotionParams(&v4l2_frame_params.global_motion,
                          current_frame_header.global_motion);
 
+  // TODO(stevecho): V4L2_CID_STATELESS_AV1_FRAME_HEADER is trending to be
+  // changed to V4L2_CID_STATELESS_AV1_FRAME
   struct v4l2_ext_control ext_ctrl = {.id = V4L2_CID_STATELESS_AV1_FRAME_HEADER,
                                       .size = sizeof(v4l2_frame_params),
                                       .ptr = &v4l2_frame_params};
 
-  if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, ext_ctrl))
+  struct v4l2_ext_controls ext_ctrls = {.count = 1, .controls = &ext_ctrl};
+
+  if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls))
     LOG(FATAL) << "VIDIOC_S_EXT_CTRLS failed.";
 
   if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_))

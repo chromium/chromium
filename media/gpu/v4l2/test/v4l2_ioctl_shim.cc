@@ -482,7 +482,7 @@ bool V4L2IoctlShim::StreamOn(const enum v4l2_buf_type type) const {
 }
 
 bool V4L2IoctlShim::SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
-                                v4l2_ext_control& ext_ctrl) const {
+                                v4l2_ext_controls* ext_ctrls) const {
   // TODO(b/230021497): add compressed header probability related change
   // when V4L2_CID_STATELESS_VP9_COMPRESSED_HDR is supported
 
@@ -492,12 +492,10 @@ bool V4L2IoctlShim::SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
   // instead are applied by the driver for the buffer associated with
   // the same request.", see:
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/vidioc-g-ext-ctrls.html#description
-  struct v4l2_ext_controls ctrls = {.which = V4L2_CTRL_WHICH_REQUEST_VAL,
-                                    .count = 1,
-                                    .request_fd = queue->media_request_fd(),
-                                    .controls = &ext_ctrl};
+  ext_ctrls->which = V4L2_CTRL_WHICH_REQUEST_VAL;
+  ext_ctrls->request_fd = queue->media_request_fd();
 
-  const bool ret = Ioctl(VIDIOC_S_EXT_CTRLS, &ctrls);
+  const bool ret = Ioctl(VIDIOC_S_EXT_CTRLS, ext_ctrls);
 
   return ret;
 }

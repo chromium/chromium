@@ -463,7 +463,9 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
                                       .size = sizeof(v4l2_frame_params),
                                       .ptr = &v4l2_frame_params};
 
-  if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, ext_ctrl))
+  struct v4l2_ext_controls ext_ctrls = {.count = 1, .controls = &ext_ctrl};
+
+  if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls))
     LOG(FATAL) << "VIDIOC_S_EXT_CTRLS failed.";
 
   if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_))

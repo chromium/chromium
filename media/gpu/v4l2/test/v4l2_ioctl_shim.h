@@ -186,10 +186,10 @@ class V4L2IoctlShim {
   // Starts streaming |queue| (via VIDIOC_STREAMON).
   [[nodiscard]] bool StreamOn(const enum v4l2_buf_type type) const;
 
-  // Sets the value of a control which specifies decoding parameters
+  // Sets the value of controls which specify decoding parameters
   // for each frame.
   [[nodiscard]] bool SetExtCtrls(const std::unique_ptr<V4L2Queue>& queue,
-                                 v4l2_ext_control& ext_ctrl) const;
+                                 v4l2_ext_controls* ext_ctrls) const;
 
   // Allocates requests (likely one per OUTPUT buffer) via
   // MEDIA_IOC_REQUEST_ALLOC on the media device.
