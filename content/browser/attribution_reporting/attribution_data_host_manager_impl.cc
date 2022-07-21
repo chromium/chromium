@@ -141,12 +141,6 @@ enum class RegistrationType {
 }  // namespace
 
 struct AttributionDataHostManagerImpl::FrozenContext {
-  FrozenContext(const FrozenContext&) = delete;
-  FrozenContext& operator=(const FrozenContext&) = delete;
-
-  FrozenContext(FrozenContext&&) = default;
-  FrozenContext& operator=(FrozenContext&&) = default;
-
   // Top-level origin the data host was created in.
   // Logically const.
   url::Origin context_origin;
@@ -174,12 +168,6 @@ struct AttributionDataHostManagerImpl::FrozenContext {
 };
 
 struct AttributionDataHostManagerImpl::DelayedTrigger {
-  DelayedTrigger(const DelayedTrigger&) = delete;
-  DelayedTrigger& operator=(const DelayedTrigger&) = delete;
-
-  DelayedTrigger(DelayedTrigger&&) = default;
-  DelayedTrigger& operator=(DelayedTrigger&&) = default;
-
   // Logically const.
   base::TimeTicks delay_until;
 
@@ -197,12 +185,6 @@ struct AttributionDataHostManagerImpl::DelayedTrigger {
 };
 
 struct AttributionDataHostManagerImpl::NavigationDataHost {
-  NavigationDataHost(const NavigationDataHost&) = delete;
-  NavigationDataHost& operator=(const NavigationDataHost&) = delete;
-
-  NavigationDataHost(NavigationDataHost&&) = default;
-  NavigationDataHost& operator=(NavigationDataHost&&) = default;
-
   mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host;
   base::TimeTicks register_time;
 };

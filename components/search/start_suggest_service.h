@@ -32,9 +32,6 @@ class SharedURLLoaderFactory;
 
 class QuerySuggestion {
  public:
-  QuerySuggestion() = default;
-  ~QuerySuggestion() = default;
-
   bool operator==(const QuerySuggestion& other) const {
     return query == other.query && destination_url == other.destination_url;
   }

@@ -26,7 +26,6 @@ class Transform;
 class GEOMETRY_SKIA_EXPORT LinearGradient {
  public:
   struct Step {
-    constexpr Step() = default;
     // Percent that defines a position in diagonal, from 0 to 100.
     float percent = 0;
     // Alpha, from 0 to 255.
