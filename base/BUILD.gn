@@ -1431,10 +1431,7 @@ mixed_component("base") {
 
   configs += [
     "//build/config:precompiled_headers",
-
-    # TODO(crbug.com/1292951): Enable.
-    # "//build/config/compiler:prevent_unsafe_narrowing",
-
+    "//build/config/compiler:prevent_unsafe_narrowing",
     "//build/config/compiler:wexit_time_destructors",
     "//build/config/compiler:wglobal_constructors",
   ]
