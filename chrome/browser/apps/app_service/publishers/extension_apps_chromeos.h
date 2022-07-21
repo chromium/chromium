@@ -79,6 +79,13 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   void LaunchAppWithParamsImpl(AppLaunchParams&& params,
                                LaunchCallback callback) override;
 
+  void LaunchAppWithIntent(const std::string& app_id,
+                           int32_t event_flags,
+                           IntentPtr intent,
+                           LaunchSource launch_source,
+                           WindowInfoPtr window_info,
+                           base::OnceCallback<void(bool)> callback);
+
   // apps::mojom::Publisher overrides.
   void LaunchAppWithIntent(const std::string& app_id,
                            int32_t event_flags,
