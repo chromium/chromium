@@ -146,10 +146,9 @@ void SideSearchIconView::OnExecuting(PageActionIconView::ExecuteSource source) {
     return;
 
   if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
-    content::WebContents* active_contents =
-        browser_view->GetActiveWebContents();
-    UnifiedSideSearchController::FromWebContents(active_contents)
-        ->OpenSidePanel();
+    browser_view->side_panel_coordinator()->Show(
+        SidePanelEntry::Id::kSideSearch,
+        SidePanelUtil::SidePanelOpenTrigger::kSideSearchPageAction);
   } else {
     browser_view->side_search_controller()->ToggleSidePanel();
   }

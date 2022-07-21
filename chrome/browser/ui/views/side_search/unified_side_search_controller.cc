@@ -89,6 +89,13 @@ void UnifiedSideSearchController::DidFinishNavigation(
 
 void UnifiedSideSearchController::OnEntryShown(SidePanelEntry* entry) {
   UpdateSidePanel();
+  auto* active_contents = GetBrowserView()->GetActiveWebContents();
+  if (active_contents) {
+    auto* helper =
+        SideSearchTabContentsHelper::FromWebContents(active_contents);
+    if (helper)
+      helper->MaybeRecordDurationSidePanelAvailableToFirstOpen();
+  }
 }
 
 void UnifiedSideSearchController::OnEntryHidden(SidePanelEntry* entry) {
@@ -151,13 +158,6 @@ void UnifiedSideSearchController::OpenSidePanel() {
   if (browser_view) {
     browser_view->side_panel_coordinator()->Show(
         SidePanelEntry::Id::kSideSearch);
-    auto* active_contents = browser_view->GetActiveWebContents();
-    if (active_contents) {
-      auto* helper =
-          SideSearchTabContentsHelper::FromWebContents(active_contents);
-      if (helper)
-        helper->MaybeRecordDurationSidePanelAvailableToFirstOpen();
-    }
   }
 }
 
