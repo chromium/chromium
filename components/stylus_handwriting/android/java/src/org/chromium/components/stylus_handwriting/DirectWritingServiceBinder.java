@@ -68,23 +68,6 @@ class DirectWritingServiceBinder {
         DirectWritingServiceCallback getServiceCallback();
     }
 
-    private interface OnServiceCallback {
-        void run(IDirectWritingService remoteDwService) throws Exception;
-    }
-
-    private void tryRunOnService(OnServiceCallback callback, String methodNameForDebug) {
-        if (!isServiceConnected()) return;
-        try {
-            callback.run(mRemoteDwService);
-        } catch (DeadObjectException e) {
-            Log.e(TAG, methodNameForDebug + " failed due to DeadObjectException : " + e);
-            resetDwServiceConnection();
-        } catch (Exception e) {
-            Log.e(TAG, methodNameForDebug + " failed : " + e);
-            e.printStackTrace();
-        }
-    }
-
     void bindService(Context context, DirectWritingTriggerCallback triggerCallback) {
         if (isServiceConnected()) return;
         requestBindService(context, triggerCallback);
@@ -145,13 +128,23 @@ class DirectWritingServiceBinder {
         assert mTriggerCallback != null;
         DirectWritingServiceCallback serviceCallback = mTriggerCallback.getServiceCallback();
 
-        tryRunOnService((remoteDwService) -> {
+        // It would be nice to extract the pattern of "do something with a service, surround it in
+        // a try catch" into a method, unfortunately that would increase the binary size too much,
+        // see:
+        // https://ci.chromium.org/ui/p/chromium/builders/try/android-binary-size/1175796/overview
+        if (!isServiceConnected()) return;
+        try {
             String callbackPackage =
                     (mPackageName + IDirectWritingService.VALUE_SERVICE_HOST_SOURCE_WEBVIEW);
-            remoteDwService.registerCallback(serviceCallback, callbackPackage);
+            mRemoteDwService.registerCallback(serviceCallback, callbackPackage);
             Log.d(TAG, "Service callback registered");
             mCallbackRegistered = true;
-        }, "registerCallback");
+        } catch (DeadObjectException e) {
+            Log.e(TAG, "registerCallback failed due to DeadObjectException.", e);
+            resetDwServiceConnection();
+        } catch (Exception e) {
+            Log.e(TAG, "registerCallback failed.", e);
+        }
     }
 
     private void unregisterCallback() {
@@ -159,11 +152,17 @@ class DirectWritingServiceBinder {
         assert mTriggerCallback != null;
         DirectWritingServiceCallback serviceCallback = mTriggerCallback.getServiceCallback();
 
-        tryRunOnService((remoteDwService) -> {
-            remoteDwService.unregisterCallback(serviceCallback);
+        if (!isServiceConnected()) return;
+        try {
+            mRemoteDwService.unregisterCallback(serviceCallback);
             Log.d(TAG, "Service callback unregistered");
             mCallbackRegistered = false;
-        }, "unregisterCallback");
+        } catch (DeadObjectException e) {
+            Log.e(TAG, "unregisterCallback failed due to DeadObjectException.", e);
+            resetDwServiceConnection();
+        } catch (Exception e) {
+            Log.e(TAG, "unregisterCallback failed.", e);
+        }
     }
 
     private void resetDwServiceConnection() {
@@ -182,12 +181,18 @@ class DirectWritingServiceBinder {
     }
 
     private void updateConfiguration() {
-        tryRunOnService((remoteDwService) -> {
+        if (!isServiceConnected()) return;
+        try {
             Bundle bundle = new Bundle();
-            remoteDwService.getConfiguration(bundle);
+            mRemoteDwService.getConfiguration(bundle);
             assert mTriggerCallback != null;
             mTriggerCallback.updateConfiguration(bundle);
-        }, "updateConfiguration");
+        } catch (DeadObjectException e) {
+            Log.e(TAG, "updateConfiguration failed due to DeadObjectException.", e);
+            resetDwServiceConnection();
+        } catch (Exception e) {
+            Log.e(TAG, "updateConfiguration failed.", e);
+        }
     }
 
     boolean isServiceConnected() {
@@ -204,52 +209,87 @@ class DirectWritingServiceBinder {
                     DirectWritingBundleUtil.buildBundle(me, editableBound, rootView));
             return true;
         } catch (DeadObjectException e) {
-            Log.e(TAG, "startRecognition failed due to DeadObjectException : " + e);
+            Log.e(TAG, "startRecognition failed due to DeadObjectException.", e);
             resetDwServiceConnection();
             return false;
         } catch (Exception e) {
-            Log.e(TAG, "startRecognition failed with exception" + e.getMessage());
-            e.printStackTrace();
+            Log.e(TAG, "startRecognition failed with exception.", e);
             return false;
         }
     }
 
     void onStopRecognition(MotionEvent me, Rect editableBounds, View rootView) {
-        tryRunOnService((remoteDwService) -> {
+        if (!isServiceConnected()) return;
+        try {
             Bundle bundle = DirectWritingBundleUtil.buildBundle(me, editableBounds, rootView);
-            remoteDwService.onStopRecognition(bundle);
-        }, "onStopRecognition");
+            mRemoteDwService.onStopRecognition(bundle);
+        } catch (DeadObjectException e) {
+            Log.e(TAG, "onStopRecognition failed due to DeadObjectException.", e);
+            resetDwServiceConnection();
+        } catch (Exception e) {
+            Log.e(TAG, "onStopRecognition failed.", e);
+        }
     }
 
     void updateEditorInfo(EditorInfo editorInfo) {
-        tryRunOnService((remoteDwService) -> {
-            remoteDwService.onUpdateImeOptions(editorInfo.imeOptions);
-        }, "updateEditorInfo");
+        if (!isServiceConnected()) return;
+        try {
+            mRemoteDwService.onUpdateImeOptions(editorInfo.imeOptions);
+        } catch (DeadObjectException e) {
+            Log.e(TAG, "updateEditorInfo failed due to DeadObjectException.", e);
+            resetDwServiceConnection();
+        } catch (Exception e) {
+            Log.e(TAG, "updateEditorInfo failed.", e);
+        }
     }
 
     void updateEditableBounds(Rect editableBounds, View rootView) {
-        tryRunOnService((remoteDwService) -> {
-            remoteDwService.onBoundedEditTextChanged(
+        if (!isServiceConnected()) return;
+        try {
+            mRemoteDwService.onBoundedEditTextChanged(
                     DirectWritingBundleUtil.buildBundle(editableBounds, rootView));
-        }, "updateEditableBounds");
+        } catch (DeadObjectException e) {
+            Log.e(TAG, "updateEditableBounds failed due to DeadObjectException.", e);
+            resetDwServiceConnection();
+        } catch (Exception e) {
+            Log.e(TAG, "updateEditableBounds failed.", e);
+        }
     }
 
     void onDispatchEvent(MotionEvent me, View rootView) {
-        tryRunOnService((remoteDwService) -> {
-            remoteDwService.onDispatchEvent(DirectWritingBundleUtil.buildBundle(me, rootView));
-        }, "onDispatchEvent");
+        if (!isServiceConnected()) return;
+        try {
+            mRemoteDwService.onDispatchEvent(DirectWritingBundleUtil.buildBundle(me, rootView));
+        } catch (DeadObjectException e) {
+            Log.e(TAG, "onDispatchEvent failed due to DeadObjectException.", e);
+            resetDwServiceConnection();
+        } catch (Exception e) {
+            Log.e(TAG, "onDispatchEvent failed.", e);
+        }
     }
 
     private void onWindowFocusLost(String packageName) {
-        tryRunOnService((remoteDwService) -> {
-            remoteDwService.onWindowFocusLost(packageName);
-        }, "onWindowFocusLost");
+        if (!isServiceConnected()) return;
+        try {
+            mRemoteDwService.onWindowFocusLost(packageName);
+        } catch (DeadObjectException e) {
+            Log.e(TAG, "onWindowFocusLost failed due to DeadObjectException.", e);
+            resetDwServiceConnection();
+        } catch (Exception e) {
+            Log.e(TAG, "onWindowFocusLost failed.", e);
+        }
     }
 
     void hideDWToolbar() {
-        tryRunOnService((remoteDwService) -> {
+        if (!isServiceConnected()) return;
+        try {
             Bundle bundle = DirectWritingBundleUtil.buildBundle();
-            remoteDwService.onEditTextActionModeStarted(bundle);
-        }, "hideDWToolbar");
+            mRemoteDwService.onEditTextActionModeStarted(bundle);
+        } catch (DeadObjectException e) {
+            Log.e(TAG, "hideDWToolbar failed due to DeadObjectException.", e);
+            resetDwServiceConnection();
+        } catch (Exception e) {
+            Log.e(TAG, "hideDWToolbar failed.", e);
+        }
     }
 }
