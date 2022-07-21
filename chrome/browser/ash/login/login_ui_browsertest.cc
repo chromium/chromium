@@ -39,6 +39,7 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
@@ -580,9 +581,6 @@ INSTANTIATE_TEST_SUITE_P(All, SshWarningTest, ::testing::Bool());
 
 namespace {
 
-// This is the constant that exists on the server side. It corresponds to
-// the type of enrollment license.
-constexpr char kKioskSkuName[] = "GOOGLE.CHROME_KIOSK_ANNUAL";
 // Names of policies.
 constexpr char kManagedGuestModeName[] = "MANAGED_GUEST_MODE";
 constexpr char kAllowNewUsersName[] = "ALLOW_NEW_USERS";
@@ -641,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, WithoutKioskSku) {
 IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, WithoutApps) {
   Shell::Get()->login_screen_controller()->ShowLoginScreen();
   policy_helper()->device_policy()->policy_data().set_license_sku(
-      kKioskSkuName);
+      policy::kKioskSkuName);
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
   EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
@@ -658,7 +656,7 @@ IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, WithoutApps) {
 IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, WithApps) {
   Shell::Get()->login_screen_controller()->ShowLoginScreen();
   policy_helper()->device_policy()->policy_data().set_license_sku(
-      kKioskSkuName);
+      policy::kKioskSkuName);
   KioskAppsMixin::AppendKioskAccount(
       &policy_helper()->device_policy()->payload());
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
@@ -676,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, WithApps) {
 IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, OpenKioskMenu) {
   Shell::Get()->login_screen_controller()->ShowLoginScreen();
   policy_helper()->device_policy()->policy_data().set_license_sku(
-      kKioskSkuName);
+      policy::kKioskSkuName);
   KioskAppsMixin::AppendKioskAccount(
       &policy_helper()->device_policy()->payload());
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
@@ -702,7 +700,7 @@ IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest,
                        TryDismissDefaultMessage) {
   Shell::Get()->login_screen_controller()->ShowLoginScreen();
   policy_helper()->device_policy()->policy_data().set_license_sku(
-      kKioskSkuName);
+      policy::kKioskSkuName);
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
   EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
@@ -752,7 +750,7 @@ class KioskSkuLoginScreenPolicyTest
 IN_PROC_BROWSER_TEST_P(KioskSkuLoginScreenPolicyTest, EnabledPolicies) {
   Shell::Get()->login_screen_controller()->ShowLoginScreen();
   policy_helper()->device_policy()->policy_data().set_license_sku(
-      kKioskSkuName);
+      policy::kKioskSkuName);
   EnablePolicy();
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 

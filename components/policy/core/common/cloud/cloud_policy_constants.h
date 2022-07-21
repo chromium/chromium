@@ -193,6 +193,10 @@ enum class MarketSegment {
 // Policy Invalidation sender coming from the Firebase console.
 extern const char kPolicyFCMInvalidationSenderID[];
 
+// Kiosk SKU name. This is the constant of the enrollment license type that
+// exists on the server side.
+inline static const char kKioskSkuName[] = "GOOGLE.CHROME_KIOSK_ANNUAL";
+
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLOUD_POLICY_CONSTANTS_H_

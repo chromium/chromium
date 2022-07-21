@@ -121,10 +121,6 @@ std::unique_ptr<ash::attestation::AttestationFlow> CreateAttestationFlow() {
       std::make_unique<ash::attestation::AttestationCAClient>());
 }
 
-// This is the constant that exists on the server side. It corresponds to
-// the type of enrollment license.
-constexpr char kKioskSkuName[] = "GOOGLE.CHROME_KIOSK_ANNUAL";
-
 }  // namespace
 
 // static

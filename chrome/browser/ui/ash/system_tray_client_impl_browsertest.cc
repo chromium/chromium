@@ -40,6 +40,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -101,14 +102,6 @@ IN_PROC_BROWSER_TEST_F(ConsumerDeviceTest, WithNoLicense) {
             ash::ManagementDeviceMode::kNone);
 }
 
-namespace {
-
-// This is the constant that exists on the server side. It corresponds to
-// the type of enrollment license.
-constexpr char kKioskSkuName[] = "GOOGLE.CHROME_KIOSK_ANNUAL";
-
-}  // namespace
-
 class EnterpriseManagedTest : public MixinBasedInProcessBrowserTest {
  public:
   EnterpriseManagedTest() {
@@ -136,7 +129,7 @@ class EnterpriseManagedTest : public MixinBasedInProcessBrowserTest {
 // Verify that the management device mode is indeed Kiosk Sku.
 IN_PROC_BROWSER_TEST_F(EnterpriseManagedTest, WithKioskSku) {
   policy_helper()->device_policy()->policy_data().set_license_sku(
-      kKioskSkuName);
+      policy::kKioskSkuName);
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
   EXPECT_EQ(ash::Shell::Get()
