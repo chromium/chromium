@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
+import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
@@ -113,6 +114,8 @@ public class SafetyCheckMediatorTest {
     private Handler mHandler;
     @Mock
     private PasswordCheck mPasswordCheck;
+
+    // TODO(crbug.com/1346235): Use existing fake instead of mocking
     @Mock
     private PasswordCheckupClientHelper mPasswordCheckupHelper;
     @Mock
@@ -121,6 +124,8 @@ public class SafetyCheckMediatorTest {
     private PrefService mPrefService;
     @Mock
     private UserPrefs.Natives mUserPrefsJniMock;
+
+    // TODO(crbug.com/1346235): Use fake instead of mocking
     @Mock
     private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
 
@@ -279,6 +284,7 @@ public class SafetyCheckMediatorTest {
 
         mModel = SafetyCheckProperties.createSafetyCheckModel();
         if (mUseNewApi) {
+            // TODO(crbug.com/1346235): Use existing fake instead of mocking
             PasswordCheckupClientHelperFactory mockPasswordCheckFactory =
                     mock(PasswordCheckupClientHelperFactory.class);
             when(mockPasswordCheckFactory.createHelper()).thenReturn(mPasswordCheckupHelper);
@@ -382,6 +388,19 @@ public class SafetyCheckMediatorTest {
         mMediator.performSafetyCheck();
         setPasswordCheckResult(/*hasError=*/true);
         assertEquals(PasswordsState.ERROR, mModel.get(PASSWORDS_STATE));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SAFETY_CHECK_PASSWORDS_RESULT_HISTOGRAM, PasswordsStatus.ERROR));
+    }
+
+    @Test
+    public void testPasswordsCheckBackendOutdated() {
+        if (!mUseNewApi) return;
+        captureRunPasswordCheckCallback();
+        mMediator.performSafetyCheck();
+        mRunPasswordCheckFailedCallback.onResult(new PasswordCheckBackendException(
+                "test", CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED));
+        assertEquals(PasswordsState.BACKEND_VERSION_NOT_SUPPORTED, mModel.get(PASSWORDS_STATE));
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SAFETY_CHECK_PASSWORDS_RESULT_HISTOGRAM, PasswordsStatus.ERROR));

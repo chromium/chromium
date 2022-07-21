@@ -26,8 +26,11 @@ import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
+import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
+import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
+import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
@@ -245,6 +248,17 @@ class SafetyCheckMediator
             mShowSafePasswordState = false;
             mModel.set(SafetyCheckProperties.SAFE_BROWSING_STATE, SafeBrowsingState.UNCHECKED);
             mModel.set(SafetyCheckProperties.UPDATES_STATE, UpdatesState.UNCHECKED);
+
+            // If the new Password Manager backend is out of date, attempting to fetch breached
+            // credentials will expectedly fail and display an error message. This error is
+            // designed to be only shown when user explicitly runs the check (or it was ran
+            // recently). For this case, breached credential fetch is skipped.
+            if (PasswordManagerHelper.canUseUpm()
+                    && PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
+                mLoadStage = PasswordCheckLoadStage.IDLE;
+                mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.UNCHECKED);
+                return;
+            }
         }
         mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.CHECKING);
         mLoadStage = PasswordCheckLoadStage.INITIAL_WAIT_FOR_LOAD;
@@ -257,6 +271,7 @@ class SafetyCheckMediator
                     PasswordsStatus.SIGNED_OUT, PasswordsStatus.MAX_VALUE + 1);
             updatePasswordElementClickDestination();
         }
+
         fetchPasswordsAndBreachedCredentials();
         if (mPasswordsLoaded && mLeaksLoaded) {
             determinePasswordStateOnLoadComplete();
@@ -543,6 +558,11 @@ class SafetyCheckMediator
                 }
                 return true;
             };
+        } else if (state == PasswordsState.BACKEND_VERSION_NOT_SUPPORTED) {
+            listener = (p) -> {
+                PasswordManagerHelper.launchGmsUpdate(p.getContext());
+                return true;
+            };
         } else {
             listener = (p) -> {
                 PasswordManagerHelper.showPasswordSettings(p.getContext(),
@@ -668,13 +688,21 @@ class SafetyCheckMediator
         if (mModel == null) return;
 
         setRunnablePasswords(() -> {
-            if (mModel != null) {
-                RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.PasswordsResult",
-                        SafetyCheckProperties.passwordsStateToNative(PasswordsState.ERROR),
-                        PasswordsStatus.MAX_VALUE + 1);
+            if (mModel == null) return;
+
+            RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.PasswordsResult",
+                    SafetyCheckProperties.passwordsStateToNative(PasswordsState.ERROR),
+                    PasswordsStatus.MAX_VALUE + 1);
+            if (error instanceof PasswordCheckBackendException
+                    && ((PasswordCheckBackendException) error).errorCode
+                            == CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED) {
+                mModel.set(SafetyCheckProperties.PASSWORDS_STATE,
+                        PasswordsState.BACKEND_VERSION_NOT_SUPPORTED);
+            } else {
                 mModel.set(SafetyCheckProperties.PASSWORDS_STATE, PasswordsState.ERROR);
-                updatePasswordElementClickDestination();
             }
+
+            updatePasswordElementClickDestination();
         });
     }
 
