@@ -1338,13 +1338,21 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, ChromeVoxAnnouncesHints) {
   // Setup ChromeVox first.
   test::SpeechMonitor sm;
   EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
+  extensions::ExtensionHostTestHelper host_helper(
+      browser()->profile(), extension_misc::kChromeVoxExtensionId);
   EnableChromeVox();
+  host_helper.WaitForHostCompletedFirstLoad();
   EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
 
-  // Wait for ChromeVox to start.
-  sm.ExpectSpeech("ChromeVox spoken feedback is ready");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
 
-  sm.Call([this]() { ToggleDictationWithKeystroke(); });
+  // Hints should show up after a few seconds without speech.
+  WaitForProperties(
+      /*visible=*/true,
+      /*icon=*/DictationBubbleIconType::kStandby,
+      /*text=*/absl::optional<std::u16string>(),
+      /*hints=*/std::vector<std::u16string>{kTrySaying, kType, kHelp});
 
   // Assert speech from ChromeVox.
   sm.ExpectSpeechPattern("Try saying*Type*Help*");
