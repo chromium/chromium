@@ -1788,8 +1788,6 @@ crbug.com/1078927 virtual/layout_ng_table_frag/external/wpt/css/css-multicol/tab
 crbug.com/1078927 virtual/layout_ng_table_frag/fragmentation/border-spacing-break-before-unbreakable-row.html [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/fragmentation/fragmented-rowspan-alignment.html [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/fragmentation/fragmented-rowspan.html [ Failure ]
-crbug.com/1078927 virtual/layout_ng_table_frag/fragmentation/nested-repeating-thead-2.html [ Failure ]
-crbug.com/1078927 virtual/layout_ng_table_frag/fragmentation/nested-repeating-thead-3.html [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/fragmentation/no-repeating-table-header-after-sections.html [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/fragmentation/single-line-cells-multiple-tables-caption-repeating-thead-tfoot-with-border-spacing-at-top-of-row-2.html [ Failure ]
 crbug.com/1078927 virtual/layout_ng_table_frag/fragmentation/single-line-cells-multiple-tables-caption-repeating-thead-tfoot-with-border-spacing-at-top-of-row-3.html [ Failure ]
