@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright (c) 2011 Code Aurora Forum. All rights reserved.
 # Copyright (c) 2010 Google Inc. All rights reserved.
 # Copyright (c) 2009 Apple Inc. All rights reserved.
