@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -191,17 +192,38 @@ absl::optional<ReportingSettings> ConnectorsService::GetReportingSettings(
 absl::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
     const GURL& url,
     AnalysisConnector connector) {
+  DCHECK_NE(connector, AnalysisConnector::FILE_TRANSFER);
   if (!ConnectorsEnabled())
     return absl::nullopt;
 
   if (IsURLExemptFromAnalysis(url))
     return absl::nullopt;
 
-  absl::optional<AnalysisSettings> settings =
-      connectors_manager_->GetAnalysisSettings(url, connector);
-  if (!settings.has_value())
+  return GetCommonAnalysisSettings(
+      connectors_manager_->GetAnalysisSettings(url, connector), connector);
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+absl::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
+    const storage::FileSystemURL& source_url,
+    const storage::FileSystemURL& destination_url,
+    AnalysisConnector connector) {
+  DCHECK_EQ(connector, AnalysisConnector::FILE_TRANSFER);
+  if (!ConnectorsEnabled())
     return absl::nullopt;
 
+  return GetCommonAnalysisSettings(
+      connectors_manager_->GetAnalysisSettings(context_, source_url,
+                                               destination_url, connector),
+      connector);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+absl::optional<AnalysisSettings> ConnectorsService::GetCommonAnalysisSettings(
+    absl::optional<AnalysisSettings> settings,
+    AnalysisConnector connector) {
+  if (!settings.has_value())
+    return absl::nullopt;
   absl::optional<DmToken> dm_token = GetDmToken(ConnectorScopePref(connector));
   bool is_cloud = settings.value().cloud_or_local_settings.is_cloud_analysis();
 

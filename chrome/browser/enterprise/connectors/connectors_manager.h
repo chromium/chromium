@@ -17,6 +17,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace storage {
+class FileSystemURL;
+}
+
 namespace enterprise_connectors {
 
 // Manages access to Connector policies for a given profile. This class is
@@ -50,6 +54,13 @@ class ConnectorsManager {
   absl::optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  absl::optional<AnalysisSettings> GetAnalysisSettings(
+      content::BrowserContext* context,
+      const storage::FileSystemURL& source_url,
+      const storage::FileSystemURL& destination_url,
+      AnalysisConnector connector);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Validates which settings should be applied to a file system connector
   // against cached policies.

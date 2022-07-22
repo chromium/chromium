@@ -640,6 +640,22 @@ std::unique_ptr<Volume> Volume::CreateForTesting(
   return volume;
 }
 
+// static
+std::unique_ptr<Volume> Volume::CreateForTesting(
+    const base::FilePath& path,
+    VolumeType volume_type,
+    absl::optional<guest_os::VmType> vm_type,
+    absl::optional<base::FilePath> source_path) {
+  std::unique_ptr<Volume> volume(new Volume());
+  volume->mount_path_ = path;
+  volume->type_ = volume_type;
+  volume->vm_type_ = vm_type;
+  volume->volume_id_ = GenerateVolumeId(*volume);
+  if (source_path.has_value())
+    volume->source_path_ = std::move(source_path.value());
+  return volume;
+}
+
 VolumeManager::VolumeManager(
     Profile* profile,
     drive::DriveIntegrationService* drive_integration_service,

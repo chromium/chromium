@@ -161,6 +161,16 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   static std::unique_ptr<Volume> CreateForTesting(
       const base::FilePath& device_path,
       const base::FilePath& mount_path);
+  // Create a volume at `path` with the specified `volume_type`.
+  // For `volume_type`==VOLUME_TYPE_GUEST_OS, `vm_type` should also be
+  // specified. For `volume_type`==VOLUME_TYPE_MOUNTED_ARCHIVE_FILE,
+  // `source_path` has to be specified and point to the (not necessarily
+  // existing) path of the archive file.
+  static std::unique_ptr<Volume> CreateForTesting(
+      const base::FilePath& path,
+      VolumeType volume_type,
+      absl::optional<guest_os::VmType> vm_type,
+      absl::optional<base::FilePath> source_path = absl::nullopt);
 
   // Getters for all members. See below for details.
   const std::string& volume_id() const { return volume_id_; }

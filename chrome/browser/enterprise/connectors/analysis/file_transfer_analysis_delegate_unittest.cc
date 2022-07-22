@@ -17,6 +17,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
@@ -25,6 +27,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/fake_files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
+#include "chrome/browser/enterprise/connectors/analysis/source_destination_test_util.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -57,14 +60,20 @@ storage::FileSystemURL GetEmptyTestDestUrl() {
   return storage::FileSystemURL();
 }
 
-// TODO(crbug.com/1339194): replace url_list with source_destination_list.
 constexpr char kBlockingScansForDlpAndMalware[] = R"(
 {
   "service_provider": "google",
   "enable": [
     {
-      "url_list": [
-        "*"
+      "source_destination_list": [
+        {
+          "sources": [{
+            "file_system_type": "*"
+          }],
+          "destinations": [{
+            "file_system_type": "*"
+          }]
+        }
       ],
       "tags": ["dlp", "malware"]
     }
@@ -77,8 +86,15 @@ constexpr char kBlockingScansForDlp[] = R"(
   "service_provider": "google",
   "enable": [
     {
-      "url_list": [
-        "*"
+      "source_destination_list": [
+        {
+          "sources": [{
+            "file_system_type": "*"
+          }],
+          "destinations": [{
+            "file_system_type": "*"
+          }]
+        }
       ],
       "tags": ["dlp"]
     }
@@ -91,8 +107,15 @@ constexpr char kBlockingScansForMalware[] = R"(
   "service_provider": "google",
   "enable": [
     {
-      "url_list": [
-        "*"
+      "source_destination_list": [
+        {
+          "sources": [{
+            "file_system_type": "*"
+          }],
+          "destinations": [{
+            "file_system_type": "*"
+          }]
+        }
       ],
       "tags": ["malware"]
     }
@@ -112,11 +135,45 @@ class ScopedSetDMToken {
   }
 };
 
-struct VolumeInfo {
-  file_manager::VolumeType type;
-  absl::optional<guest_os::VmType> vm_type;
-  std::string fs_config_string;
+using VolumeInfo = SourceDestinationTestingHelper::VolumeInfo;
+
+constexpr std::initializer_list<VolumeInfo> kVolumeInfos{
+    {file_manager::VOLUME_TYPE_TESTING, absl::nullopt, "TESTING"},
+    {file_manager::VOLUME_TYPE_GOOGLE_DRIVE, absl::nullopt, "GOOGLE_DRIVE"},
+    {file_manager::VOLUME_TYPE_DOWNLOADS_DIRECTORY, absl::nullopt, "MY_FILES"},
+    {file_manager::VOLUME_TYPE_REMOVABLE_DISK_PARTITION, absl::nullopt,
+     "REMOVABLE"},
+    {file_manager::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE, absl::nullopt, "TESTING"},
+    {file_manager::VOLUME_TYPE_PROVIDED, absl::nullopt, "PROVIDED"},
+    {file_manager::VOLUME_TYPE_MTP, absl::nullopt, "DEVICE_MEDIA_STORAGE"},
+    {file_manager::VOLUME_TYPE_MEDIA_VIEW, absl::nullopt, "ARC"},
+    {file_manager::VOLUME_TYPE_CROSTINI, absl::nullopt, "CROSTINI"},
+    {file_manager::VOLUME_TYPE_ANDROID_FILES, absl::nullopt, "ARC"},
+    {file_manager::VOLUME_TYPE_DOCUMENTS_PROVIDER, absl::nullopt, "ARC"},
+    {file_manager::VOLUME_TYPE_SMB, absl::nullopt, "SAMBA"},
+    {file_manager::VOLUME_TYPE_SYSTEM_INTERNAL, absl::nullopt, "UNKNOWN"},
+    {file_manager::VOLUME_TYPE_GUEST_OS, guest_os::VmType::TERMINA, "CROSTINI"},
+    {file_manager::VOLUME_TYPE_GUEST_OS, guest_os::VmType::PLUGIN_VM,
+     "PLUGIN_VM"},
+    {file_manager::VOLUME_TYPE_GUEST_OS, guest_os::VmType::BOREALIS,
+     "BOREALIS"},
+    {file_manager::VOLUME_TYPE_GUEST_OS, guest_os::VmType::BRUSCHETTA,
+     "BRUSCHETTA"},
+    {file_manager::VOLUME_TYPE_GUEST_OS, guest_os::VmType::UNKNOWN,
+     "UNKNOWN_VM"},
+    {file_manager::VOLUME_TYPE_GUEST_OS, absl::nullopt, "UNKNOWN_VM"},
+    {file_manager::VOLUME_TYPE_GUEST_OS, guest_os::VmType::ARCVM, "ARC"},
 };
+
+VolumeInfo GetAnyOtherVolume(const VolumeInfo& volume) {
+  for (const auto& volume_i : kVolumeInfos) {
+    if (std::string(volume_i.fs_config_string) !=
+        std::string(volume.fs_config_string)) {
+      return volume_i;
+    }
+  }
+  return {};
+}
 
 class BaseTest : public testing::Test {
  public:
@@ -124,30 +181,18 @@ class BaseTest : public testing::Test {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
 
-    file_manager::VolumeManagerFactory::GetInstance()->SetTestingFactory(
-        profile_.get(),
-        base::BindLambdaForTesting([](content::BrowserContext* context) {
-          return std::unique_ptr<KeyedService>(
-              std::make_unique<file_manager::VolumeManager>(
-                  Profile::FromBrowserContext(context), nullptr, nullptr,
-                  ash::disks::DiskMountManager::GetInstance(), nullptr,
-                  file_manager::VolumeManager::GetMtpStorageInfoCallback()));
-        }));
-
-    // Takes ownership of `disk_mount_manager_`, but Shutdown() must be called.
-    ash::disks::DiskMountManager::InitializeForTesting(
-        new file_manager::FakeDiskMountManager);
-
-    // Register volumes.
-    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+    source_destination_testing_helper_ =
+        std::make_unique<SourceDestinationTestingHelper>(profile_,
+                                                         kVolumeInfos);
 
     file_system_context_ = storage::CreateFileSystemContextForTesting(
-        nullptr, temp_dir_.GetPath());
+        nullptr, source_destination_testing_helper_->GetTempDirPath());
   }
 
   ~BaseTest() override {
+    // This deletion has to happen before source_destination_testing_helper_ is
+    // destroyed.
     profile_manager_.DeleteAllTestingProfiles();
-    ash::disks::DiskMountManager::Shutdown();
   }
 
   void EnableFeatures() {
@@ -165,9 +210,36 @@ class BaseTest : public testing::Test {
         kTestStorageKey, storage::kFileSystemTypeLocal, path);
   }
 
+  storage::FileSystemURL GetTestFileSystemURLForVolume(VolumeInfo volume_info) {
+    return source_destination_testing_helper_->GetTestFileSystemURLForVolume(
+        volume_info);
+  }
+
   Profile* profile() { return profile_; }
 
   void RunUntilDone() { run_loop_.Run(); }
+
+  void ValidateIsEnabled(const storage::FileSystemURL& src_url,
+                         const storage::FileSystemURL& dest_url,
+                         bool expect_dlp,
+                         bool expect_malware) {
+    auto settings =
+        FileTransferAnalysisDelegate::IsEnabled(profile(), src_url, dest_url);
+    ASSERT_EQ(expect_dlp || expect_malware, settings.has_value());
+    if (settings.has_value()) {
+      EXPECT_EQ(expect_dlp, settings.value().tags.count("dlp"));
+      EXPECT_EQ(expect_malware, settings.value().tags.count("malware"));
+    }
+  }
+
+  void ValidateIsEnabled(VolumeInfo src_volume_info,
+                         VolumeInfo dest_volume_info,
+                         bool expect_dlp,
+                         bool expect_malware) {
+    ValidateIsEnabled(GetTestFileSystemURLForVolume(src_volume_info),
+                      GetTestFileSystemURLForVolume(dest_volume_info),
+                      expect_dlp, expect_malware);
+  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -175,9 +247,10 @@ class BaseTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
-  base::ScopedTempDir temp_dir_;
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("chrome://abc");
+  std::unique_ptr<SourceDestinationTestingHelper>
+      source_destination_testing_helper_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   base::RunLoop run_loop_;
 };
@@ -306,6 +379,7 @@ TEST_P(FileTransferAnalysisDelegateIsEnabledTest, Enabled) {
 
 using FileTransferAnalysisDelegateIsEnabledTestSameFileSystem = BaseTest;
 
+// Test for FileSystemURL that's not registered with a volume.
 TEST_F(FileTransferAnalysisDelegateIsEnabledTestSameFileSystem,
        DlpMalwareDisabledForSameFileSystem) {
   EnableFeatures();
@@ -315,11 +389,238 @@ TEST_F(FileTransferAnalysisDelegateIsEnabledTestSameFileSystem,
                                       kBlockingScansForDlpAndMalware);
 
   auto settings = FileTransferAnalysisDelegate::IsEnabled(
-      profile(), PathToFileSystemURL(temp_dir_.GetPath()),
-      PathToFileSystemURL(temp_dir_.GetPath()));
+      profile(),
+      PathToFileSystemURL(source_destination_testing_helper_->GetTempDirPath()),
+      PathToFileSystemURL(
+          source_destination_testing_helper_->GetTempDirPath()));
 
   EXPECT_FALSE(settings.has_value());
 }
+
+class FileTransferAnalysisDelegateIsEnabledParamTest
+    : public BaseTest,
+      public testing::WithParamInterface<VolumeInfo> {};
+
+TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
+       DlpAndMalwareDisabledForSameVolume) {
+  EnableFeatures();
+  ScopedSetDMToken scoped_dm_token(
+      policy::DMToken::CreateValidTokenForTesting(kDmToken));
+
+  VolumeInfo source_volume = GetParam();
+
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_TRANSFER,
+                                      kBlockingScansForDlpAndMalware);
+
+  VolumeInfo dest_volume = GetParam();
+
+  ValidateIsEnabled(source_volume, dest_volume,
+                    /*dlp*/ false,
+                    /*malware*/ false);
+  ValidateIsEnabled(dest_volume, source_volume,
+                    /*dlp*/ false,
+                    /*malware*/ false);
+}
+
+TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
+       DlpDisabledByPatternInSource) {
+  EnableFeatures();
+  ScopedSetDMToken scoped_dm_token(
+      policy::DMToken::CreateValidTokenForTesting(kDmToken));
+
+  VolumeInfo source_volume = GetParam();
+
+  safe_browsing::SetAnalysisConnector(
+      profile_->GetPrefs(), FILE_TRANSFER,
+      base::StringPrintf(R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "source_destination_list": [
+                {
+                  "sources": [{
+                    "file_system_type": "*"
+                  }],
+                  "destinations": [{
+                    "file_system_type": "*"
+                  }]
+                }
+              ],
+              "tags": ["dlp"]
+            }
+          ],
+          "disable": [
+            {
+              "source_destination_list": [
+                {
+                  "sources": [{
+                    "file_system_type": "%s"
+                  }],
+                  "destinations": [{
+                    "file_system_type": "*"
+                  }]
+                }
+              ],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })",
+                         source_volume.fs_config_string));
+
+  VolumeInfo dest_volume = GetAnyOtherVolume(source_volume);
+
+  ValidateIsEnabled(source_volume, dest_volume,
+                    /*dlp*/ false,
+                    /*malware*/ false);
+  ValidateIsEnabled(dest_volume, source_volume,
+                    /*dlp*/ true,
+                    /*malware*/ false);
+}
+
+TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
+       DlpDisabledByPatternInDestination) {
+  EnableFeatures();
+  ScopedSetDMToken scoped_dm_token(
+      policy::DMToken::CreateValidTokenForTesting(kDmToken));
+
+  VolumeInfo dest_volume = GetParam();
+
+  safe_browsing::SetAnalysisConnector(
+      profile_->GetPrefs(), FILE_TRANSFER,
+      base::StringPrintf(R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "source_destination_list": [
+                {
+                  "sources": [{
+                    "file_system_type": "*"
+                  }],
+                  "destinations": [{
+                    "file_system_type": "*"
+                  }]
+                }
+              ],
+              "tags": ["dlp"]
+            }
+          ],
+          "disable": [
+            {
+              "source_destination_list": [
+                {
+                  "sources": [{
+                    "file_system_type": "*"
+                  }],
+                  "destinations": [{
+                    "file_system_type": "%s"
+                  }]
+                }
+              ],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1
+        })",
+                         dest_volume.fs_config_string));
+
+  VolumeInfo source_volume = GetAnyOtherVolume(dest_volume);
+
+  ValidateIsEnabled(source_volume, dest_volume,
+                    /*dlp*/ false,
+                    /*malware*/ false);
+  ValidateIsEnabled(dest_volume, source_volume,
+                    /*dlp*/ true,
+                    /*malware*/ false);
+}
+
+TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
+       MalwareEnabledWithPatternInSource) {
+  EnableFeatures();
+  ScopedSetDMToken scoped_dm_token(
+      policy::DMToken::CreateValidTokenForTesting(kDmToken));
+
+  VolumeInfo source_volume = GetParam();
+
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_TRANSFER,
+                                      base::StringPrintf(
+                                          R"({
+          "service_provider": "google",
+          "enable": [
+            {
+              "source_destination_list": [
+                {
+                  "sources": [{
+                    "file_system_type": "%s"
+                  }],
+                  "destinations": [{
+                    "file_system_type": "ANY"
+                  }]
+                }
+              ],
+              "tags": ["malware"]
+            }
+          ],
+          "block_until_verdict": 1
+        })",
+                                          source_volume.fs_config_string));
+
+  VolumeInfo dest_volume = GetAnyOtherVolume(source_volume);
+
+  ValidateIsEnabled(source_volume, dest_volume,
+                    /*dlp*/ false,
+                    /*malware*/ true);
+  ValidateIsEnabled(dest_volume, source_volume,
+                    /*dlp*/ false,
+                    /*malware*/ false);
+}
+
+TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
+       MalwareEnabledWithPatternsInDestination) {
+  EnableFeatures();
+  ScopedSetDMToken scoped_dm_token(
+      policy::DMToken::CreateValidTokenForTesting(kDmToken));
+
+  VolumeInfo dest_volume = GetParam();
+
+  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_TRANSFER,
+                                      base::StringPrintf(
+                                          R"({
+          "service_provider": "google",
+          "enable": [
+            {
+              "source_destination_list": [
+                {
+                  "sources": [{
+                    "file_system_type": "ANY"
+                  }],
+                  "destinations": [{
+                    "file_system_type": "%s"
+                  }]
+                }
+              ],
+              "tags": ["malware"]
+            }
+          ],
+          "block_until_verdict": 1
+        })",
+                                          dest_volume.fs_config_string));
+
+  VolumeInfo source_volume = GetAnyOtherVolume(dest_volume);
+
+  ValidateIsEnabled(source_volume, dest_volume,
+                    /*dlp*/ false,
+                    /*malware*/ true);
+  ValidateIsEnabled(dest_volume, source_volume,
+                    /*dlp*/ false,
+                    /*malware*/ false);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         FileTransferAnalysisDelegateIsEnabledParamTest,
+                         testing::ValuesIn(kVolumeInfos));
 
 class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
  public:
@@ -339,11 +640,12 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
             &FileTransferAnalysisDelegateAuditOnlyTest::FakeFileUploadCallback,
             base::Unretained(this))));
 
-    source_directory_url_ =
-        PathToFileSystemURL(temp_dir_.GetPath().Append("source"));
+    source_directory_url_ = PathToFileSystemURL(
+        source_destination_testing_helper_->GetTempDirPath().Append("source"));
     ASSERT_TRUE(base::CreateDirectory(source_directory_url_.path()));
-    destination_directory_url_ =
-        PathToFileSystemURL(temp_dir_.GetPath().Append("destination"));
+    destination_directory_url_ = PathToFileSystemURL(
+        source_destination_testing_helper_->GetTempDirPath().Append(
+            "destination"));
     ASSERT_TRUE(base::CreateDirectory(destination_directory_url_.path()));
   }
 
@@ -370,9 +672,10 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
     EXPECT_TRUE(service);
     EXPECT_TRUE(service->IsConnectorEnabled(AnalysisConnector::FILE_TRANSFER));
 
-    // TODO(crbug.com/1339194): Use file system urls here!
-    auto settings =
-        service->GetAnalysisSettings(GURL(), AnalysisConnector::FILE_TRANSFER);
+    // Get settings.
+    auto settings = service->GetAnalysisSettings(
+        GetEmptyTestSrcUrl(), GetEmptyTestDestUrl(),
+        AnalysisConnector::FILE_TRANSFER);
     EXPECT_TRUE(settings.has_value());
     return std::move(settings.value());
   }

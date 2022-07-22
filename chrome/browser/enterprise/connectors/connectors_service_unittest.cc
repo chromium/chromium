@@ -19,6 +19,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_task_environment.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -213,6 +214,89 @@ INSTANTIATE_TEST_SUITE_P(
                                      FILE_DOWNLOADED,
                                      BULK_DATA_ENTRY,
                                      PRINT)));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+constexpr char kNormalSourceDestinationCloudAnalysisSettingsPref[] = R"([
+  {
+    "service_provider": "google",
+    "enable": [
+      {
+        "source_destination_list": [
+          {
+            "sources": [
+              {"file_system_type": "ANY"}
+            ],
+            "destinations": [
+              {"file_system_type": "ANY"}
+            ]
+          }
+        ],
+        "tags": ["dlp", "malware"]
+      }
+    ],
+    "block_until_verdict": 1,
+    "block_password_protected": true,
+    "block_large_files": true,
+    "block_unsupported_file_types": true
+  }
+])";
+
+constexpr char kNormalSourceDestinationLocalAnalysisSettingsPref[] = R"([
+  {
+    "service_provider": "local_test",
+    "enable": [
+      {
+        "source_destination_list": [
+          {
+            "sources": [
+              {"file_system_type": "ANY"}
+            ],
+            "destinations": [
+              {"file_system_type": "ANY"}
+            ]
+          }
+        ],
+        "tags": ["dlp", "malware"]
+      }
+    ],
+    "block_until_verdict": 1,
+    "block_password_protected": true,
+    "block_large_files": true,
+    "block_unsupported_file_types": true
+  }
+])";
+
+using ConnectorsServiceAnalysisSourceDestinationNoFeatureTest =
+    ConnectorsServiceAnalysisNoFeatureTest;
+TEST_P(ConnectorsServiceAnalysisSourceDestinationNoFeatureTest,
+       AnalysisConnectors) {
+  profile_->GetPrefs()->Set(ConnectorPref(connector()),
+                            *base::JSONReader::Read(pref_value()));
+  auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile_);
+
+  // Only absl::nullopt should be returned when the feature is disabled.
+  storage::FileSystemURL source;
+  storage::FileSystemURL destination;
+  auto settings =
+      service->GetAnalysisSettings(source, destination, connector());
+  ASSERT_FALSE(settings.has_value());
+
+  // No cached settings imply the connector value was never read.
+  ASSERT_TRUE(service->ConnectorsManagerForTesting()
+                  ->GetAnalysisConnectorsSettingsForTesting()
+                  .empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ConnectorsServiceAnalysisSourceDestinationNoFeatureTest,
+    testing::Combine(
+        testing::Values(kNormalSourceDestinationCloudAnalysisSettingsPref,
+                        kNormalSourceDestinationLocalAnalysisSettingsPref),
+        testing::Values(FILE_TRANSFER)));
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Test to make sure that HasExtraUiToDisplay returns the right value to
 // show the extra UI from opt in features like custom message, URL and bypass

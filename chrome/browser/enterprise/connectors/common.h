@@ -44,6 +44,7 @@ constexpr char kKeyWindowsVerification[] = "verification.windows";
 constexpr char kKeyEnable[] = "enable";
 constexpr char kKeyDisable[] = "disable";
 constexpr char kKeyUrlList[] = "url_list";
+constexpr char kKeySourceDestinationList[] = "source_destination_list";
 constexpr char kKeyTags[] = "tags";
 constexpr char kKeyBlockUntilVerdict[] = "block_until_verdict";
 constexpr char kKeyBlockPasswordProtected[] = "block_password_protected";

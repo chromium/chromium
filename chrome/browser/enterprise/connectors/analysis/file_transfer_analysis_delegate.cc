@@ -159,8 +159,7 @@ absl::optional<AnalysisSettings> FileTransferAnalysisDelegate::IsEnabled(
     return absl::nullopt;
   }
 
-  // TODO(crbug.com/1339194): use source_url and destination_url here.
-  return service->GetAnalysisSettings(GURL(),
+  return service->GetAnalysisSettings(source_url, destination_url,
                                       enterprise_connectors::FILE_TRANSFER);
 }
 

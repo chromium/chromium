@@ -23,6 +23,10 @@ template <typename T>
 struct DefaultSingletonTraits;
 }
 
+namespace storage {
+class FileSystemURL;
+}
+
 namespace enterprise_connectors {
 
 // Controls whether the Enterprise Connectors policies should be read by
@@ -43,6 +47,12 @@ class ConnectorsService : public KeyedService {
   absl::optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  absl::optional<AnalysisSettings> GetAnalysisSettings(
+      const storage::FileSystemURL& source_url,
+      const storage::FileSystemURL& destination_url,
+      AnalysisConnector connector);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   absl::optional<FileSystemSettings> GetFileSystemGlobalSettings(
       FileSystemConnector connector);
   absl::optional<FileSystemSettings> GetFileSystemSettings(
@@ -109,6 +119,10 @@ class ConnectorsService : public KeyedService {
     // policy used to get a DM token.
     policy::PolicyScope scope;
   };
+
+  absl::optional<AnalysisSettings> GetCommonAnalysisSettings(
+      absl::optional<AnalysisSettings> settings,
+      AnalysisConnector connector);
 
   // Returns the DM token to use with the given |scope_pref|. That pref should
   // contain either POLICY_SCOPE_MACHINE or POLICY_SCOPE_USER.
