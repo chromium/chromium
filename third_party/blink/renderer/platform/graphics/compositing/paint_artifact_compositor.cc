@@ -152,11 +152,9 @@ PaintArtifactCompositor::NearestScrollTranslationForLayer(
   if (pending_layer.GetCompositingType() == PendingLayer::kScrollHitTestLayer)
     return pending_layer.ScrollTranslationForScrollHitTestLayer();
 
-  const auto& transform = pending_layer.GetPropertyTreeState().Transform();
-  // TODO(pdr): This could be a performance issue because it crawls up the
-  // transform tree for each pending layer. If this is on profiles, we should
-  // cache a lookup of transform node to scroll translation transform node.
-  return transform.NearestScrollTranslationNode();
+  return pending_layer.GetPropertyTreeState()
+      .Transform()
+      .NearestScrollTranslationNode();
 }
 
 namespace {

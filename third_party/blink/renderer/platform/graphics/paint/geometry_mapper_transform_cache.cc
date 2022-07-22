@@ -34,6 +34,9 @@ void GeometryMapperTransformCache::Update(
     root_of_2d_translation_ = &node;
     plane_root_transform_ = nullptr;
     screen_transform_ = nullptr;
+
+    DCHECK(node.ScrollNode());
+    nearest_scroll_translation_ = &node;
     return;
   }
 
@@ -43,6 +46,9 @@ void GeometryMapperTransformCache::Update(
   has_fixed_ = node.RequiresCompositingForFixedPosition() || parent.has_fixed_;
   has_sticky_ =
       node.RequiresCompositingForStickyPosition() || parent.has_sticky_;
+
+  nearest_scroll_translation_ =
+      node.ScrollNode() ? &node : parent.nearest_scroll_translation_;
 
   // screen_transform_ will be updated only when needed.
   screen_transform_ = nullptr;

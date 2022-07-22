@@ -445,9 +445,6 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
     cc::StickyPositionNodeData& sticky_data =
         transform_tree_.EnsureStickyPositionData(id);
     sticky_data.constraints = *sticky_constraint;
-    // TODO(pdr): This could be a performance issue because it crawls up the
-    // transform tree for each pending layer. If this is on profiles, we should
-    // cache a lookup of transform node to scroll translation transform node.
     const auto& scroll_ancestor = transform_node.NearestScrollTranslationNode();
     sticky_data.scroll_ancestor = EnsureCompositorScrollNode(scroll_ancestor);
     const auto& scroll_ancestor_compositor_node =
@@ -659,9 +656,6 @@ void PropertyTreeManager::EmitClipMaskLayer() {
       root_layer_.property_tree_sequence_number());
   mask_layer->SetTransformTreeIndex(
       EnsureCompositorTransformNode(*current_.transform));
-  // TODO(pdr): This could be a performance issue because it crawls up the
-  // transform tree for each pending layer. If this is on profiles, we should
-  // cache a lookup of transform node to scroll translation transform node.
   int scroll_id = EnsureCompositorScrollNode(
       current_.transform->NearestScrollTranslationNode());
   mask_layer->SetScrollTreeIndex(scroll_id);

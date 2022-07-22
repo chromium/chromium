@@ -119,18 +119,6 @@ bool TransformPaintPropertyNodeOrAlias::Changed(
   return relative_to_node.Changed(change, TransformPaintPropertyNode::Root());
 }
 
-const TransformPaintPropertyNode&
-TransformPaintPropertyNode::NearestScrollTranslationNode() const {
-  const auto* transform = this;
-  while (!transform->ScrollNode()) {
-    transform = transform->UnaliasedParent();
-    // The transform should never be null because the root transform has an
-    // associated scroll node (see: TransformPaintPropertyNode::Root()).
-    DCHECK(transform);
-  }
-  return *transform;
-}
-
 std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
   auto json = ToJSONBase();
   if (IsIdentityOr2DTranslation()) {

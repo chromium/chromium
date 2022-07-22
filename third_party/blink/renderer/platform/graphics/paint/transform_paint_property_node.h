@@ -285,8 +285,10 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
 
   // If this is a scroll offset translation (i.e., has an associated scroll
   // node), returns this. Otherwise, returns the transform node that this node
-  // scrolls with respect to. This can require a full ancestor traversal.
-  const TransformPaintPropertyNode& NearestScrollTranslationNode() const;
+  // scrolls with respect to.
+  const TransformPaintPropertyNode& NearestScrollTranslationNode() const {
+    return GetTransformCache().nearest_scroll_translation();
+  }
 
   // If true, content with this transform node (or its descendant) appears in
   // the plane of its parent. This is implemented by flattening the total

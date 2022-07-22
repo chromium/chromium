@@ -118,6 +118,11 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   bool has_fixed() const { return has_fixed_; }
   bool has_sticky() const { return has_sticky_; }
 
+  const TransformPaintPropertyNode& nearest_scroll_translation() const {
+    DCHECK(nearest_scroll_translation_);
+    return *nearest_scroll_translation_;
+  }
+
  private:
   friend class GeometryMapperTransformCacheTest;
 
@@ -213,6 +218,8 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   bool has_fixed_ = false;
   // Whether or not there is a sticky translation to the root.
   bool has_sticky_ = false;
+
+  const TransformPaintPropertyNode* nearest_scroll_translation_ = nullptr;
 
   unsigned cache_generation_ = s_global_generation - 1;
 };
