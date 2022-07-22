@@ -2052,7 +2052,7 @@ void AccessibilityControllerImpl::UpdateSwitchAccessKeyCodesFromPref(
 
     key_codes[key_code] = std::set<std::string>();
 
-    for (const base::Value& device_type : v.second.GetListDeprecated())
+    for (const base::Value& device_type : v.second.GetList())
       key_codes[key_code].insert(device_type.GetString());
 
     DCHECK(!key_codes[key_code].empty());

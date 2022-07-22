@@ -40,38 +40,37 @@ absl::optional<ArcFeatures> ParseFeaturesJson(base::StringPiece input_json) {
     return absl::nullopt;
   }
 
+  const base::Value::Dict& dict = parsed_json->GetDict();
+
   // Parse each item under features.
-  const base::Value* feature_list =
-      parsed_json->FindKeyOfType("features", base::Value::Type::LIST);
+  const base::Value::List* feature_list = dict.FindList("features");
   if (!feature_list) {
     LOG(ERROR) << "No feature list in JSON.";
     return absl::nullopt;
   }
-  for (auto& feature_item : feature_list->GetListDeprecated()) {
-    const base::Value* feature_name =
-        feature_item.FindKeyOfType("name", base::Value::Type::STRING);
-    const base::Value* feature_version =
-        feature_item.FindKeyOfType("version", base::Value::Type::INTEGER);
-    if (!feature_name || feature_name->GetString().empty()) {
+  for (auto& feature_item : *feature_list) {
+    const std::string* feature_name = feature_item.GetDict().FindString("name");
+    const absl::optional<int> feature_version =
+        feature_item.GetDict().FindInt("version");
+    if (!feature_name || feature_name->empty()) {
       LOG(ERROR) << "Missing name in the feature.";
       return absl::nullopt;
     }
-    if (!feature_version) {
+    if (!feature_version.has_value()) {
       LOG(ERROR) << "Missing version in the feature.";
       return absl::nullopt;
     }
-    arc_features.feature_map.emplace(feature_name->GetString(),
-                                     feature_version->GetInt());
+    arc_features.feature_map.emplace(*feature_name, *feature_version);
   }
 
   // Parse each item under unavailable_features.
-  const base::Value* unavailable_feature_list = parsed_json->FindKeyOfType(
-      "unavailable_features", base::Value::Type::LIST);
+  const base::Value::List* unavailable_feature_list =
+      dict.FindList("unavailable_features");
   if (!unavailable_feature_list) {
     LOG(ERROR) << "No unavailable feature list in JSON.";
     return absl::nullopt;
   }
-  for (auto& feature_item : unavailable_feature_list->GetListDeprecated()) {
+  for (auto& feature_item : *unavailable_feature_list) {
     if (!feature_item.is_string()) {
       LOG(ERROR) << "Item in the unavailable feature list is not a string.";
       return absl::nullopt;
@@ -85,13 +84,12 @@ absl::optional<ArcFeatures> ParseFeaturesJson(base::StringPiece input_json) {
   }
 
   // Parse each item under properties.
-  const base::Value* properties =
-      parsed_json->FindKeyOfType("properties", base::Value::Type::DICTIONARY);
+  const base::Value::Dict* properties = dict.FindDict("properties");
   if (!properties) {
     LOG(ERROR) << "No properties in JSON.";
     return absl::nullopt;
   }
-  for (const auto item : properties->DictItems()) {
+  for (const auto item : *properties) {
     if (!item.second.is_string()) {
       LOG(ERROR) << "Item in the properties mapping is not a string.";
       return absl::nullopt;
@@ -101,13 +99,12 @@ absl::optional<ArcFeatures> ParseFeaturesJson(base::StringPiece input_json) {
   }
 
   // Parse the Play Store version
-  const base::Value* play_version = parsed_json->FindKeyOfType(
-      "play_store_version", base::Value::Type::STRING);
+  const std::string* play_version = dict.FindString("play_store_version");
   if (!play_version) {
     LOG(ERROR) << "No Play Store version in JSON.";
     return absl::nullopt;
   }
-  arc_features.play_store_version = play_version->GetString();
+  arc_features.play_store_version = *play_version;
 
   return arc_features;
 }

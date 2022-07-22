@@ -172,12 +172,12 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetAccounts) {
   EXPECT_TRUE(call_data.arg2()->GetBool());
   ASSERT_TRUE(call_data.arg3()->is_list());
 
-  const auto& list_view = call_data.arg3()->GetListDeprecated();
+  const base::Value::List& list = call_data.arg3()->GetList();
   // There is only one account in the identity manager.
-  EXPECT_EQ(list_view.size(), 1u);
+  EXPECT_EQ(list.size(), 1u);
 
   // Ensure that the entry is an account with a the valid email.
-  const auto& account = list_view[0];
+  const auto& account = list[0];
   const std::string* email = account.FindStringPath("email");
   ASSERT_NE(email, nullptr);
   EXPECT_EQ(*email, kTestUserEmail);
@@ -414,11 +414,11 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetPendingScreencasts) {
   EXPECT_TRUE(call_data.arg2()->GetBool());
   ASSERT_TRUE(call_data.arg3()->is_list());
 
-  const auto& list_view = call_data.arg3()->GetListDeprecated();
+  const base::Value::List& list = call_data.arg3()->GetList();
   // There is only one screencast.
-  EXPECT_EQ(list_view.size(), 1u);
+  EXPECT_EQ(list.size(), 1u);
 
-  const auto& screencast = list_view[0];
+  const auto& screencast = list[0];
   EXPECT_EQ(*(screencast.FindStringPath("name")), name);
   EXPECT_EQ(*(screencast.FindDoublePath("createdTime")), 0);
   EXPECT_EQ(*(screencast.FindBoolPath("uploadFailed")), false);

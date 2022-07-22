@@ -77,8 +77,7 @@ void TetherHostResponseRecorder::
 bool TetherHostResponseRecorder::AddRecentResponse(
     const std::string& device_id,
     const std::string& pref_name) {
-  const base::Value* ids = pref_service_->GetList(pref_name);
-  base::Value::ConstListView ids_list = ids->GetListDeprecated();
+  const base::Value::List& ids_list = pref_service_->GetValueList(pref_name);
 
   std::string first_device_id_in_list;
   if (!ids_list.empty() && ids_list[0].is_string())
@@ -90,21 +89,18 @@ bool TetherHostResponseRecorder::AddRecentResponse(
     return false;
   }
 
-  // Create a mutable copy of the stored IDs, or create one if it has yet to be
-  // stored.
-  base::Value updated_ids =
-      ids ? ids->Clone() : base::Value(base::Value::Type::LIST);
+  // Create a mutable copy of the stored IDs.
+  base::Value::List updated_ids = ids_list.Clone();
 
   // Remove the device ID if it was already present in the list.
   base::Value device_id_value(device_id);
-  updated_ids.EraseListValue(device_id_value);
+  updated_ids.EraseValue(device_id_value);
 
   // Add the device ID to the front of the queue.
-  updated_ids.Insert(updated_ids.GetListDeprecated().begin(),
-                     std::move(device_id_value));
+  updated_ids.Insert(updated_ids.begin(), std::move(device_id_value));
 
   // Store the updated list back in |pref_service_|.
-  pref_service_->Set(pref_name, std::move(updated_ids));
+  pref_service_->SetList(pref_name, std::move(updated_ids));
 
   return true;
 }
@@ -113,11 +109,8 @@ std::vector<std::string> TetherHostResponseRecorder::GetDeviceIdsForPref(
     const std::string& pref_name) const {
   std::vector<std::string> device_ids;
 
-  const base::Value* ids = pref_service_->GetList(pref_name);
-  if (!ids)
-    return device_ids;
-
-  for (const auto& entry : ids->GetListDeprecated()) {
+  const base::Value::List& ids = pref_service_->GetValueList(pref_name);
+  for (const auto& entry : ids) {
     if (entry.is_string())
       device_ids.push_back(entry.GetString());
   }

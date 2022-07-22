@@ -287,9 +287,9 @@ base::Value UnlockKeyToDictionary(const cryptauth::ExternalDeviceInfo& device) {
 }
 
 void AddBeaconSeedsToExternalDevice(
-    const base::Value& beacon_seeds,
+    const base::Value::List& beacon_seeds,
     cryptauth::ExternalDeviceInfo* external_device) {
-  for (const base::Value& seed_dictionary : beacon_seeds.GetListDeprecated()) {
+  for (const base::Value& seed_dictionary : beacon_seeds) {
     if (!seed_dictionary.is_dict()) {
       PA_LOG(WARNING) << "Unable to retrieve BeaconSeed dictionary; "
                       << "skipping.";
@@ -334,11 +334,11 @@ void AddBeaconSeedsToExternalDevice(
 }
 
 void AddSoftwareFeaturesToExternalDevice(
-    const base::Value& software_features_dictionary,
+    const base::Value::Dict& software_features_dictionary,
     cryptauth::ExternalDeviceInfo* external_device,
     bool old_unlock_key_value_from_prefs,
     bool old_mobile_hotspot_supported_from_prefs) {
-  for (const auto it : software_features_dictionary.DictItems()) {
+  for (const auto it : software_features_dictionary) {
     std::string software_feature = it.first;
     if (SoftwareFeatureStringToEnum(software_feature) ==
         cryptauth::SoftwareFeature::UNKNOWN_FEATURE) {
@@ -406,10 +406,10 @@ void AddSoftwareFeaturesToExternalDevice(
 // Converts an unlock key dictionary stored in user prefs to an
 // cryptauth::ExternalDeviceInfo proto. Returns true if the dictionary is valid,
 // and the parsed proto is written to |external_device|.
-bool DictionaryToUnlockKey(const base::Value& dictionary,
+bool DictionaryToUnlockKey(const base::Value::Dict& dictionary,
                            cryptauth::ExternalDeviceInfo* external_device) {
   const std::string* public_key_b64 =
-      dictionary.FindStringKey(kExternalDeviceKeyPublicKey);
+      dictionary.FindString(kExternalDeviceKeyPublicKey);
   if (!public_key_b64) {
     // The public key is a required field, so if it is absent, there is no
     // valid data to return.
@@ -427,7 +427,7 @@ bool DictionaryToUnlockKey(const base::Value& dictionary,
   external_device->set_public_key(public_key);
 
   const std::string* device_name_b64 =
-      dictionary.FindStringKey(kExternalDeviceKeyDeviceName);
+      dictionary.FindString(kExternalDeviceKeyDeviceName);
   if (device_name_b64) {
     std::string device_name;
     if (base::Base64UrlDecode(*device_name_b64,
@@ -438,7 +438,7 @@ bool DictionaryToUnlockKey(const base::Value& dictionary,
   }
 
   const std::string* bluetooth_address_b64 =
-      dictionary.FindStringKey(kExternalDeviceKeyBluetoothAddress);
+      dictionary.FindString(kExternalDeviceKeyBluetoothAddress);
   if (bluetooth_address_b64) {
     std::string bluetooth_address;
     if (base::Base64UrlDecode(*bluetooth_address_b64,
@@ -451,12 +451,12 @@ bool DictionaryToUnlockKey(const base::Value& dictionary,
   // TODO(crbug.com/848477): Migrate |unlockable| into
   // |supported_software_features|.
   absl::optional<bool> unlockable =
-      dictionary.FindBoolKey(kExternalDeviceKeyUnlockable);
+      dictionary.FindBool(kExternalDeviceKeyUnlockable);
   if (unlockable.has_value())
     external_device->set_unlockable(unlockable.value());
 
   const std::string* last_update_time_millis_str =
-      dictionary.FindStringKey(kExternalDeviceKeyLastUpdateTimeMillis);
+      dictionary.FindString(kExternalDeviceKeyLastUpdateTimeMillis);
   if (last_update_time_millis_str) {
     int64_t last_update_time_millis;
     if (base::StringToInt64(*last_update_time_millis_str,
@@ -469,30 +469,30 @@ bool DictionaryToUnlockKey(const base::Value& dictionary,
   }
 
   absl::optional<int> device_type =
-      dictionary.FindIntKey(kExternalDeviceKeyDeviceType);
+      dictionary.FindInt(kExternalDeviceKeyDeviceType);
   if (device_type.has_value() &&
       cryptauth::DeviceType_IsValid(device_type.value())) {
     external_device->set_device_type(DeviceTypeEnumToString(
         static_cast<cryptauth::DeviceType>(device_type.value())));
   }
 
-  const base::Value* beacon_seeds =
-      dictionary.FindListKey(kExternalDeviceKeyBeaconSeeds);
+  const base::Value::List* beacon_seeds =
+      dictionary.FindList(kExternalDeviceKeyBeaconSeeds);
   if (beacon_seeds)
     AddBeaconSeedsToExternalDevice(*beacon_seeds, external_device);
 
   absl::optional<bool> arc_plus_plus =
-      dictionary.FindBoolKey(kExternalDeviceKeyArcPlusPlus);
+      dictionary.FindBool(kExternalDeviceKeyArcPlusPlus);
   if (arc_plus_plus.has_value())
     external_device->set_arc_plus_plus(arc_plus_plus.value());
 
   absl::optional<bool> pixel_phone =
-      dictionary.FindBoolKey(kExternalDeviceKeyPixelPhone);
+      dictionary.FindBool(kExternalDeviceKeyPixelPhone);
   if (pixel_phone.has_value())
     external_device->set_pixel_phone(pixel_phone.value());
 
   const std::string* no_pii_device_name_b64 =
-      dictionary.FindStringKey(kExternalDeviceKeyNoPiiDeviceName);
+      dictionary.FindString(kExternalDeviceKeyNoPiiDeviceName);
   if (no_pii_device_name_b64) {
     std::string no_pii_device_name;
     if (base::Base64UrlDecode(*no_pii_device_name_b64,
@@ -503,12 +503,12 @@ bool DictionaryToUnlockKey(const base::Value& dictionary,
   }
 
   absl::optional<bool> unlock_key =
-      dictionary.FindBoolKey(kExternalDeviceKeyUnlockKey);
+      dictionary.FindBool(kExternalDeviceKeyUnlockKey);
   absl::optional<bool> mobile_hotspot_supported =
-      dictionary.FindBoolKey(kExternalDeviceKeyMobileHotspotSupported);
+      dictionary.FindBool(kExternalDeviceKeyMobileHotspotSupported);
 
-  const base::Value* software_features_dictionary =
-      dictionary.FindDictKey(kDictionaryKeySoftwareFeatures);
+  const base::Value::Dict* software_features_dictionary =
+      dictionary.FindDict(kDictionaryKeySoftwareFeatures);
   if (software_features_dictionary) {
     AddSoftwareFeaturesToExternalDevice(
         *software_features_dictionary, external_device,
@@ -755,7 +755,7 @@ void CryptAuthDeviceManagerImpl::UpdateUnlockKeysFromPrefs() {
   for (const auto& it : unlock_key_list) {
     if (it.is_dict()) {
       cryptauth::ExternalDeviceInfo unlock_key;
-      if (DictionaryToUnlockKey(it, &unlock_key)) {
+      if (DictionaryToUnlockKey(it.GetDict(), &unlock_key)) {
         synced_devices_.push_back(unlock_key);
       } else {
         PA_LOG(ERROR) << "Unable to deserialize unlock key dictionary:\n" << it;

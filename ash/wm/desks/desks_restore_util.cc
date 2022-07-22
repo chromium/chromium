@@ -260,20 +260,20 @@ void UpdatePrimaryUserDeskNamesPrefs() {
   }
 
   ListPrefUpdate name_update(primary_user_prefs, prefs::kDesksNamesList);
-  base::Value* name_pref_data = name_update.Get();
-  name_pref_data->ClearList();
+  base::Value::List& name_pref_data = name_update->GetList();
+  name_pref_data.clear();
 
   const auto& desks = DesksController::Get()->desks();
   for (const auto& desk : desks) {
     // Desks whose names were not changed by the user, are stored as empty
     // strings. They're just place holders to restore the correct desks count.
     // RestorePrimaryUserDesks() restores only non-empty desks names.
-    name_pref_data->Append(desk->is_name_set_by_user()
-                               ? base::UTF16ToUTF8(desk->name())
-                               : std::string());
+    name_pref_data.Append(desk->is_name_set_by_user()
+                              ? base::UTF16ToUTF8(desk->name())
+                              : std::string());
   }
 
-  DCHECK_EQ(name_pref_data->GetListDeprecated().size(), desks.size());
+  DCHECK_EQ(name_pref_data.size(), desks.size());
 
   if (IsNowInValidTimePeriod() &&
       !primary_user_prefs->GetBoolean(kUserHasUsedDesksRecently)) {
@@ -293,8 +293,8 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
 
   // Save per-desk metrics.
   ListPrefUpdate metrics_update(primary_user_prefs, prefs::kDesksMetricsList);
-  base::Value* metrics_pref_data = metrics_update.Get();
-  metrics_pref_data->ClearList();
+  base::Value::List& metrics_pref_data = metrics_update->GetList();
+  metrics_pref_data.clear();
 
   auto* desks_controller = DesksController::Get();
   const auto& desks = desks_controller->desks();
@@ -307,10 +307,10 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
     metrics_dict.SetIntKey(kLastDayVisitedKey, desk->last_day_visited());
     metrics_dict.SetBoolKey(kInteractedWithThisWeekKey,
                             desk->interacted_with_this_week());
-    metrics_pref_data->Append(std::move(metrics_dict));
+    metrics_pref_data.Append(std::move(metrics_dict));
   }
 
-  DCHECK_EQ(metrics_pref_data->GetListDeprecated().size(), desks.size());
+  DCHECK_EQ(metrics_pref_data.size(), desks.size());
 
   // Save weekly active report time.
   DictionaryPrefUpdate weekly_active_desks_update(

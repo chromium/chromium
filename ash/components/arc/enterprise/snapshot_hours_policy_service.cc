@@ -90,11 +90,10 @@ void SnapshotHoursPolicyService::UpdatePolicy() {
   if (!IsArcEnabled())
     return;
 
-  const auto* dict = local_state_->GetDictionary(prefs::kArcSnapshotHours);
-  if (!dict)
-    return;
+  const base::Value::Dict& dict =
+      local_state_->GetValueDict(prefs::kArcSnapshotHours);
 
-  const auto* timezone = dict->FindStringKey("timezone");
+  const auto* timezone = dict.FindString("timezone");
   std::string timezone_str = "";
   if (!timezone || *timezone == "UNSET") {
     std::unique_ptr<icu::TimeZone> zone(icu::TimeZone::detectHostTimeZone());
@@ -111,11 +110,11 @@ void SnapshotHoursPolicyService::UpdatePolicy() {
     return;
   }
 
-  const auto* intervals = dict->FindListKey("intervals");
+  const auto* intervals = dict.FindList("intervals");
   if (!intervals)
     return;
 
-  for (const auto& entry : intervals->GetListDeprecated()) {
+  for (const auto& entry : *intervals) {
     if (!entry.is_dict())
       continue;
     auto interval =

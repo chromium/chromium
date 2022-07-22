@@ -184,22 +184,21 @@ void ExpectSyncedDevicesAndPrefAreEqual(
     const PrefService& pref_service) {
   ExpectSyncedDevicesAreEqual(expected_devices, devices);
 
-  const base::Value* synced_devices_pref =
-      pref_service.GetList(prefs::kCryptAuthDeviceSyncUnlockKeys);
-  ASSERT_EQ(expected_devices.size(),
-            synced_devices_pref->GetListDeprecated().size());
-  for (size_t i = 0; i < synced_devices_pref->GetListDeprecated().size(); ++i) {
+  const base::Value::List& synced_devices_pref =
+      pref_service.GetValueList(prefs::kCryptAuthDeviceSyncUnlockKeys);
+  ASSERT_EQ(expected_devices.size(), synced_devices_pref.size());
+  for (size_t i = 0; i < synced_devices_pref.size(); ++i) {
     SCOPED_TRACE(base::StringPrintf("Compare pref dictionary at index=%d",
                                     static_cast<int>(i)));
-    const base::Value& device_dictionary =
-        synced_devices_pref->GetListDeprecated()[i];
-    EXPECT_TRUE(device_dictionary.is_dict());
+    const base::Value::Dict* device_dictionary =
+        synced_devices_pref[i].GetIfDict();
+    EXPECT_TRUE(device_dictionary);
 
     const auto& expected_device = expected_devices[i];
 
     std::string public_key;
     const std::string* public_key_b64 =
-        device_dictionary.FindStringKey("public_key");
+        device_dictionary->FindString("public_key");
     EXPECT_TRUE(public_key_b64);
     EXPECT_TRUE(base::Base64UrlDecode(
         *public_key_b64, base::Base64UrlDecodePolicy::REQUIRE_PADDING,
@@ -209,7 +208,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
 
     std::string device_name;
     const std::string* device_name_b64 =
-        device_dictionary.FindStringKey("device_name");
+        device_dictionary->FindString("device_name");
     if (device_name_b64) {
       EXPECT_TRUE(base::Base64UrlDecode(
           *device_name_b64, base::Base64UrlDecodePolicy::REQUIRE_PADDING,
@@ -222,7 +221,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
 
     std::string no_pii_device_name;
     const std::string* no_pii_device_name_b64 =
-        device_dictionary.FindStringKey("no_pii_device_name");
+        device_dictionary->FindString("no_pii_device_name");
     if (no_pii_device_name_b64) {
       EXPECT_TRUE(base::Base64UrlDecode(
           *no_pii_device_name_b64, base::Base64UrlDecodePolicy::REQUIRE_PADDING,
@@ -235,7 +234,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
 
     std::string bluetooth_address;
     const std::string* bluetooth_address_b64 =
-        device_dictionary.FindStringKey("bluetooth_address");
+        device_dictionary->FindString("bluetooth_address");
     if (bluetooth_address_b64) {
       EXPECT_TRUE(base::Base64UrlDecode(
           *bluetooth_address_b64, base::Base64UrlDecodePolicy::REQUIRE_PADDING,
@@ -246,8 +245,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
       EXPECT_FALSE(expected_device.has_bluetooth_address());
     }
 
-    absl::optional<bool> unlock_key =
-        device_dictionary.FindBoolKey("unlock_key");
+    absl::optional<bool> unlock_key = device_dictionary->FindBool("unlock_key");
     if (unlock_key.has_value()) {
       EXPECT_TRUE(expected_device.has_unlock_key());
       EXPECT_EQ(expected_device.unlock_key(), unlock_key.value());
@@ -255,8 +253,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
       EXPECT_FALSE(expected_device.has_unlock_key());
     }
 
-    absl::optional<bool> unlockable =
-        device_dictionary.FindBoolKey("unlockable");
+    absl::optional<bool> unlockable = device_dictionary->FindBool("unlockable");
     if (unlockable.has_value()) {
       EXPECT_TRUE(expected_device.has_unlockable());
       EXPECT_EQ(expected_device.unlockable(), unlockable.value());
@@ -265,7 +262,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
     }
 
     const std::string* last_update_time_millis_str =
-        device_dictionary.FindStringKey("last_update_time_millis");
+        device_dictionary->FindString("last_update_time_millis");
     if (last_update_time_millis_str) {
       int64_t last_update_time_millis;
       EXPECT_TRUE(base::StringToInt64(*last_update_time_millis_str,
@@ -278,7 +275,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
     }
 
     absl::optional<bool> mobile_hotspot_supported =
-        device_dictionary.FindBoolKey("mobile_hotspot_supported");
+        device_dictionary->FindBool("mobile_hotspot_supported");
     if (mobile_hotspot_supported.has_value()) {
       EXPECT_TRUE(expected_device.has_mobile_hotspot_supported());
       EXPECT_EQ(expected_device.mobile_hotspot_supported(),
@@ -287,8 +284,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
       EXPECT_FALSE(expected_device.has_mobile_hotspot_supported());
     }
 
-    absl::optional<int> device_type =
-        device_dictionary.FindIntKey("device_type");
+    absl::optional<int> device_type = device_dictionary->FindInt("device_type");
     if (device_type.has_value()) {
       EXPECT_TRUE(expected_device.has_device_type());
       EXPECT_EQ(DeviceTypeStringToEnum(expected_device.device_type()),
@@ -296,15 +292,13 @@ void ExpectSyncedDevicesAndPrefAreEqual(
     } else {
       EXPECT_FALSE(expected_device.has_device_type());
     }
-    const base::Value* beacon_seeds_from_prefs =
-        device_dictionary.FindListKey("beacon_seeds");
+    const base::Value::List* beacon_seeds_from_prefs =
+        device_dictionary->FindList("beacon_seeds");
     if (beacon_seeds_from_prefs) {
       ASSERT_EQ(static_cast<size_t>(expected_device.beacon_seeds_size()),
-                beacon_seeds_from_prefs->GetListDeprecated().size());
-      for (size_t i = 0;
-           i < beacon_seeds_from_prefs->GetListDeprecated().size(); i++) {
-        const base::Value& seed =
-            beacon_seeds_from_prefs->GetListDeprecated()[i];
+                beacon_seeds_from_prefs->size());
+      for (size_t i = 0; i < beacon_seeds_from_prefs->size(); i++) {
+        const base::Value& seed = (*beacon_seeds_from_prefs)[i];
         ASSERT_TRUE(seed.is_dict());
 
         const std::string* data_b64 = seed.FindStringKey("beacon_seed_data");
@@ -337,7 +331,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
     }
 
     absl::optional<bool> arc_plus_plus =
-        device_dictionary.FindBoolKey("arc_plus_plus");
+        device_dictionary->FindBool("arc_plus_plus");
     if (arc_plus_plus.has_value()) {
       EXPECT_TRUE(expected_device.has_arc_plus_plus());
       EXPECT_EQ(expected_device.arc_plus_plus(), arc_plus_plus.value());
@@ -346,7 +340,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
     }
 
     absl::optional<bool> pixel_phone =
-        device_dictionary.FindBoolKey("pixel_phone");
+        device_dictionary->FindBool("pixel_phone");
     if (pixel_phone.has_value()) {
       EXPECT_TRUE(expected_device.has_pixel_phone());
       EXPECT_EQ(expected_device.pixel_phone(), pixel_phone.value());
@@ -354,13 +348,13 @@ void ExpectSyncedDevicesAndPrefAreEqual(
       EXPECT_FALSE(expected_device.has_pixel_phone());
     }
 
-    const base::Value* software_features_from_prefs =
-        device_dictionary.FindDictKey("software_features");
+    const base::Value::Dict* software_features_from_prefs =
+        device_dictionary->FindDict("software_features");
     if (software_features_from_prefs) {
       std::vector<cryptauth::SoftwareFeature> supported_software_features;
       std::vector<cryptauth::SoftwareFeature> enabled_software_features;
 
-      for (const auto it : software_features_from_prefs->DictItems()) {
+      for (const auto it : *software_features_from_prefs) {
         ASSERT_TRUE(it.second.is_int());
 
         cryptauth::SoftwareFeature software_feature =
@@ -961,9 +955,9 @@ TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest, SyncThreeDevices) {
 
   device_manager_->Start();
   EXPECT_EQ(1u, device_manager_->GetSyncedDevices().size());
-  EXPECT_EQ(1u, pref_service_.GetList(prefs::kCryptAuthDeviceSyncUnlockKeys)
-                    ->GetListDeprecated()
-                    .size());
+  EXPECT_EQ(
+      1u,
+      pref_service_.GetValueList(prefs::kCryptAuthDeviceSyncUnlockKeys).size());
 
   FireSchedulerForSync(cryptauth::INVOCATION_REASON_PERIODIC);
   ASSERT_FALSE(success_callback_.is_null());
