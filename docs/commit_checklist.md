@@ -138,6 +138,8 @@ continue until each commit is squashed into the first commit.
 An alternative way to squash your commits into a single commit is to do `git
 commit --amend` in the previous step.
 
+Alternatively you can also run `git squash-branch`.
+
 ## 12. Rebase your local repository
 
 Rebasing is a neat way to sync changes from the remote repository and resolve
@@ -196,6 +198,8 @@ again. Basically do a self-review before asking your reviewers for a review.
 Click `CQ Dry Run`. Fix any errors because otherwise the CL won't pass the
 commit queue (CQ) checks. Consider waiting for the CQ Dry Run to pass before
 notifying your reviewers, in case the results require major changes in your CL.
+
+Alternatively you can run `git cl try`.
 
 ## 16. Add reviewers to review your code
 
@@ -270,6 +274,8 @@ well, even if you already have OWNERS approval. Don't use `chrome/OWNERS` as a
 blanket stamp if your CL makes significant changes to subsystems. Click
 `Submit to CQ` (Commit-Queue +2) to both try your change in the commit queue
 (CQ) and automatically land it if successful.
+
+Alternatively you can run `git cl set-commit`.
 
 Just because your CL made it through the CQ doesn't mean you're in the clear
 yet. There might be internal non-public try job failures, or bugs that went
