@@ -323,11 +323,12 @@ bool HTMLFormControlElement::IsSuccessfulSubmitButton() const {
 // element, and c) this form control supports popup triggering. If multiple
 // toggle attributes are present:
 //  1. Only one idref will ever be used, if multiple attributes are present.
-//  2. If 'togglepopup' is present, its IDREF will be used.
-//  3. If 'showpopup' is present and 'togglepopup' isn't, its IDREF will be
-//  used.
-//  4. If both 'showpopup' and 'hidepopup' are present, the behavior is to
-//  toggle.
+//  2. If 'popuptoggletarget' is present, its IDREF will be used.
+//  3. If 'popupshowtarget' is present and 'popuptoggletarget' isn't present
+//     or its value doesn't match that of popupshowtarget, only popupshowtarget
+//     will be used.
+//  4. If both 'popupshowtarget' and 'popuphidetarget' are present and their
+//     values match, the behavior is to toggle.
 HTMLFormControlElement::PopupTargetElement
 HTMLFormControlElement::popupTargetElement() const {
   const PopupTargetElement no_element{.element = nullptr,
