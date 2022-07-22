@@ -146,7 +146,8 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   gfx::RectF RelativeToTreeBounds(const AXNode* node,
                                   gfx::RectF node_bounds,
                                   bool* offscreen = nullptr,
-                                  bool clip_bounds = true) const;
+                                  bool clip_bounds = true,
+                                  bool skip_container_offset = false) const;
 
   // Get the bounds of a node in the coordinate space of the tree.
   // If set, updates |offscreen| boolean to be true if the node is offscreen
@@ -384,6 +385,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
                                           gfx::RectF node_bounds,
                                           bool* offscreen,
                                           bool clip_bounds,
+                                          bool skip_container_offset,
                                           bool allow_recursion) const;
 
   base::ObserverList<AXTreeObserver> observers_;

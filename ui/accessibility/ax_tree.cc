@@ -822,6 +822,7 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
                                                 gfx::RectF bounds,
                                                 bool* offscreen,
                                                 bool clip_bounds,
+                                                bool skip_container_offset,
                                                 bool allow_recursion) const {
   // If |bounds| is uninitialized, which is not the same as empty,
   // start with the node bounds.
@@ -838,16 +839,17 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
         ui::AXNode* child = node->children()[i];
 
         bool ignore_offscreen;
-        gfx::RectF child_bounds = RelativeToTreeBoundsInternal(
-            child, gfx::RectF(), &ignore_offscreen, clip_bounds,
-            /* allow_recursion = */ false);
+        gfx::RectF child_bounds =
+            RelativeToTreeBoundsInternal(child, gfx::RectF(), &ignore_offscreen,
+                                         clip_bounds, skip_container_offset,
+                                         /* allow_recursion = */ false);
         bounds.Union(child_bounds);
       }
       if (bounds.width() > 0 && bounds.height() > 0) {
         return bounds;
       }
     }
-  } else {
+  } else if (!skip_container_offset) {
     bounds.Offset(node->data().relative_bounds.bounds.x(),
                   node->data().relative_bounds.bounds.y());
   }
@@ -863,7 +865,7 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
         GetFromId(node->data().relative_bounds.offset_container_id);
     if (!container && container != root())
       container = root();
-    if (!container || container == node)
+    if (!container || container == node || skip_container_offset)
       break;
 
     gfx::RectF container_bounds = container->data().relative_bounds.bounds;
@@ -950,6 +952,7 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
       bool ignore_offscreen;
       ancestor_bounds = RelativeToTreeBoundsInternal(
           ancestor, gfx::RectF(), &ignore_offscreen, clip_bounds,
+          skip_container_offset,
           /* allow_recursion = */ false);
 
       gfx::RectF original_bounds = original_node->data().relative_bounds.bounds;
@@ -971,10 +974,11 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
 gfx::RectF AXTree::RelativeToTreeBounds(const AXNode* node,
                                         gfx::RectF bounds,
                                         bool* offscreen,
-                                        bool clip_bounds) const {
+                                        bool clip_bounds,
+                                        bool skip_container_offset) const {
   bool allow_recursion = true;
   return RelativeToTreeBoundsInternal(node, bounds, offscreen, clip_bounds,
-                                      allow_recursion);
+                                      skip_container_offset, allow_recursion);
 }
 
 gfx::RectF AXTree::GetTreeBounds(const AXNode* node,

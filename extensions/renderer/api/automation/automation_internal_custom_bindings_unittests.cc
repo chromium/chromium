@@ -389,9 +389,9 @@ TEST_F(AutomationInternalCustomBindingsTest, GetBoundsAppIdConstruction) {
   ASSERT_TRUE(wrapper1_button);
 
   // The button in wrapper 1 is scaled by .5 (200 * .5). It's root is also
-  // scaled (100 * .5). In wrapper 0, it is offset by the tree's root bounds
-  // (100 + 50).
-  EXPECT_EQ(gfx::Rect(150, 150, 100, 100),
+  // scaled (100 * .5). In wrapper 0, it is *not* offset by the tree's root
+  // bounds.
+  EXPECT_EQ(gfx::Rect(50, 50, 100, 100),
             CallComputeGlobalNodeBounds(wrapper_1, wrapper1_button));
 }
 
@@ -478,15 +478,16 @@ TEST_F(AutomationInternalCustomBindingsTest, GetBoundsNestedAppIdConstruction) {
   ASSERT_TRUE(wrapper1_button);
 
   // The button in wrapper 1 is scaled by .5 (200 * .5). It's root is also
-  // scaled (100 * .5). In wrapper 0, it is offset by the tree's root bounds
-  // (100 + 50).
-  EXPECT_EQ(gfx::Rect(150, 150, 100, 100),
+  // scaled (100 * .5). In wrapper 0, it is *not* offset by the tree's root
+  // bounds.
+  EXPECT_EQ(gfx::Rect(50, 50, 100, 100),
             CallComputeGlobalNodeBounds(wrapper_1, wrapper1_button));
 
   ui::AXNode* wrapper1_root = wrapper_1->tree()->GetFromId(1);
   ASSERT_TRUE(wrapper1_root);
 
-  // Similar to the button, but not scaled.
+  // Similar to the button, but not scaled. This does not cross an app id
+  // boundary, so is also offset by the parent tree's root (100 + 100).
   EXPECT_EQ(gfx::Rect(200, 200, 100, 100),
             CallComputeGlobalNodeBounds(wrapper_1, wrapper1_root));
 }

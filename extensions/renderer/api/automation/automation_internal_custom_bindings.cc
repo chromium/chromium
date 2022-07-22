@@ -2929,9 +2929,11 @@ gfx::Rect AutomationInternalCustomBindings::ComputeGlobalNodeBounds(
     bool clip_bounds) const {
   gfx::RectF bounds = local_bounds;
 
+  bool crossed_app_id = false;
   while (node) {
-    bounds = tree_wrapper->tree()->RelativeToTreeBounds(node, bounds, offscreen,
-                                                        clip_bounds);
+    bounds = tree_wrapper->tree()->RelativeToTreeBounds(
+        node, bounds, offscreen, clip_bounds,
+        /* skip_container_offset = */ crossed_app_id);
 
     bool should_use_app_id = tree_wrapper->tree()->root() == node;
     AutomationAXTreeWrapper* previous_tree_wrapper = tree_wrapper;
@@ -2942,6 +2944,7 @@ gfx::Rect AutomationInternalCustomBindings::ComputeGlobalNodeBounds(
 
     // This is a fallback for trees that are constructed using app ids. Do the
     // least possible expensive check here.
+    crossed_app_id = false;
     if (!parent_of_root && previous_tree_wrapper->GetParentTreeFromAnyAppID()) {
       // Since the tree has a valid child tree app id pointing to a valid tree,
       // walk the ancestry of |node| to find the specific app id and resolve to
@@ -2958,6 +2961,7 @@ gfx::Rect AutomationInternalCustomBindings::ComputeGlobalNodeBounds(
             AutomationAXTreeWrapper::GetParentTreeNodeForAppID(app_id, this);
         tree_wrapper =
             AutomationAXTreeWrapper::GetParentTreeWrapperForAppID(app_id, this);
+        crossed_app_id = true;
       }
     }
 
