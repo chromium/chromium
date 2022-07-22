@@ -134,6 +134,7 @@ def GenerateIfndefName(file_path):
   return (('%s__' % file_path).upper()
       .replace('\\', '_')
       .replace('/', '_')
+      .replace('-', '_')
       .replace('.', '_'))
 
 
