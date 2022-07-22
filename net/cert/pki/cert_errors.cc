@@ -4,12 +4,11 @@
 
 #include "net/cert/pki/cert_errors.h"
 
-#include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/parse_name.h"
 #include "net/cert/pki/parsed_certificate.h"
+
+#include <sstream>
 
 namespace net {
 
@@ -18,11 +17,11 @@ namespace {
 void AppendLinesWithIndentation(const std::string& text,
                                 const std::string& indentation,
                                 std::string* out) {
-  std::vector<base::StringPiece> lines = base::SplitStringPieceUsingSubstr(
-      text, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-
-  for (const auto& line : lines) {
-    base::StrAppend(out, {indentation, line, "\n"});
+  std::istringstream stream(text);
+  for (std::string line; std::getline(stream, line, '\n');) {
+    out->append(indentation);
+    out->append(line);
+    out->append("\n");
   }
 }
 
@@ -164,7 +163,7 @@ bool CertPathErrors::ContainsAnyErrorWithSeverity(
 
 std::string CertPathErrors::ToDebugString(
     const ParsedCertificateList& certs) const {
-  std::string result;
+  std::ostringstream result;
 
   for (size_t i = 0; i < cert_errors_.size(); ++i) {
     // Pretty print the current CertErrors. If there were no errors/warnings,
@@ -184,25 +183,19 @@ std::string CertPathErrors::ToDebugString(
         cert_name_debug_str = " (" + cert_name_debug_str + ")";
       }
     }
-
-    result +=
-        base::StringPrintf("----- Certificate i=%d%s -----\n",
-                           static_cast<int>(i), cert_name_debug_str.c_str());
-
-    result += cert_errors_string;
-    result += "\n";
+    result << "----- Certificate i=" << i << cert_name_debug_str << " -----\n";
+    result << cert_errors_string << "\n";
   }
 
   // Print any other errors that aren't associated with a particular certificate
   // in the chain.
   std::string other_errors = other_errors_.ToDebugString();
   if (!other_errors.empty()) {
-    result += "----- Other errors (not certificate specific) -----\n";
-    result += other_errors;
-    result += "\n";
+    result << "----- Other errors (not certificate specific) -----\n";
+    result << other_errors << "\n";
   }
 
-  return result;
+  return result.str();
 }
 
 }  // namespace net

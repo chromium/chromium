@@ -9,7 +9,6 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "net/cert/pem.h"
 #include "net/cert/pki/cert_error_params.h"
@@ -17,6 +16,8 @@
 #include "net/der/parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
+
+#include <sstream>
 
 namespace net {
 
@@ -195,9 +196,6 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
   if (file_data.empty())
     return false;
 
-  std::vector<std::string> lines = base::SplitString(
-      file_data, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
   bool has_chain = false;
   bool has_trust = false;
   bool has_time = false;
@@ -206,7 +204,20 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
 
   base::StringPiece kExpectedErrors = "expected_errors:";
 
-  for (const std::string& line : lines) {
+  std::istringstream stream(file_data);
+  for (std::string line; std::getline(stream, line, '\n');) {
+    size_t start = line.find_first_not_of(" \n\t\r\f\v");
+    if (start == std::string::npos) {
+      continue;
+    }
+    size_t end = line.find_last_not_of(" \n\t\r\f\v");
+    if (end == std::string::npos) {
+      continue;
+    }
+    line = line.substr(start, end + 1);
+    if (line.empty()) {
+      continue;
+    }
     base::StringPiece line_piece(line);
 
     std::string value;

@@ -4,8 +4,9 @@
 
 #include "net/cert/pki/nist_pkits_unittest.h"
 
-#include "base/strings/string_split.h"
 #include "net/cert/pki/certificate_policies.h"
+
+#include <sstream>
 
 namespace net {
 
@@ -30,9 +31,21 @@ const uint8_t kTestPolicy6[] = {0x60, 0x86, 0x48, 0x01, 0x65,
 void SetPolicySetFromString(const char* const policy_names,
                             std::set<der::Input>* out) {
   out->clear();
-  std::vector<std::string> names = base::SplitString(
-      policy_names, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (const std::string& policy_name : names) {
+  std::istringstream stream(policy_names);
+  for (std::string line; std::getline(stream, line, ',');) {
+    size_t start = line.find_first_not_of(" \n\t\r\f\v");
+    if (start == std::string::npos) {
+      continue;
+    }
+    size_t end = line.find_last_not_of(" \n\t\r\f\v");
+    if (end == std::string::npos) {
+      continue;
+    }
+    std::string policy_name = line.substr(start, end + 1);
+    if (policy_name.empty()) {
+      continue;
+    }
+
     if (policy_name == "anyPolicy") {
       out->insert(der::Input(kAnyPolicyOid));
     } else if (policy_name == "NIST-test-policy-1") {

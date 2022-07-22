@@ -4,7 +4,6 @@
 
 #include "net/cert/pki/parse_certificate.h"
 
-#include "base/strings/stringprintf.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/general_names.h"
 #include "net/cert/pki/parsed_certificate.h"
@@ -21,9 +20,12 @@ namespace {
 // expectations (it is more readable to specify the expected results as a
 // string).
 std::string ToString(const der::GeneralizedTime& time) {
-  return base::StringPrintf(
-      "year=%d, month=%d, day=%d, hours=%d, minutes=%d, seconds=%d", time.year,
-      time.month, time.day, time.hours, time.minutes, time.seconds);
+  std::ostringstream pretty_time;
+  pretty_time << "year=" << int{time.year} << ", month=" << int{time.month}
+              << ", day=" << int{time.day} << ", hours=" << int{time.hours}
+              << ", minutes=" << int{time.minutes}
+              << ", seconds=" << int{time.seconds};
+  return pretty_time.str();
 }
 
 std::string GetFilePath(const std::string& file_name) {
