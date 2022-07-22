@@ -106,8 +106,7 @@ void OnMainProfileLoaded(base::OnceCallback<void(Profile*)>& callback,
 
       auto* fre_service =
           LacrosFirstRunServiceFactory::GetForBrowserContext(profile);
-      DCHECK(fre_service);
-      if (can_trigger_fre && fre_service->ShouldOpenFirstRun()) {
+      if (fre_service && can_trigger_fre && fre_service->ShouldOpenFirstRun()) {
         // TODO(https://crbug.com/1313848): Consider taking a
         // `ScopedProfileKeepAlive`.
         fre_service->OpenFirstRunIfNeeded(

@@ -720,6 +720,11 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
 class BrowserServiceLacrosNonSyncingProfilesBrowserTest
     : public BrowserServiceLacrosBrowserTest {
  public:
+  BrowserServiceLacrosNonSyncingProfilesBrowserTest(
+      crosapi::mojom::SessionType session_type =
+          crosapi::mojom::SessionType::kRegularSession)
+      : session_type_(session_type) {}
+
   // BrowserServiceLacrosBrowserTest:
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     BrowserServiceLacrosBrowserTest::SetUpDefaultCommandLine(command_line);
@@ -736,6 +741,22 @@ class BrowserServiceLacrosNonSyncingProfilesBrowserTest
     }
   }
 
+  Profile* GetPrimaryProfile() {
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    return profile_manager->GetProfile(
+        profile_manager->GetPrimaryUserProfilePath());
+  }
+
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        chromeos::BrowserInitParams::GetForTests()->Clone();
+    init_params->session_type = session_type_;
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+
+    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
+  }
+
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
@@ -745,6 +766,8 @@ class BrowserServiceLacrosNonSyncingProfilesBrowserTest
 
   profiles::testing::ScopedNonEnterpriseDomainSetterForTesting
       non_enterprise_domain_setter_;
+
+  crosapi::mojom::SessionType session_type_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
@@ -755,9 +778,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
 }
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        NewWindow_OpensFirstRun) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(profile_manager->GetProfile(
-      profile_manager->GetPrimaryUserProfilePath())));
+  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(GetPrimaryProfile()));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
   histogram_tester().ExpectTotalCount(
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
@@ -784,9 +805,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
 }
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        NewWindow_OpensFirstRun_UiClose) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(profile_manager->GetProfile(
-      profile_manager->GetPrimaryUserProfilePath())));
+  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(GetPrimaryProfile()));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
   histogram_tester().ExpectTotalCount(
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
@@ -813,9 +832,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
 }
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
                        NewTab_OpensFirstRun) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(profile_manager->GetProfile(
-      profile_manager->GetPrimaryUserProfilePath())));
+  EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(GetPrimaryProfile()));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
   histogram_tester().ExpectTotalCount(
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
@@ -832,4 +849,62 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesBrowserTest,
   histogram_tester().ExpectUniqueSample(
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint",
       LacrosFirstRunService::EntryPoint::kOther, 1);
+}
+
+class BrowserServiceLacrosNonSyncingProfilesGuestBrowserTest
+    : public BrowserServiceLacrosNonSyncingProfilesBrowserTest {
+ public:
+  BrowserServiceLacrosNonSyncingProfilesGuestBrowserTest()
+      : BrowserServiceLacrosNonSyncingProfilesBrowserTest(
+            crosapi::mojom::SessionType::kGuestSession) {}
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesGuestBrowserTest,
+                       PRE_NewWindow_OpensFirstRun) {
+  // Dummy case to set up the primary profile.
+  histogram_tester().ExpectTotalCount(
+      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
+}
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosNonSyncingProfilesGuestBrowserTest,
+                       NewWindow_OpensFirstRun) {
+  EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(GetPrimaryProfile()));
+  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+  histogram_tester().ExpectTotalCount(
+      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
+
+  NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false);
+
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  histogram_tester().ExpectTotalCount(
+      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
+}
+
+class BrowserServiceLacrosNonSyncingProfilesWebKioskBrowserTest
+    : public BrowserServiceLacrosNonSyncingProfilesBrowserTest {
+ public:
+  BrowserServiceLacrosNonSyncingProfilesWebKioskBrowserTest()
+      : BrowserServiceLacrosNonSyncingProfilesBrowserTest(
+            crosapi::mojom::SessionType::kWebKioskSession) {}
+};
+
+IN_PROC_BROWSER_TEST_F(
+    BrowserServiceLacrosNonSyncingProfilesWebKioskBrowserTest,
+    PRE_NewWindow_OpensFirstRun) {
+  // Dummy case to set up the primary profile.
+  histogram_tester().ExpectTotalCount(
+      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
+}
+IN_PROC_BROWSER_TEST_F(
+    BrowserServiceLacrosNonSyncingProfilesWebKioskBrowserTest,
+    NewWindow_OpensFirstRun) {
+  EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(GetPrimaryProfile()));
+  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+  histogram_tester().ExpectTotalCount(
+      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
+
+  NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/false);
+
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  histogram_tester().ExpectTotalCount(
+      "Profile.LacrosPrimaryProfileFirstRunEntryPoint", 0);
 }
