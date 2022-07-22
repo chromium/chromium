@@ -423,6 +423,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
     ash_ready_file = '%s/ash_ready.txt' % tmp_ash_data_dir_name
     enable_mojo_crosapi = any(t == os.path.basename(args.command)
                               for t in _TARGETS_REQUIRE_MOJO_CROSAPI)
+    ash_wayland_socket_name = 'wayland-exo'
 
     ash_process = None
     ash_env = os.environ.copy()
@@ -434,6 +435,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
         '--no-startup-window',
         '--enable-features=LacrosSupport,LacrosPrimary,LacrosOnly',
         '--ash-ready-file-path=%s' % ash_ready_file,
+        '--wayland-server-socket=%s' % ash_wayland_socket_name,
     ]
     if enable_mojo_crosapi:
       ash_cmd.append(lacros_mojo_socket_arg)
@@ -495,6 +497,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
       forward_args.append(lacros_mojo_socket_arg)
 
     test_env = os.environ.copy()
+    test_env['WAYLAND_DISPLAY'] = ash_wayland_socket_name
     test_env['EGL_PLATFORM'] = 'surfaceless'
     test_env['XDG_RUNTIME_DIR'] = tmp_xdg_dir_name
     test_process = subprocess.Popen([args.command] + forward_args, env=test_env)
