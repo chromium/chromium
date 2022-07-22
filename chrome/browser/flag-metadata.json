@@ -143,7 +143,7 @@
   {
     "name": "allow-touchpad-haptic-click-settings",
     "owners": [ "gavinwill", "cros-peripherals@google.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 112
   },
   {
     "name": "always-enable-hdcp",
