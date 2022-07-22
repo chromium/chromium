@@ -852,6 +852,7 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.onReset(null);
 
         assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(false));
+        verify(mDialogController).postHiding();
     }
 
     @Test

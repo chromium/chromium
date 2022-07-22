@@ -165,12 +165,16 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     @Override
     public void hideDialog(boolean showAnimation) {
         mMediator.hideDialog(showAnimation);
-        mTabListCoordinator.postHiding();
     }
 
     @Override
     public void prepareDialog() {
         mTabListCoordinator.prepareTabGridDialogView();
+    }
+
+    @Override
+    public void postHiding() {
+        mTabListCoordinator.postHiding();
     }
 
     @Override

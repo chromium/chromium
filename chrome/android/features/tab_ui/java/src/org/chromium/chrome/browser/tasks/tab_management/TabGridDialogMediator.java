@@ -78,6 +78,11 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
         void prepareDialog();
 
         /**
+         * Cleanup post hiding dialog.
+         */
+        void postHiding();
+
+        /**
          * @return Whether or not the TabGridDialog consumed the event.
          */
         boolean handleBackPressed();
@@ -334,6 +339,7 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
             mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
         } else {
             mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
+            mDialogController.postHiding();
         }
     }
 
