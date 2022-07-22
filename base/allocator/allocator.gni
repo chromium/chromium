@@ -84,12 +84,20 @@ if (is_win && use_allocator_shim) {
 _is_brp_supported = (is_win || is_android || is_linux || is_mac ||
                      is_chromeos) && use_allocator == "partition"
 
+_is_mcp_supported = is_win && use_allocator == "partition"
+
+declare_args() {
+  # We jam MTECheckedPtr off by default, but can set it to
+  # `_is_mcp_supported` to activate it.
+  use_mte_checked_ptr = false
+}
+
 declare_args() {
   # Set use_backup_ref_ptr true to use BackupRefPtr (BRP) as the implementation
   # of raw_ptr<T>, and enable PartitionAlloc support for it.
-  use_backup_ref_ptr = _is_brp_supported
-
-  use_mte_checked_ptr = false
+  # We also disable BRP in the presence of MTECheckedPtr, which is almost
+  # never enabled.
+  use_backup_ref_ptr = _is_brp_supported && !use_mte_checked_ptr
 }
 
 assert(!(use_backup_ref_ptr && use_mte_checked_ptr),
