@@ -170,6 +170,18 @@ HistoryClustersService::QueryClusters(
       continuation_params, std::move(callback));
 }
 
+void HistoryClustersService::UpdateClusters(base::OnceClosure callback) {
+  DCHECK(history_service_);
+  if (!GetConfig().persist_clusters_in_history_db)
+    return;
+  if (update_clusters_task_ && !update_clusters_task_->Done())
+    return;
+  update_clusters_task_ =
+      std::make_unique<HistoryClustersServiceTaskUpdateClusters>(
+          incomplete_visit_context_annotations_, backend_.get(),
+          history_service_, std::move(callback));
+}
+
 absl::optional<history::ClusterKeywordData>
 HistoryClustersService::DoesQueryMatchAnyCluster(const std::string& query) {
   if (!IsJourneysEnabled())

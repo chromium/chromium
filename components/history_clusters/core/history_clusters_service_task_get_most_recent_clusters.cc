@@ -74,6 +74,16 @@ void HistoryClustersServiceTaskGetMostRecentClusters::Start() {
     ReturnMostRecentPersistedClusters(continuation_params_.continuation_time);
 
   } else {
+    // TODO(manukh): It's not clear how to blend unclustered and clustered
+    //  visits when iterating recent first. E.g., if we have 4 days of
+    //  unclustered visits, should the most recent 3 be clustered in isolation,
+    //  while the 4th is clustered with older clustered visits? For now, we do
+    //  the simplest approach: cluster each day in isolation. If updating
+    //  clusters occurs frequently enough, this issue will be mitigated.
+    //  However, since the top, most prominent clusters will be the most recent
+    //  clusters, and current-day visits will never be pre-clustered, we
+    //  probably want to make sure they're optimal. So we should probably not
+    //  cluster at least the current day in isolation.
     history_service_get_annotated_visits_to_cluster_start_time_ =
         base::TimeTicks::Now();
     history_service_->ScheduleDBTask(
@@ -164,12 +174,17 @@ void HistoryClustersServiceTaskGetMostRecentClusters::OnGotModelClusters(
 
 void HistoryClustersServiceTaskGetMostRecentClusters::
     ReturnMostRecentPersistedClusters(base::Time exclusive_max_time) {
-  history_service_->GetMostRecentClusters(
-      begin_time_, exclusive_max_time, 1,
-      base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClusters::
-                         OnGotMostRecentPersistedClusters,
-                     weak_ptr_factory_.GetWeakPtr()),
-      &task_tracker_);
+  if (GetConfig().persist_clusters_in_history_db)
+    OnGotMostRecentPersistedClusters({});
+
+  else {
+    history_service_->GetMostRecentClusters(
+        begin_time_, exclusive_max_time, 1,
+        base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClusters::
+                           OnGotMostRecentPersistedClusters,
+                       weak_ptr_factory_.GetWeakPtr()),
+        &task_tracker_);
+  }
 }
 
 void HistoryClustersServiceTaskGetMostRecentClusters::

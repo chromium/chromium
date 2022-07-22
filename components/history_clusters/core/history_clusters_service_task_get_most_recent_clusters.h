@@ -45,9 +45,8 @@ class HistoryClustersServiceTaskGetMostRecentClusters {
   bool Done() { return done_; }
 
  private:
-  // When there remain unclustered visits, cluster unclustered visits (possibly
-  // in combination with clustered visits) and return the newly created
-  // clusters:
+  // When there remain unclustered visits, cluster them (possibly in combination
+  // with clustered visits) and return the newly created clusters:
   //   Start() ->
   //   OnGotAnnotatedVisitsToCluster() ->
   //   OnGotModelClusters()
@@ -59,11 +58,13 @@ class HistoryClustersServiceTaskGetMostRecentClusters {
   //   OnGotMostRecentPersistedClusters()
 
   // Invoked during construction. Will asyncly request annotated visits from
-  // `GetAnnotatedVisitsToCluster`.
+  // `GetAnnotatedVisitsToCluster`. May instead asyncly request persisted
+  // clusters if there's no `ClusteringBackend` or all visits are exhausted.
   void Start();
 
   // Invoked after `Start()` asyncly fetches annotated visits. Will asyncly
-  // request clusters from `ClusteringBackend`.
+  // request clusters from `ClusteringBackend`. May instead asyncly request
+  // persisted clusters if no annotated visits were fetched
   void OnGotAnnotatedVisitsToCluster(
       // Unused because clusters aren't persisted in this flow.
       std::vector<int64_t> old_clusters_unused,
@@ -94,12 +95,14 @@ class HistoryClustersServiceTaskGetMostRecentClusters {
   // Used to make requests to `ClusteringBackend`.
   ClusteringRequestSource clustering_request_source_;
 
-  // Used to make requests to `GetAnnotatedVisitsToCluster`.
+  // Used to make requests to `GetAnnotatedVisitsToCluster` and
+  // `HistoryService`.
   base::Time begin_time_;
   QueryClustersContinuationParams continuation_params_;
   base::CancelableTaskTracker task_tracker_;
 
-  // Invoked after `OnGotModelClusters().
+  // Invoked after either `OnGotModelClusters()` or
+  // `OnGotMostRecentPersistedClusters()`.
   QueryClustersCallback callback_;
 
   // When `Start()` kicked off the request to fetch visits to cluster.
