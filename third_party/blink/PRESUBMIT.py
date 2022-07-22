@@ -130,6 +130,7 @@ def _CommonChecks(input_api, output_api):
             input_api,
             output_api,
             excluded_paths=_EXCLUDED_PATHS,
+            owners_check=False,
             maxlen=800,
             license_header=license_header,
             global_checks=False))
