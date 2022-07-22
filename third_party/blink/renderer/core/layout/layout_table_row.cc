@@ -190,8 +190,8 @@ void LayoutTableRow::AddChild(LayoutObject* child, LayoutObject* before_child) {
   if (before_child && before_child->Parent() != this)
     before_child = SplitAnonymousBoxesAroundChild(before_child);
 
-  // TODO(crbug.com/1341619): Turn a SECURITY_DCHECK in |To| to a normal crash.
-  // This happens when |child| is a |LayoutNGTableCell|.
+  // TODO(crbug.com/1341619): See the TODO in |LayoutTable::AddChild|.
+  // |LayoutNGTableCell| is not a subclass of |LayoutTableCell|.
   CHECK(IsA<LayoutTableCell>(child));
   LayoutTableCell* cell = To<LayoutTableCell>(child);
 
