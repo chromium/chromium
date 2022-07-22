@@ -7,11 +7,14 @@
 namespace chrome {
 
 bool IsNormalResultCode(ResultCode code) {
-  // This result code is a normal exit, but is needed to signal to content that
-  // the process should terminate early. This result code should be translated
-  // back to the normal exit code to indicate nothing went wrong here.
-  if (code == RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED)
+  // These result codes are normal exit, but are needed to signal to content
+  // that the process should terminate early. These result codes should be
+  // translated back to the normal exit code to indicate nothing went wrong
+  // here.
+  if (code == RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED ||
+      code == RESULT_CODE_NORMAL_EXIT_PACK_EXTENSION_SUCCESS) {
     return true;
+  }
 
   return false;
 }

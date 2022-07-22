@@ -32,7 +32,10 @@ class PackExtensionTest : public testing::Test {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
     command_line.AppendSwitchPath(switches::kPackExtension,
                                   temp_dir.GetPath().Append(path.BaseName()));
-    return startup_helper_.PackExtension(command_line);
+    std::string error_message;
+    bool result = startup_helper_.PackExtension(command_line, &error_message);
+    EXPECT_EQ(result, error_message.empty()) << error_message;
+    return result;
   }
 
   content::BrowserTaskEnvironment task_environment_;

@@ -119,11 +119,14 @@ enum ResultCode {
   // termination of browser. See `IsNormalResultCode` below.
   RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED,
 
+  // An early startup command was executed and the browser must exit.
+  RESULT_CODE_NORMAL_EXIT_PACK_EXTENSION_SUCCESS,
+
   // Last return code (keep this last).
   RESULT_CODE_CHROME_LAST_CODE
 };
 
-static_assert(RESULT_CODE_CHROME_LAST_CODE == 36,
+static_assert(RESULT_CODE_CHROME_LAST_CODE == 37,
               "Please make sure the enum values are in sync with enums.xml");
 
 // Returns true if the result code should be treated as a normal exit code i.e.

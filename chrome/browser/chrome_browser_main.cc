@@ -293,7 +293,6 @@
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/startup_helper.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/components/javascript_dialog_extensions_client/javascript_dialog_extension_client_impl.h"
@@ -1407,20 +1406,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // Make sure aura::Env has been initialized.
   CHECK(aura::Env::GetInstance());
 #endif  // defined(USE_AURA)
-
-  // Android doesn't support extensions.
-#if !BUILDFLAG(IS_ANDROID)
-  // If the command line specifies --pack-extension, attempt the pack extension
-  // startup action and exit.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kPackExtension)) {
-    extensions::StartupHelper extension_startup_helper;
-    if (extension_startup_helper.PackExtension(
-            *base::CommandLine::ForCurrentProcess()))
-      return content::RESULT_CODE_NORMAL_EXIT;
-    return chrome::RESULT_CODE_PACK_EXTENSION_ERROR;
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
   // When another process is running, use that process instead of starting a

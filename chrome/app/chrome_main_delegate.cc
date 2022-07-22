@@ -183,6 +183,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/startup_helper.h"
 #include "extensions/common/constants.h"
 #endif
 
@@ -441,6 +442,33 @@ void SetUpProfilingShutdownHandler() {
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 
 #endif  // BUILDFLAG(IS_POSIX)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+absl::optional<int> HandlePackExtensionSwitches(
+    const base::CommandLine& command_line) {
+  // If the command line specifies --pack-extension, attempt the pack extension
+  // startup action and exit.
+  if (!command_line.HasSwitch(switches::kPackExtension))
+    return absl::nullopt;
+
+  const std::string locale =
+      command_line.GetSwitchValueASCII(::switches::kLang);
+  ui::ResourceBundle::InitSharedInstanceWithLocale(
+      locale, /*delegate=*/nullptr,
+      ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
+
+  extensions::StartupHelper extension_startup_helper;
+  std::string error_message;
+  if (!extension_startup_helper.PackExtension(command_line, &error_message)) {
+    if (!error_message.empty()) {
+      LOG(ERROR) << error_message.c_str();
+    }
+    return chrome::RESULT_CODE_PACK_EXTENSION_ERROR;
+  }
+
+  return chrome::RESULT_CODE_NORMAL_EXIT_PACK_EXTENSION_SUCCESS;
+}
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
 
 struct MainFunction {
   const char* name;
@@ -1462,6 +1490,15 @@ ChromeMainDelegate::CreateContentUtilityClient() {
 }
 
 absl::optional<int> ChromeMainDelegate::PreBrowserMain() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  absl::optional<int> pack_extension_exit_code =
+      HandlePackExtensionSwitches(command_line);
+  if (pack_extension_exit_code.has_value())
+    return pack_extension_exit_code;  // Got a --pack-extension switch; exit.
+#endif
+
 #if BUILDFLAG(IS_MAC)
   // Tell Cocoa to finish its initialization, which we want to do manually
   // instead of calling NSApplicationMain(). The primary reason is that NSAM()

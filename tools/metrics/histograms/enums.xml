@@ -20550,6 +20550,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="33" label="RESULT_CODE_DOWNGRADE_AND_RELAUNCH"/>
   <int value="34" label="RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST"/>
   <int value="35" label="RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED"/>
+  <int value="36" label="RESULT_CODE_NORMAL_EXIT_PACK_EXTENSION_SUCCESS"/>
   <int value="131" label="SIGQUIT"/>
   <int value="132" label="SIGILL"/>
   <int value="133" label="SIGTRAP"/>

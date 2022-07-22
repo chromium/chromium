@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_STARTUP_HELPER_H_
 #define CHROME_BROWSER_EXTENSIONS_STARTUP_HELPER_H_
 
+#include <string>
+
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/pack_extension_job.h"
 
@@ -31,7 +33,9 @@ class StartupHelper : public PackExtensionJob::Client {
 
   // Handle --pack-extension flag from the |cmd_line| by packing the specified
   // extension. Returns false if the pack job failed.
-  bool PackExtension(const base::CommandLine& cmd_line);
+  // If the return value is false, a description of the problem may be written
+  // into |error|.
+  bool PackExtension(const base::CommandLine& cmd_line, std::string* error);
 
   // Validates a crx at the path given by the --validate-extension flag - can
   // it be installed? Returns true if the crx is valid, or false otherwise.
@@ -40,7 +44,8 @@ class StartupHelper : public PackExtensionJob::Client {
   bool ValidateCrx(const base::CommandLine& cmd_line, std::string* error);
 
  private:
-  bool pack_job_succeeded_;
+  bool pack_job_succeeded_ = false;
+  std::string error_message_;
 };
 
 }  // namespace extensions
