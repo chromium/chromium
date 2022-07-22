@@ -167,7 +167,7 @@ Status ReportingServerConnector::EnsureUsableCore() {
                     "This is not a managed device or browser");
     }
     if (cloud_policy_manager->core() == nullptr) {
-      return Status(error::UNAVAILABLE, "CloudPolicyCore is not available");
+      return Status(error::NOT_FOUND, "No usable CloudPolicyCore found");
     }
     // Cache core and keep an eye on it being alive.
     core_ = cloud_policy_manager->core();
@@ -186,7 +186,7 @@ Status ReportingServerConnector::EnsureUsableClient() {
     RETURN_IF_ERROR(EnsureUsableCore());
 
     if (core_->client() == nullptr) {
-      return Status(error::UNAVAILABLE, "CloudPolicyClient is not available");
+      return Status(error::NOT_FOUND, "No usable CloudPolicyClient found");
     }
 
     // Core is now available, cache client.

@@ -154,7 +154,10 @@ void DmServerUploader::Finalize(CompletionResponse upload_result) {
         .Run(upload_result.ValueOrDie().sequence_information,
              upload_result.ValueOrDie().force_confirm);
   } else {
-    LOG(WARNING) << upload_result.status();
+    // Log any error except NOT_FOUND, which is a transient state for managed
+    // device, and an uninteresting one for unmanaged ones.
+    LOG_IF(WARNING, upload_result.status().code() != error::NOT_FOUND)
+        << upload_result.status();
   }
   Response(upload_result);
 }
