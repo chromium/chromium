@@ -1,0 +1,8 @@
+# TODO(crbug.com/1326993)
+-All/RenderFrameHostImplBrowsingContextStateNameTest.BlockNameUpdateForBackForwardCache/NewBrowsingContextStateOnBrowsingContextGroupSwap_EnableFrameNameUpdateOnNonCurrentRenderFrameHost
+
+# TODO(crbug.com/1296333)
+-WebRtcBrowserTest.CanSetupH264VideoCallOnSupportedDevice
+
+# TODO(crbug.com/1338951)
+-WebRtcCaptureFromElementBrowserTest.VerifyCanvasWebGLCaptureColor

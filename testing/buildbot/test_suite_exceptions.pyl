@@ -1688,6 +1688,9 @@
         },
       },
       'android-nougat-x86-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_browsertests.filter',
+        ],
         'swarming': {
           'shards': 20,
         },
