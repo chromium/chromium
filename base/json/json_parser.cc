@@ -480,7 +480,7 @@ absl::optional<Value> JSONParser::ConsumeList() {
     return absl::nullopt;
   }
 
-  Value::ListStorage list_storage;
+  Value::List list;
 
   Token token = GetNextToken();
   while (token != T_ARRAY_END) {
@@ -490,7 +490,7 @@ absl::optional<Value> JSONParser::ConsumeList() {
       return absl::nullopt;
     }
 
-    list_storage.push_back(std::move(*item));
+    list.Append(std::move(*item));
 
     token = GetNextToken();
     if (token == T_LIST_SEPARATOR) {
@@ -508,7 +508,7 @@ absl::optional<Value> JSONParser::ConsumeList() {
 
   ConsumeChar();  // Closing ']'.
 
-  return Value(std::move(list_storage));
+  return Value(std::move(list));
 }
 
 absl::optional<Value> JSONParser::ConsumeString() {

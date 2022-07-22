@@ -60,15 +60,15 @@ TEST(JSONWriterTest, NestedTypes) {
   // Writer unittests like empty list/dict nesting,
   // list list nesting, etc.
   Value::Dict root_dict;
-  Value::List list_storage;
+  Value::List list;
   Value::Dict inner_dict;
   inner_dict.Set("inner int", 10);
-  list_storage.Append(std::move(inner_dict));
+  list.Append(std::move(inner_dict));
   Value::Dict empty_dict;
-  list_storage.Append(std::move(empty_dict));
-  list_storage.Append(Value::List());
-  list_storage.Append(true);
-  root_dict.Set("list", Value(std::move(list_storage)));
+  list.Append(std::move(empty_dict));
+  list.Append(Value::List());
+  list.Append(true);
+  root_dict.Set("list", Value(std::move(list)));
 
   // The pretty-printer uses a different newline style on Windows than on
   // other platforms.
@@ -123,13 +123,12 @@ TEST(JSONWriterTest, BinaryValues) {
       root, JSONWriter::OPTIONS_OMIT_BINARY_VALUES, &output_js));
   EXPECT_TRUE(output_js.empty());
 
-  Value::List binary_list_storage;
-  binary_list_storage.Append(Value(kBufferSpan));
-  binary_list_storage.Append(5);
-  binary_list_storage.Append(Value(kBufferSpan));
-  binary_list_storage.Append(2);
-  binary_list_storage.Append(Value(kBufferSpan));
-  Value binary_list(std::move(binary_list_storage));
+  Value::List binary_list;
+  binary_list.Append(Value(kBufferSpan));
+  binary_list.Append(5);
+  binary_list.Append(Value(kBufferSpan));
+  binary_list.Append(2);
+  binary_list.Append(Value(kBufferSpan));
   EXPECT_FALSE(JSONWriter::Write(binary_list, &output_js));
   EXPECT_TRUE(JSONWriter::WriteWithOptions(
       binary_list, JSONWriter::OPTIONS_OMIT_BINARY_VALUES, &output_js));

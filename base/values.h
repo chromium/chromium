@@ -207,8 +207,6 @@ class BASE_EXPORT GSL_OWNER Value {
   using BlobStorage = std::vector<uint8_t>;
 
   using DeprecatedListStorage = std::vector<Value>;
-  // TODO(https://crbug.com/1291666): Make this private.
-  using ListStorage = DeprecatedListStorage;
 
   // Like `DictStorage`, but with std::unique_ptr in the mapped type. This is
   // due to legacy reasons, and should be replaced with
@@ -216,8 +214,9 @@ class BASE_EXPORT GSL_OWNER Value {
   // anymore.
   using LegacyDictStorage = flat_map<std::string, std::unique_ptr<Value>>;
 
-  using DeprecatedListView = CheckedContiguousRange<ListStorage>;
-  using DeprecatedConstListView = CheckedContiguousConstRange<ListStorage>;
+  using DeprecatedListView = CheckedContiguousRange<DeprecatedListStorage>;
+  using DeprecatedConstListView =
+      CheckedContiguousConstRange<DeprecatedListStorage>;
   // TODO(https://crbug.com/1291666): Make these private.
   using ListView = DeprecatedListView;
   using ConstListView = DeprecatedConstListView;
@@ -301,10 +300,6 @@ class BASE_EXPORT GSL_OWNER Value {
 
   // Constructor for `Value::Type::LIST`.
   explicit Value(List&& value) noexcept;
-
-  // DEPRECATED: prefer `Value(List&&)`.
-  explicit Value(span<const Value> value);
-  explicit Value(ListStorage&& value) noexcept;
 
   ~Value();
 
@@ -1163,6 +1158,10 @@ class BASE_EXPORT GSL_OWNER Value {
   }
 
  protected:
+  // TODO(https://crbug.com/1187091): Once deprecated list methods and ListView
+  // have been removed, make this a private member of List.
+  using ListStorage = DeprecatedListStorage;
+
   // Checked convenience accessors for dict and list.
   const LegacyDictStorage& dict() const { return GetDict().storage_; }
   LegacyDictStorage& dict() { return GetDict().storage_; }

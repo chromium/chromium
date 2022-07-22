@@ -235,17 +235,6 @@ Value::Value(Dict&& value) noexcept : data_(std::move(value)) {}
 
 Value::Value(List&& value) noexcept : data_(std::move(value)) {}
 
-Value::Value(span<const Value> value) : data_(absl::in_place_type_t<List>()) {
-  list().reserve(value.size());
-  for (const auto& val : value)
-    list().emplace_back(val.Clone());
-}
-
-Value::Value(ListStorage&& value) noexcept
-    : data_(absl::in_place_type_t<List>()) {
-  list() = std::move(value);
-}
-
 Value::Value(const LegacyDictStorage& storage)
     : data_(absl::in_place_type_t<Dict>()) {
   dict().reserve(storage.size());

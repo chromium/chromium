@@ -37,10 +37,10 @@ Value::Dict GenerateDict() {
   root.Set("String", "Foo");
 
   Value::List list;
-  list.Append(Value(2.718));
-  list.Append(Value(false));
-  list.Append(Value(123));
-  list.Append(Value("Bar"));
+  list.Append(2.718);
+  list.Append(false);
+  list.Append(123);
+  list.Append("Bar");
   root.Set("List", std::move(list));
 
   return root;
