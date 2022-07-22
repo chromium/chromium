@@ -147,6 +147,7 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
   SetFocusBehavior(FocusBehavior::ALWAYS);
 #endif
 
+  SetBackgroundColorId(ui::kColorTextfieldBackground);
   UpdateBorder();
 
   arrow_button_->SetVisible(true);
@@ -264,6 +265,11 @@ void Combobox::SetBorderColorId(ui::ColorId color_id) {
   UpdateBorder();
 }
 
+void Combobox::SetBackgroundColorId(ui::ColorId color_id) {
+  SetBackground(CreateThemedRoundedRectBackground(
+      color_id, FocusableBorder::kCornerRadiusDp));
+}
+
 void Combobox::SetEventHighlighting(bool should_highlight) {
   should_highlight_ = should_highlight;
   AsViewClass<TransparentButton>(arrow_button_)
@@ -285,10 +291,6 @@ bool Combobox::IsMenuRunning() const {
 
 void Combobox::OnThemeChanged() {
   View::OnThemeChanged();
-  SetBackground(
-      CreateBackgroundFromPainter(Painter::CreateSolidRoundRectPainter(
-          GetColorProvider()->GetColor(ui::kColorTextfieldBackground),
-          FocusableBorder::kCornerRadiusDp)));
   OnContentSizeMaybeChanged();
 }
 

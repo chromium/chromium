@@ -136,6 +136,7 @@
   E_CPONLY(kColorShadowValueKeyShadowElevationSixteen) \
   E_CPONLY(kColorShadowValueKeyShadowElevationThree) \
   E_CPONLY(kColorSidePanelComboboxBorder) \
+  E_CPONLY(kColorSidePanelComboboxBackground) \
   E_CPONLY(kColorSliderThumb) \
   E_CPONLY(kColorSliderThumbMinimal) \
   E_CPONLY(kColorSliderTrack) \

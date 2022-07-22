@@ -28,6 +28,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -503,6 +504,7 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
                                /*adjust_height_for_width=*/false)
           .WithAlignment(views::LayoutAlignment::kStart));
   combobox->SetBorderColorId(ui::kColorSidePanelComboboxBorder);
+  combobox->SetBackgroundColorId(ui::kColorSidePanelComboboxBackground);
   combobox->SetEventHighlighting(true);
   combobox->SetSizeToLargestLabel(false);
   return combobox;
