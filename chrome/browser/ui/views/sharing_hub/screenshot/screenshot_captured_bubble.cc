@@ -26,9 +26,12 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/lens/lens_entrypoints.h"
+#include "components/lens/lens_features.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -45,6 +48,8 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout_view.h"
 #include "ui/views/view.h"
+
+using content::WebContents;
 
 namespace {
 
@@ -73,6 +78,14 @@ bool IsEditorInstalled() {
   return base::FeatureList::IsEnabled(share::kSharingDesktopScreenshotsEdit) &&
          image_editor::ImageEditorComponentInfo::GetInstance()
              ->IsImageEditorAvailable();
+}
+
+bool IsSearchImageEnabled() {
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return lens::features::IsLensInScreenshotSharingEnabled();
+#else
+  return false;
+#endif
 }
 
 ScreenshotCapturedBubble::ScreenshotCapturedBubble(
@@ -170,6 +183,15 @@ void ScreenshotCapturedBubble::Init() {
               IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_EDIT_BUTTON_LABEL))
           .Build();
 
+  auto search_image_button =
+      views::Builder<views::MdTextButton>()
+          .SetCallback(base::BindRepeating(
+              &ScreenshotCapturedBubble::SearchImageButtonPressed,
+              weak_factory_.GetWeakPtr()))
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_SEARCH_IMAGE_BUTTON_LABEL))
+          .Build();
+
   auto download_button =
       views::Builder<views::MdTextButton>()
           .SetCallback(base::BindRepeating(
@@ -182,16 +204,34 @@ void ScreenshotCapturedBubble::Init() {
 
   auto download_row = views::Builder<views::TableLayoutView>();
   if (IsEditorInstalled()) {
-    const int kPaddingEditDownloadButtonPx =
-        kImageWidthPx - edit_button->CalculatePreferredSize().width() -
-        download_button->CalculatePreferredSize().width();
+    download_row.AddColumn(
+        /* h_align */ views::LayoutAlignment::kStart,
+        /* v_align */ views::LayoutAlignment::kCenter,
+        /* horizontal_resize */ 1.0,
+        /* size_type */ views::TableLayout::ColumnSize::kUsePreferred,
+        /* fixed_width */ 0, /* min_width */ 0);
+  }
 
-    download_row
-        .AddColumn(views::LayoutAlignment::kStart,
-                   views::LayoutAlignment::kCenter, 1.0,
-                   views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-        .AddPaddingColumn(views::TableLayout::kFixedSize,
-                          kPaddingEditDownloadButtonPx);
+  if (IsSearchImageEnabled()) {
+    download_row.AddColumn(
+        /* h_align */ views::LayoutAlignment::kStart,
+        /* v_align */ views::LayoutAlignment::kCenter,
+        /* horizontal_resize */ 1.0,
+        /* size_type */ views::TableLayout::ColumnSize::kUsePreferred,
+        /* fixed_width */ 0, /* min_width */ 0);
+  }
+
+  if (IsEditorInstalled() || IsSearchImageEnabled()) {
+    const int kPaddingEditSearchDownloadButtonPx =
+        kImageWidthPx -
+        (IsEditorInstalled() ? edit_button->CalculatePreferredSize().width()
+                             : 0) -
+        (IsSearchImageEnabled()
+             ? search_image_button->CalculatePreferredSize().width()
+             : 0) -
+        download_button->CalculatePreferredSize().width();
+    download_row.AddPaddingColumn(views::TableLayout::kFixedSize,
+                                  kPaddingEditSearchDownloadButtonPx);
   }
 
   // Column for download button
@@ -204,6 +244,11 @@ void ScreenshotCapturedBubble::Init() {
     download_row.AddChild(
         views::Builder<views::MdTextButton>(std::move(edit_button))
             .CopyAddressTo(&edit_button_));
+  }
+  if (IsSearchImageEnabled()) {
+    download_row.AddChild(
+        views::Builder<views::MdTextButton>(std::move(search_image_button))
+            .CopyAddressTo(&search_image_button_));
   }
   download_row.AddChild(
       views::Builder<views::MdTextButton>(std::move(download_button))
@@ -284,6 +329,24 @@ void ScreenshotCapturedBubble::EditButtonPressed() {
       base::BindOnce(&WriteTemporaryFile, image_bytes),
       base::BindOnce(&ScreenshotCapturedBubble::NavigateToImageEditor,
                      weak_factory_.GetWeakPtr()));
+}
+
+void ScreenshotCapturedBubble::SearchImageButtonPressed() {
+  // If EnablePersistentBubble() is true, we do not close the screenshot bubble
+  set_close_on_deactivate(!lens::features::EnablePersistentBubble());
+
+  CoreTabHelper::FromWebContents(web_contents_.get())
+      ->SearchWithLensInNewTab(
+          image_, GetImageSize(), lens::EntryPoint::CHROME_SCREENSHOT_SEARCH,
+          lens::features::UseSidePanelForScreenshotSharing());
+
+  // Need to manually close the screenshot bubble if side panel is enabled
+  if (lens::features::UseSidePanelForScreenshotSharing() &&
+      !lens::features::EnablePersistentBubble()) {
+    CloseBubble();
+  }
+
+  set_close_on_deactivate(true);
 }
 
 void ScreenshotCapturedBubble::NavigateToImageEditor(

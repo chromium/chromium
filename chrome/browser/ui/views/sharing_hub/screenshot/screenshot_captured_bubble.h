@@ -69,6 +69,8 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
 
   void EditButtonPressed();
 
+  void SearchImageButtonPressed();
+
   gfx::Size GetImageSize();
 
   // Requests navigation to the image editor page.
@@ -76,7 +78,9 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
   // for use as background, or empty to start with a blank canvas.
   void NavigateToImageEditor(const base::FilePath& screenshot_file_path);
 
-  const gfx::Image& image_;
+  // Makes a copy of the image to use in button callbacks without worry of
+  // dereferencing
+  const gfx::Image image_;
 
   base::WeakPtr<content::WebContents> web_contents_;
 
@@ -88,6 +92,7 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
   views::ImageView* image_view_ = nullptr;
   views::MdTextButton* download_button_ = nullptr;
   views::LabelButton* edit_button_ = nullptr;
+  views::LabelButton* search_image_button_ = nullptr;
 
   base::WeakPtrFactory<ScreenshotCapturedBubble> weak_factory_{this};
 };

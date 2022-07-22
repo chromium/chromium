@@ -22,6 +22,9 @@ const base::Feature kLensSearchOptimizations{"LensSearchOptimizations",
 const base::Feature kLensTransparentImagesFix{
     "LensTransparentImagesFix", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kLensSearchImageInScreenshotSharing{
+    "LensSearchImageInScreenshotSharing", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::FeatureParam<bool> kRegionSearchMacCursorFix{
     &kLensStandalone, "region-search-mac-cursor-fix", true};
 
@@ -60,6 +63,13 @@ const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText2{
 
 const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText3{
     &kLensSearchOptimizations, "use-menu-item-alt-text-3", false};
+
+const base::FeatureParam<bool> kUseSidePanelForScreenshotSharing{
+    &kLensSearchImageInScreenshotSharing,
+    "use-side-panel-for-screenshot-sharing", false};
+
+const base::FeatureParam<bool> kEnablePersistentBubble{
+    &kLensSearchImageInScreenshotSharing, "enable-persistent-bubble", false};
 
 // Default is set to true but it is only enabled if kLensSearchOptimizations is
 // enabled. This setup allows us to have fullscreen search as a toggleable
@@ -133,6 +143,23 @@ bool IsLensSidePanelEnabled() {
 bool GetSendImagesAsPng() {
   return base::FeatureList::IsEnabled(kLensStandalone) &&
          base::FeatureList::IsEnabled(kLensTransparentImagesFix);
+}
+
+bool IsLensInScreenshotSharingEnabled() {
+  return base::FeatureList::IsEnabled(kLensStandalone) &&
+         base::FeatureList::IsEnabled(kLensSearchImageInScreenshotSharing);
+}
+
+// Does not check if kLensSearchImageInScreenshotSharing is enabled because this
+// method is not called if kLensSearchImageInScreenshotSharing is false
+bool UseSidePanelForScreenshotSharing() {
+  return kUseSidePanelForScreenshotSharing.Get();
+}
+
+// Does not check if kLensSearchImageInScreenshotSharing is enabled because this
+// method is not called if kLensSearchImageInScreenshotSharing is false
+bool EnablePersistentBubble() {
+  return kEnablePersistentBubble.Get();
 }
 
 }  // namespace features

@@ -9053,6 +9053,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             desc="Button text for the Screenshot dialog edit button.">
           Edit
         </message>
+        <message name="IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_SEARCH_IMAGE_BUTTON_LABEL"
+            desc="Button text for the Screenshot dialog search image button.">
+          Search with Google
+        </message>
         <message name="IDS_BROWSER_SHARING_SCREENSHOT_DIALOG_SHARE_BUTTON_LABEL"
             desc="Button text for the Screenshot dialog share button.">
           Share

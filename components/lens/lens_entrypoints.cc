@@ -20,6 +20,7 @@ constexpr char kChromeRegionSearchMenuItem[] = "crs";
 constexpr char kChromeSearchWithGoogleLensContextMenuItem[] = "ccm";
 constexpr char kChromeOpenNewTabSidePanel[] = "cnts";
 constexpr char kChromeFullscreenSearchMenuItem[] = "cfs";
+constexpr char kChromeScreenshotSearch[] = "css";
 
 constexpr char kSurfaceQueryParameter[] = "s";
 constexpr char kStartTimeQueryParameter[] = "st";
@@ -54,6 +55,10 @@ std::map<std::string, std::string> GetLensQueryParametersMap(
     case lens::CHROME_FULLSCREEN_SEARCH_MENU_ITEM:
       query_parameters.insert(
           {kEntryPointQueryParameter, kChromeFullscreenSearchMenuItem});
+      break;
+    case lens::CHROME_SCREENSHOT_SEARCH:
+      query_parameters.insert(
+          {kEntryPointQueryParameter, kChromeScreenshotSearch});
       break;
     default:
       // Empty strings are ignored when query parameters are built.
