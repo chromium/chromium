@@ -126,8 +126,16 @@ HRESULT CreateMFEncoder(const IID& iid, void** out_encoder) {
   if (num_activates < 1)
     return ERROR_NOT_FOUND;
 
-  RETURN_IF_FAILED(activates[0]->ActivateObject(iid, out_encoder));
-  return S_OK;
+  HRESULT hr = activates[0]->ActivateObject(iid, out_encoder);
+
+  // According to Windows App Development doc,
+  // https://docs.microsoft.com/en-us/windows/win32/api/mfapi/nf-mfapi-mftenumex
+  // the caller must release the pointers before CoTaskMemFree function inside
+  // base::win::ScopedCoMem.
+  for (UINT32 i = 0; i < num_activates; i++)
+    activates[i]->Release();
+
+  return hr;
 }
 
 HRESULT CreateInputMediaType(const int sample_rate,
