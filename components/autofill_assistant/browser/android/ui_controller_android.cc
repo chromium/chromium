@@ -29,8 +29,6 @@
 #include "components/autofill_assistant/android/jni_headers/AssistantModel_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AssistantOverlayModel_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AssistantPlaceholdersConfiguration_jni.h"
-#include "components/autofill_assistant/android/jni_headers/AssistantQrCodeCameraScanModelWrapper_jni.h"
-#include "components/autofill_assistant/android/jni_headers/AssistantQrCodeUtil_jni.h"
 #include "components/autofill_assistant/android/jni_headers/AutofillAssistantUiController_jni.h"
 #include "components/autofill_assistant/browser/android/client_android.h"
 #include "components/autofill_assistant/browser/android/dependencies_android.h"
@@ -541,12 +539,6 @@ void UiControllerAndroid::OnHeaderFeedbackButtonClicked() {
       /* screenshotMode */ 0);
 }
 
-void UiControllerAndroid::OnQrCodeScanFinished(
-    const ClientStatus& status,
-    const absl::optional<ValueProto>& value) {
-  ui_delegate_->OnQrCodeScanFinished(status, value);
-}
-
 void UiControllerAndroid::OnViewEvent(const EventHandler::EventKey& key) {
   ui_delegate_->DispatchEvent(key);
 }
@@ -664,7 +656,6 @@ void UiControllerAndroid::RestoreUi() {
   OnPersistentGenericUserInterfaceChanged(
       ui_delegate_->GetPersistentGenericUiProto());
   OnGenericUserInterfaceChanged(ui_delegate_->GetGenericUiProto());
-  OnQrCodeScanUiChanged(ui_delegate_->GetPromptQrCodeScanProto());
 
   std::vector<RectF> area;
   execution_delegate_->GetTouchableArea(&area);
@@ -1853,58 +1844,6 @@ void UiControllerAndroid::OnClientSettingsChanged(
   Java_AssistantModel_setTalkbackSheetSizeFraction(
       env, GetModel(), settings.talkback_sheet_size_fraction);
   OnClientSettingsDisplayStringsChanged(settings);
-}
-
-void UiControllerAndroid::OnQrCodeScanUiChanged(
-    const PromptQrCodeScanProto* qr_code_scan) {
-  if (!qr_code_scan) {
-    qr_code_native_delegate_ = nullptr;
-    return;
-  }
-
-  JNIEnv* env = AttachCurrentThread();
-  qr_code_native_delegate_ =
-      std::make_unique<AssistantQrCodeNativeDelegate>(this);
-
-  const auto java_assistant_camera_scan_model_wrapper =
-      Java_AssistantQrCodeCameraScanModelWrapper_Constructor(env);
-
-  // Register qr_code_native_delegate_ as delegate for the QR Code Camera Scan
-  // UI
-  Java_AssistantQrCodeCameraScanModelWrapper_setDelegate(
-      env, java_assistant_camera_scan_model_wrapper,
-      qr_code_native_delegate_->GetJavaObject());
-
-  // Set UI strings in model
-  const PromptQrCodeScanProto_CameraScanUiStrings* camera_scan_ui_strings =
-      &qr_code_scan->camera_scan_ui_strings();
-  Java_AssistantQrCodeCameraScanModelWrapper_setToolbarTitle(
-      env, java_assistant_camera_scan_model_wrapper,
-      ConvertUTF8ToJavaString(env, camera_scan_ui_strings->title_text()));
-  Java_AssistantQrCodeCameraScanModelWrapper_setPermissionText(
-      env, java_assistant_camera_scan_model_wrapper,
-      ConvertUTF8ToJavaString(env, camera_scan_ui_strings->permission_text()));
-  Java_AssistantQrCodeCameraScanModelWrapper_setPermissionButtonText(
-      env, java_assistant_camera_scan_model_wrapper,
-      ConvertUTF8ToJavaString(
-          env, camera_scan_ui_strings->permission_button_text()));
-  Java_AssistantQrCodeCameraScanModelWrapper_setOpenSettingsText(
-      env, java_assistant_camera_scan_model_wrapper,
-      ConvertUTF8ToJavaString(env,
-                              camera_scan_ui_strings->open_settings_text()));
-  Java_AssistantQrCodeCameraScanModelWrapper_setOpenSettingsButtonText(
-      env, java_assistant_camera_scan_model_wrapper,
-      ConvertUTF8ToJavaString(
-          env, camera_scan_ui_strings->open_settings_button_text()));
-  Java_AssistantQrCodeCameraScanModelWrapper_setOverlayTitle(
-      env, java_assistant_camera_scan_model_wrapper,
-      ConvertUTF8ToJavaString(
-          env, camera_scan_ui_strings->camera_preview_instruction_text()));
-
-  Java_AssistantQrCodeUtil_promptQrCodeCameraScan(
-      env,
-      Java_AutofillAssistantUiController_getDependencies(env, java_object_),
-      java_assistant_camera_scan_model_wrapper);
 }
 
 void UiControllerAndroid::OnGenericUserInterfaceChanged(

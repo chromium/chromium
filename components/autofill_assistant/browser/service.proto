@@ -1071,7 +1071,6 @@ message ActionProto {
     ExternalActionProto external_action = 95;
     SetNativeValueProto set_native_value = 96;
     SetNativeCheckedProto set_native_checked = 97;
-    PromptQrCodeScanProto prompt_qr_code_scan = 98;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -1829,45 +1828,6 @@ message UpdateClientSettingsProto {
   // strings are updated for display string locales in the description of
   // |ClientSettingsProto|.
   optional ClientSettingsProto client_settings = 1;
-}
-
-// Action to prompt QR Code Scanning. The action is used to scan a QR Code,
-// either via Camera Preview or Image Upload, and store the output in client
-// memory.
-message PromptQrCodeScanProto {
-  // Whether to trigger QR Code Scanning via Camera Preview or Image Upload.
-  optional bool use_gallery = 1;
-
-  // Key to store the QR Code scanning output in client memory. This is a
-  // mandatory field.
-  optional string output_client_memory_key = 2;
-
-  // UI strings shown to the user during QR Code Scanning via Camera Preview.
-  message CameraScanUiStrings {
-    // Text to be displayed as title on Toolbar.
-    optional string title_text = 1;
-
-    // Text to ask users to grant camera permission.
-    optional string permission_text = 2;
-
-    // Text on action button while asking users to grant camera permissions.
-    optional string permission_button_text = 3;
-
-    // Text to ask users to grant camera permissions by going into system
-    // settings.
-    optional string open_settings_text = 4;
-
-    // Text on action button while asking users to grant camera permissions by
-    // going into system settings.
-    optional string open_settings_button_text = 5;
-
-    // Instruction text shown during camera preview.
-    optional string camera_preview_instruction_text = 6;
-  }
-
-  // UI strings shown during camera scan. This is a mandatory field when QR Code
-  // Scanning via Camera Preview is to be triggered.
-  optional CameraScanUiStrings camera_scan_ui_strings = 3;
 }
 
 // Contain a localized text message from the server.
