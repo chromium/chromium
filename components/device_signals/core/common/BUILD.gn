@@ -15,12 +15,17 @@ static_library("common") {
     "base_platform_delegate.cc",
     "common_types.cc",
     "file_system_service.cc",
+    "hashing_utils.cc",
+    "hashing_utils.h",
     "signals_constants.cc",
   ]
 
   public_deps = [ "//third_party/abseil-cpp:absl" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//crypto",
+  ]
 }
 
 source_set("features") {

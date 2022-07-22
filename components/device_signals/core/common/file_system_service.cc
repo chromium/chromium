@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "components/device_signals/core/common/common_types.h"
+#include "components/device_signals/core/common/hashing_utils.h"
 #include "components/device_signals/core/common/platform_delegate.h"
 
 namespace device_signals {
@@ -54,6 +55,10 @@ std::vector<FileSystemItem> FileSystemServiceImpl::GetSignals(
     base::FilePath resolved_file_path;
     collected_item.presence =
         ResolveFileSystemItem(option.file_path, &resolved_file_path);
+
+    if (option.compute_sha256) {
+      collected_item.sha256_hash = HashFile(resolved_file_path);
+    }
 
     collected_items.push_back(std::move(collected_item));
   }

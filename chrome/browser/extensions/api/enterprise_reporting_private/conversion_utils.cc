@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/base64url.h"
 #include "base/files/file_path.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/common/common_types.h"
@@ -62,6 +63,13 @@ api::enterprise_reporting_private::PresenceValue ConvertPresenceValue(
   }
 }
 
+std::string EncodeHash(const std::string& byte_string) {
+  std::string encoded_string;
+  base::Base64UrlEncode(byte_string, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_string);
+  return encoded_string;
+}
+
 }  // namespace
 
 std::vector<device_signals::GetFileSystemInfoOptions>
@@ -102,8 +110,8 @@ absl::optional<ParsedSignalsError> ConvertFileSystemInfoResponse(
     response.presence = ConvertPresenceValue(file_system_item.presence);
 
     if (file_system_item.sha256_hash) {
-      response.sha256_hash =
-          std::make_unique<std::string>(file_system_item.sha256_hash.value());
+      response.sha256_hash = std::make_unique<std::string>(
+          EncodeHash(file_system_item.sha256_hash.value()));
     }
 
     if (file_system_item.executable_metadata) {
@@ -121,7 +129,7 @@ absl::optional<ParsedSignalsError> ConvertFileSystemInfoResponse(
 
         if (executable_metadata.public_key_sha256) {
           response.public_key_sha256 = std::make_unique<std::string>(
-              executable_metadata.public_key_sha256.value());
+              EncodeHash(executable_metadata.public_key_sha256.value()));
         }
 
         if (executable_metadata.product_name) {
