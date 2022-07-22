@@ -76,28 +76,6 @@ source_set("hid") {
   }
 }
 
-source_set("test_support") {
-  testonly = true
-
-  sources = [
-    "mock_hid_connection.cc",
-    "mock_hid_connection.h",
-    "mock_hid_service.cc",
-    "mock_hid_service.h",
-    "test_report_descriptors.cc",
-    "test_report_descriptors.h",
-    "test_util.cc",
-    "test_util.h",
-  ]
-
-  public_deps = [
-    ":hid",
-    "//base",
-    "//services/device/public/cpp/hid",
-    "//services/device/public/mojom",
-  ]
-}
-
 fuzzer_test("hid_report_descriptor_fuzzer") {
   sources = [ "hid_report_descriptor_fuzzer.cc" ]
   deps = [

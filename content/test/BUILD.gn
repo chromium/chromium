@@ -1879,7 +1879,6 @@ test("content_browsertests") {
       "//device/fido:fido",
       "//device/fido:mocks",
       "//device/fido:test_support",
-      "//services/device/public/cpp/hid:test_support",
     ]
   }
 
@@ -2959,8 +2958,6 @@ test("content_unittests") {
       "//device/fido:cablev2_test_util",
       "//device/fido:mocks",
       "//device/fido:test_support",
-      "//services/device/hid:test_support",
-      "//services/device/public/cpp/hid:test_support",
     ]
     if (is_chromeos) {
       deps += [

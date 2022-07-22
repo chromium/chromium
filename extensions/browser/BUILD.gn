@@ -723,8 +723,6 @@ source_set("browser_tests") {
     "//extensions/shell:browser_tests",
     "//net:test_support",
     "//services/device/public/cpp:test_support",
-    "//services/device/public/cpp/hid",
-    "//services/device/public/cpp/hid:test_support",
     "//services/device/public/mojom",
     "//services/network:test_support",
     "//services/service_manager/public/cpp",

@@ -1486,7 +1486,6 @@ if (!is_android) {
       "//rlz/buildflags",
       "//services/audio/public/cpp:test_support",
       "//services/device/public/cpp:test_support",
-      "//services/device/public/cpp/hid:test_support",
       "//services/device/public/mojom",
       "//services/image_annotation/public/cpp",
       "//services/network/public/cpp",
@@ -4222,7 +4221,6 @@ if (!is_android) {
         "//mojo/core/embedder",
         "//services/audio/public/cpp",
         "//services/audio/public/cpp:test_support",
-        "//services/device/public/cpp/hid",
         "//services/media_session/public/mojom",
         "//services/network/public/mojom",
         "//services/preferences/public/cpp",
@@ -6947,7 +6945,6 @@ test("unit_tests") {
       "//components/user_notes:features",
       "//components/user_notes/browser",
       "//components/user_notes/interfaces",
-      "//services/device/hid:test_support",
       "//services/metrics/public/cpp:ukm_builders",
       "//services/network:test_support",
       "//third_party/libaddressinput",
@@ -7885,7 +7882,6 @@ test("unit_tests") {
       "//google_apis/common",
       "//google_apis/drive",
       "//media/cast:test_support",
-      "//services/device/public/cpp/hid:test_support",
       "//services/network/public/mojom",
 
       # This will add all of the unit tests for the schema compiler to this

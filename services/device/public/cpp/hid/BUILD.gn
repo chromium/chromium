@@ -44,18 +44,3 @@ source_set("hid") {
     ]
   }
 }
-
-static_library("test_support") {
-  testonly = true
-
-  sources = [
-    "fake_hid_manager.cc",
-    "fake_hid_manager.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//services/device/public/cpp/hid",
-    "//services/device/public/mojom",
-  ]
-}

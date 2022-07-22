@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/hid/test_report_descriptors.h"
+#include "services/device/public/cpp/test/test_report_descriptors.h"
 
 namespace device {
 

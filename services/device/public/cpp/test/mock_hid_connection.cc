@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/hid/mock_hid_connection.h"
+#include "services/device/public/cpp/test/mock_hid_connection.h"
 
 #include "base/memory/ref_counted_memory.h"
 #include "services/device/hid/hid_device_info.h"

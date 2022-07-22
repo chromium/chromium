@@ -57,13 +57,6 @@ source_set("test_support") {
     "test/test_wake_lock_provider.h",
   ]
 
-  if (is_android) {
-    sources += [
-      "test/scoped_nfc_overrider.cc",
-      "test/scoped_nfc_overrider.h",
-    ]
-  }
-
   public_deps = [
     "//base",
     "//services/device/public/cpp/generic_sensor",
@@ -83,4 +76,28 @@ source_set("test_support") {
     "//testing/gtest",
     "//url",
   ]
+
+  if (is_android) {
+    sources += [
+      "test/scoped_nfc_overrider.cc",
+      "test/scoped_nfc_overrider.h",
+    ]
+  } else {
+    sources += [
+      "test/fake_hid_manager.cc",
+      "test/fake_hid_manager.h",
+      "test/hid_test_util.cc",
+      "test/hid_test_util.h",
+      "test/mock_hid_connection.cc",
+      "test/mock_hid_connection.h",
+      "test/mock_hid_service.cc",
+      "test/mock_hid_service.h",
+      "test/test_report_descriptors.cc",
+      "test/test_report_descriptors.h",
+    ]
+
+    public_deps += [ "//services/device/public/cpp/hid" ]
+
+    deps += [ "//services/device/hid" ]
+  }
 }

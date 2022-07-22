@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/hid/test_util.h"
+#include "services/device/public/cpp/test/hid_test_util.h"
 
 #include "base/guid.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"

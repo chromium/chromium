@@ -275,8 +275,7 @@ source_set("tests") {
     deps += [
       "//components/variations:test_support",
       "//services/device/battery",
-      "//services/device/hid:test_support",
-      "//services/device/public/cpp/hid",
+      "//services/device/hid",
       "//services/device/vibration",
     ]
 

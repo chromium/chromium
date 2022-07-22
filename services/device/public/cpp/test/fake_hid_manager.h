@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_DEVICE_PUBLIC_CPP_HID_FAKE_HID_MANAGER_H_
-#define SERVICES_DEVICE_PUBLIC_CPP_HID_FAKE_HID_MANAGER_H_
+#ifndef SERVICES_DEVICE_PUBLIC_CPP_TEST_FAKE_HID_MANAGER_H_
+#define SERVICES_DEVICE_PUBLIC_CPP_TEST_FAKE_HID_MANAGER_H_
 
 #include <map>
 #include <string>
@@ -101,4 +101,4 @@ class FakeHidManager : public mojom::HidManager {
 
 }  // namespace device
 
-#endif  // SERVICES_DEVICE_PUBLIC_CPP_HID_FAKE_HID_MANAGER_H_
+#endif  // SERVICES_DEVICE_PUBLIC_CPP_TEST_FAKE_HID_MANAGER_H_

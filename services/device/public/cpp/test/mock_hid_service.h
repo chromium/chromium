@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_DEVICE_HID_MOCK_HID_SERVICE_H_
-#define SERVICES_DEVICE_HID_MOCK_HID_SERVICE_H_
+#ifndef SERVICES_DEVICE_PUBLIC_CPP_TEST_MOCK_HID_SERVICE_H_
+#define SERVICES_DEVICE_PUBLIC_CPP_TEST_MOCK_HID_SERVICE_H_
 
 #include "services/device/hid/hid_service.h"
 
@@ -35,4 +35,4 @@ class MockHidService : public HidService {
 
 }  // namespace device
 
-#endif  // SERVICES_DEVICE_HID_MOCK_HID_SERVICE_H_
+#endif  // SERVICES_DEVICE_PUBLIC_CPP_TEST_MOCK_HID_SERVICE_H_
