@@ -21,6 +21,11 @@
 //   --enable-pixel-output-in-tests
 // You should see there are 2 browser instances, one is ash browser,
 // another one is Lacros browser and Lacros is in the front.
+// IMPORTANT: If you're adding new tests in browser_tests target following this
+// example, make sure to add your tests in
+// //testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter
+// so that it can run with the correct argument on linux-chromeos-rel builder
+// with the step name "browser_tests_require_lacros".
 class DemoAshRequiresLacrosTest : public InProcessBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     if (ash_starter_.HasLacrosArgument()) {
