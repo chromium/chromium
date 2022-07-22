@@ -5528,6 +5528,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "safety-check-permissions",
+    "owners": ["sideyilmaz"],
+    "expiry_milestone": 111
+  },
+  {
     "name": "sameparty-cookies-considered-first-party",
     "owners": ["cfredric", "chrome-first-party-sets@chromium.org"],
     "expiry_milestone": 108

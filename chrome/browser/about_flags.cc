@@ -8821,6 +8821,12 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
+    {"safety-check-permissions", flag_descriptions::kSafetyCheckPermissionsName,
+     flag_descriptions::kSafetyCheckPermissionsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSafetyCheckPermissions)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
     {media_router::switches::kAccessCodeCastDeviceDurationSwitch,
      flag_descriptions::kAccessCodeCastDeviceDurationName,
      flag_descriptions::kAccessCodeCastDeviceDurationDescription, kOsDesktop,

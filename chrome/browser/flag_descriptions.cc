@@ -2382,6 +2382,11 @@ const char kIntensiveWakeUpThrottlingDescription[] =
     "page that has been hidden for 5 minutes. For additional details, see "
     "https://www.chromestatus.com/feature/4718288976216064.";
 
+const char kSafetyCheckPermissionsName[] = "Permission Modules on Safety Check";
+const char kSafetyCheckPermissionsDescription[] =
+    "When enabled, adds permission modules to Safety Check on desktop. "
+    "The modules will be shown depending on the browser state.";
+
 const char kSamePartyCookiesConsideredFirstPartyName[] =
     "Consider SameParty cookies to be first-party.";
 const char kSamePartyCookiesConsideredFirstPartyDescription[] =
