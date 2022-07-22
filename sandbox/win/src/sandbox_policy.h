@@ -45,12 +45,35 @@ enum class Semantics {
   kSocketAllowBroker    // Allows brokering of sockets.
 };
 
+// Policy configuration that can be shared over multiple targets of the same tag
+// (see BrokerServicesBase::CreatePolicy(tag)). Methods in TargetConfig will
+// only need to be called the first time a TargetPolicy object with a given tag
+// is configured.
+//
+// We need [[clang::lto_visibility_public]] because instances of this class are
+// passed across module boundaries. This means different modules must have
+// compatible definitions of the class even when LTO is enabled.
+class [[clang::lto_visibility_public]] TargetConfig {
+ public:
+  virtual ~TargetConfig() {}
+
+  // Returns `true` when the TargetConfig of this policy object has been
+  // populated. Methods in TargetConfig should not be called.
+  //
+  // Returns `false` if TargetConfig methods do need to be called to configure
+  // this policy object.
+  virtual bool IsConfigured() const = 0;
+};
+
 // We need [[clang::lto_visibility_public]] because instances of this class are
 // passed across module boundaries. This means different modules must have
 // compatible definitions of the class even when LTO is enabled.
 class [[clang::lto_visibility_public]] TargetPolicy {
  public:
   virtual ~TargetPolicy() {}
+
+  // Fetches the backing TargetConfig for this policy.
+  virtual TargetConfig* GetConfig() = 0;
 
   // Sets the security level for the target process' two tokens.
   // This setting is permanent and cannot be changed once the target process is

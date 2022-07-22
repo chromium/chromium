@@ -11,12 +11,14 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/job.h"
 #include "sandbox/win/src/sandbox.h"
+#include "sandbox/win/src/sandbox_policy_base.h"
 #include "sandbox/win/src/sharedmem_ipc_server.h"
 #include "sandbox/win/src/threadpool.h"
 #include "sandbox/win/src/win_utils.h"
@@ -43,6 +45,8 @@ class BrokerServicesBase final : public BrokerServices,
   // BrokerServices interface.
   ResultCode Init() override;
   std::unique_ptr<TargetPolicy> CreatePolicy() override;
+  std::unique_ptr<TargetPolicy> CreatePolicy(base::StringPiece key) override;
+
   ResultCode SpawnTarget(const wchar_t* exe_path,
                          const wchar_t* command_line,
                          std::unique_ptr<TargetPolicy> policy,
@@ -52,6 +56,8 @@ class BrokerServicesBase final : public BrokerServices,
   ResultCode WaitForAllTargets() override;
   ResultCode GetPolicyDiagnostics(
       std::unique_ptr<PolicyDiagnosticsReceiver> receiver) override;
+
+  static void FreezeTargetConfigForTesting(TargetConfig* config);
 
  private:
   // The completion port used by the job objects to communicate events to
@@ -68,6 +74,10 @@ class BrokerServicesBase final : public BrokerServices,
   // Provides a pool of threads that are used to wait on the IPC calls.
   // Owned by TargetEventsThread which is alive until our destructor.
   raw_ptr<ThreadPool> thread_pool_ = nullptr;
+
+  // Cache of configs backing policies. Entries are retained until shutdown and
+  // used to prime policies created by CreatePolicy() with the same `tag`.
+  base::flat_map<std::string, std::unique_ptr<TargetConfig>> config_cache_;
 };
 
 }  // namespace sandbox

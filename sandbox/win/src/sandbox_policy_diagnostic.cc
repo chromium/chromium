@@ -46,6 +46,7 @@ const char kLowboxSid[] = "lowboxSid";
 const char kPlatformMitigations[] = "platformMitigations";
 const char kPolicyRules[] = "policyRules";
 const char kProcessId[] = "processId";
+const char kTag[] = "tag";
 
 // Values in snapshots of Policies.
 const char kDisabled[] = "disabled";
@@ -373,6 +374,7 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
   process_id_ = base::strict_cast<uint32_t>(policy->target_->ProcessId());
   lockdown_level_ = policy->lockdown_level_;
   job_level_ = policy->job_level_;
+  tag_ = policy->tag_;
 
   // Select the final integrity level.
   if (policy->delayed_integrity_level_ == INTEGRITY_LEVEL_LAST)
@@ -426,6 +428,7 @@ const char* PolicyDiagnostic::JsonString() {
 
   base::Value::Dict dict;
   dict.Set(kProcessId, base::strict_cast<double>(process_id_));
+  dict.Set(kTag, base::Value(tag_));
   dict.Set(kLockdownLevel, GetTokenLevelInEnglish(lockdown_level_));
   dict.Set(kJobLevel, GetJobLevelInEnglish(job_level_));
   dict.Set(kDesiredIntegrityLevel,

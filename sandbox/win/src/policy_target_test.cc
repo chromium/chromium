@@ -10,8 +10,10 @@
 #include "base/win/scoped_process_information.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
+#include "sandbox/win/src/broker_services.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
+#include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_utils.h"
 #include "sandbox/win/src/target_services.h"
 #include "sandbox/win/tests/common/controller.h"
@@ -547,6 +549,48 @@ TEST(PolicyTargetTest, SetEffectiveToken) {
   runner.GetPolicy()->SetEffectiveToken(token_guard.Get());
   EXPECT_EQ(SBOX_TEST_SUCCEEDED,
             runner.RunTest(L"PolicyTargetTest_SetEffectiveToken"));
+}
+
+// Test if shared policies can be created by the broker.
+TEST(SharedTargetConfig, BrokerConfigManagement) {
+  BrokerServices* broker = GetBroker();
+  ASSERT_TRUE(broker);
+  // Policies with empty names should not be fixed.
+  auto policy = broker->CreatePolicy("");
+  EXPECT_FALSE(policy->GetConfig()->IsConfigured());
+  // Normally a policy is frozen (if necessary) by the broker when it is passed
+  // to SpawnTarget.
+  BrokerServicesBase::FreezeTargetConfigForTesting(policy->GetConfig());
+  EXPECT_TRUE(policy->GetConfig()->IsConfigured());
+  auto policy_two = broker->CreatePolicy("");
+  EXPECT_FALSE(policy_two->GetConfig()->IsConfigured());
+
+  // Policies with no name should not be fixed.
+  policy = broker->CreatePolicy();
+  EXPECT_FALSE(policy->GetConfig()->IsConfigured());
+  BrokerServicesBase::FreezeTargetConfigForTesting(policy->GetConfig());
+  policy_two = broker->CreatePolicy();
+  EXPECT_FALSE(policy_two->GetConfig()->IsConfigured());
+
+  // Named policy should not be fixed the first time.
+  policy = broker->CreatePolicy("key-one");
+  EXPECT_FALSE(policy->GetConfig()->IsConfigured());
+  BrokerServicesBase::FreezeTargetConfigForTesting(policy->GetConfig());
+  // Policy should be fixed the second time.
+  policy = broker->CreatePolicy("key-one");
+  EXPECT_TRUE(policy->GetConfig()->IsConfigured());
+  // Even if all policies with the same key are deleted.
+  policy.reset();
+  policy = broker->CreatePolicy("key-one");
+  EXPECT_TRUE(policy->GetConfig()->IsConfigured());
+
+  // A different name should not be fixed the first time.
+  policy_two = broker->CreatePolicy("key-two");
+  EXPECT_FALSE(policy_two->GetConfig()->IsConfigured());
+  BrokerServicesBase::FreezeTargetConfigForTesting(policy_two->GetConfig());
+  // But should be the second time.
+  policy_two = broker->CreatePolicy("key-two");
+  EXPECT_TRUE(policy_two->GetConfig()->IsConfigured());
 }
 
 }  // namespace sandbox

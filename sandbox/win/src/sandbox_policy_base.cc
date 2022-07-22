@@ -88,8 +88,38 @@ IntegrityLevel
     PolicyBase::alternate_desktop_local_winstation_integrity_level_label_ =
         INTEGRITY_LEVEL_SYSTEM;
 
-PolicyBase::PolicyBase()
-    : lockdown_level_(USER_LOCKDOWN),
+ConfigBase::ConfigBase() noexcept
+    :
+#if DCHECK_IS_ON()
+      creating_thread_id_(GetCurrentThreadId()),
+#endif  // DCHECK_IS_ON()
+      configured_(false) {
+}
+
+bool ConfigBase::IsOnCreatingThread() const {
+#if DCHECK_IS_ON()
+  return GetCurrentThreadId() == creating_thread_id_;
+#else  // DCHECK_IS_ON()
+  return true;
+#endif
+}
+
+bool ConfigBase::IsConfigured() const {
+  return configured_;
+}
+
+bool ConfigBase::Freeze() {
+  DCHECK(IsOnCreatingThread());
+  DCHECK(!configured_);
+  configured_ = true;
+  return true;
+}
+
+PolicyBase::PolicyBase(base::StringPiece tag)
+    : tag_(tag),
+      config_(),
+      config_ptr_(nullptr),
+      lockdown_level_(USER_LOCKDOWN),
       initial_level_(USER_LOCKDOWN),
       job_level_(JobLevel::kLockdown),
       ui_exceptions_(0),
@@ -117,6 +147,37 @@ PolicyBase::PolicyBase()
 PolicyBase::~PolicyBase() {
   delete policy_maker_;
   delete policy_;
+}
+
+TargetConfig* PolicyBase::GetConfig() {
+  return config();
+}
+
+ConfigBase* PolicyBase::config() {
+  if (config_ptr_) {
+    DCHECK(!config_);
+    // Should have a tag if we are sharing backing configuration.
+    DCHECK(!tag_.empty());
+    return config_ptr_;
+  }
+  if (!config_) {
+    DCHECK(tag_.empty());
+    config_ = std::make_unique<ConfigBase>();
+  }
+  return config_.get();
+}
+
+bool PolicyBase::SetConfig(TargetConfig* config) {
+  // Cannot call this method if we already own our memory.
+  DCHECK(!config_);
+  // Cannot call this method twice.
+  DCHECK(!config_ptr_);
+  // Must provide valid shared data region.
+  DCHECK(config);
+  // Should have a tag.
+  DCHECK(!tag_.empty());
+  config_ptr_ = static_cast<ConfigBase*>(config);
+  return true;
 }
 
 ResultCode PolicyBase::SetTokenLevel(TokenLevel initial, TokenLevel lockdown) {

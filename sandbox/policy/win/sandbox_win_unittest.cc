@@ -43,9 +43,18 @@ namespace sandbox {
 namespace policy {
 
 namespace {
+
+class TestTargetConfig : public TargetConfig {
+ public:
+  ~TestTargetConfig() override {}
+  bool IsConfigured() const override { return false; }
+};
+
 class TestTargetPolicy : public TargetPolicy {
  public:
   ~TestTargetPolicy() override {}
+  // TargetPolicy:
+  TargetConfig* GetConfig() override { return &config_; }
   ResultCode SetTokenLevel(sandbox::TokenLevel initial,
                            TokenLevel lockdown) override {
     return SBOX_ALL_OK;
@@ -138,6 +147,7 @@ class TestTargetPolicy : public TargetPolicy {
   bool GetAllowNoSandboxJob() override { return false; }
 
  private:
+  TestTargetConfig config_;
   std::vector<std::wstring> blocklisted_dlls_;
   scoped_refptr<AppContainerBase> app_container_;
 };

@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_piece.h"
 #if !defined(SANDBOX_FUZZ_TARGET)
 #include "base/win/windows_types.h"
 #else
@@ -66,8 +67,29 @@ class [[clang::lto_visibility_public]] BrokerServices {
 
   // Returns the interface pointer to a new, empty policy object. Use this
   // interface to specify the sandbox policy for new processes created by
-  // SpawnTarget()
+  // SpawnTarget().
   virtual std::unique_ptr<TargetPolicy> CreatePolicy() = 0;
+
+  // Returns the interface pointer to a new, empty policy object. Use this
+  // interface to specify the sandbox policy for new processes created by
+  // SpawnTarget().
+  //
+  // The first time a specific value of `tag` is provided an empty policy will
+  // be returned, and both TargetConfig and TargetPolicy methods should be
+  // called to populate the object before passing it to SpawnTarget().
+  //
+  // The second and subsequent times a given `tag` is provided, the object will
+  // share the backing data for state configured by TargetConfig methods (with
+  // the first instance) and those methods should not be called for this policy.
+  // TargetConfig::IsConfigured() will return `true` for the second and
+  // subsequent objects created with a given `tag`. Methods on TargetPolicy
+  // should continue to be called to populate the per-instance configuration.
+  //
+  // Provide an empty `tag` (or call CreatePolicy() with no tag) to create a
+  // policy which never shares its TargetConfig state with another policy
+  // object. For such an object both its TargetConfig and TargetPolicy methods
+  // must be called every time.
+  virtual std::unique_ptr<TargetPolicy> CreatePolicy(base::StringPiece tag) = 0;
 
   // Creates a new target (child process) in a suspended state and takes
   // ownership of |policy|.

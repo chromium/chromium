@@ -418,9 +418,30 @@ BrokerServicesBase::~BrokerServicesBase() {
 }
 
 std::unique_ptr<TargetPolicy> BrokerServicesBase::CreatePolicy() {
+  return CreatePolicy("");
+}
+
+std::unique_ptr<TargetPolicy> BrokerServicesBase::CreatePolicy(
+    base::StringPiece tag) {
   // If you change the type of the object being created here you must also
   // change the downcast to it in SpawnTarget().
-  return std::make_unique<PolicyBase>();
+  auto policy = std::make_unique<PolicyBase>(tag);
+  // Empty key implies we will not use the store. The policy will need
+  // to look after its config.
+  if (!tag.empty()) {
+    // Otherwise the broker owns the memory, not the policy.
+    auto found = config_cache_.find(tag);
+    ConfigBase* shared_config = nullptr;
+    if (found == config_cache_.end()) {
+      auto new_config = std::make_unique<ConfigBase>();
+      shared_config = new_config.get();
+      config_cache_[std::string(tag)] = std::move(new_config);
+      policy->SetConfig(shared_config);
+    } else {
+      policy->SetConfig(found->second.get());
+    }
+  }
+  return policy;
 }
 
 // SpawnTarget does all the interesting sandbox setup and creates the target
@@ -448,6 +469,12 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   std::unique_ptr<PolicyBase> policy_base;
   policy_base.reset(static_cast<PolicyBase*>(policy.release()));
   // |policy| cannot be used from here onwards.
+
+  ConfigBase* config_base = static_cast<ConfigBase*>(policy_base->GetConfig());
+  if (!config_base->IsConfigured()) {
+    if (!config_base->Freeze())
+      return SBOX_ERROR_FAILED_TO_FREEZE_CONFIG;
+  }
 
   // Even though the resources touched by SpawnTarget can be accessed in
   // multiple threads, the method itself cannot be called from more than one
@@ -631,6 +658,12 @@ ResultCode BrokerServicesBase::GetPolicyDiagnostics(
   // Ownership has passed to tracker thread.
   receiver.release();
   return SBOX_ALL_OK;
+}
+
+// static
+void BrokerServicesBase::FreezeTargetConfigForTesting(TargetConfig* config) {
+  CHECK(!config->IsConfigured());
+  static_cast<ConfigBase*>(config)->Freeze();
 }
 
 }  // namespace sandbox

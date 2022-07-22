@@ -7,6 +7,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include "sandbox/win/src/broker_services.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_params.h"
 #include "sandbox/win/src/sandbox_policy.h"
@@ -19,7 +20,7 @@ constexpr size_t maxParams = 2;
 // This fills policies with rules based on the current
 // renderer sandbox in Chrome.
 std::unique_ptr<sandbox::PolicyBase> InitPolicy() {
-  auto policy = std::make_unique<sandbox::PolicyBase>();
+  auto policy = std::make_unique<sandbox::PolicyBase>("");
 
   policy->AddRule(sandbox::SubSystem::kWin32kLockdown,
                   sandbox::Semantics::kFakeGdiInit, nullptr);
@@ -35,6 +36,8 @@ std::unique_ptr<sandbox::PolicyBase> InitPolicy() {
                   sandbox::Semantics::kNamedPipesAllowAny,
                   L"\\\\.\\pipe\\chrome.sync.*");
 
+  sandbox::BrokerServicesBase::FreezeTargetConfigForTesting(
+      policy->GetConfig());
   return policy;
 }
 

@@ -162,6 +162,8 @@ enum ResultCode : int {
   SBOX_ERROR_INVALID_READ_SENTINEL_SIZE = 67,
   // The target process sentinel value did not match the sentinel in the broker.
   SBOX_ERROR_MISMATCH_SENTINEL_VALUE = 68,
+  // The process of consolidating the ConfigBase for a policy failed.
+  SBOX_ERROR_FAILED_TO_FREEZE_CONFIG = 69,
   // Placeholder for last item of the enum.
   SBOX_ERROR_LAST
 };
