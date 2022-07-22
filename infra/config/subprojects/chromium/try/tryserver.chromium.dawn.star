@@ -29,7 +29,7 @@ try_.builder(
     branch_selector = branches.STANDARD_MILESTONE,
     mirrors = [
         "ci/Dawn Linux x64 DEPS Builder",
-        "ci/Dawn Linux x64 DEPS Release (Intel HD 630)",
+        "ci/Dawn Linux x64 DEPS Release (Intel UHD 630)",
         "ci/Dawn Linux x64 DEPS Release (NVIDIA)",
     ],
     main_list_view = "try",
@@ -147,7 +147,7 @@ try_.builder(
     name = "linux-dawn-rel",
     mirrors = [
         "ci/Dawn Linux x64 Builder",
-        "ci/Dawn Linux x64 Release (Intel HD 630)",
+        "ci/Dawn Linux x64 Release (Intel UHD 630)",
         "ci/Dawn Linux x64 Release (NVIDIA)",
     ],
     test_presentation = resultdb.test_presentation(

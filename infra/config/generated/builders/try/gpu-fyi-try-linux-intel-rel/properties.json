@@ -31,7 +31,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Linux FYI Release (Intel HD 630)",
+              "builder": "Linux FYI Release (Intel UHD 630)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -68,7 +68,7 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "Linux FYI Release (Intel HD 630)",
+          "builder": "Linux FYI Release (Intel UHD 630)",
           "project": "chromium"
         }
       ]

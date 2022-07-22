@@ -158,7 +158,7 @@ gpu_linux_builder(
     name = "gpu-fyi-try-linux-intel-exp",
     mirrors = [
         "ci/GPU FYI Linux Builder",
-        "ci/Linux FYI Experimental Release (Intel HD 630)",
+        "ci/Linux FYI Experimental Release (Intel UHD 630)",
     ],
     pool = "luci.chromium.gpu.linux.intel.try",
 )
@@ -167,7 +167,7 @@ gpu_linux_builder(
     name = "gpu-fyi-try-linux-intel-rel",
     mirrors = [
         "ci/GPU FYI Linux Builder",
-        "ci/Linux FYI Release (Intel HD 630)",
+        "ci/Linux FYI Release (Intel UHD 630)",
     ],
     pool = "luci.chromium.gpu.linux.intel.try",
 )

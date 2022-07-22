@@ -224,13 +224,13 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gles2_conform_test HD 630",
+        "name": "gles2_conform_test UHD 630",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -238,7 +238,7 @@
         },
         "test": "gles2_conform_test",
         "test_id_prefix": "ninja://gpu/gles2_conform_support:gles2_conform_test/",
-        "variant_id": "HD 630"
+        "variant_id": "UHD 630"
       }
     ],
     "isolated_scripts": [
@@ -292,14 +292,14 @@
           "--expected-vendor-id",
           "8086",
           "--expected-device-id",
-          "5912"
+          "9bc5"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "info_collection_tests HD 630",
+        "name": "info_collection_tests UHD 630",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -309,8 +309,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -318,7 +318,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "variant_id": "HD 630"
+        "variant_id": "UHD 630"
       },
       {
         "args": [
@@ -369,7 +369,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "mediapipe_passthrough_tests HD 630",
+        "name": "mediapipe_passthrough_tests UHD 630",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -379,8 +379,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -388,7 +388,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "variant_id": "HD 630"
+        "variant_id": "UHD 630"
       },
       {
         "args": [
@@ -439,7 +439,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "trace_test HD 630",
+        "name": "trace_test UHD 630",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -449,8 +449,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -458,7 +458,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "variant_id": "HD 630"
+        "variant_id": "UHD 630"
       },
       {
         "args": [
@@ -505,14 +505,14 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webcodecs_tests HD 630",
+        "name": "webcodecs_tests UHD 630",
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -520,7 +520,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "variant_id": "HD 630"
+        "variant_id": "UHD 630"
       },
       {
         "args": [
@@ -578,7 +578,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgl2_conformance_gl_passthrough_tests HD 630",
+        "name": "webgl2_conformance_gl_passthrough_tests UHD 630",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -588,8 +588,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -598,7 +598,7 @@
           "shards": 20
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "variant_id": "HD 630"
+        "variant_id": "UHD 630"
       },
       {
         "args": [
@@ -654,7 +654,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "webgl_conformance_gl_passthrough_tests HD 630",
+        "name": "webgl_conformance_gl_passthrough_tests UHD 630",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -664,8 +664,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -674,7 +674,7 @@
           "shards": 2
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "variant_id": "HD 630"
+        "variant_id": "UHD 630"
       }
     ]
   }

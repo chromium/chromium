@@ -70,6 +70,12 @@
           "builder": "Dawn Linux x64 Release (Intel UHD 630)",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "linux-dawn-rel",
+          "group": "tryserver.chromium.dawn"
+        }
       ]
     }
   },

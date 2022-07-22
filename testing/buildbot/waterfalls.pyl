@@ -1356,7 +1356,7 @@
         'os_type': 'linux',
         'browser_config': 'release',
         'mixins': [
-          'linux_intel_hd_630_stable',
+          'linux_intel_uhd_630_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_common_gtests_passthrough',
@@ -1377,7 +1377,7 @@
       'linux-angle-intel': {
         'os_type': 'linux',
         'mixins': [
-          'linux_intel_hd_630_stable',
+          'linux_intel_uhd_630_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_angle_linux_intel_gtests',
@@ -2197,11 +2197,11 @@
     'machines': {
       'Dawn Linux x64 Builder' : {},
       'Dawn Linux x64 DEPS Builder' : {},
-      'Dawn Linux x64 DEPS Release (Intel HD 630)': {
+      'Dawn Linux x64 DEPS Release (Intel UHD 630)': {
         'os_type': 'linux',
         'browser_config': 'release',
         'mixins': [
-          'linux_intel_hd_630_stable',
+          'linux_intel_uhd_630_stable',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular',
@@ -2217,18 +2217,6 @@
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular_and_validation',
-          'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
-          'isolated_scripts': 'gpu_dawn_isolated_scripts',
-        },
-      },
-      'Dawn Linux x64 Release (Intel HD 630)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'mixins': [
-          'linux_intel_hd_630_stable',
-        ],
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_dawn_telemetry_cts_regular',
           'gtest_tests': 'gpu_dawn_integration_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
@@ -4476,10 +4464,7 @@
         'os_type': 'lacros',
         'browser_config': 'release',
         'mixins': [
-          # Weston does not work on Mesa 19, but works on Mesa 20.
-          # TODO(crbug.com/1153159): Switch to the stable mixin once 20 becomes
-          # the standard version.
-          'linux_intel_hd_630_experimental',
+          'linux_intel_uhd_630_stable',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests',
@@ -4496,16 +4481,18 @@
           'gpu_telemetry_tests': 'gpu_fyi_linux_debug_telemetry_tests',
         },
       },
-      'Linux FYI Experimental Release (Intel HD 630)': {
+      'Linux FYI Experimental Release (Intel UHD 630)': {
         'os_type': 'linux',
         'browser_config': 'release',
         'mixins': [
           'limited_capacity_bot',
-          'linux_intel_hd_630_experimental',
+          'linux_intel_uhd_630_experimental',
         ],
+        # If the experimental configuration is the same as stable, this should
+        # only be running 'gpu_noop_sleep_telemetry_test'. Otherwise, this
+        # should be running the same tests as 'Linux FYI Release (Intel UHD 630)'.
         'test_suites': {
-          'gtest_tests': 'gpu_fyi_linux_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
         },
       },
       'Linux FYI Experimental Release (NVIDIA)': {
@@ -4548,17 +4535,6 @@
         'test_suites': {
           'gtest_tests': 'gpu_fyi_linux_release_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
-        },
-      },
-      'Linux FYI Release (Intel HD 630)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'mixins': [
-          'linux_intel_hd_630_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_linux_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_linux_release_vulkan_telemetry_tests',
         },
       },
       'Linux FYI Release (Intel UHD 630)': {

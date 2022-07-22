@@ -31,7 +31,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Linux FYI Release (Intel HD 630)",
+              "builder": "Linux FYI Experimental Release (Intel UHD 630)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -61,13 +61,13 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Linux FYI Release (Intel HD 630)",
+          "builder": "Linux FYI Experimental Release (Intel UHD 630)",
           "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "gpu-fyi-try-linux-intel-rel",
+          "builder": "gpu-fyi-try-linux-intel-exp",
           "group": "tryserver.chromium.linux"
         }
       ]

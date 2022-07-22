@@ -28,11 +28,10 @@ ci/GPU Win x64 Builder
 ci/Lacros FYI x64 Release (AMD)
 ci/Lacros FYI x64 Release (Intel)
 ci/Linux FYI Debug (NVIDIA)
-ci/Linux FYI Experimental Release (Intel HD 630)
+ci/Linux FYI Experimental Release (Intel UHD 630)
 ci/Linux FYI Experimental Release (NVIDIA)
 ci/Linux FYI GPU TSAN Release
 ci/Linux FYI Release (AMD RX 5500 XT)
-ci/Linux FYI Release (Intel HD 630)
 ci/Linux FYI Release (Intel UHD 630)
 ci/Linux FYI Release (NVIDIA)
 ci/Linux Release (NVIDIA)

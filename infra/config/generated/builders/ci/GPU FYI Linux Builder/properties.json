@@ -31,7 +31,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Linux FYI Experimental Release (Intel HD 630)",
+              "builder": "Linux FYI Experimental Release (Intel UHD 630)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -88,34 +88,6 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux FYI Release (AMD RX 5500 XT)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.gpu.fyi",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 64
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "GPU FYI Linux Builder",
-                "project": "chromium"
-              },
-              "run_tests_serially": true
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "Linux FYI Release (Intel HD 630)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -208,7 +180,7 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "Linux FYI Experimental Release (Intel HD 630)",
+          "builder": "Linux FYI Experimental Release (Intel UHD 630)",
           "project": "chromium"
         },
         {
@@ -219,11 +191,6 @@
         {
           "bucket": "ci",
           "builder": "Linux FYI Release (AMD RX 5500 XT)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "Linux FYI Release (Intel HD 630)",
           "project": "chromium"
         },
         {

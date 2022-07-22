@@ -64,6 +64,12 @@
           "builder": "Linux FYI Release (Intel UHD 630)",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "gpu-fyi-try-linux-intel-rel",
+          "group": "tryserver.chromium.linux"
+        }
       ]
     }
   },

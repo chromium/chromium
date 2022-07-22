@@ -96,7 +96,7 @@ ci.gpu.linux_builder(
 )
 
 ci.thin_tester(
-    name = "Dawn Linux x64 DEPS Release (Intel HD 630)",
+    name = "Dawn Linux x64 DEPS Release (Intel UHD 630)",
     branch_selector = branches.STANDARD_MILESTONE,
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -152,32 +152,6 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "Dawn Linux x64 Release (Intel HD 630)",
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-        build_gs_bucket = "chromium-dawn-archive",
-        run_tests_serially = True,
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Linux|Intel",
-        short_name = "x64",
-    ),
-    triggered_by = ["Dawn Linux x64 Builder"],
-)
-
-ci.thin_tester(
     name = "Dawn Linux x64 Release (Intel UHD 630)",
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -198,7 +172,7 @@ ci.thin_tester(
     ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Linux|Intel",
-        short_name = "exp",
+        short_name = "x64",
     ),
     triggered_by = ["Dawn Linux x64 Builder"],
 )
