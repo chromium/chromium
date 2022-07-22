@@ -90,32 +90,41 @@ public class HardwareDrawTest extends BlankUiTestActivityTestCase {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { mHardwareDraw.onViewSizeChange(mView, 1); });
 
+        final int minCompletedCaptures = 2;
+        final int minRequestCaptures = 100;
+        // Running this loop over 256 times will cause histograms default w/o native to blow up.
+        final int maxRequestCaptures = 250;
         int captureTakenCount = 0;
-        // Setting this to over 256 will cause histograms default w/o native to blow up.
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; true; i++) {
+            if (i >= minRequestCaptures && captureTakenCount >= minCompletedCaptures
+                    || i >= maxRequestCaptures) {
+                break;
+            }
+
             if (startBitmapCapture()) {
                 captureTakenCount++;
             }
+
             // Pause on some of the iterations to give the various threads a chance to do things.
             // A captures goes from UI -> TaskRunner -> Handler -> TaskRunner -> UI. Each step takes
             // 3-6ms, the whole cycle takes ~20ms. Though some devices will be faster and slower.
             // The race we're targeting is between the last TaskRunner -> UI jump.
-            if (i % 20 == 0) {
-                Thread.sleep(20);
-            } else if (i % 10 == 0) {
-                Thread.sleep(5);
-            } else if (i % 3 == 0) {
-                Thread.sleep(1);
+            if (i % 2 == 0) {
+                Thread.sleep(i / 10);
             }
         }
 
         final int finalExpectedCount = captureTakenCount;
         CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mCapturedBitmaps.size(), Matchers.equalTo(finalExpectedCount));
+            Criteria.checkThat("Not all captures completed.", mCapturedBitmaps.size(),
+                    Matchers.equalTo(finalExpectedCount));
         });
 
-        // With the above waits, a typical device will see ~10 captures. All devices should see at
-        // least 2 captures 100% of the time.
-        Assert.assertTrue(mCapturedBitmaps.size() >= 2);
+        // With the above waits, a typical device will see ~20 captures before hitting
+        // minRequestCaptures. And if it continues to until maxRequestCaptures, we see ~90 captures.
+        // We need all devices to see at least 2 captures 100% of the time to avoid flakes.
+        Assert.assertTrue("Only " + mCapturedBitmaps.size()
+                        + " successful captures. Expected at least " + minCompletedCaptures + ".",
+                mCapturedBitmaps.size() >= minCompletedCaptures);
     }
 }
