@@ -97,8 +97,7 @@ class MinimumVersionPolicyHandlerTest
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ash::FakeUpdateEngineClient* fake_update_engine_client_;
-  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
-      network_handler_test_helper_;
+  std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<base::Version> current_version_;
   std::unique_ptr<MinimumVersionPolicyHandler> minimum_version_policy_handler_;
 };
@@ -112,7 +111,7 @@ void MinimumVersionPolicyHandlerTest::SetUp() {
   chromeos::DBusThreadManager::Initialize();
   fake_update_engine_client_ = ash::UpdateEngineClient::InitializeFakeForTest();
   network_handler_test_helper_ =
-      std::make_unique<chromeos::NetworkHandlerTestHelper>();
+      std::make_unique<ash::NetworkHandlerTestHelper>();
 
   chromeos::ShillServiceClient::TestInterface* service_test =
       network_handler_test_helper_->service_test();

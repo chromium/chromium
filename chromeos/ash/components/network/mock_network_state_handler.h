@@ -8,7 +8,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockNetworkStateHandler
     : public NetworkStateHandler {
@@ -30,6 +30,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockNetworkStateHandler
   MOCK_METHOD1(UpdateBlockedCellularNetworks, void(bool));
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::MockNetworkStateHandler;
+}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_MOCK_NETWORK_STATE_HANDLER_H_

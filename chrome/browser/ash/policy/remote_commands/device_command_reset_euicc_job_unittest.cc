@@ -79,7 +79,7 @@ class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();
-    helper_ = std::make_unique<chromeos::NetworkHandlerTestHelper>();
+    helper_ = std::make_unique<ash::NetworkHandlerTestHelper>();
     helper_->hermes_manager_test()->AddEuicc(
         dbus::ObjectPath(kTestEuiccPath), kTestEid,
         /*is_active=*/true, /*physical_slot=*/0);
@@ -115,7 +115,7 @@ class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
   }
 
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<chromeos::NetworkHandlerTestHelper> helper_;
+  std::unique_ptr<ash::NetworkHandlerTestHelper> helper_;
   base::TimeTicks test_start_time_ = base::TimeTicks::Now();
 };
 

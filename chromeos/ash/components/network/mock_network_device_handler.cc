@@ -4,10 +4,10 @@
 
 #include "chromeos/ash/components/network/mock_network_device_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 MockNetworkDeviceHandler::MockNetworkDeviceHandler() = default;
 
 MockNetworkDeviceHandler::~MockNetworkDeviceHandler() = default;
 
-}  // namespace chromeos
+}  // namespace ash

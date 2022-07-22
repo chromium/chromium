@@ -8,7 +8,7 @@
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 TestCellularESimProfileHandler::TestCellularESimProfileHandler()
     : enable_notify_profile_list_update_(true),
@@ -72,4 +72,4 @@ void TestCellularESimProfileHandler::OnHermesPropertiesUpdated() {
   NotifyESimProfileListUpdated();
 }
 
-}  // namespace chromeos
+}  // namespace ash

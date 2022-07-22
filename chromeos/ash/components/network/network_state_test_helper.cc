@@ -11,7 +11,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 
-namespace chromeos {
+namespace ash {
 
 NetworkStateTestHelper::NetworkStateTestHelper(
     bool use_default_devices_and_services) {
@@ -42,4 +42,4 @@ void NetworkStateTestHelper::AddDevice(const std::string& device_path,
   network_state_handler_->SetDeviceStateUpdatedForTest(device_path);
 }
 
-}  // namespace chromeos
+}  // namespace ash

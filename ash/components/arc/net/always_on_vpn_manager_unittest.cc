@@ -68,7 +68,7 @@ class AlwaysOnVpnManagerTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+  ash::NetworkHandlerTestHelper network_handler_test_helper_;
   TestingPrefServiceSimple pref_service_;
 };
 

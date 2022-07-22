@@ -72,7 +72,7 @@ class LanConnectivityRoutineTest : public ::testing::Test {
     network_state_helper().SetServiceProperty(service_path, key, value);
   }
   const std::string& ethernet_path() const { return ethernet_path_; }
-  chromeos::NetworkStateTestHelper& network_state_helper() {
+  NetworkStateTestHelper& network_state_helper() {
     return cros_network_config_test_helper_.network_state_helper();
   }
   const std::string& wifi_path() const { return wifi_path_; }

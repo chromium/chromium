@@ -11,7 +11,7 @@
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
 #include "dbus/object_path.h"
 
-namespace chromeos {
+namespace ash {
 
 // A Test implementation of CellularESimProfileHandler that stores profile list
 // in-memory and fetches esim profiles directly from the fake hermes clients.
@@ -47,11 +47,11 @@ class TestCellularESimProfileHandler : public CellularESimProfileHandler {
   bool has_pending_notify_list_update_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::TestCellularESimProfileHandler;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::TestCellularESimProfileHandler;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_TEST_CELLULAR_ESIM_PROFILE_HANDLER_H_

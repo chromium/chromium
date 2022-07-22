@@ -147,7 +147,7 @@ class ActiveNetworkIconTest : public AshTestBase {
     network_state_helper().SetServiceProperty(service_path, key, value);
   }
 
-  chromeos::NetworkStateTestHelper& network_state_helper() {
+  NetworkStateTestHelper& network_state_helper() {
     return network_config_helper_.network_state_helper();
   }
   chromeos::NetworkStateHandler* network_state_handler() {

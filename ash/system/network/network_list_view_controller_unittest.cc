@@ -533,7 +533,7 @@ class NetworkListViewControllerTest : public AshTestBase {
     return network_state_helper()->network_state_handler();
   }
 
-  chromeos::NetworkStateTestHelper* network_state_helper() {
+  NetworkStateTestHelper* network_state_helper() {
     return &cros_network_config_test_helper_->network_state_helper();
   }
 

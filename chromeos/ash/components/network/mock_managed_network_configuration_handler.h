@@ -13,7 +13,7 @@
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
     : public ManagedNetworkConfigurationHandler {
@@ -104,11 +104,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
   MOCK_CONST_METHOD0(GetBlockedHexSSIDs, std::vector<std::string>());
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when this file is moved to ash.
-namespace ash {
-using ::chromeos::MockManagedNetworkConfigurationHandler;
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_MOCK_MANAGED_NETWORK_CONFIGURATION_HANDLER_H_

@@ -125,7 +125,7 @@ class ArcAppInstallEventLogCollectorTest : public testing::Test {
     arc_app_test_.SetUp(profile_.get());
 
     network_handler_test_helper_ =
-        std::make_unique<chromeos::NetworkHandlerTestHelper>();
+        std::make_unique<ash::NetworkHandlerTestHelper>();
     network_handler_test_helper_->service_test()->AddService(
         kEthernetServicePath, "eth1_guid", "eth1", shill::kTypeEthernet,
         shill::kStateOffline, true /* visible */);
@@ -180,8 +180,7 @@ class ArcAppInstallEventLogCollectorTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
-      network_handler_test_helper_;
+  std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<TestingProfile> profile_;
   FakeAppInstallEventLogCollectorDelegate delegate_;
   TestingPrefServiceSimple pref_service_;

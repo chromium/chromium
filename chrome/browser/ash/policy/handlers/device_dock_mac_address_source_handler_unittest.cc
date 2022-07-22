@@ -42,7 +42,7 @@ class DeviceDockMacAddressHandlerBaseTest : public testing::Test {
 
   ash::ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
 
-  testing::StrictMock<chromeos::MockNetworkDeviceHandler>
+  testing::StrictMock<ash::MockNetworkDeviceHandler>
       network_device_handler_mock_;
 
   std::unique_ptr<DeviceDockMacAddressHandler> device_dock_mac_address_handler_;

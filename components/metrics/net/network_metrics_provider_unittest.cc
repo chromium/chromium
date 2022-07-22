@@ -44,7 +44,7 @@ class NetworkMetricsProviderTest : public testing::Test {
  private:
   MetricsTaskEnvironment task_environment_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+  ash::NetworkHandlerTestHelper network_handler_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 

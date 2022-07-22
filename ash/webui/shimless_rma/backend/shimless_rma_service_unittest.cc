@@ -294,7 +294,7 @@ class ShimlessRmaServiceTest : public testing::Test {
     return *cros_network_config_test_helper_;
   }
 
-  chromeos::NetworkStateTestHelper& network_state_helper() {
+  NetworkStateTestHelper& network_state_helper() {
     return cros_network_config_test_helper_->network_state_helper();
   }
 

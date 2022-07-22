@@ -14,6 +14,10 @@
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_policy_observer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_profile.h"
 #include "components/onc/onc_constants.h"
 
 namespace base {
@@ -24,8 +28,6 @@ namespace chromeos {
 
 class NetworkConfigurationHandler;
 class NetworkDeviceHandler;
-class NetworkPolicyObserver;
-struct NetworkProfile;
 class NetworkProfileHandler;
 class NetworkStateHandler;
 

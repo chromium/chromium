@@ -100,7 +100,7 @@ class NetworkListMobileHeaderViewTest : public AshTestBase {
     network_list_mobile_header_view_->SetAddESimButtonState(enabled, visible);
   }
 
-  chromeos::NetworkStateTestHelper* network_state_helper() {
+  NetworkStateTestHelper* network_state_helper() {
     return &network_config_helper_.network_state_helper();
   }
 

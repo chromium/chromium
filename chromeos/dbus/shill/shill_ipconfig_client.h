@@ -105,4 +105,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillIPConfigClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::ShillIPConfigClient;
+}
+
 #endif  // CHROMEOS_DBUS_SHILL_SHILL_IPCONFIG_CLIENT_H_

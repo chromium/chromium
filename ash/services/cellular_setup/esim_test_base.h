@@ -17,10 +17,6 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/ash/components/network/cellular_esim_uninstall_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/ash/components/network/fake_network_connection_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/ash/components/network/network_device_handler.h"
@@ -31,7 +27,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash::cellular_setup {
+namespace ash {
+
+class FakeNetworkConnectionHandler;
+class TestCellularESimProfileHandler;
+
+namespace cellular_setup {
 
 class ESimManager;
 
@@ -97,6 +98,7 @@ class ESimTestBase : public testing::Test {
   std::unique_ptr<ESimManagerTestObserver> observer_;
 };
 
-}  // namespace ash::cellular_setup
+}  // namespace cellular_setup
+}  // namespace ash
 
 #endif  // ASH_SERVICES_CELLULAR_SETUP_ESIM_TEST_BASE_H_

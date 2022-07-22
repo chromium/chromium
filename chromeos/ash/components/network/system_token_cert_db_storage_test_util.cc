@@ -14,7 +14,7 @@
 #include "net/cert/nss_cert_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 GetSystemTokenCertDbCallbackWrapper::GetSystemTokenCertDbCallbackWrapper() =
     default;
@@ -61,4 +61,4 @@ void FakeSystemTokenCertDbStorageObserver::OnSystemTokenCertDbDestroyed() {
   has_been_notified_ = true;
 }
 
-}  // namespace chromeos
+}  // namespace ash

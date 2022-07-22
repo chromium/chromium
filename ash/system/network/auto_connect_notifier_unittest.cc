@@ -49,8 +49,7 @@ class AutoConnectNotifierTest : public AshTestBase {
     chromeos::SystemTokenCertDbStorage::Initialize();
     chromeos::NetworkCertLoader::Initialize();
     chromeos::NetworkCertLoader::ForceAvailableForNetworkAuthForTesting();
-    network_handler_test_helper_ =
-        std::make_unique<chromeos::NetworkHandlerTestHelper>();
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     CHECK(chromeos::NetworkHandler::Get()->auto_connect_handler());
     network_config_helper_ = std::make_unique<
         chromeos::network_config::CrosNetworkConfigTestHelper>();
@@ -113,8 +112,7 @@ class AutoConnectNotifierTest : public AshTestBase {
   base::MockOneShotTimer* mock_notification_timer_;
 
  private:
-  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
-      network_handler_test_helper_;
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
   ToastManagerImpl* toast_manager_ = nullptr;

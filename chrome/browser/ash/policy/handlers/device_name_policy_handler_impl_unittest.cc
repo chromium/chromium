@@ -42,7 +42,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     network_handler_test_helper_ =
-        std::make_unique<chromeos::NetworkHandlerTestHelper>();
+        std::make_unique<ash::NetworkHandlerTestHelper>();
   }
 
   void TearDown() override {
@@ -212,8 +212,7 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
-      network_handler_test_helper_;
+  std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   std::unique_ptr<ash::ScopedStubInstallAttributes> attributes_;
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;

@@ -93,7 +93,7 @@ class UpdateRequiredNotificationTest
 
   FakeUpdateEngineClient* update_engine() { return fake_update_engine_client_; }
 
-  chromeos::NetworkHandlerTestHelper* network_handler_test_helper() {
+  NetworkHandlerTestHelper* network_handler_test_helper() {
     return network_handler_test_helper_.get();
   }
 
@@ -112,8 +112,7 @@ class UpdateRequiredNotificationTest
   std::unique_ptr<base::Version> current_version_;
   std::unique_ptr<policy::MinimumVersionPolicyHandler>
       minimum_version_policy_handler_;
-  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
-      network_handler_test_helper_;
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 };
 
 UpdateRequiredNotificationTest::UpdateRequiredNotificationTest()
@@ -126,8 +125,7 @@ UpdateRequiredNotificationTest::UpdateRequiredNotificationTest()
 void UpdateRequiredNotificationTest::SetUp() {
   chromeos::DBusThreadManager::Initialize();
   fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
-  network_handler_test_helper_ =
-      std::make_unique<chromeos::NetworkHandlerTestHelper>();
+  network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
 
   chromeos::ShillServiceClient::TestInterface* service_test =
       network_handler_test_helper_->service_test();

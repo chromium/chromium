@@ -127,7 +127,7 @@ class MobileActivatorTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   NetworkState cellular_network_;
   TestMobileActivator mobile_activator_;
 };

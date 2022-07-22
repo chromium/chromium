@@ -50,7 +50,7 @@ class SystemProxyHandlerTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     network_handler_test_helper_ =
-        std::make_unique<chromeos::NetworkHandlerTestHelper>();
+        std::make_unique<ash::NetworkHandlerTestHelper>();
     ash::SystemProxyClient::InitializeFake();
 
     system_proxy_handler_ =
@@ -103,8 +103,7 @@ class SystemProxyHandlerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
-      network_handler_test_helper_;
+  std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<TestingProfile> profile_;
   chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;

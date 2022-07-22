@@ -198,7 +198,7 @@ class ExtensionInstallEventLoggerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+  ash::NetworkHandlerTestHelper network_handler_test_helper_;
   TestingProfile profile_;
   TestingPrefServiceSimple pref_service_;
 

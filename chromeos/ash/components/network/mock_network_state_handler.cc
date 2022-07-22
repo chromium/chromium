@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/network/mock_network_state_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 MockNetworkStateHandler::MockNetworkStateHandler() = default;
 
@@ -18,4 +18,4 @@ MockNetworkStateHandler::InitializeForTest() {
   return handler;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -127,7 +127,7 @@ class ExtensionInstallEventLogCollectorTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
 
     network_handler_test_helper_ =
-        std::make_unique<chromeos::NetworkHandlerTestHelper>();
+        std::make_unique<ash::NetworkHandlerTestHelper>();
     chromeos::PowerManagerClient::InitializeFake();
     profile_ = std::make_unique<TestingProfile>();
     registry_ = extensions::ExtensionRegistry::Get(profile_.get());
@@ -222,8 +222,7 @@ class ExtensionInstallEventLogCollectorTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
-      network_handler_test_helper_;
+  std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<TestingProfile> profile_;
   extensions::ExtensionRegistry* registry_;
   extensions::InstallStageTracker* install_stage_tracker_;

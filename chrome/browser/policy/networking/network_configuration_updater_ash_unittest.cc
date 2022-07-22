@@ -100,7 +100,7 @@ class MockPolicyProvidedCertsObserver
   MOCK_METHOD0(OnPolicyProvidedCertsChanged, void());
 };
 
-class FakeNetworkDeviceHandler : public chromeos::FakeNetworkDeviceHandler {
+class FakeNetworkDeviceHandler : public ash::FakeNetworkDeviceHandler {
  public:
   FakeNetworkDeviceHandler() = default;
 
@@ -420,7 +420,7 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<chromeos::onc::OncParsedCertificates> fake_certificates_;
-  StrictMock<chromeos::MockManagedNetworkConfigurationHandler>
+  StrictMock<ash::MockManagedNetworkConfigurationHandler>
       network_config_handler_;
   FakeNetworkDeviceHandler network_device_handler_;
   ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;

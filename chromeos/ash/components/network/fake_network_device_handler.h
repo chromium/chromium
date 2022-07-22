@@ -12,7 +12,7 @@
 #include "base/component_export.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // This is a fake implementation which does nothing. Use this as a base class
 // for concrete fake handlers.
@@ -74,6 +74,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FakeNetworkDeviceHandler
   void SetUsbEthernetMacAddressSource(const std::string& source) override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_FAKE_NETWORK_DEVICE_HANDLER_H_

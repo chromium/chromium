@@ -4011,7 +4011,7 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
   virtual void VerifyReporting() = 0;
 
  private:
-  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+  ash::NetworkHandlerTestHelper network_handler_test_helper_;
 };
 
 class DeviceStatusCollectorNetworkInterfacesTest

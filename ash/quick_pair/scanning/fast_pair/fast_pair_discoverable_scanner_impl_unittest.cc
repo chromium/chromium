@@ -173,7 +173,7 @@ class FastPairDiscoverableScannerImplTest : public testing::Test {
 
   FakeQuickPairProcessManager* fake_process_manager_;
   base::test::SingleThreadTaskEnvironment task_enviornment_;
-  chromeos::NetworkStateTestHelper helper_{/*use_defaults=*/true};
+  NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/true};
   scoped_refptr<FakeFastPairScanner> scanner_;
   std::unique_ptr<FakeFastPairRepository> repository_;
   std::unique_ptr<FastPairDiscoverableScannerImpl> discoverable_scanner_;

@@ -283,7 +283,7 @@ class ServicesCustomizationDocumentTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
   TestingPrefServiceSimple local_state_;

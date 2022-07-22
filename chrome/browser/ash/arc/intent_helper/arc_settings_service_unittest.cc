@@ -63,7 +63,7 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     network_handler_test_helper_ =
-        std::make_unique<chromeos::NetworkHandlerTestHelper>();
+        std::make_unique<ash::NetworkHandlerTestHelper>();
     network_config_helper_ = std::make_unique<
         chromeos::network_config::CrosNetworkConfigTestHelper>();
     ash::StatsReportingController::RegisterLocalStatePrefs(
@@ -157,8 +157,7 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
-      network_handler_test_helper_;
+  std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
   TestingPrefServiceSimple local_state_;

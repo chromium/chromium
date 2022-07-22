@@ -410,7 +410,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     // NetworkHandlerTestHelper.
     chromeos::DBusThreadManager::Initialize();
     network_handler_test_helper_ =
-        std::make_unique<chromeos::NetworkHandlerTestHelper>();
+        std::make_unique<ash::NetworkHandlerTestHelper>();
     chromeos::NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
     // The |DeviceSettingsTestBase| setup above instantiates
     // |FakeShillManagerClient| with a default environment which will post
@@ -588,8 +588,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   std::u16string device_domain_;
   ContextualManagementSourceUpdate extracted_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
-      network_handler_test_helper_;
+  std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<ash::ScopedStubInstallAttributes> install_attributes_;
   std::unique_ptr<crostini::FakeCrostiniFeatures> crostini_features_;
   TestingPrefServiceSimple local_state_;

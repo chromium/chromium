@@ -6,7 +6,7 @@
 
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeNetworkActivationHandler::ActivationParams::ActivationParams(
     const std::string& service_path,
@@ -42,4 +42,4 @@ void FakeNetworkActivationHandler::CompleteActivation(
       service_path, std::move(success_callback), std::move(error_callback));
 }
 
-}  // namespace chromeos
+}  // namespace ash

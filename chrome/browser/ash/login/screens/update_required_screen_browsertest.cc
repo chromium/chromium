@@ -153,9 +153,8 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
     OobeBaseTest::SetUpOnMainThread();
 
     // Set up fake networks.
-    network_state_test_helper_ =
-        std::make_unique<chromeos::NetworkStateTestHelper>(
-            true /*use_default_devices_and_services*/);
+    network_state_test_helper_ = std::make_unique<NetworkStateTestHelper>(
+        true /*use_default_devices_and_services*/);
     network_state_test_helper_->manager_test()->SetupDefaultEnvironment();
     // Fake networks have been set up. Connect to WiFi network.
     SetConnected(kWifiServicePath);
@@ -206,7 +205,7 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 
   // Handles network connections
-  std::unique_ptr<chromeos::NetworkStateTestHelper> network_state_test_helper_;
+  std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
   policy::DevicePolicyCrosTestHelper policy_helper_;
   DeviceStateMixin device_state_mixin_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};

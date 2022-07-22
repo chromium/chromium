@@ -179,4 +179,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::NetworkMetadataStore;
+}
+
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_METADATA_STORE_H_

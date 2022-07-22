@@ -9,12 +9,12 @@
 #include <string>
 
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/ash/components/network/network_state_test_helper.h"
 
 class AccountId;
 
 namespace ash {
+
+class NetworkStateTestHelper;
 
 // This object sets offline login mode on the login screen.
 class OfflineLoginTestMixin : public InProcessBrowserTestMixin {
@@ -60,7 +60,7 @@ class OfflineLoginTestMixin : public InProcessBrowserTestMixin {
   void StartLoginAuthOffline();
 
   // This is ised to disable networking.
-  std::unique_ptr<chromeos::NetworkStateTestHelper> network_state_test_helper_;
+  std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
 };
 
 }  // namespace ash

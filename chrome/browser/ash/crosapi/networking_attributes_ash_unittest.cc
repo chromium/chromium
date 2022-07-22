@@ -197,7 +197,7 @@ class NetworkingAttributesAshTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   mojo::Remote<mojom::NetworkingAttributes> networking_attributes_remote_;
   std::unique_ptr<NetworkingAttributesAsh> networking_attributes_ash_;
-  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+  ash::NetworkHandlerTestHelper network_handler_test_helper_;
 
   ScopedTestingLocalState local_state_;
 };

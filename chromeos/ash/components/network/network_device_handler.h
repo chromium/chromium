@@ -11,14 +11,14 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_state_handler.h"
 
 namespace base {
 class Value;
 }
 
 namespace chromeos {
-
-class NetworkStateHandler;
 
 // The NetworkDeviceHandler class allows making device specific requests on a
 // ChromeOS network device. All calls are asynchronous and interact with the

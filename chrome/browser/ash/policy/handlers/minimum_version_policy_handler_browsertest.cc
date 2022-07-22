@@ -188,9 +188,8 @@ class MinimumVersionPolicyTest : public MinimumVersionPolicyTestBase {
     MinimumVersionPolicyTestBase::SetUpOnMainThread();
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(nullptr /*profile*/);
-    network_state_test_helper_ =
-        std::make_unique<chromeos::NetworkStateTestHelper>(
-            false /*use_default_devices_and_services*/);
+    network_state_test_helper_ = std::make_unique<ash::NetworkStateTestHelper>(
+        false /*use_default_devices_and_services*/);
     network_state_test_helper_->manager_test()->SetupDefaultEnvironment();
     tray_test_api_ = ash::SystemTrayTestApi::Create();
   }
@@ -218,7 +217,7 @@ class MinimumVersionPolicyTest : public MinimumVersionPolicyTestBase {
   ash::UserPolicyMixin user_policy_mixin_{&mixin_host_,
                                           managed_user.account_id};
   ash::LoginManagerMixin login_manager_{&mixin_host_, {managed_user}};
-  std::unique_ptr<chromeos::NetworkStateTestHelper> network_state_test_helper_;
+  std::unique_ptr<ash::NetworkStateTestHelper> network_state_test_helper_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
 };

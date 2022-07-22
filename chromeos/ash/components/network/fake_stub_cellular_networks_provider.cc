@@ -10,7 +10,7 @@
 #include "base/guid.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeStubCellularNetworksProvider::FakeStubCellularNetworksProvider() = default;
 
@@ -141,4 +141,4 @@ FakeStubCellularNetworksProvider::GetStubsNotBackedByShill(
   return not_backed_by_shill;
 }
 
-}  // namespace chromeos
+}  // namespace ash

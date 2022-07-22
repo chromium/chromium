@@ -292,7 +292,7 @@ class UnifiedStatusAreaWidgetTest : public AshTestBase {
   }
 
  private:
-  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple local_state_;
 };

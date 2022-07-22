@@ -56,7 +56,7 @@ class HasSecureWiFiConnectionRoutineTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  chromeos::NetworkStateTestHelper& network_state_helper() {
+  NetworkStateTestHelper& network_state_helper() {
     return cros_network_config_test_helper_.network_state_helper();
   }
   HasSecureWiFiConnectionRoutine* has_secure_wifi_connection_routine() {

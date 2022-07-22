@@ -381,7 +381,7 @@ class NetworkingPrivateChromeOSApiTestAsh
         profile(), base::BindRepeating(&CreateNetworkingPrivateDelegate));
 
     network_handler_test_helper_ =
-        std::make_unique<chromeos::NetworkHandlerTestHelper>();
+        std::make_unique<ash::NetworkHandlerTestHelper>();
 
     ConfigFakeNetwork();
 
@@ -499,8 +499,7 @@ class NetworkingPrivateChromeOSApiTestAsh
   }
 
  protected:
-  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
-      network_handler_test_helper_;
+  std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_;

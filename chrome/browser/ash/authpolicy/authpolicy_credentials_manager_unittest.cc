@@ -128,7 +128,7 @@ class AuthPolicyCredentialsManagerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   AccountId account_id_;
   std::unique_ptr<TestingProfile> profile_;
 

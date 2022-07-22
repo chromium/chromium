@@ -76,9 +76,8 @@ void OfflineLoginTestMixin::PrepareOfflineLogin() {
 }
 
 void OfflineLoginTestMixin::GoOffline() {
-  network_state_test_helper_ =
-      std::make_unique<chromeos::NetworkStateTestHelper>(
-          false /*use_default_devices_and_services*/);
+  network_state_test_helper_ = std::make_unique<NetworkStateTestHelper>(
+      false /*use_default_devices_and_services*/);
   network_state_test_helper_->ClearServices();
   // Notify NetworkStateInformer explicitly
   if (LoginDisplayHost::default_host() &&

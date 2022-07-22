@@ -518,7 +518,7 @@ class TetherServiceTest : public testing::Test {
   const multidevice::RemoteDeviceRefList test_devices_;
   const content::BrowserTaskEnvironment task_environment_;
 
-  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   std::unique_ptr<TestingProfile> profile_;
   FakeChromeUserManager* fake_chrome_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;

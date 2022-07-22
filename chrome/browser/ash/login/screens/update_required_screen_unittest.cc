@@ -66,8 +66,7 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
     DBusThreadManager::Initialize();
     fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
 
-    network_handler_test_helper_ =
-        std::make_unique<chromeos::NetworkHandlerTestHelper>();
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     network_handler_test_helper_->AddDefaultProfiles();
 
     mock_network_portal_detector_ = new MockNetworkPortalDetector();
@@ -117,8 +116,7 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
   // Will be deleted in `DBusThreadManager::Shutdown()`.
   FakeUpdateEngineClient* fake_update_engine_client_;
   // Initializes NetworkHandler and required DBus clients.
-  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
-      network_handler_test_helper_;
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 
  private:
   // Test versions of core browser infrastructure.

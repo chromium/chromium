@@ -358,7 +358,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   }
 
  private:
-  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
+  ash::NetworkHandlerTestHelper network_handler_test_helper_;
 };
 
 TEST_F(NetworkingPrivateApiTest, SetSharedNetworkProperties) {

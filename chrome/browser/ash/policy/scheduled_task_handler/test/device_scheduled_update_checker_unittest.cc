@@ -131,9 +131,8 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
     chromeos::FakePowerManagerClient::Get()->set_tick_clock(
         task_environment_.GetMockTickClock());
 
-    network_state_test_helper_ =
-        std::make_unique<chromeos::NetworkStateTestHelper>(
-            true /* use_default_devices_and_services */);
+    network_state_test_helper_ = std::make_unique<ash::NetworkStateTestHelper>(
+        true /* use_default_devices_and_services */);
 
     auto task_executor = std::make_unique<FakeScheduledTaskExecutor>(
         task_environment_.GetMockClock());
@@ -358,7 +357,7 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
       device_scheduled_update_checker_;
   ash::ScopedTestingCrosSettings cros_settings_;
   ash::FakeUpdateEngineClient* fake_update_engine_client_;
-  std::unique_ptr<chromeos::NetworkStateTestHelper> network_state_test_helper_;
+  std::unique_ptr<ash::NetworkStateTestHelper> network_state_test_helper_;
   device::TestWakeLockProvider wake_lock_provider_;
 
  private:

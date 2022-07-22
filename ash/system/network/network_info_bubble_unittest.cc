@@ -184,7 +184,7 @@ class NetworkInfoBubbleTest : public AshTestBase {
         NetworkInfoBubble::kNetworkInfoBubbleLabelViewId));
   }
 
-  chromeos::NetworkStateTestHelper* network_state_helper() {
+  NetworkStateTestHelper* network_state_helper() {
     return &network_config_helper_.network_state_helper();
   }
 

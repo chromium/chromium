@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/network/fake_network_device_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 FakeNetworkDeviceHandler::FakeNetworkDeviceHandler() = default;
 
@@ -63,4 +63,4 @@ void FakeNetworkDeviceHandler::SetCellularPolicyAllowRoaming(
 void FakeNetworkDeviceHandler::SetUsbEthernetMacAddressSource(
     const std::string& source) {}
 
-}  // namespace chromeos
+}  // namespace ash

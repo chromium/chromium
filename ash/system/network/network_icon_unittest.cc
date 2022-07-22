@@ -145,7 +145,7 @@ class NetworkIconTest : public AshTestBase {
             chromeos::NetworkTypePattern::Cellular()));
   }
 
-  chromeos::NetworkStateTestHelper& helper() {
+  NetworkStateTestHelper& helper() {
     return network_config_helper_.network_state_helper();
   }
 

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-namespace chromeos {
+namespace ash {
 
 FakeNetworkConnectionHandler::ConnectionParams::ConnectionParams(
     const std::string& service_path,
@@ -73,4 +73,4 @@ void FakeNetworkConnectionHandler::Init(
   // No initialization necessary for a test double.
 }
 
-}  // namespace chromeos
+}  // namespace ash

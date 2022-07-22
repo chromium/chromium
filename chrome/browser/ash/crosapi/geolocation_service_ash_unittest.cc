@@ -22,7 +22,7 @@ class GeolocationServiceAshTest : public testing::Test {
  public:
   GeolocationServiceAshTest()
       : network_handler_test_helper_(
-            std::make_unique<chromeos::NetworkHandlerTestHelper>()) {}
+            std::make_unique<ash::NetworkHandlerTestHelper>()) {}
 
   void AddAccessPoints(int ssids, int aps_per_ssid) {
     for (int i = 0; i < ssids; ++i) {
@@ -55,8 +55,7 @@ class GeolocationServiceAshTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<chromeos::NetworkHandlerTestHelper>
-      network_handler_test_helper_;
+  std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   GeolocationServiceAsh download_controller_ash_;
 };
 

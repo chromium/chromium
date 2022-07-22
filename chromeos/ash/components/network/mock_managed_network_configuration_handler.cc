@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/network/mock_managed_network_configuration_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 MockManagedNetworkConfigurationHandler::
     MockManagedNetworkConfigurationHandler() = default;
@@ -12,4 +12,4 @@ MockManagedNetworkConfigurationHandler::
 MockManagedNetworkConfigurationHandler::
     ~MockManagedNetworkConfigurationHandler() = default;
 
-}  // namespace chromeos
+}  // namespace ash

@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 
 namespace ash {
+class NetworkStateTestHelper;
 namespace tether {
 class NetworkListSorterTest;
 }  // namespace tether
@@ -128,8 +129,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedState {
 
  private:
   friend class ::ash::tether::NetworkListSorterTest;
+  friend class ::ash::NetworkStateTestHelper;
   friend class NetworkStateHandler;
-  friend class NetworkStateTestHelper;
 
   ManagedType managed_type_;
 

@@ -15,6 +15,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
@@ -29,7 +31,6 @@ class Value;
 
 namespace chromeos {
 
-class DeviceState;
 class NetworkStateHandlerObserver;
 class NetworkStateHandlerTest;
 
