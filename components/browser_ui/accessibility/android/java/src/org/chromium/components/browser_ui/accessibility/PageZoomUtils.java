@@ -171,17 +171,22 @@ public class PageZoomUtils {
      * @param decrease boolean      True if the next index should be decreasing from the current,
      *         false otherwise
      * @param currentZoomFactor double      The current zoom factor for which to search
+     * @throws IllegalArgumentException if current zoom factor is <= the smallest cached zoom factor
+     *         or >= the largest cached zoom factor
      * @return int      The index of the next closest zoom factor
      */
     public static int getNextIndex(boolean decrease, double currentZoomFactor) {
         // Assert valid current zoom factor
-        if (decrease) {
-            assert currentZoomFactor > PageZoomUtils.AVAILABLE_ZOOM_FACTORS[0];
-        } else {
-            assert currentZoomFactor
-                    < PageZoomUtils
+        if (decrease && currentZoomFactor <= PageZoomUtils.AVAILABLE_ZOOM_FACTORS[0]) {
+            throw new IllegalArgumentException("currentZoomFactor should be greater than "
+                    + PageZoomUtils.AVAILABLE_ZOOM_FACTORS[0]);
+        } else if (!decrease
+                && currentZoomFactor >= PageZoomUtils.AVAILABLE_ZOOM_FACTORS
+                                                [PageZoomUtils.AVAILABLE_ZOOM_FACTORS.length - 1]) {
+            throw new IllegalArgumentException("currentZoomFactor should be less than "
+                    + PageZoomUtils
                               .AVAILABLE_ZOOM_FACTORS[PageZoomUtils.AVAILABLE_ZOOM_FACTORS.length
-                                      - 1];
+                                      - 1]);
         }
 
         // BinarySearch will return the index of the first value equal to the given value.
