@@ -60,8 +60,7 @@ inline bool ShouldUseDecoratingBox(const ComputedStyle& style) {
   // find the decorating box. For example, |NGHighlightPainter| creates a
   // |kPseudoIdHighlight| pseudo style on the fly.
   const PseudoId pseudo_id = style.StyleType();
-  if (pseudo_id == kPseudoIdSelection || pseudo_id == kPseudoIdTargetText ||
-      pseudo_id == kPseudoIdHighlight)
+  if (IsHighlightPseudoElement(pseudo_id))
     return false;
   return true;
 }
