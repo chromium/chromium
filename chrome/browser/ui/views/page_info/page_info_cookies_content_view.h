@@ -1,0 +1,32 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_COOKIES_CONTENT_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_COOKIES_CONTENT_VIEW_H_
+
+#include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
+#include "components/page_info/page_info_ui.h"
+#include "ui/views/view.h"
+
+// The view that is used as a content view of the Cookies subpage in page info.
+// It contains information about cookies (short description, how many sites
+// are allowed).
+class PageInfoCookiesContentView : public views::View, public PageInfoUI {
+ public:
+  explicit PageInfoCookiesContentView(PageInfo* presenter);
+
+  ~PageInfoCookiesContentView() override;
+
+ private:
+  raw_ptr<PageInfo> presenter_;
+
+  // The button that opens Cookie Dialog and displays a number of allowed sites.
+  raw_ptr<PageInfoHoverButton> cookies_dialog_button_ = nullptr;
+
+  // The button that displays First-Party-Set information with a link to
+  // 'All sites' settings page.
+  raw_ptr<PageInfoHoverButton> fps_button_ = nullptr;
+};
+
+#endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_COOKIES_CONTENT_VIEW_H_
