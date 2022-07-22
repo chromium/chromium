@@ -103,6 +103,10 @@ void TextTrackContainer::RemovedFrom(ContainerNode& insertion_point) {
   }
 }
 
+bool TextTrackContainer::TypeShouldForceLegacyLayout() const {
+  return !RuntimeEnabledFeatures::LayoutNGVTTCueEnabled();
+}
+
 LayoutObject* TextTrackContainer::CreateLayoutObject(const ComputedStyle& style,
                                                      LegacyLayout legacy) {
   if (RuntimeEnabledFeatures::LayoutNGVTTCueEnabled())

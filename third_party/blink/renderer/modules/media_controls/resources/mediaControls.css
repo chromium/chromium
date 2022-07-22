@@ -1281,6 +1281,15 @@ video::cue(i) {
     font-style: italic;
 }
 
+video::cue(rt) {
+    display: block;
+    font-size: 50%;
+    line-height: normal;
+    text-align: start;
+    text-emphasis: none;
+    text-indent: 0;
+}
+
 /*
  * ::-webkit-media-text-track-container needs to create new formatting context
  * because LayoutMedia is a legacy object, and

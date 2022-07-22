@@ -27,6 +27,8 @@
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/layout/layout_object_factory.h"
+#include "third_party/blink/renderer/core/layout/layout_ruby.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -140,6 +142,17 @@ void VTTElement::SetTrack(TextTrack* track) {
 void VTTElement::Trace(Visitor* visitor) const {
   visitor->Trace(track_);
   Element::Trace(visitor);
+}
+
+LayoutObject* VTTElement::CreateLayoutObject(const ComputedStyle& style,
+                                             LegacyLayout legacy) {
+  switch (web_vtt_node_type_) {
+    case kVTTNodeTypeRuby:
+      return MakeGarbageCollected<LayoutRubyAsInline>(this);
+    case kVTTNodeTypeRubyText:
+      return LayoutObjectFactory::CreateRubyText(this, style, legacy);
+  }
+  return LayoutObject::CreateObject(this, style, legacy);
 }
 
 }  // namespace blink
