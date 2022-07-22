@@ -756,7 +756,8 @@ bool HTMLPlugInElement::AllowedToLoadObject(const KURL& url,
   // is specified.
   return (!mime_type.IsEmpty() && url.IsEmpty()) ||
          !MixedContentChecker::ShouldBlockFetch(
-             frame, mojom::blink::RequestContextType::OBJECT, url,
+             frame, mojom::blink::RequestContextType::OBJECT,
+             network::mojom::blink::IPAddressSpace::kUnknown, url,
              ResourceRequest::RedirectStatus::kNoRedirect, url,
              /* devtools_id= */ absl::nullopt, ReportingDisposition::kReport,
              GetDocument().Loader()->GetContentSecurityNotifier());

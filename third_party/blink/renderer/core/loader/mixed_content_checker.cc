@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/loader/mixed_content.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -398,6 +399,7 @@ void MixedContentChecker::Count(
 bool MixedContentChecker::ShouldBlockFetch(
     LocalFrame* frame,
     mojom::blink::RequestContextType request_context,
+    network::mojom::blink::IPAddressSpace target_address_space,
     const KURL& url_before_redirects,
     ResourceRequest::RedirectStatus redirect_status,
     const KURL& url,
@@ -517,6 +519,17 @@ bool MixedContentChecker::ShouldBlockFetch(
       NOTREACHED();
       break;
   };
+
+  // Skip mixed content check for private and local targets.
+  // TODO(lyf): check the IP address space for initiator, only skip when the
+  // initiator is more public.
+  if (RuntimeEnabledFeatures::PrivateNetworkAccessPermissionPromptEnabled()) {
+    if (target_address_space ==
+            network::mojom::blink::IPAddressSpace::kPrivate ||
+        target_address_space == network::mojom::blink::IPAddressSpace::kLocal) {
+      allowed = true;
+    }
+  }
 
   if (reporting_disposition == ReportingDisposition::kReport) {
     frame->GetDocument()->AddConsoleMessage(

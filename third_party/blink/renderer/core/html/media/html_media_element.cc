@@ -2016,6 +2016,7 @@ void HTMLMediaElement::SetReadyState(ReadyState state) {
           frame,
           HasVideo() ? mojom::blink::RequestContextType::VIDEO
                      : mojom::blink::RequestContextType::AUDIO,
+          network::mojom::blink::IPAddressSpace::kUnknown,
           current_src_for_check,
           // Strictly speaking, this check is an approximation; a request could
           // have have redirected back to its original URL, for example.

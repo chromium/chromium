@@ -592,6 +592,7 @@ FrameFetchContext::CreateWebSocketHandshakeThrottle() {
 
 bool FrameFetchContext::ShouldBlockFetchByMixedContentCheck(
     mojom::blink::RequestContextType request_context,
+    network::mojom::blink::IPAddressSpace target_address_space,
     const absl::optional<ResourceRequest::RedirectInfo>& redirect_info,
     const KURL& url,
     ReportingDisposition reporting_disposition,
@@ -606,8 +607,8 @@ bool FrameFetchContext::ShouldBlockFetchByMixedContentCheck(
       redirect_info ? RedirectStatus::kFollowedRedirect
                     : RedirectStatus::kNoRedirect;
   return MixedContentChecker::ShouldBlockFetch(
-      GetFrame(), request_context, url_before_redirects, redirect_status, url,
-      devtools_id, reporting_disposition,
+      GetFrame(), request_context, target_address_space, url_before_redirects,
+      redirect_status, url, devtools_id, reporting_disposition,
       document_loader_->GetContentSecurityNotifier());
 }
 

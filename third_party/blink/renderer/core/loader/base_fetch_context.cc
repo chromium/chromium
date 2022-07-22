@@ -655,9 +655,10 @@ BaseFetchContext::CanRequestInternal(
   // Check for mixed content. We do this second-to-last so that when folks block
   // mixed content via CSP, they don't get a mixed content warning, but a CSP
   // warning instead.
-  if (ShouldBlockFetchByMixedContentCheck(request_context, redirect_info, url,
-                                          reporting_disposition,
-                                          resource_request.GetDevToolsId())) {
+  if (ShouldBlockFetchByMixedContentCheck(
+          request_context, resource_request.GetTargetAddressSpace(),
+          redirect_info, url, reporting_disposition,
+          resource_request.GetDevToolsId())) {
     return ResourceRequestBlockedReason::kMixedContent;
   }
 

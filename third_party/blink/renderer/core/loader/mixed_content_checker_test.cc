@@ -205,16 +205,18 @@ TEST(MixedContentCheckerTest, DetectMixedFavicon) {
   // Test that a mixed content favicon is correctly blocked.
   EXPECT_TRUE(MixedContentChecker::ShouldBlockFetch(
       &dummy_page_holder->GetFrame(), mojom::blink::RequestContextType::FAVICON,
-      http_favicon_url, ResourceRequest::RedirectStatus::kNoRedirect,
-      http_favicon_url, absl::optional<String>(),
-      ReportingDisposition::kSuppressReporting, *notifier_remote));
+      network::mojom::blink::IPAddressSpace::kPublic, http_favicon_url,
+      ResourceRequest::RedirectStatus::kNoRedirect, http_favicon_url,
+      absl::optional<String>(), ReportingDisposition::kSuppressReporting,
+      *notifier_remote));
 
   // Test that a secure favicon is not blocked.
   EXPECT_FALSE(MixedContentChecker::ShouldBlockFetch(
       &dummy_page_holder->GetFrame(), mojom::blink::RequestContextType::FAVICON,
-      https_favicon_url, ResourceRequest::RedirectStatus::kNoRedirect,
-      https_favicon_url, absl::optional<String>(),
-      ReportingDisposition::kSuppressReporting, *notifier_remote));
+      network::mojom::blink::IPAddressSpace::kPublic, https_favicon_url,
+      ResourceRequest::RedirectStatus::kNoRedirect, https_favicon_url,
+      absl::optional<String>(), ReportingDisposition::kSuppressReporting,
+      *notifier_remote));
 }
 
 class TestFetchClientSettingsObject : public FetchClientSettingsObject {

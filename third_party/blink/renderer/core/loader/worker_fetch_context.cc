@@ -139,6 +139,7 @@ WorkerFetchContext::CreateWebSocketHandshakeThrottle() {
 
 bool WorkerFetchContext::ShouldBlockFetchByMixedContentCheck(
     mojom::blink::RequestContextType request_context,
+    network::mojom::blink::IPAddressSpace target_address_space,
     const absl::optional<ResourceRequest::RedirectInfo>& redirect_info,
     const KURL& url,
     ReportingDisposition reporting_disposition,

@@ -76,6 +76,7 @@ class CORE_EXPORT MixedContentChecker final {
  public:
   static bool ShouldBlockFetch(LocalFrame* frame,
                                mojom::blink::RequestContextType request_context,
+                               network::mojom::blink::IPAddressSpace,
                                const KURL& url_before_redirects,
                                ResourceRequest::RedirectStatus redirect_status,
                                const KURL& url,
