@@ -153,6 +153,10 @@ void WaylandToplevelWindow::Hide() {
   }
   WaylandWindow::Hide();
 
+  if (aura_surface_ && wl::get_version_of_object(aura_surface_.get()) >=
+                           ZAURA_SURFACE_RELEASE_SINCE_VERSION) {
+    aura_surface_.reset();
+  }
   shell_toplevel_.reset();
   connection()->ScheduleFlush();
 }
@@ -874,15 +878,18 @@ void WaylandToplevelWindow::SetOrResetRestoredBounds() {
 void WaylandToplevelWindow::SetUpShellIntegration() {
   // This method should be called after the XDG surface is initialized.
   DCHECK(shell_toplevel_);
-  if (connection()->zaura_shell() && !aura_surface_) {
-    static constexpr zaura_surface_listener zaura_surface_listener = {
-        &OcclusionChanged, &LockFrame,     &UnlockFrame, &OcclusionStateChanged,
-        &DeskChanged,      &StartThrottle, &EndThrottle,
-    };
-    aura_surface_.reset(zaura_shell_get_aura_surface(
-        connection()->zaura_shell()->wl_object(), root_surface()->surface()));
-    zaura_surface_add_listener(aura_surface_.get(), &zaura_surface_listener,
-                               this);
+  if (connection()->zaura_shell()) {
+    if (!aura_surface_) {
+      static constexpr zaura_surface_listener zaura_surface_listener = {
+          &OcclusionChanged,      &LockFrame,   &UnlockFrame,
+          &OcclusionStateChanged, &DeskChanged, &StartThrottle,
+          &EndThrottle,
+      };
+      aura_surface_.reset(zaura_shell_get_aura_surface(
+          connection()->zaura_shell()->wl_object(), root_surface()->surface()));
+      zaura_surface_add_listener(aura_surface_.get(), &zaura_surface_listener,
+                                 this);
+    }
     zaura_surface_set_occlusion_tracking(aura_surface_.get());
     SetImmersiveFullscreenStatus(false);
     SetInitialWorkspace();

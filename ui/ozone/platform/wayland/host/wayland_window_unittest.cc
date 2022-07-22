@@ -156,9 +156,6 @@ class WaylandWindowTest : public WaylandTest {
   WaylandWindowTest& operator=(const WaylandWindowTest&) = delete;
 
   void SetUp() override {
-    disabled_features_.push_back(
-        ui::kWaylandSurfaceSubmissionInPixelCoordinates);
-
     WaylandTest::SetUp();
 
     xdg_surface_ = surface_->xdg_surface();

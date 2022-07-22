@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="37">
+  <interface name="zaura_shell" version="38">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -146,9 +146,21 @@
 	    summary="the aura popup interface id"/>
       <arg name="popup" type="object" interface="xdg_popup"/>
     </request>
+
+    <request name="release" type="destructor" since="38">
+      <description summary="release zaura_shell object">
+	Using this request a client can tell the server that it is not going to
+	use the zaura_shell object anymore. This does not affect any other objects.
+
+  This is named "release" because "destroy" is a special named function used for
+  freeing wl_proxy objects. Naming it "destroy" will cause marshalling errors
+  when running on lower versioned hosts. All "release" requests here should be
+  renamed to "destroy" if we move to aura-shell v2.
+      </description>
+    </request>
   </interface>
 
-  <interface name="zaura_surface" version="29">
+  <interface name="zaura_surface" version="38">
     <description summary="aura shell interface to a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to access aura shell specific functionality for surface.
@@ -512,9 +524,19 @@
         Informs the client to end throttling on the surface.
       </description>
     </event>
+
+    <!-- Version 38 additions -->
+    <request name="release" type="destructor" since="38">
+      <description summary="destroy zaura_surface">
+	Destroy the zaura_surface object. A client should destroy this object when the
+  role is unmapped from a wl_surface.
+
+  See zaura_shell.release for destructor naming.
+      </description>
+    </request>
   </interface>
 
-  <interface name="zaura_output" version="34">
+  <interface name="zaura_output" version="38">
     <description summary="aura shell interface to a wl_output">
       An additional interface to a wl_output object, which allows the
       client to access aura shell specific functionality for output.
@@ -647,9 +669,22 @@
       </description>
       <arg name="transform" type="int" enum="wl_output.transform"/>
     </event>
+
+    <!-- Version 38 additions -->
+    <request name="release" type="destructor" since="38">
+      <description summary="destroy zaura_output">
+	Destroy this zaura_shell object.
+
+	Destroying a bound zaura_shell object while there are zaura_surfaces
+	still alive created by this zaura_shell object instance is illegal
+	and will result in a protocol error.
+
+  See zaura_shell.release for destructor naming.
+      </description>
+    </request>
   </interface>
 
-  <interface name="zaura_toplevel" version="36">
+  <interface name="zaura_toplevel" version="38">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -766,6 +801,7 @@
       <arg name="restore_window_id" type="int" summary="restore browser window id"/>
     </request>
 
+    <!-- Version 31 additions -->
     <request name="set_system_modal" since="31">
       <description summary="make window a system modal">
         Requests that the toplevel surface should become a system modal. The
@@ -807,9 +843,19 @@
       <entry name="normal" value="1" summary="caption with shadow"/>
       <entry name="shadow" value="2" summary="shadow only"/>
     </enum>
+
+    <!-- Version 38 additions -->
+    <request name="release" type="destructor" since="38">
+      <description summary="destroy zaura_toplevel">
+	Destroy this zaura_toplevel object. A client should call destroy when the role
+  is unmapped from a wl_surface.
+
+  See zaura_shell.release for destructor naming.
+      </description>
+    </request>
   </interface>
 
-  <interface name="zaura_popup" version="37">
+  <interface name="zaura_popup" version="38">
     <description summary="aura shell interface to the popup shell">
       An interface to the popup shell, which allows the
       client to access shell specific functionality.
@@ -845,6 +891,16 @@
     <request name="set_menu" since="37">
       <description summary="set popup type to menu">
         Set popup type to menu
+      </description>
+    </request>
+
+    <!-- Version 38 additions -->
+    <request name="release" type="destructor" since="38">
+      <description summary="destroy zaura_popup">
+	This request destroys the zaura_popup. A client should call destroy when the
+  role is unmapped from a wl_surface.
+
+  See zaura_shell.release for destructor naming.
       </description>
     </request>
   </interface>

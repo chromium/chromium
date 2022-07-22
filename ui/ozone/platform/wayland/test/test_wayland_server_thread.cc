@@ -92,6 +92,8 @@ bool TestWaylandServerThread::Start(const ServerConfig& config) {
   } else {
     if (!xdg_shell_.Initialize(display_.get()))
       return false;
+    if (!zaura_shell_.Initialize(display_.get()))
+      return false;
   }
   if (!zcr_stylus_.Initialize(display_.get()))
     return false;

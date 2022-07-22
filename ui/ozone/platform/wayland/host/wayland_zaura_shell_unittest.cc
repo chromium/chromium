@@ -22,8 +22,7 @@ TEST(WaylandZAuraShellTest, BugFix) {
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
   wl::TestWaylandServerThread server;
   ASSERT_TRUE(server.Start({.shell_version = wl::ShellVersion::kStable}));
-  wl::MockZAuraShell zaura_shell_obj;
-  zaura_shell_obj.Initialize(server.display());
+  wl::MockZAuraShell* zaura_shell = server.zaura_shell();
 
   WaylandConnection connection;
   ASSERT_TRUE(connection.Initialize());
@@ -32,8 +31,9 @@ TEST(WaylandZAuraShellTest, BugFix) {
   base::RunLoop().RunUntilIdle();
   server.Pause();
 
-  zaura_shell_send_bug_fix(zaura_shell_obj.resource(), 1);
-  zaura_shell_send_bug_fix(zaura_shell_obj.resource(), 3);
+  ASSERT_TRUE(server.zaura_shell()->resource());
+  zaura_shell_send_bug_fix(zaura_shell->resource(), 1);
+  zaura_shell_send_bug_fix(zaura_shell->resource(), 3);
 
   server.Resume();
   base::RunLoop().RunUntilIdle();

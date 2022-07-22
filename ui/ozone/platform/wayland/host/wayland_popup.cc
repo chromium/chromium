@@ -94,10 +94,8 @@ void WaylandPopup::UpdateDecoration() {
   DCHECK(shell_popup_);
 
   // If the surface is already decorated early return.
-  if (!connection()->zaura_shell() || aura_surface_ ||
-      decorated_via_aura_popup_) {
+  if (!connection()->zaura_shell() || decorated_via_aura_popup_)
     return;
-  }
 
   // Decorate the surface using the newer protocol. Relies on Ash >= M105.
   if (shell_popup_->SupportsDecoration()) {
@@ -107,9 +105,13 @@ void WaylandPopup::UpdateDecoration() {
   }
 
   // Decorate the frame using the older protocol. Can be removed once Lacros >=
-  // M107.
-  aura_surface_.reset(zaura_shell_get_aura_surface(
-      connection()->zaura_shell()->wl_object(), root_surface()->surface()));
+  // M107. Reshown popups will not be decorated if |aura_surface_| isn't reset
+  // when server implements the older protocol.
+  if (!aura_surface_) {
+    aura_surface_.reset(zaura_shell_get_aura_surface(
+        connection()->zaura_shell()->wl_object(), root_surface()->surface()));
+  }
+
   if (shadow_type_ == PlatformWindowShadowType::kDrop) {
     zaura_surface_set_frame(aura_surface_.get(),
                             ZAURA_SURFACE_FRAME_TYPE_SHADOW);
@@ -143,11 +145,17 @@ void WaylandPopup::Hide() {
     child_window()->Hide();
   WaylandWindow::Hide();
 
+  if (aura_surface_ && wl::get_version_of_object(aura_surface_.get()) >=
+                           ZAURA_SURFACE_RELEASE_SINCE_VERSION) {
+    aura_surface_.reset();
+  }
+
   if (shell_popup_) {
     parent_window()->set_child_window(nullptr);
     shell_popup_.reset();
     decorated_via_aura_popup_ = false;
   }
+
   connection()->ScheduleFlush();
 }
 

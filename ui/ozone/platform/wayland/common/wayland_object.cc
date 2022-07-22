@@ -89,6 +89,42 @@ void delete_touch(wl_touch* touch) {
     wl_touch_destroy(touch);
 }
 
+void delete_zaura_shell(zaura_shell* shell) {
+  if (wl::get_version_of_object(shell) >= ZAURA_SHELL_RELEASE_SINCE_VERSION)
+    zaura_shell_release(shell);
+  else
+    zaura_shell_destroy(shell);
+}
+
+void delete_zaura_surface(zaura_surface* surface) {
+  if (wl::get_version_of_object(surface) >= ZAURA_SURFACE_RELEASE_SINCE_VERSION)
+    zaura_surface_release(surface);
+  else
+    zaura_surface_destroy(surface);
+}
+
+void delete_zaura_output(zaura_output* output) {
+  if (wl::get_version_of_object(output) >= ZAURA_OUTPUT_RELEASE_SINCE_VERSION)
+    zaura_output_release(output);
+  else
+    zaura_output_destroy(output);
+}
+
+void delete_zaura_toplevel(zaura_toplevel* toplevel) {
+  if (wl::get_version_of_object(toplevel) >=
+      ZAURA_TOPLEVEL_RELEASE_SINCE_VERSION)
+    zaura_toplevel_release(toplevel);
+  else
+    zaura_toplevel_destroy(toplevel);
+}
+
+void delete_zaura_popup(zaura_popup* popup) {
+  if (wl::get_version_of_object(popup) >= ZAURA_POPUP_RELEASE_SINCE_VERSION)
+    zaura_popup_release(popup);
+  else
+    zaura_popup_destroy(popup);
+}
+
 }  // namespace
 
 bool CanBind(const std::string& interface,
@@ -178,11 +214,13 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_positioner)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_surface)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_wm_base)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zaura_output)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zaura_shell)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zaura_surface)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zaura_toplevel)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS(zaura_popup)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_shell, delete_zaura_shell)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_surface,
+                                             delete_zaura_surface)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_output, delete_zaura_output)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_toplevel,
+                                             delete_zaura_toplevel)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_popup, delete_zaura_popup)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_cursor_shapes_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_management_output_v1)
