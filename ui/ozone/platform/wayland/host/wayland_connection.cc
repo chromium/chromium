@@ -212,7 +212,7 @@ bool WaylandConnection::Initialize() {
 
   display_.reset(wl_display_connect(nullptr));
   if (!display_) {
-    LOG(ERROR) << "Failed to connect to Wayland display";
+    PLOG(ERROR) << "Failed to connect to Wayland display";
     return false;
   }
 
