@@ -128,6 +128,7 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/tab/TrustedCdn.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsStateBridge.java",
+    "java/src/org/chromium/chrome/browser/tab/state/CriticalPersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedDataStorage.java",
   ]
 }

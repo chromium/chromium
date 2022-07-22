@@ -16,6 +16,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.DoNotClassMerge;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
@@ -798,5 +799,10 @@ public class CriticalPersistedTabData extends PersistedTabData {
     protected static PersistedTabDataMapper<SerializedCriticalPersistedTabData>
     getMapperForTesting() {
         return sMapper;
+    }
+
+    @CalledByNative
+    public static @TabUserAgent int getUserAgent(Tab tab) {
+        return CriticalPersistedTabData.from(tab).getUserAgent();
     }
 }
