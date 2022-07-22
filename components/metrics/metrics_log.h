@@ -283,7 +283,24 @@ class MetricsLog {
 
   // The NetworkTimeTracker used to provide higher-quality wall clock times than
   // |clock_| (when available). Can be overridden for tests.
-  raw_ptr<const network_time::NetworkTimeTracker> network_clock_;
+  //
+  // TODO(crbug.com/1298696): browser_tests breaks with MTECheckedPtr
+  // enabled. Triage.
+  //
+  // Personal notes from kdlee:
+  //
+  // Specifically, MetricsServiceUserDemographicsBrowserTest.
+  // * AddSyncedUserBirthYearAndGenderToProtoData/0
+  // * AddSyncedUserBirthYearAndGenderToProtoData/1
+  // which evokes crbug.com/1102747 a little bit. Interestingly, this fails for
+  // me consistently when I build and run browser_tests locally, *even without
+  // MTECheckedPtr enabled.* But whatever bots are running this continuously
+  // don't see a problem.
+  //
+  // The crash happens when unwrapping this for `RecordCurrentTime()` called
+  // from `MetricsLog::CloseLog()`.
+  raw_ptr<const network_time::NetworkTimeTracker, DegradeToNoOpWhenMTE>
+      network_clock_;
 };
 
 }  // namespace metrics
