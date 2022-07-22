@@ -105,6 +105,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sOptimizationGuidePushNotifications);
                 add(ChromeFeatureList.sPaintPreviewDemo);
                 add(ChromeFeatureList.sPaintPreviewShowOnStartup);
+                add(ChromeFeatureList.sQueryTiles);
                 add(ChromeFeatureList.sReadLater);
                 add(ChromeFeatureList.sStartSurfaceAndroid);
                 add(ChromeFeatureList.sStartSurfaceRefactor);

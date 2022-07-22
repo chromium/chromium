@@ -47,9 +47,7 @@ bool IsQueryTilesEnabled() {
               query_tiles::features::kQueryTilesDisableCountryOverride) &&
           query_tiles::features::IsQueryTilesEnabledForCountry(
               GetCountryCode())) ||
-         (base::FeatureList::IsEnabled(query_tiles::features::kQueryTiles) &&
-          base::FeatureList::IsEnabled(
-              query_tiles::features::kQueryTilesInNTP));
+         base::FeatureList::IsEnabled(query_tiles::features::kQueryTiles);
 }
 
 #if BUILDFLAG(IS_ANDROID)

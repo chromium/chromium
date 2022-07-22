@@ -85,6 +85,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false)
                     .put(ChromeFeatureList.PAINT_PREVIEW_DEMO, false)
                     .put(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP, false)
+                    .put(ChromeFeatureList.QUERY_TILES, false)
                     .put(ChromeFeatureList.PREFETCH_NOTIFICATION_SCHEDULING_INTEGRATION, false)
                     .put(ChromeFeatureList.READ_LATER, false)
                     .put(ChromeFeatureList.START_SURFACE_ANDROID, false)

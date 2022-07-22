@@ -31,6 +31,7 @@ import java.lang.annotation.RetentionPolicy;
 @JNINamespace("query_tiles")
 public class QueryTileUtils {
     private static Boolean sShowQueryTilesOnNTP;
+    private static Boolean sShowQueryTilesOnStartSurface;
     private static final String BEHAVIOURAL_TARGETING_KEY = "behavioural_targeting";
     private static final String NUM_DAYS_KEEP_SHOWING_QUERY_TILES_KEY =
             "num_days_keep_showing_query_tiles";
@@ -94,6 +95,19 @@ public class QueryTileUtils {
                 || QueryTileUtilsJni.get().isQueryTilesEnabled();
         sShowQueryTilesOnNTP = queryTileEnabled && shouldShowQueryTiles();
         return sShowQueryTilesOnNTP;
+    }
+
+    /**
+     * Whether query tiles is enabled and should be shown on start surface.
+     * @return Whether the query tile feature is enabled on start surface.
+     */
+    public static boolean isQueryTilesEnabledOnStartSurface() {
+        // Cache the result so it will not change during the same browser session.
+        if (sShowQueryTilesOnStartSurface != null) return sShowQueryTilesOnStartSurface;
+        boolean queryTileEnabled = ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES)
+                || QueryTileUtilsJni.get().isQueryTilesEnabled();
+        sShowQueryTilesOnStartSurface = queryTileEnabled && shouldShowQueryTiles();
+        return sShowQueryTilesOnStartSurface;
     }
 
     /**

@@ -30,7 +30,9 @@ import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.profiles.OriginalProfileSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection;
+import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
@@ -161,14 +163,18 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         }
 
         if (hasQueryTiles) {
-            mQueryTileProfileSupplier = new OriginalProfileSupplier();
-            mQueryTileProfileSupplier.onAvailable(this::initializeQueryTileSection);
+            if (ProfileManager.isInitialized()) {
+                initializeQueryTileSection(Profile.getLastUsedRegularProfile());
+            } else {
+                mQueryTileProfileSupplier = new OriginalProfileSupplier();
+                mQueryTileProfileSupplier.onAvailable(this::initializeQueryTileSection);
+            }
         }
     }
 
     private void initializeQueryTileSection(Profile profile) {
         assert profile != null;
-
+        if (!QueryTileUtils.isQueryTilesEnabledOnStartSurface()) return;
         mQueryTileSection =
                 new QueryTileSection(mView.findViewById(R.id.query_tiles_layout), profile,
                         query -> mMediator.performSearchQuery(query.queryText, query.searchParams));

@@ -525,8 +525,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             setMVTilesVisibility(!mIsIncognito);
             setTabCarouselVisibility(hasNormalTab && !mIsIncognito);
             setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
-            // TODO(qinmin): show query tiles when flag is enabled.
-            setQueryTilesVisibility(false);
+            setQueryTilesVisibility(!mIsIncognito);
             setFakeBoxVisibility(!mIsIncognito);
             setSecondaryTasksSurfaceVisibility(mIsIncognito, /* skipUpdateController = */ false);
             setTopToolbarPlaceholderHeight(getPixelSize(R.dimen.control_container_height)

@@ -34,6 +34,8 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.ScrollListener;
 import org.chromium.chrome.browser.feed.ScrollableContainerDelegate;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -274,7 +276,8 @@ public class StartSurfaceCoordinator implements StartSurface {
                 || !mIsStartSurfaceEnabled;
         boolean excludeQueryTiles =
                 StartSurfaceConfiguration.START_SURFACE_EXCLUDE_QUERY_TILES.getValue()
-                || !mIsStartSurfaceEnabled;
+                || !mIsStartSurfaceEnabled
+                || !CachedFeatureFlags.isEnabled(ChromeFeatureList.QUERY_TILES);
         if (!mIsStartSurfaceEnabled) {
             // Create Tab switcher directly to save one layer in the view hierarchy.
             mTabSwitcher = TabManagementModuleProvider.getDelegate().createGridTabSwitcher(activity,
