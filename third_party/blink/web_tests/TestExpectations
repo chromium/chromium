@@ -3406,6 +3406,7 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-001.https.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-images/gradient/gradient-eval-004.html [ Failure ]
 crbug.com/626703 [ Win11 ] virtual/conversions-debug-mode/wpt_internal/attribution-reporting/trigger-data-sanitization.sub.https.html?source-type=navigation [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/cssom/caretPositionFromPoint-with-transformation.html [ Timeout ]
@@ -7145,5 +7146,5 @@ crbug.com/1345745 virtual/async-script-scheduling-first-paint-or-finished-parsin
 
 # Sheriff 2022-07-21
 crbug.com/1346043 crbug.com/626703 [ Win10.20h2 ] external/wpt/credential-management/fedcm-network-requests.sub.https.html [ Skip ]
-crbug.com/1346158 crbug.com/1346158 external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-window.html [ Pass Failure ]
-crbug.com/1310202 [ Mac11 ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Pass Failure ]
+crbug.com/1346158 crbug.com/1346158 external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-window.html [ Failure Pass ]
+crbug.com/1310202 [ Mac11 ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass ]

@@ -816,7 +816,28 @@
          {}
         ]
        ]
-      }
+      },
+      "table-row-end-border-1-crash.html": [
+       "3947dbdadaa1b8a5c836cc82ac0fb3508eeb45e1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "table-row-end-border-2-crash.html": [
+       "e5c37cbdcf6d00c5ece82bde1e66f3a1134d987a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "table-row-end-padding-crash.html": [
+       "2fd7feb15dee1af0ca5ae077ad408b30eb138bb0",
+       [
+        null,
+        {}
+       ]
+      ]
      },
      "uncontained-oof-in-inline-after-break-000-crash.html": [
       "4d301e497749ddf0d2bfca3a5976a9877b45cff8",
@@ -316037,18 +316058,6 @@
         "c4449ca7c8a598e3712c8b24eb9e424775c19102",
         []
        ],
-       "evaluation-order-1-nothrow-worker-setup.js": [
-        "88fc22ba7f7e12881974010f3da28979bea31c65",
-        []
-       ],
-       "evaluation-order-1-worker-setup.js": [
-        "5ac90a2388a409726211987ec38100b25b529dfc",
-        []
-       ],
-       "evaluation-order-1-worker.js": [
-        "b583bf1ca627596b7e0cc1d20792625e18dda986",
-        []
-       ],
        "execution-timing": {
         "102.html": [
          "439023833f4b020004a7258de35739630c9a2b3d",
@@ -316327,6 +316336,58 @@
           "1a2b9404a7e3e245885445239bf78c3cda656bbc",
           []
          ],
+         "evaluation-order-1-nothrow-setup.js": [
+          "1b42e995937699bec3d693ac2efd06ae002e2314",
+          []
+         ],
+         "evaluation-order-1-nothrow.js": [
+          "e19d9b1b137bd5b128f4a5645b49d11a55338358",
+          []
+         ],
+         "evaluation-order-1-throw-setup.js": [
+          "651a494e5306edd1402be9382bef0642b62670a1",
+          []
+         ],
+         "evaluation-order-1-throw.js": [
+          "2451df1c15514f7e2c9115d2e9a5894b8d30ad70",
+          []
+         ],
+         "evaluation-order-2-setup.js": [
+          "46f7354538a5e711a267917a7090bf385c34ed75",
+          []
+         ],
+         "evaluation-order-2.1.mjs": [
+          "d6c2afa2f72283a68862723c7d1e8acabe9c2e93",
+          []
+         ],
+         "evaluation-order-2.2.mjs": [
+          "5c67c4f9a2558d0aaebd0d5016fcadb88af01a4e",
+          []
+         ],
+         "evaluation-order-3-setup.js": [
+          "edc046910e44198160bb0ae1f4d320ec8cf05ff4",
+          []
+         ],
+         "evaluation-order-3.1.mjs": [
+          "ef320632af75245a07c021dc228b56dd5128245c",
+          []
+         ],
+         "evaluation-order-3.2.mjs": [
+          "8ccb58120664d2bb8e5cd76d22c10e8b431166ad",
+          []
+         ],
+         "evaluation-order-4.1.mjs": [
+          "f3347c1d28eac466c6d6ec67c60b9f1261b08b38",
+          []
+         ],
+         "evaluation-order-4.2.mjs": [
+          "96a5cca3a63b46d8cff21ad4f64cb8c9cccf699d",
+          []
+         ],
+         "evaluation-order-setup.js": [
+          "d2e28935c437150b88f50b1c3b4a3834f66899b9",
+          []
+         ],
          "resolve-then-throw.js": [
           "a841eb780a050a82acb3cd496f4f7ad04a8f3a5b",
           []
@@ -316568,74 +316629,6 @@
         ],
         "errorhandling-wrongMimetype.js": [
          "373a5324455e1208bd97afd315775b5a488f0a8c",
-         []
-        ],
-        "evaluation-order-1-nothrow-worker-setup.mjs": [
-         "24cccd486be5d6ff0ff7580069104436c7a9b8c7",
-         []
-        ],
-        "evaluation-order-1-nothrow-worker.mjs": [
-         "4d3cf31a79c9f1f0c94250fc43168640b7498ab5",
-         []
-        ],
-        "evaluation-order-1-nothrow.mjs": [
-         "c1d35beb3e601c7196d8b46ed964f6fffd1aa2c1",
-         []
-        ],
-        "evaluation-order-1-worker-setup.mjs": [
-         "3971461d2ee4ba7d2f3c7561a925aa495b2eb49a",
-         []
-        ],
-        "evaluation-order-1-worker.mjs": [
-         "9be87c72227c3d3bab625f2b3a7883c62176969d",
-         []
-        ],
-        "evaluation-order-1.mjs": [
-         "7a43726635158e650d6b3977ff96ca27fcf8e184",
-         []
-        ],
-        "evaluation-order-2-import-worker-setup.mjs": [
-         "0cfdca65f08e96271d55618e07d52b2d2a8b4c27",
-         []
-        ],
-        "evaluation-order-2-import-worker.mjs": [
-         "3d9c9bb74973244909857aa73804bf1e18faf112",
-         []
-        ],
-        "evaluation-order-2.1.mjs": [
-         "d6c2afa2f72283a68862723c7d1e8acabe9c2e93",
-         []
-        ],
-        "evaluation-order-2.2.mjs": [
-         "5c67c4f9a2558d0aaebd0d5016fcadb88af01a4e",
-         []
-        ],
-        "evaluation-order-3-dynamic-worker-setup.mjs": [
-         "f202cff96a7926490a95717e76bb7461484a89e9",
-         []
-        ],
-        "evaluation-order-3-dynamic-worker.mjs": [
-         "79dabab10b39aa0fa970c64861760b9f9d2790f5",
-         []
-        ],
-        "evaluation-order-3.1.mjs": [
-         "ef320632af75245a07c021dc228b56dd5128245c",
-         []
-        ],
-        "evaluation-order-3.2.mjs": [
-         "8ccb58120664d2bb8e5cd76d22c10e8b431166ad",
-         []
-        ],
-        "evaluation-order-4.1.mjs": [
-         "f3347c1d28eac466c6d6ec67c60b9f1261b08b38",
-         []
-        ],
-        "evaluation-order-4.2.mjs": [
-         "96a5cca3a63b46d8cff21ad4f64cb8c9cccf699d",
-         []
-        ],
-        "evaluation-order-setup.mjs": [
-         "d3f22e9ee0f0bb00f1404c44469f8fd2c57b1bf3",
          []
         ],
         "execorder-dynamicordered2.js": [
@@ -403272,10 +403265,12 @@
       ]
      ],
      "modal-pseudo-class.html": [
-      "94b7b20e6276ca6912caa5b65e60053b935f5b8e",
+      "59dd2574b5912f8e72fd74e0f6e368f99b29562a",
       [
        null,
-       {}
+       {
+        "testdriver": true
+       }
       ]
      ],
      "nesting-parsing.html": [
@@ -476264,7 +476259,7 @@
         ]
        ],
        "files.html": [
-        "a4157a3d6baaa021bc7a403baa5842e5711db43a",
+        "43ebd71906a2f6685ad943cb8e4b1185c8360bc6",
         [
          null,
          {}
@@ -478217,7 +478212,7 @@
        ]
       ],
       "popup-hoverpopup-attribute.tentative.html": [
-       "51e026d85fd0bc009b3d533d6e2f3a3a193de3ce",
+       "3f1ce38c881574d45a2de8fa3b6cc1b32ebb8ff3",
        [
         null,
         {
@@ -478567,48 +478562,6 @@
        },
        "emptyish-script-elements.html": [
         "37f4a87c95ea21fdadee85575ad24e7fed9fba55",
-        [
-         null,
-         {}
-        ]
-       ],
-       "evaluation-order-1-nothrow-sharedworker.html": [
-        "9bfe5a1f312b69f5d11514a70ce43e42108677d8",
-        [
-         null,
-         {}
-        ]
-       ],
-       "evaluation-order-1-nothrow-worker.html": [
-        "4ddfb61d5078e9225d8aab3818a0842e9552d097",
-        [
-         null,
-         {}
-        ]
-       ],
-       "evaluation-order-1-nothrow.html": [
-        "b08372efd717aa55b6e5c3f9e79a56a1d39b2362",
-        [
-         null,
-         {}
-        ]
-       ],
-       "evaluation-order-1-sharedworker.html": [
-        "0ad18a8fba80ed1e15130b8ee5a52841ec672014",
-        [
-         null,
-         {}
-        ]
-       ],
-       "evaluation-order-1-worker.html": [
-        "7760e087c2dd229a9a74f69768d455930d540ae4",
-        [
-         null,
-         {}
-        ]
-       ],
-       "evaluation-order-1.html": [
-        "7bf7132081e32b955b38d4a115ebcd103cca6cea",
         [
          null,
          {}
@@ -480188,6 +480141,232 @@
            ]
           }
          ]
+        ],
+        "evaluation-order-1-nothrow-importScripts.any.js": [
+         "bacfc9fd04bdf3b9a66acd108982423f2246eb1f",
+         [
+          "html/semantics/scripting-1/the-script-element/microtasks/evaluation-order-1-nothrow-importScripts.any.sharedworker.html",
+          {
+           "script_metadata": [
+            [
+             "global",
+             "dedicatedworker,sharedworker"
+            ],
+            [
+             "script",
+             "./resources/evaluation-order-setup.js"
+            ]
+           ]
+          }
+         ],
+         [
+          "html/semantics/scripting-1/the-script-element/microtasks/evaluation-order-1-nothrow-importScripts.any.worker.html",
+          {
+           "script_metadata": [
+            [
+             "global",
+             "dedicatedworker,sharedworker"
+            ],
+            [
+             "script",
+             "./resources/evaluation-order-setup.js"
+            ]
+           ]
+          }
+         ]
+        ],
+        "evaluation-order-1-nothrow-static-import.any.js": [
+         "006eab7a7e06dfb17f963d864e3434a6bdbc7a26",
+         [
+          "html/semantics/scripting-1/the-script-element/microtasks/evaluation-order-1-nothrow-static-import.any.sharedworker-module.html",
+          {
+           "script_metadata": [
+            [
+             "global",
+             "dedicatedworker-module,sharedworker-module"
+            ],
+            [
+             "script",
+             "./resources/evaluation-order-setup.js"
+            ]
+           ]
+          }
+         ],
+         [
+          "html/semantics/scripting-1/the-script-element/microtasks/evaluation-order-1-nothrow-static-import.any.worker-module.html",
+          {
+           "script_metadata": [
+            [
+             "global",
+             "dedicatedworker-module,sharedworker-module"
+            ],
+            [
+             "script",
+             "./resources/evaluation-order-setup.js"
+            ]
+           ]
+          }
+         ]
+        ],
+        "evaluation-order-1-throw-importScripts.any.js": [
+         "0b42ea1e50178490a762649ce6219fcae4ef2453",
+         [
+          "html/semantics/scripting-1/the-script-element/microtasks/evaluation-order-1-throw-importScripts.any.sharedworker.html",
+          {
+           "script_metadata": [
+            [
+             "global",
+             "dedicatedworker,sharedworker"
+            ],
+            [
+             "script",
+             "./resources/evaluation-order-setup.js"
+            ]
+           ]
+          }
+         ],
+         [
+          "html/semantics/scripting-1/the-script-element/microtasks/evaluation-order-1-throw-importScripts.any.worker.html",
+          {
+           "script_metadata": [
+            [
+             "global",
+             "dedicatedworker,sharedworker"
+            ],
+            [
+             "script",
+             "./resources/evaluation-order-setup.js"
+            ]
+           ]
+          }
+         ]
+        ],
+        "evaluation-order-1-throw-static-import.any.js": [
+         "f6cc427c719be7514f4b1123af316dae1c3c9b17",
+         [
+          "html/semantics/scripting-1/the-script-element/microtasks/evaluation-order-1-throw-static-import.any.sharedworker-module.html",
+          {
+           "script_metadata": [
+            [
+             "global",
+             "dedicatedworker-module,sharedworker-module"
+            ],
+            [
+             "script",
+             "./resources/evaluation-order-setup.js"
+            ]
+           ]
+          }
+         ],
+         [
+          "html/semantics/scripting-1/the-script-element/microtasks/evaluation-order-1-throw-static-import.any.worker-module.html",
+          {
+           "script_metadata": [
+            [
+             "global",
+             "dedicatedworker-module,sharedworker-module"
+            ],
+            [
+             "script",
+             "./resources/evaluation-order-setup.js"
+            ]
+           ]
+          }
+         ]
+        ],
+        "evaluation-order-1.html": [
+         "4800ef81bc0287b67918ee01164d43c7e39525b1",
+         [
+          null,
+          {}
+         ]
+        ],
+        "evaluation-order-2.any.js": [
+         "bbc6474823553525310c663b08470f149a03a7fd",
+         [
+          "html/semantics/scripting-1/the-script-element/microtasks/evaluation-order-2.any.sharedworker-module.html",
+          {
+           "script_metadata": [
+            [
+             "global",
+             "dedicatedworker-module,sharedworker-module"
+            ],
+            [
+             "script",
+             "./resources/evaluation-order-setup.js"
+            ]
+           ]
+          }
+         ],
+         [
+          "html/semantics/scripting-1/the-script-element/microtasks/evaluation-order-2.any.worker-module.html",
+          {
+           "script_metadata": [
+            [
+             "global",
+             "dedicatedworker-module,sharedworker-module"
+            ],
+            [
+             "script",
+             "./resources/evaluation-order-setup.js"
+            ]
+           ]
+          }
+         ]
+        ],
+        "evaluation-order-2.html": [
+         "e55c2ecbed463604a2a4b35f231f3618b6d34311",
+         [
+          null,
+          {}
+         ]
+        ],
+        "evaluation-order-3.any.js": [
+         "19e94714e5ded1405107be9211926ad71659d506",
+         [
+          "html/semantics/scripting-1/the-script-element/microtasks/evaluation-order-3.any.sharedworker-module.html",
+          {
+           "script_metadata": [
+            [
+             "global",
+             "dedicatedworker-module,sharedworker-module"
+            ],
+            [
+             "script",
+             "./resources/evaluation-order-setup.js"
+            ]
+           ]
+          }
+         ],
+         [
+          "html/semantics/scripting-1/the-script-element/microtasks/evaluation-order-3.any.worker-module.html",
+          {
+           "script_metadata": [
+            [
+             "global",
+             "dedicatedworker-module,sharedworker-module"
+            ],
+            [
+             "script",
+             "./resources/evaluation-order-setup.js"
+            ]
+           ]
+          }
+         ]
+        ],
+        "evaluation-order-3.html": [
+         "ef351acd288a0a97e16ffe7db680fd683d7d29b6",
+         [
+          null,
+          {}
+         ]
+        ],
+        "evaluation-order-4.html": [
+         "f27678439df9853093077b5326c4b9eaab217c85",
+         [
+          null,
+          {}
+         ]
         ]
        },
        "module": {
@@ -480605,97 +480784,6 @@
         ],
         "evaluation-error-4.html": [
          "0b4b7d16622c452abcf4d70d40790c6bb437065c",
-         [
-          null,
-          {}
-         ]
-        ],
-        "evaluation-order-1-nothrow-sharedworker.html": [
-         "77ece9e49226b9d5daf6d0b2a189be1fbdab4013",
-         [
-          null,
-          {}
-         ]
-        ],
-        "evaluation-order-1-nothrow-worker.html": [
-         "1b7ea09ebdd8cb6c35aefefe6b22b6495db735c9",
-         [
-          null,
-          {}
-         ]
-        ],
-        "evaluation-order-1-nothrow.html": [
-         "080f5ac3bdaa971232a7d668e57079179d64cdc4",
-         [
-          null,
-          {}
-         ]
-        ],
-        "evaluation-order-1-sharedworker.html": [
-         "cc7f0302bfce5dbf59b9a546fb369148ea75ff4e",
-         [
-          null,
-          {}
-         ]
-        ],
-        "evaluation-order-1-worker.html": [
-         "0325bb2a30da1e22f0a6e12e0dda17bf12c89f6c",
-         [
-          null,
-          {}
-         ]
-        ],
-        "evaluation-order-1.html": [
-         "728aded3301298ee02e4e5d55496ca68e009e45f",
-         [
-          null,
-          {}
-         ]
-        ],
-        "evaluation-order-2-import-sharedworker.html": [
-         "064563900216d543b3134401577dda4821027ebc",
-         [
-          null,
-          {}
-         ]
-        ],
-        "evaluation-order-2-import-worker.html": [
-         "83070191af9ad4b693e6ca3a1f2eaea53d8bad67",
-         [
-          null,
-          {}
-         ]
-        ],
-        "evaluation-order-2-import.html": [
-         "1db333cb1cdccc827cbd6439ddb3a5f3ac6784a8",
-         [
-          null,
-          {}
-         ]
-        ],
-        "evaluation-order-3-dynamic-sharedworker.html": [
-         "cd1f5edfa22d425fb8873adeb9493f399b2eda0f",
-         [
-          null,
-          {}
-         ]
-        ],
-        "evaluation-order-3-dynamic-worker.html": [
-         "49731bd4822d2abef8fd263bca98f2a2f398933c",
-         [
-          null,
-          {}
-         ]
-        ],
-        "evaluation-order-3-dynamic.html": [
-         "6306c0b5cf204d91b8ef126da6180e7c32784b8f",
-         [
-          null,
-          {}
-         ]
-        ],
-        "evaluation-order-4-tla.html": [
-         "da07faf42d611586a295bfa3e694f7bc29d070c0",
          [
           null,
           {}
