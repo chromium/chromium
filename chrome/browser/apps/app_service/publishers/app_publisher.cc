@@ -42,7 +42,20 @@ AppPtr AppPublisher::MakeApp(AppType app_type,
 void AppPublisher::RegisterPublisher(AppType app_type) {
   proxy_->RegisterPublisher(app_type, this);
 }
+#endif
 
+void AppPublisher::LaunchAppWithIntent(
+    const std::string& app_id,
+    int32_t event_flags,
+    IntentPtr intent,
+    LaunchSource launch_source,
+    WindowInfoPtr window_info,
+    base::OnceCallback<void(bool)> callback) {
+  NOTIMPLEMENTED();
+  std::move(callback).Run(/*success=*/false);
+}
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void AppPublisher::Publish(AppPtr app) {
   if (!proxy_) {
     NOTREACHED();

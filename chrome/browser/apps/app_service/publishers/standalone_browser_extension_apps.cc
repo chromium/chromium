@@ -155,6 +155,39 @@ void StandaloneBrowserExtensionApps::Launch(const std::string& app_id,
   }
 }
 
+void StandaloneBrowserExtensionApps::LaunchAppWithIntent(
+    const std::string& app_id,
+    int32_t event_flags,
+    IntentPtr intent,
+    LaunchSource launch_source,
+    WindowInfoPtr window_info,
+    base::OnceCallback<void(bool)> callback) {
+  // It is possible that Lacros is briefly unavailable, for example if it shuts
+  // down for an update.
+  if (!controller_.is_bound()) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  auto launch_params = crosapi::mojom::LaunchParams::New();
+  launch_params->app_id = app_id;
+  launch_params->launch_source = launch_source;
+  launch_params->intent = apps_util::ConvertAppServiceToCrosapiIntent(
+      intent, ProfileManager::GetPrimaryUserProfile());
+  controller_->Launch(std::move(launch_params),
+                      /*callback=*/base::DoNothing());
+  std::move(callback).Run(/*success=*/true);
+
+  if (ShouldSaveToFullRestore(proxy(), app_id)) {
+    auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
+        app_id, apps::LaunchContainer::kLaunchContainerNone,
+        WindowOpenDisposition::UNKNOWN, display::kInvalidDisplayId,
+        std::vector<base::FilePath>{}, std::move(intent));
+    full_restore::SaveAppLaunchInfo(proxy()->profile()->GetPath(),
+                                    std::move(launch_info));
+  }
+}
+
 void StandaloneBrowserExtensionApps::LaunchAppWithParams(
     AppLaunchParams&& params,
     LaunchCallback callback) {

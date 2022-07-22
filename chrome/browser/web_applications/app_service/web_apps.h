@@ -101,7 +101,7 @@ class WebApps : public apps::PublisherBase,
                            apps::IntentPtr intent,
                            apps::LaunchSource launch_source,
                            apps::WindowInfoPtr window_info,
-                           base::OnceCallback<void(bool)> callback);
+                           base::OnceCallback<void(bool)> callback) override;
   void LaunchAppWithParams(apps::AppLaunchParams&& params,
                            apps::LaunchCallback callback) override;
   void LaunchShortcut(const std::string& app_id,

@@ -118,6 +118,25 @@ void CrostiniApps::Launch(const std::string& app_id,
       window_info ? window_info->display_id : display::kInvalidDisplayId);
 }
 
+void CrostiniApps::LaunchAppWithIntent(
+    const std::string& app_id,
+    int32_t event_flags,
+    IntentPtr intent,
+    LaunchSource launch_source,
+    WindowInfoPtr window_info,
+    base::OnceCallback<void(bool)> callback) {
+  crostini::LaunchCrostiniAppWithIntent(
+      profile_, app_id,
+      window_info ? window_info->display_id : display::kInvalidDisplayId,
+      std::move(intent), /*args=*/{},
+      base::BindOnce(
+          [](LaunchAppWithIntentCallback callback, bool success,
+             const std::string& failure_reason) {
+            std::move(callback).Run(success);
+          },
+          std::move(callback)));
+}
+
 void CrostiniApps::LaunchAppWithParams(AppLaunchParams&& params,
                                        LaunchCallback callback) {
   auto event_flags = apps::GetEventFlags(params.disposition,

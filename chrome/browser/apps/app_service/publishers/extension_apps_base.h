@@ -169,7 +169,7 @@ class ExtensionAppsBase : public apps::PublisherBase,
                            IntentPtr intent,
                            LaunchSource launch_source,
                            WindowInfoPtr window_info,
-                           base::OnceCallback<void(bool)> callback);
+                           base::OnceCallback<void(bool)> callback) override;
   void LaunchAppWithParams(AppLaunchParams&& params,
                            LaunchCallback callback) override;
 

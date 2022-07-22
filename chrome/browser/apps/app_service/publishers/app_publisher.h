@@ -85,6 +85,15 @@ class AppPublisher {
                       LaunchSource launch_source,
                       WindowInfoPtr window_info) = 0;
 
+  // Launches an app with `app_id` and Chrome OS generic `intent` irrespective
+  // of app platform. Returns whether the app was successfully launched.
+  virtual void LaunchAppWithIntent(const std::string& app_id,
+                                   int32_t event_flags,
+                                   IntentPtr intent,
+                                   LaunchSource launch_source,
+                                   WindowInfoPtr window_info,
+                                   base::OnceCallback<void(bool)> callback);
+
   // Launches an app with |params|.
   //
   // Publishers implementing this method should:
