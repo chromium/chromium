@@ -115,11 +115,21 @@ VisitRow MakeVisitRow(const sync_pb::HistorySpecifics& specifics,
   }
   row.transition = ui::PageTransitionFromInt(page_transition);
 
-  // The first visit in a chain stores the referring/opener visit (if any).
   if (redirect_index == 0) {
+    // The first visit in a chain stores the chain's referring/opener visit (if
+    // any).
     row.originator_referring_visit = specifics.originator_referring_visit_id();
     row.originator_opener_visit = specifics.originator_opener_visit_id();
+  } else {
+    // All later visits in the chain are implicitly referred to by the preceding
+    // visit.
+    // TODO(crbug.com/1335055): For visits coming from legacy devices (i.e.
+    // using the Sessions integration), originator_visit_id will be unset, so
+    // we're losing the redirect chain links here.
+    row.originator_referring_visit =
+        specifics.redirect_entries(redirect_index - 1).originator_visit_id();
   }
+
   // The last visit in a chain stores the visit duration (earlier visits, i.e.
   // redirects, are not considered to have a duration).
   if (redirect_index == specifics.redirect_entries_size() - 1) {
