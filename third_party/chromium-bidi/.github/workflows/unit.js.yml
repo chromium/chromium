@@ -21,6 +21,8 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
+      - name: Verify mapper size
+        run: du -sh src/.build/bidiMapper/mapper.js
       - name: Run unit tests
         run: npm run unit
 env:
