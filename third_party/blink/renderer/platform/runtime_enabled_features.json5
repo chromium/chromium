@@ -1169,10 +1169,6 @@
       }
     },
     {
-      name: "GravitySensor",
-      status: "stable",
-    },
-    {
       name: "GroupEffect",
       status: "test",
     },
