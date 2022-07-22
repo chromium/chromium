@@ -9,6 +9,7 @@ import("//tools/typescript/ts_definitions.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("./cr_elements/cr_elements.gni")
 
 generate_grd("build_grd") {
   grd_prefix = "webui_generated"
@@ -321,87 +322,25 @@ ts_library("library") {
   composite = true
   tsconfig_base = "tsconfig_base.json"
 
-  in_files = [
-    "cr_elements/cr_splitter/cr_splitter.ts",
-    "cr_elements/cr_tab_box/cr_tab_box.ts",
-    "cr_elements/cr_tab_box/cr_tab_box.html.ts",
-    "cr_elements/cr_tree/cr_tree.ts",
-    "cr_elements/cr_tree/cr_tree.html.ts",
-    "cr_elements/cr_tree/cr_tree_base.ts",
-    "cr_elements/cr_tree/cr_tree_item.ts",
-    "cr_elements/cr_tree/cr_tree_item.html.ts",
-    "js/assert_ts.ts",
-    "js/custom_element.ts",
-    "js/cr/ui/focus_grid.ts",
-    "js/cr/ui/drag_wrapper.ts",
-  ]
+  in_files = cr_elements_files + [
+               "js/assert_ts.ts",
+               "js/custom_element.ts",
+               "js/cr/ui/focus_grid.ts",
+               "js/cr/ui/drag_wrapper.ts",
+             ]
 
   if (include_polymer) {
     in_files += [
       "cr_components/localized_link/localized_link.html.ts",
       "cr_components/localized_link/localized_link.ts",
-      "cr_components/managed_footnote/managed_footnote.html.ts",
-      "cr_components/managed_footnote/managed_footnote.ts",
       "cr_components/managed_dialog/managed_dialog.html.ts",
       "cr_components/managed_dialog/managed_dialog.ts",
-      "cr_elements/cr_auto_img/cr_auto_img.ts",
-      "cr_elements/cr_grid/cr_grid.html.ts",
-      "cr_elements/cr_grid/cr_grid.ts",
-      "cr_elements/cr_a11y_announcer/cr_a11y_announcer.html.ts",
-      "cr_elements/cr_a11y_announcer/cr_a11y_announcer.ts",
-      "cr_elements/cr_action_menu/cr_action_menu.html.ts",
-      "cr_elements/cr_action_menu/cr_action_menu.ts",
-      "cr_elements/cr_container_shadow_mixin.ts",
-      "cr_elements/cr_drawer/cr_drawer.html.ts",
-      "cr_elements/cr_drawer/cr_drawer.ts",
-      "cr_elements/cr_link_row/cr_link_row.html.ts",
-      "cr_elements/cr_link_row/cr_link_row.ts",
-      "cr_elements/cr_menu_selector/cr_menu_selector.ts",
-      "cr_elements/cr_nav_menu_item_style.css.ts",
-      "cr_elements/cr_page_host_style.css.ts",
-      "cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector_grid.html.ts",
-      "cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector_grid.ts",
-      "cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.html.ts",
-      "cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.ts",
-      "cr_elements/cr_search_field/cr_search_field_mixin.ts",
-      "cr_elements/cr_search_field/cr_search_field.html.ts",
-      "cr_elements/cr_search_field/cr_search_field.ts",
-      "cr_elements/cr_slider/cr_slider.html.ts",
-      "cr_elements/cr_slider/cr_slider.ts",
-      "cr_elements/cr_tabs/cr_tabs.html.ts",
-      "cr_elements/cr_tabs/cr_tabs.ts",
-      "cr_elements/cr_toast/cr_toast_manager.html.ts",
-      "cr_elements/cr_toast/cr_toast_manager.ts",
-      "cr_elements/cr_toast/cr_toast.html.ts",
-      "cr_elements/cr_toast/cr_toast.ts",
-      "cr_elements/cr_toolbar/cr_toolbar_search_field.html.ts",
-      "cr_elements/cr_toolbar/cr_toolbar_search_field.ts",
-      "cr_elements/cr_toolbar/cr_toolbar_selection_overlay.html.ts",
-      "cr_elements/cr_toolbar/cr_toolbar_selection_overlay.ts",
-      "cr_elements/cr_toolbar/cr_toolbar.html.ts",
-      "cr_elements/cr_toolbar/cr_toolbar.ts",
-      "cr_elements/cr_view_manager/cr_view_manager.html.ts",
-      "cr_elements/cr_view_manager/cr_view_manager.ts",
-      "cr_elements/find_shortcut_mixin.ts",
-      "cr_elements/mouse_hoverable_mixin.ts",
-      "cr_elements/mwb_element_shared_style.css.ts",
-      "cr_elements/mwb_shared_icons.html.ts",
-      "cr_elements/mwb_shared_style.css.ts",
-      "cr_elements/mwb_shared_vars.css.ts",
-      "cr_elements/search_highlight_style.css.ts",
+      "cr_components/managed_footnote/managed_footnote.html.ts",
+      "cr_components/managed_footnote/managed_footnote.ts",
       "js/i18n_mixin.ts",
       "js/list_property_update_mixin.ts",
       "js/web_ui_listener_mixin.ts",
     ]
-
-    if (is_chromeos) {
-      # cr-searchable-drop-down is only used in smb and cups dialogs, both of
-      # which are chromeos only.
-      in_files += [
-        "cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.html.ts",
-        "cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.ts",
-      ]
-    }
   }
 
   definitions = [
