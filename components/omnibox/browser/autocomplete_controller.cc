@@ -437,8 +437,7 @@ AutocompleteController::AutocompleteController(
     providers_.push_back(voice_suggest_provider_.get());
   }
   if (provider_types & AutocompleteProvider::TYPE_HISTORY_FUZZY) {
-    providers_.push_back(new HistoryFuzzyProvider(
-        provider_client_.get(), history_quick_provider_, bookmark_provider_));
+    providers_.push_back(new HistoryFuzzyProvider(provider_client_.get()));
   }
   if (provider_types & AutocompleteProvider::TYPE_OPEN_TAB) {
     open_tab_provider_ = new OpenTabProvider(provider_client_.get());

@@ -729,8 +729,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.FuzzyMatchConversion.{SubProvider}" units="counts"
-    expires_after="M115">
+<histogram name="Omnibox.HistoryFuzzy.MatchConversion.{SubProvider}"
+    units="counts" expires_after="M115">
   <owner>orinj@chromium.org</owner>
   <owner>jdonnelly-team@google.com</owner>
   <summary>
@@ -752,6 +752,46 @@ chromium-metrics-reviews@google.com.
     <variant name="Bookmark" summary="Bookmark conversion count"/>
     <variant name="HistoryQuick" summary="HistoryQuick conversion count"/>
   </token>
+</histogram>
+
+<histogram name="Omnibox.HistoryFuzzy.Precision" enum="Boolean"
+    expires_after="M115">
+  <owner>orinj@chromium.org</owner>
+  <owner>jdonnelly-team@google.com</owner>
+  <summary>
+    When a fuzzy match was offered at the moment the user opened a match, this
+    measures whether a fuzzy suggestion was taken. This is only recorded when at
+    least one fuzzy match is in the result set, so it is useful to measure total
+    presence and engagement with fuzzy URL suggestions. It can be interpreted as
+    a click through rate for fuzzy match presentation as a whole: given that any
+    fuzzy matches were presented at the moment a match was selected by the user,
+    how often was the selected match a fuzzy URL suggestion?
+
+    Context: Fuzzy match conversion produces modified matches from other
+    synchronous autocomplete providers (sub-providers) using alternative inputs:
+    what the user might have typed, the automatic corrections.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.HistoryFuzzy.SearchDuration" units="ms"
+    expires_after="M115">
+  <owner>orinj@chromium.org</owner>
+  <owner>jdonnelly-team@google.com</owner>
+  <summary>
+    The time taken by HistoryFuzzyProvider to search for fuzzy input
+    corrections. This is measured if and only if a search is performed, so many
+    input states will not result in recording this metric (for example if the
+    input contains a space, that's taken as a hint that the user may be
+    searching instead of typing a domain name so no fuzzy search is performed).
+    It is useful to distinguish portions of the total time taken by the
+    provider, particularly as separate from sub-provider match gathering, so
+    that if there are any pathological cases in the search algorithm then they
+    will be apparent here.
+
+    Context: Fuzzy match conversion produces modified matches from other
+    synchronous autocomplete providers (sub-providers) using alternative inputs:
+    what the user might have typed, the automatic corrections.
+  </summary>
 </histogram>
 
 <histogram name="Omnibox.HoverTime" units="ms" expires_after="2021-10-31">

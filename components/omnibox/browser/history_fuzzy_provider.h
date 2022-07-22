@@ -18,9 +18,8 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/bookmark_provider.h"
+#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/history_provider.h"
-#include "components/omnibox/browser/history_quick_provider.h"
 
 // This namespace encapsulates the implementation details of fuzzy matching and
 // correction. It is used by the public (non-namespaced) HistoryFuzzyProvider
@@ -181,9 +180,11 @@ struct Node {
 class HistoryFuzzyProvider : public HistoryProvider,
                              public history::HistoryServiceObserver {
  public:
-  explicit HistoryFuzzyProvider(AutocompleteProviderClient* client,
-                                HistoryQuickProvider* history_quick_provider,
-                                BookmarkProvider* bookmark_provider);
+  // Records fuzzy matching related metrics when user opens a match.
+  static void RecordOpenMatchMetrics(const AutocompleteResult& result,
+                                     const AutocompleteMatch& match_opened);
+
+  explicit HistoryFuzzyProvider(AutocompleteProviderClient* client);
   HistoryFuzzyProvider(const HistoryFuzzyProvider&) = delete;
   HistoryFuzzyProvider& operator=(const HistoryFuzzyProvider&) = delete;
 
@@ -224,10 +225,6 @@ class HistoryFuzzyProvider : public HistoryProvider,
   void RecordMatchConversion(const char* name, int count);
 
   AutocompleteInput autocomplete_input_;
-
-  // Non-owning pointers to existing sub-providers; may be null.
-  raw_ptr<HistoryQuickProvider> history_quick_provider_;
-  raw_ptr<BookmarkProvider> bookmark_provider_;
 
   // This is the trie facilitating search for input alternatives.
   fuzzy::Node root_;

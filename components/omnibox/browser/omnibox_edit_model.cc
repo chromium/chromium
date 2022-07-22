@@ -33,6 +33,7 @@
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/history_fuzzy_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/location_bar_model.h"
@@ -828,6 +829,7 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   focus_resulted_in_navigation_ = true;
 
   RecordActionShownForAllActions(result(), OmniboxPopupSelection::kNoMatch);
+  HistoryFuzzyProvider::RecordOpenMatchMetrics(result(), match);
 
   std::u16string input_text(pasted_text);
   if (input_text.empty())

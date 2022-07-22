@@ -16,9 +16,12 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "components/history/core/browser/history_database.h"
@@ -28,7 +31,8 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-#include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/bookmark_provider.h"
+#include "components/omnibox/browser/history_quick_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/url_formatter/elide_url.h"
@@ -40,9 +44,16 @@ namespace {
 // Reminder in case other sub-providers or metrics are added: update
 // the `Omnibox.FuzzyMatchConversion` entry in histograms.xml.
 const char kMetricMatchConversionHistoryQuick[] =
-    "Omnibox.FuzzyMatchConversion.HistoryQuick";
+    "Omnibox.HistoryFuzzy.MatchConversion.HistoryQuick";
 const char kMetricMatchConversionBookmark[] =
-    "Omnibox.FuzzyMatchConversion.Bookmark";
+    "Omnibox.HistoryFuzzy.MatchConversion.Bookmark";
+
+// Histogram name for time spent on the fuzzy search portion of provider time.
+const char kMetricSearchDuration[] = "Omnibox.HistoryFuzzy.SearchDuration";
+
+// Histogram name for whether a presented fuzzy match was the one taken by the
+// user at the moment a match was opened.
+const char kMetricPrecision[] = "Omnibox.HistoryFuzzy.Precision";
 
 // This cap ensures the search trie will not grow without bound. Up to half
 // the total capacity may be filled at startup from loaded significant URLs.
@@ -493,13 +504,23 @@ class LoadSignificantUrls : public history::HistoryDBTask {
 
 }  // namespace fuzzy
 
-HistoryFuzzyProvider::HistoryFuzzyProvider(
-    AutocompleteProviderClient* client,
-    HistoryQuickProvider* history_quick_provider,
-    BookmarkProvider* bookmark_provider)
-    : HistoryProvider(AutocompleteProvider::TYPE_HISTORY_FUZZY, client),
-      history_quick_provider_(history_quick_provider),
-      bookmark_provider_(bookmark_provider) {
+// static
+void HistoryFuzzyProvider::RecordOpenMatchMetrics(
+    const AutocompleteResult& result,
+    const AutocompleteMatch& match_opened) {
+  if (std::any_of(result.begin(), result.end(),
+                  [](const AutocompleteMatch& match) {
+                    return match.provider->type() ==
+                           AutocompleteProvider::TYPE_HISTORY_FUZZY;
+                  })) {
+    const bool opened_fuzzy_match = match_opened.provider->type() ==
+                                    AutocompleteProvider::TYPE_HISTORY_FUZZY;
+    UMA_HISTOGRAM_BOOLEAN(kMetricPrecision, opened_fuzzy_match);
+  }
+}
+
+HistoryFuzzyProvider::HistoryFuzzyProvider(AutocompleteProviderClient* client)
+    : HistoryProvider(AutocompleteProvider::TYPE_HISTORY_FUZZY, client) {
   history_service_observation_.Observe(client->GetHistoryService());
   client->GetHistoryService()->ScheduleDBTask(
       FROM_HERE,
@@ -520,11 +541,6 @@ void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
   }
 
   if (!urls_loaded_event_.IsSignaled()) {
-    return;
-  }
-
-  // When there are no sub-providers, bypass fuzzy search completely.
-  if (history_quick_provider_ == nullptr && bookmark_provider_ == nullptr) {
     return;
   }
 
@@ -569,10 +585,18 @@ void HistoryFuzzyProvider::DoAutocomplete() {
   }
   std::vector<fuzzy::Correction> corrections;
   DVLOG(1) << "FindCorrections: <" << text << "> ---> ?{";
+  const base::TimeTicks time_start = base::TimeTicks::Now();
   if (root_.FindCorrections(text, kToleranceSchedule, corrections)) {
     DVLOG(1) << "Trie contains input; no fuzzy results needed";
   }
+  const base::TimeTicks time_end = base::TimeTicks::Now();
+  UMA_HISTOGRAM_TIMES(kMetricSearchDuration, time_end - time_start);
   if (!corrections.empty()) {
+    // Use of `scoped_refptr` is required here because destructor is private.
+    scoped_refptr<HistoryQuickProvider> history_quick_provider =
+        new HistoryQuickProvider(client());
+    scoped_refptr<BookmarkProvider> bookmark_provider =
+        new BookmarkProvider(client());
     int count_history_quick = 0;
     int count_bookmark = 0;
     for (const auto& correction : corrections) {
@@ -590,17 +614,14 @@ void HistoryFuzzyProvider::DoAutocomplete() {
           autocomplete_input_.current_page_classification(),
           client()->GetSchemeClassifier());
 
-      if (history_quick_provider_) {
-        history_quick_provider_->Start(corrected_input, false);
-        DCHECK(history_quick_provider_->done());
-        count_history_quick +=
-            AddConvertedMatches(history_quick_provider_->matches());
-      }
-      if (bookmark_provider_) {
-        bookmark_provider_->Start(corrected_input, false);
-        DCHECK(bookmark_provider_->done());
-        count_bookmark += AddConvertedMatches(bookmark_provider_->matches());
-      }
+      history_quick_provider->Start(corrected_input, false);
+      DCHECK(history_quick_provider->done());
+      bookmark_provider->Start(corrected_input, false);
+      DCHECK(bookmark_provider->done());
+
+      count_history_quick +=
+          AddConvertedMatches(history_quick_provider->matches());
+      count_bookmark += AddConvertedMatches(bookmark_provider->matches());
     }
     if (matches_.size() > provider_max_matches_) {
       // When too many matches are generated, take only the most relevant
@@ -609,11 +630,10 @@ void HistoryFuzzyProvider::DoAutocomplete() {
                         matches_.begin() + provider_max_matches_,
                         matches_.end(), AutocompleteMatch::MoreRelevant);
       for (size_t i = provider_max_matches_; i < matches_.size(); i++) {
-        DCHECK(matches_[i].provider != nullptr &&
-                   matches_[i].provider == history_quick_provider_ ||
-               matches_[i].provider == bookmark_provider_)
+        DCHECK(matches_[i].provider == history_quick_provider ||
+               matches_[i].provider == bookmark_provider)
             << matches_[i].provider->GetName();
-        if (matches_[i].provider == history_quick_provider_) {
+        if (matches_[i].provider == history_quick_provider) {
           count_history_quick--;
         } else {
           count_bookmark--;
