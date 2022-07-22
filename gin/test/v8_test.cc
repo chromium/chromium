@@ -9,6 +9,7 @@
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-initialization.h"
 
 using v8::Context;
 using v8::Local;
@@ -22,6 +23,11 @@ V8Test::V8Test()
 V8Test::~V8Test() = default;
 
 void V8Test::SetUp() {
+  // Multiple gin unittests are by default run in the same process. Since some
+  // tests set non-default V8 flags, we thus cannot freeze flags after V8
+  // initialization.
+  v8::V8::SetFlagsFromString("--no-freeze-flags-after-init");
+
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
   gin::V8Initializer::LoadV8Snapshot();
 #endif
