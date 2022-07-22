@@ -1062,6 +1062,10 @@ pub struct CompInfo {
     /// size_t)
     has_non_type_template_params: bool,
 
+    /// Whether this type has a bit field member whose width depends on a
+    /// template parameter. We generate an opaque type in this case.
+    has_template_param_dependent_bit_field_width: bool,
+
     /// Whether we saw `__attribute__((packed))` on or within this type.
     packed_attr: bool,
 
@@ -1096,6 +1100,7 @@ impl CompInfo {
             has_destructor: false,
             has_nonempty_base: false,
             has_non_type_template_params: false,
+            has_template_param_dependent_bit_field_width: false,
             packed_attr: false,
             found_unknown_attr: false,
             is_forward_declaration: false,
@@ -1341,7 +1346,26 @@ impl CompInfo {
                         }
                     }
 
-                    let bit_width = cur.bit_width();
+                    let bit_width = if cur.is_bit_field() {
+                        // Check if the bit width expression depends on any
+                        // template parameters.
+                        if Self::is_field_bit_width_template_dependent(&cur) {
+                            // If so, make type opaque since we can't generate
+                            // bindings for it. See
+                            // https://github.com/rust-lang/rust-bindgen/issues/2239
+                            ci.has_template_param_dependent_bit_field_width =
+                                true;
+                            return CXChildVisit_Break;
+                        }
+
+                        Some(
+                            cur.bit_width()
+                                .expect("could not evaluate bit width?"),
+                        )
+                    } else {
+                        None
+                    };
+
                     let field_type = Item::from_ty_or_ref(
                         cur.cur_type(),
                         cur,
@@ -1718,6 +1742,71 @@ impl CompInfo {
 
         true
     }
+
+    // Check whether a bit field's bit width expression contains any references
+    // to template parameters. If so, we don't evaluate its width.
+    fn is_field_bit_width_template_dependent(cursor: &clang::Cursor) -> bool {
+        use clang_sys::*;
+
+        if !cursor.is_bit_field() {
+            return false;
+        }
+
+        fn visitor(
+            found_template_parameter: &mut bool,
+            cur: clang::Cursor,
+        ) -> CXChildVisitResult {
+            // The next expression or literal is the bit width. Search it for
+            // references to template parameters.
+            if let Some(referenced) = cur.referenced() {
+                match referenced.kind() {
+                    // If we found a template argument, it is dependent.
+                    CXCursor_TemplateTemplateParameter |
+                    CXCursor_TemplateTypeParameter |
+                    CXCursor_NonTypeTemplateParameter => {
+                        *found_template_parameter = true;
+                        return CXChildVisit_Break;
+                    }
+                    // If we found a type alias or typedef, follow it and check
+                    // there.
+                    CXCursor_TypedefDecl |
+                    CXCursor_TypeAliasDecl |
+                    CXCursor_TypeAliasTemplateDecl => {
+                        referenced.visit(|cur| {
+                            visitor(found_template_parameter, cur)
+                        });
+                        if *found_template_parameter {
+                            return CXChildVisit_Break;
+                        }
+                    }
+                    _ => (),
+                }
+            }
+
+            CXChildVisit_Recurse
+        }
+
+        let mut found_template_parameter = false;
+
+        cursor.visit(|cur| {
+            // The first child may or may not be a TypeRef, depending on whether
+            // the field's type is builtin or not. Skip this.
+            if cur.kind() == CXCursor_TypeRef {
+                return CXChildVisit_Continue;
+            }
+
+            // The next expression or literal is the bit width. Search for
+            // references to template parameters.
+            cur.visit(|next_cur| {
+                visitor(&mut found_template_parameter, next_cur)
+            });
+
+            // There should be no more children.
+            CXChildVisit_Break
+        });
+
+        found_template_parameter
+    }
 }
 
 impl DotAttributes for CompInfo {
@@ -1777,7 +1866,9 @@ impl IsOpaque for CompInfo {
     type Extra = Option<Layout>;
 
     fn is_opaque(&self, ctx: &BindgenContext, layout: &Option<Layout>) -> bool {
-        if self.has_non_type_template_params {
+        if self.has_non_type_template_params ||
+            self.has_template_param_dependent_bit_field_width
+        {
             return true;
         }
 

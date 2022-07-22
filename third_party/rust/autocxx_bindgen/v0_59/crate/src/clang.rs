@@ -485,8 +485,13 @@ impl Cursor {
             !self.is_defaulted_function()
     }
 
+    /// Is the referent a bit field declaration?
+    pub fn is_bit_field(&self) -> bool {
+        unsafe { clang_Cursor_isBitField(self.x) != 0 }
+    }
+
     /// Get the width of this cursor's referent bit field, or `None` if the
-    /// referent is not a bit field.
+    /// referent is not a bit field or if the width could not be evaluated.
     pub fn bit_width(&self) -> Option<u32> {
         unsafe {
             let w = clang_getFieldDeclBitWidth(self.x);
@@ -1804,9 +1809,15 @@ pub fn ast_dump(c: &Cursor, depth: isize) -> CXChildVisitResult {
                 format!(" {}number-of-template-args = {}", prefix, num),
             );
         }
-        if let Some(width) = c.bit_width() {
-            print_indent(depth, format!(" {}bit-width = {}", prefix, width));
-        }
+
+        // It is not safe to check the bit width without ensuring it doesn't
+        // depend on some template parameter. See
+        // https://github.com/rust-lang/rust-bindgen/issues/2239
+
+        // if let Some(width) = c.bit_width() {
+        //     print_indent(depth, format!(" {}bit-width = {}", prefix, width));
+        // }
+
         if let Some(ty) = c.enum_type() {
             print_indent(
                 depth,
