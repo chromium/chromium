@@ -36,7 +36,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.components.messages.MessageQueueManager.MessageState;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
-import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -76,9 +76,15 @@ public class MessageQueueManagerTest {
 
     private static class ActiveMockWebContents extends MockWebContents {
         @Override
-        public RenderFrameHost getFocusedFrame() {
-            RenderFrameHost host = Mockito.mock(RenderFrameHost.class);
-            return host;
+        public @Visibility int getVisibility() {
+            return Visibility.VISIBLE;
+        }
+    }
+
+    private static class InactiveMockWebContents extends MockWebContents {
+        @Override
+        public @Visibility int getVisibility() {
+            return Visibility.HIDDEN;
         }
     }
 
@@ -348,8 +354,8 @@ public class MessageQueueManagerTest {
         MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
         MessageQueueManager queueManager = new MessageQueueManager();
         queueManager.setDelegate(delegate);
-        final ScopeKey inactiveScopeKey = new ScopeKey(SCOPE_TYPE, new MockWebContents());
-        final ScopeKey inactiveScopeKey2 = new ScopeKey(SCOPE_TYPE, new MockWebContents());
+        final ScopeKey inactiveScopeKey = new ScopeKey(SCOPE_TYPE, new InactiveMockWebContents());
+        final ScopeKey inactiveScopeKey2 = new ScopeKey(SCOPE_TYPE, new InactiveMockWebContents());
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         queueManager.enqueueMessage(m1, m1, inactiveScopeKey2, false);
 

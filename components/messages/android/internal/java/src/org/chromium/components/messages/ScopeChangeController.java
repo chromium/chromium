@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ActivityState;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -81,7 +82,8 @@ class ScopeChangeController {
             mDelegate = delegate;
             mScopeKey = scopeKey;
             WebContents webContents = scopeKey.webContents;
-            int changeType = webContents != null && webContents.getFocusedFrame() != null
+            int changeType =
+                    webContents != null && webContents.getVisibility() == Visibility.VISIBLE
                     ? ChangeType.ACTIVE
                     : ChangeType.INACTIVE;
             mDelegate.onScopeChange(
@@ -89,13 +91,13 @@ class ScopeChangeController {
         }
 
         @Override
-        public void onWebContentsFocused() {
+        public void wasShown() {
             mDelegate.onScopeChange(
                     new MessageScopeChange(mScopeKey.scopeType, mScopeKey, ChangeType.ACTIVE));
         }
 
         @Override
-        public void onWebContentsLostFocus() {
+        public void wasHidden() {
             mDelegate.onScopeChange(
                     new MessageScopeChange(mScopeKey.scopeType, mScopeKey, ChangeType.INACTIVE));
         }
@@ -120,7 +122,6 @@ class ScopeChangeController {
                 }
                 mLastVisitedUrl = navigationHandle.getUrl();
             }
-
             destroy();
         }
 

@@ -68,7 +68,7 @@ public class ScopeChangeControllerTest {
         Assert.assertEquals("Scope type should be inactive when page is hidden",
                 ChangeType.INACTIVE, captor.getValue().changeType);
 
-        observer.onWebContentsFocused();
+        observer.wasShown();
         expectedOnScopeChangeCalls++;
 
         verify(delegate,
@@ -78,7 +78,7 @@ public class ScopeChangeControllerTest {
         Assert.assertEquals("Scope type should be active when page is shown", ChangeType.ACTIVE,
                 captor.getValue().changeType);
 
-        observer.onWebContentsLostFocus();
+        observer.wasHidden();
         expectedOnScopeChangeCalls++;
         verify(delegate,
                 times(expectedOnScopeChangeCalls)
@@ -202,7 +202,7 @@ public class ScopeChangeControllerTest {
         Assert.assertEquals("Scope type should be inactive when page is hidden",
                 ChangeType.INACTIVE, captor.getValue().changeType);
 
-        observer.onWebContentsFocused();
+        observer.wasShown();
         expectedOnScopeChangeCalls++;
 
         verify(delegate,
@@ -212,7 +212,7 @@ public class ScopeChangeControllerTest {
         Assert.assertEquals("Scope type should be active when page is shown", ChangeType.ACTIVE,
                 captor.getValue().changeType);
 
-        observer.onWebContentsLostFocus();
+        observer.wasHidden();
         expectedOnScopeChangeCalls++;
         verify(delegate,
                 times(expectedOnScopeChangeCalls)
