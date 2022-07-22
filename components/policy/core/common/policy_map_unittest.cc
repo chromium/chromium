@@ -1276,6 +1276,7 @@ TEST_F(PolicyMapTest, Affiliation) {
   EXPECT_TRUE(policies.IsUserAffiliated());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 class PolicyMapMergeTest
     : public PolicyMapTestBase,
       public testing::TestWithParam<
@@ -1674,7 +1675,6 @@ INSTANTIATE_TEST_SUITE_P(PolicyMapMergeTestInstance,
                                           testing::Values(false, true),
                                           testing::Values(false, true)));
 
-#if !BUILDFLAG(IS_CHROMEOS)
 class PolicyMapPriorityTest
     : public testing::TestWithParam<
           std::tuple</*cloud_policy_overrides_platform_policy=*/bool,

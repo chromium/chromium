@@ -87,8 +87,6 @@ source_set("web_applications") {
     "policy/web_app_policy_constants.h",
     "policy/web_app_policy_manager.cc",
     "policy/web_app_policy_manager.h",
-    "policy/web_app_settings_policy_handler.cc",
-    "policy/web_app_settings_policy_handler.h",
     "preinstalled_app_install_features.cc",
     "preinstalled_app_install_features.h",
     "preinstalled_web_app_config_utils.cc",
@@ -243,6 +241,13 @@ source_set("web_applications") {
       "url_handler_launch_params.h",
       "url_handler_prefs.cc",
       "url_handler_prefs.h",
+    ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    sources += [
+      "policy/web_app_settings_policy_handler.cc",
+      "policy/web_app_settings_policy_handler.h",
     ]
   }
 
@@ -551,9 +556,12 @@ source_set("web_applications_unit_tests") {
   if (is_win || is_mac || is_linux) {
     sources += [
       "os_integration/url_handler_manager_impl_unittest.cc",
-      "policy/web_app_settings_policy_handler_unittest.cc",
       "url_handler_prefs_unittest.cc",
     ]
+  }
+
+  if (!is_android && !is_chromeos) {
+    sources += [ "policy/web_app_settings_policy_handler_unittest.cc" ]
   }
 
   deps = [

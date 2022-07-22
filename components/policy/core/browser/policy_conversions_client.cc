@@ -147,6 +147,7 @@ base::Value::Dict PolicyConversionsClient::GetPrecedencePolicies() {
 base::Value::List PolicyConversionsClient::GetPrecedenceOrder() {
   DCHECK(HasUserPolicies());
 
+#if !BUILDFLAG(IS_CHROMEOS)
   PolicyNamespace policy_namespace =
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string());
   const PolicyMap& chrome_policies =
@@ -194,6 +195,12 @@ base::Value::List PolicyConversionsClient::GetPrecedenceOrder() {
                           IDS_POLICY_PRECEDENCE_CLOUD_USER};
     }
   }
+#else
+  std::vector<int> precedence_order{IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE,
+                                    IDS_POLICY_PRECEDENCE_CLOUD_MACHINE,
+                                    IDS_POLICY_PRECEDENCE_PLATFORM_USER,
+                                    IDS_POLICY_PRECEDENCE_CLOUD_USER};
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   base::Value::List precedence_order_localized;
   for (int label_id : precedence_order) {
