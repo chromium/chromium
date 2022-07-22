@@ -18,9 +18,9 @@ namespace {
 // Tests lists for Combo Squatting. Some of these entries are intended to test
 // for various edge cases and aren't realistic for production.
 const char* const kBrandNames[] = {"google", "youtube", "sample", "example",
-                                   "vice"};
-const char* const kPopularKeywords[] = {"online", "login",   "account",
-                                        "ample",  "service", "test"};
+                                   "vices"};
+const char* const kPopularKeywords[] = {"online", "login",    "account",
+                                        "ample",  "services", "test"};
 const ComboSquattingParams kComboSquattingParams{
     kBrandNames, std::size(kBrandNames), kPopularKeywords,
     std::size(kPopularKeywords)};
@@ -662,7 +662,7 @@ TEST_F(ComboSquattingTest, IsComboSquatting) {
       {"online.google", "", false},
 
       // Not CSQ, brand name (vice) is part of keyword (service).
-      {"keyservice.com", "", false},
+      {"keyservices.com", "", false},
   };
   for (const TestCase& test_case : kTestCases) {
     auto navigated =

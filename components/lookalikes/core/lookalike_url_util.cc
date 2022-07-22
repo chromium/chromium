@@ -116,21 +116,22 @@ const int kDefaultLaunchPercentageOnBeta = 50;
 const char* kBrandNamesforCSQ[] = {
     "adobe",     "airbnb",    "alibaba",     "aliexpress",    "amazon",
     "baidu",     "bestbuy",   "blogspot",    "costco",        "craigslist",
-    "dropbox",   "ebay",      "etsy",        "expedia",       "facebook",
-    "fedex",     "flickr",    "github",      "glassdoor",     "gofundme",
-    "google",    "homedepot", "hulu",        "icloud",        "ikea",
-    "imdb",      "indeed",    "instagram",   "intuit",        "microsoft",
+    "dropbox",   "expedia",   "facebook",    "fedex",         "flickr",
+    "github",    "glassdoor", "gofundme",    "google",        "homedepot",
+    "icloud",    "indeed",    "instagram",   "intuit",        "microsoft",
     "nbcnews",   "netflix",   "norton",      "nytimes",       "office365",
     "paypal",    "pinterest", "playstation", "quora",         "reddit",
     "reuters",   "samsung",   "spotify",     "stackexchange", "stackoverflow",
-    "trello",    "twitch",    "twitter",     "udemy",         "usps",
-    "wikipedia", "wordpress", "xbox",        "xfinity",       "yahoo",
-    "yelp",      "youtube",   "zillow"};
+    "trello",    "twitch",    "twitter",     "udemy",         "wikipedia",
+    "wordpress", "xfinity",   "yahoo",       "youtube",       "zillow"};
 
 const char* kPopularKeywordsforCSQ[] = {
     // Security
-    "account", "activate", "active",   "admin", "login",
-    "online",  "password", "security", "signin"};
+    "account", "activate", "active", "admin",    "login",  "logout",
+    "online",  "password", "secure", "security", "signin", "signout"};
+
+// Minimum length of brand to be checked for Combo Squatting.
+const size_t kMinBrandNameLengthForComboSquatting = 4;
 
 ComboSquattingParams* GetComboSquattingParams() {
   static ComboSquattingParams params{
@@ -1231,6 +1232,8 @@ bool IsComboSquatting(const DomainInfo& navigated_domain,
   // Check if the domain has any brand name and any popular keyword.
   for (size_t i = 0; i < combo_squatting_params->num_brand_names; i++) {
     auto* const brand = combo_squatting_params->brand_names[i];
+    DCHECK(std::string(brand).size() > kMinBrandNameLengthForComboSquatting);
+
     if (!(navigated_domain.domain_without_registry.find(brand) !=
               std::string::npos &&
           navigated_domain.domain_without_registry.size() != strlen(brand))) {
