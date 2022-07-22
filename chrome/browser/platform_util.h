@@ -95,9 +95,9 @@ void ActivateWindow(gfx::NativeWindow window);
 bool IsVisible(gfx::NativeView view);
 
 #if BUILDFLAG(IS_MAC)
-// On 10.7+, back and forward swipe gestures can be triggered using a scroll
-// gesture, if enabled in System Preferences. This function returns true if
-// the feature is supported and enabled, and false otherwise.
+// On the Mac, back and forward swipe gestures can be triggered using a scroll
+// gesture, if enabled in System Preferences. This function returns true if the
+// feature is enabled, and false otherwise.
 bool IsSwipeTrackingFromScrollEventsEnabled();
 
 // Returns the active window which accepts keyboard inputs.

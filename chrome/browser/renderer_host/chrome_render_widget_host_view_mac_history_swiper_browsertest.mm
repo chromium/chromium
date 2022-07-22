@@ -132,12 +132,6 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
     return GetScriptIntValue("document.body.scrollTop");
   }
 
-  bool IsHistorySwipingSupported() {
-    // These tests require 10.7+ APIs.
-    return [NSEvent
-        respondsToSelector:@selector(isSwipeTrackingFromScrollEventsEnabled)];
-  }
-
   // Create mock events --------------------------------------------------------
 
   // Create a gesture event with no useful data. Used to create Begin and End
@@ -400,9 +394,6 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
 // recording a real swipe.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestBackwardsHistoryNavigationRealData) {
-  if (!IsHistorySwipingSupported())
-    return;
-
   QueueTouch(0.510681, 0.444672, DEPLOYMENT_TOUCHES_BEGAN, NSEventTypeGesture,
              NSEventSubtypeMouseEvent, NO);
   QueueTrackpadScroll(0, 0, NSEventPhaseMayBegin, YES);
@@ -516,9 +507,6 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // http://crbug.com/396328
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestAllDiagonalSwipes) {
-  if (!IsHistorySwipingSupported())
-    return;
-
   QueueBeginningEvents(1, -1);
   for (int i = 0; i < 150; ++i)
     QueueScrollAndTouchMoved(1, -1);
@@ -534,9 +522,6 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // not trigger history navigation.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestStaggeredDiagonalSwipe) {
-  if (!IsHistorySwipingSupported())
-    return;
-
   QueueBeginningEvents(1, 0);
   for (int i = 0; i < 150; ++i) {
     switch (i % 3) {
@@ -578,9 +563,6 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // trigger a history swipe. This should trigger history navigation.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestMostlyHorizontal) {
-  if (!IsHistorySwipingSupported())
-    return;
-
   QueueBeginningEvents(1, 1);
   for (int i = 0; i < 150; ++i) {
     if (i % 10 == 0) {
@@ -604,9 +586,6 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // crbug.com/375512
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestAllHorizontalButFirst) {
-  if (!IsHistorySwipingSupported())
-    return;
-
   QueueBeginningEvents(0, -1);
   QueueScrollAndTouchMoved(0, -1);
   for (int i = 0; i < 149; ++i)
@@ -621,9 +600,6 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // are horizontal, and should not trigger history swiping.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestIframeHistorySwiping) {
-  if (!IsHistorySwipingSupported())
-    return;
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_iframe_));
   ASSERT_EQ(url_iframe_, GetWebContents()->GetURL());
 
@@ -656,9 +632,6 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 // The gesture ends before the touchesEndedWithEvent: method gets called.
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        DISABLED_TestGestureEndTiming) {
-  if (!IsHistorySwipingSupported())
-    return;
-
   QueueBeginningEvents(1, 0);
   for (int i = 0; i < 150; ++i)
     QueueScrollAndTouchMoved(1, 0);
@@ -678,9 +651,6 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 IN_PROC_BROWSER_TEST_F(
     ChromeRenderWidgetHostViewMacHistorySwiperTest,
     DISABLED_InnerScrollersOverscrollBehaviorPreventsNavigation) {
-  if (!IsHistorySwipingSupported())
-    return;
-
   const base::FilePath base_path(FILE_PATH_LITERAL("scroll"));
   GURL url_overscroll_behavior = ui_test_utils::GetTestUrl(
       base_path, base::FilePath(FILE_PATH_LITERAL("overscroll_behavior.html")));

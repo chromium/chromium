@@ -39,10 +39,6 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderMac::GetCurrentDisplayInfo() {
     CGDirectDisplayID id =
         static_cast<CGDirectDisplayID>([device[@"NSScreenNumber"] intValue]);
 
-    float dsf = 1.0f;
-    if ([screen respondsToSelector:@selector(backingScaleFactor)])
-      dsf = [screen backingScaleFactor];
-
     NSRect bounds = [screen frame];
     int x = bounds.origin.x;
     int y = bounds.origin.y;
@@ -63,7 +59,7 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderMac::GetCurrentDisplayInfo() {
     info.y = main_display_height - y - height;
     info.width = bounds.size.width;
     info.height = height;
-    info.dpi = (int)(kDefaultScreenDpi * dsf);
+    info.dpi = (int)(kDefaultScreenDpi * [screen backingScaleFactor]);
     info.bpp = 24;
     info.is_default = is_default;
     result.AddDisplay(info);

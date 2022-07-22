@@ -39,9 +39,7 @@ TEST_F(GrabWindowSnapshotTest, DISABLED_TestGrabWindowSnapshot) {
   base::scoped_nsobject<NSBitmapImageRep> rep(
       [[NSBitmapImageRep alloc] initWithCGImage:cgImage]);
   EXPECT_TRUE([rep isKindOfClass:[NSBitmapImageRep class]]);
-  CGFloat scaleFactor = 1.0f;
-  if ([window respondsToSelector:@selector(backingScaleFactor)])
-    scaleFactor = [window backingScaleFactor];
+  CGFloat scaleFactor = [window backingScaleFactor];
   EXPECT_EQ(400 * scaleFactor, CGImageGetWidth([rep CGImage]));
   NSColor* color = [rep colorAtX:200 * scaleFactor y:200 * scaleFactor];
   CGFloat red = 0, green = 0, blue = 0, alpha = 0;

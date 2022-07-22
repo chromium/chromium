@@ -202,17 +202,11 @@ blink::WebMouseWheelEvent::Phase PhaseForNSEventPhase(
 }
 
 blink::WebMouseWheelEvent::Phase PhaseForEvent(NSEvent* event) {
-  if (![event respondsToSelector:@selector(phase)])
-    return blink::WebMouseWheelEvent::kPhaseNone;
-
   NSEventPhase event_phase = [event phase];
   return PhaseForNSEventPhase(event_phase);
 }
 
 blink::WebMouseWheelEvent::Phase MomentumPhaseForEvent(NSEvent* event) {
-  if (![event respondsToSelector:@selector(momentumPhase)])
-    return blink::WebMouseWheelEvent::kPhaseNone;
-
   NSEventPhase event_momentum_phase = [event momentumPhase];
   return PhaseForNSEventPhase(event_momentum_phase);
 }

@@ -155,13 +155,6 @@ void ExtractUnderlines(NSAttributedString* string,
 
 }  // namespace
 
-// These are not documented, so use only after checking -respondsToSelector:.
-@interface NSApplication (UndocumentedSpeechMethods)
-- (void)speakString:(NSString*)string;
-- (void)stopSpeaking:(id)sender;
-- (BOOL)isSpeaking;
-@end
-
 // RenderWidgetHostViewCocoa ---------------------------------------------------
 
 // Private methods:

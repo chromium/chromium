@@ -49,8 +49,7 @@
 }
 
 - (void)invalidateTouchBar {
-  DCHECK([_window respondsToSelector:@selector(setTouchBar:)]);
-  [_window performSelector:@selector(setTouchBar:) withObject:nil];
+  [_window setTouchBar:nil];
 }
 
 - (NSTouchBar*)makeTouchBar {

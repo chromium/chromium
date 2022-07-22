@@ -173,13 +173,6 @@ void WiFiServiceMac::Initialize(
     DVLOG(1) << "Failed to initialize default interface.";
     return;
   }
-
-  if (![interface_
-          respondsToSelector:@selector(associateToNetwork:password:error:)]) {
-    DVLOG(1) << "CWInterface does not support associateToNetwork.";
-    interface_.reset();
-    return;
-  }
 }
 
 void WiFiServiceMac::UnInitialize() {
