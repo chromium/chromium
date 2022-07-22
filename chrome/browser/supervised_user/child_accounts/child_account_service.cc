@@ -257,15 +257,17 @@ void ChildAccountService::OnGetFamilyMembersSuccess(
       parent_found = true;
       SetSecondCustodianPrefs(member);
     }
-    if (hoh_found && parent_found)
+    if (hoh_found && parent_found) {
       break;
+    }
   }
   if (!hoh_found) {
-    DLOG(WARNING) << "GetFamilyMembers didn't return a HOH?!";
+    DLOG(WARNING) << "GetFamilyMembers didn't return a HOH.";
     ClearFirstCustodianPrefs();
   }
-  if (!parent_found)
+  if (!parent_found) {
     ClearSecondCustodianPrefs();
+  }
   family_fetcher_.reset();
 
   family_fetch_backoff_.InformOfRequest(true);
@@ -356,6 +358,8 @@ void ChildAccountService::SetSecondCustodianPrefs(
 void ChildAccountService::ClearFirstCustodianPrefs() {
   profile_->GetPrefs()->ClearPref(prefs::kSupervisedUserCustodianName);
   profile_->GetPrefs()->ClearPref(prefs::kSupervisedUserCustodianEmail);
+  profile_->GetPrefs()->ClearPref(
+      prefs::kSupervisedUserCustodianObfuscatedGaiaId);
   profile_->GetPrefs()->ClearPref(prefs::kSupervisedUserCustodianProfileURL);
   profile_->GetPrefs()->ClearPref(
       prefs::kSupervisedUserCustodianProfileImageURL);
@@ -364,6 +368,8 @@ void ChildAccountService::ClearFirstCustodianPrefs() {
 void ChildAccountService::ClearSecondCustodianPrefs() {
   profile_->GetPrefs()->ClearPref(prefs::kSupervisedUserSecondCustodianName);
   profile_->GetPrefs()->ClearPref(prefs::kSupervisedUserSecondCustodianEmail);
+  profile_->GetPrefs()->ClearPref(
+      prefs::kSupervisedUserSecondCustodianObfuscatedGaiaId);
   profile_->GetPrefs()->ClearPref(
       prefs::kSupervisedUserSecondCustodianProfileURL);
   profile_->GetPrefs()->ClearPref(

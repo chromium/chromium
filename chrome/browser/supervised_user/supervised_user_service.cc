@@ -103,19 +103,6 @@ constexpr char const* kAllowlistExtensionIds[] = {
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-const char* const kCustodianInfoPrefs[] = {
-    prefs::kSupervisedUserCustodianName,
-    prefs::kSupervisedUserCustodianEmail,
-    prefs::kSupervisedUserCustodianObfuscatedGaiaId,
-    prefs::kSupervisedUserCustodianProfileImageURL,
-    prefs::kSupervisedUserCustodianProfileURL,
-    prefs::kSupervisedUserSecondCustodianName,
-    prefs::kSupervisedUserSecondCustodianEmail,
-    prefs::kSupervisedUserSecondCustodianObfuscatedGaiaId,
-    prefs::kSupervisedUserSecondCustodianProfileImageURL,
-    prefs::kSupervisedUserSecondCustodianProfileURL,
-};
-
 base::FilePath GetDenylistPath() {
   base::FilePath denylist_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &denylist_dir);
@@ -152,8 +139,8 @@ void SupervisedUserService::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kDefaultSupervisedUserFilteringBehavior,
                                 SupervisedUserURLFilter::ALLOW);
   registry->RegisterBooleanPref(prefs::kSupervisedUserSafeSites, true);
-  for (const char* pref : kCustodianInfoPrefs) {
-    registry->RegisterStringPref(pref, std::string());
+  for (base::StringPiece pref : supervised_users::CustodianInfoPrefs()) {
+    registry->RegisterStringPref(std::string(pref), std::string());
   }
 }
 
@@ -425,9 +412,9 @@ void SupervisedUserService::SetActive(bool active) {
         prefs::kSupervisedUserManualURLs,
         base::BindRepeating(&SupervisedUserService::UpdateManualURLs,
                             base::Unretained(this)));
-    for (const char* pref : kCustodianInfoPrefs) {
+    for (base::StringPiece pref : supervised_users::CustodianInfoPrefs()) {
       pref_change_registrar_.Add(
-          pref,
+          std::string(pref),
           base::BindRepeating(&SupervisedUserService::OnCustodianInfoChanged,
                               base::Unretained(this)));
     }
@@ -460,8 +447,8 @@ void SupervisedUserService::SetActive(bool active) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
     pref_change_registrar_.Remove(prefs::kSupervisedUserManualHosts);
     pref_change_registrar_.Remove(prefs::kSupervisedUserManualURLs);
-    for (const char* pref : kCustodianInfoPrefs) {
-      pref_change_registrar_.Remove(pref);
+    for (base::StringPiece pref : supervised_users::CustodianInfoPrefs()) {
+      pref_change_registrar_.Remove(std::string(pref));
     }
 
     url_filter_.Clear();

@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_CONSTANTS_H_
 #define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_CONSTANTS_H_
 
+#include "base/containers/fixed_flat_set.h"
+#include "base/strings/string_piece.h"
+
 namespace supervised_users {
 
 // Keys for supervised user settings. These are configured remotely and mapped
@@ -25,11 +28,12 @@ extern const char kUserName[];
 extern const char kChildAccountSUID[];
 
 // Keys for supervised user shared settings. These can be configured remotely or
-// locally, and are mapped to preferences by the
 // SupervisedUserPrefMappingService.
 extern const char kChromeAvatarIndex[];
 extern const char kChromeOSAvatarIndex[];
 extern const char kChromeOSPasswordData[];
+
+base::fixed_flat_set<base::StringPiece, 10>& CustodianInfoPrefs();
 
 }  // namespace supervised_users
 

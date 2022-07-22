@@ -58,7 +58,7 @@ class Extension;
 
 namespace user_prefs {
 class PrefRegistrySyncable;
-}
+}  // namespace user_prefs
 
 #if !BUILDFLAG(IS_ANDROID)
 class Browser;
