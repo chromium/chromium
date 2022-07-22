@@ -274,10 +274,9 @@ bool IsForceLibinput(const EventDeviceInfo& devinfo) {
   return false;
 }
 
-// Note: this is not SteelSeries's actual VID; the Stratus Duo just reports it
-// incorrectly over Bluetooth.
-const uint16_t kSteelSeriesStratusDuoBluetoothVendorId = 0x0111;
+const uint16_t kSteelSeriesBluetoothVendorId = 0x0111;
 const uint16_t kSteelSeriesStratusDuoBluetoothProductId = 0x1431;
+const uint16_t kSteelSeriesStratusPlusBluetoothProductId = 0x1434;
 
 bool GetEventBits(int fd,
                   const base::FilePath& path,
@@ -766,8 +765,9 @@ bool EventDeviceInfo::HasMouse() const {
   // The SteelSeries Stratus Duo claims to be a mouse over Bluetooth, preventing
   // it from being set up as a gamepad correctly, so check for its vendor and
   // product ID. (b/189491809)
-  if (input_id_.vendor == kSteelSeriesStratusDuoBluetoothVendorId &&
-      input_id_.product == kSteelSeriesStratusDuoBluetoothProductId) {
+  if (input_id_.vendor == kSteelSeriesBluetoothVendorId &&
+      (input_id_.product == kSteelSeriesStratusDuoBluetoothProductId ||
+      input_id_.product == kSteelSeriesStratusPlusBluetoothProductId)) {
     return false;
   }
 
