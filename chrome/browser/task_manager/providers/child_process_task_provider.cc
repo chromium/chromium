@@ -38,8 +38,9 @@ Task* ChildProcessTaskProvider::GetTaskOfUrlRequest(int child_id,
 void ChildProcessTaskProvider::BrowserChildProcessLaunchedAndConnected(
     const content::ChildProcessData& data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!data.GetProcess().IsValid())
-    return;
+  // TODO(pmonette): Change the following CHECK to a DCHECK after September 1st,
+  // after confirming that this never gets hit.
+  CHECK(data.GetProcess().IsValid());
 
   CreateTask(data);
 }
@@ -88,13 +89,8 @@ void ChildProcessTaskProvider::CreateTask(
     const content::ChildProcessData& data) {
   std::unique_ptr<ChildProcessTask>& task =
       tasks_by_processid_[data.GetProcess().Pid()];
-  if (task) {
-    // This task is already known to us. This case can happen when some of the
-    // child process data we collect upon StartUpdating() might be of
-    // BrowserChildProcessHosts whose process hadn't launched yet. So we just
-    // return.
-    return;
-  }
+  CHECK(!task);  // TODO(pmonette): Change to DCHECK after September 1st, after
+                 //                 confirming that this never gets hit.
 
   // Create the task and notify the observer.
   task = std::make_unique<ChildProcessTask>(
