@@ -467,6 +467,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Is the element focusable?
   bool CanSetFocusAttribute() const;
+  // Is the element in the tab order?
+  bool IsKeyboardFocusable() const;
 
   // Whether objects are ignored, i.e. hidden from the AT.
   bool AccessibilityIsIgnored() const;

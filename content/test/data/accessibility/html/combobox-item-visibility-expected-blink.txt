@@ -1,8 +1,8 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++popUpButton collapsed setSize=2
-++++++++menuListPopup invisible setSize=2
-++++++++++menuListOption setSize=2 posInSet=1 selected=true
+++++++popUpButton collapsed setSize=1
+++++++++menuListPopup invisible setSize=1
+++++++++++menuListOption setSize=1 posInSet=1 selected=true
 ++++++++++menuListOption ignored invisible selected=false
-++++++++++menuListOption invisible setSize=2 posInSet=2 selected=false
+++++++++++menuListOption ignored invisible selected=false

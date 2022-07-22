@@ -2808,9 +2808,9 @@ bool AXObject::AccessibilityIsIgnoredByDefault(
 AXObjectInclusion AXObject::DefaultObjectInclusion(
     IgnoredReasons* ignored_reasons) const {
   if (IsAriaHidden()) {
-    // Keep focusable elements that are aria-hidden in tree, so that they can
-    // still fire events such as focus and value changes.
-    if (!CanSetFocusAttribute()) {
+    // Keep keyboard focusable elements that are aria-hidden in tree, so that
+    // they can still fire events such as focus and value changes.
+    if (!IsKeyboardFocusable()) {
       if (ignored_reasons)
         ComputeIsAriaHidden(ignored_reasons);
       return kIgnoreObject;
@@ -3535,6 +3535,21 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
 
   // NOT focusable: everything else.
   return false;
+}
+
+// We can't use `Element::IsKeyboardFocusable()` since the downstream
+// `Element::IsFocusableStyle()` call will reset the document lifecycle.
+bool AXObject::IsKeyboardFocusable() const {
+  if (!CanSetFocusAttribute())
+    return false;
+
+  Element* element = GetElement();
+  DCHECK(element) << "Cannot be focusable without an element: "
+                  << ToString(true, true);
+  // TODO(jarhar) Scrollable containers should return true here if
+  // `RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled()`
+  // is true.
+  return element->tabIndex() >= 0 || IsRootEditableElement(*element);
 }
 
 // From ARIA 1.1.
