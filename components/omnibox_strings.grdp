@@ -293,27 +293,21 @@
     &quot;<ph name="SECTION">$1<ex>Related to recent searches</ex></ph>&quot; section hidden
   </message>
 
-  <!-- Site Search/Keyword mode Starter Pack strings. -->
+  <!-- Site Search/Keyword mode Starter Pack strings. Note: kCurrentDataVersion in template_url_starter_pack_data.cc must also be updated when changing these values. -->
   <message name="IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_NAME" desc = "The name of the chrome bookmarks search engine as it appears on chrome://settings/searchEngines">
-    Chrome Bookmarks
+    Bookmarks
   </message>
   <message name="IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_KEYWORD" desc = "The keyword required to trigger bookmarks search in keyword mode. This will be prepended with an '@'.">
     Bookmarks
   </message>
   <message name="IDS_SEARCH_ENGINES_STARTER_PACK_HISTORY_NAME" desc = "The name of the chrome history search engine as it appears on chrome://settings/searchEngines">
-    Chrome History
+    History
   </message>
   <message name="IDS_SEARCH_ENGINES_STARTER_PACK_HISTORY_KEYWORD" desc = "The keyword required to trigger history search in keyword mode. This will be prepended with an '@'.">
     History
   </message>
-  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_SETTINGS_NAME" desc = "The name of the chrome settings search engine as it appears on chrome://settings/searchEngines">
-    Chrome Settings
-  </message>
-  <message name="IDS_SEARCH_ENGINES_STARTER_PACK_SETTINGS_KEYWORD" desc = "The keyword required to trigger settings search in keyword mode. This will be prepended with an '@'.">
-    Settings
-  </message>
   <message name="IDS_SEARCH_ENGINES_STARTER_PACK_TABS_NAME" desc = "The name of the search engine to search through open Chrome Tabs as it appears on chrome://settings/searchEngines.">
-    Chrome Tabs
+    Tabs
   </message>
   <message name="IDS_SEARCH_ENGINES_STARTER_PACK_TABS_KEYWORD" desc = "The keyword required to trigger tab search in keyword mode. This will be prepended with an '@'.">
     Tabs

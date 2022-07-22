@@ -13,7 +13,7 @@
 
 namespace TemplateURLStarterPackData {
 
-const int kCurrentDataVersion = 2;
+const int kCurrentDataVersion = 3;
 
 const StarterPackEngine bookmarks = {
     .name_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_NAME,

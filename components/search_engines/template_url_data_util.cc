@@ -415,6 +415,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromStarterPackEngine(
   turl->favicon_url = GURL(ToStringPiece(engine.favicon_url));
   turl->starter_pack_id = engine.id;
   turl->GenerateSyncGUID();
+  turl->safe_for_autoreplace = true;
   turl->is_active = TemplateURLData::ActiveStatus::kTrue;
 
   return turl;
