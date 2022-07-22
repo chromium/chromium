@@ -250,7 +250,7 @@ const base::Feature kDocumentProviderDedupingOptimization{
 // "loss" to represent colors red and green in a way that is appropriate for a
 // given country/culture
 const base::Feature kSuggestionAnswersColorReverse = {
-    "SuggestionAnswersColorReverse", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SuggestionAnswersColorReverse", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, frequently visited sites are presented in form of a single row
 // with a carousel of tiles, instead of one URL per row.
