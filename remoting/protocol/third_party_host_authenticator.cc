@@ -34,7 +34,7 @@ void ThirdPartyHostAuthenticator::ProcessTokenMessage(
   if (token.empty()) {
     LOG(ERROR) << "Third-party authentication protocol error: missing token.";
     token_state_ = REJECTED;
-    rejection_reason_ = PROTOCOL_ERROR;
+    rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
     std::move(resume_callback).Run();
     return;
   }

@@ -75,7 +75,8 @@ class ValidatingAuthenticator : public Authenticator {
   State state_ = Authenticator::WAITING_MESSAGE;
 
   // Returns the rejection reason. Can be called only when in REJECTED state.
-  RejectionReason rejection_reason_ = Authenticator::INVALID_CREDENTIALS;
+  RejectionReason rejection_reason_ =
+      Authenticator::RejectionReason::INVALID_CREDENTIALS;
 
   std::unique_ptr<Authenticator> current_authenticator_;
 

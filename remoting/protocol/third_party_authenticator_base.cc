@@ -28,8 +28,7 @@ ThirdPartyAuthenticatorBase::ThirdPartyAuthenticatorBase(
     Authenticator::State initial_state)
     : token_state_(initial_state),
       started_(false),
-      rejection_reason_(INVALID_CREDENTIALS) {
-}
+      rejection_reason_(RejectionReason::INVALID_CREDENTIALS) {}
 
 ThirdPartyAuthenticatorBase::~ThirdPartyAuthenticatorBase() = default;
 

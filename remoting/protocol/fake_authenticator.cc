@@ -156,7 +156,7 @@ bool FakeAuthenticator::started() const {
 
 Authenticator::RejectionReason FakeAuthenticator::rejection_reason() const {
   EXPECT_EQ(REJECTED, state());
-  return INVALID_CREDENTIALS;
+  return RejectionReason::INVALID_CREDENTIALS;
 }
 
 void FakeAuthenticator::ProcessMessage(const jingle_xmpp::XmlElement* message,

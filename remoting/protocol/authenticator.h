@@ -63,7 +63,7 @@ class Authenticator {
     PROCESSING_MESSAGE,
   };
 
-  enum RejectionReason {
+  enum class RejectionReason {
     // The account credentials were not valid (i.e. incorrect PIN).
     INVALID_CREDENTIALS,
 

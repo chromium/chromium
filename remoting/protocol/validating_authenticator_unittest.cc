@@ -209,7 +209,7 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorInvalidCredentials) {
   SendMessageAndWaitForCallback();
   ASSERT_TRUE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::INVALID_CREDENTIALS,
+  ASSERT_EQ(Authenticator::RejectionReason::INVALID_CREDENTIALS,
             validating_authenticator_->rejection_reason());
 }
 
@@ -226,7 +226,7 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorRejectedByUser) {
   SendMessageAndWaitForCallback();
   ASSERT_TRUE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::REJECTED_BY_USER,
+  ASSERT_EQ(Authenticator::RejectionReason::REJECTED_BY_USER,
             validating_authenticator_->rejection_reason());
 }
 
@@ -253,7 +253,7 @@ TEST_F(ValidatingAuthenticatorTest,
   SendMessageAndWaitForCallback();
   ASSERT_TRUE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::REJECTED_BY_USER,
+  ASSERT_EQ(Authenticator::RejectionReason::REJECTED_BY_USER,
             validating_authenticator_->rejection_reason());
 }
 
@@ -270,7 +270,7 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorTooManyConnections) {
   SendMessageAndWaitForCallback();
   ASSERT_TRUE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::TOO_MANY_CONNECTIONS,
+  ASSERT_EQ(Authenticator::RejectionReason::TOO_MANY_CONNECTIONS,
             validating_authenticator_->rejection_reason());
 }
 
@@ -283,13 +283,14 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidCredentials) {
       .WillByDefault(Return(Authenticator::REJECTED));
 
   ON_CALL(*mock_authenticator_, rejection_reason())
-      .WillByDefault(Return(Authenticator::INVALID_CREDENTIALS));
+      .WillByDefault(
+          Return(Authenticator::RejectionReason::INVALID_CREDENTIALS));
 
   // Verify validation callback is not called for invalid connections.
   SendMessageAndWaitForCallback();
   ASSERT_FALSE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::INVALID_CREDENTIALS,
+  ASSERT_EQ(Authenticator::RejectionReason::INVALID_CREDENTIALS,
             validating_authenticator_->rejection_reason());
 }
 
@@ -302,13 +303,14 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidAccount) {
       .WillByDefault(Return(Authenticator::REJECTED));
 
   ON_CALL(*mock_authenticator_, rejection_reason())
-      .WillByDefault(Return(Authenticator::INVALID_ACCOUNT_ID));
+      .WillByDefault(
+          Return(Authenticator::RejectionReason::INVALID_ACCOUNT_ID));
 
   // Verify validation callback is not called for invalid connections.
   SendMessageAndWaitForCallback();
   ASSERT_FALSE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::INVALID_ACCOUNT_ID,
+  ASSERT_EQ(Authenticator::RejectionReason::INVALID_ACCOUNT_ID,
             validating_authenticator_->rejection_reason());
 }
 
@@ -321,13 +323,13 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_ProtocolError) {
       .WillByDefault(Return(Authenticator::REJECTED));
 
   ON_CALL(*mock_authenticator_, rejection_reason())
-      .WillByDefault(Return(Authenticator::PROTOCOL_ERROR));
+      .WillByDefault(Return(Authenticator::RejectionReason::PROTOCOL_ERROR));
 
   // Verify validation callback is not called for invalid connections.
   SendMessageAndWaitForCallback();
   ASSERT_FALSE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::PROTOCOL_ERROR,
+  ASSERT_EQ(Authenticator::RejectionReason::PROTOCOL_ERROR,
             validating_authenticator_->rejection_reason());
 }
 

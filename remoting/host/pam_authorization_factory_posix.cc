@@ -72,7 +72,7 @@ bool PamAuthorizer::started() const {
 protocol::Authenticator::RejectionReason
 PamAuthorizer::rejection_reason() const {
   if (local_login_status_ == DISALLOWED) {
-    return INVALID_CREDENTIALS;
+    return RejectionReason::INVALID_CREDENTIALS;
   } else {
     return underlying_->rejection_reason();
   }

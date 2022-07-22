@@ -79,8 +79,8 @@ Me2MeHostAuthenticatorFactory::CreateAuthenticator(
     LOG(ERROR) << "Rejecting incoming connection from " << remote_jid
                << ": Prefix mismatch.  Expected: "
                << canonical_host_owner_email_;
-    return base::WrapUnique(
-        new RejectingAuthenticator(Authenticator::INVALID_CREDENTIALS));
+    return base::WrapUnique(new RejectingAuthenticator(
+        Authenticator::RejectionReason::INVALID_CREDENTIALS));
   }
 
   // If necessary, verify that the client's jid belongs to the correct domain.
@@ -102,7 +102,7 @@ Me2MeHostAuthenticatorFactory::CreateAuthenticator(
       LOG(ERROR) << "Rejecting incoming connection from " << remote_jid
                  << ": Domain not allowed.";
       return std::make_unique<RejectingAuthenticator>(
-          Authenticator::INVALID_ACCOUNT_ID);
+          Authenticator::RejectionReason::INVALID_ACCOUNT_ID);
     }
   }
 
@@ -121,8 +121,8 @@ Me2MeHostAuthenticatorFactory::CreateAuthenticator(
         pin_hash_, pairing_registry_);
   }
 
-  return base::WrapUnique(
-      new RejectingAuthenticator(Authenticator::INVALID_CREDENTIALS));
+  return base::WrapUnique(new RejectingAuthenticator(
+      Authenticator::RejectionReason::INVALID_CREDENTIALS));
 }
 
 }  // namespace protocol

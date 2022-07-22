@@ -96,7 +96,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
   // If the host has already chosen a method, it can't be changed by the client.
   if (current_method_ != Method::INVALID && method != current_method_) {
     state_ = REJECTED;
-    rejection_reason_ = PROTOCOL_ERROR;
+    rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
     std::move(resume_callback).Run();
     return;
   }
@@ -113,7 +113,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
     if (supported_methods_attr.empty()) {
       // Message contains neither method nor supported-methods attributes.
       state_ = REJECTED;
-      rejection_reason_ = PROTOCOL_ERROR;
+      rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
       std::move(resume_callback).Run();
       return;
     }
@@ -137,7 +137,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
     if (method == Method::INVALID) {
       // Failed to find a common auth method.
       state_ = REJECTED;
-      rejection_reason_ = PROTOCOL_ERROR;
+      rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
       std::move(resume_callback).Run();
       return;
     }

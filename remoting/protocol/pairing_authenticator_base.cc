@@ -39,7 +39,7 @@ bool PairingAuthenticatorBase::started() const {
 Authenticator::RejectionReason
 PairingAuthenticatorBase::rejection_reason() const {
   if (!spake2_authenticator_) {
-    return PROTOCOL_ERROR;
+    return RejectionReason::PROTOCOL_ERROR;
   }
   return spake2_authenticator_->rejection_reason();
 }
@@ -121,7 +121,8 @@ void PairingAuthenticatorBase::CheckForFailedSpakeExchange(
   // credentials were the paired secret, then notify the peer that the
   // PIN-less connection failed and retry using the PIN.
   if (spake2_authenticator_->state() == REJECTED &&
-      spake2_authenticator_->rejection_reason() == INVALID_CREDENTIALS &&
+      spake2_authenticator_->rejection_reason() ==
+          RejectionReason::INVALID_CREDENTIALS &&
       using_paired_secret_) {
     using_paired_secret_ = false;
     error_message_ = "invalid-shared-secret";

@@ -65,23 +65,21 @@ const int kAny = -1;
 ErrorCode AuthRejectionReasonToErrorCode(
     Authenticator::RejectionReason reason) {
   switch (reason) {
-    case Authenticator::INVALID_CREDENTIALS:
+    case Authenticator::RejectionReason::INVALID_CREDENTIALS:
       return AUTHENTICATION_FAILED;
-    case Authenticator::PROTOCOL_ERROR:
+    case Authenticator::RejectionReason::PROTOCOL_ERROR:
       return INCOMPATIBLE_PROTOCOL;
-    case Authenticator::INVALID_ACCOUNT_ID:
+    case Authenticator::RejectionReason::INVALID_ACCOUNT_ID:
       return INVALID_ACCOUNT;
-    case Authenticator::TOO_MANY_CONNECTIONS:
+    case Authenticator::RejectionReason::TOO_MANY_CONNECTIONS:
       return SESSION_REJECTED;
-    case Authenticator::REJECTED_BY_USER:
+    case Authenticator::RejectionReason::REJECTED_BY_USER:
       return SESSION_REJECTED;
-    case Authenticator::AUTHZ_POLICY_CHECK_FAILED:
+    case Authenticator::RejectionReason::AUTHZ_POLICY_CHECK_FAILED:
       return AUTHZ_POLICY_CHECK_FAILED;
-    case Authenticator::LOCATION_AUTHZ_POLICY_CHECK_FAILED:
+    case Authenticator::RejectionReason::LOCATION_AUTHZ_POLICY_CHECK_FAILED:
       return LOCATION_AUTHZ_POLICY_CHECK_FAILED;
   }
-  NOTREACHED();
-  return UNKNOWN_ERROR;
 }
 
 // Extracts a sequential id from the id attribute of the IQ stanza.

@@ -245,7 +245,7 @@ TEST_F(NegotiatingAuthenticatorTest, InvalidSharedSecret) {
                                              kTestPinBad, kTestPin));
   ASSERT_NO_FATAL_FAILURE(RunAuthExchange());
 
-  VerifyRejected(Authenticator::INVALID_CREDENTIALS);
+  VerifyRejected(Authenticator::RejectionReason::INVALID_CREDENTIALS);
 }
 
 TEST_F(NegotiatingAuthenticatorTest, IncompatibleMethods) {
@@ -258,7 +258,7 @@ TEST_F(NegotiatingAuthenticatorTest, IncompatibleMethods) {
 
   ASSERT_NO_FATAL_FAILURE(RunAuthExchange());
 
-  VerifyRejected(Authenticator::PROTOCOL_ERROR);
+  VerifyRejected(Authenticator::RejectionReason::PROTOCOL_ERROR);
 }
 
 TEST_F(NegotiatingAuthenticatorTest, PairingNotSupported) {
@@ -292,7 +292,7 @@ TEST_P(NegotiatingPairingAuthenticatorTest, PairingRevokedPinBad) {
   ASSERT_NO_FATAL_FAILURE(InitAuthenticators(kTestClientId, kTestPairedSecret,
                                              kTestPinBad, kTestPin));
   ASSERT_NO_FATAL_FAILURE(RunAuthExchange());
-  VerifyRejected(Authenticator::INVALID_CREDENTIALS);
+  VerifyRejected(Authenticator::RejectionReason::INVALID_CREDENTIALS);
 }
 
 TEST_P(NegotiatingPairingAuthenticatorTest, PairingSucceeded) {
@@ -317,7 +317,7 @@ TEST_P(NegotiatingPairingAuthenticatorTest, PairingFailedInvalidSecretAndPin) {
   ASSERT_NO_FATAL_FAILURE(InitAuthenticators(
       kTestClientId, kTestPairedSecretBad, kTestPinBad, kTestPin));
   ASSERT_NO_FATAL_FAILURE(RunAuthExchange());
-  VerifyRejected(Authenticator::INVALID_CREDENTIALS);
+  VerifyRejected(Authenticator::RejectionReason::INVALID_CREDENTIALS);
 }
 
 }  // namespace protocol

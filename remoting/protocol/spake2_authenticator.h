@@ -87,7 +87,7 @@ class Spake2Authenticator : public Authenticator {
   raw_ptr<SPAKE2_CTX> spake2_context_;
   State state_;
   bool started_ = false;
-  RejectionReason rejection_reason_ = INVALID_CREDENTIALS;
+  RejectionReason rejection_reason_ = RejectionReason::INVALID_CREDENTIALS;
   std::string local_spake_message_;
   bool spake_message_sent_ = false;
   std::string outgoing_verification_hash_;

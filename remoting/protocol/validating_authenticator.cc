@@ -93,19 +93,19 @@ void ValidatingAuthenticator::OnValidateComplete(base::OnceClosure callback,
       return;
 
     case Result::ERROR_INVALID_CREDENTIALS:
-      rejection_reason_ = Authenticator::INVALID_CREDENTIALS;
+      rejection_reason_ = RejectionReason::INVALID_CREDENTIALS;
       break;
 
     case Result::ERROR_INVALID_ACCOUNT:
-      rejection_reason_ = Authenticator::INVALID_ACCOUNT_ID;
+      rejection_reason_ = RejectionReason::INVALID_ACCOUNT_ID;
       break;
 
     case Result::ERROR_TOO_MANY_CONNECTIONS:
-      rejection_reason_ = Authenticator::TOO_MANY_CONNECTIONS;
+      rejection_reason_ = RejectionReason::TOO_MANY_CONNECTIONS;
       break;
 
     case Result::ERROR_REJECTED_BY_USER:
-      rejection_reason_ = Authenticator::REJECTED_BY_USER;
+      rejection_reason_ = RejectionReason::REJECTED_BY_USER;
       break;
   }
 

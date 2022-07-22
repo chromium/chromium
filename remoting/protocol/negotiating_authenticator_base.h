@@ -140,7 +140,7 @@ class NegotiatingAuthenticatorBase : public Authenticator {
   Method current_method_ = Method::INVALID;
   std::unique_ptr<Authenticator> current_authenticator_;
   State state_;
-  RejectionReason rejection_reason_ = INVALID_CREDENTIALS;
+  RejectionReason rejection_reason_ = RejectionReason::INVALID_CREDENTIALS;
 };
 
 }  // namespace protocol

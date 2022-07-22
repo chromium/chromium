@@ -83,7 +83,8 @@ TEST_F(Spake2AuthenticatorTest, InvalidSecret) {
   ASSERT_NO_FATAL_FAILURE(RunAuthExchange());
 
   ASSERT_EQ(Authenticator::REJECTED, client_->state());
-  ASSERT_EQ(Authenticator::INVALID_CREDENTIALS, client_->rejection_reason());
+  ASSERT_EQ(Authenticator::RejectionReason::INVALID_CREDENTIALS,
+            client_->rejection_reason());
 
   // Change |client_| so that we can get the last message.
   reinterpret_cast<Spake2Authenticator*>(client_.get())->state_ =

@@ -65,7 +65,7 @@ void NegotiatingClientAuthenticator::ProcessMessage(
     if (method_set_by_host_ || method == Method::INVALID ||
         std::find(methods_.begin(), methods_.end(), method) == methods_.end()) {
       state_ = REJECTED;
-      rejection_reason_ = PROTOCOL_ERROR;
+      rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
       std::move(resume_callback).Run();
       return;
     }

@@ -61,7 +61,7 @@ Authenticator::State PairingHostAuthenticator::state() const {
 Authenticator::RejectionReason
 PairingHostAuthenticator::rejection_reason() const {
   if (protocol_error_) {
-    return PROTOCOL_ERROR;
+    return RejectionReason::PROTOCOL_ERROR;
   }
   return PairingAuthenticatorBase::rejection_reason();
 }
