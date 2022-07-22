@@ -92,6 +92,7 @@ def _CheckWebViewExposedExperiments(input_api, output_api):
 
   _PRODUCTION_SUPPORT_FILE = ('android_webview/java/src/org/chromium/' +
       'android_webview/common/ProductionSupportedFlagList.java')
+  _GENERATE_FLAG_LABELS_PY = 'android_webview/tools/generate_flag_labels.py'
 
   def is_autofill_features_file(f):
     return (f.LocalPath().startswith('components/autofill/') and
@@ -106,9 +107,12 @@ def _CheckWebViewExposedExperiments(input_api, output_api):
   warnings = []
   if (any_file_matches(is_autofill_features_file)
       and not any_file_matches(is_webview_features_file)):
-    warnings += [ output_api.PresubmitPromptWarning(
-        'You may need to modify {} if your feature affects WebView.'
-            .format(_PRODUCTION_SUPPORT_FILE)) ]
+    warnings += [
+        output_api.PresubmitPromptWarning((
+            'You may need to modify {} and run {} and follow its '+
+            'instructions if your feature affects WebView.'
+        ).format(_PRODUCTION_SUPPORT_FILE, _GENERATE_FLAG_LABELS_PY))
+    ]
 
   return warnings
 
