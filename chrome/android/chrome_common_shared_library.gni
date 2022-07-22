@@ -38,6 +38,7 @@ apk_pak_asset_type = "_apk"
 #      native_deps. See //chrome/android/modules/chrome_feature_modules.gni for
 #      the descriptor format.
 template("chrome_common_shared_library") {
+  forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
   _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
   _is_webview = defined(invoker.is_webview) && invoker.is_webview
   _export_java_symbols = _is_monochrome || _is_webview
@@ -123,9 +124,14 @@ template("chrome_common_shared_library") {
         sources += [ "../browser/android/vr/register_jni_monochrome.cc" ]
       } else {
         sources += [ "../browser/android/vr/register_jni.cc" ]
-        deps += [
-          "//chrome/browser/android/vr:jni_registration($default_toolchain)",
-        ]
+        if (defined(invoker.testonly) && invoker.testonly) {
+          defines = [ "JNI_REGISTRATION_FOR_TESTING" ]
+          deps += [ "//chrome/browser/android/vr:jni_registration_for_testing($default_toolchain)" ]
+        } else {
+          deps += [
+            "//chrome/browser/android/vr:jni_registration($default_toolchain)",
+          ]
+        }
       }
     }
 

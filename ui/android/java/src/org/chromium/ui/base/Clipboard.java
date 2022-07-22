@@ -111,6 +111,13 @@ public class Clipboard {
     }
 
     /**
+     * Cleans up clipboard on native side.
+     */
+    public static void cleanupNativeForTesting() {
+        ClipboardJni.get().cleanupForTesting();
+    }
+
+    /**
      * Emulates the behavior of the now-deprecated
      * {@link android.text.ClipboardManager#getText()} by invoking
      * {@link android.content.ClipData.Item#coerceToText(Context)} on the first
@@ -365,5 +372,6 @@ public class Clipboard {
         void onPrimaryClipTimestampInvalidated(
                 long nativeClipboardAndroid, Clipboard caller, long timestamp);
         long getLastModifiedTimeToJavaTime(long nativeClipboardAndroid);
+        void cleanupForTesting();
     }
 }

@@ -53,7 +53,7 @@ public class ClipboardAndroidTest extends BlankUiTestActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        ClipboardAndroidTestSupport.cleanup();
+        Clipboard.cleanupNativeForTesting();
 
         // Clear the clipboard to avoid leaving any state.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
