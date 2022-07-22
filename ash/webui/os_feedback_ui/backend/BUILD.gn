@@ -12,6 +12,8 @@ static_library("backend") {
     "feedback_service_provider.h",
     "help_content_provider.cc",
     "help_content_provider.h",
+    "histogram_util.cc",
+    "histogram_util.h",
     "os_feedback_delegate.h",
   ]
 

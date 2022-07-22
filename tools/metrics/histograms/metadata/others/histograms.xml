@@ -5764,6 +5764,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.ChromeOSApp.Openduration" units="ms"
+    expires_after="2023-07-15">
+  <owner>longbowei@google.com</owner>
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records the duration that the Feedback App is open. Emitted when the app is
+    closed.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.Duration.FetchSystemInformation" units="ms"
     expires_after="2023-03-25">
   <owner>xiangdongkong@google.com</owner>

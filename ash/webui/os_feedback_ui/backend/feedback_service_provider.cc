@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/webui/os_feedback_ui/backend/histogram_util.h"
 #include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "base/bind.h"
@@ -23,9 +24,14 @@ using ::ash::os_feedback_ui::mojom::SendReportStatus;
 
 FeedbackServiceProvider::FeedbackServiceProvider(
     std::unique_ptr<OsFeedbackDelegate> feedback_delegate)
-    : feedback_delegate_(std::move(feedback_delegate)) {}
+    : feedback_delegate_(std::move(feedback_delegate)) {
+  open_timestamp_ = base::Time::Now();
+}
 
-FeedbackServiceProvider::~FeedbackServiceProvider() = default;
+FeedbackServiceProvider::~FeedbackServiceProvider() {
+  const base::TimeDelta time_open = base::Time::Now() - open_timestamp_;
+  ash::os_feedback_ui::metrics::EmitFeedbackAppOpenDuration(time_open);
+}
 
 void FeedbackServiceProvider::GetFeedbackContext(
     GetFeedbackContextCallback callback) {

@@ -9,6 +9,7 @@
 
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -45,6 +46,9 @@ class FeedbackServiceProvider
   std::unique_ptr<OsFeedbackDelegate> feedback_delegate_;
   mojo::Receiver<os_feedback_ui::mojom::FeedbackServiceProvider> receiver_{
       this};
+  // Timestamp of when the app was opened. Used to calculate a duration for
+  // metrics.
+  base::Time open_timestamp_;
   base::WeakPtrFactory<FeedbackServiceProvider> weak_ptr_factory_{this};
 };
 
