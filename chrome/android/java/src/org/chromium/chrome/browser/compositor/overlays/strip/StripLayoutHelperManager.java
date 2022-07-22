@@ -586,7 +586,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             }
 
             @Override
-            public void didCloseTab(Tab tab) {
+            public void onFinishingTabClosure(Tab tab) {
                 getStripLayoutHelper(tab.isIncognito()).tabClosed(time(), tab.getId());
                 updateModelSwitcherButton();
             }

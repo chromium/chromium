@@ -62,7 +62,7 @@ public class TabModelSelectorTabObserver
             }
 
             @Override
-            public void didCloseTab(Tab tab) {
+            public void onFinishingTabClosure(Tab tab) {
                 if (mTabsToClose.get(tab.getId()) != null) {
                     mTabsToClose.remove(tab.getId());
                     onTabUnregistered(tab);

@@ -41,17 +41,17 @@ public interface TabModelObserver {
      *
      * @param tab The {@link Tab} that was closed.
      */
-    default void didCloseTab(Tab tab) {}
+    default void onFinishingTabClosure(Tab tab) {}
 
     /**
      * Called right before each of {@code tabs} will be destroyed. Called as each closure event is
-     * committed. Will be called per closure eventm i.e. {@link TabModel#closeTab()},
+     * committed. Will be called per closure event i.e. {@link TabModel#closeTab()},
      * {@link TabModel#closeAllTabs()}, and {@link TabModel#closeMultipleTabs()} will all trigger
      * one event when the tabs associated with a particular closure commit to closing.
      *
      * @param tabs The list of {@link Tab} that were closed.
      */
-    default void didCloseTabs(List<Tab> tabs) {}
+    default void onFinishingMultipleTabClosure(List<Tab> tabs) {}
 
     /**
      * Called before a tab will be added to the {@link TabModel}.

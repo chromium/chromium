@@ -121,7 +121,7 @@ public class TabCountProvider {
             }
 
             @Override
-            public void didCloseTab(Tab tab) {
+            public void onFinishingTabClosure(Tab tab) {
                 updateTabCount();
             }
 

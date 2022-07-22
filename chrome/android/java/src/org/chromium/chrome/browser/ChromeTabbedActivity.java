@@ -595,7 +595,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
             mTabModelObserver = new TabModelSelectorTabModelObserver(mTabModelSelector) {
                 @Override
-                public void didCloseTab(Tab tab) {
+                public void onFinishingTabClosure(Tab tab) {
                     closeIfNoTabsAndHomepageEnabled(false);
                     openTabletTabSwitcherIfNoTabs();
                 }

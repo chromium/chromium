@@ -45,7 +45,7 @@ public class PendingTabClosureManager {
          * Request to notify observers that {@code tabs} will be closed.
          * @param tabs The list of tabs to close together.
          */
-        public void notifyDidCloseTabs(List<Tab> tabs);
+        public void notifyOnFinishingMultipleTabClosure(List<Tab> tabs);
     }
 
     /**
@@ -341,8 +341,8 @@ public class PendingTabClosureManager {
         while (events.hasNext()) {
             TabClosureEvent event = events.next();
             events.remove();
-            // This calls notifyDidCloseTabs once per TabClosureEvent. This is intended so that tabs
-            // closed as distinct events are recorded as such.
+            // This calls notifyOnFinishingMultipleTabClosure once per TabClosureEvent. This is
+            // intended so that tabs closed as distinct events are recorded as such.
             commitClosuresInternal(event.getList());
         }
         assert mTabClosureEvents.isEmpty();
@@ -379,7 +379,7 @@ public class PendingTabClosureManager {
             // Tabs shouldn't be removed more than once.
             assert removed;
         }
-        mDelegate.notifyDidCloseTabs(tabs);
+        mDelegate.notifyOnFinishingMultipleTabClosure(tabs);
         for (Tab tab : tabs) {
             mDelegate.finalizeClosure(tab);
         }

@@ -164,7 +164,7 @@ public class PartnerHomepageIntegrationTest {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             tabModel.addObserver(new TabModelObserver() {
                 @Override
-                public void didCloseTab(Tab tab) {
+                public void onFinishingTabClosure(Tab tab) {
                     if (tabModel.getCount() == 0) tabClosed.notifyCalled();
                 }
             });

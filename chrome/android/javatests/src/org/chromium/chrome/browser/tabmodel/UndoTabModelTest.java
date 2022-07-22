@@ -174,7 +174,7 @@ public class UndoTabModelTest {
         }
 
         @Override
-        public void didCloseTab(Tab tab) {
+        public void onFinishingTabClosure(Tab tab) {
             mTabClosedCallback.notifyCalled();
         }
     }

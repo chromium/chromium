@@ -38,7 +38,7 @@ public class HistoricalTabModelObserver implements TabModelObserver {
     }
 
     @Override
-    public void didCloseTabs(List<Tab> tabs) {
+    public void onFinishingMultipleTabClosure(List<Tab> tabs) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.BULK_TAB_RESTORE)) {
             legacyCreateHistoricalTabs(tabs);
             return;

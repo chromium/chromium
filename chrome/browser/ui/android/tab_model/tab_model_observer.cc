@@ -15,9 +15,10 @@ void TabModelObserver::DidSelectTab(TabAndroid* tab,
 
 void TabModelObserver::WillCloseTab(TabAndroid* tab, bool animate) {}
 
-void TabModelObserver::DidCloseTab(int tab_id, bool incognito) {}
+void TabModelObserver::OnFinishingTabClosure(int tab_id, bool incognito) {}
 
-void TabModelObserver::DidCloseTabs(const std::vector<TabAndroid*>& tabs) {}
+void TabModelObserver::OnFinishingMultipleTabClosure(
+    const std::vector<TabAndroid*>& tabs) {}
 
 void TabModelObserver::WillAddTab(TabAndroid* tab,
                                   TabModel::TabLaunchType type) {}

@@ -124,7 +124,7 @@ public class TabObserverRegistrar implements TabModelObserver, DestroyObserver {
     }
 
     @Override
-    public void didCloseTab(Tab tab) {
+    public void onFinishingTabClosure(Tab tab) {
         // We don't need to remove the Tab Observers since it's closed.
         // TODO(peconn): Do we really want to remove the *global* PageLoadMetrics observers here?
         removePageLoadMetricsObservers();

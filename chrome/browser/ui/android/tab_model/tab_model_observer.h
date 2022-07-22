@@ -30,10 +30,11 @@ class TabModelObserver {
   virtual void WillCloseTab(TabAndroid* tab, bool animate);
 
   // Called right before a |tab| has been destroyed.
-  virtual void DidCloseTab(int tab_id, bool incognito);
+  virtual void OnFinishingTabClosure(int tab_id, bool incognito);
 
   // Called right before all |tabs| are destroyed.
-  virtual void DidCloseTabs(const std::vector<TabAndroid*>& tabs);
+  virtual void OnFinishingMultipleTabClosure(
+      const std::vector<TabAndroid*>& tabs);
 
   // Called before a |tab| is added to the TabModel.
   virtual void WillAddTab(TabAndroid* tab, TabModel::TabLaunchType type);

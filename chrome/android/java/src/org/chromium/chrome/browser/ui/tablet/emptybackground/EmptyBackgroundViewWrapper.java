@@ -86,7 +86,7 @@ public class EmptyBackgroundViewWrapper {
             }
 
             @Override
-            public void didCloseTab(Tab tab) {
+            public void onFinishingTabClosure(Tab tab) {
                 updateEmptyContainerState();
             }
 

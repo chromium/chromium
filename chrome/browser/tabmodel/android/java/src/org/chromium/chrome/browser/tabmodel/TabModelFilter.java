@@ -218,16 +218,16 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     }
 
     @Override
-    public void didCloseTab(Tab tab) {
+    public void onFinishingTabClosure(Tab tab) {
         for (TabModelObserver observer : mFilteredObservers) {
-            observer.didCloseTab(tab);
+            observer.onFinishingTabClosure(tab);
         }
     }
 
     @Override
-    public void didCloseTabs(List<Tab> tabs) {
+    public void onFinishingMultipleTabClosure(List<Tab> tabs) {
         for (TabModelObserver observer : mFilteredObservers) {
-            observer.didCloseTabs(tabs);
+            observer.onFinishingMultipleTabClosure(tabs);
         }
     }
 

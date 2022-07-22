@@ -234,7 +234,7 @@ public class LayoutManagerImpl
         }
 
         @Override
-        public void didCloseTab(Tab tab) {
+        public void onFinishingTabClosure(Tab tab) {
             tabClosed(tab.getId(), tab.isIncognito(), false);
         }
 

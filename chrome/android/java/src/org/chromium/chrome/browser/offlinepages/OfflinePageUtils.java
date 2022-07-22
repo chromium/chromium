@@ -822,7 +822,7 @@ public class OfflinePageUtils {
         }
 
         @Override
-        public void didCloseTab(Tab tab) {
+        public void onFinishingTabClosure(Tab tab) {
             Profile profile = mTabModelSelector.getModel(tab.isIncognito()).getProfile();
             OfflinePageBridge bridge = OfflinePageBridge.getForProfile(profile);
             if (bridge == null) return;

@@ -1379,7 +1379,7 @@ public class UndoTabModelUnitTest {
 
     /**
      * Test a {@link TabModel} where undo is not supported and
-     * {@link TabModelObserver#didCloseTabs()} is called.
+     * {@link TabModelObserver#onFinishingMultipleTabClosure()} is called.
      *     Action                     Model List         Close List        Comprehensive List
      * 1.  Initial State              [ 0 1 2 3 4s ]     -                 [ 0 1 2 3 4s ]
      * 2.  CloseTab(1)                [ 0 2 3 4s ]       -                 [ 0 2 3 4s ]
@@ -1388,7 +1388,7 @@ public class UndoTabModelUnitTest {
      */
     @Test
     @SmallTest
-    public void testUndoNotSupportedDidCloseTabs() throws TimeoutException {
+    public void testUndoNotSupportedOnFinishingMultipleTabClosure() throws TimeoutException {
         final boolean isIncognito = true;
         final TabModel model = createTabModel(isIncognito);
         createTab(model, isIncognito);
@@ -1412,7 +1412,7 @@ public class UndoTabModelUnitTest {
         final ArrayList<Tab> lastClosedTabs = new ArrayList<Tab>();
         model.addObserver(new TabModelObserver() {
             @Override
-            public void didCloseTabs(List<Tab> tabs) {
+            public void onFinishingMultipleTabClosure(List<Tab> tabs) {
                 lastClosedTabs.clear();
                 lastClosedTabs.addAll(tabs);
             }

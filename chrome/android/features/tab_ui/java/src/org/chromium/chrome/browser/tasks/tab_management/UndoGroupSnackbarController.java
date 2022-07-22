@@ -108,7 +108,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
                     }
 
                     @Override
-                    public void didCloseTab(Tab tab) {
+                    public void onFinishingTabClosure(Tab tab) {
                         mSnackbarManager.dismissSnackbars(UndoGroupSnackbarController.this);
                     }
                 };
