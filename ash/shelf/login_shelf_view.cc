@@ -1063,9 +1063,6 @@ bool LoginShelfView::ShouldShowGuestButton() const {
   if (session_state != SessionState::LOGIN_PRIMARY)
     return false;
 
-  if (kiosk_license_mode_)
-    return false;
-
   return true;
 }
 

@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(KioskSkuVisibilityTest, WithoutApps) {
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
   EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
 }
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(KioskSkuVisibilityTest, WithApps) {
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
   EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
   EXPECT_TRUE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
 }

@@ -1521,6 +1521,30 @@ TEST_P(LoginShelfViewWithKioskLicenseTest,
   EXPECT_FALSE(IsKioskInstructionBubbleVisible());
 }
 
+// Checks that the button of guest mode is shown if allow_guest_ is set to
+// true for devices with Kiosk SKU.
+TEST_P(LoginShelfViewWithKioskLicenseTest, ShowGuestModeButton) {
+  SetKioskLicenseModeForTesting(true);
+  NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
+
+  login_shelf_view_->SetAllowLoginAsGuest(true);
+
+  EXPECT_TRUE(login_shelf_view_->GetViewByID(LoginShelfView::kBrowseAsGuest)
+                  ->GetVisible());
+}
+
+// Checks that the button of guest mode is hidden if allow_guest_ is set to
+// false for devices with Kiosk SKU.
+TEST_P(LoginShelfViewWithKioskLicenseTest, HideGuestModeButton) {
+  SetKioskLicenseModeForTesting(true);
+  NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
+
+  login_shelf_view_->SetAllowLoginAsGuest(false);
+
+  EXPECT_FALSE(login_shelf_view_->GetViewByID(LoginShelfView::kBrowseAsGuest)
+                   ->GetVisible());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, LoginShelfViewTest, testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All, OsInstallButtonTest, testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,

@@ -588,7 +588,6 @@ namespace {
 // Names of policies.
 constexpr char kManagedGuestModeName[] = "MANAGED_GUEST_MODE";
 constexpr char kAllowNewUsersName[] = "ALLOW_NEW_USERS";
-constexpr char kGuestModeName[] = "GUEST_MODE";
 
 }  // namespace
 
@@ -647,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, WithoutApps) {
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
   EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAppsButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
@@ -666,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, WithApps) {
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
   EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
   EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
   EXPECT_TRUE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
@@ -684,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest, OpenKioskMenu) {
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
   EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
   EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
   EXPECT_TRUE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
@@ -708,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(KioskSkuLoginScreenVisibilityTest,
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
   EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
   EXPECT_TRUE(LoginScreenTestApi::IsKioskDefaultMessageShown());
@@ -741,12 +740,6 @@ class KioskSkuLoginScreenPolicyTest
           ->payload()
           .mutable_allow_new_users()
           ->set_allow_new_users(true);
-    } else if (policy_name == kGuestModeName) {
-      policy_helper()
-          ->device_policy()
-          ->payload()
-          .mutable_guest_mode_enabled()
-          ->set_guest_mode_enabled(true);
     }
   }
 };
@@ -759,7 +752,7 @@ IN_PROC_BROWSER_TEST_P(KioskSkuLoginScreenPolicyTest, EnabledPolicies) {
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
   EXPECT_TRUE(LoginScreenTestApi::IsLoginShelfShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsKioskInstructionBubbleShown());
   EXPECT_TRUE(LoginScreenTestApi::IsKioskDefaultMessageShown());
@@ -768,7 +761,6 @@ IN_PROC_BROWSER_TEST_P(KioskSkuLoginScreenPolicyTest, EnabledPolicies) {
 INSTANTIATE_TEST_SUITE_P(All,
                          KioskSkuLoginScreenPolicyTest,
                          testing::Values(kManagedGuestModeName,
-                                         kAllowNewUsersName,
-                                         kGuestModeName));
+                                         kAllowNewUsersName));
 
 }  // namespace ash
