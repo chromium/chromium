@@ -4,6 +4,8 @@ This directory contains scripts for building, packaging, and distributing the
 Rust toolchain (the Rust compiler, and also C++/Rust FFI tools like
 [Crubit](https://github.com/google/crubit)).
 
+[TOC]
+
 
 ## Rolling Rust compiler and other Rust tools
 
@@ -20,11 +22,9 @@ a new version:
 Steps to roll the Crubit tools (e.g. `rs_bindings_from_cc` tool)
 to a new version:
 
-- Locally, update `CRUBIT_REVISION` in `build_crubit.py`.
+- Locally, update `CRUBIT_REVISION` in `update_rust.py`.
   (Update `CRUBIT_SUB_REVISION` when the build or packaging is changed, but
   the upstream Rust revision we build from is not changed.)
-  TODO(https://crbug.com/1329611): Move `CRUBIT_REVISION` to
-  `update_rust.py` (see WIP CL: https://crrev.com/c/3718281).
 
 - Locally, update `crubit_revision` in `//DEPS`, so that it matches
   the revision from the previous bullet item.
@@ -45,20 +45,19 @@ to a new version:
 
 - Upload the CL to Gerrit.
   Ask [CQ](//docs/infra/cq.md) for Rust-specific tryjobs in the CL description:
-  `Cq-Include-Tryjobs:
-  luci.chromium.try:linux-rust-x64-rel,linux-rust-x64-dbg,android-rust-arm-rel,android-rust-arm-dbg`.
+  `Cq-Include-Trybots: luci.chromium.try:linux-rust-x64-rel,linux-rust-x64-dbg,android-rust-arm-rel,android-rust-arm-dbg`.
 
 - Run `linux_upload_clang` tryjob.  This will run `package_rust.py` which will
   `build_rust.py` and then upload a new version of the Rust toolchain package to
-  the staging bucket.
-  TODO(https://crbug.com/1329611): In the future this will also run
-  `build_crubit.py` - we should update the docs once that happens.
+  the staging bucket.  This step runs `build_crubit.py` but doesn't (yet) package
+  the built binaries.
+  TODO(https://crbug.com/1329611): Update the docs once Crubit also gets packaged.
 
 - Move the new toolchain package from staging to prod.
   (A small set of people have the permission for this.  There are
   some Google-internal docs with more details.)
 
-- Run CQ (see also `Cq-Include-Tryjobs` suggested above).
+- Run CQ (see also `Cq-Include-Trybots` suggested above).
   This step will test that `gclient sync` can fetch the new Rust toolchain
   package + that the new package works fine in Chromium build.
 
@@ -70,15 +69,37 @@ to a new version:
 
 ### Prerequisites
 
+#### LLVM/Clang build
+
 `build_crubit.py` depends on having a locally-built LLVM/Clang:
 `tools/clang/scripts/build.py --bootstrap --without-android --without-fuchsia`.
 Among other things this prerequisite is required to generate
 `third_party/llvm-bootstrap-install` where `build_crubit.py` will look for
 LLVM/Clang libs and headers).
 
+#### Bazel
+
 `build_crubit.py` depends on Bazel.
-TODO(https://crbug.com/1329611): Provide instructions for using `checkout_bazel`
-in `.gclient` after https://crrev.com/c/3763581 lands.
+
+To get Bazel, ensure that you have `checkout_bazel` set in your `.gclient` file
+and then rerun `gclient sync`:
+
+```sh
+$ cat ../.gclient
+solutions = [
+  {
+    "name": "src",
+    "url": "https://chromium.googlesource.com/chromium/src.git",
+    ...
+    "custom_vars": {
+      "checkout_bazel": True,
+      "use_rust": True,
+    },
+  },
+]
+```
+
+#### Supported host platforms
 
 So far `build_crubit.py` has only been tested on Linux hosts.
 

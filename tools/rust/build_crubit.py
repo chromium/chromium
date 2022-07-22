@@ -31,24 +31,10 @@ sys.path.append(
 from update import (CLANG_REVISION, CLANG_SUB_REVISION, LLVM_BUILD_DIR)
 from build import (LLVM_BOOTSTRAP_INSTALL_DIR, MaybeDownloadHostGcc)
 
-from update_rust import (CHROMIUM_DIR, RUST_REVISION, RUST_SUB_REVISION,
-                         STAGE0_JSON_SHA256, THIRD_PARTY_DIR,
-                         GetPackageVersion)
+from update_rust import (CHROMIUM_DIR, CRUBIT_REVISION, THIRD_PARTY_DIR)
 
-# Trunk on 2022-07-14.
-#
-# The revision specified below should typically be the same as the
-# `crubit_revision` specified in the //DEPS file.  More details and roll
-# instructions can be found in tools/rust/README.md.
-#
-# TODO(https://crbug.com/1329611): Move `CRUBIT_REVISION` to `update_rust.py`
-# (see WIP CL: https://crrev.com/c/3718281).
-CRUBIT_REVISION = 'd9b0ad4c09b46328dcc7a5ec28ce86cca56e0389'
-CRUBIT_SUB_REVISION = 1
-
-THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
-CRUBIT_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'crubit', 'src')
 BAZEL_EXE = os.path.join(CHROMIUM_DIR, 'tools', 'bazel', 'bazel')
+CRUBIT_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'crubit', 'src')
 
 
 def RunCommand(command, env=None, cwd=None, fail_hard=True):
@@ -143,10 +129,11 @@ def BuildCrubit(gcc_toolchain_path):
     RunCommand(args + extra_args, env=env, cwd=CRUBIT_SRC_DIR)
 
 
+def CleanBazel():
+    RunCommand([BAZEL_EXE, "clean", "--expunge"], cwd=CRUBIT_SRC_DIR)
+
+
 def ShutdownBazel():
-    # This needs to use the same arguments as BuildCrubit, because otherwise
-    # we get: WARNING: Running Bazel server needs to be killed, because the
-    # startup options are different.
     RunCommand([BAZEL_EXE, "shutdown"], cwd=CRUBIT_SRC_DIR)
 
 
@@ -172,6 +159,7 @@ def main():
         CheckoutCrubit(CRUBIT_REVISION, CRUBIT_SRC_DIR)
 
     try:
+        CleanBazel()
         BuildCrubit(args.gcc_toolchain)
     finally:
         ShutdownBazel()

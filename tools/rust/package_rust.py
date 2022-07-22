@@ -24,6 +24,18 @@ BUILDLOG_NAME = f'rust-buildlog-{PACKAGE_VERSION}.txt'
 RUST_TOOLCHAIN_PACKAGE_NAME = f'rust-toolchain-{PACKAGE_VERSION}.tgz'
 
 
+def BuildCrubit():
+    with open(os.path.join(THIRD_PARTY_DIR, BUILDLOG_NAME), 'w') as log:
+        build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_crubit.py')]
+        # TODO(lukasza): Default to `fail_hard` once we actually depend on the
+        # build step (i.e. once we start packaging Crubit).
+        TeeCmd(build_cmd, log, fail_hard=False)
+
+    # TODO(lukasza): Rename this function to BuildAndInstallCrubit and actually
+    # install Crubit binaries into RUST_TOOLCHAIN_OUT_DIR/bin (once we gain
+    # confidence that Crubit continues to build uneventfully on the bots).
+
+
 def main():
     parser = argparse.ArgumentParser(description='build and package Rust')
     parser.add_argument('--upload',
@@ -45,6 +57,8 @@ def main():
     with open(os.path.join(THIRD_PARTY_DIR, BUILDLOG_NAME), 'w') as log:
         build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_rust.py')]
         TeeCmd(build_cmd, log)
+
+    BuildCrubit()
 
     with tarfile.open(
             os.path.join(THIRD_PARTY_DIR, RUST_TOOLCHAIN_PACKAGE_NAME),
