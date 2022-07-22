@@ -4467,6 +4467,8 @@ static_library("ui") {
       "views/importer/import_lock_dialog_view.h",
       "views/incognito_clear_browsing_data_dialog.cc",
       "views/incognito_clear_browsing_data_dialog.h",
+      "views/incognito_clear_browsing_data_dialog_coordinator.cc",
+      "views/incognito_clear_browsing_data_dialog_coordinator.h",
       "views/infobars/alternate_nav_infobar_view.cc",
       "views/infobars/alternate_nav_infobar_view.h",
       "views/infobars/confirm_infobar.cc",
