@@ -122,10 +122,9 @@
 
 namespace {
 
-TabDragController::EventSource EventSourceFromEvent(
-    const ui::LocatedEvent& event) {
-  return event.IsGestureEvent() ? TabDragController::EVENT_SOURCE_TOUCH
-                                : TabDragController::EVENT_SOURCE_MOUSE;
+ui::mojom::DragEventSource EventSourceFromEvent(const ui::LocatedEvent& event) {
+  return event.IsGestureEvent() ? ui::mojom::DragEventSource::kTouch
+                                : ui::mojom::DragEventSource::kMouse;
 }
 
 }  // namespace

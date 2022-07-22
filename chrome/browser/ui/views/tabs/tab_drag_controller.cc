@@ -45,7 +45,6 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/clipboard/clipboard_constants.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/display.h"
@@ -452,7 +451,7 @@ TabDragController::~TabDragController() {
   if (current_state_ == DragState::kDraggingWindow)
     GetAttachedBrowserWidget()->EndMoveLoop();
 
-  if (event_source_ == EVENT_SOURCE_TOUCH) {
+  if (event_source_ == ui::mojom::DragEventSource::kTouch) {
     TabDragContext* capture_context =
         attached_context_ ? attached_context_.get() : source_context_.get();
     capture_context->GetWidget()->ReleaseCapture();
@@ -466,7 +465,7 @@ void TabDragController::Init(TabDragContext* source_context,
                              const gfx::Point& mouse_offset,
                              int source_view_offset,
                              ui::ListSelectionModel initial_selection_model,
-                             EventSource event_source) {
+                             ui::mojom::DragEventSource event_source) {
   DCHECK(!dragging_views.empty());
   DCHECK(base::Contains(dragging_views, source_view));
   source_context_ = source_context;
@@ -523,7 +522,7 @@ void TabDragController::Init(TabDragContext* source_context,
 
   // Gestures don't automatically do a capture. We don't allow multiple drags at
   // the same time, so we explicitly capture.
-  if (event_source == EVENT_SOURCE_TOUCH) {
+  if (event_source == ui::mojom::DragEventSource::kTouch) {
     // Taking capture may cause capture to be lost, ending the drag and
     // destroying |this|.
     base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
@@ -1563,7 +1562,7 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
     attached_context_->OwnDragController(std::move(me));
   }
   const views::Widget::MoveLoopSource move_loop_source =
-      event_source_ == EVENT_SOURCE_MOUSE
+      event_source_ == ui::mojom::DragEventSource::kMouse
           ? views::Widget::MoveLoopSource::kMouse
           : views::Widget::MoveLoopSource::kTouch;
   const views::Widget::MoveLoopEscapeBehavior escape_behavior =
@@ -1788,9 +1787,10 @@ void TabDragController::PerformDeferredAttach() {
   // On ChromeOS, the gesture state is already cleared and so
   // GetCursorScreenPoint() will fail to obtain the last touch location.
   // Therefore it uses the last remembered location instead.
-  const gfx::Point current_screen_point = (event_source_ == EVENT_SOURCE_TOUCH)
-                                              ? last_point_in_screen_
-                                              : GetCursorScreenPoint();
+  const gfx::Point current_screen_point =
+      (event_source_ == ui::mojom::DragEventSource::kTouch)
+          ? last_point_in_screen_
+          : GetCursorScreenPoint();
   // If we're attaching the dragged tabs to an overview window's tabstrip, the
   // tabstrip should not have focus.
   DetachAndAttachToNewContext(DONT_RELEASE_CAPTURE, deferred_target_context,
@@ -2342,11 +2342,8 @@ gfx::Point TabDragController::GetCursorScreenPoint() {
   DCHECK(widget);
   aura::Window* widget_window = widget->GetNativeWindow();
   DCHECK(widget_window->GetRootWindow());
-  auto event_source = event_source_ == EVENT_SOURCE_MOUSE
-                          ? ui::mojom::DragEventSource::kMouse
-                          : ui::mojom::DragEventSource::kTouch;
   return aura::Env::GetInstance()->GetLastPointerPoint(
-      event_source, widget_window, /*fallback=*/last_point_in_screen_);
+      event_source_, widget_window, /*fallback=*/last_point_in_screen_);
 #else
   return display::Screen::GetScreen()->GetCursorScreenPoint();
 #endif

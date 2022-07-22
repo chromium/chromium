@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -55,12 +56,6 @@ class WindowFinder;
 // is the default on aura.
 class TabDragController : public views::WidgetObserver {
  public:
-  // Indicates the event source that initiated the drag.
-  enum EventSource {
-    EVENT_SOURCE_MOUSE,
-    EVENT_SOURCE_TOUCH,
-  };
-
   // Amount above or below the tabstrip the user has to drag before detaching.
   static const int kTouchVerticalDetachMagnetism;
   static const int kVerticalDetachMagnetism;
@@ -86,7 +81,7 @@ class TabDragController : public views::WidgetObserver {
             const gfx::Point& mouse_offset,
             int source_view_offset,
             ui::ListSelectionModel initial_selection_model,
-            EventSource event_source);
+            ui::mojom::DragEventSource event_source);
 
   // Returns true if there is a drag underway and the drag is attached to
   // |tab_strip|.
@@ -109,7 +104,7 @@ class TabDragController : public views::WidgetObserver {
   // Returns the pointer of |source_context_|.
   static TabDragContext* GetSourceContext();
 
-  EventSource event_source() const { return event_source_; }
+  ui::mojom::DragEventSource event_source() const { return event_source_; }
 
   // See description above fields for details on these.
   bool active() const { return current_state_ != DragState::kStopped; }
@@ -565,7 +560,7 @@ class TabDragController : public views::WidgetObserver {
   // as a result of a drag finishing.
   void NotifyEventIfTabAddedToGroup();
 
-  EventSource event_source_ = EVENT_SOURCE_MOUSE;
+  ui::mojom::DragEventSource event_source_ = ui::mojom::DragEventSource::kMouse;
 
   // The TabDragContext the drag originated from. This is set to null
   // if destroyed during the drag.
