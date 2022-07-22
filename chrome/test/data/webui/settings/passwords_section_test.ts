@@ -57,7 +57,7 @@ function validateMultiStorePasswordList(
     assertTrue(!!listItem);
     assertEquals(expected.urls.shown, listItem.$.originUrl.textContent!.trim());
     assertEquals(expected.urls.link, listItem.$.originUrl.href);
-    assertEquals(expected.username, listItem.$.username.value);
+    assertEquals(expected.username, listItem.$.username.textContent!.trim());
   }
 }
 

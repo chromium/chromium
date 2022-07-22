@@ -60,7 +60,9 @@ function validatePasswordsSubsection(
         expectedPassword.urls.shown,
         listItemElement.$.originUrl.textContent!.trim());
     assertEquals(expectedPassword.urls.link, listItemElement.$.originUrl.href);
-    assertEquals(expectedPassword.username, listItemElement.$.username.value);
+    assertEquals(
+        expectedPassword.username,
+        listItemElement.$.username.textContent!.trim());
   }
 }
 
