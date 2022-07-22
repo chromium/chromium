@@ -7,6 +7,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
+#include "base/values.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/base/pref_names.h"
 #include "chromecast/browser/metrics/cast_metrics_prefs.h"
@@ -45,13 +46,13 @@ void CastFeatureListCreator::CreatePrefServiceAndFeatureList(
   pref_service_ = shell::PrefServiceHelper::CreatePrefService(
       pref_registry.get(), process_type);
 
-  const auto* features_dict =
-      pref_service_->GetDictionary(prefs::kLatestDCSFeatures);
-  const auto* experiment_ids =
-      pref_service_->GetList(prefs::kActiveDCSExperiments);
+  const base::Value::Dict& features_dict =
+      pref_service_->GetValueDict(prefs::kLatestDCSFeatures);
+  const base::Value::List& experiment_ids =
+      pref_service_->GetValueList(prefs::kActiveDCSExperiments);
   auto* command_line = base::CommandLine::ForCurrentProcess();
   InitializeFeatureList(
-      *features_dict, *experiment_ids,
+      features_dict, experiment_ids,
       command_line->GetSwitchValueASCII(switches::kEnableFeatures),
       command_line->GetSwitchValueASCII(switches::kDisableFeatures),
       extra_enable_features_, extra_disable_features_);

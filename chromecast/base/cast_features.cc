@@ -40,11 +40,10 @@ std::vector<const base::Feature*>& GetTestFeatures() {
   return *features_for_test;
 }
 
-void SetExperimentIds(const base::Value& list) {
+void SetExperimentIds(const base::Value::List& list) {
   DCHECK(!g_experiment_ids_initialized);
-  DCHECK(list.is_list());
   std::unordered_set<int32_t> ids;
-  for (const auto& it : list.GetListDeprecated()) {
+  for (const auto& it : list) {
     if (it.is_int()) {
       ids.insert(it.GetInt());
     } else {
@@ -195,15 +194,13 @@ const std::vector<const base::Feature*>& GetFeatures() {
   return *features;
 }
 
-void InitializeFeatureList(const base::Value& dcs_features,
-                           const base::Value& dcs_experiment_ids,
+void InitializeFeatureList(const base::Value::Dict& dcs_features,
+                           const base::Value::List& dcs_experiment_ids,
                            const std::string& cmd_line_enable_features,
                            const std::string& cmd_line_disable_features,
                            const std::string& extra_enable_features,
                            const std::string& extra_disable_features) {
   DCHECK(!base::FeatureList::GetInstance());
-  DCHECK(dcs_features.is_dict());
-  DCHECK(dcs_experiment_ids.is_list());
 
   // Set the experiments.
   SetExperimentIds(dcs_experiment_ids);
@@ -219,7 +216,7 @@ void InitializeFeatureList(const base::Value& dcs_features,
                                           all_disable_features);
 
   // Override defaults from the DCS config.
-  for (const auto kv : dcs_features.DictItems()) {
+  for (const auto kv : dcs_features) {
     // Each feature must have its own FieldTrial object. Since experiments are
     // controlled server-side for Chromecast, and this class is designed with a
     // client-side experimentation framework in mind, these parameters are
@@ -293,41 +290,37 @@ bool IsFeatureEnabled(const base::Feature& feature) {
   return base::FeatureList::IsEnabled(feature);
 }
 
-base::Value GetOverriddenFeaturesForStorage(const base::Value& features) {
-  base::Value persistent_dict(base::Value::Type::DICTIONARY);
+base::Value::Dict GetOverriddenFeaturesForStorage(
+    const base::Value::Dict& features) {
+  base::Value::Dict persistent_dict;
 
   // |features| maps feature names to either a boolean or a dict of params.
-  for (const auto feature : features.DictItems()) {
+  for (const auto feature : features) {
     if (feature.second.is_bool()) {
-      persistent_dict.SetBoolKey(feature.first, feature.second.GetBool());
+      persistent_dict.Set(feature.first, feature.second.GetBool());
       continue;
     }
 
     if (feature.second.is_dict()) {
       const base::Value* params_dict = &feature.second;
-      base::Value params(base::Value::Type::DICTIONARY);
+      base::Value::Dict params;
 
-      for (const auto params_kv : params_dict->DictItems()) {
-        const auto& param_key = params_kv.first;
-        const auto& param_val = params_kv.second;
+      for (const auto [param_key, param_val] : params_dict->GetDict()) {
         if (param_val.is_bool()) {
-          params.SetStringKey(param_key,
-                              param_val.GetBool() ? "true" : "false");
+          params.Set(param_key, param_val.GetBool() ? "true" : "false");
         } else if (param_val.is_int()) {
-          params.SetStringKey(param_key,
-                              base::NumberToString(param_val.GetInt()));
+          params.Set(param_key, base::NumberToString(param_val.GetInt()));
         } else if (param_val.is_double()) {
-          params.SetStringKey(param_key,
-                              base::NumberToString(param_val.GetDouble()));
+          params.Set(param_key, base::NumberToString(param_val.GetDouble()));
         } else if (param_val.is_string()) {
-          params.SetStringKey(param_key, param_val.GetString());
+          params.Set(param_key, param_val.GetString());
         } else {
           LOG(ERROR) << "Entry in params dict for \"" << feature.first << "\""
                      << " is not of a supported type (key: " << param_key
                      << ", type: " << param_val.type();
         }
       }
-      persistent_dict.SetPath(feature.first, std::move(params));
+      persistent_dict.Set(feature.first, std::move(params));
       continue;
     }
 

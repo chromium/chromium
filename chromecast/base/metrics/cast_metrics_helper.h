@@ -164,7 +164,7 @@ class CastMetricsHelper {
                              int num_buckets);
   void LogMediumTimeHistogramEvent(const std::string& name,
                                    base::TimeDelta value);
-  base::Value CreateEventBase(const std::string& name);
+  base::Value::Dict CreateEventBase(const std::string& name);
   base::TimeTicks Now();
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

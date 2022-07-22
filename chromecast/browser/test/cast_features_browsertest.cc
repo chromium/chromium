@@ -122,10 +122,13 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
   // Write |dcs_features| to the pref store. This method is intended to be
   // overridden in internal test to utilize the real production codepath for
   // setting features from the server.
-  virtual void SetFeatures(const base::DictionaryValue& dcs_features) {
-    auto pref_features = GetOverriddenFeaturesForStorage(dcs_features);
+  virtual void SetFeatures(const base::Value::Dict& dcs_features) {
+    base::Value::Dict pref_features =
+        GetOverriddenFeaturesForStorage(dcs_features);
     DictionaryPrefUpdate dict(pref_service(), prefs::kLatestDCSFeatures);
-    dict->MergeDictionary(&pref_features);
+    for (auto [pref_name, pref_value] : pref_features) {
+      dict->SetStringKey(pref_name, pref_value.GetString());
+    }
     pref_service()->CommitPendingWrite();
   }
 
@@ -173,10 +176,10 @@ IN_PROC_BROWSER_TEST_F(CastFeaturesBrowserTest,
   ASSERT_TRUE(chromecast::IsFeatureEnabled(kTestFeat4));
 
   // Set the features to be used on next boot.
-  base::DictionaryValue features;
-  features.SetBoolean("test_feat_1", true);
-  features.SetBoolean("test_feat_4", false);
-  SetFeatures(features);
+  base::Value::Dict features;
+  features.Set("test_feat_1", true);
+  features.Set("test_feat_4", false);
+  SetFeatures(std::move(features));
 
   // Default values should still be returned until next boot.
   EXPECT_FALSE(chromecast::IsFeatureEnabled(kTestFeat1));
@@ -208,15 +211,15 @@ IN_PROC_BROWSER_TEST_F(CastFeaturesBrowserTest,
   ASSERT_FALSE(chromecast::IsFeatureEnabled(kTestFeat11));
 
   // Set the features to be used on next boot.
-  base::DictionaryValue features;
-  auto params = std::make_unique<base::DictionaryValue>();
-  params->SetBoolean("bool_param", true);
-  params->SetBoolean("bool_param_2", false);
-  params->SetString("str_param", "foo");
-  params->SetDoubleKey("doub_param", 3.14159);
-  params->SetInteger("int_param", 76543);
+  base::Value::Dict features;
+  base::Value::Dict params;
+  params.Set("bool_param", true);
+  params.Set("bool_param_2", false);
+  params.Set("str_param", "foo");
+  params.Set("doub_param", 3.14159);
+  params.Set("int_param", 76543);
   features.Set("test_feat_11", std::move(params));
-  SetFeatures(features);
+  SetFeatures(std::move(features));
 
   // Default value should still be returned until next boot.
   EXPECT_FALSE(chromecast::IsFeatureEnabled(kTestFeat11));
@@ -262,15 +265,16 @@ IN_PROC_BROWSER_TEST_F(CastFeaturesBrowserTest,
   ASSERT_TRUE(chromecast::IsFeatureEnabled(kTestFeat24));
 
   // Set both good parameters...
-  base::DictionaryValue features;
-  features.SetBoolean("test_feat_21", true);
-  features.SetBoolean("test_feat_24", false);
+  base::Value::Dict features;
+  features.Set("test_feat_21", true);
+  features.Set("test_feat_24", false);
 
   // ... and bad parameters.
-  features.SetString("test_feat_22", "False");
-  features.Set("test_feat_23", std::make_unique<base::ListValue>());
+  features.Set("test_feat_22", "False");
+  base::Value::List empty_list;
+  features.Set("test_feat_23", std::move(empty_list));
 
-  SetFeatures(features);
+  SetFeatures(std::move(features));
 }
 
 // Test that only well-formed features are persisted to disk. Part 2 of 2.
