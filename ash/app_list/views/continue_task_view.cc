@@ -248,8 +248,7 @@ void ContinueTaskView::ShowContextMenuForViewImpl(
       source->GetWidget(), nullptr /*button_controller*/,
       source->GetBoundsInScreen(), views::MenuAnchorPosition::kBubbleTopRight,
       source_type);
-  views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
-      views::InkDropState::ACTIVATED);
+  views::InkDrop::Get(this)->GetInkDrop()->SnapToActivated();
 }
 
 void ContinueTaskView::ExecuteCommand(int command_id, int event_flags) {
