@@ -557,6 +557,15 @@ void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
       match.provider = this;
     }
   }
+
+  // When in the counterfactual group, we do all the work of finding fuzzy
+  // matches, but do not provide the benefit. To reduce risk of unintended
+  // consequences downstream (for example showing fewer suggestions than
+  // normal), the matches are cleared here instead of at end of result
+  // processing pipeline so they won't interact or dedupe with other matches.
+  if (OmniboxFieldTrial::kFuzzyUrlSuggestionsCounterfactual.Get()) {
+    matches_.clear();
+  }
 }
 
 size_t HistoryFuzzyProvider::EstimateMemoryUsage() const {
