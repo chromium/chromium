@@ -97,9 +97,9 @@ void WidgetInputHandlerImpl::ImeSetComposition(
     int32_t end,
     WidgetInputHandlerImpl::ImeSetCompositionCallback callback) {
   RunOnMainThread(base::BindOnce(&ImeSetCompositionOnMainThread, widget_,
-                                 base::ThreadTaskRunnerHandle::Get(),
-                                 text.IsolatedCopy(), ime_text_spans, range,
-                                 start, end, std::move(callback)));
+                                 base::ThreadTaskRunnerHandle::Get(), text,
+                                 ime_text_spans, range, start, end,
+                                 std::move(callback)));
 }
 
 static void ImeCommitTextOnMainThread(
@@ -120,10 +120,10 @@ void WidgetInputHandlerImpl::ImeCommitText(
     const gfx::Range& range,
     int32_t relative_cursor_position,
     ImeCommitTextCallback callback) {
-  RunOnMainThread(base::BindOnce(
-      &ImeCommitTextOnMainThread, widget_, base::ThreadTaskRunnerHandle::Get(),
-      text.IsolatedCopy(), ime_text_spans, range, relative_cursor_position,
-      std::move(callback)));
+  RunOnMainThread(
+      base::BindOnce(&ImeCommitTextOnMainThread, widget_,
+                     base::ThreadTaskRunnerHandle::Get(), text, ime_text_spans,
+                     range, relative_cursor_position, std::move(callback)));
 }
 
 void WidgetInputHandlerImpl::ImeFinishComposingText(bool keep_selection) {

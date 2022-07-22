@@ -153,8 +153,7 @@ void FrameWidgetInputHandlerImpl::ExecuteEditCommand(const String& command,
         if (handler)
           handler->ExecuteEditCommand(command, value);
       },
-      main_thread_frame_widget_input_handler_, command.IsolatedCopy(),
-      value.IsolatedCopy()));
+      main_thread_frame_widget_input_handler_, command, value));
 }
 
 void FrameWidgetInputHandlerImpl::Undo() {
@@ -213,7 +212,7 @@ void FrameWidgetInputHandlerImpl::Replace(const String& word) {
         if (handler)
           handler->Replace(word);
       },
-      main_thread_frame_widget_input_handler_, word.IsolatedCopy()));
+      main_thread_frame_widget_input_handler_, word));
 }
 
 void FrameWidgetInputHandlerImpl::ReplaceMisspelling(const String& word) {
@@ -223,7 +222,7 @@ void FrameWidgetInputHandlerImpl::ReplaceMisspelling(const String& word) {
         if (handler)
           handler->ReplaceMisspelling(word);
       },
-      main_thread_frame_widget_input_handler_, word.IsolatedCopy()));
+      main_thread_frame_widget_input_handler_, word));
 }
 
 void FrameWidgetInputHandlerImpl::Delete() {
