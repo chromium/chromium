@@ -103,6 +103,7 @@
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_to_video_frame_copier.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -122,17 +123,6 @@ namespace {
 const base::Feature kOneCopyCanvasCapture {
   "OneCopyCanvasCapture",
 #if BUILDFLAG(IS_MAC)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
-
-const base::Feature kTwoCopyCanvasCapture {
-  "TwoCopyCanvasCapture",
-// For ChromeOS, currently just enable this feature on X86 CPU, see b/203695564.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_FAMILY))
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -723,7 +713,8 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
   scoped_refptr<StaticBitmapImage> source_image;
   if (!copier_) {
     copier_ = std::make_unique<StaticBitmapImageToVideoFrameCopier>(
-        base::FeatureList::IsEnabled(kTwoCopyCanvasCapture));
+        WebGraphicsContext3DVideoFramePool::
+            IsGpuMemoryBufferReadbackFromTextureEnabled());
   }
   for (CanvasDrawListener* listener : listeners_) {
     if (!listener->NeedsNewFrame())

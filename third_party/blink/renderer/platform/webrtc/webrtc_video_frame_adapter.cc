@@ -9,10 +9,8 @@
 
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
-#include "base/feature_list.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
-#include "build/build_config.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -20,6 +18,7 @@
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/renderers/video_frame_rgba_to_yuva_converter.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
@@ -194,16 +193,6 @@ WebRtcVideoFrameAdapter::SharedResources::GetRasterContextProvider() {
   return raster_context_provider_;
 }
 
-const base::Feature kWebRTCGpuMemoryBufferReadback {
-  "WebRTCGpuMemoryBufferReadback",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_FAMILY))
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
-
 bool CanUseGpuMemoryBufferReadback(
     media::VideoPixelFormat format,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
@@ -215,7 +204,8 @@ bool CanUseGpuMemoryBufferReadback(
           format == media::PIXEL_FORMAT_XRGB ||
           format == media::PIXEL_FORMAT_ABGR ||
           format == media::PIXEL_FORMAT_ARGB) &&
-         base::FeatureList::IsEnabled(kWebRTCGpuMemoryBufferReadback);
+         WebGraphicsContext3DVideoFramePool::
+             IsGpuMemoryBufferReadbackFromTextureEnabled();
 }
 
 scoped_refptr<media::VideoFrame>
