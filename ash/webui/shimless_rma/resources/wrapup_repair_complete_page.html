@@ -230,7 +230,7 @@
   </div>
 </base-page>
 
-<cr-dialog id="logsDialog" close-text="close">
+<cr-dialog id="logsDialog" close-text="close" on-cancel="closeLogsDialog_">
   <div slot="title">
     [[i18n('rmaLogsTitleText')]]
   </div>
@@ -239,7 +239,7 @@
   </div>
   <div class="dialog-footer" slot="button-container"
       hidden="[[!shouldShowSaveToUsbButton_(usbLogState_)]]">
-    <cr-button id="closeLogDialogButton" on-click="onCancelClick_">
+    <cr-button id="closeLogDialogButton" on-click="closeLogsDialog_">
       [[i18n('rmaLogsCancelButtonText')]]
     </cr-button>
     <cr-button id="saveLogDialogButton" class="text-button action-button"
@@ -256,7 +256,8 @@
       </iron-icon>
       [[logSavedStatusText_]]
     </div>
-    <cr-button id="logSaveDoneDialogButton" class="text-button action-button">
+    <cr-button id="logSaveDoneDialogButton" class="text-button action-button"
+        on-click="closeLogsDialog_">
       [[i18n('doneButtonLabel')]]
     </cr-button>
   </div>
@@ -270,7 +271,7 @@
     [[getPowerwashDescriptionString_(selectedFinishRmaOption_)]]
   </div>
   <div class="dialog-footer" slot="button-container">
-    <cr-button id="closePowerwashDialogButton" on-click="onCancelClick_">
+    <cr-button id="closePowerwashDialogButton" on-click="closePowerwashDialog_">
       [[i18n('cancelButtonLabel')]]
     </cr-button>
     <cr-button id="powerwashButton" class="text-button action-button"

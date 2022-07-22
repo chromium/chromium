@@ -53,6 +53,12 @@ const USBLogState = {
   LOG_SAVE_FAIL: 4,
 };
 
+/**
+ * The starting USB state for the logs dialog.
+ * @type {!USBLogState}
+ */
+const DEFAULT_USB_LOG_STATE = USBLogState.USB_READY;
+
 /** @polymer */
 export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   static get is() {
@@ -130,7 +136,7 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
        */
       usbLogState_: {
         type: Number,
-        value: USBLogState.USB_READY,
+        value: DEFAULT_USB_LOG_STATE,
       },
 
       /** @protected */
@@ -291,15 +297,6 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   }
 
   /** @protected */
-  onCancelClick_() {
-    const dialogs = /** @type {!NodeList<!CrDialogElement>} */ (
-        this.shadowRoot.querySelectorAll('cr-dialog'));
-    Array.from(dialogs).map((dialog) => {
-      dialog.close();
-    });
-  }
-
-  /** @protected */
   onSaveLogClick_() {
     this.shimlessRmaService_.saveLog().then(
         /*@type {!SaveLogResponse}*/ (result) => {
@@ -309,6 +306,19 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
             this.usbLogState_ = USBLogState.LOG_SAVE_SUCCESS;
           }
         });
+  }
+
+  /** @protected */
+  closeLogsDialog_() {
+    this.shadowRoot.querySelector('#logsDialog').close();
+
+    // Reset the USB state back to the default.
+    this.usbLogState_ = DEFAULT_USB_LOG_STATE;
+  }
+
+  /** @protected */
+  closePowerwashDialog_() {
+    this.shadowRoot.querySelector('#powerwashDialog').close();
   }
 
   /** @protected */

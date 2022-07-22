@@ -360,6 +360,17 @@ export function wrapupRepairCompletePageTest() {
         isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
     assertTrue(isVisible(
         component.shadowRoot.querySelector('#logSaveDoneDialogButton')));
+
+    // Close the logs dialog.
+    await clickButton('#logSaveDoneDialogButton');
+    await flushTasks();
+
+    // Open the logs dialog and verify we are at the original state with the
+    // Save Log button displayed.
+    await clickButton('#rmaLogButton');
+    resolver.resolve({savePath: 'save/path', error: RmadErrorCode.kOk});
+    assertTrue(
+        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
   });
 
   test('BatteryCutButtonDisabledByDefault', async () => {
