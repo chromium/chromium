@@ -1410,6 +1410,8 @@ DisplayMode ToMojomDisplayMode(WebAppProto::DisplayMode display_mode) {
       return DisplayMode::kWindowControlsOverlay;
     case WebAppProto::TABBED:
       return DisplayMode::kTabbed;
+    case WebAppProto::BORDERLESS:
+      return DisplayMode::kBorderless;
   }
 }
 
@@ -1446,6 +1448,8 @@ WebAppProto::DisplayMode ToWebAppProtoDisplayMode(DisplayMode display_mode) {
       return WebAppProto::WINDOW_CONTROLS_OVERLAY;
     case DisplayMode::kTabbed:
       return WebAppProto::TABBED;
+    case DisplayMode::kBorderless:
+      return WebAppProto::BORDERLESS;
   }
 }
 

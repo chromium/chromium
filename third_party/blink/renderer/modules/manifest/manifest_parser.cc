@@ -550,6 +550,11 @@ Vector<mojom::blink::DisplayMode> ManifestParser::ParseDisplayOverride(
       display_enum = mojom::blink::DisplayMode::kUndefined;
     }
 
+    if (!base::FeatureList::IsEnabled(blink::features::kWebAppBorderless) &&
+        display_enum == mojom::blink::DisplayMode::kBorderless) {
+      display_enum = mojom::blink::DisplayMode::kUndefined;
+    }
+
     if (display_enum != mojom::blink::DisplayMode::kUndefined)
       display_override.push_back(display_enum);
   }

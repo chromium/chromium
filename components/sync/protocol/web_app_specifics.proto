@@ -49,6 +49,7 @@ message WebAppSpecifics {
     // FULLSCREEN is never serialized.
     // WINDOW_CONTROLS_OVERLAY is never serialized.
     TABBED = 6;
+    // BORDERLESS is never serialized.
   }
 
   optional string start_url = 1;

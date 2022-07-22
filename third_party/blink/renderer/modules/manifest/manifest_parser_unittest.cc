@@ -718,6 +718,26 @@ TEST_F(ManifestParserTest, DisplayParseRules) {
     EXPECT_EQ("inapplicable 'display' value ignored.", errors()[0]);
   }
 
+  // Parsing fails for 'borderless' when Borderless flag is disabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(blink::features::kWebAppBorderless);
+    auto& manifest = ParseManifest(R"({ "display": "borderless" })");
+    EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("inapplicable 'display' value ignored.", errors()[0]);
+  }
+
+  // Parsing fails for 'borderless' when Borderless flag is enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(blink::features::kWebAppBorderless);
+    auto& manifest = ParseManifest(R"({ "display": "borderless" })");
+    EXPECT_EQ(manifest->display, blink::mojom::DisplayMode::kUndefined);
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("inapplicable 'display' value ignored.", errors()[0]);
+  }
+
   // Parsing fails for 'tabbed' when flag is disabled.
   {
     ScopedWebAppTabStripForTest tabbed(false);
@@ -881,6 +901,29 @@ TEST_F(ManifestParserTest, DisplayOverrideParseRules) {
     EXPECT_FALSE(manifest->display_override.IsEmpty());
     EXPECT_EQ(manifest->display_override[0],
               blink::mojom::DisplayMode::kWindowControlsOverlay);
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Reject 'borderless' when Borderless flag is disabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(blink::features::kWebAppBorderless);
+    auto& manifest =
+        ParseManifest(R"({ "display_override": [ "borderless" ] })");
+    EXPECT_TRUE(manifest->display_override.IsEmpty());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Accept 'borderless' when Borderless flag is enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(blink::features::kWebAppBorderless);
+    auto& manifest =
+        ParseManifest(R"({ "display_override": [ "borderless" ] })");
+    EXPECT_FALSE(manifest->display_override.IsEmpty());
+    EXPECT_EQ(manifest->display_override[0],
+              blink::mojom::DisplayMode::kBorderless);
     EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_EQ(0u, GetErrorCount());
   }

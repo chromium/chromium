@@ -42,6 +42,8 @@ std::string DisplayModeToString(blink::mojom::DisplayMode display) {
       return "window-controls-overlay";
     case blink::mojom::DisplayMode::kTabbed:
       return "tabbed";
+    case blink::mojom::DisplayMode::kBorderless:
+      return "borderless";
   }
   return "";
 }
@@ -59,6 +61,8 @@ blink::mojom::DisplayMode DisplayModeFromString(const std::string& display) {
     return blink::mojom::DisplayMode::kWindowControlsOverlay;
   if (base::EqualsCaseInsensitiveASCII(display, "tabbed"))
     return blink::mojom::DisplayMode::kTabbed;
+  if (base::EqualsCaseInsensitiveASCII(display, "borderless"))
+    return blink::mojom::DisplayMode::kBorderless;
   return blink::mojom::DisplayMode::kUndefined;
 }
 

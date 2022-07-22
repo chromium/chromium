@@ -111,6 +111,8 @@ DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
         return DisplayMode::kTabbed;
       else
         return DisplayMode::kStandalone;
+    case DisplayMode::kBorderless:
+      return DisplayMode::kBorderless;
   }
 }
 
@@ -605,6 +607,7 @@ apps::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
     case DisplayMode::kFullscreen:
     case DisplayMode::kWindowControlsOverlay:
     case DisplayMode::kTabbed:
+    case DisplayMode::kBorderless:
       return apps::LaunchContainer::kLaunchContainerWindow;
     case DisplayMode::kUndefined:
       return apps::LaunchContainer::kLaunchContainerNone;

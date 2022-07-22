@@ -100069,6 +100069,7 @@ others/histograms.xml -->
   <int value="4" label="Fullscreen"/>
   <int value="5" label="WindowControlsOverlay"/>
   <int value="6" label="Tabbed"/>
+  <int value="7" label="Borderless"/>
 </enum>
 
 <enum name="WebAppIconsDownloadedResult">

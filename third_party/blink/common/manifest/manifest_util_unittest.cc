@@ -23,6 +23,7 @@ TEST(ManifestUtilTest, DisplayModeConversions) {
       {blink::mojom::DisplayMode::kWindowControlsOverlay,
        "window-controls-overlay"},
       {blink::mojom::DisplayMode::kTabbed, "tabbed"},
+      {blink::mojom::DisplayMode::kBorderless, "borderless"},
   };
 
   for (const ReversibleConversion& conversion : reversible_conversions) {
