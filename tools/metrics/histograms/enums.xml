@@ -59893,6 +59893,7 @@ from previous Chrome versions.
   <int value="698273842" label="SyncSendTabToSelf:enabled"/>
   <int value="698809951" label="WebRtcHWVP8Encoding:enabled"/>
   <int value="699149897" label="ContentSuggestionsDebugLog:disabled"/>
+  <int value="699632009" label="NewTabPageTilesTitleWrapAround:enabled"/>
   <int value="700346797" label="WheelEventRegions:enabled"/>
   <int value="700926106" label="OmniboxPedalsBatch3NonEnglish:enabled"/>
   <int value="701766325" label="PerNavigationMojoInterface:enabled"/>
@@ -60186,6 +60187,7 @@ from previous Chrome versions.
   <int value="879891709"
       label="ExperimentalAccessibilityDictationWithPumpkin:enabled"/>
   <int value="879992337" label="disable-pull-to-refresh-effect"/>
+  <int value="880201245" label="NewTabPageTilesTitleWrapAround:disabled"/>
   <int value="880510010" label="enable-permissions-bubbles"/>
   <int value="882893584" label="UseOfHashAffiliationFetcher:disabled"/>
   <int value="883190338" label="PrintWithReducedRasterization:disabled"/>

@@ -64,10 +64,10 @@ public class TileRenderer {
 
     @TileStyle
     private final int mStyle;
-    private final int mTitleLinesCount;
     private final int mDesiredIconSize;
     private final int mMinIconSize;
     private final float mIconCornerRadius;
+    private int mTitleLinesCount;
 
     @LayoutRes
     private final int mLayout;
@@ -164,6 +164,14 @@ public class TileRenderer {
 
     public void setImageFetcher(ImageFetcher imageFetcher) {
         mImageFetcher = imageFetcher;
+    }
+
+    /**
+     * Override currently set maximum number of title lines.
+     * @param titleLines The new max number of title lines to be shown under the tile icon.
+     */
+    public void setTitleLines(int titleLines) {
+        mTitleLinesCount = titleLines;
     }
 
     /**

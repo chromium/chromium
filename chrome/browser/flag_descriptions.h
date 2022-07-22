@@ -2030,6 +2030,9 @@ extern const char kNetworkServiceInProcessDescription[];
 extern const char kNewInstanceFromDraggedLinkName[];
 extern const char kNewInstanceFromDraggedLinkDescription[];
 
+extern const char kNewTabPageTilesTitleWrapAroundName[];
+extern const char kNewTabPageTilesTitleWrapAroundDescription[];
+
 extern const char kNewWindowAppMenuName[];
 extern const char kNewWindowAppMenuDescription[];
 

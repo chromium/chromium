@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
@@ -115,11 +116,16 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
             TileGroup.Delegate tileGroupDelegate, TouchEnabledDelegate touchEnabledDelegate) {
         mActivityLifecycleDispatcher.register(this);
         Profile profile = Profile.getLastUsedRegularProfile();
+        int titleLines =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.NEW_TAB_PAGE_TILES_TITLE_WRAP_AROUND)
+                ? 2
+                : 1;
         if (mRenderer == null) {
             mRenderer = new TileRenderer(mActivity, SuggestionsConfig.getTileStyle(mUiConfig),
-                    TITLE_LINES, suggestionsUiDelegate.getImageFetcher());
+                    titleLines, suggestionsUiDelegate.getImageFetcher());
         } else {
             mRenderer.setImageFetcher(suggestionsUiDelegate.getImageFetcher());
+            mRenderer.setTitleLines(titleLines);
         }
 
         mContextMenuManager = new ContextMenuManager(suggestionsUiDelegate.getNavigationDelegate(),

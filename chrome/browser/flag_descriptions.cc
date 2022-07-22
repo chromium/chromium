@@ -3566,6 +3566,12 @@ const char kNewInstanceFromDraggedLinkName[] =
 const char kNewInstanceFromDraggedLinkDescription[] =
     "Enables creation of a new instance when a link is dragged out of Chrome.";
 
+const char kNewTabPageTilesTitleWrapAroundName[] =
+    "NTP Tiles Title wrap around";
+const char kNewTabPageTilesTitleWrapAroundDescription[] =
+    "Permits longer Tile titles to wrap around to the second line "
+    "to reduce ellipsizing and improve clarity.";
+
 const char kNewWindowAppMenuName[] = "Show a menu item 'New Window'";
 const char kNewWindowAppMenuDescription[] =
     "Show a new menu item 'New Window' on tablet-sized screen when Chrome "
