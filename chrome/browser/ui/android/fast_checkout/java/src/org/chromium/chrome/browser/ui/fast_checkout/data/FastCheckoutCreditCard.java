@@ -57,26 +57,32 @@ public class FastCheckoutCreditCard {
         mProductDescription = productDescription;
     }
 
+    @CalledByNative
     public String getGUID() {
         return mGUID;
     }
 
+    @CalledByNative
     public String getOrigin() {
         return mOrigin;
     }
 
+    @CalledByNative
     public boolean getIsLocal() {
         return mIsLocal;
     }
 
+    @CalledByNative
     public boolean getIsCached() {
         return mIsCached;
     }
 
+    @CalledByNative
     public String getName() {
         return mName;
     }
 
+    @CalledByNative
     public String getNumber() {
         return mNumber;
     }
@@ -85,14 +91,17 @@ public class FastCheckoutCreditCard {
         return mObfuscatedNumber;
     }
 
+    @CalledByNative
     public String getMonth() {
         return mMonth;
     }
 
+    @CalledByNative
     public String getYear() {
         return mYear;
     }
 
+    @CalledByNative
     public String getBasicCardIssuerNetwork() {
         return mBasicCardIssuerNetwork;
     }
@@ -101,30 +110,37 @@ public class FastCheckoutCreditCard {
         return mIssuerIconString;
     }
 
+    @CalledByNative
     public String getBillingAddressId() {
         return mBillingAddressId;
     }
 
+    @CalledByNative
     public String getServerId() {
         return mServerId;
     }
 
+    @CalledByNative
     public long getInstrumentId() {
         return mInstrumentId;
     }
 
+    @CalledByNative
     public String getNickname() {
         return mNickname;
     }
 
+    @CalledByNative
     public GURL getCardArtUrl() {
         return mCardArtUrl;
     }
 
+    @CalledByNative
     public @VirtualCardEnrollmentState int getVirtualCardEnrollmentState() {
         return mVirtualCardEnrollmentState;
     }
 
+    @CalledByNative
     public String getProductDescription() {
         return mProductDescription;
     }

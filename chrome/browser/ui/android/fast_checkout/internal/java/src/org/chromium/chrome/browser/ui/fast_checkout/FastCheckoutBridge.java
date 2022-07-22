@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.fast_checkout;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -73,12 +74,24 @@ class FastCheckoutBridge implements FastCheckoutComponent.Delegate {
 
     @Override
     public void onDismissed() {
-        // TODO(crbug.com/1334642): Call native side to continue dismissing.
+        if (mNativeFastCheckoutBridge != 0) {
+            FastCheckoutBridgeJni.get().onDismiss(mNativeFastCheckoutBridge);
+        }
     }
 
     @Override
     public void onOptionsSelected(
             FastCheckoutAutofillProfile profile, FastCheckoutCreditCard creditCard) {
-        // TODO(crbug.com/1334642): Call native side to continue filling.
+        if (mNativeFastCheckoutBridge != 0) {
+            FastCheckoutBridgeJni.get().onOptionsSelected(
+                    mNativeFastCheckoutBridge, profile, creditCard);
+        }
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onOptionsSelected(long nativeFastCheckoutViewImpl, FastCheckoutAutofillProfile profile,
+                FastCheckoutCreditCard creditCard);
+        void onDismiss(long nativeFastCheckoutViewImpl);
     }
 }

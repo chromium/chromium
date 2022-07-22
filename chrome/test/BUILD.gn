@@ -6275,6 +6275,7 @@ test("unit_tests") {
       "../browser/translate/android/translate_bridge_unittest.cc",
       "../browser/translate/translate_manager_render_view_host_android_unittest.cc",
       "../browser/ui/android/autofill/save_card_message_controller_android_unittest.cc",
+      "../browser/ui/android/fast_checkout/ui_view_android_utils_unittest.cc",
       "../browser/ui/android/tab_model/tab_model_list_unittest.cc",
       "../browser/ui/android/toolbar/location_bar_model_android_unittest.cc",
       "../browser/ui/autofill/payments/autofill_error_dialog_controller_impl_unittest.cc",

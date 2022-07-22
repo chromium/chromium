@@ -36,11 +36,20 @@ void FastCheckoutViewImpl::OnOptionsSelected(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& autofill_profile_java,
     const base::android::JavaParamRef<jobject>& credit_card_java) {
-  // TODO(crbug.com/1334642): Notify the controller.
+  std::unique_ptr<autofill::AutofillProfile> autofill_profile =
+      CreateFastCheckoutAutofillProfileFromJava(
+          env, autofill_profile_java,
+          g_browser_process->GetApplicationLocale());
+
+  std::unique_ptr<autofill::CreditCard> credit_card =
+      CreateFastCheckoutCreditCardFromJava(env, credit_card_java);
+
+  controller_->OnOptionsSelected(std::move(autofill_profile),
+                                 std::move(credit_card));
 }
 
 void FastCheckoutViewImpl::OnDismiss(JNIEnv* env) {
-  // TODO(crbug.com/1334642): Notify the controller.
+  controller_->OnDismiss();
 }
 
 void FastCheckoutViewImpl::Show(

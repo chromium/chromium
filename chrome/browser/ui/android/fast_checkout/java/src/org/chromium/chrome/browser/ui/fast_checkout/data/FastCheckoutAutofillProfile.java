@@ -53,10 +53,12 @@ public class FastCheckoutAutofillProfile {
         mLanguageCode = languageCode;
     }
 
+    @CalledByNative
     public String getGUID() {
         return mGUID;
     }
 
+    @CalledByNative
     public String getOrigin() {
         return mOrigin;
     }
@@ -65,42 +67,52 @@ public class FastCheckoutAutofillProfile {
         return mIsLocal;
     }
 
+    @CalledByNative
     public String getHonorificPrefix() {
         return mHonorificPrefix;
     }
 
+    @CalledByNative
     public String getFullName() {
         return mFullName;
     }
 
+    @CalledByNative
     public String getCompanyName() {
         return mCompanyName;
     }
 
+    @CalledByNative
     public String getStreetAddress() {
         return mStreetAddress;
     }
 
+    @CalledByNative
     public String getRegion() {
         return mRegion;
     }
 
+    @CalledByNative
     public String getLocality() {
         return mLocality;
     }
 
+    @CalledByNative
     public String getDependentLocality() {
         return mDependentLocality;
     }
 
+    @CalledByNative
     public String getPostalCode() {
         return mPostalCode;
     }
 
+    @CalledByNative
     public String getSortingCode() {
         return mSortingCode;
     }
 
+    @CalledByNative
     public String getCountryCode() {
         return mCountryCode;
     }
@@ -109,14 +121,17 @@ public class FastCheckoutAutofillProfile {
         return mCountryName;
     }
 
+    @CalledByNative
     public String getPhoneNumber() {
         return mPhoneNumber;
     }
 
+    @CalledByNative
     public String getEmailAddress() {
         return mEmailAddress;
     }
 
+    @CalledByNative
     public String getLanguageCode() {
         return mLanguageCode;
     }
