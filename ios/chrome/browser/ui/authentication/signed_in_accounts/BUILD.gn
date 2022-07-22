@@ -21,7 +21,6 @@ source_set("signed_in_accounts") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/authentication/cells",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/table_view",
