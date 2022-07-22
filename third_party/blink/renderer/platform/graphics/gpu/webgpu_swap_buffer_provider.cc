@@ -229,6 +229,10 @@ WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const gfx::Size& size,
     return nullptr;
   }
 
+  if (size.IsEmpty()) {
+    return nullptr;
+  }
+
   gpu::webgpu::WebGPUInterface* webgpu =
       context_provider->ContextProvider()->WebGPUInterface();
 

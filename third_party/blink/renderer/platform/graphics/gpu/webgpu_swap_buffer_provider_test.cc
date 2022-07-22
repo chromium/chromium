@@ -548,4 +548,19 @@ TEST_F(WebGPUSwapBufferProviderTest, ReserveTextureDescriptorForReflection) {
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
 }
 
+// Ensures that requests for zero size textures (width == 0 or height == 0) do
+// not attempt to reserve a texture.
+TEST_F(WebGPUSwapBufferProviderTest, VerifyZeroSizeRejects) {
+  const gfx::Size kZeroSize(0, 0);
+  const gfx::Size kZeroWidth(0, 10);
+  const gfx::Size kZeroHeight(10, 0);
+
+  // None of these calls should result in ReserveTexture being called
+  EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_, _)).Times(0);
+
+  EXPECT_EQ(nullptr, provider_->GetNewTexture(kZeroSize));
+  EXPECT_EQ(nullptr, provider_->GetNewTexture(kZeroWidth));
+  EXPECT_EQ(nullptr, provider_->GetNewTexture(kZeroHeight));
+}
+
 }  // namespace blink
