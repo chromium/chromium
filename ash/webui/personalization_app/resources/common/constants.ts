@@ -5,7 +5,7 @@
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../trusted/personalization_app.mojom-webui.js';
+import {GooglePhotosPhoto, WallpaperImage} from '../trusted/personalization_app.mojom-webui.js';
 
 // A special unique symbol that represents the device default image, normally
 // not accessible by the user.
@@ -23,46 +23,6 @@ export const trustedOrigin = 'chrome://personalization';
 
 export const kMaximumLocalImagePreviews = 4;
 
-export enum EventType {
-  SEND_COLLECTIONS = 'send_collections',
-  SEND_GOOGLE_PHOTOS_ENABLED = 'send_google_photos_enabled',
-  SELECT_COLLECTION = 'select_collection',
-  SELECT_GOOGLE_PHOTOS_COLLECTION = 'select_google_photos_collection',
-  SELECT_LOCAL_COLLECTION = 'select_local_collection',
-  SEND_IMAGE_COUNTS = 'send_image_counts',
-  SEND_LOCAL_IMAGE_DATA = 'send_local_image_data',
-  SEND_LOCAL_IMAGES = 'send_local_images',
-  SEND_VISIBLE = 'send_visible',
-}
-
-export type SendCollectionsEvent = {
-  type: EventType.SEND_COLLECTIONS,
-  collections: WallpaperCollection[],
-};
-
-export type SendGooglePhotosEnabledEvent = {
-  type: EventType.SEND_GOOGLE_PHOTOS_ENABLED,
-  enabled: GooglePhotosEnablementState,
-};
-
-export type SelectCollectionEvent = {
-  type: EventType.SELECT_COLLECTION,
-  collectionId: string,
-};
-
-export type SelectGooglePhotosCollectionEvent = {
-  type: EventType.SELECT_GOOGLE_PHOTOS_COLLECTION,
-};
-
-export type SelectLocalCollectionEvent = {
-  type: EventType.SELECT_LOCAL_COLLECTION,
-};
-
-export type SendImageCountsEvent = {
-  type: EventType.SEND_IMAGE_COUNTS,
-  counts: {[key: string]: number|null},
-};
-
 /**
  * A displayable type constructed from WallpaperImages to display them as a
  * single unit. e.g. Dark/Light wallpaper images.
@@ -72,29 +32,3 @@ export type ImageTile = {
   attribution?: string[],
   unitId?: bigint, preview: Url[],
 };
-
-export type SendLocalImagesEvent = {
-  type: EventType.SEND_LOCAL_IMAGES,
-  images: Array<FilePath|DefaultImageSymbol>,
-};
-
-/**
- * Sends local image data keyed by stringified local image path.
- */
-export type SendLocalImageDataEvent = {
-  type: EventType.SEND_LOCAL_IMAGE_DATA,
-  data: Record<string|DefaultImageSymbol, string>,
-};
-
-/**
- * Notify an iframe if its visible state changes.
- */
-export type SendVisibleEvent = {
-  type: EventType.SEND_VISIBLE,
-  visible: boolean,
-};
-
-export type Events = SendCollectionsEvent|SendGooglePhotosEnabledEvent|
-    SelectCollectionEvent|SelectGooglePhotosCollectionEvent|
-    SelectLocalCollectionEvent|SendImageCountsEvent|SendLocalImagesEvent|
-    SendLocalImageDataEvent|SendVisibleEvent;

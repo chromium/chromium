@@ -213,16 +213,20 @@
             <div class="photo-images-border"></div>
             <template is="dom-repeat" items="[[item.preview]]" as="preview">
               <img is="cr-auto-img" auto-src="[[preview.url]]"
+                  data-collection-id$="[[item.id]]"
                   class$="[[getClassForImg_(index, item)]]"
                   aria-hidden="true" on-load="onImgLoad_" on-error="onImgLoad_"
                   is-google-photos="[[isGooglePhotosTile_(item)]]" clear-src>
             </template>
           </div>
-          <div class="photo-text-container" hidden>
+          <div class="photo-text-container"
+              hidden$="[[isPhotoTextHidden_(item, loadedCollectionIdPhotos_)]]">
             <p title$="[[item.name]]">[[item.name]]</p>
             <p title$="[[item.count]]">[[item.count]]</p>
           </div>
-          <div class="photo-gradient-mask" hidden></div>
+          <div class="photo-gradient-mask"
+              hidden$="[[isPhotoTextHidden_(item, loadedCollectionIdPhotos_)]]">
+          </div>
         </div>
       </template>
     </div>

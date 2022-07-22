@@ -30,7 +30,6 @@ non_web_component_files = [
   "trusted/ambient/ambient_observer.ts",
   "trusted/ambient/ambient_reducers.ts",
   "trusted/ambient/ambient_state.ts",
-  "trusted/iframe_api.ts",
   "trusted/keyboard_backlight/keyboard_backlight_actions.ts",
   "trusted/keyboard_backlight/keyboard_backlight_controller.ts",
   "trusted/keyboard_backlight/keyboard_backlight_interface_provider.ts",
@@ -61,7 +60,6 @@ non_web_component_files = [
   "trusted/utils.ts",
   "trusted/wallpaper/google_photos_metrics_logger.ts",
   "trusted/wallpaper/wallpaper_actions.ts",
-  "trusted/wallpaper/untrusted_message_handler.ts",
   "trusted/wallpaper/wallpaper_controller.ts",
   "trusted/wallpaper/wallpaper_interface_provider.ts",
   "trusted/wallpaper/wallpaper_observer.ts",
@@ -69,7 +67,6 @@ non_web_component_files = [
   "trusted/wallpaper/wallpaper_state.ts",
   "trusted/wallpaper/index.ts",
 
-  "untrusted/iframe_api.ts",
   "untrusted/setup.ts",
 ]
 
