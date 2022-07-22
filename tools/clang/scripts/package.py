@@ -534,11 +534,6 @@ def main():
       os.symlink(
           old, os.path.join(pdir, 'lib', 'clang', RELEASE_VERSION, 'lib', new))
 
-  # Copy libc++ headers.
-  if sys.platform == 'darwin':
-    shutil.copytree(os.path.join(LLVM_BOOTSTRAP_INSTALL_DIR, 'include', 'c++'),
-                    os.path.join(pdir, 'include', 'c++'))
-
   # Create main archive.
   PackageInArchive(pdir, pdir + '.tgz')
   MaybeUpload(args.upload, pdir + '.tgz', gcs_platform)

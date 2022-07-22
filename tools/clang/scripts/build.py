@@ -612,9 +612,6 @@ def main():
   # move this down to where we fetch other build tools.
   AddGnuWinToPath()
 
-  if sys.platform == 'darwin':
-    isysroot = subprocess.check_output(['xcrun', '--show-sdk-path'],
-                                       universal_newlines=True).rstrip()
 
   if args.build_dir:
     LLVM_BUILD_DIR = args.build_dir
@@ -658,11 +655,6 @@ def main():
   projects = 'clang;lld;clang-tools-extra'
   runtimes = 'compiler-rt'
 
-  if sys.platform == 'darwin':
-    # clang needs libc++, else -stdlib=libc++ won't find includes
-    # (this is needed for bootstrap builds and for building the fuchsia runtime)
-    runtimes += ';libcxx'
-
   base_cmake_args = [
       '-GNinja',
       '-DCMAKE_BUILD_TYPE=Release',
@@ -690,6 +682,17 @@ def main():
       # Build libclang.a as well as libclang.so
       '-DLIBCLANG_BUILD_STATIC=ON',
   ]
+
+  if sys.platform == 'darwin':
+    isysroot = subprocess.check_output(['xcrun', '--show-sdk-path'],
+                                       universal_newlines=True).rstrip()
+
+    # clang only automatically links to libc++ when targeting OS X 10.9+, so
+    # add stdlib=libc++ explicitly so clang can run on OS X versions as old as
+    # 10.7.
+    cxxflags += ['-stdlib=libc++']
+    ldflags += ['-stdlib=libc++']
+
 
   # See https://crbug.com/1302636#c49 - #c56 -- intercepting crypt_r() does not
   # work with the sysroot for not fully understood reasons. Disable it.
@@ -729,15 +732,6 @@ def main():
     # broken on mac.
     # TODO: check if this works now.
     base_cmake_args.append('-DLLVM_ENABLE_LLD=ON')
-
-  if sys.platform == 'darwin':
-    # For libc++, we only want the headers.
-    base_cmake_args.extend([
-        '-DLIBCXX_ENABLE_SHARED=OFF',
-        '-DLIBCXX_ENABLE_STATIC=OFF',
-        '-DLIBCXX_INCLUDE_TESTS=OFF',
-        '-DLIBCXX_ENABLE_EXPERIMENTAL_LIBRARY=OFF',
-    ])
 
   if sys.platform.startswith('linux'):
     # Download sysroots. This uses basically Chromium's sysroots, but with
@@ -828,9 +822,6 @@ def main():
       runtimes += ';compiler-rt'
     if sys.platform != 'darwin':
       projects += ';lld'
-    if sys.platform == 'darwin':
-      # Need libc++ for the bootstrap compiler on mac.
-      runtimes += ';libcxx'
 
     bootstrap_targets = 'X86'
     if sys.platform == 'darwin':
@@ -898,13 +889,9 @@ def main():
     os.chdir(LLVM_INSTRUMENTED_DIR)
 
     projects = 'clang'
-    runtimes = ''
-    if sys.platform == 'darwin':
-      runtimes += 'libcxx'
 
     instrument_args = base_cmake_args + [
         '-DLLVM_ENABLE_PROJECTS=' + projects,
-        '-DLLVM_ENABLE_RUNTIMES=' + runtimes,
         '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
         '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
         '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
@@ -962,19 +949,7 @@ def main():
                                        '*.profraw')), msvc_arch='x64')
     print('Profile generated.')
 
-  # LLVM uses C++11 starting in llvm 3.5. On Linux, this means libstdc++4.7+ is
-  # needed, on OS X it requires libc++. clang only automatically links to libc++
-  # when targeting OS X 10.9+, so add stdlib=libc++ explicitly so clang can run
-  # on OS X versions as old as 10.7.
-  deployment_target = ''
-
-  if sys.platform == 'darwin' and args.bootstrap:
-    # When building on 10.9, /usr/include usually doesn't exist, and while
-    # Xcode's clang automatically sets a sysroot, self-built clangs don't.
-    cflags = ['-isysroot', isysroot]
-    cxxflags = ['-stdlib=libc++'] + cflags
-    ldflags += ['-stdlib=libc++']
-    deployment_target = '10.7'
+  deployment_target = '10.7'
 
   # If building at head, define a macro that plugins can use for #ifdefing
   # out code that builds at head, but not at CLANG_REVISION or vice versa.
