@@ -838,9 +838,6 @@ EntryResult SimpleBackendImpl::OpenEntryFromHash(uint64_t entry_hash,
 net::Error SimpleBackendImpl::DoomEntryFromHash(
     uint64_t entry_hash,
     CompletionOnceCallback callback) {
-  Entry** entry = new Entry*();
-  std::unique_ptr<Entry*> scoped_entry(entry);
-
   std::vector<SimplePostDoomWaiter>* post_doom =
       post_doom_waiting_->Find(entry_hash);
   if (post_doom) {
