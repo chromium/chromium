@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "net/base/net_export.h"
 
