@@ -2865,6 +2865,10 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
 
   DCHECK(GetFrame().IsLocalRoot());
 
+  absl::optional<MobileFriendlinessChecker::PaintScope> mf_scope;
+  if (mobile_friendliness_checker_)
+    mf_scope.emplace(*mobile_friendliness_checker_);
+
   auto* layout_view = GetLayoutView();
   DCHECK(layout_view);
 

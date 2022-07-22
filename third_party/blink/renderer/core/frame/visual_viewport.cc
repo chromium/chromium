@@ -817,6 +817,10 @@ gfx::Vector2d VisualViewport::MaximumScrollOffsetInt() const {
 }
 
 ScrollOffset VisualViewport::MaximumScrollOffset() const {
+  return MaximumScrollOffsetAtScale(scale_);
+}
+
+ScrollOffset VisualViewport::MaximumScrollOffsetAtScale(float scale) const {
   if (!IsActiveViewport())
     return ScrollOffset();
 
@@ -830,14 +834,14 @@ ScrollOffset VisualViewport::MaximumScrollOffset() const {
     frame_view_size.Enlarge(0, browser_controls_adjustment_ / min_scale);
   }
 
-  frame_view_size.Scale(scale_);
+  frame_view_size.Scale(scale);
   frame_view_size = gfx::SizeF(ToFlooredSize(frame_view_size));
 
   gfx::SizeF viewport_size(size_);
   viewport_size.Enlarge(0, ceilf(browser_controls_adjustment_));
 
   gfx::SizeF max_position = frame_view_size - viewport_size;
-  max_position.Scale(1 / scale_);
+  max_position.Scale(1 / scale);
   return ScrollOffset(max_position.width(), max_position.height());
 }
 

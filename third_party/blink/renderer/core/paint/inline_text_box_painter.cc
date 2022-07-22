@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
+#include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/document_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
@@ -159,6 +160,18 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
 
   physical_overflow.Move(paint_offset);
   gfx::Rect visual_rect = ToEnclosingRect(physical_overflow);
+
+  if (paint_info.phase == PaintPhase::kForeground) {
+    if (auto* mf_checker = MobileFriendlinessChecker::From(
+            inline_text_box_.GetLineLayoutItem().GetDocument())) {
+      if (const auto* text = DynamicTo<LayoutText>(InlineLayoutObject())) {
+        PhysicalRect clipped_rect = PhysicalRect(visual_rect);
+        clipped_rect.Intersect(PhysicalRect(paint_info.GetCullRect().Rect()));
+        mf_checker->NotifyPaintTextFragment(clipped_rect,
+                                            text->StyleRef().FontSize());
+      }
+    }
+  }
 
   GraphicsContext& context = paint_info.context;
   PhysicalOffset box_origin =

@@ -218,7 +218,7 @@ bool HitTestCulledInlineAncestors(
 //
 // TODO(kojii): This may become more complicated when we use
 // |NGBoxFragmentPainter| for all fragments, and we still want this
-// oprimization.
+// optimization.
 bool FragmentRequiresLegacyFallback(const NGPhysicalFragment& fragment) {
   // If |fragment| is |IsFormattingContextRoot|, it may be legacy.
   // Avoid falling back to |LayoutObject| if |CanTraverse|, because it

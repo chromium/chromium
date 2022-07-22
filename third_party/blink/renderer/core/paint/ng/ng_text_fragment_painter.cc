@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_text_decoration_offset.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
+#include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "third_party/blink/renderer/core/paint/document_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/inline_text_box_painter.h"
@@ -335,6 +336,16 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       fragment_paint_info, text_painter, decoration_painter, paint_info,
       cursor_, *cursor_.CurrentItem(), rotation, rotated_box,
       physical_box.offset, style, text_style, selection, is_printing);
+  if (paint_info.phase == PaintPhase::kForeground) {
+    if (auto* mf_checker = MobileFriendlinessChecker::From(document)) {
+      if (auto* text = DynamicTo<LayoutText>(*layout_object)) {
+        PhysicalRect clipped_rect = PhysicalRect(visual_rect);
+        clipped_rect.Intersect(PhysicalRect(paint_info.GetCullRect().Rect()));
+        mf_checker->NotifyPaintTextFragment(clipped_rect,
+                                            text->StyleRef().FontSize());
+      }
+    }
+  }
 
   if (svg_inline_text) {
     NGTextPainter::SvgTextPaintState& svg_state = text_painter.SetSvgState(
