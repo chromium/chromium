@@ -1,6 +1,10 @@
 const fs = require("fs");
 const { spawnSync } = require("child_process");
 
+// Ensure that the git repository is "trusted", otherwise we'll get errors like:
+// fatal: unsafe repository ('/chromium/src' is owned by someone else)
+spawnChecked("git", ["config", "--global", "--add", "safe.directory", "."]);
+
 if (currentPlatform() == "macOS") {
   // Make sure the main executable gets rebuilt with the new build ID.
   spawnChecked("touch", [`${__dirname}/chrome/app/chrome_exe_main_mac.cc`]);
