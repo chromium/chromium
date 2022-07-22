@@ -272,7 +272,7 @@ void ConfigureDisplaysTask::Run() {
       is_first_attempt ? &ConfigureDisplaysTask::OnFirstAttemptConfigured
                        : &ConfigureDisplaysTask::OnRetryConfigured;
 
-  uint32_t modeset_flags = display::kTestModeset | display::kCommitModeset;
+  uint32_t modeset_flags = display::kTestModeset;
   if (configuration_type_ == kConfigurationTypeSeamless)
     modeset_flags |= display::kSeamlessModeset;
   delegate_->Configure(
@@ -309,15 +309,22 @@ void ConfigureDisplaysTask::OnFirstAttemptConfigured(bool config_success) {
   }
 
   // This code execute only when the first modeset attempt fully succeeds.
-  // Update the displays' status and report success.
-  for (const DisplayConfigureRequest& request : requests_) {
-    request.display->set_current_mode(request.mode);
-    request.display->set_origin(request.origin);
-    final_requests_status_.emplace_back(std::make_pair(&request, true));
+  // Submit the current |requests_| for modeset.
+  std::vector<display::DisplayConfigurationParams> config_requests;
+  for (const auto& request : requests_) {
+    final_requests_status_.emplace_back(&request, true);
+
+    config_requests.emplace_back(request.display->display_id(), request.origin,
+                                 request.mode);
   }
 
-  UpdateFinalStatusUma(final_requests_status_);
-  std::move(callback_).Run(task_status_);
+  uint32_t modeset_flags = display::kCommitModeset;
+  if (configuration_type_ == kConfigurationTypeSeamless)
+    modeset_flags |= display::kSeamlessModeset;
+  delegate_->Configure(config_requests,
+                       base::BindOnce(&ConfigureDisplaysTask::OnConfigured,
+                                      weak_ptr_factory_.GetWeakPtr()),
+                       modeset_flags);
 }
 
 void ConfigureDisplaysTask::OnRetryConfigured(bool config_success) {
@@ -339,19 +346,21 @@ void ConfigureDisplaysTask::OnRetryConfigured(bool config_success) {
         pair.request->mode = nullptr;
       task_status_ = ERROR;
     }
+  } else {
+    // This configuration attempt passed test-modeset. Cache it so we can use it
+    // to modeset the displays once we are done testing, or if no other future
+    // attempts succeed.
+    last_successful_config_parameters_.clear();
+    for (const auto& request : requests_) {
+      last_successful_config_parameters_.emplace_back(
+          request.display->display_id(), request.origin, request.mode);
+    }
   }
 
   // This code executes only when this display group request fully succeeds or
   // fails to modeset. Update the final status of this group.
-  for (const auto& pair : pending_display_group_requests_.front()) {
-    const DisplayConfigureRequest* request = pair.request;
-    final_requests_status_.emplace_back(
-        std::make_pair(request, config_success));
-    if (config_success) {
-      request->display->set_current_mode(request->mode);
-      request->display->set_origin(request->origin);
-    }
-  }
+  for (const auto& pair : pending_display_group_requests_.front())
+    final_requests_status_.emplace_back(pair.request, config_success);
 
   // Subsequent modeset attempts will be done on the next pending display group,
   // if one exists.
@@ -364,7 +373,38 @@ void ConfigureDisplaysTask::OnRetryConfigured(bool config_success) {
     return;
   }
 
-  // No more display groups to retry.
+  if (task_status_ == ERROR) {
+    LOG(WARNING) << "One or more of the connected display groups failed to "
+                    "pass test-modeset entirely and will be disabled.";
+
+    if (last_successful_config_parameters_.empty()) {
+      LOG(ERROR) << "Display configuration failed. No modeset was attempted.";
+
+      UpdateFinalStatusUma(final_requests_status_);
+      std::move(callback_).Run(task_status_);
+      return;
+    }
+  }
+
+  // Configure the displays using the last successful configuration parameter
+  // list.
+  uint32_t modeset_flags = display::kCommitModeset;
+  if (configuration_type_ == kConfigurationTypeSeamless)
+    modeset_flags |= display::kSeamlessModeset;
+  delegate_->Configure(last_successful_config_parameters_,
+                       base::BindOnce(&ConfigureDisplaysTask::OnConfigured,
+                                      weak_ptr_factory_.GetWeakPtr()),
+                       modeset_flags);
+}
+
+void ConfigureDisplaysTask::OnConfigured(bool config_success) {
+  if (config_success) {
+    for (const DisplayConfigureRequest& request : requests_) {
+      request.display->set_current_mode(request.mode);
+      request.display->set_origin(request.origin);
+    }
+  }
+
   UpdateFinalStatusUma(final_requests_status_);
   std::move(callback_).Run(task_status_);
 }

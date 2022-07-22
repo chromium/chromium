@@ -14,6 +14,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/manager/display_manager_export.h"
+#include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/native_display_observer.h"
 #include "ui/gfx/geometry/point.h"
@@ -104,7 +105,7 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   // Upon failure, partitions the original request from Ash into smaller
   // requests where the displays are grouped by the physical connector they
   // connect to and initiates the retry sequence.
-  void OnFirstAttemptConfigured(bool config_status);
+  void OnFirstAttemptConfigured(bool config_success);
 
   // Deals with the aftermath of a configuration retry, which attempts to
   // configure a subset of the displays grouped together by the physical
@@ -115,7 +116,11 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   // If any of the display groups entirely fail to modeset (i.e. exhaust all
   // available modes during retry), the configuration will fail as a whole, but
   // will continue to try to modeset the remaining display groups.
-  void OnRetryConfigured(bool config_status);
+  void OnRetryConfigured(bool config_success);
+
+  // Finalizes the configuration after a modeset attempt was made (as opposed to
+  // test-modeset).
+  void OnConfigured(bool config_success);
 
   // Partition |requests_| by their base connector id (i.e. the physical
   // connector the displays are connected to) and populate the result in
@@ -142,6 +147,11 @@ class DISPLAY_MANAGER_EXPORT ConfigureDisplaysTask
   // used to downgrade displays' modes stored in |requests_| when the original
   // request fails to modeset and a the fallback logic is triggered.
   PartitionedRequestsQueue pending_display_group_requests_;
+
+  // The last configuration parameter request list that passed modeset test
+  // during retry, which will be used for modeset once we are done testing.
+  std::vector<display::DisplayConfigurationParams>
+      last_successful_config_parameters_;
 
   // The final requests and their configuration status for UMA.
   std::vector<RequestAndStatusList> final_requests_status_;

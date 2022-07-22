@@ -23,6 +23,12 @@ class NativeDisplayObserver;
 
 namespace test {
 
+constexpr char kTestModesetStr[] = "test-modeset";
+constexpr char kCommitModesetStr[] = "commit-modeset";
+constexpr char kSeamlessModesetStr[] = "seamless-modeset";
+constexpr char kModesetOutcomeFailure[] = "outcome: failure";
+constexpr char kModesetOutcomeSuccess[] = "outcome: success";
+
 class TestNativeDisplayDelegate : public NativeDisplayDelegate {
  public:
   // Ownership of |log| remains with the caller.

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/display/manager/test/action_logger.h"
@@ -16,6 +17,21 @@
 
 namespace display {
 namespace test {
+
+std::string GetModesetFlag(uint32_t flag) {
+  std::string flags_str;
+  if (flag & kTestModeset)
+    flags_str = base::StrCat({flags_str, kTestModesetStr, ", "});
+  if (flag & kCommitModeset)
+    flags_str = base::StrCat({flags_str, kCommitModesetStr, ", "});
+  if (flag & kSeamlessModeset)
+    flags_str = base::StrCat({flags_str, kSeamlessModesetStr, ", "});
+
+  // Remove trailing comma and space.
+  if (!flags_str.empty())
+    flags_str.resize(flags_str.size() - 2);
+  return flags_str;
+}
 
 TestNativeDisplayDelegate::TestNativeDisplayDelegate(ActionLogger* log)
     : max_configurable_pixels_(0),
@@ -110,6 +126,7 @@ void TestNativeDisplayDelegate::Configure(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
     ConfigureCallback callback,
     uint32_t modeset_flag) {
+  log_->AppendAction(GetModesetFlag(modeset_flag));
   bool config_success = true;
   for (const auto& config : config_requests)
     config_success &= Configure(config);
@@ -118,6 +135,10 @@ void TestNativeDisplayDelegate::Configure(
 
   if (config_success)
     SaveCurrentConfigSystemBandwidth(config_requests);
+
+  std::string config_outcome = "outcome: ";
+  config_outcome += config_success ? "success" : "failure";
+  log_->AppendAction(config_outcome);
 
   if (run_async_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
