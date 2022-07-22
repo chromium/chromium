@@ -8,6 +8,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
 #include "ash/system/accessibility/floating_menu_button.h"
@@ -38,13 +39,6 @@ constexpr int kScrollButtonCloseSizeDips = 48;
 constexpr int kScrollpadStrokeWidthDips = 2;
 constexpr int kScrollPadButtonHypotenuseDips = 192;
 constexpr int kScrollPadIconPadding = 30;
-
-SkColor HoveredButtonColor() {
-  const std::pair<SkColor, float> base_color_and_opacity =
-      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity();
-  return SkColorSetA(base_color_and_opacity.first,
-                     255 * base_color_and_opacity.second);
-}
 
 }  // namespace
 
@@ -97,7 +91,7 @@ class AutoclickScrollCloseButton : public FloatingMenuButton {
       cc::PaintFlags flags;
       flags.setAntiAlias(true);
       flags.setStyle(cc::PaintFlags::kFill_Style);
-      flags.setColor(HoveredButtonColor());
+      flags.setColor(GetColorProvider()->GetColor(kColorAshInkDrop));
       canvas->DrawCircle(gfx::PointF(rect.CenterPoint()),
                          kScrollButtonCloseSizeDips / 2, flags);
     }
@@ -259,7 +253,7 @@ class AutoclickScrollButton : public CustomShapeButton,
     flags.setAntiAlias(true);
 
     if (active_) {
-      flags.setColor(HoveredButtonColor());
+      flags.setColor(GetColorProvider()->GetColor(kColorAshInkDrop));
       flags.setStyle(cc::PaintFlags::kFill_Style);
       canvas->DrawPath(CreateCustomShapePath(rect), flags);
     }

@@ -89,7 +89,8 @@ namespace ash {
   /* Color for the battery icon in the system info view. */ \
   E_CPONLY(kColorAshBatterySystemInfoIconColor) \
   /* Color of the capture region in the capture session. */ \
-  E_CPONLY(kColorAshCaptureRegionColor)
+  E_CPONLY(kColorAshCaptureRegionColor) \
+  E_CPONLY(kColorAshInkDrop)
 
 #include "ui/color/color_id_macros.inc"
 
