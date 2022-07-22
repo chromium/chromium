@@ -1569,6 +1569,17 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
   CheckUkm({kNavigatedUrl}, "TriggeredByInitialUrl", false);
 }
 
+// Combo Squatting shouldn't trigger on allowlisted sites and no
+// UKM should be recorded.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
+                       ComboSquatting_ShouldNotTriggeredForAllowlist) {
+  const GURL kNavigatedUrl = GetURL("google-login.com");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  reputation::SetSafetyTipAllowlistPatterns({"google-login.com/"}, {}, {});
+  TestInterstitialNotShown(browser(), kNavigatedUrl);
+  CheckNoUkm();
+}
+
 scoped_refptr<net::X509Certificate> LoadCertificate() {
   constexpr char kCertFileName[] = "prime256v1-sha256-google-com.public.pem";
 
