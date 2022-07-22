@@ -13,7 +13,7 @@
     <h2>[[section.title]]</h2>
     <div class="list-frame">
       <template is="dom-repeat" items="[[section.options]]" as="option">
-        <div class="list-item" actionable>
+        <div class="list-item">
           <div class="start" id="option-label" aria-hidden="true">
             [[option.label]]
           </div>
@@ -44,8 +44,8 @@
         <!--TODO(b/189280771): Reduce this duplication.-->
         <template is="dom-repeat" items="[[option.dependentOptions]]"
             as="dependant" id="dependent-settings">
-          <div class="list-item" actionable>
-            <div class="dependent start" aria-hidden="true">
+          <div class="list-item dependent" >
+            <div class="start" aria-hidden="true">
               [[dependant.label]]
             </div>
             <template is="dom-if"
