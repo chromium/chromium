@@ -415,17 +415,26 @@ public class ExternalNavigationHandlerTest {
                 .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
                         START_OTHER_ACTIVITY);
 
+        RedirectHandler redirectHandler = RedirectHandler.create();
+        redirectHandler.updateNewUrlLoading(PageTransition.TYPED, false, false, 0, 0, false, false);
+
         // http://crbug.com/143118 - Don't show the picker for directly typed URLs, unless
         // the URL results in a redirect.
         checkUrl(YOUTUBE_URL)
                 .withPageTransition(PageTransition.TYPED)
                 .withIsRendererInitiated(false)
+                .withRedirectHandler(redirectHandler)
                 .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+
+        redirectHandler = RedirectHandler.create();
+        redirectHandler.updateNewUrlLoading(
+                PageTransition.RELOAD, false, false, 0, 0, false, false);
 
         // http://crbug.com/162106 - Don't show the picker on reload.
         checkUrl(YOUTUBE_URL)
                 .withPageTransition(PageTransition.RELOAD)
                 .withIsRendererInitiated(false)
+                .withRedirectHandler(redirectHandler)
                 .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
     }
 
@@ -490,6 +499,8 @@ public class ExternalNavigationHandlerTest {
     @Test
     @SmallTest
     public void testTypedRedirectToExternalProtocol() {
+        if (RedirectHandler.isRefactoringEnabled()) return;
+
         // http://crbug.com/169549
         checkUrl("market://1234")
                 .withPageTransition(PageTransition.TYPED)
@@ -507,10 +518,54 @@ public class ExternalNavigationHandlerTest {
                         START_OTHER_ACTIVITY);
 
         // http://crbug.com/143118
+        mUrlHandler.mExpectingMessage = true;
         checkUrl("market://1234")
                 .withPageTransition(PageTransition.TYPED)
                 .withIsRendererInitiated(false)
-                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                        OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH, IGNORE);
+    }
+
+    @Test
+    @SmallTest
+    public void testTypedRedirectToExternalProtocolWithRefactor() {
+        if (!RedirectHandler.isRefactoringEnabled()) return;
+        mUrlHandler.mExpectingMessage = true;
+
+        RedirectHandler redirectHandler = RedirectHandler.create();
+
+        // http://crbug.com/169549
+        redirectHandler.updateNewUrlLoading(PageTransition.TYPED, false, false, 0, 0, false, false);
+        redirectHandler.updateNewUrlLoading(PageTransition.TYPED, true, false, 0, 0, false, false);
+        checkUrl("market://1234")
+                .withPageTransition(PageTransition.TYPED)
+                .withIsRendererInitiated(false)
+                .withIsRedirect(true)
+                .withRedirectHandler(redirectHandler)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                        OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH, IGNORE);
+
+        // http://crbug.com/709217
+        redirectHandler.updateNewUrlLoading(
+                PageTransition.FROM_ADDRESS_BAR, false, false, 0, 0, false, false);
+        redirectHandler.updateNewUrlLoading(
+                PageTransition.FROM_ADDRESS_BAR, true, false, 0, 0, false, false);
+        checkUrl("market://1234")
+                .withPageTransition(PageTransition.FROM_ADDRESS_BAR)
+                .withIsRendererInitiated(false)
+                .withIsRedirect(true)
+                .withRedirectHandler(redirectHandler)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                        OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH, IGNORE);
+
+        // If a user types an external protocol, it may as well ask to leave Chrome.
+        redirectHandler.updateNewUrlLoading(PageTransition.TYPED, false, false, 0, 0, false, false);
+        checkUrl("market://1234")
+                .withPageTransition(PageTransition.TYPED)
+                .withIsRendererInitiated(false)
+                .withRedirectHandler(redirectHandler)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                        OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH, IGNORE);
     }
 
     @Test
@@ -2567,15 +2622,20 @@ public class ExternalNavigationHandlerTest {
     @SmallTest
     public void testEmbedderInitiatedNavigationsLeaveBrowser() {
         mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME));
+        RedirectHandler redirectHandler = RedirectHandler.create();
+        redirectHandler.updateNewUrlLoading(
+                PageTransition.AUTO_BOOKMARK, false, false, 0, 0, false, false);
 
         checkUrl(YOUTUBE_URL)
                 .withIsRendererInitiated(false)
+                .withRedirectHandler(redirectHandler)
                 .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
 
         mDelegate.setShouldEmbedderInitiatedNavigationsStayInBrowser(false);
 
         checkUrl(YOUTUBE_URL)
                 .withIsRendererInitiated(false)
+                .withRedirectHandler(redirectHandler)
                 .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
                         START_OTHER_ACTIVITY);
     }
@@ -2805,6 +2865,7 @@ public class ExternalNavigationHandlerTest {
         public Intent mStartActivityIntent;
         public boolean mCalledWithProxy;
         private boolean mSendIntentsForReal;
+        public boolean mExpectingMessage;
 
         public ExternalNavigationHandlerForTesting(ExternalNavigationDelegate delegate) {
             super(delegate);
@@ -2904,6 +2965,19 @@ public class ExternalNavigationHandlerTest {
         public void reset() {
             mCalledWithProxy = false;
             mStartActivityIntent = null;
+        }
+
+        @Override
+        protected OverrideUrlLoadingResult maybeAskToLaunchApp(boolean isExternalProtocol,
+                Intent targetIntent, QueryIntentActivitiesSupplier resolvingInfos,
+                ResolveActivitySupplier resolveActivity, GURL browserFallbackUrl) {
+            if (!browserFallbackUrl.isEmpty() || !isExternalProtocol) {
+                return super.maybeAskToLaunchApp(isExternalProtocol, targetIntent, resolvingInfos,
+                        resolveActivity, browserFallbackUrl);
+            }
+            Assert.assertTrue(mExpectingMessage);
+            return OverrideUrlLoadingResult.forAsyncAction(
+                    OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH);
         }
     };
 

@@ -349,6 +349,13 @@ public class RedirectHandler {
     }
 
     /**
+     * @return whether we're on the first load in the current navigation chain.
+     */
+    public boolean isOnFirstLoadInNavigationChain() {
+        return mNavigationChainState.mIsOnFirstLoadInChain;
+    }
+
+    /**
      * @param hasExternalProtocol whether the destination URI has an external protocol or not.
      * @param isForTrustedCallingApp whether the app we would launch to is trusted and what launched
      *                               Chrome.
