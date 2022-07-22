@@ -3,6 +3,11 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<!-- This UI should not apply dynamic colors (it should only respect the
+     dark/light mode of the android device). This happens for UI consistency
+     reasons as this screen is displayed after a GMSCore bottom sheet which
+     doesn't support dynamic colors. -->
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -53,6 +58,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/website_approval_horizontal_margin"
         android:layout_marginEnd="@dimen/website_approval_horizontal_margin"
+        android:backgroundTint="@color/default_bg_color_secondary"
         style="@style/MaterialCardStyle">
 
         <LinearLayout
@@ -106,7 +112,7 @@
     </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
 
     <!-- The approve button -->
-    <org.chromium.ui.widget.ButtonCompat
+   <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/approve_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -119,6 +125,8 @@
         android:ellipsize="end"
         android:singleLine="true"
         android:text="@string/parent_website_approval_approve_button"
+        app:buttonColor="@color/filled_button_bg"
+        app:buttonTextColor="@color/default_text_color_on_accent1_baseline_list"
         style="@style/FilledButton.Flat"/>
 
     <!-- The deny button button -->
@@ -135,6 +143,7 @@
         android:ellipsize="end"
         android:singleLine="true"
         android:text="@string/parent_website_approval_deny_button"
+        app:buttonTextColor="@color/default_text_color_blue_baseline"
         style="@style/TextButton"/>
 
 </LinearLayout>
