@@ -34,7 +34,7 @@ void GetInstalledVersion(InstalledVersionCallback callback) {
               base::Version version(version_str);
               if (!version.IsValid() ||
                   (version < version_info::GetVersion() &&
-                   chromeos::BrowserParamsProxy::Get()->lacros_selection() ==
+                   chromeos::BrowserParamsProxy::Get()->LacrosSelection() ==
                        crosapi::mojom::BrowserInitParams::LacrosSelection::
                            kRootfs)) {
                 version = version_info::GetVersion();

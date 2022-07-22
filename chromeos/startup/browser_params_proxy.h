@@ -114,7 +114,7 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool EnableLacrosTtsSupport() const;
 
-  crosapi::mojom::BrowserInitParams::LacrosSelection lacros_selection() const;
+  crosapi::mojom::BrowserInitParams::LacrosSelection LacrosSelection() const;
 
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
