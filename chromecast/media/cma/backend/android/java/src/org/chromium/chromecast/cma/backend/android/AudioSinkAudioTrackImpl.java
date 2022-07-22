@@ -491,17 +491,8 @@ class AudioSinkAudioTrackImpl {
         long beforeMsecs = SystemClock.elapsedRealtime();
         int bytesWritten;
         if (mUseHwAvSync) {
-            // Hw av sync stream uses the timestamp in the audio buffer to do
-            // synchronization. Therefore we need to skip pushing audio data to
-            // Android AudioTrack if the timestamp is invalid. The audio buffer
-            // with no timestamp is usually the silence buffer pushed by cma
-            // backend, not the audio data pushed by the native application.
-            if (timestampNs == NO_TIMESTAMP) {
-                bytesWritten = sizeInBytes;
-            } else {
-                bytesWritten = mAudioTrack.write(
-                        mPcmBuffer, sizeInBytes, AudioTrack.WRITE_BLOCKING, timestampNs);
-            }
+            bytesWritten = mAudioTrack.write(
+                    mPcmBuffer, sizeInBytes, AudioTrack.WRITE_BLOCKING, timestampNs);
         } else {
             bytesWritten = mAudioTrack.write(mPcmBuffer, sizeInBytes, AudioTrack.WRITE_BLOCKING);
         }
