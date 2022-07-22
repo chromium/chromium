@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -341,7 +342,7 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
                 IDP_METADATA, CLIENT_ID_METADATA, false);
         pressBack();
-        verify(mMockDelegate).onDismissed(/*shouldEmbargo=*/false);
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         assertTrue(mMediator.wasDismissed());
     }
 
@@ -351,7 +352,7 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA, BOB),
                 IDP_METADATA, CLIENT_ID_METADATA, false);
         pressBack();
-        verify(mMockDelegate).onDismissed(/*shouldEmbargo=*/false);
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         assertTrue(mMediator.wasDismissed());
     }
 
@@ -444,7 +445,7 @@ public class AccountSelectionControllerTest {
         mMediator.showAccounts(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1, Arrays.asList(ANA),
                 IDP_METADATA, CLIENT_ID_METADATA, true);
         pressBack();
-        verify(mMockDelegate).onDismissed(/*shouldEmbargo=*/false);
+        verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verifyNoMoreInteractions(mMockDelegate);
         assertTrue(mMediator.wasDismissed());
         // The delayed task should not call delegate after user dismissing.
@@ -486,7 +487,7 @@ public class AccountSelectionControllerTest {
     private void pressBack() {
         if (mBottomSheetContent.handleBackPress()) return;
 
-        mMediator.onDismissed(/*shouldEmbargo=*/false);
+        mMediator.onDismissed(IdentityRequestDialogDismissReason.OTHER);
     }
 
     private int countAllItems() {

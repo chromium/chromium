@@ -58,10 +58,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Closes the widget and notifies the delegate.
   void Close();
 
-  // Notify the delegate that the widget was closed.
-  // |should_embargo| indicates whether the FedCM API should be embargoed due
-  // to the user explicitly dismissing the dialog.
-  void OnDismiss(bool should_embargo);
+  // Notify the delegate that the widget was closed with reason
+  // `dismiss_reason`.
+  void OnDismiss(
+      content::IdentityRequestDialogController::DismissReason dismiss_reason);
 
   // Whether to notify the delegate when the widget is closed.
   bool notify_delegate_of_dismiss_{true};

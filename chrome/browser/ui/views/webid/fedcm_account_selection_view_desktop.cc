@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+using DismissReason = content::IdentityRequestDialogController::DismissReason;
+
 // static
 std::unique_ptr<AccountSelectionView> AccountSelectionView::Create(
     AccountSelectionView::Delegate* delegate) {
@@ -106,9 +108,12 @@ void FedCmAccountSelectionView::OnTabStripModelChanged(
 }
 
 void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
-  bool should_embargo = (bubble_widget_->closed_reason() ==
-                         views::Widget::ClosedReason::kCloseButtonClicked);
-  OnDismiss(should_embargo);
+  DismissReason dismiss_reason =
+      (bubble_widget_->closed_reason() ==
+       views::Widget::ClosedReason::kCloseButtonClicked)
+          ? DismissReason::CLOSE_BUTTON
+          : DismissReason::OTHER;
+  OnDismiss(dismiss_reason);
 }
 
 void FedCmAccountSelectionView::OnAccountSelected(
@@ -122,10 +127,10 @@ void FedCmAccountSelectionView::Close() {
     return;
 
   bubble_widget_->Close();
-  OnDismiss(/*should_embargo=*/false);
+  OnDismiss(DismissReason::OTHER);
 }
 
-void FedCmAccountSelectionView::OnDismiss(bool should_embargo) {
+void FedCmAccountSelectionView::OnDismiss(DismissReason dismiss_reason) {
   if (!bubble_widget_)
     return;
 
@@ -133,5 +138,5 @@ void FedCmAccountSelectionView::OnDismiss(bool should_embargo) {
   bubble_widget_.reset();
 
   if (notify_delegate_of_dismiss_)
-    delegate_->OnDismiss(should_embargo);
+    delegate_->OnDismiss(dismiss_reason);
 }

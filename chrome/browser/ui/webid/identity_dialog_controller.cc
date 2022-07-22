@@ -52,11 +52,13 @@ void IdentityDialogController::ShowAccountsDialog(
     const content::IdentityProviderMetadata& idp_metadata,
     const content::ClientIdData& client_data,
     content::IdentityRequestAccount::SignInMode sign_in_mode,
-    AccountSelectionCallback on_selected) {
+    AccountSelectionCallback on_selected,
+    DismissCallback dismiss_callback) {
   // IDP scheme is expected to always be `https://`.
   CHECK(idp_url.SchemeIs(url::kHttpsScheme));
   rp_web_contents_ = rp_web_contents;
   on_account_selection_ = std::move(on_selected);
+  on_dismiss_ = std::move(dismiss_callback);
   std::string rp_for_display =
       FormatUrlForDisplay(rp_web_contents_->GetLastCommittedURL());
   std::string idp_for_display = FormatUrlForDisplay(idp_url);
@@ -68,18 +70,20 @@ void IdentityDialogController::ShowAccountsDialog(
 }
 
 void IdentityDialogController::OnAccountSelected(const Account& account) {
+  on_dismiss_.Reset();
   std::move(on_account_selection_)
       .Run(account.id,
            account.login_state ==
-               content::IdentityRequestAccount::LoginState::kSignIn,
-           /* should_embargo=*/false);
+               content::IdentityRequestAccount::LoginState::kSignIn);
 }
 
-void IdentityDialogController::OnDismiss(bool should_embargo) {
+void IdentityDialogController::OnDismiss(DismissReason dismiss_reason) {
   // |OnDismiss| can be called after |OnAccountSelected| which sets the callback
   // to null.
-  if (on_account_selection_)
-    std::move(on_account_selection_).Run(std::string(), false, should_embargo);
+  if (on_dismiss_) {
+    on_account_selection_.Reset();
+    std::move(on_dismiss_).Run(dismiss_reason);
+  }
 }
 
 gfx::NativeView IdentityDialogController::GetNativeView() {

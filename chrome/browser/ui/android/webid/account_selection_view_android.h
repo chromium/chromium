@@ -32,7 +32,7 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
       const base::android::JavaParamRef<jobjectArray>& account_string_fields,
       const base::android::JavaParamRef<jobject>& account_picture_url,
       bool is_sign_in);
-  void OnDismiss(JNIEnv* env, bool should_embargo);
+  void OnDismiss(JNIEnv* env, jint dismiss_reason);
   void OnAutoSignInCancelled(JNIEnv* env);
 
  private:

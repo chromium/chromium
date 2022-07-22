@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_
 
 #include "content/common/content_export.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -79,9 +80,16 @@ class FedCmMetrics {
   // presses the Continue button.
   void RecordContinueOnDialogTime(base::TimeDelta duration);
 
-  // Records the time from when the accounts dialog is shown to when the user
-  // closes the dialog without selecting any account.
+  // Records metrics when the user explicitly closes the accounts dialog without
+  // selecting any accounts. `duration` is the time from when the accounts
+  // dialog was shown to when the user closed the dialog.
   void RecordCancelOnDialogTime(base::TimeDelta duration);
+
+  // Records the reason that closed accounts dialog without selecting any
+  // accounts. Unlike RecordCancelOnDialogTime() this metric is recorded in
+  // cases that the acccounts dialog was closed without an explicit user action.
+  void RecordCancelReason(
+      IdentityRequestDialogController::DismissReason dismiss_reason);
 
   // Records the time from when the user presses the Continue button to when the
   // token response is received. Also records the overall time from when the API

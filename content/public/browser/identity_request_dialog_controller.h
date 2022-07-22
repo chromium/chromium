@@ -88,23 +88,24 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
 // surfaces that are displayed to intermediate the exchange of ID tokens.
 class CONTENT_EXPORT IdentityRequestDialogController {
  public:
-  enum class UserApproval {
-    kApproved,
-    kDenied,
+  // This enum is used to back a histogram. Do not remove or reorder members.
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.webid
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: IdentityRequestDialogDismissReason
+  enum class DismissReason {
+    OTHER = 0,
+    CLOSE_BUTTON = 1,
+    SWIPE = 2,
+    VIRTUAL_KEYBOARD_SHOWN = 3,
+
+    COUNT = 4,
   };
 
-  enum class PermissionDialogMode {
-    kStateless,
-    kStateful,
-  };
-
-  using InitialApprovalCallback = base::OnceCallback<void(UserApproval)>;
-  using IdProviderWindowClosedCallback = base::OnceCallback<void()>;
-  using TokenExchangeApprovalCallback = base::OnceCallback<void(UserApproval)>;
   using AccountSelectionCallback =
       base::OnceCallback<void(const std::string& /*account_id*/,
-                              bool /*is_sign_in*/,
-                              bool /*should_embargo*/)>;
+                              bool /*is_sign_in*/)>;
+  using DismissCallback =
+      base::OnceCallback<void(DismissReason dismiss_reason)>;
 
   IdentityRequestDialogController() = default;
 
@@ -133,7 +134,8 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       const IdentityProviderMetadata& idp_metadata,
       const ClientIdData& client_id_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
-      AccountSelectionCallback on_selected);
+      AccountSelectionCallback on_selected,
+      DismissCallback dismiss_callback);
 };
 
 }  // namespace content

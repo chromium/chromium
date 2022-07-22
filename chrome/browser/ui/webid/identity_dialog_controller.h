@@ -18,9 +18,10 @@
 
 class GURL;
 
-using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using AccountSelectionCallback =
     content::IdentityRequestDialogController::AccountSelectionCallback;
+using DismissCallback =
+    content::IdentityRequestDialogController::DismissCallback;
 
 // The IdentityDialogController controls the views that are used across
 // browser-mediated federated sign-in flows.
@@ -46,11 +47,12 @@ class IdentityDialogController
       const content::IdentityProviderMetadata& idp_metadata,
       const content::ClientIdData& client_data,
       content::IdentityRequestAccount::SignInMode sign_in_mode,
-      AccountSelectionCallback on_selected) override;
+      AccountSelectionCallback on_selected,
+      DismissCallback dismiss_callback) override;
 
   // AccountSelectionView::Delegate:
   void OnAccountSelected(const Account& account) override;
-  void OnDismiss(bool should_embargo) override;
+  void OnDismiss(DismissReason dismiss_reason) override;
   gfx::NativeView GetNativeView() override;
   content::WebContents* GetWebContents() override;
 
@@ -59,6 +61,7 @@ class IdentityDialogController
 
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};
   AccountSelectionCallback on_account_selection_;
+  DismissCallback on_dismiss_;
   raw_ptr<content::WebContents> rp_web_contents_;
 };
 

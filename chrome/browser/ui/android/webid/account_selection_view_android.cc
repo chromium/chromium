@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/android/webid/jni_headers/ClientIdMetadata_jni.h"
 #include "chrome/browser/ui/android/webid/jni_headers/IdentityProviderMetadata_jni.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -28,6 +29,7 @@ using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+using DismissReason = content::IdentityRequestDialogController::DismissReason;
 
 namespace {
 
@@ -123,7 +125,7 @@ void AccountSelectionViewAndroid::Show(
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
     // waiting state so report that AccountSelectionView is dismissed instead.
-    delegate_->OnDismiss(/* should_embargo=*/false);
+    delegate_->OnDismiss(DismissReason::OTHER);
     return;
   }
 
@@ -152,13 +154,13 @@ void AccountSelectionViewAndroid::OnAccountSelected(
       env, account_string_fields, account_picture_url, is_sign_in));
 }
 
-void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env, bool should_embargo) {
-  delegate_->OnDismiss(should_embargo);
+void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env, jint dismiss_reason) {
+  delegate_->OnDismiss(static_cast<DismissReason>(dismiss_reason));
 }
 
 void AccountSelectionViewAndroid::OnAutoSignInCancelled(JNIEnv* env) {
   // TODO(yigu): Alternatively we could fall back to manual sign in flow.
-  delegate_->OnDismiss(/*should_embargo=*/false);
+  delegate_->OnDismiss(DismissReason::OTHER);
 }
 
 bool AccountSelectionViewAndroid::RecreateJavaObject() {
