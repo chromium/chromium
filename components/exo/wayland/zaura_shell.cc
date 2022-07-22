@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/display.h"
 #include "components/exo/seat.h"
@@ -743,9 +744,9 @@ void AuraToplevel::SetSystemModal(bool modal) {
   shell_surface_->SetSystemModal(modal);
 }
 
-void AddState(wl_array* states, xdg_toplevel_state state) {
-  xdg_toplevel_state* value = static_cast<xdg_toplevel_state*>(
-      wl_array_add(states, sizeof(xdg_toplevel_state)));
+template <class T>
+void AddState(wl_array* states, T state) {
+  T* value = static_cast<T*>(wl_array_add(states, sizeof(T)));
   DCHECK(value);
   *value = state;
 }
@@ -762,6 +763,9 @@ void AuraToplevel::OnConfigure(const gfx::Rect& bounds,
   // TODO(crbug/1250129): Support snapped state.
   if (IsFullscreenOrPinnedWindowStateType(state_type)) {
     AddState(&states, XDG_TOPLEVEL_STATE_FULLSCREEN);
+    if (shell_surface_->GetWidget()->GetNativeWindow()->GetProperty(
+            chromeos::kImmersiveImpliedByFullscreen))
+      AddState(&states, ZAURA_TOPLEVEL_STATE_IMMERSIVE);
   }
   if (resizing)
     AddState(&states, XDG_TOPLEVEL_STATE_RESIZING);
@@ -772,6 +776,9 @@ void AuraToplevel::OnConfigure(const gfx::Rect& bounds,
     AddState(&states, XDG_TOPLEVEL_STATE_TILED_LEFT);
   if (state_type == chromeos::WindowStateType::kSecondarySnapped)
     AddState(&states, XDG_TOPLEVEL_STATE_TILED_RIGHT);
+
+  if (state_type == chromeos::WindowStateType::kMinimized)
+    AddState(&states, ZAURA_TOPLEVEL_STATE_MINIMIZED);
 
   zaura_toplevel_send_configure(aura_toplevel_resource_, bounds.x(), bounds.y(),
                                 bounds.width(), bounds.height(), &states);

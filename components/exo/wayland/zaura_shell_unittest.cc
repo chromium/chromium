@@ -368,16 +368,6 @@ TEST_F(ZAuraSurfaceTest, ZeroSizeWindowSendsZeroOcclusionFraction) {
             aura_surface().last_sent_occlusion_state());
 }
 
-TEST_F(ZAuraSurfaceTest, CanSetFullscreenModeToPlain) {
-  MockSurfaceDelegate delegate;
-  wl_resource resource;
-  resource.data = &aura_surface();
-  surface().SetSurfaceDelegate(&delegate);
-  EXPECT_CALL(delegate, SetUseImmersiveForFullscreen(false));
-
-  aura_surface().SetFullscreenMode(ZAURA_SURFACE_FULLSCREEN_MODE_PLAIN);
-}
-
 TEST_F(ZAuraSurfaceTest, CanPin) {
   MockSurfaceDelegate delegate;
   wl_resource resource;
@@ -396,6 +386,16 @@ TEST_F(ZAuraSurfaceTest, CanUnpin) {
   EXPECT_CALL(delegate, Unpin());
 
   aura_surface().Unpin();
+}
+
+TEST_F(ZAuraSurfaceTest, CanSetFullscreenModeToPlain) {
+  MockSurfaceDelegate delegate;
+  wl_resource resource;
+  resource.data = &aura_surface();
+  surface().SetSurfaceDelegate(&delegate);
+  EXPECT_CALL(delegate, SetUseImmersiveForFullscreen(false));
+
+  aura_surface().SetFullscreenMode(ZAURA_SURFACE_FULLSCREEN_MODE_PLAIN);
 }
 
 TEST_F(ZAuraSurfaceTest, CanSetFullscreenModeToImmersive) {
