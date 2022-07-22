@@ -16,7 +16,9 @@ namespace string_matching {
 
 namespace {
 
-constexpr float kEps = 1e-5f;
+constexpr double kEps = 1e-5;
+constexpr double kCompleteMatchScore = 1.0;
+constexpr double kCompleteMismatchScore = 0.0;
 
 // Default parameters.
 constexpr bool kUseWeightedRatio = false;
@@ -186,6 +188,234 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkCamelCase) {
   }
   // TODO(crbug.com/1336160): Enforce/check that scores are close, after this
   // behavior is implemented.
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkCompleteMatchSingleToken) {
+  // A complete match between text and query should always score very well. Test
+  // score calculations for pairs of identical strings, for various lengths of
+  // string.
+  std::u16string full_string = u"abcdefgh";
+
+  for (size_t i = 1; i < full_string.size(); ++i) {
+    // N.B. The created `substring` is compared to itself, not to `full_string`.
+    std::u16string substring = full_string.substr(0, i);
+    const double relevance = CalculateRelevance(substring, substring);
+    VLOG(1) << FormatRelevanceResult(substring, substring, relevance,
+                                     /*query_first*/ false);
+    EXPECT_NEAR(relevance, kCompleteMatchScore, kEps);
+  }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkCompleteMatchMultiToken) {
+  // A complete match between text and query should always score very well. Test
+  // score calculations for pairs of identical strings, for various lengths of
+  // string.
+  std::u16string full_string = u"ab cdefgh ijk";
+
+  for (size_t i = 1; i < full_string.size(); ++i) {
+    // N.B. The created `substring` is compared to itself, not to `full_string`.
+    std::u16string substring = full_string.substr(0, i);
+    const double relevance = CalculateRelevance(substring, substring);
+    VLOG(1) << FormatRelevanceResult(substring, substring, relevance,
+                                     /*query_first*/ false);
+    EXPECT_NEAR(relevance, kCompleteMatchScore, kEps);
+  }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkCompleteNonMatchSingleToken) {
+  std::u16string full_text = u"abcdefgh";
+  std::u16string full_query = u"stuvwxyz";
+  ASSERT_EQ(full_text.size(), full_query.size());
+
+  for (size_t i = 1; i < full_text.size(); ++i) {
+    std::u16string text = full_text.substr(0, i);
+    std::u16string query = full_query.substr(0, i);
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+    EXPECT_NEAR(relevance, kCompleteMismatchScore, kEps);
+  }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkCompleteNonMatchMultiToken) {
+  std::u16string full_text = u"ab cdefgh ijk";
+  std::u16string full_query = u"pqrstu vw xyz";
+  ASSERT_EQ(full_text.size(), full_query.size());
+
+  for (size_t i = 1; i < full_text.size(); ++i) {
+    std::u16string text = full_text.substr(0, i);
+    std::u16string query = full_query.substr(0, i);
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+    // TODO(crbug.com/1336160): Expect score is zero. Currently, the
+    // presence of whitespace in both text and query causes
+    // inappropriately high relevance scoring.
+  }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest,
+       BenchmarkVariedLengthUnmatchedTextSingleToken) {
+  std::u16string full_text = u"abcdefghijklmnop";
+  const size_t shortest_text_length = 6;
+  const size_t longest_text_length = full_text.size();
+
+  std::vector<std::u16string> queries = {u"abc", u"bcd", u"cde", u"def"};
+
+  for (const auto& query : queries) {
+    // For a fixed query, where the query is a full match to some portion of the
+    // text, the relevance score should not be influenced by the
+    // amounts of any remaining unmatched portions of text ("text-length
+    // agnosticism").
+    for (size_t i = shortest_text_length; i < longest_text_length; ++i) {
+      std::u16string text = full_text.substr(0, i);
+      const double relevance = CalculateRelevance(query, text);
+      VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                       /*query_first*/ true);
+    }
+    // TODO(crbug.com/1336160): Enforce/check text-length agnosticism.
+  }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest,
+       BenchmarkVariedLengthUnmatchedTextMultiToken) {
+  std::vector<std::u16string> texts = {u"ab cdefgh", u"ab cdefgh ijk",
+                                       u"ab cdefgh ijk lmno",
+                                       u"ab cdefgh ijk lmno pqrst"};
+
+  std::vector<std::u16string> queries = {
+      u"ab c",  // strict prefix of text
+      u"cdef",  // token prefix of text
+      u"defg",  // token in-fix of text
+      u"efgh"   // token suffix of text
+  };
+
+  for (const auto& query : queries) {
+    // For a fixed query, where the query is a full match to some portion of the
+    // text, the relevance score should not be influenced by the
+    // amounts of any remaining unmatched portions of text ("text-length
+    // agnosticism").
+    for (const auto& text : texts) {
+      const double relevance = CalculateRelevance(query, text);
+      VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                       /*query_first*/ true);
+    }
+    // TODO(crbug.com/1336160): Enforce/check text-length agnosticism.
+  }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest,
+       BenchmarkVariedLengthUnmatchedQuerySingleToken) {
+  // This test contains the same strings as
+  // BenchmarkVariedLengthUnmatchedTextSingleToken, with the
+  // roles of text and query swapped.
+  std::vector<std::u16string> texts = {u"abc", u"bcd", u"cde", u"def"};
+
+  std::u16string full_query = u"abcdefghijklmnop";
+  const size_t shortest_query_length = 6;
+  const size_t longest_query_length = full_query.size();
+
+  for (const auto& text : texts) {
+    // Compare a fixed text against a number of queries of differing length,
+    // where the query is a substring of the text but the query has leftover
+    // unmatched characters.
+    for (size_t i = shortest_query_length; i < longest_query_length; ++i) {
+      std::u16string query = full_query.substr(0, i);
+      const double relevance = CalculateRelevance(query, text);
+      VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                       /*query_first*/ false);
+    }
+    // TODO(crbug.com/1336160): Decide on how to handle unmatched portions of
+    // query.
+  }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest,
+       BenchmarkVariedLengthUnmatchedQueryMultiToken) {
+  // This test contains the same strings as
+  // BenchmarkVariedLengthUnmatchedTextMultiToken, with the
+  // roles of text and query swapped.
+  std::vector<std::u16string> texts = {
+      u"ab c",  // strict prefix of query
+      u"cdef",  // token prefix of query
+      u"defg",  // token in-fix of query
+      u"efgh"   // token suffix of query
+  };
+
+  std::vector<std::u16string> queries = {u"ab cdefgh", u"ab cdefgh ijk",
+                                         u"ab cdefgh ijk lmno",
+                                         u"ab cdefgh ijk lmno pqrst"};
+
+  for (const auto& text : texts) {
+    // Compare a fixed text against a number of queries of differing length,
+    // where the query is a substring of the text but the query has leftover
+    // unmathced characters.
+    for (const auto& query : queries) {
+      const double relevance = CalculateRelevance(query, text);
+      VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                       /*query_first*/ false);
+    }
+    // TODO(crbug.com/1336160): Decide on how to handle unmatched portions of
+    // query.
+  }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkPartialMatchPartialMismatch) {
+  std::u16string text = u"abcdef";
+
+  std::u16string query_full = u"abcdef";
+  std::u16string query_prefix = u"abc";
+
+  std::u16string query_suffix_mismatch = u"abcxyz";
+  std::u16string query_prefix_mismatch = u"xyzdef";
+
+  std::u16string query_suffix_is_text_prefix = u"xyzabc";
+  std::u16string query_prefix_is_text_suffix = u"defxyz";
+
+  const double relevance_query_full = CalculateRelevance(query_full, text);
+  VLOG(1) << FormatRelevanceResult(query_full, text, relevance_query_full,
+                                   /*query_first*/ false);
+
+  const double relevance_query_prefix = CalculateRelevance(query_prefix, text);
+  VLOG(1) << FormatRelevanceResult(query_prefix, text, relevance_query_prefix,
+                                   /*query_first*/ false);
+
+  const double relevance_query_suffix_mismatch =
+      CalculateRelevance(query_suffix_mismatch, text);
+  VLOG(1) << FormatRelevanceResult(query_suffix_mismatch, text,
+                                   relevance_query_suffix_mismatch,
+                                   /*query_first*/ false);
+
+  const double relevance_query_prefix_mismatch =
+      CalculateRelevance(query_prefix_mismatch, text);
+  VLOG(1) << FormatRelevanceResult(query_prefix_mismatch, text,
+                                   relevance_query_prefix_mismatch,
+                                   /*query_first*/ false);
+
+  const double relevance_query_suffix_is_text_prefix =
+      CalculateRelevance(query_suffix_is_text_prefix, text);
+  VLOG(1) << FormatRelevanceResult(query_suffix_is_text_prefix, text,
+                                   relevance_query_suffix_is_text_prefix,
+                                   /*query_first*/ false);
+
+  const double relevance_query_prefix_is_text_suffix =
+      CalculateRelevance(query_prefix_is_text_suffix, text);
+  VLOG(1) << FormatRelevanceResult(query_prefix_is_text_suffix, text,
+                                   relevance_query_prefix_is_text_suffix,
+                                   /*query_first*/ false);
+
+  CHECK_GT(relevance_query_full, relevance_query_prefix);
+
+  CHECK_GT(relevance_query_prefix, relevance_query_suffix_mismatch);
+  CHECK_GT(relevance_query_prefix, relevance_query_prefix_mismatch);
+  CHECK_GT(relevance_query_prefix, relevance_query_suffix_is_text_prefix);
+  CHECK_GT(relevance_query_prefix, relevance_query_prefix_is_text_suffix);
+
+  // TODO(crbug.com/1336160): Consider the following if/when supported:
+  //
+  // CHECK_GT(relevance_query_suffix_mismatch,
+  // relevance_query_prefix_mismatch);
+  // CHECK_GT(relevance_query_suffix_mismatch, query_suffix_is_text_prefix);
 }
 
 /**********************************************************************
