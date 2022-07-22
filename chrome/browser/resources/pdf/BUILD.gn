@@ -15,35 +15,36 @@ import("./pdf.gni")
 
 assert(enable_pdf, "enable_pdf check failed")
 
-preprocess_folder = "preprocessed"
+preprocess_folder = "${target_gen_dir}/preprocessed"
 tsc_folder = "tsc"
 
 preprocess_if_expr("preprocess") {
-  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_folder = preprocess_folder
   defines = [ "enable_ink=$enable_ink" ]
-  in_files = ts_files
-}
-
-preprocess_if_expr("preprocess_generated") {
-  deps = [
-    ":css_wrapper_files",
-    ":html_wrapper_files",
-  ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  defines = [ "enable_ink=$enable_ink" ]
-  in_files = html_wrapper_files + css_wrapper_files
+  in_files = ts_files + html_files + shared_icons_html_files + css_files
 }
 
 html_to_wrapper("html_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = preprocess_folder
+  out_folder = preprocess_folder
   in_files = html_files + shared_icons_html_files
+  minify = optimize_webui
+}
+
+css_to_wrapper("css_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = preprocess_folder
+  out_folder = preprocess_folder
+  in_files = css_files
+  minify = optimize_webui
 }
 
 # Preprocess and build a manifest file for the Print Preview HTML/CSS files,
 # which aren't passed to ts_library().
 print_preview_html_css_manifest = "print_preview_html_css_manifest.json"
 preprocess_if_expr("preprocess_print_preview_html_css") {
-  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/$print_preview_html_css_manifest"
   in_files = [
     "index_pp.html",
@@ -134,12 +135,8 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-css_to_wrapper("css_wrapper_files") {
-  in_files = css_files
-}
-
 ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
+  root_dir = preprocess_folder
   out_dir = "$target_gen_dir/$tsc_folder"
   tsconfig_base = "tsconfig_base.json"
   composite = true
@@ -156,8 +153,9 @@ ts_library("build_ts") {
     "//ui/webui/resources:library",
   ]
   extra_deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
     ":preprocess",
-    ":preprocess_generated",
   ]
 }
 
