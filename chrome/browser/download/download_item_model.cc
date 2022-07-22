@@ -809,12 +809,14 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
         std::string token =
             safe_browsing::DownloadProtectionService::GetDownloadPingToken(
                 download_);
-        if (!token.empty())
-          report->set_token(token);
+        if (sb_service) {
+          if (!token.empty())
+            report->set_token(token);
 
-        ReportThreatDetailsResult result =
-            sb_service->SendDownloadReport(profile(), std::move(report));
-        DCHECK(result == ReportThreatDetailsResult::SUCCESS);
+          ReportThreatDetailsResult result =
+              sb_service->SendDownloadReport(profile(), std::move(report));
+          DCHECK(result == ReportThreatDetailsResult::SUCCESS);
+        }
       }
 #endif
       download_->ValidateDangerousDownload();
