@@ -389,7 +389,8 @@ TEST_F(GamepadServiceTest, ConnectAndDisconnectWhileInactiveTest) {
   WaitForData();
 }
 
-TEST_F(GamepadServiceTest, DisconnectWhileInactiveTest) {
+// https://crbug.com/1346527 Flaky on Android and Linux.
+TEST_F(GamepadServiceTest, DISABLED_DisconnectWhileInactiveTest) {
   // Create two active consumers.
   auto* consumer1 = CreateConsumer();
   auto* consumer2 = CreateConsumer();
