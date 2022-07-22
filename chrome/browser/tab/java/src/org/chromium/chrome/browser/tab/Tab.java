@@ -212,9 +212,10 @@ public interface Tab extends TabLifecycle {
      * Loads the tab if it's not loaded (e.g. because it was killed in background).
      * This will trigger a regular load for tabs with pending lazy first load (tabs opened in
      * background on low-memory devices).
+     * @param caller The caller of this method.
      * @return true iff the Tab handled the request.
      */
-    boolean loadIfNeeded();
+    boolean loadIfNeeded(int caller);
 
     /**
      * Reloads the current page content.

@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
@@ -104,7 +105,8 @@ public class TabTest {
     @DisabledTest(message = "https://crbug.com/1090378")
     public void testTabRestoredIfKilledWhileActivityStopped() throws Exception {
         // Ensure the tab is showing before stopping the activity.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.show(TabSelectionType.FROM_NEW));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mTab.show(TabSelectionType.FROM_NEW, LoadIfNeededCaller.OTHER));
 
         Assert.assertFalse(mTab.needsReload());
         Assert.assertFalse(mTab.isHidden());

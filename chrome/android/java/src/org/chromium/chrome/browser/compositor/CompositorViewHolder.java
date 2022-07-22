@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -1409,7 +1410,7 @@ public class CompositorViewHolder extends FrameLayout
         // Tab needs to be loaded. Once a new Tab is opening and Start surface is hiding, this flag
         // will be reset.
         if (tab != null && !StartSurfaceUserData.getInstance().getUnusedTabRestoredAtStartup()) {
-            tab.loadIfNeeded();
+            tab.loadIfNeeded(LoadIfNeededCaller.SET_TAB);
         }
 
         View newView = tab != null ? tab.getView() : null;

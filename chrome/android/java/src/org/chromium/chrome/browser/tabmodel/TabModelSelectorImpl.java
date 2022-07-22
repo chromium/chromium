@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -267,7 +268,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         // without actual tab switch.
         if (mVisibleTab == tab && !mVisibleTab.isHidden()) {
             // The current tab might have been killed by the os while in tab switcher.
-            tab.loadIfNeeded();
+            tab.loadIfNeeded(LoadIfNeededCaller.REQUEST_TO_SHOW_TAB);
             // |tabToDropImportance| must be null, so no need to drop importance.
             return;
         }
@@ -277,7 +278,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         // avoids unecessary work (tab restore) and prevents pollution of tab display metrics - see
         // http://crbug.com/316166.
         if (type != TabSelectionType.FROM_EXIT) {
-            tab.show(type);
+            tab.show(type, LoadIfNeededCaller.REQUEST_TO_SHOW_TAB_THEN_SHOW);
             tab.getId();
             tab.isBeingRestored();
         }

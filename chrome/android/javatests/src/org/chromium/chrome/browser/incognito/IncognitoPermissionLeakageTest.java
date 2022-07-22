@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.TestParams;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -105,7 +106,7 @@ public class IncognitoPermissionLeakageTest {
 
     private void requestLocationPermission(Tab tab) throws TimeoutException, ExecutionException {
         // If tab is frozen then getWebContents may return null
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.loadIfNeeded());
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.loadIfNeeded(LoadIfNeededCaller.OTHER));
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(tab.getWebContents(), Matchers.notNullValue()));
         JavaScriptUtils.executeJavaScriptAndWaitForResult(

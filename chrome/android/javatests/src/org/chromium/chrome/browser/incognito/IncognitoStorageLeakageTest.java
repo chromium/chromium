@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.TestParams;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -150,7 +151,8 @@ public class IncognitoStorageLeakageTest {
             // Due to which tab1 could potentially be marked as frozen and invoking
             // getWebContents on it may return null. Please see the javadoc for
             // TabImpl#getWebContents.
-            TestThreadUtils.runOnUiThreadBlocking(() -> tab1.loadIfNeeded());
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> tab1.loadIfNeeded(LoadIfNeededCaller.OTHER));
             CriteriaHelper.pollUiThread(
                     () -> Criteria.checkThat(tab1.getWebContents(), Matchers.notNullValue()));
             // Set the storage in tab1
@@ -162,7 +164,8 @@ public class IncognitoStorageLeakageTest {
                     JavaScriptUtils.runJavascriptWithAsyncResult(
                             tab1.getWebContents(), "has" + type + "()"));
 
-            TestThreadUtils.runOnUiThreadBlocking(() -> tab2.loadIfNeeded());
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> tab2.loadIfNeeded(LoadIfNeededCaller.OTHER));
             CriteriaHelper.pollUiThread(
                     () -> Criteria.checkThat(tab2.getWebContents(), Matchers.notNullValue()));
             // Access the storage from tab2

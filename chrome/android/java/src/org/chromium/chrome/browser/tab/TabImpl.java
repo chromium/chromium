@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.rlz.RevenueStats;
+import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
@@ -540,7 +541,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     @Override
-    public boolean loadIfNeeded() {
+    public boolean loadIfNeeded(@LoadIfNeededCaller int caller) {
         if (getActivity() == null) {
             Log.e(TAG, "Tab couldn't be loaded because Context was null.");
             return false;
@@ -561,7 +562,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             return true;
         }
 
-        switchUserAgentIfNeeded(UseDesktopUserAgentCaller.LOAD_IF_NEEDED);
+        switchUserAgentIfNeeded(UseDesktopUserAgentCaller.LOAD_IF_NEEDED + caller);
         restoreIfNeeded();
         return true;
     }
@@ -661,7 +662,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     @Override
-    public final void show(@TabSelectionType int type) {
+    public final void show(@TabSelectionType int type, @LoadIfNeededCaller int caller) {
         try {
             TraceEvent.begin("Tab.show");
             if (!isHidden()) return;
@@ -670,7 +671,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             mIsHidden = false;
             updateInteractableState();
 
-            loadIfNeeded();
+            loadIfNeeded(caller);
 
             if (getWebContents() != null) getWebContents().onShow();
 
@@ -1670,7 +1671,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 "Android.RequestDesktopSite.UseDesktopUserAgent", value);
     }
 
-    private void switchUserAgentIfNeeded(@UseDesktopUserAgentCaller int caller) {
+    private void switchUserAgentIfNeeded(int caller) {
         if (calculateUserAgentOverrideOption() == UserAgentOverrideOption.INHERIT
                 || getWebContents() == null) {
             return;

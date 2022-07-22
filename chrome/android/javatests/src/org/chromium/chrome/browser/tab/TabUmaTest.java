@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.TabbedModeTabDelegateFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -101,7 +102,7 @@ public class TabUmaTest {
                                 .setDelegateFactory(createTabDelegateFactory())
                                 .setInitiallyHidden(true)
                                 .build();
-            if (show) bgTab.show(TabSelectionType.FROM_USER);
+            if (show) bgTab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER);
             return bgTab;
         });
     }
@@ -119,7 +120,7 @@ public class TabUmaTest {
             // Simulate the renderer being killed by the OS.
             if (kill) ChromeTabUtils.simulateRendererKilledForTesting(tab);
 
-            tab.show(TabSelectionType.FROM_USER);
+            tab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER);
             return tab;
         });
     }
@@ -139,11 +140,13 @@ public class TabUmaTest {
         int offset = lazyLoadCount.getDelta();
 
         // Show the tab and verify that one sample was recorded in the lazy load bucket.
-        TestThreadUtils.runOnUiThreadBlocking(() -> { tab.show(TabSelectionType.FROM_USER); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { tab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER); });
         Assert.assertEquals(offset + 1, lazyLoadCount.getDelta());
 
         // Show the tab again and verify that we didn't record another sample.
-        TestThreadUtils.runOnUiThreadBlocking(() -> { tab.show(TabSelectionType.FROM_USER); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { tab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER); });
         Assert.assertEquals(offset + 1, lazyLoadCount.getDelta());
     }
 
@@ -172,7 +175,8 @@ public class TabUmaTest {
                     .build();
         });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.show(TabSelectionType.FROM_USER));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> tab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER));
 
         // There should be no histogram changes.
         Assert.assertEquals(switchFgStatusOffset, getHistogram(switchFgStatus));
@@ -230,7 +234,7 @@ public class TabUmaTest {
                               .setDelegateFactory(createTabDelegateFactory())
                               .setTabState(createTabState())
                               .build();
-            tab.show(TabSelectionType.FROM_USER);
+            tab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER);
             return tab;
         });
 

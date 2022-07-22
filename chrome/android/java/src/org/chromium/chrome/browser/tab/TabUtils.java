@@ -52,10 +52,26 @@ public class TabUtils {
     @Retention(RetentionPolicy.SOURCE)
     public @interface UseDesktopUserAgentCaller {
         int ON_MENU_OR_KEYBOARD_ACTION = 0;
-        int LOAD_IF_NEEDED = 1;
-        int RELOAD = 2;
-        int RELOAD_IGNORING_CACHE = 3;
-        int OTHER = 4;
+        int LOAD_IF_NEEDED = 100;
+        int RELOAD = 200;
+        int RELOAD_IGNORING_CACHE = 300;
+        int OTHER = 400;
+    }
+
+    /**
+     * Define the callers of TabImpl#loadIfNeeded.
+     */
+    @IntDef({LoadIfNeededCaller.SET_TAB, LoadIfNeededCaller.ON_ACTIVITY_SHOWN,
+            LoadIfNeededCaller.ON_ACTIVITY_SHOWN_THEN_SHOW, LoadIfNeededCaller.REQUEST_TO_SHOW_TAB,
+            LoadIfNeededCaller.REQUEST_TO_SHOW_TAB_THEN_SHOW, LoadIfNeededCaller.OTHER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface LoadIfNeededCaller {
+        int SET_TAB = 0;
+        int ON_ACTIVITY_SHOWN = 1;
+        int ON_ACTIVITY_SHOWN_THEN_SHOW = 2;
+        int REQUEST_TO_SHOW_TAB = 3;
+        int REQUEST_TO_SHOW_TAB_THEN_SHOW = 4;
+        int OTHER = 5;
     }
 
     // Do not instantiate this class.
@@ -114,8 +130,8 @@ public class TabUtils {
      * @param forcedByUser Whether this was triggered by users action.
      * @param caller The caller of this method.
      */
-    public static void switchUserAgent(Tab tab, boolean switchToDesktop, boolean forcedByUser,
-            @UseDesktopUserAgentCaller int caller) {
+    public static void switchUserAgent(
+            Tab tab, boolean switchToDesktop, boolean forcedByUser, int caller) {
         final boolean reloadOnChange = !tab.isNativePage();
         tab.getWebContents().getNavigationController().setUseDesktopUserAgent(
                 switchToDesktop, reloadOnChange, caller);
