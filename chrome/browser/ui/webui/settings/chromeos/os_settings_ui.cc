@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/audio_config_service.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/network_config_service.h"
@@ -220,6 +221,12 @@ void OSSettingsUI::BindInterface(
         receiver) {
   DCHECK(features::IsBluetoothRevampEnabled());
   ash::GetBluetoothConfigService(std::move(receiver));
+}
+
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<ash::audio_config::mojom::CrosAudioConfig> receiver) {
+  DCHECK(features::IsAudioSettingsPageEnabled());
+  ash::GetAudioConfigService(std::move(receiver));
 }
 
 void OSSettingsUI::BindInterface(

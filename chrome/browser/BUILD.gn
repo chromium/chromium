@@ -5069,6 +5069,7 @@ static_library("browser") {
       "//ash/components/arc/mojom",
       "//ash/components/arc/mojom",
       "//ash/components/audio",
+      "//ash/components/audio/public/mojom",
       "//ash/components/device_activity:device_activity",
       "//ash/components/geolocation",
       "//ash/components/login/session",

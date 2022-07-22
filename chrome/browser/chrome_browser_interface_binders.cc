@@ -197,6 +197,7 @@
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/audio/public/mojom/cros_audio_config.mojom.h"
 #include "ash/services/cellular_setup/public/mojom/cellular_setup.mojom.h"
 #include "ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "ash/services/multidevice_setup/multidevice_setup_service.h"
@@ -1176,6 +1177,12 @@ void PopulateChromeWebUIFrameBinders(
         chromeos::bluetooth_config::mojom::CrosBluetoothConfig,
         chromeos::BluetoothPairingDialogUI, chromeos::settings::OSSettingsUI>(
         map);
+  }
+
+  if (ash::features::IsAudioSettingsPageEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        ash::audio_config::mojom::CrosAudioConfig,
+        chromeos::settings::OSSettingsUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<audio::mojom::PageHandlerFactory,

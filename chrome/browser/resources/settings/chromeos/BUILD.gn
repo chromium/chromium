@@ -335,6 +335,7 @@ preprocess_if_expr("preprocess_non_web_component_files") {
     "chromeos/crostini_page/crostini_browser_proxy.js",
     "chromeos/date_time_page/date_time_types.js",
     "chromeos/date_time_page/timezone_browser_proxy.js",
+    "chromeos/device_page/cros_audio_config.js",
     "chromeos/device_page/device_page_browser_proxy.js",
     "chromeos/device_page/drag_behavior.js",
     "chromeos/device_page/layout_behavior.js",

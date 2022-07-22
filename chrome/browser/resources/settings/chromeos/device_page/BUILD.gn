@@ -12,6 +12,7 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":audio",
+    ":cros_audio_config",
     ":device_page",
     ":device_page_browser_proxy",
     ":display",
@@ -31,14 +32,20 @@ js_type_check("closure_compile_module") {
 
 js_library("audio") {
   deps = [
+    ":cros_audio_config",
     "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
+    "//ash/components/audio/public/mojom:mojom_webui_js",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
 
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js" ]
+}
+
+js_library("cros_audio_config") {
+  deps = [ "//ash/components/audio/public/mojom:mojom_webui_js" ]
 }
 
 js_library("device_page") {

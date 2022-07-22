@@ -406,6 +406,7 @@ component("cpp") {
 
   public_deps = [
     "//ash/components/arc/mojom:notifications",
+    "//ash/components/audio/public/mojom",
     "//ash/components/login/auth",
     "//ash/public/mojom",
     "//ash/services/cellular_setup/public/mojom",

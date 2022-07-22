@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/components/audio/public/mojom/cros_audio_config.mojom-forward.h"
 #include "ash/services/cellular_setup/public/mojom/cellular_setup.mojom-forward.h"
 #include "ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
 #include "ash/webui/personalization_app/search/search.mojom-forward.h"
@@ -59,6 +60,12 @@ class OSSettingsUI : public ui::MojoWebUIController {
   // passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<ash::cellular_setup::mojom::ESimManager> receiver);
+
+  // Instantiates implementor of the mojom::CrosAudioConfig mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<ash::audio_config::mojom::CrosAudioConfig>
+          receiver);
 
   // Instantiates implementor of the mojom::CrosNetworkConfig mojo interface
   // passing the pending receiver that will be internally bound.
