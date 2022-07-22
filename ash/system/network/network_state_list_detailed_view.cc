@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/machine_learning/user_settings_event_logger.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/system_menu_button.h"
 #include "ash/system/tray/tri_view.h"
@@ -201,6 +202,7 @@ NetworkStateListDetailedView::NetworkStateListDetailedView(
       info_button_(nullptr),
       settings_button_(nullptr),
       info_bubble_(nullptr) {
+  RecordDetailedViewSection(DetailedViewSection::kDetailedSection);
   OverrideProgressBarAccessibleName(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_NETWORK_PROGRESS_ACCESSIBLE_NAME));
 }
@@ -271,6 +273,8 @@ void NetworkStateListDetailedView::HandleViewClickedImpl(
       if (!Shell::Get()->session_controller()->ShouldEnableSettings()) {
         return;
       }
+      RecordNetworkRowClickedAction(
+          NetworkRowClickedAction::kOpenSimUnlockDialog);
       Shell::Get()->system_tray_model()->client()->ShowSettingsSimUnlock();
       return;
     }
@@ -289,6 +293,10 @@ void NetworkStateListDetailedView::HandleViewClickedImpl(
               ? UserMetricsAction("StatusArea_VPN_ConnectToNetwork")
               : UserMetricsAction("StatusArea_Network_ConnectConfigured"));
       LogUserNetworkEvent(*network.get());
+      if (list_type_ == LIST_TYPE_NETWORK) {
+        RecordNetworkRowClickedAction(
+            NetworkRowClickedAction::kConnectToNetwork);
+      }
       chromeos::NetworkConnect::Get()->ConnectToNetworkId(network->guid);
       return;
     }
@@ -299,6 +307,10 @@ void NetworkStateListDetailedView::HandleViewClickedImpl(
       list_type_ == LIST_TYPE_VPN
           ? UserMetricsAction("StatusArea_VPN_ConnectionDetails")
           : UserMetricsAction("StatusArea_Network_ConnectionDetails"));
+  if (list_type_ == LIST_TYPE_NETWORK) {
+    RecordNetworkRowClickedAction(
+        NetworkRowClickedAction::kOpenNetworkSettingsPage);
+  }
   Shell::Get()->system_tray_model()->client()->ShowNetworkSettings(
       network ? network->guid : std::string());
 }
@@ -331,6 +343,9 @@ void NetworkStateListDetailedView::ShowSettings() {
   const std::string guid = model_->default_network()
                                ? model_->default_network()->guid
                                : std::string();
+
+  base::RecordAction(base::UserMetricsAction(
+      "ChromeOS.SystemTray.Network.SettingsButtonPressed"));
 
   // Showing network settings window may close the bubble (and destroy this
   // view). Explicitly request bubble closure here, before showing network

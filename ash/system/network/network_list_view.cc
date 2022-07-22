@@ -19,6 +19,7 @@
 #include "ash/system/network/network_info.h"
 #include "ash/system/network/network_section_header_view.h"
 #include "ash/system/network/network_state_list_detailed_view.h"
+#include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/tray/hover_highlight_view.h"
@@ -397,8 +398,10 @@ NetworkListView::UpdateNetworkListEntries() {
   index += new_guids->size();
 
   if (ShouldMobileDataSectionBeShown()) {
-    if (!mobile_header_view_)
+    if (!mobile_header_view_) {
+      RecordDetailedViewSection(DetailedViewSection::kMobileSection);
       mobile_header_view_ = new MobileSectionHeaderView();
+    }
 
     index = UpdateNetworkSectionHeader(
         NetworkType::kMobile, false /* enabled */, index, mobile_header_view_,
@@ -423,8 +426,10 @@ NetworkListView::UpdateNetworkListEntries() {
     needs_relayout_ = true;
   }
 
-  if (!wifi_header_view_)
+  if (!wifi_header_view_) {
+    RecordDetailedViewSection(DetailedViewSection::kWifiSection);
     wifi_header_view_ = new WifiSectionHeaderView();
+  }
 
   bool wifi_enabled =
       model()->GetDeviceState(NetworkType::kWiFi) == DeviceStateType::kEnabled;
@@ -701,14 +706,29 @@ std::unique_ptr<std::set<std::string>> NetworkListView::UpdateNetworkChildren(
 void NetworkListView::UpdateNetworkChild(int index, const NetworkInfo* info) {
   HoverHighlightView* network_view = nullptr;
   NetworkGuidMap::const_iterator found = network_guid_map_.find(info->guid);
+
+  // This value is used to determine whether at least one network of |type| type
+  // already existed prior to this method.
+  bool has_reordered_a_network = false;
+
   if (found == network_guid_map_.end()) {
     network_view = new HoverHighlightView(this);
     UpdateViewForNetwork(network_view, *info);
   } else {
+    has_reordered_a_network = true;
     network_view = found->second;
     if (NeedUpdateViewForNetwork(*info))
       UpdateViewForNetwork(network_view, *info);
   }
+
+  // Only emit ethernet metric each time we show Ethernet section
+  // for the first time. We use |has_reordered_a_network| to determine
+  // if Ethernet networks already exist in network detailed list.
+  if (NetworkTypeMatchesType(info->type, NetworkType::kEthernet) &&
+      !has_reordered_a_network) {
+    RecordDetailedViewSection(DetailedViewSection::kEthernetSection);
+  }
+
   PlaceViewAtIndex(network_view, index);
   network_view->SetEnabled(!info->disable);
   network_map_[network_view] = info->guid;

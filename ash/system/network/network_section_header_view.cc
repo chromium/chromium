@@ -14,6 +14,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/tray_toggle_button.h"
 #include "base/bind.h"
@@ -309,6 +310,7 @@ int MobileSectionHeaderView::UpdateToggleAndGetStatusMessage(
 }
 
 void MobileSectionHeaderView::OnToggleToggled(bool is_on) {
+  RecordNetworkTypeToggled(NetworkType::kMobile, is_on);
   DeviceStateType cellular_state =
       model()->GetDeviceState(NetworkType::kCellular);
 
@@ -463,6 +465,7 @@ const char* WifiSectionHeaderView::GetClassName() const {
 }
 
 void WifiSectionHeaderView::OnToggleToggled(bool is_on) {
+  RecordNetworkTypeToggled(NetworkType::kWiFi, is_on);
   model()->SetNetworkTypeEnabledState(NetworkType::kWiFi, is_on);
 }
 
