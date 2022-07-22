@@ -795,32 +795,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
   }
 }
 
-bool CSSSelector::operator==(const CSSSelector& other) const {
-  const CSSSelector* sel1 = this;
-  const CSSSelector* sel2 = &other;
-
-  while (sel1 && sel2) {
-    if (sel1->Attribute() != sel2->Attribute() ||
-        sel1->Relation() != sel2->Relation() || sel1->match_ != sel2->match_ ||
-        sel1->Value() != sel2->Value() ||
-        sel1->GetPseudoType() != sel2->GetPseudoType() ||
-        sel1->Argument() != sel2->Argument()) {
-      return false;
-    }
-    if (sel1->match_ == kTag) {
-      if (sel1->TagQName() != sel2->TagQName())
-        return false;
-    }
-    sel1 = sel1->TagHistory();
-    sel2 = sel2->TagHistory();
-  }
-
-  if (sel1 || sel2)
-    return false;
-
-  return true;
-}
-
 static void SerializeIdentifierOrAny(const AtomicString& identifier,
                                      const AtomicString& any,
                                      StringBuilder& builder) {

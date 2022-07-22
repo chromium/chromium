@@ -101,7 +101,8 @@ class CORE_EXPORT CSSSelector {
 
   String SelectorText() const;
 
-  bool operator==(const CSSSelector&) const;
+  bool operator==(const CSSSelector&) const = delete;
+  bool operator!=(const CSSSelector&) const = delete;
 
   static constexpr unsigned kIdSpecificity = 0x010000;
   static constexpr unsigned kClassLikeSpecificity = 0x000100;
