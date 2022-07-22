@@ -37,6 +37,8 @@ class DummyTraceWriter : public perfetto::TraceWriter {
     return perfetto::TraceWriter::TracePacketHandle(&trace_packet_);
   }
 
+  void FinishTracePacket() override { trace_packet_.Finalize(); }
+
   void Flush(std::function<void()> callback = {}) override {}
 
   perfetto::WriterID writer_id() const override {
@@ -90,7 +92,8 @@ void TestProducerClient::FlushPacketIfPossible() {
   if (!trace_packet_)
     return;
 
-  uint32_t message_size = trace_packet_->Finalize();
+  trace_packet_->Finalize();
+  uint32_t message_size = stream_.written() - trace_packet_written_start_;
   EXPECT_GE(buffer.size(), message_size);
 
   auto proto = std::make_unique<perfetto::protos::TracePacket>();
@@ -114,7 +117,12 @@ perfetto::protos::pbzero::TracePacket* TestProducerClient::NewTracePacket() {
   FlushPacketIfPossible();
   trace_packet_.emplace();
   trace_packet_->Reset(&stream_);
+  trace_packet_written_start_ = stream_.written();
   return &trace_packet_.value();
+}
+
+void TestProducerClient::FinishTracePacket() {
+  FlushPacketIfPossible();
 }
 
 size_t TestProducerClient::GetFinalizedPacketCount() {
@@ -175,6 +183,10 @@ TestTraceWriter::TestTraceWriter(TestProducerClient* producer_client)
 perfetto::TraceWriter::TracePacketHandle TestTraceWriter::NewTracePacket() {
   return perfetto::TraceWriter::TracePacketHandle(
       producer_client_->NewTracePacket());
+}
+
+void TestTraceWriter::FinishTracePacket() {
+  producer_client_->FinishTracePacket();
 }
 
 perfetto::WriterID TestTraceWriter::writer_id() const {

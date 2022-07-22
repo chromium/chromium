@@ -47,6 +47,8 @@ class TestProducerClient : public ProducerClient {
 
   perfetto::protos::pbzero::TracePacket* NewTracePacket();
 
+  void FinishTracePacket();
+
   size_t GetFinalizedPacketCount();
 
   const perfetto::protos::TracePacket* GetFinalizedPacket(
@@ -93,6 +95,7 @@ class TestProducerClient : public ProducerClient {
       trace_packet_;
   protozero::ScatteredStreamWriterNullDelegate delegate_;
   protozero::ScatteredStreamWriter stream_;
+  size_t trace_packet_written_start_ = 0;
   std::unique_ptr<base::tracing::PerfettoTaskRunner> main_thread_task_runner_;
   bool log_only_main_thread_;
 };
@@ -104,6 +107,7 @@ class TestTraceWriter : public perfetto::TraceWriter {
   explicit TestTraceWriter(TestProducerClient* producer_client);
 
   perfetto::TraceWriter::TracePacketHandle NewTracePacket() override;
+  void FinishTracePacket() override;
   void Flush(std::function<void()> callback = {}) override {}
   perfetto::WriterID writer_id() const override;
   uint64_t written() const override;
