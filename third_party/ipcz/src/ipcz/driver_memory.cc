@@ -63,4 +63,18 @@ DriverMemoryMapping DriverMemory::Map() {
   return DriverMemoryMapping(*memory_.driver(), mapping_handle, address, size_);
 }
 
+DriverMemoryWithMapping::DriverMemoryWithMapping() = default;
+
+DriverMemoryWithMapping::DriverMemoryWithMapping(DriverMemory memory,
+                                                 DriverMemoryMapping mapping)
+    : memory(std::move(memory)), mapping(std::move(mapping)) {}
+
+DriverMemoryWithMapping::DriverMemoryWithMapping(DriverMemoryWithMapping&&) =
+    default;
+
+DriverMemoryWithMapping& DriverMemoryWithMapping::operator=(
+    DriverMemoryWithMapping&&) = default;
+
+DriverMemoryWithMapping::~DriverMemoryWithMapping() = default;
+
 }  // namespace ipcz

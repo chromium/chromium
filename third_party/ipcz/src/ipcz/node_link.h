@@ -106,6 +106,24 @@ class NodeLink : public msg::NodeMessageListener {
   // AllocateNewBufferId().
   void AddBlockBuffer(BufferId id, uint32_t block_size, DriverMemory memory);
 
+  // Asks the broker on the other end of this link to introduce the local node
+  // to the node identified by `name`. This will always elicit a response from
+  // the broker in the form of either an AcceptIntroduction or
+  // RejectIntroduction message.
+  void RequestIntroduction(const NodeName& name);
+
+  // Introduces the remote node to the node named `name`, with details needed to
+  // construct a new NodeLink to that node.
+  void AcceptIntroduction(const NodeName& name,
+                          LinkSide side,
+                          uint32_t remote_protocol_version,
+                          Ref<DriverTransport> transport,
+                          DriverMemory memory);
+
+  // Rejects an introduction request previously sent by the remote node for the
+  // node identified by `name`.
+  void RejectIntroduction(const NodeName& name);
+
   // Permanently deactivates this NodeLink. Once this call returns the NodeLink
   // will no longer receive transport messages. It may still be used to transmit
   // outgoing messages, but it cannot be reactivated. Transmissions over a
@@ -132,6 +150,9 @@ class NodeLink : public msg::NodeMessageListener {
   SequenceNumber GenerateOutgoingSequenceNumber();
 
   // NodeMessageListener overrides:
+  bool OnRequestIntroduction(msg::RequestIntroduction& request) override;
+  bool OnAcceptIntroduction(msg::AcceptIntroduction& accept) override;
+  bool OnRejectIntroduction(msg::RejectIntroduction& reject) override;
   bool OnAddBlockBuffer(msg::AddBlockBuffer& add) override;
   bool OnAcceptParcel(msg::AcceptParcel& accept) override;
   bool OnRouteClosed(msg::RouteClosed& route_closed) override;

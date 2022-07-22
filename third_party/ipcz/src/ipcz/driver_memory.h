@@ -52,6 +52,19 @@ class DriverMemory {
   size_t size_ = 0;
 };
 
+// This pairs a DriverMemory object with a mapping of that same object, for
+// convenience.
+struct DriverMemoryWithMapping {
+  DriverMemoryWithMapping();
+  DriverMemoryWithMapping(DriverMemory memory, DriverMemoryMapping mapping);
+  DriverMemoryWithMapping(DriverMemoryWithMapping&&);
+  DriverMemoryWithMapping& operator=(DriverMemoryWithMapping&&);
+  ~DriverMemoryWithMapping();
+
+  DriverMemory memory;
+  DriverMemoryMapping mapping;
+};
+
 }  // namespace ipcz
 
 #endif  // IPCZ_SRC_IPCZ_DRIVER_MEMORY_H_

@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "ipcz/driver_memory.h"
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/link_side.h"
@@ -33,15 +34,16 @@ class NodeLinkMemoryTest : public testing::Test {
 
   void SetUp() override {
     auto transports = DriverTransport::CreatePair(kTestDriver);
-    auto alloc = NodeLinkMemory::Allocate(node_a_);
-    link_a_ =
-        NodeLink::Create(node_a_, LinkSide::kA, kTestBrokerName,
-                         kTestNonBrokerName, Node::Type::kNormal, 0,
-                         transports.first, std::move(alloc.node_link_memory));
+    DriverMemoryWithMapping buffer =
+        NodeLinkMemory::AllocateMemory(kTestDriver);
+    link_a_ = NodeLink::Create(
+        node_a_, LinkSide::kA, kTestBrokerName, kTestNonBrokerName,
+        Node::Type::kNormal, 0, transports.first,
+        NodeLinkMemory::Create(node_a_, std::move(buffer.mapping)));
     link_b_ = NodeLink::Create(
         node_b_, LinkSide::kB, kTestNonBrokerName, kTestBrokerName,
         Node::Type::kBroker, 0, transports.second,
-        NodeLinkMemory::Adopt(node_b_, std::move(alloc.primary_buffer_memory)));
+        NodeLinkMemory::Create(node_b_, buffer.memory.Map()));
     node_a_->AddLink(kTestNonBrokerName, link_a_);
     node_b_->AddLink(kTestBrokerName, link_b_);
     link_a_->transport()->Activate();

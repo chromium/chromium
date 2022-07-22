@@ -125,6 +125,39 @@ void NodeLink::AddBlockBuffer(BufferId id,
   Transmit(add);
 }
 
+void NodeLink::RequestIntroduction(const NodeName& name) {
+  ABSL_ASSERT(remote_node_type_ == Node::Type::kBroker);
+
+  msg::RequestIntroduction request;
+  request.params().name = name;
+  Transmit(request);
+}
+
+void NodeLink::AcceptIntroduction(const NodeName& name,
+                                  LinkSide side,
+                                  uint32_t remote_protocol_version,
+                                  Ref<DriverTransport> transport,
+                                  DriverMemory memory) {
+  ABSL_ASSERT(node_->type() == Node::Type::kBroker);
+
+  msg::AcceptIntroduction accept;
+  accept.params().name = name;
+  accept.params().link_side = side;
+  accept.params().remote_protocol_version = remote_protocol_version;
+  accept.params().transport =
+      accept.AppendDriverObject(transport->TakeDriverObject());
+  accept.params().memory = accept.AppendDriverObject(memory.TakeDriverObject());
+  Transmit(accept);
+}
+
+void NodeLink::RejectIntroduction(const NodeName& name) {
+  ABSL_ASSERT(node_->type() == Node::Type::kBroker);
+
+  msg::RejectIntroduction reject;
+  reject.params().name = name;
+  Transmit(reject);
+}
+
 void NodeLink::Deactivate() {
   {
     absl::MutexLock lock(&mutex_);
@@ -156,6 +189,59 @@ void NodeLink::Transmit(Message& message) {
 SequenceNumber NodeLink::GenerateOutgoingSequenceNumber() {
   return SequenceNumber(next_outgoing_sequence_number_generator_.fetch_add(
       1, std::memory_order_relaxed));
+}
+
+bool NodeLink::OnRequestIntroduction(msg::RequestIntroduction& request) {
+  // TODO: Support broker-to-broker introduction requests.
+  if (remote_node_type_ != Node::Type::kNormal ||
+      node()->type() != Node::Type::kBroker) {
+    return false;
+  }
+
+  node()->HandleIntroductionRequest(*this, request.params().name);
+  return true;
+}
+
+bool NodeLink::OnAcceptIntroduction(msg::AcceptIntroduction& accept) {
+  if (remote_node_type_ != Node::Type::kBroker) {
+    return false;
+  }
+
+  if (node()->type() != Node::Type::kNormal) {
+    // TODO: Support broker-to-broker introductions.
+    return false;
+  }
+
+  auto memory = DriverMemory(accept.TakeDriverObject(accept.params().memory));
+  if (!memory.is_valid()) {
+    return false;
+  }
+
+  auto mapping = memory.Map();
+  if (!mapping.is_valid()) {
+    return false;
+  }
+
+  auto transport = MakeRefCounted<DriverTransport>(
+      accept.TakeDriverObject(accept.params().transport));
+  node()->AcceptIntroduction(
+      *this, accept.params().name, accept.params().link_side,
+      accept.params().remote_protocol_version, std::move(transport),
+      NodeLinkMemory::Create(node(), std::move(mapping)));
+  return true;
+}
+
+bool NodeLink::OnRejectIntroduction(msg::RejectIntroduction& reject) {
+  if (remote_node_type_ != Node::Type::kBroker) {
+    return false;
+  }
+
+  if (node()->type() != Node::Type::kNormal) {
+    // TODO: Support broker-to-broker introductions.
+    return false;
+  }
+
+  return node()->CancelIntroduction(reject.params().name);
 }
 
 bool NodeLink::OnAddBlockBuffer(msg::AddBlockBuffer& add) {

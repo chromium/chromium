@@ -48,15 +48,16 @@ class TestNodePair {
  public:
   TestNodePair() {
     auto transports = DriverTransport::CreatePair(kTestDriver);
-    auto alloc = NodeLinkMemory::Allocate(node_a_);
-    node_link_a_ =
-        NodeLink::Create(node_a_, LinkSide::kA, kTestBrokerName,
-                         kTestNonBrokerName, Node::Type::kNormal, 0,
-                         transports.first, std::move(alloc.node_link_memory));
+    DriverMemoryWithMapping buffer =
+        NodeLinkMemory::AllocateMemory(kTestDriver);
+    node_link_a_ = NodeLink::Create(
+        node_a_, LinkSide::kA, kTestBrokerName, kTestNonBrokerName,
+        Node::Type::kNormal, 0, transports.first,
+        NodeLinkMemory::Create(node_a_, std::move(buffer.mapping)));
     node_link_b_ = NodeLink::Create(
         node_b_, LinkSide::kB, kTestNonBrokerName, kTestBrokerName,
         Node::Type::kBroker, 0, transports.second,
-        NodeLinkMemory::Adopt(node_b_, std::move(alloc.primary_buffer_memory)));
+        NodeLinkMemory::Create(node_b_, buffer.memory.Map()));
     node_a_->AddLink(kTestNonBrokerName, node_link_a_);
     node_b_->AddLink(kTestBrokerName, node_link_b_);
   }

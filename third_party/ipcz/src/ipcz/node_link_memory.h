@@ -41,24 +41,6 @@ class NodeLinkMemory : public RefCounted {
   // reserved for use by initial portals.
   static constexpr size_t kMaxInitialPortals = 12;
 
-  NodeLinkMemory(NodeLinkMemory&&);
-
-  // Returned by Allocate().
-  struct Allocation {
-    // The NodeLinkMemory created by a succesful call to Allocate(), or null if
-    // memory could not be allocated. This memory is initialized with a
-    // primary buffer (BufferId 0) whose contents have also been appropriately
-    // initialized. This object is ready for immediate use by a new NodeLink on
-    // the `node` passed to Allocate().
-    Ref<NodeLinkMemory> node_link_memory;
-
-    // A handle to the region underlying the new NodeLinkMemory's primary
-    // buffer. This should be shared with the corresponding NodeLink's remote
-    // node, where it can be passed to Adopt() to establish a new NodeLinkMemory
-    // there.
-    DriverMemory primary_buffer_memory;
-  };
-
   // Sets a reference to the NodeLink using this NodeLinkMemory. This is called
   // by the NodeLink itself before any other methods can be called on the
   // NodeLinkMemory, and it's only reset to null once the NodeLink is
@@ -67,16 +49,16 @@ class NodeLinkMemory : public RefCounted {
   // memory pool as this one.
   void SetNodeLink(Ref<NodeLink> link);
 
-  // Constructs a new NodeLinkMemory over a newly allocated DriverMemory object.
-  // The new DriverMemory is returned in `primary_buffer_memory`, while the
-  // returned NodeLinkMemory internally retains a mapping of that memory.
-  static Allocation Allocate(Ref<Node> node);
+  // Allocates a new DriverMemory object and initializes its contents to be
+  // suitable as the primary buffer of a new NodeLinkMemory. Returns the memory
+  // along with a mapping of it.
+  static DriverMemoryWithMapping AllocateMemory(const IpczDriver& driver);
 
   // Constructs a new NodeLinkMemory with BufferId 0 (the primary buffer) mapped
-  // from `primary_buffer_memory`. The buffer must have been created and
-  // initialized by a prior call to Allocate() above.
-  static Ref<NodeLinkMemory> Adopt(Ref<Node> node,
-                                   DriverMemory primary_buffer_memory);
+  // as `primary_buffer_memory`. The buffer must have been created and
+  // initialized by a prior call to AllocateMemory() above.
+  static Ref<NodeLinkMemory> Create(Ref<Node> node,
+                                    DriverMemoryMapping primary_buffer_memory);
 
   // Returns a new BufferId which should still be unused by any buffer in this
   // NodeLinkMemory's BufferPool, or that of its peer NodeLinkMemory. When
@@ -152,7 +134,10 @@ class NodeLinkMemory : public RefCounted {
  private:
   struct PrimaryBuffer;
 
-  NodeLinkMemory(Ref<Node> node, DriverMemoryMapping primary_buffer);
+  // Constructs a new NodeLinkMemory over `mapping`, which must correspond to
+  // a DriverMemory whose contents have already been initialized as a
+  // NodeLinkMemory primary buffer.
+  NodeLinkMemory(Ref<Node> node, DriverMemoryMapping mapping);
   ~NodeLinkMemory() override;
 
   // Indicates whether the NodeLinkMemory should be allowed to expand its

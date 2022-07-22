@@ -54,6 +54,50 @@ IPCZ_MSG_BEGIN(ConnectFromNonBrokerToBroker,
   IPCZ_MSG_PARAM(uint32_t, num_initial_portals)
 IPCZ_MSG_END()
 
+// Sent by a non-broker node to a broker node, asking the broker to introduce
+// the non-broker to the node identified by `name`. If the broker is willing and
+// able to comply with this request, it will send an AcceptIntroduction message
+// (see below) to both the sender of this message and the node identified by
+// `name`.
+//
+// If the broker does not know the node named `name`, it will send only a
+// RejectIntroduction message back to the sender to indicate failure.
+IPCZ_MSG_BEGIN(RequestIntroduction, IPCZ_MSG_ID(10), IPCZ_MSG_VERSION(0))
+  IPCZ_MSG_PARAM(NodeName, name)
+IPCZ_MSG_END()
+
+// Introduces one node to another. Sent only by broker nodes and must only be
+// accepted from broker nodes.
+IPCZ_MSG_BEGIN(AcceptIntroduction, IPCZ_MSG_ID(11), IPCZ_MSG_VERSION(0))
+  // The name of the node being introduced to the recipient of this message.
+  IPCZ_MSG_PARAM(NodeName, name)
+
+  // Indicates which nominal side of the link (A or B) the recipient must assume
+  // for the NodeLink it will establish over `transport`.
+  IPCZ_MSG_PARAM(LinkSide, link_side)
+
+  // Indicates the highest ipcz protocol version which the remote side of
+  // `transport` able and willing to use according to the broker.
+  IPCZ_MSG_PARAM(uint32_t, remote_protocol_version)
+
+  // The DriverTransport which should be used by the recipient to establish a
+  // new NodeLink to the named node. The transport's peer endpoint will be
+  // given by the broker to the node identified by `name`.
+  IPCZ_MSG_PARAM_DRIVER_OBJECT(transport)
+
+  // A DriverMemory object which should adopted for the NodeLinkMemory instance
+  // of the newly established NodeLink. This becomes the new NodeLinkMemory's
+  // primary buffer.
+  IPCZ_MSG_PARAM_DRIVER_OBJECT(memory)
+IPCZ_MSG_END()
+
+// Sent back to a non-broker if the broker did not recognzie the subject of an
+// introduction request.
+IPCZ_MSG_BEGIN(RejectIntroduction, IPCZ_MSG_ID(12), IPCZ_MSG_VERSION(0))
+  // The name of the node whose introduction cannot be fulfilled.
+  IPCZ_MSG_PARAM(NodeName, name)
+IPCZ_MSG_END()
+
 // Shares a new buffer to support allocation of blocks of `block_size` bytes.
 // The sender must initialize an appropriate BlockAllocator within the buffer's
 // memory before sending this message.

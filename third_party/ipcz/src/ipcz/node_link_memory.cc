@@ -150,6 +150,7 @@ NodeLinkMemory::NodeLinkMemory(Ref<Node> node,
   // Consistency check here, because PrimaryBuffer is private to NodeLinkMemory.
   static_assert(sizeof(PrimaryBuffer) <= kPrimaryBufferSize,
                 "PrimaryBuffer structure is too large.");
+  ABSL_HARDENING_ASSERT(primary_buffer_memory_.size() >= kPrimaryBufferSize);
 
   const BlockAllocator allocators[] = {
       primary_buffer_.block_allocator_64(),
@@ -171,16 +172,16 @@ void NodeLinkMemory::SetNodeLink(Ref<NodeLink> link) {
 }
 
 // static
-NodeLinkMemory::Allocation NodeLinkMemory::Allocate(Ref<Node> node) {
-  DriverMemory primary_buffer_memory(node->driver(), sizeof(PrimaryBuffer));
-  if (!primary_buffer_memory.is_valid()) {
-    return {.node_link_memory = nullptr, .primary_buffer_memory = {}};
+DriverMemoryWithMapping NodeLinkMemory::AllocateMemory(
+    const IpczDriver& driver) {
+  DriverMemory memory(driver, kPrimaryBufferSize);
+  if (!memory.is_valid()) {
+    return {};
   }
 
-  auto memory = AdoptRef(
-      new NodeLinkMemory(std::move(node), primary_buffer_memory.Map()));
-
-  PrimaryBuffer& primary_buffer = memory->primary_buffer_;
+  DriverMemoryMapping mapping = memory.Map();
+  PrimaryBuffer& primary_buffer =
+      *reinterpret_cast<PrimaryBuffer*>(mapping.bytes().data());
 
   // The first allocable BufferId is 1, because the primary buffer uses 0.
   primary_buffer.header.next_buffer_id.store(1, std::memory_order_relaxed);
@@ -201,17 +202,13 @@ NodeLinkMemory::Allocation NodeLinkMemory::Allocate(Ref<Node> node) {
   primary_buffer.block_allocator_1024().InitializeRegion();
   primary_buffer.block_allocator_2048().InitializeRegion();
 
-  return {
-      .node_link_memory = std::move(memory),
-      .primary_buffer_memory = std::move(primary_buffer_memory),
-  };
+  return {std::move(memory), std::move(mapping)};
 }
 
 // static
-Ref<NodeLinkMemory> NodeLinkMemory::Adopt(Ref<Node> node,
-                                          DriverMemory primary_buffer_memory) {
-  return AdoptRef(
-      new NodeLinkMemory(std::move(node), primary_buffer_memory.Map()));
+Ref<NodeLinkMemory> NodeLinkMemory::Create(Ref<Node> node,
+                                           DriverMemoryMapping memory) {
+  return AdoptRef(new NodeLinkMemory(std::move(node), std::move(memory)));
 }
 
 BufferId NodeLinkMemory::AllocateNewBufferId() {

@@ -336,6 +336,7 @@ ipcz_source_set("ipcz_tests_sources") {
     "ipcz/node_connector_test.cc",
     "ipcz/node_link_memory_test.cc",
     "ipcz/node_link_test.cc",
+    "ipcz/node_test.cc",
     "ipcz/parcel_queue_test.cc",
     "ipcz/ref_counted_fragment_test.cc",
     "ipcz/router_link_test.cc",
