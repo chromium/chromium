@@ -30268,16 +30268,15 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
         },
       ],
       'example_value': True,
-      'default': False,
+      'default': True,
       'id': 935,
       'caption': '''Enable Projector''',
       'desc': '''This policy gives Projector permission to create and transcribe screen recording and upload to Drive for enterprise users.
       This policy does not affect Family Link users.
       This policy does not affect <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME">ProjectorDogfoodForFamilyLinkEnabled</ph> policy for Family Link users.
 
-      If the policy is enabled, Projector will be enabled.
-      If the policy is disabled, Projector will be disabled.
-      If the policy is not set, Projector will by default disabled.''',
+      If the policy is unset or enabled, Projector will be enabled.
+      If the policy is disabled, Projector will be disabled.''',
     },
     {
       'name': 'DeviceKeylockerForStorageEncryptionEnabled',

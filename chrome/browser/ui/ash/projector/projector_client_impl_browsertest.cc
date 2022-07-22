@@ -333,17 +333,24 @@ class ProjectorClientManagedTest
 };
 
 IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
-                       CantOpenProjectorAppWithoutPolicy) {
+                       OpenProjectorAppWithoutPolicy) {
   auto* profile = browser()->profile();
   ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();
   web_app::FlushSystemWebAppLaunchesForTesting(profile);
 
-  // Verify that Projector App is not opened.
+  // Verify that Projector App is opened.
   Browser* app_browser = web_app::FindSystemWebAppBrowser(
       profile, ash::SystemWebAppType::PROJECTOR);
-  EXPECT_FALSE(app_browser);
+
+  if (is_child()) {
+    // Can't open for Family Link account.
+    EXPECT_FALSE(app_browser);
+  } else {
+    // Can open for other managed account.
+    EXPECT_TRUE(app_browser);
+  }
 }
 
 // Prevents a regression to b/230779397.

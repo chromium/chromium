@@ -17828,7 +17828,7 @@
         "policies": {},
         "prefs": {
           "ash.projector.allow_by_policy": {
-            "default_value": false
+            "default_value": true
           }
         }
       },
