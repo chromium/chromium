@@ -8,9 +8,19 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/test_support/mock_web_bundle_parser.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_package {
 
+// There are two main ways tests can interact with this class. The more verbose
+// way, which is most useful in unit tests, involves calling the
+// `WaitUntilParse*Called`, followed by `Run*Callback`. This allows the test to
+// verify both the arguments that the parser was called with, as well as to set
+// the parse results.
+// The second way to use this class are the `Set*ParseResult` methods. These
+// must be called before the parser is used, and will cause the parser to return
+// the values passed to the setters. This is most useful in browser tests, where
+// the test does not have fine-grained control over when the the parser is used.
 class MockWebBundleParserFactory final : public mojom::WebBundleParserFactory {
  public:
   MockWebBundleParserFactory();
@@ -25,23 +35,39 @@ class MockWebBundleParserFactory final : public mojom::WebBundleParserFactory {
       mojo::PendingReceiver<mojom::WebBundleParserFactory> receiver);
 
   void WaitUntilParseIntegrityBlockCalled(base::OnceClosure closure);
-
   void WaitUntilParseMetadataCalled(
       base::OnceCallback<void(int64_t offset)> callback);
 
   void RunIntegrityBlockCallback(
       mojom::BundleIntegrityBlockPtr integrity_block,
       mojom::BundleIntegrityBlockParseErrorPtr error = nullptr);
-
   void RunMetadataCallback(int64_t expected_metadata_offset,
                            mojom::BundleMetadataPtr metadata,
                            mojom::BundleMetadataParseErrorPtr error = nullptr);
-
   void RunResponseCallback(mojom::BundleResponseLocationPtr expected_parse_args,
                            mojom::BundleResponsePtr response,
                            mojom::BundleResponseParseErrorPtr error = nullptr);
 
+  void SetIntegrityBlockParseResult(
+      mojom::BundleIntegrityBlockPtr integrity_block,
+      mojom::BundleIntegrityBlockParseErrorPtr error = nullptr);
+  void SetMetadataParseResult(
+      mojom::BundleMetadataPtr metadata,
+      web_package::mojom::BundleMetadataParseErrorPtr error = nullptr);
+  void SetResponseParseResult(
+      mojom::BundleResponsePtr response,
+      mojom::BundleResponseParseErrorPtr error = nullptr);
+
+  int GetParserCreationCount() const;
+
+  void SimulateParserDisconnect();
+  void SimulateParseIntegrityBlockCrash();
+  void SimulateParseMetadataCrash();
+  void SimulateParseResponseCrash();
+
  private:
+  void GetParser(mojo::PendingReceiver<mojom::WebBundleParser> receiver);
+
   // mojom::WebBundleParserFactory implementation.
   void GetParserForFile(mojo::PendingReceiver<mojom::WebBundleParser> receiver,
                         base::File file) override;
@@ -50,9 +76,24 @@ class MockWebBundleParserFactory final : public mojom::WebBundleParserFactory {
       mojo::PendingRemote<mojom::BundleDataSource> data_source) override;
 
   std::unique_ptr<MockWebBundleParser> parser_;
+  int parser_creation_count_ = 0;
+  bool simulate_parse_integrity_block_crash_ = false;
+  bool simulate_parse_metadata_crash_ = false;
+  bool simulate_parse_response_crash_ = false;
+
   mojo::ReceiverSet<mojom::WebBundleParserFactory> receivers_;
   base::OnceClosure wait_parse_integrity_block_callback_;
   base::OnceCallback<void(int64_t offset)> wait_parse_metadata_callback_;
+
+  absl::optional<std::pair<mojom::BundleIntegrityBlockPtr,
+                           mojom::BundleIntegrityBlockParseErrorPtr>>
+      integrity_block_parse_result_ = absl::nullopt;
+  absl::optional<std::pair<mojom::BundleMetadataPtr,
+                           web_package::mojom::BundleMetadataParseErrorPtr>>
+      metadata_parse_result_ = absl::nullopt;
+  absl::optional<
+      std::pair<mojom::BundleResponsePtr, mojom::BundleResponseParseErrorPtr>>
+      response_parse_result_ = absl::nullopt;
 };
 
 }  // namespace web_package
