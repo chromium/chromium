@@ -1284,7 +1284,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2191754378957563929">Activat</translation>
 <translation id="2192505247865591433">De:</translation>
 <translation id="2193365732679659387">Configuració de confiança</translation>
-<translation id="2194554416429452547">Durant les proves, Chrome explora maneres de limitar el contingut brossa, el frau i la compartició entre llocs web. Chrome també <ph name="ESTIMATE_INTERESTS_LINK" />, que els llocs web poden utilitzar per mostrar-te anuncis. Pots gestionar els teus interessos a la configuració.</translation>
 <translation id="2194856509914051091">Aspectes que cal tenir en compte</translation>
 <translation id="2195331105963583686">Podràs continuar utilitzant aquest <ph name="DEVICE_TYPE" /> després d'aquest període de temps, pero no rebràs cap més actualització automàtica de programari i seguretat.</translation>
 <translation id="2195729137168608510">Protecció del correu electrònic</translation>
@@ -3265,6 +3264,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4077919383365622693">S'esborraran totes les dades i galetes emmagatzemades per <ph name="SITE" />.</translation>
 <translation id="4078738236287221428">Agressiva</translation>
 <translation id="4079140982534148664">Fes servir el corrector ortogràfic millorat</translation>
+<translation id="4081203444152654304">Cerca a la imatge amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4081242589061676262">No s'ha pogut emetre el fitxer.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> ha enviat una notificació al teu telèfon. Per confirmar la teva identitat, segueix els passos que s'hi mostren.</translation>
 <translation id="4084682180776658562">Adreça d'interès</translation>
@@ -3660,6 +3660,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Per escanejar aquest codi, pots fer servir una aplicació d'escaneig QR al telèfon o algunes aplicacions de la càmera.</translation>
 <translation id="4477015793815781985">Inclou la tecla Ctrl, Alt o ⌘</translation>
+<translation id="4477379360383751882">Cerca a la imatge amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4478664379124702289">Anomena i desa &amp;l'enllaç...</translation>
 <translation id="4479424953165245642">Gestiona les aplicacions de quiosc</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -4105,6 +4106,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4900392736118574277">La pàgina d'arrencada ha canviat a <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz, entrellaçat</translation>
 <translation id="4900652253009739885">No es pot suprimir l'únic interruptor assignat a Selecciona. Prem qualsevol tecla per <ph name="RESPONSE" />.</translation>
+<translation id="4901154724271753917">Desplega les que s'han tancat recentment</translation>
 <translation id="4901309472892185668">Selecciona l'estat de l'experiment <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">La política que s'ha baixat del servidor no és vàlida: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Configura o gestiona els fitxers compartits de la xarxa. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -6992,6 +6994,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7768526219335215384"><ph name="ORIGIN" /> podrà veure els fitxers de la carpeta <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Canvia</translation>
 <translation id="7768784765476638775">Escolta la selecció</translation>
+<translation id="7769748505895274502">Replega les que s'han tancat recentment</translation>
 <translation id="7770406201819593386">Executar proves diagnòstiques de ChromeOS Flex.</translation>
 <translation id="7770450735129978837">Clic del botó dret del ratolí</translation>
 <translation id="7770612696274572992">Imatge copiada des d'un altre dispositiu</translation>

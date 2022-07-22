@@ -306,6 +306,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2814448776515246190">Delimično snimanje</translation>
 <translation id="2819276065543622893">Bićete odmah odjavljeni.</translation>
+<translation id="2822551631199737692">Kamera se koristi</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ne podržava rezoluciju <ph name="SPECIFIED_RESOLUTION" />. Rezolucija je promenjena u <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Polica</translation>
 <translation id="2831035692318564937">Uključeno do svitanja</translation>
@@ -807,6 +808,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5682642926269496722">Google nije dostupan za aktuelni korisnički nalog.</translation>
 <translation id="5689633613396158040">Noćno svetlo vam olakšava da pregledate sadržaj ekrana ili da čitate pri prigušenom svetlu. Dodirnite da biste promenili vreme kada se noćno svetlo uključuje ili ga potpuno isključite.</translation>
 <translation id="5691772641933328258">Otisak prsta nije prepoznat</translation>
+<translation id="5693255400847650006">Mikrofon se koristi</translation>
 <translation id="570390244361237317">Sve aplikacije, krećite se pomoću tastera sa strelicama da biste pristupali svim aplikacijama</translation>
 <translation id="5707775774148071965">Uređaj podržava veći protok podataka u odnosu na kabl. Učinak uređaja će možda biti ograničen.</translation>
 <translation id="5710450975648804523">Režim Ne uznemiravaj je uključen</translation>
@@ -981,6 +983,7 @@ Novo instaliranje</translation>
 <translation id="6723839937902243910">Energija</translation>
 <translation id="6727969043791803658">Povezano, nivo baterije je <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Kamera i mikrofon se koriste</translation>
 <translation id="6739144137573853180">IDI U PODEŠAVANJA</translation>
 <translation id="6751052314767925245">Primenjuje administrator</translation>
 <translation id="6751826523481687655">Praćenje učinka je uključeno</translation>

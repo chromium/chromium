@@ -1284,7 +1284,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2191754378957563929">Aktibatuta</translation>
 <translation id="2192505247865591433">Igorlea:</translation>
 <translation id="2193365732679659387">Fidagarritasun-ezarpenak</translation>
-<translation id="2194554416429452547">Probak abian diren bitartean, spama, iruzurrak eta webguneen artean partekatzeko aukera mugatzeko moduak arakatzen ari da Chrome. Halaber, webguneek iragarkiak erakusteko erabil ditzaketen <ph name="ESTIMATE_INTERESTS_LINK" /> Chrome-k. Zure interesak kudeatzeko, joan ezarpenetara.</translation>
 <translation id="2194856509914051091">Kontuan hartu beharrekoak</translation>
 <translation id="2195331105963583686">Handik aurrera, <ph name="DEVICE_TYPE" /> erabiltzen jarraitu ahal izango duzu, baina ez duzu jasoko software- eta segurtasun-eguneratze automatikorik</translation>
 <translation id="2195729137168608510">Posta elektronikoaren babesa</translation>
@@ -3265,6 +3264,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4077919383365622693">Garbitu egingo dira <ph name="SITE" /> webguneak gordetako datu eta cookie guztiak.</translation>
 <translation id="4078738236287221428">Neurriz gainekoa</translation>
 <translation id="4079140982534148664">Erabili ortografia-zuzentzaile hobetua</translation>
+<translation id="4081203444152654304">Bilatu irudiaren barruan <ph name="VISUAL_SEARCH_PROVIDER" /> erabilita</translation>
 <translation id="4081242589061676262">Ezin da igorri fitxategia.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> webguneak jakinarazpen bat bidali dizu telefonora. Zeu zarela berresteko, jarraitu bertan adierazitako argibideei.</translation>
 <translation id="4084682180776658562">Laster-marka</translation>
@@ -3660,6 +3660,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Kode hau eskaneatzeko, QR kodeak eskaneatzeko berariazko aplikazio bat edo kamera-aplikazio batzuk erabil ditzakezu.</translation>
 <translation id="4477015793815781985">Erabili Ktrl, Alt edo ⌘</translation>
+<translation id="4477379360383751882">Bilatu irudiaren barruan <ph name="VISUAL_SEARCH_PROVIDER" /> erabilita</translation>
 <translation id="4478664379124702289">Gorde &amp;esteka honela…</translation>
 <translation id="4479424953165245642">Kudeatu aplikazio espezializatuak</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -5283,6 +5284,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6086846494333236931">Administratzaileak instalatu du</translation>
 <translation id="6087746524533454243">Arakatzailearen "Honi buruz" orriaren bila zabiltza? Joan helbide honetara:</translation>
 <translation id="6087960857463881712">Aurpegi zoragarria</translation>
+<translation id="6088535503330933227">Iragarkien spama, iruzurrak eta webguneen artean partekatzeko aukera mugatzeko moduak arakatzen ari da Chrome. Halaber, webguneek iragarkiak erakusteko erabil ditzaketen <ph name="ESTIMATE_INTERESTS_LINK" /> Chrome-k. Zure interesak kudeatzeko, joan ezarpenetara.</translation>
 <translation id="608912389580139775">Orria irakurketa-zerrendan gehitzeko, sakatu laster-markaren ikonoa</translation>
 <translation id="6091761513005122595">Muntatu da fitxategiak partekatzeko biltegia.</translation>
 <translation id="6093888419484831006">Eguneratzea bertan behera uzten…</translation>

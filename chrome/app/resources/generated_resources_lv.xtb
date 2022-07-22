@@ -1286,7 +1286,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2191754378957563929">Iesl.</translation>
 <translation id="2192505247865591433">No:</translation>
 <translation id="2193365732679659387">Uzticamības iestatījumi</translation>
-<translation id="2194554416429452547">Izmēģinājumu laikā Chrome pēta veidus, kā ierobežot nevēlamu saturu, krāpšanu un kopīgošanu starp vietnēm. Chrome arī <ph name="ESTIMATE_INTERESTS_LINK" />, ko vietnes var izmantot, lai rādītu jums reklāmas. Intereses varat pārvaldīt iestatījumos.</translation>
 <translation id="2194856509914051091">Svarīgi apsvērumi</translation>
 <translation id="2195331105963583686">Jūs joprojām varēsiet izmantot šo ierīci <ph name="DEVICE_TYPE" /> pēc noteiktā laika, taču vairs nesaņemsiet automātiskus programmatūras un drošības atjauninājumus.</translation>
 <translation id="2195729137168608510">E-pasta aizsardzība</translation>
@@ -3268,6 +3267,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4077919383365622693">Tiks notīrīti visi vietnes <ph name="SITE" /> saglabātie dati un sīkfaili.</translation>
 <translation id="4078738236287221428">Agresīvi</translation>
 <translation id="4079140982534148664">Izmantot uzlaboto pareizrakstības pārbaudi</translation>
+<translation id="4081203444152654304">Meklēt attēlā, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4081242589061676262">Faila apraides kļūme</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> nosūtīja paziņojumu uz jūsu tālruni. Veiciet paziņojumā norādītās darbības, lai apstiprinātu savu identitāti.</translation>
 <translation id="4084682180776658562">Grāmatzīme</translation>
@@ -3663,6 +3663,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4476590490540813026">Sportiste</translation>
 <translation id="4476659815936224889">Lai skenētu šo kodu, varat izmantot kvadrātkodu skenēšanas lietotni tālrunī vai noteiktas kameras lietotnes.</translation>
 <translation id="4477015793815781985">Iekļaujiet taustiņu Ctrl, Alt vai ⌘</translation>
+<translation id="4477379360383751882">Meklēt attēlā, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4478664379124702289">Saglabāt saiti &amp;kā...</translation>
 <translation id="4479424953165245642">Pārvaldīt kioska lietojumprogrammas</translation>
 <translation id="4479639480957787382">tīkls Ethernet</translation>

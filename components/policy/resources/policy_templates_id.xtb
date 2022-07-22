@@ -1110,6 +1110,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika kebijakan ini disetel ke aktif atau tidak disetel, Definisi Jawaban Instan akan diaktifkan.
       Jika kebijakan ini disetel ke nonaktif, Definisi Jawaban Instan akan dinonaktifkan.</translation>
 <translation id="209586405398070749">Saluran stabil</translation>
+<translation id="2096932573113293941">Minta izin pengguna untuk menjalankan plugin yang memerlukan otorisasi</translation>
 <translation id="2098658257603918882">Aktifkan laporan data penggunaan dan yang terkait error</translation>
 <translation id="2104418465060359056">Melaporkan informasi Ekstensi dan Plugin</translation>
 <translation id="2106627642643925514">Mengganti mode pencetakan PIN default. Jika mode ini tidak tersedia, kebijakan ini akan diabaikan.</translation>
@@ -1239,6 +1240,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2223393221350938149">Jangan izinkan situs apa pun menjalankan JIT JavaScript</translation>
 <translation id="2223582957891074498">Jika kebijakan ditetapkan ke Benar (True), screenshot yang diambil dengan pintasan keyboard atau API ekstensi tidak akan diizinkan. Jika kebijakan ditetapkan ke Salah (False), screenshot akan diizinkan.</translation>
 <translation id="2223598546285729819">Setelan pemberitahuan default</translation>
+<translation id="222673035924187991">Mengaktifkan Encrypted ClientHello TLS</translation>
 <translation id="2231726854197443389">Kebijakan ini mengontrol apakah pengguna dapat mengaktifkan Mode Khusus HTTPS di Setelan. Mode Khusus HTTPS mengupgrade semua navigasi ke HTTPS.
       Jika setelan ini tidak disetel atau disetel ke diizinkan, pengguna akan diizinkan mengaktifkan Mode Khusus HTTPS.
       Jika setelan ini disetel ke tidak diizinkan, pengguna tidak akan diizinkan mengaktifkan Mode Khusus HTTPS.
@@ -1359,6 +1361,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2349117476121456297">Jika kebijakan ditetapkan ke Benar (True), tombol baris teratas pada keyboard akan bertindak sebagai perintah tombol fungsi. Jika menekan tombol Penelusuran, perilaku tombol tersebut akan kembali menjadi tombol media.
 
       Jika ditetapkan ke Salah (False) atau tidak ditetapkan, default keyboard adalah membuat perintah tombol media. Jika menekan tombol Penelusuran, tombol tersebut akan berubah menjadi tombol fungsi.</translation>
+<translation id="2354439478396602136">Tampilkan rekomendasi aplikasi di peluncur <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2355876547176311490">Nonaktifkan penggunaan server relai oleh host akses jarak jauh</translation>
 <translation id="2358176879566587521">Kebijakan ini dihapus. Kebijakan ini tidak kompatibel dengan versi <ph name="PRODUCT_NAME" /> ini. Baca selengkapnya di https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">Interval waktu peluncuran kembali</translation>
@@ -1585,6 +1588,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Pengguna tidak dapat mengubah folder lokasi bookmark (meskipun pengguna dapat menyembunyikannya dari kolom bookmark). Nama folder default untuk bookmark terkelola adalah "Bookmark terkelola (Managed bookmarks)", tetapi dapat diubah dengan menambahkan sub-kamus baru ke kebijakan dengan kunci tunggal bernama "<ph name="TOPLEVEL_NAME" />" yang berisi nama folder yang diinginkan sebagai nilainya. Bookmark terkelola tidak disinkronkan ke akun pengguna dan ekstensi tidak dapat mengubahnya.</translation>
 <translation id="2552966063069741410">Zona Waktu</translation>
 <translation id="2555244983262829274">Sembunyikan tombol Layar Utama dari toolbar</translation>
+<translation id="2562213287271514629">Izinkan <ph name="FLASH_PLUGIN_NAME" /> yang sudah tidak berlaku untuk digunakan sebagai <ph name="FLASH_PLUGIN_NAME" /> normal</translation>
 <translation id="2562339630163277285">Menentukan URL mesin telusur yang digunakan untuk memberikan hasil instan. URL harus berisi string <ph name="SEARCH_TERM_MARKER" />, yang akan diganti pada waktu kueri dengan teks yang telah dimasukkan oleh pengguna sejauh ini.
 
           Kebijakan ini persifat opsional. Jika tidak disetel, tidak ada hasil penelusuran instan yang akan diberikan.
@@ -1629,6 +1633,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2593762551209145088">Safe Browsing selalu tidak aktif.</translation>
 <translation id="26023406105317310">Konfigurasikan akun Kerberos</translation>
 <translation id="2604182581880595781">Mengonfigurasi kebijakan terkait fitur Berbagi File Jaringan.</translation>
+<translation id="2608039968712973520">Minta izin pengguna untuk menjalankan <ph name="FLASH_PLUGIN_NAME" /> yang sudah tidak berlaku</translation>
 <translation id="2608535066974278204">Jangka waktu (menit) yang menentukan lamanya interval peluncuran kembali.</translation>
 <translation id="2608887839902987727">Cegah autentikasi captive portal mengabaikan setelan proxy</translation>
 <translation id="2608985885792348429">Setelan papan klip default</translation>
@@ -1680,6 +1685,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Kebijakan ini dihapus di M77.
       Kebijakan ini berlaku untuk layar login. Baca juga kebijakan <ph name="SITE_PER_PROCESS_POLICY_NAME" /> yang berlaku untuk sesi pengguna. Pengguna disarankan untuk menetapkan kedua kebijakan ke nilai yang sama. Jika nilai tidak cocok, penundaan mungkin terjadi ketika memasuki sesi pengguna saat nilai yang ditentukan oleh kebijakan pengguna sedang diterapkan.
       </translation>
+<translation id="2697717608663878828">Aktifkan eksperimen Encrypted ClientHello TLS</translation>
 <translation id="2702023190395322609">Mengaktifkan Rekomendasi Media</translation>
 <translation id="270582584528242502">Jangan tampilkan dialog peringatan saat pengguna mencoba menutup browser</translation>
 <translation id="2706708761587205154">Hanya izinkan pencetakan dengan PIN</translation>
@@ -2276,6 +2282,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3255762580838224124">Jika kebijakan disetel, tiap tampilan akan diputar sesuai dengan setelan orientasi layar setiap kali mulai ulang dan saat pertama kali terhubung setelah nilai kebijakan berubah. Pengguna dapat mengubah rotasi tampilan melalui halaman setelan setelah login, tetapi tampilan akan kembali berubah saat mulai ulang berikutnya. Kebijakan ini akan berlaku untuk tampilan utama dan sekunder.
 
       Jika tidak disetel, nilai default adalah 0 derajat dan pengguna bebas mengubahnya. Dalam hal ini, nilai default tidak diterapkan kembali saat mulai ulang.</translation>
+<translation id="3258380413685430793">Jalankan semua konten <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="325883417142483505">Menyetel kebijakan akan menetapkan daftar URL Login perusahaan (hanya protokol HTTP dan HTTPS). Layanan perlindungan sandi akan merekam hash sandi yang dilengkapi salt di URL ini dan menggunakannya untuk deteksi penggunaan ulang sandi. Agar <ph name="PRODUCT_NAME" /> dapat merekam hash sandi yang dilengkapi salt dengan benar, pastikan halaman login mengikuti pedoman ( https://www.chromium.org/developers/design-documents/create-amazing-password-forms ).
 
       Jika setelan ini dinonaktifkan atau tidak disetel, layanan perlindungan sandi hanya merekam hash sandi yang dilengkapi salt di https://accounts.google.com.
@@ -2344,6 +2351,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Catatan: Baca selengkapnya tentang Kebijakan mitigasi proses ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="3339271789059866414">Mengonfigurasi ketersediaan layanan System-proxy dan kredensial proxy untuk layanan sistem.
       Jika kebijakan tidak ditetapkan, layanan System-proxy tidak akan tersedia.</translation>
+<translation id="334231891933432876">Buat pengguna logout segera setelah akunnya menjadi tidak terautentikasi</translation>
 <translation id="3348799281602260763">Jika diaktifkan, koneksi pembanding WebRTC dapat mendowngrade ke versi
       protokol TLS/DTLS (DTLS 1.0, TLS 1.0, dan TLS 1.1) yang sudah usang.
       Jika kebijakan ini disetel ke nonaktif atau tidak disetel, versi TLS/DTLS ini akan
@@ -2386,6 +2394,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika tidak disetel, 0 milidetik akan digunakan sebagai waktu tunggu.
 
       Jika kebijakan <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> tidak disetel, kebijakan ini tidak berpengaruh.</translation>
+<translation id="3397883909301547525">Jangan tampilkan rekomendasi aplikasi di peluncur <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3399859571630358395">Paksa penonaktifan Sambungan Cepat (penyambungan Bluetooth cepat).</translation>
 <translation id="341285788698114069">Kebijakan ini mengontrol prioritas proses audio di Windows.
       Jika kebijakan ini diaktifkan, proses audio akan berjalan dengan prioritas di atas normal.
@@ -2465,6 +2474,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Ketersediaan fungsi ini akan tergantung pada kebijakan pengguna terkait.</translation>
 <translation id="3495602011142234826">Jika disetel ke benar (true), ekstensi ini dapat menggunakan semua kunci yang ditujukan untuk penggunaan perusahaan guna menandatangani data arbitrer. Jika disetel ke salah (false), ekstensi ini tidak dapat mengakses kunci tersebut dan pengguna juga tidak dapat memberikan izin. Sebagai pengecualian, sebuah ekstensi dapat mengakses kunci tersebut tepat hanya sekali jika ekstensi yang sama membuat kunci tersebut.</translation>
 <translation id="3496296378755072552">Pengelola sandi</translation>
+<translation id="3496761649331792755">Aktifkan kolom bookmark</translation>
 <translation id="3498109920669229084">Menyetel kebijakan akan menentukan ekstensi yang tidak tunduk pada daftar yang tidak diizinkan.
 
        Nilai <ph name="ALL_EXTENSIONS" /> untuk daftar yang tidak diizinkan berarti semua ekstensi diblokir dan pengguna hanya dapat menginstal ekstensi yang tercantum dalam daftar yang diizinkan.
@@ -3302,6 +3312,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="449423975179525290">Konfigurasikan kebijakan terkait <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="449784980858429908">Otomatis memberikan izin ke situs untuk menghubungkan semua port serial.</translation>
 <translation id="450080746522343150">Blokir semua download.</translation>
+<translation id="45036050223225148">Nonaktifkan eksperimen Encrypted ClientHello TLS</translation>
 <translation id="4508728400492074981">Mengontrol kebijakan untuk fitur Set Pihak Pertama.</translation>
 <translation id="4510923771103268849">Pengguna diizinkan untuk memiliki akses root ke penampung Crostini</translation>
 <translation id="4512407512989846472">Memungkinkan pemblokiran penyalinan ke papan klip pada URL tertentu</translation>
@@ -3338,6 +3349,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
       Jika kebijakan ini tidak ditetapkan, pengguna dapat menonaktifkan plugin apa pun yang diinstal pada sistem.</translation>
 <translation id="4549405078915181477">Aktifkan Waktu Pemakaian Perangkat untuk situs</translation>
 <translation id="4554651132977135445">Mode pemrosesan loopback kebijakan pengguna</translation>
+<translation id="4554991346503872538">Jangan pernah tawarkan terjemahan</translation>
 <translation id="4555850956567117258">Mengaktifkan pengesahan jarak jauh bagi pengguna</translation>
 <translation id="4557134566541205630">URL halaman tab baru penyedia penelusuran default</translation>
 <translation id="4558166110367609724">Otomatis melewati ToS dan memuat browser.</translation>
@@ -3786,6 +3798,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="5109383437323376357">Menentukan ketersediaan variasi</translation>
 <translation id="5124368997194894978">Aktifkan booting pada tegangan AC (arus bolak-balik)</translation>
 <translation id="5130213897914754028">Cegah situs menggunakan SharedArrayBuffer</translation>
+<translation id="5130935469849337738">Selalu tawarkan terjemahan</translation>
 <translation id="5141670636904227950">Menyetel jenis lup default yang diaktifkan di layar masuk</translation>
 <translation id="5142301680741828703">Selalu mengurai pola URL berikut di <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="5143258831402123447">Perjalanan tidak akan dapat dilihat di chrome://history/journeys.</translation>
@@ -3918,6 +3931,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> untuk suatu akun, akun ini hanya akan diizinkan login sebagai akun utama. Akun tidak akan diizinkan login sebagai akun sekunder.</translation>
 <translation id="523505283826916779">Setelan aksesibilitas</translation>
+<translation id="5238275681097851753">Izinkan konten <ph name="FLASH_PLUGIN_NAME" /> tertentu untuk diblokir</translation>
 <translation id="5238976843489093540">Paksa pengaktifan Sambungan Cepat (penyambungan Bluetooth cepat).</translation>
 <translation id="52393120393725840">Menyetel kebijakan ke Aktif berarti pengguna dapat membuat <ph name="PRODUCT_NAME" /> mengingat sandi dan memberikannya saat mereka kembali login ke situs.
 
@@ -3984,6 +3998,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan tidak ditetapkan, pengguna tidak dapat memainkan game di <ph name="PRODUCT_OS_NAME" /> yang terdaftar, tetapi dapat memainkannya dalam kondisi lain.</translation>
 <translation id="529457411593078576">Menampilkan Persyaratan Layanan (ToS) saat CCT pertama kali dijalankan</translation>
+<translation id="5297948043665200363">Izinkan pengguna tetap login setelah akunnya menjadi tidak terautentikasi</translation>
 <translation id="5298949392804966105">Tidak ada batasan di akun terkelola</translation>
 <translation id="530134925949808452">Waktu dalam hari dalam waktu lokal saat kuota penggunaan diperpanjang.</translation>
 <translation id="5303080953475303561">Menyetel kebijakan akan mengontrol frekuensi layar kunci meminta sandi untuk mode buka kunci cepat. Setiap kali layar kunci ditampilkan, jika entri sandi terakhir terjadi sebelum jangka waktu yang ditentukan oleh nilai yang dipilih, mode buka kunci cepat tidak akan tersedia. Jika pengguna tetap berada di layar kunci setelah jangka waktu ini, sandi akan diminta saat pengguna salah memasukkan kode lagi atau masuk kembali ke layar kunci, mana saja yang terjadi lebih dahulu.
@@ -4594,6 +4609,13 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Untuk <ph name="MS_WIN_NAME" /> atau <ph name="MAC_OS_NAME" />, kebijakan ini hanya akan berpengaruh jika <ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME" /> juga diaktifkan.</translation>
 <translation id="5932767795525445337">Kebijakan ini juga dapat digunakan untuk memasang pin pada aplikasi Android.</translation>
+<translation id="5936193585187054065">Encrypted ClientHello (ECH) adalah ekstensi ke TLS untuk mengenkripsi kolom sensitif ClientHello dan meningkatkan privasi.
+
+      Jika kebijakan ini tidak dikonfigurasi atau disetel ke aktif, <ph name="PRODUCT_NAME" /> akan mengikuti proses peluncuran default untuk ECH. Jika kebijakan ini disetel ke nonaktif, <ph name="PRODUCT_NAME" /> tidak akan mengaktifkan ECH.
+
+      Saat fitur ini diaktifkan, <ph name="PRODUCT_NAME" /> mungkin menggunakan atau tidak menggunakan ECH bergantung pada dukungan server, ketersediaan data DNS HTTPS, atau status peluncuran.
+
+      ECH adalah protokol yang berkembang, sehingga penerapan <ph name="PRODUCT_NAME" /> dapat berubah sewaktu-waktu. Oleh karena itu, kebijakan ini merupakan tindakan sementara untuk mengontrol penerapan eksperimental awal. Kebijakan ini akan diganti dengan kontrol akhir saat protokol diselesaikan.</translation>
 <translation id="5939656968921014919">Nonaktifkan Mode Developer Aplikasi Terisolasi</translation>
 <translation id="5945312246863177268">Melarang pengguna mengklik notifikasi Phone Hub untuk meluncurkan aplikasi Eche.</translation>
 <translation id="5946082169633555022">Saluran beta</translation>
@@ -5212,6 +5234,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
           Kebijakan ini tidak mencegah admin perusahaan terhubung ke perangkat <ph name="PRODUCT_OS_NAME" /> terkelola.
 
           Kebijakan ini tidak berpengaruh jika disetel ke aktif, dibiarkan kosong, atau tidak disetel.</translation>
+<translation id="6583249367505445969">Nonaktifkan kolom bookmark</translation>
 <translation id="6584541828182430328">Nonaktifkan tampilkan peringatan layar penuh</translation>
 <translation id="6593350713192882944">Aktifkan Jawaban Instan</translation>
 <translation id="6594372503585248865">Aktifkan UI terkait koneksi pada desktop host jarak jauh saat koneksi aktif</translation>
@@ -5689,6 +5712,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="7040229947030068419">Nilai contoh:</translation>
 <translation id="7044883996351280650">Mengontrol layanan pencadangan dan pemulihan Android</translation>
 <translation id="7047495632846973438">Menentukan apakah kebijakan izin perekaman layar dicentang atau dilewati.</translation>
+<translation id="7055022222176591388">Larang <ph name="FLASH_PLUGIN_NAME" /> yang sudah tidak berlaku</translation>
 <translation id="7066292150801784098">Cegah interaksi pengguna jarak jauh dengan jendela administrator di sesi bantuan jarak jauh</translation>
 <translation id="706669471845501145">Izinkan situs menampilkan pemberitahuan desktop</translation>
 <translation id="70681795425744184">Jangan izinkan CRD mengeksekusi permintaan WebAuthn API yang di-proxy dari host jarak jauh.</translation>
@@ -6817,9 +6841,6 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
 <translation id="8295496526151576383">Kebijakan ini menentukan ekstensi yang diizinkan untuk melewati dialog konfirmasi pekerjaan cetak ketika menggunakan fungsi <ph name="PRINTING_API" /> <ph name="SUBMIT_JOB_FUNCTION" /> untuk mengirimkan pekerjaan cetak.
 
       Jika ekstensi tidak berada dalam daftar, atau daftar tidak ditetapkan, dialog konfirmasi pekerjaan cetak akan ditampilkan ke pengguna untuk setiap panggilan fungsi <ph name="SUBMIT_JOB_FUNCTION" />.</translation>
-<translation id="829641334878002866">Memungkinkan Anda menentukan jangka waktu, dalam milidetik, antara notifikasi pertama bahwa perangkat <ph name="PRODUCT_OS_NAME" /> harus dimulai ulang untuk menerapkan update tertunda dan akhir dari jangka waktu yang ditentukan oleh kebijakan <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />.
-
-      Jika tidak ditetapkan, jangka waktu default selama 259200000 milidetik (tiga hari) akan digunakan untuk perangkat <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="829703642501504476">Jika kebijakan disetel ke Benar (True), <ph name="PRODUCT_NAME" /> akan menggunakan halaman error alternatif yang telah disertakan dalam browser tersebut (seperti "halaman tidak ditemukan"). Jika kebijakan disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan pernah menggunakan halaman error alternatif.
 
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya. Jika tidak disetel, kebijakan akan aktif tetapi pengguna dapat mengubah setelan ini.</translation>
@@ -7508,6 +7529,7 @@ Kebijakan akan dihapus pada M75.</translation>
 
       Jika kebijakan ini tidak ditetapkan, atau jika nilainya tidak dipetakan ke Quick Fix Build, perangkat tidak akan diupdate ke Quick Fix Build. Jika perangkat sudah menjalankan Quick Fix Build dan kebijakan tidak ditetapkan lagi atau nilainya tidak lagi dipetakan ke Quick Fix Build, perangkat akan diupdate ke versi reguler jika update tidak diblokir oleh kebijakan lain.</translation>
 <translation id="9051019223077908578">Mengonfigurasi daftar aplikasi dan ekstensi terinstal di layar login</translation>
+<translation id="9053841574218808519">Selalu jalankan plugin yang masih berlaku</translation>
 <translation id="9055866143096316150">Demosikan permintaan penguncian layar saat aktif ke permintaan penguncian layar saat aktif di sistem</translation>
 <translation id="9057444687284972605">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs tempat sertifikat klien dipilih secara otomatis di layar login dalam frame yang menghosting alur SAML, jika situs tersebut meminta sertifikat. Contoh penggunaan adalah ketika mengonfigurasikan sertifikat di seluruh perangkat untuk ditampilkan ke SAML IdP.
 

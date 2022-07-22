@@ -511,6 +511,7 @@
 <translation id="4300318234632215983">링크 이면의 URL 알림</translation>
 <translation id="4322625298640984693">시에나</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{마침표}=3{생략 부호}other{마침표 #개}}</translation>
+<translation id="4352022650330571548"><ph name="PHRASE" /> 입력</translation>
 <translation id="4372435075475052704">최소:<ph name="X" /></translation>
 <translation id="4372705107434148843">음성 중지</translation>
 <translation id="4376316291247992553">그래픽을 점자로 인식하기</translation>

@@ -41,6 +41,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="2018879682492276940">Installationen mislykkedes. Prøv igen.</translation>
 <translation id="2020032459870799438">Du kan tjekke, om dine andre adgangskoder er beskyttet mod brud på datasikkerheden og andre sikkerhedsproblemer ved at <ph name="BEGIN_LINK" />logge ind på Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Vælg, om du vil inkludere Chromium-historikken for at få mere tilpassede oplevelser i Googles tjenester</translation>
+<translation id="2088953378266246249">Oplysninger om, hvordan Chromium administrerer sine rodcertifikater</translation>
 <translation id="2174178932569897599">Tilpas Chromium</translation>
 <translation id="2174917724755363426">Installationen er ikke fuldført. Er du sikker på, at du vil annullere?</translation>
 <translation id="2185166961232948079">Chromium – Login på netværk – <ph name="PAGE_TITLE" /></translation>
@@ -365,6 +366,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="9185526690718004400">Genstart og opdater &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium fungerer muligvis ikke korrekt på grund af manglende understøttelse i Windows XP og Windows Vista</translation>
+<translation id="942598560705308788">Certifikater, der administreres af Chromium</translation>
 <translation id="945990405696787151">Hvis du vil have fremtidige Chromium-opdateringer, skal du have macOS 10.13 eller nyere. Denne computer anvender OS X 10.11.</translation>
 <translation id="965162752251293939">Hvem bruger Chromium?</translation>
 <translation id="967427899662692980">Få Chromiums stærkeste beskyttelse</translation>

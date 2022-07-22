@@ -1296,7 +1296,6 @@
 <translation id="2191754378957563929">사용</translation>
 <translation id="2192505247865591433">웹 브라우저</translation>
 <translation id="2193365732679659387">신뢰 설정</translation>
-<translation id="2194554416429452547">무료 체험 기간 동안 Chrome에서는 스팸, 사기 및 사이트 간 공유를 제한하는 방법을 탐색합니다. 또한 Chrome의 <ph name="ESTIMATE_INTERESTS_LINK" />을 기반으로 사이트가 광고를 표시할 수 있습니다. 설정에서 관심분야를 관리할 수 있습니다.</translation>
 <translation id="2194856509914051091">고려사항</translation>
 <translation id="2195331105963583686">이후로도 이 <ph name="DEVICE_TYPE" /> 기기를 계속 사용할 수는 있지만, 소프트웨어 및 보안 업데이트를 자동으로 받을 수 없게 됩니다.</translation>
 <translation id="2195729137168608510">이메일 보호</translation>
@@ -3282,6 +3281,7 @@
 <translation id="4077919383365622693"><ph name="SITE" />에서 저장한 모든 데이터와 쿠키가 삭제됩니다.</translation>
 <translation id="4078738236287221428">강한 규칙</translation>
 <translation id="4079140982534148664">향상된 맞춤법 검사 기능 사용</translation>
+<translation id="4081203444152654304"><ph name="VISUAL_SEARCH_PROVIDER" />로 이미지 내 검색</translation>
 <translation id="4081242589061676262">파일을 전송할 수 없음</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" />에서 휴대전화로 알림을 보냈습니다. 본인 인증을 하려면 알림의 단계를 따라주세요.</translation>
 <translation id="4084682180776658562">북마크</translation>
@@ -3675,6 +3675,7 @@
 <translation id="4476590490540813026">운동선수</translation>
 <translation id="4476659815936224889">스마트폰의 QR 스캐너 앱 또는 일부 카메라 앱을 사용하여 이 코드를 스캔할 수 있습니다.</translation>
 <translation id="4477015793815781985">Ctrl, Alt 또는 ⌘ 키를 포함하세요</translation>
+<translation id="4477379360383751882"><ph name="VISUAL_SEARCH_PROVIDER" />로 이미지 내 검색</translation>
 <translation id="4478664379124702289">다른 이름으로 링크 저장(&amp;K)...</translation>
 <translation id="4479424953165245642">키오스크 애플리케이션 관리</translation>
 <translation id="4479639480957787382">이더넷</translation>

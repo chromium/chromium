@@ -306,6 +306,7 @@
 <translation id="2805756323405976993">Програм</translation>
 <translation id="2814448776515246190">Хэсэгчилсэн зураг авах</translation>
 <translation id="2819276065543622893">Та нэвтрэх хэсгээс яг одоо гарч байна.</translation>
+<translation id="2822551631199737692">Камерыг ашиглаж байна</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />-г дэмждэггүй. Нягтралыг <ph name="FALLBACK_RESOLUTION" /> болгож өөрчилсөн.</translation>
 <translation id="2825619548187458965">Шельф</translation>
 <translation id="2831035692318564937">Нар мандах хүртэл асаалттай</translation>
@@ -808,6 +809,7 @@
 <translation id="5682642926269496722">Одоогийн хэрэглэгчийн бүртгэл дээр Google Туслах боломжгүй байна.</translation>
 <translation id="5689633613396158040">Шөнийн гэрэл нь бүдэг гэрэлтэй үед дэлгэцээ харах эсвэл уншихад илүү хялбар болгодог. Аль цагт Шөнийн гэрлийг бүрмөсөн асааж эсвэл унтраахыг өөрчлөхийн тулд товшино уу.</translation>
 <translation id="5691772641933328258">Хурууны хээг таньсангүй</translation>
+<translation id="5693255400847650006">Микрофоныг ашиглаж байна</translation>
 <translation id="570390244361237317">Бүх апп, бүх аппад хандахын тулд суман товчоор шилжинэ үү</translation>
 <translation id="5707775774148071965">Таны төхөөрөмж кабелиас тань өндөр дата хурдыг дэмжинэ. Төхөөрөмжийн гүйцэтгэл хязгаарлагдмал байж магадгүй.</translation>
 <translation id="5710450975648804523">Бүү саад бол горим асаалттай байна</translation>
@@ -982,6 +984,7 @@
 <translation id="6723839937902243910">Эрчим хүч</translation>
 <translation id="6727969043791803658">Холбогдсон, батарей <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Камер болон микрофоныг ашиглаж байна</translation>
 <translation id="6739144137573853180">ТОХИРГОО РУУ ОЧИХ</translation>
 <translation id="6751052314767925245">Таны администратор хэрэгжүүлдэг</translation>
 <translation id="6751826523481687655">Гүйцэтгэлийн хяналтыг асаасан</translation>

@@ -306,6 +306,7 @@
 <translation id="2805756323405976993">แอป</translation>
 <translation id="2814448776515246190">จับภาพบางส่วน</translation>
 <translation id="2819276065543622893">คุณจะออกจากระบบในตอนนี้</translation>
+<translation id="2822551631199737692">ใช้กล้องอยู่</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ไม่รองรับ <ph name="SPECIFIED_RESOLUTION" /> ระบบเปลี่ยนความละเอียดเป็น <ph name="FALLBACK_RESOLUTION" /></translation>
 <translation id="2825619548187458965">ชั้นวาง</translation>
 <translation id="2831035692318564937">เปิดจนถึงพระอาทิตย์ขึ้น</translation>
@@ -807,6 +808,7 @@
 <translation id="5682642926269496722">Google Assistant ไม่พร้อมใช้งานกับบัญชีผู้ใช้ปัจจุบัน</translation>
 <translation id="5689633613396158040">แสงตอนกลางคืนช่วยให้มองหรืออ่านหน้าจอในแสงสลัวได้ง่ายขึ้น แตะเพื่อเปลี่ยนเวลาเปิดแสงตอนกลางคืนหรือจะปิดไปเลยก็ได้</translation>
 <translation id="5691772641933328258">ระบบไม่รู้จักลายนิ้วมือนี้</translation>
+<translation id="5693255400847650006">ใช้ไมโครโฟนอยู่</translation>
 <translation id="570390244361237317">แอปทั้งหมด ใช้แป้นลูกศรเพื่อเข้าถึงแอปทั้งหมด</translation>
 <translation id="5707775774148071965">อุปกรณ์รองรับอัตราข้อมูลที่สูงกว่าสายสัญญาณ และอาจจำกัดประสิทธิภาพของอุปกรณ์</translation>
 <translation id="5710450975648804523">โหมดห้ามรบกวนเปิดอยู่</translation>
@@ -981,6 +983,7 @@
 <translation id="6723839937902243910">พลังงาน</translation>
 <translation id="6727969043791803658">เชื่อมต่อแล้ว แบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">ใช้กล้องและไมโครโฟนอยู่</translation>
 <translation id="6739144137573853180">ไปที่การตั้งค่า</translation>
 <translation id="6751052314767925245">บังคับใช้โดยผู้ดูแลระบบของคุณ</translation>
 <translation id="6751826523481687655">การติดตามประสิทธิภาพเปิดอยู่</translation>

@@ -70,6 +70,7 @@
 <translation id="2139300032719313227">ChromeOS-г дахин эхлүүлнэ үү</translation>
 <translation id="2151406531797534936">Chrome-г одоо дахин эхлүүлнэ үү</translation>
 <translation id="2174917724755363426">Суулгаж дуусаагүй байна. Та цуцлахдаа итгэлтэй байна уу?</translation>
+<translation id="223889379102603431">Chrome өөрийн үндсэн гэрчилгээг хэрхэн удирддаг тухай мэдээлэл</translation>
 <translation id="2258103955319320201">Та бүх төхөөрөмж дээрээ Chrome хөтчийн зүйлсдээ хандахын тулд нэвтэрч, дараа нь синк хийхийг асаана уу</translation>
 <translation id="2290014774651636340">Google-ийн API түлхүүр байхгүй байна. Google Chrome-ийн зарим функц идэвхгүй болно.</translation>
 <translation id="2290095356545025170">Та Google Chrome-ыг устгах гэж байгаадаа итгэлтэй байна уу?</translation>
@@ -356,6 +357,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8129812357326543296">Google Chrome-ийн тухай</translation>
 <translation id="813913629614996137">Эхлүүлж байна…</translation>
 <translation id="8255190535488645436">Google Chrome нь таны камер болон микрофоныг ашиглаж байна.</translation>
+<translation id="8270775718612349140">Chrome-н удирддаг гэрчилгээ</translation>
 <translation id="8286862437124483331">Google Chrome нь нууц үгийг харуулахыг оролдож байна. Үүнийг зөвшөөрөхийн тулд Windows-ийн нууц үгээ бичиж оруулна уу.</translation>
 <translation id="828798499196665338">Таны эцэг эх Chrome-н "Сайтууд, аппууд болон өргөтгөлүүдийн зөвшөөрөл"-ийг унтраасан байна. Энэ <ph name="EXTENSION_TYPE_PARAMETER" />-г идэвхжүүлэхийг зөвшөөрдөггүй.</translation>
 <translation id="8290100596633877290">Өө! Google Chrome гэмтсэн байна. Дахин эхлүүлэх үү?</translation>

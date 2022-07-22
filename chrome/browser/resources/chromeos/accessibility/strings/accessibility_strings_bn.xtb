@@ -511,6 +511,7 @@
 <translation id="4300318234632215983">একটি লিঙ্কের পিছনের URL ঘোষণা করুন</translation>
 <translation id="4322625298640984693">পোড়া লাল</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{বিন্দু}=3{এলিপসিস}one{#টি বিন্দু}other{# বিন্দু}}</translation>
+<translation id="4352022650330571548"><ph name="PHRASE" /> টাইপ করুন</translation>
 <translation id="4372435075475052704">ন্যূনতম:<ph name="X" /></translation>
 <translation id="4372705107434148843">স্পিচ থামান</translation>
 <translation id="4376316291247992553">ব্রেইল হিসাবে গ্রাফিক দেখুন</translation>

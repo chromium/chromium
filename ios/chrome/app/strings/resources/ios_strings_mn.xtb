@@ -329,6 +329,7 @@
 <translation id="3775743491439407556">Синк ажиллахгүй байна</translation>
 <translation id="3779810277399252432">Интернэт холболт алга.</translation>
 <translation id="3783017676699494206">Зургийг хадгал</translation>
+<translation id="3789294999358192700">Дараах алхмуудыг дагана уу:</translation>
 <translation id="3789841737615482174">Суулгах</translation>
 <translation id="380329542618494757">Нэр</translation>
 <translation id="3803696231112616155">Энэ сайтыг орчуулахыг санал болгох</translation>
@@ -623,7 +624,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6284652193729350524"><ph name="LANGUAGE" />-г орчуулахыг санал болгох</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" />-г дагахаа больсон</translation>
 <translation id="6293101329759844770">Аюулгүй үзэлтийг асаахын тулд <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүдийг<ph name="END_LINK" /> нээж, Аюулгүй үзэлт дээр товшино уу.</translation>
-<translation id="6294610283659775533">Та ижил Google Бүртгэлээр нэвтэрсэн төхөөрөмжүүдийн хооронд таб илгээх боломжтой</translation>
 <translation id="6321526113093607004">Хавчуургaд нэмэх</translation>
 <translation id="6324669097367352121">Нэвтрэх тохиргоонууд</translation>
 <translation id="6337234675334993532">Шифрлэх</translation>
@@ -941,6 +941,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8870413625673593573">Саяхан хаагдсан</translation>
 <translation id="8876882697946675716">Төхөөрөмжүүдээ синк хийсэн хэвээр байгаарай</translation>
 <translation id="8881801611828450202">Энэ зургийг <ph name="SEARCH_ENGINE" />-с хайх</translation>
+<translation id="8891935667620843985">Та Chrome-г өгөгдмөл хөтчийн програм болгосноор холбоосуудыг автоматаар нээх боломжтой.</translation>
 <translation id="8898822736010347272">Шинэ аюул заналыг олж илрүүлэх болон веб дээрх бүх хүнийг хамгаалахад туслахын тулд таны зочилдог зарим хуудасны URL, системийн хязгаарлагдмал мэдээлэл болон хуудасны зарим контентыг Google рүү илгээдэг.</translation>
 <translation id="8909135823018751308">Мэдээллийг хуваалцах ...</translation>
 <translation id="8917490105272468696">Тийм, би зөвшөөрч байна</translation>

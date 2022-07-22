@@ -1283,7 +1283,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2191754378957563929">Activado</translation>
 <translation id="2192505247865591433">De:</translation>
 <translation id="2193365732679659387">Configuración de confianza</translation>
-<translation id="2194554416429452547">Durante as probas, Chrome tenta explorar formas de limitar o spam, a fraude e o uso compartido entre sitios. Chrome tamén <ph name="ESTIMATE_INTERESTS_LINK" /> que os sitios poden usar para mostrarche anuncios. Podes xestionar os teus intereses na configuración.</translation>
 <translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
 <translation id="2195331105963583686">Seguirás podendo utilizar este <ph name="DEVICE_TYPE" /> despois desta data, pero deixará de recibir actualizacións de software e seguranza automáticas</translation>
 <translation id="2195729137168608510">Protección de correo electrónico</translation>
@@ -3264,6 +3263,7 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="4077919383365622693">Borraranse todos os datos e as cookies almacenados por <ph name="SITE" />.</translation>
 <translation id="4078738236287221428">Agresiva</translation>
 <translation id="4079140982534148664">Utilizar corrector ortográfico mellorado</translation>
+<translation id="4081203444152654304">Buscar na imaxe con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4081242589061676262">Non se pode emitir o ficheiro.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> enviouche unha notificación ao teléfono. Sigue os pasos que se indican nela para confirmar a túa identidade.</translation>
 <translation id="4084682180776658562">Marcador</translation>
@@ -3659,6 +3659,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Para escanear este código, podes utilizar unha aplicación de escáner de QR do teu teléfono ou algunhas aplicacións de cámara.</translation>
 <translation id="4477015793815781985">Inclúea Ctrl, Alt ou ⌘</translation>
+<translation id="4477379360383751882">Buscar na imaxe con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4478664379124702289">Gardar liga&amp;zón como...</translation>
 <translation id="4479424953165245642">Xestionar as aplicacións de quiosco</translation>
 <translation id="4479639480957787382">Ethernet</translation>

@@ -1296,7 +1296,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2191754378957563929">Vuliwe</translation>
 <translation id="2192505247865591433">Kusuka ku-:</translation>
 <translation id="2193365732679659387">Themba izilungiselelo</translation>
-<translation id="2194554416429452547">Ngesikhathi sokuzama, i-Chrome ihlola izindlela zokukhawulela ugaxekile, ukukhwabanisa, nokwabelana phakathi kwamasayithi. I-Chrome nayo <ph name="ESTIMATE_INTERESTS_LINK" /> ukuthi amasayithi angasebenza ukukubonisa izikhangiso. Ungaphatha ongaba nentshisekelo kukho kumasethingi.</translation>
 <translation id="2194856509914051091">Izinto okufanele uzicabangele</translation>
 <translation id="2195331105963583686">Usazokwazi ukusebenzisa le <ph name="DEVICE_TYPE" /> ngemuva kwaleso sikhathi, kodwa ngeke isathola isofthiwe ezenzakalelayo nezibuyekezo zokuvikelwa</translation>
 <translation id="2195729137168608510">Ukuvikelwa kwe-imeyili</translation>
@@ -3281,6 +3280,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4077919383365622693">Yonke idatha namakhukhi alondolozwe nge-<ph name="SITE" /> azosuswa.</translation>
 <translation id="4078738236287221428">Udlame</translation>
 <translation id="4079140982534148664">Sebenzisa Ukuhlola Kwesipele Okuthuthukisiwe</translation>
+<translation id="4081203444152654304">Sesha umfanekiso wangaphakathi nge-<ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4081242589061676262">Ayikwazi ukusakaza ifayela.</translation>
 <translation id="408223403876103285">I-<ph name="WEBSITE" /> ithumele isaziso efonini yakho. Ukuze uqinisekise ukuthi uwena, landela izinyathelo ezilapho.</translation>
 <translation id="4084682180776658562">Ibhukhimakhi</translation>
@@ -3676,6 +3676,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4476590490540813026">Umsubathi</translation>
 <translation id="4476659815936224889">Ukuze uskene le khodi, ungasebenzisa uhlelo lokusebenza lweskena lwe-QR kufoni yakho, noma ezinye izinhlelo zokusebenza zekhamera.</translation>
 <translation id="4477015793815781985">Faka phakathi U-Ctrl, Alt, noma u-⌘</translation>
+<translation id="4477379360383751882">Sesha Umfanekiso wangaphakathi nge-<ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4478664379124702289">Londoloza isixhumanisi njenge...</translation>
 <translation id="4479424953165245642">Phatha izinhlelo zokusebenza zekhiyoski</translation>
 <translation id="4479639480957787382">I-Ethernet</translation>
@@ -5306,6 +5307,7 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="6086846494333236931">Kufakwe umqondisi wakho</translation>
 <translation id="6087746524533454243">Ufuna ikhasi elimayelana ne-browser? Vakashela</translation>
 <translation id="6087960857463881712">Ubuso obuhle</translation>
+<translation id="6088535503330933227">I-Chrome ihlola izindlela zokukhawulela ogaxekile besikhangiso, ukukhwabanisa, nokwabelana phakathi kwamasayithi. I-Chrome iphinde yenze i-<ph name="ESTIMATE_INTERESTS_LINK" /> engasetshenziswa amasayithi ukukubonisa izikhangiso. Ungaphatha ongaba nentshisekelo kukho kumasethingi.</translation>
 <translation id="608912389580139775">Ukwengeza leli khasi kuhlu lwakho lokufunda, chofoza isithonjana sebhukhimakhi</translation>
 <translation id="6091761513005122595">Yabelana ngokukhweziwe ngempumelelo.</translation>
 <translation id="6093888419484831006">Ikhansela isibuyekezo...</translation>

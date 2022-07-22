@@ -1286,7 +1286,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2191754378957563929">zapnuté</translation>
 <translation id="2192505247865591433">Zdroj:</translation>
 <translation id="2193365732679659387">Nastavenie dôveryhodnosti</translation>
-<translation id="2194554416429452547">Počas skúšobných období hľadá Chrome spôsoby, ako obmedziť spam, podvody a zdieľanie obsahu medzi webmi. Chrome okrem toho <ph name="ESTIMATE_INTERESTS_LINK" />, na základe ktorých vám budú môcť weby zobrazovať reklamy. Svoje záujmy môžete spravovať v nastaveniach.</translation>
 <translation id="2194856509914051091">Čo je potrebné zohľadniť</translation>
 <translation id="2195331105963583686">Po tomto dátume budete môcť <ph name="DEVICE_TYPE" /> naďalej používať, ale už nebude dostávať automatické aktualizácie softvéru a zabezpečenia</translation>
 <translation id="2195729137168608510">Ochrana e-mailu</translation>
@@ -4108,6 +4107,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4900392736118574277">Vaša stránka pri spustení bola zmenená na <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz –prekladané</translation>
 <translation id="4900652253009739885">Jediný prepínač pridelený k akcii Vybrať sa nedá odstrániť. Ak chcete <ph name="RESPONSE" />, stlačte ľubovoľný kláves.</translation>
+<translation id="4901154724271753917">Rozbaliť nedávno zatvorené</translation>
 <translation id="4901309472892185668">Vyberte stav experimentu <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Pravidlo stiahnuté zo servera je neplatné: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Nastaviť alebo spravovať sieťové zdieľané úložiská. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
@@ -5918,6 +5918,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500">Pripojiť sa pomocou rozšírenia <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Späť</translation>
+<translation id="6710394144992407503">Kontrolovať pravopis pri zadávaní textu na webových stránkach</translation>
 <translation id="6711146141291425900">Prepojte účet <ph name="WEB_DRIVE" /> pre stiahnuté súbory</translation>
 <translation id="6712943853047024245">Už ste si uložili heslo pomocou tohto používateľského mena pre web alebo aplikáciu <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Pridať pracovný profil</translation>
@@ -6539,6 +6540,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7340757554212515731">Prehľady pádov, diagnostiky a údaje o využití sa budú automaticky odosielať Googlu</translation>
 <translation id="7341834142292923918">Požaduje prístup k tomuto webu</translation>
 <translation id="7343372807593926528">Opíšte problém a až potom odošlite spätnú väzbu.</translation>
+<translation id="7344585835349671209">Spravujte certifikáty HTTPS a SSL v zariadení</translation>
 <translation id="7345706641791090287">Potvrdenie hesla</translation>
 <translation id="7346909386216857016">Dobre</translation>
 <translation id="7347452120014970266">Týmto vymažete všetky dáta a súbory cookie uložené webom <ph name="ORIGIN_NAME" /> a jeho nainštalovanými aplikáciami</translation>
@@ -6668,6 +6670,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7460045493116006516">Aktuálny nainštalovaný motív</translation>
 <translation id="7461924472993315131">Pripnúť</translation>
 <translation id="746216226901520237">Zariadenie <ph name="DEVICE_TYPE" /> nabudúce odomknete telefónom. Smart Lock vypnete v Nastaveniach.</translation>
+<translation id="7464153996453281700">Komponent je už aktuálny</translation>
 <translation id="7464637891177137294">Uložte si ho do účtu Google <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# otvorená karta, panel kariet prepínajte stláčaním}few{# otvorené karty, panel kariet prepínajte stláčaním}many{# open tabs, press to toggle tab strip}other{# otvorených kariet, panel kariet prepínajte stláčaním}}</translation>
 <translation id="7465635034594602553">Vyskytol sa problém. Počkajte niekoľko minút a aplikáciu <ph name="APP_NAME" /> znova spustite.</translation>
@@ -7000,6 +7003,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7768526219335215384"><ph name="ORIGIN" /> bude môcť čítať súbory v priečinku <ph name="FOLDERNAME" />.</translation>
 <translation id="7768770796815395237">Zmeniť</translation>
 <translation id="7768784765476638775">Vyslovenie položky po vybratí</translation>
+<translation id="7769748505895274502">Zbaliť nedávno zatvorené</translation>
 <translation id="7770406201819593386">Spúšťať diagnostické testy systému Chrome OS Flex</translation>
 <translation id="7770450735129978837">Kliknutie pravým tlačidlom myši</translation>
 <translation id="7770612696274572992">Obrázok bol skopírovaný z iného zariadenia</translation>
@@ -7175,6 +7179,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="793531125873261495">Pri sťahovaní virtuálneho počítača sa vyskytla chyba. Skúste to znova.</translation>
 <translation id="7935451262452051102">Dokončené: <ph name="PERCENT" /> %</translation>
 <translation id="7939062555109487992">Rozšírené možnosti</translation>
+<translation id="7939328347457537652">Správa certifikátov zariadení</translation>
 <translation id="7939412583708276221">Aj tak ponechať</translation>
 <translation id="7942349550061667556">Červená</translation>
 <translation id="7943368935008348579">Stiahnuť súbory PDF</translation>

@@ -329,6 +329,7 @@
 <translation id="3775743491439407556">Синхронизација не ради</translation>
 <translation id="3779810277399252432">Нема интернет везе.</translation>
 <translation id="3783017676699494206">Сачувај слику</translation>
+<translation id="3789294999358192700">Пратите кораке испод:</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Понуди превод овог сајта</translation>
@@ -624,7 +625,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6284652193729350524">Понуди превод за <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Опозвали сте праћење канала <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Да бисте укључили Безбедно прегледање, отворите <ph name="BEGIN_LINK" />Google услуге<ph name="END_LINK" /> и додирните Безбедно прегледање.</translation>
-<translation id="6294610283659775533">Можете да шаљете картице с једног уређаја на други ако сте на њих пријављени помоћу истог Google налога</translation>
 <translation id="6321526113093607004">Додај у обележиваче</translation>
 <translation id="6324669097367352121">Подешавања пријављивања</translation>
 <translation id="6337234675334993532">Шифровање</translation>
@@ -942,6 +942,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8870413625673593573">Недавно затворено</translation>
 <translation id="8876882697946675716">Синхронизујте уређаје</translation>
 <translation id="8881801611828450202">Претражи ову слику у <ph name="SEARCH_ENGINE" />-у</translation>
+<translation id="8891935667620843985">Можете да аутоматски отварате линкове у Chrome-у тако што ћете га подесити као подразумевану апликацију за прегледање.</translation>
 <translation id="8898822736010347272">Шаље Google-у URL-ове неких страница које посећујете, ограничене информације о систему и одређени садржај страница да би се откриле нове претње и заштитили сви широм веба.</translation>
 <translation id="8909135823018751308">Дели...</translation>
 <translation id="8917490105272468696">Да, омогући</translation>

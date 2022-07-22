@@ -1281,7 +1281,6 @@
 <translation id="2191754378957563929">オン</translation>
 <translation id="2192505247865591433">取得先:</translation>
 <translation id="2193365732679659387">信頼の設定</translation>
-<translation id="2194554416429452547">トライアル期間中、Chrome はスパムや不正行為、サイト間の共有を制限する方法を検証します。また、<ph name="ESTIMATE_INTERESTS_LINK" />して、サイトでの広告表示に使用できるようにします。興味 / 関心は設定で管理できます。</translation>
 <translation id="2194856509914051091">留意事項</translation>
 <translation id="2195331105963583686">この期限を過ぎても <ph name="DEVICE_TYPE" /> は使用できますが、ソフトウェアとセキュリティは自動更新されなくなります。</translation>
 <translation id="2195729137168608510">電子メールの保護</translation>
@@ -3257,6 +3256,7 @@
 <translation id="4077919383365622693"><ph name="SITE" /> により保存されたすべてのデータと Cookie が削除されます。</translation>
 <translation id="4078738236287221428">強め</translation>
 <translation id="4079140982534148664">拡張スペルチェックを使用</translation>
+<translation id="4081203444152654304"><ph name="VISUAL_SEARCH_PROVIDER" /> で画像内を検索</translation>
 <translation id="4081242589061676262">ファイルをキャストできません。</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> からスマートフォンに通知が送信されました。表示されている手順に沿って本人確認を行ってください。</translation>
 <translation id="4084682180776658562">ブックマーク</translation>
@@ -3650,6 +3650,7 @@
 <translation id="4476590490540813026">競技選手</translation>
 <translation id="4476659815936224889">このコードをスキャンするには、スマートフォンの QR スキャンアプリまたはカメラアプリを使用してください。</translation>
 <translation id="4477015793815781985">Ctrl キー、Alt キー、⌘ キーのいずれかが必要です</translation>
+<translation id="4477379360383751882"><ph name="VISUAL_SEARCH_PROVIDER" /> で画像内を検索</translation>
 <translation id="4478664379124702289">リンク先を別名で保存(&amp;K)...</translation>
 <translation id="4479424953165245642">キオスク アプリケーションを管理</translation>
 <translation id="4479639480957787382">イーサネット</translation>

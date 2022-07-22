@@ -329,6 +329,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3775743491439407556">Synkronisering fungerer ikke</translation>
 <translation id="3779810277399252432">Ingen internetforbindelse.</translation>
 <translation id="3783017676699494206">Gem billede</translation>
+<translation id="3789294999358192700">Sådan gør du:</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803696231112616155">Tilbyd at oversætte dette website</translation>
@@ -624,7 +625,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6284652193729350524">Tilbyd at oversætte fra <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Følger ikke længere <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Åbn <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />, og tryk på Beskyttet browsing for at aktivere Beskyttet browsing.</translation>
-<translation id="6294610283659775533">Du kan sende faner mellem enheder, hvor du er logget ind på den samme Google-konto</translation>
 <translation id="6321526113093607004">Føj til Bogmærker</translation>
 <translation id="6324669097367352121">Loginindstillinger</translation>
 <translation id="6337234675334993532">Kryptering</translation>
@@ -942,6 +942,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8870413625673593573">Senest lukkede</translation>
 <translation id="8876882697946675716">Bevar synkroniseringen af dine enheder</translation>
 <translation id="8881801611828450202">Søg på <ph name="SEARCH_ENGINE" /> efter dette billede</translation>
+<translation id="8891935667620843985">Du kan åbne links i Chrome automatisk ved at angive Chrome som din standardbrowserapp.</translation>
 <translation id="8898822736010347272">Sender webadresser på visse sider, du besøger, begrænsede systemoplysninger og indhold fra visse sider til Google med henblik på at opdage nye trusler og beskytte brugerne på nettet.</translation>
 <translation id="8909135823018751308">Del…</translation>
 <translation id="8917490105272468696">Ja tak</translation>

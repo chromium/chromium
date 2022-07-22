@@ -1295,7 +1295,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2191754378957563929">Päällä</translation>
 <translation id="2192505247865591433">Lähettäjä:</translation>
 <translation id="2193365732679659387">Luottamusasetukset</translation>
-<translation id="2194554416429452547">Kokeilujen aikana Chrome tutkii tapoja rajoittaa roskasisältöä, huijauksia ja sivustojen välistä jakamista. Chrome myös <ph name="ESTIMATE_INTERESTS_LINK" />, joita sivustot voivat käyttää näyttääksesi sinulle mainoksia. Voit muuttaa kiinnostuksen kohteitasi asetuksista.</translation>
 <translation id="2194856509914051091">Huomioitavaa</translation>
 <translation id="2195331105963583686"><ph name="DEVICE_TYPE" /> on käytettävissä jatkossakin, mutta se ei enää saa automaattisia ohjelmisto- ja tietoturvapäivityksiä</translation>
 <translation id="2195729137168608510">Sähköpostin suojaus</translation>
@@ -3277,6 +3276,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4077919383365622693">Kaikki data ja evästeet, jotka <ph name="SITE" /> on tallentanut, poistetaan.</translation>
 <translation id="4078738236287221428">Aggressiivinen</translation>
 <translation id="4079140982534148664">Käytä parannettua oikeinkirjoituksen tarkistusta</translation>
+<translation id="4081203444152654304">Hae kuvasta (<ph name="VISUAL_SEARCH_PROVIDER" />)</translation>
 <translation id="4081242589061676262">Tiedoston suoratoisto epäonnistui</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> lähetti ilmoituksen puhelimeesi. Todista henkilöllisyytesi seuraamalla puhelimessa näkyviä ohjeita.</translation>
 <translation id="4084682180776658562">Kirjanmerkki</translation>
@@ -3672,6 +3672,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4476590490540813026">Urheilija</translation>
 <translation id="4476659815936224889">Voit skannata koodin puhelimen QR-skannaussovelluksella tai joillakin kamerasovelluksilla.</translation>
 <translation id="4477015793815781985">Sisällytä Ctrl, Alt tai ⌘</translation>
+<translation id="4477379360383751882">Hae kuvasta (<ph name="VISUAL_SEARCH_PROVIDER" />)</translation>
 <translation id="4478664379124702289">Tallenna lin&amp;kki nimellä...</translation>
 <translation id="4479424953165245642">Hallinnoi kioskisovelluksia</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -5299,6 +5300,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6086846494333236931">Järjestelmänvalvojasi asentama</translation>
 <translation id="6087746524533454243">Etsitkö selaimen tietosivua? Avaa</translation>
 <translation id="6087960857463881712">Eeppinen hymiö</translation>
+<translation id="6088535503330933227">Chrome tutkii tapoja rajoittaa mainosspämmäystä, petoksia ja sivustojen välistä jakamista. Chrome myös <ph name="ESTIMATE_INTERESTS_LINK" />, joita sivustot voivat käyttää näyttääksesi sinulle mainoksia. Voit muuttaa kiinnostuksen kohteitasi asetuksista.</translation>
 <translation id="608912389580139775">Jos haluat lisätä sivun lukulistallesi, klikkaa Kirjanmerkki-kuvaketta</translation>
 <translation id="6091761513005122595">Jako otettiin käyttöön.</translation>
 <translation id="6093888419484831006">Peruutetaan päivitystä...</translation>

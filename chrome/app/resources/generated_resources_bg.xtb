@@ -1292,7 +1292,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2191754378957563929">Включено</translation>
 <translation id="2192505247865591433">От:</translation>
 <translation id="2193365732679659387">Настройки за доверие</translation>
-<translation id="2194554416429452547">По време на експериментите Chrome проучва начини да ограничи спама, измамите и споделянето между сайтовете. Също така браузърът <ph name="ESTIMATE_INTERESTS_LINK" />, които сайтовете могат да използват, за да ви показват реклами. Имате възможност да управлявате интересите си от настройките.</translation>
 <translation id="2194856509914051091">Обмислете следните неща</translation>
 <translation id="2195331105963583686">След това пак ще можете да използвате устройството <ph name="DEVICE_TYPE" />, но то няма да получава повече автоматични актуализации на софтуера и сигурността</translation>
 <translation id="2195729137168608510">Защита за имейли</translation>
@@ -3278,6 +3277,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4077919383365622693">Всички данни и „бисквитки“, съхранявани от <ph name="SITE" />, ще бъдат изтрити.</translation>
 <translation id="4078738236287221428">Агресивно</translation>
 <translation id="4079140982534148664">Използване на подобрената проверка на правописа</translation>
+<translation id="4081203444152654304">Търсене в изображението чрез <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4081242589061676262">Предаването на файла не е възможно.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> изпрати известие до телефона ви. За да потвърдите, че това сте вие, изпълнете стъпките в известието.</translation>
 <translation id="4084682180776658562">Отметка</translation>
@@ -3673,6 +3673,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4476590490540813026">Спортист</translation>
 <translation id="4476659815936224889">За да сканирате този код, можете да използвате приложение за сканиране на QR кодове на телефона си или някои приложения за камера.</translation>
 <translation id="4477015793815781985">Добавете Ctrl, Alt или ⌘</translation>
+<translation id="4477379360383751882">Търсене в изображението чрез <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4478664379124702289">Запазване на вр&amp;ъзката като...</translation>
 <translation id="4479424953165245642">Управление на павилионните приложения</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -5301,6 +5302,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6086846494333236931">Инсталирано от администратора ви</translation>
 <translation id="6087746524533454243">Търсите страницата с информация за браузъра? Посетете</translation>
 <translation id="6087960857463881712">Страхотно лице</translation>
+<translation id="6088535503330933227">Chrome проучва начини за ограничаване на рекламния спам, измамите и споделянето между сайтовете. Също така браузърът <ph name="ESTIMATE_INTERESTS_LINK" />, които сайтовете могат да използват, за да ви показват реклами. Имате възможност да управлявате интересите си от настройките.</translation>
 <translation id="608912389580139775">За да добавите тази страница към списъка си за четене, кликнете върху иконата на отметка</translation>
 <translation id="6091761513005122595">Дялът е свързан успешно.</translation>
 <translation id="6093888419484831006">Актуализирането се анулира...</translation>

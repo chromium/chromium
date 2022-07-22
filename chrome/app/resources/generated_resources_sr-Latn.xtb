@@ -1283,7 +1283,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2191754378957563929">Uključeno</translation>
 <translation id="2192505247865591433">Od:</translation>
 <translation id="2193365732679659387">Podešavanja pouzdanosti</translation>
-<translation id="2194554416429452547">Tokom probnih perioda, Chrome istražuje načine da ograniči nepoželjan sadržaj, prevaru i deljenje između sajtova. Chrome takođe <ph name="ESTIMATE_INTERESTS_LINK" /> koja sajtovi mogu da koriste da bi vam prikazivali oglase. Možete da upravljate interesovanjima u podešavanjima.</translation>
 <translation id="2194856509914051091">Šta treba imati u vidu</translation>
 <translation id="2195331105963583686">Posle tog perioda i dalje ćete moći da koristite <ph name="DEVICE_TYPE" />, ali uređaj neće više dobijati automatska ažuriranja softvera i bezbednosna ažuriranja</translation>
 <translation id="2195729137168608510">Zaštita e-pošte</translation>
@@ -5288,6 +5287,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6086846494333236931">Instalirao je administrator</translation>
 <translation id="6087746524533454243">Tražite stranicu sa osnovnim podacima o pregledaču? Posetite</translation>
 <translation id="6087960857463881712">Zadovoljno lice</translation>
+<translation id="6088535503330933227">Chrome istražuje načine da ograniči nepoželjne oglase, prevaru i deljenje između sajtova. Chrome takođe <ph name="ESTIMATE_INTERESTS_LINK" /> koja sajtovi mogu da koriste da bi vam prikazivali oglase. Možete da upravljate interesovanjima u podešavanjima.</translation>
 <translation id="608912389580139775">Da biste dodali ovu stranicu na listu za čitanje, kliknite na ikonu obeleživača</translation>
 <translation id="6091761513005122595">Deljena datoteka je učitana.</translation>
 <translation id="6093888419484831006">Otkazivanje ažuriranja...</translation>
@@ -5918,6 +5918,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6709133671862442373">Vesti</translation>
 <translation id="6709357832553498500">Poveži se pomoću <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Prethodno</translation>
+<translation id="6710394144992407503">Proverite da li ima pravopisnih grešaka kada unosite tekst na veb-stranicama</translation>
 <translation id="6711146141291425900">Povežite nalog za uslugu <ph name="WEB_DRIVE" /> radi preuzimanja</translation>
 <translation id="6712943853047024245">Već ste sačuvali lozinku sa ovim korisničkim imenom za <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Dodaj poslovni profil</translation>
@@ -6539,6 +6540,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7340757554212515731">Automatski šaljite izveštaje o otkazivanju, kao i dijagnostiku i podatke o korišćenju Google-u</translation>
 <translation id="7341834142292923918">Želi da pristupa ovom sajtu</translation>
 <translation id="7343372807593926528">Opišite problem da biste poslali povratne informacije.</translation>
+<translation id="7344585835349671209">Upravljajte HTTPS/SSL sertifikatima na uređaju</translation>
 <translation id="7345706641791090287">Potvrdite lozinku</translation>
 <translation id="7346909386216857016">Važi</translation>
 <translation id="7347452120014970266">Ovim brišete sve podatke i kolačiće koje čuvaju sajt <ph name="ORIGIN_NAME" /> i njegove instalirane aplikacije</translation>
@@ -6668,6 +6670,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7460045493116006516">Aktuelna tema koju ste instalirali</translation>
 <translation id="7461924472993315131">Zakači</translation>
 <translation id="746216226901520237">Sledeći put će telefon otključati <ph name="DEVICE_TYPE" />. Možete da isključite Smart Lock u podešavanjima.</translation>
+<translation id="7464153996453281700">Komponenta je već ažurirana</translation>
 <translation id="7464637891177137294">Sačuvajte je na Google nalogu, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# otvorena kartica, pritisnite da biste uključili/isključili traku sa karticama}one{# otvorena kartica, pritisnite da biste uključili/isključili traku sa karticama}few{# otvorene kartice, pritisnite da biste uključili/isključili traku sa karticama}other{# otvorenih kartica, pritisnite da biste uključili/isključili traku sa karticama}}</translation>
 <translation id="7465635034594602553">Došlo je do greške. Sačekajte par minuta, pa ponovo pokrenite aplikaciju <ph name="APP_NAME" />.</translation>
@@ -7176,6 +7179,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="793531125873261495">Greška pri preuzimanju virtuelne mašine. Probajte ponovo.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% je završeno</translation>
 <translation id="7939062555109487992">Napredne opcije</translation>
+<translation id="7939328347457537652">Upravljajte sertifikatima uređaja</translation>
 <translation id="7939412583708276221">Ipak zadrži</translation>
 <translation id="7942349550061667556">Crvena</translation>
 <translation id="7943368935008348579">Preuzimajte PDF-ove</translation>

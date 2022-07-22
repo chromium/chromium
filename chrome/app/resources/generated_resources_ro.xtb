@@ -1285,7 +1285,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2191754378957563929">Activat</translation>
 <translation id="2192505247865591433">De la:</translation>
 <translation id="2193365732679659387">Setări privind încrederea</translation>
-<translation id="2194554416429452547">În perioadele de încercare, Chrome explorează moduri de a limita spamul, frauda și transferul între site-uri. În plus, Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, pe care site-urile le pot folosi pentru a-ți afișa anunțuri. Îți poți gestiona interesele din setări.</translation>
 <translation id="2194856509914051091">De reținut</translation>
 <translation id="2195331105963583686">Vei putea folosi în continuare <ph name="DEVICE_TYPE" />, dar nu vei mai primi actualizări automate de software și de securitate</translation>
 <translation id="2195729137168608510">Protecție e-mail</translation>
@@ -5918,6 +5917,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6709133671862442373">Știri</translation>
 <translation id="6709357832553498500">Conectează-te folosind <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Înapoi</translation>
+<translation id="6710394144992407503">Verifică dacă există greșeli de ortografie când introduci text în pagini web</translation>
 <translation id="6711146141291425900">Conectează contul <ph name="WEB_DRIVE" /> pentru Descărcări</translation>
 <translation id="6712943853047024245">Ai salvat deja o parolă folosind acest nume de utilizator pentru <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Adaugă un profil de serviciu</translation>
@@ -6539,6 +6539,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7340757554212515731">Trimite automat la Google rapoarte de blocare, precum și date de diagnosticare și de utilizare</translation>
 <translation id="7341834142292923918">Vrea acces la acest site</translation>
 <translation id="7343372807593926528">Descrie problema înainte de a trimite feedback.</translation>
+<translation id="7344585835349671209">Gestionează certificatele HTTPS/SSL pe dispozitiv</translation>
 <translation id="7345706641791090287">Confirmă parola</translation>
 <translation id="7346909386216857016">OK, am înțeles</translation>
 <translation id="7347452120014970266">Astfel, se vor șterge toate datele și cookie-urile stocate de <ph name="ORIGIN_NAME" /> și aplicațiile instalate asociate</translation>
@@ -6668,6 +6669,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7460045493116006516">Tema actuală pe care ai instalat-o</translation>
 <translation id="7461924472993315131">Fixează</translation>
 <translation id="746216226901520237">Data viitoare, telefonul va debloca dispozitivul <ph name="DEVICE_TYPE" />. Poți debloca Smart Lock în Setări.</translation>
+<translation id="7464153996453281700">Componenta este deja actualizată</translation>
 <translation id="7464637891177137294">Salveaz-o în Contul Google <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# filă deschisă; atinge pentru a comuta bara de file}few{# file deschise; atinge pentru a comuta bara de file}other{# de file deschise; atinge pentru a comuta bara de file}}</translation>
 <translation id="7465635034594602553">A apărut o eroare. Așteaptă câteva minute și rulează din nou <ph name="APP_NAME" />.</translation>
@@ -7176,6 +7178,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="793531125873261495">A apărut o eroare la descărcarea mașinii virtuale. Încearcă din nou.</translation>
 <translation id="7935451262452051102">S-a finalizat <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">Opțiuni avansate</translation>
+<translation id="7939328347457537652">Gestionează certificatele dispozitivelor</translation>
 <translation id="7939412583708276221">Păstrați oricum</translation>
 <translation id="7942349550061667556">Roșu</translation>
 <translation id="7943368935008348579">Descarcă fișiere PDF</translation>

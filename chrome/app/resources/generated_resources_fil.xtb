@@ -1297,7 +1297,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2191754378957563929">Naka-on</translation>
 <translation id="2192505247865591433">Mula:</translation>
 <translation id="2193365732679659387">Mga setting ng pagtitiwala</translation>
-<translation id="2194554416429452547">Sa panahon ng mga trial, ine-explore ng Chrome ang mga paraan para limitahan ang spam, panloloko, at pagbabahagi sa pagitan ng mga site. Ginagawa rin ng Chrome na <ph name="ESTIMATE_INTERESTS_LINK" /> na magagamit ng mga site para magpakita sa iyo ng mga ad. Puwede mong pamahalaan ang iyong mga interes sa mga setting.</translation>
 <translation id="2194856509914051091">Mga bagay na dapat isaalang-alang</translation>
 <translation id="2195331105963583686">Magagamit mo pa rin ang <ph name="DEVICE_TYPE" /> na ito pagkatapos noon, pero hindi na ito makakakuha ng mga awtomatikong update sa software at seguridad</translation>
 <translation id="2195729137168608510">Proteksyon sa Email</translation>
@@ -5306,6 +5305,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6086846494333236931">Na-install ng iyong administrator</translation>
 <translation id="6087746524533454243">Hinahanap ang page na tungkol sa browser? Bisitahin ang</translation>
 <translation id="6087960857463881712">Astig na mukha</translation>
+<translation id="6088535503330933227">Nag-e-explore ang Chrome kung paano limitahan ang mga spam na ad, panloloko, at pagbabahagi sa pagitan ng mga site. Ginagawa rin ng Chrome na <ph name="ESTIMATE_INTERESTS_LINK" /> na magagamit ng mga site para magpakita sa iyo ng mga ad. Puwede mong pamahalaan ang iyong mga interes sa mga setting.</translation>
 <translation id="608912389580139775">Para idagdag ang page na ito sa iyong listahan ng babasahin, i-click ang icon ng Bookmark</translation>
 <translation id="6091761513005122595">Matagumpay na na-mount ang share</translation>
 <translation id="6093888419484831006">Kinakansela ang pag-update...</translation>
@@ -5934,6 +5934,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6709133671862442373">Balita</translation>
 <translation id="6709357832553498500">Kumonekta sa pamamagitan ng <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Nauna</translation>
+<translation id="6710394144992407503">Suriin kung may mga error sa pagbabaybay kapag nag-type ka ng text sa mga web page</translation>
 <translation id="6711146141291425900">I-link ang <ph name="WEB_DRIVE" /> account para sa Mga pag-download</translation>
 <translation id="6712943853047024245">Nag-save ka na ng password na may ganitong username para sa <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Magdagdag ng Profile sa Trabaho</translation>
@@ -6555,6 +6556,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7340757554212515731">Awtomatikong nagpapadala sa Google ng mga ulat ng pag-crash pati na rin ng diagnostic na data at data ng paggamit</translation>
 <translation id="7341834142292923918">Gusto ng access sa site na ito</translation>
 <translation id="7343372807593926528">Pakilarawan ang problema bago ipadala ang feedback.</translation>
+<translation id="7344585835349671209">Pamahalaan ang mga HTTPS/SSL certificate sa iyong device</translation>
 <translation id="7345706641791090287">Kumpirmahin ang iyong password</translation>
 <translation id="7346909386216857016">Ok, nakuha ko</translation>
 <translation id="7347452120014970266">Iki-clear nito ang lahat ng data at cookies na na-store ng <ph name="ORIGIN_NAME" /> at ang mga na-install na app nito</translation>
@@ -6684,6 +6686,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7460045493116006516">Kasalukuyang temang na-install mo</translation>
 <translation id="7461924472993315131">I-pin</translation>
 <translation id="746216226901520237">Sa susunod, ia-unlock ng iyong telepono ang <ph name="DEVICE_TYPE" /> mo. Puwede mong i-off ang Smart Lock sa Mga Setting.</translation>
+<translation id="7464153996453281700">Up to date na ang bahagi</translation>
 <translation id="7464637891177137294">I-save ito sa iyong Google Account, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# bukas na tab, pindutin para i-toggle ang tab strip}one{# bukas na tab, pindutin para i-toggle ang tab strip}other{# na bukas na tab, pindutin para i-toggle ang tab strip}}</translation>
 <translation id="7465635034594602553">Nagkaproblema. Maghintay ng ilang minuto at patakbuhin ulit ang <ph name="APP_NAME" />.</translation>
@@ -7193,6 +7196,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="793531125873261495">Nagkaroon ng error sa pag-download ng virtual machine. Pakisubukang muli.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% na ang natapos</translation>
 <translation id="7939062555109487992">Mga advanced na pagpipilian</translation>
+<translation id="7939328347457537652">Pamahalaan ang mga certificate ng device</translation>
 <translation id="7939412583708276221">Panatilihin pa rin</translation>
 <translation id="7942349550061667556">Pula</translation>
 <translation id="7943368935008348579">Mag-download ng mga PDF</translation>

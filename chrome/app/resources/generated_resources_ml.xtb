@@ -1283,7 +1283,6 @@
 <translation id="2191754378957563929">ഓണാണ്</translation>
 <translation id="2192505247865591433">പ്രേഷിതാവ്:</translation>
 <translation id="2193365732679659387">വിശ്വസ്ഥത ക്രമീകരണം</translation>
-<translation id="2194554416429452547">ട്രയലുകൾ നടക്കുമ്പോൾ, സ്പാം, വഞ്ചന, സൈറ്റുകൾക്കിടയിൽ പങ്കിടൽ എന്നിവ പരിമിതപ്പെടുത്താനുള്ള വഴികൾ കണ്ടെത്താൻ Chrome ശ്രമിക്കുന്നു. Chrome, നിങ്ങൾക്ക് പരസ്യങ്ങൾ കാണിക്കാൻ സൈറ്റുകൾക്ക് ഉപയോഗിക്കാനാകുന്ന <ph name="ESTIMATE_INTERESTS_LINK" />. ക്രമീകരണത്തിൽ നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ മാനേജ് ചെയ്യാം.</translation>
 <translation id="2194856509914051091">പരിഗണിക്കേണ്ട കാര്യങ്ങൾ</translation>
 <translation id="2195331105963583686">ആ സമയത്തിന് ശേഷവും നിങ്ങൾക്ക് <ph name="DEVICE_TYPE" /> ഉപയോഗിക്കാനാവും, എന്നാൽ തുടർന്നങ്ങോട്ട് സ്വയമേവയുള്ള സോഫ്‌റ്റ്‌വെയർ, സുരക്ഷാ അപ്ഡേറ്റുകൾ ലഭിക്കില്ല</translation>
 <translation id="2195729137168608510">ഇമെയില്‍‌ പരിരക്ഷണം</translation>
@@ -4104,6 +4103,7 @@
 <translation id="4900392736118574277">നിങ്ങളുടെ ആരംഭ പേജിനെ <ph name="URL" /> എന്നതിലേക്ക് മാറ്റിയിരിക്കുന്നു.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - മിശ്രമാക്കിയത്</translation>
 <translation id="4900652253009739885">“തിരഞ്ഞെടുക്കുക” പ്രവർത്തനത്തിന് അസൈൻ ചെയ്തിട്ടുള്ള ഏക സ്വിച്ച് നീക്കം ചെയ്യാനാകില്ല. <ph name="RESPONSE" /> എന്നത് ചെയ്യാൻ ഏതെങ്കിലും കീ അമർത്തുക.</translation>
+<translation id="4901154724271753917">അടുത്തിടെ അടച്ചവ വികസിപ്പിക്കുക</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> പരീക്ഷണത്തിന്റെ പരീക്ഷണ നില തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="49027928311173603">സെർവറിൽ നിന്നും ഡൗൺലോഡ് ചെയ്‌ത നയം അസാധുവാണ്: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">നെറ്റ്‌വർക്ക് ഫയൽ പങ്കിടലുകൾ സജ്ജീകരിക്കുക അല്ലെങ്കിൽ മാനേജ് ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
@@ -6994,6 +6994,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" /> എന്നതിന് <ph name="FOLDERNAME" /> എന്ന ഫോൾഡറിലെ ഫയലുകൾ കാണാനാകും</translation>
 <translation id="7768770796815395237">മാറ്റുക</translation>
 <translation id="7768784765476638775">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="7769748505895274502">അടുത്തിടെ അടച്ചവ ചുരുക്കുക</translation>
 <translation id="7770406201819593386">ChromeOS Flex പ്രശ്നനിർണ്ണയ ടെസ്റ്റുകൾ റൺ ചെയ്യുക.</translation>
 <translation id="7770450735129978837">വലത് മൗസ് ക്ലിക്ക്</translation>
 <translation id="7770612696274572992">മറ്റൊരു ഉപകരണത്തിൽ നിന്ന് പകർത്തിയ ചിത്രം</translation>

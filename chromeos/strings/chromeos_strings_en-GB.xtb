@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">History</translation>
 <translation id="1645954272419197032">Please confirm device information</translation>
 <translation id="1662989795263954667">Stopped – out of ink</translation>
+<translation id="1664796644829245314">Preview <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Built-in VPN</translation>
 <translation id="1672499492233627739">Webcam video feed</translation>
 <translation id="1676557873873341166">Taking video</translation>
@@ -118,6 +119,7 @@
 <translation id="1851218745569890714">Video conferencing</translation>
 <translation id="1852934301711881861">Install Chrome OS Flex</translation>
 <translation id="1856388568474281774">Down arrow</translation>
+<translation id="1858620243986915808">Attach screenshot</translation>
 <translation id="1871569928317311284">Turn Dark theme off</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Turn dark mode off</translation>
@@ -797,6 +799,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7978412674231730200">Private key</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7994702968232966508">EAP method</translation>
+<translation id="8018928621986160031">Saved to '<ph name="FILE_LOCATION" />'</translation>
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Enable auto colour mode</translation>

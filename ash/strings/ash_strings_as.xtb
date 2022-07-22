@@ -306,6 +306,7 @@
 <translation id="2805756323405976993">এপ্</translation>
 <translation id="2814448776515246190">আংশিক কেপচাৰ</translation>
 <translation id="2819276065543622893">আপুনি এতিয়া ছাইন আউট হ’ব।</translation>
+<translation id="2822551631199737692">কেমেৰা ব্যৱহাৰ হৈ আছে</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />এ <ph name="SPECIFIED_RESOLUTION" /> সমর্থন নকৰে। ৰিজ’লিউশ্বনটো <ph name="FALLBACK_RESOLUTION" />লৈ সলনি কৰা হৈছে।</translation>
 <translation id="2825619548187458965">শ্বেল্ফ</translation>
 <translation id="2831035692318564937">সূৰ্যোদয় পৰ্যন্ত অন কৰক</translation>
@@ -807,6 +808,7 @@
 <translation id="5682642926269496722">Google Assistant বৰ্তমানৰ ব্যৱহাৰকাৰী একাউণ্টৰ বাবে উপলব্ধ নহয়।</translation>
 <translation id="5689633613396158040">ৰাতিৰ পোহৰে আপোনাৰ স্ক্ৰীনখনলৈ চোৱা অথবা কম পোহৰত পঢ়া সহজ কৰি তোলে। ৰাতিৰ পোহৰ কোন সময়ত অন হয় সেয়া সলনি কৰিবলৈ অথবা এইটো সম্পূর্ণকৈ অফ কৰিবলৈ টিপক।</translation>
 <translation id="5691772641933328258">ফিংগাৰপ্ৰিণ্ট চিনাক্ত কৰিব পৰা নগ’ল</translation>
+<translation id="5693255400847650006">মাইক্ৰ’ফ’ন ব্যৱহাৰ হৈ আছে</translation>
 <translation id="570390244361237317">আটাইবোৰ এপ্‌, আটাইবোৰ এপ্‌ এক্সেছ কৰিবলৈ কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰি নেভিগে’ট কৰক</translation>
 <translation id="5707775774148071965">আপোনাৰ ডিভাইচটোৱে আপোনাৰ কে’বলতকৈ উচ্চ ডেটাৰ হাৰ সমৰ্থন কৰে। ডিভাইচৰ কাৰ্যক্ষমতা সীমিত হ’ব পাৰে।</translation>
 <translation id="5710450975648804523">অসুবিধা নিদিব ম’ড অন হৈ আছে</translation>
@@ -981,6 +983,7 @@
 <translation id="6723839937902243910">পাৱাৰ</translation>
 <translation id="6727969043791803658">সংযোগ কৰা আছে, <ph name="BATTERY_PERCENTAGE" />% বেটাৰী</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /> টা</translation>
+<translation id="6737983188036277605">কেমেৰা আৰু মাইক্ৰ’ফ’ন ব্যৱহাৰ হৈ আছে</translation>
 <translation id="6739144137573853180">ছেটিঙলৈ যাওক</translation>
 <translation id="6751052314767925245">আপোনাৰ প্ৰশাসকে বলৱৎ কৰা</translation>
 <translation id="6751826523481687655">কাৰ্যদক্ষতাৰ ট্ৰেচিং অন কৰা হৈছে</translation>

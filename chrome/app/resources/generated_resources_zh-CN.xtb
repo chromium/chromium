@@ -1277,7 +1277,6 @@
 <translation id="2191754378957563929">已开启</translation>
 <translation id="2192505247865591433">来源：</translation>
 <translation id="2193365732679659387">信任设置</translation>
-<translation id="2194554416429452547">在试用版阶段，Chrome 会探索各种方式来限制网络垃圾、欺诈行为以及网站间共享。Chrome 还会<ph name="ESTIMATE_INTERESTS_LINK" />以供网站用于向您展示广告。您可在设置中管理自己的兴趣。</translation>
 <translation id="2194856509914051091">注意事项</translation>
 <translation id="2195331105963583686">在此之后，您仍能使用此 <ph name="DEVICE_TYPE" />，但它将无法继续自动完成软件更新和安全更新</translation>
 <translation id="2195729137168608510">电子邮件保护</translation>
@@ -4094,6 +4093,7 @@
 <translation id="4900392736118574277">您的启动页已改为 <ph name="URL" />。</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> 赫兹 - 隔行扫描</translation>
 <translation id="4900652253009739885">这是为“选择”操作分配的唯一开关键，因此无法移除。按任意键即可<ph name="RESPONSE" />。</translation>
+<translation id="4901154724271753917">展开“最近关闭的标签页”部分</translation>
 <translation id="4901309472892185668">请为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态。</translation>
 <translation id="49027928311173603">从服务器下载的策略无效：<ph name="VALIDATION_ERROR" />。</translation>
 <translation id="4906490889887219338">设置或管理网络文件共享。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -5271,6 +5271,7 @@
 <translation id="6086846494333236931">这是您的管理员安装的</translation>
 <translation id="6087746524533454243">想要查看浏览器简介页面？请访问</translation>
 <translation id="6087960857463881712">酷炫表情</translation>
+<translation id="6088535503330933227">Chrome 会探索各种方式来限制垃圾广告、欺诈行为以及网站间共享。Chrome 还会<ph name="ESTIMATE_INTERESTS_LINK" />以供网站用于向您展示广告。您可在设置中管理自己的兴趣。</translation>
 <translation id="608912389580139775">若要将此网页添加到您的阅读清单中，请点击“书签”图标</translation>
 <translation id="6091761513005122595">已成功装载共享资源。</translation>
 <translation id="6093888419484831006">正在取消更新...</translation>
@@ -6979,6 +6980,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" /> 将能够查看“<ph name="FOLDERNAME" />”中的文件</translation>
 <translation id="7768770796815395237">更改</translation>
 <translation id="7768784765476638775">随选朗读</translation>
+<translation id="7769748505895274502">收起“最近关闭的标签页”部分</translation>
 <translation id="7770406201819593386">运行 ChromeOS Flex 诊断测试。</translation>
 <translation id="7770450735129978837">用鼠标右键点击</translation>
 <translation id="7770612696274572992">从其他设备复制的图片</translation>

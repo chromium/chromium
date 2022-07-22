@@ -1084,6 +1084,7 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
       Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist die Definition über die Funktion „Schnellinfo“ aktiviert.
       Wenn die Richtlinie deaktiviert ist, ist die Definition über „Schnellinfo“ deaktiviert.</translation>
 <translation id="209586405398070749">Stabiler Kanal</translation>
+<translation id="2096932573113293941">Nutzer um Erlaubnis zum Ausführen von Plug-ins bitten, die eine Autorisierung erfordern</translation>
 <translation id="2098658257603918882">Berichte mit Nutzungs- und Absturzdaten erstellen</translation>
 <translation id="2104418465060359056">Daten von Erweiterungen und Plug-ins erfassen</translation>
 <translation id="2106627642643925514">Hiermit wird der Standardmodus für den PIN-Druck überschrieben. Wenn der Modus nicht verfügbar ist, wird diese Richtlinie ignoriert.</translation>
@@ -1213,6 +1214,7 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 <translation id="2223393221350938149">Ausführung von JavaScript JIT für keine Website zulassen</translation>
 <translation id="2223582957891074498">Wenn die Richtlinie auf "True" gesetzt ist, können keine Screenshots über Tastenkombinationen oder Erweiterungs-APIs aufgenommen werden. Ist sie auf "False" gesetzt, können Screenshots aufgenommen werden.</translation>
 <translation id="2223598546285729819">Standardeinstellung für Benachrichtigungen</translation>
+<translation id="222673035924187991">TLS Encrypted ClientHello aktivieren</translation>
 <translation id="2231726854197443389">Mit dieser Richtlinie wird festgelegt, ob Nutzer den Nur-HTTPS-Modus in den Einstellungen aktivieren können. Über den Nur-HTTPS-Modus werden alle Aufrufe von Websites auf HTTPS umgestellt.
       Wenn diese Einstellung nicht konfiguriert oder auf „Zugelassen“ festgelegt ist, dürfen Nutzer den Nur-HTTPS-Modus aktivieren.
       Ist sie auf „Nicht zugelassen“ festgelegt, dürfen Nutzer den Nur-HTTPS-Modus nicht aktivieren.
@@ -1333,6 +1335,7 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 <translation id="2349117476121456297">Wenn du die Richtlinie auf "True" setzt, führt die oberste Reihe der Tastatur Funktionstastenbefehle aus. Bei gedrückter Suchtaste führt die Tastatur stattdessen wieder Medientastenbefehle aus.
 
       Wenn du die Richtlinie auf "False" setzt oder nicht konfigurieren, führt die Tastatur standardmäßig Medientastenbefehle aus. Bei gedrückter Suchtaste führt die Tastatur Funktionstastenbefehle aus.</translation>
+<translation id="2354439478396602136">App-Empfehlungen im <ph name="PRODUCT_OS_NAME" />-Launcher anzeigen</translation>
 <translation id="2355876547176311490">Nicht zulassen, dass Relayserver vom Host für den Remote-Zugriff verwendet werden können</translation>
 <translation id="2358176879566587521">Diese Richtlinie wurde entfernt. Sie ist mit dieser Version von <ph name="PRODUCT_NAME" /> nicht kompatibel. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a/answer/7643500.</translation>
 <translation id="2362469626417133796">Zeitfenster für Neustart</translation>
@@ -1559,6 +1562,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Nutzer können nicht ändern, in welchem Ordner die Lesezeichen abgelegt werden. Aber sie haben die Möglichkeit, den Ordner in der Lesezeichenleiste auszublenden. Der Standardname des Ordners für verwaltete Lesezeichen lautet "Verwaltete Lesezeichen", kann jedoch angepasst werden. Dazu muss der Richtlinie ein neues untergeordnetes Wörterbuch mit einem einfachen Schlüssel namens "<ph name="TOPLEVEL_NAME" />" hinzugefügt werden, wobei der gewünschte Ordnername der Wert ist. Verwaltete Lesezeichen werden nicht mit dem Nutzerkonto synchronisiert und können nicht von Erweiterungen geändert werden.</translation>
 <translation id="2552966063069741410">Zeitzone</translation>
 <translation id="2555244983262829274">„Home“-Schaltfläche in der Symbolleiste ausblenden</translation>
+<translation id="2562213287271514629">Zulassen, dass veraltete <ph name="FLASH_PLUGIN_NAME" />-Plug-ins als normale <ph name="FLASH_PLUGIN_NAME" />-Plug-ins verwendet werden</translation>
 <translation id="2562339630163277285">Gibt die URL an, die die Suchmaschine für die Bereitstellung von Instant-Ergebnissen verwendet. Die URL sollte den String "<ph name="SEARCH_TERM_MARKER" />" enthalten, der bei der Abfrage durch den Text ersetzt wird, den der Nutzer bisher eingegeben hat.
 
           Diese Richtlinie ist optional. Falls sie nicht festgelegt wird, werden auch keine Instant-Ergebnisse angeboten.
@@ -1603,6 +1607,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2593762551209145088">Safe Browsing ist nie aktiv.</translation>
 <translation id="26023406105317310">Kerberos-Konten konfigurieren</translation>
 <translation id="2604182581880595781">Richtlinien für Netzwerkfreigaben konfigurieren.</translation>
+<translation id="2608039968712973520">Nutzer um Erlaubnis zum Ausführen veralteter <ph name="FLASH_PLUGIN_NAME" />-Plug-ins bitten</translation>
 <translation id="2608535066974278204">Zeitraum (in Minuten), der die Dauer des Zeitfensters für den Neustart angibt.</translation>
 <translation id="2608887839902987727">Verhindern, dass die Captive-Portal-Authentifizierung Proxy-Einstellungen ignoriert</translation>
 <translation id="2608985885792348429">Standardmäßige Einstellung für die Zwischenablage</translation>
@@ -1654,6 +1659,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Diese Richtlinie wurde in M77 entfernt.
       Diese Richtlinie gilt für die Anmeldeseite. Sieh dir auch die Richtlinie "<ph name="SITE_PER_PROCESS_POLICY_NAME" />" für die eigentliche Nutzersitzung an. Es wird empfohlen, für beide Richtlinien denselben Wert festzulegen. Wenn die Werte nicht übereinstimmen, kann es beim Beginn einer Nutzersitzung zu einer Verzögerung kommen, weil der von der Nutzerrichtlinie angegebene Wert erst angewendet werden muss.
       </translation>
+<translation id="2697717608663878828">Test für TLS Encrypted ClientHello aktivieren</translation>
 <translation id="2702023190395322609">Empfehlungen zu Medien aktivieren</translation>
 <translation id="270582584528242502">Keine Warnung anzeigen, wenn der Nutzer versucht, den Browser zu schließen</translation>
 <translation id="2706708761587205154">Drucken nur mit PIN zulassen</translation>
@@ -2248,6 +2254,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="3255762580838224124">Wenn die Richtlinie konfiguriert ist, wird jeder Bildschirm anhand der festgelegten Bildschirmausrichtung gedreht, wenn das Gerät neugestartet oder der Bildschirm nach einer Änderung des Richtlinienwerts zum ersten Mal angeschlossen wird. Nachdem ein Nutzer sich angemeldet hat, kann er die Bildschirmausrichtung auf der Einstellungsseite ändern, sie wird aber nach dem nächsten Neustart zurückgesetzt. Diese Richtlinie gilt sowohl für primäre als auch sekundäre Bildschirme.
 
       Ist die Richtlinie nicht konfiguriert, wird der Standardwert von 0 Grad verwendet und Nutzer können die Bildschirmausrichtung ändern. Die Bildschirmausrichtung wird dann nach dem Neustart nicht zurückgesetzt.</translation>
+<translation id="3258380413685430793">Alle <ph name="FLASH_PLUGIN_NAME" />-Inhalte ausführen</translation>
 <translation id="325883417142483505">Mit dieser Richtlinie kannst du die Liste der URLs für die Unternehmensanmeldung festlegen (nur HTTP- und HTTPS-Protokolle). Der Passwortschutzdienst erfasst auf diesen URLs den Salted-Hash-Wert von Passwörtern und verwendet ihn, um zu prüfen, ob Passwörter wiederverwendet werden. Deine Anmeldeseiten müssen den Richtlinien unter https://www.chromium.org/developers/design-documents/create-amazing-password-forms entsprechen, damit Salted-Hash-Werte von Passwörtern in <ph name="PRODUCT_NAME" /> richtig erfasst werden können.
 
 Ist diese Einstellung deaktiviert oder nicht konfiguriert, erfasst der Passwortschutzdienst die Salted-Hash-Werte von Passwörtern nur unter https://accounts.google.com.
@@ -2316,6 +2323,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
       Hinweis: Weitere Informationen zu Prozessschutzrichtlinien findest du unter https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="3339271789059866414">Konfiguriert die Verfügbarkeit des System-Proxy-Dienstes und die Proxy-Anmeldedaten für Systemdienste.
       Ist diese Richtlinie nicht konfiguriert, ist der System-Proxy-Dienst nicht verfügbar.</translation>
+<translation id="334231891933432876">Nutzer wird abgemeldet, sobald sein Konto nicht mehr authentifiziert ist</translation>
 <translation id="3348799281602260763">Wenn die Richtlinie aktiviert ist, können WebRTC-Peer-Verbindungen ein Downgrade auf veraltete
       Versionen der TLS/DTLS-Protokolle (DTLS 1.0, TLS 1.0 und TLS 1.1) durchführen.
       Wenn sie deaktiviert oder nicht konfiguriert ist, sind diese TLS/DTLS-Versionen
@@ -2358,6 +2366,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
       Wenn diese Richtlinie nicht konfiguriert ist, werden 0 Millisekunden als Zeitlimit verwendet.
 
       Wenn die Richtlinie <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> nicht konfiguriert ist, hat diese Richtlinie keine Auswirkungen.</translation>
+<translation id="3397883909301547525">Keine App-Empfehlungen im Launcher von <ph name="PRODUCT_OS_NAME" /> anzeigen</translation>
 <translation id="3399859571630358395">Deaktivierung von schnellem Pairing (schnellem Bluetooth-Koppeln) erzwingen.</translation>
 <translation id="341285788698114069">Diese Richtlinie steuert die Priorität des Audioprozesses unter Windows.
       Wenn diese Richtlinie aktiviert ist, wird der Audioprozess mit einer Priorität ausgeführt, die über der normalen liegt.
@@ -2436,6 +2445,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
       Die Verfügbarkeit dieser Funktion hängt außerdem von den entsprechenden Nutzerrichtlinien ab.</translation>
 <translation id="3495602011142234826">Wird die Richtlinie auf „true“ gesetzt, kann die Erweiterung alle Schlüssel nutzen, die für die geschäftliche Nutzung bestimmt sind, um beliebige Daten zu signieren. Ist sie auf „false“ gesetzt, können solche Schlüssel nicht verwendet werden, und Nutzer können auch keine entsprechende Berechtigung gewähren. Die einzige Ausnahme ist, dass eine Erweiterung genau einmal auf einen solchen Schlüssel zugreifen kann, sofern die Erweiterung selbst diesen Schlüssel erzeugt hat.</translation>
 <translation id="3496296378755072552">Passwortmanager</translation>
+<translation id="3496761649331792755">Lesezeichenleiste aktivieren</translation>
 <translation id="3498109920669229084">Wenn die Richtlinie konfiguriert ist, wird festgelegt, welche Erweiterungen nicht von der Sperrliste betroffen sind.
 
        Der Wert "<ph name="ALL_EXTENSIONS" />" in der Sperrliste gibt an, dass alle Erweiterungen gesperrt sind und Nutzer nur die in der Zulassungsliste angegebenen Erweiterungen installieren können.
@@ -3260,6 +3270,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="449423975179525290">Richtlinien für <ph name="PLUGIN_VM_NAME" /> konfigurieren.</translation>
 <translation id="449784980858429908">Websites automatisch die Berechtigung erteilen, eine Verbindung zu allen seriellen Ports herzustellen.</translation>
 <translation id="450080746522343150">Alle Downloads blockieren.</translation>
+<translation id="45036050223225148">Test für Encrypted ClientHello deaktivieren</translation>
 <translation id="4508728400492074981">Hiermit werden die Richtlinien für die Funktion „First-Party-Sets“ gesteuert.</translation>
 <translation id="4510923771103268849">Nutzer hat Root-Zugriff auf Crostini-Container</translation>
 <translation id="4512407512989846472">Gestattet das Blockieren von Kopiervorgängen in die Zwischenablage auf bestimmten URLs</translation>
@@ -3296,6 +3307,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
       Wenn die Richtlinie nicht konfiguriert ist, kann der Nutzer beliebige auf dem System installierte Plug-ins deaktivieren.</translation>
 <translation id="4549405078915181477">„Bildschirmzeit“ für Websites aktivieren</translation>
 <translation id="4554651132977135445">Loopback-Verarbeitungsmodus der Nutzerrichtlinien</translation>
+<translation id="4554991346503872538">Nie Übersetzung anbieten</translation>
 <translation id="4555850956567117258">Remote-Bescheinigung (Remote Attestation) für den Nutzer aktivieren</translation>
 <translation id="4557134566541205630">Standardsuchanbieter-URL für die "Neuer Tab"-Seite</translation>
 <translation id="4558166110367609724">Überspringt automatisch die Nutzungsbedingungen und lädt den Browser.</translation>
@@ -3739,6 +3751,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="5109383437323376357">Die Verfügbarkeit von Variationen bestimmen</translation>
 <translation id="5124368997194894978">Starten bei anliegender Netzspannung aktivieren</translation>
 <translation id="5130213897914754028">Websites die Nutzung von „SharedArrayBuffers“ nicht erlauben</translation>
+<translation id="5130935469849337738">Übersetzung immer anbieten</translation>
 <translation id="5141670636904227950">Standardtyp für die Lupe festlegen, die auf der Anmeldeseite aktiviert ist</translation>
 <translation id="5142301680741828703">Folgende URL-Muster immer in <ph name="PRODUCT_FRAME_NAME" /> darstellen</translation>
 <translation id="5143258831402123447">Onlinerecherchen sind nicht unter chrome://history/journeys sichtbar.</translation>
@@ -3871,6 +3884,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 
 Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> gesetzt ist, kann dieses Konto nur als primäres Konto angemeldet werden. Eine Anmeldung als sekundäres Konto ist dann nicht zulässig.</translation>
 <translation id="523505283826916779">Einstellungen für Bedienungshilfen</translation>
+<translation id="5238275681097851753">Sperren bestimmter <ph name="FLASH_PLUGIN_NAME" />-Inhalte zulassen</translation>
 <translation id="5238976843489093540">Aktivierung von schnellem Pairing (schnellem Bluetooth-Koppeln) erzwingen.</translation>
 <translation id="52393120393725840">Wenn die Richtlinie aktiviert ist, können Nutzer einstellen, dass <ph name="PRODUCT_NAME" /> Passwörter speichert und sie bei der nächsten Anmeldung auf einer Website bereitstellt.
 
@@ -3937,6 +3951,7 @@ Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_
 
       Wenn die Richtlinie nicht konfiguriert ist, können Nutzer das Dinosaurierspiel nicht auf registrierten <ph name="PRODUCT_OS_NAME" />-Geräten spielen, auf anderen aber schon.</translation>
 <translation id="529457411593078576">Nutzungsbedingungen während der ersten Ausführung für CCT aktivieren</translation>
+<translation id="5297948043665200363">Nutzer kann angemeldet bleiben, wenn sein Konto nicht mehr authentifiziert ist</translation>
 <translation id="5298949392804966105">Keine Einschränkungen für verwaltete Konten</translation>
 <translation id="530134925949808452">Zeitpunkt (in Ortszeit), an dem das Nutzungskontingent erneuert wird.</translation>
 <translation id="5303080953475303561">Mit dieser Richtlinie kannst du festlegen, wie oft auf dem Sperrbildschirm das Passwort zum schnellen Entsperren angefordert wird. Immer dann, wenn der Sperrbildschirm angezeigt wird und die letzte Passworteingabe vor dem über den ausgewählten Wert festgelegten Zeitfenster liegt, steht schnelles Entsperren nicht zur Verfügung. Wenn Nutzer auf dem Sperrbildschirm bleiben, bis diese Zeit abgelaufen ist, wird das nächste Mal, wenn sie einen falschen Code eingeben oder wieder auf den Sperrbildschirm gelangen, ein Passwort angefordert, je nachdem, welche Situation zuerst eintritt.
@@ -4525,6 +4540,13 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 
       Für <ph name="MS_WIN_NAME" /> oder <ph name="MAC_OS_NAME" /> gilt diese Richtlinie nur, wenn <ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME" /> ebenfalls aktiviert ist.</translation>
 <translation id="5932767795525445337">Diese Richtlinie kann auch verwendet werden, um Android-Apps anzupinnen.</translation>
+<translation id="5936193585187054065">Encrypted ClientHello (ECH) ist eine Erweiterung für TLS, um vertrauliche Felder von ClientHello zu verschlüsseln und den Datenschutz zu verbessern.
+
+      Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, folgt <ph name="PRODUCT_NAME" /> dem standardmäßigen Einführungsprozess für ECH. Ist die Richtlinie deaktiviert, wird ECH von <ph name="PRODUCT_NAME" /> nicht aktiviert.
+
+      Wenn die Funktion aktiviert ist, kann <ph name="PRODUCT_NAME" /> je nach Serversupport, Verfügbarkeit des HTTPS-DNS-Eintrags oder Einführungsstatus ECH verwenden.
+
+      ECH ist ein Protokoll, das ständig weiterentwickelt wird. Die Implementierung von <ph name="PRODUCT_NAME" /> kann sich also ändern. Diese Richtlinie ist daher eine vorübergehende Maßnahme, um die ursprüngliche experimentelle Implementierung zu steuern. Sie wird durch eine endgültige Lösung ersetzt, wenn die Entwicklung des Protokolls abgeschlossen ist.</translation>
 <translation id="5939656968921014919">Entwicklermodus für isolierte Apps deaktivieren</translation>
 <translation id="5945312246863177268">Verhindert, dass Nutzer auf eine Phone Hub-Benachrichtigung klicken, um die App „Eche“ zu starten.</translation>
 <translation id="5946082169633555022">Beta-Kanal</translation>
@@ -5126,6 +5148,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
           Sie hindert Unternehmensadministratoren nicht daran, eine Verbindung zu verwalteten <ph name="PRODUCT_OS_NAME" />-Geräten herzustellen.
 
           Diese Richtlinie ist nicht wirksam, wenn sie aktiviert, leer gelassen oder nicht konfiguriert wird.</translation>
+<translation id="6583249367505445969">Lesezeichenleiste deaktivieren</translation>
 <translation id="6584541828182430328">Anzeige von Vollbild-Warnung deaktivieren</translation>
 <translation id="6593350713192882944">„Schnellinfo“ aktivieren</translation>
 <translation id="6594372503585248865">Benutzeroberflächen im Zusammenhang mit der Verbindung auf dem Remote-Host-Desktop während einer aktiven Verbindung aktivieren</translation>
@@ -5601,6 +5624,7 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 <translation id="7040229947030068419">Beispielwert</translation>
 <translation id="7044883996351280650">Android-Dienst "Sicherung und Wiederherstellung" konfigurieren</translation>
 <translation id="7047495632846973438">Gibt an, ob die Richtlinie für Berechtigungen zur Display-Erfassung ausgewählt ist oder übersprungen wird.</translation>
+<translation id="7055022222176591388">Veraltete <ph name="FLASH_PLUGIN_NAME" />-Plug-ins nicht zulassen</translation>
 <translation id="7066292150801784098">Nicht zulassen, dass Remote-Nutzer bei der Remote-Unterstützung mit Administratorfenstern interagieren können</translation>
 <translation id="706669471845501145">Anzeige von Desktop-Benachrichtigungen durch Websites zulassen</translation>
 <translation id="70681795425744184">Nicht zulassen, dass CRD WebAuthn API-Anfragen ausführt, die von einem Remote-Host über einen Proxy weitergeleitet werden.</translation>
@@ -6741,9 +6765,6 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
 <translation id="8295496526151576383">Diese Richtlinie gibt die Erweiterungen an, die den Dialog zur Bestätigung des Druckauftrags überspringen dürfen, wenn die <ph name="PRINTING_API" />-Funktion "<ph name="SUBMIT_JOB_FUNCTION" />" zum Senden eines Druckauftrags verwendet wird.
 
       Steht eine Erweiterung nicht auf der Liste oder ist die Liste nicht konfiguriert, wird dem Nutzer für jeden Aufruf von "<ph name="SUBMIT_JOB_FUNCTION" />" der Bestätigungsdialog für den Druckauftrag angezeigt.</translation>
-<translation id="829641334878002866">Diese Richtlinie ermöglicht, den Zeitraum zwischen der ersten Benachrichtigung zum Neustart eines <ph name="PRODUCT_OS_NAME" />-Geräts, um eine ausstehende Aktualisierung anzuwenden, und dem Ende des durch die Richtlinie "<ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />" vorgegebenen Zeitraums in Millisekunden festzulegen.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt für <ph name="PRODUCT_OS_NAME" />-Geräte der standardmäßige Zeitraum von 259.200.000 Millisekunden (drei Tage).</translation>
 <translation id="829703642501504476">Wenn für diese Richtlinie "True" festgelegt ist, verwendet <ph name="PRODUCT_NAME" /> alternative Fehlerseiten (z. B. "Seite nicht gefunden"). Wenn für diese Richtlinie "False" festgelegt ist, verwendet <ph name="PRODUCT_NAME" /> niemals alternative Fehlerseiten.
 
       Wenn du diese Richtlinie konfigurierst, können Nutzer sie nicht ändern. Wird die Richtlinie nicht konfiguriert, ist sie aktiviert, aber Nutzer können die Einstellung ändern.</translation>
@@ -7432,6 +7453,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Falls die Richtlinie nicht konfiguriert oder der Wert nicht mit einem Quick-Fix-Build verknüpft ist, wird das Gerät nicht auf einen Quick-Fix-Build aktualisiert. Wenn auf dem Gerät bereits ein Quick-Fix-Build installiert ist und die Richtlinie nicht mehr konfiguriert oder der Wert nicht mehr mit einem Quick-Fix-Build verknüpft ist, wird das Gerät auf einen regulären Build aktualisiert, sofern die Aktualisierung nicht durch eine andere Richtlinie blockiert wird.</translation>
 <translation id="9051019223077908578">Liste der installierten Apps und Erweiterungen auf dem Anmeldebildschirm konfigurieren</translation>
+<translation id="9053841574218808519">Plug-ins, die nicht veraltet sind, immer ausführen</translation>
 <translation id="9055866143096316150">Bildschirm-Wakelock-Anfragen auf den Status von System-Wakelocks zurückstufen</translation>
 <translation id="9057444687284972605">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen und so angeben, für welche Websites auf dem Anmeldebildschirm im Frame, in dem der SAML-Flow gehostet wird, automatisch ein Clientzertifikat ausgewählt wird, wenn die Website ein Zertifikat anfordert. Zum Beispiel kann damit ein geräteübergreifendes Zertifikat konfiguriert werden, das dem SAML-IdP präsentiert wird.
 

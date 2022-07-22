@@ -1294,7 +1294,6 @@
 <translation id="2191754378957563929">ເປີດ</translation>
 <translation id="2192505247865591433">ຈາກ:</translation>
 <translation id="2193365732679659387">ການຕັ້ງຄ່າການເຊື່ອຖື</translation>
-<translation id="2194554416429452547">ໃນລະຫວ່າງການທົດລອງໃຊ້, Chrome ກຳລັງສຳຫຼວດວິທີຈຳກັດສະແປມ, ການສໍ້ໂກງ ແລະ ການແບ່ງປັນລະຫວ່າງເວັບໄຊ. ນອກຈາກນັ້ນ, Chrome ຍັງ <ph name="ESTIMATE_INTERESTS_LINK" /> ນຳ ເຊິ່ງເວັບໄຊສາມາດໃຊ້ເພື່ອສະແດງໂຄສະນາໃຫ້ທ່ານເຫັນໄດ້. ທ່ານສາມາດຈັດການຄວາມສົນໃຈຂອງທ່ານໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="2194856509914051091">ສິ່ງທີ່ຕ້ອງພິຈາລະນາ</translation>
 <translation id="2195331105963583686">ທ່ານຈະຍັງສາມາດໃຊ້ <ph name="DEVICE_TYPE" /> ນີ້ໄດ້ຄືເກົ່າຫຼັງຈາກເວລານັ້ນ, ແຕ່ມັນຈະບໍ່ໄດ້ຮັບການອັບເດດຊອບແວ ແລະ ຄວາມປອດໄພໂດຍອັດຕະໂນມັດ</translation>
 <translation id="2195729137168608510">ການປົກປ້ອງອີເມວ</translation>
@@ -4121,6 +4120,7 @@
 <translation id="4900392736118574277">ໜ້າເລີ່ມຕົ້ນຂອງທ່ານໄດ້ຖືກປ່ຽນເປັນ <ph name="URL" /> ແລ້ວ.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - ອິນເຕີເລດ</translation>
 <translation id="4900652253009739885">ບໍ່ສາມາດລຶບສະວິດທີ່ມອບໝາຍໃຫ້ “ເລືອກ” ຢ່າງດຽວອອກໄດ້. ກະລຸນາກົດປຸ່ມໃດກໍໄດ້ເພື່ອ <ph name="RESPONSE" />.</translation>
+<translation id="4901154724271753917">ຂະຫຍາຍແຖບທີ່ປິດໄປຫຼ້າສຸດ</translation>
 <translation id="4901309472892185668">ເລືອກສະຖານະການທົດລອງສຳລັບການທົດລອງ <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">ນະ​ໂຍ​ບາຍທີ່ດາວໂຫຼດຈາກເຊີບເວີໃຊ້ບໍ່ໄດ້: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">ຕັ້ງຄ່າ ຫຼື ຈັດການການແບ່ງປັນໄຟລ໌ຜ່ານເຄືອຂ່າຍ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
@@ -7008,6 +7008,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" /> ຈະສາມາດເບິ່ງໄຟລ໌ໃນ <ph name="FOLDERNAME" /> ໄດ້</translation>
 <translation id="7768770796815395237">ປ່ຽນ</translation>
 <translation id="7768784765476638775">ເລືອກເພື່ອເວົ້າ</translation>
+<translation id="7769748505895274502">ຫຍໍ້ແຖບທີ່ປິດໄປຫຼ້າສຸດລົງ</translation>
 <translation id="7770406201819593386">ເອີ້ນໃຊ້ການທົດສອບການວິນິໄສ ChromeOS Flex.</translation>
 <translation id="7770450735129978837">ຄລິກເມົ້າຂວາ</translation>
 <translation id="7770612696274572992">ສຳເນົາຮູບຈາກອຸປະກອນອື່ນແລ້ວ</translation>

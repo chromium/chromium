@@ -1296,7 +1296,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2191754378957563929">Күйүк</translation>
 <translation id="2192505247865591433">Кимден:</translation>
 <translation id="2193365732679659387">Ишеним жөндөөлөрү</translation>
-<translation id="2194554416429452547">Сыноо версияларында Chrome cпам, шылуундук жана сайттардын арасында маалымат бөлүшүү аракеттерин чектөө жолдорун изилдейт. Ошондой эле, Chrome сайттар жарнамаларды көрсөтүү үчүн колдоно турган <ph name="ESTIMATE_INTERESTS_LINK" />. Кызыккан нерселериңизди параметрлерден башкара аласыз.</translation>
 <translation id="2194856509914051091">Эске ала турган нерселер</translation>
 <translation id="2195331105963583686">Андан кийин деле <ph name="DEVICE_TYPE" /> түзмөгүн колдоно бересиз, бирок андагы программа менен коопсуздук жаңыртуулары автоматтык түрдө алынбайт</translation>
 <translation id="2195729137168608510">Электрондук почтаны коргоо</translation>
@@ -3281,6 +3280,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4077919383365622693"><ph name="SITE" /> сайты сактаган бардык маалымат менен cookie файлдары өчүрүлөт.</translation>
 <translation id="4078738236287221428">Агрессивдүү</translation>
 <translation id="4079140982534148664">Жакшыртылган орфографиялык текшерүү функциясын колдонуу</translation>
+<translation id="4081203444152654304"><ph name="VISUAL_SEARCH_PROVIDER" /> аркылуу сүрөттүн ичинен издөө</translation>
 <translation id="4081242589061676262">Файлды тышкы экранга чыгаруу мүмкүн эмес.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> телефонуңузга билдирме жөнөттү. Сиз экениңизди ырастоо үчүн ал жердеги кадамдарды аткарыңыз.</translation>
 <translation id="4084682180776658562">Кыстарма</translation>
@@ -3676,6 +3676,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4476590490540813026">Спортчу айым</translation>
 <translation id="4476659815936224889">Бул кодду телефонуңуздагы QR сканери же камера колдонмолорунун бирөө менен скандаңыз.</translation>
 <translation id="4477015793815781985">Ctrl, Alt же ⌘ камтылсын</translation>
+<translation id="4477379360383751882"><ph name="VISUAL_SEARCH_PROVIDER" /> аркылуу сүрөттүн ичинен издөө</translation>
 <translation id="4478664379124702289">Шил&amp;темени төмөнкүдөй сактоо…</translation>
 <translation id="4479424953165245642">Киоск колдонмолорун башкаруу</translation>
 <translation id="4479639480957787382">Ethernet</translation>

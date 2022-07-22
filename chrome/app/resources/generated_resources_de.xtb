@@ -1281,7 +1281,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2191754378957563929">An</translation>
 <translation id="2192505247865591433">von</translation>
 <translation id="2193365732679659387">Vertrauenseinstellungen</translation>
-<translation id="2194554416429452547">Während Tests sucht Chrome nach Möglichkeiten, Spam, Betrug und die Datenweitergabe zwischen Websites einschränken. Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, die von anderen Websites dazu verwendet werden können, dir Werbung zu zeigen. Du kannst deine Interessen in den Einstellungen verwalten.</translation>
 <translation id="2194856509914051091">Wichtige Punkte</translation>
 <translation id="2195331105963583686">Du kannst dieses Gerät (<ph name="DEVICE_TYPE" />) auch danach verwenden, erhältst jedoch keine automatischen Software- und Sicherheitsupdates mehr</translation>
 <translation id="2195729137168608510">E-Mail-Schutz</translation>
@@ -3263,6 +3262,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4077919383365622693">Alle von <ph name="SITE" /> gespeicherten Daten und Cookies werden gelöscht.</translation>
 <translation id="4078738236287221428">Aggressiv</translation>
 <translation id="4079140982534148664">Erweiterte Rechtschreibprüfung verwenden</translation>
+<translation id="4081203444152654304">Mit <ph name="VISUAL_SEARCH_PROVIDER" /> im Bild suchen</translation>
 <translation id="4081242589061676262">Datei kann nicht gestreamt werden.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> hat eine Benachrichtigung an dein Smartphone gesendet. Folge den darin beschriebenen Schritten, um deine Identität zu bestätigen.</translation>
 <translation id="4084682180776658562">Lesezeichen</translation>
@@ -3658,6 +3658,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4476590490540813026">Athletin</translation>
 <translation id="4476659815936224889">Du kannst eine QR-Scanner-App oder bestimmte Kamera-Apps auf deinem Smartphone verwenden, um diesen Code zu scannen.</translation>
 <translation id="4477015793815781985">Verwende Strg, Alt oder ⌘</translation>
+<translation id="4477379360383751882">Mit <ph name="VISUAL_SEARCH_PROVIDER" /> im Bild suchen</translation>
 <translation id="4478664379124702289">Lin&amp;k speichern unter...</translation>
 <translation id="4479424953165245642">Kioskanwendungen verwalten</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -5281,6 +5282,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6086846494333236931">Von deinem Administrator installiert</translation>
 <translation id="6087746524533454243">Suchst du die Seite „Über den Browser“? Gehe zu</translation>
 <translation id="6087960857463881712">Cooles Gesicht</translation>
+<translation id="6088535503330933227">Chrome sucht nach Möglichkeiten, Anzeigenspam, Betrug und die Datenweitergabe zwischen Websites einzuschränken. Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, die von anderen Websites dazu verwendet werden können, dir Werbung zu zeigen. Du kannst deine Interessen in den Einstellungen verwalten.</translation>
 <translation id="608912389580139775">Wenn du deiner Leseliste diese Seite hinzufügen möchtest, klicke auf das Lesezeichensymbol</translation>
 <translation id="6091761513005122595">Freigabe wurde erfolgreich bereitgestellt.</translation>
 <translation id="6093888419484831006">Aktualisierung wird abgebrochen...</translation>

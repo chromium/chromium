@@ -1285,7 +1285,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2191754378957563929">Activé</translation>
 <translation id="2192505247865591433">De :</translation>
 <translation id="2193365732679659387">Paramètres de confiance</translation>
-<translation id="2194554416429452547">Lors des essais, Chrome étudie différents moyens de limiter le spam, la fraude et le partage entre les sites. En outre, Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> que les sites peuvent utiliser pour vous proposer des annonces. Vous pouvez gérer vos centres d'intérêt dans les paramètres.</translation>
 <translation id="2194856509914051091">Éléments à prendre en compte</translation>
 <translation id="2195331105963583686">Vous pourrez toujours utiliser cet appareil <ph name="DEVICE_TYPE" /> par la suite, mais il ne recevra plus de mises à jour logicielles et de sécurité automatiques</translation>
 <translation id="2195729137168608510">Protection du courrier électronique</translation>
@@ -4107,6 +4106,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4900392736118574277">Votre page de démarrage a été remplacée par <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz (entrelacé)</translation>
 <translation id="4900652253009739885">Impossible de supprimer l'unique contacteur associé à "Sélectionner". Appuyez sur une touche pour <ph name="RESPONSE" />.</translation>
+<translation id="4901154724271753917">Développer "Récemment fermés"</translation>
 <translation id="4901309472892185668">Sélectionnez l'état du test pour <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">La règle téléchargée depuis le serveur n'est pas valide : <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Configurer ou gérer des partages de fichiers en réseau. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -5288,6 +5288,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6086846494333236931">Installée par votre administrateur</translation>
 <translation id="6087746524533454243">Vous recherchez des informations à propos du navigateur ? Accédez à la page</translation>
 <translation id="6087960857463881712">Visage "Génial"</translation>
+<translation id="6088535503330933227">Chrome étudie différents moyens de limiter le spam publicitaire, la fraude et le partage entre les sites. En outre, Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> que les sites peuvent utiliser pour vous proposer des annonces. Vous pouvez gérer vos centres d'intérêt dans les paramètres.</translation>
 <translation id="608912389580139775">Pour ajouter cette page à votre liste de lecture, cliquez sur l'icône Ajouter aux favoris</translation>
 <translation id="6091761513005122595">Le partage a bien été installé.</translation>
 <translation id="6093888419484831006">Annulation de la mise à jour...</translation>
@@ -6998,6 +6999,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7768526219335215384"><ph name="ORIGIN" /> pourra consulter les fichiers du dossier <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Modifier</translation>
 <translation id="7768784765476638775">Sélectionner pour prononcer</translation>
+<translation id="7769748505895274502">Réduire "Récemment fermés"</translation>
 <translation id="7770406201819593386">Exécuter des tests de diagnostic Chrome OS Flex.</translation>
 <translation id="7770450735129978837">Clic droit de la souris</translation>
 <translation id="7770612696274572992">Image copiée depuis un autre appareil</translation>

@@ -329,6 +329,7 @@
 <translation id="3775743491439407556">ছিংক কৰা সুবিধাটোৱে কাম কৰা নাই</translation>
 <translation id="3779810277399252432">ইণ্টাৰনেট সংযোগ নাই।</translation>
 <translation id="3783017676699494206">ছবি ছেভ কৰক</translation>
+<translation id="3789294999358192700">তলৰ এই পদক্ষেপসমূহ অনুসৰণ কৰক:</translation>
 <translation id="3789841737615482174">ইনষ্টল কৰক</translation>
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803696231112616155">এই ছাইটটো অনুবাদ কৰাৰ প্ৰস্তাৱ দিয়ক</translation>
@@ -624,7 +625,6 @@
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> অনুবাদ কৰাৰ প্ৰস্তাৱ দিয়ক</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" />ক আনফ’ল’ কৰিলে</translation>
 <translation id="6293101329759844770">সুৰক্ষিত ব্ৰাউজিং অন কৰিবলৈ <ph name="BEGIN_LINK" />Google সেৱা<ph name="END_LINK" /> খোলক আৰু সুৰক্ষিত ব্ৰাউজিঙত টিপক।</translation>
-<translation id="6294610283659775533">আপুনি একেটা Google একাউণ্টৰ জৰিয়তে ছাইন ইন কৰি থোৱা ডিভাইচসমূহৰ মাজত টেব পঠিয়াব পাৰে</translation>
 <translation id="6321526113093607004">বুকমাৰ্কত যোগ দিয়ক</translation>
 <translation id="6324669097367352121">ছাইন ইন কৰাৰ ছেটিং</translation>
 <translation id="6337234675334993532">এনক্ৰিপশ্বন</translation>
@@ -942,6 +942,7 @@
 <translation id="8870413625673593573">শেহতীয়াকৈ বন্ধ কৰা</translation>
 <translation id="8876882697946675716">আপোনাৰ ডিভাইচসমূহ ছিংক কৰি ৰাখক</translation>
 <translation id="8881801611828450202">এই প্ৰতিচ্ছবিটোৰ কাৰণে <ph name="SEARCH_ENGINE" />ত সন্ধান কৰক</translation>
+<translation id="8891935667620843985">আপুনি Chromeক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ এপ্‌ বনাই তাত স্বয়ংক্ৰিয়ভাৱে লিংকসমূহ খুলিব পাৰে।</translation>
 <translation id="8898822736010347272">নতুন ভাবুকিবোৰ বিচাৰি পোৱাত আৰু ৱেবত থকা সকলোকে সুৰক্ষিত কৰাত সহায় কৰিবলৈ আপুনি চোৱা কিছুমান পৃষ্ঠাৰ URLসমূহ, সীমিত ছিষ্টেমৰ তথ্য আৰু কিছুমান পৃষ্ঠাৰ সমল Googleলৈ পঠিয়ায়।</translation>
 <translation id="8909135823018751308">শ্বেয়াৰ কৰক…</translation>
 <translation id="8917490105272468696">হয়, মই সন্মত</translation>

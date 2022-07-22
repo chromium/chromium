@@ -306,6 +306,7 @@
 <translation id="2805756323405976993">Апликации</translation>
 <translation id="2814448776515246190">Делумно снимање</translation>
 <translation id="2819276065543622893">Сега ќе бидете одјавени.</translation>
+<translation id="2822551631199737692">Камерата е во употреба</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не поддржува <ph name="SPECIFIED_RESOLUTION" />. Резолуцијата е сменета во <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Полица</translation>
 <translation id="2831035692318564937">Вклучено до изгрејсонце</translation>
@@ -808,6 +809,7 @@
 <translation id="5682642926269496722">„Помошникот на Google“ не е достапен за тековната корисничка сметка.</translation>
 <translation id="5689633613396158040">„Ноќно светло“ го олеснува гледањето во екранот или читањето при слаба светлина. Допрете за да го промените времето на вклучување на „Ноќно светло“ или исклучете го целосно.</translation>
 <translation id="5691772641933328258">Отпечатокот не е препознаен</translation>
+<translation id="5693255400847650006">Микрофонот е во употреба</translation>
 <translation id="570390244361237317">Сите апликации, користете ги стрелките за да пристапувате до сите апликации</translation>
 <translation id="5707775774148071965">Вашиот уред поддржува поголем проток на податоци отколку кабелот. Изведбата на уредот може да биде ограничена.</translation>
 <translation id="5710450975648804523">Вклучено е „Не вознемирувај“</translation>
@@ -982,6 +984,7 @@
 <translation id="6723839937902243910">Енергија</translation>
 <translation id="6727969043791803658">Поврзан, <ph name="BATTERY_PERCENTAGE" /> % батерија</translation>
 <translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Камерата и микрофонот се во употреба</translation>
 <translation id="6739144137573853180">ОДИ ВО ПОСТАВКИ</translation>
 <translation id="6751052314767925245">Наметнато од администраторот</translation>
 <translation id="6751826523481687655">Следењето на изведбата е вклучено</translation>

@@ -27,6 +27,7 @@
 <translation id="1111021433905331574">你可以在「設定」&gt;「<ph name="APP_TITLE" />」中變更鍵盤背光的顏色</translation>
 <translation id="112308213915226829">自動隱藏檔案櫃</translation>
 <translation id="1142002900084379065">最近的相片</translation>
+<translation id="114451698114044150">自動放大功能已開啟。</translation>
 <translation id="1148499908455722006">開啟「<ph name="USER_NAME" />」的資訊對話方塊</translation>
 <translation id="1150989369772528668">日曆</translation>
 <translation id="1153356358378277386">配對裝置</translation>
@@ -448,6 +449,7 @@
 <translation id="3593039967545720377">按下 <ph name="SHORTCUT_KEY_NAME" /> + V 鍵查看剪貼簿，藉此存取剪貼簿歷史記錄。複製任一項目即可開始。</translation>
 <translation id="3593646411856133110">向上滑動並按住螢幕即可查看開啟的應用程式</translation>
 <translation id="3595596368722241419">電池已充滿</translation>
+<translation id="3600061223661453002">關閉</translation>
 <translation id="3604801046548457007">已建立桌面 <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">已連接點字顯示器。</translation>
 <translation id="3615926715408477684">如果啟用行動數據，藍牙功能也會一併開啟</translation>
@@ -964,6 +966,7 @@
 <translation id="6637729079642709226">變更時間</translation>
 <translation id="6641720045729354415">切換即時字幕。<ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">復原依名稱排列順序</translation>
+<translation id="6649641931981131786">調整攝影機，讓自己保持在畫面中央。</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 要求確認你的身分</translation>
 <translation id="6650933572246256093">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限，請在裝置上輸入此密碼金鑰：<ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">密碼</translation>
@@ -1004,6 +1007,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{剩餘一個位數}other{剩餘 # 個位數}}</translation>
 <translation id="6867938213751067702">已暫停下載 <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">已關閉快速鍵功能</translation>
+<translation id="6878709625737492815">自動放大功能已關閉。</translation>
 <translation id="6884665277231944629">返回今天</translation>
 <translation id="6886172995547742638">你的「<ph name="DEVICE_TYPE" />」可能會有效能低落的問題。請使用 <ph name="PREFERRED_MINIMUM_POWER" /> 瓦以上且符合標準的 USB-C 電源變壓器。</translation>
 <translation id="688631446150864480">按下向下鍵即可切換視窗</translation>
@@ -1083,6 +1087,7 @@
 <translation id="7378203170292176219">拖曳選取要錄影的區域</translation>
 <translation id="7378594059915113390">媒體控制項</translation>
 <translation id="7378889811480108604">省電模式已關閉</translation>
+<translation id="7382680553121047388">開啟</translation>
 <translation id="7384028040782072252">在任一處按一下滑鼠右鍵，即可將應用程式重新排序</translation>
 <translation id="7392563512730092880">你稍後可以隨時前往「設定」頁面進行設定。</translation>
 <translation id="7405710164030118432">如要將這部裝置解鎖，請輸入你的 Family Link 家長存取碼</translation>
@@ -1165,6 +1170,7 @@
 <translation id="7868900307798234037">指紋辨識成功，正在解鎖</translation>
 <translation id="7872195908557044066">管理員正在重設 eSIM 卡，請稍候片刻。</translation>
 <translation id="7872786842639831132">關閉</translation>
+<translation id="7875280185395705476">自動放大</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> 的藍牙功能似乎已關閉。請開啟藍牙功能，才能使用 Phone Hub。</translation>
 <translation id="7877557217297072640">{0,plural, =0{立即將裝置復原為較舊的版本}=1{在 1 秒內將裝置復原為較舊的版本}other{在 # 秒內將裝置復原為較舊的版本}}</translation>
 <translation id="7886169021410746335">調整隱私權設定</translation>
@@ -1285,6 +1291,7 @@
 <translation id="856298576161209842"><ph name="MANAGER" /> 建議你更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">通知設定</translation>
 <translation id="857201607579416096">已將選單移至畫面右下角。</translation>
+<translation id="8576288697319745668">切換自動放大功能。<ph name="STATE_TEXT" /></translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">依名稱或顏色將應用程式排序</translation>
 <translation id="8614517853887502247">檢視防護功能已開啟，因此系統隱藏了 <ph name="APP_1_TITLE" /> 和 <ph name="APP_2_TITLE" /> 的通知</translation>

@@ -6827,9 +6827,6 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
 <translation id="8295496526151576383">Esta política especifica las extensiones que pueden saltarse el cuadro de diálogo de confirmación de trabajo de impresión cuando usen la función de <ph name="PRINTING_API" /> <ph name="SUBMIT_JOB_FUNCTION" /> para enviar un trabajo de impresión.
 
       Si la lista no se ha configurado o una extensión no está incluida en ella, se mostrará al usuario el cuadro de diálogo de confirmación de trabajo de impresión para cada llamada de función de <ph name="SUBMIT_JOB_FUNCTION" />.</translation>
-<translation id="829641334878002866">Permite definir el periodo (en milisegundos) que transcurre entre la primera notificación que avisa de que un dispositivo <ph name="PRODUCT_OS_NAME" /> debe reiniciarse para aplicar una actualización pendiente y la finalización del periodo especificado en la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />.
-
-      Si no se asigna ningún valor a esta política, se usará el periodo predeterminado de 259.200.000 milisegundos (tres días) para los dispositivos <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="829703642501504476">Si se asigna el valor "True" a esta política, <ph name="PRODUCT_NAME" /> usará páginas de error alternativas que vienen incorporadas (como "No se encuentra la página"). Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> nunca usará páginas de error alternativas.
 
       Si se configura la política, los usuarios no podrán cambiarla. Si no se configura, la política estará activada, pero los usuarios podrán cambiar esta opción.</translation>

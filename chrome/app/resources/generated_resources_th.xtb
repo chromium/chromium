@@ -1284,7 +1284,6 @@
 <translation id="2191754378957563929">เปิด</translation>
 <translation id="2192505247865591433">จาก:</translation>
 <translation id="2193365732679659387">การตั้งค่าความเชื่อถือ</translation>
-<translation id="2194554416429452547">ระหว่างช่วงทดลองใช้ Chrome จะสำรวจวิธีจำกัดสแปม การประพฤติมิชอบ และการแชร์ระหว่างเว็บไซต์ Chrome จะ<ph name="ESTIMATE_INTERESTS_LINK" />ด้วย ซึ่งเว็บไซต์สามารถใช้ข้อมูลเพื่อแสดงโฆษณาแก่คุณ คุณจัดการความสนใจได้ในการตั้งค่า</translation>
 <translation id="2194856509914051091">สิ่งที่ควรพิจารณา</translation>
 <translation id="2195331105963583686">คุณยังคงใช้ <ph name="DEVICE_TYPE" /> นี้ได้หลังจากเวลานั้น แต่จะไม่ได้รับการอัปเดตซอฟต์แวร์และการอัปเดตการรักษาความปลอดภัยอัตโนมัติอีกต่อไป</translation>
 <translation id="2195729137168608510">การป้องกันอีเมล </translation>
@@ -5286,6 +5285,7 @@
 <translation id="6086846494333236931">ติดตั้งโดยผู้ดูแลระบบ</translation>
 <translation id="6087746524533454243">หากต้องการดูหน้าข้อมูลเกี่ยวกับเบราว์เซอร์ โปรดไปที่</translation>
 <translation id="6087960857463881712">ใบหน้าเจ๋ง</translation>
+<translation id="6088535503330933227">Chrome จะสำรวจวิธีจำกัดสแปมโฆษณา การประพฤติมิชอบ และการแชร์ระหว่างเว็บไซต์ Chrome จะ<ph name="ESTIMATE_INTERESTS_LINK" />ด้วย ซึ่งเว็บไซต์สามารถใช้ข้อมูลเพื่อแสดงโฆษณาแก่คุณ คุณจัดการความสนใจได้ในการตั้งค่า</translation>
 <translation id="608912389580139775">คลิกไอคอนบุ๊กมาร์กเพื่อเพิ่มหน้านี้ลงในเรื่องรออ่าน</translation>
 <translation id="6091761513005122595">ต่อเชื่อมพื้นที่แชร์สำเร็จแล้ว</translation>
 <translation id="6093888419484831006">กำลังยกเลิกการอัปเดต…</translation>
@@ -5912,6 +5912,7 @@
 <translation id="6709133671862442373">ข่าวสาร</translation>
 <translation id="6709357832553498500">เชื่อมต่อโดยใช้ <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">ก่อนหน้า</translation>
+<translation id="6710394144992407503">ตรวจสอบข้อผิดพลาดของการสะกดคำเมื่อพิมพ์ข้อความในหน้าเว็บ</translation>
 <translation id="6711146141291425900">ลิงก์บัญชี <ph name="WEB_DRIVE" /> สำหรับไฟล์ดาวน์โหลด</translation>
 <translation id="6712943853047024245">คุณได้บันทึกรหัสผ่านไว้กับชื่อผู้ใช้นี้แล้วสำหรับ <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">เพิ่มโปรไฟล์งาน</translation>
@@ -6533,6 +6534,7 @@
 <translation id="7340757554212515731">ส่งรายงานข้อขัดข้อง รวมถึงข้อมูลการวินิจฉัยและการใช้งานให้ Google โดยอัตโนมัติ</translation>
 <translation id="7341834142292923918">ต้องการเข้าถึงเว็บไซต์นี้</translation>
 <translation id="7343372807593926528">โปรดอธิบายปัญหาก่อนส่งความคิดเห็น</translation>
+<translation id="7344585835349671209">จัดการใบรับรอง HTTPS/SSL ในอุปกรณ์</translation>
 <translation id="7345706641791090287">ยืนยันรหัสผ่าน</translation>
 <translation id="7346909386216857016">รับทราบ</translation>
 <translation id="7347452120014970266">การดำเนินการนี้จะล้างข้อมูลและคุกกี้ทั้งหมดที่ <ph name="ORIGIN_NAME" /> และแอปที่ติดตั้งโดยกลุ่มนี้จัดเก็บไว้</translation>
@@ -6662,6 +6664,7 @@
 <translation id="7460045493116006516">ธีมที่คุณติดตั้งอยู่ตอนนี้</translation>
 <translation id="7461924472993315131">ปักหมุด</translation>
 <translation id="746216226901520237">โทรศัพท์จะปลดล็อก <ph name="DEVICE_TYPE" /> ของคุณในครั้งถัดไป คุณปิด Smart Lock ได้ในการตั้งค่า</translation>
+<translation id="7464153996453281700">คอมโพเนนต์เป็นเวอร์ชันล่าสุดแล้ว</translation>
 <translation id="7464637891177137294">บันทึกไว้ในบัญชี Google ของคุณ <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{มีแท็บที่เปิดอยู่ # แท็บ กดเพื่อสลับแนวแท็บ}other{มีแท็บที่เปิดอยู่ # แท็บ กดเพื่อสลับแนวแท็บ}}</translation>
 <translation id="7465635034594602553">เกิดข้อผิดพลาด โปรดรอสักครู่แล้วเรียกใช้ <ph name="APP_NAME" /> อีกครั้ง</translation>
@@ -7170,6 +7173,7 @@
 <translation id="793531125873261495">เกิดข้อผิดพลาดขณะดาวน์โหลดเครื่องเสมือน โปรดลองอีกครั้ง</translation>
 <translation id="7935451262452051102">เสร็จสมบูรณ์ <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">ตัวเลือกขั้นสูง</translation>
+<translation id="7939328347457537652">จัดการใบรับรองอุปกรณ์</translation>
 <translation id="7939412583708276221">เก็บเอาไว้ ไม่ว่าอย่างไรก็ตาม</translation>
 <translation id="7942349550061667556">สีแดง</translation>
 <translation id="7943368935008348579">ดาวน์โหลด PDF</translation>

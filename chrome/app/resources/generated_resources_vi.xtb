@@ -1296,7 +1296,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2191754378957563929">Đang bật</translation>
 <translation id="2192505247865591433">Từ:</translation>
 <translation id="2193365732679659387">Cài đặt tin cậy</translation>
-<translation id="2194554416429452547">Trong khi thử nghiệm, Chrome vẫn tiếp tục cải tiến các phương pháp để hạn chế thư rác, hành vi gian lận và hoạt động chia sẻ giữa các trang. Chrome cũng <ph name="ESTIMATE_INTERESTS_LINK" /> mà các trang web có thể sử dụng để hiện quảng cáo cho bạn. Bạn có thể quản lý những gì bạn quan tâm trong phần cài đặt.</translation>
 <translation id="2194856509914051091">Những yếu tố cần xem xét</translation>
 <translation id="2195331105963583686">Bạn vẫn có thể sử dụng <ph name="DEVICE_TYPE" /> này sau thời gian đó, nhưng thiết bị sẽ không nhận được các bản cập nhật bảo mật và phần mềm tự động nữa</translation>
 <translation id="2195729137168608510">Bảo vệ Email</translation>
@@ -5305,6 +5304,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6086846494333236931">Do quản trị viên của bạn cài đặt</translation>
 <translation id="6087746524533454243">Bạn đang tìm trình duyệt giới thiệu trang? Hãy truy cập</translation>
 <translation id="6087960857463881712">Khuôn mặt vui nhộn</translation>
+<translation id="6088535503330933227">Chrome đang nghiên cứu các phương pháp hạn chế quảng cáo không liên quan, hành vi gian lận và hoạt động chia sẻ giữa các trang web. Chrome cũng <ph name="ESTIMATE_INTERESTS_LINK" /> mà các trang web có thể sử dụng để hiện quảng cáo cho bạn. Bạn có thể vào phần cài đặt để quản lý các mối quan tâm của mình.</translation>
 <translation id="608912389580139775">Để thêm trang này vào danh sách đọc, hãy nhấp vào biểu tượng Dấu trang</translation>
 <translation id="6091761513005122595">Đã kết nối thành công với thư mục chia sẻ.</translation>
 <translation id="6093888419484831006">Đang hủy cập nhật...</translation>
@@ -5931,6 +5931,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6709133671862442373">Tin tức</translation>
 <translation id="6709357832553498500">Kết nối bằng <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Trước</translation>
+<translation id="6710394144992407503">Kiểm tra lỗi chính tả khi bạn nhập văn bản trên các trang web</translation>
 <translation id="6711146141291425900">Liên kết với tài khoản <ph name="WEB_DRIVE" /> cho mục Tải xuống</translation>
 <translation id="6712943853047024245">Bạn đã lưu mật khẩu cho tên người dùng này trên <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Thêm hồ sơ công việc</translation>
@@ -6552,6 +6553,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7340757554212515731">Tự động gửi báo cáo sự cố cũng như thông tin chẩn đoán và dữ liệu sử dụng cho Google</translation>
 <translation id="7341834142292923918">Muốn truy cập vào trang web này</translation>
 <translation id="7343372807593926528">Vui lòng mô tả sự cố trước khi gửi ý kiến phản hồi.</translation>
+<translation id="7344585835349671209">Quản lý chứng chỉ HTTPS/SSL trên thiết bị của bạn</translation>
 <translation id="7345706641791090287">Xác nhận mật khẩu của bạn</translation>
 <translation id="7346909386216857016">Ok</translation>
 <translation id="7347452120014970266">Thao tác này sẽ xóa toàn bộ dữ liệu và cookie lưu trữ trong <ph name="ORIGIN_NAME" /> cũng như các ứng dụng đã cài đặt thuộc nguồn này</translation>
@@ -6681,6 +6683,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7460045493116006516">Giao diện hiện tại mà bạn đã cài đặt</translation>
 <translation id="7461924472993315131">Ghim</translation>
 <translation id="746216226901520237">Vào lần tới, điện thoại của bạn sẽ mở khóa <ph name="DEVICE_TYPE" />. Bạn có thể tắt tính năng Smart Lock trong phần Cài đặt.</translation>
+<translation id="7464153996453281700">Thành phần đã được cập nhật</translation>
 <translation id="7464637891177137294">Lưu mật khẩu vào Tài khoản Google của bạn, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# thẻ đang mở, nhấn để ẩn/hiện thanh thẻ}other{# thẻ đang mở, nhấn để ẩn/hiện thanh thẻ}}</translation>
 <translation id="7465635034594602553">Đã xảy ra lỗi. Vui lòng đợi vài phút rồi chạy lại <ph name="APP_NAME" />.</translation>
@@ -7190,6 +7193,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="793531125873261495">Lỗi khi tải máy ảo xuống. Vui lòng thử lại.</translation>
 <translation id="7935451262452051102">Đã hoàn thành <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">Tùy chọn nâng cao</translation>
+<translation id="7939328347457537652">Quản lý chứng chỉ thiết bị</translation>
 <translation id="7939412583708276221">Vẫn tiếp tục</translation>
 <translation id="7942349550061667556">Đỏ</translation>
 <translation id="7943368935008348579">Tải tệp PDF xuống</translation>

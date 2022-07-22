@@ -1281,7 +1281,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2191754378957563929">Sí</translation>
 <translation id="2192505247865591433">De:</translation>
 <translation id="2193365732679659387">Configuración de confianza</translation>
-<translation id="2194554416429452547">Durante las pruebas, Chrome explora maneras de limitar el spam, el fraude y el uso compartido entre sitios. Chrome también <ph name="ESTIMATE_INTERESTS_LINK" /> que pueden usar los sitios para mostrarte anuncios. Puedes administrar tus intereses en la Configuración.</translation>
 <translation id="2194856509914051091">Aspectos para tener en cuenta</translation>
 <translation id="2195331105963583686">De todos modos, podrás usar tu <ph name="DEVICE_TYPE" /> después de ese momento, pero ya no recibirá actualizaciones automáticas de software y seguridad</translation>
 <translation id="2195729137168608510">Protección de correo electrónico</translation>
@@ -4103,6 +4102,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4900392736118574277">Tu página de inicio se cambió a <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz (entrelazado)</translation>
 <translation id="4900652253009739885">No se puede quitar el único interruptor asignado a "Seleccionar". Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
+<translation id="4901154724271753917">Expandir las pestañas cerradas recientemente</translation>
 <translation id="4901309472892185668">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">La política descargada del servidor no es válida: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Configura o administra archivos compartidos de red. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -6991,6 +6991,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7768526219335215384"><ph name="ORIGIN" /> podrá ver los archivos de la carpeta <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Cambiar</translation>
 <translation id="7768784765476638775">Seleccionar para pronunciar</translation>
+<translation id="7769748505895274502">Contraer las pestañas cerradas recientemente</translation>
 <translation id="7770406201819593386">Ejecuta pruebas diagnóstico de Chrome OS Flex.</translation>
 <translation id="7770450735129978837">Hacer clic con el botón derecho del mouse</translation>
 <translation id="7770612696274572992">Imagen copiada de otro dispositivo</translation>

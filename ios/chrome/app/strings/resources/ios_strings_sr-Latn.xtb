@@ -329,6 +329,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3775743491439407556">Sinhronizacija ne radi</translation>
 <translation id="3779810277399252432">Nema internet veze.</translation>
 <translation id="3783017676699494206">Sačuvaj sliku</translation>
+<translation id="3789294999358192700">Pratite korake ispod:</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803696231112616155">Ponudi prevod ovog sajta</translation>
@@ -624,7 +625,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6284652193729350524">Ponudi prevod za <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Opozvali ste praćenje kanala <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Da biste uključili Bezbedno pregledanje, otvorite <ph name="BEGIN_LINK" />Google usluge<ph name="END_LINK" /> i dodirnite Bezbedno pregledanje.</translation>
-<translation id="6294610283659775533">Možete da šaljete kartice s jednog uređaja na drugi ako ste na njih prijavljeni pomoću istog Google naloga</translation>
 <translation id="6321526113093607004">Dodaj u obeleživače</translation>
 <translation id="6324669097367352121">Podešavanja prijavljivanja</translation>
 <translation id="6337234675334993532">Šifrovanje</translation>
@@ -942,6 +942,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8870413625673593573">Nedavno zatvoreno</translation>
 <translation id="8876882697946675716">Sinhronizujte uređaje</translation>
 <translation id="8881801611828450202">Pretraži ovu sliku u <ph name="SEARCH_ENGINE" />-u</translation>
+<translation id="8891935667620843985">Možete da automatski otvarate linkove u Chrome-u tako što ćete ga podesiti kao podrazumevanu aplikaciju za pregledanje.</translation>
 <translation id="8898822736010347272">Šalje Google-u URL-ove nekih stranica koje posećujete, ograničene informacije o sistemu i određeni sadržaj stranica da bi se otkrile nove pretnje i zaštitili svi širom veba.</translation>
 <translation id="8909135823018751308">Deli...</translation>
 <translation id="8917490105272468696">Da, omogući</translation>

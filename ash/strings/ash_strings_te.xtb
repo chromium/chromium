@@ -306,6 +306,7 @@
 <translation id="2805756323405976993">యాప్స్</translation>
 <translation id="2814448776515246190">పాక్షికంగా క్యాప్చర్ చేయండి</translation>
 <translation id="2819276065543622893">మీరు ఇప్పుడు సైన్ అవుట్ చేయబడతారు.</translation>
+<translation id="2822551631199737692">కెమెరా ఉపయోగంలో ఉంది</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />కు మద్దతివ్వదు. రిజల్యూషన్ <ph name="FALLBACK_RESOLUTION" />కు మార్చబడింది.</translation>
 <translation id="2825619548187458965">అర</translation>
 <translation id="2831035692318564937">సూర్యోదయం వరకు ఆన్‌లో ఉంటుంది</translation>
@@ -808,6 +809,7 @@
 <translation id="5682642926269496722">ప్రస్తుత వినియోగదారు ఖాతాలో Google Assistant పని చేయదు.</translation>
 <translation id="5689633613396158040">రాత్రి కాంతి ఫీచర్ అనేది తక్కువ కాంతి ఉన్న సందర్భాలలో మీ స్క్రీన్‌ను స్పష్టంగా చూడటాన్ని లేదా చదవడాన్ని మరింత సులభతరం చేస్తుంది. నైట్ లైట్ ఆన్ చేసే సమయాన్ని మార్చడానికి నొక్కండి లేదా దాన్ని పూర్తిగా ఆపివేయండి.</translation>
 <translation id="5691772641933328258">వేలిముద్ర గుర్తించబడలేదు</translation>
+<translation id="5693255400847650006">మైక్రోఫోన్ ఉపయోగంలో ఉంది</translation>
 <translation id="570390244361237317">అన్ని యాప్‌లు, అన్ని యాప్‌లను యాక్సెస్ చేయడానికి బాణం కీలతో నావిగేట్ చేయండి</translation>
 <translation id="5707775774148071965">మీ పరికరం మీ కేబుల్ కంటే ఎక్కువ డేటా రేట్‌ను సపోర్ట్ చేస్తుంది. పరికర పనితీరు పరిమితంగా ఉండవచ్చు.</translation>
 <translation id="5710450975648804523">'అంతరాయం కలిగించవద్దు' మోడ్ ఆన్‌లో ఉంది</translation>
@@ -982,6 +984,7 @@
 <translation id="6723839937902243910">పవర్</translation>
 <translation id="6727969043791803658">కనెక్ట్ చేయబడింది, <ph name="BATTERY_PERCENTAGE" />% బ్యాటరీ ఉంది</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">కెమెరా, మైక్రోఫోన్ ఉపయోగంలో ఉన్నాయి</translation>
 <translation id="6739144137573853180">సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="6751052314767925245">మీ నిర్వాహకుని ద్వారా అమలు చేయబడింది</translation>
 <translation id="6751826523481687655">పనితీరు స్థితిగతి కనుగొనడం ఆన్‌లో ఉంది</translation>

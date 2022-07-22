@@ -1286,7 +1286,6 @@
 <translation id="2191754378957563929">Միաց</translation>
 <translation id="2192505247865591433">Ուղարկող`</translation>
 <translation id="2193365732679659387">Վստահության կարգավորումներ</translation>
-<translation id="2194554416429452547">Փորձարկումների ընթացքում Chrome-ն ուսումասիրում է եղանակները, որոնք թույլ են տալիս սահմանափակել սպամը, խարդախությունները և կայքերի միջև տեղեկությունների փոխանակումը։ Chrome-ը նաև <ph name="ESTIMATE_INTERESTS_LINK" />, որոնք կայքերը կարող են օգտագործել՝ ձեզ գովազդ ցուցադրելու համար։ Ձեր հետաքրքրությունները կարող եք կառավարել կարգավորումներում։</translation>
 <translation id="2194856509914051091">Կարևոր տեղեկություններ</translation>
 <translation id="2195331105963583686">Դուք նախկինի պես կկարողանաք օգտագործել <ph name="DEVICE_TYPE" /> սարքը, սակայն այն այլևս չի ստանա ծրագրային և անվտանգության կարգավորումների ավտոմատ թարմացումներ:</translation>
 <translation id="2195729137168608510">Էլփոստի պաշտպանություն</translation>
@@ -3266,6 +3265,7 @@
 <translation id="4077919383365622693"><ph name="SITE" /> կայքի պահած բոլոր տվյալներն ու քուքիները կջնջվեն։</translation>
 <translation id="4078738236287221428">Ագրեսիվ</translation>
 <translation id="4079140982534148664">Օգտագործել ուղղագրության ընդլայնված ստուգումը</translation>
+<translation id="4081203444152654304">Որոնել պատկերում <ph name="VISUAL_SEARCH_PROVIDER" />ով</translation>
 <translation id="4081242589061676262">Չհաջողվեց հեռարձակել ֆայլը։</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> կայքը ծանուցում է ուղարկել ձեր հեռախոսին։ Ձեր ինքնությունը հաստատելու համար կատարեք այնտեղ նշված քայլերը։</translation>
 <translation id="4084682180776658562">Էջանիշ</translation>
@@ -3661,6 +3661,7 @@
 <translation id="4476590490540813026">Մարզիկ</translation>
 <translation id="4476659815936224889">Դուք կարող եք սկանավորել այս կոդը հեռախոսի QR սկաների կամ տեսախցիկի որոշ հավելվածների միջոցով:</translation>
 <translation id="4477015793815781985">Սկզբում սեղմեք Ctrl, Alt կամ ⌘</translation>
+<translation id="4477379360383751882">Որոնել պատկերում <ph name="VISUAL_SEARCH_PROVIDER" />ով</translation>
 <translation id="4478664379124702289">Պահել հղում&amp;ը որպես…</translation>
 <translation id="4479424953165245642">Կարգավորել կրպակ-հավելվածները</translation>
 <translation id="4479639480957787382">Ethernet</translation>

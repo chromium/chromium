@@ -1297,7 +1297,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2191754378957563929">Kveikt</translation>
 <translation id="2192505247865591433">Frá:</translation>
 <translation id="2193365732679659387">Trauststillingar</translation>
-<translation id="2194554416429452547">Chrome nýtir prufuáskriftir til að kanna leiðir til að takmarka ruslefni, svik og deilingu á milli vefsvæða. Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, sem vefsvæði geta notað til að birta þér auglýsingar. Þú getur stjórnað áhugasviðunum þínum í stillingunum.</translation>
 <translation id="2194856509914051091">Atriði til að hafa í huga</translation>
 <translation id="2195331105963583686">Þú getur notað þetta <ph name="DEVICE_TYPE" /> áfram eftir þann tíma en færð ekki lengur sjálfvirkar hugbúnaðar- og öryggisuppfærslur</translation>
 <translation id="2195729137168608510">Tölvupóstvörn</translation>
@@ -4122,6 +4121,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4900392736118574277">Upphafssíðu var breytt í <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – samfléttað</translation>
 <translation id="4900652253009739885">Ekki er hægt að fjarlægja eina rofann sem er úthlutaður til „Velja“. Ýttu á hvaða hnapp sem er til að <ph name="RESPONSE" />.</translation>
+<translation id="4901154724271753917">Stækka „Nýlega lokað“</translation>
 <translation id="4901309472892185668">Veldu ástand tilraunar fyrir <ph name="EXPERIMENT_NAME" /> tilraunina.</translation>
 <translation id="49027928311173603">Reglan sem sótt var frá þjóninum er ógild: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Setja upp eða hafa umsjón með samnýttum skráageymslum. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
@@ -7012,6 +7012,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7768526219335215384"><ph name="ORIGIN" /> mun geta skoðað skrár í <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Breyta</translation>
 <translation id="7768784765476638775">Textaupplestur</translation>
+<translation id="7769748505895274502">Minnka „Nýlega lokað“</translation>
 <translation id="7770406201819593386">Keyra greiningarprófanir ChromeOS Flex.</translation>
 <translation id="7770450735129978837">Hægri músarsmellur</translation>
 <translation id="7770612696274572992">Mynd afrituð úr öðru tæki</translation>

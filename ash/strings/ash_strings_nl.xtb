@@ -306,6 +306,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Gedeeltelijke opname</translation>
 <translation id="2819276065543622893">Je wordt nu uitgelogd.</translation>
+<translation id="2822551631199737692">Camera in gebruik</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ondersteunt <ph name="SPECIFIED_RESOLUTION" /> niet. De resolutie is gewijzigd in <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Plank</translation>
 <translation id="2831035692318564937">Aan tot zonsopgang</translation>
@@ -807,6 +808,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5682642926269496722">De Google Assistent is niet beschikbaar voor het huidige gebruikersaccount.</translation>
 <translation id="5689633613396158040">Met Nachtverlichting kun je je scherm beter zien en lezen bij weinig licht. Tik om te wijzigen wanneer Nachtverlichting wordt aangezet of zet de functie helemaal uit.</translation>
 <translation id="5691772641933328258">Vingerafdruk niet herkend</translation>
+<translation id="5693255400847650006">Microfoon in gebruik</translation>
 <translation id="570390244361237317">Alle apps, navigeer met de pijltoetsen voor toegang tot alle apps</translation>
 <translation id="5707775774148071965">Je apparaat ondersteunt een hogere datasnelheid dan je kabel. De prestaties van het apparaat kunnen beperkt zijn.</translation>
 <translation id="5710450975648804523">Niet storen staat aan</translation>
@@ -981,6 +983,7 @@ Nieuwe installatie</translation>
 <translation id="6723839937902243910">Voeding</translation>
 <translation id="6727969043791803658">Verbonden, batterij <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Camera en microfoon in gebruik</translation>
 <translation id="6739144137573853180">NAAR INSTELLINGEN</translation>
 <translation id="6751052314767925245">Afgedwongen door je beheerder</translation>
 <translation id="6751826523481687655">Bijhouden van prestaties staat aan</translation>

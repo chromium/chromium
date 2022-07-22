@@ -1285,7 +1285,6 @@
 <translation id="2191754378957563929">آن</translation>
 <translation id="2192505247865591433">منجانب:</translation>
 <translation id="2193365732679659387">ٹرسٹ کی ترتیبات</translation>
-<translation id="2194554416429452547">‏ٹرائلز کے دوران، Chrome سپام، دھوکہ اور سائٹس کے درمیان اشتراک کو محدود کرنے کے طریقے دریافت کر رہا ہے۔ Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> کرتا ہے جو سائٹس آپ کو اشتہارات دکھانے کے لیے استعمال کر سکتی ہیں۔ آپ ترتیبات میں اپنی دلچسپیوں کا نظم کر سکتے ہیں۔</translation>
 <translation id="2194856509914051091">قابل غور چیزیں</translation>
 <translation id="2195331105963583686">اس وقت کے بعد، آپ اب بھی اس <ph name="DEVICE_TYPE" /> کا استعمال کر سکیں گے، لیکن اب اسے خودکار سافٹ ویئر اور سیکیورٹی اپ ڈیٹس حاصل نہیں ہوں گی</translation>
 <translation id="2195729137168608510">ای میل کا تحفظ</translation>
@@ -3267,6 +3266,7 @@
 <translation id="4077919383365622693"><ph name="SITE" /> کا اسٹور کردہ تمام ڈیٹا اور کوکیز کو صاف کر دیا جائے گا۔</translation>
 <translation id="4078738236287221428">پرجوش</translation>
 <translation id="4079140982534148664">املا کی بہتر جانچ استعمال کریں</translation>
+<translation id="4081203444152654304"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ تصویر کے اندر تلاش کریں</translation>
 <translation id="4081242589061676262">فائل کاسٹ کرنے سے قاصر۔</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> نے آپ کے فون پر ایک اطلاع بھیجی ہے۔ اس بات کی تصدیق کرنے کیلئے کہ یہ آپ ہی ہیں، وہاں پر دئیے گئے مراحل کی پیروی کریں۔</translation>
 <translation id="4084682180776658562">بُک مارک</translation>
@@ -3662,6 +3662,7 @@
 <translation id="4476590490540813026">کھلاڑی</translation>
 <translation id="4476659815936224889">‏یہ کوڈ اسکین کرنے کیلئے، آپ اپنے فون یا کچھ کیمرا ایپس پر ایک QR اسکینر ایپ کا استعمال کر سکتے ہیں۔</translation>
 <translation id="4477015793815781985">‏Ctrl، Alt یا ⌘ شامل کریں</translation>
+<translation id="4477379360383751882"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ تصویر کے اندر تلاش کریں</translation>
 <translation id="4478664379124702289">&amp;لنک محفوظ کریں بطور…</translation>
 <translation id="4479424953165245642">کیوسک ایپلیکیشنز کا نظم کریں</translation>
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
@@ -4107,6 +4108,7 @@
 <translation id="4900392736118574277">آپ کا ابتدائی صفحہ <ph name="URL" /> پر تبدیل کر دیا گیا۔</translation>
 <translation id="490051679772058907">‏<ph name="REFRESH_RATE" /> Hz - انٹرلیسڈ</translation>
 <translation id="4900652253009739885">"منتخب کرنے" کے لئے تفویض کردہ سوئچ ہی ہٹایا نہیں جا سکتا۔ <ph name="RESPONSE" /> دینے کیلئے کوئی کلید دبائیں۔</translation>
+<translation id="4901154724271753917">حال ہی میں بند کو پھیلائیں</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> تجربے کے لیے تجربے کی حالت منتخب کریں۔</translation>
 <translation id="49027928311173603">سرور سے ڈاؤن لوڈ کردہ پالیسی غلط ہے: <ph name="VALIDATION_ERROR" />۔</translation>
 <translation id="4906490889887219338">نیٹ ورک فائل کے اشتراکات کو سیٹ اپ کریں یا ان کا نظم کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
@@ -5286,6 +5288,7 @@
 <translation id="6086846494333236931">آپ کے منتظم نے انسٹال کیا ہے</translation>
 <translation id="6087746524533454243">براؤزر کے تعارف کا صفحہ تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
 <translation id="6087960857463881712">زبردست چہرہ</translation>
+<translation id="6088535503330933227">‏Chrome اشتہار سے متعلق اسپام، دھوکہ اور سائٹس کے درمیان اشتراک کو محدود کرنے کے طریقے دریافت کر رہا ہے۔ Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> بھی کرتا ہے جو سائٹس آپ کو اشتہارات دکھانے کے لیے استعمال کر سکتی ہیں۔ آپ ترتیبات میں اپنی دلچسپیوں کا نظم کر سکتے ہیں۔</translation>
 <translation id="608912389580139775">اس صفحے کو اپنی پڑھنے کی فہرست میں شامل کرنے کیلئے بُک مارک آئیکن پر کلک کریں</translation>
 <translation id="6091761513005122595">اشتراک کو کامیابی کے ساتھ ماؤنٹ کر دیا گیا۔</translation>
 <translation id="6093888419484831006">اپ ڈیٹ منسوخ کیا جا رہا ہے…</translation>
@@ -6994,6 +6997,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> میں سبھی فائلز کو دیکھ سکے گا</translation>
 <translation id="7768770796815395237">تبدیل کریں</translation>
 <translation id="7768784765476638775">سننے کیلئے منتخب کریں</translation>
+<translation id="7769748505895274502">حال ہی میں بند کو سکیڑیں</translation>
 <translation id="7770406201819593386">‏ChromeOS Flex تشخیصی ٹیسٹس چلائیں۔</translation>
 <translation id="7770450735129978837">ماؤس کی دائیں کلک</translation>
 <translation id="7770612696274572992">دوسرے آلے سے تصویر کاپی کی گئی</translation>

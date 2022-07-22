@@ -6798,9 +6798,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8295496526151576383">Questo criterio specifica le estensioni consentite per ignorare la finestra di dialogo di conferma del processo di stampa utilizzando la funzione <ph name="PRINTING_API" /> <ph name="SUBMIT_JOB_FUNCTION" /> per l'invio di un processo di stampa.
 
       Se un'estensione non è presente nell'elenco o non è configurato alcun elenco, la finestra di dialogo di conferma del processo di stampa verrà visualizzata dall'utente per ogni chiamata funzione <ph name="SUBMIT_JOB_FUNCTION" />.</translation>
-<translation id="829641334878002866">Ti consente di impostare il periodo di tempo, in millisecondi, tra la prima notifica relativa alla necessità di riavviare un dispositivo <ph name="PRODUCT_OS_NAME" /> per applicare un aggiornamento in sospeso e la fine del periodo di tempo specificato dal criterio <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />.
-
-      Se non è impostato, per i dispositivi <ph name="PRODUCT_OS_NAME" /> viene utilizzato il periodo predefinito di 259200000 millisecondi (tre giorni).</translation>
 <translation id="829703642501504476">Se il criterio viene impostato su true, <ph name="PRODUCT_NAME" /> consente l'utilizzo di pagine di errore alternative integrate nel browser (come "pagina non trovata"). Se il criterio viene impostato su false, <ph name="PRODUCT_NAME" /> non consente mai l'utilizzo di pagine di errore alternative.
 
       Se il criterio viene configurato, gli utenti non possono modificarlo. Se non viene configurato, il criterio è attivo, ma gli utenti possono modificare questa impostazione.</translation>

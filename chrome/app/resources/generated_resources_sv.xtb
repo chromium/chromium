@@ -1296,7 +1296,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2191754378957563929">På</translation>
 <translation id="2192505247865591433">Från:</translation>
 <translation id="2193365732679659387">Inställningar för tillförlitlighet</translation>
-<translation id="2194554416429452547">Under provperioder utforskar Chrome olika sätt att begränsa skräppost, bedrägerier och delning mellan webbplatser. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> också. Dessa kan användas på webbplatser för att visa annonser. Du kan hantera dina intressen i inställningarna.</translation>
 <translation id="2194856509914051091">Tänk på detta</translation>
 <translation id="2195331105963583686">Du kan fortfarande använda <ph name="DEVICE_TYPE" /> efter det, men den får inte längre några automatiska program- eller säkerhetsuppdateringar</translation>
 <translation id="2195729137168608510">E-postskydd</translation>
@@ -3281,6 +3280,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4077919383365622693">All data och alla cookies som sparats av <ph name="SITE" /> raderas.</translation>
 <translation id="4078738236287221428">Alltid</translation>
 <translation id="4079140982534148664">Använd förbättrad stavningskontroll</translation>
+<translation id="4081203444152654304">Sök i bilden med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4081242589061676262">Det går inte att casta filen.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> har skickat en avisering till din telefon. Bekräfta din identitet genom att följa anvisningarna på telefonen.</translation>
 <translation id="4084682180776658562">Infoga bokmärke</translation>
@@ -3676,6 +3676,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4476590490540813026">Idrottare</translation>
 <translation id="4476659815936224889">Du kan skanna koden på telefonen med en app för att skanna QR-koder eller med vissa kameraappar.</translation>
 <translation id="4477015793815781985">Använd Ctrl, Alt eller ⌘</translation>
+<translation id="4477379360383751882">Sök i bilden med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4478664379124702289">Spara l&amp;änk som...</translation>
 <translation id="4479424953165245642">Hantera kioskappar</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -4122,6 +4123,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4900392736118574277">Startfliken har ändrats till <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – med flätning</translation>
 <translation id="4900652253009739885">Det går inte att ta bort den enda brytaren som tilldelats Välj. Tryck på valfri tangent för att <ph name="RESPONSE" />.</translation>
+<translation id="4901154724271753917">Utöka nyligen stängda</translation>
 <translation id="4901309472892185668">Välj experimentstatus för experimentet <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Policyn som laddades ned från servern är ogiltig: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Konfigurera eller hantera filresurser i nätverk. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
@@ -5302,6 +5304,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6086846494333236931">Har installerats av administratören</translation>
 <translation id="6087746524533454243">Letar du webbläsarens about-sida? Besök</translation>
 <translation id="6087960857463881712">Entusiastiskt ansikte</translation>
+<translation id="6088535503330933227">Chrome utforskar olika sätt att begränsa skräppost, bedrägerier och delning mellan webbplatser. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> också. Dessa kan användas på webbplatser för att visa annonser. Du kan hantera dina intressen i inställningarna.</translation>
 <translation id="608912389580139775">Om du vill lägga till den här sidan i läslistan klickar du på bokmärkesikonen</translation>
 <translation id="6091761513005122595">Den delade resursen har monterats.</translation>
 <translation id="6093888419484831006">Avbryter uppdatering ...</translation>
@@ -7010,6 +7013,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7768526219335215384"><ph name="ORIGIN" /> får läsbehörighet till filer i <ph name="FOLDERNAME" /></translation>
 <translation id="7768770796815395237">Ändra</translation>
 <translation id="7768784765476638775">Textuppläsning</translation>
+<translation id="7769748505895274502">Komprimera nyligen stängda</translation>
 <translation id="7770406201819593386">Kör diagnostiska test av ChromeOS Flex.</translation>
 <translation id="7770450735129978837">Högerklick på musen</translation>
 <translation id="7770612696274572992">Bild kopierad från en annan enhet</translation>

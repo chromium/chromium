@@ -983,6 +983,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1916502483199172559">Defolt qırmızı avatar</translation>
 <translation id="1918141783557917887">&amp;Kiçik</translation>
 <translation id="1920390473494685033">Kontaktlar</translation>
+<translation id="1921544956190977703">Təhlükəli vebsaytlara, endirmələrə və artırmalara qarşı Chrome'un ən güclü təhlükəsizliyinə sahibsiniz</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1923468477587371721">Gmail, Disk və YouTube kimi Google saytları fərdi məhsul dilini dəyişdirmədiyiniz təqdirdə Google Hesabınızın dilindən istifadə edir</translation>
 <translation id="192494336144674234">Bununla açın</translation>
@@ -1280,7 +1281,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2191754378957563929">Aktiv</translation>
 <translation id="2192505247865591433">Kimdən:</translation>
 <translation id="2193365732679659387">Güvənlik ayarları</translation>
-<translation id="2194554416429452547">Sınaqlar zamanı Chrome spam, fırıldaqçılıq və saytlar arasında paylaşımı məhdudlaşdırmaq yollarını araşdırır. Chrome həmçinin saytların sizə reklam göstərmək üçün istifadə edə biləcəyi <ph name="ESTIMATE_INTERESTS_LINK" />. Maraqlarınızı Ayarlarda idarə edə bilərsiniz.</translation>
 <translation id="2194856509914051091">Nəzərə alınmalı amillər</translation>
 <translation id="2195331105963583686">Daha sonra bu <ph name="DEVICE_TYPE" /> cıhazını istifadə edə biləcəksiniz lakin, artıq avtomatik proqram təminatı və təhlükəsizlik güncəlləmələri almayacaqsınız.</translation>
 <translation id="2195729137168608510">E-poçt Müdafiəsi</translation>
@@ -2087,6 +2087,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <ph name="DOMAIN" /> smart kartınızın taxılı qalmasını tələb edir.</translation>
 <translation id="2923234477033317484">Bu hesabı silin</translation>
 <translation id="2923644930701689793">Telefonunuzun foto lentinə giriş edin</translation>
+<translation id="292371311537977079">Chrome ayarları</translation>
 <translation id="2925658782192398150">Tamamlandı, heç bir problem tapılmadı</translation>
 <translation id="2926085873880284723">Defolt qısayolları bərap edin</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> dəstəklənmir.</translation>
@@ -2671,6 +2672,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3511528412952710609">Qısa</translation>
 <translation id="3514335087372914653">Oyuna Nəzarət</translation>
 <translation id="3514373592552233661">Birdən çox şəbəkə əlçatan olduqda, məlum olan şəbəkə ilə müqayisədə tərcih edilən şəbəkələr seçiləcək</translation>
+<translation id="3514647716686280777">Standart qoruma əldə edirsiniz. Təhlükəli vebsaytlara, endirmələrə və artırmalara qarşı daha çox qoruma əldə etmək üçün Chrome ayarlarında Qabaqcıl Güvənli Baxışı aktiv edin.</translation>
 <translation id="3515983984924808886">Sıfırlamanı təsdiq etmək üçün təhlükəsizlik açarınıza yenidən toxunun. PIN kod daxil olmaqla təhlükəsizlik açarında saxlanılan bütün məlumatlar silinəcək.</translation>
 <translation id="3518985090088779359">Qəbul edin və davam edin</translation>
 <translation id="3519564332031442870">Çap Server Xidməti</translation>
@@ -5283,6 +5285,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6086846494333236931">Administratorunuz tərəfindən quraşdırılıb</translation>
 <translation id="6087746524533454243">Brauzerin haqqında səhifəsini axtarırsınız? Ziyarət edin</translation>
 <translation id="6087960857463881712">Zəhmli üz</translation>
+<translation id="6088535503330933227">Chrome reklam spamı, fırıldaqçılıq və saytlar arasında paylaşımı məhdudlaşdırmaq yollarını araşdırır. Chrome həmçinin saytların sizə reklam göstərmək üçün istifadə edə biləcəyi <ph name="ESTIMATE_INTERESTS_LINK" />. Maraqlarınızı Ayarlarda idarə edə bilərsiniz.</translation>
 <translation id="608912389580139775">Bu səhifəni oxu siyahınıza əlavə etmək üçün Əlfəcin ikonasına toxunun</translation>
 <translation id="6091761513005122595">Paylaşım başladı.</translation>
 <translation id="6093888419484831006">Güncəllənmə ləğv edilir...</translation>
@@ -5472,6 +5475,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Məkanı dəyişin</translation>
 <translation id="6279183038361895380">Kursorunuzu göstərmək üçün |<ph name="ACCELERATOR" />| basın</translation>
+<translation id="6279595948631688299">Seçilmiş sertifikatı e&amp;ksport edin...</translation>
 <translation id="6280215091796946657">Fərqli hesab ilə daxil olun</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 vərəq limitini keçir}other{{COUNT} vərəq limitini keçir}}</translation>
@@ -5586,6 +5590,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6398715114293939307">Google Play Mağazanı Silin</translation>
 <translation id="6398765197997659313">Tam ekrandan çıxın</translation>
 <translation id="6399774419735315745">Cəsus</translation>
+<translation id="6401458660421980302">Bu tabı başqa cihaza göndərmək üçün orada Chrome'a daxil olun</translation>
 <translation id="6401597285454423070">Kompüteriniz ChromeOS'da bir çox kritik təhlükəsizlik funksiyalarının tətbiqi üçün istifadə olunan Trusted Platform Module (TPM) təhlükəsizlik cihazından ibarətdir. Ətraflı məlumat üçün Chromebook Yardım Mərkəzinə daxil olun: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chromebook Oyun</translation>
 <translation id="6404511346730675251">Əlfəcinə düzəliş edin</translation>
@@ -5822,6 +5827,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6619801788773578757">Kiosk tətbiqi əlavə edin</translation>
 <translation id="6619990499523117484">PİN kodunuzu təsdiq edin</translation>
 <translation id="6620254580880484313">Konteynerin adı</translation>
+<translation id="6621391692573306628">Bu tabı başqa cihaza göndərmək üçün hər iki cihazda Chrome'a daxil olun</translation>
 <translation id="6622980291894852883">Təsvirləri blok etməyə davam edin</translation>
 <translation id="6624036901798307345">Planşet rejimində hər tabın miniatürlərini göstərən yeni tab zolağını açmaq üçün tab sayğacı alətlər paneli düyməsinə toxunun.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> həssas və ya təhlükəli məzmun ehtiva edir. Sahibindən onu düzəltməsini istəyin.</translation>

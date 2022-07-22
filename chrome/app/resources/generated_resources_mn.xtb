@@ -1292,7 +1292,6 @@
 <translation id="2191754378957563929">Асаалттай</translation>
 <translation id="2192505247865591433">Хэнээс:</translation>
 <translation id="2193365732679659387">Итгэмжлэх тохиргоо</translation>
-<translation id="2194554416429452547">Туршилтын хугацааны үеэр Chrome спам, залилан болон сайтууд хооронд хуваалцахыг хязгаарлах аргуудыг судалж байна. Chrome мөн сайтуудын танд зар харуулахын тулд ашиглаж болох <ph name="ESTIMATE_INTERESTS_LINK" />. Та сонирхлуудаа тохиргоо хэсэгт удирдах боломжтой.</translation>
 <translation id="2194856509914051091">Анхаарч үзэх зүйлс</translation>
 <translation id="2195331105963583686">Та энэ <ph name="DEVICE_TYPE" />-г ийм хугацааны дараа ашиглах боломжтой хэвээр байх боловч энэ нь программ хангамж болон аюулгүй байдлын автомат шинэчлэлтийг авах боломжгүй байна.</translation>
 <translation id="2195729137168608510">И-мэйл хамгаалалт</translation>
@@ -5926,6 +5925,7 @@
 <translation id="6709133671862442373">Мэдээ</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" />-ыг ашиглан холбогдоно уу</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
+<translation id="6710394144992407503">Вэб хуудсан дээр текст бичихдээ зөв бичгийн алдаа байгаа эсэхийг шалгана уу</translation>
 <translation id="6711146141291425900">Таталтуудад <ph name="WEB_DRIVE" /> бүртгэл холбоно уу</translation>
 <translation id="6712943853047024245">Та аль хэдийн <ph name="WEBSITE" />-д энэ хэрэглэгчийн нэрээр нууц үг хадгалсан байна</translation>
 <translation id="6713233729292711163">Ажлын профайл нэмэх</translation>
@@ -6547,6 +6547,7 @@
 <translation id="7340757554212515731">Гэмтлийн тайлан болон оношилгоо, ашиглалтын өгөгдлийг Google-д автоматаар илгээнэ</translation>
 <translation id="7341834142292923918">Энэ сайтад хандахыг хүсэж байна</translation>
 <translation id="7343372807593926528">Санал хүсэлтийг илгээхийн өмнө асуудлыг тайлбарлана уу.</translation>
+<translation id="7344585835349671209">Өөрийн төхөөрөмж дээрх HTTPS/SSL сертификатуудыг удирдаарай</translation>
 <translation id="7345706641791090287">Нууц үгээ баталгаажуулна уу</translation>
 <translation id="7346909386216857016">OK, ойлголоо</translation>
 <translation id="7347452120014970266">Энэ нь <ph name="ORIGIN_NAME" /> болон үүний суулгасан аппуудын хадгалсан бүх өгөгдөл, күүкийг арилгана</translation>
@@ -6676,6 +6677,7 @@
 <translation id="7460045493116006516">Таны суулгасан одоогийн загвар</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">Дараагийн удаа таны утас таны <ph name="DEVICE_TYPE" />-н түгжээг тайлна. Та Smart Lock-г Тохиргоонд унтрааж болно.</translation>
+<translation id="7464153996453281700">Бүрэлдэхүүн хэсэг нь аль хэдийн шинэчлэгдсэн</translation>
 <translation id="7464637891177137294">Үүнийг <ph name="ACCOUNT" /> Google Бүртгэлдээ хадгална уу</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{нээлттэй # таб, tab мессежийг асаах/унтраахын тулд дарна уу}other{нээлттэй # таб, tab мессежийг асаах/унтраахын тулд дарна уу}}</translation>
 <translation id="7465635034594602553">Алдаа гарлаа. Хэдэн минут хүлээгээд <ph name="APP_NAME" />-г дахин ажиллуулна уу.</translation>
@@ -7184,6 +7186,7 @@
 <translation id="793531125873261495">Виртуал машиныг татаж авахад алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />%-ийг гүйцэтгэсэн</translation>
 <translation id="7939062555109487992">Дэвшилтэт сонголт</translation>
+<translation id="7939328347457537652">Төхөөрөмжийн гэрчилгээг удирдах</translation>
 <translation id="7939412583708276221">Ямар ч байсан үргэлжлүүлнэ үү</translation>
 <translation id="7942349550061667556">Улаан</translation>
 <translation id="7943368935008348579">PDF татах</translation>

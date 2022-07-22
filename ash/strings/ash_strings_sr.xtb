@@ -306,6 +306,7 @@
 <translation id="2805756323405976993">Апликације</translation>
 <translation id="2814448776515246190">Делимично снимање</translation>
 <translation id="2819276065543622893">Бићете одмах одјављени.</translation>
+<translation id="2822551631199737692">Камера се користи</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не подржава резолуцију <ph name="SPECIFIED_RESOLUTION" />. Резолуција је промењена у <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Полица</translation>
 <translation id="2831035692318564937">Укључено до свитања</translation>
@@ -807,6 +808,7 @@
 <translation id="5682642926269496722">Google није доступан за актуелни кориснички налог.</translation>
 <translation id="5689633613396158040">Ноћно светло вам олакшава да прегледате садржај екрана или да читате при пригушеном светлу. Додирните да бисте променили време када се ноћно светло укључује или га потпуно искључите.</translation>
 <translation id="5691772641933328258">Отисак прста није препознат</translation>
+<translation id="5693255400847650006">Микрофон се користи</translation>
 <translation id="570390244361237317">Све апликације, крећите се помоћу тастера са стрелицама да бисте приступали свим апликацијама</translation>
 <translation id="5707775774148071965">Уређај подржава већи проток података у односу на кабл. Учинак уређаја ће можда бити ограничен.</translation>
 <translation id="5710450975648804523">Режим Не узнемиравај је укључен</translation>
@@ -981,6 +983,7 @@
 <translation id="6723839937902243910">Енергија</translation>
 <translation id="6727969043791803658">Повезано, ниво батерије је <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Камера и микрофон се користе</translation>
 <translation id="6739144137573853180">ИДИ У ПОДЕШАВАЊА</translation>
 <translation id="6751052314767925245">Примењује администратор</translation>
 <translation id="6751826523481687655">Праћење учинка је укључено</translation>

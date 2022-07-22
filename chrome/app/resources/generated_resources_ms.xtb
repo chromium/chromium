@@ -1296,7 +1296,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2191754378957563929">Hidup</translation>
 <translation id="2192505247865591433">Daripada:</translation>
 <translation id="2193365732679659387">Tetapan percaya</translation>
-<translation id="2194554416429452547">Semasa percubaan, Chrome sedang meneroka cara untuk mengehadkan spam, penipuan dan perkongsian antara laman. Chrome juga <ph name="ESTIMATE_INTERESTS_LINK" /> laman tersebut boleh digunakan untuk memaparkan iklan kepada anda. Anda boleh mengurus minat anda dalam tetapan.</translation>
 <translation id="2194856509914051091">Perkara yang perlu dipertimbangkan</translation>
 <translation id="2195331105963583686">Anda masih boleh menggunakan <ph name="DEVICE_TYPE" /> ini selepas waktu itu tetapi tidak akan mendapat perisian automatik dan kemas kini keselamatan lagi</translation>
 <translation id="2195729137168608510">Perlindungan E-mel</translation>
@@ -5305,6 +5304,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6086846494333236931">Dipasang oleh pentadbir anda</translation>
 <translation id="6087746524533454243">Mencari halaman perihalan penyemak imbas? Lawati</translation>
 <translation id="6087960857463881712">Wajah hebat</translation>
+<translation id="6088535503330933227">Chrome sedang meneroka cara untuk mengehadkan spam iklan, penipuan dan perkongsian antara laman. Chrome juga <ph name="ESTIMATE_INTERESTS_LINK" /> laman tersebut boleh digunakan untuk memaparkan iklan kepada anda. Anda boleh mengurus minat anda dalam tetapan.</translation>
 <translation id="608912389580139775">Untuk menambahkan halaman ini pada senarai bacaan anda, klik ikon Penanda Halaman</translation>
 <translation id="6091761513005122595">Perkongsian berjaya dilekapkan.</translation>
 <translation id="6093888419484831006">Membatalkan kemas kini...</translation>
@@ -5931,6 +5931,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6709133671862442373">Berita</translation>
 <translation id="6709357832553498500">Sambung menggunakan <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
+<translation id="6710394144992407503">Semak ralat ejaan apabila anda menaip teks pada halaman web</translation>
 <translation id="6711146141291425900">Pautkan akaun <ph name="WEB_DRIVE" /> untuk Muat Turun</translation>
 <translation id="6712943853047024245">Anda telah menyimpan kata laluan dengan nama pengguna ini untuk <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Tambah Profil Kerja</translation>
@@ -6552,6 +6553,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7340757554212515731">Menghantar laporan ranap sistem serta data diagnostik dan penggunaan kepada Google secara automatik.</translation>
 <translation id="7341834142292923918">Mahukan akses ke tapak ini</translation>
 <translation id="7343372807593926528">Sila terangkan masalah tersebut sebelum menghantar maklum balas.</translation>
+<translation id="7344585835349671209">Urus sijil HTTPS/SSL pada peranti anda</translation>
 <translation id="7345706641791090287">Sahkan kata laluan anda</translation>
 <translation id="7346909386216857016">Ok, faham</translation>
 <translation id="7347452120014970266">Tindakan ini akan mengosongkan semua data dan kuki yang disimpan oleh <ph name="ORIGIN_NAME" /> dan apl yang dipasang</translation>
@@ -6681,6 +6683,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7460045493116006516">Tema semasa yang telah dipasang</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">Selepas ini, telefon anda akan membuka kunci <ph name="DEVICE_TYPE" /> anda. Anda boleh mematikan Smart Lock dalam Tetapan.</translation>
+<translation id="7464153996453281700">Komponen sudah dikemas kini</translation>
 <translation id="7464637891177137294">Simpan pada Google Account anda, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# buka tab, tekan untuk menogol jalur tab}other{# buka tab, tekan untuk menogol jalur tab}}</translation>
 <translation id="7465635034594602553">Kesilapan telah berlaku. Sila tunggu beberapa minit dan jalankan <ph name="APP_NAME" /> sekali lagi.</translation>
@@ -7190,6 +7193,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="793531125873261495">Ralat memuat turun mesin maya. Sila cuba lagi.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% selesai</translation>
 <translation id="7939062555109487992">Pilihan lanjutan</translation>
+<translation id="7939328347457537652">Urus sijil peranti</translation>
 <translation id="7939412583708276221">Simpan juga</translation>
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7943368935008348579">Muat turun PDF</translation>

@@ -306,6 +306,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="2814448776515246190">Delvis opptak</translation>
 <translation id="2819276065543622893">Du blir nå logget av.</translation>
+<translation id="2822551631199737692">Kameraet er i bruk</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> støtter ikke <ph name="SPECIFIED_RESOLUTION" />. Oppløsningen ble endret til <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Hylle</translation>
 <translation id="2831035692318564937">Påslått til soloppgang</translation>
@@ -807,6 +808,7 @@ Koble enheten til strøm.</translation>
 <translation id="5682642926269496722">Google-assistenten er ikke tilgjengelig for denne brukerkontoen.</translation>
 <translation id="5689633613396158040">Nattlys gjør det lettere å se på skjermen og lese i svakt lys. Trykk for å endre når Nattlys slås på, eller slå det helt av.</translation>
 <translation id="5691772641933328258">Gjenkjenner ikke fingeravtrykket</translation>
+<translation id="5693255400847650006">Mikrofonen er i bruk</translation>
 <translation id="570390244361237317">Alle apper – naviger med piltastene for å få tilgang til alle appene</translation>
 <translation id="5707775774148071965">Enheten støtter en høyere datafrekvens enn kabelen. Enhetens ytelse kan være begrenset.</translation>
 <translation id="5710450975648804523">Ikke forstyrr er på</translation>
@@ -981,6 +983,7 @@ Nylig installert</translation>
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="6727969043791803658">Koblet til – <ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Kameraet og mikrofonen er i bruk</translation>
 <translation id="6739144137573853180">GÅ TIL INNSTILLINGER</translation>
 <translation id="6751052314767925245">Påkreves av administratoren din</translation>
 <translation id="6751826523481687655">Ytelsessporing er slått på</translation>

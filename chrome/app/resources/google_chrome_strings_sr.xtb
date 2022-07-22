@@ -70,6 +70,7 @@
 <translation id="2139300032719313227">Рестартујте Chrome ОС</translation>
 <translation id="2151406531797534936">Поново покрените Chrome</translation>
 <translation id="2174917724755363426">Инсталација није довршена. Желите стварно да је откажете?</translation>
+<translation id="223889379102603431">Информације о томе како Chrome управља сертификатима основног нивоа</translation>
 <translation id="2258103955319320201">Да бисте приступали Chrome прегледачу на свим уређајима, пријавите се, па укључите синхронизацију</translation>
 <translation id="2290014774651636340">Недостају шифре за Google API. Неке функције Google Chrome-а ће бити онемогућене.</translation>
 <translation id="2290095356545025170">Да ли стварно желите да деинсталирате Google Chrome?</translation>
@@ -356,6 +357,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8129812357326543296">О &amp;Google Chrome-у</translation>
 <translation id="813913629614996137">Покреће се…</translation>
 <translation id="8255190535488645436">Google Chrome користи камеру и микрофон.</translation>
+<translation id="8270775718612349140">Сертификати којима управља Chrome</translation>
 <translation id="8286862437124483331">Google Chrome покушава да прикаже лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="828798499196665338">Родитељ је искључио „Дозволе за сајтове, апликације и додатке“ за Chrome. Омогућавање ове ставке (<ph name="EXTENSION_TYPE_PARAMETER" />) није дозвољено.</translation>
 <translation id="8290100596633877290">Опа! Google Chrome је отказао. Желите ли да га одмах поново покренете?</translation>

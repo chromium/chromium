@@ -985,6 +985,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1916502483199172559">Domyślny czerwony awatar</translation>
 <translation id="1918141783557917887">&amp;Mniejszy</translation>
 <translation id="1920390473494685033">Kontakty</translation>
+<translation id="1921544956190977703">Korzystasz z najlepszych zabezpieczeń Chrome przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1923468477587371721">Strony Google takie jak Gmail, Dysk i YouTube korzystają z języka Twojego konta Google, chyba że ustawienia języka tych usług zostały wcześniej zmienione</translation>
 <translation id="192494336144674234">Otwórz za pomocą</translation>
@@ -1282,7 +1283,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2191754378957563929">Włączono</translation>
 <translation id="2192505247865591433">Z:</translation>
 <translation id="2193365732679659387">Ustawienia zaufania</translation>
-<translation id="2194554416429452547">Podczas testów Chrome sprawdza, w jaki sposób można ograniczyć spam, oszustwa i udostępnianie treści między witrynami. Chrome również <ph name="ESTIMATE_INTERESTS_LINK" />, do których witryny mogą dostosowywać pokazywane Ci reklamy. Swoimi zainteresowaniami możesz zarządzać w ustawieniach.</translation>
 <translation id="2194856509914051091">Istotne kwestie</translation>
 <translation id="2195331105963583686">Po tej dacie nadal będzie można używać urządzenia <ph name="DEVICE_TYPE" />, ale nie będziesz już otrzymywać automatycznych aktualizacji zabezpieczeń i oprogramowania</translation>
 <translation id="2195729137168608510">Ochrona poczty e-mail</translation>
@@ -2075,6 +2075,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.</translation>
 <translation id="2923234477033317484">Usuń to konto</translation>
 <translation id="2923644930701689793">Uzyskaj dostęp do rolki z aparatu telefonu</translation>
+<translation id="292371311537977079">Ustawienia Chrome</translation>
 <translation id="2925658782192398150">Gotowe, nie znaleziono problemów</translation>
 <translation id="2926085873880284723">Przywróć domyślne skróty</translation>
 <translation id="2926620265753325858">Urządzenie <ph name="DEVICE_NAME" /> nie jest obsługiwane</translation>
@@ -2659,6 +2660,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3511528412952710609">Krótkie</translation>
 <translation id="3514335087372914653">Sterowanie grą</translation>
 <translation id="3514373592552233661">Jeśli będzie dostępnych więcej sieci, sieci preferowane będą wybierane przed innymi znanymi sieciami</translation>
+<translation id="3514647716686280777">Korzystasz ze standardowej ochrony. Aby lepiej chronić się przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami, włącz Ulepszone Bezpieczne przeglądanie w ustawieniach Chrome.</translation>
 <translation id="3515983984924808886">Jeszcze raz dotknij klucza bezpieczeństwa, by potwierdzić resetowanie. Wszystkie informacje zapisane w kluczu, w tym jego kod PIN, zostaną usunięte.</translation>
 <translation id="3518985090088779359">Akceptuj i kontynuuj</translation>
 <translation id="3519564332031442870">Usługa backendu drukowania</translation>
@@ -5274,6 +5276,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="6086846494333236931">Zainstalowane przez administratora</translation>
 <translation id="6087746524533454243">Szukasz strony z informacjami o przeglądarce? Wejdź na</translation>
 <translation id="6087960857463881712">Niesamowita twarz</translation>
+<translation id="6088535503330933227">Chrome sprawdza, w jaki sposób można ograniczyć spam, oszustwa i udostępnianie treści między witrynami. Chrome również <ph name="ESTIMATE_INTERESTS_LINK" />, do których witryny mogą dostosowywać pokazywane Ci reklamy. Swoimi zainteresowaniami możesz zarządzać w ustawieniach.</translation>
 <translation id="608912389580139775">Aby dodać tę stronę do listy Do przeczytania, kliknij ikonę Zakładka</translation>
 <translation id="6091761513005122595">Udział został podłączony.</translation>
 <translation id="6093888419484831006">Anulowanie aktualizacji...</translation>
@@ -5463,6 +5466,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="6278428485366576908">Motyw</translation>
 <translation id="6278776436938569440">Zmień lokalizację</translation>
 <translation id="6279183038361895380">Naciśnij |<ph name="ACCELERATOR" />|, by wyświetlić kursor</translation>
+<translation id="6279595948631688299">E&amp;ksportuj wybrany certyfikat…</translation>
 <translation id="6280215091796946657">Zaloguj się na inne konto</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Przekroczono limit 1 kartki}few{Przekroczono limit {COUNT} kartek}many{Przekroczono limit {COUNT} kartek}other{Przekroczono limit {COUNT} kartki}}</translation>
@@ -5577,6 +5581,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6398715114293939307">Usuń Sklep Google Play</translation>
 <translation id="6398765197997659313">Zamknij pełny ekran</translation>
 <translation id="6399774419735315745">Szpieg</translation>
+<translation id="6401458660421980302">Aby wysłać tę kartę na inne urządzenie, zaloguj się na nim w Chrome</translation>
 <translation id="6401597285454423070">Twój komputer ma układ TPM (Trusted Platform Module), który umożliwia zastosowanie wielu krytycznych funkcji zabezpieczeń w Chrome OS. Więcej informacji znajdziesz w Centrum pomocy Chromebooka na https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Granie w gry na Chromebooku</translation>
 <translation id="6404511346730675251">Edytuj zakładkę</translation>
@@ -5817,6 +5822,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6619801788773578757">Dodaj aplikację kiosku</translation>
 <translation id="6619990499523117484">Potwierdź kod PIN</translation>
 <translation id="6620254580880484313">Nazwa kontenera</translation>
+<translation id="6621391692573306628">Aby wysłać tę kartę na inne urządzenie, na obu urządzeniach zaloguj się w Chrome</translation>
 <translation id="6622980291894852883">Nadal blokuj pokazywanie grafik</translation>
 <translation id="6624036901798307345">W trybie tabletu kliknij przycisk licznika kart na pasku narzędzi, aby otworzyć nowy pasek kart z miniaturą każdej karty.</translation>
 <translation id="6624535038674360844">Plik <ph name="FILE_NAME" /> zawiera treści niebezpieczne lub treści o charakterze kontrowersyjnym. Poproś właściciela, by rozwiązał problem.</translation>

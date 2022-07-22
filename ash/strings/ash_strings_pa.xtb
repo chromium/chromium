@@ -306,6 +306,7 @@
 <translation id="2805756323405976993">ਐਪਸ</translation>
 <translation id="2814448776515246190">ਅੰਸ਼ਕ ਕੈਪਚਰ</translation>
 <translation id="2819276065543622893">ਤੁਹਾਨੂੰ ਹੁਣ ਸਾਈਨ ਆਉਟ ਕੀਤਾ ਜਾਏਗਾ।</translation>
+<translation id="2822551631199737692">ਕੈਮਰਾ ਵਰਤੋਂ ਵਿੱਚ ਹੈ</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। ਰੈਜ਼ੋਲਿਊਸ਼ਨ <ph name="FALLBACK_RESOLUTION" /> ਵਿੱਚ ਬਦਲਿਆ ਗਿਆ ਸੀ।</translation>
 <translation id="2825619548187458965">Shelf</translation>
 <translation id="2831035692318564937">ਸੂਰਜ ਚੜ੍ਹਨ ਤੱਕ ਚਾਲੂ ਰਹੇਗਾ</translation>
@@ -808,6 +809,7 @@
 <translation id="5682642926269496722">Google Assistant ਮੌਜੂਦਾ ਵਰਤੋਂਕਾਰ ਖਾਤੇ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="5689633613396158040">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ ਵਿਸ਼ੇਸ਼ਤਾ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਨੂੰ ਘੱਟ ਰੋਸ਼ਨੀ ਵਿੱਚ ਦੇਖਣਾ ਜਾਂ ਪੜ੍ਹਨਾ ਵਧੇਰੇ ਆਸਾਨ ਬਣਾਉਂਦੀ ਹੈ। ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ ਵਿਸ਼ੇਸ਼ਤਾ ਦੇ ਚਾਲੂ ਜਾਂ ਬੰਦ ਹੋਣ ਦਾ ਸਮਾਂ ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="5691772641933328258">ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੀ ਪਛਾਣ ਨਹੀਂ ਹੋਈ</translation>
+<translation id="5693255400847650006">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤੋਂ ਵਿੱਚ ਹੈ</translation>
 <translation id="570390244361237317">ਸਾਰੀਆਂ ਐਪਾਂ, ਸਾਰੀਆਂ ਐਪਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਤੀਰ ਕੁੰਜੀਆਂ ਨਾਲ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
 <translation id="5707775774148071965">ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਤੁਹਾਡੀ ਕੇਬਲ ਨਾਲੋਂ ਵੱਧ ਡਾਟਾ ਦਰ ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ। ਡੀਵਾਈਸ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="5710450975648804523">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਚਾਲੂ ਹੈ</translation>
@@ -982,6 +984,7 @@
 <translation id="6723839937902243910">ਪਾਵਰ</translation>
 <translation id="6727969043791803658">ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ, <ph name="BATTERY_PERCENTAGE" />% ਬੈਟਰੀ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤੋਂ ਵਿੱਚ ਹਨ</translation>
 <translation id="6739144137573853180">ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="6751052314767925245">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਲਾਗੂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6751826523481687655">ਪ੍ਰਦਰਸ਼ਨ ਟ੍ਰੇਸਿੰਗ ਚਾਲੂ ਹੈ</translation>

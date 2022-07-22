@@ -1297,7 +1297,6 @@
 <translation id="2191754378957563929">ਚਾਲੂ</translation>
 <translation id="2192505247865591433">ਤੋਂ:</translation>
 <translation id="2193365732679659387">ਭਰੋਸਾ ਸੈਟਿੰਗਾਂ</translation>
-<translation id="2194554416429452547">ਪਰਖ ਦੌਰਾਨ, Chrome ਸਪੈਮ, ਧੋਖਾਧੜੀ, ਅਤੇ ਸਾਈਟਾਂ ਵਿਚਕਾਰ ਸਾਂਝਾਕਰਨ ਨੂੰ ਸੀਮਤ ਕਰਨ ਦੇ ਤਰੀਕਿਆਂ ਦੀ ਪੜਚੋਲ ਕਰ ਰਿਹਾ ਹੈ। Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> ਵੀ ਦਿਖਾਉਂਦਾ ਹੈ, ਜਿਸ ਨੂੰ ਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ ਵਰਤ ਸਕਦੀਆਂ ਹਨ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਆਪਣੀਆਂ ਦਿਲਚਸਪੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2194856509914051091">ਵਿਚਾਰੇ ਜਾਣ ਵਾਲੀਆਂ ਚੀਜ਼ਾਂ</translation>
 <translation id="2195331105963583686">ਤੁਸੀਂ ਹਾਲੇ ਵੀ ਉਸ ਸਮੇਂ ਤੋਂ ਬਾਅਦ ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਵਰਤ ਸਕੋਗੇ, ਪਰ ਇਸਨੂੰ ਸਵੈਚਲਿਤ ਸਾਫ਼ਟਵੇਅਰ ਅਤੇ ਸੁਰੱਖਿਆ ਅੱਪਡੇਟ ਨਹੀਂ ਮਿਲਣਗੇ</translation>
 <translation id="2195729137168608510">ਈਮੇਲ ਸੁਰੱਖਿਆ</translation>
@@ -4122,6 +4121,7 @@
 <translation id="4900392736118574277">ਤੁਹਾਡਾ ਸ਼ੁਰੂਆਤੀ ਪੰਨਾ <ph name="URL" /> 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ ਸੀ।</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - ਇੰਟਰਲੇਸਡ</translation>
 <translation id="4900652253009739885">"'ਚੁਣੋ" ਲਈ ਜ਼ਿੰਮੇ ਲਗਾਏ ਗਏ ਇੱਕੋ-ਇੱਕ ਸਵਿੱਚ ਨੂੰ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ। <ph name="RESPONSE" /> ਲਈ ਕੋਈ ਵੀ ਕੁੰਜੀ ਦਬਾਓ।</translation>
+<translation id="4901154724271753917">ਹਾਲੀਆਂ ਬੰਦ ਕੀਤੀਆਂ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="4901309472892185668">ਪ੍ਰਯੋਗ <ph name="EXPERIMENT_NAME" /> ਲਈ, ਪ੍ਰਯੋਗ ਦੀ ਸਥਿਤੀ ਚੁਣੋ।</translation>
 <translation id="49027928311173603">ਸਰਵਰ ਤੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀ ਨੀਤੀ ਅਵੈਧ ਹੈ: <ph name="VALIDATION_ERROR" />।</translation>
 <translation id="4906490889887219338">'ਨੈੱਟਵਰਕ ਫ਼ਾਈਲ ਸਾਂਝਾਕਰਨ' ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ ਜਾਂ ਪ੍ਰਬੰਧਨ ਕਰੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
@@ -5302,6 +5302,7 @@
 <translation id="6086846494333236931">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਸਥਾਪਿਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6087746524533454243">ਕੀ ਪੰਨੇ ਸੰਬੰਧੀ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ ਲੱਭ ਰਹੇ ਹੋ? ਇੱਥੇ ਜਾਓ</translation>
 <translation id="6087960857463881712">ਸੁੰਦਰ ਚਿਹਰਾ</translation>
+<translation id="6088535503330933227">Chrome ਸਪੈਮ, ਧੋਖਾਧੜੀ ਅਤੇ ਸਾਈਟਾਂ ਵਿਚਕਾਰ ਸਾਂਝਾਕਰਨ ਨੂੰ ਸੀਮਤ ਕਰਨ ਦੇ ਤਰੀਕਿਆਂ ਦੀ ਪੜਚੋਲ ਕਰ ਰਿਹਾ ਹੈ। Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> ਵੀ ਦਿਖਾਉਂਦਾ ਹੈ, ਜਿਸਨੂੰ ਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ ਵਰਤ ਸਕਦੀਆਂ ਹਨ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਆਪਣੀਆਂ ਦਿਲਚਸਪੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="608912389580139775">ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਇਹ ਪੰਨਾ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, 'ਬੁੱਕਮਾਰਕ' ਪ੍ਰਤੀਕ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="6091761513005122595">ਸਾਂਝਾਕਰਨ ਨੂੰ ਮਾਊਂਟ ਕਰਨਾ ਸਫਲ ਰਿਹਾ।</translation>
 <translation id="6093888419484831006">ਅੱਪਡੇਟ ਰੱਦ ਕਰ ਰਿਹਾ ਹੈ...</translation>
@@ -5931,6 +5932,7 @@
 <translation id="6709133671862442373">ਖਬਰਾਂ</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> ਵਰਤਦੇ ਹੋਏ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="6710213216561001401">ਪਿਛਲਾ</translation>
+<translation id="6710394144992407503">ਤੁਹਾਡੇ ਵੱਲੋਂ ਵੈੱਬ ਪੰਨਿਆਂ 'ਤੇ ਲਿਖਤ ਨੂੰ ਟਾਈਪ ਕਰਨ ਦੌਰਾਨ ਸ਼ਬਦ-ਜੋੜ ਗੜਬੜੀਆਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="6711146141291425900">ਡਾਊਨਲੋਡਾਂ ਲਈ <ph name="WEB_DRIVE" /> ਖਾਤਾ ਲਿੰਕ ਕਰੋ</translation>
 <translation id="6712943853047024245">ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ <ph name="WEBSITE" /> ਲਈ ਇਸ ਵਰਤੋਂਕਾਰ ਨਾਮ ਨਾਲ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰ ਲਿਆ ਹੈ</translation>
 <translation id="6713233729292711163">ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -6552,6 +6554,7 @@
 <translation id="7340757554212515731">Google ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਦੇ ਨਾਲ-ਨਾਲ ਤਸ਼ਖੀਸੀ ਅਤੇ ਵਰਤੋਂ ਡਾਟਾ ਭੇਜਦਾ ਹੈ</translation>
 <translation id="7341834142292923918">ਇਸ ਸਾਈਟ ਤੱਕ ਪਹੁੰਚ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="7343372807593926528">ਵਿਚਾਰ ਭੇਜਣ ਤੋਂ ਪਹਿਲਾਂ ਕਿਰਪਾ ਕਰਕੇ ਸਮੱਸਿਆ ਦਾ ਵਰਣਨ ਕਰੋ।</translation>
+<translation id="7344585835349671209">ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ HTTPS/SSL ਸਰਟੀਫਿਕੇਟਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="7345706641791090287">ਆਪਣੇ ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7346909386216857016">ਠੀਕ, ਸਮਝ ਲਿਆ</translation>
 <translation id="7347452120014970266">ਇੰਝ ਕਰਨ ਨਾਲ <ph name="ORIGIN_NAME" /> ਵੱਲੋਂ ਸਟੋਰ ਕੀਤੇ ਸਾਰੇ ਡਾਟੇ ਅਤੇ ਕੁਕੀਜ਼ ਅਤੇ ਇਸਦੀਆਂ ਸਥਾਪਤ ਕੀਤੀਆਂ ਐਪਾਂ ਨੂੰ ਕਲੀਅਰ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
@@ -6681,6 +6684,7 @@
 <translation id="7460045493116006516">ਮੌਜੂਦਾ ਥੀਮ ਜੋ ਤੁਸੀਂ ਸਥਾਪਤ ਕੀਤਾ ਹੈ</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">ਅਗਲੀ ਵਾਰ ਤੁਹਾਡਾ ਫ਼ੋਨ ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> ਨੂੰ ਅਣਲਾਕ ਕਰੇਗਾ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ 'ਸਮਾਰਟ ਲਾਕ' ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="7464153996453281700">ਤੱਤ ਪਹਿਲਾਂ ਹੀ ਅੱਪ-ਟੂ-ਡੇਟ ਹੈ</translation>
 <translation id="7464637891177137294">ਇਸ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ, <ph name="ACCOUNT" />, ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# ਖੁੱਲ੍ਹੀ ਟੈਬ, ਟੈਬ ਪੱਟੀ ਨੂੰ ਟੌਗਲ ਕਰਨ ਲਈ ਦਬਾਓ}one{# ਖੁੱਲ੍ਹੀ ਟੈਬ, ਟੈਬ ਪੱਟੀ ਨੂੰ ਟੌਗਲ ਕਰਨ ਲਈ ਦਬਾਓ}other{# ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ, ਟੈਬ ਪੱਟੀ ਨੂੰ ਟੌਗਲ ਕਰਨ ਲਈ ਦਬਾਓ}}</translation>
 <translation id="7465635034594602553">ਕੋਈ ਗੜਬੜ ਹੋਈ। ਕਿਰਪਾ ਕਰਕੇ ਥੋੜ੍ਹੀ ਦੇਰ ਉਡੀਕ ਕਰੋ ਅਤੇ <ph name="APP_NAME" /> ਨੂੰ ਦੁਬਾਰਾ ਚਲਾਓ।</translation>
@@ -7013,6 +7017,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਦੇਖ ਸਕੇਗੀ</translation>
 <translation id="7768770796815395237">ਬਦਲੋ</translation>
 <translation id="7768784765476638775">ਚੁਣੋ ਅਤੇ ਸੁਣੋ</translation>
+<translation id="7769748505895274502">ਹਾਲੀਆਂ ਬੰਦ ਕੀਤੀਆਂ ਨੂੰ ਸਮੇਟੋ</translation>
 <translation id="7770406201819593386">ChromeOS Flex ਤਸ਼ਖੀਸ ਜਾਂਚਾਂ ਚਲਾਓ।</translation>
 <translation id="7770450735129978837">ਸੱਜਾ ਮਾਊਸ ਕਲਿੱਕ</translation>
 <translation id="7770612696274572992">ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ ਤੋਂ ਚਿੱਤਰ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
@@ -7188,6 +7193,7 @@
 <translation id="793531125873261495">ਆਭਾਸੀ ਮਸ਼ੀਨ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋ ਗਈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ ਕਰੋ।</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% ਮੁਕੰਮਲ</translation>
 <translation id="7939062555109487992">ਉੱਨਤ ਵਿਕਲਪ</translation>
+<translation id="7939328347457537652">ਡੀਵਾਈਸ ਦੇ ਸਰਟੀਫਿਕੇਟਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="7939412583708276221">ਫੇਰ ਵੀ ਰੱਖੋ</translation>
 <translation id="7942349550061667556">ਲਾਲ</translation>
 <translation id="7943368935008348579">PDF ਡਾਊਨਲੋਡ ਕਰੋ</translation>

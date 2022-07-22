@@ -1283,7 +1283,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2191754378957563929">Açık</translation>
 <translation id="2192505247865591433">Nereden:</translation>
 <translation id="2193365732679659387">Güven ayarları</translation>
-<translation id="2194554416429452547">Chrome, denemeler sırasında spam, sahtekarlık ve siteler arası paylaşımı kısıtlamanın yollarını arar. Chrome ayrıca sitelerin size reklam göstermek için kullanabileceği <ph name="ESTIMATE_INTERESTS_LINK" />. İlgi alanlarınızı ayarlardan yönetebilirsiniz.</translation>
 <translation id="2194856509914051091">Dikkate alınması gereken noktalar</translation>
 <translation id="2195331105963583686">Bundan sonra <ph name="DEVICE_TYPE" /> cihazını hâlâ kullanabileceksiniz ancak cihaz artık otomatik yazılım ve güvenlik güncellemelerini almayacak</translation>
 <translation id="2195729137168608510">E-posta Koruması</translation>
@@ -3263,6 +3262,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4077919383365622693"><ph name="SITE" /> web sitesinin depoladığı tüm veriler ve çerezler temizlenecek.</translation>
 <translation id="4078738236287221428">Yoğun</translation>
 <translation id="4079140982534148664">Gelişmiş Yazım Denetimini Kullan</translation>
+<translation id="4081203444152654304"><ph name="VISUAL_SEARCH_PROVIDER" /> ile görselin içinde arama yap</translation>
 <translation id="4081242589061676262">Dosya yayınlanamıyor.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" />, telefonunuza bildirim gönderdi. Kimliğinizi doğrulamak için bildirimdeki adımları uygulayın.</translation>
 <translation id="4084682180776658562">Yer İşareti</translation>
@@ -3658,6 +3658,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4476590490540813026">Sporcu</translation>
 <translation id="4476659815936224889">Bu kodu taramak için telefonunuzda bir QR tarayıcı uygulamasını veya bazı kamera uygulamalarını kullanabilirsiniz.</translation>
 <translation id="4477015793815781985">Ctrl, Alt veya ⌘ tuşuna da basın</translation>
+<translation id="4477379360383751882"><ph name="VISUAL_SEARCH_PROVIDER" /> ile Görselin İçinde Arama Yap</translation>
 <translation id="4478664379124702289">Bağl&amp;antıyı Farklı Kaydet...</translation>
 <translation id="4479424953165245642">Kiosk uygulamalarını yönet</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -5285,6 +5286,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6086846494333236931">Yöneticiniz tarafından yüklendi</translation>
 <translation id="6087746524533454243">Tarayıcı bilgisi sayfasını mı arıyorsunuz? Şu adresi ziyaret edin:</translation>
 <translation id="6087960857463881712">Çok beğenen</translation>
+<translation id="6088535503330933227">Chrome; reklam spam'i, sahtekarlık ve siteler arası paylaşımı kısıtlamanın yollarını arar. Chrome ayrıca sitelerin size reklam göstermek için kullanabileceği <ph name="ESTIMATE_INTERESTS_LINK" />. İlgi alanlarınızı ayarlardan yönetebilirsiniz.</translation>
 <translation id="608912389580139775">Bu sayfayı okuma listenize eklemek için Yer İşareti simgesini tıklayın</translation>
 <translation id="6091761513005122595">Paylaşım başarıyla eklendi.</translation>
 <translation id="6093888419484831006">Güncelleme iptal ediliyor...</translation>

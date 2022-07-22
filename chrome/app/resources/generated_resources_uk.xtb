@@ -1299,7 +1299,6 @@
 <translation id="2191754378957563929">Увімкнено</translation>
 <translation id="2192505247865591433">Від:</translation>
 <translation id="2193365732679659387">Налаштування довіри</translation>
-<translation id="2194554416429452547">Під час пробних періодів Chrome досліджує способи протидіяти спаму й шахрайству, а також обмежити обмін даними між сайтами. Chrome також <ph name="ESTIMATE_INTERESTS_LINK" />, які можуть використовувати інші сайти для показу оголошень. Ви можете керувати своїми інтересами в налаштуваннях.</translation>
 <translation id="2194856509914051091">Що варто врахувати</translation>
 <translation id="2195331105963583686">Після цього ви й надалі зможете користуватися пристроєм <ph name="DEVICE_TYPE" />, але він не буде отримувати автоматичні оновлення програмного забезпечення й системи безпеки</translation>
 <translation id="2195729137168608510">Захист електронної пошти</translation>
@@ -3284,6 +3283,7 @@
 <translation id="4077919383365622693">Усі дані й файли cookie, збережені сайтом <ph name="SITE" />, буде видалено.</translation>
 <translation id="4078738236287221428">Примусово</translation>
 <translation id="4079140982534148664">Використовувати покращену перевірку орфографії</translation>
+<translation id="4081203444152654304">Пошук на зображенні через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4081242589061676262">Не вдається транслювати файл.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> надсилає сповіщення на ваш телефон. Щоб підтвердити свою особу, виконайте вказівки в ньому.</translation>
 <translation id="4084682180776658562">Закладка</translation>
@@ -3679,6 +3679,7 @@
 <translation id="4476590490540813026">Спортсменка</translation>
 <translation id="4476659815936224889">Ви можете зісканувати цей код за допомогою QR-сканера на телефоні або в деяких додатках для камери.</translation>
 <translation id="4477015793815781985">Натискайте Ctrl, Alt або ⌘</translation>
+<translation id="4477379360383751882">Пошук на зображенні через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4478664379124702289">Зберегти посиланн&amp;я як...</translation>
 <translation id="4479424953165245642">Керувати додатками-терміналами</translation>
 <translation id="4479639480957787382">Ethernet</translation>

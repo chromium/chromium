@@ -3130,6 +3130,7 @@
 <translation id="4372704773119750918">不允许企业用户成为多用户配置的用户（一级或二级）</translation>
 <translation id="4377599627073874279">允许所有网站显示所有图片</translation>
 <translation id="437791893267799639">政策未设置，禁止数据迁移和 ARC</translation>
+<translation id="4380159792986204036">允许 Web 自助服务终端在任意屏幕上打开多个浏览器窗口</translation>
 <translation id="4381227367939912539">禁止玩恐龙复活节彩蛋游戏</translation>
 <translation id="4382413175336720282">已停用实时网址检查功能。</translation>
 <translation id="4387741272680827493">通过设置此政策，您可以指定一系列可绕过预加载的 HSTS 升级（从 HTTP 升级到 HTTPS）的主机名。
@@ -3636,6 +3637,9 @@
 
           如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="4978533099939732984">一律显示磁盘空间不足警告</translation>
+<translation id="4979714585847741269">如果此政策已启用，自助服务终端 Web 应用可再打开一个浏览器窗口，而且该窗口既可位于同一屏幕上，也可位于另一屏幕上。若要打开一个新窗口，Web 应用应调用 JavaScript 函数 <ph name="OPEN_NEW_WINDOW_JS" />。
+
+      如果此政策已停用或未设置，自助服务终端 Web 应用只能使用主浏览器窗口，无法打开一个新窗口。对任何用于打开新窗口的 JavaScript 函数的调用都会被忽略。</translation>
 <translation id="4980635395568992380">数据类型：</translation>
 <translation id="4983201894483989687">允许运行过期的插件</translation>
 <translation id="4986560318567565414">控制用于从替代浏览器切换至 Chrome 的路径。</translation>
@@ -6065,6 +6069,7 @@
       请注意，此政策取决于操作系统证书验证堆栈是否允许 SHA-1 签名。如果操作系统更新更改了操作系统处理 SHA-1 证书的方式，则此政策可能不再有效。此外，此政策仅用作临时解决方法，旨在为企业提供更多时间来弃用 SHA-1。系统将于 2019 年 1 月 1 日（或左右）取消此政策。
 
       如果此政策未设置或设置为 false，则 <ph name="PRODUCT_NAME" /> 会遵循公开发布的 SHA-1 停用时间表。</translation>
+<translation id="7577082478271919056">允许自助服务终端 Web 应用再打开一个浏览器窗口</translation>
 <translation id="7578142001795552218">此政策旨在授权快速解答功能访问所选内容并将相关信息发送给服务器，以获得单位换算结果。
 
       如果此政策已启用或未设置，系统将启用快速解答单位换算功能。
@@ -6695,9 +6700,6 @@
 <translation id="8295496526151576383">此政策旨在以列表形式指定：哪些扩展程序能够在使用 <ph name="PRINTING_API" /> 函数 <ph name="SUBMIT_JOB_FUNCTION" /> 发送打印任务时跳过打印任务确认对话框。
 
       如果此列表不含任何扩展程序，或者未设置此列表，系统将针对每次 <ph name="SUBMIT_JOB_FUNCTION" /> 函数调用向用户显示打印任务确认对话框。</translation>
-<translation id="829641334878002866">您可以设置一个时间段（以毫秒为单位），从而指定第一条通知（提示用户必须重启 <ph name="PRODUCT_OS_NAME" />设备以安装更新）的发出时间应与 <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> 政策所设时间段的结束时间相隔多久。
-
-      如果未做设置，系统将会在 <ph name="PRODUCT_OS_NAME" />设备上使用默认时间段，即 259200000 毫秒（3 天）。</translation>
 <translation id="829703642501504476">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 会使用内置的备用错误页面（例如“找不到网页”）。如果此政策设为 False，<ph name="PRODUCT_NAME" /> 将一律不使用备用错误页面。
 
       如果您设置了此政策，用户便无法更改它。如果您未设置此政策，系统会开启它，但用户可以更改此设置。</translation>
@@ -7546,6 +7548,7 @@
 
       注意：屏蔽内部 chrome://* 网址可能会导致意外的错误。</translation>
 <translation id="957778406002650056">可供下载相应 <ph name="PLUGIN_VM_NAME" /> 图片的网址。</translation>
+<translation id="958285142322823422">禁止自助服务终端 Web 应用再打开一个浏览器窗口</translation>
 <translation id="958577147847681221">控制 <ph name="PRODUCT_OS_NAME" />是否允许创建新的用户帐号。
 
       如果此政策设为 false，只有 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> 中列出的用户才能登录。
