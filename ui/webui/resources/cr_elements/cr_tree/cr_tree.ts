@@ -7,7 +7,7 @@ import {isMac} from '../../js/cr.m.js';
 
 import {getTemplate} from './cr_tree.html.js';
 import {CrTreeBaseElement} from './cr_tree_base.js';
-import {SELECTED_ATTR} from './cr_tree_item.js';
+import {CrTreeItemElement, SELECTED_ATTR} from './cr_tree_item.js';
 
 /**
  * @fileoverview cr-tree is a container for a tree structure. Items can be added
@@ -84,18 +84,11 @@ export class CrTreeElement extends CrTreeBaseElement {
    * Initializes the element.
    */
   connectedCallback() {
-    // Make list focusable
-    if (!this.hasAttribute('tabindex')) {
-      this.tabIndex = 0;
-    }
-
     if (!this.hasAttribute('role')) {
       this.setAttribute('role', 'tree');
     }
 
     this.addEventListener('keydown', this.handleKeyDown.bind(this));
-    this.addEventListener('focus', this.onFocus.bind(this));
-    this.addEventListener('blur', this.onBlur.bind(this));
   }
 
   // CrTreeBase implementation:
@@ -142,6 +135,9 @@ export class CrTreeElement extends CrTreeBaseElement {
         if (item.id) {
           this.setAttribute('aria-activedescendant', item.id);
         }
+        if (this.matches(':focus-within') || this.shadowRoot!.activeElement) {
+          (item as CrTreeItemElement).rowElement.focus();
+        }
       } else {
         this.removeAttribute('aria-activedescendant');
       }
@@ -151,15 +147,12 @@ export class CrTreeElement extends CrTreeBaseElement {
     }
   }
 
-  // Event handlers:
-  // TODO(rbpotter): Figure out if there is a better way to handle tree:focus
-  // and tree[icon-visibility] styles from tree.css.
-  onFocus() {
-    this.setAttribute('tree-focused', 'true');
-  }
-
-  onBlur() {
-    this.setAttribute('tree-focused', 'false');
+  override addAt(child: CrTreeBaseElement, index: number) {
+    super.addAt(child, index);
+    // aria-owns doesn't work well for the tree because the treeitem role is
+    // set on the rowElement within cr-tree-item's shadow DOM. Set the size
+    // here, so the correct number of items is read.
+    this.setAttribute('aria-setsize', this.items.length.toString());
   }
 
   /**
