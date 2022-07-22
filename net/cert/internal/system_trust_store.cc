@@ -341,18 +341,23 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
 #endif  // CHROME_ROOT_STORE_SUPPORTED
 
 void InitializeTrustStoreMacCache() {
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
     base::ThreadPool::PostTask(
         FROM_HERE,
         {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(&InitializeTrustCacheForCRSOnWorkerThread));
-  } else if (base::FeatureList::IsEnabled(
-                 net::features::kCertVerifierBuiltinFeature)) {
+    return;
+  }
+#endif  // CHROME_ROOT_STORE_SUPPORTED
+  if (base::FeatureList::IsEnabled(
+          net::features::kCertVerifierBuiltinFeature)) {
     base::ThreadPool::PostTask(
         FROM_HERE,
         {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(
             &SystemTrustStoreMac::InitializeTrustCacheOnWorkerThread));
+    return;
   }
 }
 
