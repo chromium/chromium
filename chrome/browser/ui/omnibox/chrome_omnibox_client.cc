@@ -441,22 +441,13 @@ void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
   if (content::DevToolsAgentHost::IsDebuggerAttached(web_contents))
     return;
 
-  // Treat search hint differently, since AutocompleteActionPredictor does not
-  // prerender search results.
   // TODO(https://crbug.com/1278634): Refactor relevant code to reuse common
   // code, and ensure metrics are correctly recorded.
-  if (AutocompleteMatch::IsSearchType(match.type)) {
-    DCHECK(prerender_utils::IsSearchSuggestionPrerenderEnabled());
-    DCHECK(BaseSearchProvider::ShouldPrerender(match));
-    PrerenderManager::CreateForWebContents(web_contents);
-    auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
-    prerender_manager->StartPrerenderSearchSuggestion(match);
-  } else {
-    gfx::Rect container_bounds = web_contents->GetContainerBounds();
-    predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
-        ->StartPrerendering(match.destination_url, *web_contents,
-                            container_bounds.size());
-  }
+  DCHECK(!AutocompleteMatch::IsSearchType(match.type));
+  gfx::Rect container_bounds = web_contents->GetContainerBounds();
+  predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
+      ->StartPrerendering(match.destination_url, *web_contents,
+                          container_bounds.size());
 }
 
 void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {
