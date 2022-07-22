@@ -464,13 +464,6 @@ static_library("libwebp_sharpyuv_sse2") {
   ]
 }
 
-config("libwebp_utils_warnings") {
-  if (is_clang) {
-    # See https://code.google.com/p/webp/issues/detail?id=253.
-    cflags = [ "-Wno-incompatible-pointer-types" ]
-  }
-}
-
 static_library("libwebp_utils") {
   sources = [
     "src/src/utils/bit_reader_inl_utils.h",
@@ -509,8 +502,6 @@ static_library("libwebp_utils") {
   }
 
   all_dependent_configs = [ ":libwebp_config" ]
-
-  public_configs = [ ":libwebp_utils_warnings" ]
 
   deps = [
     ":libwebp_dsp_headers",
