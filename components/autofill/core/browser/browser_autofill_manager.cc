@@ -695,8 +695,12 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
       form_for_autocomplete.fields[i].should_autocomplete = false;
     }
 
+    // If the field was edited by the user and there existed an autofillable
+    // value for the field, log whether the value on submission is same as the
+    // autofillable value.
     if (submitted_form->field(i)
-            ->value_not_autofilled_over_existing_value_hash()) {
+            ->value_not_autofilled_over_existing_value_hash() &&
+        (submitted_form->field(i)->properties_mask & kUserTyped)) {
       // Compare and record if the currently filled value is same as the
       // non-empty value that was to be autofilled in the field.
       AutofillMetrics::
@@ -1922,6 +1926,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     // case.
     if (base::FeatureList::IsEnabled(
             features::kAutofillPreventOverridingPrefilledValues)) {
+      form_structure->field(i)
+          ->set_value_not_autofilled_over_existing_value_hash(absl::nullopt);
       if (form.fields[i].form_control_type != "select-one" &&
           !form.fields[i].value.empty() && !has_override &&
           !FormFieldData::DeepEqual(form.fields[i], field)) {
@@ -1933,18 +1939,16 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
             optional_cvc ? *optional_cvc : kEmptyCvc, action,
             &unused_failure_to_fill);
         if (action == mojom::RendererFormDataAction::kFill &&
-            !fill_value.empty() && fill_value != form.fields[i].value) {
-          // Save the value that was supposed to be autofilled for this field.
+            !fill_value.empty() && fill_value != form.fields[i].value &&
+            !form_structure->field(i)->value.empty()) {
+          // Save the value that was supposed to be autofilled for this field if
+          // the field contained an initial value.
           form_structure->field(i)
               ->set_value_not_autofilled_over_existing_value_hash(
                   base::FastHash(base::UTF16ToUTF8(fill_value)));
         }
         continue;
       }
-
-      // Clear out the value in case the autofill happens for the field.
-      form_structure->field(i)
-          ->set_value_not_autofilled_over_existing_value_hash(absl::nullopt);
     }
 
     // Do not fill fields that have been edited by the user, except if the field

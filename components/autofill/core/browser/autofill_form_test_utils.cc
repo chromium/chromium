@@ -115,6 +115,7 @@ FormData GetFormData(const FormDataDescription& d) {
     ff.is_autofilled = dd.is_autofilled.value_or(false);
     ff.origin = dd.origin.value_or(f.main_frame_origin);
     ff.should_autocomplete = dd.should_autocomplete;
+    ff.properties_mask = dd.properties_mask;
     f.fields.push_back(ff);
   }
   return f;

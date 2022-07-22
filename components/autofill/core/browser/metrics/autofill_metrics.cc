@@ -3598,7 +3598,7 @@ void AutofillMetrics::LogOtpInputDialogNewOtpRequested() {
 void AutofillMetrics::
     LogIsValueNotAutofilledOverExistingValueSameAsSubmittedValue(bool is_same) {
   base::UmaHistogramBoolean(
-      "Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue",
+      "Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue2",
       is_same);
 }
 
