@@ -829,7 +829,7 @@ void VolumeManager::RemoveSshfsCrostiniVolume(
   disk_mount_manager_->UnmountPath(
       sshfs_mount_path.value(),
       base::BindOnce(&VolumeManager::OnSshfsCrostiniUnmountCallback,
-                     base::Unretained(this), sshfs_mount_path,
+                     weak_ptr_factory_.GetWeakPtr(), sshfs_mount_path,
                      std::move(callback)));
 }
 
@@ -840,7 +840,7 @@ void VolumeManager::RemoveSftpGuestOsVolume(
   disk_mount_manager_->UnmountPath(
       sftp_mount_path.value(),
       base::BindOnce(&VolumeManager::OnSftpGuestOsUnmountCallback,
-                     base::Unretained(this), sftp_mount_path,
+                     weak_ptr_factory_.GetWeakPtr(), sftp_mount_path,
                      std::move(callback)));
 }
 
