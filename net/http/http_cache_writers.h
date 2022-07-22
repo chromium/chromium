@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/http/http_cache.h"
@@ -241,6 +242,8 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   // IO Completion callback function.
   void OnIOComplete(int result);
 
+  ActiveEntry* entry() const { return &*entry_; }
+
   State next_state_ = State::NONE;
 
   // True if only reading from network and not writing to cache.
@@ -249,7 +252,7 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   raw_ptr<HttpCache> const cache_ = nullptr;
 
   // Owner of |this|.
-  raw_ptr<ActiveEntry> const entry_ = nullptr;
+  base::SafeRef<ActiveEntry> const entry_;
 
   std::unique_ptr<HttpTransaction> network_transaction_;
 

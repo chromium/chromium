@@ -69,9 +69,8 @@ HttpCache::Writers::TransactionInfo::TransactionInfo(const TransactionInfo&) =
     default;
 
 HttpCache::Writers::Writers(HttpCache* cache, HttpCache::ActiveEntry* entry)
-    : cache_(cache), entry_(entry) {
+    : cache_(cache), entry_(entry->GetSafeRef()) {
   DCHECK(cache_);
-  DCHECK(entry_);
 }
 
 HttpCache::Writers::~Writers() = default;
@@ -123,7 +122,7 @@ bool HttpCache::Writers::StopCaching(bool keep_entry) {
   network_read_only_ = true;
   if (!keep_entry) {
     should_keep_entry_ = false;
-    cache_->WritersDoomEntryRestartTransactions(entry_);
+    cache_->WritersDoomEntryRestartTransactions(entry());
   }
 
   return true;
@@ -198,7 +197,7 @@ void HttpCache::Writers::RemoveTransaction(Transaction* transaction,
   if (!success && ShouldTruncate())
     TruncateEntry();
 
-  cache_->WritersDoneWritingToEntry(entry_, success, should_keep_entry_,
+  cache_->WritersDoneWritingToEntry(entry(), success, should_keep_entry_,
                                     TransactionSet());
 }
 
@@ -632,7 +631,7 @@ void HttpCache::Writers::OnCacheWriteFailure() {
   if (all_writers_.empty()) {
     SetCacheCallback(false, TransactionSet());
   } else {
-    cache_->WritersDoomEntryRestartTransactions(entry_);
+    cache_->WritersDoomEntryRestartTransactions(entry());
   }
 }
 
@@ -681,7 +680,7 @@ void HttpCache::Writers::SetCacheCallback(bool success,
                                           const TransactionSet& make_readers) {
   DCHECK(!cache_callback_);
   cache_callback_ = base::BindOnce(&HttpCache::WritersDoneWritingToEntry,
-                                   cache_->GetWeakPtr(), entry_, success,
+                                   cache_->GetWeakPtr(), entry(), success,
                                    should_keep_entry_, make_readers);
 }
 

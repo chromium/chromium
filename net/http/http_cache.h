@@ -25,6 +25,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/clock.h"
@@ -373,6 +374,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
     bool TransactionInReaders(Transaction* transaction) const;
 
+    base::SafeRef<ActiveEntry> GetSafeRef() const;
+
     const raw_ptr<disk_cache::Entry, DanglingUntriaged> disk_entry;
 
     // Indicates if the disk_entry was opened or not (i.e.: created).
@@ -404,6 +407,10 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
     // True if entry is doomed.
     bool doomed = false;
+
+    // TODO(ricea): Delete this when undoing the change to
+    // HttpCache::Transaction to use SafeRef.
+    base::WeakPtrFactory<ActiveEntry> weak_factory_{this};
   };
 
   using ActiveEntriesMap =
