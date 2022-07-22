@@ -6,29 +6,61 @@ use rust_gtest_interop::prelude::*;
 
 use gnrt_lib::platforms::*;
 
+use cargo_platform::{CfgExpr, Platform};
+use std::str::FromStr;
+
 #[gtest(PlatformTest, PlatformIsSupported)]
 fn test() {
-    use cargo_platform::{CfgExpr, Platform};
-    use std::str::FromStr;
-
     for named_platform in supported_named_platforms_for_testing() {
-        expect_true!(is_supported(&Platform::Name(named_platform.to_string())));
+        expect_true!(matches_supported_target(&Platform::Name(named_platform.to_string())));
     }
 
-    expect_false!(is_supported(&Platform::Name("x86_64-unknown-redox".to_string())));
-    expect_false!(is_supported(&Platform::Name("wasm32-wasi".to_string())));
+    expect_false!(matches_supported_target(&Platform::Name("x86_64-unknown-redox".to_string())));
+    expect_false!(matches_supported_target(&Platform::Name("wasm32-wasi".to_string())));
 
     for os in supported_os_cfgs_for_testing() {
-        expect_true!(is_supported(&Platform::Cfg(CfgExpr::Value(os.clone()))));
+        expect_true!(matches_supported_target(&Platform::Cfg(CfgExpr::Value(os.clone()))));
     }
 
-    expect_false!(is_supported(&Platform::Cfg(
+    expect_false!(matches_supported_target(&Platform::Cfg(
         CfgExpr::from_str("target_os = \"redox\"").unwrap()
     )));
-    expect_false!(is_supported(&Platform::Cfg(
+    expect_false!(matches_supported_target(&Platform::Cfg(
         CfgExpr::from_str("target_os = \"haiku\"").unwrap()
     )));
-    expect_false!(is_supported(&Platform::Cfg(
+    expect_false!(matches_supported_target(&Platform::Cfg(
         CfgExpr::from_str("target_arch = \"sparc\"").unwrap()
     )));
+
+    expect_true!(matches_supported_target(&Platform::Cfg(
+        CfgExpr::from_str("any(unix, target_os = \"wasi\")").unwrap()
+    )));
+
+    expect_false!(matches_supported_target(&Platform::Cfg(
+        CfgExpr::from_str("all(unix, target_os = \"wasi\")").unwrap()
+    )));
+}
+
+#[gtest(PlatformTest, FilterUnsupported)]
+fn test() {
+    expect_eq!(
+        filter_unsupported_platform_terms(Platform::Cfg(
+            CfgExpr::from_str("any(unix, target_os = \"wasi\")").unwrap()
+        )),
+        Some(Platform::Cfg(CfgExpr::from_str("unix").unwrap()))
+    );
+
+    expect_eq!(
+        filter_unsupported_platform_terms(Platform::Cfg(
+            CfgExpr::from_str("all(not(unix), not(target_os = \"wasi\"))").unwrap()
+        )),
+        Some(Platform::Cfg(CfgExpr::from_str("not(unix)").unwrap()))
+    );
+
+    expect_eq!(
+        filter_unsupported_platform_terms(Platform::Cfg(
+            CfgExpr::from_str("not(target_os = \"wasi\")").unwrap()
+        )),
+        None
+    );
 }

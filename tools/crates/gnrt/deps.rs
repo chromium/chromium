@@ -230,10 +230,19 @@ pub fn collect_dependencies(metadata: &cargo_metadata::Metadata) -> Vec<ThirdPar
         // needed for build file generation later.
         for node_dep in iter_node_deps(node) {
             let dep_pkg = dep_graph.packages.get(node_dep.pkg).unwrap();
+
+            // Get the platform filter and remove terms with unsupported
+            // configurations.
+            let mut platform = node_dep.target;
+            if let Some(p) = platform {
+                assert!(platforms::matches_supported_target(&p));
+                platform = platforms::filter_unsupported_platform_terms(p);
+            }
+
             let dep_of_dep = DepOfDep {
                 normalized_name: NormalizedName::from_crate_name(&dep_pkg.name),
                 epoch: epoch_from_version(&dep_pkg.version),
-                platform: node_dep.target,
+                platform,
             };
 
             match node_dep.kind {
@@ -350,7 +359,7 @@ fn iter_node_deps(node: &cargo_metadata::Node) -> impl Iterator<Item = Dependenc
                 match &dep_kind_info.target {
                     None => (),
                     Some(platform) => {
-                        if !platforms::is_supported(platform) {
+                        if !platforms::matches_supported_target(platform) {
                             return None;
                         }
                     }
