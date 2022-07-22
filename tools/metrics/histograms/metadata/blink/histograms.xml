@@ -1423,26 +1423,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.HTMLParsing.ParsingTimeMax2" units="microseconds"
+<histogram name="Blink.HTMLParsing.ParsingTimeMax3" units="microseconds"
     expires_after="2023-06-30">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the maximum time used to parse a single chunk before
-    being blocked, yielding or completing, in microseconds.
+    being blocked, yielding or completing, in microseconds. This does not
+    include time spent executing script.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
   </summary>
 </histogram>
 
-<histogram name="Blink.HTMLParsing.ParsingTimeMin2" units="microseconds"
+<histogram name="Blink.HTMLParsing.ParsingTimeMin3" units="microseconds"
     expires_after="2023-06-30">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the minimum time used to parse a single chunk before
-    being blocked, yielding or completing, in microseconds.
+    being blocked, yielding or completing, in microseconds. This does not
+    include time spent executing script.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
@@ -1455,7 +1457,8 @@ chromium-metrics-reviews@google.com.
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the total amount of time spent in the
-    HTMLDocumentParser performing parsing, in microseconds.
+    HTMLDocumentParser performing parsing, in microseconds. This does not
+    include time spent executing script.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.

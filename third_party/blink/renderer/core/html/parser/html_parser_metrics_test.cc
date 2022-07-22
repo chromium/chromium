@@ -67,9 +67,9 @@ TEST_F(HTMLMetricsTest, MAYBE_ReportSingleChunk) {
   // Should have one of each metric, except the yield times because with
   // a single chunk they should not report.
   histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ChunkCount2", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeMax2", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeMin2", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeTotal2", 1);
+  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeMax3", 1);
+  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeMin3", 1);
+  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeTotal3", 1);
   histogram_tester.ExpectTotalCount("Blink.HTMLParsing.TokensParsedMax2", 1);
   histogram_tester.ExpectTotalCount("Blink.HTMLParsing.TokensParsedMin2", 1);
   histogram_tester.ExpectTotalCount("Blink.HTMLParsing.TokensParsedAverage2",
@@ -93,11 +93,11 @@ TEST_F(HTMLMetricsTest, MAYBE_ReportSingleChunk) {
   // Expect that the times have moved from the default and the max and min
   // and total are all the same (within the same bucket)
   std::vector<base::Bucket> parsing_time_max_buckets =
-      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeMax2");
+      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeMax3");
   std::vector<base::Bucket> parsing_time_min_buckets =
-      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeMin2");
+      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeMin3");
   std::vector<base::Bucket> parsing_time_total_buckets =
-      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeTotal2");
+      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeTotal3");
   EXPECT_EQ(parsing_time_max_buckets.size(), 1u);
   EXPECT_EQ(parsing_time_min_buckets.size(), 1u);
   EXPECT_EQ(parsing_time_total_buckets.size(), 1u);
@@ -159,9 +159,9 @@ TEST_F(HTMLMetricsTest, MAYBE_HistogramReportsTwoChunks) {
 
   // Should have one of each metric.
   histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ChunkCount2", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeMax2", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeMin2", 1);
-  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeTotal2", 1);
+  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeMax3", 1);
+  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeMin3", 1);
+  histogram_tester.ExpectTotalCount("Blink.HTMLParsing.ParsingTimeTotal3", 1);
   histogram_tester.ExpectTotalCount("Blink.HTMLParsing.TokensParsedMax2", 1);
   histogram_tester.ExpectTotalCount("Blink.HTMLParsing.TokensParsedMin2", 1);
   histogram_tester.ExpectTotalCount("Blink.HTMLParsing.TokensParsedAverage2",
@@ -184,11 +184,11 @@ TEST_F(HTMLMetricsTest, MAYBE_HistogramReportsTwoChunks) {
 
   // For parse times, expect that the times have moved from the default.
   std::vector<base::Bucket> parsing_time_max_buckets =
-      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeMax2");
+      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeMax3");
   std::vector<base::Bucket> parsing_time_min_buckets =
-      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeMin2");
+      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeMin3");
   std::vector<base::Bucket> parsing_time_total_buckets =
-      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeTotal2");
+      histogram_tester.GetAllSamples("Blink.HTMLParsing.ParsingTimeTotal3");
   EXPECT_EQ(parsing_time_max_buckets.size(), 1u);
   EXPECT_EQ(parsing_time_min_buckets.size(), 1u);
   EXPECT_EQ(parsing_time_total_buckets.size(), 1u);

@@ -747,7 +747,8 @@ void HTMLDocumentParser::RunScriptsForPausedTreeBuilder() {
   CheckIfBlockingStylesheetAdded();
 }
 
-HTMLDocumentParser::NextTokenStatus HTMLDocumentParser::CanTakeNextToken() {
+HTMLDocumentParser::NextTokenStatus HTMLDocumentParser::CanTakeNextToken(
+    base::TimeDelta& time_executing_script) {
   if (IsStopped())
     return kNoTokens;
 
@@ -755,8 +756,10 @@ HTMLDocumentParser::NextTokenStatus HTMLDocumentParser::CanTakeNextToken() {
   // continuing.
   auto ret = kHaveTokens;
   if (tree_builder_->HasParserBlockingScript()) {
+    base::ElapsedTimer timer;
     RunScriptsForPausedTreeBuilder();
     ret = kHaveTokensAfterScript;
+    time_executing_script += timer.Elapsed();
   }
   if (IsStopped() || IsPaused())
     return kNoTokens;
@@ -812,13 +815,14 @@ bool HTMLDocumentParser::PumpTokenizer() {
   if (TimedParserBudgetEnabled())
     timed_budget = GetTimedBudget(task_runner_state_->TimesYielded());
 
-  base::ElapsedTimer chunk_parsing_timer_;
+  base::ElapsedTimer chunk_parsing_timer;
   unsigned tokens_parsed = 0;
+  base::TimeDelta time_executing_script;
   while (!should_yield) {
     if (task_runner_state_->ShouldProcessPreloads())
       FlushPendingPreloads();
 
-    const auto next_token_status = CanTakeNextToken();
+    const auto next_token_status = CanTakeNextToken(time_executing_script);
     if (next_token_status == kNoTokens) {
       // No tokens left to process in this pump, so break
       break;
@@ -829,7 +833,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
       // mode. So reduce the budget back to at most the default.
       budget = std::min(budget, kDefaultMaxTokenizationBudget);
       if (TimedParserBudgetEnabled()) {
-        timed_budget = std::min(timed_budget, chunk_parsing_timer_.Elapsed() +
+        timed_budget = std::min(timed_budget, chunk_parsing_timer.Elapsed() +
                                                   GetDefaultTimedBudget());
       }
     }
@@ -849,7 +853,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
     if (!should_run_until_completion && !IsPaused()) {
       DCHECK_EQ(task_runner_state_->GetMode(), kAllowDeferredParsing);
       if (TimedParserBudgetEnabled())
-        should_yield = chunk_parsing_timer_.Elapsed() >= timed_budget;
+        should_yield = chunk_parsing_timer.Elapsed() >= timed_budget;
       else
         should_yield = budget <= 0;
       should_yield |= scheduler_->ShouldYieldForHighPriorityWork();
@@ -871,18 +875,24 @@ bool HTMLDocumentParser::PumpTokenizer() {
                      starting_bytes - input_.length());
   }
 
-  if (IsStopped() || IsParsingFragment()) {
-    if (metrics_reporter_ && tokens_parsed) {
-      metrics_reporter_->AddChunk(chunk_parsing_timer_.Elapsed(),
-                                  tokens_parsed);
-    }
-    return false;
+  const bool is_stopped_or_parsing_fragment =
+      IsStopped() || IsParsingFragment();
+
+  if (!is_stopped_or_parsing_fragment) {
+    // There should only be PendingText left since the tree-builder always
+    // flushes the task queue before returning. In case that ever changes,
+    // crash.
+    tree_builder_->Flush(kFlushAlways);
+    CHECK(!IsStopped());
   }
 
-  // There should only be PendingText left since the tree-builder always flushes
-  // the task queue before returning. In case that ever changes, crash.
-  tree_builder_->Flush(kFlushAlways);
-  CHECK(!IsStopped());
+  if (tokens_parsed && metrics_reporter_) {
+    metrics_reporter_->AddChunk(
+        chunk_parsing_timer.Elapsed() - time_executing_script, tokens_parsed);
+  }
+
+  if (is_stopped_or_parsing_fragment)
+    return false;
 
   if (IsPaused()) {
     DCHECK_EQ(tokenizer_->GetState(), HTMLTokenizer::kDataState);
@@ -895,10 +905,6 @@ bool HTMLDocumentParser::PumpTokenizer() {
       }
       ScanAndPreload(preload_scanner_.get());
     }
-  }
-
-  if (metrics_reporter_ && tokens_parsed) {
-    metrics_reporter_->AddChunk(chunk_parsing_timer_.Elapsed(), tokens_parsed);
   }
 
   // should_run_until_completion implies that we should not yield

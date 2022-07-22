@@ -169,7 +169,10 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   }
   void AppendCurrentInputStreamToPreloadScannerAndScan() final;
 
-  NextTokenStatus CanTakeNextToken();
+  // This function may end up running script. If it does,
+  // `time_executing_script` is incremented by the amount of time it takes to
+  // execute script.
+  NextTokenStatus CanTakeNextToken(base::TimeDelta& time_executing_script);
   bool PumpTokenizer();
   void PumpTokenizerIfPossible();
   void DeferredPumpTokenizerIfPossible();

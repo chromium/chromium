@@ -28,7 +28,7 @@ namespace blink {
 
 enum class DocumentUpdateReason;
 
-// This class aggregaties and records time based UKM and UMA metrics
+// This class aggregates and records time based UKM and UMA metrics
 // for LocalFrameView. The simplest way to use it is via the
 // SCOPED_UMA_AND_UKM_TIMER macro combined with
 // LocalFrameView::RecordEndOfFrameMetrics.

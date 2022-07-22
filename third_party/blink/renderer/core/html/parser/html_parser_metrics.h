@@ -56,7 +56,7 @@ class CORE_EXPORT HTMLParserMetrics {
 
   // Track total number of characters parsed in one instantiation of the
   // parser.
-  unsigned input_character_count = 0;
+  unsigned input_character_count_ = 0;
 };
 
 }  // namespace blink
