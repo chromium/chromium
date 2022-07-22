@@ -24,6 +24,7 @@
 #include "build/buildflag.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 #include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check nogncheck
@@ -113,6 +114,47 @@ class RawPtrTest : public Test {
   void SetUp() override { RawPtrCountingImpl::ClearCounters(); }
 };
 
+// Struct intended to be used with designated initializers and passed
+// to the `CountingRawPtrHas()` matcher.
+struct CountingRawPtrExpectations {
+  absl::optional<int> wrap_raw_ptr_cnt;
+  absl::optional<int> release_wrapped_ptr_cnt;
+  absl::optional<int> get_for_dereference_cnt;
+  absl::optional<int> get_for_extraction_cnt;
+  absl::optional<int> get_for_comparison_cnt;
+  absl::optional<int> wrapped_ptr_swap_cnt;
+  absl::optional<int> wrapped_ptr_less_cnt;
+  absl::optional<int> pointer_to_member_operator_cnt;
+};
+
+// Implicit `arg` has type `CountingRawPtrExpectations`.
+MATCHER(CountingRawPtrHasCounts, "`CountingRawPtr` has specified counters") {
+#define REPORT_UNEQUAL_RAW_PTR_COUNTERS(member_name)                  \
+  {                                                                   \
+    if (arg.member_name.has_value() &&                                \
+        arg.member_name.value() != RawPtrCountingImpl::member_name) { \
+      *result_listener << "Expected `" #member_name "` to be "        \
+                       << arg.member_name.value() << " but got "      \
+                       << RawPtrCountingImpl::member_name << "; ";    \
+      result = false;                                                 \
+    }                                                                 \
+  }
+  bool result = true;
+  REPORT_UNEQUAL_RAW_PTR_COUNTERS(wrap_raw_ptr_cnt)
+  REPORT_UNEQUAL_RAW_PTR_COUNTERS(release_wrapped_ptr_cnt)
+  REPORT_UNEQUAL_RAW_PTR_COUNTERS(get_for_dereference_cnt)
+  REPORT_UNEQUAL_RAW_PTR_COUNTERS(get_for_extraction_cnt)
+  REPORT_UNEQUAL_RAW_PTR_COUNTERS(get_for_comparison_cnt)
+  REPORT_UNEQUAL_RAW_PTR_COUNTERS(wrapped_ptr_swap_cnt)
+  REPORT_UNEQUAL_RAW_PTR_COUNTERS(wrapped_ptr_less_cnt)
+  REPORT_UNEQUAL_RAW_PTR_COUNTERS(pointer_to_member_operator_cnt)
+  return result;
+#undef RAW_PTR_COUNTERS_ARE_EQUAL
+}
+
+// Matcher used with `CountingRawPtr`. Provides slightly shorter
+// boilerplate for verifying counts.
+
 // Use this instead of std::ignore, to prevent the instruction from getting
 // optimized out by the compiler.
 volatile int g_volatile_int_to_ignore;
@@ -132,9 +174,10 @@ TEST_F(RawPtrTest, NullExtractNoDereference) {
   // No dereference hence shouldn't crash.
   int* raw = ptr;
   std::ignore = raw;
-  EXPECT_EQ(RawPtrCountingImpl::get_for_comparison_cnt, 0);
-  EXPECT_EQ(RawPtrCountingImpl::get_for_extraction_cnt, 1);
-  EXPECT_EQ(RawPtrCountingImpl::get_for_dereference_cnt, 0);
+  EXPECT_THAT((CountingRawPtrExpectations{.get_for_dereference_cnt = 0,
+                                          .get_for_extraction_cnt = 1,
+                                          .get_for_comparison_cnt = 0}),
+              CountingRawPtrHasCounts());
 }
 
 TEST_F(RawPtrTest, NullCmpExplicit) {
