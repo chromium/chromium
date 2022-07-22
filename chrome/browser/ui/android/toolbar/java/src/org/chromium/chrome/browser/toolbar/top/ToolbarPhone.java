@@ -744,7 +744,16 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private int getBoundsAfterAccountingForRightButtons() {
         if (mStartSurfaceScrollFraction == 1.0f) return mToolbarSidePadding;
 
-        return Math.max(mToolbarSidePadding, mToolbarButtonsContainer.getWidth());
+        int toolbarButtonsContainerWidth = mToolbarButtonsContainer.getWidth();
+
+        // If the button container changed but there's no optional button animation running then we
+        // must have shown the optional button without an animation, use measuredWidth() to take
+        // into account the optional button's space.
+        if (mToolbarButtonsContainer.isDirty() && !mOptionalButtonAnimationRunning) {
+            toolbarButtonsContainerWidth = mToolbarButtonsContainer.getMeasuredWidth();
+        }
+
+        return Math.max(mToolbarSidePadding, toolbarButtonsContainerWidth);
     }
 
     /**
@@ -2536,9 +2545,12 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                             getToolbarDataProvider()
                                     .getNewTabPageDelegate()
                                     .transitioningAwayFromLocationBar();
+                    boolean isInOverviewAndShowingOmnibox =
+                            getToolbarDataProvider().isInOverviewAndShowingOmnibox();
 
                     return mTabSwitcherState == STATIC_TAB && !mUrlFocusChangeInProgress
-                            && !urlHasFocus() && !transitioningAwayFromLocationBarInNTP;
+                            && !urlHasFocus() && !transitioningAwayFromLocationBarInNTP
+                            && !isInOverviewAndShowingOmnibox;
                 }
             };
 
