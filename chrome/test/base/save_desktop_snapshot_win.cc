@@ -21,7 +21,7 @@
 
 namespace {
 
-// A callback that holds the last frame catpured by a webrtc::DesktopCapturer.
+// A callback that holds the last frame captured by a webrtc::DesktopCapturer.
 class FrameHolder : public webrtc::DesktopCapturer::Callback {
  public:
   FrameHolder() = default;
