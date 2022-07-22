@@ -6,12 +6,15 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/background.h"
 
 ExtensionsToolbarControls::ExtensionsToolbarControls(
     std::unique_ptr<ExtensionsToolbarButton> extensions_button,
@@ -25,6 +28,12 @@ ExtensionsToolbarControls::ExtensionsToolbarControls(
   request_access_button_->SetVisible(false);
   // TODO(emiliapaz): Consider changing AddMainItem() to receive a unique_ptr.
   AddMainItem(extensions_button.release());
+
+  // TODO(emiliapaz): Rename omnibox background name to better reflect its use.
+  const int radius = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kMaximum, extensions_button_->GetPreferredSize());
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      kColorOmniboxBackground, radius));
 }
 
 ExtensionsToolbarControls::~ExtensionsToolbarControls() = default;

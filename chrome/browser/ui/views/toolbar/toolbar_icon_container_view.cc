@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "extensions/common/extension_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/paint_recorder.h"
@@ -261,6 +263,14 @@ void ToolbarIconContainerView::AddedToWidget() {
 }
 
 void ToolbarIconContainerView::UpdateHighlight() {
+  // New feature doesn't have a border around the toolbar icons.
+  // TODO(crbug.com/1279986): Remove ToolbarIconContainerView once feature is
+  // rolled out.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    return;
+  }
+
   bool showing_before = border_.layer()->GetTargetOpacity() == 1;
 
   {
