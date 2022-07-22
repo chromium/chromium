@@ -35,8 +35,9 @@ def NaclRevision():
 def CipdEnsure(pkg_name, ref, directory):
     print('ensure %s %s in %s' % (pkg_name, ref, directory))
     output = subprocess.check_output(
-        ['cipd', 'ensure', '-root', directory,
-         '-ensure-file', '-'],
+        ' '.join(['cipd', 'ensure', '-root', directory,
+                  '-ensure-file', '-']),
+        shell=True,
         input=('%s %s' % (pkg_name, ref)).encode('utf-8'))
     print(output)
 
