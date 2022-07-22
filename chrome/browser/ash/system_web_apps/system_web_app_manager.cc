@@ -24,6 +24,7 @@
 #include "ash/webui/shimless_rma/url_constants.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "base/bind.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -267,6 +268,11 @@ SystemWebAppManager* SystemWebAppManager::GetForLocalAppsUnchecked(
 
 // static
 SystemWebAppManager* SystemWebAppManager::GetForTest(Profile* profile) {
+  // Running a nested base::RunLoop outside of tests causes a deadlock. Crash
+  // immediately instead of deadlocking for easier debugging (especially for
+  // TAST tests which use prod binaries).
+  CHECK_IS_TEST();
+
   web_app::WebAppProvider* provider =
       SystemWebAppManager::GetWebAppProvider(profile);
   if (!provider)
