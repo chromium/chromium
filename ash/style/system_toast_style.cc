@@ -13,6 +13,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/system_shadow.h"
 #include "ash/system/toast/toast_overlay.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/strings/strcat.h"
@@ -173,6 +174,13 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
         toast_corner_radius, views::HighlightBorder::Type::kHighlightBorder1,
         /*use_light_colors=*/false));
   }
+
+  // Since system toast has a very large corner radius, we should use the shadow
+  // on texture layer. Refer to `ash::SystemShadowOnTextureLayer` for more
+  // details.
+  shadow_ = SystemShadow::CreateShadowOnTextureLayer(
+      SystemShadow::Type::kElevation12);
+  shadow_->SetRoundedCornerRadius(toast_corner_radius);
 }
 
 SystemToastStyle::~SystemToastStyle() = default;
@@ -203,6 +211,18 @@ bool SystemToastStyle::ToggleA11yFocus() {
 
 void SystemToastStyle::SetText(const std::u16string& text) {
   label_->SetText(text);
+}
+
+void SystemToastStyle::AddedToWidget() {
+  // Attach the shadow at the bottom of the widget layer.
+  auto* shadow_layer = shadow_->GetLayer();
+  auto* widget_layer = GetWidget()->GetLayer();
+
+  widget_layer->Add(shadow_layer);
+  widget_layer->StackAtBottom(shadow_layer);
+
+  // Update shadow content bounds with the bounds of widget layer.
+  shadow_->SetContentBounds(gfx::Rect(widget_layer->bounds().size()));
 }
 
 void SystemToastStyle::OnThemeChanged() {

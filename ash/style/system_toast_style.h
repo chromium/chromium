@@ -19,6 +19,7 @@ class LabelButton;
 namespace ash {
 
 class ScopedA11yOverrideWindowSetter;
+class SystemShadow;
 
 // A view that has rounded corner with label and button inside. The label shows
 // the information. The button inside is optional and has certain functionality
@@ -53,6 +54,7 @@ class ASH_EXPORT SystemToastStyle : public views::View {
 
  private:
   // views::View:
+  void AddedToWidget() override;
   void OnThemeChanged() override;
 
   views::Label* label_ = nullptr;
@@ -61,6 +63,8 @@ class ASH_EXPORT SystemToastStyle : public views::View {
 
   // Tells the toast if the dismiss button is already highlighted if one exists.
   bool is_dismiss_button_highlighted_ = false;
+
+  std::unique_ptr<SystemShadow> shadow_;
 
   // Updates the current a11y override window when the dismiss button is being
   // highlighted.
