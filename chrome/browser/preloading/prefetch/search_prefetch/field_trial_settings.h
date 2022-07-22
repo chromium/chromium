@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_
-#define CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_
+#ifndef CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_
+#define CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
@@ -44,4 +44,4 @@ extern const base::Feature kSearchNavigationPrefetch;
 // navigation start provides benefit over the typical navigation flow.
 bool IsSearchNavigationPrefetchEnabled();
 
-#endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_
+#endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_

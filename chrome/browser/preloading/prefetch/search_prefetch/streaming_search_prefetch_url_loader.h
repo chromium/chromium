@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_STREAMING_SEARCH_PREFETCH_URL_LOADER_H_
-#define CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_STREAMING_SEARCH_PREFETCH_URL_LOADER_H_
+#ifndef CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_STREAMING_SEARCH_PREFETCH_URL_LOADER_H_
+#define CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_STREAMING_SEARCH_PREFETCH_URL_LOADER_H_
 
 #include <memory>
 #include <string>
@@ -13,8 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/prefetch/search_prefetch/search_prefetch_request.h"
-#include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_request.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -225,4 +225,4 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   base::WeakPtrFactory<StreamingSearchPrefetchURLLoader> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_STREAMING_SEARCH_PREFETCH_URL_LOADER_H_
+#endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_STREAMING_SEARCH_PREFETCH_URL_LOADER_H_

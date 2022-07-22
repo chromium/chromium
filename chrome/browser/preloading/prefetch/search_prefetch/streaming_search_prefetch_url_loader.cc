@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
 
 #include <string>
 #include <utility>
@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/c/system/data_pipe.h"

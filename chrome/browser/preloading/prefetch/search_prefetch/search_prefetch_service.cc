@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 
 #include <iterator>
 #include <memory>
@@ -17,9 +17,9 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
-#include "chrome/browser/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
-#include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
-#include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"

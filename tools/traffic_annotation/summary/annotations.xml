@@ -226,7 +226,7 @@ Refer to README.md for content description and update process.
  <item id="sanitized_image_source" added_in_milestone="86" content_hash_code="076ce826" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/sanitized_image_source.cc" />
  <item id="save_file_manager" added_in_milestone="62" content_hash_code="03610e73" os_list="linux,windows,chromeos,android" file_path="content/browser/download/save_file_manager.cc" />
  <item id="sct_auditing" added_in_milestone="87" content_hash_code="0298c98f" os_list="linux,windows,chromeos,android" file_path="chrome/browser/ssl/sct_reporting_service.cc" />
- <item id="search_prefetch_service" added_in_milestone="88" content_hash_code="077746c6" os_list="windows,linux,chromeos,android" file_path="chrome/browser/prefetch/search_prefetch/search_prefetch_request.cc" />
+ <item id="search_prefetch_service" added_in_milestone="88" content_hash_code="077746c6" os_list="windows,linux,chromeos,android" file_path="chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_request.cc" />
  <item id="security_key_socket" added_in_milestone="66" content_hash_code="00d1acb0" os_list="linux,windows,chromeos" file_path="remoting/host/security_key/security_key_socket.cc" />
  <item id="service_worker_navigation_preload" added_in_milestone="63" content_hash_code="0675faf7" os_list="linux,windows,chromeos,android" file_path="content/browser/service_worker/service_worker_fetch_dispatcher.cc" />
  <item id="service_worker_script_load" added_in_milestone="90" content_hash_code="035ab34f" os_list="linux,windows,chromeos,android" file_path="content/browser/service_worker/service_worker_new_script_fetcher.cc" />

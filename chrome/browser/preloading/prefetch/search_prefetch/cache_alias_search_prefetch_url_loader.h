@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_CACHE_ALIAS_SEARCH_PREFETCH_URL_LOADER_H_
-#define CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_CACHE_ALIAS_SEARCH_PREFETCH_URL_LOADER_H_
+#ifndef CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_CACHE_ALIAS_SEARCH_PREFETCH_URL_LOADER_H_
+#define CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_CACHE_ALIAS_SEARCH_PREFETCH_URL_LOADER_H_
 
 #include <memory>
 #include <string>
@@ -11,8 +11,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
-#include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -123,4 +123,4 @@ class CacheAliasSearchPrefetchURLLoader
   base::WeakPtrFactory<CacheAliasSearchPrefetchURLLoader> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_CACHE_ALIAS_SEARCH_PREFETCH_URL_LOADER_H_
+#endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_CACHE_ALIAS_SEARCH_PREFETCH_URL_LOADER_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_BROWSER_TEST_BASE_H_
-#define CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_BROWSER_TEST_BASE_H_
+#ifndef CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_BROWSER_TEST_BASE_H_
+#define CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_BROWSER_TEST_BASE_H_
 
 #include <string>
 
@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/prefetch/search_prefetch/search_prefetch_request.h"
+#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_request.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -181,4 +181,4 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
   raw_ptr<DevToolsWindow> window_ = nullptr;
 };
 
-#endif  // CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_BROWSER_TEST_BASE_H_
+#endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_BROWSER_TEST_BASE_H_

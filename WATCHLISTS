@@ -1718,7 +1718,7 @@
       'filepath': 'screen_ai',
     },
     'search_prefetch': {
-      'filepath': 'chrome/browser/prefetch/search_prefetch',
+      'filepath': 'chrome/browser/preloading/prefetch/search_prefetch',
     },
     'security': {
       'filepath': 'base/json/'\
