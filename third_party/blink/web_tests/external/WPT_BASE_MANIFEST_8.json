@@ -237012,6 +237012,60 @@
          {}
         ]
        ]
+      },
+      "the-textarea-element": {
+       "textarea-padding-bend-overlaps-content-001.tentative.html": [
+        "d99ca1956f36cacca26874fc35a7b879952dd60b",
+        [
+         null,
+         [
+          [
+           "/html/rendering/replaced-elements/the-textarea-element/textarea-padding-bend-overlaps-content-001-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "textarea-padding-bstart-moves-content-001.tentative.html": [
+        "f4643af132841c80c26ed045571530b4ace93754",
+        [
+         null,
+         [
+          [
+           "/html/rendering/replaced-elements/the-textarea-element/textarea-padding-bstart-moves-content-001-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "textarea-padding-iend-overlaps-content-001.tentative.html": [
+        "80cbbe3c1e4e4d364aff3c97703984a4b8c83a99",
+        [
+         null,
+         [
+          [
+           "/html/rendering/replaced-elements/the-textarea-element/textarea-padding-iend-overlaps-content-001-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "textarea-padding-istart-moves-content-001.tentative.html": [
+        "f5abf84c122cbd80d76ae218095de0abe4636ce2",
+        [
+         null,
+         [
+          [
+           "/html/rendering/replaced-elements/the-textarea-element/textarea-padding-istart-moves-content-001-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ]
       }
      },
      "the-css-user-agent-style-sheet-and-presentational-hints": {
@@ -303055,7 +303109,7 @@
     },
     "private-network-access": {
      "META.yml": [
-      "50fab067a4364e4aa64ecabfaa7e70387e049160",
+      "944ce6f14a1204f048e00db3b7ea21da93037709",
       []
      ],
      "README.md": [
@@ -313736,6 +313790,24 @@
        ],
        "select-multiple-re-add-option-via-document-fragment-ref.html": [
         "cb66ddaaaf369479e59f6092d04633a2dc2baf6c",
+        []
+       ]
+      },
+      "the-textarea-element": {
+       "textarea-padding-bend-overlaps-content-001-ref.html": [
+        "2f479dd72a0ec0456eec947c3e49b50983209c32",
+        []
+       ],
+       "textarea-padding-bstart-moves-content-001-ref.html": [
+        "5144f186604eb2a3e80ad036903c4d708c3b61de",
+        []
+       ],
+       "textarea-padding-iend-overlaps-content-001-ref.html": [
+        "94473c08733930427dfc571d934f96f84d9338de",
+        []
+       ],
+       "textarea-padding-istart-moves-content-001-ref.html": [
+        "eb88858b87a1b1755f94df28ca1740a86bd04a07",
         []
        ]
       },
@@ -372031,7 +372103,7 @@
      ]
     ],
     "fedcm-logout-rps.https.html": [
-     "6e97239dfa848b822933cf5eaf294ee00ce17437",
+     "9c8d2c16031034f7cd5c3d57e24ed3a963d3ae92",
      [
       null,
       {}
@@ -435246,6 +435318,102 @@
          [
           "script",
           "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "mixed-content-fetch.tentative.https.window.js": [
+      "a5cddf49f1f4f923c79850e084bd4f66c1f6ca0c",
+      [
+       "fetch/private-network-access/mixed-content-fetch.tentative.https.window.html?include=from-private",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/mixed-content-fetch.tentative.https.window.html?include=from-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/mixed-content-fetch.tentative.https.window.html?include=from-treat-as-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
          ]
         ]
        }
