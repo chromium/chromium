@@ -28,7 +28,7 @@ class WebAppInternalsSource : public content::URLDataSource {
 
   // content::URLDataSource:
   std::string GetSource() override;
-  std::string GetMimeType(const std::string& path) override;
+  std::string GetMimeType(const GURL& url) override;
   void StartDataRequest(
       const GURL& url,
       const content::WebContents::Getter& wc_getter,

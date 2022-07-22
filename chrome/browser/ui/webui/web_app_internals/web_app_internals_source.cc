@@ -352,7 +352,7 @@ std::string WebAppInternalsSource::GetSource() {
   return chrome::kChromeUIWebAppInternalsHost;
 }
 
-std::string WebAppInternalsSource::GetMimeType(const std::string& path) {
+std::string WebAppInternalsSource::GetMimeType(const GURL& url) {
   return "application/json";
 }
 
