@@ -12,8 +12,8 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/compute_pressure/cpu_probe.h"
+#include "services/device/compute_pressure/platform_collector.h"
 #include "services/device/compute_pressure/pressure_sample.h"
-#include "services/device/compute_pressure/pressure_sampler.h"
 #include "services/device/public/mojom/pressure_state.mojom.h"
 
 namespace device {
@@ -37,11 +37,11 @@ std::unique_ptr<PressureManagerImpl> PressureManagerImpl::CreateForTesting(
 PressureManagerImpl::PressureManagerImpl(std::unique_ptr<CpuProbe> cpu_probe,
                                          base::TimeDelta sampling_interval)
     // base::Unretained usage is safe here because the callback is only run
-    // while `sampler_` is alive, and `sampler_` is owned by this instance.
-    : sampler_(std::move(cpu_probe),
-               sampling_interval,
-               base::BindRepeating(&PressureManagerImpl::UpdateClients,
-                                   base::Unretained(this))) {
+    // while `collector_` is alive, and `collector_` is owned by this instance.
+    : collector_(std::move(cpu_probe),
+                 sampling_interval,
+                 base::BindRepeating(&PressureManagerImpl::UpdateClients,
+                                     base::Unretained(this))) {
   // base::Unretained use is safe because mojo guarantees the callback will not
   // be called after `clients_` is deallocated, and `clients_` is owned by
   // PressureManagerImpl.
@@ -66,12 +66,12 @@ void PressureManagerImpl::AddClient(
     AddClientCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!sampler_.has_probe()) {
+  if (!collector_.has_probe()) {
     std::move(callback).Run(false);
     return;
   }
   clients_.Add(std::move(client));
-  sampler_.EnsureStarted();
+  collector_.EnsureStarted();
   std::move(callback).Run(true);
 }
 
@@ -89,7 +89,7 @@ void PressureManagerImpl::OnClientRemoteDisconnected(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (clients_.empty())
-    sampler_.Stop();
+    collector_.Stop();
 }
 
 }  // namespace device

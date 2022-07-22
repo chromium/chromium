@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_DEVICE_COMPUTE_PRESSURE_PRESSURE_SAMPLER_H_
-#define SERVICES_DEVICE_COMPUTE_PRESSURE_PRESSURE_SAMPLER_H_
+#ifndef SERVICES_DEVICE_COMPUTE_PRESSURE_PLATFORM_COLLECTOR_H_
+#define SERVICES_DEVICE_COMPUTE_PRESSURE_PLATFORM_COLLECTOR_H_
 
 #include <memory>
 
@@ -29,7 +29,7 @@ class CpuProbe;
 // Instances are not thread-safe. They must be used on the same sequence.
 //
 // The instance is owned by a PressureManagerImpl.
-class PressureSampler {
+class PlatformCollector {
  public:
   // The caller must ensure that `cpu_probe` outlives this instance. Production
   // code should pass CpuProbe::Create().
@@ -37,13 +37,13 @@ class PressureSampler {
   // `sampling_interval` is exposed to avoid idling in tests. Production code
   // should pass `kDefaultSamplingInterval`.
   //
-  // `sampling_callback` is called regularly every `sampling_interval` while the
-  // sampler is started.
-  PressureSampler(
+  // `sampling_callback` is called regularly every `sampling_interval` while
+  // the collector is started.
+  PlatformCollector(
       std::unique_ptr<CpuProbe> cpu_probe,
       base::TimeDelta sampling_interval,
       base::RepeatingCallback<void(PressureSample)> sampling_callback);
-  ~PressureSampler();
+  ~PlatformCollector();
 
   bool has_probe() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -66,7 +66,7 @@ class PressureSampler {
   }
 
  private:
-  // Called periodically while the sampler is running.
+  // Called periodically while the collector is running.
   void UpdateProbe();
   // Called after the CpuProbe is updated.
   void DidUpdateProbe(PressureSample sample);
@@ -78,7 +78,7 @@ class PressureSampler {
 
   // Methods on the underlying probe must be executed on `probe_task_runner_`.
   //
-  // Constant between the sampler's construction and destruction.
+  // Constant between the collector's construction and destruction.
   std::unique_ptr<CpuProbe> probe_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Drives repeated sampling.
@@ -98,10 +98,10 @@ class PressureSampler {
   // reported via `sampling_callback_`.
   bool got_probe_baseline_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
-  base::WeakPtrFactory<PressureSampler> weak_factory_
+  base::WeakPtrFactory<PlatformCollector> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
 }  // namespace device
 
-#endif  // SERVICES_DEVICE_COMPUTE_PRESSURE_PRESSURE_SAMPLER_H_
+#endif  // SERVICES_DEVICE_COMPUTE_PRESSURE_PLATFORM_COLLECTOR_H_

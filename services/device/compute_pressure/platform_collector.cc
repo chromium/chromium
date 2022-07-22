@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/compute_pressure/pressure_sampler.h"
+#include "services/device/compute_pressure/platform_collector.h"
 
 #include <utility>
 
@@ -33,7 +33,7 @@ scoped_refptr<base::SequencedTaskRunner> CreateProbeTaskRunner() {
 
 }  // namespace
 
-PressureSampler::PressureSampler(
+PlatformCollector::PlatformCollector(
     std::unique_ptr<CpuProbe> probe,
     base::TimeDelta sampling_interval,
     base::RepeatingCallback<void(PressureSample)> sampling_callback)
@@ -44,12 +44,12 @@ PressureSampler::PressureSampler(
   DCHECK(sampling_callback_);
 }
 
-PressureSampler::~PressureSampler() {
+PlatformCollector::~PlatformCollector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   probe_task_runner_->DeleteSoon(FROM_HERE, std::move(probe_));
 }
 
-void PressureSampler::EnsureStarted() {
+void PlatformCollector::EnsureStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(has_probe()) << __func__
                       << " should not be called if has_probe() returns false";
@@ -67,18 +67,18 @@ void PressureSampler::EnsureStarted() {
   // base::Unretained usage is safe here because base::RepeatingTimer guarantees
   // that its callback will not be called after it goes out of scope.
   timer_.Start(FROM_HERE, sampling_interval_,
-               base::BindRepeating(&PressureSampler::UpdateProbe,
+               base::BindRepeating(&PlatformCollector::UpdateProbe,
                                    base::Unretained(this)));
 }
 
-void PressureSampler::Stop() {
+void PlatformCollector::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   timer_.AbandonAndStop();
   got_probe_baseline_ = false;
 }
 
-void PressureSampler::UpdateProbe() {
+void PlatformCollector::UpdateProbe() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(has_probe());
 
@@ -93,11 +93,11 @@ void PressureSampler::UpdateProbe() {
             return probe->LastSample();
           },
           probe_.get()),
-      base::BindOnce(&PressureSampler::DidUpdateProbe,
+      base::BindOnce(&PlatformCollector::DidUpdateProbe,
                      weak_factory_.GetWeakPtr()));
 }
 
-void PressureSampler::DidUpdateProbe(PressureSample sample) {
+void PlatformCollector::DidUpdateProbe(PressureSample sample) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Don't report the update result if Stop() was called.

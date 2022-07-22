@@ -19,16 +19,16 @@ between the browser process and services.
 
 `device::PressureSample` represents the device's compute pressure state.
 This information is collected by `device::CpuProbe` and bubbled up by
-`device::PressureSampler` to `device::PressureManagerImpl`, which broadcasts
+`device::PlatformCollector` to `device::PressureManagerImpl`, which broadcasts
 the information to the `content::PressureServiceImpl` instances.
 
-`device::PressureSampler` drives measuring the device's compute pressure
+`device::PlatformCollector` drives measuring the device's compute pressure
 state. The class is responsible for invoking platform-specific measurement
 code at regular intervals, and for straddling between sequences to meet
 the platform-specific code's requirements.
 
 `device::CpuProbe` is an abstract base class that interfaces between
-`device::PressureSampler` and platform-specific code that retrieves the
+`device::PlatformCollector` and platform-specific code that retrieves the
 compute pressure state from the operating system. This interface is also
 a dependency injection point for tests.
 

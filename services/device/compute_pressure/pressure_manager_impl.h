@@ -14,8 +14,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "services/device/compute_pressure/platform_collector.h"
 #include "services/device/compute_pressure/pressure_sample.h"
-#include "services/device/compute_pressure/pressure_sampler.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 
 namespace device {
@@ -24,7 +24,7 @@ class CpuProbe;
 
 // Handles the communication between the browser process and services.
 //
-// This class owns one instance of PressureSampler. The PressureSampler
+// This class owns one instance of PlatformCollector. The PlatformCollector
 // instance keeps collecting compute pressure information from the
 // underlying operating system when `clients_` is not empty and stops
 // collecting when `clients_` becomes empty.
@@ -61,15 +61,15 @@ class PressureManagerImpl : public mojom::PressureManager {
   PressureManagerImpl(std::unique_ptr<CpuProbe> cpu_probe,
                       base::TimeDelta sampling_interval);
 
-  // Called periodically by PressureSampler.
+  // Called periodically by PlatformCollector.
   void UpdateClients(PressureSample sample);
 
-  // Stop `sampler_` once there is no client.
+  // Stop `collector_` once there is no client.
   void OnClientRemoteDisconnected(mojo::RemoteSetElementId /*id*/);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  PressureSampler sampler_ GUARDED_BY_CONTEXT(sequence_checker_);
+  PlatformCollector collector_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   mojo::ReceiverSet<mojom::PressureManager> receivers_
       GUARDED_BY_CONTEXT(sequence_checker_);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/compute_pressure/pressure_sampler.h"
+#include "services/device/compute_pressure/platform_collector.h"
 
 #include <cstddef>
 #include <memory>
@@ -26,13 +26,13 @@
 
 namespace device {
 
-class PressureSamplerTest : public testing::Test {
+class PlatformCollectorTest : public testing::Test {
  public:
-  PressureSamplerTest()
-      : sampler_(std::make_unique<PressureSampler>(
+  PlatformCollectorTest()
+      : collector_(std::make_unique<PlatformCollector>(
             std::make_unique<FakeCpuProbe>(),
             base::Milliseconds(1),
-            base::BindRepeating(&PressureSamplerTest::SamplerCallback,
+            base::BindRepeating(&PlatformCollectorTest::CollectorCallback,
                                 base::Unretained(this)))) {}
 
   void WaitForUpdate() {
@@ -43,16 +43,16 @@ class PressureSamplerTest : public testing::Test {
     run_loop.Run();
   }
 
-  // Only valid if `sampler_` uses a FakeCpuProbe. This is guaranteed if
-  // `sampler_` is not replaced during the test.
+  // Only valid if `collector_` uses a FakeCpuProbe. This is guaranteed if
+  // `collector_` is not replaced during the test.
   FakeCpuProbe& cpu_probe() {
     auto* cpu_probe =
-        static_cast<FakeCpuProbe*>(sampler_->cpu_probe_for_testing());
+        static_cast<FakeCpuProbe*>(collector_->cpu_probe_for_testing());
     DCHECK(cpu_probe);
     return *cpu_probe;
   }
 
-  void SamplerCallback(PressureSample sample) {
+  void CollectorCallback(PressureSample sample) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     samples_.push_back(sample);
     if (update_callback_) {
@@ -66,9 +66,9 @@ class PressureSamplerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  // This member is a std::unique_ptr instead of a plain PressureSampler
+  // This member is a std::unique_ptr instead of a plain PlatformCollector
   // so it can be replaced inside tests.
-  std::unique_ptr<PressureSampler> sampler_;
+  std::unique_ptr<PlatformCollector> collector_;
 
   // The samples reported by the callback.
   std::vector<PressureSample> samples_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -85,10 +85,10 @@ class PressureSamplerTest : public testing::Test {
   base::OnceClosure update_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-TEST_F(PressureSamplerTest, EnsureStarted) {
+TEST_F(PlatformCollectorTest, EnsureStarted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  sampler_->EnsureStarted();
+  collector_->EnsureStarted();
   WaitForUpdate();
 
   EXPECT_GE(samples_.size(), 1u);
@@ -145,7 +145,7 @@ class StreamingCpuProbe : public CpuProbe {
 
 }  // namespace
 
-TEST_F(PressureSamplerTest, EnsureStarted_SkipsFirstSample) {
+TEST_F(PlatformCollectorTest, EnsureStarted_SkipsFirstSample) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<PressureSample> samples = {
@@ -158,12 +158,12 @@ TEST_F(PressureSamplerTest, EnsureStarted_SkipsFirstSample) {
   };
 
   base::RunLoop run_loop;
-  sampler_ = std::make_unique<PressureSampler>(
+  collector_ = std::make_unique<PlatformCollector>(
       std::make_unique<StreamingCpuProbe>(samples, run_loop.QuitClosure()),
       base::Milliseconds(1),
-      base::BindRepeating(&PressureSamplerTest::SamplerCallback,
+      base::BindRepeating(&PlatformCollectorTest::CollectorCallback,
                           base::Unretained(this)));
-  sampler_->EnsureStarted();
+  collector_->EnsureStarted();
   run_loop.Run();
 
   EXPECT_GE(samples_.size(), 1u);
@@ -172,74 +172,82 @@ TEST_F(PressureSamplerTest, EnsureStarted_SkipsFirstSample) {
 }
 
 // TODO(crbug.com/1271419): Flaky.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN)
 #define MAYBE_Stop_Delayed_EnsureStarted_Immediate \
   DISABLED_Stop_Delayed_EnsureStarted_Immediate
 #else
 #define MAYBE_Stop_Delayed_EnsureStarted_Immediate \
   Stop_Delayed_EnsureStarted_Immediate
 #endif
-TEST_F(PressureSamplerTest, MAYBE_Stop_Delayed_EnsureStarted_Immediate) {
+TEST_F(PlatformCollectorTest, MAYBE_Stop_Delayed_EnsureStarted_Immediate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  sampler_->EnsureStarted();
+  collector_->EnsureStarted();
   WaitForUpdate();
-  sampler_->Stop();
+  collector_->Stop();
 
   samples_.clear();
   cpu_probe().SetLastSample(PressureSample{0.25});
 
-  sampler_->EnsureStarted();
+  collector_->EnsureStarted();
   WaitForUpdate();
   EXPECT_GE(samples_.size(), 1u);
   EXPECT_THAT(samples_, testing::Contains(PressureSample{0.25}));
 }
 
-TEST_F(PressureSamplerTest, Stop_Delayed_EnsureStarted_Delayed) {
+// TODO(crbug.com/1271419): Flaky.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Stop_Delayed_EnsureStarted_Delayed \
+  DISABLED_Stop_Delayed_EnsureStarted_Delayed
+#else
+#define MAYBE_Stop_Delayed_EnsureStarted_Delayed \
+  Stop_Delayed_EnsureStarted_Delayed
+#endif
+TEST_F(PlatformCollectorTest, MAYBE_Stop_Delayed_EnsureStarted_Delayed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  sampler_->EnsureStarted();
+  collector_->EnsureStarted();
   WaitForUpdate();
-  sampler_->Stop();
+  collector_->Stop();
 
   samples_.clear();
   cpu_probe().SetLastSample(PressureSample{0.25});
   // 10ms should be long enough to ensure that all the sampling tasks are done.
   base::PlatformThread::Sleep(base::Milliseconds(10));
 
-  sampler_->EnsureStarted();
+  collector_->EnsureStarted();
   WaitForUpdate();
   EXPECT_GE(samples_.size(), 1u);
   EXPECT_THAT(samples_, testing::Contains(PressureSample{0.25}));
 }
 
-TEST_F(PressureSamplerTest, Stop_Immediate_EnsureStarted_Immediate) {
+TEST_F(PlatformCollectorTest, Stop_Immediate_EnsureStarted_Immediate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  sampler_->EnsureStarted();
-  sampler_->Stop();
+  collector_->EnsureStarted();
+  collector_->Stop();
 
   samples_.clear();
   cpu_probe().SetLastSample(PressureSample{0.25});
 
-  sampler_->EnsureStarted();
+  collector_->EnsureStarted();
   WaitForUpdate();
   EXPECT_GE(samples_.size(), 1u);
   EXPECT_THAT(samples_, testing::Contains(PressureSample{0.25}));
 }
 
-TEST_F(PressureSamplerTest, Stop_Immediate_EnsureStarted_Delayed) {
+TEST_F(PlatformCollectorTest, Stop_Immediate_EnsureStarted_Delayed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  sampler_->EnsureStarted();
-  sampler_->Stop();
+  collector_->EnsureStarted();
+  collector_->Stop();
 
   samples_.clear();
   cpu_probe().SetLastSample(PressureSample{0.25});
   // 10ms should be long enough to ensure that all the sampling tasks are done.
   base::PlatformThread::Sleep(base::Milliseconds(10));
 
-  sampler_->EnsureStarted();
+  collector_->EnsureStarted();
   WaitForUpdate();
   EXPECT_GE(samples_.size(), 1u);
   EXPECT_THAT(samples_, testing::Contains(PressureSample{0.25}));
