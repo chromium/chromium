@@ -240,9 +240,6 @@ void CheckExperimentalMemoryMetrics(
   CheckMemoryMetric("Memory.Experimental.Gpu2.IOSurface", histogram_tester, 1,
                     ValueRestriction::ABOVE_ZERO);
 #endif
-
-  CheckMemoryMetric("Memory.Experimental.Total2.PrivateMemoryFootprint",
-                    histogram_tester, count, ValueRestriction::ABOVE_ZERO);
 }
 
 void CheckStableMemoryMetrics(const base::HistogramTester& histogram_tester,

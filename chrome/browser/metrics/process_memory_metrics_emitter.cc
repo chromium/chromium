@@ -1250,9 +1250,6 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
       }
     }
 
-    UMA_HISTOGRAM_MEMORY_LARGE_MB(
-        "Memory.Experimental.Total2.PrivateMemoryFootprint",
-        private_footprint_total_kb / kKiB);
 #if BUILDFLAG(IS_MAC)
     // Resident set is not populated on Mac.
     DCHECK_EQ(resident_set_total_kb, 0U);
