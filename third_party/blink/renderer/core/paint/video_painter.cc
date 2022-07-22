@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 
@@ -63,13 +62,6 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
                                 paint_offset);
     context.SetURLForRect(layout_video_.GetDocument().Url(),
                           snapped_replaced_rect);
-  }
-
-  // Since we may have changed the location of the replaced content, we need to
-  // notify PaintArtifactCompositor.
-  if (layout_video_.GetFrameView()) {
-    layout_video_.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate(
-        PaintArtifactCompositorUpdateReason::kVideoPainterPaintReplaced);
   }
 
   // Video frames are only painted in software for printing or capturing node
