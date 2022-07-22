@@ -645,7 +645,7 @@ class MockDXGIDeviceManager : public DXGIDeviceManager {
         .WillByDefault([this](Microsoft::WRL::ComPtr<ID3D11Device>* device) {
           return DXGIDeviceManager::ResetDevice(*device);
         });
-    ON_CALL(*this, DoGetDevice).WillByDefault([this]() {
+    ON_CALL(*this, GetDevice).WillByDefault([this]() {
       return DXGIDeviceManager::GetDevice();
     });
   }
@@ -655,13 +655,11 @@ class MockDXGIDeviceManager : public DXGIDeviceManager {
     return DoResetDevice(&d3d_device);
   }
 
+  // Can't use Microsoft::WRL::ComPtr<ID3D11Device>& argument type in a mock
+  // due to interaction with ComPtrRef
   MOCK_METHOD1(DoResetDevice, HRESULT(Microsoft::WRL::ComPtr<ID3D11Device>*));
 
-  virtual Microsoft::WRL::ComPtr<ID3D11Device> GetDevice() {
-    return DoGetDevice();
-  }
-
-  MOCK_METHOD0(DoGetDevice, Microsoft::WRL::ComPtr<ID3D11Device>(void));
+  MOCK_METHOD0(GetDevice, Microsoft::WRL::ComPtr<ID3D11Device>(void));
 
  private:
   ~MockDXGIDeviceManager() override = default;
@@ -2007,7 +2005,7 @@ class VideoCaptureDeviceMFWinTestWithDXGI : public VideoCaptureDeviceMFWinTest {
     UINT d3d_device_reset_token = 0;
     HRESULT hr = MFCreateDXGIDeviceManager(&d3d_device_reset_token,
                                            &mf_dxgi_device_manager);
-    ASSERT_TRUE(SUCCEEDED(hr));
+    ASSERT_EQ(hr, S_OK);
     dxgi_device_manager_ = new MockDXGIDeviceManager(
         std::move(mf_dxgi_device_manager), d3d_device_reset_token);
     VideoCaptureDeviceMFWinTest::SetUp();
@@ -2130,7 +2128,7 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, DeliverGMBCaptureBuffers) {
 
   Microsoft::WRL::ComPtr<MockD3D11Device> mock_device(new MockD3D11Device());
 
-  EXPECT_CALL(*dxgi_device_manager_.get(), DoGetDevice)
+  EXPECT_CALL(*dxgi_device_manager_.get(), GetDevice)
       .WillOnce(Return(mock_device));
 
   // Create mock source texture (to be provided to capture device from MF
