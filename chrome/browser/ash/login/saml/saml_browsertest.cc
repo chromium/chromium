@@ -316,7 +316,8 @@ class SamlTestBase : public OobeBaseTest {
   virtual void StartSamlAndWaitForIdpPageLoad(const std::string& gaia_email) {
     OobeScreenWaiter(GetFirstSigninScreen()).Wait();
 
-    content::DOMMessageQueue message_queue;  // Start observe before SAML.
+    content::DOMMessageQueue message_queue(
+        GetLoginUI()->GetWebContents());  // Start observe before SAML.
     SetupAuthFlowChangeListener();
     LoginDisplayHost::default_host()
         ->GetOobeUI()
@@ -496,7 +497,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, SamlUI) {
                                      fake_saml_idp()->GetIdpHost());
   test::OobeJS().ExpectTrue(js);
 
-  content::DOMMessageQueue message_queue;  // Observe before 'close'.
+  content::DOMMessageQueue message_queue(GetLoginUI()->GetWebContents());
   SetupAuthFlowChangeListener();
   // Click on 'close'.
   test::OobeJS().ClickOnPath(std::get<1>(GetParam()) ? kSamlBackButton
@@ -532,7 +533,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, IdpRequiresHttpAuth) {
       &(gaia_frame_web_contents->GetController());
 
   // Start observing before initiating SAML sign-in.
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(GetLoginUI()->GetWebContents());
   LoginPromptBrowserTestObserver login_prompt_observer;
   login_prompt_observer.Register(content::Source<content::NavigationController>(
       gaia_frame_navigation_controller));
@@ -676,7 +677,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, ScrapedSingle) {
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFirstUserCorpExampleComEmail);
 
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(GetLoginUI()->GetWebContents());
   // Make sure that the password is scraped correctly.
   ASSERT_TRUE(content::ExecuteScript(
       GetLoginUI()->GetWebContents(),
@@ -1334,7 +1335,7 @@ void SAMLPolicyTest::SetLoginVideoCaptureAllowedUrls(
 void SAMLPolicyTest::ShowGAIALoginForm() {
   ash::LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(GetLoginUI()->GetWebContents());
   ASSERT_TRUE(content::ExecuteScript(
       GetLoginUI()->GetWebContents(),
       "$('gaia-signin').authenticator_.addEventListener('ready', function() {"
@@ -1359,7 +1360,7 @@ void SAMLPolicyTest::ClickBackOnSAMLInterstitialPage() {
 }
 
 void SAMLPolicyTest::ClickNextOnSAMLInterstitialPage() {
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(GetLoginUI()->GetWebContents());
   SetupAuthFlowChangeListener();
 
   test::OobeJS().TapOnPath({"gaia-signin", "interstitial-next"});
@@ -1383,7 +1384,7 @@ void SAMLPolicyTest::MaybeWaitForSAMLToLoad() {
   // message.
   if (test::OobeJS().GetAttributeBool("isSamlForTesting()", {"gaia-signin"}))
     return;
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(GetLoginUI()->GetWebContents());
   SetupAuthFlowChangeListener();
   std::string message;
   do {
