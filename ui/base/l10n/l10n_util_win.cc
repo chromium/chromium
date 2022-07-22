@@ -46,8 +46,8 @@ int GetExtendedStyles() {
   return !base::i18n::IsRTL() ? 0 : WS_EX_LAYOUTRTL | WS_EX_RTLREADING;
 }
 
-int GetExtendedTooltipStyles() {
-  return !base::i18n::IsRTL() ? 0 : WS_EX_LAYOUTRTL;
+DWORD GetExtendedTooltipStyles() {
+  return base::i18n::IsRTL() ? WS_EX_LAYOUTRTL : 0;
 }
 
 void HWNDSetRTLLayout(HWND hwnd) {

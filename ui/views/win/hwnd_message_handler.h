@@ -579,7 +579,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // |time_stamp| is the time stamp associated with the message.
   void GenerateTouchEvent(ui::EventType event_type,
                           const gfx::Point& point,
-                          size_t id,
+                          ui::PointerId id,
                           base::TimeTicks time_stamp,
                           TouchEvents* touch_events);
 

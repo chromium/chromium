@@ -22,7 +22,7 @@ COMPONENT_EXPORT(UI_BASE) int GetExtendedStyles();
 
 // TODO(xji):
 // This is a temporary name, it will eventually replace GetExtendedStyles
-COMPONENT_EXPORT(UI_BASE) int GetExtendedTooltipStyles();
+COMPONENT_EXPORT(UI_BASE) DWORD GetExtendedTooltipStyles();
 
 // Give an HWND, this function sets the WS_EX_LAYOUTRTL extended style for the
 // underlying window. When this style is set, the UI for the window is going to

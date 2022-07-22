@@ -63,7 +63,7 @@ class VIEWS_EXPORT PenEventProcessor {
   base::flat_map<UINT32, bool> sent_mouse_down_;
   base::flat_map<UINT32, bool> sent_touch_start_;
 
-  absl::optional<unsigned int> eraser_pointer_id_;
+  absl::optional<ui::PointerId> eraser_pointer_id_;
 };
 
 }  // namespace views

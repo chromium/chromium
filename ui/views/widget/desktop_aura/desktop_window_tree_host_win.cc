@@ -378,7 +378,7 @@ void DesktopWindowTreeHostWin::SetShape(
       scaled_rect.roundOut(&rounded_scaled_rect);
       sk_rects.push_back(rounded_scaled_rect);
     }
-    shape.setRects(&sk_rects[0], sk_rects.size());
+    shape.setRects(&sk_rects[0], static_cast<int>(sk_rects.size()));
   } else {
     for (const gfx::Rect& rect : *native_shape)
       shape.op(gfx::RectToSkIRect(rect), SkRegion::kUnion_Op);

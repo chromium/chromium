@@ -81,8 +81,8 @@ void TooltipWin::PositionTooltip() {
   const int cursoroffset = GetCurrentCursorVisibleHeight();
   screen_point.Offset(0, cursoroffset);
 
-  DWORD tooltip_size = SendMessage(tooltip_hwnd_, TTM_GETBUBBLESIZE, 0,
-                                   reinterpret_cast<LPARAM>(&toolinfo_));
+  LRESULT tooltip_size = SendMessage(tooltip_hwnd_, TTM_GETBUBBLESIZE, 0,
+                                     reinterpret_cast<LPARAM>(&toolinfo_));
   const gfx::Size size(LOWORD(tooltip_size), HIWORD(tooltip_size));
 
   const display::Display display(

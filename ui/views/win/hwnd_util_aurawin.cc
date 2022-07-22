@@ -40,8 +40,8 @@ gfx::Rect GetWindowBoundsForClientBounds(View* view,
   if (host) {
     HWND hwnd = host->GetAcceleratedWidget();
     RECT rect = client_bounds.ToRECT();
-    DWORD style = ::GetWindowLong(hwnd, GWL_STYLE);
-    DWORD ex_style = ::GetWindowLong(hwnd, GWL_EXSTYLE);
+    auto style = static_cast<DWORD>(::GetWindowLong(hwnd, GWL_STYLE));
+    auto ex_style = static_cast<DWORD>(::GetWindowLong(hwnd, GWL_EXSTYLE));
     ::AdjustWindowRectEx(&rect, style, FALSE, ex_style);
     return gfx::Rect(rect);
   }
@@ -60,7 +60,7 @@ void ShowSystemMenuAtScreenPixelLocation(HWND window, const gfx::Point& point) {
       ::TrackPopupMenu(menu, flags, point.x(), point.y(), 0, window, nullptr);
 
   if (command)
-    ::SendMessage(window, WM_SYSCOMMAND, command, 0);
+    ::SendMessage(window, WM_SYSCOMMAND, static_cast<WPARAM>(command), 0);
 }
 
 }  // namespace views

@@ -24,7 +24,8 @@ void DesktopNativeCursorManagerWin::SetSystemCursorSize(
   if (hkcu_cursor_regkey_.Valid() &&
       hkcu_cursor_regkey_.ReadValueDW(L"CursorBaseSize", &cursor_base_size) ==
           ERROR_SUCCESS) {
-    system_cursor_size_ = gfx::Size(cursor_base_size, cursor_base_size);
+    int size = base::checked_cast<int>(cursor_base_size);
+    system_cursor_size_ = gfx::Size(size, size);
   }
 
   // Report cursor size.

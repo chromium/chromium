@@ -37,7 +37,8 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateEvent(
     UINT32 pointer_id,
     const POINTER_PEN_INFO& pointer_pen_info,
     const gfx::Point& point) {
-  unsigned int mapped_pointer_id = id_generator_->GetGeneratedID(pointer_id);
+  auto mapped_pointer_id =
+      static_cast<ui::PointerId>(id_generator_->GetGeneratedID(pointer_id));
 
   // We are now creating a fake mouse event with pointer type of pen from
   // the WM_POINTER message and then setting up an associated pointer
