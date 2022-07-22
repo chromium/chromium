@@ -9870,9 +9870,8 @@ class RemoteFrameHostInterceptor : public FakeRemoteFrameHost {
 };
 
 TEST_F(WebFrameSwapTest, NavigateRemoteFrameViaLocation) {
-  frame_test_helpers::TestWebRemoteFrameClient client;
   RemoteFrameHostInterceptor interceptor;
-  WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote(&client);
+  WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
   WebFrame* target_frame = MainFrame()->FirstChild();
   ASSERT_TRUE(target_frame);
   frame_test_helpers::SwapRemoteFrame(target_frame, remote_frame,
@@ -9896,10 +9895,8 @@ TEST_F(WebFrameSwapTest, NavigateRemoteFrameViaLocation) {
 }
 
 TEST_F(WebFrameSwapTest, WindowOpenOnRemoteFrame) {
-  frame_test_helpers::TestWebRemoteFrameClient remote_client;
   RemoteFrameHostInterceptor interceptor;
-  WebRemoteFrame* remote_frame =
-      frame_test_helpers::CreateRemote(&remote_client);
+  WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
   frame_test_helpers::SwapRemoteFrame(MainFrame()->FirstChild(), remote_frame,
                                       interceptor.BindNewAssociatedRemote());
   remote_frame->SetReplicatedOrigin(
@@ -9955,10 +9952,6 @@ class RemoteWindowCloseTest : public WebFrameTest {
   RemoteWindowCloseTest() = default;
   ~RemoteWindowCloseTest() override = default;
 
-  frame_test_helpers::TestWebRemoteFrameClient* remote_frame_client() {
-    return &remote_frame_client_;
-  }
-
   bool Closed() const { return remote_main_frame_host_.remote_window_closed(); }
 
   TestRemoteMainFrameHostForWindowClose* remote_main_frame_host() {
@@ -9967,7 +9960,6 @@ class RemoteWindowCloseTest : public WebFrameTest {
 
  private:
   TestRemoteMainFrameHostForWindowClose remote_main_frame_host_;
-  frame_test_helpers::TestWebRemoteFrameClient remote_frame_client_;
 };
 
 TEST_F(RemoteWindowCloseTest, WindowOpenRemoteClose) {
@@ -9976,7 +9968,7 @@ TEST_F(RemoteWindowCloseTest, WindowOpenRemoteClose) {
 
   // Create a remote window that will be closed later in the test.
   frame_test_helpers::WebViewHelper popup;
-  popup.InitializeRemote(remote_frame_client(), nullptr, nullptr);
+  popup.InitializeRemote(nullptr, nullptr);
   popup.GetWebView()->DidAttachRemoteMainFrame(
       remote_main_frame_host()->BindNewAssociatedRemote(),
       mojo::AssociatedRemote<mojom::blink::RemoteMainFrame>()
@@ -10014,7 +10006,7 @@ TEST_F(WebFrameTest, NavigateRemoteToLocalWithOpener) {
   // Create a popup with a remote frame and set its opener to the main frame.
   frame_test_helpers::WebViewHelper popup_helper;
   popup_helper.InitializeRemoteWithOpener(
-      main_frame, nullptr, SecurityOrigin::CreateFromString("http://foo.com"));
+      main_frame, SecurityOrigin::CreateFromString("http://foo.com"));
   WebRemoteFrame* popup_remote_frame = popup_helper.RemoteMainFrame();
   EXPECT_FALSE(main_frame->GetSecurityOrigin().CanAccess(
       popup_remote_frame->GetSecurityOrigin()));
@@ -10294,8 +10286,7 @@ TEST_F(WebFrameTest, SendBeaconFromChildWithRemoteMainFrame) {
 
 TEST_F(WebFrameTest, SiteForCookiesFromChildWithRemoteMainFrame) {
   frame_test_helpers::WebViewHelper helper;
-  helper.InitializeRemote(nullptr,
-                          SecurityOrigin::Create(ToKURL(not_base_url_)));
+  helper.InitializeRemote(SecurityOrigin::Create(ToKURL(not_base_url_)));
 
   WebLocalFrame* local_frame =
       helper.CreateLocalChild(*helper.RemoteMainFrame());
@@ -10912,10 +10903,8 @@ TEST_F(WebFrameTest, RotatedIframeViewportIntersection) {
 </style>
 <iframe></iframe>
   )HTML");
-  frame_test_helpers::TestWebRemoteFrameClient remote_frame_client;
   TestViewportIntersection remote_frame_host;
-  WebRemoteFrameImpl* remote_frame =
-      frame_test_helpers::CreateRemote(&remote_frame_client);
+  WebRemoteFrameImpl* remote_frame = frame_test_helpers::CreateRemote();
   frame_test_helpers::SwapRemoteFrame(
       web_view_helper.LocalMainFrame()->FirstChild(), remote_frame,
       remote_frame_host.BindNewAssociatedRemote());
@@ -11075,7 +11064,7 @@ class WebRemoteFrameVisibilityChangeTest : public WebFrameTest {
         web_view_helper_.InitializeAndLoad(base_url_ + "single_iframe.html")
             ->MainFrameImpl();
     web_view_helper_.Resize(gfx::Size(640, 480));
-    web_remote_frame_ = frame_test_helpers::CreateRemote(&remote_frame_client_);
+    web_remote_frame_ = frame_test_helpers::CreateRemote();
   }
 
   ~WebRemoteFrameVisibilityChangeTest() override = default;
@@ -11102,7 +11091,6 @@ class WebRemoteFrameVisibilityChangeTest : public WebFrameTest {
 
  private:
   TestRemoteFrameHostForVisibility remote_frame_host_;
-  frame_test_helpers::TestWebRemoteFrameClient remote_frame_client_;
   frame_test_helpers::WebViewHelper web_view_helper_;
   WebLocalFrame* frame_;
   Persistent<WebRemoteFrameImpl> web_remote_frame_;
@@ -13567,10 +13555,8 @@ TEST_F(WebFrameSimTest, MainFrameTransformOffsetPixelSnapped) {
       <!DOCTYPE html>
       <iframe id="iframe" style="position:absolute;top:7px;left:13.5px;border:none"></iframe>
   )HTML");
-  frame_test_helpers::TestWebRemoteFrameClient remote_frame_client;
   TestViewportIntersection remote_frame_host;
-  WebRemoteFrame* remote_frame =
-      frame_test_helpers::CreateRemote(&remote_frame_client);
+  WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
   frame_test_helpers::SwapRemoteFrame(
       MainFrame().FirstChild(), remote_frame,
       remote_frame_host.BindNewAssociatedRemote());

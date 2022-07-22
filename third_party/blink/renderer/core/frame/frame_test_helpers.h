@@ -58,7 +58,6 @@
 #include "third_party/blink/public/web/web_frame_owner_properties.h"
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
-#include "third_party/blink/public/web/web_remote_frame_client.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
@@ -84,7 +83,6 @@ class WidgetInputHandlerManager;
 
 namespace frame_test_helpers {
 class TestWebFrameClient;
-class TestWebRemoteFrameClient;
 class TestWebViewClient;
 class TestWidgetInputHandlerHost;
 class WebViewHelper;
@@ -147,13 +145,12 @@ WebLocalFrameImpl* CreateLocalChild(
 // frame to swap into the frame tree.
 // TODO(dcheng): Consider allowing security origin to be passed here once the
 // frame tree moves back to core.
-WebRemoteFrameImpl* CreateRemote(TestWebRemoteFrameClient* = nullptr);
+WebRemoteFrameImpl* CreateRemote();
 
 // Helper for creating a remote child frame of a remote parent frame.
 WebRemoteFrameImpl* CreateRemoteChild(WebRemoteFrame& parent,
                                       const WebString& name = WebString(),
-                                      scoped_refptr<SecurityOrigin> = nullptr,
-                                      TestWebRemoteFrameClient* = nullptr);
+                                      scoped_refptr<SecurityOrigin> = nullptr);
 
 // Call Swap with a `new_remote_frame` stubbing out the mojo channels if
 // necessary.
@@ -400,8 +397,7 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
       void (*update_settings_func)(WebSettings*) = nullptr);
 
   // Same as InitializeRemoteWithOpener(), but always sets the opener to null.
-  WebViewImpl* InitializeRemote(TestWebRemoteFrameClient* = nullptr,
-                                scoped_refptr<SecurityOrigin> = nullptr,
+  WebViewImpl* InitializeRemote(scoped_refptr<SecurityOrigin> = nullptr,
                                 TestWebViewClient* = nullptr);
 
   // Creates and initializes the WebView with a main WebRemoteFrame. Passing
@@ -409,7 +405,6 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
   // origin.
   WebViewImpl* InitializeRemoteWithOpener(
       WebFrame* opener,
-      TestWebRemoteFrameClient* = nullptr,
       scoped_refptr<SecurityOrigin> = nullptr,
       TestWebViewClient* = nullptr);
 
@@ -596,32 +591,6 @@ class TestWebFrameClient : public WebLocalFrameClient {
       network::mojom::WebSandboxFlags::kNone;
 
   base::WeakPtrFactory<TestWebFrameClient> weak_factory_{this};
-};
-
-// Minimal implementation of WebRemoteFrameClient needed for unit tests that
-// load remote frames. Tests that load frames and need further specialization
-// of WebLocalFrameClient behavior should subclass this.
-class TestWebRemoteFrameClient : public WebRemoteFrameClient {
- public:
-  TestWebRemoteFrameClient();
-  ~TestWebRemoteFrameClient() override = default;
-
-  WebRemoteFrame* Frame() const { return frame_; }
-  // Pass ownership of the TestWebFrameClient to |self_owned| here if the
-  // TestWebRemoteFrameClient should delete itself on frame detach.
-  void Bind(WebRemoteFrame*,
-            std::unique_ptr<TestWebRemoteFrameClient> self_owned = nullptr);
-
-  // WebRemoteFrameClient:
-  void FrameDetached(DetachType) override;
-
- private:
-  // If set to a non-null value, self-deletes on frame detach.
-  std::unique_ptr<TestWebRemoteFrameClient> self_owned_;
-
-  // This is null from when the client is created until it is initialized with
-  // Bind().
-  WebRemoteFrame* frame_ = nullptr;
 };
 
 class TestWidgetInputHandlerHost : public mojom::blink::WidgetInputHandlerHost {

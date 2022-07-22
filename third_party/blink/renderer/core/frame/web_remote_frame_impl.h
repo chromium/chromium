@@ -10,7 +10,6 @@
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_remote_frame.h"
-#include "third_party/blink/public/web/web_remote_frame_client.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
@@ -33,7 +32,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
  public:
   static WebRemoteFrameImpl* CreateMainFrame(
       WebView*,
-      WebRemoteFrameClient*,
       const RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
       WebFrame* opener,
@@ -44,7 +42,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
 
   static WebRemoteFrameImpl* CreateForPortalOrFencedFrame(
       mojom::blink::TreeScopeType,
-      WebRemoteFrameClient*,
       const RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
       const WebElement& frame_owner,
@@ -54,7 +51,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
       mojom::FrameReplicationStatePtr replicated_state);
 
   WebRemoteFrameImpl(mojom::blink::TreeScopeType,
-                     WebRemoteFrameClient*,
                      const RemoteFrameToken& frame_token);
   ~WebRemoteFrameImpl() override;
 
@@ -76,7 +72,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
       std::unique_ptr<blink::WebPolicyContainer> policy_container) override;
   WebRemoteFrame* CreateRemoteChild(
       mojom::blink::TreeScopeType,
-      WebRemoteFrameClient*,
       const RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
       WebFrame* opener,
@@ -108,8 +103,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
       mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver);
   RemoteFrame* GetFrame() const { return frame_.Get(); }
 
-  WebRemoteFrameClient* Client() const { return client_; }
-
   static WebRemoteFrameImpl* FromFrame(RemoteFrame&);
 
   void Trace(Visitor*) const;
@@ -134,7 +127,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
   WebRemoteFrame* ToWebRemoteFrame() override;
   const WebRemoteFrame* ToWebRemoteFrame() const override;
 
-  WebRemoteFrameClient* client_;
   // TODO(dcheng): Inline this field directly rather than going through Member.
   Member<RemoteFrameClientImpl> frame_client_;
   Member<RemoteFrame> frame_;

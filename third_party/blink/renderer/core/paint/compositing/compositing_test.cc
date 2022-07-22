@@ -2572,10 +2572,8 @@ TEST_P(CompositingSimTest, ForeignLayersInMovedSubsequence) {
       <div id="target" style="background: blue;">a</div>
   )HTML");
 
-  frame_test_helpers::TestWebRemoteFrameClient remote_frame_client;
   FakeRemoteFrameHost remote_frame_host;
-  WebRemoteFrameImpl* remote_frame =
-      frame_test_helpers::CreateRemote(&remote_frame_client);
+  WebRemoteFrameImpl* remote_frame = frame_test_helpers::CreateRemote();
   frame_test_helpers::SwapRemoteFrame(
       MainFrame().FirstChild(), remote_frame,
       remote_frame_host.BindNewAssociatedRemote());

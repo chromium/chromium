@@ -25,7 +25,6 @@ enum class TreeScopeType;
 class InterfaceRegistry;
 class WebElement;
 class WebLocalFrameClient;
-class WebRemoteFrameClient;
 class WebString;
 class WebView;
 struct FramePolicy;
@@ -34,16 +33,13 @@ struct WebFrameOwnerProperties;
 
 class WebRemoteFrame : public WebFrame {
  public:
-  // Factory methods for creating a WebRemoteFrame. The WebRemoteFrameClient
-  // argument must be non-null for all creation methods.
+  // Factory methods for creating a WebRemoteFrame.
   BLINK_EXPORT static WebRemoteFrame* Create(
       mojom::TreeScopeType,
-      WebRemoteFrameClient*,
       const RemoteFrameToken& frame_token);
 
   BLINK_EXPORT static WebRemoteFrame* CreateMainFrame(
       WebView*,
-      WebRemoteFrameClient*,
       const RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
       WebFrame* opener,
@@ -57,7 +53,6 @@ class WebRemoteFrame : public WebFrame {
   // with the provided <portal> or <fencedframe> element.
   BLINK_EXPORT static WebRemoteFrame* CreateForPortalOrFencedFrame(
       mojom::TreeScopeType,
-      WebRemoteFrameClient*,
       const RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
       const WebElement& frame_owner,
@@ -88,7 +83,6 @@ class WebRemoteFrame : public WebFrame {
 
   virtual WebRemoteFrame* CreateRemoteChild(
       mojom::TreeScopeType,
-      WebRemoteFrameClient*,
       const RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
       WebFrame* opener,

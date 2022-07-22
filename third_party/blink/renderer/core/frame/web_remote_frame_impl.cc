@@ -54,15 +54,13 @@ WebRemoteFrame* WebRemoteFrame::FromFrameToken(
 }
 
 WebRemoteFrame* WebRemoteFrame::Create(mojom::blink::TreeScopeType scope,
-                                       WebRemoteFrameClient* client,
                                        const RemoteFrameToken& frame_token) {
-  return MakeGarbageCollected<WebRemoteFrameImpl>(scope, client, frame_token);
+  return MakeGarbageCollected<WebRemoteFrameImpl>(scope, frame_token);
 }
 
 // static
 WebRemoteFrame* WebRemoteFrame::CreateMainFrame(
     WebView* web_view,
-    WebRemoteFrameClient* client,
     const RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
     WebFrame* opener,
@@ -72,7 +70,7 @@ WebRemoteFrame* WebRemoteFrame::CreateMainFrame(
         receiver,
     mojom::FrameReplicationStatePtr replicated_state) {
   return WebRemoteFrameImpl::CreateMainFrame(
-      web_view, client, frame_token, devtools_frame_token, opener,
+      web_view, frame_token, devtools_frame_token, opener,
       std::move(remote_frame_host), std::move(receiver),
       std::move(replicated_state));
 }
@@ -80,7 +78,6 @@ WebRemoteFrame* WebRemoteFrame::CreateMainFrame(
 // static
 WebRemoteFrame* WebRemoteFrame::CreateForPortalOrFencedFrame(
     mojom::blink::TreeScopeType scope,
-    WebRemoteFrameClient* client,
     const RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
     const WebElement& frame_owner,
@@ -90,7 +87,7 @@ WebRemoteFrame* WebRemoteFrame::CreateForPortalOrFencedFrame(
         receiver,
     mojom::FrameReplicationStatePtr replicated_state) {
   return WebRemoteFrameImpl::CreateForPortalOrFencedFrame(
-      scope, client, frame_token, devtools_frame_token, frame_owner,
+      scope, frame_token, devtools_frame_token, frame_owner,
       std::move(remote_frame_host), std::move(receiver),
       std::move(replicated_state));
 }
@@ -98,7 +95,6 @@ WebRemoteFrame* WebRemoteFrame::CreateForPortalOrFencedFrame(
 // static
 WebRemoteFrameImpl* WebRemoteFrameImpl::CreateMainFrame(
     WebView* web_view,
-    WebRemoteFrameClient* client,
     const RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
     WebFrame* opener,
@@ -107,7 +103,7 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateMainFrame(
     mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
     mojom::FrameReplicationStatePtr replicated_state) {
   WebRemoteFrameImpl* frame = MakeGarbageCollected<WebRemoteFrameImpl>(
-      mojom::blink::TreeScopeType::kDocument, client, frame_token);
+      mojom::blink::TreeScopeType::kDocument, frame_token);
   Page& page = *To<WebViewImpl>(web_view)->GetPage();
   // It would be nice to DCHECK that the main frame is not set yet here.
   // Unfortunately, there is an edge case with a pending RenderFrameHost that
@@ -130,7 +126,6 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateMainFrame(
 
 WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForPortalOrFencedFrame(
     mojom::blink::TreeScopeType scope,
-    WebRemoteFrameClient* client,
     const RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
     const WebElement& frame_owner,
@@ -138,8 +133,7 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForPortalOrFencedFrame(
         remote_frame_host,
     mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
     mojom::FrameReplicationStatePtr replicated_state) {
-  auto* frame =
-      MakeGarbageCollected<WebRemoteFrameImpl>(scope, client, frame_token);
+  auto* frame = MakeGarbageCollected<WebRemoteFrameImpl>(scope, frame_token);
 
   // We first convert this to a raw blink::Element*, and manually convert this
   // to an HTMLElement*. That is the only way the IsA<> and To<> casts below
@@ -296,7 +290,6 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
 
 WebRemoteFrame* WebRemoteFrameImpl::CreateRemoteChild(
     mojom::blink::TreeScopeType scope,
-    WebRemoteFrameClient* client,
     const RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
     WebFrame* opener,
@@ -305,8 +298,7 @@ WebRemoteFrame* WebRemoteFrameImpl::CreateRemoteChild(
     CrossVariantMojoAssociatedReceiver<mojom::blink::RemoteFrameInterfaceBase>
         receiver,
     mojom::FrameReplicationStatePtr replicated_state) {
-  auto* child =
-      MakeGarbageCollected<WebRemoteFrameImpl>(scope, client, frame_token);
+  auto* child = MakeGarbageCollected<WebRemoteFrameImpl>(scope, frame_token);
   auto* owner = MakeGarbageCollected<RemoteFrameOwner>(
       replicated_state->frame_policy, WebFrameOwnerProperties());
   WindowAgentFactory* window_agent_factory = nullptr;
@@ -393,13 +385,9 @@ bool WebRemoteFrameImpl::IsAdSubframe() const {
 }
 
 WebRemoteFrameImpl::WebRemoteFrameImpl(mojom::blink::TreeScopeType scope,
-                                       WebRemoteFrameClient* client,
                                        const RemoteFrameToken& frame_token)
     : WebRemoteFrame(scope, frame_token),
-      client_(client),
-      frame_client_(MakeGarbageCollected<RemoteFrameClientImpl>(this)) {
-  DCHECK(client);
-}
+      frame_client_(MakeGarbageCollected<RemoteFrameClientImpl>(this)) {}
 
 void WebRemoteFrameImpl::SetReplicatedState(
     mojom::FrameReplicationStatePtr state) {

@@ -9,7 +9,6 @@
 
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
-#include "third_party/blink/public/web/web_remote_frame_client.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -39,17 +38,12 @@ bool RemoteFrameClientImpl::InShadowTree() const {
 }
 
 void RemoteFrameClientImpl::Detached(FrameDetachType type) {
-  // Alert the client that the frame is being detached.
-  WebRemoteFrameClient* client = web_frame_->Client();
-  if (!client)
-    return;
-
   // We only notify the browser process when the frame is being detached for
   // removal, not after a swap.
   if (type == FrameDetachType::kRemove)
     web_frame_->GetFrame()->GetRemoteFrameHostRemote().Detach();
 
-  client->FrameDetached(static_cast<WebRemoteFrameClient::DetachType>(type));
+  web_frame_->Close();
 
   if (web_frame_->Parent()) {
     if (type == FrameDetachType::kRemove)

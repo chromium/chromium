@@ -95,7 +95,6 @@
 #include "content/renderer/navigation_state.h"
 #include "content/renderer/pepper/pepper_audio_controller.h"
 #include "content/renderer/policy_container_util.h"
-#include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_process.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
@@ -158,6 +157,7 @@
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
@@ -219,6 +219,7 @@
 #include "third_party/blink/public/web/web_plugin_document.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_range.h"
+#include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/public/web/web_savable_resources_test_support.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_searchable_form_data.h"
@@ -257,7 +258,6 @@ using blink::WebContentDecryptionModule;
 using blink::WebData;
 using blink::WebDocument;
 using blink::WebDocumentLoader;
-using blink::WebDOMEvent;
 using blink::WebDOMMessageEvent;
 using blink::WebElement;
 using blink::WebElementCollection;
@@ -3490,11 +3490,13 @@ RenderFrameImpl::CreatePortal(
       std::move(portal_endpoint), std::move(client_endpoint),
       std::move(remote_frame_interfaces), &initial_replicated_state,
       &portal_token, &frame_token, &devtools_frame_token);
-  RenderFrameProxy* proxy = RenderFrameProxy::CreateProxyForPortalOrFencedFrame(
-      agent_scheduling_group_, this, frame_token,
-      std::move(initial_replicated_state), devtools_frame_token, portal_element,
-      std::move(remote_frame_host), std::move(remote_frame_receiver));
-  return std::make_pair(proxy->web_frame(), portal_token);
+  return std::make_pair(
+      blink::WebRemoteFrame::CreateForPortalOrFencedFrame(
+          blink::mojom::TreeScopeType::kDocument, frame_token,
+          devtools_frame_token, portal_element, std::move(remote_frame_host),
+          std::move(remote_frame_receiver),
+          std::move(initial_replicated_state)),
+      portal_token);
 }
 
 blink::WebRemoteFrame* RenderFrameImpl::AdoptPortal(
@@ -3517,11 +3519,10 @@ blink::WebRemoteFrame* RenderFrameImpl::AdoptPortal(
   GetFrameHost()->AdoptPortal(portal_token, std::move(remote_frame_interfaces),
                               &replicated_state, &frame_token,
                               &devtools_frame_token);
-  RenderFrameProxy* proxy = RenderFrameProxy::CreateProxyForPortalOrFencedFrame(
-      agent_scheduling_group_, this, frame_token, std::move(replicated_state),
-      devtools_frame_token, portal_element, std::move(remote_frame_host),
-      std::move(remote_frame_receiver));
-  return proxy->web_frame();
+  return blink::WebRemoteFrame::CreateForPortalOrFencedFrame(
+      blink::mojom::TreeScopeType::kDocument, frame_token, devtools_frame_token,
+      portal_element, std::move(remote_frame_host),
+      std::move(remote_frame_receiver), std::move(replicated_state));
 }
 
 blink::WebRemoteFrame* RenderFrameImpl::CreateFencedFrame(
@@ -3546,15 +3547,17 @@ blink::WebRemoteFrame* RenderFrameImpl::CreateFencedFrame(
       std::move(receiver), mode, std::move(remote_frame_interfaces),
       &initial_replicated_state, &frame_token, &devtools_frame_token);
 
-  RenderFrameProxy* proxy = RenderFrameProxy::CreateProxyForPortalOrFencedFrame(
-      agent_scheduling_group_, this, frame_token,
-      std::move(initial_replicated_state), devtools_frame_token, fenced_frame,
-      std::move(remote_frame_host), std::move(remote_frame_receiver));
+  blink::WebRemoteFrame* remote_frame =
+      blink::WebRemoteFrame::CreateForPortalOrFencedFrame(
+          blink::mojom::TreeScopeType::kDocument, frame_token,
+          devtools_frame_token, fenced_frame, std::move(remote_frame_host),
+          std::move(remote_frame_receiver),
+          std::move(initial_replicated_state));
 
   for (auto& observer : observers_)
     observer.DidCreateFencedFrame(frame_token);
 
-  return proxy->web_frame();
+  return remote_frame;
 }
 
 blink::WebFrame* RenderFrameImpl::FindFrame(const blink::WebString& name) {
@@ -4073,11 +4076,9 @@ bool RenderFrameImpl::SwapOutAndDeleteThis(
                routing_id_);
   DCHECK(!base::RunLoop::IsNestedOnCurrentThread());
 
-  // There should always be a proxy to replace this RenderFrame. Create it so
-  // we can pass a WebRemoteFrame into `Swap`.
-  RenderFrameProxy* proxy = RenderFrameProxy::CreateProxyToReplaceFrame(
-      agent_scheduling_group_, this, frame_->GetTreeScopeType(),
-      proxy_frame_token);
+  // Create a WebRemoteFrame so we can pass it into `Swap`.
+  blink::WebRemoteFrame* remote_frame = blink::WebRemoteFrame::Create(
+      frame_->GetTreeScopeType(), proxy_frame_token);
 
   RenderViewImpl* render_view = render_view_;
   bool is_main_frame = is_main_frame_;
@@ -4091,10 +4092,10 @@ bool RenderFrameImpl::SwapOutAndDeleteThis(
   // it to return false without detaching.
   //
   // This executes the unload handlers on this frame and its local descendants.
-  bool success = frame_->Swap(
-      proxy->web_frame(), std::move(remote_frame_interfaces->frame_host),
-      std::move(remote_frame_interfaces->frame_receiver),
-      std::move(replicated_frame_state));
+  bool success =
+      frame_->Swap(remote_frame, std::move(remote_frame_interfaces->frame_host),
+                   std::move(remote_frame_interfaces->frame_receiver),
+                   std::move(replicated_frame_state));
 
   // WARNING: Do not access 'this' past this point!
 
@@ -4115,12 +4116,12 @@ bool RenderFrameImpl::SwapOutAndDeleteThis(
     // The swap can fail when the frame is detached during swap (this can
     // happen while running the unload handlers). When that happens, delete
     // the proxy.
-    proxy->FrameDetached(blink::WebRemoteFrameClient::DetachType::kSwap);
+    remote_frame->Close();
     return false;
   }
 
   if (is_loading)
-    proxy->DidStartLoading();
+    remote_frame->DidStartLoading();
 
   return true;
 }

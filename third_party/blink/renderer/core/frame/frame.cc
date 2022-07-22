@@ -37,7 +37,6 @@
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
-#include "third_party/blink/public/web/web_remote_frame_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/document_type.h"
@@ -929,10 +928,5 @@ void Frame::DetachFromParent() {
   }
   Parent()->RemoveChild(this);
 }
-
-STATIC_ASSERT_ENUM(FrameDetachType::kRemove,
-                   WebRemoteFrameClient::DetachType::kRemove);
-STATIC_ASSERT_ENUM(FrameDetachType::kSwap,
-                   WebRemoteFrameClient::DetachType::kSwap);
 
 }  // namespace blink

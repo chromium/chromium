@@ -9,7 +9,6 @@
 #include "content/public/renderer/render_frame_visitor.h"
 #include "content/public/test/fake_render_widget_host.h"
 #include "content/public/test/render_view_test.h"
-#include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"

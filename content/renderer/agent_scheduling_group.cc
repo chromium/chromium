@@ -16,7 +16,6 @@
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/public/common/content_features.h"
 #include "content/renderer/render_frame_impl.h"
-#include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
 #include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
@@ -24,7 +23,10 @@
 #include "ipc/ipc_channel_mojo.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sync_channel.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
+#include "third_party/blink/public/web/web_remote_frame.h"
+#include "third_party/blink/public/web/web_view.h"
 
 namespace content {
 
@@ -289,7 +291,7 @@ void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
 }
 
 void AgentSchedulingGroup::CreateFrameProxy(
-    const blink::RemoteFrameToken& token,
+    const blink::RemoteFrameToken& frame_token,
     const absl::optional<blink::FrameToken>& opener_frame_token,
     int32_t view_routing_id,
     const absl::optional<blink::RemoteFrameToken>& parent_frame_token,
@@ -298,11 +300,46 @@ void AgentSchedulingGroup::CreateFrameProxy(
     const base::UnguessableToken& devtools_frame_token,
     mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
     mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
-  RenderFrameProxy::CreateFrameProxy(
-      *this, token, opener_frame_token, view_routing_id, parent_frame_token,
-      tree_scope_type, std::move(replicated_state), devtools_frame_token,
-      std::move(remote_frame_interfaces),
-      std::move(remote_main_frame_interfaces));
+  blink::WebRemoteFrame* parent = nullptr;
+  if (parent_frame_token) {
+    parent = blink::WebRemoteFrame::FromFrameToken(parent_frame_token.value());
+    // It is possible that the parent proxy has been detached in this renderer
+    // process, just as the parent's real frame was creating this child frame.
+    // In this case, do not create the proxy. See https://crbug.com/568670.
+    if (!parent)
+      return;
+  }
+
+  blink::WebFrame* opener = nullptr;
+  if (opener_frame_token)
+    opener = blink::WebFrame::FromFrameToken(*opener_frame_token);
+  if (!parent) {
+    // Create a top level WebRemoteFrame.
+    RenderViewImpl* render_view =
+        RenderViewImpl::FromRoutingID(view_routing_id);
+    blink::WebView* web_view = render_view->GetWebView();
+    blink::WebRemoteFrame::CreateMainFrame(
+        web_view, frame_token, devtools_frame_token, opener,
+        std::move(remote_frame_interfaces->frame_host),
+        std::move(remote_frame_interfaces->frame_receiver),
+        std::move(replicated_state));
+    // Root frame proxy has no ancestors to point to their RenderWidget.
+
+    // The WebRemoteFrame created here was already attached to the Page as its
+    // main frame, so we can call WebView's DidAttachRemoteMainFrame().
+    web_view->DidAttachRemoteMainFrame(
+        std::move(remote_main_frame_interfaces->main_frame_host),
+        std::move(remote_main_frame_interfaces->main_frame));
+  } else {
+    // Create a frame under an existing parent. The parent is always expected
+    // to be a RenderFrameProxy, because navigations initiated by local frames
+    // should not wind up here.
+    parent->CreateRemoteChild(
+        tree_scope_type, frame_token, devtools_frame_token, opener,
+        std::move(remote_frame_interfaces->frame_host),
+        std::move(remote_frame_interfaces->frame_receiver),
+        std::move(replicated_state));
+  }
 }
 
 void AgentSchedulingGroup::CreateSharedStorageWorkletService(

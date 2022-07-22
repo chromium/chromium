@@ -27,7 +27,6 @@
 #include "content/public/renderer/window_features_converter.h"
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/render_frame_impl.h"
-#include "content/renderer/render_frame_proxy.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/url_conversion.h"
@@ -151,14 +150,18 @@ void RenderViewImpl::Initialize(
         std::move(params->replication_state), params->devtools_main_frame_token,
         std::move(params->main_frame->get_local_params()));
   } else {
-    RenderFrameProxy::CreateFrameProxy(
-        agent_scheduling_group_, params->main_frame->get_remote_params()->token,
-        params->opener_frame_token, routing_id_, absl::nullopt,
-        blink::mojom::TreeScopeType::kDocument /* ignored for main frames */,
-        std::move(params->replication_state), params->devtools_main_frame_token,
-        std::move(params->main_frame->get_remote_params()->frame_interfaces),
-        std::move(
-            params->main_frame->get_remote_params()->main_frame_interfaces));
+    static_cast<mojom::AgentSchedulingGroup&>(agent_scheduling_group_)
+        .CreateFrameProxy(
+            params->main_frame->get_remote_params()->token,
+            params->opener_frame_token, routing_id_, absl::nullopt,
+            blink::mojom::TreeScopeType::
+                kDocument /* ignored for main frames */,
+            std::move(params->replication_state),
+            params->devtools_main_frame_token,
+            std::move(
+                params->main_frame->get_remote_params()->frame_interfaces),
+            std::move(params->main_frame->get_remote_params()
+                          ->main_frame_interfaces));
   }
 
   // TODO(davidben): Move this state from Blink into content.

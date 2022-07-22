@@ -110,8 +110,6 @@ target(link_target_type, "renderer") {
     "policy_container_util.h",
     "render_frame_impl.cc",
     "render_frame_impl.h",
-    "render_frame_proxy.cc",
-    "render_frame_proxy.h",
     "render_process.cc",
     "render_process.h",
     "render_process_impl.cc",

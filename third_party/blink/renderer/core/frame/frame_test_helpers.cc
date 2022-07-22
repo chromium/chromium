@@ -313,34 +313,27 @@ WebLocalFrameImpl* CreateLocalChild(
   return frame;
 }
 
-WebRemoteFrameImpl* CreateRemote(TestWebRemoteFrameClient* client) {
-  std::unique_ptr<TestWebRemoteFrameClient> owned_client;
-  client = CreateDefaultClientIfNeeded(client, owned_client);
+WebRemoteFrameImpl* CreateRemote() {
   auto* frame = MakeGarbageCollected<WebRemoteFrameImpl>(
-      mojom::blink::TreeScopeType::kDocument, client, RemoteFrameToken());
-  client->Bind(frame, std::move(owned_client));
+      mojom::blink::TreeScopeType::kDocument, RemoteFrameToken());
   return frame;
 }
 
 WebRemoteFrameImpl* CreateRemoteChild(
     WebRemoteFrame& parent,
     const WebString& name,
-    scoped_refptr<SecurityOrigin> security_origin,
-    TestWebRemoteFrameClient* client) {
+    scoped_refptr<SecurityOrigin> security_origin) {
   mojom::FrameReplicationStatePtr replicated_state =
       mojom::FrameReplicationState::New();
   replicated_state->name = name.Utf8();
-  std::unique_ptr<TestWebRemoteFrameClient> owned_client;
-  client = CreateDefaultClientIfNeeded(client, owned_client);
   auto* frame = To<WebRemoteFrameImpl>(parent.CreateRemoteChild(
-      mojom::blink::TreeScopeType::kDocument, client, RemoteFrameToken(),
+      mojom::blink::TreeScopeType::kDocument, RemoteFrameToken(),
       /*devtools_frame_token=*/base::UnguessableToken(), /*opener=*/nullptr,
       CreateStubRemoteIfNeeded<mojom::blink::RemoteFrameHost>(
           mojo::NullAssociatedRemote()),
       mojo::AssociatedRemote<mojom::blink::RemoteFrame>()
           .BindNewEndpointAndPassDedicatedReceiver(),
       std::move(replicated_state)));
-  client->Bind(frame, std::move(owned_client));
   if (!security_origin)
     security_origin = SecurityOrigin::CreateUniqueOpaque();
   frame->GetFrame()->SetReplicatedOrigin(std::move(security_origin), false);
@@ -478,35 +471,27 @@ WebViewImpl* WebViewHelper::InitializeAndLoad(
 }
 
 WebViewImpl* WebViewHelper::InitializeRemote(
-    TestWebRemoteFrameClient* client,
     scoped_refptr<SecurityOrigin> security_origin,
     TestWebViewClient* web_view_client) {
-  return InitializeRemoteWithOpener(nullptr, client, security_origin,
-                                    web_view_client);
+  return InitializeRemoteWithOpener(nullptr, security_origin, web_view_client);
 }
 
 WebViewImpl* WebViewHelper::InitializeRemoteWithOpener(
     WebFrame* opener,
-    TestWebRemoteFrameClient* web_remote_frame_client,
     scoped_refptr<SecurityOrigin> security_origin,
     TestWebViewClient* web_view_client) {
   Reset();
 
   InitializeWebView(web_view_client, nullptr, absl::nullopt);
 
-  std::unique_ptr<TestWebRemoteFrameClient> owned_web_remote_frame_client;
-  web_remote_frame_client = CreateDefaultClientIfNeeded(
-      web_remote_frame_client, owned_web_remote_frame_client);
   WebRemoteFrameImpl* frame = WebRemoteFrameImpl::CreateMainFrame(
-      web_view_, web_remote_frame_client, RemoteFrameToken(),
+      web_view_, RemoteFrameToken(),
       /*devtools_frame_token=*/base::UnguessableToken(), opener,
       CreateStubRemoteIfNeeded<mojom::blink::RemoteFrameHost>(
           mojo::NullAssociatedRemote()),
       mojo::AssociatedRemote<mojom::blink::RemoteFrame>()
           .BindNewEndpointAndPassDedicatedReceiver(),
       mojom::FrameReplicationState::New());
-  web_remote_frame_client->Bind(frame,
-                                std::move(owned_web_remote_frame_client));
   if (!security_origin)
     security_origin = SecurityOrigin::CreateUniqueOpaque();
   frame->GetFrame()->SetReplicatedOrigin(std::move(security_origin), false);
@@ -847,22 +832,6 @@ void TestWebFrameClient::DidMeaningfulLayout(
       finished_loading_layout_count_++;
       break;
   }
-}
-
-TestWebRemoteFrameClient::TestWebRemoteFrameClient() = default;
-
-void TestWebRemoteFrameClient::Bind(
-    WebRemoteFrame* frame,
-    std::unique_ptr<TestWebRemoteFrameClient> self_owned) {
-  DCHECK(!frame_);
-  DCHECK(!self_owned || self_owned.get() == this);
-  frame_ = frame;
-  self_owned_ = std::move(self_owned);
-}
-
-void TestWebRemoteFrameClient::FrameDetached(DetachType type) {
-  frame_->Close();
-  self_owned_.reset();
 }
 
 TestWidgetInputHandlerHost* TestWebFrameWidget::GetInputHandlerHost() {
