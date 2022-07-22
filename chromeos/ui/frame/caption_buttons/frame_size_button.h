@@ -91,6 +91,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // whether the buttons should animate back to their original icons.
   void SetButtonsToNormalMode(FrameSizeButtonDelegate::Animate animate);
 
+  // Show Multitask Menu when pie animation is completed.
+  void OnPieAnimationCompleted();
   void DestroyPieAnimation();
 
   // Not owned.

@@ -237,21 +237,23 @@ bool FrameSizeButton::OnMousePressed(const ui::MouseEvent& event) {
   // `pie_animation_` below to come after `StateChanged()`.
   views::FrameCaptionButton::OnMousePressed(event);
 
-  // The minimize and close buttons are set to snap left and right when snapping
-  // is enabled. Do not enable snapping if the minimize button is not visible.
-  // The close button is always visible.
-  if (IsTriggerableEvent(event) && !in_snap_mode_ &&
-      delegate_->IsMinimizeButtonVisible() && delegate_->CanSnap()) {
-    StartSetButtonsToSnapModeTimer(event);
-
+  if (IsTriggerableEvent(event)) {
     // Add a visual indicator of when snap mode will get triggered.
     if (chromeos::wm::features::IsFloatWindowEnabled()) {
-      std::pair<base::OnceClosure, base::OnceClosure> split =
-          base::SplitOnceCallback(base::BindOnce(
-              &FrameSizeButton::DestroyPieAnimation, base::Unretained(this)));
+      base::OnceClosure cancel_animation = base::BindOnce(
+          &FrameSizeButton::DestroyPieAnimation, base::Unretained(this));
+      base::OnceClosure show_multitask_menu = base::BindOnce(
+          &FrameSizeButton::OnPieAnimationCompleted, base::Unretained(this));
       pie_animation_ = std::make_unique<PieAnimation>(
-          kPieAnimationPressDuration, std::move(split.first),
-          std::move(split.second), this);
+          kPieAnimationPressDuration, std::move(cancel_animation),
+          std::move(show_multitask_menu), this);
+    }
+    // The minimize and close buttons are set to snap left and right when
+    // snapping is enabled. Do not enable snapping if the minimize button is not
+    // visible. The close button is always visible.
+    if (!in_snap_mode_ && delegate_->CanSnap() &&
+        delegate_->IsMinimizeButtonVisible()) {
+      StartSetButtonsToSnapModeTimer(event);
     }
   }
 
@@ -337,13 +339,14 @@ void FrameSizeButton::StateChanged(views::Button::ButtonState old_state) {
     return;
 
   if (GetState() == views::Button::STATE_HOVERED) {
-    // TODO(shidi): On animation end we should show the multitask menu.
-    std::pair<base::OnceClosure, base::OnceClosure> split =
-        base::SplitOnceCallback(base::BindOnce(
-            &FrameSizeButton::DestroyPieAnimation, base::Unretained(this)));
+    base::OnceClosure cancel_animation = base::BindOnce(
+        &FrameSizeButton::DestroyPieAnimation, base::Unretained(this));
+    base::OnceClosure show_multitask_menu = base::BindOnce(
+        &FrameSizeButton::OnPieAnimationCompleted, base::Unretained(this));
     pie_animation_ = std::make_unique<PieAnimation>(
-        kPieAnimationHoverDuration, std::move(split.first),
-        std::move(split.second), this);
+        kPieAnimationHoverDuration, std::move(cancel_animation),
+        std::move(show_multitask_menu), this);
+    // On animation end we should show the multitask menu.
   } else if (old_state == views::Button::STATE_HOVERED) {
     pie_animation_.reset();
   }
@@ -409,7 +412,6 @@ void FrameSizeButton::SetButtonsToSnapMode(
                               views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
                               animate);
   }
-  ShowMultitaskMenu();
 }
 
 void FrameSizeButton::UpdateSnapPreview(const ui::LocatedEvent& event) {
@@ -496,6 +498,11 @@ void FrameSizeButton::SetButtonsToNormalMode(
   pie_animation_.reset();
   set_buttons_to_snap_mode_timer_.Stop();
   delegate_->SetButtonsToNormal(animate);
+}
+
+void FrameSizeButton::OnPieAnimationCompleted() {
+  ShowMultitaskMenu();
+  pie_animation_.reset();
 }
 
 void FrameSizeButton::DestroyPieAnimation() {
