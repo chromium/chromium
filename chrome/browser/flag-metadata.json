@@ -2344,14 +2344,14 @@
     "owners": [
       "xhwang", "media-dev"
     ],
-    "expiry_milestone": 105
+    "expiry_milestone": 120
   },
   {
     "name": "enable-hardware-secure-decryption-fallback",
     "owners": [
       "xhwang", "media-dev"
     ],
-    "expiry_milestone": 105
+    "expiry_milestone": 120
   },
   {
     "name": "enable-heavy-ad-intervention",
