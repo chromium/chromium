@@ -597,12 +597,32 @@ NGHighlightPainter::Case NGHighlightPainter::ComputePaintCase() const {
   if (!RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled())
     return selection_ ? kOldSelection : kNoHighlights;
 
-  // This can yield false positives (weakening the optimisation below) if there
-  // are non-spelling/grammar highlights that are all outside the text fragment.
-  if (selection_ || !target_.IsEmpty() || !custom_.IsEmpty())
+  // This can yield false positives (weakening the optimisations below) if all
+  // non-spelling/grammar/selection highlights are outside the text fragment.
+  if (!target_.IsEmpty() || !custom_.IsEmpty())
     return kOverlay;
 
+  if (selection_ && spelling_.IsEmpty() && grammar_.IsEmpty()) {
+    scoped_refptr<const ComputedStyle> pseudo_style =
+        HighlightPaintingUtils::HighlightPseudoStyle(node_, style_,
+                                                     kPseudoIdSelection);
+
+    // If we only have a selection, and there are no selection or originating
+    // decorations, we don’t need the expense of overlay painting.
+    return style_.TextDecorationsInEffect() == TextDecorationLine::kNone &&
+                   (!pseudo_style || pseudo_style->TextDecorationsInEffect() ==
+                                         TextDecorationLine::kNone)
+               ? kFastSelection
+               : kOverlay;
+  }
+
   if (!spelling_.IsEmpty() || !grammar_.IsEmpty()) {
+    // If there is a selection too, or there are originating decorations, we
+    // must use the full overlay painting algorithm.
+    if (selection_ ||
+        style_.TextDecorationsInEffect() != TextDecorationLine::kNone)
+      return kOverlay;
+
     // Just check if there are no spelling/grammar styles at all, which is
     // simpler and faster than checking all the relevant properties, but may
     // yield false negatives (weakening the optimisation below).
@@ -619,6 +639,8 @@ NGHighlightPainter::Case NGHighlightPainter::ComputePaintCase() const {
     return spelling_ok && grammar_ok ? kFastSpellingGrammar : kOverlay;
   }
 
+  DCHECK(!selection_ && target_.IsEmpty() && spelling_.IsEmpty() &&
+         grammar_.IsEmpty() && custom_.IsEmpty());
   return kNoHighlights;
 }
 

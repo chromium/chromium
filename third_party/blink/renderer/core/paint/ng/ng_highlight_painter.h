@@ -156,22 +156,29 @@ class CORE_EXPORT NGHighlightPainter {
     // Caller should use PaintOriginatingText and PaintHighlightOverlays.
     // This happens if HighlightOverlayPainting is on and there are highlights
     // that may involve the text fragment, except in some situations with only
-    // spelling and/or grammar errors (see kFastSpellingGrammar).
+    // spelling/grammar (kFastSpellingGrammar) or selection (kFastSelection).
     kOverlay,
     // Caller should use PaintSelectedText only.
     // This happens if ShouldPaintSelectedTextOnly is true, such as when
     // painting the ::selection drag image.
     kSelectionOnly,
     // Caller should use PaintSuppressingTextProperWhereSelected,
-    // PaintSelectionBackground, and PaintSelectedText.
+    // PaintSelectionBackground, PaintSelectedText, and NGTextDecorationPainter
+    // (which paints highlight decorations incorrectly).
     // This happens if HighlightOverlayPainting is off and the text fragment
     // is selected.
     kOldSelection,
+    // Caller should use PaintSuppressingTextProperWhereSelected,
+    // PaintSelectionBackground, and PaintSelectedText.
+    // This happens if the only highlight that may involve the text fragment
+    // is a selection, and neither the selection nor the originating content
+    // has any decorations.
+    kFastSelection,
     // Caller should use FastPaintSpellingGrammarDecorations.
     // This happens if the only highlights that may involve the text fragment
-    // are spelling and/or grammar errors, and they are completely unstyled.
-    // The default style only adds spelling/grammar decorations, which have no
-    // specified painting order in css-text-decor-4.
+    // are spelling and/or grammar errors, they are completely unstyled (since
+    // the default style only adds a spelling or grammar decoration), and the
+    // originating content has no decorations.
     kFastSpellingGrammar
   };
   Case PaintCase() const;
