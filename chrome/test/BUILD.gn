@@ -6910,6 +6910,7 @@ test("unit_tests") {
       "//chrome/browser/web_applications:web_applications_test_support",
       "//components/app_constants",
       "//components/autofill_assistant/browser/public",
+      "//components/autofill_assistant/browser/public:password_change",
       "//components/autofill_assistant/browser/public:proto",
       "//components/autofill_assistant/browser/public:unit_test_support",
       "//components/autofill_assistant/browser/public/password_change/proto:proto",

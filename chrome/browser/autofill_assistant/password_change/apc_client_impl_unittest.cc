@@ -20,6 +20,9 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill_assistant/browser/public/mock_headless_script_controller.h"
 #include "components/autofill_assistant/browser/public/mock_runtime_manager.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_client_helper.h"
+#include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,6 +31,7 @@
 #include "url/gurl.h"
 
 namespace {
+
 constexpr char kUrl1[] = "https://www.example.com";
 constexpr char kUsername1[] = "Lori";
 constexpr char kDebugBundleId[] = "testuser/123/password_change/example.com";
@@ -43,6 +47,7 @@ constexpr char kSourcePasswordChangeSettings[] = "11";
 
 constexpr int kDescriptionId1 = 3;
 constexpr int kDescriptionId2 = 17;
+
 }  // namespace
 
 using ::testing::DoAll;
@@ -79,6 +84,10 @@ class TestApcClientImpl : public ApcClientImpl {
     return std::move(scrim_manager_);
   }
 
+  password_manager::PasswordManagerClient* GetPasswordManagerClient() override {
+    return password_manager_client_.get();
+  }
+
   // Allows setting an onboarding coordinator that is returned by the factory
   // function. Must be called at least once before every expected call to
   // `CreateOnboardingCoordinator()`.
@@ -112,6 +121,13 @@ class TestApcClientImpl : public ApcClientImpl {
     scrim_manager_ = std::move(scrim_manager);
   }
 
+  // Allows setting an PasswordManagerClient.
+  void InjectPasswordManagerClientForTesting(
+      std::unique_ptr<password_manager::PasswordManagerClient>
+          password_manager_client) {
+    password_manager_client_ = std::move(password_manager_client);
+  }
+
  private:
   std::unique_ptr<ApcOnboardingCoordinator> coordinator_;
   std::unique_ptr<AssistantSidePanelCoordinator> side_panel_;
@@ -119,6 +135,8 @@ class TestApcClientImpl : public ApcClientImpl {
       external_script_controller_;
   raw_ptr<autofill_assistant::RuntimeManager> runtime_manager_;
   std::unique_ptr<ApcScrimManager> scrim_manager_;
+  std::unique_ptr<password_manager::PasswordManagerClient>
+      password_manager_client_;
 };
 
 // static
@@ -172,6 +190,12 @@ class ApcClientImplTest : public ChromeRenderViewHostTestHarness {
     auto scrim_manager = std::make_unique<MockApcScrimManager>();
     scrim_manager_ref_ = scrim_manager.get();
     test_apc_client_->InjectApcScrimManagerForTesting(std::move(scrim_manager));
+
+    // Prepare the PasswordManagerClient.
+    auto password_manager_client =
+        std::make_unique<password_manager::StubPasswordManagerClient>();
+    test_apc_client_->InjectPasswordManagerClientForTesting(
+        std::move(password_manager_client));
   }
 
   TestApcClientImpl* apc_client() { return test_apc_client_; }
@@ -377,6 +401,18 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_WithUnifiedSidePanelDisabled) {
                 /*callback=*/base::DoNothing(),
                 /*debug_run_information=*/absl::nullopt);
   EXPECT_FALSE(client->IsRunning());
+}
+
+TEST_F(ApcClientImplTest,
+       CreateAndStartApcFlow_WithoutPasswordClientManagerFlowStops) {
+  apc_client()->InjectPasswordManagerClientForTesting(nullptr);
+
+  apc_client()->Start(GURL(kUrl1), kUsername1, /*skip_login=*/true,
+                      /*callback=*/base::DoNothing(),
+                      /*debug_run_information=*/absl::nullopt);
+
+  // Fail run.
+  EXPECT_FALSE(apc_client()->IsRunning());
 }
 
 TEST_F(ApcClientImplTest, StopApcFlow) {

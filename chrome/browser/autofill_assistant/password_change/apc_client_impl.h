@@ -24,6 +24,14 @@
 class ApcExternalActionDelegate;
 class ApcScrimManager;
 
+namespace autofill_assistant {
+class WebsiteLoginManager;
+}  // namespace autofill_assistant
+
+namespace password_manager {
+class PasswordManagerClient;
+}  // namespace password_manager
+
 // Implementation of the ApcClient interface that attaches itself to a
 // `WebContents`.
 class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
@@ -70,6 +78,10 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
   // Creates the ApcScrimManager used to apply a scrim over the webcontent
   // during script runs.
   virtual std::unique_ptr<ApcScrimManager> CreateApcScrimManager();
+
+  // Get the `PasswordManagerClient` so that we can initialize
+  // `website_login_manager_`.
+  virtual password_manager::PasswordManagerClient* GetPasswordManagerClient();
 
   explicit ApcClientImpl(content::WebContents* web_contents);
 
@@ -126,6 +138,11 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
 
   // Manages the scrim shown during a password change run.
   std::unique_ptr<ApcScrimManager> scrim_manager_;
+
+  // The website login manager used to handle iteractions with the password
+  // manager.
+  std::unique_ptr<autofill_assistant::WebsiteLoginManager>
+      website_login_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

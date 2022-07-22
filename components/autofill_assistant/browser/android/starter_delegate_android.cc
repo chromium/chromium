@@ -321,7 +321,8 @@ void StarterDelegateAndroid::Start(
   if (trigger_context->GetScriptParameters().GetRunHeadless()) {
     headless_script_controller_ =
         std::make_unique<HeadlessScriptControllerImpl>(
-            &GetWebContents(), /*action_extension_delegate=*/nullptr);
+            &GetWebContents(), /*action_extension_delegate=*/nullptr,
+            GetWebsiteLoginManager());
 
     headless_script_controller_->StartScript(
         // Note: this ignores device-only parameters.

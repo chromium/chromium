@@ -20,6 +20,7 @@
 #include "components/autofill_assistant/browser/public/external_action.pb.h"
 #include "components/autofill_assistant/browser/public/external_action_delegate.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
+#include "components/autofill_assistant/browser/public/password_change/website_login_manager_impl.h"
 #include "components/autofill_assistant/browser/public/rectf.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -29,11 +30,14 @@ using autofill_assistant::password_change::GenericPasswordChangeSpecification;
 
 ApcExternalActionDelegate::ApcExternalActionDelegate(
     AssistantDisplayDelegate* display_delegate,
-    ApcScrimManager* apc_scrim_manager)
+    ApcScrimManager* apc_scrim_manager,
+    autofill_assistant::WebsiteLoginManager* website_login_manager)
     : display_delegate_(display_delegate),
-      apc_scrim_manager_(apc_scrim_manager) {
+      apc_scrim_manager_(apc_scrim_manager),
+      website_login_manager_(website_login_manager) {
   DCHECK(display_delegate_);
   DCHECK(apc_scrim_manager_);
+  DCHECK(website_login_manager_);
 }
 
 ApcExternalActionDelegate::~ApcExternalActionDelegate() = default;
@@ -290,9 +294,9 @@ void ApcExternalActionDelegate::HandleBasePrompt(
 void ApcExternalActionDelegate::HandleGeneratedPasswordPrompt(
     const autofill_assistant::password_change::
         UseGeneratedPasswordPromptSpecification& specification) {
-  // TODO(crbug.com/1331202): Replace this hardcoded password with the real
-  // generated one.
-  ShowUseGeneratedPasswordPrompt(specification, u"verySecretPassword123");
+  ShowUseGeneratedPasswordPrompt(
+      specification,
+      base::UTF8ToUTF16(website_login_manager_->GetGeneratedPassword()));
 }
 
 void ApcExternalActionDelegate::HandleUpdateSidePanel(

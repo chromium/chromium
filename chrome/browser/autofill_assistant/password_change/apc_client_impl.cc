@@ -14,6 +14,7 @@
 #include "chrome/browser/autofill_assistant/common_dependencies_chrome.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_external_action_delegate.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/apc_scrim_manager.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_display_delegate.h"
@@ -21,7 +22,10 @@
 #include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
 #include "components/autofill_assistant/browser/public/headless_script_controller.h"
+#include "components/autofill_assistant/browser/public/password_change/empty_website_login_manager_impl.h"
+#include "components/autofill_assistant/browser/public/password_change/website_login_manager_impl.h"
 #include "components/autofill_assistant/browser/public/public_script_parameters.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -52,6 +56,10 @@ void ApcClientImpl::Start(
     return;
   }
 
+  if (GetPasswordManagerClient() == nullptr) {
+    std::move(callback).Run(false);
+    return;
+  }
   // Ensure that only one run is ongoing.
   if (is_running_) {
     std::move(callback).Run(false);
@@ -186,8 +194,14 @@ ApcClientImpl::CreateSidePanel() {
 std::unique_ptr<autofill_assistant::HeadlessScriptController>
 ApcClientImpl::CreateHeadlessScriptController() {
   DCHECK(scrim_manager_);
+
+  website_login_manager_ =
+      std::make_unique<autofill_assistant::WebsiteLoginManagerImpl>(
+          GetPasswordManagerClient(), &GetWebContents());
+
   apc_external_action_delegate_ = std::make_unique<ApcExternalActionDelegate>(
-      side_panel_coordinator_.get(), scrim_manager_.get());
+      side_panel_coordinator_.get(), scrim_manager_.get(),
+      website_login_manager_.get());
   apc_external_action_delegate_->SetupDisplay();
   apc_external_action_delegate_->ShowStartingScreen(url_);
 
@@ -196,7 +210,8 @@ ApcClientImpl::CreateHeadlessScriptController() {
           GetWebContents().GetBrowserContext(),
           std::make_unique<autofill_assistant::CommonDependenciesChrome>());
   return autofill_assistant->CreateHeadlessScriptController(
-      &GetWebContents(), apc_external_action_delegate_.get());
+      &GetWebContents(), apc_external_action_delegate_.get(),
+      website_login_manager_.get());
 }
 
 autofill_assistant::RuntimeManager* ApcClientImpl::GetRuntimeManager() {
@@ -206,6 +221,11 @@ autofill_assistant::RuntimeManager* ApcClientImpl::GetRuntimeManager() {
 
 std::unique_ptr<ApcScrimManager> ApcClientImpl::CreateApcScrimManager() {
   return ApcScrimManager::Create(&GetWebContents());
+}
+
+password_manager::PasswordManagerClient*
+ApcClientImpl::GetPasswordManagerClient() {
+  return ChromePasswordManagerClient::FromWebContents(&GetWebContents());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ApcClientImpl);

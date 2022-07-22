@@ -471,11 +471,15 @@ absl::optional<std::string> WebsiteLoginManagerImpl::GeneratePassword(
   if (!driver) {
     return absl::nullopt;
   }
-
-  return base::UTF16ToUTF8(
-      driver->GetPasswordGenerationHelper()->GeneratePassword(
+  generated_password_ =
+      base::UTF16ToUTF8(driver->GetPasswordGenerationHelper()->GeneratePassword(
           driver->GetLastCommittedURL(), form_signature, field_signature,
           max_length));
+  return generated_password_;
+}
+
+const std::string& WebsiteLoginManagerImpl::GetGeneratedPassword() {
+  return generated_password_;
 }
 
 void WebsiteLoginManagerImpl::PresaveGeneratedPassword(

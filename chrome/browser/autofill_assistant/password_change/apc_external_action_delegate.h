@@ -21,6 +21,9 @@ class ApcScrimManager;
 namespace autofill_assistant {
 struct RectF;
 }
+namespace autofill_assistant {
+class WebsiteLoginManager;
+}  // namespace autofill_assistant
 
 // Receives actions from the `HeadlessScriptController` and passes them on an
 // implementation of a `PasswordChangeRunDisplay`.
@@ -31,8 +34,10 @@ class ApcExternalActionDelegate
     : public autofill_assistant::ExternalActionDelegate,
       public PasswordChangeRunController {
  public:
-  explicit ApcExternalActionDelegate(AssistantDisplayDelegate* display_delegate,
-                                     ApcScrimManager* apc_scrim_manager);
+  explicit ApcExternalActionDelegate(
+      AssistantDisplayDelegate* display_delegate,
+      ApcScrimManager* apc_scrim_manager,
+      autofill_assistant::WebsiteLoginManager* website_login_manager);
   ApcExternalActionDelegate(const ApcExternalActionDelegate&) = delete;
   ApcExternalActionDelegate& operator=(const ApcExternalActionDelegate&) =
       delete;
@@ -134,6 +139,10 @@ class ApcExternalActionDelegate
 
   // The scrim manager to update the overlay and html elements showcasting.
   raw_ptr<ApcScrimManager> apc_scrim_manager_ = nullptr;
+
+  // Use to handle interactions with the password manager.
+  raw_ptr<autofill_assistant::WebsiteLoginManager> website_login_manager_ =
+      nullptr;
 
   // Factory for weak pointers to this class.
   base::WeakPtrFactory<PasswordChangeRunController> weak_ptr_factory_{this};

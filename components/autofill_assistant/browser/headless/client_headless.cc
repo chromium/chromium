@@ -19,6 +19,7 @@
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/headless/headless_script_controller_impl.h"
 #include "components/autofill_assistant/browser/public/password_change/empty_website_login_manager_impl.h"
+#include "components/autofill_assistant/browser/public/password_change/website_login_manager.h"
 #include "components/autofill_assistant/browser/public/password_change/website_login_manager_impl.h"
 #include "components/autofill_assistant/browser/public/ui_state.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
@@ -45,18 +46,12 @@ ClientHeadless::ClientHeadless(
     content::WebContents* web_contents,
     const CommonDependencies* common_dependencies,
     ExternalActionDelegate* action_extension_delegate,
+    WebsiteLoginManager* website_login_manager,
     HeadlessScriptControllerImpl* external_script_controller)
     : web_contents_(web_contents),
       common_dependencies_(common_dependencies),
+      website_login_manager_(website_login_manager),
       external_script_controller_(external_script_controller) {
-  auto* password_manager_client =
-      common_dependencies_->GetPasswordManagerClient(web_contents);
-  if (password_manager_client) {
-    website_login_manager_ = std::make_unique<WebsiteLoginManagerImpl>(
-        password_manager_client, web_contents);
-  } else {
-    website_login_manager_ = std::make_unique<EmptyWebsiteLoginManagerImpl>();
-  }
   headless_ui_controller_ =
       std::make_unique<HeadlessUiController>(action_extension_delegate);
 }

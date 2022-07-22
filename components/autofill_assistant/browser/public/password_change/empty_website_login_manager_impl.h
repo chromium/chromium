@@ -43,6 +43,7 @@ class EmptyWebsiteLoginManagerImpl : public WebsiteLoginManager {
       autofill::FormSignature form_signature,
       autofill::FieldSignature field_signature,
       uint64_t max_length) override;
+  const std::string& GetGeneratedPassword() override;
   void PresaveGeneratedPassword(const Login& login,
                                 const std::string& password,
                                 const autofill::FormData& form_data,
@@ -56,6 +57,9 @@ class EmptyWebsiteLoginManagerImpl : public WebsiteLoginManager {
       SavePasswordLeakDetectionDelegate::Callback callback,
       base::TimeDelta timeout) override;
   bool SaveSubmittedPassword() override;
+
+ private:
+  std::string generated_password_;
 };
 
 }  // namespace autofill_assistant

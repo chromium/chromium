@@ -52,6 +52,8 @@ class MockWebsiteLoginManager : public WebsiteLoginManager {
                uint64_t max_length),
               (override));
 
+  MOCK_METHOD(const std::string&, GetGeneratedPassword, (), (override));
+
   MOCK_METHOD(void,
               PresaveGeneratedPassword,
               (const Login& login,

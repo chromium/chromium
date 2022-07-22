@@ -51,6 +51,8 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
       autofill::FieldSignature field_signature,
       uint64_t max_length) override;
 
+  const std::string& GetGeneratedPassword() override;
+
   void PresaveGeneratedPassword(const Login& login,
                                 const std::string& password,
                                 const autofill::FormData& form_data,
@@ -100,6 +102,9 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
   // LeakDetection requests are created, owned and their results received by
   // a SavePasswordLeakDetectionDelegate.
   std::unique_ptr<SavePasswordLeakDetectionDelegate> leak_delegate_;
+
+  // Generated password suggested to the user.
+  std::string generated_password_;
 
   // Needs to be the last member.
   base::WeakPtrFactory<WebsiteLoginManagerImpl> weak_ptr_factory_;

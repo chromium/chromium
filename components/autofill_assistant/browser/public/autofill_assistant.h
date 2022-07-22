@@ -15,9 +15,11 @@
 
 namespace content {
 class WebContents;
-}
+}  // namespace content
 
 namespace autofill_assistant {
+
+class WebsiteLoginManager;
 
 // Abstract interface for exported services.
 class AutofillAssistant {
@@ -65,7 +67,8 @@ class AutofillAssistant {
   virtual std::unique_ptr<HeadlessScriptController>
   CreateHeadlessScriptController(
       content::WebContents* web_contents,
-      ExternalActionDelegate* action_extension_delegate) = 0;
+      ExternalActionDelegate* action_extension_delegate,
+      WebsiteLoginManager* website_login_manager = nullptr) = 0;
 
  protected:
   AutofillAssistant() = default;

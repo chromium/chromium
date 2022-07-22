@@ -55,6 +55,10 @@ absl::optional<std::string> EmptyWebsiteLoginManagerImpl::GeneratePassword(
   return absl::nullopt;
 }
 
+const std::string& EmptyWebsiteLoginManagerImpl::GetGeneratedPassword() {
+  return generated_password_;
+}
+
 void EmptyWebsiteLoginManagerImpl::PresaveGeneratedPassword(
     const Login& login,
     const std::string& password,

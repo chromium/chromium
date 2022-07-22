@@ -26,7 +26,8 @@ class MockAutofillAssistant : public AutofillAssistant {
   MOCK_METHOD(std::unique_ptr<HeadlessScriptController>,
               CreateHeadlessScriptController,
               (content::WebContents * web_contents,
-               ExternalActionDelegate* action_extension_delegate),
+               ExternalActionDelegate* action_extension_delegate,
+               WebsiteLoginManager* website_login_manager),
               (override));
 };
 

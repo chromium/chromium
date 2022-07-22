@@ -21,11 +21,14 @@
 
 namespace autofill_assistant {
 
+class WebsiteLoginManager;
+
 class HeadlessScriptControllerImpl : public HeadlessScriptController {
  public:
   HeadlessScriptControllerImpl(
       content::WebContents* web_contents,
-      ExternalActionDelegate* action_extension_delegate);
+      ExternalActionDelegate* action_extension_delegate,
+      WebsiteLoginManager* website_login_manager);
 
   HeadlessScriptControllerImpl(const HeadlessScriptControllerImpl&) = delete;
   HeadlessScriptControllerImpl& operator=(const HeadlessScriptControllerImpl&) =

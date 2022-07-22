@@ -6,21 +6,23 @@
 
 #include "base/time/default_tick_clock.h"
 #include "components/autofill_assistant/browser/desktop/starter_delegate_desktop.h"
+#include "components/autofill_assistant/browser/public/password_change/website_login_manager.h"
 #include "components/autofill_assistant/browser/starter.h"
 
 namespace autofill_assistant {
 
 HeadlessScriptControllerImpl::HeadlessScriptControllerImpl(
     content::WebContents* web_contents,
-    ExternalActionDelegate* action_extension_delegate)
+    ExternalActionDelegate* action_extension_delegate,
+    WebsiteLoginManager* website_login_manager)
     : web_contents_(web_contents) {
   DCHECK(web_contents_);
 
   auto* starter = Starter::FromWebContents(web_contents_);
   if (starter) {
-    client_ = std::make_unique<ClientHeadless>(web_contents,
-                                               starter->GetCommonDependencies(),
-                                               action_extension_delegate, this);
+    client_ = std::make_unique<ClientHeadless>(
+        web_contents, starter->GetCommonDependencies(),
+        action_extension_delegate, website_login_manager, this);
   }
 }
 

@@ -21,6 +21,7 @@ class WebContents;
 namespace autofill_assistant {
 
 class CommonDependencies;
+class WebsiteLoginManager;
 
 class AutofillAssistantImpl : public autofill_assistant::AutofillAssistant {
  public:
@@ -45,7 +46,8 @@ class AutofillAssistantImpl : public autofill_assistant::AutofillAssistant {
 
   std::unique_ptr<HeadlessScriptController> CreateHeadlessScriptController(
       content::WebContents* web_contents,
-      ExternalActionDelegate* action_extension_delegate) override;
+      ExternalActionDelegate* action_extension_delegate,
+      WebsiteLoginManager* website_login_manager = nullptr) override;
 
  private:
   // The `BrowserContext` for which this `AutofillAssistantImpl` was created

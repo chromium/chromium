@@ -11,6 +11,7 @@
 #include "components/autofill_assistant/browser/desktop/starter_delegate_desktop.h"
 #include "components/autofill_assistant/browser/headless/headless_script_controller_impl.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
+#include "components/autofill_assistant/browser/public/password_change/website_login_manager.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
 #include "components/autofill_assistant/browser/service/cup_impl.h"
@@ -137,9 +138,10 @@ void AutofillAssistantImpl::GetCapabilitiesByHashPrefix(
 std::unique_ptr<HeadlessScriptController>
 AutofillAssistantImpl::CreateHeadlessScriptController(
     content::WebContents* web_contents,
-    ExternalActionDelegate* action_extension_delegate) {
+    ExternalActionDelegate* action_extension_delegate,
+    WebsiteLoginManager* website_login_manager) {
   return std::make_unique<HeadlessScriptControllerImpl>(
-      web_contents, action_extension_delegate);
+      web_contents, action_extension_delegate, website_login_manager);
 }
 
 }  // namespace autofill_assistant
