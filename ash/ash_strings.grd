@@ -2118,13 +2118,25 @@ Connect your device to power.
         ''' - '''
       </message>
       <!-- Status tray channel indicator strings -->
-      <message name="IDS_ASH_STATUS_TRAY_CHANNEL_BETA" desc="The string used to indicate that this device is on the beta release track">
+      <message name="IDS_ASH_STATUS_TRAY_REPORT_FEEDBACK" desc="The string used for the tooltip and speakable name of the 'report feedback' button">
+        Report feedback
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_CHANNEL_BETA" desc="The string used to show the name of beta release track, by itself">
+        Beta
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_CHANNEL_DEV" desc="The string used to show the name of dev release track, by itself">
+        Dev
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_CHANNEL_CANARY" desc="The string used to show the name of canary release track, by itself">
+        Canary
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_CHANNEL_BETA_CHANNEL" desc="The string used to indicate that this device is on the beta release track">
         Beta Channel
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_CHANNEL_DEV" desc="The string used to indicate that this device is on the development release track">
+      <message name="IDS_ASH_STATUS_TRAY_CHANNEL_DEV_CHANNEL" desc="The string used to indicate that this device is on the development release track">
         Dev Channel
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_CHANNEL_CANARY" desc="The string used to indicate that this device is on the canary release track">
+      <message name="IDS_ASH_STATUS_TRAY_CHANNEL_CANARY_CHANNEL" desc="The string used to indicate that this device is on the canary release track">
         Canary Channel
       </message>
       <!-- Status Tray Network strings -->

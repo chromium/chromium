@@ -149,6 +149,9 @@ class ASH_EXPORT ShellDelegate {
   // window when that window is closed.
   virtual void ForceSkipWarningUserOnClose(
       const std::vector<aura::Window*>& windows) = 0;
+
+  // Retrieves the official Chrome version string e.g. 105.0.5178.0.
+  virtual std::string GetVersionString() = 0;
 };
 
 }  // namespace ash

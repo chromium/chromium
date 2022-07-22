@@ -53,6 +53,8 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/user_manager/user_manager.h"
+#include "components/version_info/channel.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/render_widget_host.h"
@@ -351,4 +353,8 @@ void ChromeShellDelegate::ForceSkipWarningUserOnClose(
       browser_view->browser()->set_force_skip_warning_user_on_close(true);
     }
   }
+}
+
+std::string ChromeShellDelegate::GetVersionString() {
+  return version_info::GetVersionNumber();
 }

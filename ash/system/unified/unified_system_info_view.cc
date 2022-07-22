@@ -10,8 +10,11 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/channel_indicator/channel_indicator_quick_settings_view.h"
+#include "ash/system/channel_indicator/channel_indicator_utils.h"
 #include "ash/system/enterprise/enterprise_domain_observer.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/clock_observer.h"
@@ -24,6 +27,7 @@
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -260,7 +264,7 @@ class BatteryLabelView : public BatteryInfoViewBase {
     auto seperator = std::make_unique<views::Label>();
     seperator->SetText(l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BATTERY_STATUS_SEPARATOR));
-    separator_ = AddChildView(std::move(seperator));
+    separator_view_ = AddChildView(std::move(seperator));
     status_ = AddChildView(std::make_unique<views::Label>());
     Update();
   }
@@ -275,7 +279,7 @@ class BatteryLabelView : public BatteryInfoViewBase {
     const auto color =
         GetContentLayerColor(ContentLayerType::kTextColorSecondary);
     ConfigureLabel(percentage_, color);
-    ConfigureLabel(separator_, color);
+    ConfigureLabel(separator_view_, color);
     ConfigureLabel(status_, color);
   }
 
@@ -291,8 +295,9 @@ class BatteryLabelView : public BatteryInfoViewBase {
 
     percentage_->SetVisible(!percentage_text.empty() &&
                             !use_smart_charging_ui_);
-    separator_->SetVisible(!percentage_text.empty() &&
-                           !use_smart_charging_ui_ && !status_text.empty());
+    separator_view_->SetVisible(!percentage_text.empty() &&
+                                !use_smart_charging_ui_ &&
+                                !status_text.empty());
     status_->SetVisible(!status_text.empty());
 
     percentage_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
@@ -300,7 +305,7 @@ class BatteryLabelView : public BatteryInfoViewBase {
   }
 
   views::Label* percentage_ = nullptr;
-  views::Label* separator_ = nullptr;
+  views::Label* separator_view_ = nullptr;
   views::Label* status_ = nullptr;
 
   const bool use_smart_charging_ui_;
@@ -585,34 +590,88 @@ SupervisedUserView::SupervisedUserView()
 
 }  // namespace
 
+// A view that contains date, battery status, and whether the device
+// is enterprise managed.
+class ManagementPowerDateComboView : public views::View {
+ public:
+  explicit ManagementPowerDateComboView(
+      UnifiedSystemTrayController* controller) {
+    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal,
+        kUnifiedSystemInfoViewPadding, kUnifiedSystemInfoSpacing));
+    layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+    AddChildView(std::make_unique<DateView>(controller));
+
+    if (PowerStatus::Get()->IsBatteryPresent()) {
+      separator_view_ = AddChildView(std::make_unique<views::Separator>());
+      separator_view_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
+      separator_view_->SetPreferredLength(kUnifiedSystemInfoHeight);
+
+      const bool use_smart_charging_ui = UseSmartChargingUI();
+      if (use_smart_charging_ui)
+        AddChildView(std::make_unique<BatteryIconView>(controller));
+      AddChildView(std::make_unique<BatteryLabelView>(controller,
+                                                      use_smart_charging_ui));
+    }
+
+    auto* spacing = AddChildView(std::make_unique<views::View>());
+    layout->SetFlexForView(spacing, 1);
+
+    enterprise_managed_view_ =
+        AddChildView(std::make_unique<EnterpriseManagedView>(controller));
+    supervised_view_ = AddChildView(std::make_unique<SupervisedUserView>());
+  }
+  ManagementPowerDateComboView(const ManagementPowerDateComboView&) = delete;
+  ManagementPowerDateComboView& operator=(const ManagementPowerDateComboView&) =
+      delete;
+  ~ManagementPowerDateComboView() override = default;
+
+  // Introspection methods for unit tests, that call into individual views.
+  bool IsEnterpriseManagedVisibleForTesting() {
+    return enterprise_managed_view_->GetVisible();
+  }
+
+  bool IsSupervisedVisibleForTesting() {
+    return supervised_view_->GetVisible();
+  }
+
+ private:
+  // Pointer to the actual child view is maintained for unit testing, owned by
+  // `ManagementPowerDateComboView`.
+  EnterpriseManagedView* enterprise_managed_view_ = nullptr;
+
+  // Pointer to the actual child view is maintained for unit testing, owned by
+  // `ManagementPowerDateComboView`.
+  SupervisedUserView* supervised_view_ = nullptr;
+
+  // Separator between date and battery views, owned by
+  // `ManagementPowerDateComboView`.
+  views::Separator* separator_view_ = nullptr;
+};
+
 UnifiedSystemInfoView::UnifiedSystemInfoView(
     UnifiedSystemTrayController* controller) {
+  // Layout for the overall UnifiedSystemInfoView.
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, kUnifiedSystemInfoViewPadding,
+      views::BoxLayout::Orientation::kVertical, kUnifiedSystemInfoViewPadding,
       kUnifiedSystemInfoSpacing));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  AddChildView(std::make_unique<DateView>(controller));
+  // Construct a ManagementPowerDateComboView and save off a raw pointer, to
+  // facilitate introspection needed for unit tests.
+  combo_view_ =
+      AddChildView(std::make_unique<ManagementPowerDateComboView>(controller));
 
-  if (PowerStatus::Get()->IsBatteryPresent()) {
-    separator_ = AddChildView(std::make_unique<views::Separator>());
-    separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
-    separator_->SetPreferredLength(kUnifiedSystemInfoHeight);
-
-    const bool use_smart_charging_ui = UseSmartChargingUI();
-    if (use_smart_charging_ui)
-      AddChildView(std::make_unique<BatteryIconView>(controller));
-    AddChildView(
-        std::make_unique<BatteryLabelView>(controller, use_smart_charging_ui));
+  // If the release track is not "stable" then channel indicator UI for quick
+  // settings is put up.
+  auto channel = Shell::Get()->shell_delegate()->GetChannel();
+  if (features::IsReleaseTrackUiEnabled() &&
+      channel_indicator_utils::IsDisplayableChannel(channel)) {
+    channel_view_ = AddChildView(
+        std::make_unique<ChannelIndicatorQuickSettingsView>(channel));
   }
-
-  auto* spacing = AddChildView(std::make_unique<views::View>());
-  layout->SetFlexForView(spacing, 1);
-
-  enterprise_managed_ =
-      AddChildView(std::make_unique<EnterpriseManagedView>(controller));
-  supervised_ = AddChildView(std::make_unique<SupervisedUserView>());
 }
 
 UnifiedSystemInfoView::~UnifiedSystemInfoView() = default;
@@ -623,6 +682,18 @@ void UnifiedSystemInfoView::ChildVisibilityChanged(views::View* child) {
 
 void UnifiedSystemInfoView::ChildPreferredSizeChanged(views::View* child) {
   Layout();
+}
+
+bool UnifiedSystemInfoView::IsEnterpriseManagedVisibleForTesting() {
+  return combo_view_->IsEnterpriseManagedVisibleForTesting();  // IN-TEST
+}
+
+bool UnifiedSystemInfoView::IsSupervisedVisibleForTesting() {
+  return combo_view_->IsSupervisedVisibleForTesting();  // IN-TEST
+}
+
+bool UnifiedSystemInfoView::IsChannelIndicatorQuickSettingsVisibleForTesting() {
+  return channel_view_ && channel_view_->GetVisible();  // IN-TEST
 }
 
 BEGIN_METADATA(UnifiedSystemInfoView, views::View)

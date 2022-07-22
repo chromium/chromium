@@ -5,6 +5,7 @@
 #include "ash/test_shell_delegate.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/accessibility/default_accessibility_delegate.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
@@ -117,6 +118,10 @@ void TestShellDelegate::SetLastCommittedURLForWindow(const GURL& url) {
 
 version_info::Channel TestShellDelegate::GetChannel() {
   return channel_;
+}
+
+std::string TestShellDelegate::GetVersionString() {
+  return version_string_;
 }
 
 }  // namespace ash

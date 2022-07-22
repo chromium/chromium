@@ -11,15 +11,13 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-namespace views {
-class Separator;
-}  // namespace views
-
 namespace ash {
 
+class ManagementPowerDateComboView;
+class ChannelIndicatorQuickSettingsView;
+
 // A view at the bottom of UnifiedSystemTray bubble that shows system
-// information. The view contains date, battery status, and whether the device
-// is enterprise managed or not.
+// information.
 class ASH_EXPORT UnifiedSystemInfoView : public views::View {
  public:
   METADATA_HEADER(UnifiedSystemInfoView);
@@ -34,6 +32,11 @@ class ASH_EXPORT UnifiedSystemInfoView : public views::View {
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
 
+  // Introspection methods needed for unit tests.
+  bool IsEnterpriseManagedVisibleForTesting();
+  bool IsSupervisedVisibleForTesting();
+  bool IsChannelIndicatorQuickSettingsVisibleForTesting();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewTest, EnterpriseManagedVisible);
   FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewTest,
@@ -42,14 +45,14 @@ class ASH_EXPORT UnifiedSystemInfoView : public views::View {
                            EnterpriseUserManagedVisible);
   FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewNoSessionTest, ChildVisible);
 
-  // EnterpriseManagedView for unit testing. Owned by this view. Null if
-  // kManagedDeviceUIRedesign is enabled.
-  views::View* enterprise_managed_ = nullptr;
-  // SupervisedUserView for unit testing. Owned by this view . Null if
-  // kManagedDeviceUIRedesign is enabled.
-  views::View* supervised_ = nullptr;
+  // Raw pointer to the combo view (owned by `UnifiedSystemInfoView`) that
+  // facilitates introspection needed for unit tests.
+  ManagementPowerDateComboView* combo_view_ = nullptr;
 
-  views::Separator* separator_ = nullptr;
+  // Raw pointer to the channel indicator quick settings view (owned by
+  // `UnifiedSystemInfoView`) that facilitates introspection needed for unit
+  // tests.
+  ChannelIndicatorQuickSettingsView* channel_view_ = nullptr;
 };
 
 }  // namespace ash

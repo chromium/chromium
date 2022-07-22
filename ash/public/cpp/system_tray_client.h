@@ -159,6 +159,14 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
                                  bool& opened_pwa,
                                  GURL& finalized_event_url) = 0;
 
+  // Shown when the device is on a non-stable release track and the user clicks
+  // the channel/version button from quick settings.
+  virtual void ShowChannelInfoAdditionalDetails() = 0;
+
+  // Shown when the device is on a non-stable release track and the user clicks
+  // the "send feedback" button.
+  virtual void ShowChannelInfoGiveFeedback() = 0;
+
  protected:
   SystemTrayClient() {}
 };
