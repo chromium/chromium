@@ -30,6 +30,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -50,7 +51,7 @@ public class HeaderViewBinderUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         mHeaderView = mock(HeaderView.class,

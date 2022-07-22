@@ -64,6 +64,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -185,8 +186,7 @@ public class TabGridDialogMediatorUnitTest {
                     ContextUtils.getApplicationContext())) {
             mTabSelectionEditorController = null;
         }
-        mActivity = Robolectric.buildActivity(Activity.class).get();
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivity = Robolectric.buildActivity(TestActivity.class).get();
         mModel = new PropertyModel(TabGridPanelProperties.ALL_KEYS);
         mMediator = new TabGridDialogMediator(mActivity, mDialogController, mModel,
                 mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler,

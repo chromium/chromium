@@ -33,7 +33,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserverJni;
@@ -42,6 +41,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -73,8 +73,7 @@ public class ContextMenuHeaderMediatorTest {
 
     @Before
     public void setUpTest() {
-        mActivity = Robolectric.setupActivity(Activity.class);
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivity = Robolectric.setupActivity(TestActivity.class);
         MockitoAnnotations.initMocks(this);
         mocker.mock(PerformanceHintsObserverJni.TEST_HOOKS, mMockPerformanceHintsObserverJni);
         mocker.mock(LargeIconBridgeJni.TEST_HOOKS, mMockLargeIconBridgeJni);

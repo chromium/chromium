@@ -52,6 +52,7 @@ import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragStateTracker;
@@ -142,8 +143,7 @@ public class ContextMenuCoordinatorTest {
 
     @Before
     public void setUpTest() {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mCoordinator = new ContextMenuCoordinator(TOP_CONTENT_OFFSET_PX, mNativeDelegate);
         MockitoAnnotations.initMocks(this);
         mocker.mock(PerformanceHintsObserverJni.TEST_HOOKS, mNativeMock);

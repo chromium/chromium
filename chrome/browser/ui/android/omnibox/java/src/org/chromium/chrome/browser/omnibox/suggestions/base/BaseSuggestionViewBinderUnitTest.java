@@ -33,6 +33,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -65,9 +66,8 @@ public class BaseSuggestionViewBinderUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         // First set the app theme, then apply the feed theme overlay.
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mResources = mActivity.getResources();
 
         when(mContentView.getContext()).thenReturn(mActivity);

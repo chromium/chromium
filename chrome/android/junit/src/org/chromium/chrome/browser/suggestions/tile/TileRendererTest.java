@@ -30,7 +30,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
-import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDrawable;
 
@@ -51,6 +50,7 @@ import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -113,7 +113,6 @@ public class TileRendererTest {
     private ColorStateList mFakeColorStateList;
 
     private ShadowPostTaskImpl mPostTaskRunner;
-    private ActivityController<Activity> mActivityController;
     private Activity mActivity;
     private LinearLayout mSharedParent;
     private final ArgumentCaptor<Drawable> mIconCaptor = ArgumentCaptor.forClass(Drawable.class);
@@ -125,10 +124,7 @@ public class TileRendererTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mActivityController = Robolectric.buildActivity(Activity.class);
-        mActivityController.setup();
-        mActivity = mActivityController.get();
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
 
         mPostTaskRunner = new ShadowPostTaskImpl();
         ShadowPostTask.setTestImpl(mPostTaskRunner);
