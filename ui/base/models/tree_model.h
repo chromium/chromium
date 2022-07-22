@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 
@@ -92,10 +93,10 @@ class COMPONENT_EXPORT(UI_BASE) TreeModel {
   // this if you don't want to use the default folder icons.
   virtual void GetIcons(std::vector<ui::ImageModel>* icons) {}
 
-  // Returns the index of the icon to use for |node|. Return -1 to use the
+  // Returns the index of the icon to use for |node|. Return nullopt to use the
   // default icon. The index is relative to the list of icons returned from
   // GetIcons.
-  virtual int GetIconIndex(TreeModelNode* node);
+  virtual absl::optional<size_t> GetIconIndex(TreeModelNode* node);
 
  protected:
   virtual ~TreeModel() {}

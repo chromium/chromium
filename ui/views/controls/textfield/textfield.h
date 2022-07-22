@@ -313,7 +313,9 @@ class VIEWS_EXPORT Textfield : public View,
   // Set extra spacing placed between glyphs; used for obscured text styling.
   void SetObscuredGlyphSpacing(int spacing);
 
-  int GetPasswordCharRevealIndex() const { return password_char_reveal_index_; }
+  absl::optional<size_t> GetPasswordCharRevealIndex() const {
+    return password_char_reveal_index_;
+  }
 
   void SetExtraInsets(const gfx::Insets& insets);
 
@@ -619,9 +621,10 @@ class VIEWS_EXPORT Textfield : public View,
   bool ImeEditingAllowed() const;
 
   // Reveals the password character at |index| for a set duration.
-  // If |index| is -1, the existing revealed character will be reset.
+  // If |index| is nullopt, the existing revealed character will be reset.
   // |duration| is the time to remain the password char to be visible.
-  void RevealPasswordChar(int index, base::TimeDelta duration);
+  void RevealPasswordChar(absl::optional<size_t> index,
+                          base::TimeDelta duration);
 
   void CreateTouchSelectionControllerAndNotifyIt();
 
@@ -776,7 +779,7 @@ class VIEWS_EXPORT Textfield : public View,
       ui::TextInputClient::FOCUS_REASON_NONE;
 
   // The password char reveal index, for testing only.
-  int password_char_reveal_index_ = -1;
+  absl::optional<size_t> password_char_reveal_index_;
 
   // Extra insets, useful to make room for a button for example.
   gfx::Insets extra_insets_ = gfx::Insets();

@@ -304,17 +304,10 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
     bool batch_in_progress_ = false;
   };
 
-  // ui::TreeModel methods:
-  // Returns the set of icons for the nodes in the tree. You only need override
-  // this if you don't want to use the default folder icons.
+  // ui::TreeModel:
   void GetIcons(std::vector<ui::ImageModel>* icons) override;
+  absl::optional<size_t> GetIconIndex(ui::TreeModelNode* node) override;
 
-  // Returns the index of the icon to use for |node|. Return -1 to use the
-  // default icon. The index is relative to the list of icons returned from
-  // GetIcons.
-  int GetIconIndex(ui::TreeModelNode* node) override;
-
-  // CookiesTreeModel methods:
   void DeleteAllStoredObjects();
 
   // Deletes a specific node in the tree, identified by |cookie_node|, and its
@@ -380,8 +373,6 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   GetCookieDeletionDisabledCallback(Profile* profile);
 
  private:
-  enum CookieIconIndex { COOKIE = 0, DATABASE = 1 };
-
   // Record that one batch has been delivered.
   void RecordBatchSeen();
 

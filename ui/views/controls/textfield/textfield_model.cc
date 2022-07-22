@@ -364,8 +364,8 @@ void SelectRangeInCompositionText(gfx::RenderText* render_text,
                                   const gfx::Range& range) {
   DCHECK(render_text);
   DCHECK(range.IsValid());
-  uint32_t start = range.GetMin();
-  uint32_t end = range.GetMax();
+  size_t start = range.GetMin();
+  size_t end = range.GetMax();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Swap |start| and |end| so that GetCaretBounds() can always return the same
   // value during conversion.
@@ -783,11 +783,11 @@ void TextfieldModel::SetCompositionFromExistingText(const gfx::Range& range) {
   render_text_->SetCompositionRange(range);
 }
 
-uint32_t TextfieldModel::ConfirmCompositionText() {
+size_t TextfieldModel::ConfirmCompositionText() {
   DCHECK(HasCompositionText());
   std::u16string composition =
       text().substr(composition_range_.start(), composition_range_.length());
-  uint32_t composition_length = composition_range_.length();
+  size_t composition_length = composition_range_.length();
   // TODO(oshima): current behavior on ChromeOS is a bit weird and not
   // sure exactly how this should work. Find out and fix if necessary.
   AddOrMergeEditHistory(std::make_unique<internal::InsertEdit>(

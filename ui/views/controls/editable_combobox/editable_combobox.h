@@ -110,9 +110,9 @@ class VIEWS_EXPORT EditableCombobox
 
   // Accessors of private members for tests.
   ui::ComboboxModel* GetComboboxModelForTest() { return combobox_model_.get(); }
-  int GetItemCountForTest();
-  std::u16string GetItemForTest(int index);
-  ui::ImageModel GetIconForTest(int index);
+  size_t GetItemCountForTest();
+  std::u16string GetItemForTest(size_t index);
+  ui::ImageModel GetIconForTest(size_t index);
   MenuRunner* GetMenuRunnerForTest() { return menu_runner_.get(); }
   Textfield* GetTextfieldForTest() { return textfield_; }
 
@@ -123,7 +123,7 @@ class VIEWS_EXPORT EditableCombobox
   void CloseMenu();
 
   // Called when an item is selected from the menu.
-  void OnItemSelected(int index);
+  void OnItemSelected(size_t index);
 
   // Notifies listener of new content and updates the menu items to show.
   void HandleNewContent(const std::u16string& new_content);

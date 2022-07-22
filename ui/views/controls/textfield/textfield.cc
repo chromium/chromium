@@ -971,14 +971,16 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
   const gfx::Range range = GetSelectedRange();
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart,
-                             range.start());
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, range.end());
+                             base::checked_cast<int32_t>(range.start()));
+  node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd,
+                             base::checked_cast<int32_t>(range.end()));
 }
 
 bool Textfield::HandleAccessibleAction(const ui::AXActionData& action_data) {
   if (action_data.action == ax::mojom::Action::kSetSelection) {
     DCHECK_EQ(action_data.anchor_node_id, action_data.focus_node_id);
-    const gfx::Range range(action_data.anchor_offset, action_data.focus_offset);
+    const gfx::Range range(static_cast<size_t>(action_data.anchor_offset),
+                           static_cast<size_t>(action_data.focus_offset));
     return SetEditableSelectionRange(range);
   }
 
@@ -1352,7 +1354,7 @@ uint32_t Textfield::ConfirmCompositionText(bool keep_selection) {
     return 0;
   OnBeforeUserAction();
   skip_input_method_cancel_composition_ = true;
-  const uint32_t confirmed_text_length = model_->ConfirmCompositionText();
+  const size_t confirmed_text_length = model_->ConfirmCompositionText();
   skip_input_method_cancel_composition_ = false;
   UpdateAfterChange(TextChangeType::kUserTriggered, true);
   OnAfterUserAction();
@@ -1410,7 +1412,7 @@ void Textfield::InsertChar(const ui::KeyEvent& event) {
   DoInsertChar(ch);
 
   if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD) {
-    password_char_reveal_index_ = -1;
+    password_char_reveal_index_ = absl::nullopt;
     base::TimeDelta duration = GetPasswordRevealDuration(event);
     if (!duration.is_zero()) {
       const size_t change_offset = model_->GetCursorPosition();
@@ -2546,17 +2548,18 @@ bool Textfield::ImeEditingAllowed() const {
   return (t != ui::TEXT_INPUT_TYPE_NONE && t != ui::TEXT_INPUT_TYPE_PASSWORD);
 }
 
-void Textfield::RevealPasswordChar(int index, base::TimeDelta duration) {
+void Textfield::RevealPasswordChar(absl::optional<size_t> index,
+                                   base::TimeDelta duration) {
   GetRenderText()->SetObscuredRevealIndex(index);
   SchedulePaint();
   password_char_reveal_index_ = index;
   UpdateCursorViewPosition();
 
-  if (index != -1) {
-    password_reveal_timer_.Start(
-        FROM_HERE, duration,
-        base::BindOnce(&Textfield::RevealPasswordChar,
-                       weak_ptr_factory_.GetWeakPtr(), -1, duration));
+  if (index.has_value()) {
+    password_reveal_timer_.Start(FROM_HERE, duration,
+                                 base::BindOnce(&Textfield::RevealPasswordChar,
+                                                weak_ptr_factory_.GetWeakPtr(),
+                                                absl::nullopt, duration));
   }
 }
 

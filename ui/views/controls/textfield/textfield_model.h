@@ -257,7 +257,7 @@ class VIEWS_EXPORT TextfieldModel {
 
   // Converts current composition text into final content and returns the
   // length of the text committed.
-  uint32_t ConfirmCompositionText();
+  size_t ConfirmCompositionText();
 
   // Removes current composition text.
   void CancelCompositionText();

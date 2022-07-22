@@ -12,8 +12,8 @@ void TreeModel::SetTitle(TreeModelNode* node, const std::u16string& title) {
   NOTREACHED();
 }
 
-int TreeModel::GetIconIndex(TreeModelNode* node) {
-  return -1;
+absl::optional<size_t> TreeModel::GetIconIndex(TreeModelNode* node) {
+  return absl::nullopt;
 }
 
 }  // namespace ui

@@ -655,7 +655,7 @@ TEST_F(EditableComboboxTest, MAYBE_RefocusingReopensMenuBasedOnLatestContent) {
   combobox_->GetTextfieldForTest()->RequestFocus();
 
   SendKeyEvent(ui::VKEY_B);
-  ASSERT_EQ(3, combobox_->GetItemCountForTest());
+  ASSERT_EQ(3u, combobox_->GetItemCountForTest());
 
   SendKeyEvent(ui::VKEY_DOWN);
   SendKeyEvent(ui::VKEY_RETURN);
@@ -669,7 +669,7 @@ TEST_F(EditableComboboxTest, MAYBE_RefocusingReopensMenuBasedOnLatestContent) {
   dummy_focusable_view_->RequestFocus();
   ClickArrow();
   EXPECT_TRUE(IsMenuOpen());
-  ASSERT_EQ(2, combobox_->GetItemCountForTest());
+  ASSERT_EQ(2u, combobox_->GetItemCountForTest());
 }
 
 TEST_F(EditableComboboxTest, GetItemsWithoutFiltering) {
@@ -677,7 +677,7 @@ TEST_F(EditableComboboxTest, GetItemsWithoutFiltering) {
   InitEditableCombobox(items, /*filter_on_edit=*/false, /*show_on_empty=*/true);
 
   combobox_->SetText(u"z");
-  ASSERT_EQ(2, combobox_->GetItemCountForTest());
+  ASSERT_EQ(2u, combobox_->GetItemCountForTest());
   ASSERT_EQ(u"item0", combobox_->GetItemForTest(0));
   ASSERT_EQ(u"item1", combobox_->GetItemForTest(1));
 }
@@ -686,22 +686,22 @@ TEST_F(EditableComboboxTest, FilteringEffectOnGetItems) {
   std::vector<std::u16string> items = {u"abc", u"abd", u"bac", u"bad"};
   InitEditableCombobox(items, /*filter_on_edit=*/true, /*show_on_empty=*/true);
 
-  ASSERT_EQ(4, combobox_->GetItemCountForTest());
+  ASSERT_EQ(4u, combobox_->GetItemCountForTest());
   ASSERT_EQ(u"abc", combobox_->GetItemForTest(0));
   ASSERT_EQ(u"abd", combobox_->GetItemForTest(1));
   ASSERT_EQ(u"bac", combobox_->GetItemForTest(2));
   ASSERT_EQ(u"bad", combobox_->GetItemForTest(3));
 
   combobox_->SetText(u"b");
-  ASSERT_EQ(2, combobox_->GetItemCountForTest());
+  ASSERT_EQ(2u, combobox_->GetItemCountForTest());
   ASSERT_EQ(u"bac", combobox_->GetItemForTest(0));
   ASSERT_EQ(u"bad", combobox_->GetItemForTest(1));
 
   combobox_->SetText(u"bc");
-  ASSERT_EQ(0, combobox_->GetItemCountForTest());
+  ASSERT_EQ(0u, combobox_->GetItemCountForTest());
 
   combobox_->SetText(std::u16string());
-  ASSERT_EQ(4, combobox_->GetItemCountForTest());
+  ASSERT_EQ(4u, combobox_->GetItemCountForTest());
   ASSERT_EQ(u"abc", combobox_->GetItemForTest(0));
   ASSERT_EQ(u"abd", combobox_->GetItemForTest(1));
   ASSERT_EQ(u"bac", combobox_->GetItemForTest(2));
@@ -721,18 +721,18 @@ TEST_F(EditableComboboxTest, FilteringEffectOnIcons) {
                        /*filter_on_edit=*/true,
                        /*show_on_empty=*/true);
 
-  ASSERT_EQ(2, combobox_->GetItemCountForTest());
+  ASSERT_EQ(2u, combobox_->GetItemCountForTest());
   EXPECT_EQ(16,
             combobox_->GetComboboxModelForTest()->GetIconAt(0).Size().width());
   EXPECT_EQ(20,
             combobox_->GetComboboxModelForTest()->GetIconAt(1).Size().width());
 
   combobox_->SetText(u"a");
-  ASSERT_EQ(1, combobox_->GetItemCountForTest());
+  ASSERT_EQ(1u, combobox_->GetItemCountForTest());
   EXPECT_EQ(16, combobox_->GetIconForTest(0).Size().width());
 
   combobox_->SetText(u"d");
-  ASSERT_EQ(1, combobox_->GetItemCountForTest());
+  ASSERT_EQ(1u, combobox_->GetItemCountForTest());
   EXPECT_EQ(20, combobox_->GetIconForTest(0).Size().width());
 }
 
@@ -740,18 +740,18 @@ TEST_F(EditableComboboxTest, FilteringWithMismatchedCase) {
   std::vector<std::u16string> items = {u"AbCd", u"aBcD", u"xyz"};
   InitEditableCombobox(items, /*filter_on_edit=*/true, /*show_on_empty=*/true);
 
-  ASSERT_EQ(3, combobox_->GetItemCountForTest());
+  ASSERT_EQ(3u, combobox_->GetItemCountForTest());
   ASSERT_EQ(u"AbCd", combobox_->GetItemForTest(0));
   ASSERT_EQ(u"aBcD", combobox_->GetItemForTest(1));
   ASSERT_EQ(u"xyz", combobox_->GetItemForTest(2));
 
   combobox_->SetText(u"abcd");
-  ASSERT_EQ(2, combobox_->GetItemCountForTest());
+  ASSERT_EQ(2u, combobox_->GetItemCountForTest());
   ASSERT_EQ(u"AbCd", combobox_->GetItemForTest(0));
   ASSERT_EQ(u"aBcD", combobox_->GetItemForTest(1));
 
   combobox_->SetText(u"ABCD");
-  ASSERT_EQ(2, combobox_->GetItemCountForTest());
+  ASSERT_EQ(2u, combobox_->GetItemCountForTest());
   ASSERT_EQ(u"AbCd", combobox_->GetItemForTest(0));
   ASSERT_EQ(u"aBcD", combobox_->GetItemForTest(1));
 }
@@ -761,9 +761,9 @@ TEST_F(EditableComboboxTest, DontShowOnEmpty) {
   InitEditableCombobox(items, /*filter_on_edit=*/false,
                        /*show_on_empty=*/false);
 
-  ASSERT_EQ(0, combobox_->GetItemCountForTest());
+  ASSERT_EQ(0u, combobox_->GetItemCountForTest());
   combobox_->SetText(u"a");
-  ASSERT_EQ(2, combobox_->GetItemCountForTest());
+  ASSERT_EQ(2u, combobox_->GetItemCountForTest());
   ASSERT_EQ(u"item0", combobox_->GetItemForTest(0));
   ASSERT_EQ(u"item1", combobox_->GetItemForTest(1));
 }
@@ -797,7 +797,7 @@ TEST_F(EditableComboboxTest, PasswordCanBeHiddenAndRevealed) {
   InitEditableCombobox(items, /*filter_on_edit=*/false, /*show_on_empty=*/true,
                        EditableCombobox::Type::kPassword);
 
-  ASSERT_EQ(2, combobox_->GetItemCountForTest());
+  ASSERT_EQ(2u, combobox_->GetItemCountForTest());
   ASSERT_EQ(std::u16string(5, gfx::RenderText::kPasswordReplacementChar),
             combobox_->GetItemForTest(0));
   ASSERT_EQ(std::u16string(5, gfx::RenderText::kPasswordReplacementChar),
@@ -926,7 +926,7 @@ class ConfigurableComboboxModel final : public ui::ComboboxModel {
 
 TEST_F(EditableComboboxDefaultTest, Default) {
   auto combobox = std::make_unique<EditableCombobox>();
-  EXPECT_EQ(0, combobox->GetItemCountForTest());
+  EXPECT_EQ(0u, combobox->GetItemCountForTest());
 }
 
 TEST_F(EditableComboboxDefaultTest, SetModel) {
@@ -935,7 +935,7 @@ TEST_F(EditableComboboxDefaultTest, SetModel) {
   model->SetItemCount(42);
   auto combobox = std::make_unique<EditableCombobox>();
   combobox->SetModel(std::move(model));
-  EXPECT_EQ(42, combobox->GetItemCountForTest());
+  EXPECT_EQ(42u, combobox->GetItemCountForTest());
 }
 
 TEST_F(EditableComboboxDefaultTest, SetModelOverwrite) {

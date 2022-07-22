@@ -472,7 +472,7 @@ void Combobox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
   }
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
-                             selected_index_.value());
+                             base::checked_cast<int>(selected_index_.value()));
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize,
                              base::checked_cast<int>(model_->GetItemCount()));
 }

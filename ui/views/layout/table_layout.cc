@@ -109,9 +109,9 @@ template <class T>
 int TotalSize(size_t start, size_t length, const std::vector<T>& elements) {
   DCHECK_GT(length, 0u);
   DCHECK_LE(start + length, elements.size());
-  const auto begin = elements.cbegin() + start;
+  const auto begin = elements.cbegin() + static_cast<ptrdiff_t>(start);
   return std::accumulate(
-      begin, begin + length, 0,
+      begin, begin + static_cast<ptrdiff_t>(length), 0,
       [](int size, const auto& elem) { return size + elem.size(); });
 }
 
@@ -456,8 +456,8 @@ void TableLayout::SetViewStates() const {
 
     // Construct a ViewState for this `child`.
     const gfx::Size* span = child->GetProperty(kTableColAndRowSpanKey);
-    const size_t col_span = span ? span->width() : 1;
-    const size_t row_span = span ? span->height() : 1;
+    const size_t col_span = span ? static_cast<size_t>(span->width()) : 1;
+    const size_t row_span = span ? static_cast<size_t>(span->height()) : 1;
     LayoutAlignment* const child_h_align =
         child->GetProperty(kTableHorizAlignKey);
     const LayoutAlignment h_align =
@@ -589,8 +589,9 @@ void TableLayout::DistributeRemainingHeight(ViewState& view_state) const {
   // Determine the number of resizable rows the view touches.
   size_t start_row = view_state.start_row;
   size_t max_row = view_state.start_row + view_state.row_span;
-  const int resizable_rows =
-      std::count_if(rows_.cbegin() + start_row, rows_.cbegin() + max_row,
+  const ptrdiff_t resizable_rows =
+      std::count_if(rows_.cbegin() + static_cast<ptrdiff_t>(start_row),
+                    rows_.cbegin() + static_cast<ptrdiff_t>(max_row),
                     [](const auto& row) { return row.resizable(); });
 
   const auto adjust_row = [&height](Row& row, int delta) {
@@ -603,7 +604,7 @@ void TableLayout::DistributeRemainingHeight(ViewState& view_state) const {
 
   if (resizable_rows > 0) {
     // There are resizable rows, give the remaining height to them.
-    int row_delta = height / resizable_rows;
+    int row_delta = height / static_cast<int>(resizable_rows);
     for (size_t i = start_row; i < max_row; ++i) {
       if (rows_[i].resizable())
         adjust_row(rows_[i], row_delta);
@@ -611,7 +612,7 @@ void TableLayout::DistributeRemainingHeight(ViewState& view_state) const {
   } else {
     // None of the rows are resizable, divvy the remaining height up equally
     // among all rows the view touches.
-    int row_delta = height / view_state.row_span;
+    int row_delta = height / static_cast<int>(view_state.row_span);
     for (size_t i = start_row; i < max_row; ++i)
       adjust_row(rows_[i], row_delta);
     view_state.remaining_height = 0;
@@ -666,7 +667,7 @@ void TableLayout::DistributeRemainingWidth(ViewState& view_state) const {
   } else if (pref_size_columns > 0) {
     // None of the columns are resizable, distribute the width among those
     // that use the preferred size.
-    int column_delta = width / pref_size_columns;
+    int column_delta = width / static_cast<int>(pref_size_columns);
     for (size_t i = start_col; i < max_col; ++i) {
       if (columns_[i].size_type() == ColumnSize::kUsePreferred) {
         width -= column_delta;
@@ -830,7 +831,7 @@ void TableLayout::ResizeUsingMin(int total_delta) const {
       if (data.available == 0) {
         data.column->set_size(data.column->size() - data.delta);
         next_iteration_total_resize -= data.column->resize();
-        resize_data.erase(resize_data.begin() + (i - 1));
+        resize_data.erase(resize_data.begin() + static_cast<ptrdiff_t>(i - 1));
       }
     }
     DCHECK_LT(next_iteration_delta, total_delta);
@@ -843,10 +844,13 @@ void TableLayout::ResizeUsingMin(int total_delta) const {
 }
 
 bool TableLayout::CanUseMinimum(const ViewState& view_state) const {
-  const auto begin = columns_.cbegin() + view_state.start_col;
-  return std::all_of(begin, begin + view_state.col_span, [](const auto& col) {
-    return col.resizable() && col.size_type() != ColumnSize::kFixed;
-  });
+  const auto begin =
+      columns_.cbegin() + static_cast<ptrdiff_t>(view_state.start_col);
+  return std::all_of(begin, begin + static_cast<ptrdiff_t>(view_state.col_span),
+                     [](const auto& col) {
+                       return col.resizable() &&
+                              col.size_type() != ColumnSize::kFixed;
+                     });
 }
 
 }  // namespace views

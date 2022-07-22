@@ -1322,7 +1322,7 @@ TEST_F(RenderTextTest, RevealObscuredText) {
             render_text->GetDisplayText());
 
   // Invalid reveal index.
-  render_text->RenderText::SetObscuredRevealIndex(-1);
+  render_text->RenderText::SetObscuredRevealIndex(absl::nullopt);
   EXPECT_EQ(no_seuss, render_text->GetDisplayText());
   render_text->RenderText::SetObscuredRevealIndex(seuss.length() + 1);
   EXPECT_EQ(no_seuss, render_text->GetDisplayText());

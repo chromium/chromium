@@ -1107,7 +1107,7 @@ void FlexLayout::AllocateZeroWeightFlex(
   // this priority order.
   auto it = child_list.begin();
   while (it != child_list.end()) {
-    const int child_index = *it;
+    const size_t child_index = *it;
     FlexChildData& flex_child = data.child_data[child_index];
 
     // We don't care about weighted flex in this step.

@@ -1472,15 +1472,15 @@ TEST_F(TextfieldTest, TextInputType_InsertionTest) {
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD, textfield_->GetTextInputType());
 
   SendKeyEvent(ui::VKEY_A);
-  EXPECT_EQ(-1, textfield_->GetPasswordCharRevealIndex());
+  EXPECT_FALSE(textfield_->GetPasswordCharRevealIndex().has_value());
   SendKeyEvent(kHebrewLetterSamekh, ui::EF_NONE, true /* from_vk */);
 #if !BUILDFLAG(IS_MAC)
   // Don't verifies the password character reveal on MacOS, because on MacOS,
   // the text insertion is not done through TextInputClient::InsertChar().
-  EXPECT_EQ(1, textfield_->GetPasswordCharRevealIndex());
+  EXPECT_EQ(1u, textfield_->GetPasswordCharRevealIndex());
 #endif
   SendKeyEvent(ui::VKEY_B);
-  EXPECT_EQ(-1, textfield_->GetPasswordCharRevealIndex());
+  EXPECT_FALSE(textfield_->GetPasswordCharRevealIndex().has_value());
 
   EXPECT_EQ(
       u"a\x05E1"

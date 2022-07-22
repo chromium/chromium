@@ -418,15 +418,15 @@ void EditableCombobox::RevealPasswords(bool revealed) {
   menu_model_->UpdateItemsShown();
 }
 
-int EditableCombobox::GetItemCountForTest() {
+size_t EditableCombobox::GetItemCountForTest() {
   return menu_model_->GetItemCount();
 }
 
-std::u16string EditableCombobox::GetItemForTest(int index) {
+std::u16string EditableCombobox::GetItemForTest(size_t index) {
   return menu_model_->GetItemTextAt(index, showing_password_text_);
 }
 
-ui::ImageModel EditableCombobox::GetIconForTest(int index) {
+ui::ImageModel EditableCombobox::GetIconForTest(size_t index) {
   return menu_model_->GetIconAt(index);
 }
 
@@ -492,7 +492,7 @@ void EditableCombobox::CloseMenu() {
   pre_target_handler_.reset();
 }
 
-void EditableCombobox::OnItemSelected(int index) {
+void EditableCombobox::OnItemSelected(size_t index) {
   // |textfield_| can hide the characters on its own so we read the actual
   // characters instead of gfx::RenderText::kPasswordReplacementChar characters.
   std::u16string selected_item_text =
