@@ -138,6 +138,19 @@ std::string DebugStringImpl(ValueView value) {
   return json;
 }
 
+// This set of overloads are used to unwrap arguments from the reference
+// wrapper, and are used by ValueView when visiting its members and cloning
+// them.
+template <typename T>
+const T& UnwrapReference(std::reference_wrapper<const T> value) {
+  return value.get();
+}
+
+template <typename T>
+const T& UnwrapReference(const T& value) {
+  return value;
+}
+
 }  // namespace
 
 // static
@@ -262,16 +275,7 @@ Value::DoubleStorage::DoubleStorage(double v) : v_(bit_cast<decltype(v_)>(v)) {
 }
 
 Value Value::Clone() const {
-  return absl::visit(
-      [](const auto& member) {
-        using T = std::decay_t<decltype(member)>;
-        if constexpr (std::is_same_v<T, Dict> || std::is_same_v<T, List>) {
-          return Value(member.Clone());
-        } else {
-          return Value(member);
-        }
-      },
-      data_);
+  return ValueView(*this).ToValue();
 }
 
 Value::~Value() = default;
@@ -1781,6 +1785,21 @@ void ListValue::Swap(ListValue* other) {
 ValueView::ValueView(const Value& value)
     : data_view_(
           value.Visit([](const auto& member) { return ViewType(member); })) {}
+
+base::Value ValueView::ToValue() const {
+  return absl::visit(
+      [](const auto& member) {
+        const auto& value = UnwrapReference(member);
+        using T = std::decay_t<decltype(value)>;
+        if constexpr (std::is_same_v<T, Value::Dict> ||
+                      std::is_same_v<T, Value::List>) {
+          return Value(value.Clone());
+        } else {
+          return Value(value);
+        }
+      },
+      data_view_);
+}
 
 ValueSerializer::~ValueSerializer() = default;
 

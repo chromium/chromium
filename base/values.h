@@ -1477,6 +1477,9 @@ class BASE_EXPORT GSL_POINTER ValueView {
     return absl::visit(std::forward<Visitor>(visitor), data_view_);
   }
 
+  // Returns a clone of the underlying Value.
+  Value ToValue() const;
+
  private:
   using ViewType =
       absl::variant<absl::monostate,

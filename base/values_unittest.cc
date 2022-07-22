@@ -2542,4 +2542,42 @@ TEST(ValueViewTest, ValueConstruction) {
   }
 }
 
+TEST(ValueViewTest, ToValue) {
+  {
+    Value val(true);
+    Value to_val = ValueView(val).ToValue();
+    EXPECT_EQ(val, to_val);
+  }
+  {
+    Value val(25);
+    Value to_val = ValueView(val).ToValue();
+    EXPECT_EQ(val, to_val);
+  }
+  {
+    Value val(3.14);
+    Value to_val = ValueView(val).ToValue();
+    EXPECT_EQ(val, to_val);
+  }
+  {
+    Value val("hello world");
+    Value to_val = ValueView(val).ToValue();
+    EXPECT_EQ(val, to_val);
+  }
+  {
+    Value::Dict dict;
+    dict.Set("hello", "world");
+    Value val(dict.Clone());
+    Value to_val = ValueView(val).ToValue();
+    EXPECT_EQ(val, to_val);
+  }
+  {
+    Value::List list;
+    list.Append("hello");
+    list.Append("world");
+    Value val(list.Clone());
+    Value to_val = ValueView(val).ToValue();
+    EXPECT_EQ(val, to_val);
+  }
+}
+
 }  // namespace base
