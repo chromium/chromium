@@ -259,6 +259,7 @@ void FontServiceApp::MatchFontByPostscriptNameOrFullFontName(
   std::move(callback).Run(nullptr);
 }
 
+#if BUILDFLAG(ENABLE_PDF)
 void FontServiceApp::MatchFontWithFallback(
     const std::string& family,
     bool is_bold,
@@ -268,7 +269,6 @@ void FontServiceApp::MatchFontWithFallback(
     MatchFontWithFallbackCallback callback) {
   TRACE_EVENT0("fonts", "FontServiceApp::MatchFontWithFallback");
 
-#if BUILDFLAG(ENABLE_PDF)
   base::File matched_font_file;
   int font_file_descriptor = MatchFontFaceWithFallback(
       family, is_bold, is_italic, charset, fallbackFamilyType);
@@ -276,10 +276,8 @@ void FontServiceApp::MatchFontWithFallback(
   if (!matched_font_file.IsValid())
     matched_font_file = base::File();
   std::move(callback).Run(std::move(matched_font_file));
-#else
-  NOTREACHED();
-#endif
 }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 size_t FontServiceApp::FindOrAddPath(const base::FilePath& path) {
   TRACE_EVENT1("fonts", "FontServiceApp::FindOrAddPath", "path",

@@ -14,6 +14,7 @@
 #include "components/services/font/public/mojom/font_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "pdf/buildflags.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/ports/SkFontConfigInterface.h"
@@ -69,12 +70,15 @@ class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
   bool MatchFontByPostscriptNameOrFullFontName(
       std::string postscript_name_or_full_font_name,
       mojom::FontIdentityPtr* out_identity);
+
+#if BUILDFLAG(ENABLE_PDF)
   void MatchFontWithFallback(std::string family,
                              bool is_bold,
                              bool is_italic,
                              uint32_t charset,
                              uint32_t fallbackFamilyType,
                              base::File* out_font_file_handle);
+#endif  // BUILDFLAG(ENABLE_PDF)
 
  private:
   friend class base::RefCountedThreadSafe<FontServiceThread>;
@@ -162,6 +166,7 @@ class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
       mojom::FontIdentityPtr* out_font_identity,
       mojom::FontIdentityPtr font_identity);
 
+#if BUILDFLAG(ENABLE_PDF)
   void MatchFontWithFallbackImpl(base::WaitableEvent* done_event,
                                  std::string family,
                                  bool is_bold,
@@ -172,6 +177,7 @@ class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
   void OnMatchFontWithFallbackComplete(base::WaitableEvent* done_event,
                                        base::File* out_font_file_handle,
                                        base::File file);
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   // Connection to |font_service_| has gone away. Called on the background
   // thread.

@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/trace_event.h"
 #include "components/services/font/public/cpp/font_service_thread.h"
+#include "pdf/buildflags.h"
 
 namespace font_service {
 
@@ -98,6 +99,7 @@ bool FontLoader::MatchFontByPostscriptNameOrFullFontName(
       std::move(postscript_name_or_full_font_name), out_identity);
 }
 
+#if BUILDFLAG(ENABLE_PDF)
 void FontLoader::MatchFontWithFallback(std::string family,
                                        bool is_bold,
                                        bool is_italic,
@@ -107,6 +109,7 @@ void FontLoader::MatchFontWithFallback(std::string family,
   thread_->MatchFontWithFallback(std::move(family), is_bold, is_italic, charset,
                                  fallback_family_type, out_font_file_handle);
 }
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 void FontLoader::OnMappedFontFileDestroyed(internal::MappedFontFile* f) {
   TRACE_EVENT1("fonts", "FontLoader::OnMappedFontFileDestroyed", "identity",
