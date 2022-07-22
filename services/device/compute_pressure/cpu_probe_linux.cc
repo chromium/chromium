@@ -50,7 +50,7 @@ void CpuProbeLinux::Update() {
     const CoreTimes& current_core_times = core_times[i];
 
     if (last_core_times_.size() == i) {
-      InitializeCore(static_cast<int>(i), current_core_times);
+      InitializeCore(i, current_core_times);
       continue;
     }
 
@@ -78,11 +78,11 @@ PressureSample CpuProbeLinux::LastSample() {
   return last_sample_;
 }
 
-void CpuProbeLinux::InitializeCore(int core_index,
+void CpuProbeLinux::InitializeCore(size_t core_index,
                                    const CoreTimes& initial_core_times) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(core_index, 0);
-  DCHECK_EQ(last_core_times_.size(), static_cast<size_t>(core_index));
+  DCHECK_GE(core_index, 0u);
+  DCHECK_EQ(last_core_times_.size(), core_index);
 
   last_core_times_.push_back(initial_core_times);
 }

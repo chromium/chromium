@@ -45,7 +45,7 @@ class CpuProbeLinux : public CpuProbe {
   //
   // For most systems, the cores listed in /proc/stat are static. However, it is
   // theoretically possible for cores to go online and offline.
-  void InitializeCore(int core_index, const CoreTimes& initial_core_times);
+  void InitializeCore(size_t core_index, const CoreTimes& initial_core_times);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
