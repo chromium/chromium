@@ -3,7 +3,13 @@ const { spawnSync } = require("child_process");
 
 // Ensure that the git repository is "trusted", otherwise we'll get errors like:
 // fatal: unsafe repository ('/chromium/src' is owned by someone else)
-spawnChecked("git", ["config", "--global", "--add", "safe.directory", "."]);
+spawnChecked("git", [
+  "config",
+  "--global",
+  "--add",
+  "safe.directory",
+  __dirname,
+]);
 
 if (currentPlatform() == "macOS") {
   // Make sure the main executable gets rebuilt with the new build ID.
@@ -15,17 +21,29 @@ if (currentPlatform() == "macOS") {
 let driverArchive = `${currentPlatform()}-recordreplay.tgz`;
 let downloadArchive = driverArchive;
 if (process.env.DRIVER_REVISION) {
-  downloadArchive = `${currentPlatform()}-recordreplay-${process.env.DRIVER_REVISION}.tgz`;
+  downloadArchive = `${currentPlatform()}-recordreplay-${
+    process.env.DRIVER_REVISION
+  }.tgz`;
 }
 const driverFile = `${currentPlatform()}-recordreplay.${driverExtension()}`;
 const driverJSON = `${currentPlatform()}-recordreplay.json`;
-spawnChecked("curl", [`https://static.replay.io/downloads/${downloadArchive}`, "-o", driverArchive], { stdio: "inherit" });
+spawnChecked(
+  "curl",
+  [
+    `https://static.replay.io/downloads/${downloadArchive}`,
+    "-o",
+    driverArchive,
+  ],
+  { stdio: "inherit" }
+);
 spawnChecked("tar", ["xf", driverArchive]);
 fs.unlinkSync(driverArchive);
 
 // Embed the driver in the source.
 const driverContents = fs.readFileSync(driverFile);
-const { revision: driverRevision, date: driverDate } = JSON.parse(fs.readFileSync(driverJSON, "utf8"));
+const { revision: driverRevision, date: driverDate } = JSON.parse(
+  fs.readFileSync(driverJSON, "utf8")
+);
 fs.unlinkSync(driverFile);
 fs.unlinkSync(driverJSON);
 let driverString = "";
@@ -45,7 +63,9 @@ namespace recordreplay {
 
 spawnChecked("goma_ctl", ["restart"]);
 
-spawnChecked("autoninja", ["-C", "out/Release", "chrome"], { stdio: "inherit" });
+spawnChecked("autoninja", ["-C", "out/Release", "chrome"], {
+  stdio: "inherit",
+});
 
 function spawnChecked(cmd, args, options) {
   const prettyCmd = [cmd].concat(args).join(" ");
@@ -80,7 +100,13 @@ function computeBuildId() {
   // Note: this build ID doesn't include revision etc. information for v8 or other inner git
   // repositories. It would be good to either fix this or enforce that the chromium revision
   // gets bumped whenever an inner repository changes.
-  const chromiumRevision = spawnChecked("git", ["rev-parse", "--short=12", "HEAD"]).stdout.toString().trim();
+  const chromiumRevision = spawnChecked("git", [
+    "rev-parse",
+    "--short=12",
+    "HEAD",
+  ])
+    .stdout.toString()
+    .trim();
   const chromiumDate = spawnChecked("git", [
     "show",
     "HEAD",
