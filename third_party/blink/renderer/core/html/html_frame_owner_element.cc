@@ -355,10 +355,8 @@ void HTMLFrameOwnerElement::PluginDisposeSuspendScope::
 HTMLFrameOwnerElement::HTMLFrameOwnerElement(const QualifiedName& tag_name,
                                              Document& document)
     : HTMLElement(tag_name, document),
-      content_frame_(nullptr),
-      embedded_content_view_(nullptr),
-      should_lazy_load_children_(DoesParentAllowLazyLoadingChildren(document)),
-      is_swapping_frames_(false) {}
+      should_lazy_load_children_(DoesParentAllowLazyLoadingChildren(document)) {
+}
 
 LayoutEmbeddedContent* HTMLFrameOwnerElement::GetLayoutEmbeddedContent() const {
   // HTMLObjectElement and HTMLEmbedElement may return arbitrary layoutObjects

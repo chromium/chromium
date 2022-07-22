@@ -241,7 +241,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
 
   Member<LazyLoadFrameObserver> lazy_load_frame_observer_;
   bool should_lazy_load_children_;
-  bool is_swapping_frames_;
+  bool is_swapping_frames_{false};
 };
 
 class SubframeLoadingDisabler {
