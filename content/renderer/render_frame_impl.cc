@@ -2183,9 +2183,7 @@ void RenderFrameImpl::SnapshotAndDistillAXTree(
     SnapshotAndDistillAXTreeCallback callback) {
   if (!ax_tree_distiller_)
     ax_tree_distiller_ = std::make_unique<AXTreeDistiller>(this);
-  ax_tree_distiller_->Distill();
-  std::move(callback).Run(*ax_tree_distiller_->GetSnapshot(),
-                          *ax_tree_distiller_->GetContentNodeIDs());
+  ax_tree_distiller_->Distill(std::move(callback));
 }
 
 void RenderFrameImpl::GetSerializedHtmlWithLocalLinks(

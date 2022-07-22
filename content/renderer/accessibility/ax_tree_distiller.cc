@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <queue>
+#include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -116,15 +117,11 @@ AXTreeDistiller::AXTreeDistiller(RenderFrameImpl* render_frame)
 
 AXTreeDistiller::~AXTreeDistiller() = default;
 
-void AXTreeDistiller::Distill() {
+void AXTreeDistiller::Distill(
+    mojom::Frame::SnapshotAndDistillAXTreeCallback callback) {
+  callback_ = std::move(callback);
   SnapshotAXTree();
   DistillAXTree();
-
-  // TODO(https://crbug.com/1278249): Move the call to a proper place.
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (features::IsReadAnythingWithScreen2xEnabled())
-    ScheduleScreen2xRun();
-#endif
 }
 
 void AXTreeDistiller::SnapshotAXTree() {
@@ -145,26 +142,46 @@ void AXTreeDistiller::SnapshotAXTree() {
 }
 
 void AXTreeDistiller::DistillAXTree() {
-  // If content_node_ids_ is already cached, do nothing.
-  if (content_node_ids_)
+  // If content_node_ids_ is already cached, finish and run the callback.
+  if (content_node_ids_) {
+    RunCallback();
     return;
-  content_node_ids_ = std::make_unique<std::vector<ui::AXNodeID>>();
+  }
 
+  // If Read Anything with Screen 2x is enabled, kick off Screen 2x run, which
+  // distills the AXTree in the utility process using ML.
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (features::IsReadAnythingWithScreen2xEnabled()) {
+    ScheduleScreen2xRun();
+    return;
+  }
+#endif
+
+  // Otherwise, distill the AXTree in process using the rules-based algorithm.
+  content_node_ids_ = std::make_unique<std::vector<ui::AXNodeID>>();
   DCHECK(snapshot_);
   ui::AXTree tree;
-  bool success = tree.Unserialize(*snapshot_);
-  if (!success)
-    return;
+  // Unserialize the snapshot. Failure to unserialize doesn't result in a crash:
+  // we control both ends of the serialization-unserialization so any failures
+  // are programming error.
+  if (!tree.Unserialize(*snapshot_))
+    NOTREACHED() << tree.error();
 
   const ui::AXNode* article_node = GetArticleNode(tree.root());
   // If this page does not have an article node, this means it is not
   // distillable.
   if (!article_node) {
     is_distillable_ = false;
+    RunCallback();
     return;
   }
 
   AddContentNodesToVector(article_node, content_node_ids_.get());
+  RunCallback();
+}
+
+void AXTreeDistiller::RunCallback() {
+  std::move(callback_).Run(*snapshot_.get(), *content_node_ids_.get());
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -178,9 +195,11 @@ void AXTreeDistiller::ScheduleScreen2xRun() {
 
 void AXTreeDistiller::ProcessScreen2xResult(
     const std::vector<ui::AXNodeID>& content_node_ids) {
-  // TODO(https://crbug.com/1278249): Use |content_node_ids|.
+  content_node_ids_ =
+      std::make_unique<std::vector<ui::AXNodeID>>(content_node_ids);
+  // TODO(https://crbug.com/1278249): Set |is_distillable_|.
+  RunCallback();
 }
-
 #endif
 
 }  // namespace content
