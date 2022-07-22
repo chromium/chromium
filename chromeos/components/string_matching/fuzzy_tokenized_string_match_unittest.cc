@@ -418,6 +418,129 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkPartialMatchPartialMismatch) {
   // CHECK_GT(relevance_query_suffix_mismatch, query_suffix_is_text_prefix);
 }
 
+TEST_F(FuzzyTokenizedStringMatchTest,
+       BenchmarkPrefixOfVaryingLengthSingleToken) {
+  std::u16string text = u"abcdefg";
+  std::u16string query_full = u"abcdefg";
+
+  std::vector<double> scores;
+  for (size_t i = 1; i < text.size(); ++i) {
+    std::u16string query = text.substr(0, i);
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+    scores.push_back(relevance);
+  }
+
+  // Intuitively, it seems desirable that, for a fixed text, the longer the
+  // prefix match between text and a query, the greater the relevance score
+  // should be. Check for this behavior here, but revisit the utility of this
+  // later as it relates to text-length agnosticism.
+  ExpectStrictlyIncreasing(scores);
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkPrefixVsNonPrefixSingleToken) {
+  std::u16string text = u"abcdefg";
+  std::vector<std::u16string> queries = {u"ab", u"bc", u"cd",
+                                         u"de", u"ef", u"fg"};
+
+  std::vector<double> scores;
+  for (const auto& query : queries) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+    scores.push_back(relevance);
+  }
+
+  // Only query "ab" should benefit from a prefix-related scoring boost, and
+  // the boost should be fairly high.
+  const double prefix_score_boost = 0.3;
+
+  EXPECT_GT(scores[0], scores[1] + prefix_score_boost);
+  EXPECT_GT(scores[0], scores[2] + prefix_score_boost);
+  EXPECT_GT(scores[0], scores[3] + prefix_score_boost);
+  EXPECT_GT(scores[0], scores[4] + prefix_score_boost);
+  EXPECT_GT(scores[0], scores[5] + prefix_score_boost);
+
+  // TODO(crbug.com/1336160): Consider whether position of match should be
+  // important when the match does not involve a prefix of the text. For example
+  // here, is it meaningful or useful for query "bc" to be a better match than
+  // query "cd"?
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest,
+       BenchmarkPrefixVsNonPrefixForTextAndQuerySingleToken) {
+  std::u16string text = u"abcdefgh";
+
+  // For a fixed length of matched portion between text and query, cover cases
+  // where the matched portion is:
+
+  std::vector<std::u16string> queries = {
+      u"abcd",   // case 0: a text prefix, and query prefix.
+      u"cdef",   // case 1: a text non-prefix, and query prefix.
+      u"xabcd",  // case 2: a text prefix, and query non-prefix.
+      u"xcdef"   // case 3: a text non-prefix, and query non-prefix.
+  };
+
+  // N.B. It isn't possible to have all the queries be the same length while
+  // also creating matched portions of the same length. So there is some
+  // necessary overlap of prefix scoring logic with other logic here.
+
+  double relevance0 = CalculateRelevance(queries[0], text);
+  VLOG(1) << FormatRelevanceResult(queries[0], text, relevance0,
+                                   /*query_first*/ false);
+  double relevance1 = CalculateRelevance(queries[1], text);
+  VLOG(1) << FormatRelevanceResult(queries[1], text, relevance1,
+                                   /*query_first*/ false);
+  double relevance2 = CalculateRelevance(queries[2], text);
+  VLOG(1) << FormatRelevanceResult(queries[2], text, relevance2,
+                                   /*query_first*/ false);
+  double relevance3 = CalculateRelevance(queries[3], text);
+  VLOG(1) << FormatRelevanceResult(queries[3], text, relevance3,
+                                   /*query_first*/ false);
+
+  // Only case 0 should benefit from a prefix-related scoring boost, and
+  // the boost should be fairly high.
+  const double prefix_score_boost = 0.3;
+
+  EXPECT_GT(relevance0, relevance1 + prefix_score_boost);
+  EXPECT_GT(relevance0, relevance2 + prefix_score_boost);
+  EXPECT_GT(relevance0, relevance3 + prefix_score_boost);
+
+  // TODO(crbug.com/1336160): Consider whether cases 1, 2, and 3 should have
+  // some expected ordering. e.g. choose between the following:
+  //
+  //   A prefix match (for either text or query) provides a boost i.e.:
+  //   R0 > R1, R2 > R3
+  //
+  //   A prefix score boost is only given in case 0 i.e.:
+  //   R0 > R1 ~= R2 ~= R3
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest,
+       BenchmarkPrefixVsContiguousBlockSingleToken) {
+  std::u16string text = u"ababc";
+  std::u16string query = u"abc";
+
+  const double relevance = CalculateRelevance(query, text);
+  VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                   /*query_first*/ false);
+
+  // TODO(crbug.com/1336160): Consider having a strong opinion on whether prefix
+  // matching or longest-contiguous-block matching should take precedence in
+  // these cases.
+  //
+  // Prefix matching:
+  //
+  //   text:  ababc
+  //   query: ab  c
+  //
+  // Longest-contiguous-block matching:
+  //
+  //   text:  ababc
+  //   query:   abc
+}
+
 /**********************************************************************
  * Benchmarking section 2 - Non-abstract test cases                   *
  **********************************************************************/
