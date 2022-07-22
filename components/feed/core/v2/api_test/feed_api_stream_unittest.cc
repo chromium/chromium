@@ -1128,12 +1128,30 @@ TEST_F(FeedApiTest, ReportOpenInNewTabAction) {
 
   base::UserActionTester user_actions;
 
-  stream_->ReportOpenInNewTabAction(
+  stream_->ReportOpenAction(
       GURL(), surface.GetStreamType(),
-      surface.initial_state->updated_slices(1).slice().slice_id());
+      surface.initial_state->updated_slices(1).slice().slice_id(),
+      OpenActionType::kNewTab);
 
   EXPECT_EQ(1, user_actions.GetActionCount(
                    "ContentSuggestions.Feed.CardAction.OpenInNewTab"));
+}
+
+TEST_F(FeedApiTest, ReportOpenInNewTabInGroupAction) {
+  store_->OverwriteStream(kForYouStream, MakeTypicalInitialModelState(),
+                          base::DoNothing());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  base::UserActionTester user_actions;
+
+  stream_->ReportOpenAction(
+      GURL(), surface.GetStreamType(),
+      surface.initial_state->updated_slices(1).slice().slice_id(),
+      OpenActionType::kNewTabInGroup);
+
+  EXPECT_EQ(1, user_actions.GetActionCount(
+                   "ContentSuggestions.Feed.CardAction.OpenInNewTabInGroup"));
 }
 
 TEST_F(FeedApiTest, HasUnreadContentAfterLoadFromNetwork) {
@@ -2637,8 +2655,10 @@ TEST_F(FeedApiTest, WasUrlRecentlyNavigatedFromFeed) {
   EXPECT_FALSE(stream_->WasUrlRecentlyNavigatedFromFeed(url1));
   EXPECT_FALSE(stream_->WasUrlRecentlyNavigatedFromFeed(url2));
 
-  stream_->ReportOpenAction(url1, kForYouStream, "slice");
-  stream_->ReportOpenInNewTabAction(url2, kForYouStream, "slice");
+  stream_->ReportOpenAction(url1, kForYouStream, "slice",
+                            OpenActionType::kDefault);
+  stream_->ReportOpenAction(url2, kForYouStream, "slice",
+                            OpenActionType::kNewTab);
 
   EXPECT_TRUE(stream_->WasUrlRecentlyNavigatedFromFeed(url1));
   EXPECT_TRUE(stream_->WasUrlRecentlyNavigatedFromFeed(url2));
@@ -2651,7 +2671,8 @@ TEST_F(FeedApiTest, WasUrlRecentlyNavigatedFromFeedMaxHistory) {
     urls.emplace_back("https://someurl" + base::NumberToString(i));
 
   for (const GURL& url : urls)
-    stream_->ReportOpenAction(url, kForYouStream, "slice");
+    stream_->ReportOpenAction(url, kForYouStream, "slice",
+                              OpenActionType::kDefault);
 
   EXPECT_FALSE(stream_->WasUrlRecentlyNavigatedFromFeed(urls[0]));
   for (size_t i = 1; i < urls.size(); ++i) {
@@ -3344,7 +3365,8 @@ TEST_F(FeedApiTest, FeedCloseRefresh_Open) {
   WaitForIdleTaskQueue();
 
   // Opening should cause a refresh to be scheduled.
-  stream_->ReportOpenAction(GURL("http://example.com"), kForYouStream, "");
+  stream_->ReportOpenAction(GURL("http://example.com"), kForYouStream, "",
+                            OpenActionType::kDefault);
   EXPECT_EQ(base::Minutes(30),
             refresh_scheduler_
                 .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
@@ -3361,8 +3383,8 @@ TEST_F(FeedApiTest, FeedCloseRefresh_OpenInNewTab) {
   WaitForIdleTaskQueue();
 
   // Should cause a refresh to be scheduled.
-  stream_->ReportOpenInNewTabAction(GURL("http://example.com"), kForYouStream,
-                                    "");
+  stream_->ReportOpenAction(GURL("http://example.com"), kForYouStream, "",
+                            OpenActionType::kNewTab);
   EXPECT_EQ(base::Minutes(30),
             refresh_scheduler_
                 .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);
@@ -3547,7 +3569,8 @@ TEST_F(FeedApiTest, FeedCloseRefresh_RequestType) {
   WaitForIdleTaskQueue();
 
   // Opening should cause a refresh to be scheduled.
-  stream_->ReportOpenAction(GURL("http://example.com"), kForYouStream, "");
+  stream_->ReportOpenAction(GURL("http://example.com"), kForYouStream, "",
+                            OpenActionType::kDefault);
   EXPECT_EQ(base::Minutes(30),
             refresh_scheduler_
                 .scheduled_run_times[RefreshTaskId::kRefreshForYouFeed]);

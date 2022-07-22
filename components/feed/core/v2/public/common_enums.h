@@ -158,8 +158,10 @@ enum class FeedUserActionType {
   // Page load caused a Follow Recommendation IPH to be shown. User action not
   // reported here. iOS only.
   kFollowRecommendationIPHShown = 57,
+  // User opened the article in a new tab in group from the back of card menu.
+  kTappedOpenInNewTabInGroup = 58,
 
-  kMaxValue = kFollowRecommendationIPHShown,
+  kMaxValue = kTappedOpenInNewTabInGroup,
 };
 
 // For testing and debugging only.

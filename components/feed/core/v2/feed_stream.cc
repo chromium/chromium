@@ -1256,7 +1256,8 @@ void FeedStream::UpdateUserProfileOnLinkClick(
 
 void FeedStream::ReportOpenAction(const GURL& url,
                                   const StreamType& stream_type,
-                                  const std::string& slice_id) {
+                                  const std::string& slice_id,
+                                  OpenActionType action_type) {
   recent_feed_navigations_.insert(recent_feed_navigations_.begin(), url);
   recent_feed_navigations_.resize(
       std::min(kMaxRecentFeedNavigations, recent_feed_navigations_.size()));
@@ -1266,7 +1267,7 @@ void FeedStream::ReportOpenAction(const GURL& url,
   int index = stream.surface_updater->GetSliceIndexFromSliceId(slice_id);
   if (index < 0)
     index = MetricsReporter::kUnknownCardIndex;
-  metrics_reporter_->OpenAction(stream_type, index);
+  metrics_reporter_->OpenAction(stream_type, index, action_type);
 
   if (stream.model) {
     privacy_notice_card_tracker_.OnOpenAction(
@@ -1274,27 +1275,9 @@ void FeedStream::ReportOpenAction(const GURL& url,
   }
   ScheduleFeedCloseRefreshOnInteraction(stream_type);
 }
+
 void FeedStream::ReportOpenVisitComplete(base::TimeDelta visit_time) {
   metrics_reporter_->OpenVisitComplete(visit_time);
-}
-void FeedStream::ReportOpenInNewTabAction(const GURL& url,
-                                          const StreamType& stream_type,
-                                          const std::string& slice_id) {
-  recent_feed_navigations_.insert(recent_feed_navigations_.begin(), url);
-  recent_feed_navigations_.resize(
-      std::min(kMaxRecentFeedNavigations, recent_feed_navigations_.size()));
-
-  Stream& stream = GetStream(stream_type);
-  int index = stream.surface_updater->GetSliceIndexFromSliceId(slice_id);
-  if (index < 0)
-    index = MetricsReporter::kUnknownCardIndex;
-  metrics_reporter_->OpenInNewTabAction(stream_type, index);
-
-  if (stream.model) {
-    privacy_notice_card_tracker_.OnOpenAction(
-        stream.model->FindContentId(ToContentRevision(slice_id)));
-  }
-  ScheduleFeedCloseRefreshOnInteraction(stream_type);
 }
 
 void FeedStream::ReportSliceViewed(SurfaceId surface_id,

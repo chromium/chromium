@@ -6211,6 +6211,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContentSuggestions.Feed.CardAction.OpenInNewTabInGroup">
+  <owner>jianli@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user selected the 'open in new tab in group' option for a Feed card.
+  </description>
+</action>
+
 <action name="ContentSuggestions.Feed.CardAction.ReadLater">
   <owner>adamta@google.org</owner>
   <owner>sczs@chromium.org</owner>

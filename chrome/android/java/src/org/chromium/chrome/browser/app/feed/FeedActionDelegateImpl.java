@@ -55,15 +55,16 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     }
 
     @Override
-    public void openSuggestionUrl(int disposition, LoadUrlParams params, Runnable onPageLoaded,
-            Callback<VisitResult> onVisitComplete) {
+    public void openSuggestionUrl(int disposition, LoadUrlParams params, boolean inGroup,
+            Runnable onPageLoaded, Callback<VisitResult> onVisitComplete) {
         params.setReferrer(
                 new Referrer(SuggestionsConfig.getReferrerUrl(ChromeFeatureList.INTEREST_FEED_V2),
                         // WARNING: ReferrerPolicy.ALWAYS is assumed by other Chrome code for NTP
                         // tiles to set consider_for_ntp_most_visited.
                         org.chromium.network.mojom.ReferrerPolicy.ALWAYS));
 
-        Tab tab = mNavigationDelegate.openUrl(disposition, params);
+        Tab tab = inGroup ? mNavigationDelegate.openUrlInGroup(disposition, params)
+                          : mNavigationDelegate.openUrl(disposition, params);
 
         NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_SNIPPET);
 

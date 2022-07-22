@@ -466,7 +466,7 @@ public class FeedStreamTest {
         handler.navigateTab(TEST_URL, null);
         verify(mActionDelegate)
                 .openSuggestionUrl(eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
-                        any(), any(), any());
+                        any(), eq(false), any(), any());
     }
 
     @Test
@@ -521,7 +521,22 @@ public class FeedStreamTest {
         verify(mActionDelegate)
                 .openSuggestionUrl(
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB), any(),
-                        any(), any());
+                        eq(false), any(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testNavigateNewTabInGroup() {
+        bindToView();
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
+
+        handler.navigateNewTabInGroup(TEST_URL, null);
+        verify(mActionDelegate)
+                .openSuggestionUrl(
+                        eq(org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB), any(),
+                        eq(true), any(), any());
     }
 
     @Test
@@ -534,7 +549,7 @@ public class FeedStreamTest {
         handler.navigateIncognitoTab(TEST_URL);
         verify(mActionDelegate)
                 .openSuggestionUrl(eq(org.chromium.ui.mojom.WindowOpenDisposition.OFF_THE_RECORD),
-                        any(), any(), any());
+                        any(), eq(false), any(), any());
     }
 
     @Test

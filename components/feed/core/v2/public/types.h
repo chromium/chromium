@@ -255,6 +255,17 @@ enum class StreamKind : int {
 std::ostream& operator<<(std::ostream& out,
                          WebFeedPageInformationRequestReason value);
 
+// Used to tell how to open an URL.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed
+enum class OpenActionType : int {
+  // The default open action.
+  kDefault = 0,
+  // "Open in new tab" action.
+  kNewTab = 1,
+  // "Open in new tab in group" action.
+  kNewTabInGroup = 2,
+};
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_CORE_V2_PUBLIC_TYPES_H_

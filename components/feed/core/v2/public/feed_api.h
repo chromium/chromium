@@ -168,20 +168,18 @@ class FeedApi {
                                 SurfaceId surface_id) = 0;
   // A web page was loaded in response to opening a link from the Feed.
   virtual void ReportPageLoaded() = 0;
-  // The user triggered the default open action, usually by tapping the card.
+  // The user triggered the open action which can be caused by tapping the card,
+  // or selecting 'Open in new tab' menu item. The open action to trigger is
+  // providen in `action_type`.
   // Remembers the URL for later calls to `WasUrlRecentlyNavigatedFromFeed()`.
   virtual void ReportOpenAction(const GURL& url,
                                 const StreamType& stream_type,
-                                const std::string& slice_id) = 0;
+                                const std::string& slice_id,
+                                OpenActionType action_type) = 0;
   // The user triggered an open action, visited a web page, and then navigated
   // away or backgrouded the tab. |visit_time| is a measure of how long the
   // visited page was foregrounded.
   virtual void ReportOpenVisitComplete(base::TimeDelta visit_time) = 0;
-  // The user triggered the 'open in new tab' action.
-  // Remembers the URL for later calls to `WasUrlRecentlyNavigatedFromFeed()`.
-  virtual void ReportOpenInNewTabAction(const GURL& url,
-                                        const StreamType& stream_type,
-                                        const std::string& slice_id) = 0;
   // The user scrolled the feed by |distance_dp| and then stopped.
   virtual void ReportStreamScrolled(const StreamType& stream_type,
                                     int distance_dp) = 0;

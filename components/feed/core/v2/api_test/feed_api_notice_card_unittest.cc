@@ -52,7 +52,8 @@ TEST_F(FeedApiNoticeCardTest, LoadStreamSendsNoticeCardAcknowledgement) {
   task_environment_.FastForwardBy(base::Hours(1));
   stream_->ReportSliceViewed(surface.GetSurfaceId(), surface.GetStreamType(),
                              slice_id);
-  stream_->ReportOpenAction(GURL(), surface.GetStreamType(), slice_id);
+  stream_->ReportOpenAction(GURL(), surface.GetStreamType(), slice_id,
+                            OpenActionType::kDefault);
 
   response_translator_.InjectResponse(model_generator_.MakeFirstPage());
   stream_->UnloadModel(surface.GetStreamType());

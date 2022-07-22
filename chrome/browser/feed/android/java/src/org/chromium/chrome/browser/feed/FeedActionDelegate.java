@@ -21,11 +21,12 @@ public interface FeedActionDelegate {
      * Opens a url that was presented to the user as suggested content.
      * @param disposition A `org.chromium.ui.mojom.WindowOpenDisposition` value.
      * @param params What to load.
+     * @param inGroup Whether to open the url in a tab in group.
      * @param onPageLoaded Called when the page completes loading.
      * @param onVisitComplete Called when the user closes or navigates away from the page.
      */
-    void openSuggestionUrl(int disposition, LoadUrlParams params, Runnable onPageLoaded,
-            Callback<VisitResult> onVisitComplete);
+    void openSuggestionUrl(int disposition, LoadUrlParams params, boolean inGroup,
+            Runnable onPageLoaded, Callback<VisitResult> onVisitComplete);
 
     /**
      * Opens a page.

@@ -465,11 +465,26 @@ void MetricsReporter::FeedViewed(SurfaceId surface_id) {
 }
 
 void MetricsReporter::OpenAction(const StreamType& stream_type,
-                                 int index_in_stream) {
+                                 int index_in_stream,
+                                 OpenActionType action_type) {
   CardOpenBegin(stream_type);
-  ReportUserActionHistogram(FeedUserActionType::kTappedOnCard);
-  base::RecordAction(
-      base::UserMetricsAction("ContentSuggestions.Feed.CardAction.Open"));
+  switch (action_type) {
+    case OpenActionType::kDefault:
+      ReportUserActionHistogram(FeedUserActionType::kTappedOnCard);
+      base::RecordAction(
+          base::UserMetricsAction("ContentSuggestions.Feed.CardAction.Open"));
+      break;
+    case OpenActionType::kNewTab:
+      ReportUserActionHistogram(FeedUserActionType::kTappedOpenInNewTab);
+      base::RecordAction(base::UserMetricsAction(
+          "ContentSuggestions.Feed.CardAction.OpenInNewTab"));
+      break;
+    case OpenActionType::kNewTabInGroup:
+      ReportUserActionHistogram(FeedUserActionType::kTappedOpenInNewTabInGroup);
+      base::RecordAction(base::UserMetricsAction(
+          "ContentSuggestions.Feed.CardAction.OpenInNewTabInGroup"));
+      break;
+  }
   ReportContentSuggestionsOpened(stream_type, index_in_stream);
   RecordInteraction(stream_type);
 }
@@ -477,16 +492,6 @@ void MetricsReporter::OpenAction(const StreamType& stream_type,
 void MetricsReporter::OpenVisitComplete(base::TimeDelta visit_time) {
   base::UmaHistogramLongTimes("ContentSuggestions.Feed.VisitDuration",
                               visit_time);
-}
-
-void MetricsReporter::OpenInNewTabAction(const StreamType& stream_type,
-                                         int index_in_stream) {
-  CardOpenBegin(stream_type);
-  ReportUserActionHistogram(FeedUserActionType::kTappedOpenInNewTab);
-  base::RecordAction(base::UserMetricsAction(
-      "ContentSuggestions.Feed.CardAction.OpenInNewTab"));
-  ReportContentSuggestionsOpened(stream_type, index_in_stream);
-  RecordInteraction(stream_type);
 }
 
 void MetricsReporter::PageLoaded() {
@@ -500,14 +505,12 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
   ReportUserActionHistogram(action_type);
   switch (action_type) {
     case FeedUserActionType::kTappedOnCard:
+    case FeedUserActionType::kTappedOpenInNewTab:
+    case FeedUserActionType::kTappedOpenInNewTabInGroup:
       DCHECK(false) << "This should be reported with OpenAction() instead";
       break;
     case FeedUserActionType::kShownCard_DEPRECATED:
       DCHECK(false) << "deprecated";
-      break;
-    case FeedUserActionType::kTappedOpenInNewTab:
-      DCHECK(false)
-          << "This should be reported with OpenInNewTabAction() instead";
       break;
     case FeedUserActionType::kOpenedFeedSurface:
       DCHECK(false) << "This should be reported with SurfaceOpened() instead";

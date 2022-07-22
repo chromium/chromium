@@ -80,11 +80,9 @@ class StubFeedApi : public FeedApi {
   void ReportPageLoaded() override {}
   void ReportOpenAction(const GURL& url,
                         const StreamType& stream_type,
-                        const std::string& slice_id) override {}
+                        const std::string& slice_id,
+                        OpenActionType action_type) override {}
   void ReportOpenVisitComplete(base::TimeDelta visit_time) override {}
-  void ReportOpenInNewTabAction(const GURL& url,
-                                const StreamType& stream_type,
-                                const std::string& slice_id) override {}
   void ReportStreamScrolled(const StreamType& stream_type,
                             int distance_dp) override {}
   void ReportStreamScrollStart() override {}

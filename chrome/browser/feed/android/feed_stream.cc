@@ -177,13 +177,15 @@ void FeedStream::SurfaceClosed(JNIEnv* env, const JavaParamRef<jobject>& obj) {
 void FeedStream::ReportOpenAction(JNIEnv* env,
                                   const JavaParamRef<jobject>& obj,
                                   const JavaParamRef<jobject>& j_url,
-                                  const JavaParamRef<jstring>& slice_id) {
+                                  const JavaParamRef<jstring>& slice_id,
+                                  int action_type) {
   if (!feed_stream_api_)
     return;
   std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
   feed_stream_api_->ReportOpenAction(
       url ? *url : GURL(), GetStreamType(),
-      base::android::ConvertJavaStringToUTF8(env, slice_id));
+      base::android::ConvertJavaStringToUTF8(env, slice_id),
+      static_cast<OpenActionType>(action_type));
 }
 
 void FeedStream::UpdateUserProfileOnLinkClick(
@@ -197,20 +199,6 @@ void FeedStream::UpdateUserProfileOnLinkClick(
   base::android::JavaLongArrayToInt64Vector(env, entity_mids,
                                             &entities_mids_vector);
   feed_stream_api_->UpdateUserProfileOnLinkClick(*url, entities_mids_vector);
-}
-
-void FeedStream::ReportOpenInNewTabAction(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& j_url,
-    const JavaParamRef<jstring>& slice_id) {
-  if (!feed_stream_api_)
-    return;
-  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
-
-  feed_stream_api_->ReportOpenInNewTabAction(
-      url ? *url : GURL(), GetStreamType(),
-      base::android::ConvertJavaStringToUTF8(env, slice_id));
 }
 
 void FeedStream::ReportSliceViewed(JNIEnv* env,

@@ -99,9 +99,10 @@ public class FeedStream implements Stream {
         public void navigateTab(String url, View actionSourceView) {
             assert ThreadUtils.runningOnUiThread();
             FeedStreamJni.get().reportOpenAction(mNativeFeedStream, FeedStream.this,
-                    mMakeGURL.apply(url), getSliceIdFromView(actionSourceView));
+                    mMakeGURL.apply(url), getSliceIdFromView(actionSourceView),
+                    OpenActionType.DEFAULT);
 
-            openSuggestionUrl(url, WindowOpenDisposition.CURRENT_TAB);
+            openSuggestionUrl(url, WindowOpenDisposition.CURRENT_TAB, /*inGroup=*/false);
 
             // Attempts to load more content if needed.
             maybeLoadMore();
@@ -110,10 +111,11 @@ public class FeedStream implements Stream {
         @Override
         public void navigateNewTab(String url, View actionSourceView) {
             assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportOpenInNewTabAction(mNativeFeedStream, FeedStream.this,
-                    mMakeGURL.apply(url), getSliceIdFromView(actionSourceView));
+            FeedStreamJni.get().reportOpenAction(mNativeFeedStream, FeedStream.this,
+                    mMakeGURL.apply(url), getSliceIdFromView(actionSourceView),
+                    OpenActionType.NEW_TAB);
 
-            openSuggestionUrl(url, WindowOpenDisposition.NEW_BACKGROUND_TAB);
+            openSuggestionUrl(url, WindowOpenDisposition.NEW_BACKGROUND_TAB, /*inGroup=*/false);
 
             // Attempts to load more content if needed.
             maybeLoadMore();
@@ -125,7 +127,7 @@ public class FeedStream implements Stream {
             FeedStreamJni.get().reportOtherUserAction(mNativeFeedStream, FeedStream.this,
                     FeedUserActionType.TAPPED_OPEN_IN_NEW_INCOGNITO_TAB);
 
-            openSuggestionUrl(url, WindowOpenDisposition.OFF_THE_RECORD);
+            openSuggestionUrl(url, WindowOpenDisposition.OFF_THE_RECORD, /*inGroup=*/false);
 
             // Attempts to load more content if needed.
             maybeLoadMore();
@@ -253,7 +255,7 @@ public class FeedStream implements Stream {
             }
         }
 
-        private void openSuggestionUrl(String url, int disposition) {
+        private void openSuggestionUrl(String url, int disposition, boolean inGroup) {
             boolean inNewTab = (disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
                     || disposition == WindowOpenDisposition.OFF_THE_RECORD);
 
@@ -268,13 +270,27 @@ public class FeedStream implements Stream {
             // triggers unbind, which can break event handling.
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
                 mActionDelegate.openSuggestionUrl(disposition,
-                        new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK),
+                        new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK), inGroup,
                         ()
                                 -> FeedStreamJni.get().reportPageLoaded(
                                         mNativeFeedStream, FeedStream.this, inNewTab),
                         visitResult
                         -> FeedServiceBridge.reportOpenVisitComplete(visitResult.visitTimeMs));
             });
+        }
+
+        @Override
+        public void navigateNewTabInGroup(String url, View actionSourceView) {
+            assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().reportOpenAction(mNativeFeedStream, FeedStream.this,
+                    mMakeGURL.apply(url), getSliceIdFromView(actionSourceView),
+                    OpenActionType.NEW_TAB_IN_GROUP);
+
+            openSuggestionUrl(url, WindowOpenDisposition.NEW_BACKGROUND_TAB,
+                    /*inGroup=*/true);
+
+            // Attempts to load more content if needed.
+            maybeLoadMore();
         }
     }
 
@@ -1275,9 +1291,8 @@ public class FeedStream implements Stream {
         void reportFeedViewed(long nativeFeedStream, FeedStream caller);
         void reportSliceViewed(long nativeFeedStream, FeedStream caller, String sliceId);
         void reportPageLoaded(long nativeFeedStream, FeedStream caller, boolean inNewTab);
-        void reportOpenAction(long nativeFeedStream, FeedStream caller, GURL url, String sliceId);
-        void reportOpenInNewTabAction(
-                long nativeFeedStream, FeedStream caller, GURL url, String sliceId);
+        void reportOpenAction(long nativeFeedStream, FeedStream caller, GURL url, String sliceId,
+                @OpenActionType int openActionType);
         void reportOtherUserAction(
                 long nativeFeedStream, FeedStream caller, @FeedUserActionType int userAction);
         void reportStreamScrolled(long nativeFeedStream, FeedStream caller, int distanceDp);

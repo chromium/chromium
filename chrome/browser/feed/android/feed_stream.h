@@ -83,16 +83,12 @@ class FeedStream : public ::feed::FeedStreamSurface {
   void ReportOpenAction(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj,
                         const base::android::JavaParamRef<jobject>& j_url,
-                        const base::android::JavaParamRef<jstring>& slice_id);
+                        const base::android::JavaParamRef<jstring>& slice_id,
+                        int action_type);
   void UpdateUserProfileOnLinkClick(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_url,
       const base::android::JavaParamRef<jlongArray>& entity_mids);
-  void ReportOpenInNewTabAction(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& j_url,
-      const base::android::JavaParamRef<jstring>& slice_id);
   void ReportOpenInNewIncognitoTabAction(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
