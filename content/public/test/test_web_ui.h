@@ -53,9 +53,6 @@ class TestWebUI : public WebUI {
   void AddMessageHandler(std::unique_ptr<WebUIMessageHandler> handler) override;
   void RegisterMessageCallback(base::StringPiece message,
                                MessageCallback callback) override;
-  void RegisterDeprecatedMessageCallback(
-      base::StringPiece message,
-      const DeprecatedMessageCallback& callback) override;
   void ProcessWebUIMessage(const GURL& source_url,
                            const std::string& message,
                            base::Value::List args) override {}
@@ -128,8 +125,6 @@ class TestWebUI : public WebUI {
   void OnJavascriptCall(const CallData& call_data);
 
   base::flat_map<std::string, std::vector<MessageCallback>> message_callbacks_;
-  base::flat_map<std::string, std::vector<DeprecatedMessageCallback>>
-      deprecated_message_callbacks_;
   std::vector<std::unique_ptr<CallData>> call_data_;
   std::vector<std::unique_ptr<WebUIMessageHandler>> handlers_;
   int bindings_ = 0;

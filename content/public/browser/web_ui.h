@@ -80,22 +80,11 @@ class CONTENT_EXPORT WebUI {
   virtual void RegisterMessageCallback(base::StringPiece message,
                                        MessageCallback callback) = 0;
 
-  // TODO(crbug.com/1243386): Instances of RegisterDeprecatedMessageCallback()
-  // should be migrated to RegisterMessageCallback() above if possible.
-  //
-  // Used by WebUIMessageHandlers. If the given message is already registered,
-  // the call has no effect. Use RegisterMessageCallback() above in new code.
-  using DeprecatedMessageCallback =
-      base::RepeatingCallback<void(const base::ListValue*)>;
-  virtual void RegisterDeprecatedMessageCallback(
-      base::StringPiece message,
-      const DeprecatedMessageCallback& callback) = 0;
-
   template <typename... Args>
   void RegisterHandlerCallback(
       base::StringPiece message,
       base::RepeatingCallback<void(Args...)> callback) {
-    RegisterDeprecatedMessageCallback(
+    RegisterMessageCallback(
         message, base::BindRepeating(
                      &Call<std::index_sequence_for<Args...>, Args...>::Impl,
                      callback, message));
@@ -152,14 +141,18 @@ class CONTENT_EXPORT WebUI {
   template <typename Is, typename... Args>
   struct Call;
 
+  // Helper to unpack a  base::Value::List  and invoke a callback, passing
+  // list[0] as the first argument, list[1] as the second argument, et cetera.
+  // Each value in the list will be coerced to the type of the corresponding
+  // function parameter, CHECK()ing if the conversion is not possible or if the
+  // number of arguments is wrong.
   template <size_t... Is, typename... Args>
   struct Call<std::index_sequence<Is...>, Args...> {
     static void Impl(base::RepeatingCallback<void(Args...)> callback,
                      base::StringPiece message,
-                     const base::ListValue* list) {
-      base::span<const base::Value> args = list->GetListDeprecated();
-      CHECK_EQ(args.size(), sizeof...(Args)) << message;
-      callback.Run(GetValue<Args>(args[Is])...);
+                     const base::Value::List& list) {
+      CHECK_EQ(list.size(), sizeof...(Args)) << message;
+      callback.Run(GetValue<Args>(list[Is])...);
     }
   };
 };
