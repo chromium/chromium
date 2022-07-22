@@ -29,6 +29,7 @@ class BrowserBench(object):
     self._output = None
     self._githash = None
     self._browser = None
+    self._driver = None
 
   @staticmethod
   def _CreateChromeDriver(optargs):
@@ -66,6 +67,30 @@ class BrowserBench(object):
       if not optargs.executable:
         params['executable_path'] = DEFAULT_STP_DRIVER_PATH
     return webdriver.Safari(**params)
+
+  def _GetBrowserVersion(self, optargs):
+    '''
+    Returns the version of the browser.
+    '''
+    if optargs.browser == 'safari' or optargs.browser == 'stp':
+      return BrowserBench._GetSafariVersion(optargs)
+    # Selenium provides the full version for chrome.
+    return self._driver.capabilities['browserVersion']
+
+  @staticmethod
+  def _GetSafariVersion(optargs):
+    # selenium does not report the build id of stp (e.g. 149), so this uses safaridriver,
+    # which is able to report the version.
+    safaridriver_executable = 'safaridriver'
+    if optargs.executable:
+      safaridriver_executable = optargs.executable
+    if optargs.browser == 'stp' and not optargs.executable:
+      safaridriver_executable = DEFAULT_STP_DRIVER_PATH
+    results = subprocess.run([safaridriver_executable, '--version'],
+                             capture_output=True).stdout.decode('utf-8')
+    start_index = results.find('Safari')
+    version = results[start_index:] if start_index != -1 else results
+    return version.strip()
 
   @staticmethod
   def _CreateDriver(optargs):
@@ -110,12 +135,12 @@ class BrowserBench(object):
 
   def _CreateDriverAndRun(self, optargs):
     logging.info('Creating Driver')
-    driver = BrowserBench._CreateDriver(optargs)
-    if not driver:
+    self._driver = BrowserBench._CreateDriver(optargs)
+    if not self._driver:
       raise Exception('failed to create driver')
-    driver.set_window_size(900, 780)
+    self._driver.set_window_size(900, 780)
     logging.info('About to run test')
-    return self.RunAndExtractMeasurements(driver, optargs)
+    return self.RunAndExtractMeasurements(self._driver, optargs)
 
   def _ConvertMeasurementsToSkiaFormat(self, measurements):
     '''
@@ -145,7 +170,7 @@ class BrowserBench(object):
         all_results.append(converted_result)
     return all_results
 
-  def _ProduceOutput(self, measurements, extra_key_values):
+  def _ProduceOutput(self, measurements, extra_key_values, optargs):
     '''
     extra_key_values is a dictionary of arbitrary key/value pairs added to the
     results.
@@ -157,6 +182,7 @@ class BrowserBench(object):
             'test': self._name,
             'version': self._version,
             'browser': self._browser,
+            'browser-version': self._GetBrowserVersion(optargs),
         },
         'results': self._ConvertMeasurementsToSkiaFormat(measurements)
     }
@@ -258,7 +284,7 @@ class BrowserBench(object):
       BrowserBench._KillBrowser(optargs)
 
     logging.info('Test completed')
-    self._ProduceOutput(measurements, extra_key_values)
+    self._ProduceOutput(measurements, extra_key_values, optargs)
     if caffeinate_process:
       caffeinate_process.kill()
 
