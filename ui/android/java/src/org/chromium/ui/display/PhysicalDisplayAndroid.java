@@ -166,7 +166,8 @@ import java.util.List;
         Rect rect = ApiHelperForR.getMaximumWindowMetricsBounds(windowManager);
         size.set(rect.width(), rect.height());
         DisplayMetrics displayMetrics = mWindowContext.getResources().getDisplayMetrics();
-        updateCommon(size, displayMetrics.density, ApiHelperForR.getDisplay(mWindowContext));
+        updateCommon(size, displayMetrics.density, displayMetrics.xdpi, displayMetrics.ydpi,
+                ApiHelperForR.getDisplay(mWindowContext));
     }
 
     /* package */ void onDisplayRemoved() {
@@ -193,10 +194,11 @@ import java.util.List;
             display.getSize(size);
             display.getMetrics(displayMetrics);
         }
-        updateCommon(size, displayMetrics.density, display);
+        updateCommon(
+                size, displayMetrics.density, displayMetrics.xdpi, displayMetrics.ydpi, display);
     }
 
-    private void updateCommon(Point size, float density, Display display) {
+    private void updateCommon(Point size, float density, float xdpi, float ydpi, Display display) {
         if (hasForcedDIPScale()) density = sForcedDIPScale.floatValue();
         boolean isWideColorGamut = false;
         // Although this API was added in Android O, it was buggy.
@@ -220,8 +222,8 @@ import java.util.List;
             assert supportedModes.size() > 0;
         }
 
-        super.update(size, density, bitsPerPixel(pixelFormatId), bitsPerComponent(pixelFormatId),
-                display.getRotation(), isWideColorGamut, null, display.getRefreshRate(),
-                currentMode, supportedModes);
+        super.update(size, density, xdpi, ydpi, bitsPerPixel(pixelFormatId),
+                bitsPerComponent(pixelFormatId), display.getRotation(), isWideColorGamut, null,
+                display.getRefreshRate(), currentMode, supportedModes);
     }
 }

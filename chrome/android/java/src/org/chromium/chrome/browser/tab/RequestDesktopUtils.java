@@ -23,6 +23,11 @@ import java.lang.annotation.RetentionPolicy;
  * Utilities for requesting desktop sites support.
  */
 public class RequestDesktopUtils {
+    private static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES =
+            "default_on_display_size_threshold_inches";
+    private static final double DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES =
+            12.0;
+
     // Note: these values must match the UserAgentRequestType enum in enums.xml.
     @IntDef({UserAgentRequestType.REQUEST_DESKTOP, UserAgentRequestType.REQUEST_MOBILE})
     @Retention(RetentionPolicy.SOURCE)
@@ -103,5 +108,23 @@ public class RequestDesktopUtils {
         }
         WebsitePreferenceBridge.setContentSettingDefaultScope(browserContextHandle,
                 ContentSettingsType.REQUEST_DESKTOP_SITE, url, url, contentSettingValue);
+    }
+
+    /**
+     * @param displaySizeInInches The device primary display size, in inches.
+     * @return Whether the desktop site global setting should be default-enabled.
+     */
+    public static boolean shouldDefaultEnableGlobalSetting(double displaySizeInInches) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS)) {
+            return false;
+        }
+
+        // TODO(crbug.com/1343916): Also check new SharedPreferences for REQUEST_DESKTOP_SITE to
+        // determine if the setting should be updated. Also nice to have a Finch configurable
+        // boolean to disable default-enabling this setting on low RAM devices.
+        return displaySizeInInches >= ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                       ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS,
+                       PARAM_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
+                       DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES);
     }
 }

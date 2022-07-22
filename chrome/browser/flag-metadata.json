@@ -5499,6 +5499,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "request-desktop-site-defaults",
+    "owners": [ "aishwaryarj", "twellington", "clank-app-team@google.com" ],
+    "expiry_milestone": 108
+  },
+  {
     "name": "request-desktop-site-exceptions",
     "owners": [ "shuyng@google.com", "twellington", "clank-app-team@google.com" ],
     "expiry_milestone": 108

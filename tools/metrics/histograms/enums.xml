@@ -58345,6 +58345,7 @@ from previous Chrome versions.
   <int value="-303467388" label="ShimlessRMAEnableStandalone:enabled"/>
   <int value="-302948746" label="DeferBeginMainFrameDuringLoading:disabled"/>
   <int value="-302407285" label="WipeDataOnChildAccountSignin:disabled"/>
+  <int value="-302078301" label="RequestDesktopSiteDefaults:enabled"/>
   <int value="-301689561" label="PermissionQuietChip:disabled"/>
   <int value="-301228557" label="PageInfoDiscoverability:disabled"/>
   <int value="-300018686" label="disable-cloud-import"/>
@@ -58962,6 +58963,7 @@ from previous Chrome versions.
   <int value="98218116" label="ContextualSearchLongpressResolve:disabled"/>
   <int value="99177659" label="OmniboxUICuesForSearchHistoryMatches:disabled"/>
   <int value="99660832" label="DockedMagnifierResizing:enabled"/>
+  <int value="101253756" label="RequestDesktopSiteDefaults:disabled"/>
   <int value="103347629" label="WinrtSensorsImplementation:enabled"/>
   <int value="103560544" label="ViewportHeightClientHintHeader:disabled"/>
   <int value="103932290" label="show-autofill-type-predictions"/>

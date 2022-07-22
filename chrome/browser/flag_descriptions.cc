@@ -3729,6 +3729,12 @@ const char kRequestDesktopSiteAdditionsDescription[] =
     "Secondary options in `Site settings` to request the desktop version of "
     "websites based on external display or peripheral.";
 
+const char kRequestDesktopSiteDefaultsName[] =
+    "Default settings for request desktop site on Android.";
+const char kRequestDesktopSiteDefaultsDescription[] =
+    "Request the desktop version of websites by default based on device "
+    "conditions.";
+
 const char kRequestDesktopSiteExceptionsName[] =
     "Per-site setting to request desktop site on Android.";
 const char kRequestDesktopSiteExceptionsDescription[] =

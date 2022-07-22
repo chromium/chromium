@@ -70,6 +70,8 @@ public class DisplayAndroid {
     private final int mDisplayId;
     private Point mSize;
     private float mDipScale;
+    private float mXdpi;
+    private float mYdpi;
     private int mBitsPerPixel;
     private int mBitsPerComponent;
     private int mRotation;
@@ -162,6 +164,20 @@ public class DisplayAndroid {
     }
 
     /**
+     * @return The exact physical pixels per inch of the screen in the X dimension.
+     */
+    public float getXdpi() {
+        return mXdpi;
+    }
+
+    /**
+     * @return The exact physical pixels per inch of the screen in the Y dimension.
+     */
+    public float getYdpi() {
+        return mYdpi;
+    }
+
+    /**
      * You probably do not want to use this function.
      *
      * In VR, there's a mismatch between the dip scale reported by getDipScale and the dip scale
@@ -251,7 +267,8 @@ public class DisplayAndroid {
     }
 
     public void updateIsDisplayServerWideColorGamut(Boolean isDisplayServerWideColorGamut) {
-        update(null, null, null, null, null, null, isDisplayServerWideColorGamut, null, null, null);
+        update(null, null, null, null, null, null, null, null, isDisplayServerWideColorGamut, null,
+                null, null);
     }
 
     /**
@@ -262,10 +279,25 @@ public class DisplayAndroid {
             Integer bitsPerComponent, Integer rotation, Boolean isDisplayWideColorGamut,
             Boolean isDisplayServerWideColorGamut, Float refreshRate, Display.Mode currentMode,
             List<Display.Mode> supportedModes) {
+        update(size, dipScale, null, null, bitsPerPixel, bitsPerComponent, rotation,
+                isDisplayWideColorGamut, isDisplayServerWideColorGamut, refreshRate, currentMode,
+                supportedModes);
+    }
+
+    /**
+     * Update the display to the provided parameters. Null values leave the parameter unchanged.
+     */
+    @SuppressLint("NewApi")
+    protected void update(Point size, Float dipScale, Float xdpi, Float ydpi, Integer bitsPerPixel,
+            Integer bitsPerComponent, Integer rotation, Boolean isDisplayWideColorGamut,
+            Boolean isDisplayServerWideColorGamut, Float refreshRate, Display.Mode currentMode,
+            List<Display.Mode> supportedModes) {
         boolean sizeChanged = size != null && !mSize.equals(size);
         // Intentional comparison of floats: we assume that if scales differ, they differ
         // significantly.
         boolean dipScaleChanged = dipScale != null && mDipScale != dipScale;
+        boolean xdpiChanged = xdpi != null && mXdpi != xdpi;
+        boolean ydpiChanged = ydpi != null && mYdpi != ydpi;
         boolean bitsPerPixelChanged = bitsPerPixel != null && mBitsPerPixel != bitsPerPixel;
         boolean bitsPerComponentChanged =
                 bitsPerComponent != null && mBitsPerComponent != bitsPerComponent;
@@ -288,6 +320,8 @@ public class DisplayAndroid {
 
         if (sizeChanged) mSize = size;
         if (dipScaleChanged) mDipScale = dipScale;
+        if (xdpiChanged) mXdpi = xdpi;
+        if (ydpiChanged) mYdpi = ydpi;
         if (bitsPerPixelChanged) mBitsPerPixel = bitsPerPixel;
         if (bitsPerComponentChanged) mBitsPerComponent = bitsPerComponent;
         if (rotationChanged) mRotation = rotation;

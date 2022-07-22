@@ -8968,6 +8968,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kRequestDesktopSiteAdditions)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"request-desktop-site-defaults",
+     flag_descriptions::kRequestDesktopSiteDefaultsName,
+     flag_descriptions::kRequestDesktopSiteDefaultsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kRequestDesktopSiteDefaults)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-web-hid-on-extension-service-worker",
      flag_descriptions::kEnableWebHidOnExtensionServiceWorkerName,

@@ -132,6 +132,7 @@ extern const base::Feature kRelatedSearchesAlternateUx;
 extern const base::Feature kRelatedSearchesInBar;
 extern const base::Feature kRelatedSearchesSimplifiedUx;
 extern const base::Feature kRelatedSearchesUi;
+extern const base::Feature kRequestDesktopSiteDefaults;
 extern const base::Feature kSearchEnginePromoExistingDevice;
 extern const base::Feature kSearchEnginePromoExistingDeviceV2;
 extern const base::Feature kSearchEnginePromoNewDevice;
