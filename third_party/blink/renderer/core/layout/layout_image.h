@@ -176,11 +176,13 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
   // and thus is stored in ComputedStyle (see ContentData::image) that gets
   // propagated to the anonymous LayoutImage in LayoutObject::createObject.
   Member<LayoutImageResource> image_resource_;
-  bool did_increment_visually_non_empty_pixel_count_;
+  bool did_increment_visually_non_empty_pixel_count_ = false;
 
   // This field stores whether this image is generated with 'content'.
-  bool is_generated_content_;
-  float image_device_pixel_ratio_;
+  bool is_generated_content_ = false;
+  float image_device_pixel_ratio_ = 1.0f;
+
+  bool image_ad_use_counter_recorded_ = false;
 };
 
 template <>

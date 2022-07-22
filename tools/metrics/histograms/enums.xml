@@ -40873,6 +40873,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4309" label="SendBeaconWithURLSearchParams"/>
   <int value="4310" label="SendBeaconWithUSVString"/>
   <int value="4311" label="ReplacedElementPaintedWithOverflow"/>
+  <int value="4312" label="ImageAd"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

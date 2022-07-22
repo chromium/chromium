@@ -55,10 +55,7 @@
 namespace blink {
 
 LayoutImage::LayoutImage(Element* element)
-    : LayoutReplaced(element, LayoutSize()),
-      did_increment_visually_non_empty_pixel_count_(false),
-      is_generated_content_(false),
-      image_device_pixel_ratio_(1.0f) {}
+    : LayoutReplaced(element, LayoutSize()) {}
 
 LayoutImage* LayoutImage::CreateAnonymous(PseudoElement& pseudo) {
   LayoutImage* image = MakeGarbageCollected<LayoutImage>(nullptr);
@@ -471,6 +468,17 @@ void LayoutImage::UpdateAfterLayout() {
   if (auto* image_element = DynamicTo<HTMLImageElement>(node)) {
     media_element_parser_helpers::CheckUnsizedMediaViolation(
         this, image_element->IsDefaultIntrinsicSize());
+
+    // Scope to the outermost frame to avoid counting image ads that are
+    // (likely) already in ad iframes. Exclude image ads that are invisible or
+    // too small (e.g. tracking pixels).
+    if (!image_ad_use_counter_recorded_ && image_element->IsAdRelated() &&
+        GetDocument().IsInOutermostMainFrame() &&
+        image_element->LayoutBoxWidth() > 1 &&
+        image_element->LayoutBoxHeight() > 1) {
+      UseCounter::Count(GetDocument(), WebFeature::kImageAd);
+      image_ad_use_counter_recorded_ = true;
+    }
   } else if (auto* video_element = DynamicTo<HTMLVideoElement>(node)) {
     media_element_parser_helpers::CheckUnsizedMediaViolation(
         this, video_element->IsDefaultIntrinsicSize());
