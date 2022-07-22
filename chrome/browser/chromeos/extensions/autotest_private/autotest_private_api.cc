@@ -4937,6 +4937,20 @@ void AutotestPrivateActivateAdjacentDesksToTargetIndexFunction::
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateGetDeskCountFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateGetDeskCountFunction::AutotestPrivateGetDeskCountFunction() =
+    default;
+AutotestPrivateGetDeskCountFunction::~AutotestPrivateGetDeskCountFunction() =
+    default;
+
+ExtensionFunction::ResponseAction AutotestPrivateGetDeskCountFunction::Run() {
+  return RespondNow(
+      OneArgument(base::Value(ash::AutotestDesksApi().GetDeskCount())));
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateMouseClickFunction
 ///////////////////////////////////////////////////////////////////////////////
 

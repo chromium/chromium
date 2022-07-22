@@ -1305,6 +1305,17 @@ class AutotestPrivateActivateAdjacentDesksToTargetIndexFunction
   void OnAnimationComplete();
 };
 
+class AutotestPrivateGetDeskCountFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateGetDeskCountFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getDeskCount",
+                             AUTOTESTPRIVATE_GETDESKCOUNT)
+
+ private:
+  ~AutotestPrivateGetDeskCountFunction() override;
+  ResponseAction Run() override;
+};
+
 class AutotestPrivateMouseClickFunction : public ExtensionFunction {
  public:
   AutotestPrivateMouseClickFunction();

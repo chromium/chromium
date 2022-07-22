@@ -1751,6 +1751,7 @@ enum HistogramValue {
   ENTERPRISEREPORTINGPRIVATE_GETFILESYSTEMINFO = 1688,
   FILEMANAGERPRIVATE_GETDRIVEQUOTAMETADATA = 1689,
   DOWNLOADS_SETUIOPTIONS = 1690,
+  AUTOTESTPRIVATE_GETDESKCOUNT = 1691,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

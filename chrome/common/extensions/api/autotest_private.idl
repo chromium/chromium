@@ -596,6 +596,8 @@ namespace autotestPrivate {
 
   callback DesksCallback = void (boolean success);
 
+  callback GetDeskCountCallback = void (long count);
+
   callback GetScrollableShelfInfoForStateCallback = void (
       ScrollableShelfInfo info);
 
@@ -1267,6 +1269,13 @@ namespace autotestPrivate {
     [supportsPromises] static void activateAdjacentDesksToTargetIndex(
         long index,
         DesksCallback callback);
+
+    // Fetches the number of open desks in the `DesksController` at the time of
+    // call.
+    // `callback`: callback that is passed the number of open desks.
+    [supportsPromises] static void getDeskCount(
+        GetDeskCountCallback callback
+    );
 
     // Create mouse events to cause a mouse click.
     // |button|: the mouse button for the click event.
