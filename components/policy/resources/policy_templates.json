@@ -25905,7 +25905,7 @@
                                   'PROVIDED',
                                   'ARC',
                                   'GOOGLE_DRIVE',
-                                  'SAMBA',
+                                  'SMB',
                                   'CROSTINI',
                                   'PLUGIN_VM',
                                   'BOREALIS',
@@ -25980,7 +25980,7 @@
                     'file_system_type': 'MY_FILES'
                   },
                   {
-                    'file_system_type': 'SAMBA'
+                    'file_system_type': 'SMB'
                   }
                 ],
                 'destinations': [{
@@ -26003,7 +26003,7 @@
                     'file_system_type': 'ARC'
                   },
                   {
-                    'file_system_type': 'SAMBA'
+                    'file_system_type': 'SMB'
                   },
                   {
                     'file_system_type': 'MY_FILES'

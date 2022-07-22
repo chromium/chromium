@@ -71,7 +71,7 @@ constexpr std::array kVolumeInfos{
     VolumeInfo{file_manager::VOLUME_TYPE_ANDROID_FILES, absl::nullopt, "ARC"},
     VolumeInfo{file_manager::VOLUME_TYPE_DOCUMENTS_PROVIDER, absl::nullopt,
                "ARC"},
-    VolumeInfo{file_manager::VOLUME_TYPE_SMB, absl::nullopt, "SAMBA"},
+    VolumeInfo{file_manager::VOLUME_TYPE_SMB, absl::nullopt, "SMB"},
     VolumeInfo{file_manager::VOLUME_TYPE_SYSTEM_INTERNAL, absl::nullopt,
                "UNKNOWN"},
     VolumeInfo{file_manager::VOLUME_TYPE_GUEST_OS, guest_os::VmType::TERMINA,
@@ -376,8 +376,7 @@ TEST(SourceDestinationMatcherAshFsTypeStringConversionTest, StringToType) {
           {"PROVIDED", SourceDestinationMatcherAsh::FsType::kProvided},
           {"ARC", SourceDestinationMatcherAsh::FsType::kArc},
           {"GOOGLE_DRIVE", SourceDestinationMatcherAsh::FsType::kGoogleDrive},
-          // TODO(crbug.com/1346233): Replace SAMBA with SMB.
-          {"SAMBA", SourceDestinationMatcherAsh::FsType::kSmb},
+          {"SMB", SourceDestinationMatcherAsh::FsType::kSmb},
           {"CROSTINI", SourceDestinationMatcherAsh::FsType::kCrostini},
           {"PLUGIN_VM", SourceDestinationMatcherAsh::FsType::kPluginVm},
           {"BOREALIS", SourceDestinationMatcherAsh::FsType::kBorealis},
@@ -403,8 +402,7 @@ TEST(SourceDestinationMatcherAshFsTypeStringConversionTest, TypeToString) {
           {SourceDestinationMatcherAsh::FsType::kProvided, "PROVIDED"},
           {SourceDestinationMatcherAsh::FsType::kArc, "ARC"},
           {SourceDestinationMatcherAsh::FsType::kGoogleDrive, "GOOGLE_DRIVE"},
-          // TODO(crbug.com/1346233): Replace SAMBA with SMB.
-          {SourceDestinationMatcherAsh::FsType::kSmb, "SAMBA"},
+          {SourceDestinationMatcherAsh::FsType::kSmb, "SMB"},
           {SourceDestinationMatcherAsh::FsType::kCrostini, "CROSTINI"},
           {SourceDestinationMatcherAsh::FsType::kPluginVm, "PLUGIN_VM"},
           {SourceDestinationMatcherAsh::FsType::kBorealis, "BOREALIS"},

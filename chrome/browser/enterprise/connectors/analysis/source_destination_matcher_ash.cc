@@ -158,8 +158,7 @@ SourceDestinationMatcherAsh::StringToFsType(const std::string& s) {
   if (s == "GOOGLE_DRIVE") {
     return SourceDestinationMatcherAsh::FsType::kGoogleDrive;
   }
-  if (s == "SAMBA") {
-    // TODO(crbug.com/1346233): Replace SAMBA with SMB.
+  if (s == "SMB") {
     return SourceDestinationMatcherAsh::FsType::kSmb;
   }
   if (s == "CROSTINI") {
@@ -232,8 +231,7 @@ std::string SourceDestinationMatcherAsh::FsTypeToString(
     case SourceDestinationMatcherAsh::FsType::kGoogleDrive:
       return "GOOGLE_DRIVE";
     case SourceDestinationMatcherAsh::FsType::kSmb:
-      // TODO(crbug.com/1346233): Replace SAMBA with SMB.
-      return "SAMBA";
+      return "SMB";
     case SourceDestinationMatcherAsh::FsType::kCrostini:
       return "CROSTINI";
     case SourceDestinationMatcherAsh::FsType::kPluginVm:

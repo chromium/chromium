@@ -126,7 +126,7 @@ class SourceDestinationMatcherAsh {
     ID id;
     std::set<FsType> fs_sources;
     std::set<FsType> fs_destinations;
-    // TODO(crbug.com/1340553): Add support for app ids and samba server
+    // TODO(crbug.com/1340553): Add support for app ids and smb server
     // configurations.
   };
 

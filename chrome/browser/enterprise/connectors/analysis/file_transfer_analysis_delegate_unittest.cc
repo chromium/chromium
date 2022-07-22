@@ -150,7 +150,7 @@ constexpr std::initializer_list<VolumeInfo> kVolumeInfos{
     {file_manager::VOLUME_TYPE_CROSTINI, absl::nullopt, "CROSTINI"},
     {file_manager::VOLUME_TYPE_ANDROID_FILES, absl::nullopt, "ARC"},
     {file_manager::VOLUME_TYPE_DOCUMENTS_PROVIDER, absl::nullopt, "ARC"},
-    {file_manager::VOLUME_TYPE_SMB, absl::nullopt, "SAMBA"},
+    {file_manager::VOLUME_TYPE_SMB, absl::nullopt, "SMB"},
     {file_manager::VOLUME_TYPE_SYSTEM_INTERNAL, absl::nullopt, "UNKNOWN"},
     {file_manager::VOLUME_TYPE_GUEST_OS, guest_os::VmType::TERMINA, "CROSTINI"},
     {file_manager::VOLUME_TYPE_GUEST_OS, guest_os::VmType::PLUGIN_VM,
