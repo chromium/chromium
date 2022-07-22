@@ -125,9 +125,9 @@ void AXTreeDistiller::Distill(
 }
 
 void AXTreeDistiller::SnapshotAXTree() {
-  // If snapshot_ is already cached, do nothing.
-  if (snapshot_)
-    return;
+  // TODO(crbug.com/1266555): Consider doing nothing if |snapshot_| is already
+  // cached. We are disabling caching while the feature is still in development
+  // to ease debugging.
   snapshot_ = std::make_unique<ui::AXTreeUpdate>();
 
   // Get page contents (via snapshot of a11y tree) for reader generation.
@@ -142,11 +142,9 @@ void AXTreeDistiller::SnapshotAXTree() {
 }
 
 void AXTreeDistiller::DistillAXTree() {
-  // If content_node_ids_ is already cached, finish and run the callback.
-  if (content_node_ids_) {
-    RunCallback();
-    return;
-  }
+  // TODO(crbug.com/1266555): Consider finishing and running the callback if
+  // |content_node_ids_| is already cached. We are disabling caching while the
+  // feature is still in development to ease debugging.
 
   // If Read Anything with Screen 2x is enabled, kick off Screen 2x run, which
   // distills the AXTree in the utility process using ML.
