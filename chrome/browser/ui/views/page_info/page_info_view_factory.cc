@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_about_this_site_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_ad_personalization_content_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
@@ -161,6 +162,13 @@ PageInfoViewFactory::CreateAdPersonalizationPageView() {
           presenter_->GetSimpleSiteName()),
       std::make_unique<PageInfoAdPersonalizationContentView>(presenter_,
                                                              ui_delegate_));
+}
+
+// TODO(crbug.com/1346305): Use translatable strings instead of hardcoded one.
+std::unique_ptr<views::View> PageInfoViewFactory::CreateCookiesPageView() {
+  return std::make_unique<PageInfoSubpageView>(
+      CreateSubpageHeader(u"Cookies", presenter_->GetSimpleSiteName()),
+      std::make_unique<PageInfoCookiesContentView>(presenter_));
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(

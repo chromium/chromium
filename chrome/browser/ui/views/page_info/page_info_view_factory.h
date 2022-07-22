@@ -129,6 +129,7 @@ class PageInfoViewFactory {
   [[nodiscard]] std::unique_ptr<views::View> CreateAboutThisSitePageView(
       const page_info::proto::SiteInfo& info);
   [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationPageView();
+  [[nodiscard]] std::unique_ptr<views::View> CreateCookiesPageView();
 
  private:
   // Creates a subpage header with back button that opens the main page, a
