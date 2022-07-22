@@ -6,7 +6,6 @@ package org.chromium.components.crash;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PiiElider;
 import org.chromium.components.minidump_uploader.CrashFileManager;
@@ -44,10 +43,9 @@ public class LogcatCrashExtractor {
     /**
      * @param minidump The minidump file that needs logcat output to be attached.
      */
-    public File attachLogcatToMinidump(File minidump) {
+    public File attachLogcatToMinidump(File minidump, CrashFileManager fileManager) {
         Log.i(TAG, "Trying to extract logcat for minidump %s.", minidump.getName());
-        CrashFileManager fileManager =
-                new CrashFileManager(ContextUtils.getApplicationContext().getCacheDir());
+
         File fileToUpload = minidump;
         try {
             List<String> logcat = getElidedLogcat();

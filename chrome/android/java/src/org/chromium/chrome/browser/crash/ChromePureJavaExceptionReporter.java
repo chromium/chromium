@@ -24,7 +24,7 @@ public class ChromePureJavaExceptionReporter extends PureJavaExceptionReporter {
 
     @UsedByReflection("SplitCompatApplication.java")
     public ChromePureJavaExceptionReporter() {
-        super(ContextUtils.getApplicationContext().getCacheDir());
+        super(ContextUtils.getApplicationContext().getCacheDir(), /*attachLogcat=*/true);
     }
 
     @Override

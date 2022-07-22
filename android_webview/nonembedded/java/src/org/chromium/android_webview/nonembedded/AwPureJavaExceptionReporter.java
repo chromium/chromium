@@ -18,7 +18,7 @@ import java.io.File;
             "nonembeded-webview-minidump-";
 
     public AwPureJavaExceptionReporter() {
-        super(SystemWideCrashDirectories.getOrCreateWebViewCrashDir());
+        super(SystemWideCrashDirectories.getOrCreateWebViewCrashDir(), /*attachLogcat=*/false);
         // The reporter doesn't create a minidump if the crash dump directory doesn't exist, so make
         // sure to create it.
         // TODO(https://crbug.com/1293108): this should be shared with chrome as well and removed
