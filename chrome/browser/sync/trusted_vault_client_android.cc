@@ -218,7 +218,6 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure cb) {
-  // Not invoked on Android, but this is about to change with crbug.com/1341279.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(cb);
 
