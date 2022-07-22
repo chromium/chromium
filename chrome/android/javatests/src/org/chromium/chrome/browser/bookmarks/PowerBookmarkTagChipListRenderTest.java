@@ -13,6 +13,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -25,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -96,6 +99,7 @@ public class PowerBookmarkTagChipListRenderTest extends BlankUiTestActivityTestC
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testTagListLarge() throws IOException {
         PowerBookmarkMeta.Builder meta = PowerBookmarkMeta.newBuilder();
         PowerBookmarkMeta.Tag.Builder tag = PowerBookmarkMeta.Tag.newBuilder();
