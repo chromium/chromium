@@ -4,6 +4,8 @@
 
 #include "content/browser/webid/federated_auth_request_impl.h"
 
+#include <random>
+
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/rand_util.h"
@@ -275,8 +277,13 @@ void FederatedAuthRequestImpl::RequestToken(const GURL& provider,
 
   auth_request_callback_ = std::move(callback);
   provider_ = provider;
+  // Generate a random int for the FedCM call, to be used by the UKM events.
+  std::random_device dev;
+  std::mt19937 rng(dev());
+  std::uniform_int_distribution<std::mt19937::result_type> uniform_dist(
+      1, 1 << 30);
   fedcm_metrics_ = std::make_unique<FedCmMetrics>(
-      provider_, render_frame_host().GetPageUkmSourceId());
+      provider_, render_frame_host().GetPageUkmSourceId(), uniform_dist(rng));
   client_id_ = client_id;
   nonce_ = nonce;
   prefer_auto_sign_in_ = prefer_auto_sign_in && IsFedCmAutoSigninEnabled();

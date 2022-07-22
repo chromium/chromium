@@ -12,16 +12,20 @@
 
 namespace content {
 
-FedCmMetrics::FedCmMetrics(const GURL& provider, ukm::SourceId page_source_id)
+FedCmMetrics::FedCmMetrics(const GURL& provider,
+                           ukm::SourceId page_source_id,
+                           int session_id)
     : page_source_id_(page_source_id),
       provider_source_id_(ukm::UkmRecorder::GetSourceIdForWebIdentityFromScope(
           base::PassKey<FedCmMetrics>(),
-          provider)) {}
+          provider)),
+      session_id_(session_id) {}
 
 void FedCmMetrics::RecordShowAccountsDialogTime(base::TimeDelta duration) {
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetTiming_ShowAccountsDialog(
         ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
+    ukm_builder.SetFedCmSessionID(session_id_);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };
   ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
@@ -36,6 +40,7 @@ void FedCmMetrics::RecordContinueOnDialogTime(base::TimeDelta duration) {
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetTiming_ContinueOnDialog(
         ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
+    ukm_builder.SetFedCmSessionID(session_id_);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };
   ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
@@ -51,6 +56,7 @@ void FedCmMetrics::RecordCancelOnDialogTime(base::TimeDelta duration) {
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetTiming_CancelOnDialog(
         ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
+    ukm_builder.SetFedCmSessionID(session_id_);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };
   ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
@@ -78,6 +84,7 @@ void FedCmMetrics::RecordTokenResponseAndTurnaroundTime(
             token_response_time.InMilliseconds()))
         .SetTiming_TurnaroundTime(ukm::GetExponentialBucketMinForUserTiming(
             turnaround_time.InMilliseconds()));
+    ukm_builder.SetFedCmSessionID(session_id_);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };
   ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
@@ -105,6 +112,7 @@ void FedCmMetrics::RecordRequestTokenStatus(FedCmRequestIdTokenStatus status) {
 
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetStatus_RequestIdToken(static_cast<int>(status));
+    ukm_builder.SetFedCmSessionID(session_id_);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };
   ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
@@ -120,6 +128,7 @@ void FedCmMetrics::RecordSignInStateMatchStatus(
     FedCmSignInStateMatchStatus status) {
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetStatus_SignInStateMatch(static_cast<int>(status));
+    ukm_builder.SetFedCmSessionID(session_id_);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };
   ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);

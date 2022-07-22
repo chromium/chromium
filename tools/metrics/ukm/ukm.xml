@@ -3096,6 +3096,13 @@ be describing additional metrics about the same event.
   <summary>
     Records performance metrics for FedCM(Federated Credential Management) API.
   </summary>
+  <metric name="FedCmSessionID">
+    <summary>
+      Records the session ID associated to the FedCM call for which this event
+      is recording metrics. Each FedCM call gets a random integer session id,
+      which helps group UKM events by the session id.
+    </summary>
+  </metric>
   <metric name="Status.RequestIdToken" enum="FedCmRequestIdTokenStatus">
     <summary>
       Records the status of a request id token call to the FedCM API.
@@ -3152,6 +3159,13 @@ be describing additional metrics about the same event.
     This event uses the specific WEB_IDENTITY ukm_source_id which is generated
     from the identity provider's origin.
   </summary>
+  <metric name="FedCmSessionID">
+    <summary>
+      Records the session ID associated to the FedCM call for which this event
+      is recording metrics. Each FedCM call gets a random integer session id,
+      which helps group UKM events by the session id.
+    </summary>
+  </metric>
   <metric name="Status.RequestIdToken" enum="FedCmRequestIdTokenStatus">
     <summary>
       Records the status of a request id token call to the FedCM API.

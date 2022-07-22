@@ -68,7 +68,9 @@ enum class FedCmSignInStateMatchStatus {
 
 class FedCmMetrics {
  public:
-  FedCmMetrics(const GURL& provider, const ukm::SourceId page_source_id);
+  FedCmMetrics(const GURL& provider,
+               const ukm::SourceId page_source_id,
+               int session_id);
 
   ~FedCmMetrics() = default;
 
@@ -103,6 +105,7 @@ class FedCmMetrics {
   // Records whether user sign-in states between IDP and browser match.
   void RecordSignInStateMatchStatus(FedCmSignInStateMatchStatus status);
 
+ private:
   // The page's SourceId. Used to log the UKM event Blink.FedCm.
   ukm::SourceId page_source_id_;
 
@@ -112,6 +115,11 @@ class FedCmMetrics {
 
   // Whether a RequestTokenStatus has been recorded.
   bool request_token_status_recorded_{false};
+
+  // The session ID associated to the FedCM call for which this object is
+  // recording metrics. Each FedCM call gets a random integer session id, which
+  // helps group UKM events by the session id.
+  int session_id_;
 };
 
 // The following are UMA-only recordings, hence do not need to be in the
