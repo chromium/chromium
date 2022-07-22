@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/mojom/cros_display_config.mojom-forward.h"
 #include "chrome/browser/ash/policy/display/display_settings_handler.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom-forward.h"
 
 namespace policy {
 
@@ -43,8 +43,9 @@ class DisplayResolutionHandler : public DisplaySettingsPolicyHandler {
   const char* SettingName() override;
   void OnSettingUpdate() override;
   void ApplyChanges(
-      ash::mojom::CrosDisplayConfigController* cros_display_config,
-      const std::vector<ash::mojom::DisplayUnitInfoPtr>& info_list) override;
+      crosapi::mojom::CrosDisplayConfigController* cros_display_config,
+      const std::vector<crosapi::mojom::DisplayUnitInfoPtr>& info_list)
+      override;
 
  private:
   struct InternalDisplaySettings;

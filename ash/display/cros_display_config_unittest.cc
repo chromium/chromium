@@ -10,7 +10,6 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/touch_calibrator_controller.h"
-#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/touch/ash_touch_transform_controller.h"
@@ -20,6 +19,7 @@
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ui/display/display_switches.h"
@@ -35,9 +35,9 @@ namespace ash {
 
 namespace {
 
-void SetResult(mojom::DisplayConfigResult* result_ptr,
+void SetResult(crosapi::mojom::DisplayConfigResult* result_ptr,
                base::OnceClosure callback,
-               mojom::DisplayConfigResult result) {
+               crosapi::mojom::DisplayConfigResult result) {
   *result_ptr = result;
   std::move(callback).Run();
 }
@@ -59,14 +59,14 @@ void InitExternalTouchDevices(int64_t display_id) {
       ->ConfigureTouchDevices(transforms);
 }
 
-class TestObserver : public mojom::CrosDisplayConfigObserver {
+class TestObserver : public crosapi::mojom::CrosDisplayConfigObserver {
  public:
   TestObserver() = default;
 
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
 
-  // mojom::CrosDisplayConfigObserver:
+  // crosapi::mojom::CrosDisplayConfigObserver:
   void OnDisplayConfigChanged() override { display_changes_++; }
 
   int display_changes() const { return display_changes_; }
@@ -97,12 +97,13 @@ class CrosDisplayConfigTest : public AshTestBase {
     cros_display_config_ = Shell::Get()->cros_display_config();
   }
 
-  mojom::DisplayLayoutInfoPtr GetDisplayLayoutInfo() {
-    mojom::DisplayLayoutInfoPtr display_layout_info;
+  crosapi::mojom::DisplayLayoutInfoPtr GetDisplayLayoutInfo() {
+    crosapi::mojom::DisplayLayoutInfoPtr display_layout_info;
     base::RunLoop run_loop;
     cros_display_config_->GetDisplayLayoutInfo(base::BindOnce(
-        [](mojom::DisplayLayoutInfoPtr* result_ptr, base::OnceClosure callback,
-           mojom::DisplayLayoutInfoPtr result) {
+        [](crosapi::mojom::DisplayLayoutInfoPtr* result_ptr,
+           base::OnceClosure callback,
+           crosapi::mojom::DisplayLayoutInfoPtr result) {
           *result_ptr = std::move(result);
           std::move(callback).Run();
         },
@@ -111,9 +112,9 @@ class CrosDisplayConfigTest : public AshTestBase {
     return display_layout_info;
   }
 
-  mojom::DisplayConfigResult SetDisplayLayoutInfo(
-      mojom::DisplayLayoutInfoPtr display_layout_info) {
-    mojom::DisplayConfigResult result;
+  crosapi::mojom::DisplayConfigResult SetDisplayLayoutInfo(
+      crosapi::mojom::DisplayLayoutInfoPtr display_layout_info) {
+    crosapi::mojom::DisplayConfigResult result;
     base::RunLoop run_loop;
     cros_display_config_->SetDisplayLayoutInfo(
         std::move(display_layout_info),
@@ -122,15 +123,15 @@ class CrosDisplayConfigTest : public AshTestBase {
     return result;
   }
 
-  std::vector<mojom::DisplayUnitInfoPtr> GetDisplayUnitInfoList() {
-    std::vector<mojom::DisplayUnitInfoPtr> display_info_list;
+  std::vector<crosapi::mojom::DisplayUnitInfoPtr> GetDisplayUnitInfoList() {
+    std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_info_list;
     base::RunLoop run_loop;
     cros_display_config_->GetDisplayUnitInfoList(
         /*single_unified=*/false,
         base::BindOnce(
-            [](std::vector<mojom::DisplayUnitInfoPtr>* result_ptr,
+            [](std::vector<crosapi::mojom::DisplayUnitInfoPtr>* result_ptr,
                base::OnceClosure callback,
-               std::vector<mojom::DisplayUnitInfoPtr> result) {
+               std::vector<crosapi::mojom::DisplayUnitInfoPtr> result) {
               *result_ptr = std::move(result);
               std::move(callback).Run();
             },
@@ -139,28 +140,28 @@ class CrosDisplayConfigTest : public AshTestBase {
     return display_info_list;
   }
 
-  mojom::DisplayConfigResult SetDisplayProperties(
+  crosapi::mojom::DisplayConfigResult SetDisplayProperties(
       const std::string& id,
-      mojom::DisplayConfigPropertiesPtr properties) {
-    mojom::DisplayConfigResult result;
+      crosapi::mojom::DisplayConfigPropertiesPtr properties) {
+    crosapi::mojom::DisplayConfigResult result;
     base::RunLoop run_loop;
     cros_display_config_->SetDisplayProperties(
-        id, std::move(properties), mojom::DisplayConfigSource::kUser,
+        id, std::move(properties), crosapi::mojom::DisplayConfigSource::kUser,
         base::BindOnce(&SetResult, &result, run_loop.QuitClosure()));
     run_loop.Run();
     return result;
   }
 
   bool OverscanCalibration(int64_t id,
-                           mojom::DisplayConfigOperation op,
+                           crosapi::mojom::DisplayConfigOperation op,
                            const absl::optional<gfx::Insets>& delta) {
-    mojom::DisplayConfigResult result;
+    crosapi::mojom::DisplayConfigResult result;
     base::RunLoop run_loop;
     cros_display_config()->OverscanCalibration(
         base::NumberToString(id), op, delta,
         base::BindOnce(&SetResult, &result, run_loop.QuitClosure()));
     run_loop.Run();
-    return result == mojom::DisplayConfigResult::kSuccess;
+    return result == crosapi::mojom::DisplayConfigResult::kSuccess;
   }
 
   bool DisplayExists(int64_t display_id) {
@@ -169,35 +170,37 @@ class CrosDisplayConfigTest : public AshTestBase {
     return display.id() != display::kInvalidDisplayId;
   }
 
-  mojom::TouchCalibrationPtr GetDefaultCalibration() {
-    auto calibration = mojom::TouchCalibration::New();
+  crosapi::mojom::TouchCalibrationPtr GetDefaultCalibration() {
+    auto calibration = crosapi::mojom::TouchCalibration::New();
     for (int i = 0; i < 4; ++i)
-      calibration->pairs.emplace_back(mojom::TouchCalibrationPair::New());
+      calibration->pairs.emplace_back(
+          crosapi::mojom::TouchCalibrationPair::New());
     return calibration;
   }
 
   bool StartTouchCalibration(const std::string& display_id) {
     return CallTouchCalibration(
-        display_id, ash::mojom::DisplayConfigOperation::kStart, nullptr);
+        display_id, crosapi::mojom::DisplayConfigOperation::kStart, nullptr);
   }
 
-  bool CompleteCustomTouchCalibration(const std::string& display_id,
-                                      mojom::TouchCalibrationPtr calibration) {
-    return CallTouchCalibration(display_id,
-                                ash::mojom::DisplayConfigOperation::kComplete,
-                                std::move(calibration));
+  bool CompleteCustomTouchCalibration(
+      const std::string& display_id,
+      crosapi::mojom::TouchCalibrationPtr calibration) {
+    return CallTouchCalibration(
+        display_id, crosapi::mojom::DisplayConfigOperation::kComplete,
+        std::move(calibration));
   }
 
   bool CallTouchCalibration(const std::string& id,
-                            ash::mojom::DisplayConfigOperation op,
-                            ash::mojom::TouchCalibrationPtr calibration) {
-    mojom::DisplayConfigResult result;
+                            crosapi::mojom::DisplayConfigOperation op,
+                            crosapi::mojom::TouchCalibrationPtr calibration) {
+    crosapi::mojom::DisplayConfigResult result;
     base::RunLoop run_loop;
     cros_display_config_->TouchCalibration(
         id, op, std::move(calibration),
         base::BindOnce(&SetResult, &result, run_loop.QuitClosure()));
     run_loop.Run();
-    return result == mojom::DisplayConfigResult::kSuccess;
+    return result == crosapi::mojom::DisplayConfigResult::kSuccess;
   }
 
   bool IsTouchCalibrationActive() {
@@ -231,8 +234,9 @@ class CrosDisplayConfigTest : public AshTestBase {
 
 TEST_F(CrosDisplayConfigTest, OnDisplayConfigChanged) {
   TestObserver observer;
-  mojo::AssociatedRemote<mojom::CrosDisplayConfigObserver> observer_remote;
-  mojo::AssociatedReceiver<mojom::CrosDisplayConfigObserver> receiver(
+  mojo::AssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>
+      observer_remote;
+  mojo::AssociatedReceiver<crosapi::mojom::CrosDisplayConfigObserver> receiver(
       &observer, observer_remote.BindNewEndpointAndPassDedicatedReceiver());
   cros_display_config()->AddObserver(observer_remote.Unbind());
   base::RunLoop().RunUntilIdle();
@@ -255,21 +259,24 @@ TEST_F(CrosDisplayConfigTest, GetDisplayLayoutInfo) {
       display::Screen::GetScreen()->GetAllDisplays();
   ASSERT_EQ(3u, displays.size());
 
-  mojom::DisplayLayoutInfoPtr display_layout_info = GetDisplayLayoutInfo();
+  crosapi::mojom::DisplayLayoutInfoPtr display_layout_info =
+      GetDisplayLayoutInfo();
 
   ASSERT_TRUE(display_layout_info);
-  const std::vector<mojom::DisplayLayoutPtr>& layouts =
+  const std::vector<crosapi::mojom::DisplayLayoutPtr>& layouts =
       *display_layout_info->layouts;
   ASSERT_EQ(2u, layouts.size());
 
   EXPECT_EQ(base::NumberToString(displays[1].id()), layouts[0]->id);
   EXPECT_EQ(base::NumberToString(displays[0].id()), layouts[0]->parent_id);
-  EXPECT_EQ(mojom::DisplayLayoutPosition::kRight, layouts[0]->position);
+  EXPECT_EQ(crosapi::mojom::DisplayLayoutPosition::kRight,
+            layouts[0]->position);
   EXPECT_EQ(0, layouts[0]->offset);
 
   EXPECT_EQ(base::NumberToString(displays[2].id()), layouts[1]->id);
   EXPECT_EQ(layouts[0]->id, layouts[1]->parent_id);
-  EXPECT_EQ(mojom::DisplayLayoutPosition::kRight, layouts[1]->position);
+  EXPECT_EQ(crosapi::mojom::DisplayLayoutPosition::kRight,
+            layouts[1]->position);
   EXPECT_EQ(0, layouts[1]->offset);
 }
 
@@ -283,18 +290,18 @@ TEST_F(CrosDisplayConfigTest, SetLayoutUnified) {
   EXPECT_TRUE(display_manager()->IsInUnifiedMode());
 
   // Disable unified mode.
-  auto properties = mojom::DisplayLayoutInfo::New();
-  properties->layout_mode = mojom::DisplayLayoutMode::kNormal;
-  mojom::DisplayConfigResult result =
+  auto properties = crosapi::mojom::DisplayLayoutInfo::New();
+  properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kNormal;
+  crosapi::mojom::DisplayConfigResult result =
       SetDisplayLayoutInfo(std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   EXPECT_FALSE(display_manager()->IsInUnifiedMode());
 
   // Enable unified mode.
-  properties = mojom::DisplayLayoutInfo::New();
-  properties->layout_mode = mojom::DisplayLayoutMode::kUnified;
+  properties = crosapi::mojom::DisplayLayoutInfo::New();
+  properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kUnified;
   result = SetDisplayLayoutInfo(std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   EXPECT_TRUE(display_manager()->IsInUnifiedMode());
 
   // Restore extended mode.
@@ -305,20 +312,20 @@ TEST_F(CrosDisplayConfigTest, SetLayoutUnified) {
 TEST_F(CrosDisplayConfigTest, SetLayoutMirroredDefault) {
   UpdateDisplay("500x400,500x400,500x400");
 
-  auto properties = mojom::DisplayLayoutInfo::New();
-  properties->layout_mode = mojom::DisplayLayoutMode::kMirrored;
-  mojom::DisplayConfigResult result =
+  auto properties = crosapi::mojom::DisplayLayoutInfo::New();
+  properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kMirrored;
+  crosapi::mojom::DisplayConfigResult result =
       SetDisplayLayoutInfo(std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   display::DisplayIdList id_list =
       display_manager()->GetMirroringDestinationDisplayIdList();
   ASSERT_EQ(2u, id_list.size());
 
-  properties = mojom::DisplayLayoutInfo::New();
-  properties->layout_mode = mojom::DisplayLayoutMode::kNormal;
+  properties = crosapi::mojom::DisplayLayoutInfo::New();
+  properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kNormal;
   result = SetDisplayLayoutInfo(std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
 }
 
@@ -329,16 +336,16 @@ TEST_F(CrosDisplayConfigTest, SetLayoutMirroredMixed) {
       display::Screen::GetScreen()->GetAllDisplays();
   ASSERT_EQ(4u, displays.size());
 
-  auto properties = mojom::DisplayLayoutInfo::New();
-  properties->layout_mode = mojom::DisplayLayoutMode::kMirrored;
+  auto properties = crosapi::mojom::DisplayLayoutInfo::New();
+  properties->layout_mode = crosapi::mojom::DisplayLayoutMode::kMirrored;
   properties->mirror_source_id = base::NumberToString(displays[0].id());
   properties->mirror_destination_ids =
       absl::make_optional<std::vector<std::string>>(
           {base::NumberToString(displays[1].id()),
            base::NumberToString(displays[3].id())});
-  mojom::DisplayConfigResult result =
+  crosapi::mojom::DisplayConfigResult result =
       SetDisplayLayoutInfo(std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   display::DisplayIdList id_list =
       display_manager()->GetMirroringDestinationDisplayIdList();
@@ -349,13 +356,14 @@ TEST_F(CrosDisplayConfigTest, SetLayoutMirroredMixed) {
 
 TEST_F(CrosDisplayConfigTest, GetDisplayUnitInfoListBasic) {
   UpdateDisplay("500x600,400x520");
-  std::vector<mojom::DisplayUnitInfoPtr> result = GetDisplayUnitInfoList();
+  std::vector<crosapi::mojom::DisplayUnitInfoPtr> result =
+      GetDisplayUnitInfoList();
   ASSERT_EQ(2u, result.size());
 
   int64_t display_id;
   ASSERT_TRUE(base::StringToInt64(result[0]->id, &display_id));
   ASSERT_TRUE(DisplayExists(display_id));
-  const mojom::DisplayUnitInfo& info_0 = *result[0];
+  const crosapi::mojom::DisplayUnitInfo& info_0 = *result[0];
   EXPECT_TRUE(info_0.is_primary);
   EXPECT_TRUE(info_0.is_internal);
   EXPECT_TRUE(info_0.is_enabled);
@@ -364,19 +372,19 @@ TEST_F(CrosDisplayConfigTest, GetDisplayUnitInfoListBasic) {
   EXPECT_FALSE(info_0.has_accelerometer_support);
   EXPECT_EQ(96, info_0.dpi_x);
   EXPECT_EQ(96, info_0.dpi_y);
-  EXPECT_EQ(mojom::DisplayRotationOptions::kZeroDegrees,
+  EXPECT_EQ(crosapi::mojom::DisplayRotationOptions::kZeroDegrees,
             info_0.rotation_options);
   EXPECT_EQ(gfx::Rect(0, 0, 500, 600), info_0.bounds);
   EXPECT_EQ(gfx::Insets(), info_0.overscan);
 
   ASSERT_TRUE(base::StringToInt64(result[1]->id, &display_id));
   ASSERT_TRUE(DisplayExists(display_id));
-  const mojom::DisplayUnitInfo& info_1 = *result[1];
+  const crosapi::mojom::DisplayUnitInfo& info_1 = *result[1];
   EXPECT_EQ(display_manager()->GetDisplayNameForId(display_id), info_1.name);
   // Second display is left of the primary display whose width 500.
   EXPECT_EQ(gfx::Rect(500, 0, 400, 520), info_1.bounds);
   EXPECT_EQ(gfx::Insets(), info_1.overscan);
-  EXPECT_EQ(mojom::DisplayRotationOptions::kZeroDegrees,
+  EXPECT_EQ(crosapi::mojom::DisplayRotationOptions::kZeroDegrees,
             info_1.rotation_options);
   EXPECT_FALSE(info_1.is_primary);
   EXPECT_FALSE(info_1.is_internal);
@@ -387,10 +395,11 @@ TEST_F(CrosDisplayConfigTest, GetDisplayUnitInfoListBasic) {
 
 TEST_F(CrosDisplayConfigTest, GetDisplayUnitInfoListZoomFactor) {
   UpdateDisplay("1024x512,1024x512");
-  std::vector<mojom::DisplayUnitInfoPtr> result = GetDisplayUnitInfoList();
+  std::vector<crosapi::mojom::DisplayUnitInfoPtr> result =
+      GetDisplayUnitInfoList();
   ASSERT_EQ(2u, result.size());
 
-  const mojom::DisplayUnitInfo& info_0 = *result[0];
+  const crosapi::mojom::DisplayUnitInfo& info_0 = *result[0];
   EXPECT_EQ(1.0, info_0.display_zoom_factor);
   const std::vector<double>& zoom_factors =
       info_0.available_display_zoom_factors;
@@ -414,11 +423,11 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesPrimary) {
                              .id();
   ASSERT_NE(primary_id, secondary_id);
 
-  auto properties = mojom::DisplayConfigProperties::New();
+  auto properties = crosapi::mojom::DisplayConfigProperties::New();
   properties->set_primary = true;
-  mojom::DisplayConfigResult result = SetDisplayProperties(
+  crosapi::mojom::DisplayConfigResult result = SetDisplayProperties(
       base::NumberToString(secondary_id), std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
 
   // secondary display should now be primary.
   primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
@@ -431,11 +440,11 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesOverscan) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
 
-  auto properties = mojom::DisplayConfigProperties::New();
+  auto properties = crosapi::mojom::DisplayConfigProperties::New();
   properties->overscan = gfx::Insets::TLBR(199, 20, 51, 130);
-  mojom::DisplayConfigResult result = SetDisplayProperties(
+  crosapi::mojom::DisplayConfigResult result = SetDisplayProperties(
       base::NumberToString(secondary.id()), std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   EXPECT_EQ(gfx::Rect(1200, 0, 150, 250), secondary.bounds());
   const gfx::Insets overscan =
       display_manager()->GetOverscanInsets(secondary.id());
@@ -451,34 +460,34 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesRotation) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
 
-  mojom::DisplayConfigResult result;
+  crosapi::mojom::DisplayConfigResult result;
 
-  auto properties = mojom::DisplayConfigProperties::New();
-  properties->rotation =
-      mojom::DisplayRotation::New(mojom::DisplayRotationOptions::k90Degrees);
+  auto properties = crosapi::mojom::DisplayConfigProperties::New();
+  properties->rotation = crosapi::mojom::DisplayRotation::New(
+      crosapi::mojom::DisplayRotationOptions::k90Degrees);
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   EXPECT_EQ(gfx::Rect(1200, 0, 500, 300), secondary.bounds());
   EXPECT_EQ(display::Display::ROTATE_90, secondary.rotation());
 
-  properties = mojom::DisplayConfigProperties::New();
-  properties->rotation =
-      mojom::DisplayRotation::New(mojom::DisplayRotationOptions::k270Degrees);
+  properties = crosapi::mojom::DisplayConfigProperties::New();
+  properties->rotation = crosapi::mojom::DisplayRotation::New(
+      crosapi::mojom::DisplayRotationOptions::k270Degrees);
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   EXPECT_EQ(gfx::Rect(1200, 0, 500, 300), secondary.bounds());
   EXPECT_EQ(display::Display::ROTATE_270, secondary.rotation());
 
   // Test setting primary and rotating.
-  properties = mojom::DisplayConfigProperties::New();
+  properties = crosapi::mojom::DisplayConfigProperties::New();
   properties->set_primary = true;
-  properties->rotation =
-      mojom::DisplayRotation::New(mojom::DisplayRotationOptions::k180Degrees);
+  properties->rotation = crosapi::mojom::DisplayRotation::New(
+      crosapi::mojom::DisplayRotationOptions::k180Degrees);
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   const display::Display& primary =
       display::Screen::GetScreen()->GetPrimaryDisplay();
   EXPECT_EQ(secondary.id(), primary.id());
@@ -492,34 +501,34 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesBoundsOrigin) {
       display::test::DisplayManagerTestApi(display_manager())
           .GetSecondaryDisplay();
 
-  mojom::DisplayConfigResult result;
+  crosapi::mojom::DisplayConfigResult result;
 
-  auto properties = mojom::DisplayConfigProperties::New();
+  auto properties = crosapi::mojom::DisplayConfigProperties::New();
   properties->bounds_origin = gfx::Point({-520, 50});
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   EXPECT_EQ(gfx::Rect(-520, 50, 520, 400), secondary.bounds());
 
-  properties = mojom::DisplayConfigProperties::New();
+  properties = crosapi::mojom::DisplayConfigProperties::New();
   properties->bounds_origin = gfx::Point({1200, 100});
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   EXPECT_EQ(gfx::Rect(1200, 100, 520, 400), secondary.bounds());
 
-  properties = mojom::DisplayConfigProperties::New();
+  properties = crosapi::mojom::DisplayConfigProperties::New();
   properties->bounds_origin = gfx::Point({1100, -400});
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   EXPECT_EQ(gfx::Rect(1100, -400, 520, 400), secondary.bounds());
 
-  properties = mojom::DisplayConfigProperties::New();
+  properties = crosapi::mojom::DisplayConfigProperties::New();
   properties->bounds_origin = gfx::Point({-350, 600});
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   EXPECT_EQ(gfx::Rect(-350, 600, 520, 400), secondary.bounds());
 }
 
@@ -548,11 +557,11 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesDisplayZoomFactor) {
         display_manager()->GetDisplayInfo(display_id_list[1]).zoom_factor());
 
     // Set zoom factor for display 0, should not affect display 1.
-    auto properties = mojom::DisplayConfigProperties::New();
+    auto properties = crosapi::mojom::DisplayConfigProperties::New();
     properties->display_zoom_factor = zoom_factor_1;
-    mojom::DisplayConfigResult result = SetDisplayProperties(
+    crosapi::mojom::DisplayConfigResult result = SetDisplayProperties(
         base::NumberToString(display_id_list[0]), std::move(properties));
-    EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+    EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
     EXPECT_EQ(
         zoom_factor_1,
         display_manager()->GetDisplayInfo(display_id_list[0]).zoom_factor());
@@ -561,11 +570,11 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesDisplayZoomFactor) {
         display_manager()->GetDisplayInfo(display_id_list[1]).zoom_factor());
 
     // Set zoom factor for display 1.
-    properties = mojom::DisplayConfigProperties::New();
+    properties = crosapi::mojom::DisplayConfigProperties::New();
     properties->display_zoom_factor = zoom_factor_2;
     result = SetDisplayProperties(base::NumberToString(display_id_list[1]),
                                   std::move(properties));
-    EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+    EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
     EXPECT_EQ(
         zoom_factor_1,
         display_manager()->GetDisplayInfo(display_id_list[0]).zoom_factor());
@@ -575,12 +584,13 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesDisplayZoomFactor) {
 
     // Invalid zoom factor should fail.
     const float invalid_zoom_factor = 0.01f;
-    properties = mojom::DisplayConfigProperties::New();
+    properties = crosapi::mojom::DisplayConfigProperties::New();
     properties->display_zoom_factor = invalid_zoom_factor;
     result = SetDisplayProperties(base::NumberToString(display_id_list[1]),
                                   std::move(properties));
-    EXPECT_EQ(mojom::DisplayConfigResult::kPropertyValueOutOfRangeError,
-              result);
+    EXPECT_EQ(
+        crosapi::mojom::DisplayConfigResult::kPropertyValueOutOfRangeError,
+        result);
     EXPECT_EQ(
         zoom_factor_2,
         display_manager()->GetDisplayInfo(display_id_list[1]).zoom_factor());
@@ -589,16 +599,17 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesDisplayZoomFactor) {
 
 TEST_F(CrosDisplayConfigTest, SetDisplayMode) {
   UpdateDisplay("1024x512,1024x512");
-  std::vector<mojom::DisplayUnitInfoPtr> result = GetDisplayUnitInfoList();
+  std::vector<crosapi::mojom::DisplayUnitInfoPtr> result =
+      GetDisplayUnitInfoList();
   ASSERT_EQ(2u, result.size());
   // Internal display has just one mode.
   EXPECT_EQ(0, result[0]->selected_display_mode_index);
   ASSERT_EQ(1u, result[0]->available_display_modes.size());
 
-  auto properties = mojom::DisplayConfigProperties::New();
+  auto properties = crosapi::mojom::DisplayConfigProperties::New();
   auto display_mode = result[0]->available_display_modes[0].Clone();
   properties->display_mode = std::move(display_mode);
-  ASSERT_EQ(mojom::DisplayConfigResult::kSuccess,
+  ASSERT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess,
             SetDisplayProperties(result[0]->id, std::move(properties)));
 
   result = GetDisplayUnitInfoList();
@@ -612,18 +623,18 @@ TEST_F(CrosDisplayConfigTest, OverscanCalibration) {
   ASSERT_NE(display::kInvalidDisplayId, id);
 
   // Test that kAdjust succeeds after kComplete call.
-  EXPECT_TRUE(OverscanCalibration(id, mojom::DisplayConfigOperation::kStart,
-                                  absl::nullopt));
+  EXPECT_TRUE(OverscanCalibration(
+      id, crosapi::mojom::DisplayConfigOperation::kStart, absl::nullopt));
   EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(id));
 
   gfx::Insets insets(10);
-  EXPECT_TRUE(
-      OverscanCalibration(id, mojom::DisplayConfigOperation::kAdjust, insets));
+  EXPECT_TRUE(OverscanCalibration(
+      id, crosapi::mojom::DisplayConfigOperation::kAdjust, insets));
   // Adjust has no effect until Complete.
   EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(id));
 
-  EXPECT_TRUE(OverscanCalibration(id, mojom::DisplayConfigOperation::kComplete,
-                                  absl::nullopt));
+  EXPECT_TRUE(OverscanCalibration(
+      id, crosapi::mojom::DisplayConfigOperation::kComplete, absl::nullopt));
   gfx::Insets overscan = display_manager()->GetOverscanInsets(id);
   EXPECT_EQ(insets, overscan)
       << "Overscan: " << overscan.ToString() << " != " << insets.ToString();
@@ -631,21 +642,21 @@ TEST_F(CrosDisplayConfigTest, OverscanCalibration) {
   // Test that kReset clears restores previous insets.
 
   // Start clears any overscan values.
-  EXPECT_TRUE(OverscanCalibration(id, mojom::DisplayConfigOperation::kStart,
-                                  absl::nullopt));
+  EXPECT_TRUE(OverscanCalibration(
+      id, crosapi::mojom::DisplayConfigOperation::kStart, absl::nullopt));
   EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(id));
 
   // Reset + Complete restores previously set insets.
-  EXPECT_TRUE(OverscanCalibration(id, mojom::DisplayConfigOperation::kReset,
-                                  absl::nullopt));
+  EXPECT_TRUE(OverscanCalibration(
+      id, crosapi::mojom::DisplayConfigOperation::kReset, absl::nullopt));
   EXPECT_EQ(gfx::Insets(), display_manager()->GetOverscanInsets(id));
-  EXPECT_TRUE(OverscanCalibration(id, mojom::DisplayConfigOperation::kComplete,
-                                  absl::nullopt));
+  EXPECT_TRUE(OverscanCalibration(
+      id, crosapi::mojom::DisplayConfigOperation::kComplete, absl::nullopt));
   EXPECT_EQ(insets, display_manager()->GetOverscanInsets(id));
 
   // Additional complete call should fail.
-  EXPECT_FALSE(OverscanCalibration(id, mojom::DisplayConfigOperation::kComplete,
-                                   absl::nullopt));
+  EXPECT_FALSE(OverscanCalibration(
+      id, crosapi::mojom::DisplayConfigOperation::kComplete, absl::nullopt));
 }
 
 TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationInternal) {
@@ -713,7 +724,7 @@ TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationInvalidPoints) {
   std::string id = base::NumberToString(display_id);
 
   EXPECT_TRUE(StartTouchCalibration(id));
-  mojom::TouchCalibrationPtr calibration = GetDefaultCalibration();
+  crosapi::mojom::TouchCalibrationPtr calibration = GetDefaultCalibration();
   calibration->pairs[0]->display_point.set_x(-1);
   EXPECT_FALSE(CompleteCustomTouchCalibration(id, std::move(calibration)));
 
@@ -745,14 +756,15 @@ TEST_F(CrosDisplayConfigTest, CustomTouchCalibrationSuccess) {
 
   EXPECT_TRUE(StartTouchCalibration(id));
   EXPECT_TRUE(IsTouchCalibrationActive());
-  mojom::TouchCalibrationPtr calibration = GetDefaultCalibration();
+  crosapi::mojom::TouchCalibrationPtr calibration = GetDefaultCalibration();
   EXPECT_TRUE(CompleteCustomTouchCalibration(id, std::move(calibration)));
 }
 
 TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   TestObserver observer;
-  mojo::AssociatedRemote<mojom::CrosDisplayConfigObserver> observer_remote;
-  mojo::AssociatedReceiver<mojom::CrosDisplayConfigObserver> receiver(
+  mojo::AssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>
+      observer_remote;
+  mojo::AssociatedReceiver<crosapi::mojom::CrosDisplayConfigObserver> receiver(
       &observer, observer_remote.BindNewEndpointAndPassDedicatedReceiver());
   cros_display_config()->AddObserver(observer_remote.Unbind());
   base::RunLoop().RunUntilIdle();
@@ -764,12 +776,12 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   // is treated as a request to set the rotation to 0.
   const display::Display& display =
       display_manager()->GetPrimaryDisplayCandidate();
-  auto properties = mojom::DisplayConfigProperties::New();
-  properties->rotation =
-      mojom::DisplayRotation::New(mojom::DisplayRotationOptions::kAutoRotate);
+  auto properties = crosapi::mojom::DisplayConfigProperties::New();
+  properties->rotation = crosapi::mojom::DisplayRotation::New(
+      crosapi::mojom::DisplayRotationOptions::kAutoRotate);
   auto result = SetDisplayProperties(base::NumberToString(display.id()),
                                      std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   auto* screen_orientation_controller =
       Shell::Get()->screen_orientation_controller();
   EXPECT_FALSE(screen_orientation_controller->user_rotation_locked());
@@ -787,12 +799,12 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   base::RunLoop().RunUntilIdle();
   observer.reset_display_changes();
 
-  properties = mojom::DisplayConfigProperties::New();
-  properties->rotation =
-      mojom::DisplayRotation::New(mojom::DisplayRotationOptions::k90Degrees);
+  properties = crosapi::mojom::DisplayConfigProperties::New();
+  properties->rotation = crosapi::mojom::DisplayRotation::New(
+      crosapi::mojom::DisplayRotationOptions::k90Degrees);
   result = SetDisplayProperties(base::NumberToString(display.id()),
                                 std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   EXPECT_TRUE(screen_orientation_controller->user_rotation_locked());
   EXPECT_EQ(display::Display::ROTATE_90, display.rotation());
   // OnDisplayConfigChanged() will be called twice, once as a result of the
@@ -813,12 +825,12 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   base::RunLoop().RunUntilIdle();
   observer.reset_display_changes();
 
-  properties = mojom::DisplayConfigProperties::New();
-  properties->rotation =
-      mojom::DisplayRotation::New(mojom::DisplayRotationOptions::kAutoRotate);
+  properties = crosapi::mojom::DisplayConfigProperties::New();
+  properties->rotation = crosapi::mojom::DisplayRotation::New(
+      crosapi::mojom::DisplayRotationOptions::kAutoRotate);
   result = SetDisplayProperties(base::NumberToString(display.id()),
                                 std::move(properties));
-  EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
+  EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
   EXPECT_FALSE(screen_orientation_controller->user_rotation_locked());
   // Unlocking auto-rotate doesn't actually change the display rotation. It
   // simply allows it to auto-rotate in response to accelerometer updates.

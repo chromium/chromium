@@ -10,7 +10,6 @@
 
 #include "ash/components/arc/arc_features_parser.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/base64url.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
@@ -25,6 +24,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "gpu/config/gpu_info.h"
@@ -103,10 +103,12 @@ arc::ArcFeatures CreateArcFeaturesForTest() {
   return arc_features;
 }
 
-class TestCrosDisplayConfig : public mojom::CrosDisplayConfigController {
+class TestCrosDisplayConfig
+    : public crosapi::mojom::CrosDisplayConfigController {
  public:
   explicit TestCrosDisplayConfig(
-      mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver)
+      mojo::PendingReceiver<crosapi::mojom::CrosDisplayConfigController>
+          receiver)
       : receiver_(this, std::move(receiver)) {}
 
   TestCrosDisplayConfig(const TestCrosDisplayConfig&) = delete;
@@ -119,7 +121,7 @@ class TestCrosDisplayConfig : public mojom::CrosDisplayConfigController {
   }
 
   bool RunGetDisplayUnitInfoListCallback(
-      std::vector<mojom::DisplayUnitInfoPtr> unit_info_list) {
+      std::vector<crosapi::mojom::DisplayUnitInfoPtr> unit_info_list) {
     if (!get_display_unit_info_list_callback_)
       return false;
     std::move(get_display_unit_info_list_callback_)
@@ -127,30 +129,31 @@ class TestCrosDisplayConfig : public mojom::CrosDisplayConfigController {
     return true;
   }
 
-  // mojom::CrosDisplayConfigController:
+  // crosapi::mojom::CrosDisplayConfigController:
   void AddObserver(
-      mojo::PendingAssociatedRemote<mojom::CrosDisplayConfigObserver> observer)
-      override {}
+      mojo::PendingAssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>
+          observer) override {}
   void GetDisplayLayoutInfo(GetDisplayLayoutInfoCallback callback) override {}
-  void SetDisplayLayoutInfo(mojom::DisplayLayoutInfoPtr info,
+  void SetDisplayLayoutInfo(crosapi::mojom::DisplayLayoutInfoPtr info,
                             SetDisplayLayoutInfoCallback callback) override {}
   void GetDisplayUnitInfoList(
       bool single_unified,
       GetDisplayUnitInfoListCallback callback) override {
     get_display_unit_info_list_callback_ = std::move(callback);
   }
-  void SetDisplayProperties(const std::string& id,
-                            mojom::DisplayConfigPropertiesPtr properties,
-                            mojom::DisplayConfigSource source,
-                            SetDisplayPropertiesCallback callback) override {}
+  void SetDisplayProperties(
+      const std::string& id,
+      crosapi::mojom::DisplayConfigPropertiesPtr properties,
+      crosapi::mojom::DisplayConfigSource source,
+      SetDisplayPropertiesCallback callback) override {}
   void SetUnifiedDesktopEnabled(bool enabled) override {}
   void OverscanCalibration(const std::string& display_id,
-                           mojom::DisplayConfigOperation op,
+                           crosapi::mojom::DisplayConfigOperation op,
                            const absl::optional<gfx::Insets>& delta,
                            OverscanCalibrationCallback callback) override {}
   void TouchCalibration(const std::string& display_id,
-                        mojom::DisplayConfigOperation op,
-                        mojom::TouchCalibrationPtr calibration,
+                        crosapi::mojom::DisplayConfigOperation op,
+                        crosapi::mojom::TouchCalibrationPtr calibration,
                         TouchCalibrationCallback callback) override {}
   void HighlightDisplay(int64_t id) override {}
   void DragDisplayDelta(int64_t display_id,
@@ -158,7 +161,7 @@ class TestCrosDisplayConfig : public mojom::CrosDisplayConfigController {
                         int32_t delta_y) override {}
 
  private:
-  mojo::Receiver<mojom::CrosDisplayConfigController> receiver_;
+  mojo::Receiver<crosapi::mojom::CrosDisplayConfigController> receiver_;
 
   GetDisplayUnitInfoListCallback get_display_unit_info_list_callback_;
 };
@@ -260,7 +263,7 @@ class RecommendAppsFetcherImplTest : public testing::Test {
     display::Screen::SetScreenInstance(&test_screen_);
     display::SetInternalDisplayIds({test_screen_.GetPrimaryDisplay().id()});
 
-    mojo::PendingRemote<mojom::CrosDisplayConfigController>
+    mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
         remote_display_config;
     cros_display_config_ = std::make_unique<TestCrosDisplayConfig>(
         remote_display_config.InitWithNewPipeAndPassReceiver());
@@ -296,13 +299,13 @@ class RecommendAppsFetcherImplTest : public testing::Test {
     const float y;
   };
 
-  std::vector<mojom::DisplayUnitInfoPtr> CreateDisplayUnitInfo(
+  std::vector<crosapi::mojom::DisplayUnitInfoPtr> CreateDisplayUnitInfo(
       const Dpi& internal_dpi,
       absl::optional<Dpi> external_dpi) {
-    std::vector<mojom::DisplayUnitInfoPtr> info_list;
+    std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list;
 
     if (external_dpi.has_value()) {
-      auto external_info = mojom::DisplayUnitInfo::New();
+      auto external_info = crosapi::mojom::DisplayUnitInfo::New();
       external_info->id =
           base::NumberToString(test_screen_.GetPrimaryDisplay().id() + 1);
       external_info->is_internal = false;
@@ -311,7 +314,7 @@ class RecommendAppsFetcherImplTest : public testing::Test {
       info_list.emplace_back(std::move(external_info));
     }
 
-    auto info = mojom::DisplayUnitInfo::New();
+    auto info = crosapi::mojom::DisplayUnitInfo::New();
     info->id = base::NumberToString(test_screen_.GetPrimaryDisplay().id());
     info->is_internal = true;
     info->dpi_x = internal_dpi.x;

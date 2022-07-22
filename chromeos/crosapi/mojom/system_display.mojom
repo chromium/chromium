@@ -14,8 +14,8 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // However, the two mojoms operate at different layers and have different
 // version stability requirements, so should not be mixed.
 
-[Stable]
-struct DisplayMode {
+[Stable, RenamedFrom="crosapi.mojom.DisplayMode"]
+struct SysDisplayMode {
   // The display mode sizes in device independent (user visible) pixels.
   gfx.mojom.Size size@0;
 
@@ -47,8 +47,8 @@ struct DisplayMode {
 // EXTENDED DISPLAY IDENTIFICATION DATA STANDARD (Defines EDID Structure
 // Version 1, Revision 4)" Release A, Revision 2 September 25, 2006.
 // https://www.vesa.org/vesa-standards
-[Stable]
-struct Edid {
+[Stable, RenamedFrom="crosapi.mojom.Edid"]
+struct SysDisplayEdid {
   // Three character manufacturer code, Sec. 3.4.1 page 21.
   string manufacturer_id@0;
 
@@ -60,8 +60,8 @@ struct Edid {
 };
 
 // Struct to transmit extensions::api::system_display::DisplayUnitInfo.
-[Stable]
-struct DisplayUnitInfo {
+[Stable, RenamedFrom="crosapi.mojom.DisplayUnitInfo"]
+struct SysDisplayUnitInfo {
   // The unique identifier of the display.
   string id@0;
 
@@ -69,7 +69,7 @@ struct DisplayUnitInfo {
   string name@1;
 
   // EDID properties when available.
-  Edid? edid@2;
+  SysDisplayEdid? edid@2;
 
   // Identifier of the display that is being mirrored if mirroring is enabled,
   // otherwise empty. This will be set for all displays (including the display
@@ -124,7 +124,7 @@ struct DisplayUnitInfo {
 
   // The list of available display modes. The current mode will have
   // is_selected=true.
-  array<DisplayMode> modes@17;
+  array<SysDisplayMode> modes@17;
 
   // True if this display has a touch input device associated with it.
   bool has_touch_support@18;
@@ -154,7 +154,7 @@ interface SystemDisplay {
   // Returns the properties for all displays. If |single_unified| is true, a
   // single display will be returned if the display layout is in unifed mode.
   GetDisplayUnitInfoList@0(bool single_unified) =>
-    (array<DisplayUnitInfo> info_list);
+    (array<SysDisplayUnitInfo> info_list);
 
   // Adds an observer for display change. Multiple observers may be registered.
   [MinVersion=1] AddDisplayChangeObserver@1(

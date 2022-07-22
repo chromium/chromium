@@ -857,7 +857,8 @@ DeviceSection::DeviceSection(Profile* profile,
   // Display search tags are added/removed dynamically.
   ash::BindCrosDisplayConfigController(
       cros_display_config_.BindNewPipeAndPassReceiver());
-  mojo::PendingAssociatedRemote<ash::mojom::CrosDisplayConfigObserver> observer;
+  mojo::PendingAssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>
+      observer;
   cros_display_config_observer_receiver_.Bind(
       observer.InitWithNewEndpointAndPassReceiver());
   cros_display_config_->AddObserver(std::move(observer));
@@ -1143,15 +1144,15 @@ void DeviceSection::PowerChanged(
 }
 
 void DeviceSection::OnGetDisplayUnitInfoList(
-    std::vector<ash::mojom::DisplayUnitInfoPtr> display_unit_info_list) {
+    std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_unit_info_list) {
   cros_display_config_->GetDisplayLayoutInfo(base::BindOnce(
       &DeviceSection::OnGetDisplayLayoutInfo, base::Unretained(this),
       std::move(display_unit_info_list)));
 }
 
 void DeviceSection::OnGetDisplayLayoutInfo(
-    std::vector<ash::mojom::DisplayUnitInfoPtr> display_unit_info_list,
-    ash::mojom::DisplayLayoutInfoPtr display_layout_info) {
+    std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_unit_info_list,
+    crosapi::mojom::DisplayLayoutInfoPtr display_layout_info) {
   bool has_multiple_displays = display_unit_info_list.size() > 1u;
 
   // Mirroring mode is active if there's at least one display and if there's a
@@ -1168,7 +1169,7 @@ void DeviceSection::OnGetDisplayLayoutInfo(
 
     unified_desktop_mode |= display_unit_info->is_primary &&
                             display_layout_info->layout_mode ==
-                                ash::mojom::DisplayLayoutMode::kUnified;
+                                crosapi::mojom::DisplayLayoutMode::kUnified;
   }
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();

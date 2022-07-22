@@ -13,7 +13,8 @@
 namespace ash {
 
 void BindCrosDisplayConfigController(
-    mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver) {
+    mojo::PendingReceiver<crosapi::mojom::CrosDisplayConfigController>
+        receiver) {
   if (Shell::HasInstance())
     Shell::Get()->cros_display_config()->BindReceiver(std::move(receiver));
 }

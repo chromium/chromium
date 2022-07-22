@@ -33,11 +33,40 @@ class DisplayInfoProviderLacros : public DisplayInfoProvider,
       bool single_unified,
       base::OnceCallback<void(DisplayUnitInfoList)> callback) override;
 
+  void GetDisplayLayout(
+      base::OnceCallback<void(DisplayLayoutList result)> callback) override;
+
+  void SetDisplayProperties(
+      const std::string& display_id,
+      const api::system_display::DisplayProperties& properties,
+      ErrorCallback callback) override;
+
+  void SetDisplayLayout(const DisplayLayoutList& layouts,
+                        ErrorCallback callback) override;
+
+  void EnableUnifiedDesktop(bool enable) override;
+
+  bool OverscanCalibrationStart(const std::string& id) override;
+  bool OverscanCalibrationAdjust(
+      const std::string& id,
+      const api::system_display::Insets& delta) override;
+  bool OverscanCalibrationReset(const std::string& id) override;
+  bool OverscanCalibrationComplete(const std::string& id) override;
+  void ShowNativeTouchCalibration(const std::string& id,
+                                  ErrorCallback callback) override;
+  bool StartCustomTouchCalibration(const std::string& id) override;
+  bool CompleteCustomTouchCalibration(
+      const api::system_display::TouchCalibrationPairQuad& pairs,
+      const api::system_display::Bounds& bounds) override;
+  bool ClearTouchCalibration(const std::string& id) override;
+  void SetMirrorMode(const api::system_display::MirrorModeInfo& info,
+                     ErrorCallback callback) override;
+
  private:
   // Receiver for SystemDisplayAsh::GetDisplayUnitInfoList().
   void OnCrosapiResult(
       base::OnceCallback<void(DisplayUnitInfoList)> callback,
-      std::vector<crosapi::mojom::DisplayUnitInfoPtr> src_info_list);
+      std::vector<crosapi::mojom::SysDisplayUnitInfoPtr> src_info_list);
 
   // crosapi::mojom::DisplayChangeObserver:
   void OnCrosapiDisplayChanged() override;

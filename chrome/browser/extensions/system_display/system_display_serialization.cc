@@ -95,11 +95,11 @@ void DeserializeInsets(const gfx::Insets& src,
 }  // namespace
 
 // extensions::api::system_display::DisplayMode <==>
-//     crosapi::mojom::DisplayMode.
+//     crosapi::mojom::SysDisplayMode.
 
-crosapi::mojom::DisplayModePtr SerializeDisplayMode(
+crosapi::mojom::SysDisplayModePtr SerializeDisplayMode(
     const extensions::api::system_display::DisplayMode& src) {
-  auto dst = crosapi::mojom::DisplayMode::New();
+  auto dst = crosapi::mojom::SysDisplayMode::New();
   dst->size = SerializeSize(src.width, src.height);
   dst->size_in_native_pixels =
       SerializeSize(src.width_in_native_pixels, src.height_in_native_pixels);
@@ -112,7 +112,7 @@ crosapi::mojom::DisplayModePtr SerializeDisplayMode(
   return dst;
 }
 
-void DeserializeDisplayMode(const crosapi::mojom::DisplayMode& src,
+void DeserializeDisplayMode(const crosapi::mojom::SysDisplayMode& src,
                             extensions::api::system_display::DisplayMode* dst) {
   DeserializeSize(src.size, &dst->width, &dst->height);
   DeserializeSize(src.size_in_native_pixels, &dst->width_in_native_pixels,
@@ -125,18 +125,18 @@ void DeserializeDisplayMode(const crosapi::mojom::DisplayMode& src,
                                      &dst->is_interlaced);
 }
 
-// extensions::api::system_display::Edid <==> crosapi::mojom::Edid.
+// extensions::api::system_display::Edid <==> crosapi::mojom::SysDisplayEdid.
 
-crosapi::mojom::EdidPtr SerializeEdid(
+crosapi::mojom::SysDisplayEdidPtr SerializeEdid(
     const extensions::api::system_display::Edid& src) {
-  auto dst = crosapi::mojom::Edid::New();
+  auto dst = crosapi::mojom::SysDisplayEdid::New();
   dst->manufacturer_id = src.manufacturer_id;
   dst->product_id = src.product_id;
   dst->year_of_manufacture = src.year_of_manufacture;
   return dst;
 }
 
-void DeserializeEdid(const crosapi::mojom::Edid& src,
+void DeserializeEdid(const crosapi::mojom::SysDisplayEdid& src,
                      extensions::api::system_display::Edid* dst) {
   dst->manufacturer_id = src.manufacturer_id;
   dst->product_id = src.product_id;
@@ -144,11 +144,11 @@ void DeserializeEdid(const crosapi::mojom::Edid& src,
 }
 
 // extensions::api::system_display::DisplayUnitInfo <==>
-//     crosapi::mojom::DisplayUnitInfo.
+//     crosapi::mojom::SysDisplayUnitInfo.
 
-crosapi::mojom::DisplayUnitInfoPtr SerializeDisplayUnitInfo(
+crosapi::mojom::SysDisplayUnitInfoPtr SerializeDisplayUnitInfo(
     const extensions::api::system_display::DisplayUnitInfo& src) {
-  auto dst = crosapi::mojom::DisplayUnitInfo::New();
+  auto dst = crosapi::mojom::SysDisplayUnitInfo::New();
   dst->id = src.id;
   dst->name = src.name;
   if (src.edid)
@@ -180,7 +180,7 @@ crosapi::mojom::DisplayUnitInfoPtr SerializeDisplayUnitInfo(
 }
 
 void DeserializeDisplayUnitInfo(
-    const crosapi::mojom::DisplayUnitInfo& src,
+    const crosapi::mojom::SysDisplayUnitInfo& src,
     extensions::api::system_display::DisplayUnitInfo* dst) {
   dst->id = src.id;
   dst->name = src.name;

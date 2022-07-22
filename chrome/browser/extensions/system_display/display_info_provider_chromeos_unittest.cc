@@ -71,7 +71,8 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
 
     // Initialize the DisplayInfoProviderChromeOS with a remote connected to our
     // local implementation.
-    mojo::PendingRemote<ash::mojom::CrosDisplayConfigController> display_config;
+    mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
+        display_config;
     cros_display_config_->BindReceiver(
         display_config.InitWithNewPipeAndPassReceiver());
     DisplayInfoProvider::InitializeForTesting(

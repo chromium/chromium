@@ -8,11 +8,11 @@
 #include <vector>
 
 #include "ash/public/cpp/night_light_controller.h"
-#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/system/pointer_device_observer.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -35,7 +35,7 @@ class DeviceSection : public OsSettingsSection,
                       public system::PointerDeviceObserver::Observer,
                       public ui::InputDeviceEventObserver,
                       public ash::NightLightController::Observer,
-                      public ash::mojom::CrosDisplayConfigObserver,
+                      public crosapi::mojom::CrosDisplayConfigObserver,
                       public PowerManagerClient::Observer {
  public:
   DeviceSection(Profile* profile,
@@ -78,17 +78,18 @@ class DeviceSection : public OsSettingsSection,
   void UpdateStylusSearchTags();
 
   void OnGetDisplayUnitInfoList(
-      std::vector<ash::mojom::DisplayUnitInfoPtr> display_unit_info_list);
+      std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_unit_info_list);
   void OnGetDisplayLayoutInfo(
-      std::vector<ash::mojom::DisplayUnitInfoPtr> display_unit_info_list,
-      ash::mojom::DisplayLayoutInfoPtr display_layout_info);
+      std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_unit_info_list,
+      crosapi::mojom::DisplayLayoutInfoPtr display_layout_info);
 
   void AddDevicePointersStrings(content::WebUIDataSource* html_source);
 
   PrefService* pref_service_;
   system::PointerDeviceObserver pointer_device_observer_;
-  mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
-  mojo::AssociatedReceiver<ash::mojom::CrosDisplayConfigObserver>
+  mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
+      cros_display_config_;
+  mojo::AssociatedReceiver<crosapi::mojom::CrosDisplayConfigObserver>
       cros_display_config_observer_receiver_{this};
   base::WeakPtrFactory<DeviceSection> weak_ptr_factory_{this};
 };

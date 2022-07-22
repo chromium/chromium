@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/language_preferences.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
@@ -195,7 +195,8 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
 
   std::unique_ptr<input_method::InputMethodSyncer> input_method_syncer_;
 
-  mojo::Remote<mojom::CrosDisplayConfigController> cros_display_config_;
+  mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
+      cros_display_config_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

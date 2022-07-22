@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom-forward.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
@@ -153,6 +154,9 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::ClipboardHistory> receiver) override;
   void BindContentProtection(
       mojo::PendingReceiver<mojom::ContentProtection> receiver) override;
+  void BindCrosDisplayConfigController(
+      mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver)
+      override;
   void BindDeskTemplate(
       mojo::PendingReceiver<mojom::DeskTemplate> receiver) override;
   void BindDeviceAttributes(

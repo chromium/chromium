@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 
 namespace chromeos {
 
@@ -38,7 +38,7 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
   void HandleGetPrimaryDisplayName(const std::string& callback_id);
   void OnGetDisplayUnitInfoList(
       const std::string& callback_id,
-      std::vector<ash::mojom::DisplayUnitInfoPtr> info_list);
+      std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list);
 };
 
 }  // namespace chromeos

@@ -21,6 +21,7 @@ import "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/clipboard.mojom";
 import "chromeos/crosapi/mojom/clipboard_history.mojom";
 import "chromeos/crosapi/mojom/content_protection.mojom";
+import "chromeos/crosapi/mojom/cros_display_config.mojom";
 import "chromeos/crosapi/mojom/desk_template.mojom";
 import "chromeos/crosapi/mojom/device_attributes.mojom";
 import "chromeos/crosapi/mojom/device_settings_service.mojom";
@@ -119,8 +120,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 89
-// Next method id: 93
+// Next version: 90
+// Next method id: 94
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -226,6 +227,11 @@ interface Crosapi {
   // content decryption module.
   [MinVersion=26] BindContentProtection@31(
       pending_receiver<ContentProtection> receiver);
+
+  // Binds the CrosDisplayConfigController interface for querying display info.
+  // Added in M106.
+  [MinVersion=89] BindCrosDisplayConfigController@93(
+      pending_receiver<CrosDisplayConfigController> receiver);
 
   // Binds the desk template factory interface.
   // Added in M101.

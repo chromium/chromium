@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/ash_interfaces.h"
-#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -49,7 +49,8 @@ std::unique_ptr<RecommendAppsFetcher> RecommendAppsFetcher::Create(
                                                       fake_apps_count);
   }
 
-  mojo::PendingRemote<mojom::CrosDisplayConfigController> display_config;
+  mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
+      display_config;
   BindCrosDisplayConfigController(
       display_config.InitWithNewPipeAndPassReceiver());
   return std::make_unique<RecommendAppsFetcherImpl>(

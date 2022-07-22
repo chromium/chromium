@@ -17,8 +17,8 @@
 namespace policy {
 
 using DisplayUnitTraits =
-    mojo::StructTraits<::ash::mojom::DisplayUnitInfo::DataView,
-                       ::ash::mojom::DisplayUnitInfoPtr>;
+    mojo::StructTraits<crosapi::mojom::DisplayUnitInfo::DataView,
+                       crosapi::mojom::DisplayUnitInfoPtr>;
 
 struct DisplayResolutionHandler::InternalDisplaySettings {
   int scale_percentage = 0;
@@ -36,8 +36,8 @@ struct DisplayResolutionHandler::InternalDisplaySettings {
 
   // Create display config for the internal display using policy settings from
   // |internal_display_settings_|.
-  ash::mojom::DisplayConfigPropertiesPtr ToDisplayConfigProperties() {
-    auto new_config = ash::mojom::DisplayConfigProperties::New();
+  crosapi::mojom::DisplayConfigPropertiesPtr ToDisplayConfigProperties() {
+    auto new_config = crosapi::mojom::DisplayConfigProperties::New();
     // Converting percentage to factor.
     new_config->display_zoom_factor = scale_percentage / 100.0;
     return new_config;
@@ -73,7 +73,7 @@ struct DisplayResolutionHandler::ExternalDisplaySettings {
 
   // Check if either |use_native| flag is set and mode is native or the mode
   // has required resolution.
-  bool IsSuitableDisplayMode(const ash::mojom::DisplayModePtr& mode) {
+  bool IsSuitableDisplayMode(const crosapi::mojom::DisplayModePtr& mode) {
     return (use_native && mode->is_native) ||
            (!use_native && width == mode->size.width() &&
             height == mode->size.height());
@@ -81,11 +81,11 @@ struct DisplayResolutionHandler::ExternalDisplaySettings {
 
   // Create display config for the external display using policy settings from
   // |external_display_settings_|.
-  ash::mojom::DisplayConfigPropertiesPtr ToDisplayConfigProperties(
-      const std::vector<ash::mojom::DisplayModePtr>& display_modes) {
+  crosapi::mojom::DisplayConfigPropertiesPtr ToDisplayConfigProperties(
+      const std::vector<crosapi::mojom::DisplayModePtr>& display_modes) {
     bool found_suitable_mode = false;
-    auto new_config = ash::mojom::DisplayConfigProperties::New();
-    for (const ash::mojom::DisplayModePtr& mode : display_modes) {
+    auto new_config = crosapi::mojom::DisplayConfigProperties::New();
+    for (const crosapi::mojom::DisplayModePtr& mode : display_modes) {
       // Check if the current display mode has required resolution and its
       // refresh rate is higher than refresh rate of the already found mode.
       if (IsSuitableDisplayMode(mode) &&
@@ -98,7 +98,7 @@ struct DisplayResolutionHandler::ExternalDisplaySettings {
     // If we couldn't find the required mode and and scale percentage doesn't
     // need to be changed, we have nothing to do.
     if (!found_suitable_mode && !scale_percentage) {
-      return ash::mojom::DisplayConfigPropertiesPtr();
+      return crosapi::mojom::DisplayConfigPropertiesPtr();
     }
 
     if (scale_percentage) {
@@ -204,11 +204,12 @@ void DisplayResolutionHandler::OnSettingUpdate() {
 // Applies settings received with |OnSettingUpdate| to each supported display
 // from |info_list| if |policy_enabled_| is true.
 void DisplayResolutionHandler::ApplyChanges(
-    ash::mojom::CrosDisplayConfigController* cros_display_config,
-    const std::vector<ash::mojom::DisplayUnitInfoPtr>& info_list) {
+    crosapi::mojom::CrosDisplayConfigController* cros_display_config,
+    const std::vector<crosapi::mojom::DisplayUnitInfoPtr>& info_list) {
   if (!policy_enabled_)
     return;
-  for (const ash::mojom::DisplayUnitInfoPtr& display_unit_info : info_list) {
+  for (const crosapi::mojom::DisplayUnitInfoPtr& display_unit_info :
+       info_list) {
     std::string display_id = display_unit_info->id;
     // If policy value is marked as "recommended" we need to change the
     // resolution just once for each display. So we're just skipping the display
@@ -218,7 +219,7 @@ void DisplayResolutionHandler::ApplyChanges(
       continue;
     }
 
-    ash::mojom::DisplayConfigPropertiesPtr new_config;
+    crosapi::mojom::DisplayConfigPropertiesPtr new_config;
     if (display_unit_info->is_internal && internal_display_settings_) {
       new_config = internal_display_settings_->ToDisplayConfigProperties();
     } else if (!display_unit_info->is_internal && external_display_settings_) {
@@ -232,9 +233,9 @@ void DisplayResolutionHandler::ApplyChanges(
     resized_display_ids_.insert(display_id);
     cros_display_config->SetDisplayProperties(
         display_unit_info->id, std::move(new_config),
-        ash::mojom::DisplayConfigSource::kPolicy,
-        base::BindOnce([](ash::mojom::DisplayConfigResult result) {
-          if (result == ash::mojom::DisplayConfigResult::kSuccess) {
+        crosapi::mojom::DisplayConfigSource::kPolicy,
+        base::BindOnce([](crosapi::mojom::DisplayConfigResult result) {
+          if (result == crosapi::mojom::DisplayConfigResult::kSuccess) {
             VLOG(1) << "Successfully changed display mode.";
           } else {
             LOG(ERROR) << "Couldn't change display mode. Error code: "

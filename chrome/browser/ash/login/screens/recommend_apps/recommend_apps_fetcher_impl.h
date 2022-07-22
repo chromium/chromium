@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "ash/components/arc/arc_features_parser.h"
-#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/device_configuration.pb.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -71,7 +71,8 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
 
   RecommendAppsFetcherImpl(
       RecommendAppsFetcherDelegate* delegate,
-      mojo::PendingRemote<mojom::CrosDisplayConfigController> display_config,
+      mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
+          display_config,
       network::mojom::URLLoaderFactory* url_loader_factory);
 
   RecommendAppsFetcherImpl(const RecommendAppsFetcherImpl&) = delete;
@@ -104,7 +105,8 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
 
   // Callback function called when display unit info list is retrieved from ash.
   // It will populate the device config info related to the screen density.
-  void OnAshResponse(std::vector<mojom::DisplayUnitInfoPtr> all_displays_info);
+  void OnAshResponse(
+      std::vector<crosapi::mojom::DisplayUnitInfoPtr> all_displays_info);
 
   // Callback function called when ARC features are read by the parser.
   // It will populate the device config info related to ARC features.
@@ -171,7 +173,8 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
 
   ArcFeaturesGetter arc_features_getter_;
 
-  mojo::Remote<mojom::CrosDisplayConfigController> cros_display_config_;
+  mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
+      cros_display_config_;
   base::WeakPtrFactory<RecommendAppsFetcherImpl> weak_ptr_factory_{this};
 };
 

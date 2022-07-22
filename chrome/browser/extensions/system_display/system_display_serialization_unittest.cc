@@ -92,7 +92,7 @@ TEST(SystemDisplaySerialization, DisplayMode) {
     std::string original_json_string =
         MakeJsonString(test_lines, /*include_optional=*/iter > 0);
     auto original_obj = StringToObject<DisplayMode>(original_json_string);
-    crosapi::mojom::DisplayModePtr serialized_obj =
+    crosapi::mojom::SysDisplayModePtr serialized_obj =
         SerializeDisplayMode(*original_obj);
     DisplayMode copied_obj;
     DeserializeDisplayMode(*serialized_obj, &copied_obj);
@@ -115,7 +115,8 @@ TEST(SystemDisplaySerialization, Edid) {
 
   std::string original_json_string = MakeJsonString(test_lines, true);
   auto original_obj = StringToObject<Edid>(original_json_string);
-  crosapi::mojom::EdidPtr serialized_obj = SerializeEdid(*original_obj);
+  crosapi::mojom::SysDisplayEdidPtr serialized_obj =
+      SerializeEdid(*original_obj);
   Edid copied_obj;
   DeserializeEdid(*serialized_obj, &copied_obj);
   std::string copied_json_string = ObjectToString(copied_obj);
@@ -213,7 +214,7 @@ TEST(SystemDisplaySerialization, DisplayUnitInfo) {
     std::string original_json_string =
         MakeJsonString(test_lines, /*include_optional=*/iter > 0);
     auto original_obj = StringToObject<DisplayUnitInfo>(original_json_string);
-    crosapi::mojom::DisplayUnitInfoPtr serialized_obj =
+    crosapi::mojom::SysDisplayUnitInfoPtr serialized_obj =
         SerializeDisplayUnitInfo(*original_obj);
     DisplayUnitInfo copied_obj;
     DeserializeDisplayUnitInfo(*serialized_obj, &copied_obj);

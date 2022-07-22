@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "chromeos/crosapi/mojom/system_display.mojom.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/common/api/system_display.h"
@@ -25,8 +25,8 @@ namespace crosapi {
 // This class must only be used from the main thread.
 // Display change is triggered by 2 sources:
 // * "Source 1": display::Screen using display::DisplayObserver.
-// * "Source 2": ash::mojom::CrosDisplayConfigController using
-//   ash::mojom::CrosDisplayConfigObserver.
+// * "Source 2": crosapi::mojom::CrosDisplayConfigController using
+//   crosapi::mojom::CrosDisplayConfigObserver.
 // To set up both sources, this class duplicates code from DisplayInfoProvider
 // and DisplayInfoProviderChromeOS. This is necessary because the activation of
 // these sources are managed differently: DisplayInfoProvider's sources are
@@ -34,7 +34,7 @@ namespace crosapi {
 // controlled by |observers_| change.
 class SystemDisplayAsh : public mojom::SystemDisplay,
                          public display::DisplayObserver,
-                         public ash::mojom::CrosDisplayConfigObserver {
+                         public crosapi::mojom::CrosDisplayConfigObserver {
  public:
   // This type was generated from IDL.
   using DisplayUnitInfo = extensions::api::system_display::DisplayUnitInfo;
@@ -69,7 +69,7 @@ class SystemDisplayAsh : public mojom::SystemDisplay,
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t /*metrics*/) override;
 
-  // ash::mojom::CrosDisplayConfigObserver (for Source 2):
+  // crosapi::mojom::CrosDisplayConfigObserver (for Source 2):
   void OnDisplayConfigChanged() override;
 
   // Starts listening to display change event sources. No-op if already started.
@@ -89,8 +89,9 @@ class SystemDisplayAsh : public mojom::SystemDisplay,
 
   // Source 2 status and objects.
   bool is_observing_cros_display_config_ = false;
-  mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
-  mojo::AssociatedReceiver<ash::mojom::CrosDisplayConfigObserver>
+  mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
+      cros_display_config_;
+  mojo::AssociatedReceiver<crosapi::mojom::CrosDisplayConfigObserver>
       cros_display_config_observer_receiver_{this};
 
   base::WeakPtrFactory<SystemDisplayAsh> weak_ptr_factory_{this};

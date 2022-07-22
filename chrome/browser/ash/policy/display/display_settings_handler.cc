@@ -8,7 +8,6 @@
 
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/public/ash_interfaces.h"
-#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
@@ -61,10 +60,11 @@ void DisplaySettingsHandler::Start() {
 }
 
 void DisplaySettingsHandler::OnGetInitialDisplayInfo(
-    std::vector<ash::mojom::DisplayUnitInfoPtr> info_list) {
+    std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list) {
   // Add this as an observer to the mojo service now that it is ready.
   // (We only care about changes that occur after we apply any changes below).
-  mojo::PendingAssociatedRemote<ash::mojom::CrosDisplayConfigObserver> observer;
+  mojo::PendingAssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>
+      observer;
   cros_display_config_observer_receiver_.Bind(
       observer.InitWithNewEndpointAndPassReceiver());
   cros_display_config_->AddObserver(std::move(observer));
@@ -80,7 +80,7 @@ void DisplaySettingsHandler::RequestDisplaysAndApplyChanges() {
 }
 
 void DisplaySettingsHandler::ApplyChanges(
-    std::vector<ash::mojom::DisplayUnitInfoPtr> info_list) {
+    std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list) {
   for (std::unique_ptr<DisplaySettingsPolicyHandler>& handler : handlers_)
     UpdateSettingAndApplyChanges(handler.get(), info_list);
 }
@@ -95,14 +95,14 @@ void DisplaySettingsHandler::OnSettingUpdate(
 
 void DisplaySettingsHandler::UpdateSettingAndApplyChanges(
     DisplaySettingsPolicyHandler* handler,
-    const std::vector<ash::mojom::DisplayUnitInfoPtr>& info_list) {
+    const std::vector<crosapi::mojom::DisplayUnitInfoPtr>& info_list) {
   handler->OnSettingUpdate();
   handler->ApplyChanges(cros_display_config_.get(), info_list);
 }
 
 void DisplaySettingsHandler::OnConfigurationChangeForHandler(
     DisplaySettingsPolicyHandler* handler,
-    std::vector<ash::mojom::DisplayUnitInfoPtr> info_list) {
+    std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list) {
   UpdateSettingAndApplyChanges(handler, info_list);
 }
 

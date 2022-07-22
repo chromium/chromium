@@ -105,7 +105,8 @@ class ResolutionNotificationControllerTest
       float new_refresh_rate,
       bool old_is_native,
       bool new_is_native,
-      mojom::DisplayConfigSource source = mojom::DisplayConfigSource::kUser) {
+      crosapi::mojom::DisplayConfigSource source =
+          crosapi::mojom::DisplayConfigSource::kUser) {
     const display::ManagedDisplayInfo& info =
         display_manager()->GetDisplayInfo(display.id());
     display::ManagedDisplayMode old_mode(info.size_in_pixel(),
@@ -145,7 +146,8 @@ class ResolutionNotificationControllerTest
       float refresh_rate,
       bool old_is_native,
       bool new_is_native,
-      mojom::DisplayConfigSource source = mojom::DisplayConfigSource::kUser) {
+      crosapi::mojom::DisplayConfigSource source =
+          crosapi::mojom::DisplayConfigSource::kUser) {
     SetDisplayResolutionAndNotifyWithResolution(
         display, new_resolution, new_resolution, refresh_rate, old_is_native,
         new_is_native, source);
@@ -238,7 +240,7 @@ TEST_P(ResolutionNotificationControllerTest, ForcedByPolicy) {
   SetDisplayResolutionAndNotify(display_manager_test.GetSecondaryDisplay(),
                                 gfx::Size(300, 200), 60, /*old_is_native=*/true,
                                 /*new_is_native=*/false,
-                                mojom::DisplayConfigSource::kPolicy);
+                                crosapi::mojom::DisplayConfigSource::kPolicy);
   EXPECT_FALSE(IsNotificationVisible());
   display::ManagedDisplayMode mode;
   EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));

@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_DEVICE_DISPLAY_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_DEVICE_DISPLAY_HANDLER_H_
 
-#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -30,7 +30,8 @@ class DisplayHandler : public ::settings::SettingsPageUIHandler {
   void HandleHighlightDisplay(const base::Value::List& args);
   void HandleDragDisplayDelta(const base::Value::List& args);
 
-  mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
+  mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
+      cros_display_config_;
 };
 
 }  // namespace settings

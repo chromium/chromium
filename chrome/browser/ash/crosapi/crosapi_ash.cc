@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "ash/display/cros_display_config.h"
+#include "ash/public/ash_interfaces.h"
 #include "base/dcheck_is_on.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -591,6 +593,11 @@ void CrosapiAsh::BindClipboardHistory(
 void CrosapiAsh::BindContentProtection(
     mojo::PendingReceiver<mojom::ContentProtection> receiver) {
   content_protection_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindCrosDisplayConfigController(
+    mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver) {
+  ash::BindCrosDisplayConfigController(std::move(receiver));
 }
 
 void CrosapiAsh::BindDeskTemplate(

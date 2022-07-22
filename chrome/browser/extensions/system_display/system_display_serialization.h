@@ -52,33 +52,33 @@ struct Edid;
 //     crosapi::mojom::DisplayMode.
 
 COMPONENT_EXPORT(CROSAPI)
-crosapi::mojom::DisplayModePtr SerializeDisplayMode(
+crosapi::mojom::SysDisplayModePtr SerializeDisplayMode(
     const extensions::api::system_display::DisplayMode& src);
 
 COMPONENT_EXPORT(CROSAPI)
-void DeserializeDisplayMode(const crosapi::mojom::DisplayMode& src,
+void DeserializeDisplayMode(const crosapi::mojom::SysDisplayMode& src,
                             extensions::api::system_display::DisplayMode* dst);
 
 // extensions::api::system_display::Edid <==> crosapi::mojom::Edid.
 
 COMPONENT_EXPORT(CROSAPI)
-crosapi::mojom::EdidPtr SerializeEdid(
+crosapi::mojom::SysDisplayEdidPtr SerializeEdid(
     const extensions::api::system_display::Edid& src);
 
 COMPONENT_EXPORT(CROSAPI)
-void DeserializeEdid(const crosapi::mojom::Edid& src,
+void DeserializeEdid(const crosapi::mojom::SysDisplayEdid& src,
                      extensions::api::system_display::Edid* dst);
 
 // extensions::api::system_display::DisplayUnitInfo <==>
 //     crosapi::mojom::DisplayUnitInfo.
 
 COMPONENT_EXPORT(CROSAPI)
-crosapi::mojom::DisplayUnitInfoPtr SerializeDisplayUnitInfo(
+crosapi::mojom::SysDisplayUnitInfoPtr SerializeDisplayUnitInfo(
     const extensions::api::system_display::DisplayUnitInfo& src);
 
 COMPONENT_EXPORT(CROSAPI)
 void DeserializeDisplayUnitInfo(
-    const crosapi::mojom::DisplayUnitInfo& src,
+    const crosapi::mojom::SysDisplayUnitInfo& src,
     extensions::api::system_display::DisplayUnitInfo* dst);
 
 }  // namespace system_display

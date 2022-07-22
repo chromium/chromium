@@ -166,13 +166,13 @@ std::string GetEnrollmentStatusString() {
 }
 
 std::string GetDisplayInfoString(
-    const ash::mojom::DisplayUnitInfo& display_info) {
+    const crosapi::mojom::DisplayUnitInfo& display_info) {
   std::string entry;
   if (!display_info.name.empty())
     base::StringAppendF(&entry, "%s : ", display_info.name.c_str());
   if (!display_info.edid)
     return entry;
-  const ash::mojom::Edid& edid = *display_info.edid;
+  const crosapi::mojom::Edid& edid = *display_info.edid;
   if (!edid.manufacturer_id.empty()) {
     base::StringAppendF(&entry, "Manufacturer: %s - ",
                         edid.manufacturer_id.c_str());
@@ -189,16 +189,16 @@ std::string GetDisplayInfoString(
 
 // Called from the main (UI) thread, invokes |callback| when complete.
 void PopulateMonitorInfoAsync(
-    ash::mojom::CrosDisplayConfigController* cros_display_config_ptr,
+    crosapi::mojom::CrosDisplayConfigController* cros_display_config_ptr,
     SystemLogsResponse* response,
     base::OnceCallback<void()> callback) {
   cros_display_config_ptr->GetDisplayUnitInfoList(
       false /* single_unified */,
       base::BindOnce(
           [](SystemLogsResponse* response, base::OnceCallback<void()> callback,
-             std::vector<ash::mojom::DisplayUnitInfoPtr> info_list) {
+             std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list) {
             std::string entry;
-            for (const ash::mojom::DisplayUnitInfoPtr& info : info_list) {
+            for (const crosapi::mojom::DisplayUnitInfoPtr& info : info_list) {
               if (!entry.empty())
                 base::StringAppendF(&entry, "\n");
               entry += GetDisplayInfoString(*info);

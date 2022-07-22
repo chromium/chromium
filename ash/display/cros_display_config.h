@@ -10,7 +10,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/public/mojom/cros_display_config.mojom.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -22,7 +22,8 @@ class OverscanCalibrator;
 class TouchCalibratorController;
 
 // ASH_EXPORT for use in chrome unit_tests for DisplayInfoProviderChromeOS.
-class ASH_EXPORT CrosDisplayConfig : public mojom::CrosDisplayConfigController {
+class ASH_EXPORT CrosDisplayConfig
+    : public crosapi::mojom::CrosDisplayConfigController {
  public:
   CrosDisplayConfig();
 
@@ -32,29 +33,31 @@ class ASH_EXPORT CrosDisplayConfig : public mojom::CrosDisplayConfigController {
   ~CrosDisplayConfig() override;
 
   void BindReceiver(
-      mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver);
+      mojo::PendingReceiver<crosapi::mojom::CrosDisplayConfigController>
+          receiver);
 
-  // mojom::CrosDisplayConfigController:
+  // crosapi::mojom::CrosDisplayConfigController:
   void AddObserver(
-      mojo::PendingAssociatedRemote<mojom::CrosDisplayConfigObserver> observer)
-      override;
+      mojo::PendingAssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>
+          observer) override;
   void GetDisplayLayoutInfo(GetDisplayLayoutInfoCallback callback) override;
-  void SetDisplayLayoutInfo(mojom::DisplayLayoutInfoPtr info,
+  void SetDisplayLayoutInfo(crosapi::mojom::DisplayLayoutInfoPtr info,
                             SetDisplayLayoutInfoCallback callback) override;
   void GetDisplayUnitInfoList(bool single_unified,
                               GetDisplayUnitInfoListCallback callback) override;
-  void SetDisplayProperties(const std::string& id,
-                            mojom::DisplayConfigPropertiesPtr properties,
-                            mojom::DisplayConfigSource source,
-                            SetDisplayPropertiesCallback callback) override;
+  void SetDisplayProperties(
+      const std::string& id,
+      crosapi::mojom::DisplayConfigPropertiesPtr properties,
+      crosapi::mojom::DisplayConfigSource source,
+      SetDisplayPropertiesCallback callback) override;
   void SetUnifiedDesktopEnabled(bool enabled) override;
   void OverscanCalibration(const std::string& display_id,
-                           mojom::DisplayConfigOperation op,
+                           crosapi::mojom::DisplayConfigOperation op,
                            const absl::optional<gfx::Insets>& delta,
                            OverscanCalibrationCallback callback) override;
   void TouchCalibration(const std::string& display_id,
-                        mojom::DisplayConfigOperation op,
-                        mojom::TouchCalibrationPtr calibration,
+                        crosapi::mojom::DisplayConfigOperation op,
+                        crosapi::mojom::TouchCalibrationPtr calibration,
                         TouchCalibrationCallback callback) override;
   void HighlightDisplay(int64_t display_id) override;
   void DragDisplayDelta(int64_t display_id,
@@ -72,7 +75,7 @@ class ASH_EXPORT CrosDisplayConfig : public mojom::CrosDisplayConfigController {
   OverscanCalibrator* GetOverscanCalibrator(const std::string& id);
 
   std::unique_ptr<ObserverImpl> observer_impl_;
-  mojo::ReceiverSet<mojom::CrosDisplayConfigController> receivers_;
+  mojo::ReceiverSet<crosapi::mojom::CrosDisplayConfigController> receivers_;
   std::map<std::string, std::unique_ptr<OverscanCalibrator>>
       overscan_calibrators_;
   std::unique_ptr<TouchCalibratorController> touch_calibrator_;

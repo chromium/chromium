@@ -10,10 +10,10 @@
 #include "ash/ash_export.h"
 #include "ash/display/display_change_dialog.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -63,7 +63,7 @@ class ASH_EXPORT ResolutionNotificationController
       int64_t display_id,
       const display::ManagedDisplayMode& old_resolution,
       const display::ManagedDisplayMode& new_resolution,
-      mojom::DisplayConfigSource source,
+      crosapi::mojom::DisplayConfigSource source,
       base::OnceClosure accept_callback);
 
   DisplayChangeDialog* dialog_for_testing() const {

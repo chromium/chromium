@@ -1004,6 +1004,8 @@ static_library("extensions") {
       "clipboard_extension_helper_chromeos.h",
       "extension_keeplist_chromeos.cc",
       "extension_keeplist_chromeos.h",
+      "system_display/display_info_provider_utils.cc",
+      "system_display/display_info_provider_utils.h",
       "system_display/system_display_serialization.cc",
       "system_display/system_display_serialization.h",
     ]

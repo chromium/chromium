@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_P(SystemDisplayExtensionApiTest, GetDisplayInfo) {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
 
 using SystemDisplayExtensionApiFunctionTest = SystemDisplayExtensionApiTest;
 

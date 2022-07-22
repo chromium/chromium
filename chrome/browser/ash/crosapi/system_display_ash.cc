@@ -51,7 +51,7 @@ void SystemDisplayAsh::AddDisplayChangeObserver(
 void SystemDisplayAsh::OnDisplayInfoResult(
     GetDisplayUnitInfoListCallback callback,
     std::vector<DisplayUnitInfo> src_info_list) {
-  std::vector<crosapi::mojom::DisplayUnitInfoPtr> dst_info_list;
+  std::vector<crosapi::mojom::SysDisplayUnitInfoPtr> dst_info_list;
   dst_info_list.reserve(src_info_list.size());
   for (const auto& src_info : src_info_list) {
     dst_info_list.emplace_back(
@@ -95,13 +95,14 @@ void SystemDisplayAsh::StartDisplayChangedEventSources() {
 
   // Start Source 2.
   if (!is_observing_cros_display_config_) {
-    mojo::PendingRemote<ash::mojom::CrosDisplayConfigController> display_config;
+    mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
+        display_config;
     ash::BindCrosDisplayConfigController(
         display_config.InitWithNewPipeAndPassReceiver());
     cros_display_config_ =
-        mojo::Remote<ash::mojom::CrosDisplayConfigController>(
+        mojo::Remote<crosapi::mojom::CrosDisplayConfigController>(
             std::move(display_config));
-    mojo::PendingAssociatedRemote<ash::mojom::CrosDisplayConfigObserver>
+    mojo::PendingAssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>
         observer;
     cros_display_config_observer_receiver_.Bind(
         observer.InitWithNewEndpointAndPassReceiver());

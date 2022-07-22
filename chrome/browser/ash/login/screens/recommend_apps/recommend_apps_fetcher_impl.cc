@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_impl.h"
 
-#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/json/json_reader.h"
@@ -283,7 +282,8 @@ RecommendAppsFetcherImpl::ScopedGpuInfoForTest::~ScopedGpuInfoForTest() {
 
 RecommendAppsFetcherImpl::RecommendAppsFetcherImpl(
     RecommendAppsFetcherDelegate* delegate,
-    mojo::PendingRemote<mojom::CrosDisplayConfigController> display_config,
+    mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
+        display_config,
     network::mojom::URLLoaderFactory* url_loader_factory)
     : delegate_(delegate),
       url_loader_factory_(url_loader_factory),
@@ -367,11 +367,12 @@ void RecommendAppsFetcherImpl::OnProtoMessageCompressedAndEncoded(
 }
 
 void RecommendAppsFetcherImpl::OnAshResponse(
-    std::vector<mojom::DisplayUnitInfoPtr> all_displays_info) {
+    std::vector<crosapi::mojom::DisplayUnitInfoPtr> all_displays_info) {
   ash_ready_ = true;
 
   int screen_density = 0;
-  for (const mojom::DisplayUnitInfoPtr& display_info : all_displays_info) {
+  for (const crosapi::mojom::DisplayUnitInfoPtr& display_info :
+       all_displays_info) {
     if (base::NumberToString(display::Display::InternalDisplayId()) ==
         display_info->id) {
       screen_density = display_info->dpi_x + display_info->dpi_y;

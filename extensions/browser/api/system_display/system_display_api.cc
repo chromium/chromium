@@ -17,7 +17,7 @@
 #include "extensions/common/api/system_display.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 #endif
 
@@ -178,10 +178,7 @@ bool SystemDisplayCrOSRestrictedFunction::PreRunValidation(std::string* error) {
   if (!ExtensionFunction::PreRunValidation(error))
     return false;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  *error = kCrosOnlyError;
-  return false;
-#else
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!ShouldRestrictToKioskAndWebUI())
     return true;
 
@@ -190,6 +187,9 @@ bool SystemDisplayCrOSRestrictedFunction::PreRunValidation(std::string* error) {
   if (KioskModeInfo::IsKioskEnabled(extension()))
     return true;
   *error = kKioskOnlyError;
+  return false;
+#else
+  *error = kCrosOnlyError;
   return false;
 #endif
 }

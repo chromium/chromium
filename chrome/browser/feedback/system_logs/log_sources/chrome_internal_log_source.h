@@ -10,7 +10,7 @@
 #include "components/feedback/system_logs/system_logs_source.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/mojom/cros_display_config.mojom.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #endif
 
@@ -49,7 +49,8 @@ class ChromeInternalLogSource : public SystemLogsSource {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
+  mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
+      cros_display_config_;
 #endif
 };
 
