@@ -820,13 +820,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.SystemApps.BadNavigate.Type" units="App ID"
-    expires_after="2021-09-01">
+    expires_after="2022-12-31">
   <owner>calamity@chromium.org</owner>
   <owner>qjw@chromium.org</owner>
   <summary>
     Records the type of System Web App that caused a bad navigation. This is
     used to trigger a Perfetto trace to provide more debugging information. See
     crbug.com/1201820 for more details.
+
+    Warning: this histogram was expired from 2021-09-01 to 2022-12-31, data may
+    be missing.
   </summary>
 </histogram>
 
