@@ -682,18 +682,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptBypassPageCSP) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-class ContentScriptApiTestWithTrustedDOMTypesEnabled
-    : public ContentScriptApiTest {
- public:
-  ContentScriptApiTestWithTrustedDOMTypesEnabled() {
-    feature_list_.InitAndEnableFeature(features::kTrustedDOMTypes);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ContentScriptApiTestWithTrustedDOMTypesEnabled,
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
                        ContentScriptBypassPageTrustedTypes) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   extensions::ResultCatcher catcher;

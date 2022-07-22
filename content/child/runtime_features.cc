@@ -393,7 +393,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kSetOnlyIfOverridden},
           {"TouchActionEffectiveAtPointerDown",
            features::kVirtualKeyboardMultitouch},
-          {"TrustedDOMTypes", features::kTrustedDOMTypes},
           {"UserAgentClientHint", blink::features::kUserAgentClientHint},
           {"ViewportHeightClientHintHeader",
            blink::features::kViewportHeightClientHintHeader},

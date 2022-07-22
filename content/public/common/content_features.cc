@@ -1012,10 +1012,6 @@ const base::Feature kTouchpadOverscrollHistoryNavigation {
 const base::Feature kTreatBootstrapAsDefault{"TreatBootstrapAsDefault",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether the Trusted Types API is available.
-const base::Feature kTrustedDOMTypes{"TrustedDOMTypes",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
-
 // This feature is for a reverse Origin Trial, enabling SharedArrayBuffer for
 // sites as they migrate towards requiring cross-origin isolation for these
 // features.
