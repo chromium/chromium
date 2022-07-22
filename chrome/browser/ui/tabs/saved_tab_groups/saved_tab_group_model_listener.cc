@@ -27,12 +27,12 @@ SavedTabGroupModelListener::SavedTabGroupModelListener(
 
 SavedTabGroupModelListener::~SavedTabGroupModelListener() {
   BrowserList::GetInstance()->RemoveObserver(this);
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    // Note: Can no longer call OnBrowserRemoved here because model_ is already
-    // destroyed.
-    observed_browsers_.erase(browser);
+  // Note: Can no longer call OnBrowserRemoved here because model_ is already
+  // destroyed.
+  for (Browser* browser : observed_browsers_)
     browser->tab_strip_model()->RemoveObserver(this);
-  }
+
+  observed_browsers_.clear();
 }
 
 TabStripModel* SavedTabGroupModelListener::GetTabStripModelWithTabGroupId(
