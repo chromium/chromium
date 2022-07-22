@@ -32,9 +32,10 @@ class InputMethodWinTSF::TSFEventObserver : public TSFEventRouterObserver {
   bool is_candidate_popup_open_ = false;
 };
 
-InputMethodWinTSF::InputMethodWinTSF(internal::InputMethodDelegate* delegate,
-                                     HWND attached_window_handle)
-    : InputMethodWinBase(delegate, attached_window_handle),
+InputMethodWinTSF::InputMethodWinTSF(
+    ImeKeyEventDispatcher* ime_key_event_dispatcher,
+    HWND attached_window_handle)
+    : InputMethodWinBase(ime_key_event_dispatcher, attached_window_handle),
       tsf_event_observer_(new TSFEventObserver()),
       tsf_event_router_(new TSFEventRouter(tsf_event_observer_.get())) {}
 
@@ -48,8 +49,8 @@ void InputMethodWinTSF::OnFocus() {
   }
   tsf_event_router_->SetManager(
       ui::TSFBridge::GetInstance()->GetThreadManager().Get());
-  ui::TSFBridge::GetInstance()->SetInputMethodDelegate(
-      InputMethodBase::delegate());
+  ui::TSFBridge::GetInstance()->SetImeKeyEventDispatcher(
+      InputMethodBase::ime_key_event_dispatcher());
 }
 
 void InputMethodWinTSF::OnBlur() {
@@ -59,7 +60,7 @@ void InputMethodWinTSF::OnBlur() {
     return;
   }
   tsf_event_router_->SetManager(nullptr);
-  ui::TSFBridge::GetInstance()->RemoveInputMethodDelegate();
+  ui::TSFBridge::GetInstance()->RemoveImeKeyEventDispatcher();
 }
 
 bool InputMethodWinTSF::OnUntranslatedIMEMessage(

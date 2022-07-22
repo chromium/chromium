@@ -18,10 +18,11 @@
 
 namespace ui {
 
-InputMethodFuchsia::InputMethodFuchsia(bool enable_virtual_keyboard,
-                                       internal::InputMethodDelegate* delegate,
-                                       fuchsia::ui::views::ViewRef view_ref)
-    : InputMethodBase(delegate) {
+InputMethodFuchsia::InputMethodFuchsia(
+    bool enable_virtual_keyboard,
+    ImeKeyEventDispatcher* ime_key_event_dispatcher,
+    fuchsia::ui::views::ViewRef view_ref)
+    : InputMethodBase(ime_key_event_dispatcher) {
   if (enable_virtual_keyboard)
     virtual_keyboard_controller_.emplace(std::move(view_ref), this);
 }

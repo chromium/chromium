@@ -25,7 +25,7 @@
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/fake_text_input_client.h"
-#include "ui/base/ime/input_method_delegate.h"
+#include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -56,8 +56,10 @@ uint32_t GetOffsetInUTF16(const std::u16string& utf16_string,
 
 class TestableInputMethodAsh : public InputMethodAsh {
  public:
-  explicit TestableInputMethodAsh(internal::InputMethodDelegate* delegate)
-      : InputMethodAsh(delegate), process_key_event_post_ime_call_count_(0) {}
+  explicit TestableInputMethodAsh(
+      ImeKeyEventDispatcher* ime_key_event_dispatcher)
+      : InputMethodAsh(ime_key_event_dispatcher),
+        process_key_event_post_ime_call_count_(0) {}
 
   struct ProcessKeyEventPostIMEArgs {
     ProcessKeyEventPostIMEArgs()
@@ -207,7 +209,7 @@ class NiceMockIMEEngine : public ash::MockIMEEngineHandler {
                void(const std::u16string&, uint32_t, uint32_t, uint32_t));
 };
 
-class InputMethodAshTest : public internal::InputMethodDelegate,
+class InputMethodAshTest : public ImeKeyEventDispatcher,
                            public testing::Test,
                            public DummyTextInputClient {
  public:
@@ -252,7 +254,7 @@ class InputMethodAshTest : public internal::InputMethodDelegate,
     ResetFlags();
   }
 
-  // Overridden from ui::internal::InputMethodDelegate:
+  // Overridden from ui::ImeKeyEventDispatcher:
   ui::EventDispatchDetails DispatchKeyEventPostIME(
       ui::KeyEvent* event) override {
     dispatched_key_event_ = *event;

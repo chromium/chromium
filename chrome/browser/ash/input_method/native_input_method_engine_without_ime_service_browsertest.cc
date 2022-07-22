@@ -41,7 +41,7 @@
 #include "ui/base/ime/ash/input_method_ash.h"
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
 #include "ui/base/ime/dummy_text_input_client.h"
-#include "ui/base/ime/input_method_delegate.h"
+#include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -121,7 +121,7 @@ class KeyProcessingWaiter {
 // TODO(crbug/1197005): Migrate all these to unit tests.
 class NativeInputMethodEngineWithoutImeServiceTest
     : public InProcessBrowserTest,
-      public ui::internal::InputMethodDelegate {
+      public ui::ImeKeyEventDispatcher {
  public:
   NativeInputMethodEngineWithoutImeServiceTest() : input_method_(this) {
     feature_list_.InitWithFeatures(
@@ -191,7 +191,7 @@ class NativeInputMethodEngineWithoutImeServiceTest
     SetFocus(helper.GetTextInputClient());
   }
 
-  // Overridden from ui::internal::InputMethodDelegate:
+  // Overridden from ui::ImeKeyEventDispatcher:
   ui::EventDispatchDetails DispatchKeyEventPostIME(
       ui::KeyEvent* event) override {
     return ui::EventDispatchDetails();

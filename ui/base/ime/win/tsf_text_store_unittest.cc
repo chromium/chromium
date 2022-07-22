@@ -78,9 +78,9 @@ class MockTextInputClient : public TextInputClient {
   MOCK_METHOD0(GetTextEditingContext, ui::TextInputClient::EditingContext());
 };
 
-class MockInputMethodDelegate : public internal::InputMethodDelegate {
+class MockImeKeyEventDispatcher : public ImeKeyEventDispatcher {
  public:
-  ~MockInputMethodDelegate() {}
+  ~MockImeKeyEventDispatcher() {}
   MOCK_METHOD1(DispatchKeyEventPostIME, EventDispatchDetails(KeyEvent*));
 };
 
@@ -150,7 +150,7 @@ class TSFTextStoreTest : public testing::Test {
     EXPECT_EQ(S_OK, text_store_->AdviseSink(IID_ITextStoreACPSink, sink_.get(),
                                             TS_AS_ALL_SINKS));
     text_store_->SetFocusedTextInputClient(kWindowHandle, &text_input_client_);
-    text_store_->SetInputMethodDelegate(&input_method_delegate_);
+    text_store_->SetImeKeyEventDispatcher(&ime_key_event_dispatcher_);
   }
 
   void TearDown() override {
@@ -167,7 +167,7 @@ class TSFTextStoreTest : public testing::Test {
 
   base::win::ScopedCOMInitializer com_initializer_;
   MockTextInputClient text_input_client_;
-  MockInputMethodDelegate input_method_delegate_;
+  MockImeKeyEventDispatcher ime_key_event_dispatcher_;
   scoped_refptr<TSFTextStore> text_store_;
   scoped_refptr<MockStoreACPSink> sink_;
 };
@@ -1757,7 +1757,7 @@ TEST_F(TSFTextStoreTest, KeyEventTest) {
       .WillOnce(Invoke(&callback, &KeyEventTestCallback::InsertText2))
       .WillOnce(Invoke(&callback, &KeyEventTestCallback::InsertText3));
 
-  EXPECT_CALL(input_method_delegate_, DispatchKeyEventPostIME(_))
+  EXPECT_CALL(ime_key_event_dispatcher_, DispatchKeyEventPostIME(_))
       .WillOnce(
           Invoke(&callback, &KeyEventTestCallback::DispatchKeyEventPostIME1))
       .WillOnce(
@@ -2813,7 +2813,7 @@ TEST_F(TSFTextStoreTest, RegressionTest) {
       .WillOnce(
           Invoke(&callback, &RegressionTestCallback::SetCompositionText5));
 
-  EXPECT_CALL(input_method_delegate_, DispatchKeyEventPostIME(_))
+  EXPECT_CALL(ime_key_event_dispatcher_, DispatchKeyEventPostIME(_))
       .WillOnce(
           Invoke(&callback, &RegressionTestCallback::DispatchKeyEventPostIME1))
       .WillOnce(

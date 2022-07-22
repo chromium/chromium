@@ -16,7 +16,6 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ime/input_method_delegate.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/wm/core/default_activation_client.h"

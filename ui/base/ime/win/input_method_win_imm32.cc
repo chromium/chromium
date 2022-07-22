@@ -24,9 +24,9 @@
 namespace ui {
 
 InputMethodWinImm32::InputMethodWinImm32(
-    internal::InputMethodDelegate* delegate,
+    ImeKeyEventDispatcher* ime_key_event_dispatcher,
     HWND attached_window_handle)
-    : InputMethodWinBase(delegate, attached_window_handle),
+    : InputMethodWinBase(ime_key_event_dispatcher, attached_window_handle),
 
       enabled_(false),
       is_candidate_popup_open_(false),

@@ -20,8 +20,8 @@
 #include "base/timer/timer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host_observer.h"
+#include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ime/input_method_delegate.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/content_protection_manager.h"
 #include "ui/display/manager/display_manager.h"
@@ -50,7 +50,7 @@ class ASH_EXPORT WindowTreeHostManager
       public aura::WindowTreeHostObserver,
       public display::ContentProtectionManager::Observer,
       public display::DisplayManager::Delegate,
-      public ui::internal::InputMethodDelegate,
+      public ui::ImeKeyEventDispatcher,
       public AshWindowTreeHostDelegate {
  public:
   // TODO(oshima): Consider moving this to display::DisplayObserver.
@@ -163,7 +163,7 @@ class ASH_EXPORT WindowTreeHostManager
   void PreDisplayConfigurationChange(bool clear_focus) override;
   void PostDisplayConfigurationChange() override;
 
-  // ui::internal::InputMethodDelegate overrides:
+  // ui::ImeKeyEventDispatcher overrides:
   ui::EventDispatchDetails DispatchKeyEventPostIME(
       ui::KeyEvent* event) override;
 

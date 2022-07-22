@@ -143,11 +143,12 @@ class OzonePlatformFlatland : public OzonePlatform,
   void InitScreen(PlatformScreen* screen) override {}
 
   std::unique_ptr<InputMethod> CreateInputMethod(
-      internal::InputMethodDelegate* delegate,
+      ImeKeyEventDispatcher* ime_key_event_dispatcher,
       gfx::AcceleratedWidget widget) override {
     return std::make_unique<InputMethodFuchsia>(
         window_manager_->GetWindow(widget)->virtual_keyboard_enabled(),
-        delegate, window_manager_->GetWindow(widget)->CloneViewRef());
+        ime_key_event_dispatcher,
+        window_manager_->GetWindow(widget)->CloneViewRef());
   }
 
   bool InitializeUI(const InitParams& params) override {

@@ -40,7 +40,8 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
   ~InputMethodBase() override;
 
   // Overriden from InputMethod.
-  void SetDelegate(internal::InputMethodDelegate* delegate) override;
+  void SetImeKeyEventDispatcher(
+      ImeKeyEventDispatcher* ime_key_event_dispatcher) override;
   void OnFocus() override;
   void OnTouch(ui::EventPointerType pointerType) override;
   void OnBlur() override;
@@ -69,8 +70,8 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
   VirtualKeyboardController* GetVirtualKeyboardController() override;
 
  protected:
-  explicit InputMethodBase(internal::InputMethodDelegate* delegate);
-  InputMethodBase(internal::InputMethodDelegate* delegate,
+  explicit InputMethodBase(ImeKeyEventDispatcher* ime_key_event_dispatcher);
+  InputMethodBase(ImeKeyEventDispatcher* ime_key_event_dispatcher,
                   std::unique_ptr<VirtualKeyboardController> controller);
 
   virtual void OnWillChangeFocusedClient(TextInputClient* focused_before,
@@ -108,10 +109,12 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
   // Gets the bounds of the composition text or cursor in |client|.
   std::vector<gfx::Rect> GetCompositionBounds(const TextInputClient* client);
 
-  internal::InputMethodDelegate* delegate() const { return delegate_; }
+  ImeKeyEventDispatcher* ime_key_event_dispatcher() {
+    return ime_key_event_dispatcher_;
+  }
 
  private:
-  raw_ptr<internal::InputMethodDelegate> delegate_;
+  raw_ptr<ImeKeyEventDispatcher> ime_key_event_dispatcher_;
 
   void SetFocusedTextInputClientInternal(TextInputClient* client);
 

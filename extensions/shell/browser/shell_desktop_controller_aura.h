@@ -17,7 +17,7 @@
 #include "extensions/shell/browser/desktop_controller.h"
 #include "extensions/shell/browser/root_window_controller.h"
 #include "ui/aura/window.h"
-#include "ui/base/ime/input_method_delegate.h"
+#include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/display/display.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -68,7 +68,7 @@ class ShellDesktopControllerAura
       public chromeos::PowerManagerClient::Observer,
       public display::DisplayConfigurator::Observer,
 #endif
-      public ui::internal::InputMethodDelegate,
+      public ui::ImeKeyEventDispatcher,
       public KeepAliveStateObserver {
  public:
   explicit ShellDesktopControllerAura(content::BrowserContext* browser_context);
@@ -100,7 +100,7 @@ class ShellDesktopControllerAura
       const display::DisplayConfigurator::DisplayStateList& displays) override;
 #endif
 
-  // ui::internal::InputMethodDelegate:
+  // ui::ImeKeyEventDispatcher:
   ui::EventDispatchDetails DispatchKeyEventPostIME(
       ui::KeyEvent* key_event) override;
 

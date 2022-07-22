@@ -27,10 +27,8 @@
 #endif
 
 namespace ui {
-namespace internal {
-class InputMethodDelegate;
-}
 class EventSink;
+class ImeKeyEventDispatcher;
 }  // namespace ui
 
 namespace views {
@@ -116,8 +114,8 @@ class WidgetTest : public ViewsTestBase {
   // sink.
   static ui::EventSink* GetEventSink(Widget* widget);
 
-  // Get the InputMethodDelegate, for setting on a Mock InputMethod in tests.
-  static ui::internal::InputMethodDelegate* GetInputMethodDelegateForWidget(
+  // Get the ImeKeyEventDispatcher, for setting on a Mock InputMethod in tests.
+  static ui::ImeKeyEventDispatcher* GetImeKeyEventDispatcherForWidget(
       Widget* widget);
 
   // Return true if |window| is transparent according to the native platform.

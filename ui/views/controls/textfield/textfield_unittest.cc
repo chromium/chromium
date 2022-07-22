@@ -28,9 +28,9 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/constants.h"
+#include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method_base.h"
-#include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -472,8 +472,8 @@ void TextfieldTest::PrepareTextfieldsInternal(int count,
                                               Textfield* textfield,
                                               View* container,
                                               gfx::Rect bounds) {
-  input_method_->SetDelegate(
-      test::WidgetTest::GetInputMethodDelegateForWidget(widget_.get()));
+  input_method_->SetImeKeyEventDispatcher(
+      test::WidgetTest::GetImeKeyEventDispatcherForWidget(widget_.get()));
 
   textfield->set_controller(this);
   textfield->SetBoundsRect(bounds);

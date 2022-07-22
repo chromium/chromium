@@ -37,7 +37,7 @@ bool g_create_input_method_called = false;
 namespace ui {
 
 std::unique_ptr<InputMethod> CreateInputMethod(
-    internal::InputMethodDelegate* delegate,
+    ImeKeyEventDispatcher* ime_key_event_dispatcher,
     gfx::AcceleratedWidget widget) {
   if (!g_create_input_method_called)
     g_create_input_method_called = true;
@@ -49,23 +49,26 @@ std::unique_ptr<InputMethod> CreateInputMethod(
   }
 
   if (g_input_method_set_for_testing)
-    return std::make_unique<MockInputMethod>(delegate);
+    return std::make_unique<MockInputMethod>(ime_key_event_dispatcher);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless))
-    return base::WrapUnique(new MockInputMethod(delegate));
+    return base::WrapUnique(new MockInputMethod(ime_key_event_dispatcher));
 
 #if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(features::kTSFImeSupport) &&
       base::win::GetVersion() > base::win::Version::WIN7) {
-    return std::make_unique<InputMethodWinTSF>(delegate, widget);
+    return std::make_unique<InputMethodWinTSF>(ime_key_event_dispatcher,
+                                               widget);
   }
-  return std::make_unique<InputMethodWinImm32>(delegate, widget);
+  return std::make_unique<InputMethodWinImm32>(ime_key_event_dispatcher,
+                                               widget);
 #elif BUILDFLAG(IS_APPLE)
-  return std::make_unique<InputMethodMac>(delegate);
+  return std::make_unique<InputMethodMac>(ime_key_event_dispatcher);
 #elif defined(USE_OZONE)
-  return ui::OzonePlatform::GetInstance()->CreateInputMethod(delegate, widget);
+  return ui::OzonePlatform::GetInstance()->CreateInputMethod(
+      ime_key_event_dispatcher, widget);
 #else
-  return std::make_unique<InputMethodMinimal>(delegate);
+  return std::make_unique<InputMethodMinimal>(ime_key_event_dispatcher);
 #endif
 }
 

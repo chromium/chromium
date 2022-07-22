@@ -16,7 +16,7 @@
 #include "base/threading/thread_local_storage.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_variant.h"
-#include "ui/base/ime/input_method_delegate.h"
+#include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/win/mock_tsf_bridge.h"
 #include "ui/base/ime/win/tsf_text_store.h"
@@ -47,8 +47,9 @@ class TSFBridgeImpl : public TSFBridge {
   bool ConfirmComposition() override;
   void SetFocusedClient(HWND focused_window, TextInputClient* client) override;
   void RemoveFocusedClient(TextInputClient* client) override;
-  void SetInputMethodDelegate(internal::InputMethodDelegate* delegate) override;
-  void RemoveInputMethodDelegate() override;
+  void SetImeKeyEventDispatcher(
+      ImeKeyEventDispatcher* ime_key_event_dispatcher) override;
+  void RemoveImeKeyEventDispatcher() override;
   bool IsInputLanguageCJK() override;
   Microsoft::WRL::ComPtr<ITfThreadMgr> GetThreadManager() override;
   TextInputClient* GetFocusedTextInputClient() const override;
@@ -355,21 +356,21 @@ void TSFBridgeImpl::RemoveFocusedClient(TextInputClient* client) {
   }
 }
 
-void TSFBridgeImpl::SetInputMethodDelegate(
-    internal::InputMethodDelegate* delegate) {
+void TSFBridgeImpl::SetImeKeyEventDispatcher(
+    ImeKeyEventDispatcher* ime_key_event_dispatcher) {
   DCHECK(base::CurrentUIThread::IsSet());
-  DCHECK(delegate);
+  DCHECK(ime_key_event_dispatcher);
   DCHECK(IsInitialized());
 
   for (TSFDocumentMap::iterator it = tsf_document_map_.begin();
        it != tsf_document_map_.end(); ++it) {
     if (it->second.text_store.get() == nullptr)
       continue;
-    it->second.text_store->SetInputMethodDelegate(delegate);
+    it->second.text_store->SetImeKeyEventDispatcher(ime_key_event_dispatcher);
   }
 }
 
-void TSFBridgeImpl::RemoveInputMethodDelegate() {
+void TSFBridgeImpl::RemoveImeKeyEventDispatcher() {
   DCHECK(base::CurrentUIThread::IsSet());
   DCHECK(IsInitialized());
 
@@ -377,7 +378,7 @@ void TSFBridgeImpl::RemoveInputMethodDelegate() {
        it != tsf_document_map_.end(); ++it) {
     if (it->second.text_store.get() == nullptr)
       continue;
-    it->second.text_store->RemoveInputMethodDelegate();
+    it->second.text_store->RemoveImeKeyEventDispatcher();
   }
 }
 

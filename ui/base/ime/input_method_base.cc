@@ -12,7 +12,7 @@
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "ui/base/ime/input_method_delegate.h"
+#include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/virtual_keyboard_controller_stub.h"
@@ -20,13 +20,14 @@
 
 namespace ui {
 
-InputMethodBase::InputMethodBase(internal::InputMethodDelegate* delegate)
-    : InputMethodBase(delegate, nullptr) {}
+InputMethodBase::InputMethodBase(
+    ImeKeyEventDispatcher* ime_key_event_dispatcher)
+    : InputMethodBase(ime_key_event_dispatcher, nullptr) {}
 
 InputMethodBase::InputMethodBase(
-    internal::InputMethodDelegate* delegate,
+    ImeKeyEventDispatcher* ime_key_event_dispatcher,
     std::unique_ptr<VirtualKeyboardController> keyboard_controller)
-    : delegate_(delegate),
+    : ime_key_event_dispatcher_(ime_key_event_dispatcher),
       keyboard_controller_(std::move(keyboard_controller)) {}
 
 InputMethodBase::~InputMethodBase() {
@@ -34,8 +35,9 @@ InputMethodBase::~InputMethodBase() {
     observer.OnInputMethodDestroyed(this);
 }
 
-void InputMethodBase::SetDelegate(internal::InputMethodDelegate* delegate) {
-  delegate_ = delegate;
+void InputMethodBase::SetImeKeyEventDispatcher(
+    ImeKeyEventDispatcher* ime_key_event_dispatcher) {
+  ime_key_event_dispatcher_ = ime_key_event_dispatcher;
 }
 
 void InputMethodBase::OnFocus() {
@@ -137,8 +139,9 @@ ui::EventDispatchDetails InputMethodBase::DispatchKeyEventPostIME(
     if (event->handled())
       return EventDispatchDetails();
   }
-  return delegate_ ? delegate_->DispatchKeyEventPostIME(event)
-                   : ui::EventDispatchDetails();
+  return ime_key_event_dispatcher_
+             ? ime_key_event_dispatcher_->DispatchKeyEventPostIME(event)
+             : ui::EventDispatchDetails();
 }
 
 void InputMethodBase::NotifyTextInputStateChanged(

@@ -12,16 +12,14 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace ui {
-namespace internal {
-class InputMethodDelegate;
-}  // namespace internal
 
 class InputMethod;
+class ImeKeyEventDispatcher;
 
 // Creates a new instance of InputMethod and returns it.
 COMPONENT_EXPORT(UI_BASE_IME_INIT)
 std::unique_ptr<InputMethod> CreateInputMethod(
-    internal::InputMethodDelegate* delegate,
+    ImeKeyEventDispatcher* ime_key_event_dispatcher,
     gfx::AcceleratedWidget widget);
 
 // Makes CreateInputMethod return a MockInputMethod.
@@ -39,6 +37,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_INIT) ScopedTestInputMethodFactory {
   ~ScopedTestInputMethodFactory();
 };
 
-}  // namespace ui;
+}  // namespace ui
 
 #endif  // UI_BASE_IME_INIT_INPUT_METHOD_FACTORY_H_

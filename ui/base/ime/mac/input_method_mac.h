@@ -17,7 +17,7 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE_IME_MAC) InputMethodMac
     : public InputMethodBase {
  public:
-  explicit InputMethodMac(internal::InputMethodDelegate* delegate);
+  explicit InputMethodMac(ImeKeyEventDispatcher* ime_key_event_dispatcher);
 
   InputMethodMac(const InputMethodMac&) = delete;
   InputMethodMac& operator=(const InputMethodMac&) = delete;

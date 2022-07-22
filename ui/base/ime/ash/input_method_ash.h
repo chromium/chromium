@@ -27,7 +27,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
     : public InputMethodBase,
       public IMEInputContextHandlerInterface {
  public:
-  explicit InputMethodAsh(internal::InputMethodDelegate* delegate);
+  explicit InputMethodAsh(ImeKeyEventDispatcher* ime_key_event_dispatcher);
 
   InputMethodAsh(const InputMethodAsh&) = delete;
   InputMethodAsh& operator=(const InputMethodAsh&) = delete;

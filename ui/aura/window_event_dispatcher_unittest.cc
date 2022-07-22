@@ -111,13 +111,13 @@ class ConsumeKeyHandler : public ui::test::TestEventHandler {
   }
 };
 
-// InputMethodDelegate that tracks the events passed to PostIME phase.
-class TestInputMethodDelegate : public ui::internal::InputMethodDelegate {
+// ImeKeyEventDispatcher that tracks the events passed to PostIME phase.
+class TestImeKeyEventDispatcher : public ui::ImeKeyEventDispatcher {
  public:
-  TestInputMethodDelegate() = default;
-  ~TestInputMethodDelegate() override = default;
+  TestImeKeyEventDispatcher() = default;
+  ~TestImeKeyEventDispatcher() override = default;
 
-  // ui::internal::InputMethodDelegate:
+  // ui::ImeKeyEventDispatcher:
   ui::EventDispatchDetails DispatchKeyEventPostIME(
       ui::KeyEvent* event) override {
     ++dispatched_event_count_;
@@ -496,8 +496,8 @@ TEST_F(WindowEventDispatcherTest, ScrollEventDispatch) {
 
 TEST_F(WindowEventDispatcherTest, PreDispatchKeyEventToIme) {
   ui::MockInputMethod mock_ime(nullptr);
-  TestInputMethodDelegate delegate;
-  mock_ime.SetDelegate(&delegate);
+  TestImeKeyEventDispatcher dispatcher;
+  mock_ime.SetImeKeyEventDispatcher(&dispatcher);
   host()->SetSharedInputMethod(&mock_ime);
 
   ConsumeKeyHandler handler;
@@ -510,7 +510,7 @@ TEST_F(WindowEventDispatcherTest, PreDispatchKeyEventToIme) {
   ui::KeyEvent key_press(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
   DispatchEventUsingWindowDispatcher(&key_press);
   EXPECT_EQ(0, handler.num_key_events());
-  EXPECT_EQ(1, delegate.dispatched_event_count());
+  EXPECT_EQ(1, dispatcher.dispatched_event_count());
 
   // However, for the window with kSkipImeProcessing
   // The event went to the event target at first.
@@ -518,7 +518,7 @@ TEST_F(WindowEventDispatcherTest, PreDispatchKeyEventToIme) {
   ui::KeyEvent key_release(ui::ET_KEY_RELEASED, ui::VKEY_A, ui::EF_NONE);
   DispatchEventUsingWindowDispatcher(&key_release);
   EXPECT_EQ(1, handler.num_key_events());
-  EXPECT_EQ(1, delegate.dispatched_event_count());
+  EXPECT_EQ(1, dispatcher.dispatched_event_count());
 }
 
 namespace {

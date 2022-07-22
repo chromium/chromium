@@ -27,7 +27,7 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/typing_session_manager.h"
 #include "ui/base/ime/composition_text.h"
-#include "ui/base/ime/input_method_delegate.h"
+#include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -41,8 +41,8 @@ ui::IMEEngineHandlerInterface* GetEngine() {
 }
 
 // InputMethodAsh implementation -----------------------------------------
-InputMethodAsh::InputMethodAsh(internal::InputMethodDelegate* delegate)
-    : InputMethodBase(delegate),
+InputMethodAsh::InputMethodAsh(ImeKeyEventDispatcher* ime_key_event_dispatcher)
+    : InputMethodBase(ime_key_event_dispatcher),
       typing_session_manager_(base::DefaultClock::GetInstance()) {
   ResetContext();
 }

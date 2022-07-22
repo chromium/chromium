@@ -18,7 +18,7 @@ class TSFEventRouter;
 class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinTSF
     : public InputMethodWinBase {
  public:
-  InputMethodWinTSF(internal::InputMethodDelegate* delegate,
+  InputMethodWinTSF(ImeKeyEventDispatcher* ime_key_event_dispatcher,
                     HWND attached_window_handle);
 
   InputMethodWinTSF(const InputMethodWinTSF&) = delete;

@@ -59,10 +59,10 @@ component("ime") {
   sources = [
     "constants.cc",
     "constants.h",
+    "ime_key_event_dispatcher.h",
     "input_method.h",
     "input_method_base.cc",
     "input_method_base.h",
-    "input_method_delegate.h",
     "input_method_minimal.cc",
     "input_method_minimal.h",
     "input_method_observer.h",

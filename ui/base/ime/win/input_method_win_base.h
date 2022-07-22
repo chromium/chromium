@@ -17,7 +17,7 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinBase
     : public InputMethodBase {
  public:
-  InputMethodWinBase(internal::InputMethodDelegate* delegate,
+  InputMethodWinBase(ImeKeyEventDispatcher* ime_key_event_dispatcher,
                      HWND attached_window_handle);
 
   InputMethodWinBase(const InputMethodWinBase&) = delete;

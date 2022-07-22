@@ -14,8 +14,8 @@ DummyInputMethod::DummyInputMethod() {
 DummyInputMethod::~DummyInputMethod() {
 }
 
-void DummyInputMethod::SetDelegate(internal::InputMethodDelegate* delegate) {
-}
+void DummyInputMethod::SetImeKeyEventDispatcher(
+    ImeKeyEventDispatcher* ime_key_event_dispatcher) {}
 
 void DummyInputMethod::OnFocus() {
 }

@@ -12,8 +12,8 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/ime_text_span.h"
-#include "ui/base/ime/input_method_delegate.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/range/range.h"
 
@@ -253,11 +253,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   // Removes currently focused TextInputClient.
   void RemoveFocusedTextInputClient(TextInputClient* text_input_client);
 
-  // Sets InputMethodDelegate pointer.
-  void SetInputMethodDelegate(internal::InputMethodDelegate* delegate);
+  // Sets ImeKeyEventDispatcher pointer.
+  void SetImeKeyEventDispatcher(
+      ImeKeyEventDispatcher* ime_key_event_dispatcher);
 
-  // Removes InputMethodDelegate pointer.
-  void RemoveInputMethodDelegate();
+  // Removes ImeKeyEventDispatcher pointer.
+  void RemoveImeKeyEventDispatcher();
 
   // Cancels the ongoing composition if exists.
   bool CancelComposition();
@@ -342,8 +343,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   // Current TextInputClient which is set in SetFocusedTextInputClient.
   raw_ptr<TextInputClient> text_input_client_ = nullptr;
 
-  // InputMethodDelegate instance which is used dispatch key events.
-  raw_ptr<internal::InputMethodDelegate> input_method_delegate_ = nullptr;
+  // ImeKeyEventDispatcher instance which is used dispatch key events.
+  raw_ptr<ImeKeyEventDispatcher> ime_key_event_dispatcher_ = nullptr;
 
   //  |string_buffer_document_| contains all string in current active view.
   //  |string_pending_insertion_| contains only string in current edit session.

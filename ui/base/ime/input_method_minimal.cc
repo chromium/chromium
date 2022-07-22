@@ -12,8 +12,9 @@
 
 namespace ui {
 
-InputMethodMinimal::InputMethodMinimal(internal::InputMethodDelegate* delegate)
-    : InputMethodBase(delegate) {}
+InputMethodMinimal::InputMethodMinimal(
+    ImeKeyEventDispatcher* ime_key_event_dispatcher)
+    : InputMethodBase(ime_key_event_dispatcher) {}
 
 InputMethodMinimal::~InputMethodMinimal() {}
 

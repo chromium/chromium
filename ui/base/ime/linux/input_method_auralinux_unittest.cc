@@ -14,8 +14,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/dummy_text_input_client.h"
+#include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/init/input_method_initializer.h"
-#include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/ime/virtual_keyboard_controller_stub.h"
 #include "ui/events/event.h"
@@ -188,7 +188,7 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   bool should_do_learning_;
 };
 
-class InputMethodDelegateForTesting : public internal::InputMethodDelegate {
+class InputMethodDelegateForTesting : public ImeKeyEventDispatcher {
  public:
   InputMethodDelegateForTesting() {}
 

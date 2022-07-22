@@ -15,7 +15,7 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE_IME) InputMethodMinimal
     : public InputMethodBase {
  public:
-  explicit InputMethodMinimal(internal::InputMethodDelegate* delegate);
+  explicit InputMethodMinimal(ImeKeyEventDispatcher* ime_key_event_dispatcher);
 
   InputMethodMinimal(const InputMethodMinimal&) = delete;
   InputMethodMinimal& operator=(const InputMethodMinimal&) = delete;

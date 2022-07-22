@@ -22,7 +22,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
     : public InputMethodBase,
       public LinuxInputMethodContextDelegate {
  public:
-  explicit InputMethodAuraLinux(internal::InputMethodDelegate* delegate);
+  explicit InputMethodAuraLinux(
+      ImeKeyEventDispatcher* ime_key_event_dispatcher);
   InputMethodAuraLinux(const InputMethodAuraLinux&) = delete;
   InputMethodAuraLinux& operator=(const InputMethodAuraLinux&) = delete;
   ~InputMethodAuraLinux() override;

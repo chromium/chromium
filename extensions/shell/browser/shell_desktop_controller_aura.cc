@@ -386,7 +386,7 @@ ShellDesktopControllerAura::CreateRootWindowControllerForDisplay(
   aura::client::SetCursorClient(root_window, cursor_manager_.get());
 
   if (!input_method_) {
-    // Create an input method and become its delegate.
+    // Create an input method and become its key event dispatcher.
     input_method_ = ui::CreateInputMethod(
         this, root_window_controller->host()->GetAcceleratedWidget());
     root_window_controller->host()->SetSharedInputMethod(input_method_.get());

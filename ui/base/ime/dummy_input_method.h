@@ -22,7 +22,8 @@ class DummyInputMethod : public InputMethod {
   ~DummyInputMethod() override;
 
   // InputMethod overrides:
-  void SetDelegate(internal::InputMethodDelegate* delegate) override;
+  void SetImeKeyEventDispatcher(
+      ImeKeyEventDispatcher* ime_key_event_dispatcher) override;
   void OnFocus() override;
   void OnTouch(ui::EventPointerType pointerType) override;
   void OnBlur() override;

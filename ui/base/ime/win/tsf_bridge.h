@@ -10,7 +10,7 @@
 #include <wrl/client.h>
 
 #include "base/component_export.h"
-#include "ui/base/ime/input_method_delegate.h"
+#include "ui/base/ime/ime_key_event_dispatcher.h"
 
 namespace ui {
 class TextInputClient;
@@ -82,12 +82,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFBridge {
   // Caller must free |client|.
   virtual void RemoveFocusedClient(TextInputClient* client) = 0;
 
-  // Lets TSFTextstore see InputMethodDelegate instance when in focus.
-  virtual void SetInputMethodDelegate(
-      internal::InputMethodDelegate* delegate) = 0;
+  // Lets TSFTextstore see ImeKeyEventDispatcher instance when in focus.
+  virtual void SetImeKeyEventDispatcher(
+      ImeKeyEventDispatcher* ime_key_event_dispatcher) = 0;
 
-  // Remove InputMethodDelegate instance from TSFTextStore when not in focus.
-  virtual void RemoveInputMethodDelegate() = 0;
+  // Remove ImeKeyEventDispatcher instance from TSFTextStore when not in focus.
+  virtual void RemoveImeKeyEventDispatcher() = 0;
 
   // Returns whether the system's input language is CJK.
   virtual bool IsInputLanguageCJK() = 0;

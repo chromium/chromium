@@ -8,8 +8,8 @@
 
 namespace ui {
 
-InputMethodMac::InputMethodMac(internal::InputMethodDelegate* delegate)
-    : InputMethodBase(delegate) {}
+InputMethodMac::InputMethodMac(ImeKeyEventDispatcher* ime_key_event_dispatcher)
+    : InputMethodBase(ime_key_event_dispatcher) {}
 
 InputMethodMac::~InputMethodMac() {
 }
