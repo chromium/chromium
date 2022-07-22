@@ -127,7 +127,7 @@
   [self.TOSCoordinator start];
 }
 
-- (void)hideTOSPage {
+- (void)closeTOSPage {
   [self.TOSCoordinator stop];
   self.TOSCoordinator = nil;
 }

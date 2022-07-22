@@ -58,7 +58,7 @@
 
 // Called by the Done button from the navigation bar.
 - (void)close {
-  [self.handler hideTOSPage];
+  [self.handler closeTOSPage];
 }
 
 #pragma mark - Private

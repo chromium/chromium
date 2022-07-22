@@ -14,10 +14,12 @@ source_set("welcome") {
     ":welcome_ui",
     "//base",
     "//components/metrics",
+    "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
@@ -69,4 +71,15 @@ source_set("welcome_ui") {
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "tos_unittest.mm" ]
+  deps = [
+    ":welcome",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
 }

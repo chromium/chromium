@@ -18,6 +18,9 @@
 - (instancetype)initWithContentView:(UIView*)TOSView
                             handler:(id<TOSCommands>)handler;
 
+// Closes the TOS.
+- (void)close;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_WELCOME_TOS_VIEW_CONTROLLER_H_

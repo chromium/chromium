@@ -315,7 +315,7 @@
   [self.TOSCoordinator start];
 }
 
-- (void)hideTOSPage {
+- (void)closeTOSPage {
   DCHECK(self.TOSCoordinator);
   [self.TOSCoordinator stop];
   self.TOSCoordinator = nil;
