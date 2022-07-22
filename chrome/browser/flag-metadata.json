@@ -1146,8 +1146,8 @@
   },
   {
     "name": "cups-ipp-printing-backend",
-    "owners": [ "dhoss", "//printing/OWNERS" ],
-    "expiry_milestone": 105
+    "owners": [ "awscreen", "//printing/OWNERS" ],
+    "expiry_milestone": 112
   },
   {
     "name": "dark-light-mode",
@@ -5390,7 +5390,7 @@
   {
     "name": "read-printer-capabilities-with-xps",
     "owners": [ "awscreen", "//printing/OWNERS" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 112
   },
   {
     "name": "reader-mode-heuristics",
