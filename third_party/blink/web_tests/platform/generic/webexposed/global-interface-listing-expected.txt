@@ -4766,7 +4766,7 @@ interface IIRFilterNode : AudioNode
     method constructor
     method getFrequencyResponse
 interface IdentityCredential : Credential
-    static method logoutRps
+    static method logoutRPs
     attribute @@toStringTag
     getter token
     method constructor

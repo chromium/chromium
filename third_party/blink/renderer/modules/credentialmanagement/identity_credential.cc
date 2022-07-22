@@ -8,7 +8,6 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_rps_request.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"
@@ -98,9 +97,9 @@ bool IdentityCredential::IsIdentityCredential() const {
   return true;
 }
 
-ScriptPromise IdentityCredential::logoutRps(
+ScriptPromise IdentityCredential::logoutRPs(
     ScriptState* script_state,
-    const HeapVector<Member<IdentityCredentialLogoutRpsRequest>>&
+    const HeapVector<Member<IdentityCredentialLogoutRPsRequest>>&
         logout_endpoints) {
   if (!RuntimeEnabledFeatures::FedCmIdpSignoutEnabled(
           ExecutionContext::From(script_state))) {

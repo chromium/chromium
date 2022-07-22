@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_IDENTITY_CREDENTIAL_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_rps_request.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_r_ps_request.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -33,9 +33,9 @@ class MODULES_EXPORT IdentityCredential final : public Credential {
   // IdentityCredential.idl
   const String& token() const { return token_; }
 
-  static ScriptPromise logoutRps(
+  static ScriptPromise logoutRPs(
       ScriptState*,
-      const HeapVector<Member<IdentityCredentialLogoutRpsRequest>>&);
+      const HeapVector<Member<IdentityCredentialLogoutRPsRequest>>&);
 
  private:
   const String token_;
