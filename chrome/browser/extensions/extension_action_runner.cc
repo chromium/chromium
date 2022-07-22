@@ -205,6 +205,16 @@ void ExtensionActionRunner::HandlePageAccessModified(
     RunBlockedActions(extension);
 }
 
+void ExtensionActionRunner::HandleUserSiteSettingModified(
+    const base::flat_set<ToolbarActionsModel::ActionId>& action_ids,
+    const url::Origin& origin,
+    PermissionsManager::UserSiteSetting new_site_settings) {
+  // TODO(crbug.com/1319555): Show reload page bubble when changing user site
+  // settings needs a page reload.
+  extensions::PermissionsManager::Get(browser_context_)
+      ->UpdateUserSiteSetting(origin, new_site_settings);
+}
+
 void ExtensionActionRunner::OnActiveTabPermissionGranted(
     const Extension* extension) {
   if (ignore_active_tab_granted_)

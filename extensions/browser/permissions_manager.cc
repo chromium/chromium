@@ -189,6 +189,23 @@ void PermissionsManager::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kUserPermissions.name);
 }
 
+void PermissionsManager::UpdateUserSiteSetting(
+    const url::Origin& origin,
+    PermissionsManager::UserSiteSetting site_setting) {
+  switch (site_setting) {
+    case UserSiteSetting::kGrantAllExtensions:
+      AddUserPermittedSite(origin);
+      break;
+    case UserSiteSetting::kBlockAllExtensions:
+      AddUserRestrictedSite(origin);
+      break;
+    case UserSiteSetting::kCustomizeByExtension:
+      RemoveUserPermittedSite(origin);
+      RemoveUserRestrictedSite(origin);
+      break;
+  }
+}
+
 void PermissionsManager::AddUserRestrictedSite(const url::Origin& origin) {
   if (base::Contains(user_permissions_.restricted_sites, origin))
     return;

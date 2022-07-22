@@ -78,6 +78,13 @@ class ExtensionActionRunner : public content::WebContentsObserver,
       SitePermissionsHelper::SiteAccess current_access,
       SitePermissionsHelper::SiteAccess new_access);
 
+  // Notifies the ExtensionActionRunner that the user site setting for `origin`
+  // with `action_ids` has changed.
+  void HandleUserSiteSettingModified(
+      const base::flat_set<ToolbarActionsModel::ActionId>& action_ids,
+      const url::Origin& origin,
+      PermissionsManager::UserSiteSetting new_site_settings);
+
   // Notifies the ExtensionActionRunner that an extension has been granted
   // active tab permissions. This will run any pending injections for that
   // extension.

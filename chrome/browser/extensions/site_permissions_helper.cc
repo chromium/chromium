@@ -108,6 +108,22 @@ void SitePermissionsHelper::UpdateSiteAccess(
   runner->HandlePageAccessModified(&extension, current_access, new_access);
 }
 
+void SitePermissionsHelper::UpdateUserSiteSettings(
+    const base::flat_set<ToolbarActionsModel::ActionId>& action_ids,
+    content::WebContents* web_contents,
+    extensions::PermissionsManager::UserSiteSetting site_setting) {
+  DCHECK(web_contents);
+
+  ExtensionActionRunner* runner =
+      ExtensionActionRunner::GetForWebContents(web_contents);
+  if (!runner)
+    return;
+
+  runner->HandleUserSiteSettingModified(
+      action_ids, web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+      site_setting);
+}
+
 bool SitePermissionsHelper::CanSelectSiteAccess(const Extension& extension,
                                                 const GURL& url,
                                                 SiteAccess site_access) const {

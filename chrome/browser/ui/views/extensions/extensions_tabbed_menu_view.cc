@@ -832,23 +832,13 @@ void ExtensionsTabbedMenuView::OnSiteSettingsButtonPressed() {
 }
 
 void ExtensionsTabbedMenuView::OnSiteSettingSelected(
-    extensions::PermissionsManager::UserSiteSetting site_settings) {
-  auto current_origin =
-      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
-  auto* permissions_manager =
-      extensions::PermissionsManager::Get(browser_->profile());
-  switch (site_settings) {
-    case UserSiteSetting::kGrantAllExtensions:
-      permissions_manager->AddUserPermittedSite(current_origin);
-      break;
-    case UserSiteSetting::kBlockAllExtensions:
-      permissions_manager->AddUserRestrictedSite(current_origin);
-      break;
-    case UserSiteSetting::kCustomizeByExtension:
-      permissions_manager->RemoveUserPermittedSite(current_origin);
-      permissions_manager->RemoveUserRestrictedSite(current_origin);
-      break;
-  }
+    extensions::PermissionsManager::UserSiteSetting site_setting) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  DCHECK(web_contents);
+
+  extensions::SitePermissionsHelper(browser_->profile())
+      .UpdateUserSiteSettings(toolbar_model_->action_ids(), web_contents,
+                              site_setting);
 }
 
 void ExtensionsTabbedMenuView::ConsistencyCheck() {

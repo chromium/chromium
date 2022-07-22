@@ -231,7 +231,6 @@ TEST_F(PermissionsManagerUnittest, AddAndRemovePermittedSite) {
 TEST_F(PermissionsManagerUnittest,
        RestrictedAndPermittedSitesAreMutuallyExclusive) {
   const url::Origin url = url::Origin::Create(GURL("http://a.example.com"));
-  const std::string expected_url_pattern = "http://a.example.com/*";
   std::set<url::Origin> empty_set;
   std::set<url::Origin> set_with_url;
   set_with_url.insert(url);
@@ -270,6 +269,46 @@ TEST_F(PermissionsManagerUnittest,
     EXPECT_EQ(actual_permissions.permitted_sites, empty_set);
     EXPECT_EQ(manager_->GetUserSiteSetting(url),
               PermissionsManager::UserSiteSetting::kBlockAllExtensions);
+  }
+}
+
+TEST_F(PermissionsManagerUnittest, UpdateUserSiteSetting) {
+  const url::Origin url = url::Origin::Create(GURL("http://a.example.com"));
+  std::set<url::Origin> empty_set;
+  std::set<url::Origin> set_with_url;
+  set_with_url.insert(url);
+
+  {
+    manager_->UpdateUserSiteSetting(
+        url, PermissionsManager::UserSiteSetting::kGrantAllExtensions);
+    const PermissionsManager::UserPermissionsSettings& actual_permissions =
+        manager_->GetUserPermissionsSettings();
+    EXPECT_EQ(actual_permissions.restricted_sites, empty_set);
+    EXPECT_EQ(actual_permissions.permitted_sites, set_with_url);
+    EXPECT_EQ(manager_->GetUserSiteSetting(url),
+              PermissionsManager::UserSiteSetting::kGrantAllExtensions);
+  }
+
+  {
+    manager_->UpdateUserSiteSetting(
+        url, PermissionsManager::UserSiteSetting::kBlockAllExtensions);
+    const PermissionsManager::UserPermissionsSettings& actual_permissions =
+        manager_->GetUserPermissionsSettings();
+    EXPECT_EQ(actual_permissions.restricted_sites, set_with_url);
+    EXPECT_EQ(actual_permissions.permitted_sites, empty_set);
+    EXPECT_EQ(manager_->GetUserSiteSetting(url),
+              PermissionsManager::UserSiteSetting::kBlockAllExtensions);
+  }
+
+  {
+    manager_->UpdateUserSiteSetting(
+        url, PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+    const PermissionsManager::UserPermissionsSettings& actual_permissions =
+        manager_->GetUserPermissionsSettings();
+    EXPECT_EQ(actual_permissions.restricted_sites, empty_set);
+    EXPECT_EQ(actual_permissions.permitted_sites, empty_set);
+    EXPECT_EQ(manager_->GetUserSiteSetting(url),
+              PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   }
 }
 
