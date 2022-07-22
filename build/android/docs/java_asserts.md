@@ -70,9 +70,9 @@ asserts](https://chromium-review.googlesource.com/c/chromium/src/+/3307087) on
 Canary. It spiked our crash rate, and it was decided to not do this again, as
 it's bad user experience to crash the app incessantly for non-fatal issues.
 
-So, we asked the R8 team with an ask to allow us to rewrite the bytecode of
-these assertions, which they implemented for us. Now, instead of just turning
-it on and throwing an `AssertionError`, [R8 would call a provided assertion
+So, we asked the R8 team for a feature which would rewrite the bytecode of these
+assertions, which they implemented for us. Now, instead of just turning it on
+and throwing an `AssertionError`, [R8 would call a provided assertion
 handler](https://r8.googlesource.com/r8/+/aefe7bc18a7ce19f3e9c6dac0bedf6d182bbe142/src/main/java/com/android/tools/r8/ParseFlagInfoImpl.java#124)
 with the `AssertionError`. We then wrote a [silent assertion
 reporter](https://chromium-review.googlesource.com/c/chromium/src/+/3746261)
