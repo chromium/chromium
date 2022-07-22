@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -522,6 +523,7 @@ void TaskQueueImpl::PushOntoDelayedIncomingQueueFromMainThread(
     sequence_manager_->WillQueueTask(&pending_task, name_);
     MaybeReportIpcTaskQueuedFromMainThread(pending_task, name_);
   }
+  RecordQueuingDelayedTaskMetrics(pending_task, lazy_now);
   main_thread_only().delayed_incoming_queue.push(std::move(pending_task));
   UpdateWakeUp(lazy_now);
 
@@ -568,6 +570,34 @@ void TaskQueueImpl::ScheduleDelayedWorkTask(Task pending_task) {
                                                &lazy_now, false);
   }
   TraceQueueSize();
+}
+
+void TaskQueueImpl::RecordQueuingDelayedTaskMetrics(const Task& pending_task,
+                                                    LazyNow* lazy_now) {
+  // The sampling depends on having a high-resolution clock.
+  if (!base::TimeTicks::IsHighResolution())
+    return;
+
+  // A sample is taken on average every kSampleRate tasks.
+  static constexpr int kSampleRate = 10000;
+
+  // Use pseudorandom sampling to avoid "running jank," which may occur
+  // when emitting many samples to a histogram in parallel. (This function is
+  // called a lot in parallel.) See https://crbug/1254354 for more details. The
+  // current time is used as a source of pseudorandomness.
+  if (((lazy_now->Now() - TimeTicks::UnixEpoch()).InMicroseconds() ^
+       pending_task.sequence_num) %
+          kSampleRate ==
+      0) {
+    // The |delay| will be different than the delay passed to PostDelayedTask
+    // for cross-thread delayed tasks.
+    const TimeDelta delay = pending_task.delayed_run_time - lazy_now->Now();
+    UMA_HISTOGRAM_LONG_TIMES("Scheduler.TaskQueueImpl.PostDelayedTaskDelay",
+                             delay);
+    UMA_HISTOGRAM_COUNTS_1000(
+        "Scheduler.TaskQueueImpl.DelayedIncomingQueueSize",
+        static_cast<int>(main_thread_only().delayed_incoming_queue.size()));
+  }
 }
 
 void TaskQueueImpl::ReloadEmptyImmediateWorkQueue() {
