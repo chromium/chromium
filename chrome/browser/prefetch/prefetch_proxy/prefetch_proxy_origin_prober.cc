@@ -315,3 +315,13 @@ void PrefetchProxyOriginProber::DoTLSProbeAfterDNSResolution(
   // |prober| manages its own lifetime, using the mojo pipes.
   prober.release();
 }
+
+PrefetchProxyCanaryChecker*
+PrefetchProxyOriginProber::GetDNSCanaryCheckerForTesting() {
+  return dns_canary_check_.get();
+}
+
+PrefetchProxyCanaryChecker*
+PrefetchProxyOriginProber::GetTLSCanaryCheckerForTesting() {
+  return tls_canary_check_.get();
+}

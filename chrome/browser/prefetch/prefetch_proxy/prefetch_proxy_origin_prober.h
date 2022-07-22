@@ -49,6 +49,14 @@ class PrefetchProxyOriginProber {
   // failure. Used for testing.
   bool IsTLSCanaryCheckCompleteForTesting() const;
 
+  // Returns the PrefetchProxyCanaryChecker object used for DNS canary checks.
+  // Used for testing.
+  PrefetchProxyCanaryChecker* GetDNSCanaryCheckerForTesting();
+
+  // Returns the PrefetchProxyCanaryChecker object used for TLS canary checks.
+  // Used for testing.
+  PrefetchProxyCanaryChecker* GetTLSCanaryCheckerForTesting();
+
   // Starts a probe to |url| and calls |callback| with an
   // |PrefetchProxyProbeResult| to indicate success.
   using OnProbeResultCallback =

@@ -119,6 +119,11 @@ class PrefetchProxyCanaryChecker {
   // True if checks are being attempted, including retries.
   bool IsActive() const { return time_when_set_active_.has_value(); }
 
+  // Overrides the NetworkConnectionTracker used for generating cache keys. Used
+  // for testing.
+  void SetNetworkConnectionTrackerForTesting(
+      network::NetworkConnectionTracker* tracker);
+
  protected:
   // Exposes |tick_clock| and |clock| for testing.
   PrefetchProxyCanaryChecker(Profile* profile,

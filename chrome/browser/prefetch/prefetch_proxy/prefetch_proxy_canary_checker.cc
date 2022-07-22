@@ -417,3 +417,8 @@ void PrefetchProxyCanaryChecker::OnDNSResolved(
     ProcessFailure(net_error);
   }
 }
+
+void PrefetchProxyCanaryChecker::SetNetworkConnectionTrackerForTesting(
+    network::NetworkConnectionTracker* tracker) {
+  network_connection_tracker_ = tracker;
+}

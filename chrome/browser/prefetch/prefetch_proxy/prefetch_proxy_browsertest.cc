@@ -32,6 +32,7 @@
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_canary_checker.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
@@ -124,6 +125,7 @@
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_network_context.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -525,7 +527,26 @@ class PrefetchProxyBrowserTest
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
     // Ensure the service gets created before the tests start.
-    PrefetchProxyServiceFactory::GetForProfile(browser()->profile());
+    PrefetchProxyService* service =
+        PrefetchProxyServiceFactory::GetForProfile(browser()->profile());
+    // Override the system's connection type to avoid flakes due to changing
+    // connection type during testing.
+    network_connection_tracker_ =
+        network::TestNetworkConnectionTracker::CreateInstance();
+    network_connection_tracker_->SetConnectionType(
+        network::mojom::ConnectionType::CONNECTION_3G);
+    PrefetchProxyCanaryChecker* dns_checker =
+        service->origin_prober()->GetDNSCanaryCheckerForTesting();
+    if (dns_checker) {
+      dns_checker->SetNetworkConnectionTrackerForTesting(
+          network_connection_tracker_.get());
+    }
+    PrefetchProxyCanaryChecker* tls_checker =
+        service->origin_prober()->GetTLSCanaryCheckerForTesting();
+    if (tls_checker) {
+      tls_checker->SetNetworkConnectionTrackerForTesting(
+          network_connection_tracker_.get());
+    }
 
     host_resolver()->AddRule("a.test", "127.0.0.1");
     host_resolver()->AddRule("proxy.a.test", "127.0.0.1");
@@ -1031,6 +1052,9 @@ class PrefetchProxyBrowserTest
   std::set<std::unique_ptr<TestProxyTunnelConnection>,
            base::UniquePtrComparator>
       tunnels_;
+
+  std::unique_ptr<network::TestNetworkConnectionTracker>
+      network_connection_tracker_;
 
   size_t origin_server_request_count_ = 0;
 };
