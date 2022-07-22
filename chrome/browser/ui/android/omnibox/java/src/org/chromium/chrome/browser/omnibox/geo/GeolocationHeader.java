@@ -26,6 +26,7 @@ import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -181,12 +182,6 @@ public class GeolocationHeader {
         int PROMPT = 1;
         int BLOCKED = 2;
     }
-
-    /** The maximum value for the GeolocationHeader.TimeListening* histograms. */
-    public static final int TIME_LISTENING_HISTOGRAM_MAX_MILLIS = 50 * 60 * 1000; // 50 minutes
-
-    /** The maximum value for the GeolocationHeader.LocationAge* histograms. */
-    public static final int LOCATION_AGE_HISTOGRAM_MAX_SECONDS = 30 * 24 * 60 * 60; // 30 days
 
     @IntDef({HeaderState.HEADER_ENABLED, HeaderState.INCOGNITO, HeaderState.UNSUITABLE_URL,
             HeaderState.NOT_HTTPS, HeaderState.LOCATION_PERMISSION_BLOCKED})
@@ -384,26 +379,15 @@ public class GeolocationHeader {
                 }
             }
 
-            @LocationSource
-            int locationSource = getLocationSource();
-            @Permission
-            int appPermission = getGeolocationPermission(tab);
-            @Permission
-            int domainPermission = getDomainPermission(profile, url);
-
-            // Record the permission state with a histogram.
-            recordPermissionHistogram(locationSource, appPermission, domainPermission,
-                    locationToAttach != null, headerState);
-
-            if (locationSource != LocationSource.LOCATION_OFF && appPermission != Permission.BLOCKED
-                    && domainPermission != Permission.BLOCKED && !profile.isOffTheRecord()) {
-                // Record the Location Age with a histogram.
-                recordLocationAgeHistogram(locationSource, locationAge);
-                long duration = sFirstLocationTime == Long.MAX_VALUE
-                        ? 0
-                        : SystemClock.elapsedRealtime() - sFirstLocationTime;
-                // Record the Time Listening with a histogram.
-                recordTimeListeningHistogram(locationSource, locationToAttach != null, duration);
+            // TODO(crbug.com/1330739): remove this.
+            if (!ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.OPTIMIZE_GEOLOCATION_HEADER_GENERATION)) {
+                // These calls used to be necessary to record obsoleted
+                // histograms. We keep them here temporarily to measure the
+                // impact of removing them.
+                getLocationSource();
+                getGeolocationPermission(tab);
+                getDomainPermission(profile, url);
             }
 
             // Proto encoding
@@ -709,18 +693,6 @@ public class GeolocationHeader {
         return UmaPermission.UNKNOWN;
     }
 
-    /** Records a data point for the Geolocation.Header.PermissionState histogram. */
-    private static void recordPermissionHistogram(@LocationSource int locationSource,
-            @Permission int appPermission, @Permission int domainPermission,
-            boolean locationAttached, @HeaderState int headerState) {
-        if (headerState == HeaderState.INCOGNITO) return;
-        @UmaPermission
-        int result = getPermissionHistogramEnum(
-                locationSource, appPermission, domainPermission, locationAttached, headerState);
-        RecordHistogram.recordEnumeratedHistogram(
-                "Geolocation.Header.PermissionState", result, UmaPermission.NUM_ENTRIES);
-    }
-
     /**
      * Determines the name for a Time Listening Histogram. Returns empty string if the location
      * source is LOCATION_OFF as we do not record histograms for that case.
@@ -745,36 +717,6 @@ public class GeolocationHeader {
                 assert false : "Unexpected locationSource: " + locationSource;
                 return null;
         }
-    }
-
-    /** Records a data point for one of the GeolocationHeader.TimeListening* histograms. */
-    private static void recordTimeListeningHistogram(
-            int locationSource, boolean locationAttached, long duration) {
-        String name = getTimeListeningHistogramEnum(locationSource, locationAttached);
-        if (name == null) return;
-        RecordHistogram.recordCustomTimesHistogram(
-                name, duration, 1, TIME_LISTENING_HISTOGRAM_MAX_MILLIS, 50);
-    }
-
-    /** Records a data point for one of the GeolocationHeader.LocationAge* histograms. */
-    private static void recordLocationAgeHistogram(int locationSource, long durationMillis) {
-        String name = "";
-        if (locationSource == LocationSource.HIGH_ACCURACY) {
-            name = "Geolocation.Header.LocationAge.HighAccuracy";
-        } else if (locationSource == LocationSource.GPS_ONLY) {
-            name = "Geolocation.Header.LocationAge.GpsOnly";
-        } else if (locationSource == LocationSource.BATTERY_SAVING) {
-            name = "Geolocation.Header.LocationAge.BatterySaving";
-        } else {
-            Log.e(TAG, "Unexpected locationSource: " + locationSource);
-            assert false : "Unexpected locationSource: " + locationSource;
-            return;
-        }
-        long durationSeconds = durationMillis / 1000;
-        int duration = durationSeconds >= (long) Integer.MAX_VALUE ? Integer.MAX_VALUE
-                                                                   : (int) durationSeconds;
-        RecordHistogram.recordCustomCountHistogram(
-                name, duration, 1, LOCATION_AGE_HISTOGRAM_MAX_SECONDS, 50);
     }
 
     /**

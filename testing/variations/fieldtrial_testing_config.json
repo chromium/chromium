@@ -2040,21 +2040,6 @@
             ]
         }
     ],
-    "CacheDeprecatedSystemLocationSetting": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CacheDeprecatedSystemLocationSetting"
-                    ]
-                }
-            ]
-        }
-    ],
     "CacheFontFamilyMatching": [
         {
             "platforms": [
@@ -6441,6 +6426,22 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OptimizeDataUrls"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OptimizeGeolocationHeaderGeneration": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CacheDeprecatedSystemLocationSetting",
+                        "OptimizeGeolocationHeaderGeneration"
                     ]
                 }
             ]

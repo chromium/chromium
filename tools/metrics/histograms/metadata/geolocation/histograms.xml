@@ -34,6 +34,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Geolocation.Header.LocationAge" units="seconds"
     expires_after="M85">
+  <obsolete>
+    Code for recording this histogram was removed in July 2022. Recording this
+    long-expired histogram was slowing down navigations.
+  </obsolete>
   <owner>kcarattini@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
@@ -45,6 +49,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Geolocation.Header.PermissionState"
     enum="GeolocationHeaderPermissionState" expires_after="M85">
+  <obsolete>
+    Code for recording this histogram was removed in July 2022. Recording this
+    long-expired histogram was slowing down navigations.
+  </obsolete>
   <owner>kcarattini@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
@@ -56,6 +64,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Geolocation.Header.TimeListening" units="ms"
     expires_after="M85">
+  <obsolete>
+    Code for recording this histogram was removed in July 2022. Recording this
+    long-expired histogram was slowing down navigations.
+  </obsolete>
   <owner>kcarattini@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>

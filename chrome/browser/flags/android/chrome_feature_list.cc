@@ -259,6 +259,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBookmarksRefresh,
     &kBackGestureRefactorAndroid,
     &kOmniboxModernizeVisualUpdate,
+    &kOptimizeGeolocationHeaderGeneration,
     &kOptimizeLayoutsForPullRefresh,
     &kPostTaskFocusTab,
     &kProbabilisticCryptidRenderer,
@@ -744,6 +745,9 @@ const base::Feature kBackGestureRefactorAndroid{
 
 const base::Feature kOmniboxModernizeVisualUpdate{
     "OmniboxModernizeVisualUpdate", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kOptimizeGeolocationHeaderGeneration{
+    "OptimizeGeolocationHeaderGeneration", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kOptimizeLayoutsForPullRefresh{
     "OptimizeLayoutsForPullRefresh", base::FEATURE_DISABLED_BY_DEFAULT};
