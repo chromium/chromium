@@ -10,6 +10,7 @@
 
 #include "ipcz/ipcz.h"
 #include "ipcz/parcel_queue.h"
+#include "ipcz/route_edge.h"
 #include "ipcz/router_descriptor.h"
 #include "ipcz/router_link.h"
 #include "ipcz/sequence_number.h"
@@ -169,27 +170,25 @@ class Router : public RefCounted {
   // traps are notified about any interesting state changes within the router.
   TrapSet traps_ ABSL_GUARDED_BY(mutex_);
 
+  // The edge connecting this router outward to another, toward the portal on
+  // the other side of the route.
+  RouteEdge outward_edge_ ABSL_GUARDED_BY(mutex_);
+
+  // The edge connecting this router inward to another, closer to the portal on
+  // our own side of the route. Only present for proxying routers: terminal
+  // routers by definition can have no inward edge.
+  absl::optional<RouteEdge> inward_edge_ ABSL_GUARDED_BY(mutex_);
+
   // Parcels received from the other end of the route. If this is a terminal
-  // router, these may be retrieved by the application via a controlling portal.
+  // router, these may be retrieved by the application via a controlling portal;
+  // otherwise they will be forwarded along `inward_edge_` as soon as possible.
   ParcelQueue inbound_parcels_ ABSL_GUARDED_BY(mutex_);
-
-  // A link to this router's outward peer.
-  //
-  // TODO(rockot): Replace this with a dynamic link that can be incrementally
-  // decayed and replaced.
-  Ref<RouterLink> outward_link_ ABSL_GUARDED_BY(mutex_);
-
-  // A link to this router's inward peer. Present only for proxying Routers.
-  //
-  // TODO(rockot): Replace this with a dynamic link that can be incrementally
-  // decayed and replaced.
-  Ref<RouterLink> inward_link_ ABSL_GUARDED_BY(mutex_);
 
   // Parcels transmitted directly from this router (if sent by a controlling
   // portal) or received from an inward peer which sent them outward toward this
   // Router. These parcels generally only accumulate if there is no outward link
-  // present when received, and they are forwarded along `outward_link_` as soon
-  // as possible.
+  // present when attempting to transmit them, and they are forwarded along
+  // `outward_edge_` as soon as possible.
   ParcelQueue outbound_parcels_ ABSL_GUARDED_BY(mutex_);
 
   // Tracks whether this router has been unexpectedly disconnected from its

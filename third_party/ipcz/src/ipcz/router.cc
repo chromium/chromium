@@ -21,6 +21,48 @@
 
 namespace ipcz {
 
+namespace {
+
+// Helper structure used to accumulate individual parcel flushing operations
+// within Router::Flush(), via CollectParcelsToFlush() below.
+struct ParcelToFlush {
+  // The link over which to flush this parcel.
+  RouterLink* link;
+
+  // The parcel to be flushed.
+  Parcel parcel;
+};
+
+using ParcelsToFlush = absl::InlinedVector<ParcelToFlush, 8>;
+
+// Helper which attempts to pop elements from `queue` for transmission along
+// `edge`. This terminates either when `queue` is exhausted, or the next parcel
+// in `queue` is to be transmitted over a link that is not yet known to `edge`.
+// Any successfully popped elements are accumulated at the end of `parcels`.
+void CollectParcelsToFlush(ParcelQueue& queue,
+                           const RouteEdge& edge,
+                           ParcelsToFlush& parcels) {
+  RouterLink* decaying_link = edge.decaying_link().get();
+  RouterLink* primary_link = edge.primary_link().get();
+  while (queue.HasNextElement()) {
+    const SequenceNumber n = queue.current_sequence_number();
+    RouterLink* link = nullptr;
+    if (decaying_link && edge.ShouldTransmitOnDecayingLink(n)) {
+      link = decaying_link;
+    } else if (primary_link && !edge.ShouldTransmitOnDecayingLink(n)) {
+      link = primary_link;
+    } else {
+      return;
+    }
+
+    ParcelToFlush& parcel = parcels.emplace_back(ParcelToFlush{.link = link});
+    const bool popped = queue.Pop(parcel.parcel);
+    ABSL_ASSERT(popped);
+  }
+}
+
+}  // namespace
+
 Router::Router() = default;
 
 Router::~Router() {
@@ -49,10 +91,8 @@ void Router::QueryStatus(IpczPortalStatus& status) {
 
 bool Router::HasLocalPeer(Router& router) {
   absl::MutexLock lock(&mutex_);
-  if (!outward_link_) {
-    return false;
-  }
-  return outward_link_->HasLocalPeer(router);
+  return outward_edge_.primary_link() &&
+         outward_edge_.primary_link()->HasLocalPeer(router);
 }
 
 IpczResult Router::SendOutboundParcel(Parcel& parcel) {
@@ -67,14 +107,15 @@ IpczResult Router::SendOutboundParcel(Parcel& parcel) {
     const SequenceNumber sequence_number =
         outbound_parcels_.GetCurrentSequenceLength();
     parcel.set_sequence_number(sequence_number);
-    if (outward_link_ &&
+    if (outward_edge_.primary_link() &&
         outbound_parcels_.MaybeSkipSequenceNumber(sequence_number)) {
+      link = outward_edge_.primary_link();
+    } else {
       // If there are no unsent parcels ahead of this one in the outbound
       // sequence, and we have an active outward link, we can immediately
-      // transmit the parcel without any intermediate queueing step. This is the
-      // most common case.
-      link = outward_link_;
-    } else {
+      // transmit the parcel without any intermediate queueing step. That is the
+      // most common case, but otherwise we have to queue the parcel here and it
+      // will be flushed out ASAP.
       DVLOG(4) << "Queuing outbound " << parcel.Describe();
       const bool push_ok =
           outbound_parcels_.Push(sequence_number, std::move(parcel));
@@ -108,10 +149,8 @@ void Router::SetOutwardLink(Ref<RouterLink> link) {
 
   {
     absl::MutexLock lock(&mutex_);
-    ABSL_ASSERT(!outward_link_);
-
     if (!is_disconnected_) {
-      outward_link_ = std::move(link);
+      outward_edge_.SetPrimaryLink(std::move(link));
     }
   }
 
@@ -136,10 +175,13 @@ bool Router::AcceptInboundParcel(Parcel& parcel) {
       return true;
     }
 
-    status_.num_local_parcels = inbound_parcels_.GetNumAvailableElements();
-    status_.num_local_bytes = inbound_parcels_.GetTotalAvailableElementSize();
-    traps_.UpdatePortalStatus(status_, TrapSet::UpdateReason::kNewLocalParcel,
-                              dispatcher);
+    if (!inward_edge_) {
+      // If this is a terminal router, we may have trap events to fire.
+      status_.num_local_parcels = inbound_parcels_.GetNumAvailableElements();
+      status_.num_local_bytes = inbound_parcels_.GetTotalAvailableElementSize();
+      traps_.UpdatePortalStatus(status_, TrapSet::UpdateReason::kNewLocalParcel,
+                                dispatcher);
+    }
   }
 
   Flush();
@@ -184,7 +226,7 @@ bool Router::AcceptRouteClosureFrom(LinkType link_type,
                *inbound_parcels_.final_sequence_length() <= sequence_length;
       }
 
-      if (!inward_link_) {
+      if (!inward_edge_) {
         status_.flags |= IPCZ_PORTAL_STATUS_PEER_CLOSED;
         if (inbound_parcels_.IsSequenceFullyConsumed()) {
           status_.flags |= IPCZ_PORTAL_STATUS_DEAD;
@@ -223,10 +265,12 @@ bool Router::AcceptRouteDisconnectedFrom(LinkType link_type) {
     }
 
     // Wipe out all remaining links and propagate the disconnection over them.
-    forwarding_links.push_back(std::move(outward_link_));
-    forwarding_links.push_back(std::move(inward_link_));
-
-    if (!inward_link_) {
+    forwarding_links.push_back(outward_edge_.ReleasePrimaryLink());
+    forwarding_links.push_back(outward_edge_.ReleaseDecayingLink());
+    if (inward_edge_) {
+      forwarding_links.push_back(inward_edge_->ReleasePrimaryLink());
+      forwarding_links.push_back(inward_edge_->ReleaseDecayingLink());
+    } else {
       // Terminal routers may have trap events to fire.
       status_.flags |= IPCZ_PORTAL_STATUS_PEER_CLOSED;
       if (inbound_parcels_.IsSequenceFullyConsumed()) {
@@ -336,7 +380,7 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
         descriptor.new_sublink, nullptr, LinkType::kPeripheralOutward,
         LinkSide::kB, router);
     if (new_link) {
-      router->outward_link_ = std::move(new_link);
+      router->outward_edge_.SetPrimaryLink(std::move(new_link));
 
       DVLOG(4) << "Route extended from "
                << from_node_link.remote_node_name().ToString() << " to "
@@ -362,6 +406,8 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
 void Router::SerializeNewRouter(NodeLink& to_node_link,
                                 RouterDescriptor& descriptor) {
   TrapEventDispatcher dispatcher;
+  const SublinkId new_sublink = to_node_link.memory().AllocateSublinkIds(1);
+  descriptor.new_sublink = new_sublink;
   {
     absl::MutexLock lock(&mutex_);
     traps_.RemoveAll(dispatcher);
@@ -371,34 +417,42 @@ void Router::SerializeNewRouter(NodeLink& to_node_link,
     descriptor.next_incoming_sequence_number =
         inbound_parcels_.current_sequence_number();
 
-    DVLOG(4) << "Extending route to new router with outbound sequence length "
-             << descriptor.next_outgoing_sequence_number
-             << " and current inbound sequence number "
-             << descriptor.next_incoming_sequence_number;
+    // Initialize an inward edge but with no link yet. This ensures that we
+    // don't look like a terminal router while waiting for a link to be set,
+    // which can only happen after `descriptor` is transmitted.
+    inward_edge_.emplace();
 
     if (status_.flags & IPCZ_PORTAL_STATUS_PEER_CLOSED) {
       descriptor.peer_closed = true;
       descriptor.closed_peer_sequence_length =
           *inbound_parcels_.final_sequence_length();
+
+      // Ensure that the new edge decays its link as soon as it has one, since
+      // we know the link will not be used.
+      inward_edge_->BeginPrimaryLinkDecay();
+      inward_edge_->set_length_to_decaying_link(
+          *inbound_parcels_.final_sequence_length());
+      inward_edge_->set_length_from_decaying_link(
+          outbound_parcels_.current_sequence_number());
     }
+
+    // Once `descriptor` is transmitted to the destination node and the new
+    // Router is created there, it may immediately begin transmitting messages
+    // back to this node regarding `new_sublink`. We establish a new
+    // RemoteRouterLink now and register it to `new_sublink` on `to_node_link`,
+    // so that any such incoming messages are routed to `this`.
+    //
+    // NOTE: We do not yet provide `this` itself with a reference to the new
+    // RemoteRouterLink, because it's not yet safe for us to send messages to
+    // the remote node regarding `new_sublink`. `descriptor` must be transmitted
+    // first.
+    Ref<RemoteRouterLink> new_link = to_node_link.AddRemoteRouterLink(
+        new_sublink, nullptr, LinkType::kPeripheralInward, LinkSide::kA,
+        WrapRefCounted(this));
+
+    DVLOG(4) << "Router " << this << " extending route with tentative new "
+             << new_link->Describe();
   }
-
-  const SublinkId new_sublink = to_node_link.memory().AllocateSublinkIds(1);
-  descriptor.new_sublink = new_sublink;
-
-  // Once `descriptor` is transmitted to the destination node and the new Router
-  // is created there, it may immediately begin transmitting messages back to
-  // this node regarding `new_sublink`. We establish a new RemoteRouterLink now
-  // and register it to `new_sublink` on `to_node_link`, so that any such
-  // incoming messages are routed to `this`.
-  //
-  // NOTE: We do not yet provide `this` itself with a reference to the new
-  // RemoteRouterLink, because it's not yet safe for us to send messages to the
-  // remote node regarding `new_sublink`. `descriptor` must be transmitted
-  // first.
-  to_node_link.AddRemoteRouterLink(new_sublink, nullptr,
-                                   LinkType::kPeripheralInward, LinkSide::kA,
-                                   WrapRefCounted(this));
 }
 
 void Router::BeginProxyingToNewRouter(NodeLink& to_node_link,
@@ -410,13 +464,21 @@ void Router::BeginProxyingToNewRouter(NodeLink& to_node_link,
     Ref<RemoteRouterLink> new_router_link = new_sublink->router_link;
     {
       absl::MutexLock lock(&mutex_);
-      ABSL_ASSERT(!inward_link_);
+      ABSL_ASSERT(inward_edge_);
 
       // If the new router has already been closed or disconnected, we will
       // discard the new link to it.
       if (!outbound_parcels_.final_sequence_length() && !is_disconnected_) {
-        // TODO: Initiate proxy removal ASAP now that we're proxying.
-        inward_link_ = std::move(new_router_link);
+        DVLOG(4) << "Router " << this << " will proxy to new router over "
+                 << new_router_link->Describe();
+
+        inward_edge_->SetPrimaryLink(std::move(new_router_link));
+
+        Ref<RouterLink> outward_link = outward_edge_.primary_link();
+        if (outward_link && outward_edge_.is_stable() &&
+            inward_edge_->is_stable()) {
+          outward_link->MarkSideStable();
+        }
       }
     }
 
@@ -437,10 +499,18 @@ void Router::BeginProxyingToNewRouter(NodeLink& to_node_link,
 void Router::NotifyLinkDisconnected(RemoteRouterLink& link) {
   {
     absl::MutexLock lock(&mutex_);
-    if (outward_link_ == &link) {
-      outward_link_.reset();
-    } else if (inward_link_ == &link) {
-      inward_link_.reset();
+    if (outward_edge_.primary_link() == &link) {
+      DVLOG(4) << "Primary " << link.Describe() << " disconnected";
+      outward_edge_.ReleasePrimaryLink();
+    } else if (outward_edge_.decaying_link() == &link) {
+      DVLOG(4) << "Decaying " << link.Describe() << " disconnected";
+      outward_edge_.ReleaseDecayingLink();
+    } else if (inward_edge_ && inward_edge_->primary_link() == &link) {
+      DVLOG(4) << "Primary " << link.Describe() << " disconnected";
+      inward_edge_->ReleasePrimaryLink();
+    } else if (inward_edge_ && inward_edge_->decaying_link() == &link) {
+      DVLOG(4) << "Decaying " << link.Describe() << " disconnected";
+      inward_edge_->ReleaseDecayingLink();
     }
   }
 
@@ -454,37 +524,35 @@ void Router::NotifyLinkDisconnected(RemoteRouterLink& link) {
 void Router::Flush() {
   Ref<RouterLink> outward_link;
   Ref<RouterLink> inward_link;
+  Ref<RouterLink> decaying_outward_link;
+  Ref<RouterLink> decaying_inward_link;
   Ref<RouterLink> dead_inward_link;
   Ref<RouterLink> dead_outward_link;
-  absl::InlinedVector<Parcel, 2> inbound_parcels;
-  absl::InlinedVector<Parcel, 2> outbound_parcels;
   absl::optional<SequenceNumber> final_inward_sequence_length;
   absl::optional<SequenceNumber> final_outward_sequence_length;
+  ParcelsToFlush parcels_to_flush;
   {
     absl::MutexLock lock(&mutex_);
-    outward_link = outward_link_;
-    inward_link = inward_link_;
 
-    // Collect any outbound parcels which are safe to transmit now. Note that we
-    // do not transmit anything or generally call into any RouterLinks while
-    // `mutex_` is held, because such calls may ultimately re-enter this Router
+    // Acquire stack references to all links we might want to use, so it's safe
+    // to acquire additional (unmanaged) references per ParcelToFlush.
+    outward_link = outward_edge_.primary_link();
+    inward_link = inward_edge_ ? inward_edge_->primary_link() : nullptr;
+    decaying_outward_link = outward_edge_.decaying_link();
+    decaying_inward_link =
+        inward_edge_ ? inward_edge_->decaying_link() : nullptr;
+
+    // Collect any parcels which are safe to transmit now. Note that we do not
+    // transmit anything or generally call into any RouterLinks while `mutex_`
+    // is held, because such calls may ultimately re-enter this Router
     // (e.g. if a link is a LocalRouterLink, or even a RemoteRouterLink with a
     // fully synchronous driver.) Instead we accumulate work within this block,
     // and then perform any transmissions or link deactivations after the mutex
     // is released further below.
-    Parcel parcel;
-    while (outbound_parcels_.HasNextElement() && outward_link) {
-      bool ok = outbound_parcels_.Pop(parcel);
-      ABSL_ASSERT(ok);
-      outbound_parcels.push_back(std::move(parcel));
-    }
 
-    // If we have an inward link, then we're a proxy. Collect any queued inbound
-    // parcels to forward over that link.
-    while (inbound_parcels_.HasNextElement() && inward_link) {
-      bool ok = inbound_parcels_.Pop(parcel);
-      ABSL_ASSERT(ok);
-      inbound_parcels.push_back(std::move(parcel));
+    CollectParcelsToFlush(outbound_parcels_, outward_edge_, parcels_to_flush);
+    if (inward_edge_) {
+      CollectParcelsToFlush(inbound_parcels_, *inward_edge_, parcels_to_flush);
     }
 
     if (outward_link && outbound_parcels_.IsSequenceFullyConsumed()) {
@@ -497,11 +565,11 @@ void Router::Flush() {
       // there are no more outbound parcels to send outward, and there no longer
       // exists an ultimate destination for any forwarded inbound parcels. So we
       // drop both links now.
-      dead_outward_link = std::move(outward_link_);
+      dead_outward_link = outward_edge_.ReleasePrimaryLink();
     } else if (!inbound_parcels_.ExpectsMoreElements()) {
       // If the other end of the route is gone and we've received all its
       // parcels, we can simply drop the outward link in that case.
-      dead_outward_link = std::move(outward_link_);
+      dead_outward_link = outward_edge_.ReleasePrimaryLink();
     }
 
     if (inbound_parcels_.IsSequenceFullyConsumed()) {
@@ -509,18 +577,14 @@ void Router::Flush() {
       // then we've also forwarded everything already. We can propagate closure
       // inward and drop the inward link, if applicable.
       final_inward_sequence_length = inbound_parcels_.final_sequence_length();
-      if (inward_link_) {
-        dead_inward_link = std::move(inward_link_);
+      if (inward_edge_) {
+        dead_inward_link = inward_edge_->ReleasePrimaryLink();
       }
     }
   }
 
-  for (Parcel& parcel : outbound_parcels) {
-    outward_link->AcceptParcel(parcel);
-  }
-
-  for (Parcel& parcel : inbound_parcels) {
-    inward_link->AcceptParcel(parcel);
+  for (ParcelToFlush& parcel : parcels_to_flush) {
+    parcel.link->AcceptParcel(parcel.parcel);
   }
 
   if (dead_outward_link) {

@@ -4,24 +4,19 @@
 
 #include "ipcz/node_name.h"
 
-#include <cinttypes>
-#include <cstdint>
-#include <cstdio>
 #include <string>
 #include <type_traits>
 
 #include "third_party/abseil-cpp/absl/base/macros.h"
+#include "third_party/abseil-cpp/absl/strings/str_cat.h"
 
 namespace ipcz {
 
 static_assert(std::is_standard_layout<NodeName>::value, "Invalid NodeName");
 
 std::string NodeName::ToString() const {
-  std::string name(33, 0);
-  int length = snprintf(name.data(), name.size(), "%016" PRIx64 "%016" PRIx64,
-                        high_, low_);
-  ABSL_ASSERT(length == 32);
-  return name;
+  return absl::StrCat(absl::Hex(high_, absl::kZeroPad16),
+                      absl::Hex(low_, absl::kZeroPad16));
 }
 
 }  // namespace ipcz
