@@ -17,9 +17,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
-#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/sync/base/features.h"
@@ -172,6 +170,85 @@ void HistoryDatabase::ComputeDatabaseMetrics(
 
   UMA_HISTOGRAM_TIMES("History.DatabaseBasicMetricsTime",
                       base::TimeTicks::Now() - start_time);
+
+  if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
+    // Compute metrics about foreign visits (i.e. visits coming from other
+    // devices) in the DB.
+    start_time = base::TimeTicks::Now();
+
+    sql::Statement foreign_visits_sql(db_.GetUniqueStatement(
+        "SELECT from_visit, opener_visit, originator_cache_guid, "
+        "originator_visit_id, originator_from_visit, originator_opener_visit "
+        "FROM visits WHERE originator_cache_guid IS NOT NULL AND "
+        "originator_cache_guid != ''"));
+
+    size_t total_foreign_visits = 0;
+    size_t legacy_foreign_visits = 0;
+    size_t unmapped_foreign_visits = 0;
+    size_t mappable_from_visits = 0;
+    size_t mappable_opener_visits = 0;
+    while (foreign_visits_sql.Step()) {
+      ++total_foreign_visits;
+
+      VisitID from_visit = foreign_visits_sql.ColumnInt64(0);
+      VisitID opener_visit = foreign_visits_sql.ColumnInt64(1);
+      std::string originator_cache_guid = foreign_visits_sql.ColumnString(2);
+      VisitID originator_visit = foreign_visits_sql.ColumnInt64(3);
+      VisitID originator_from_visit = foreign_visits_sql.ColumnInt64(4);
+      VisitID originator_opener_visit = foreign_visits_sql.ColumnInt64(5);
+
+      // Foreign visits that don't have an originator_visit_id must have come
+      // from a "legacy" client, i.e. one that's using the Sessions integration
+      // to sync history.
+      if (originator_visit == 0) {
+        ++legacy_foreign_visits;
+      }
+
+      bool missing_from_visit = (from_visit == 0 && originator_from_visit != 0);
+      bool missing_opener_visit =
+          (opener_visit == 0 && originator_opener_visit != 0);
+      if (missing_from_visit || missing_opener_visit) {
+        // Found a visit that's missing the local from/opener_visit values.
+        ++unmapped_foreign_visits;
+        // Check if a matching referrer/opener visits actually exist in the DB.
+        sql::Statement matching_visit(db_.GetCachedStatement(
+            SQL_FROM_HERE,
+            "SELECT id FROM visits WHERE originator_cache_guid=? AND "
+            "originator_visit_id=?"));
+        if (missing_from_visit) {
+          matching_visit.BindString(0, originator_cache_guid);
+          matching_visit.BindInt64(1, originator_from_visit);
+          if (matching_visit.Step()) {
+            ++mappable_from_visits;
+          }
+          matching_visit.Reset(/*clear_bound_vars=*/true);
+        }
+        if (missing_opener_visit) {
+          matching_visit.BindString(0, originator_cache_guid);
+          matching_visit.BindInt64(1, originator_opener_visit);
+          if (matching_visit.Step()) {
+            ++mappable_opener_visits;
+          }
+        }
+      }
+    }
+    // Only record these metrics if there are any foreign visits in the DB.
+    if (total_foreign_visits > 0) {
+      base::UmaHistogramCounts1M("History.ForeignVisitsTotal",
+                                 total_foreign_visits);
+      base::UmaHistogramCounts1M("History.ForeignVisitsLegacy",
+                                 legacy_foreign_visits);
+      base::UmaHistogramCounts1M("History.ForeignVisitsNotRemapped",
+                                 unmapped_foreign_visits);
+      base::UmaHistogramCounts1M("History.ForeignVisitsRemappableFrom",
+                                 mappable_from_visits);
+      base::UmaHistogramCounts1M("History.ForeignVisitsRemappableOpener",
+                                 mappable_opener_visits);
+    }
+
+    base::UmaHistogramTimes("History.DatabaseForeignVisitMetricsTime",
+                            base::TimeTicks::Now() - start_time);
+  }
 
   // Compute the advanced metrics even less often, pending timing data showing
   // that's not necessary.

@@ -1084,8 +1084,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DatabaseAdvancedMetricsTime" units="ms"
-    expires_after="M77">
-  <owner>shess@chromium.org</owner>
+    expires_after="2023-07-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>tommycli@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
   <summary>
     Time spent on advanced History DB metrics calculation (weekly and monthly
@@ -1095,8 +1097,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DatabaseBasicMetricsTime" units="ms"
-    expires_after="M77">
-  <owner>shess@chromium.org</owner>
+    expires_after="2023-07-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>tommycli@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
   <summary>
     Time spent on basic History DB metrics calculation (file size and table
@@ -1114,6 +1118,21 @@ chromium-metrics-reviews@google.com.
     Size of History DB file. Duplicate of Profile.HistorySize and
     Sqlite.SizeKB.History. Logged on initialization of the History DB on 1% of
     starts.
+  </summary>
+</histogram>
+
+<histogram name="History.DatabaseForeignVisitMetricsTime" units="ms"
+    expires_after="2023-07-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>tommycli@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <component>UI&gt;Browser&gt;History</component>
+  <summary>
+    Time spent on foreign-visit-related History DB metrics calculation. These
+    metrics are logged on initialization of the History DB on 1% of starts. Note
+    that the actual metrics (History.ForeignVisits*) are only recorded if any
+    such visits were actually found, so the total counts will not match this
+    histogram's.
   </summary>
 </histogram>
 
@@ -1340,6 +1359,74 @@ chromium-metrics-reviews@google.com.
     function is called during startup. Excludes the case where local
     TopSitesDatabase db_ is unavailable, i.e. where the update doesn't really
     happen.
+  </summary>
+</histogram>
+
+<histogram name="History.ForeignVisitsLegacy" units="visits"
+    expires_after="2023-07-01">
+  <owner>tommycli@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <component>UI&gt;Browser&gt;History</component>
+  <summary>
+    The number of foreign visits (i.e. visits coming from another device) in the
+    DB table which came from &quot;legacy&quot; clients, i.e. those still using
+    the Sessions sync integration. Recorded on initialization of the History DB
+    on 1% of starts, only if any foreign visits exist (i.e. basically for users
+    with History Sync on).
+  </summary>
+</histogram>
+
+<histogram name="History.ForeignVisitsNotRemapped" units="visits"
+    expires_after="2023-07-01">
+  <owner>tommycli@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <component>UI&gt;Browser&gt;History</component>
+  <summary>
+    The number of foreign visits (i.e. visits coming from another device) in the
+    DB table which have an originator_from|opener_visit but are missing a
+    corresponding local from|opener_visit. Recorded on initialization of the
+    History DB on 1% of starts, only if any foreign visits exist (i.e. basically
+    for users with History Sync on).
+  </summary>
+</histogram>
+
+<histogram name="History.ForeignVisitsRemappableFrom" units="visits"
+    expires_after="2023-07-01">
+  <owner>tommycli@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <component>UI&gt;Browser&gt;History</component>
+  <summary>
+    The number of foreign visits (i.e. visits coming from another device) in the
+    DB table which have an originator_from_visit but are missing a corresponding
+    local from_visit, and a matching visit actually exists in the DB. Recorded
+    on initialization of the History DB on 1% of starts, only if any foreign
+    visits exist (i.e. basically for users with History Sync on).
+  </summary>
+</histogram>
+
+<histogram name="History.ForeignVisitsRemappableOpener" units="visits"
+    expires_after="2023-07-01">
+  <owner>tommycli@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <component>UI&gt;Browser&gt;History</component>
+  <summary>
+    The number of foreign visits (i.e. visits coming from another device) in the
+    DB table which have an originator_opener_visit but are missing a
+    corresponding local opener_visit, and a matching visit actually exists in
+    the DB. Recorded on initialization of the History DB on 1% of starts, only
+    if any foreign visits exist (i.e. basically for users with History Sync on).
+  </summary>
+</histogram>
+
+<histogram name="History.ForeignVisitsTotal" units="visits"
+    expires_after="2023-07-01">
+  <owner>tommycli@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <component>UI&gt;Browser&gt;History</component>
+  <summary>
+    The number of foreign visits (i.e. visits coming from another device) in the
+    DB table. Recorded on initialization of the History DB on 1% of starts, only
+    if any foreign visits exist (i.e. basically for users with History Sync on).
   </summary>
 </histogram>
 
