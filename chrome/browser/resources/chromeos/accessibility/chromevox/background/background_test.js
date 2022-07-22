@@ -3783,11 +3783,9 @@ AX_TEST_F(
       mockFeedback.expectSpeech(/menu opened/).replay();
     });
 
-// TODO(crbug.com/1346144): Fix flaky test.
-AX_TEST_F(
-    'ChromeVoxBackgroundTest', 'DISABLED_SelectWithOptGroup', async function() {
-      const mockFeedback = this.createMockFeedback();
-      const site = `
+AX_TEST_F('ChromeVoxBackgroundTest', 'SelectWithOptGroup', async function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
     <select>
       <optgroup label="Theropods">
           <option>Tyrannosaurus</option>
@@ -3796,18 +3794,18 @@ AX_TEST_F(
       </optgroup>
     </select>
   `;
-      await this.runWithLoadedTree(site);
-      mockFeedback.expectSpeech('Tyrannosaurus', 'has pop up', 'Collapsed')
-          .call(doCmd('forceClickOnCurrentItem'))
-          .expectSpeech('Tyrannosaurus')
-          .call(press(KeyCode.DOWN))
-          .expectSpeech('Velociraptor')
-          .call(press(KeyCode.DOWN))
-          .expectSpeech('Deinonychus')
-          .call(press(KeyCode.UP))
-          .expectSpeech('Velociraptor')
-          .replay();
-    });
+  await this.runWithLoadedTree(site);
+  mockFeedback.expectSpeech('Tyrannosaurus', 'has pop up', 'Collapsed')
+      .call(doCmd('forceClickOnCurrentItem'))
+      .expectSpeech('Tyrannosaurus')
+      .call(press(KeyCode.DOWN))
+      .expectSpeech('Velociraptor')
+      .call(press(KeyCode.DOWN))
+      .expectSpeech('Deinonychus')
+      .call(press(KeyCode.UP))
+      .expectSpeech('Velociraptor')
+      .replay();
+});
 
 AX_TEST_F('ChromeVoxBackgroundTest', 'GroupNavigation', async function() {
   const mockFeedback = this.createMockFeedback();
@@ -4070,24 +4068,21 @@ AX_TEST_F(
           .replay();
     });
 
-// TODO(crbug.com/1346144): Fix flaky test.
-AX_TEST_F(
-    'ChromeVoxBackgroundTest', 'DISABLED_GestureOnPopUpButton',
-    async function() {
-      const mockFeedback = this.createMockFeedback();
-      const site = `
+AX_TEST_F('ChromeVoxBackgroundTest', 'GestureOnPopUpButton', async function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
     <select><option>apple</option><option>banana</option></select>
   `;
-      await this.runWithLoadedTree(site);
-      mockFeedback.expectSpeech('Button', 'has pop up')
-          .call(doGesture(Gesture.CLICK))
-          .expectSpeech('Button', 'has pop up', 'Expanded')
-          .call(doGesture(Gesture.SWIPE_DOWN1))
-          .expectSpeech('banana')
-          .call(doGesture(Gesture.SWIPE_UP1))
-          .expectSpeech('apple')
-          .replay();
-    });
+  await this.runWithLoadedTree(site);
+  mockFeedback.expectSpeech('Button', 'has pop up')
+      .call(doGesture(Gesture.CLICK))
+      .expectSpeech('Button', 'has pop up', 'Expanded')
+      .call(doGesture(Gesture.SWIPE_DOWN1))
+      .expectSpeech('banana')
+      .call(doGesture(Gesture.SWIPE_UP1))
+      .expectSpeech('apple')
+      .replay();
+});
 
 AX_TEST_F('ChromeVoxBackgroundTest', 'NestedImages', async function() {
   const mockFeedback = this.createMockFeedback();

@@ -17,25 +17,7 @@ select_to_speak_out_dir =
     "$root_out_dir/resources/chromeos/accessibility/select_to_speak"
 
 group("build") {
-  deps = [
-    ":select_to_speak_copied_files",
-    ":select_to_speak_script",
-  ]
-}
-
-# Pulls in Closure-based common files and loads Select to Speak.
-run_jsbundler("select_to_speak_script") {
-  mode = "compressed_bundle"
-  modules = [
-    "//third_party/chromevox/third_party/closure-library/closure/goog/base.js",
-    "../common/automation_predicate.js",
-    "../common/automation_util.js",
-    "../common/constants.js",
-    "../common/key_code.js",
-    "../common/tree_walker.js",
-  ]
-  sources = [ "loader.js" ]
-  output_file = "$select_to_speak_out_dir/selectToSpeakScript.js"
+  deps = [ ":select_to_speak_copied_files" ]
 }
 
 # Instead of setting up one copy target for each subdirectory, use a script
@@ -44,10 +26,10 @@ run_jsbundler("select_to_speak_copied_files") {
   mode = "copy"
   dest_dir = select_to_speak_out_dir
   sources = [
+    "background.html",
     "checked.png",
     "earcons/null_selection.ogg",
     "input_handler.js",
-    "loader.js",
     "metrics_utils.js",
     "node_navigation_utils.js",
     "node_utils.js",

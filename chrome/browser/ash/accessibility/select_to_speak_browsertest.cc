@@ -32,7 +32,6 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/notification_types.h"
@@ -87,24 +86,6 @@ class SelectToSpeakTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    // Select to speak loads part of itself (eventually all of itself) via a
-    // dynamic import. This means that the background page signals a load event
-    // prior to the import being fully finished. Wait for it here.
-    std::string script =
-        R"JS(
-          (async function() {
-            await import("/select_to_speak/select_to_speak_main.js");
-            window.domAutomationController.send('ok');
-          })();
-        )JS";
-
-    std::string result =
-        extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-            browser()->profile(), extension_misc::kSelectToSpeakExtensionId,
-            script,
-            extensions::browsertest_util::ScriptUserActivation::kDontActivate);
-    ASSERT_EQ(result, "ok");
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -422,9 +403,13 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
   sm_.Replay();
 }
 
-// Flaky on ChromeOS MSAN bots: https://crbug.com/1227368 and ChromeOS in
-// general: https://crbug.com/1225388
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, DISABLED_BreaksAtParagraphBounds) {
+// Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_BreaksAtParagraphBounds DISABLED_BreaksAtParagraphBounds
+#else
+#define MAYBE_BreaksAtParagraphBounds BreaksAtParagraphBounds
+#endif
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_BreaksAtParagraphBounds) {
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<div><p>First paragraph</p>"
       "<p>Second paragraph</p></div>");
@@ -497,13 +482,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_DoesNotCrashWithMousewheelEvent)
   sm_.Replay();
 }
 
-// Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_FocusRingMovesWithMouse DISABLED_FocusRingMovesWithMouse
-#else
-#define MAYBE_FocusRingMovesWithMouse FocusRingMovesWithMouse
-#endif
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_FocusRingMovesWithMouse) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, FocusRingMovesWithMouse) {
   // Create a callback for the focus ring observer.
   base::RepeatingCallback<void()> callback =
       base::BindRepeating(&SelectToSpeakTest::OnFocusRingChanged, GetWeakPtr());
@@ -637,10 +616,8 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_WorksWithStickyKeys) {
   sm_.Replay();
 }
 
-// TODO(crbug.com/1227368): Flaky on ChromeOS MSAN bots.
-// TODO(crbug.com/1344562): Flaky on other CrOS bots too.
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
-                       DISABLED_SelectToSpeakDoesNotDismissTrayBubble) {
+                       SelectToSpeakDoesNotDismissTrayBubble) {
   // Open tray bubble menu.
   tray_test_api_->ShowBubble();
 

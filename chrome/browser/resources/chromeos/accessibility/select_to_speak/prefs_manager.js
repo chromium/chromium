@@ -321,9 +321,7 @@ export class PrefsManager {
                 'enhancedNetworkVoices': this.enhancedNetworkVoicesEnabled_,
               });
             }
-            // Tests can set |this.enhancedVoicesDialogShown_|.
-            if (!this.enhancedVoicesDialogShown_ &&
-                prefs['enhancedVoicesDialogShown'] !== undefined) {
+            if (prefs['enhancedVoicesDialogShown'] !== undefined) {
               this.enhancedVoicesDialogShown_ =
                   prefs['enhancedVoicesDialogShown'];
             } else {

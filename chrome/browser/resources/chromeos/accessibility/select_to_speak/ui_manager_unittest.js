@@ -81,6 +81,16 @@ class MockPrefsManager {
  * Test fixture for ui_manager.js.
  */
 SelectToSpeakUiManagerUnitTest = class extends SelectToSpeakE2ETest {
+  constructor() {
+    super();
+    this.mockAccessibilityPrivate = MockAccessibilityPrivate;
+    chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
+
+    this.mockPrefsManager = null;
+    this.mockListener = null;
+    this.uiManager = null;
+  }
+
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -88,8 +98,6 @@ SelectToSpeakUiManagerUnitTest = class extends SelectToSpeakE2ETest {
     await importModule('PrefsManager', '/select_to_speak/prefs_manager.js');
     await importModule('ParagraphUtils', '/select_to_speak/paragraph_utils.js');
 
-    this.mockAccessibilityPrivate = MockAccessibilityPrivate;
-    chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
     this.mockPrefsManager = new MockPrefsManager();
     this.mockListener = new MockUiListener();
     this.uiManager = new UiManager(this.mockPrefsManager, this.mockListener);
