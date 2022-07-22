@@ -427,6 +427,12 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         # Force-enable SharedArrayBuffer to be able to test its
         # support in WEBGL_multi_draw.
         '--enable-blink-features=SharedArrayBuffer',
+        # When running tests in parallel, windows can be treated as occluded if
+        # a newly opened window fully covers a previous one, which can cause
+        # issues in a few tests. This is practically only an issue on Windows
+        # since Linux/Mac stagger new windows, but pass in on all platforms
+        # since it could technically be hit on any platform.
+        '--disable-backgrounding-occluded-windows',
     ])
     # Note that the overriding of the default --js-flags probably
     # won't interact well with RestartBrowserIfNecessaryWithArgs, but
@@ -460,14 +466,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def SetUpProcess(cls) -> None:
     super(WebGLConformanceIntegrationTest, cls).SetUpProcess()
     cls.SetClassVariablesFromOptions(cls.child.context.finder_options)
-    cls.CustomizeBrowserArgs([
-        # When running tests in parallel, windows can be treated as occluded if
-        # a newly opened window fully covers a previous one, which can cause
-        # issues in a few tests. This is practically only an issue on Windows
-        # since Linux/Mac stagger new windows, but pass in on all platforms
-        # since it could technically be hit on any platform.
-        '--disable-backgrounding-occluded-windows',
-    ])
+    cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
     # By setting multiple server directories, the root of the server
     # implicitly becomes the common base directory, i.e., the Chromium
