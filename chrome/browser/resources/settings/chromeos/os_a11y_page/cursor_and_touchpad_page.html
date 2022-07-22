@@ -21,6 +21,7 @@
 <settings-toggle-button
     pref="{{prefs.settings.a11y.autoclick}}"
     label="$i18n{clickOnStopLabel}"
+    sub-label="$i18n{clickOnStopDescription}"
     deep-link-focus-id$="[[Setting.kAutoClickWhenCursorStops]]">
 </settings-toggle-button>
 <div class="settings-box continuation"
@@ -41,13 +42,6 @@
       label="$i18n{autoclickStabilizeCursorPosition}">
   </settings-toggle-button>
 </div>
-<div class="sub-item">
-  <settings-toggle-button class="sub-item"
-      hidden$="[[!prefs.settings.a11y.autoclick.value]]"
-      pref="{{prefs.settings.a11y.autoclick_revert_to_left_click}}"
-      label="$i18n{autoclickRevertToLeftClick}">
-  </settings-toggle-button>
-</div>
 <div class="settings-box continuation"
     hidden$="[[!prefs.settings.a11y.autoclick.value]]">
   <div class="start sub-item settings-box-text" aria-hidden="true">
@@ -59,6 +53,13 @@
       menu-options="[[autoClickMovementThresholdOptions_]]"
       disabled="[[!prefs.settings.a11y.autoclick.value]]">
   </settings-dropdown-menu>
+</div>
+<div class="sub-item">
+  <settings-toggle-button class="sub-item"
+      hidden$="[[!prefs.settings.a11y.autoclick.value]]"
+      pref="{{prefs.settings.a11y.autoclick_revert_to_left_click}}"
+      label="$i18n{autoclickRevertToLeftClick}">
+  </settings-toggle-button>
 </div>
 <settings-toggle-button
     class="hr"
@@ -98,7 +99,6 @@
 </settings-toggle-button>
 <cr-link-row id="pointerSubpageButton" class="hr"
     label="$i18n{mouseSettingsTitle}" on-click="onMouseTap_"
-    sub-label="$i18n{mouseSettingsDescription}"
     role-description="$i18n{subpageArrowRoleDescription}" embedded>
 </cr-link-row>
 <template is="dom-if" if="[[showShelfNavigationButtonsSettings_]]" restamp>

@@ -907,21 +907,24 @@
 
   <!-- Accessibility -->
   <message name="IDS_SETTINGS_A11Y_TABLET_MODE_SHELF_BUTTONS_LABEL" desc="The name of a setting within accessibility settings that controls whether ChromeOS system shelf navigation buttons (for going back, home, or to overview) should be shown when the device is in tablet mode.">
-    Show navigation buttons
+    Show navigation buttons in tablet mode
   </message>
   <message name="IDS_SETTINGS_A11Y_TABLET_MODE_SHELF_BUTTONS_DESCRIPTION" desc="The description for the setting within accessibility settings that controls whether ChromeOS system shelf navigation buttons should be shown when the device is in tablet mode. The buttons whose visibility the setting controls are the button to go home (to launcher), the button to go back, and the button to go to overview.">
-    Navigate home, back, and switch apps with buttons in tablet mode. Turned on when ChromeVox or Automatic clicks is enabled.
+    Use on-screen buttons to navigate home, back, and switch apps. Turns on automatically if ChromeVox or automatic clicks is turned on.
   </message>
 
   <!-- A11y (OS Settings) -->
   <message name="IDS_SETTINGS_OPTIONS_IN_MENU_LABEL" desc="Label for checkbox which enables showing accessibility options in the system menu.">
-    Always show accessibility options in the system menu
+    Show accessibility options in Quick Settings
+  </message>
+  <message name="IDS_SETTINGS_OPTIONS_IN_MENU_DESCRIPTION" desc="Description for checkbox which enables showing accessibility options in the system menu.">
+    Accessibility features make your device easier to use. To access Quick Settings, select the time on the bottom of your screen.
   </message>
   <message name="IDS_SETTINGS_LARGE_MOUSE_CURSOR_LABEL" desc="Label for checkbox which enables showing a larger mouse cursor than normal.">
     Show large mouse cursor
   </message>
   <message name="IDS_SETTINGS_LARGE_MOUSE_CURSOR_SIZE_LABEL" desc="Label for a slider which changes the size of large mouse cursor.">
-    Adjust cursor size
+    Cursor size
   </message>
   <message name="IDS_SETTINGS_LARGE_MOUSE_CURSOR_SIZE_DEFAULT_LABEL" desc="Label in the slider which indicates that this side makes the cursor to its default size.">
     Default
@@ -957,25 +960,40 @@
     Pink
   </message>
   <message name="IDS_SETTINGS_HIGH_CONTRAST_LABEL" desc="Label for checkbox which enables high-contrast UI.">
-      Use high contrast mode
+    Color inversion
+  </message>
+  <message name="IDS_SETTINGS_HIGH_CONTRAST_DESCRIPTION" desc="Label for checkbox which enables high-contrast UI.">
+    Turn light screens dark, and dark screens light. Press Search + Ctrl + H to turn color inversion on and off.
   </message>
   <message name="IDS_SETTINGS_STICKY_KEYS_LABEL" desc="Label for checkbox which enables sticky keys, with an explanation of the term 'sticky keys'.">
-      Enable sticky keys (to perform keyboard shortcuts by typing them sequentially)
+    Sticky keys
+  </message>
+  <message name="IDS_SETTINGS_STICKY_KEYS_DESCRIPTION" desc="Label for checkbox which enables sticky keys, with an explanation of the term 'sticky keys'.">
+    Press one key at a time for keyboard shortcuts instead of holding keys down at the same time
   </message>
   <message name="IDS_SETTINGS_CHROMEVOX_LABEL" desc="Label for checkbox which enables ChromeVox, with a description of what ChromeVox is.">
-      Enable ChromeVox (spoken feedback)
+    ChromeVox
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_DESCRIPTION_OFF" desc="Description for checkbox which enables ChromeVox, with a description of what ChromeVox is, when ChromeVox is turned off.">
+    Hear spoken feedback so you can use your device without looking at the screen. Braille feedback is available with a connected device.
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_DESCRIPTION_ON" desc="Description for checkbox which enables ChromeVox, with a description of what ChromeVox is, when ChromeVox is turned on.">
+    Hear spoken feedback so you can use your device without looking at the screen. Braille feedback is available with a connected device. Use Ctrl + Alt + Z to turn ChromeVox on and off. Use Search + Left arrow or Right arrow to navigate. Use Search + Space to select (activate).
   </message>
   <message name="IDS_SETTINGS_CHROMEVOX_OPTIONS_LABEL" desc="Label for button to open ChromeVox options.">
-      Open ChromeVox settings
+    ChromeVox settings
   </message>
   <message name="IDS_SETTINGS_CHROMEVOX_TUTORIAL_LABEL" desc="Label for button to open ChromeVox tutorial.">
-    Open ChromeVox tutorial
+    ChromeVox tutorial
   </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL" desc="Label for checkbox which enables the fullscreen magnifier">
-      Enable fullscreen magnifier
+    Full-screen magnifier
   </message>
-  <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_HINT_LABEL" desc="Label for keyboard shortcut hint which tells how to enable and disable the fullscreen magnifier.">
-    Press Ctrl+<ph name="SEARCH_KEY_NAME">$1<ex>Search</ex></ph>+M to turn fullscreen magnifier on or off. Press Ctrl+Alt+Arrow keys to move around when zoomed in.
+  <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_DESCRIPTION_OFF" desc="Description for checkbox which enables the fullscreen magnifier, when fullscreen magnifier is turned off.">
+    Zoom in to make items on the screen bigger. Use Search + Ctrl + M to turn magnifier on and off.
+  </message>
+  <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_DESCRIPTION_ON" desc="Description for checkbox which enables the fullscreen magnifier, when fullscreen magnifier is turned on.">
+    Zoom in to make items on the screen bigger. Use Search + Ctrl + M to turn magnifier on and off. Use Ctrl + Alt + Arrow keys to move around when zoomed in.
   </message>
   <message name="IDS_SETTINGS_SCREEN_MANIFIER_MOUSE_FOLLOWING_MODE_CONTINUOUS" desc="Label for the radio button that allows the user to choose the 'continuous' mouse following mode for the full screen magnifier, which moves the zoomed-in screen continuously (underneath the cursor in the opposite direction) as the mouse moves towards the edges of the screen. This feature allows the user of full screen magnifier to choose how the zoomed-in screen moves as their mouse moves within the screen. The options are 'Move screen continuously as mouse moves', 'Move screen keeping mouse at center of screen', and 'Move screen when mouse touches edges of screen'.">
     Move screen continuously as mouse moves
@@ -993,11 +1011,14 @@
     Fullscreen zoom level
   </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_ZOOM_HINT_LABEL" desc="Label for keyboard shortcut for adjusting the zoom levels for the fullscreen magnifier">
-    Press Ctrl+Alt+Brightness up to zoom in,
-and Ctrl+Alt+Brightness down to zoom out.
+    Use Ctrl + Alt + Brightness up to zoom in.
+Use Ctrl + Alt + Brightness down to zoom out.
   </message>
   <message name="IDS_SETTINGS_DOCKED_MAGNIFIER_LABEL" desc="Label for checkbox which enables the docked magnifier">
-    Enable docked magnifier
+    Docked magnifier
+  </message>
+  <message name="IDS_SETTINGS_DOCKED_MAGNIFIER_DESCRIPTION" desc="Description for checkbox which enables the docked magnifier">
+    Use a split-screen view to see the magnified area of your screen. Use Search + Ctrl + D to turn docked magnifier on and off.
   </message>
   <message name="IDS_SETTINGS_DOCKED_MAGNIFIER_ZOOM_LABEL" desc="Label for dropdown menu which contains zoom levels for the docked magnifier">
     Docked zoom level:
@@ -1036,6 +1057,9 @@ and Ctrl+Alt+Brightness down to zoom out.
     Enable tap dragging
   </message>
   <message name="IDS_SETTINGS_CLICK_ON_STOP_LABEL" desc="Label for checkbox which enables automatically do a mouse action when the mouse cursor stops.">
+    Automatic clicks
+  </message>
+  <message name="IDS_SETTINGS_CLICK_ON_STOP_DESCRIPTION" desc="Description for checkbox which enables automatically do a mouse action when the mouse cursor stops.">
     Automatically click when the cursor stops
   </message>
   <message name="IDS_SETTINGS_DELAY_BEFORE_CLICK_LABEL" desc="Label for dropdown menu which contains various time delays for mouse action.">
@@ -1059,11 +1083,11 @@ and Ctrl+Alt+Brightness down to zoom out.
   <message name="IDS_SETTINGS_AUTOCLICK_REVERT_TO_LEFT_CLICK" desc="Description of a checkbox that gives the option to return to the default left click action after taking another action.">
     Revert to left click after action
   </message>
-  <message name="IDS_SETTINGS_AUTOCLICK_STABILIZE_CURSOR_POSITION" desc="Description of a checkbox that gives the option to turn on cursor movmeent stablization.">
-    Stabilize click location
+  <message name="IDS_SETTINGS_AUTOCLICK_STABILIZE_CURSOR_POSITION" desc="Description of a checkbox that gives the option to turn on cursor movement stablization.">
+    Ignore minor cursor movement
   </message>
   <message name="IDS_SETTINGS_AUTOCLICK_MOVEMENT_THRESHOLD_LABEL" desc="Label for a dropdown menu which that has options for how much mouse movement can occur before a new autoclick is initiated.">
-    Movement threshold
+    Cursor area size
   </message>
   <message name="IDS_SETTINGS_AUTOCLICK_MOVEMENT_THRESHOLD_EXTRA_SMALL" desc="Description of an extra small mouse movement threshold for autoclick mouse movements.">
     Extra small
@@ -1087,7 +1111,7 @@ and Ctrl+Alt+Brightness down to zoom out.
     Enable dictation (speak to type)
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_NEW_DESCRIPTION" desc="Description explaining what Dictation does and how to use it. Is only user-visible if the kEnableExperimentalAccessibilityDictationOffline flag is enabled.">
-    Type with your voice. Press Search + D, then start speaking.
+    Type with your voice. Use Search + D, then start speaking.
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_PROGRESS" desc="Description explaining the progress for the speech recognition library download.">
     Downloading speech recognition files... <ph name="PERCENT">$1<ex>17</ex></ph>%
@@ -1144,7 +1168,10 @@ and Ctrl+Alt+Brightness down to zoom out.
     <ph name="LANGUAGE">$1<ex>English</ex></ph> (not selected)
   </message>
   <message name="IDS_SETTINGS_ON_SCREEN_KEYBOARD_LABEL" desc="Label for checkbox which enables an on-screen keyboard.">
-    Enable on-screen keyboard
+    On-screen keyboard
+  </message>
+  <message name="IDS_SETTINGS_ON_SCREEN_KEYBOARD_DESCRIPTION" desc="Description for checkbox which enables an on-screen keyboard.">
+    Select a text field to open the keyboard. You can also select the Keyboard icon on the bottom of your screen. 
   </message>
   <message name="IDS_SETTINGS_MONO_AUDIO_LABEL" desc="Label for checkbox which enables mono audio output.">
     Play the same audio through all speakers (mono audio)
@@ -1159,22 +1186,34 @@ and Ctrl+Alt+Brightness down to zoom out.
     Enable accessibility features to make your device easier to use. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_CARET_HIGHLIGHT_DESCRIPTION" desc="In the settings tab, the text next to the checkbox to highlight the caret (the text insertion point) to make it easier to see.">
-    Highlight the text caret when it appears or moves
+    Highlight text cursor
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_CARET_HIGHLIGHT_DESCRIPTION_SUBTEXT" desc="In the settings tab, the sub-text next to the checkbox to highlight the caret (the text insertion point) to make it easier to see.">
+    Cursor is highlighted when it appears or moves
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_CARET_BROWSING_DESCRIPTION" desc="Name of the setting to enable Caret Browsing, which allows you to move around any web page using a text caret.">
+    Navigate with text cursor (caret browsing)
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_CARET_BROWSING_DESCRIPTION_SUBTEXT" desc="Subtext of the setting to enable Caret Browsing, which allows you to move around any web page using a text caret.">
+    Use the arrow keys to move through items letter by letter
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_CURSOR_HIGHLIGHT_DESCRIPTION" desc="In the settings tab, the text next to the checkbox to highlight the mouse cursor when it's moving to make it easier to see.">
     Highlight the mouse cursor when it's moving
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION" desc="In the settings tab, the text next to the checkbox to highlight the focused object to make it easier to see.">
-    Highlight the object with keyboard focus when it changes
+    Highlight item with keyboard focus
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION_SUBTEXT" desc="In the settings tab, the subtext next to the checkbox to highlight the focused object to make it easier to see.">
+    Item is highlighted when you move focus. Press tab or select an item to change focus.
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_TITLE" desc="In the settings tab, the text next to the checkbox to enable an option to hold a key and click to speak any on-screen text out loud.">
-    Enable select-to-speak
+    Select-to-speak
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DISABLED_DESCRIPTION" desc="In the settings tab, the description of a feature that will read on-screen text out loud. This text is shown when that feature is disabled.">
-    Hear selected text
+    Hear specific text read aloud. First, select the Select-to-speak icon on the bottom of your screen, then highlight text.
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DESCRIPTION" desc="For devices with a hardware keyboard. In the settings tab, the description of an option to hold a key and click or drag a box with the mouse to speak any on-screen text out loud.">
-    Highlight what you want to hear, then press Search + S. You can also press and hold the Search key, or tap the Select-to-Speak icon near the status tray to make a selection.
+    Hear specific text read aloud. First, select the Select-to-speak icon on the bottom of your screen, then highlight text. You can also use a keyboard shortcut: Highlight text, then press Search + S.
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DESCRIPTION_WITHOUT_KEYBOARD" desc="For devices that do not have a hardware keyboard. In the settings tab, the description of an option to highlight text to be read out loud.">
     Tap the Select-to-Speak icon near your profile image, then select what you want to hear.
@@ -1183,10 +1222,13 @@ and Ctrl+Alt+Brightness down to zoom out.
     Open select-to-speak settings
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SWITCH_ACCESS_DESCRIPTION" desc="In the settings tab, the text next to the checkbox to enable Switch Access (for users with limited motor control).">
-    Switch Access (control the computer with just one or two switches)
+    Switch Access
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_SWITCH_ACCESS_DESCRIPTION_SUBTEXT" desc="In the settings tab, the description next to the checkbox to enable Switch Access (for users with limited motor control).">
+    Control your device with one or more switches. Switches can be keyboard keys, gamepad buttons, or dedicated devices.
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SWITCH_ACCESS_OPTIONS_LABEL" desc="In the settings tab, the label for the button that opens the Options page for the Switch Access feature.">
-    Switch Access options
+    Switch Access settings
   </message>
   <message name="IDS_SETTINGS_MANAGE_SWITCH_ACCESS_SETTINGS" desc="Title of the page to manage Switch Access settings.">
     Switch Access settings
@@ -1416,34 +1458,31 @@ Press an assigned switch or key to remove assignment.
     Text-to-Speech
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_DISPLAY_SETTINGS_TITLE" desc="In the settings tab, the title of a link to open display settings.">
-    Open display device settings
+    Display settings
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_DISPLAY_SETTINGS_DESCRIPTION" desc="In the settings tab, an explanation that the display settings have options to adjust the screen resolution.">
-    Allows you to adjust your screen resolution
+    Change display size to make items on your screen smaller or larger
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_APPEARANCE_SETTINGS_TITLE" desc="In the settings tab, the title of a link to open appearance settings.">
-    Open appearance settings
+    Website text size and font
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_APPEARANCE_SETTINGS_DESCRIPTION" desc="In the settings tab, an explanation that the appearance settings allows you to change the size of text on the screen.">
-    Customize your text size
+    Customize text size and font for the web browser
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_AND_TEXT_INPUT_HEADING" desc="In the settings tab, the heading above settings related to the keyboard and other text input.">
     Keyboard and text input
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_SETTINGS_TITLE" desc="In the settings tab, the title of a link to open keyboard settings.">
-    Open keyboard device settings
+    Keyboard settings
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_SETTINGS_DESCRIPTION" desc="In the settings tab, an explanation that the keyboard settings let you adjust the rate at which keys automatically repeat when held down, automatic prediction of words, and more.">
-    Allows you to adjust your keyboard repeat rate, word prediction, and more
+    Change keyboard key mapping, function keys, and more
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_MOUSE_AND_TOUCHPAD_HEADING" desc="In the settings tab, the heading for the section on mouse and touchpad settings.">
     Mouse and touchpad
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_MOUSE_SETTINGS_TITLE" desc="In the settings tab, the title of a link to open mouse and touchpad settings.">
-    Open mouse and touchpad device settings
-  </message>
-  <message name="IDS_SETTINGS_ACCESSIBILITY_MOUSE_SETTINGS_DESCRIPTION" desc="In the settings tab, an explanation that the mouse and touchpad settings allows you to turn the tap-to-click and tap dragging features on and off.">
-    Allows you to enable/disable tap-to-click and tap dragging
+    Mouse and touchpad settings
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_AUDIO_AND_CAPTIONS_HEADING" desc="In the settings tab, the heading for the section on audio / sound and caption settings.">
     Audio and captions
@@ -1455,7 +1494,7 @@ Press an assigned switch or key to remove assignment.
     Text-to-Speech voice settings
   </message>
   <message name="IDS_SETTINGS_TTS_LINK_DESCRIPTION" desc="Description of link to manage text-to-speech settings">
-    Select and customize text-to-speech voices
+    Select and customize text-to-speech voices for ChromeVox and Select-to-speak
   </message>
   <message name="IDS_SETTINGS_TEXT_TO_SPEECH_VOICES" desc="Heading describing a collection of listboxes on the text-to-speech settings page. Each listbox is associated with a language, and contains all possible voices for that language">
     Preferred Voices
@@ -1533,25 +1572,25 @@ Press an assigned switch or key to remove assignment.
     Display and magnification
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change keyboard and text input accessibility features.">
-    High-contrast mode, magnifier, and display settings
+    Color inversion, magnifier, and display settings
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_AND_TEXT_INPUT_LINK_TITLE" desc="In the settings tab, the title of a link that opens a screen allowing the user to change keyboard and text input accessibility features.">
     Keyboard and text input
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_AND_TEXT_INPUT_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change keyboard and text input accessibility features.">
-    Sticky keys, on-screen keyboard, dictation, switch access, and enhanced highlight
+    On-screen keyboard, dictation, Switch Access, and more
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_CURSOR_AND_TOUCHPAD_LINK_TITLE" desc="In the settings tab, the title of a link that opens a screen allowing the user to change cursor and touchpad accessibility features.">
     Cursor and touchpad
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_CURSOR_AND_TOUCHPAD_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change cursor and touchpad accessibility features.">
-    Automatic click, cursor size, cursor color, and highlight cursor
+    Automatic clicks, cursor size, cursor color, and more
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_AUDIO_AND_CAPTIONS_LINK_TITLE" desc="In the settings tab, the title of a link that opens a screen allowing the user to change audio and captions accessibility features.">
     Audio and captions
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_AUDIO_AND_CAPTIONS_LINK_DESCRIPTION" desc="In the settings tab, the description of a link that opens a screen allowing the user to change audio and captions accessibility features.">
-    Mono audio, sounds on startup, and captions
+    Mono audio, startup, Live Caption, and more
   </message>
 
   <!-- Account Manager (OS settings) -->

@@ -138,11 +138,23 @@ class SettingsTextToSpeechPageElement extends
   }
 
   /**
-   * Updates the Select-to-Speak description text based on:
+   * Return ChromeVox description text based on whether ChromeVox is enabled.
+   * @param {boolean} enabled
+   * @return {string}
+   * @private
+   */
+  getChromeVoxDescription_(enabled) {
+    return this.i18n(
+        enabled ? 'chromeVoxDescriptionOn' : 'chromeVoxDescriptionOff');
+  }
+
+  /**
+   * Return Select-to-Speak description text based on:
    *    1. Whether Select-to-Speak is enabled.
    *    2. If it is enabled, whether a physical keyboard is present.
    * @param {boolean} enabled
    * @param {boolean} hasKeyboard
+   * @return {string}
    * @private
    */
   getSelectToSpeakDescription_(enabled, hasKeyboard) {

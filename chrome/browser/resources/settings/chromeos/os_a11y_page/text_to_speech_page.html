@@ -20,6 +20,7 @@
 <settings-toggle-button
     pref="{{prefs.settings.accessibility}}"
     label="$i18n{chromeVoxLabel}"
+    sub-label="[[getChromeVoxDescription_(prefs.settings.accessibility.value)]]"
     deep-link-focus-id$="[[Setting.kChromeVox]]">
 </settings-toggle-button>
 <iron-collapse opened="[[prefs.settings.accessibility.value]]">

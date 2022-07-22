@@ -120,20 +120,10 @@ class SettingsDisplayAndMagnificationElement extends
        * Whether the user is in kiosk mode.
        * @protected
        */
-       isKioskModeActive_: {
+      isKioskModeActive_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isKioskModeActive');
-        },
-      },
-
-      /** @protected */
-      screenMagnifierHintLabel_: {
-        type: String,
-        value() {
-          return this.i18n(
-              'screenMagnifierHintLabel',
-              this.i18n('screenMagnifierHintSearchKey'));
         },
       },
 
@@ -176,6 +166,19 @@ class SettingsDisplayAndMagnificationElement extends
     }
 
     this.attemptDeepLink();
+  }
+
+  /**
+   * Return Fullscreen magnifier description text based on whether Fullscreen
+   * magnifier is enabled.
+   * @param {boolean} enabled
+   * @return {string}
+   * @private
+   */
+  getScreenMagnifierDescription_(enabled) {
+    return this.i18n(
+        enabled ? 'screenMagnifierDescriptionOn' :
+                  'screenMagnifierDescriptionOff');
   }
 
   /** @private */

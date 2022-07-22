@@ -36,12 +36,14 @@
 <settings-toggle-button
     pref="{{prefs.settings.a11y.sticky_keys_enabled}}"
     label="$i18n{stickyKeysLabel}"
+    sub-label="$i18n{stickyKeysDescription}"
     deep-link-focus-id$="[[Setting.kStickyKeys]]">
 </settings-toggle-button>
 <settings-toggle-button
     class="hr"
     pref="{{prefs.settings.a11y.virtual_keyboard}}"
     label="$i18n{onScreenKeyboardLabel}"
+    sub-label="$i18n{onScreenKeyboardDescription}"
     deep-link-focus-id$="[[Setting.kOnScreenKeyboard]]">
 </settings-toggle-button>
 <settings-toggle-button
@@ -49,7 +51,7 @@
     class="hr"
     pref="{{prefs.settings.a11y.dictation}}"
     label="$i18n{dictationLabel}"
-    sub-label="[[dictationSubtitle_]]"
+    sub-label="$i18n{dictationDescription}"
     deep-link-focus-id$="[[Setting.kDictation]]"
     learn-more-url="[[dictationLearnMoreUrl_]]">
 </settings-toggle-button>
@@ -80,12 +82,14 @@
     class="hr"
     pref="{{prefs.settings.a11y.focus_highlight}}"
     label="$i18n{focusHighlightLabel}"
+    sub-label="$i18n{focusHighlightLabelSubtext}"
     deep-link-focus-id$="[[Setting.kHighlightKeyboardFocus]]">
 </settings-toggle-button>
 <settings-toggle-button
     class="hr"
     pref="{{prefs.settings.a11y.caret_highlight}}"
     label="$i18n{caretHighlightLabel}"
+    sub-label="$i18n{caretHighlightLabelSubtext}"
     deep-link-focus-id$="[[Setting.kHighlightTextCaret]]">
 </settings-toggle-button>
 <settings-toggle-button
@@ -101,6 +105,7 @@
       class="hr"
       pref="{{prefs.settings.a11y.switch_access.enabled}}"
       label="$i18n{switchAccessLabel}"
+      sub-label="$i18n{switchAccessLabelSubtext}"
       deep-link-focus-id$="[[Setting.kEnableSwitchAccess]]">
   </settings-toggle-button>
   <iron-collapse

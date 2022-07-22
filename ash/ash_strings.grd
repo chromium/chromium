@@ -972,7 +972,7 @@ This file contains the strings for ash.
         ChromeVox (spoken feedback)
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK" desc="The label used in the accessibility menu of the system tray to toggle on/off the select-to-speak feature.">
-        Select-to-Speak
+        Select-to-speak
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION" desc="The label used in the accessibility menu of the system tray to toggle on/off the speak to type feature.">
         Dictation
@@ -984,7 +984,7 @@ This file contains the strings for ash.
         Are you sure you want to turn off Switch Access?
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGH_CONTRAST_MODE" desc="The label used in the accessibility menu of the system tray to toggle on/off high contrast feature.">
-        High-contrast mode
+        Color inversion
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SCREEN_MAGNIFIER" desc="The label used in the accessibility menu of the system tray to toggle on/off a magnifier that magnifies the entire screen.">
         Full-screen magnifier

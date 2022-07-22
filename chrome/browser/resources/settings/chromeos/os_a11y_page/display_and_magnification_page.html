@@ -30,13 +30,15 @@
 <settings-toggle-button
     pref="{{prefs.settings.a11y.high_contrast_enabled}}"
     label="$i18n{highContrastLabel}"
+    sub-label="$i18n{highContrastDescription}"
     deep-link-focus-id$="[[Setting.kHighContrastMode]]">
 </settings-toggle-button>
 <settings-toggle-button
     class="hr"
     pref="{{prefs.settings.a11y.screen_magnifier}}"
     label="$i18n{screenMagnifierLabel}"
-    sub-label="[[screenMagnifierHintLabel_]]"
+    sub-label="[[getScreenMagnifierDescription_(
+        prefs.settings.a11y.screen_magnifier.value)]]"
     disabled="[[prefs.ash.docked_magnifier.enabled.value]]"
     deep-link-focus-id$="[[Setting.kFullscreenMagnifier]]">
 </settings-toggle-button>
@@ -81,9 +83,8 @@
       <div class="label" aria-hidden="true">
         $i18n{screenMagnifierZoomLabel}
       </div>
-      <div id="screenMagnifierZoomHintLabel" class="secondary label">
-        $i18n{screenMagnifierZoomHintLabel}
-      </div>
+      <!-- Next line long because screenMagnifierZoomHintLabel uses pre-line -->
+      <div id="screenMagnifierZoomHintLabel" class="secondary label">$i18n{screenMagnifierZoomHintLabel}</div>
     </div>
     <settings-dropdown-menu label="$i18n{screenMagnifierZoomLabel}"
         pref="{{prefs.settings.a11y.screen_magnifier_scale}}"
@@ -96,6 +97,7 @@
     class="hr"
     pref="{{prefs.ash.docked_magnifier.enabled}}"
     label="$i18n{dockedMagnifierLabel}"
+    sub-label="$i18n{dockedMagnifierDescription}"
     disabled="[[prefs.settings.a11y.screen_magnifier.value]]"
     deep-link-focus-id$="[[Setting.kDockedMagnifier]]">
 </settings-toggle-button>
