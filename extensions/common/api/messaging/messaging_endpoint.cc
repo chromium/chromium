@@ -15,19 +15,19 @@ namespace {
 
 base::debug::CrashKeyString* GetMessagingSourceTypeCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "MessagingSource::type", base::debug::CrashKeySize::Size32);
+      "MessagingSource-type", base::debug::CrashKeySize::Size32);
   return crash_key;
 }
 
 base::debug::CrashKeyString* GetMessagingSourceExtensionIdCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "MessagingSource::extension_id", base::debug::CrashKeySize::Size64);
+      "MessagingSource-extension_id", base::debug::CrashKeySize::Size64);
   return crash_key;
 }
 
 base::debug::CrashKeyString* GetMessagingSourceNativeAppNameCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "MessagingSource::native_app_name", base::debug::CrashKeySize::Size64);
+      "MessagingSource-native_app_name", base::debug::CrashKeySize::Size64);
   return crash_key;
 }
 
