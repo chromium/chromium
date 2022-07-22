@@ -351,10 +351,8 @@ class POLICY_EXPORT PolicyMap {
       const base::RepeatingCallback<bool(const const_iterator)>& filter,
       bool deletion_value);
 
-#if !BUILDFLAG(IS_CHROMEOS)
   // Updates the stored state of computed metapolicies.
   void UpdateStoredComputedMetapolicies();
-#endif
 
   // Updates the stored state of user affiliation.
   void UpdateStoredUserAffiliation();

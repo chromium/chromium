@@ -143,14 +143,10 @@ class PolicyWatcherTest : public testing::Test {
     unknown_policies_.SetStringKey("UnknownPolicyTwo", std::string());
     unknown_policies_.SetBoolKey("RemoteAccessHostUnknownPolicyThree", true);
 
-#if !BUILDFLAG(IS_CHROMEOS)
     pairing_true_.SetBoolKey(key::kRemoteAccessHostAllowClientPairing, true);
     pairing_false_.SetBoolKey(key::kRemoteAccessHostAllowClientPairing, false);
     gnubby_auth_true_.SetBoolKey(key::kRemoteAccessHostAllowGnubbyAuth, true);
     gnubby_auth_false_.SetBoolKey(key::kRemoteAccessHostAllowGnubbyAuth, false);
-    curtain_true_.SetBoolKey(key::kRemoteAccessHostRequireCurtain, true);
-    curtain_false_.SetBoolKey(key::kRemoteAccessHostRequireCurtain, false);
-#endif
     relay_true_.SetBoolKey(key::kRemoteAccessHostAllowRelayedConnection, true);
     relay_false_.SetBoolKey(key::kRemoteAccessHostAllowRelayedConnection,
                             false);
@@ -164,11 +160,12 @@ class PolicyWatcherTest : public testing::Test {
     port_range_malformed_domain_full_.SetKey(key::kRemoteAccessHostDomainList,
                                              host_domain.Clone());
 
+    curtain_true_.SetBoolKey(key::kRemoteAccessHostRequireCurtain, true);
+    curtain_false_.SetBoolKey(key::kRemoteAccessHostRequireCurtain, false);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     username_true_.SetBoolKey(key::kRemoteAccessHostMatchUsername, true);
     username_false_.SetBoolKey(key::kRemoteAccessHostMatchUsername, false);
 #endif
-#if !BUILDFLAG(IS_CHROMEOS)
     third_party_auth_partial_.SetStringKey(key::kRemoteAccessHostTokenUrl,
                                            "https://token.com");
     third_party_auth_partial_.SetStringKey(
@@ -180,7 +177,6 @@ class PolicyWatcherTest : public testing::Test {
     third_party_auth_cert_empty_.MergeDictionary(&third_party_auth_partial_);
     third_party_auth_cert_empty_.SetStringKey(
         key::kRemoteAccessHostTokenValidationCertificateIssuer, "");
-#endif
 
 #if BUILDFLAG(IS_WIN)
     remote_assistance_uiaccess_true_.SetBoolKey(
@@ -328,7 +324,6 @@ class PolicyWatcherTest : public testing::Test {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     dict.SetBoolKey(key::kRemoteAccessHostMatchUsername, false);
 #endif
-#if !BUILDFLAG(IS_CHROMEOS)
     dict.SetBoolKey(key::kRemoteAccessHostRequireCurtain, false);
     dict.SetStringKey(key::kRemoteAccessHostTokenUrl, "");
     dict.SetStringKey(key::kRemoteAccessHostTokenValidationUrl, "");
@@ -336,7 +331,6 @@ class PolicyWatcherTest : public testing::Test {
                       "");
     dict.SetBoolKey(key::kRemoteAccessHostAllowClientPairing, true);
     dict.SetBoolKey(key::kRemoteAccessHostAllowGnubbyAuth, true);
-#endif
 #if BUILDFLAG(IS_WIN)
     dict.SetBoolKey(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance,
                     false);
@@ -568,7 +562,7 @@ INSTANTIATE_TEST_SUITE_P(
                       "RemoteAccessHostdomain",
                       "RemoteAccessHostPolicyForFutureVersion"));
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PolicyWatcherTest, PairingFalseThenTrue) {
   testing::InSequence sequence;
   EXPECT_CALL(mock_policy_callback_,
@@ -598,7 +592,7 @@ TEST_F(PolicyWatcherTest, GnubbyAuth) {
   SetPolicies(gnubby_auth_false_);
   SetPolicies(gnubby_auth_true_);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PolicyWatcherTest, RemoteAssistanceUiAccess) {
   testing::InSequence sequence;
@@ -728,6 +722,15 @@ TEST_F(PolicyWatcherTest, PolicySchemaAndPolicyWatcherShouldBeInSync) {
        i.Advance()) {
     expected_schema[i.key()] = i.value().type();
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Me2Me Policies are not supported on ChromeOS.
+  expected_schema.erase(key::kRemoteAccessHostAllowGnubbyAuth);
+  expected_schema.erase(key::kRemoteAccessHostAllowClientPairing);
+  expected_schema.erase(key::kRemoteAccessHostRequireCurtain);
+  expected_schema.erase(key::kRemoteAccessHostTokenUrl);
+  expected_schema.erase(key::kRemoteAccessHostTokenValidationUrl);
+  expected_schema.erase(key::kRemoteAccessHostTokenValidationCertificateIssuer);
+#endif
 
   std::map<std::string, base::Value::Type> actual_schema;
   const policy::Schema* schema = GetPolicySchema();
