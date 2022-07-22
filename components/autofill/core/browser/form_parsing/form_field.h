@@ -55,13 +55,15 @@ class FormField {
       PatternSource pattern_source,
       LogManager* log_manager = nullptr);
 
-  // Looks for a promo code field in |fields|. Each field has a derived unique
-  // name that is used as the key into the returned FieldCandidatesMap.
-  static FieldCandidatesMap ParseFormFieldsForPromoCodes(
+  // Looks for types that are allowed to appear in solitary (such as merchant
+  // promo codes) inside |fields|. Each field has a derived unique name that is
+  // used as the key into the |field_candidates| parameter.
+  static void ParseSingleFieldForms(
       const std::vector<std::unique_ptr<AutofillField>>& fields,
       const LanguageCode& page_language,
       bool is_form_tag,
       PatternSource pattern_source,
+      FieldCandidatesMap* field_candidates,
       LogManager* log_manager = nullptr);
 
 #if defined(UNIT_TEST)
@@ -157,6 +159,9 @@ class FormField {
   // Returns true iff |type| matches |match_type|.
   static bool MatchesFormControlType(base::StringPiece type,
                                      DenseSet<MatchFieldType> match_type);
+
+  // Returns true if |field_type| is a single field parseable type.
+  static bool IsSingleFieldParseableType(ServerFieldType field_type);
 
   // Derived classes must implement this interface to supply field type
   // information.  |ParseFormFields| coordinates the parsing and extraction

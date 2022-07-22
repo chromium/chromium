@@ -152,8 +152,8 @@ class FormStructureTestImpl : public test::FormStructureTest {
     return FormStructure(form).ShouldRunHeuristics();
   }
 
-  bool FormShouldRunPromoCodeHeuristics(const FormData& form) {
-    return FormStructure(form).ShouldRunPromoCodeHeuristics();
+  bool FormShouldRunHeuristicsForSingleFieldForms(const FormData& form) {
+    return FormStructure(form).ShouldRunHeuristicsForSingleFieldForms();
   }
 
   bool FormShouldBeQueried(const FormData& form) {
@@ -1185,7 +1185,8 @@ TEST_F(FormStructureTestImpl,
   }
 }
 
-// Tests that promo code heuristics are run for forms with fewer than 3 fields.
+// Tests that heuristics for single field parseable types are run for forms with
+// fewer than 3 fields.
 TEST_F(FormStructureTestImpl, PromoCodeHeuristics_SmallForm) {
   base::test::ScopedFeatureList scoped_feature;
   scoped_feature.InitAndEnableFeature(
@@ -1201,7 +1202,7 @@ TEST_F(FormStructureTestImpl, PromoCodeHeuristics_SmallForm) {
   field.unique_renderer_id = MakeFieldRendererId();
   form.fields.push_back(field);
 
-  EXPECT_TRUE(FormShouldRunPromoCodeHeuristics(form));
+  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFieldForms(form));
 
   // Default configuration.
   {

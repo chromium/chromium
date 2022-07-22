@@ -254,8 +254,8 @@ TEST_P(FormFieldTest, TestParseableLabels) {
   }
 }
 
-// Test that |ParseFormFieldsForPromoCodes| parses single field promo codes.
-TEST_P(FormFieldTest, ParseFormFieldsForPromoCodes) {
+// Test to invoke |ParseSingleFieldForms| in the code path of |ParseFormFields|.
+TEST_P(FormFieldTest, ParseSingleFieldFormsInsideParseFormField) {
   base::test::ScopedFeatureList scoped_feature;
   scoped_feature.InitAndEnableFeature(
       features::kAutofillParseMerchantPromoCodeFields);
@@ -264,15 +264,47 @@ TEST_P(FormFieldTest, ParseFormFieldsForPromoCodes) {
   FormFieldData field_data;
   field_data.form_control_type = "text";
 
+  field_data.label = u"phone";
+  field_data.unique_renderer_id = MakeFieldRendererId();
+  fields.push_back(std::make_unique<AutofillField>(field_data));
+
+  field_data.label = u"email";
+  field_data.unique_renderer_id = MakeFieldRendererId();
+  fields.push_back(std::make_unique<AutofillField>(field_data));
+
+  field_data.label = u"Promo code";
+  field_data.unique_renderer_id = MakeFieldRendererId();
+  fields.push_back(std::make_unique<AutofillField>(field_data));
+
+  // |ParseSingleFieldForms| should also detect promo code.
+  EXPECT_EQ(3u,
+            FormField::ParseFormFields(fields, LanguageCode(""),
+                                       /*is_form_tag=*/true, pattern_source())
+                .size());
+}
+
+// Test that |ParseSingleFieldForms| parses single field promo codes.
+TEST_P(FormFieldTest, ParseSingleFieldFormsPromoCode) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      features::kAutofillParseMerchantPromoCodeFields);
+
+  std::vector<std::unique_ptr<AutofillField>> fields;
+  FormFieldData field_data;
+  field_data.form_control_type = "text";
+  FieldCandidatesMap field_candidates;
+
   // Parse single field promo code.
   field_data.label = u"Promo code";
   field_data.unique_renderer_id = MakeFieldRendererId();
   fields.push_back(std::make_unique<AutofillField>(field_data));
 
-  EXPECT_EQ(
-      1u, FormField::ParseFormFieldsForPromoCodes(
-              fields, LanguageCode(""), /*is_form_tag=*/true, pattern_source())
-              .size());
+  FormField::ParseSingleFieldForms(fields, LanguageCode(""),
+                                   /*is_form_tag=*/true, pattern_source(),
+                                   &field_candidates);
+  EXPECT_EQ(1u, field_candidates.size());
+
+  field_candidates.clear();
 
   // Don't parse other fields.
   field_data.label = u"Address line 1";
@@ -280,10 +312,10 @@ TEST_P(FormFieldTest, ParseFormFieldsForPromoCodes) {
   fields.push_back(std::make_unique<AutofillField>(field_data));
 
   // Still only the promo code field should be parsed.
-  EXPECT_EQ(
-      1u, FormField::ParseFormFieldsForPromoCodes(
-              fields, LanguageCode(""), /*is_form_tag=*/true, pattern_source())
-              .size());
+  FormField::ParseSingleFieldForms(fields, LanguageCode(""),
+                                   /*is_form_tag=*/true, pattern_source(),
+                                   &field_candidates);
+  EXPECT_EQ(1u, field_candidates.size());
 }
 
 struct ParseInAnyOrderTestcase {

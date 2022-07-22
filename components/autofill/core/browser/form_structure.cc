@@ -865,10 +865,8 @@ bool FormStructure::ShouldRunHeuristics() const {
          HasAllowedScheme(source_url_);
 }
 
-bool FormStructure::ShouldRunPromoCodeHeuristics() const {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillParseMerchantPromoCodeFields) &&
-         active_field_count() > 0 && HasAllowedScheme(source_url_);
+bool FormStructure::ShouldRunHeuristicsForSingleFieldForms() const {
+  return active_field_count() > 0 && HasAllowedScheme(source_url_);
 }
 
 bool FormStructure::ShouldBeQueried() const {
@@ -1336,10 +1334,10 @@ void FormStructure::ParseFieldTypesWithPatterns(PatternSource pattern_source,
     field_type_map =
         FormField::ParseFormFields(fields_, current_page_language_,
                                    is_form_tag_, pattern_source, log_manager);
-  } else if (ShouldRunPromoCodeHeuristics()) {
-    field_type_map = FormField::ParseFormFieldsForPromoCodes(
-        fields_, current_page_language_, is_form_tag_, pattern_source,
-        log_manager);
+  } else if (ShouldRunHeuristicsForSingleFieldForms()) {
+    FormField::ParseSingleFieldForms(fields_, current_page_language_,
+                                     is_form_tag_, pattern_source,
+                                     &field_type_map, log_manager);
   }
   if (field_type_map.empty())
     return;

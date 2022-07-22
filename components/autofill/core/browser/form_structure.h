@@ -171,9 +171,10 @@ class FormStructure {
   // this form.
   bool ShouldRunHeuristics() const;
 
-  // Returns true if heuristic autofill type detection for promo codes should be
-  // attempted for this form.
-  bool ShouldRunPromoCodeHeuristics() const;
+  // Returns true if autofill's heuristic field type detection should be
+  // attempted for this form given that |kMinRequiredFieldsForHeuristics| is not
+  // met.
+  bool ShouldRunHeuristicsForSingleFieldForms() const;
 
   // Returns true if we should query the crowd-sourcing server to determine this
   // form's field types. If the form includes author-specified types, this will
