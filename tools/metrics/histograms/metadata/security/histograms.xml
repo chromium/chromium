@@ -936,14 +936,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SiteIsolation.ReusePendingOrCommittedSite.CouldReuse"
-    enum="ReusePendingOrCommittedSiteEnum" expires_after="M77">
+<histogram name="SiteIsolation.ReusePendingOrCommittedSite.CouldReuse2"
+    enum="ReusePendingOrCommittedSiteEnum" expires_after="2023-01-20">
   <owner>clamy@chromium.org</owner>
   <summary>
     Whether SiteInstances with a ProcessReusePolicy of
     REUSE_PENDING_OR_COMMITTED_SITE could reuse an existing RenderProcessHost or
     they had to create a new one. True when they reused an existing process,
     false when they created a new one.
+
+    (Was expired between M77 and M105 before moving on to V2.)
   </summary>
 </histogram>
 
