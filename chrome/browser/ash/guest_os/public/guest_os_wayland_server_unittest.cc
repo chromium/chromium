@@ -88,10 +88,11 @@ TEST_F(GuestOsWaylandServerTest, SuccessfulResultIsReused) {
   EXPECT_CALL(capability_factory, Call(_))
       .Times(1)
       .WillOnce(Invoke(
-          [](base::OnceCallback<void(std::unique_ptr<GuestOsSecurityDelegate>)>
-                 callback) {
+          [this](base::OnceCallback<void(
+                     std::unique_ptr<GuestOsSecurityDelegate>)> callback) {
             std::move(callback).Run(
-                std::make_unique<borealis::BorealisSecurityDelegate>());
+                std::make_unique<borealis::BorealisSecurityDelegate>(
+                    &profile_));
           }));
   base::RunLoop loop;
   EXPECT_CALL(result_factory, Call(_))
@@ -123,10 +124,11 @@ TEST_F(GuestOsWaylandServerTest, InvalidatedOnceServerDestroyed) {
 
   EXPECT_CALL(capability_factory, Call(_))
       .WillOnce(Invoke(
-          [](base::OnceCallback<void(std::unique_ptr<GuestOsSecurityDelegate>)>
-                 callback) {
+          [this](base::OnceCallback<void(
+                     std::unique_ptr<GuestOsSecurityDelegate>)> callback) {
             std::move(callback).Run(
-                std::make_unique<borealis::BorealisSecurityDelegate>());
+                std::make_unique<borealis::BorealisSecurityDelegate>(
+                    &profile_));
           }));
   base::RunLoop loop;
   EXPECT_CALL(result_factory, Call(_))

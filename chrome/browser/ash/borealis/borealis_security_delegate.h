@@ -22,10 +22,15 @@ class BorealisSecurityDelegate : public guest_os::GuestOsSecurityDelegate {
       base::OnceCallback<
           void(std::unique_ptr<guest_os::GuestOsSecurityDelegate>)> callback);
 
+  explicit BorealisSecurityDelegate(Profile* profile);
   ~BorealisSecurityDelegate() override;
 
   // exo::SecurityDelegate overrides:
   std::string GetSecurityContext() const override;
+  bool CanSelfActivate(aura::Window* window) const override;
+
+ private:
+  Profile* const profile_;
 };
 
 }  // namespace borealis

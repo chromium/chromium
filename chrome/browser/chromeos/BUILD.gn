@@ -2850,6 +2850,7 @@ source_set("unit_tests") {
     "../ash/borealis/borealis_installer_unittest.cc",
     "../ash/borealis/borealis_launch_watcher_unittest.cc",
     "../ash/borealis/borealis_power_controller_unittest.cc",
+    "../ash/borealis/borealis_security_delegate_unittest.cc",
     "../ash/borealis/borealis_shutdown_monitor_unittest.cc",
     "../ash/borealis/borealis_task_unittest.cc",
     "../ash/borealis/borealis_util_unittest.cc",

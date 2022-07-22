@@ -150,24 +150,4 @@ TEST_F(BorealisContextTest, ChunneldFailure) {
       1);
 }
 
-TEST_F(BorealisContextTest, MainAppHasSelfActivationPermission) {
-  CreateFakeMainApp(profile_.get());
-  std::unique_ptr<ScopedTestWindow> window = MakeAndTrackWindow(
-      "org.chromium.borealis.wmclass.Steam", borealis_window_manager_.get());
-  EXPECT_TRUE(exo::HasPermissionToActivate(window->window()));
-}
-
-TEST_F(BorealisContextTest, NormalAppDoesNotHaveSelfActivationPermission) {
-  // We need to prevent the system from trying to pop up a feedback form in this
-  // test, it causes a crash.
-  BorealisLaunchOptions::Options opts;
-  opts.feedback_forms = false;
-  borealis_context_->set_launch_options(opts);
-
-  CreateFakeApp(profile_.get(), "some_app", "borealis/123");
-  std::unique_ptr<ScopedTestWindow> window = MakeAndTrackWindow(
-      "org.chromium.borealis.wmclass.some_app", borealis_window_manager_.get());
-  EXPECT_FALSE(exo::HasPermissionToActivate(window->window()));
-}
-
 }  // namespace borealis
