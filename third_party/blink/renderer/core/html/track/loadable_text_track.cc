@@ -48,7 +48,7 @@ bool LoadableTextTrack::IsDefault() const {
 
 void LoadableTextTrack::setMode(const V8TextTrackMode& mode) {
   TextTrack::setMode(mode);
-  if (track_element_->getReadyState() == HTMLTrackElement::kNone)
+  if (track_element_->getReadyState() == HTMLTrackElement::ReadyState::kNone)
     track_element_->ScheduleLoad();
 }
 

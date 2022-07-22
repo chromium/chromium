@@ -180,7 +180,7 @@ void HTMLTrackElement::LoadTimerFired(TimerBase*) {
   // Also we will first check if the new URL is not equal with
   // the previous URL (there is an unclarified issue in spec
   // about it, see: https://github.com/whatwg/html/issues/2916)
-  if (url == url_ && getReadyState() != kNone)
+  if (url == url_ && getReadyState() != ReadyState::kNone)
     return;
 
   if (track_)
@@ -191,7 +191,7 @@ void HTMLTrackElement::LoadTimerFired(TimerBase*) {
   // 6. [X] Set the text track readiness state to loading.
   // Step 7 does not depend on step 6, so they were reordered to grant
   // setting kLoading state after the equality check
-  SetReadyState(kLoading);
+  SetReadyState(ReadyState::kLoading);
 
   // 8. [X] If the track element's parent is a media element then let CORS mode
   // be the state of the parent media element's crossorigin content attribute.
@@ -261,7 +261,7 @@ void HTMLTrackElement::DidCompleteLoad(LoadStatus status) {
   // must change the text track readiness state to failed to load and fire a
   // simple event named error at the track element.
   if (status == kFailure) {
-    SetReadyState(kError);
+    SetReadyState(ReadyState::kError);
     DispatchEvent(*Event::Create(event_type_names::kError));
     return;
   }
@@ -271,7 +271,7 @@ void HTMLTrackElement::DidCompleteLoad(LoadStatus status) {
   // source, after it has finished parsing the data, must change the text track
   // readiness state to loaded, and fire a simple event named load at the track
   // element.
-  SetReadyState(kLoaded);
+  SetReadyState(ReadyState::kLoaded);
   DispatchEvent(*Event::Create(event_type_names::kLoad));
 }
 
@@ -302,19 +302,19 @@ void HTMLTrackElement::CueLoadingCompleted(TextTrackLoader* loader,
 // NOTE: The values in the TextTrack::ReadinessState enum must stay in sync with
 // those in HTMLTrackElement::ReadyState.
 static_assert(
-    HTMLTrackElement::kNone ==
+    HTMLTrackElement::ReadyState::kNone ==
         static_cast<HTMLTrackElement::ReadyState>(TextTrack::kNotLoaded),
     "HTMLTrackElement::kNone should be in sync with TextTrack::NotLoaded");
 static_assert(
-    HTMLTrackElement::kLoading ==
+    HTMLTrackElement::ReadyState::kLoading ==
         static_cast<HTMLTrackElement::ReadyState>(TextTrack::kLoading),
     "HTMLTrackElement::kLoading should be in sync with TextTrack::Loading");
 static_assert(
-    HTMLTrackElement::kLoaded ==
+    HTMLTrackElement::ReadyState::kLoaded ==
         static_cast<HTMLTrackElement::ReadyState>(TextTrack::kLoaded),
     "HTMLTrackElement::kLoaded should be in sync with TextTrack::Loaded");
 static_assert(
-    HTMLTrackElement::kError ==
+    HTMLTrackElement::ReadyState::kError ==
         static_cast<HTMLTrackElement::ReadyState>(TextTrack::kFailedToLoad),
     "HTMLTrackElement::kError should be in sync with TextTrack::FailedToLoad");
 
@@ -326,7 +326,8 @@ void HTMLTrackElement::SetReadyState(ReadyState state) {
 }
 
 HTMLTrackElement::ReadyState HTMLTrackElement::getReadyState() {
-  return track_ ? static_cast<ReadyState>(track_->GetReadinessState()) : kNone;
+  return track_ ? static_cast<ReadyState>(track_->GetReadinessState())
+                : ReadyState::kNone;
 }
 
 const AtomicString& HTMLTrackElement::MediaElementCrossOriginAttribute() const {

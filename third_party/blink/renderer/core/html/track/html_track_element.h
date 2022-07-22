@@ -47,7 +47,7 @@ class HTMLTrackElement final : public HTMLElement,
   const AtomicString& kind();
   void setKind(const AtomicString&);
 
-  enum ReadyState { kNone = 0, kLoading = 1, kLoaded = 2, kError = 3 };
+  enum class ReadyState { kNone = 0, kLoading = 1, kLoaded = 2, kError = 3 };
   ReadyState getReadyState();
   void ScheduleLoad();
 
