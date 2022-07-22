@@ -12,7 +12,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "ui/events/blink/blink_features.h"
 
@@ -432,9 +431,10 @@ bool TouchActionFilter::ShouldSuppressScrolling(
 
   // We need to wait for main-thread touch action to see if touch region is
   // writable for stylus handwriting, and accumulate scroll events until then.
-  // TODO(mahesh.ma): Wait for main-thread action only if stylus writing service
-  // is enabled. Replace Feature flag with a configurable setting.
-  if (base::FeatureList::IsEnabled(blink::features::kStylusWritingToInput) &&
+  if ((gesture_event.primary_pointer_type ==
+           blink::WebPointerProperties::PointerType::kPen ||
+       gesture_event.primary_pointer_type ==
+           blink::WebPointerProperties::PointerType::kEraser) &&
       !is_active_touch_action &&
       (touch_action & cc::TouchAction::kInternalNotWritable) !=
           cc::TouchAction::kInternalNotWritable)

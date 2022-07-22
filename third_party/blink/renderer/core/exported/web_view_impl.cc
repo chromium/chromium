@@ -1554,6 +1554,9 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
 
   settings->SetMainFrameClipsContent(!prefs.record_whole_document);
 
+  RuntimeEnabledFeatures::SetStylusHandwritingEnabled(
+      prefs.stylus_handwriting_enabled);
+
   settings->SetSmartInsertDeleteEnabled(prefs.smart_insert_delete_enabled);
 
   settings->SetSpatialNavigationEnabled(prefs.spatial_navigation_enabled);

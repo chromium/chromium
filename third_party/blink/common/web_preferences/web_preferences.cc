@@ -142,6 +142,7 @@ WebPreferences::WebPreferences()
       fake_no_alloc_direct_call_for_testing_enabled(false),
       v8_cache_options(blink::mojom::V8CacheOptions::kDefault),
       record_whole_document(false),
+      stylus_handwriting_enabled(false),
       cookie_enabled(true),
       accelerated_video_decode_enabled(false),
       animation_policy(

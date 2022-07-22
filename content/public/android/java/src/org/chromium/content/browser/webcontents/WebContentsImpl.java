@@ -797,6 +797,9 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     @Override
     public void setStylusWritingHandler(StylusWritingHandler stylusWritingHandler) {
         mStylusWritingHandler = stylusWritingHandler;
+        if (mNativeWebContentsAndroid == 0) return;
+        WebContentsImplJni.get().setStylusHandwritingEnabled(
+                mNativeWebContentsAndroid, mStylusWritingHandler != null);
     }
 
     public StylusWritingHandler getStylusWritingHandler() {
@@ -1135,6 +1138,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         void setOverscrollRefreshHandler(long nativeWebContentsAndroid,
                 OverscrollRefreshHandler nativeOverscrollRefreshHandler);
         void setSpatialNavigationDisabled(long nativeWebContentsAndroid, boolean disabled);
+        void setStylusHandwritingEnabled(long nativeWebContentsAndroid, boolean enabled);
         int downloadImage(long nativeWebContentsAndroid, GURL url, boolean isFavicon,
                 int maxBitmapSize, boolean bypassCache, ImageDownloadCallback callback);
         void setHasPersistentVideo(long nativeWebContentsAndroid, boolean value);

@@ -428,6 +428,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.record_whole_document;
   }
 
+  static bool stylus_handwriting_enabled(
+      const blink::web_pref::WebPreferences& r) {
+    return r.stylus_handwriting_enabled;
+  }
+
   static bool cookie_enabled(const blink::web_pref::WebPreferences& r) {
     return r.cookie_enabled;
   }

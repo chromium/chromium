@@ -1176,6 +1176,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Sets the spatial navigation state.
   void SetSpatialNavigationDisabled(bool disabled);
 
+  // Sets the Stylus handwriting feature status. This status is updated to web
+  // preferences.
+  void SetStylusHandwritingEnabled(bool enabled);
+
   // Called when a file selection is to be done.
   void RunFileChooser(
       RenderFrameHost* render_frame_host,
@@ -2199,6 +2203,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool has_persistent_video_ = false;
 
   bool is_spatial_navigation_disabled_ = false;
+
+  bool stylus_handwriting_enabled_ = false;
 
   bool is_currently_audible_ = false;
   bool was_ever_audible_ = false;
