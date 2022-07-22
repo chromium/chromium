@@ -1331,7 +1331,7 @@
       // crbug.com/1335309
       name: "LayoutNGVTTCue",
       depends_on: ["LayoutNG"],
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "LazyFrameLoading",
