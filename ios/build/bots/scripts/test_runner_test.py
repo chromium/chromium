@@ -42,6 +42,16 @@ class TestCase(unittest.TestCase):
         member, getattr(obj, member))
     setattr(obj, member, mock)
 
+  def unmock(self, obj, member):
+    """Uninstalls the mock from the named member of given obj.
+
+    Args:
+      obj: An obj who's member has been mocked
+      member: String naming the attribute of the object to unmock
+    """
+    if self._mocks[obj][member]:
+      setattr(obj, member, self._mocks[obj][member])
+
   def tearDown(self, *args, **kwargs):
     """Uninstalls mocks."""
     super(TestCase, self).tearDown(*args, **kwargs)
