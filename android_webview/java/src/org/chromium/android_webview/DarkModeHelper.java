@@ -64,6 +64,8 @@ public class DarkModeHelper {
         }
     }
 
+    // must use getIdentifier to access resources from another app
+    @SuppressWarnings("DiscouragedApi")
     @LightTheme
     public static int getLightTheme(Context context) {
         if (sLightThemeForTesting != null) return sLightThemeForTesting;
