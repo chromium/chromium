@@ -7,7 +7,6 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/rand_util.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -273,10 +272,8 @@ void CloudBinaryUploadService::UploadForDeepScanning(
   active_requests_[raw_request] = std::move(request);
   start_times_[raw_request] = base::TimeTicks::Now();
 
-  std::string token = base::RandBytesAsString(128);
-  token = base::HexEncode(token.data(), token.size());
+  std::string token = raw_request->SetRandomRequestToken();
   active_tokens_[raw_request] = token;
-  raw_request->set_request_token(token);
 
   if ((!binary_fcm_service_ || !binary_fcm_service_->Connected()) &&
       !is_auth_request) {

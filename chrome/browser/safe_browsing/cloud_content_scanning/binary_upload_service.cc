@@ -5,6 +5,8 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 
 #include "base/command_line.h"
+#include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -130,6 +132,13 @@ void BinaryUploadService::Request::set_client_metadata(
 
 void BinaryUploadService::Request::set_content_type(const std::string& type) {
   content_analysis_request_.mutable_request_data()->set_content_type(type);
+}
+
+std::string BinaryUploadService::Request::SetRandomRequestToken() {
+  std::string token = base::RandBytesAsString(128);
+  token = base::HexEncode(token.data(), token.size());
+  set_request_token(token);
+  return token;
 }
 
 enterprise_connectors::AnalysisConnector

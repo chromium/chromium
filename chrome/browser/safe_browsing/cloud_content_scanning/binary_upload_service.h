@@ -125,6 +125,11 @@ class BinaryUploadService : public KeyedService {
       return content_analysis_request_;
     }
 
+    const enterprise_connectors::CloudOrLocalAnalysisSettings&
+    cloud_or_local_settings() const {
+      return cloud_or_local_settings_;
+    }
+
     void set_tab_url(const GURL& tab_url);
     const GURL& tab_url() const;
 
@@ -146,6 +151,8 @@ class BinaryUploadService : public KeyedService {
     void clear_dlp_scan_request();
     void set_client_metadata(enterprise_connectors::ClientMetadata metadata);
     void set_content_type(const std::string& type);
+
+    std::string SetRandomRequestToken();
 
     // Methods for accessing the ContentAnalysisRequest.
     enterprise_connectors::AnalysisConnector analysis_connector();

@@ -4,16 +4,26 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service.h"
 
+#include <memory>
+
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/content_analysis_sdk/src/browser/include/content_analysis/sdk/analysis_client.h"
 
 namespace enterprise_connectors {
 namespace {
+
+// Build a content analysis SDK client config based on the request being sent.
+content_analysis::sdk::Client::Config SDKConfigFromRequest(
+    const safe_browsing::BinaryUploadService::Request* request) {
+  return {request->cloud_or_local_settings().local_path(),
+          request->cloud_or_local_settings().user_specific()};
+}
 
 // Convert enterprise connector ContentAnalysisRequest into the SDK equivalent.
 // SDK ContentAnalysisRequest is a strict subset of the enterprise connector
@@ -46,70 +56,65 @@ ContentAnalysisResponse ConvertSDKResponseToChromeResponse(
   return response;
 }
 
+// Sends a request to the local server provider and waits for a response.
 absl::optional<content_analysis::sdk::ContentAnalysisResponse> SendRequestToSDK(
-    content_analysis::sdk::Client* client,
-    content_analysis::sdk::ContentAnalysisRequest
-        local_content_analysis_request) {
+    scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
+    content_analysis::sdk::ContentAnalysisRequest sdk_request) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
+
   content_analysis::sdk::ContentAnalysisResponse response;
-  client->Send(local_content_analysis_request, &response);
-
-  return response;
-}
-
-}  // namespace
-
-LocalBinaryUploadService::LocalBinaryUploadService(
-    std::unique_ptr<AnalysisSettings> analysis_settings)
-    : analysis_settings_(std::move(analysis_settings)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-}
-
-LocalBinaryUploadService::~LocalBinaryUploadService() = default;
-
-void LocalBinaryUploadService::OnSentRequestStatus(
-    std::unique_ptr<Request> request,
-    absl::optional<content_analysis::sdk::ContentAnalysisResponse> response) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  Result result;
-  ContentAnalysisResponse chrome_content_analysis_response;
-  if (response.has_value()) {
-    result = Result::SUCCESS;
-    chrome_content_analysis_response =
-        ConvertSDKResponseToChromeResponse(response.value());
-  } else {
-    result = Result::UPLOAD_FAILURE;
-    // Release old client when the status is not ok.
-    client_.reset();
+  if (wrapped && wrapped->client()) {
+    int sts = wrapped->client()->Send(sdk_request, &response);
+    if (sts == 0)
+      return response;
   }
-  request->FinishRequest(result, std::move(chrome_content_analysis_response));
+  return absl::nullopt;
 }
 
-void LocalBinaryUploadService::DoLocalContentAnalysis(
-    std::unique_ptr<Request> request,
-    Result result,
-    Request::Data data) {
+// Handles the response from the local service provider.
+void HandleResponseFromSDK(
+    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+    absl::optional<content_analysis::sdk::ContentAnalysisResponse>
+        sdk_response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (result != Result::SUCCESS) {
+  safe_browsing::BinaryUploadService::Result result;
+  ContentAnalysisResponse response;
+  if (sdk_response.has_value()) {
+    result = safe_browsing::BinaryUploadService::Result::SUCCESS;
+    response = ConvertSDKResponseToChromeResponse(sdk_response.value());
+  } else {
+    result = safe_browsing::BinaryUploadService::Result::UPLOAD_FAILURE;
+    ContentAnalysisSdkManager::Get()->ResetClient(
+        SDKConfigFromRequest(request.get()));
+  }
+  request->FinishRequest(result, std::move(response));
+}
+
+// Sends a request's data to the local service provider.  Handles the response
+// the service provider asynchronously.
+void DoLocalContentAnalysis(
+    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+    safe_browsing::BinaryUploadService::Result result,
+    safe_browsing::BinaryUploadService::Request::Data data) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (result != safe_browsing::BinaryUploadService::Result::SUCCESS) {
     request->FinishRequest(result, ContentAnalysisResponse());
     return;
   }
 
-  // TODO(b/226679912): Add logic to support OS-user-specific agents.
-  if (!client_) {
-    DCHECK(analysis_settings_->cloud_or_local_settings.is_local_analysis());
-    client_ = content_analysis::sdk::Client::Create(
-        {analysis_settings_->cloud_or_local_settings.local_settings()
-             .local_path});
-  }
-  content_analysis::sdk::ContentAnalysisRequest local_content_analysis_request =
+  request->SetRandomRequestToken();
+
+  DCHECK(request->cloud_or_local_settings().is_local_analysis());
+  auto client = ContentAnalysisSdkManager::Get()->GetClient(
+      SDKConfigFromRequest(request.get()));
+  content_analysis::sdk::ContentAnalysisRequest sdk_request =
       ConvertChromeRequestToSDKRequest(request->content_analysis_request());
 
   if (!data.contents.empty()) {
-    local_content_analysis_request.set_text_content(std::move(data.contents));
+    sdk_request.set_text_content(std::move(data.contents));
   } else if (!data.path.empty()) {
-    local_content_analysis_request.set_file_path(data.path.AsUTF8Unsafe());
+    sdk_request.set_file_path(data.path.AsUTF8Unsafe());
   } else {
     NOTREACHED();
   }
@@ -120,17 +125,18 @@ void LocalBinaryUploadService::DoLocalContentAnalysis(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      // `client_` passed as naked pointer to avoid using `std::move()` which
-      // will reset `client_`, making chrome continually connecting and
-      // disconnecting from agent.
-      // Because LocalBinaryUploadService is a profile keyed service, the object
-      // should live for at least as long as the profile. Besides, the task is
-      // posted with `SKIP_ON_SHUTDOWN`, therefore if the task is pending on
-      // shutdown, it won't run.
-      base::BindOnce(&SendRequestToSDK, base::Unretained(client_.get()),
-                     std::move(local_content_analysis_request)),
-      base::BindOnce(&LocalBinaryUploadService::OnSentRequestStatus,
-                     weakptr_factory_.GetWeakPtr(), std::move(request)));
+      base::BindOnce(&SendRequestToSDK, client, std::move(sdk_request)),
+      base::BindOnce(&HandleResponseFromSDK, std::move(request)));
+}
+
+}  // namespace
+
+LocalBinaryUploadService::LocalBinaryUploadService() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
+
+LocalBinaryUploadService::~LocalBinaryUploadService() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
 void LocalBinaryUploadService::MaybeUploadForDeepScanning(
@@ -138,8 +144,7 @@ void LocalBinaryUploadService::MaybeUploadForDeepScanning(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   Request* raw_request = request.get();
   raw_request->GetRequestData(
-      base::BindOnce(&LocalBinaryUploadService::DoLocalContentAnalysis,
-                     weakptr_factory_.GetWeakPtr(), std::move(request)));
+      base::BindOnce(&DoLocalContentAnalysis, std::move(request)));
 }
 
 }  // namespace enterprise_connectors

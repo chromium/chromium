@@ -3711,8 +3711,6 @@ static_library("browser") {
       "enterprise/connectors/analysis/content_analysis_downloads_delegate.h",
       "enterprise/connectors/analysis/files_request_handler.cc",
       "enterprise/connectors/analysis/files_request_handler.h",
-      "enterprise/connectors/analysis/local_binary_upload_service.cc",
-      "enterprise/connectors/analysis/local_binary_upload_service.h",
       "enterprise/connectors/analysis/page_print_analysis_request.cc",
       "enterprise/connectors/analysis/page_print_analysis_request.h",
       "enterprise/connectors/analysis/request_handler_base.cc",
@@ -4487,7 +4485,6 @@ static_library("browser") {
       "//components/web_modal",
       "//courgette:courgette_lib",
       "//services/device/public/cpp/hid",
-      "//third_party/content_analysis_sdk:liblcasdk",
       "//third_party/sqlite",
       "//third_party/zxcvbn-cpp",
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
@@ -6228,6 +6225,10 @@ static_library("browser") {
 
   if (is_linux || is_win || is_mac) {
     sources += [
+      "enterprise/connectors/analysis/content_analysis_sdk_manager.cc",
+      "enterprise/connectors/analysis/content_analysis_sdk_manager.h",
+      "enterprise/connectors/analysis/local_binary_upload_service.cc",
+      "enterprise/connectors/analysis/local_binary_upload_service.h",
       "enterprise/connectors/device_trust/attestation/desktop/crypto_utility.cc",
       "enterprise/connectors/device_trust/attestation/desktop/crypto_utility.h",
       "enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service.cc",
@@ -6265,6 +6266,7 @@ static_library("browser") {
       "//components/device_signals/core/browser",
       "//components/device_signals/core/common",
     ]
+    public_deps += [ "//third_party/content_analysis_sdk:liblcasdk" ]
 
     if (is_win) {
       deps += [
