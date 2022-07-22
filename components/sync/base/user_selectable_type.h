@@ -14,6 +14,9 @@
 
 namespace syncer {
 
+// TODO(crbug.com/1286405): once it's impossible to launch Ash-browser only
+// UserSelectableOsType will be relevant for Ash, guard UserSelectableType with
+// #if !BUILDFLAG(IS_CHROMEOS_ASH) and remove lower level Ash-specific code.
 enum class UserSelectableType {
   kBookmarks,
   kFirstType = kBookmarks,
