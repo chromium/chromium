@@ -143,19 +143,23 @@ void AddContainerToPrefs(Profile* profile,
 void RemoveContainerFromPrefs(Profile* profile, const GuestId& container_id) {
   auto* pref_service = profile->GetPrefs();
   ListPrefUpdate updater(pref_service, prefs::kGuestOsContainers);
-  updater->EraseListIter(
-      std::find_if(updater->GetListDeprecated().begin(),
-                   updater->GetListDeprecated().end(), [&](const auto& dict) {
-                     return MatchContainerDict(dict, container_id);
-                   }));
+  base::Value::List& update_list = updater->GetList();
+  auto it = std::find_if(
+      update_list.begin(), update_list.end(),
+      [&](const auto& dict) { return MatchContainerDict(dict, container_id); });
+  if (it != update_list.end())
+    update_list.erase(it);
 }
 
 void RemoveVmFromPrefs(Profile* profile, VmType vm_type) {
   auto* pref_service = profile->GetPrefs();
   ListPrefUpdate updater(pref_service, prefs::kGuestOsContainers);
-  updater->EraseListIter(std::find_if(
-      updater->GetListDeprecated().begin(), updater->GetListDeprecated().end(),
-      [&](const auto& dict) { return VmTypeFromPref(dict) == vm_type; }));
+  base::Value::List& update_list = updater->GetList();
+  auto it = std::find_if(
+      update_list.begin(), update_list.end(),
+      [&](const auto& dict) { return VmTypeFromPref(dict) == vm_type; });
+  if (it != update_list.end())
+    update_list.erase(it);
 }
 
 const base::Value* GetContainerPrefValue(Profile* profile,

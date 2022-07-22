@@ -343,11 +343,11 @@ bool OwnerSettingsServiceAsh::RemoveFromList(const std::string& setting,
   const base::Value* old_value = CrosSettings::Get()->GetPref(setting);
   if (old_value && !old_value->is_list())
     return false;
-  base::Value new_value(base::Value::Type::LIST);
+  base::Value::List new_value;
   if (old_value)
-    new_value = old_value->Clone();
-  new_value.EraseListValue(value);
-  return Set(setting, std::move(new_value));
+    new_value = old_value->GetList().Clone();
+  new_value.EraseValue(value);
+  return Set(setting, base::Value(std::move(new_value)));
 }
 
 bool OwnerSettingsServiceAsh::CommitTentativeDeviceSettings(

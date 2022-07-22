@@ -1374,10 +1374,13 @@ void ChromeUserManagerImpl::AddReportingUser(const AccountId& account_id) {
 
 void ChromeUserManagerImpl::RemoveReportingUser(const AccountId& account_id) {
   ListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
-  users_update->EraseListIter(
-      std::find(users_update->GetListDeprecated().begin(),
-                users_update->GetListDeprecated().end(),
-                base::Value(FullyCanonicalize(account_id.GetUserEmail()))));
+  base::Value::List& update_list = users_update->GetList();
+  auto it =
+      std::find(update_list.begin(), update_list.end(),
+                base::Value(FullyCanonicalize(account_id.GetUserEmail())));
+  if (it == update_list.end())
+    return;
+  update_list.erase(it);
 }
 
 const AccountId& ChromeUserManagerImpl::GetGuestAccountId() const {

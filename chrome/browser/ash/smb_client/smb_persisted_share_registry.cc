@@ -116,11 +116,10 @@ void SmbPersistedShareRegistry::Delete(const SmbUrl& share_url) {
   ListPrefUpdate pref(profile_->GetPrefs(),
                       prefs::kNetworkFileSharesSavedShares);
 
-  base::Value::ListView share_list = pref->GetListDeprecated();
-  for (auto it = share_list.begin(); it != share_list.end(); ++it) {
+  base::Value::List& list_update = pref->GetList();
+  for (auto it = list_update.begin(); it != list_update.end(); ++it) {
     if (GetStringValue(*it, kShareUrlKey) == share_url.ToString()) {
-      bool result = pref->EraseListIter(it);
-      DCHECK(result);
+      list_update.erase(it);
       return;
     }
   }
