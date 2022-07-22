@@ -43,9 +43,12 @@ bool ShouldExposeMojoApi(content::NavigationHandle* navigation_handle) {
       navigation_handle->GetRenderFrameHost();
   const url::Origin main_frame_origin = main_frame->GetLastCommittedOrigin();
   // Restrict to allowed origin and only if site isolation requires a dedicated
-  // process.
+  // process. The host is compared explicitly to confirm that the allowed origin
+  // uses a dedicated process, rather than sharing process with eTLD+1.
   return main_frame_origin == GetAllowedOrigin() &&
-         main_frame->GetSiteInstance()->RequiresDedicatedProcess();
+         main_frame->GetSiteInstance()->RequiresDedicatedProcess() &&
+         main_frame->GetSiteInstance()->GetSiteURL().host() ==
+             GetAllowedOrigin().host();
 }
 
 // EncryptionKeyApi represents the actual exposure of the Mojo API (i.e.
