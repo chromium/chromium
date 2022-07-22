@@ -248,13 +248,15 @@ public class BuildInfo {
         // Logic for pre-API-finalization:
         // return BuildCompat.isAtLeastT() && target == Build.VERSION_CODES.CUR_DEVELOPMENT;
 
-        // Logic for smooth transition period so that both pre-finalization and final SDKs
-        // will return true, assuming T will be API 33.
-        // Keeping this until we upstream the public SDK is a reasonable transition period.
-        return target >= 33 ||
-                (BuildCompat.isAtLeastT() && target == Build.VERSION_CODES.CUR_DEVELOPMENT);
+        // Logic for after API finalization but before public SDK release has to
+        // just hardcode the appropriate SDK integer. This will include Android
+        // builds with the finalized SDK, and also pre-API-finalization builds
+        // (because CUR_DEVELOPMENT == 10000).
+        return target >= 33;
 
-        // Logic for public SDK release:
+        // Once the public SDK is upstreamed we can use the defined constant,
+        // deprecate this, then eventually inline this at all callsites and
+        // remove it.
         // return target >= Build.VERSION_CODES.TIRAMISU;
     }
 
