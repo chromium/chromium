@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Module for tag-related helper functions."""
 
-import typing
+from typing import Iterable
 
 from flake_suppressor import common_typing as ct
 
@@ -15,7 +15,7 @@ IGNORED_TAGS_TO_TEMPORARILY_KEEP = set([
 ])
 
 
-def RemoveMostIgnoredTags(tags: typing.Iterable[str]) -> ct.TagTupleType:
+def RemoveMostIgnoredTags(tags: Iterable[str]) -> ct.TagTupleType:
   """Removes ignored tags from |tags| except temporarily kept ones.
 
   The temporarily kept ones can later be removed by
@@ -41,8 +41,7 @@ def RemoveMostIgnoredTags(tags: typing.Iterable[str]) -> ct.TagTupleType:
   return tuple(tags)
 
 
-def RemoveTemporarilyKeptIgnoredTags(tags: typing.Iterable[str]
-                                     ) -> ct.TagTupleType:
+def RemoveTemporarilyKeptIgnoredTags(tags: Iterable[str]) -> ct.TagTupleType:
   """Removes ignored tags that were temporarily kept.
 
   Args:

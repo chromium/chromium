@@ -4,26 +4,26 @@
 """Module for outputting results in a human-readable format."""
 
 import tempfile
-import typing
+from typing import Dict, IO, List, Optional, Union
 
 from flake_suppressor import common_typing as ct
 
-UrlListType = typing.List[str]
-StringTagsToUrlsType = typing.Dict[str, UrlListType]
-TestToStringTagsType = typing.Dict[str, StringTagsToUrlsType]
-StringMapType = typing.Dict[str, TestToStringTagsType]
+UrlListType = List[str]
+StringTagsToUrlsType = Dict[str, UrlListType]
+TestToStringTagsType = Dict[str, StringTagsToUrlsType]
+StringMapType = Dict[str, TestToStringTagsType]
 
-TestToUrlListType = typing.Dict[str, UrlListType]
-SuiteToTestsType = typing.Dict[str, TestToUrlListType]
-ConfigGroupedStringMapType = typing.Dict[str, SuiteToTestsType]
+TestToUrlListType = Dict[str, UrlListType]
+SuiteToTestsType = Dict[str, TestToUrlListType]
+ConfigGroupedStringMapType = Dict[str, SuiteToTestsType]
 
-NodeType = typing.Union[UrlListType, StringTagsToUrlsType, TestToStringTagsType,
-                        StringMapType, TestToUrlListType, SuiteToTestsType,
-                        ConfigGroupedStringMapType]
+NodeType = Union[UrlListType, StringTagsToUrlsType, TestToStringTagsType,
+                 StringMapType, TestToUrlListType, SuiteToTestsType,
+                 ConfigGroupedStringMapType]
 
 
 def GenerateHtmlOutputFile(aggregated_results: ct.AggregatedResultsType,
-                           outfile: typing.Optional[typing.IO] = None) -> None:
+                           outfile: Optional[IO] = None) -> None:
   """Generates an HTML results file.
 
   Args:
@@ -45,7 +45,7 @@ def GenerateHtmlOutputFile(aggregated_results: ct.AggregatedResultsType,
 
 
 def _OutputMapToHtmlFile(string_map: StringMapType, result_header: str,
-                         output_file: typing.IO) -> None:
+                         output_file: IO) -> None:
   """Outputs a map to a file as a nested list.
 
   Args:
@@ -60,7 +60,7 @@ def _OutputMapToHtmlFile(string_map: StringMapType, result_header: str,
   output_file.write('</ul>\n')
 
 
-def _RecursiveHtmlToFile(node: NodeType, output_file: typing.IO) -> None:
+def _RecursiveHtmlToFile(node: NodeType, output_file: IO) -> None:
   """Recursively outputs a string map to an output file as HTML.
 
   Specifically, contents are output as an unordered list (<ul>).

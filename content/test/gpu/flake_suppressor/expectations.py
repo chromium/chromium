@@ -8,7 +8,7 @@ import collections
 import os
 import posixpath
 import re
-import typing
+from typing import Dict, List, Set, Tuple, Union
 import urllib.request
 
 import gpu_path_util
@@ -36,9 +36,9 @@ TEXT_FORMAT_ARG = '?format=TEXT'
 
 TAG_GROUP_REGEX = re.compile(r'# tags: \[([^\]]*)\]', re.MULTILINE | re.DOTALL)
 
-TestToUrlsType = typing.Dict[str, typing.List[str]]
-SuiteToTestsType = typing.Dict[str, TestToUrlsType]
-TagOrderedAggregateResultType = typing.Dict[ct.TagTupleType, SuiteToTestsType]
+TestToUrlsType = Dict[str, List[str]]
+SuiteToTestsType = Dict[str, TestToUrlsType]
+TagOrderedAggregateResultType = Dict[ct.TagTupleType, SuiteToTestsType]
 
 
 # pylint: disable=too-many-locals
@@ -143,7 +143,7 @@ def IterateThroughResultsWithThresholds(result_map: ct.AggregatedResultsType,
 def FindFailuresInSameTest(result_map: ct.AggregatedResultsType,
                            target_suite: str, target_test: str,
                            target_typ_tags: ct.TagTupleType
-                           ) -> typing.List[typing.Tuple[ct.TagTupleType, int]]:
+                           ) -> List[Tuple[ct.TagTupleType, int]]:
   """Finds all other failures that occurred in the given test.
 
   Ignores the failures for the test on the same configuration.
@@ -173,7 +173,7 @@ def FindFailuresInSameTest(result_map: ct.AggregatedResultsType,
 def FindFailuresInSameConfig(
     typ_tag_ordered_result_map: TagOrderedAggregateResultType,
     target_suite: str, target_test: str,
-    target_typ_tags: ct.TagTupleType) -> typing.List[typing.Tuple[str, int]]:
+    target_typ_tags: ct.TagTupleType) -> List[Tuple[str, int]]:
   """Finds all other failures that occurred on the given configuration.
 
   Ignores the failures for the given test on the given configuration.
@@ -235,7 +235,7 @@ def _ReorderMapByTypTags(result_map: ct.AggregatedResultsType
 
 
 def PromptUserForExpectationAction(
-) -> typing.Union[typing.Tuple[str, str], typing.Tuple[None, None]]:
+) -> Union[Tuple[str, str], Tuple[None, None]]:
   """Prompts the user on what to do to handle a failure.
 
   Returns:
@@ -414,7 +414,7 @@ def GetExpectationFileForSuite(suite: str, typ_tags: ct.TagTupleType) -> str:
 
 def FindBestInsertionLineForExpectation(typ_tags: ct.TagTupleType,
                                         expectation_file: str
-                                        ) -> typing.Tuple[int, typing.Set[str]]:
+                                        ) -> Tuple[int, Set[str]]:
   """Finds the best place to insert an expectation when grouping by tags.
 
   Args:
@@ -448,7 +448,7 @@ def FindBestInsertionLineForExpectation(typ_tags: ct.TagTupleType,
   return best_insertion_line, best_matching_tags
 
 
-def GetExpectationFilesFromOrigin() -> typing.Dict[str, str]:
+def GetExpectationFilesFromOrigin() -> Dict[str, str]:
   """Gets expectation file contents from origin/main.
 
   Returns:
@@ -480,7 +480,7 @@ def GetExpectationFilesFromOrigin() -> typing.Dict[str, str]:
   return origin_file_contents
 
 
-def GetExpectationFilesFromLocalCheckout() -> typing.Dict[str, str]:
+def GetExpectationFilesFromLocalCheckout() -> Dict[str, str]:
   """Gets expectaiton file contents from the local checkout.
 
   Returns:

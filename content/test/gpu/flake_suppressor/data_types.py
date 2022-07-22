@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Module for custom data types."""
 
-import typing
+from typing import Any
 
 from flake_suppressor import common_typing as ct
 
@@ -43,7 +43,7 @@ class Result():
     self.tags = tags
     self.build_id = build_id
 
-  def __eq__(self, other: typing.Any) -> bool:
+  def __eq__(self, other: Any) -> bool:
     return (isinstance(other, Result) and self.suite == other.suite
             and self.test == other.test and self.tags == other.tags
             and self.build_id == other.build_id)

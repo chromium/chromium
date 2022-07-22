@@ -9,7 +9,7 @@ import base64
 import os
 import sys
 import tempfile
-import typing
+from typing import Any
 import unittest
 import unittest.mock as mock
 import urllib.error
@@ -634,7 +634,7 @@ mode type hash bar_tests.txt"""
   def testNonOkStatusCodesSurfaced(self) -> None:
     """Tests that getting a non-200 status code back results in a failure."""
 
-    def SideEffect(_: typing.Any) -> None:
+    def SideEffect(_: Any) -> None:
       raise urllib.error.HTTPError('url', 404, 'No exist :(', {}, None)
 
     self._get_mock.side_effect = SideEffect

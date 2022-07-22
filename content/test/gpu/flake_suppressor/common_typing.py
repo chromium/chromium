@@ -3,9 +3,9 @@
 # found in the LICENSE file.
 """Module for shared/commonly used type hinting."""
 
-import typing
+from typing import Any, Dict, List, Tuple
 
-TagTupleType = typing.Tuple[str, ...]
+TagTupleType = Tuple[str, ...]
 
 # Sample:
 # {
@@ -15,9 +15,9 @@ TagTupleType = typing.Tuple[str, ...]
 #     },
 #   },
 # }
-TagsToUrlsType = typing.Dict[TagTupleType, typing.List[str]]
-TestToTagsType = typing.Dict[str, TagsToUrlsType]
-AggregatedResultsType = typing.Dict[str, TestToTagsType]
+TagsToUrlsType = Dict[TagTupleType, List[str]]
+TestToTagsType = Dict[str, TagsToUrlsType]
+AggregatedResultsType = Dict[str, TestToTagsType]
 
 # Sample:
 # {
@@ -25,8 +25,8 @@ AggregatedResultsType = typing.Dict[str, TestToTagsType]
 #     test_name (str): result_count (int)
 #   }
 # }
-TestToResultCountType = typing.Dict[str, int]
-ResultCountType = typing.Dict[TagTupleType, TestToResultCountType]
+TestToResultCountType = Dict[str, int]
+ResultCountType = Dict[TagTupleType, TestToResultCountType]
 
-SingleQueryResultType = typing.Dict[str, typing.Any]
-QueryJsonType = typing.List[SingleQueryResultType]
+SingleQueryResultType = Dict[str, Any]
+QueryJsonType = List[SingleQueryResultType]
