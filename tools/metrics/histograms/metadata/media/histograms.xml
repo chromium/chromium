@@ -1402,7 +1402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioInputCbErrorMac" units="OSStatus"
-    expires_after="2022-07-29">
+    expires_after="2023-07-29">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>
