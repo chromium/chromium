@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/media/session/mock_media_session_player_observer.h"
-
+#include "content/public/browser/render_frame_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -11,7 +11,10 @@ namespace content {
 MockMediaSessionPlayerObserver::MockMediaSessionPlayerObserver(
     RenderFrameHost* render_frame_host,
     media::MediaContentType media_content_type)
-    : render_frame_host_(render_frame_host),
+    : render_frame_host_global_id_(
+          render_frame_host
+              ? absl::make_optional(render_frame_host->GetGlobalId())
+              : absl::nullopt),
       media_content_type_(media_content_type) {}
 
 MockMediaSessionPlayerObserver::MockMediaSessionPlayerObserver(
@@ -115,7 +118,10 @@ bool MockMediaSessionPlayerObserver::IsPictureInPictureAvailable(
 }
 
 RenderFrameHost* MockMediaSessionPlayerObserver::render_frame_host() const {
-  return render_frame_host_;
+  if (render_frame_host_global_id_.has_value()) {
+    return RenderFrameHost::FromID(render_frame_host_global_id_.value());
+  }
+  return nullptr;
 }
 
 int MockMediaSessionPlayerObserver::StartNewPlayer() {
