@@ -714,6 +714,10 @@ void AppListBubbleView::ReparentDragEnded() {
   // Nothing to do.
 }
 
+void AppListBubbleView::InitializeUIForBubbleView() {
+  assistant_page_->InitializeUIForBubbleView();
+}
+
 void AppListBubbleView::DisableFocusForShowingActiveFolder(bool disabled) {
   search_box_view_->SetEnabled(!disabled);
   SetViewIgnoredForAccessibility(search_box_view_, disabled);

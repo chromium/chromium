@@ -69,6 +69,8 @@ class ASH_EXPORT AppListAssistantMainStage
       absl::optional<AssistantEntryPoint> entry_point,
       absl::optional<AssistantExitPoint> exit_point) override;
 
+  void InitializeUIForBubbleView();
+
  private:
   void InitLayout();
   std::unique_ptr<views::View> CreateContentLayoutContainer();
@@ -80,6 +82,7 @@ class ASH_EXPORT AppListAssistantMainStage
   void AnimateInFooter();
 
   void MaybeHideZeroState();
+  void InitializeUIForStartingSession(bool from_search);
 
   AssistantViewDelegate* const delegate_;  // Owned by Shell.
 

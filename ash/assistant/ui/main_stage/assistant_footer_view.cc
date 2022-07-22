@@ -88,7 +88,6 @@ void AssistantFooterView::InitLayout() {
   suggestion_container_->layer()->SetOpacity(consent_given ? 1.f : 0.f);
   suggestion_container_->SetVisible(consent_given);
 
-
   // Opt in view.
   opt_in_view_ = AddChildView(std::make_unique<AssistantOptInView>(delegate_));
   opt_in_view_->SetCanProcessEventsWithinSubtree(!consent_given);
@@ -143,6 +142,10 @@ void AssistantFooterView::OnAssistantConsentStatusChanged(int consent_status) {
 
   // Set the observer to active to receive animation callback events.
   animation_observer_->SetActive();
+}
+
+void AssistantFooterView::InitializeUIForBubbleView() {
+  suggestion_container_->InitializeUIForBubbleView();
 }
 
 void AssistantFooterView::OnAnimationStarted(

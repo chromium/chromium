@@ -41,6 +41,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantFooterView
   // AssistantStateObserver:
   void OnAssistantConsentStatusChanged(int consent_status) override;
 
+  void InitializeUIForBubbleView();
+
  private:
   void InitLayout();
 

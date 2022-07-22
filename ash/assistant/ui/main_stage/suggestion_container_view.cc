@@ -249,6 +249,12 @@ void SuggestionContainerView::OnUiVisibilityChanged(
       views::BoxLayout::MainAxisAlignment::kCenter);
 }
 
+void SuggestionContainerView::InitializeUIForBubbleView() {
+  OnConversationStartersChanged(AssistantSuggestionsController::Get()
+                                    ->GetModel()
+                                    ->GetConversationStarters());
+}
+
 void SuggestionContainerView::OnButtonPressed(SuggestionChipView* chip_view) {
   // Remember which chip was selected, so we can give it a special animation.
   selected_chip_ = chip_view;

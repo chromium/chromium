@@ -230,6 +230,9 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
         std::make_unique<AppListEventTargeter>(controller_));
     bubble_view_ = bubble_widget_->SetContentsView(
         std::make_unique<AppListBubbleView>(controller_, drag_and_drop_host));
+    // Some of Assistant UIs have to be initialized explicitly. See details in
+    // the comment of AppListBubbleView::InitializeUIForBubbleView.
+    bubble_view_->InitializeUIForBubbleView();
     // Arrow left/right and up/down triggers the same focus movement as
     // tab/shift+tab.
     bubble_widget_->widget_delegate()->SetEnableArrowKeyTraversal(true);

@@ -423,19 +423,9 @@ void AppListAssistantMainStage::OnUiVisibilityChanged(
     absl::optional<AssistantEntryPoint> entry_point,
     absl::optional<AssistantExitPoint> exit_point) {
   if (assistant::util::IsStartingSession(new_visibility, old_visibility)) {
-    // When Assistant is starting a new session, we animate in the appearance of
-    // the zero state view and footer.
     const bool from_search =
         entry_point == AssistantEntryPoint::kLauncherSearchResult;
-    progress_indicator_->layer()->SetOpacity(0.f);
-    horizontal_separator_->layer()->SetOpacity(from_search ? 1.f : 0.f);
-
-    if (!from_search)
-      AnimateInZeroState();
-    else
-      zero_state_view_->SetVisible(false);
-
-    AnimateInFooter();
+    InitializeUIForStartingSession(from_search);
     return;
   }
 
@@ -446,12 +436,32 @@ void AppListAssistantMainStage::OnUiVisibilityChanged(
   footer_->SetCanProcessEventsWithinSubtree(true);
 }
 
+void AppListAssistantMainStage::InitializeUIForBubbleView() {
+  InitializeUIForStartingSession(/*from_search=*/false);
+}
+
 void AppListAssistantMainStage::MaybeHideZeroState() {
   if (!IsShown(zero_state_view_))
     return;
 
   assistant::util::FadeOutAndHide(zero_state_view_,
                                   kZeroStateAnimationFadeOutDuration);
+}
+
+void AppListAssistantMainStage::InitializeUIForStartingSession(
+    bool from_search) {
+  // When Assistant is starting a new session, we animate in the appearance of
+  // the zero state view and footer.
+  progress_indicator_->layer()->SetOpacity(0.f);
+  horizontal_separator_->layer()->SetOpacity(from_search ? 1.f : 0.f);
+
+  if (!from_search)
+    AnimateInZeroState();
+  else
+    zero_state_view_->SetVisible(false);
+
+  footer_->InitializeUIForBubbleView();
+  AnimateInFooter();
 }
 
 BEGIN_METADATA(AppListAssistantMainStage, views::View)

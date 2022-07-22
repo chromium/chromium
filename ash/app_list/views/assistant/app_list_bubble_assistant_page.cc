@@ -47,6 +47,10 @@ void AppListBubbleAssistantPage::OnBoundsChanged(
     AssistantUiController::Get()->SetAppListBubbleWidth(size().width());
 }
 
+void AppListBubbleAssistantPage::InitializeUIForBubbleView() {
+  main_stage_->InitializeUIForBubbleView();
+}
+
 BEGIN_METADATA(AppListBubbleAssistantPage, views::View)
 END_METADATA
 

@@ -13,6 +13,7 @@
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
@@ -32,6 +33,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -431,6 +433,16 @@ TEST_F(AppListBubblePresenterTest, AssistantKeyOpensToAssistantPage) {
   EXPECT_FALSE(
       presenter->bubble_view_for_test()->apps_page_for_test()->GetVisible());
   EXPECT_TRUE(presenter->IsShowingEmbeddedAssistantUI());
+
+  views::View* progress_indicator =
+      presenter->bubble_view_for_test()->GetViewByID(
+          AssistantViewID::kProgressIndicator);
+  EXPECT_FLOAT_EQ(0.f, progress_indicator->layer()->opacity());
+
+  // Check target opacity as footer is animating.
+  views::View* footer = presenter->bubble_view_for_test()->GetViewByID(
+      AssistantViewID::kFooterView);
+  EXPECT_FLOAT_EQ(1.f, footer->layer()->GetTargetOpacity());
 }
 
 TEST_F(AppListBubblePresenterTest, AssistantKeyOpensAssistantPageWhenCached) {
