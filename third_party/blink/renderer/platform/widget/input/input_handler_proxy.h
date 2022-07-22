@@ -315,7 +315,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   void RecordMainThreadScrollingReasons(blink::WebGestureDevice device,
                                         uint32_t reasons_from_scroll_begin,
                                         bool was_main_thread_hit_tested,
-                                        bool needs_main_thread_repaint);
+                                        uint32_t main_thread_repaint_reasons);
 
   bool HasQueuedEventsReadyForDispatch();
 

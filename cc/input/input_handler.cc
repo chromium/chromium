@@ -314,10 +314,9 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
   DCHECK(scrolling_node);
 
   ActiveTree().SetCurrentlyScrollingNode(scrolling_node);
-  if (unification_enabled &&
-      !scroll_tree.CanRealizeScrollsOnCompositor(*scrolling_node)) {
-    scroll_status.needs_main_thread_repaint = true;
-  }
+  if (unification_enabled)
+    scroll_status.main_thread_repaint_reasons =
+        scroll_tree.GetMainThreadRepaintReasons(*scrolling_node);
 
   DidLatchToScroller(*scroll_state, type);
 

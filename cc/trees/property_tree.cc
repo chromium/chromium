@@ -1363,7 +1363,15 @@ bool ScrollTree::IsComposited(const ScrollNode& node) const {
 }
 
 bool ScrollTree::CanRealizeScrollsOnCompositor(const ScrollNode& node) const {
-  return node.is_composited && !node.main_thread_scrolling_reasons;
+  return GetMainThreadRepaintReasons(node) ==
+         MainThreadScrollingReason::kNotScrollingOnMain;
+}
+
+uint32_t ScrollTree::GetMainThreadRepaintReasons(const ScrollNode& node) const {
+  uint32_t reasons = node.main_thread_scrolling_reasons;
+  if (!node.is_composited)
+    reasons |= MainThreadScrollingReason::kNoScrollingLayer;
+  return reasons;
 }
 
 void ScrollTree::clear() {

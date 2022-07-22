@@ -21,6 +21,9 @@ namespace cc {
 //   tools/metrics/histograms/enums.xml
 // When adding a new MainThreadScrollingReason, make sure the corresponding
 // [MainThread/Compositor]CanSetScrollReasons function is also updated.
+//
+// More info at: http://bit.ly/mtsr-details
+//
 struct CC_EXPORT MainThreadScrollingReason {
   enum : uint32_t {
     kNotScrollingOnMain = 0,

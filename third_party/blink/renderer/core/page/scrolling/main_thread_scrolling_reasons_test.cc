@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/property_tree.h"
@@ -102,15 +103,21 @@ class MainThreadScrollingReasonsTest : public PaintTestConfigurations,
         ->GetScrollableArea();
   }
 
+  base::Bucket BucketForReason(uint32_t reason) {
+    uint32_t bucket = 0;
+    while (reason >>= 1)
+      bucket++;
+    return base::Bucket(base::HistogramBase::Sample(bucket), 1);
+  }
+
  protected:
   String base_url_;
+  frame_test_helpers::WebViewHelper helper_;
 
  private:
   static void ConfigureSettings(WebSettings* settings) {
     settings->SetPreferCompositingToLCDTextEnabled(true);
   }
-
-  frame_test_helpers::WebViewHelper helper_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(MainThreadScrollingReasonsTest);
@@ -232,6 +239,55 @@ TEST_P(MainThreadScrollingReasonsTest,
   EXPECT_MAIN_THREAD_SCROLLING_REASON(
       cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
       GetMainThreadScrollingReasons(outer_scroll_layer));
+}
+
+TEST_P(MainThreadScrollingReasonsTest, ReportBackgroundAttachmentFixed) {
+  base::HistogramTester histogram_tester;
+  std::string html = R"HTML(
+    <style>
+      body { width: 900px; height: 900px; }
+      #bg { background: url('white-1x1.png') fixed; }
+    </style>
+    <div id=bg>x</div>
+  )HTML";
+
+  WebLocalFrameImpl* frame = helper_.LocalMainFrame();
+  frame_test_helpers::LoadHTMLString(frame, html,
+                                     url_test_helpers::ToKURL("about:blank"));
+
+  helper_.GetLayerTreeHost()->CompositeForTest(base::TimeTicks::Now(), false);
+
+  auto CreateEvent = [](WebInputEvent::Type type) {
+    return WebGestureEvent(type, WebInputEvent::kNoModifiers,
+                           base::TimeTicks::Now(),
+                           WebGestureDevice::kTouchscreen);
+  };
+
+  WebGestureEvent scroll_begin =
+      CreateEvent(WebInputEvent::Type::kGestureScrollBegin);
+  WebGestureEvent scroll_update =
+      CreateEvent(WebInputEvent::Type::kGestureScrollUpdate);
+  WebGestureEvent scroll_end =
+      CreateEvent(WebInputEvent::Type::kGestureScrollEnd);
+
+  scroll_begin.SetPositionInWidget(gfx::PointF(100, 100));
+  scroll_update.SetPositionInWidget(gfx::PointF(100, 100));
+  scroll_end.SetPositionInWidget(gfx::PointF(100, 100));
+
+  scroll_update.data.scroll_update.delta_y = -100;
+
+  auto* widget = helper_.GetMainFrameWidget();
+  widget->DispatchThroughCcInputHandler(scroll_begin);
+  widget->DispatchThroughCcInputHandler(scroll_update);
+  widget->DispatchThroughCcInputHandler(scroll_end);
+
+  helper_.GetLayerTreeHost()->CompositeForTest(base::TimeTicks::Now(), false);
+
+  uint32_t expected_reason =
+      cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Renderer4.MainThreadGestureScrollReason"),
+      testing::ElementsAre(BucketForReason(expected_reason)));
 }
 
 // Upon resizing the content size, the main thread scrolling reason

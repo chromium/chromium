@@ -424,7 +424,7 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
     // RecordScrollBegin and RecordScrollEnd but we should probably be avoiding
     // this if the scroll never starts. https://crbug.com/1082601.
     RecordMainThreadScrollingReasons(gesture_event->SourceDevice(), 0, false,
-                                     false);
+                                     0);
 
     // If the main thread failed to return a scroller for whatever reason,
     // consider the ScrollBegin to be dropped.
@@ -851,7 +851,7 @@ void InputHandlerProxy::RecordMainThreadScrollingReasons(
     WebGestureDevice device,
     uint32_t reasons_from_scroll_begin,
     bool was_main_thread_hit_tested,
-    bool needs_main_thread_repaint) {
+    uint32_t main_thread_repaint_reasons) {
   if (device != WebGestureDevice::kTouchpad &&
       device != WebGestureDevice::kScrollbar &&
       device != WebGestureDevice::kTouchscreen) {
@@ -869,7 +869,8 @@ void InputHandlerProxy::RecordMainThreadScrollingReasons(
   const bool is_compositor_scroll =
       reasons_from_scroll_begin ==
           cc::MainThreadScrollingReason::kNotScrollingOnMain &&
-      !needs_main_thread_repaint;
+      main_thread_repaint_reasons ==
+          cc::MainThreadScrollingReason::kNotScrollingOnMain;
 
   absl::optional<EventDisposition> disposition =
       (device == WebGestureDevice::kTouchpad ? mouse_wheel_result_
@@ -902,24 +903,11 @@ void InputHandlerProxy::RecordMainThreadScrollingReasons(
     reportable_reasons |= cc::MainThreadScrollingReason::kFailedHitTest;
   }
 
-  if (needs_main_thread_repaint) {
-    // With scroll unification, most of the values in MainThreadScrollingReason
-    // aren't reflected in reasons_from_scroll_begin, since we are not scrolling
-    // "on main" from ThreadedInputHandler's perspective. But we still want to
-    // log a reason to UMA if the user will not see new pixels until the next
-    // BeginMainFrame. We use kNoScrollingLayer here to cover scenarios that
-    // were reported pre-unification as one of:
-    //
-    //   kHasBackgroundAttachmentFixedObjects
-    //   kThreadedScrollingDisabled
-    //   kNonFastScrollableRegion
-    //   kNotOpaqueForTextAndLCDText
-    //   kCantPaintScrollingBackgroundAndLCDText
-    //
-    // TODO(crbug.com/1082590): Add new plumbing to distinguish between these in
-    // the post-unification world?
-    reportable_reasons |= cc::MainThreadScrollingReason::kNoScrollingLayer;
-  }
+  // With scroll unification, we never scroll "on main" from the perspective
+  // of cc::InputHandler, but we still want to log reasons if the user will not
+  // see new pixels until the next BeginMainFrame. These reasons are passed as
+  // main_thread_repaint_reasons instead of reasons_from_scroll_begin.
+  reportable_reasons |= main_thread_repaint_reasons;
 
   RecordScrollReasonsMetric(device, reportable_reasons);
 }
@@ -1019,7 +1007,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
   RecordMainThreadScrollingReasons(gesture_event.SourceDevice(),
                                    scroll_status.main_thread_scrolling_reasons,
                                    scroll_state.is_main_thread_hit_tested(),
-                                   scroll_status.needs_main_thread_repaint);
+                                   scroll_status.main_thread_repaint_reasons);
 
   InputHandlerProxy::EventDisposition result = DID_NOT_HANDLE;
   scroll_sequence_ignored_ = false;

@@ -583,6 +583,11 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   // main-thread scrolling reasons (see main_thread_scrolling_reason.h).
   bool CanRealizeScrollsOnCompositor(const ScrollNode& node) const;
 
+  // Reports reasons for blocking scroll updates on main-thread repaint. For use
+  // only with scroll unification enabled. Returns bitfield of values from
+  // MainThreadScrollingReason.
+  uint32_t GetMainThreadRepaintReasons(const ScrollNode& node) const;
+
  private:
   // ScrollTree doesn't use the needs_update flag.
   using PropertyTree::needs_update;

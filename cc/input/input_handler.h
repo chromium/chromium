@@ -232,12 +232,15 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
     // the main thread to perform a hit test.
     bool needs_main_thread_hit_test = false;
 
-    // Used only in scroll unification. Tells the caller that we have performed
+    // Used only in scroll unification. A nonzero value means we have performed
     // the scroll (i.e. updated the offset in the scroll tree) on the compositor
     // thread, but we will need a main thread lifecycle update + commit before
     // the user will see the new pixels (for example, because the scroller does
-    // not have a composited layer).
-    bool needs_main_thread_repaint = false;
+    // not have a composited layer). If nonzero, this will be one or more values
+    // from the MainThreadScrollingReason enum. (Unification avoids setting
+    // main_thread_scrolling_reasons, to keep that field consistent with
+    // semantics of ScrollThread::SCROLL_ON_IMPL_THREAD.)
+    uint32_t main_thread_repaint_reasons = 0;
   };
 
   enum class TouchStartOrMoveEventListenerType {

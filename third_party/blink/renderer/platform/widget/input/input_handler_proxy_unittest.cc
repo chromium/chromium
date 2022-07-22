@@ -3726,7 +3726,8 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
   VERIFY_AND_RESET_MOCKS();
 
   cc::InputHandler::ScrollStatus scroll_status = kImplThreadScrollState;
-  scroll_status.needs_main_thread_repaint = true;
+  scroll_status.main_thread_repaint_reasons =
+      cc::MainThreadScrollingReason::kNoScrollingLayer;
 
   EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
       .WillOnce(testing::Return(scroll_status));
