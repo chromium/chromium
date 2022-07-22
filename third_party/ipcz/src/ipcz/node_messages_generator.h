@@ -161,10 +161,18 @@ IPCZ_MSG_BEGIN(RouteClosed, IPCZ_MSG_ID(22), IPCZ_MSG_VERSION(0))
   IPCZ_MSG_PARAM(SequenceNumber, sequence_length)
 IPCZ_MSG_END()
 
+// Notifies a specific router that its route from the direction of this link has
+// been unexpectedly disconnected (e.g. due to a node crashing). This is
+// essentially the same as route closure but without respect for complete parcel
+// sequence delivery.
+IPCZ_MSG_BEGIN(RouteDisconnected, IPCZ_MSG_ID(23), IPCZ_MSG_VERSION(0))
+  IPCZ_MSG_PARAM(SublinkId, sublink)
+IPCZ_MSG_END()
+
 // Notifies a node that the Router it has bound to `sublink` (on the
 // transmitting NodeLink) now has an allocated RouterLinkState in the fragment
 // identified by `descriptor`.
-IPCZ_MSG_BEGIN(SetRouterLinkState, IPCZ_MSG_ID(23), IPCZ_MSG_VERSION(0))
+IPCZ_MSG_BEGIN(SetRouterLinkState, IPCZ_MSG_ID(24), IPCZ_MSG_VERSION(0))
   IPCZ_MSG_PARAM(SublinkId, sublink)
   IPCZ_MSG_PARAM(FragmentDescriptor, descriptor)
 IPCZ_MSG_END()

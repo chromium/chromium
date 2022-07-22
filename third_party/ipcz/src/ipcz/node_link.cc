@@ -352,6 +352,19 @@ bool NodeLink::OnRouteClosed(msg::RouteClosed& route_closed) {
       sublink->router_link->GetType(), route_closed.params().sequence_length);
 }
 
+bool NodeLink::OnRouteDisconnected(msg::RouteDisconnected& route_closed) {
+  absl::optional<Sublink> sublink = GetSublink(route_closed.params().sublink);
+  if (!sublink) {
+    return true;
+  }
+
+  DVLOG(4) << "Accepting RouteDisconnected at "
+           << sublink->router_link->Describe();
+
+  return sublink->receiver->AcceptRouteDisconnectedFrom(
+      sublink->router_link->GetType());
+}
+
 bool NodeLink::OnSetRouterLinkState(msg::SetRouterLinkState& set) {
   if (set.params().descriptor.is_null()) {
     return false;
@@ -380,8 +393,14 @@ void NodeLink::OnTransportError() {
   }
 
   for (auto& [id, sublink] : sublinks) {
-    sublink.receiver->NotifyLinkDisconnected(*this, id);
+    DVLOG(4) << "NodeLink disconnection dropping "
+             << sublink.router_link->Describe() << " which is bound to router "
+             << sublink.receiver.get();
+    sublink.receiver->NotifyLinkDisconnected(*sublink.router_link);
   }
+
+  Ref<NodeLink> self = WrapRefCounted(this);
+  node_->DropLink(remote_node_name_);
 }
 
 NodeLink::Sublink::Sublink(Ref<RemoteRouterLink> router_link,

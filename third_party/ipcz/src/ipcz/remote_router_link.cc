@@ -112,11 +112,6 @@ bool RemoteRouterLink::HasLocalPeer(const Router& router) {
   return false;
 }
 
-bool RemoteRouterLink::IsRemoteLinkTo(const NodeLink& node_link,
-                                      SublinkId sublink) {
-  return node_link_.get() == &node_link && sublink_ == sublink;
-}
-
 void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
   const absl::Span<Ref<APIObject>> objects = parcel.objects_view();
 
@@ -223,6 +218,12 @@ void RemoteRouterLink::AcceptRouteClosure(SequenceNumber sequence_length) {
   route_closed.params().sublink = sublink_;
   route_closed.params().sequence_length = sequence_length;
   node_link()->Transmit(route_closed);
+}
+
+void RemoteRouterLink::AcceptRouteDisconnected() {
+  msg::RouteDisconnected route_disconnected;
+  route_disconnected.params().sublink = sublink_;
+  node_link()->Transmit(route_disconnected);
 }
 
 void RemoteRouterLink::MarkSideStable() {

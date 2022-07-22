@@ -69,9 +69,9 @@ class RemoteRouterLink : public RouterLink {
   LinkType GetType() const override;
   RouterLinkState* GetLinkState() const override;
   bool HasLocalPeer(const Router& router) override;
-  bool IsRemoteLinkTo(const NodeLink& node_link, SublinkId sublink) override;
   void AcceptParcel(Parcel& parcel) override;
   void AcceptRouteClosure(SequenceNumber sequence_length) override;
+  void AcceptRouteDisconnected() override;
   void MarkSideStable() override;
   bool TryLockForBypass(const NodeName& bypass_request_source) override;
   bool TryLockForClosure() override;

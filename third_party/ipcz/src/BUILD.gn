@@ -320,6 +320,42 @@ config("ipcz_include_src_dir") {
   include_dirs = [ "${ipcz_src_root}" ]
 }
 
+ipcz_source_set("ipcz_test_support") {
+  testonly = true
+  public = [
+    "test/mock_driver.h",
+    "test/multinode_test.h",
+    "test/test.h",
+    "test/test_base.h",
+    "test/test_transport_listener.h",
+  ]
+
+  sources = [
+    "test/mock_driver.cc",
+    "test/multinode_test.cc",
+    "test/test_base.cc",
+    "test/test_transport_listener.cc",
+  ]
+
+  if (enable_multiprocess_tests) {
+    public += [ "test/test_child_launcher.h" ]
+    sources += [ "test/test_child_launcher.cc" ]
+  }
+
+  deps = [
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+  public_deps = [ ":test_buildflags" ]
+  ipcz_public_deps = [
+    ":impl",
+    ":ipcz",
+    ":reference_drivers",
+    ":util",
+  ]
+}
+
 ipcz_source_set("ipcz_tests_sources") {
   testonly = true
 
@@ -343,27 +379,16 @@ ipcz_source_set("ipcz_tests_sources") {
     "ipcz/sequenced_queue_test.cc",
     "reference_drivers/sync_reference_driver_test.cc",
     "remote_portal_test.cc",
-    "test/mock_driver.cc",
-    "test/mock_driver.h",
-    "test/multinode_test.cc",
-    "test/multinode_test.h",
-    "test/test.h",
-    "test/test_base.cc",
-    "test/test_base.h",
-    "test/test_transport_listener.cc",
-    "test/test_transport_listener.h",
     "trap_test.cc",
     "util/ref_counted_test.cc",
     "util/stack_trace_test.cc",
   ]
 
   if (enable_multiprocess_tests) {
-    public = [ "test/test_child_launcher.h" ]
     sources += [
       "reference_drivers/memfd_memory_test.cc",
       "reference_drivers/multiprocess_reference_driver_test.cc",
       "reference_drivers/socket_transport_test.cc",
-      "test/test_child_launcher.cc",
     ]
   }
 
@@ -372,13 +397,15 @@ ipcz_source_set("ipcz_tests_sources") {
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
-  public_deps = [ ":test_buildflags" ]
   ipcz_deps = [
     ":impl",
     ":ipcz",
     ":util",
   ]
-  ipcz_public_deps = [ ":reference_drivers" ]
+  ipcz_public_deps = [
+    ":ipcz_test_support",
+    ":reference_drivers",
+  ]
 
   configs = [ ":ipcz_include_src_dir" ]
 }

@@ -11,6 +11,7 @@
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/link_side.h"
+#include "ipcz/link_type.h"
 #include "ipcz/node_link.h"
 #include "ipcz/node_link_memory.h"
 #include "ipcz/portal.h"
@@ -264,9 +265,14 @@ void NodeConnector::EstablishWaitingPortals(Ref<NodeLink> to_link,
       std::min(max_valid_portals, waiting_portals_.size());
   for (size_t i = 0; i < num_valid_portals; ++i) {
     const Ref<Router> router = waiting_portals_[i]->router();
-    router->SetOutwardLink(to_link->AddRemoteRouterLink(
+    Ref<RouterLink> link = to_link->AddRemoteRouterLink(
         SublinkId(i), to_link->memory().GetInitialRouterLinkState(i),
-        LinkType::kCentral, link_side, router));
+        LinkType::kCentral, link_side, router);
+    if (link) {
+      router->SetOutwardLink(std::move(link));
+    } else {
+      router->AcceptRouteDisconnectedFrom(LinkType::kCentral);
+    }
   }
 
   // Elicit immediate peer closure on any surplus portals that were established

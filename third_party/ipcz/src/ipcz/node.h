@@ -139,12 +139,19 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // the broker could not satisfy the request.
   bool CancelIntroduction(const NodeName& name);
 
+  // Drops this node's link to the named node, if one exists.
+  void DropLink(const NodeName& name);
+
  private:
   ~Node() override;
 
   // Deactivates all NodeLinks and their underlying driver transports in
   // preparation for this node's imminent destruction.
   void ShutDown();
+
+  // Resolves all pending introduction requests with a null link, implying
+  // failure.
+  void CancelAllIntroductions();
 
   const Type type_;
   const IpczDriver& driver_;
@@ -172,8 +179,9 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // A map of other nodes to which this node is waiting for an introduction from
   // `broker_link_`. Once such an introduction is received, all callbacks for
   // that NodeName are executed.
-  absl::flat_hash_map<NodeName, std::vector<EstablishLinkCallback>>
-      pending_introductions_ ABSL_GUARDED_BY(mutex_);
+  using PendingIntroductionMap =
+      absl::flat_hash_map<NodeName, std::vector<EstablishLinkCallback>>;
+  PendingIntroductionMap pending_introductions_ ABSL_GUARDED_BY(mutex_);
 
   // Nodes may race to request introductions to each other from the same broker.
   // This can lead to redundant introductions being sent which the requesting

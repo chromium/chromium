@@ -40,10 +40,6 @@ class RouterLink : public RefCounted {
   // Returns true iff this is a LocalRouterLink whose peer router is `router`.
   virtual bool HasLocalPeer(const Router& router) = 0;
 
-  // Returns true iff this is a RemoteRouterLink routing over `node_link` via
-  // `sublink`.
-  virtual bool IsRemoteLinkTo(const NodeLink& node_link, SublinkId sublink) = 0;
-
   // Passes a parcel to the Router on the other side of this link to be queued
   // and/or router further.
   virtual void AcceptParcel(Parcel& parcel) = 0;
@@ -52,6 +48,12 @@ class RouterLink : public RefCounted {
   // closed from this side. `sequence_length` is the total number of parcels
   // transmitted from the closed side before it was closed.
   virtual void AcceptRouteClosure(SequenceNumber sequence_length) = 0;
+
+  // Notifies the Router on the other side of the link that the route has been
+  // unexpectedly disconnected from this side. Unlike clean route closure above,
+  // in this case we don't know the final sequence length and can't guarantee
+  // delivery of any further parcels.
+  virtual void AcceptRouteDisconnected() = 0;
 
   // Signals that this side of the link is in a stable state suitable for one
   // side or the other to lock the link, either for bypass or closure

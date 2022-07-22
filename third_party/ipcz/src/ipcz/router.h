@@ -21,6 +21,7 @@
 namespace ipcz {
 
 class NodeLink;
+class RemoteRouterLink;
 
 // The Router is the main primitive responsible for routing parcels between ipcz
 // portals. This class is thread-safe.
@@ -92,13 +93,19 @@ class Router : public RefCounted {
   bool AcceptOutboundParcel(Parcel& parcel);
 
   // Accepts notification that the other end of the route has been closed and
-  // that the close end transmitted a total of `sequence_length` parcels before
-  // closing. If `sequence_length` is unknown and omitted (due to closure being
-  // forced by disconnection), the current sequence length in the appropriate
-  // direction is used.
-  bool AcceptRouteClosureFrom(
-      LinkType link_type,
-      absl::optional<SequenceNumber> sequence_length = absl::nullopt);
+  // that the closed end transmitted a total of `sequence_length` parcels before
+  // closing.
+  bool AcceptRouteClosureFrom(LinkType link_type,
+                              SequenceNumber sequence_length);
+
+  // Accepts notification from a link bound to this Router that some node along
+  // the route (in the direction of that link) has been disconnected, e.g. due
+  // to a crash, and that the route is no longer functional as a result. This is
+  // similar to route closure, except no effort can realistically be made to
+  // deliver the complete sequence of parcels transmitted from that end of the
+  // route. `link_type` specifies the type of link which is propagating the
+  // notification to this rouer.
+  bool AcceptRouteDisconnectedFrom(LinkType link_type);
 
   // Retrieves the next available inbound parcel from this Router, if present.
   IpczResult GetNextInboundParcel(IpczGetFlags flags,
@@ -131,10 +138,10 @@ class Router : public RefCounted {
   void BeginProxyingToNewRouter(NodeLink& to_node_link,
                                 const RouterDescriptor& descriptor);
 
-  // Notifies this Router that one of its links has been disconnected from a
-  // remote node. The link is identified by a combination of a specific NodeLink
-  // and SublinkId.
-  void NotifyLinkDisconnected(const NodeLink& node_link, SublinkId sublink);
+  // Notifies this router that the given RemoteRouterLink has been disconnected
+  // due to an underlying NodeLink disconnection. This is only called for
+  // RemoteRouterLinks which are associated with this Router.
+  void NotifyLinkDisconnected(RemoteRouterLink& link);
 
   // Flushes any inbound or outbound parcels, as well as any route closure
   // notifications. RouterLinks which are no longer needed for the operation of
@@ -184,6 +191,10 @@ class Router : public RefCounted {
   // present when received, and they are forwarded along `outward_link_` as soon
   // as possible.
   ParcelQueue outbound_parcels_ ABSL_GUARDED_BY(mutex_);
+
+  // Tracks whether this router has been unexpectedly disconnected from its
+  // links. This may be used to prevent additional links from being established.
+  bool is_disconnected_ ABSL_GUARDED_BY(mutex_) = false;
 };
 
 }  // namespace ipcz

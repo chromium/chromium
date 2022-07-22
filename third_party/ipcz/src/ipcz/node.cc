@@ -280,6 +280,35 @@ bool Node::CancelIntroduction(const NodeName& name) {
   return true;
 }
 
+void Node::DropLink(const NodeName& name) {
+  Ref<NodeLink> link;
+  bool lost_broker = false;
+  {
+    absl::MutexLock lock(&mutex_);
+    auto it = node_links_.find(name);
+    if (it == node_links_.end()) {
+      return;
+    }
+    link = std::move(it->second);
+    node_links_.erase(it);
+
+    DVLOG(4) << "Node " << link->local_node_name().ToString() << " dropping "
+             << " link to " << link->remote_node_name().ToString();
+    if (link == broker_link_) {
+      DVLOG(4) << "Node " << link->local_node_name().ToString()
+               << " has lost its broker link";
+      broker_link_.reset();
+      lost_broker = true;
+    }
+  }
+
+  link->Deactivate();
+
+  if (lost_broker) {
+    CancelAllIntroductions();
+  }
+}
+
 void Node::ShutDown() {
   NodeLinkMap node_links;
   {
@@ -290,6 +319,22 @@ void Node::ShutDown() {
 
   for (const auto& entry : node_links) {
     entry.second->Deactivate();
+  }
+
+  CancelAllIntroductions();
+}
+
+void Node::CancelAllIntroductions() {
+  PendingIntroductionMap introductions;
+  {
+    absl::MutexLock lock(&mutex_);
+    introductions.swap(pending_introductions_);
+  }
+
+  for (auto& [name, callbacks] : introductions) {
+    for (auto& callback : callbacks) {
+      callback(nullptr);
+    }
   }
 }
 

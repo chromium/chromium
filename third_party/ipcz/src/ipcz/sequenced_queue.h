@@ -161,6 +161,25 @@ class SequencedQueue {
     return Reallocate(length);
   }
 
+  // Forcibly sets the final length of this queue's sequence to its currently
+  // available length. This means that if there is a gap in the available
+  // elements, the queue is cut off just before the gap and all elements beyond
+  // the gap are destroyed. If the final sequence length had already been set on
+  // this queue, this overrides that.
+  void ForceTerminateSequence() {
+    final_sequence_length_ = GetCurrentSequenceLength();
+    num_entries_ = GetNumAvailableElements();
+    if (num_entries_ == 0) {
+      storage_.clear();
+      entries_ = {};
+      return;
+    }
+
+    const size_t entries_offset = entries_.data() - storage_.data();
+    storage_.resize(entries_offset + num_entries_);
+    entries_ = EntryView(storage_.data() + entries_offset, num_entries_);
+  }
+
   // Indicates whether this queue is still expecting to have more elements
   // pushed. This is always true if the final sequence length has not been set
   // yet.

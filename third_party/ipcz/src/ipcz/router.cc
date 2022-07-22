@@ -59,6 +59,11 @@ IpczResult Router::SendOutboundParcel(Parcel& parcel) {
   Ref<RouterLink> link;
   {
     absl::MutexLock lock(&mutex_);
+    if (inbound_parcels_.final_sequence_length()) {
+      // If the inbound sequence is finalized, the peer portal must be gone.
+      return IPCZ_RESULT_NOT_FOUND;
+    }
+
     const SequenceNumber sequence_number =
         outbound_parcels_.GetCurrentSequenceLength();
     parcel.set_sequence_number(sequence_number);
@@ -90,10 +95,8 @@ void Router::CloseRoute() {
   Ref<RouterLink> link;
   {
     absl::MutexLock lock(&mutex_);
-    bool ok = outbound_parcels_.SetFinalSequenceLength(
+    outbound_parcels_.SetFinalSequenceLength(
         outbound_parcels_.GetCurrentSequenceLength());
-    ABSL_ASSERT(ok);
-
     traps_.RemoveAll(dispatcher);
   }
 
@@ -101,10 +104,22 @@ void Router::CloseRoute() {
 }
 
 void Router::SetOutwardLink(Ref<RouterLink> link) {
+  ABSL_ASSERT(link);
+
   {
     absl::MutexLock lock(&mutex_);
     ABSL_ASSERT(!outward_link_);
-    outward_link_ = std::move(link);
+
+    if (!is_disconnected_) {
+      outward_link_ = std::move(link);
+    }
+  }
+
+  if (link) {
+    // If the link wasn't adopted, this Router has already been disconnected.
+    link->AcceptRouteDisconnected();
+    link->Deactivate();
+    return;
   }
 
   Flush();
@@ -116,7 +131,9 @@ bool Router::AcceptInboundParcel(Parcel& parcel) {
     absl::MutexLock lock(&mutex_);
     const SequenceNumber sequence_number = parcel.sequence_number();
     if (!inbound_parcels_.Push(sequence_number, std::move(parcel))) {
-      return false;
+      // Unexpected route disconnection can cut off inbound sequences, so don't
+      // treat an out-of-bounds parcel as a validation failure.
+      return true;
     }
 
     status_.num_local_parcels = inbound_parcels_.GetNumAvailableElements();
@@ -144,7 +161,9 @@ bool Router::AcceptOutboundParcel(Parcel& parcel) {
     // that tracks complete sequences from potentially fragmented contributions.
     const SequenceNumber sequence_number = parcel.sequence_number();
     if (!outbound_parcels_.Push(sequence_number, std::move(parcel))) {
-      return false;
+      // Unexpected route disconnection can cut off outbound sequences, so don't
+      // treat an out-of-bounds parcel as a validation failure.
+      return true;
     }
   }
 
@@ -152,16 +171,17 @@ bool Router::AcceptOutboundParcel(Parcel& parcel) {
   return true;
 }
 
-bool Router::AcceptRouteClosureFrom(
-    LinkType link_type,
-    absl::optional<SequenceNumber> sequence_length) {
+bool Router::AcceptRouteClosureFrom(LinkType link_type,
+                                    SequenceNumber sequence_length) {
   TrapEventDispatcher dispatcher;
   {
     absl::MutexLock lock(&mutex_);
     if (link_type.is_outward()) {
-      if (!inbound_parcels_.SetFinalSequenceLength(sequence_length.value_or(
-              inbound_parcels_.GetCurrentSequenceLength()))) {
-        return false;
+      if (!inbound_parcels_.SetFinalSequenceLength(sequence_length)) {
+        // Ignore if and only if the sequence was terminated early.
+        DVLOG(4) << "Discarding inbound route closure notification";
+        return inbound_parcels_.final_sequence_length().has_value() &&
+               *inbound_parcels_.final_sequence_length() <= sequence_length;
       }
 
       if (!inward_link_) {
@@ -173,10 +193,55 @@ bool Router::AcceptRouteClosureFrom(
                                   dispatcher);
       }
     } else if (link_type.is_peripheral_inward()) {
-      if (!outbound_parcels_.SetFinalSequenceLength(sequence_length.value_or(
-              outbound_parcels_.GetCurrentSequenceLength()))) {
-        return false;
+      if (!outbound_parcels_.SetFinalSequenceLength(sequence_length)) {
+        // Ignore if and only if the sequence was terminated early.
+        DVLOG(4) << "Discarding outbound route closure notification";
+        return outbound_parcels_.final_sequence_length().has_value() &&
+               *outbound_parcels_.final_sequence_length() <= sequence_length;
       }
+    }
+  }
+
+  Flush();
+  return true;
+}
+
+bool Router::AcceptRouteDisconnectedFrom(LinkType link_type) {
+  TrapEventDispatcher dispatcher;
+  absl::InlinedVector<Ref<RouterLink>, 4> forwarding_links;
+  {
+    absl::MutexLock lock(&mutex_);
+
+    DVLOG(4) << "Router " << this << " disconnected from "
+             << link_type.ToString() << "link";
+
+    is_disconnected_ = true;
+    if (link_type.is_peripheral_inward()) {
+      outbound_parcels_.ForceTerminateSequence();
+    } else {
+      inbound_parcels_.ForceTerminateSequence();
+    }
+
+    // Wipe out all remaining links and propagate the disconnection over them.
+    forwarding_links.push_back(std::move(outward_link_));
+    forwarding_links.push_back(std::move(inward_link_));
+
+    if (!inward_link_) {
+      // Terminal routers may have trap events to fire.
+      status_.flags |= IPCZ_PORTAL_STATUS_PEER_CLOSED;
+      if (inbound_parcels_.IsSequenceFullyConsumed()) {
+        status_.flags |= IPCZ_PORTAL_STATUS_DEAD;
+      }
+      traps_.UpdatePortalStatus(status_, TrapSet::UpdateReason::kPeerClosed,
+                                dispatcher);
+    }
+  }
+
+  for (const Ref<RouterLink>& link : forwarding_links) {
+    if (link) {
+      DVLOG(4) << "Forwarding disconnection over " << link->Describe();
+      link->AcceptRouteDisconnected();
+      link->Deactivate();
     }
   }
 
@@ -248,6 +313,7 @@ IpczResult Router::Trap(const IpczTrapConditions& conditions,
 // static
 Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
                                 NodeLink& from_node_link) {
+  bool disconnected = false;
   auto router = MakeRefCounted<Router>();
   {
     absl::MutexLock lock(&router->mutex_);
@@ -280,9 +346,13 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
       // The new portal is DOA, either because the associated NodeLink is dead,
       // or the sublink ID was already in use. The latter implies a bug or bad
       // behavior, but it should be harmless to ignore beyond this point.
-      router->AcceptRouteClosureFrom(LinkType::kPeripheralOutward,
-                                     descriptor.next_incoming_sequence_number);
+      disconnected = true;
     }
+  }
+
+  if (disconnected) {
+    DVLOG(4) << "Disconnected new Router immediately after deserialization";
+    router->AcceptRouteDisconnectedFrom(LinkType::kPeripheralOutward);
   }
 
   router->Flush();
@@ -336,39 +406,27 @@ void Router::BeginProxyingToNewRouter(NodeLink& to_node_link,
   // Acquire a reference to the RemoteRouterLink created by an earlier call to
   // SerializeNewRouter(). If the NodeLink has already been disconnected, this
   // may be null.
-  Ref<RemoteRouterLink> new_router_link;
   if (auto new_sublink = to_node_link.GetSublink(descriptor.new_sublink)) {
-    new_router_link = new_sublink->router_link;
-  }
+    Ref<RemoteRouterLink> new_router_link = new_sublink->router_link;
+    {
+      absl::MutexLock lock(&mutex_);
+      ABSL_ASSERT(!inward_link_);
 
-  bool deactivate_link = false;
-  if (new_router_link) {
-    absl::MutexLock lock(&mutex_);
-    ABSL_ASSERT(!inward_link_);
-
-    // It's possible that the new router was already closed and we've already
-    // received a notification about this and forwarded any parcels it may have
-    // sent. In that case it would be pointless to establish an inward link, so
-    // we'll just drop it instead.
-    if (outbound_parcels_.IsSequenceFullyConsumed()) {
-      deactivate_link = true;
-    } else {
-      // TODO: Initiate proxy removal ASAP now that we're proxying.
-      inward_link_ = new_router_link;
+      // If the new router has already been closed or disconnected, we will
+      // discard the new link to it.
+      if (!outbound_parcels_.final_sequence_length() && !is_disconnected_) {
+        // TODO: Initiate proxy removal ASAP now that we're proxying.
+        inward_link_ = std::move(new_router_link);
+      }
     }
-  }
 
-  if (deactivate_link) {
-    new_router_link->Deactivate();
-    return;
-  }
-
-  if (!to_node_link.GetSublink(descriptor.new_sublink)) {
-    // If the NodeLink was disconnected since we entered this method but before
-    // `inward_link_` was set above, disconnection will not have been propagated
-    // inward. Remedy that.
-    AcceptRouteClosureFrom(LinkType::kPeripheralInward);
-    return;
+    if (new_router_link) {
+      // The link was not adopted, so deactivate and discard it.
+      DVLOG(4) << "Dropping link to new router " << new_router_link->Describe();
+      new_router_link->AcceptRouteDisconnected();
+      new_router_link->Deactivate();
+      return;
+    }
   }
 
   // We may have inbound parcels queued which need to be forwarded to the new
@@ -376,32 +434,20 @@ void Router::BeginProxyingToNewRouter(NodeLink& to_node_link,
   Flush();
 }
 
-void Router::NotifyLinkDisconnected(const NodeLink& node_link,
-                                    SublinkId sublink) {
-  Ref<RouterLink> dead_outward_link;
-  SequenceNumber inbound_sequence_length;
-  Ref<RouterLink> dead_inward_link;
-  SequenceNumber outbound_sequence_length;
+void Router::NotifyLinkDisconnected(RemoteRouterLink& link) {
   {
     absl::MutexLock lock(&mutex_);
-    if (outward_link_ && outward_link_->IsRemoteLinkTo(node_link, sublink)) {
-      dead_outward_link = std::move(outward_link_);
-      inbound_sequence_length = inbound_parcels_.GetCurrentSequenceLength();
-    } else if (inward_link_ &&
-               inward_link_->IsRemoteLinkTo(node_link, sublink)) {
-      dead_inward_link = std::move(inward_link_);
-      outbound_sequence_length = outbound_parcels_.GetCurrentSequenceLength();
+    if (outward_link_ == &link) {
+      outward_link_.reset();
+    } else if (inward_link_ == &link) {
+      inward_link_.reset();
     }
   }
 
-  if (dead_outward_link) {
-    AcceptRouteClosureFrom(dead_outward_link->GetType(),
-                           inbound_sequence_length);
-  }
-
-  if (dead_inward_link) {
-    AcceptRouteClosureFrom(dead_inward_link->GetType(),
-                           outbound_sequence_length);
+  if (link.GetType().is_outward()) {
+    AcceptRouteDisconnectedFrom(LinkType::kPeripheralOutward);
+  } else {
+    AcceptRouteDisconnectedFrom(LinkType::kPeripheralInward);
   }
 }
 

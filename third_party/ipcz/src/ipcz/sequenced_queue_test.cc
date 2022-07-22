@@ -69,6 +69,33 @@ TEST(SequencedQueueTest, SetFinalSequenceLength) {
   EXPECT_FALSE(q.HasNextElement());
 }
 
+TEST(SequencedQueueTest, ForceTerminateSequence) {
+  TestQueue q;
+  q.SetFinalSequenceLength(SequenceNumber(3));
+  EXPECT_TRUE(q.ExpectsMoreElements());
+  EXPECT_FALSE(q.HasNextElement());
+
+  // Push elements 0 and 2, leaving the current sequence length at 1, due to the
+  // gap in element 1.
+  EXPECT_TRUE(q.Push(SequenceNumber(0), "woot."));
+  EXPECT_TRUE(q.Push(SequenceNumber(2), "woot!"));
+  EXPECT_TRUE(q.ExpectsMoreElements());
+  EXPECT_TRUE(q.HasNextElement());
+  EXPECT_EQ(SequenceNumber(1), q.GetCurrentSequenceLength());
+
+  // We can't normally change the final sequence length once set.
+  EXPECT_FALSE(q.SetFinalSequenceLength(SequenceNumber(4)));
+  EXPECT_FALSE(q.SetFinalSequenceLength(SequenceNumber(0)));
+  EXPECT_FALSE(q.SetFinalSequenceLength(SequenceNumber(1)));
+
+  // But we can still force it to terminate at its current length. Now the gap
+  // at element 1 is irrelevant, and element 0 alone is the complete sequence.
+  q.ForceTerminateSequence();
+  EXPECT_FALSE(q.ExpectsMoreElements());
+  EXPECT_TRUE(q.HasNextElement());
+  EXPECT_FALSE(q.Push(SequenceNumber(1), "woot?"));
+}
+
 TEST(SequencedQueueTest, SequenceTooLow) {
   TestQueue q;
 
