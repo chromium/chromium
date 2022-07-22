@@ -147,6 +147,7 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   static WebRTCInternals* g_webrtc_internals;
 
   void SendUpdate(const std::string& event_name, base::Value event_data);
+  void SendUpdate(const std::string& event_name, base::Value::Dict event_data);
 
   // RenderProcessHostObserver implementation.
   void RenderProcessExited(RenderProcessHost* host,
@@ -177,6 +178,11 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   // saving.
   void UpdateWakeLock();
 
+  // Convenient method to access `peer_connection_data_` as a Value::List.
+  base::Value::List& peer_connection_data() {
+    return peer_connection_data_.GetList();
+  }
+
   device::mojom::WakeLock* GetWakeLock();
 
   // Called on a timer to deliver updates to javascript.
@@ -187,16 +193,17 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
 
   // Returns an iterator for peer_connection_data_.GetList (an end() iterator
   // if not found).
-  base::CheckedContiguousIterator<base::Value> FindRecord(
-      GlobalRenderFrameHostId frame_id,
-      int lid);
+  base::Value::List::iterator FindRecord(GlobalRenderFrameHostId frame_id,
+                                         int lid);
 
   base::ObserverList<WebRTCInternalsUIObserver>::Unchecked observers_;
 
   base::ObserverList<WebRtcInternalsConnectionsObserver> connections_observers_;
 
   // |peer_connection_data_| is a list containing all the PeerConnection
-  // updates.
+  // updates. Stored as a Value rather than as a List::Value so it can be passed
+  // as a Value without having to copy it.
+  //
   // Each item of the list represents the data for one PeerConnection, which
   // contains these fields:
   // "rid" -- the renderer id.
@@ -206,11 +213,11 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   // "rtcConfiguration" -- serialized rtcConfiguration object.
   // "constraints" -- serialized legacy peerconnection constraints.
   // used to initialize the PeerConnection respectively.
-  // "log" -- a ListValue contains all the updates for the PeerConnection. Each
+  // "log" -- a List contains all the updates for the PeerConnection. Each
   // list item is a DictionaryValue containing "time", which is the number of
   // milliseconds since epoch as a string, and "type" and "value", both of which
   // are strings representing the event.
-  base::ListValue peer_connection_data_;
+  base::Value peer_connection_data_;
 
   // A list of getUserMedia requests or updates.
   // Each item is a DictionaryValue that contains some of these fields
@@ -224,7 +231,7 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   // "stream_id" -- the resulting stream id.
   // "audio_track_info" -- the serialized audio track (track id and label).
   // "video_track_info" -- the serialized video track (track id and label).
-  base::ListValue get_user_media_requests_;
+  base::Value::List get_user_media_requests_;
 
   // For managing select file dialog.
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
