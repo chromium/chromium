@@ -41,10 +41,6 @@ export default {
     }),
     nodeResolve(),
     commonjs(),
-    terser({
-      format: {
-        comments: /copyright/i,
-      },
-    }),
+    terser(),
   ],
 };
