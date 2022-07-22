@@ -1394,7 +1394,6 @@ TEST_P(AutofillProfileComparatorTest, CheckStatesMergeability) {
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeature(
       autofill::features::kAutofillUseAlternativeStateNameMap);
-
   autofill::test::ClearAlternativeStateNameMapForTesting();
   autofill::test::PopulateAlternativeStateNameMapForTesting(
       "DE", "RandomState",
@@ -1706,13 +1705,8 @@ TEST_P(AutofillProfileComparatorTest, GetMergeCandidate) {
 // Tests that the profiles are merged when they have common states.
 TEST_P(AutofillProfileComparatorTest, MergeProfilesBasedOnState) {
   base::test::ScopedFeatureList feature;
-  // The feature
-  // |autofill::features::kAutofillEnableSupportForMoreStructureInAddresses| is
-  // disabled since it is incompatible with the feature
-  // |autofill::features::kAutofillUseStateMappingCache|.
-  feature.InitWithFeatures(
-      {autofill::features::kAutofillUseAlternativeStateNameMap},
-      {autofill::features::kAutofillEnableSupportForMoreStructureInAddresses});
+  feature.InitAndEnableFeature(
+      autofill::features::kAutofillUseAlternativeStateNameMap);
 
   autofill::test::ClearAlternativeStateNameMapForTesting();
   autofill::test::PopulateAlternativeStateNameMapForTesting();

@@ -84,15 +84,17 @@ enum MergeMode {
   kRecursivelyMergeSingleTokenSubset = 1 << 6,
   // If one is a substring of the other use the most recent one.
   kUseMostRecentSubstring = 1 << 7,
-  // Merge the child nodes and reformat the node from its children after merge
-  // if the value has changed.
+  // If the tokens match or one is a subset of the other, pick the shorter one.
   kPickShorterIfOneContainsTheOther = 1 << 8,
   // If the normalized values are different, use the better one in terms
   // of verification score or the most recent one if both scores are the same.
   kUseBetterOrMostRecentIfDifferent = 1 << 9,
-  // Defines the default merging behavior.
+  // Merge the child nodes and reformat the node from its children after merge
+  // if the value has changed.
   kMergeChildrenAndReformatIfNeeded = 1 << 10,
-  // If the tokens match or one is a subset of the other, pick the shorter one.
+  // Make a merge decision based on canonicalized values.
+  kMergeBasedOnCanonicalizedValues = 1 << 11,
+  // Defines the default merging behavior.
   kDefault = kRecursivelyMergeTokenEquivalentValues
 };
 
@@ -181,6 +183,10 @@ class AddressComponent {
   // Returns a constant reference to |value_.value()|. If the value is not
   // assigned, an empty string is returned.
   const std::u16string& GetValue() const;
+
+  // Returns a canonicalized version of the value or absl::nullopt if
+  // canonicalization is not possible or not implemented.
+  virtual absl::optional<std::u16string> GetCanonicalizedValue() const;
 
   // Returns true if the value of this AddressComponent is assigned.
   bool IsValueAssigned() const;

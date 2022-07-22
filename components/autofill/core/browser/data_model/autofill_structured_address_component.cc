@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -17,14 +16,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/common/autofill_features.h"
 
-namespace autofill {
-
-namespace structured_address {
+namespace autofill::structured_address {
 
 bool IsLessSignificantVerificationStatus(VerificationStatus left,
                                          VerificationStatus right) {
@@ -215,6 +210,10 @@ const std::u16string& AddressComponent::GetValue() const {
   if (value_.has_value())
     return value_.value();
   return base::EmptyString16();
+}
+
+absl::optional<std::u16string> AddressComponent::GetCanonicalizedValue() const {
+  return absl::nullopt;
 }
 
 bool AddressComponent::IsValueAssigned() const {
@@ -808,8 +807,10 @@ const std::vector<AddressToken> AddressComponent::GetSortedTokens() const {
 
 bool AddressComponent::IsMergeableWithComponent(
     const AddressComponent& newer_component) const {
-  const std::u16string value = ValueForComparison(newer_component);
-  const std::u16string value_newer = newer_component.ValueForComparison(*this);
+  const std::u16string older_comparison_value =
+      ValueForComparison(newer_component);
+  const std::u16string newer_comparison_value =
+      newer_component.ValueForComparison(*this);
 
   // If both components are the same, there is nothing to do.
   if (SameAs(newer_component))
@@ -820,18 +821,52 @@ bool AddressComponent::IsMergeableWithComponent(
     return true;
   }
 
-  if ((merge_mode_ & kReplaceEmpty) && (value.empty() || value_newer.empty())) {
+  if ((merge_mode_ & kReplaceEmpty) &&
+      (older_comparison_value.empty() || newer_comparison_value.empty())) {
     return true;
   }
 
-  if (merge_mode_ & kUseBetterOrNewerForSameValue) {
-    if (base::ToUpperASCII(value) == base::ToUpperASCII(value_newer)) {
+  SortedTokenComparisonResult token_comparison_result =
+      CompareSortedTokens(older_comparison_value, newer_comparison_value);
+
+  bool comparison_values_are_substrings_of_each_other =
+      (older_comparison_value.find(newer_comparison_value) !=
+           std::u16string::npos ||
+       newer_comparison_value.find(older_comparison_value) !=
+           std::u16string::npos);
+
+  if (merge_mode_ & kMergeBasedOnCanonicalizedValues) {
+    absl::optional<std::u16string> older_canonical_value =
+        GetCanonicalizedValue();
+    absl::optional<std::u16string> newer_canonical_value =
+        newer_component.GetCanonicalizedValue();
+
+    bool older_has_canonical_value = older_canonical_value.has_value();
+    bool newer_has_canonical_value = newer_canonical_value.has_value();
+
+    // If both have a canonical value and the value is the same, they are
+    // obviously mergeable.
+    if (older_has_canonical_value && newer_has_canonical_value &&
+        older_canonical_value == newer_canonical_value) {
+      return true;
+    }
+
+    // If one value does not have canonicalized representation but the actual
+    // values are substrings of each other, or the tokens contain each other we
+    // will merge by just using the one with the canonicalized name.
+    if (older_has_canonical_value != newer_has_canonical_value &&
+        (comparison_values_are_substrings_of_each_other ||
+         token_comparison_result.ContainEachOther())) {
       return true;
     }
   }
 
-  SortedTokenComparisonResult token_comparison_result =
-      CompareSortedTokens(value, value_newer);
+  if (merge_mode_ & kUseBetterOrNewerForSameValue) {
+    if (base::ToUpperASCII(older_comparison_value) ==
+        base::ToUpperASCII(newer_comparison_value)) {
+      return true;
+    }
+  }
 
   if ((merge_mode_ & (kRecursivelyMergeTokenEquivalentValues |
                       kRecursivelyMergeSingleTokenSubset)) &&
@@ -859,8 +894,7 @@ bool AddressComponent::IsMergeableWithComponent(
   // If the one value is a substring of the other, use the substring of the
   // corresponding mode is active.
   if ((merge_mode_ & kUseMostRecentSubstring) &&
-      (value.find(value_newer) != std::u16string::npos ||
-       value_newer.find(value) != std::u16string::npos)) {
+      comparison_values_are_substrings_of_each_other) {
     return true;
   }
 
@@ -893,6 +927,16 @@ bool AddressComponent::MergeWithComponent(
 
   const std::u16string value = ValueForComparison(newer_component);
   const std::u16string value_newer = newer_component.ValueForComparison(*this);
+
+  bool newer_component_has_better_or_equal_status =
+      !IsLessSignificantVerificationStatus(
+          newer_component.GetVerificationStatus(), GetVerificationStatus());
+  bool components_have_the_same_status =
+      GetVerificationStatus() == newer_component.GetVerificationStatus();
+  bool newer_component_has_better_status =
+      newer_component_has_better_or_equal_status &&
+      !components_have_the_same_status;
+
   if (SameAs(newer_component))
     return true;
 
@@ -933,8 +977,7 @@ bool AddressComponent::MergeWithComponent(
   // Replace the subset with the superset if the corresponding mode is active.
   if ((merge_mode_ & kReplaceSubset) && token_comparison_result.OneIsSubset()) {
     if (token_comparison_result.status == SUBSET &&
-        !IsLessSignificantVerificationStatus(
-            newer_component.GetVerificationStatus(), GetVerificationStatus())) {
+        newer_component_has_better_or_equal_status) {
       CopyFrom(newer_component);
     }
     return true;
@@ -952,8 +995,7 @@ bool AddressComponent::MergeWithComponent(
   if ((merge_mode_ & (kReplaceSuperset | kReplaceSubset)) &&
       token_comparison_result.status == MATCH) {
     if (newer_was_more_recently_used &&
-        !IsLessSignificantVerificationStatus(
-            newer_component.GetVerificationStatus(), GetVerificationStatus())) {
+        newer_component_has_better_or_equal_status) {
       CopyFrom(newer_component);
     }
     return true;
@@ -988,10 +1030,57 @@ bool AddressComponent::MergeWithComponent(
       (value.find(value_newer) != std::u16string::npos ||
        value_newer.find(value) != std::u16string::npos)) {
     if (newer_was_more_recently_used &&
-        !IsLessSignificantVerificationStatus(
-            newer_component.GetVerificationStatus(), GetVerificationStatus()))
+        newer_component_has_better_or_equal_status) {
       CopyFrom(newer_component);
+    }
     return true;
+  }
+
+  bool comparison_values_are_substrings_of_each_other =
+      (value.find(value_newer) != std::u16string::npos ||
+       value_newer.find(value) != std::u16string::npos);
+
+  if (merge_mode_ & kMergeBasedOnCanonicalizedValues) {
+    absl::optional<std::u16string> canonical_value = GetCanonicalizedValue();
+    absl::optional<std::u16string> other_canonical_value =
+        newer_component.GetCanonicalizedValue();
+
+    bool this_has_canonical_value = canonical_value.has_value();
+    bool newer_has_canonical_value = other_canonical_value.has_value();
+
+    // When both have the same canonical value they are obviously mergeable.
+    if (canonical_value.has_value() && other_canonical_value.has_value() &&
+        *canonical_value == *other_canonical_value) {
+      // If the newer component has a better verification status use the newer
+      // one.
+      if (newer_component_has_better_status) {
+        CopyFrom(newer_component);
+      }
+      // If they have the same status use the shorter one.
+      if (components_have_the_same_status &&
+          newer_component.GetValue().size() <= GetValue().size()) {
+        CopyFrom(newer_component);
+      }
+      return true;
+    }
+
+    // If only one component has a canonicalized name but the actual values
+    // contain each other either tokens-wise or as substrings, use the component
+    // that has a canonicalized name unless the other component has a better
+    // verification status.
+    if (this_has_canonical_value != newer_has_canonical_value &&
+        (comparison_values_are_substrings_of_each_other ||
+         token_comparison_result.ContainEachOther())) {
+      // Copy the new component if it has a canoniscalized name and a status
+      // that is not worse of it if has a better stastus even if it is not
+      // canoniscalized.
+      if ((!this_has_canonical_value &&
+           newer_component_has_better_or_equal_status) ||
+          (this_has_canonical_value && newer_component_has_better_status)) {
+        CopyFrom(newer_component);
+      }
+      return true;
+    }
   }
 
   if ((merge_mode_ & kPickShorterIfOneContainsTheOther) &&
@@ -1307,6 +1396,4 @@ std::u16string AddressComponent::ValueForComparison(
   return NormalizedValue();
 }
 
-}  // namespace structured_address
-
-}  // namespace autofill
+}  // namespace autofill::structured_address

@@ -6,21 +6,18 @@
 
 #include <utility>
 #include "base/containers/contains.h"
-#include "base/i18n/case_conversion.h"
-#include "base/strings/strcat.h"
+#include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/address_rewriter.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/alternative_state_name_map.h"
+#include "components/autofill/core/common/autofill_features.h"
 
-namespace autofill {
-
-namespace structured_address {
+namespace autofill::structured_address {
 
 std::u16string AddressComponentWithRewriter::RewriteValue(
     const std::u16string& value,
@@ -316,9 +313,38 @@ State::State(AddressComponent* parent)
     : AddressComponentWithRewriter(
           ADDRESS_HOME_STATE,
           parent,
-          MergeMode::kPickShorterIfOneContainsTheOther | kReplaceEmpty) {}
+          kPickShorterIfOneContainsTheOther |
+              (base::FeatureList::IsEnabled(
+                   features::kAutofillUseAlternativeStateNameMap)
+                   ? MergeMode::kMergeBasedOnCanonicalizedValues
+                   : 0) |
+              kReplaceEmpty) {}
 
 State::~State() = default;
+
+absl::optional<std::u16string> State::GetCanonicalizedValue() const {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillUseAlternativeStateNameMap)) {
+    return absl::nullopt;
+  }
+
+  std::string country_code =
+      base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY));
+
+  if (country_code.empty()) {
+    return absl::nullopt;
+  }
+
+  absl::optional<AlternativeStateNameMap::CanonicalStateName>
+      canonicalized_state_name = AlternativeStateNameMap::GetCanonicalStateName(
+          country_code, GetValue());
+
+  if (!canonicalized_state_name.has_value()) {
+    return absl::nullopt;
+  }
+
+  return canonicalized_state_name.value().value();
+}
 
 // Zips are mergeable when one is a substring of the other one.
 // For merging, the shorter substring is taken.
@@ -389,6 +415,4 @@ void Address::MigrateLegacyStructure(bool is_verified_profile) {
   }
 }
 
-}  // namespace structured_address
-
-}  // namespace autofill
+}  // namespace autofill::structured_address
