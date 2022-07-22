@@ -36,7 +36,7 @@ bool DownloadAutoOpenPolicyHandler::CheckPolicySettings(
     if (extension.empty() ||
         *extension.begin() == base::FilePath::kExtensionSeparator) {
       errors->AddError(policy::key::kAutoOpenFileTypes, i,
-                       IDS_POLICY_VALUE_FORMAT_ERROR);
+                       IDS_POLICY_INVALID_FILE_EXTENSION_ERROR);
     }
   }
 

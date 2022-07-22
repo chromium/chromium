@@ -62,7 +62,7 @@ bool NewTabPageLocationPolicyHandler::CheckPolicySettings(
   if (NewTabPageLocationPolicyHandler::ValidateNewTabPageLocationURL(value)) {
     return true;
   }
-  errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR);
+  errors->AddError(policy_name(), IDS_POLICY_INVALID_URL_ERROR);
   return false;
 }
 

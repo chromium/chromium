@@ -61,7 +61,8 @@ bool PrintingEnumPolicyHandler<Mode>::GetValue(const PolicyMap& policies,
       return true;
     }
     if (errors)
-      errors->AddError(policy_name_, IDS_POLICY_VALUE_FORMAT_ERROR);
+      errors->AddError(policy_name_, IDS_POLICY_INVALID_SELECTION_ERROR,
+                       "printing mode");
   }
   return false;
 }
@@ -223,7 +224,8 @@ bool PrintingPaperSizeDefaultPolicyHandler::GetValue(
   const base::Value* name = value->FindKey(printing::kPaperSizeName);
   if (!name) {
     if (errors)
-      errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR);
+      errors->AddError(policy_name(), IDS_POLICY_INVALID_SELECTION_ERROR,
+                       "paper size");
     return false;
   }
   if (!name->is_string()) {
@@ -259,7 +261,10 @@ bool PrintingPaperSizeDefaultPolicyHandler::GetValue(
 
   if (custom_option_specified != custom_size_property_found) {
     if (errors)
-      errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR);
+      errors->AddError(policy_name(),
+                       custom_option_specified
+                           ? IDS_POLICY_PAPER_SIZE_CUSTOM_NO_SIZE_ERROR
+                           : IDS_POLICY_PAPER_SIZE_NOT_CUSTOM_ERROR);
     return false;
   }
 

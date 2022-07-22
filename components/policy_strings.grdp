@@ -163,6 +163,36 @@
   <message name="IDS_POLICY_VALUE_FORMAT_ERROR" desc="The text displayed in the status column when a policy value doesn't match the expected format.">
     Value doesn't match format.
   </message>
+  <message name="IDS_POLICY_INVALID_FILE_EXTENSION_ERROR" desc="The text displayed in the status column when the file extension is invalid.">
+    File extension is empty or malformed.
+  </message>
+  <message name="IDS_POLICY_INVALID_HASH_ERROR" desc="The text displayed in the status column when the hash string is not of type SHA-256.">
+    Hash must be of format SHA-256.
+  </message>
+  <message name="IDS_POLICY_INVALID_SELECTION_ERROR" desc="The text displayed in the status column when the policy value is not in a list of selectable modes.">
+    The inserted <ph name="VALUE_NAME">$1<ex>paper size</ex></ph> couldn't be found.
+  </message>
+  <message name="IDS_POLICY_PAPER_SIZE_CUSTOM_NO_SIZE_ERROR" desc="The text displayed in the status column when the paper size name is 'custom' but the property 'custom_size' is empty or invalid.">
+    Found paper size name "custom", but the "custom_size" property is empty or invalid.
+  </message>
+  <message name="IDS_POLICY_PAPER_SIZE_NOT_CUSTOM_ERROR" desc="The text displayed in the status column when the property 'custom_size' is set but property 'name' is not set to 'custom'.">
+    The property "custom_size" is set, expected name to be "custom".
+  </message>
+  <message name="IDS_POLICY_INVALID_ACCOUNT_PATTERN_FORMAT_ERROR" desc="The text displayed in the status column for the policy RestrictAccountsToPatterns when the inserted value is not a list of patterns.">
+    Invalid format: Expected a list of patterns.
+  </message>
+  <message name="IDS_POLICY_INVALID_PROTOCOL_ERROR" desc="The text displayed in the status column for the policy AutoLaunchProtocolsFromOrigins when the protocol format is invalid">
+    Invalid protocol format.
+  </message>
+  <message name="IDS_POLICY_INVALID_ORIGIN_ERROR" desc="The text displayed in the status column for the policy AutoLaunchProtocolsFromOrigins when the origin format is invalid">
+    Invalid origin format.
+  </message>
+  <message name="IDS_POLICY_EMPTY_ORIGIN_LIST_ERROR" desc="The text displayed in the status column for the policy AutoLaunchProtocolsFromOrigins when the origin list is empty">
+    Origin list is empty.
+  </message>
+  <message name="IDS_POLICY_INVALID_EXTENSION_ERROR" desc="The text displayed in the status column when the extension doesn't match the expected format.">
+    Invalid Extension: Expected the value to be of one of the following forms: &lt;extension_id&gt; or &lt;extension_id&gt;;&lt;update_url&gt;.
+  </message>
   <message name="IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR" desc="The text displayed in the status column when a policy that should only be set in the cloud is set from another source.">
     Ignored because the policy is not set by a cloud source.
   </message>
@@ -198,6 +228,9 @@
   </message>
   <message name="IDS_POLICY_INVALID_JSON_ERROR" desc="The text displayed in the status column when the policy value should be a valid JSON string, but it cannot be parsed as JSON.">
     Error while parsing JSON value: <ph name="ERROR">$1<ex>Line 2, Column 3: Map keys must be quoted.</ex></ph>
+  </message>
+  <message name="IDS_POLICY_INVALID_URL_ERROR" desc="The text displayed in the status column when the URL given is invalid.">
+    Invalid URL.
   </message>
   <message name="IDS_POLICY_INVALID_SEARCH_URL_ERROR" desc="The text displayed in the status column when a the URL given for DefaultSearchProviderSearchURL is invalid.">
     Invalid search URL.

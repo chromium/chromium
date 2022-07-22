@@ -80,7 +80,7 @@ bool AutoLaunchProtocolsPolicyHandler::CheckPolicySettings(
     DCHECK(protocol);
     if (!IsValidProtocol(*protocol)) {
       errors->AddError(policy::key::kAutoLaunchProtocolsFromOrigins, i,
-                       IDS_POLICY_VALUE_FORMAT_ERROR);
+                       IDS_POLICY_INVALID_PROTOCOL_ERROR);
     }
 
     const base::Value* origins_list = protocol_origins_map.FindListKey(
@@ -90,13 +90,13 @@ bool AutoLaunchProtocolsPolicyHandler::CheckPolicySettings(
       // If it's not a valid origin pattern mark it as an error.
       if (!IsValidOriginMatchingPattern(pattern)) {
         errors->AddError(policy::key::kAutoLaunchProtocolsFromOrigins, i,
-                         IDS_POLICY_VALUE_FORMAT_ERROR);
+                         IDS_POLICY_INVALID_ORIGIN_ERROR);
       }
     }
     // If the origin list is empty mark it as an error.
     if (origins_list->GetListDeprecated().empty()) {
       errors->AddError(policy::key::kAutoLaunchProtocolsFromOrigins, i,
-                       IDS_POLICY_VALUE_FORMAT_ERROR);
+                       IDS_POLICY_EMPTY_ORIGIN_LIST_ERROR);
     }
   }
 

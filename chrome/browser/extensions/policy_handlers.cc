@@ -144,7 +144,8 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
     if (!crx_file::id_util::IdIsValid(extension_id) ||
         !GURL(update_url).is_valid()) {
       if (errors) {
-        errors->AddError(policy_name(), index, IDS_POLICY_VALUE_FORMAT_ERROR);
+        errors->AddError(policy_name(), index,
+                         IDS_POLICY_INVALID_EXTENSION_ERROR);
       }
       continue;
     }
@@ -196,7 +197,7 @@ bool ExtensionURLPatternListPolicyHandler::CheckPolicySettings(
     URLPattern pattern(URLPattern::SCHEME_ALL);
     if (pattern.Parse(url_pattern_string) !=
         URLPattern::ParseResult::kSuccess) {
-      errors->AddError(policy_name(), index, IDS_POLICY_VALUE_FORMAT_ERROR);
+      errors->AddError(policy_name(), index, IDS_POLICY_INVALID_URL_ERROR);
       return false;
     }
     ++index;

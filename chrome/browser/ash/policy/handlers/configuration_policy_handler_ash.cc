@@ -160,14 +160,14 @@ bool ExternalDataPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
   const GURL url(url_string.value());
   if (!url.is_valid()) {
-    errors->AddError(policy, kSubkeyURL, IDS_POLICY_VALUE_FORMAT_ERROR);
+    errors->AddError(policy, kSubkeyURL, IDS_POLICY_INVALID_URL_ERROR);
     return false;
   }
 
   std::vector<uint8_t> hash;
   if (!base::HexStringToBytes(hash_string.value(), &hash) ||
       hash.size() != crypto::kSHA256Length) {
-    errors->AddError(policy, kSubkeyHash, IDS_POLICY_VALUE_FORMAT_ERROR);
+    errors->AddError(policy, kSubkeyHash, IDS_POLICY_INVALID_HASH_ERROR);
     return false;
   }
 

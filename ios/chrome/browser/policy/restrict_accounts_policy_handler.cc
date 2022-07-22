@@ -36,7 +36,8 @@ bool RestrictAccountsPolicyHandler::CheckPolicySettings(
   if (!value)
     return true;
   if (!ArePatternsValid(value)) {
-    errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR);
+    errors->AddError(policy_name(),
+                     IDS_POLICY_INVALID_ACCOUNT_PATTERN_FORMAT_ERROR);
   }
   if (!value->is_list())
     return false;
