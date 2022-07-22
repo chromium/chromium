@@ -6,10 +6,10 @@
 
 namespace gl {
 #if defined(USE_EGL)
-template class GLDisplayManager<GLDisplayEGL>;
+template class EXPORT_TEMPLATE_DEFINE(GL_EXPORT) GLDisplayManager<GLDisplayEGL>;
 #endif
 
 #if defined(USE_GLX)
-template class GLDisplayManager<GLDisplayX11>;
+template class EXPORT_TEMPLATE_DEFINE(GL_EXPORT) GLDisplayManager<GLDisplayX11>;
 #endif
 }  // namespace gl

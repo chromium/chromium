@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/export_template.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -20,7 +21,7 @@
 namespace gl {
 
 template <typename GLDisplayPlatform>
-class GL_EXPORT GLDisplayManager {
+class GLDisplayManager {
  public:
   // Getter for the singleton. This will return nullptr on failure.
   // This should only be called inside the ui/gl module. In component build,
@@ -95,10 +96,16 @@ class GL_EXPORT GLDisplayManager {
 
 #if defined(USE_EGL)
 using GLDisplayManagerEGL = GLDisplayManager<GLDisplayEGL>;
+
+extern template class EXPORT_TEMPLATE_DECLARE(GL_EXPORT)
+    GLDisplayManager<GLDisplayEGL>;
 #endif
 
 #if defined(USE_GLX)
 using GLDisplayManagerX11 = GLDisplayManager<GLDisplayX11>;
+
+extern template class EXPORT_TEMPLATE_DECLARE(GL_EXPORT)
+    GLDisplayManager<GLDisplayX11>;
 #endif
 
 }  // namespace gl
