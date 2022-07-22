@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/mock_extension_special_storage_policy.h"
-#include "base/callback.h"
 
 MockExtensionSpecialStoragePolicy::MockExtensionSpecialStoragePolicy()
     : ExtensionSpecialStoragePolicy(NULL) {}
@@ -23,11 +22,6 @@ bool MockExtensionSpecialStoragePolicy::IsStorageSessionOnly(
 
 bool MockExtensionSpecialStoragePolicy::HasSessionOnlyOrigins() {
   return false;
-}
-
-network::DeleteCookiePredicate
-MockExtensionSpecialStoragePolicy::CreateDeleteCookieOnExitPredicate() {
-  return network::DeleteCookiePredicate();
 }
 
 MockExtensionSpecialStoragePolicy::~MockExtensionSpecialStoragePolicy() {}

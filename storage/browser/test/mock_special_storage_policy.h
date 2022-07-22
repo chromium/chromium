@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "services/network/public/cpp/session_cookie_delete_predicate.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "url/gurl.h"
 
@@ -24,7 +23,6 @@ class MockSpecialStoragePolicy : public SpecialStoragePolicy {
   bool HasIsolatedStorage(const GURL& origin) override;
   bool HasSessionOnlyOrigins() override;
   bool IsStorageDurable(const GURL& origin) override;
-  network::DeleteCookiePredicate CreateDeleteCookieOnExitPredicate() override;
 
   void AddProtected(const GURL& origin) { protected_.insert(origin); }
 
@@ -68,8 +66,6 @@ class MockSpecialStoragePolicy : public SpecialStoragePolicy {
   ~MockSpecialStoragePolicy() override;
 
  private:
-  bool ShouldDeleteCookieOnExit(const std::string& domain, bool is_https);
-
   std::set<GURL> protected_;
   std::set<GURL> unlimited_;
   std::set<GURL> session_only_;

@@ -13,7 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "extensions/common/extension_set.h"
-#include "services/network/public/cpp/session_cookie_delete_predicate.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "url/gurl.h"
 
@@ -41,7 +40,6 @@ class ExtensionSpecialStoragePolicy : public storage::SpecialStoragePolicy {
   bool HasIsolatedStorage(const GURL& origin) override;
   bool HasSessionOnlyOrigins() override;
   bool IsStorageDurable(const GURL& origin) override;
-  network::DeleteCookiePredicate CreateDeleteCookieOnExitPredicate() override;
 
   // Methods used by the ExtensionService to populate this class.
   void GrantRightsForExtension(const extensions::Extension* extension);

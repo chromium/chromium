@@ -147,18 +147,6 @@ bool ExtensionSpecialStoragePolicy::IsStorageSessionOnly(const GURL& origin) {
   return cookie_settings_->IsCookieSessionOnly(origin);
 }
 
-network::DeleteCookiePredicate
-ExtensionSpecialStoragePolicy::CreateDeleteCookieOnExitPredicate() {
-  if (!cookie_settings_)
-    return network::DeleteCookiePredicate();
-  // Fetch the list of cookies related content_settings and bind it
-  // to CookieSettings::ShouldDeleteCookieOnExit to avoid fetching it on
-  // every call.
-  return base::BindRepeating(
-      &content_settings::CookieSettings::ShouldDeleteCookieOnExit,
-      cookie_settings_, cookie_settings_->GetCookieSettings());
-}
-
 bool ExtensionSpecialStoragePolicy::HasSessionOnlyOrigins() {
   if (!cookie_settings_)
     return false;
