@@ -159,69 +159,6 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests clicking a link with target="_blank" and "event.stopPropagation()"
-// opens a new tab.
-- (void)testBrowsingStopPropagation {
-  // Create map of canned responses and set up the test HTML server.
-  std::map<GURL, std::string> responses;
-  const GURL URL = web::test::HttpServer::MakeUrl("http://stopPropagation");
-  const GURL destinationURL =
-      web::test::HttpServer::MakeUrl("http://destination");
-  // This is a page with a link to |kDestination|.
-  responses[URL] = base::StringPrintf(
-      "<a id='link' href='%s' target='_blank' "
-      "onclick='event.stopPropagation()'>link</a>",
-      destinationURL.spec().c_str());
-  // This is the destination page; it just contains some text.
-  responses[destinationURL] = "You've arrived!";
-  web::test::SetUpSimpleHttpServer(responses);
-
-  ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_ALLOW);
-
-  [ChromeEarlGrey loadURL:URL];
-  [ChromeEarlGrey waitForMainTabCount:1];
-
-  [ChromeEarlGrey tapWebStateElementWithID:@"link"];
-  [ChromeEarlGrey waitForMainTabCount:2];
-  [ChromeEarlGrey waitForPageToFinishLoading];
-
-  // Verify the new tab was opened with the expected URL.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
-}
-
-// Tests clicking a relative link with target="_blank" and
-// "event.stopPropagation()" opens a new tab.
-- (void)testBrowsingStopPropagationRelativePath {
-  // Create map of canned responses and set up the test HTML server.
-  std::map<GURL, std::string> responses;
-  const GURL URL = web::test::HttpServer::MakeUrl("http://stopPropRel");
-  const GURL destinationURL =
-      web::test::HttpServer::MakeUrl("http://stopPropRel/#test");
-  // This is page with a relative link to "#test".
-  responses[URL] =
-      "<a id='link' href='#test' target='_blank' "
-      "onclick='event.stopPropagation()'>link</a>";
-  // This is the page that should be showing at the end of the test.
-  responses[destinationURL] = "You've arrived!";
-  web::test::SetUpSimpleHttpServer(responses);
-
-  ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_ALLOW);
-
-  [ChromeEarlGrey loadURL:URL];
-  [ChromeEarlGrey waitForMainTabCount:1];
-
-  [ChromeEarlGrey tapWebStateElementWithID:@"link"];
-
-  [ChromeEarlGrey waitForMainTabCount:2];
-
-  // Verify the new tab was opened with the expected URL.
-  const std::string omniboxText =
-      net::GetContentAndFragmentForUrl(destinationURL);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(omniboxText)]
-      assertWithMatcher:grey_notNil()];
-}
-
 // Tests that clicking a link with URL changed by onclick uses the href of the
 // anchor tag instead of the one specified in JavaScript. Also verifies a new
 // tab is opened by target '_blank'.
