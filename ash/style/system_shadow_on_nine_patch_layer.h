@@ -42,7 +42,7 @@ class SystemShadowOnNinePatchLayer : public SystemShadow {
 // the ui::Shadow.
 class SystemShadowOnNinePatchLayerImpl : public SystemShadowOnNinePatchLayer {
  public:
-  explicit SystemShadowOnNinePatchLayerImpl(int elevation);
+  explicit SystemShadowOnNinePatchLayerImpl(SystemShadow::Type type);
   SystemShadowOnNinePatchLayerImpl(const SystemShadowOnNinePatchLayerImpl&) =
       delete;
   SystemShadowOnNinePatchLayerImpl& operator=(
@@ -62,7 +62,7 @@ class SystemShadowOnNinePatchLayerImpl : public SystemShadowOnNinePatchLayer {
 // content bounds.
 class SystemViewShadowOnNinePatchLayer : public SystemShadowOnNinePatchLayer {
  public:
-  SystemViewShadowOnNinePatchLayer(views::View* view, int elevation);
+  SystemViewShadowOnNinePatchLayer(views::View* view, SystemShadow::Type type);
   SystemViewShadowOnNinePatchLayer(const SystemViewShadowOnNinePatchLayer&) =
       delete;
   SystemViewShadowOnNinePatchLayer& operator=(
@@ -87,7 +87,8 @@ class SystemWindowShadowOnNinePatchLayer
     : public SystemShadowOnNinePatchLayerImpl,
       public aura::WindowObserver {
  public:
-  SystemWindowShadowOnNinePatchLayer(aura::Window* window, int elevation);
+  SystemWindowShadowOnNinePatchLayer(aura::Window* window,
+                                     SystemShadow::Type type);
   SystemWindowShadowOnNinePatchLayer(
       const SystemWindowShadowOnNinePatchLayer&) = delete;
   SystemWindowShadowOnNinePatchLayer& operator=(

@@ -5,6 +5,7 @@
 #include "ash/style/system_shadow.h"
 
 #include "ash/style/system_shadow_on_nine_patch_layer.h"
+#include "ash/style/system_shadow_on_texture_layer.h"
 #include "base/memory/ptr_util.h"
 
 namespace ash {
@@ -14,8 +15,7 @@ SystemShadow::~SystemShadow() = default;
 // static
 std::unique_ptr<SystemShadow> SystemShadow::CreateShadowOnNinePatchLayer(
     Type shadow_type) {
-  int elevation = GetElevationFromType(shadow_type);
-  return base::WrapUnique(new SystemShadowOnNinePatchLayerImpl(elevation));
+  return base::WrapUnique(new SystemShadowOnNinePatchLayerImpl(shadow_type));
 }
 
 // static
@@ -23,9 +23,8 @@ std::unique_ptr<SystemShadow> SystemShadow::CreateShadowOnNinePatchLayerForView(
     views::View* view,
     Type shadow_type) {
   DCHECK(view);
-  int elevation = GetElevationFromType(shadow_type);
   return base::WrapUnique(
-      new SystemViewShadowOnNinePatchLayer(view, elevation));
+      new SystemViewShadowOnNinePatchLayer(view, shadow_type));
 }
 
 // static
@@ -33,9 +32,14 @@ std::unique_ptr<SystemShadow>
 SystemShadow::CreateShadowOnNinePatchLayerForWindow(aura::Window* window,
                                                     Type shadow_type) {
   DCHECK(window);
-  int elevation = GetElevationFromType(shadow_type);
   return base::WrapUnique(
-      new SystemWindowShadowOnNinePatchLayer(window, elevation));
+      new SystemWindowShadowOnNinePatchLayer(window, shadow_type));
+}
+
+// static
+std::unique_ptr<SystemShadow> SystemShadow::CreateShadowOnTextureLayer(
+    Type shadow_type) {
+  return base::WrapUnique(new SystemShadowOnTextureLayer(shadow_type));
 }
 
 // static

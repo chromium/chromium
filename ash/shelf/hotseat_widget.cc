@@ -21,6 +21,7 @@
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
+#include "ash/style/system_shadow.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -482,6 +483,8 @@ class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
   // The most recent color that the |translucent_background_| has been animated
   // to.
   SkColor target_color_ = SK_ColorTRANSPARENT;
+
+  std::unique_ptr<SystemShadow> shadow_;
 };
 
 HotseatWidget::DelegateView::~DelegateView() {
@@ -527,18 +530,33 @@ void HotseatWidget::DelegateView::Init(
     translucent_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   }
   translucent_background_->layer()->SetName("hotseat/Background");
+
+  // Create a shadow and stack at the bottom.
+  shadow_ = SystemShadow::CreateShadowOnTextureLayer(
+      SystemShadow::Type::kElevation12);
+  auto* parent_layer = translucent_background_->layer()->parent();
+  auto* shadow_layer = shadow_->GetLayer();
+  parent_layer->Add(shadow_layer);
+  parent_layer->StackAtBottom(shadow_layer);
 }
 
 void HotseatWidget::DelegateView::UpdateTranslucentBackground() {
   if (!HotseatWidget::ShouldShowHotseatBackground()) {
     translucent_background_->SetVisible(false);
     SetBackgroundBlur(false);
+    shadow_->GetLayer()->SetVisible(false);
     return;
   }
 
   DCHECK(scrollable_shelf_view_);
   SetTranslucentBackground(
       scrollable_shelf_view_->GetHotseatBackgroundBounds());
+
+  // Update the shadow content bounds and corner radius.
+  shadow_->GetLayer()->SetVisible(true);
+  gfx::Rect background_bounds = translucent_background_->bounds();
+  shadow_->SetRoundedCornerRadius(background_bounds.height() / 2);
+  shadow_->SetContentBounds(background_bounds);
 }
 
 void HotseatWidget::DelegateView::SetTranslucentBackground(

@@ -70,6 +70,12 @@ class ASH_EXPORT SystemShadow {
       aura::Window* window,
       Type shadow_type);
 
+  // Create a system shadow painted on a texture layer. Painting shadow on a
+  // texture layer is expensive so only use it when necessary. See
+  // `SystemShadowOnTextureLayer` for more details.
+  static std::unique_ptr<SystemShadow> CreateShadowOnTextureLayer(
+      Type shadow_type);
+
   // Get shadow elevation according to the given type.
   static int GetElevationFromType(Type type);
 

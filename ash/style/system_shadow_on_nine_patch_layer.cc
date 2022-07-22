@@ -39,8 +39,8 @@ ui::Layer* SystemShadowOnNinePatchLayer::GetNinePatchLayer() {
 // -----------------------------------------------------------------------------
 // SystemShadowOnNinePatchLayerImpl:
 SystemShadowOnNinePatchLayerImpl::SystemShadowOnNinePatchLayerImpl(
-    int elevation) {
-  shadow_.Init(elevation);
+    SystemShadow::Type type) {
+  shadow_.Init(SystemShadow::GetElevationFromType(type));
   shadow_.SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
 }
 
@@ -54,8 +54,8 @@ ui::Shadow* SystemShadowOnNinePatchLayerImpl::shadow() {
 // SystemViewShadowOnNinePatchLayer:
 SystemViewShadowOnNinePatchLayer::SystemViewShadowOnNinePatchLayer(
     views::View* view,
-    int elevation)
-    : view_shadow_(view, elevation) {
+    SystemShadow::Type type)
+    : view_shadow_(view, SystemShadow::GetElevationFromType(type)) {
   view_shadow_.shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
 }
 
@@ -77,8 +77,8 @@ ui::Shadow* SystemViewShadowOnNinePatchLayer::shadow() {
 // SystemWindowShadowOnNinePatchLayer:
 SystemWindowShadowOnNinePatchLayer::SystemWindowShadowOnNinePatchLayer(
     aura::Window* window,
-    int elevation)
-    : SystemShadowOnNinePatchLayerImpl(elevation) {
+    SystemShadow::Type type)
+    : SystemShadowOnNinePatchLayerImpl(type) {
   auto* window_layer = window->layer();
   auto* shadow_layer = GetLayer();
   window_layer->Add(shadow_layer);
