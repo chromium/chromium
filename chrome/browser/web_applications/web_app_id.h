@@ -14,7 +14,7 @@ using AppId = std::string;
 
 // Unhashed version of App ID. This can be hashed using
 // GenerateAppIdFromUnhashed(unhashed_app_id), see
-// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/web_app_helpers.h;l=53.
+// chrome/browser/web_applications/web_app_helpers.h.
 using UnhashedAppId = std::string;
 
 }  // namespace web_app
