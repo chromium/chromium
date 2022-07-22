@@ -1972,6 +1972,7 @@ fyi_mac_builder(
     cores = None,
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
+    builderless = True,
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = 40,

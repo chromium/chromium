@@ -171,6 +171,8 @@ ci.builder(
     ),
     os = os.MAC_DEFAULT,
     sheriff_rotations = args.ignore_default(None),
+    builderless = True,
+    cores = None,
     goma_backend = None,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = 40,
