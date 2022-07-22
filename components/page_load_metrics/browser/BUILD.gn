@@ -31,6 +31,7 @@ source_set("browser") {
     "observers/prerender_page_load_metrics_observer.cc",
     "observers/prerender_page_load_metrics_observer.h",
     "observers/use_counter/ukm_features.cc",
+    "observers/use_counter/webdev_metrics_ukm_features.cc",
     "observers/use_counter_page_load_metrics_observer.cc",
     "observers/use_counter_page_load_metrics_observer.h",
     "page_load_metrics_embedder_base.cc",

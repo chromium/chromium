@@ -15,6 +15,13 @@
 // data shows a behaviour that is rare but too common to blindly change.
 // UKM-based UseCounter would allow us to find specific pages to reason about
 // whether a breaking change is acceptable or not.
+//
+// This event is emitted for every page load and is not sub-sampled by the UKM
+// system. The WebFeature::kPageVisits is always present in the event, so
+// it is valid to take the ratio of events with your feature to kPageVisit to
+// estimate "percentage of page views using a feature". Note that the lack of
+// sub-sampling is the reason why this event must only be used for rare
+// features.
 
 using WebFeature = blink::mojom::WebFeature;
 

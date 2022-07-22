@@ -88,6 +88,7 @@ UseCounterPageLoadMetricsObserver::OnCommit(
   DCHECK_EQ(features_recorded_.count(), 0ul);
   DCHECK_EQ(main_frame_features_recorded_.count(), 0ul);
   DCHECK_EQ(ukm_features_recorded_.count(), 0ul);
+  DCHECK_EQ(webdev_metrics_ukm_features_recorded_.count(), 0ul);
   DCHECK_EQ(css_properties_recorded_.count(), 0ul);
   DCHECK_EQ(animated_css_properties_recorded_.count(), 0ul);
   DCHECK_EQ(violated_permissions_policy_features_recorded_.count(), 0ul);
@@ -270,6 +271,22 @@ void UseCounterPageLoadMetricsObserver::RecordUkmFeatures() {
       continue;
 
     ukm::builders::Blink_UseCounter(GetDelegate().GetPageUkmSourceId())
+        .SetFeature(feature_enum_value)
+        .SetIsMainFrameFeature(
+            main_frame_features_recorded_.test(feature_enum_value))
+        .Record(ukm::UkmRecorder::Get());
+  }
+  for (WebFeature web_feature : GetAllowedWebDevMetricsUkmFeatures()) {
+    auto feature_enum_value =
+        static_cast<blink::UseCounterFeature::EnumValue>(web_feature);
+    if (!features_recorded_.test(feature_enum_value))
+      continue;
+
+    if (TestAndSet(webdev_metrics_ukm_features_recorded_, feature_enum_value))
+      continue;
+
+    ukm::builders::Blink_DeveloperMetricsRare(
+        GetDelegate().GetPageUkmSourceId())
         .SetFeature(feature_enum_value)
         .SetIsMainFrameFeature(
             main_frame_features_recorded_.test(feature_enum_value))
