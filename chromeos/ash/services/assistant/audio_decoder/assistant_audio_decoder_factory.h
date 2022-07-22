@@ -10,8 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 class AssistantAudioDecoderFactory
     : public mojom::AssistantAudioDecoderFactory {
@@ -36,7 +35,11 @@ class AssistantAudioDecoderFactory
   mojo::Receiver<mojom::AssistantAudioDecoderFactory> receiver_;
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::assistant {
+using ::ash::assistant::AssistantAudioDecoderFactory;
+}
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_AUDIO_DECODER_ASSISTANT_AUDIO_DECODER_FACTORY_H_

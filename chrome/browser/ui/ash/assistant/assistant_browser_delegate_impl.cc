@@ -126,8 +126,8 @@ void AssistantBrowserDelegateImpl::RequestAudioStreamFactory(
 }
 
 void AssistantBrowserDelegateImpl::RequestAudioDecoderFactory(
-    mojo::PendingReceiver<
-        chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver) {
+    mojo::PendingReceiver<ash::assistant::mojom::AssistantAudioDecoderFactory>
+        receiver) {
   content::ServiceProcessHost::Launch(
       std::move(receiver),
       content::ServiceProcessHost::Options()

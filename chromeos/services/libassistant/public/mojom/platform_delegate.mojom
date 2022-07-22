@@ -21,7 +21,7 @@ interface PlatformDelegate {
   // Requests an audio decoder interface from the Assistant Audio Decoder
   // service, via the browser.
   BindAudioDecoderFactory(
-    pending_receiver<chromeos.assistant.mojom.AssistantAudioDecoderFactory>
+    pending_receiver<ash.assistant.mojom.AssistantAudioDecoderFactory>
       receiver);
 
   // Requests Ash's AssistantVolumeControl interface from the browser.

@@ -23,8 +23,8 @@ void PlatformDelegateImpl::BindAudioStreamFactory(
 }
 
 void PlatformDelegateImpl::BindAudioDecoderFactory(
-    mojo::PendingReceiver<
-        chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver) {
+    mojo::PendingReceiver<ash::assistant::mojom::AssistantAudioDecoderFactory>
+        receiver) {
   AssistantBrowserDelegate::Get()->RequestAudioDecoderFactory(
       std::move(receiver));
 }

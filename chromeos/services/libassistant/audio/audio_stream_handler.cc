@@ -21,8 +21,7 @@ AudioStreamHandler::~AudioStreamHandler() {
 }
 
 void AudioStreamHandler::StartAudioDecoder(
-    chromeos::assistant::mojom::AssistantAudioDecoderFactory*
-        audio_decoder_factory,
+    ash::assistant::mojom::AssistantAudioDecoderFactory* audio_decoder_factory,
     assistant_client::AudioOutput::Delegate* delegate,
     InitCB on_inited) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -30,7 +29,7 @@ void AudioStreamHandler::StartAudioDecoder(
   mojo::PendingRemote<AssistantAudioDecoderClient> client;
   client_receiver_.Bind(client.InitWithNewPipeAndPassReceiver());
 
-  mojo::PendingRemote<chromeos::assistant::mojom::AssistantMediaDataSource>
+  mojo::PendingRemote<ash::assistant::mojom::AssistantMediaDataSource>
       data_source;
   media_data_source_ = std::make_unique<AudioMediaDataSource>(
       data_source.InitWithNewPipeAndPassReceiver());

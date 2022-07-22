@@ -25,11 +25,11 @@
 namespace chromeos {
 namespace libassistant {
 namespace {
+using ::ash::assistant::mojom::AssistantAudioDecoderFactory;
 using ::assistant_client::OutputStreamMetadata;
 using ::base::test::ScopedFeatureList;
 using ::base::test::SingleThreadTaskEnvironment;
 using ::chromeos::assistant::FakePlatformDelegate;
-using ::chromeos::assistant::mojom::AssistantAudioDecoderFactory;
 
 constexpr char kFakeDeviceId[] = "device_id";
 }  // namespace
@@ -122,13 +122,12 @@ class FakeAssistantAudioDecoderFactory : public AssistantAudioDecoderFactory {
   FakeAssistantAudioDecoderFactory() = default;
 
   void CreateAssistantAudioDecoder(
-      ::mojo::PendingReceiver<
-          ::chromeos::assistant::mojom::AssistantAudioDecoder> audio_decoder,
+      ::mojo::PendingReceiver<::ash::assistant::mojom::AssistantAudioDecoder>
+          audio_decoder,
       ::mojo::PendingRemote<
-          ::chromeos::assistant::mojom::AssistantAudioDecoderClient> client,
-      ::mojo::PendingRemote<
-          ::chromeos::assistant::mojom::AssistantMediaDataSource> data_source)
-      override {}
+          ::ash::assistant::mojom::AssistantAudioDecoderClient> client,
+      ::mojo::PendingRemote<::ash::assistant::mojom::AssistantMediaDataSource>
+          data_source) override {}
 };
 
 class AssistantAudioDeviceOwnerTest : public testing::Test {

@@ -12,8 +12,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/message.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 IPCDataSource::IPCDataSource(
     mojo::PendingRemote<mojom::AssistantMediaDataSource> media_data_source)
@@ -87,5 +86,4 @@ void IPCDataSource::ReadDone(uint8_t* destination,
   std::move(callback).Run(data.size());
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

@@ -54,9 +54,8 @@ class AssistantBrowserDelegateImpl
       mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver)
       override;
   void RequestAudioDecoderFactory(
-      mojo::PendingReceiver<
-          chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver)
-      override;
+      mojo::PendingReceiver<ash::assistant::mojom::AssistantAudioDecoderFactory>
+          receiver) override;
   void RequestAudioFocusManager(
       mojo::PendingReceiver<media_session::mojom::AudioFocusManager> receiver)
       override;

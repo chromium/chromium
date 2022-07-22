@@ -15,8 +15,7 @@
 #include "media/filters/audio_file_reader.h"
 #include "media/filters/blocking_url_protocol.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
 
@@ -162,5 +161,4 @@ void AssistantAudioDecoder::RunCallbacksAsClosed() {
     std::move(close_callback_).Run();
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

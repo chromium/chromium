@@ -176,8 +176,8 @@ class AudioDecoderFactoryManagerImpl
         audio_decoder_factory_.BindNewPipeAndPassReceiver());
   }
 
-  chromeos::assistant::mojom::AssistantAudioDecoderFactory*
-  GetAudioDecoderFactory() override {
+  ash::assistant::mojom::AssistantAudioDecoderFactory* GetAudioDecoderFactory()
+      override {
     return audio_decoder_factory_.get();
   }
 
@@ -195,7 +195,7 @@ class AudioDecoderFactoryManagerImpl
   }
 
  private:
-  mojo::Remote<chromeos::assistant::mojom::AssistantAudioDecoderFactory>
+  mojo::Remote<ash::assistant::mojom::AssistantAudioDecoderFactory>
       audio_decoder_factory_;
 
   SEQUENCE_CHECKER(main_sequence_checker_);

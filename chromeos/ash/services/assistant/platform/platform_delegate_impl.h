@@ -27,9 +27,8 @@ class PlatformDelegateImpl
       mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver)
       override;
   void BindAudioDecoderFactory(
-      mojo::PendingReceiver<
-          chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver)
-      override;
+      mojo::PendingReceiver<ash::assistant::mojom::AssistantAudioDecoderFactory>
+          receiver) override;
   void BindBatteryMonitor(
       mojo::PendingReceiver<::device::mojom::BatteryMonitor> receiver) override;
   void BindNetworkConfig(

@@ -376,9 +376,9 @@ auto RunQuickPairService(
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 auto RunAssistantAudioDecoder(
-    mojo::PendingReceiver<
-        chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver) {
-  return std::make_unique<chromeos::assistant::AssistantAudioDecoderFactory>(
+    mojo::PendingReceiver<ash::assistant::mojom::AssistantAudioDecoderFactory>
+        receiver) {
+  return std::make_unique<ash::assistant::AssistantAudioDecoderFactory>(
       std::move(receiver));
 }
 

@@ -23,9 +23,8 @@ class FakePlatformDelegate
       mojo::PendingReceiver<::media::mojom::AudioStreamFactory> receiver)
       override;
   void BindAudioDecoderFactory(
-      mojo::PendingReceiver<
-          chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver)
-      override;
+      mojo::PendingReceiver<ash::assistant::mojom::AssistantAudioDecoderFactory>
+          receiver) override;
   void BindBatteryMonitor(
       mojo::PendingReceiver<::device::mojom::BatteryMonitor> receiver) override;
   void BindNetworkConfig(
@@ -44,8 +43,7 @@ class FakePlatformDelegate
     return std::move(stream_factory_receiver_);
   }
 
-  mojo::PendingReceiver<
-      ::chromeos::assistant::mojom::AssistantAudioDecoderFactory>
+  mojo::PendingReceiver<::ash::assistant::mojom::AssistantAudioDecoderFactory>
   audio_decoder_factory_receiver() {
     return std::move(audio_decoder_factory_receiver_);
   }
@@ -59,8 +57,7 @@ class FakePlatformDelegate
  private:
   mojo::PendingReceiver<::media::mojom::AudioStreamFactory>
       stream_factory_receiver_;
-  mojo::PendingReceiver<
-      ::chromeos::assistant::mojom::AssistantAudioDecoderFactory>
+  mojo::PendingReceiver<::ash::assistant::mojom::AssistantAudioDecoderFactory>
       audio_decoder_factory_receiver_;
   mojo::PendingReceiver<::device::mojom::BatteryMonitor>
       battery_monitor_receiver_;

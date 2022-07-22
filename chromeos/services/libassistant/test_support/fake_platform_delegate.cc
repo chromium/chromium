@@ -16,8 +16,8 @@ void FakePlatformDelegate::BindAudioStreamFactory(
 }
 
 void FakePlatformDelegate::BindAudioDecoderFactory(
-    mojo::PendingReceiver<
-        ::chromeos::assistant::mojom::AssistantAudioDecoderFactory> receiver) {
+    mojo::PendingReceiver<::ash::assistant::mojom::AssistantAudioDecoderFactory>
+        receiver) {
   audio_decoder_factory_receiver_ = std::move(receiver);
 }
 

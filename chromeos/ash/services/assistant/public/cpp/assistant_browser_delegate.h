@@ -61,7 +61,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantBrowserDelegate {
   // Requests an audio decoder interface from the Assistant Audio Decoder
   // service, via the browser.
   virtual void RequestAudioDecoderFactory(
-      mojo::PendingReceiver<mojom::AssistantAudioDecoderFactory> receiver) = 0;
+      mojo::PendingReceiver<ash::assistant::mojom::AssistantAudioDecoderFactory>
+          receiver) = 0;
 
   // Requests a connection to the Media Session service's AudioFocusManager from
   // the browser.

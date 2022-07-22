@@ -43,7 +43,7 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
   class AudioDecoderFactoryManager
       : public base::RefCounted<AudioDecoderFactoryManager> {
    public:
-    virtual chromeos::assistant::mojom::AssistantAudioDecoderFactory*
+    virtual ash::assistant::mojom::AssistantAudioDecoderFactory*
     GetAudioDecoderFactory() = 0;
 
     AudioDecoderFactoryManager() = default;
