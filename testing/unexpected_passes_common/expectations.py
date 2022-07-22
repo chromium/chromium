@@ -12,7 +12,7 @@ import os
 import re
 import subprocess
 import sys
-import typing
+from typing import Iterable, List, Optional, Set, Tuple, Union
 
 import six
 
@@ -74,9 +74,8 @@ class RemovalType(object):
 
 class Expectations(object):
   def CreateTestExpectationMap(
-      self,
-      expectation_files: typing.Optional[typing.Union[str, typing.List[str]]],
-      tests: typing.Optional[typing.Iterable[str]],
+      self, expectation_files: Optional[Union[str, List[str]]],
+      tests: Optional[Iterable[str]],
       grace_period: int) -> data_types.TestExpectationMap:
     """Creates an expectation map based off a file or list of tests.
 
@@ -189,9 +188,10 @@ class Expectations(object):
         content += line_content
     return content
 
-  def RemoveExpectationsFromFile(
-      self, expectations: typing.List[data_types.Expectation],
-      expectation_file: str, removal_type: str) -> typing.Set[str]:
+  def RemoveExpectationsFromFile(self,
+                                 expectations: List[data_types.Expectation],
+                                 expectation_file: str,
+                                 removal_type: str) -> Set[str]:
     """Removes lines corresponding to |expectations| from |expectation_file|.
 
     Ignores any lines that match but are within a disable block or have an
@@ -313,8 +313,7 @@ class Expectations(object):
     raise NotImplementedError()
 
   def ModifySemiStaleExpectations(
-      self,
-      stale_expectation_map: data_types.TestExpectationMap) -> typing.Set[str]:
+      self, stale_expectation_map: data_types.TestExpectationMap) -> Set[str]:
     """Modifies lines from |stale_expectation_map| in |expectation_file|.
 
     Prompts the user for each modification and provides debug information since
@@ -384,10 +383,9 @@ class Expectations(object):
       modified_urls |= set(e.bug.split())
     return modified_urls
 
-  def _GetExpectationLine(
-      self, expectation: data_types.Expectation, file_contents: str,
-      expectation_file: str
-  ) -> typing.Union[typing.Tuple[None, None], typing.Tuple[str, int]]:
+  def _GetExpectationLine(self, expectation: data_types.Expectation,
+                          file_contents: str, expectation_file: str
+                          ) -> Union[Tuple[None, None], Tuple[str, int]]:
     """Gets the line and line number of |expectation| in |file_contents|.
 
     Args:
@@ -421,8 +419,7 @@ class Expectations(object):
         return line, line_number + 1
     return None, None
 
-  def FindOrphanedBugs(self,
-                       affected_urls: typing.Iterable[str]) -> typing.Set[str]:
+  def FindOrphanedBugs(self, affected_urls: Iterable[str]) -> Set[str]:
     """Finds cases where expectations for bugs no longer exist.
 
     Args:
@@ -447,7 +444,7 @@ class Expectations(object):
           seen_bugs.add(url)
     return set(affected_urls) - seen_bugs
 
-  def GetExpectationFilepaths(self) -> typing.List[str]:
+  def GetExpectationFilepaths(self) -> List[str]:
     """Gets all the filepaths to expectation files of interest.
 
     Returns:

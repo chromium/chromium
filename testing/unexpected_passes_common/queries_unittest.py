@@ -7,13 +7,10 @@ import copy
 import json
 import subprocess
 import sys
-import typing
+from typing import List, Tuple
 import unittest
 
-if sys.version_info[0] == 2:
-  import mock
-else:
-  import unittest.mock as mock
+import unittest.mock as mock
 
 from unexpected_passes_common import builders
 from unexpected_passes_common import constants
@@ -202,7 +199,7 @@ class QueryBuilderUnittest(unittest.TestCase):
   def testValidResultsMultipleSteps(self) -> None:
     """Tests functionality when results from multiple steps are present."""
 
-    def SideEffect(result: queries.QueryResult) -> typing.List[str]:
+    def SideEffect(result: queries.QueryResult) -> List[str]:
       if result['step_name'] == 'a step name':
         return ['foo_expectations']
       if result['step_name'] == 'another step name':
@@ -348,7 +345,7 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
     """Tests functionality when valid results are returned by the query."""
 
     def SideEffect(builder: data_types.BuilderEntry,
-                   *args) -> typing.Tuple[data_types.ResultListType, None]:
+                   *args) -> Tuple[data_types.ResultListType, None]:
       del args
       if builder.name == 'matched_builder':
         return ([

@@ -11,7 +11,7 @@ import os
 import subprocess
 import threading
 import time
-import typing
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 import six
 
@@ -51,8 +51,8 @@ SUBMITTED_BUILDS_TEMPLATE = """\
       AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
                                      INTERVAL 30 DAY)"""
 
-QueryResult = typing.Dict[str, typing.Any]
-QueryParameters = typing.Dict[str, typing.Dict[str, typing.Any]]
+QueryResult = Dict[str, Any]
+QueryParameters = Dict[str, Dict[str, Any]]
 
 # pylint: disable=super-with-arguments,useless-object-inheritance
 
@@ -84,8 +84,8 @@ class BigQueryQuerier(object):
 
   def FillExpectationMapForBuilders(
       self, expectation_map: data_types.TestExpectationMap,
-      builders: typing.Iterable[data_types.BuilderEntry]
-  ) -> typing.Dict[str, data_types.ResultListType]:
+      builders: Iterable[data_types.BuilderEntry]
+  ) -> Dict[str, data_types.ResultListType]:
     """Fills |expectation_map| with results from |builders|.
 
     Args:
@@ -144,9 +144,10 @@ class BigQueryQuerier(object):
 
     return all_unmatched_results
 
-  def _FilterOutInactiveBuilders(
-      self, builders: typing.Iterable[data_types.BuilderEntry],
-      builder_type: str) -> typing.List[data_types.BuilderEntry]:
+  def _FilterOutInactiveBuilders(self,
+                                 builders: Iterable[data_types.BuilderEntry],
+                                 builder_type: str
+                                 ) -> List[data_types.BuilderEntry]:
     """Filters out any builders that are not producing data.
 
     This helps save time on querying, as querying for the builder names is cheap
@@ -189,10 +190,9 @@ class BigQueryQuerier(object):
     return filtered_builders
 
   def _QueryAddCombined(
-      self, inputs: typing.Tuple[data_types.BuilderEntry, data_types.
-                                 TestExpectationMap]
-  ) -> typing.Tuple[data_types.ResultListType, str, data_types.
-                    TestExpectationMap]:
+      self,
+      inputs: Tuple[data_types.BuilderEntry, data_types.TestExpectationMap]
+  ) -> Tuple[data_types.ResultListType, str, data_types.TestExpectationMap]:
     """Combines the query and add steps for use in a process pool.
 
     Args:
@@ -215,8 +215,7 @@ class BigQueryQuerier(object):
     return unmatched_results, prefixed_builder_name, expectation_map
 
   def QueryBuilder(self, builder: data_types.BuilderEntry
-                   ) -> typing.Tuple[data_types.ResultListType, typing.
-                                     Optional[typing.List[str]]]:
+                   ) -> Tuple[data_types.ResultListType, Optional[List[str]]]:
     """Queries ResultDB for results from |builder|.
 
     Args:
@@ -314,8 +313,8 @@ class BigQueryQuerier(object):
     step = json_result['step_name']
     return data_types.Result(test_name, tags, actual_result, step, build_id)
 
-  def _GetRelevantExpectationFilesForQueryResult(
-      self, query_result: QueryResult) -> typing.Optional[typing.Iterable[str]]:
+  def _GetRelevantExpectationFilesForQueryResult(self, query_result: QueryResult
+                                                 ) -> Optional[Iterable[str]]:
     """Gets the relevant expectation file names for a given query result.
 
     Args:
@@ -341,7 +340,7 @@ class BigQueryQuerier(object):
     return False
 
   def _GetQueryGeneratorForBuilder(self, builder: data_types.BuilderEntry
-                                   ) -> typing.Optional['BaseQueryGenerator']:
+                                   ) -> Optional['BaseQueryGenerator']:
     """Returns a BaseQueryGenerator instance to only include relevant tests.
 
     Args:
@@ -353,9 +352,9 @@ class BigQueryQuerier(object):
     """
     raise NotImplementedError()
 
-  def _RunBigQueryCommandsForJsonOutput(
-      self, queries: typing.Union[str, typing.List[str]],
-      parameters: QueryParameters) -> typing.List[QueryResult]:
+  def _RunBigQueryCommandsForJsonOutput(self, queries: Union[str, List[str]],
+                                        parameters: QueryParameters
+                                        ) -> List[QueryResult]:
     """Runs the given BigQuery queries and returns their outputs as JSON.
 
     Args:
@@ -377,7 +376,7 @@ class BigQueryQuerier(object):
     processes = set()
     processes_lock = threading.Lock()
 
-    def run_cmd_in_thread(inputs: typing.Tuple[typing.List[str], str]) -> str:
+    def run_cmd_in_thread(inputs: Tuple[List[str], str]) -> str:
       cmd, query = inputs
       query = query.encode('utf-8')
       with open(os.devnull, 'w') as devnull:
@@ -408,7 +407,7 @@ class BigQueryQuerier(object):
           raise RuntimeError(error_msg)
         return stdout
 
-    def run_cmd(cmd: typing.List[str], tries: int) -> typing.List[str]:
+    def run_cmd(cmd: List[str], tries: int) -> List[str]:
       if tries >= MAX_QUERY_TRIES:
         raise RuntimeError('Query failed too many times, aborting')
 
@@ -490,7 +489,7 @@ class BaseQueryGenerator(object):
     """Splits the query into more clauses/queries."""
     raise NotImplementedError('SplitQuery must be overridden in a child class')
 
-  def GetClauses(self) -> typing.List[str]:
+  def GetClauses(self) -> List[str]:
     """Gets string representations of the test filters.
 
     Returns:
@@ -499,7 +498,7 @@ class BaseQueryGenerator(object):
     """
     raise NotImplementedError('GetClauses must be overridden in a child class')
 
-  def GetQueries(self) -> typing.List[str]:
+  def GetQueries(self) -> List[str]:
     """Gets string representations of the queries to run.
 
     Returns:
@@ -525,7 +524,7 @@ class FixedQueryGenerator(BaseQueryGenerator):
     raise QuerySplitError('Tried to split a query without any test IDs to use, '
                           'use --large-query-mode')
 
-  def GetClauses(self) -> typing.List[str]:
+  def GetClauses(self) -> List[str]:
     return [self._test_filter]
 # pylint: enable=abstract-method
 
@@ -534,8 +533,8 @@ class FixedQueryGenerator(BaseQueryGenerator):
 class SplitQueryGenerator(BaseQueryGenerator):
   """Concrete test filter that can be split to a desired size."""
 
-  def __init__(self, builder: data_types.BuilderEntry,
-               test_ids: typing.List[str], target_num_samples: int):
+  def __init__(self, builder: data_types.BuilderEntry, test_ids: List[str],
+               target_num_samples: int):
     """
     Args:
       test_ids: A list of strings containing the test IDs to use in the test
@@ -549,7 +548,7 @@ class SplitQueryGenerator(BaseQueryGenerator):
     self._clauses = []
     self._PerformInitialSplit(test_ids)
 
-  def _PerformInitialSplit(self, test_ids: typing.List[str]) -> None:
+  def _PerformInitialSplit(self, test_ids: List[str]) -> None:
     """Evenly splits |test_ids| into lists that are  ~|_target_num_samples| long
 
     Only to be called from the constructor.
@@ -580,7 +579,7 @@ class SplitQueryGenerator(BaseQueryGenerator):
     self._clauses = test_filter_clauses
 
   def SplitQuery(self) -> None:
-    def _SplitListInHalf(l: list) -> typing.Tuple[list, list]:
+    def _SplitListInHalf(l: list) -> Tuple[list, list]:
       assert len(l) > 1
       front = l[:len(l) // 2]
       back = l[len(l) // 2:]
@@ -597,14 +596,14 @@ class SplitQueryGenerator(BaseQueryGenerator):
     self._test_id_lists = tmp_test_id_lists
     self._GenerateClauses()
 
-  def GetClauses(self) -> typing.List[str]:
+  def GetClauses(self) -> List[str]:
     return self._clauses
 # pylint: enable=abstract-method
 
 
 def GenerateBigQueryCommand(project: str,
                             parameters: QueryParameters,
-                            batch: bool = True) -> typing.List[str]:
+                            batch: bool = True) -> List[str]:
   """Generate a BigQuery commandline.
 
   Does not contain the actual query, as that is passed in via stdin.

@@ -8,6 +8,7 @@ from __future__ import print_function
 import copy
 import sys
 import typing
+from typing import Dict, List
 import unittest
 
 if sys.version_info[0] == 2:
@@ -265,7 +266,7 @@ class MapTypeUnittest(unittest.TestCase):
     self._StringToMapHelper(data_types.TestExpectationMap,
                             data_types.ExpectationBuilderMap)
 
-  def _GetSampleBuildStats(self) -> typing.List[data_types.BuildStats]:
+  def _GetSampleBuildStats(self) -> List[data_types.BuildStats]:
     build_stats = []
     for i in range(8):
       bs = data_types.BuildStats()
@@ -1239,8 +1240,7 @@ class TestExpectationMapSplitByStalenessUnittest(unittest.TestCase):
         }),
     })
 
-    def SideEffect(pass_map: typing.Dict[int, data_types.BuilderStepMap]
-                   ) -> bool:
+    def SideEffect(pass_map: Dict[int, data_types.BuilderStepMap]) -> bool:
       return pass_map[data_types.FULL_PASS]['foo_builder'][
           'step1'] == uu.CreateStatsWithPassFails(1, 0)
 

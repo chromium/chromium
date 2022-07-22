@@ -8,7 +8,7 @@ from __future__ import print_function
 import json
 import os
 import sys
-import typing
+from typing import Any, Dict, Set, Tuple
 import unittest
 
 if sys.version_info[0] == 2:
@@ -132,7 +132,7 @@ class GetCiBuildersUnittest(FakeFilesystemTestCaseWithFileCreation):
   def testFilterBySuite(self) -> None:
     """Tests that only builders that run the given suite are returned."""
 
-    def SideEffect(tm: typing.Dict[str, typing.Any]) -> bool:
+    def SideEffect(tm: Dict[str, Any]) -> bool:
       tests = tm.get('isolated_scripts', [])
       for t in tests:
         if t.get('isolate_name') == 'foo_integration_test':
@@ -333,7 +333,7 @@ class GetTryBuildersUnittest(FakeFilesystemTestCaseWithFileCreation):
     """Tests that parsed, mirrored builders get returned on success."""
 
     def SideEffect(ci_builder: data_types.BuilderEntry
-                   ) -> typing.Tuple[typing.Set[data_types.BuilderEntry], bool]:
+                   ) -> Tuple[Set[data_types.BuilderEntry], bool]:
       b = [
           data_types.BuilderEntry(ci_builder.name.replace('ci', 'try'),
                                   constants.BuilderTypes.TRY, False),
@@ -364,7 +364,7 @@ class GetTryBuildersUnittest(FakeFilesystemTestCaseWithFileCreation):
   def testDedicatedJsonContentLoaded(self) -> None:
     """Tests that tryserver JSON content is loaded."""
 
-    def SideEffect(test_spec: typing.Dict[str, typing.Any]) -> bool:
+    def SideEffect(test_spec: Dict[str, Any]) -> bool:
       # Treat non-empty test specs as valid.
       return bool(test_spec)
 
@@ -447,7 +447,7 @@ class GetTryBuildersUnittest(FakeFilesystemTestCaseWithFileCreation):
   def testDedicatedFilterBySuite(self) -> None:
     """Tests that only builders that run the given suite are returned."""
 
-    def SideEffect(tm: typing.Dict[str, typing.Any]) -> bool:
+    def SideEffect(tm: Dict[str, Any]) -> bool:
       tests = tm.get('isolated_scripts', [])
       for t in tests:
         if t.get('isolate_name') == 'foo_integration_test':
@@ -505,8 +505,7 @@ class GetTryBuildersUnittest(FakeFilesystemTestCaseWithFileCreation):
   def testDedicatedAndMirroredCombined(self) -> None:
     """Tests that both dedicated and mirrored trybots are returned."""
 
-    def SideEffect(_: typing.Any
-                   ) -> typing.Tuple[typing.Set[data_types.BuilderEntry], bool]:
+    def SideEffect(_: Any) -> Tuple[Set[data_types.BuilderEntry], bool]:
       return set({
           data_types.BuilderEntry('mirrored_trybot', constants.BuilderTypes.TRY,
                                   False)

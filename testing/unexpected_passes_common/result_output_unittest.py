@@ -9,7 +9,7 @@ import collections
 import itertools
 import sys
 import tempfile
-import typing
+from typing import Iterable, Set
 import unittest
 
 import six
@@ -21,8 +21,7 @@ from unexpected_passes_common import result_output
 from unexpected_passes_common import unittest_utils as uu
 
 
-def CreateTextOutputPermutations(text: str, inputs: typing.Iterable[str]
-                                 ) -> typing.Set[str]:
+def CreateTextOutputPermutations(text: str, inputs: Iterable[str]) -> Set[str]:
   """Creates permutations of |text| filled with the contents of |inputs|.
 
   Some output ordering is not guaranteed, so this acts as a way to generate
