@@ -323,12 +323,8 @@ export class PasswordViewElement extends PasswordViewElementBase {
     // The dialog is recently closed. Use the new IDs to update the URL.
     const newParams = Router.getInstance().getQueryParameters();
 
-    if (event.detail.accountId !== undefined) {
-      newParams.set(
-          PasswordViewPageUrlParams.ID, event.detail.accountId.toString());
-    } else if (event.detail.deviceId !== undefined) {
-      newParams.set(
-          PasswordViewPageUrlParams.ID, event.detail.deviceId.toString());
+    if (event.detail !== undefined) {
+      newParams.set(PasswordViewPageUrlParams.ID, String(event.detail));
     }
     Router.getInstance().updateRouteParams(newParams);
   }

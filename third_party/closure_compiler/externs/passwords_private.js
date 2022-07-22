@@ -206,31 +206,21 @@ chrome.passwordsPrivate.AddPasswordOptions;
 chrome.passwordsPrivate.ChangeSavedPasswordParams;
 
 /**
- * @typedef {{
- *   accountId: (number|undefined),
- *   deviceId: (number|undefined)
- * }}
- */
-chrome.passwordsPrivate.CredentialIds;
-
-/**
  * Function that logs that the Passwords page was accessed from the Chrome
  * Settings WebUI.
  */
 chrome.passwordsPrivate.recordPasswordsPageAccessInSettings = function() {};
 
 /**
- * Changes the saved password corresponding to |ids|. Since the password can be
- * stored in Google Account and on device, in this case we want to change the
- * password for accountId and deviceId. Invokes |callback| or raises an error
- * depending on whether the operation succeeded.
- * @param {!Array<number>} ids The ids for the password entry being updated.
+ * Changes the saved password corresponding to |id|. Invokes |callback| or
+ * raises an error depending on whether the operation succeeded.
+ * @param {number} id The id for the password entry being updated.
  * @param {!chrome.passwordsPrivate.ChangeSavedPasswordParams} params The
  *     dictionary which holds the changed parameters.
- * @param {function(!chrome.passwordsPrivate.CredentialIds): void=} callback The
- *     callback that gets invoked in the end.
+ * @param {function(number): void=} callback The callback that gets invoked in
+ *     the end.
  */
-chrome.passwordsPrivate.changeSavedPassword = function(ids, params, callback) {};
+chrome.passwordsPrivate.changeSavedPassword = function(id, params, callback) {};
 
 /**
  * Removes the saved password corresponding to |id| in |fromStores|. If no saved
@@ -438,8 +428,7 @@ chrome.passwordsPrivate.getPasswordCheckStatus = function(callback) {};
  * @param {!chrome.passwordsPrivate.InsecureCredential} credential
  * @param {function(boolean): void=} callback
  */
-chrome.passwordsPrivate.startAutomatedPasswordChange = function(
-    credential, callback) {};
+chrome.passwordsPrivate.startAutomatedPasswordChange = function(credential, callback) {};
 
 /**
  * Requests whether the account store is a default location for saving

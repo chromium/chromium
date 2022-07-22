@@ -88,27 +88,17 @@ bool TestPasswordsPrivateDelegate::AddPassword(
   return !url.empty() && !password.empty();
 }
 
-absl::optional<api::passwords_private::CredentialIds>
-TestPasswordsPrivateDelegate::ChangeSavedPassword(
-    const std::vector<int>& ids,
+absl::optional<int> TestPasswordsPrivateDelegate::ChangeSavedPassword(
+    const int id,
     const api::passwords_private::ChangeSavedPasswordParams& params) {
-  constexpr int kDeviceIdIndex = 0;
-  constexpr int kAccountIdIndex = 1;
-
-  for (int id : ids) {
-    if (static_cast<size_t>(id) >= current_entries_.size()) {
-      return absl::nullopt;
-    }
+  if (static_cast<size_t>(id) >= current_entries_.size()) {
+    return absl::nullopt;
   }
 
-  if (params.password.empty() || ids.empty())
+  if (params.password.empty())
     return absl::nullopt;
 
-  api::passwords_private::CredentialIds newIds;
-  newIds.device_id = std::make_unique<int>(ids[kDeviceIdIndex]);
-  newIds.account_id =
-      ids.size() == 2 ? std::make_unique<int>(ids[kAccountIdIndex]) : nullptr;
-  return newIds;
+  return id;
 }
 
 void TestPasswordsPrivateDelegate::RemoveSavedPassword(

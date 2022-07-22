@@ -53,17 +53,17 @@ ResponseAction PasswordsPrivateChangeSavedPasswordFunction::Run() {
       api::passwords_private::ChangeSavedPassword::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  auto new_ids = GetDelegate(browser_context())
-                     ->ChangeSavedPassword(parameters->ids, parameters->params);
-  if (new_ids.has_value()) {
+  auto new_id = GetDelegate(browser_context())
+                    ->ChangeSavedPassword(parameters->id, parameters->params);
+  if (new_id.has_value()) {
     return RespondNow(ArgumentList(
         api::passwords_private::ChangeSavedPassword::Results::Create(
-            new_ids.value())));
+            new_id.value())));
   }
   return RespondNow(Error(
       "Could not change the password. Either the password is empty, the user "
-      "is not authenticated, vector of ids is empty or no matching password "
-      "could be found at least for one of the ids."));
+      "is not authenticated or no matching password could be found for the "
+      "id."));
 }
 
 // PasswordsPrivateRemoveSavedPasswordFunction

@@ -63,8 +63,8 @@ class PasswordsPrivateDelegateImpl
                    const std::u16string& note,
                    bool use_account_store,
                    content::WebContents* web_contents) override;
-  absl::optional<api::passwords_private::CredentialIds> ChangeSavedPassword(
-      const std::vector<int>& ids,
+  absl::optional<int> ChangeSavedPassword(
+      int id,
       const api::passwords_private::ChangeSavedPasswordParams& params) override;
   void RemoveSavedPassword(
       int id,

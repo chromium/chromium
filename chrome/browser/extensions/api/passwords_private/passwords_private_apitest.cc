@@ -168,21 +168,8 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       ChangeSavedPasswordWithOneIncorrectIdFromArrayFails) {
-  EXPECT_TRUE(RunPasswordsSubtest(
-      "changeSavedPasswordWithOneIncorrectIdFromArrayFails"))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
                        ChangeSavedPasswordWithEmptyPasswordFails) {
   EXPECT_TRUE(RunPasswordsSubtest("changeSavedPasswordWithEmptyPasswordFails"))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       ChangeSavedPasswordWithEmptyArrayIdFails) {
-  EXPECT_TRUE(RunPasswordsSubtest("changeSavedPasswordWithEmptyArrayIdFails"))
       << message_;
 }
 

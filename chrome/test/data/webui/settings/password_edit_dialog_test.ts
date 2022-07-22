@@ -151,7 +151,7 @@ async function updateWebsiteInput(
  * @param entryIds Ids to be called as a changeSavedPassword parameter.
  */
 async function changeSavedPasswordTestHelper(
-    editDialog: PasswordEditDialogElement, entryIds: number[],
+    editDialog: PasswordEditDialogElement, entryId: number,
     passwordManager: TestPasswordManagerProxy) {
   const expectedParams: chrome.passwordsPrivate.ChangeSavedPasswordParams = {
     username: 'new_username',
@@ -168,16 +168,14 @@ async function changeSavedPasswordTestHelper(
   assertFalse(editDialog.$.passwordInput.invalid);
   assertFalse(editDialog.$.actionButton.disabled);
 
-  passwordManager.setChangeSavedPasswordResponse({accountId: 999});
+  passwordManager.setChangeSavedPasswordResponse(999);
   editDialog.$.actionButton.click();
 
   // Check that the changeSavedPassword is called with the right arguments.
-  const {ids, params} = await passwordManager.whenCalled('changeSavedPassword');
+  const {id, params} = await passwordManager.whenCalled('changeSavedPassword');
   assertEquals(expectedParams.password, params.password);
   assertEquals(expectedParams.username, params.username);
-
-  assertEquals(entryIds.length, ids.length);
-  entryIds.forEach(entryId => assertTrue(ids.includes(entryId)));
+  assertEquals(entryId, id);
 }
 
 /**
@@ -270,7 +268,7 @@ suite('PasswordEditDialog', function() {
     const editDialog = elementFactory.createPasswordEditDialog(accountEntry);
 
     return changeSavedPasswordTestHelper(
-        editDialog, [accountEntry.id], passwordManager);
+        editDialog, accountEntry.id, passwordManager);
   });
 
   test('changesPasswordForDeviceId', function() {
@@ -279,7 +277,7 @@ suite('PasswordEditDialog', function() {
     const editDialog = elementFactory.createPasswordEditDialog(deviceEntry);
 
     return changeSavedPasswordTestHelper(
-        editDialog, [deviceEntry.id], passwordManager);
+        editDialog, deviceEntry.id, passwordManager);
   });
 
   test('changesPasswordForBothId', function() {
@@ -288,7 +286,7 @@ suite('PasswordEditDialog', function() {
     const editDialog = elementFactory.createPasswordEditDialog(multiEntry);
 
     return changeSavedPasswordTestHelper(
-        editDialog, [multiEntry.id], passwordManager);
+        editDialog, multiEntry.id, passwordManager);
   });
 
   test('changeUsernameFailsWhenReused', function() {
@@ -310,7 +308,7 @@ suite('PasswordEditDialog', function() {
     assertFalse(editDialog.$.actionButton.disabled);
 
     return changeSavedPasswordTestHelper(
-        editDialog, [accountPasswords[0]!.id], passwordManager);
+        editDialog, accountPasswords[0]!.id, passwordManager);
   });
 
   test('changesUsernameWhenReusedForDifferentStore', async function() {
@@ -672,7 +670,7 @@ suite('PasswordEditDialog', function() {
     assertFalse(editDialog.$.passwordInput.invalid);
     assertFalse(editDialog.$.actionButton.disabled);
 
-    passwordManager.setChangeSavedPasswordResponse({accountId: 43});
+    passwordManager.setChangeSavedPasswordResponse(43);
     editDialog.$.actionButton.click();
 
     // Check that the changeSavedPassword is called with the right arguments.
@@ -683,8 +681,7 @@ suite('PasswordEditDialog', function() {
     assertEquals(expectedParams.note, params.note);
 
     await dispatchedEvent.then((event) => {
-      assertEquals(43, event.detail.accountId);
-      assertEquals(undefined, event.detail.deviceId);
+      assertEquals(43, event.detail);
     });
   });
 

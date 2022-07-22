@@ -90,9 +90,8 @@ class PasswordsPrivateDelegate : public KeyedService {
   // |params|: The struct which holds the new username, password and note.
   // Returns the ids if the change was successful (can be the same ids if the
   // username and the password didn't change), nullopt otherwise.
-  virtual absl::optional<api::passwords_private::CredentialIds>
-  ChangeSavedPassword(
-      const std::vector<int>& ids,
+  virtual absl::optional<int> ChangeSavedPassword(
+      int id,
       const api::passwords_private::ChangeSavedPasswordParams& params) = 0;
 
   // Removes the saved password entry corresponding to the |id| in the

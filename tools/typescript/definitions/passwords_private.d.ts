@@ -144,15 +144,10 @@ declare global {
         note?: string;
       }
 
-      export interface CredentialIds {
-        accountId?: number;
-        deviceId?: number;
-      }
-
       export function recordPasswordsPageAccessInSettings(): void;
       export function changeSavedPassword(
-          ids: number[], params: ChangeSavedPasswordParams,
-          callback?: (newIds: CredentialIds) => void): void;
+          id: number, params: ChangeSavedPasswordParams,
+          callback?: (newId: number) => void): void;
       export function removeSavedPassword(id: number, fromStores: PasswordStoreSet): void;
       export function removePasswordException(id: number): void;
       export function undoRemoveSavedPasswordOrException(): void;

@@ -373,7 +373,7 @@ suite('PasswordViewTest', function() {
         assertEquals(entry.username, editDialog.existingEntry.username);
         assertEquals(PASSWORD, editDialog.existingEntry.password);
 
-        passwordManager.setChangeSavedPasswordResponse({deviceId: NEW_ID});
+        passwordManager.setChangeSavedPasswordResponse(NEW_ID);
         // user edits the username
         editDialog.$.usernameInput.value = NEW_USERNAME;
         editDialog.$.actionButton.click();

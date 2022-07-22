@@ -274,17 +274,11 @@ bool PasswordsPrivateDelegateImpl::AddPassword(
   return success;
 }
 
-absl::optional<api::passwords_private::CredentialIds>
-PasswordsPrivateDelegateImpl::ChangeSavedPassword(
-    const std::vector<int>& ids,
+absl::optional<int> PasswordsPrivateDelegateImpl::ChangeSavedPassword(
+    int id,
     const api::passwords_private::ChangeSavedPasswordParams& params) {
-  DCHECK(!ids.empty());
-  DCHECK_LE(ids.size(), 2u);
-  // It may have 2 elements but only if it's the same password in two stores. In
-  // this case updating only one of them is enough as
-  // |saved_passwords_presenter_| will update both of them anyway.
   const CredentialUIEntry* original_credential =
-      credential_id_generator_.TryGetKey(ids[0]);
+      credential_id_generator_.TryGetKey(id);
   if (!original_credential)
     return absl::nullopt;
 
@@ -309,23 +303,8 @@ PasswordsPrivateDelegateImpl::ChangeSavedPassword(
     case password_manager::SavedPasswordsPresenter::EditResult::kEmptyPassword:
       return absl::nullopt;
   }
-  api::passwords_private::CredentialIds new_ids;
-  for (auto& form : forms_to_edit) {
-    // Calculate the new IDs using the new username and password.
-    form.username_value = updated_credential.username;
-    form.password_value = updated_credential.password;
 
-    auto new_id = std::make_unique<int>(
-        credential_id_generator_.GenerateId(CredentialUIEntry(form)));
-
-    if (form.IsUsingProfileStore()) {
-      new_ids.device_id = std::move(new_id);
-    }
-    if (form.IsUsingAccountStore()) {
-      new_ids.account_id = std::move(new_id);
-    }
-  }
-  return new_ids;
+  return credential_id_generator_.GenerateId(updated_credential);
 }
 
 void PasswordsPrivateDelegateImpl::RemoveSavedPassword(

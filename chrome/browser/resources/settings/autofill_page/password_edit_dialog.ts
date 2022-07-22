@@ -32,9 +32,7 @@ import {getTemplate} from './password_edit_dialog.html.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {PasswordRequestorMixin} from './password_requestor_mixin.js';
 
-// TODO(derinel@google.com): Use a single id instead of CredentialIds.
-export type SavedPasswordEditedEvent =
-    CustomEvent<chrome.passwordsPrivate.CredentialIds>;
+export type SavedPasswordEditedEvent = CustomEvent<number>;
 
 const SAVED_PASSWORD_EDITED_EVENT_NAME = 'saved-password-edited';
 
@@ -521,10 +519,10 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     }
 
     PasswordManagerImpl.getInstance()
-        .changeSavedPassword([this.existingEntry!.id], params)
-        .then(newIds => {
+        .changeSavedPassword(this.existingEntry!.id, params)
+        .then(newId => {
           if (this.isPasswordViewPageEnabled_) {
-            this.dispatchChangePasswordEvent_(newIds);
+            this.dispatchChangePasswordEvent_(newId);
           }
         })
         .finally(() => {
@@ -532,12 +530,11 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         });
   }
 
-  private dispatchChangePasswordEvent_(
-      newIds: chrome.passwordsPrivate.CredentialIds) {
+  private dispatchChangePasswordEvent_(newId: number) {
     this.dispatchEvent(new CustomEvent(SAVED_PASSWORD_EDITED_EVENT_NAME, {
       bubbles: true,
       composed: true,
-      detail: newIds,
+      detail: newId,
     }));
   }
 

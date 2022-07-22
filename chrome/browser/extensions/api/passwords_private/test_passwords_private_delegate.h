@@ -40,10 +40,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
                    bool use_account_store,
                    content::WebContents* web_contents) override;
   // Fake implementation of ChangeSavedPassword. This succeeds if the current
-  // list of entries has each of the ids, vector of ids isn't empty and if the
-  // new password isn't empty.
-  absl::optional<api::passwords_private::CredentialIds> ChangeSavedPassword(
-      const std::vector<int>& ids,
+  // list of entries has the id and if the new password isn't empty.
+  absl::optional<int> ChangeSavedPassword(
+      const int id,
       const api::passwords_private::ChangeSavedPasswordParams& params) override;
   void RemoveSavedPassword(
       int id,
