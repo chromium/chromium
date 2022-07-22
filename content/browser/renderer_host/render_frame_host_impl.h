@@ -2155,8 +2155,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const absl::optional<blink::LocalFrameToken>& opener_frame) override;
   void DidChangeIframeAttributes(
       const blink::FrameToken& child_frame_token,
-      network::mojom::ContentSecurityPolicyPtr parsed_csp_attribute,
-      bool anonymous) override;
+      blink::mojom::IframeAttributesPtr attributes) override;
   void DidChangeFramePolicy(const blink::FrameToken& child_frame_token,
                             const blink::FramePolicy& frame_policy) override;
   void CapturePaintPreviewOfSubframe(

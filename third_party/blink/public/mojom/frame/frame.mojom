@@ -207,6 +207,26 @@ struct OpenURLParams {
       initiator_policy_container_keep_alive_handle;
 };
 
+// This struct holds iframe's HTML attributes that are needed in the browser.
+// id, name and src are used to report back/forward cache NotRestoredReasons.
+// If 'id', 'name' or 'src' are too long, it is cut down to a certain character
+// limit.
+// TODO(crbug.com/1345849): The char limit can be different on renderer and
+// browser. Enforce the same char limit on both sides.
+struct IframeAttributes {
+  // Parsed value of the 'csp' attribute of the iframe.
+  network.mojom.ContentSecurityPolicy? parsed_csp_attribute;
+  // 'anonymous' attribute of the iframe.
+  bool anonymous;
+  // 'id' attribute of the iframe.
+  string id;
+  // 'name' attribute of the iframe. This is different from window.name, which is
+  // tracked in FrameReplicationState.
+  string name;
+  // 'src' attribute of the iframe.
+  string src;
+};
+
 // An opaque handle that keeps alive the associated render process even after
 // the frame is detached. Used by resource requests with "keepalive" specified.
 interface KeepAliveHandle {};
@@ -525,9 +545,7 @@ interface LocalFrameHost {
   // Notifies the browser that one of the iframe attributes tracked by the
   // browser process changed.
   DidChangeIframeAttributes(
-      blink.mojom.FrameToken child_frame_token,
-      network.mojom.ContentSecurityPolicy? parsed_csp_attribute,
-      bool anonymous);
+      blink.mojom.FrameToken child_frame_token, IframeAttributes attributes);
 
   // Sent by the renderer to request a paint preview of a subframe. |clip_rect|
   // is the size of the frame in it's parent. |guid| is an an identifier for

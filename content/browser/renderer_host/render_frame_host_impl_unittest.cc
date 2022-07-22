@@ -373,7 +373,16 @@ TEST_F(RenderFrameHostImplTest, ChildOfAnonymousIsAnonymous) {
   EXPECT_FALSE(child_frame->IsAnonymous());
   EXPECT_FALSE(child_frame->storage_key().nonce().has_value());
 
-  child_frame->frame_tree_node()->SetAnonymous(true);
+  auto attributes = blink::mojom::IframeAttributes::New();
+  attributes->parsed_csp_attribute = std::move(
+      child_frame->frame_tree_node()->attributes_->parsed_csp_attribute);
+  attributes->id = child_frame->frame_tree_node()->html_id();
+  attributes->name = child_frame->frame_tree_node()->html_name();
+  attributes->src = child_frame->frame_tree_node()->html_src();
+  // Set |anonymous| to true.
+  attributes->anonymous = true;
+  child_frame->frame_tree_node()->SetAttributes(std::move(attributes));
+
   EXPECT_FALSE(child_frame->IsAnonymous());
   EXPECT_FALSE(child_frame->storage_key().nonce().has_value());
 

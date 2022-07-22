@@ -200,8 +200,7 @@ void FakeLocalFrameHost::DidChangeOpener(
 
 void FakeLocalFrameHost::DidChangeIframeAttributes(
     const blink::FrameToken& child_frame_token,
-    network::mojom::blink::ContentSecurityPolicyPtr,
-    bool anonymous) {}
+    mojom::blink::IframeAttributesPtr) {}
 
 void FakeLocalFrameHost::DidChangeFramePolicy(
     const blink::FrameToken& child_frame_token,

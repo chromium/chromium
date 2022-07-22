@@ -61,6 +61,16 @@ EvalJsResult GetOriginFromRenderer(FrameTreeNode* node) {
   return EvalJs(node, "self.origin");
 }
 
+// Expect that frame_name, id and src match the node's values.
+void ExpectAttributesEq(FrameTreeNode* node,
+                        const std::string& frame_name,
+                        const std::string& id,
+                        const std::string& src) {
+  EXPECT_EQ(frame_name, node->frame_name());
+  EXPECT_EQ(id, node->html_id());
+  EXPECT_EQ(src, node->html_src());
+}
+
 }  // namespace
 
 class FrameTreeBrowserTest : public ContentBrowserTest {
@@ -113,18 +123,17 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeShape2) {
 
   // Check that the root node is properly created.
   ASSERT_EQ(3UL, root->child_count());
-  EXPECT_EQ(std::string(), root->frame_name());
+  ExpectAttributesEq(root, std::string(), std::string(), std::string());
 
   ASSERT_EQ(2UL, root->child_at(0)->child_count());
-  EXPECT_STREQ("1-1-name", root->child_at(0)->frame_name().c_str());
+  ExpectAttributesEq(root->child_at(0), "1-1-name", "1-1-id", "1-1.html");
 
   // Verify the deepest node exists and has the right name.
   ASSERT_EQ(2UL, root->child_at(2)->child_count());
   EXPECT_EQ(1UL, root->child_at(2)->child_at(1)->child_count());
   EXPECT_EQ(0UL, root->child_at(2)->child_at(1)->child_at(0)->child_count());
-  EXPECT_STREQ(
-      "3-1-name",
-      root->child_at(2)->child_at(1)->child_at(0)->frame_name().c_str());
+  ExpectAttributesEq(root->child_at(2)->child_at(1)->child_at(0), "3-1-name",
+                     "3-1-id", "3-1.html");
 
   // Navigate to about:blank, which should leave only the root node of the frame
   // tree in the browser process.
@@ -133,7 +142,131 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeShape2) {
 
   root = wc->GetPrimaryFrameTree().root();
   EXPECT_EQ(0UL, root->child_count());
+  ExpectAttributesEq(root, std::string(), std::string(), std::string());
+}
+
+// Frame attributes of iframe elements are correctly tracked in FrameTree.
+IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameTreeAttributesUpdate) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/frame_tree/top.html")));
+
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* root = wc->GetPrimaryFrameTree().root();
+
+  // Check that the root node is properly created.
+  ASSERT_EQ(3UL, root->child_count());
+  ExpectAttributesEq(root, std::string(), std::string(), std::string());
+
+  ASSERT_EQ(2UL, root->child_at(0)->child_count());
+  ExpectAttributesEq(root->child_at(0), "1-1-name", "1-1-id", "1-1.html");
+
+  // Change id, name and src of the iframe.
+  EXPECT_TRUE(ExecJs(root->current_frame_host(), R"(
+    let iframe = document.getElementById('1-1-id');
+    iframe.id = '1-1-updated-id';
+    iframe.name = '1-1-updated-name';
+    iframe.src = '1-1-updated.html';
+  )"));
+  // |html_name()| gets updated whenever the name attribute gets updated.
+  EXPECT_EQ("1-1-updated-name", root->child_at(0)->html_name());
+  ExpectAttributesEq(root->child_at(0), "1-1-name", "1-1-updated-id",
+                     "1-1-updated.html");
+}
+
+// Ensures that frames' name attributes and their updates are tracked in
+// |html_name()| and window.name and its updates are tracked in |frame_name()|.
+IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, FrameNameVSWindowName) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/frame_tree/top.html")));
+
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* root = wc->GetPrimaryFrameTree().root();
+
+  // Check that the root node is properly created.
+  ASSERT_EQ(3UL, root->child_count());
+  EXPECT_EQ(std::string(), root->html_name());
   EXPECT_EQ(std::string(), root->frame_name());
+
+  ASSERT_EQ(2UL, root->child_at(0)->child_count());
+  EXPECT_EQ("1-1-name", root->child_at(0)->html_name());
+  EXPECT_EQ("1-1-name", root->child_at(0)->frame_name());
+
+  // Change the name attribute of the iframe.
+  EXPECT_TRUE(ExecJs(root->current_frame_host(), R"(
+    let iframe = document.getElementById('1-1-id');
+    iframe.name = '1-1-updated-name';
+  )"));
+  // |html_name()| gets updated whenever the name attribute gets updated.
+  EXPECT_EQ("1-1-updated-name", root->child_at(0)->html_name());
+  // |frame_name()| stays the same.
+  EXPECT_EQ("1-1-name", root->child_at(0)->frame_name());
+
+  // Change the window.name of the iframe.
+  EXPECT_TRUE(ExecJs(root->current_frame_host(), R"(
+    let iframe = document.getElementById('1-1-id');
+    iframe.contentWindow.name = '1-1-updated-name-2';
+  )"));
+  // |html_name()| stays the same.
+  EXPECT_EQ("1-1-updated-name", root->child_at(0)->html_name());
+  // |frame_name()| gets updated.
+  EXPECT_EQ("1-1-updated-name-2", root->child_at(0)->frame_name());
+}
+
+// Ensures that long attributes are cut down to the max length.
+IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, LongAttributesCutDown) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/frame_tree/top.html")));
+
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* root = wc->GetPrimaryFrameTree().root();
+
+  // Check that the root node is properly created.
+  ASSERT_EQ(3UL, root->child_count());
+  ASSERT_EQ(2UL, root->child_at(0)->child_count());
+  EXPECT_EQ("1-1-name", root->child_at(0)->html_name());
+
+  // Change the name attribute of the iframe.
+  EXPECT_TRUE(ExecJs(root->current_frame_host(), R"(
+    let iframe = document.getElementById('1-1-id');
+    iframe.id += 'a'.repeat(1200);
+    iframe.name += 'b'.repeat(1200);
+    iframe.src += 'c'.repeat(1200) + '.html';
+  )"));
+  // Long attribute is cut down to the maximum length.
+  EXPECT_EQ(1024UL, root->child_at(0)->html_id().size());
+  EXPECT_EQ(1024UL, root->child_at(0)->html_name().size());
+  EXPECT_EQ(1024UL, root->child_at(0)->html_src().size());
+}
+
+// Insert a frame into the frame tree and ensure that the inserted frame's
+// attributes are correctly captured.
+IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, InsertFrameInTree) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/frame_tree/top.html")));
+
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* root = wc->GetPrimaryFrameTree().root();
+
+  // Check that the root node is properly created.
+  ASSERT_EQ(3UL, root->child_count());
+  ExpectAttributesEq(root, std::string(), std::string(), std::string());
+
+  ASSERT_EQ(2UL, root->child_at(0)->child_count());
+  ExpectAttributesEq(root->child_at(0), "1-1-name", "1-1-id", "1-1.html");
+
+  // Insert a child iframe.
+  EXPECT_TRUE(ExecJs(root->current_frame_host(), R"(
+    let new_iframe = document.createElement('iframe');
+    new_iframe.id = '1-1-child-id';
+    new_iframe.src = '1-1-child.html';
+    new_iframe.name = '1-1-child-name';
+
+    document.body.appendChild(new_iframe);
+  )"));
+  // Check that the new iframe is inserted and their attributes are correct.
+  ASSERT_EQ(4UL, root->child_count());
+  ExpectAttributesEq(root->child_at(3), "1-1-child-name", "1-1-child-id",
+                     "1-1-child.html");
 }
 
 // Test that we can navigate away if the previous renderer doesn't clean up its
@@ -3897,11 +4030,11 @@ class UUIDFrameTreeBrowserTest : public FrameTreeBrowserTest,
   }
 
   bool NavigateIframeAndCheckURL(WebContents* web_contents,
-                                 const std::string& iframe_id,
+                                 const std::string& html_id,
                                  const GURL& url,
                                  const GURL& expected_commit_url) {
     TestNavigationObserver nav_observer(web_contents);
-    if (!BeginNavigateIframeToURL(web_contents, iframe_id, url))
+    if (!BeginNavigateIframeToURL(web_contents, html_id, url))
       return false;
     nav_observer.Wait();
     EXPECT_EQ(expected_commit_url, nav_observer.last_navigation_url());

@@ -6976,10 +6976,10 @@ void RenderFrameHostImpl::DidChangeOpener(
 
 void RenderFrameHostImpl::DidChangeIframeAttributes(
     const blink::FrameToken& child_frame_token,
-    network::mojom::ContentSecurityPolicyPtr parsed_csp_attribute,
-    bool anonymous) {
-  if (parsed_csp_attribute &&
-      !ValidateCSPAttribute(parsed_csp_attribute->header->header_value)) {
+    blink::mojom::IframeAttributesPtr attributes) {
+  if (attributes->parsed_csp_attribute &&
+      !ValidateCSPAttribute(
+          attributes->parsed_csp_attribute->header->header_value)) {
     bad_message::ReceivedBadMessage(GetProcess(),
                                     bad_message::RFH_CSP_ATTRIBUTE);
     return;
@@ -6990,8 +6990,7 @@ void RenderFrameHostImpl::DidChangeIframeAttributes(
   if (!child)
     return;
 
-  child->set_csp_attribute(std::move(parsed_csp_attribute));
-  child->SetAnonymous(anonymous);
+  child->SetAttributes(std::move(attributes));
 }
 
 void RenderFrameHostImpl::DidChangeFramePolicy(

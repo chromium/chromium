@@ -89,12 +89,17 @@ class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
   // FrameOwner overrides:
   bool AllowFullscreen() const override { return allow_fullscreen_; }
   bool AllowPaymentRequest() const override { return allow_payment_request_; }
+  // HTML attributes of the iframe element that need to be tracked by the
+  // browser changed, such as 'id' and 'src'. This will send an IPC to the
+  // browser about the updates.
   void DidChangeAttributes() override;
 
   AtomicString name_;
   AtomicString required_csp_;
   AtomicString allow_;
   AtomicString required_policy_;  // policy attribute
+  AtomicString id_;
+  AtomicString src_;
   // String attribute storing a JSON representation of the Trust Token
   // parameters (in order to align with the fetch interface to the Trust Token
   // API). If present, this is parsed in ConstructTrustTokenParams.

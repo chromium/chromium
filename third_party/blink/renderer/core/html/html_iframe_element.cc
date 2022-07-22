@@ -56,6 +56,18 @@
 
 namespace blink {
 
+namespace {
+// Cut down |value| if too long and return empty string if null. This is used to
+// convert the HTML attributes to report to the browser.
+String ConvertToReportValue(const AtomicString& value) {
+  if (value.IsNull()) {
+    return g_empty_string;
+  }
+  static constexpr size_t kMaxLengthToReport = 1024;
+  return value.GetString().Left(kMaxLengthToReport);
+}
+};  // namespace
+
 HTMLIFrameElement::HTMLIFrameElement(Document& document)
     : HTMLFrameElementBase(html_names::kIFrameTag, document),
       collapsed_by_client_(false),
@@ -144,6 +156,8 @@ void HTMLIFrameElement::ParseAttribute(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
   const AtomicString& value = params.new_value;
+  // This is only set to true for values needed by the browser.
+  bool should_call_did_change_attributes = false;
   if (name == html_names::kNameAttr) {
     auto* document = DynamicTo<HTMLDocument>(GetDocument());
     if (document && IsInDocumentTree()) {
@@ -152,8 +166,10 @@ void HTMLIFrameElement::ParseAttribute(
     }
     AtomicString old_name = name_;
     name_ = value;
-    if (name_ != old_name)
+    if (name_ != old_name) {
       FrameOwnerPropertiesChanged();
+      should_call_did_change_attributes = true;
+    }
     if (name_.Contains('\n'))
       UseCounter::Count(GetDocument(), WebFeature::kFrameNameContainsNewline);
     if (name_.Contains('<'))
@@ -237,7 +253,7 @@ void HTMLIFrameElement::ParseAttribute(
                          kMaxLengthCSPAttribute)));
     } else if (required_csp_ != value) {
       required_csp_ = value;
-      DidChangeAttributes();
+      should_call_did_change_attributes = true;
       UseCounter::Count(GetDocument(), WebFeature::kIFrameCSPAttribute);
     }
   } else if (name == html_names::kAnonymousAttr &&
@@ -246,7 +262,7 @@ void HTMLIFrameElement::ParseAttribute(
     bool new_value = !value.IsNull();
     if (anonymous_ != new_value) {
       anonymous_ = new_value;
-      DidChangeAttributes();
+      should_call_did_change_attributes = true;
     }
   } else if (name == html_names::kAllowAttr) {
     if (allow_ != value) {
@@ -285,9 +301,26 @@ void HTMLIFrameElement::ParseAttribute(
           "https://goo.gl/ximf56"));
     }
 
-    if (name == html_names::kSrcAttr)
+    if (name == html_names::kSrcAttr) {
       LogUpdateAttributeIfIsolatedWorldAndInDocument("iframe", params);
+      if (src_ != value) {
+        src_ = value;
+        should_call_did_change_attributes = true;
+      }
+    }
+    if (name == html_names::kIdAttr && id_ != value) {
+      id_ = value;
+      should_call_did_change_attributes = true;
+    }
+    if (name == html_names::kNameAttr && name_ != value) {
+      name_ = value;
+      should_call_did_change_attributes = true;
+    }
     HTMLFrameElementBase::ParseAttribute(params);
+  }
+  if (should_call_did_change_attributes) {
+    // This causes IPC to the browser. Only call it once per parsing.
+    DidChangeAttributes();
   }
 }
 
@@ -517,9 +550,16 @@ void HTMLIFrameElement::DidChangeAttributes() {
           network::mojom::blink::ContentSecurityPolicySource::kHTTP, KURL());
   DCHECK_LE(csp.size(), 1u);
 
+  auto attributes = mojom::blink::IframeAttributes::New();
+  attributes->parsed_csp_attribute =
+      csp.IsEmpty() ? nullptr : std::move(csp[0]);
+  attributes->anonymous = anonymous_;
+
+  attributes->id = ConvertToReportValue(id_);
+  attributes->name = ConvertToReportValue(name_);
+  attributes->src = ConvertToReportValue(src_);
   GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeIframeAttributes(
-      ContentFrame()->GetFrameToken(),
-      csp.IsEmpty() ? nullptr : std::move(csp[0]), anonymous_);
+      ContentFrame()->GetFrameToken(), std::move(attributes));
 
   // Make sure we update the srcdoc value, if any, in the browser.
   String srcdoc_value = "";

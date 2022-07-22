@@ -188,6 +188,7 @@ FrameTreeNode::FrameTreeNode(
       is_created_by_script_(is_created_by_script),
       devtools_frame_token_(devtools_frame_token),
       frame_owner_properties_(frame_owner_properties),
+      attributes_(blink::mojom::IframeAttributes::New()),
       fenced_frame_status_(
           ComputeFencedFrameStatus(frame_tree_, parent_, frame_policy)),
       render_manager_(this, frame_tree->manager_delegate()) {
@@ -505,19 +506,14 @@ void FrameTreeNode::SetPendingFramePolicy(blink::FramePolicy frame_policy) {
   }
 }
 
-void FrameTreeNode::SetAnonymous(bool anonymous) {
-  if (anonymous) {
-    if (!parent_) {
-      bad_message::ReceivedBadMessage(current_frame_host()->GetProcess(),
-                                      bad_message::FTN_ANONYMOUS);
-      return;
-    }
-
+void FrameTreeNode::SetAttributes(
+    blink::mojom::IframeAttributesPtr attributes) {
+  if (!anonymous() && attributes->anonymous) {
+    // Log this only when anonymous is changed to true.
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         parent_, blink::mojom::WebFeature::kAnonymousIframe);
   }
-
-  anonymous_ = anonymous;
+  attributes_ = std::move(attributes);
 }
 
 bool FrameTreeNode::IsLoading() const {
@@ -1006,7 +1002,7 @@ void FrameTreeNode::ClearOpenerReferences() {
 
 bool FrameTreeNode::AncestorOrSelfHasCSPEE() const {
   // Check if CSPEE is set in this frame or any ancestor frames.
-  return csp_attribute_ || (parent() && parent()->required_csp());
+  return csp_attribute() || (parent() && parent()->required_csp());
 }
 
 }  // namespace content

@@ -125,6 +125,11 @@ class CONTENT_EXPORT FrameTreeNode {
     return &render_manager_;
   }
   int frame_tree_node_id() const { return frame_tree_node_id_; }
+  // This reflects window.name, which is initially set to the the "name"
+  // attribute. But this won't reflect changes of 'name' attribute and instead
+  // reflect changes to the Window object's name property.
+  // This is different from IframeAttributes' name in that this will not get
+  // updated when 'name' attribute gets updated.
   const std::string& frame_name() const {
     return render_manager_.current_replication_state().name;
   }
@@ -276,19 +281,21 @@ class CONTENT_EXPORT FrameTreeNode {
     frame_owner_properties_ = frame_owner_properties;
   }
 
-  const network::mojom::ContentSecurityPolicy* csp_attribute() {
-    return csp_attribute_.get();
+  // Reflects the attributes of the corresponding iframe html element, such
+  // as 'anonymous', 'id', 'name' and 'src'. These values should not be
+  // exposed to cross-origin renderers.
+  const network::mojom::ContentSecurityPolicy* csp_attribute() const {
+    return attributes_->parsed_csp_attribute.get();
   }
+  bool anonymous() const { return attributes_->anonymous; }
+  const std::string& html_id() const { return attributes_->id; }
+  // This tracks iframe's 'name' attribute instead of window.name, which is
+  // tracked in FrameReplicationState. See the comment for frame_name() for
+  // more details.
+  const std::string& html_name() const { return attributes_->name; }
+  const std::string& html_src() const { return attributes_->src; }
 
-  void set_csp_attribute(
-      network::mojom::ContentSecurityPolicyPtr parsed_csp_attribute) {
-    csp_attribute_ = std::move(parsed_csp_attribute);
-  }
-
-  // Reflects the 'anonymous' attribute of the corresponding iframe html
-  // element.
-  bool anonymous() const { return anonymous_; }
-  void SetAnonymous(bool anonymous);
+  void SetAttributes(blink::mojom::IframeAttributesPtr attributes);
 
   bool HasSameOrigin(const FrameTreeNode& node) const {
     return render_manager_.current_replication_state().origin.IsSameOriginWith(
@@ -565,10 +572,16 @@ class CONTENT_EXPORT FrameTreeNode {
   bool AncestorOrSelfHasCSPEE() const;
 
  private:
+  friend class CSPEmbeddedEnforcementUnitTest;
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
                            ContainerPolicyDynamic);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
                            ContainerPolicySandboxDynamic);
+  FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, StorageKeyToCommit);
+  FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest,
+                           NavigationToAnonymousDocumentNetworkIsolationInfo);
+  FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplTest,
+                           ChildOfAnonymousIsAnonymous);
 
   // Called by the destructor. When `this` is an outer dummy FrameTreeNode
   // representing an inner FrameTree, this method destroys said inner FrameTree.
@@ -714,12 +727,9 @@ class CONTENT_EXPORT FrameTreeNode {
   // Note that dynamic updates only take effect on the next frame navigation.
   blink::mojom::FrameOwnerProperties frame_owner_properties_;
 
-  // Contains the current parsed value of the 'csp' attribute of this frame.
-  network::mojom::ContentSecurityPolicyPtr csp_attribute_;
-
-  // Reflects the 'anonymous' attribute of the corresponding iframe html
-  // element.
-  bool anonymous_ = false;
+  // Contains the tracked HTML attributes of the corresponding iframe element,
+  // such as 'id' and 'src'.
+  blink::mojom::IframeAttributesPtr attributes_;
 
   // Owns an ongoing NavigationRequest until it is ready to commit. It will then
   // be reset and a RenderFrameHost will be responsible for the navigation.
