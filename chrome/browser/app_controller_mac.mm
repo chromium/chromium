@@ -539,6 +539,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
 - (void)dealloc {
   [[_closeTabMenuItem menu] setDelegate:nil];
+  [NSMenu cr_setMenuItemForKeyEquivalentEventPreSearchBlock:nil];
   [super dealloc];
 }
 

@@ -39,7 +39,8 @@ NSMenuItem* MenuItemForKeyEquivalentEventInMenu(NSEvent* event, NSMenu* menu) {
 
 + (void)cr_setMenuItemForKeyEquivalentEventPreSearchBlock:
     (void (^)(void))block {
-  CHECK(g_pre_search_block == nil);
+  if (block != nil)
+    CHECK(g_pre_search_block == nil);
   g_pre_search_block = block;
 }
 
