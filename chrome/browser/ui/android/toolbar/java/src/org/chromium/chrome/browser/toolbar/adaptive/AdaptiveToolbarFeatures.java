@@ -135,6 +135,15 @@ public class AdaptiveToolbarFeatures {
     }
 
     /**
+     * @return Whether the CPA action chip should use a different background color when expanded.
+     */
+    public static boolean shouldUseAlternativeActionChipColor() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
+                "action_chip_with_different_color", false);
+    }
+
+    /**
      * @return Whether contextual page actions are enabled.
      */
     public static boolean isContextualPageActionsEnabled() {
