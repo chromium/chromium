@@ -72,7 +72,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -544,22 +543,31 @@ std::vector<std::string> GetOfflineWallpaperListImpl() {
 
 // Returns true if the user's wallpaper is to be treated as ephemeral.
 bool IsEphemeralUser(const AccountId& id) {
-  if (user_manager::UserManager::IsInitialized()) {
-    return user_manager::UserManager::Get()->IsUserNonCryptohomeDataEphemeral(
-        id);
+  const UserSession* user_session =
+      Shell::Get()->session_controller()->GetUserSessionByAccountId(id);
+  if (!user_session) {
+    // If we don't know if a user is logged in, assume there is a user.
+    return false;
   }
-  // Unit tests may not have a UserManager.
-  return false;
+
+  return user_session->user_info.is_ephemeral;
 }
 
 // Returns the type of the user with the specified |id| or USER_TYPE_REGULAR.
 user_manager::UserType GetUserType(const AccountId& id) {
-  if (user_manager::UserManager::IsInitialized()) {
-    if (auto* user = user_manager::UserManager::Get()->FindUser(id))
-      return user->GetType();
+  const UserSession* user_session =
+      Shell::Get()->session_controller()->GetUserSessionByAccountId(id);
+  // If we can't match the account with a session, we can't safely continue.
+  if (!user_session) {
+    // TODO(crbug.com/1329256): Change tests that hit this codepath to sign in
+    // users first if they have an active session so that this can be changed to
+    // a CHECK.
+    LOG(ERROR) << "Cannot resolve user. Assuming regular. This should only "
+                  "happen in tests";
+    return user_manager::USER_TYPE_REGULAR;
   }
-  // Unit tests may not have a UserManager.
-  return user_manager::USER_TYPE_REGULAR;
+
+  return user_session->user_info.type;
 }
 
 // Gets |account_id|'s custom wallpaper at |wallpaper_path|. Falls back to the

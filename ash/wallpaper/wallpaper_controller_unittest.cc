@@ -53,8 +53,6 @@
 #include "base/time/time_override.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -340,9 +338,11 @@ void AssertWallpaperInfoInPrefs(const PrefService* pref_service,
                                 const char pref_name[],
                                 AccountId account_id,
                                 WallpaperInfo info) {
+  const base::Value* dict = pref_service->GetDictionary(pref_name);
+  DCHECK(dict);
   const base::Value* stored_info_dict =
-      pref_service->GetDictionary(pref_name)->FindDictKey(
-          account_id.GetUserEmail());
+      dict->FindDictKey(account_id.GetUserEmail());
+  DCHECK(stored_info_dict);
   base::Value expected_info_dict = CreateWallpaperInfoDict(info);
   EXPECT_EQ(expected_info_dict, *stored_info_dict);
 }
@@ -426,10 +426,6 @@ class WallpaperControllerTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    fake_user_manager_ = fake_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
 
     TestSessionControllerClient* const client = GetSessionControllerClient();
     client->ProvidePrefServiceForUser(account_id_1);
@@ -744,8 +740,6 @@ class WallpaperControllerTest : public AshTestBase {
   base::ScopedTempDir default_wallpaper_dir_;
   base::HistogramTester histogram_tester_;
 
-  user_manager::FakeUserManager* fake_user_manager_ = nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   TestWallpaperControllerClient client_;
   std::unique_ptr<TestImageDownloader> test_image_downloader_;
 
@@ -1547,7 +1541,7 @@ TEST_F(WallpaperControllerTest, SetDefaultWallpaperForRegularAccount) {
 TEST_F(WallpaperControllerTest, SetDefaultWallpaperForChildAccount) {
   CreateDefaultWallpapers();
 
-  fake_user_manager_->AddChildUser(kChildAccountId);
+  SimulateUserLogin(kChildAccountId, user_manager::USER_TYPE_CHILD);
 
   // Verify the large child wallpaper is set successfully with the correct file
   // path.
@@ -1602,7 +1596,7 @@ TEST_F(WallpaperControllerTest,
 
   const AccountId guest_id =
       AccountId::FromUserEmail(user_manager::kGuestUserName);
-  fake_user_manager_->AddGuestUser(guest_id);
+  SimulateUserLogin(guest_id, user_manager::USER_TYPE_GUEST);
   controller_->SetDefaultWallpaper(guest_id, /*show_wallpaper=*/true,
                                    base::DoNothing());
 
@@ -1662,7 +1656,7 @@ TEST_F(WallpaperControllerTest, SetDefaultWallpaperForGuestSession) {
 
   const AccountId guest_id =
       AccountId::FromUserEmail(user_manager::kGuestUserName);
-  fake_user_manager_->AddGuestUser(guest_id);
+  SimulateUserLogin(guest_id, user_manager::USER_TYPE_GUEST);
 
   // Verify that during a guest session, |SetDefaultWallpaper| removes the user
   // custom wallpaper info, but a guest specific wallpaper should be set,
@@ -3131,6 +3125,9 @@ TEST_F(WallpaperControllerTest, OnFirstWallpaperShown) {
 // Although ephemeral users' custom wallpapers are not saved to disk, they
 // should be kept within the user session. Test for https://crbug.com/825237.
 TEST_F(WallpaperControllerTest, ShowWallpaperForEphemeralUser) {
+  // Clear the local pref so we can make sure nothing writes to it.
+  local_state()->ClearPref(prefs::kUserWallpaperInfo);
+
   // Add an ephemeral user session and simulate login, like SimulateUserLogin.
   UserSession session;
   session.session_id = 0;
@@ -3157,6 +3154,9 @@ TEST_F(WallpaperControllerTest, ShowWallpaperForEphemeralUser) {
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(WallpaperType::kCustomized, controller_->GetWallpaperType());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
+  // Assert that we do not use local state for an ephemeral user.
+  auto* dict = local_state()->GetUserPrefValue(prefs::kUserWallpaperInfo);
+  ASSERT_FALSE(dict) << *dict;
 
   // The custom wallpaper is cached.
   EXPECT_TRUE(
