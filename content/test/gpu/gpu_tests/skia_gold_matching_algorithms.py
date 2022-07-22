@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Classes related to the possible matching algorithms for Skia Gold."""
 
-import typing
+from typing import List, Union
 
 
 class Parameters():
@@ -36,7 +36,7 @@ class SkiaGoldMatchingAlgorithm():
   ALGORITHM_KEY = 'image_matching_algorithm'
   """Abstract base class for all algorithms."""
 
-  def GetCmdline(self) -> typing.List[str]:
+  def GetCmdline(self) -> List[str]:
     """Gets command line parameters for the algorithm.
 
     Returns:
@@ -56,7 +56,7 @@ class SkiaGoldMatchingAlgorithm():
 class ExactMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
   """Class for the default exact matching algorithm in Gold."""
 
-  def GetCmdline(self) -> typing.List[str]:
+  def GetCmdline(self) -> List[str]:
     return []
 
   def Name(self) -> str:
@@ -78,7 +78,7 @@ class FuzzyMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
     self._pixel_delta_threshold = pixel_delta_threshold
     self._ignored_border_thickness = ignored_border_thickness
 
-  def GetCmdline(self) -> typing.List[str]:
+  def GetCmdline(self) -> List[str]:
     retval = super().GetCmdline()
     retval.extend(
         _GenerateOptionalKey(Parameters.MAX_DIFFERENT_PIXELS,
@@ -116,7 +116,7 @@ class SobelMatchingAlgorithm(FuzzyMatchingAlgorithm):
           'matching.')
     self._edge_threshold = edge_threshold
 
-  def GetCmdline(self) -> typing.List[str]:
+  def GetCmdline(self) -> List[str]:
     retval = super().GetCmdline()
     retval.extend(
         _GenerateOptionalKey(Parameters.EDGE_THRESHOLD, self._edge_threshold))
@@ -126,6 +126,5 @@ class SobelMatchingAlgorithm(FuzzyMatchingAlgorithm):
     return 'sobel'
 
 
-def _GenerateOptionalKey(key: str,
-                         value: typing.Union[int, str]) -> typing.List[str]:
+def _GenerateOptionalKey(key: str, value: Union[int, str]) -> List[str]:
   return ['--add-test-optional-key', '%s:%s' % (key, value)]

@@ -7,7 +7,7 @@ import logging
 import re
 import sys
 import types
-import typing
+from typing import Any, Dict, Generator, List, Optional, Set, Tuple, Type
 import unittest
 
 from telemetry.internal.results import artifact_compatibility_wrapper as acw
@@ -36,8 +36,8 @@ _SUPPORTED_WIN_INTEL_GPUS_WITH_NV12_OVERLAYS = [0x5912, 0x3e92]
 # Hardware overlays are disabled in 26.20.100.8141 per crbug.com/1079393#c105
 _UNSUPPORTED_WIN_INTEL_GPU_DRIVERS_WITH_NV12_OVERLAYS = ['5912-26.20.100.8141']
 
-TestTuple = typing.Tuple[str, ct.GeneratedTest]
-TestTupleGenerator = typing.Generator[TestTuple, None, None]
+TestTuple = Tuple[str, ct.GeneratedTest]
+TestTupleGenerator = Generator[TestTuple, None, None]
 
 
 class GpuIntegrationTest(
@@ -80,10 +80,9 @@ class GpuIntegrationTest(
     if self.artifacts is None:
       self.set_artifacts(None)
 
-  def set_artifacts(
-      self,
-      artifacts: typing.Optional[typing.Type[acw.ArtifactCompatibilityWrapper]]
-  ) -> None:
+  def set_artifacts(self,
+                    artifacts: Optional[Type[acw.ArtifactCompatibilityWrapper]]
+                    ) -> None:
     # Instead of using the default logging artifact implementation, use the
     # full logging one. This ensures we get debugging information if something
     # goes wrong before typ can set the actual artifact implementation, such
@@ -122,8 +121,7 @@ class GpuIntegrationTest(
                       help='The extra Intel device id with overlays')
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args: typing.List[str]
-                          ) -> typing.List[str]:
+  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
     """Generates the browser args to use for the next browser startup.
 
     Child classes are expected to override this and add any additional default
@@ -144,8 +142,8 @@ class GpuIntegrationTest(
     return default_args + additional_args
 
   @classmethod
-  def CustomizeBrowserArgs(
-      cls, additional_args: typing.Optional[typing.List[str]] = None) -> None:
+  def CustomizeBrowserArgs(cls,
+                           additional_args: Optional[List[str]] = None) -> None:
     """Customizes the browser's command line arguments for the next startup.
 
     NOTE that redefining this method in subclasses will NOT do what
@@ -161,8 +159,7 @@ class GpuIntegrationTest(
 
   @classmethod
   def _GenerateAndSanitizeBrowserArgs(
-      cls, additional_args: typing.Optional[typing.List[str]] = None
-  ) -> typing.List[str]:
+      cls, additional_args: Optional[List[str]] = None) -> List[str]:
     """Generates browser arguments and sanitizes invalid arguments.
 
     Args:
@@ -199,8 +196,7 @@ class GpuIntegrationTest(
     return browser_args
 
   @classmethod
-  def _SetBrowserArgsForNextStartup(cls,
-                                    browser_args: typing.List[str]) -> None:
+  def _SetBrowserArgsForNextStartup(cls, browser_args: List[str]) -> None:
     """Sets the browser arguments to use for the next browser startup.
 
     Args:
@@ -222,7 +218,7 @@ class GpuIntegrationTest(
   @classmethod
   def RestartBrowserIfNecessaryWithArgs(
       cls,
-      additional_args: typing.Optional[typing.List[str]] = None,
+      additional_args: Optional[List[str]] = None,
       force_restart: bool = False) -> None:
     """Restarts the browser if it is determined to be necessary.
 
@@ -245,8 +241,8 @@ class GpuIntegrationTest(
       cls.StartBrowser()
 
   @classmethod
-  def RestartBrowserWithArgs(
-      cls, additional_args: typing.Optional[typing.List[str]] = None) -> None:
+  def RestartBrowserWithArgs(cls, additional_args: Optional[List[str]] = None
+                             ) -> None:
     cls.RestartBrowserIfNecessaryWithArgs(additional_args, force_restart=True)
 
   # The following is the rest of the framework for the GPU integration tests.
@@ -423,7 +419,7 @@ class GpuIntegrationTest(
       self._HandlePass(test_name, expected_crashes, expected_results)
 
   def _HandleExpectedFailureOrFlake(self, test_name: str,
-                                    expected_crashes: typing.Dict[str, int],
+                                    expected_crashes: Dict[str, int],
                                     should_retry_on_failure: bool) -> None:
     """Helper method for handling a failure in an expected flaky/failing test"""
     # We don't check the return value here since we'll be raising the caught
@@ -470,8 +466,8 @@ class GpuIntegrationTest(
     # propagate to the next test iteration.
     self._RestartBrowser('unexpected test failure')
 
-  def _HandlePass(self, test_name: str, expected_crashes: typing.Dict[str, int],
-                  expected_results: typing.Set[str]) -> None:
+  def _HandlePass(self, test_name: str, expected_crashes: Dict[str, int],
+                  expected_results: Set[str]) -> None:
     """Helper function for handling a passing test."""
     # Fuchsia does not have minidump support, use system info to check
     # for crash count.
@@ -540,8 +536,7 @@ class GpuIntegrationTest(
       return True
     return False
 
-  def _ClearExpectedCrashes(self,
-                            expected_crashes: typing.Dict[str, int]) -> bool:
+  def _ClearExpectedCrashes(self, expected_crashes: Dict[str, int]) -> bool:
     """Clears any expected crash minidumps so they're not caught later.
 
     Args:
@@ -577,7 +572,7 @@ class GpuIntegrationTest(
     return False
 
   # pylint: disable=no-self-use
-  def GetExpectedCrashes(self, args: ct.TestArgs) -> typing.Dict[str, int]:
+  def GetExpectedCrashes(self, args: ct.TestArgs) -> Dict[str, int]:
     """Returns which crashes, per process type, to expect for the current test.
 
     Should be overridden by child classes to actually return valid data if
@@ -609,7 +604,7 @@ class GpuIntegrationTest(
     """
     raise NotImplementedError
 
-  def GetOverlayBotConfig(self) -> typing.Dict[str, typing.Any]:
+  def GetOverlayBotConfig(self) -> Dict[str, Any]:
     """Returns expected bot config for DirectComposition and overlay support.
 
     This is only meaningful on Windows platform.
@@ -668,7 +663,7 @@ class GpuIntegrationTest(
           config['nv12_overlay_support'] = 'SCALING'
     return config
 
-  def GetDx12VulkanBotConfig(self) -> typing.Dict[str, bool]:
+  def GetDx12VulkanBotConfig(self) -> Dict[str, bool]:
     """Returns expected bot config for DX12 and Vulkan support.
 
     This configuration is collected on Windows platform only.
@@ -704,7 +699,7 @@ class GpuIntegrationTest(
     return config
 
   @classmethod
-  def GetPlatformTags(cls, browser: ct.Browser) -> typing.List[str]:
+  def GetPlatformTags(cls, browser: ct.Browser) -> List[str]:
     """This function will take a Browser instance as an argument.
     It will call the super classes implementation of GetPlatformTags() to get
     a list of tags. Then it will add the gpu vendor, gpu device id,
@@ -791,7 +786,7 @@ class GpuIntegrationTest(
     return '/'
 
   @classmethod
-  def IgnoredTags(cls) -> typing.List[str]:
+  def IgnoredTags(cls) -> List[str]:
     return [
         # We only ever use android-webview-instrumentation if we want to specify
         # that an expectation applies to Webview.

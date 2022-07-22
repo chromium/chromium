@@ -4,14 +4,14 @@
 """Helper module to store class-independent, common type hinting."""
 
 import optparse
-import typing
+from typing import Any, Generator, Tuple
 
 from telemetry.internal.browser import tab
 from telemetry.internal.browser import browser
 
 TestArgs = list
-GeneratedTest = typing.Tuple[str, str, TestArgs]
-TestGenerator = typing.Generator[GeneratedTest, None, None]
+GeneratedTest = Tuple[str, str, TestArgs]
+TestGenerator = Generator[GeneratedTest, None, None]
 
 # Will hopefully eventually be replaced by argparses' equivalents once Telemetry
 # finally switches off optparse.
@@ -20,6 +20,6 @@ ParsedCmdArgs = optparse.Values
 
 # Telemetry screenshot type. Can be changed to union of specific types if/when
 # Telemetry exposes those types.
-Screenshot = typing.Any
+Screenshot = Any
 Tab = tab.Tab
 Browser = browser.Browser

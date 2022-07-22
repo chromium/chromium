@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import logging
-import typing
+from typing import Any, Dict, List
 
 from gpu_tests import common_typing as ct
 from gpu_tests import pixel_test_pages
@@ -12,7 +12,7 @@ from gpu_tests import skia_gold_integration_test_base
 from telemetry.util import image_util
 from telemetry.util import rgba_color
 
-ExpectedColorExpectation = typing.Dict[str, typing.Any]
+ExpectedColorExpectation = Dict[str, Any]
 
 
 class ExpectedColorTest(
@@ -29,8 +29,8 @@ class ExpectedColorTest(
     raise NotImplementedError(
         'RunActualGpuTest must be overridden in a subclass')
 
-  def GetGoldJsonKeys(self, page: pixel_test_pages.PixelTestPage
-                      ) -> typing.Dict[str, str]:
+  def GetGoldJsonKeys(self,
+                      page: pixel_test_pages.PixelTestPage) -> Dict[str, str]:
     keys = super().GetGoldJsonKeys(page)
     keys['expected_color_comment'] = (
         'This is an expected color test. Triaging in Gold will not affect test '
@@ -162,8 +162,8 @@ class ExpectedColorTest(
 class ExpectedColorPixelTestPage(pixel_test_pages.PixelTestPage):
   """Extension of PixelTestPage with expected color information."""
 
-  def __init__(self, expected_colors: typing.List[ExpectedColorExpectation],
-               *args, **kwargs):
+  def __init__(self, expected_colors: List[ExpectedColorExpectation], *args,
+               **kwargs):
     # The tolerance when comparing against the reference image.
     self.tolerance = kwargs.pop('tolerance', 2)
 

@@ -7,7 +7,7 @@ import logging
 import os
 import re
 import sys
-import typing
+from typing import Any, List, Optional, Tuple
 import unittest
 
 from gpu_tests import common_browser_args as cba
@@ -78,7 +78,7 @@ SERIAL_TEST_GLOBS = {
 
 
 # cmp no longer exists in Python 3
-def cmp(a: typing.Any, b: typing.Any) -> int:
+def cmp(a: Any, b: Any) -> int:
   return int(a > b) - int(a < b)
 
 
@@ -187,7 +187,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                           ])
 
   @classmethod
-  def _GetExtensionList(cls) -> typing.List[str]:
+  def _GetExtensionList(cls) -> List[str]:
     if cls._webgl_version == 1:
       return [
           'ANGLE_instanced_arrays',
@@ -401,8 +401,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return timeout
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args: typing.List[str]
-                          ) -> typing.List[str]:
+  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -492,10 +491,9 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   @classmethod
   def _ParseTests(cls, path: str, version: str, webgl2_only: bool,
-                  folder_min_version: typing.Optional[str]) -> typing.List[str]:
-    def _ParseTestNameAndVersions(
-        line: str
-    ) -> typing.Tuple[str, typing.Optional[str], typing.Optional[str]]:
+                  folder_min_version: Optional[str]) -> List[str]:
+    def _ParseTestNameAndVersions(line: str
+                                  ) -> Tuple[str, Optional[str], Optional[str]]:
       """Parses any min/max versions and the test name on the given line.
 
       Args:
@@ -564,7 +562,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return test_paths
 
   @classmethod
-  def GetPlatformTags(cls, browser: ct.Browser) -> typing.List[str]:
+  def GetPlatformTags(cls, browser: ct.Browser) -> List[str]:
     tags = super(WebGLConformanceIntegrationTest, cls).GetPlatformTags(browser)
     tags.append('webgl-version-%d' % cls._webgl_version)
 
@@ -604,7 +602,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return tags
 
   @classmethod
-  def ExpectationsFiles(cls) -> typing.List[str]:
+  def ExpectationsFiles(cls) -> List[str]:
     assert cls._webgl_version == 1 or cls._webgl_version == 2
     if cls._webgl_version == 1:
       file_name = 'webgl_conformance_expectations.txt'
@@ -631,7 +629,7 @@ def _GetExtensionHarnessScript() -> str:
   return conformance_harness_script + extension_harness_additional_script
 
 
-def load_tests(loader: unittest.TestLoader, tests: typing.Any,
-               pattern: typing.Any) -> unittest.TestSuite:
+def load_tests(loader: unittest.TestLoader, tests: Any,
+               pattern: Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

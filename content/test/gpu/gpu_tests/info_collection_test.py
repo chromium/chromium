@@ -4,7 +4,7 @@
 
 import os
 import sys
-import typing
+from typing import Any, List, Optional, Union
 import unittest
 
 import six
@@ -19,9 +19,9 @@ class InfoCollectionTestArgs():
   """Struct-like class for passing args to an InfoCollection test."""
 
   def __init__(self,
-               expected_vendor_id_str: typing.Optional[str] = None,
-               expected_device_id_strs: typing.Optional[str] = None):
-    self.gpu: typing.Optional[gi.GPUInfo] = None
+               expected_vendor_id_str: Optional[str] = None,
+               expected_device_id_strs: Optional[str] = None):
+    self.gpu: Optional[gi.GPUInfo] = None
     self.expected_vendor_id_str = expected_vendor_id_str
     self.expected_device_id_strs = expected_device_id_strs
 
@@ -156,7 +156,7 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
     self.assertIn('is_asan', gpu_info.aux_attributes)
 
   @staticmethod
-  def _ValueToStr(value: typing.Union[str, bool]) -> str:
+  def _ValueToStr(value: Union[str, bool]) -> str:
     if isinstance(value, six.string_types):
       return value
     if isinstance(value, bool):
@@ -165,14 +165,14 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
     return False
 
   @classmethod
-  def ExpectationsFiles(cls) -> typing.List[str]:
+  def ExpectationsFiles(cls) -> List[str]:
     return [
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'test_expectations', 'info_collection_expectations.txt')
     ]
 
 
-def load_tests(loader: unittest.TestLoader, tests: typing.Any,
-               pattern: typing.Any) -> unittest.TestSuite:
+def load_tests(loader: unittest.TestLoader, tests: Any,
+               pattern: Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

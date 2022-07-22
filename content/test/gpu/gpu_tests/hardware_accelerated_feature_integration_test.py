@@ -6,7 +6,7 @@ from __future__ import print_function
 
 import os
 import sys
-import typing
+from typing import Any, List
 import unittest
 
 from gpu_tests import common_typing as ct
@@ -78,7 +78,7 @@ class HardwareAcceleratedFeatureIntegrationTest(
       self.fail('%s not hardware accelerated' % feature)
 
   @classmethod
-  def ExpectationsFiles(cls) -> typing.List[str]:
+  def ExpectationsFiles(cls) -> List[str]:
     return [
         os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'test_expectations',
@@ -86,7 +86,7 @@ class HardwareAcceleratedFeatureIntegrationTest(
     ]
 
 
-def load_tests(loader: unittest.TestLoader, tests: typing.Any,
-               pattern: typing.Any) -> unittest.TestSuite:
+def load_tests(loader: unittest.TestLoader, tests: Any,
+               pattern: Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

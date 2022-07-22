@@ -9,7 +9,7 @@ import re
 import shutil
 import sys
 import tempfile
-import typing
+from typing import Any, Dict, List, Optional
 import unittest
 
 from gpu_tests import color_profile_manager
@@ -40,15 +40,15 @@ SKIA_GOLD_CORPUS = 'chrome-gpu'
 class _ImageParameters():
   def __init__(self):
     # Parameters for cloud storage reference images.
-    self.vendor_id: typing.Optional[int] = None
-    self.device_id: typing.Optional[int] = None
-    self.vendor_string: typing.Optional[str] = None
-    self.device_string: typing.Optional[str] = None
+    self.vendor_id: Optional[int] = None
+    self.device_id: Optional[int] = None
+    self.vendor_string: Optional[str] = None
+    self.device_string: Optional[str] = None
     self.msaa: bool = False
-    self.model_name: typing.Optional[str] = None
-    self.driver_version: typing.Optional[str] = None
-    self.driver_vendor: typing.Optional[str] = None
-    self.display_server: typing.Optional[str] = None
+    self.model_name: Optional[str] = None
+    self.driver_version: Optional[str] = None
+    self.driver_vendor: Optional[str] = None
+    self.display_server: Optional[str] = None
 
 
 class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
@@ -104,8 +104,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     return cls._skia_gold_session_manager
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args: typing.List[str]
-                          ) -> typing.List[str]:
+  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -266,7 +265,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   def _UploadBitmapToCloudStorage(cls,
                                   bucket: str,
                                   name: str,
-                                  bitmap: typing.Any,
+                                  bitmap: Any,
                                   public: bool = False) -> None:
     # This sequence of steps works on all platforms to write a temporary
     # PNG to disk, following the pattern in bitmap_unittest.py. The key to
@@ -300,8 +299,8 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     image_name = re.sub(r'(\.|/|-)', '_', image_name)
     return image_name
 
-  def GetGoldJsonKeys(self, page: pixel_test_pages.PixelTestPage
-                      ) -> typing.Dict[str, str]:
+  def GetGoldJsonKeys(self,
+                      page: pixel_test_pages.PixelTestPage) -> Dict[str, str]:
     """Get all the JSON metadata that will be passed to golctl."""
     img_params = self.GetImageParameters(page)
     # The frequently changing last part of the ANGLE driver version (revision of
@@ -467,11 +466,11 @@ def _ToHex(num: str) -> str:
   return hex(int(num))
 
 
-def _ToHexOrNone(num: typing.Optional[str]) -> str:
+def _ToHexOrNone(num: Optional[str]) -> str:
   return 'None' if num is None else _ToHex(num)
 
 
-def _ToNonEmptyStrOrNone(val: typing.Optional[str]) -> str:
+def _ToNonEmptyStrOrNone(val: Optional[str]) -> str:
   return 'None' if val == '' else str(val)
 
 
@@ -547,7 +546,7 @@ def _OutputLocalDiffFiles(gold_session: sgs.SkiaGoldSession,
   logging.error('Diff image: %s', diff_file or failure_message)
 
 
-def load_tests(loader: unittest.TestLoader, tests: typing.Any,
-               pattern: typing.Any) -> unittest.TestSuite:
+def load_tests(loader: unittest.TestLoader, tests: Any,
+               pattern: Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

@@ -7,7 +7,7 @@ import itertools
 import os
 import re
 import sys
-import typing
+from typing import List, Optional, Set, Type
 import unittest
 import unittest.mock as mock
 
@@ -106,7 +106,7 @@ def check_intel_driver_version(version: str) -> bool:
   return True
 
 
-def _MapGpuDevicesToVendors(tag_sets: typing.List[typing.Set[str]]) -> None:
+def _MapGpuDevicesToVendors(tag_sets: List[Set[str]]) -> None:
   for tag_set in tag_sets:
     if any(gpu in tag_set for gpu in GPU_CONDITIONS):
       _map_specific_to_generic.update({
@@ -173,7 +173,7 @@ def _DoTagsConflict(t1: str, t2: str) -> bool:
           and t2 != _map_specific_to_generic.get(t1, t1))
 
 
-def _ExtractUnitTestTestExpectations(file_name: str) -> typing.List[str]:
+def _ExtractUnitTestTestExpectations(file_name: str) -> List[str]:
   file_name = os.path.join(
       os.path.dirname(os.path.abspath(__file__)), '..', 'unittest_data',
       'test_expectations', file_name)
@@ -201,9 +201,9 @@ def _ExtractUnitTestTestExpectations(file_name: str) -> typing.List[str]:
 
 def CheckTestExpectationsAreForExistingTests(
     unittest_testcase: unittest.TestCase,
-    test_class: typing.Type[gpu_integration_test.GpuIntegrationTest],
+    test_class: Type[gpu_integration_test.GpuIntegrationTest],
     mock_options: mock.MagicMock,
-    test_names: typing.Optional[typing.List[str]] = None) -> None:
+    test_names: Optional[List[str]] = None) -> None:
   test_names = test_names or [
       args[0] for args in test_class.GenerateGpuTests(mock_options)
   ]
@@ -232,8 +232,7 @@ def CheckTestExpectationPatternsForConflicts(expectations: str,
   return test_expectations.check_test_expectations_patterns_for_conflicts()
 
 
-def _FindTestCases(
-) -> typing.List[typing.Type[gpu_integration_test.GpuIntegrationTest]]:
+def _FindTestCases() -> List[Type[gpu_integration_test.GpuIntegrationTest]]:
   test_cases = []
   for start_dir in gpu_project_config.CONFIG.start_dirs:
     # Note we deliberately only scan the integration tests as a

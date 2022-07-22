@@ -6,7 +6,7 @@ import logging
 import os
 import sys
 import time
-import typing
+from typing import Any, List, Optional, Tuple
 import unittest
 
 from devil.android.sdk import version_codes
@@ -71,8 +71,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.SetStaticServerDirs([data_path])
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args: typing.List[str]
-                          ) -> typing.List[str]:
+  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -102,7 +101,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     # Also note that since functional_video.html refers to files in
     # ../media/ , the serving dir must be the common parent directory.
-    tests: typing.Tuple[str, str] = (
+    tests = (
         ('GpuProcess_canvas2d', 'gpu/functional_canvas_demo.html'),
         ('GpuProcess_css3d', 'gpu/functional_3d_css.html'),
         ('GpuProcess_webgl', 'gpu/functional_webgl.html'),
@@ -186,9 +185,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail('%s %s workarounds: %s' % (workaround_name, error_message,
                                            gpu_driver_bug_workarounds))
 
-  def _ValidateDriverBugWorkarounds(self,
-                                    expected_workaround: typing.Optional[str],
-                                    unexpected_workaround: typing.Optional[str]
+  def _ValidateDriverBugWorkarounds(self, expected_workaround: Optional[str],
+                                    unexpected_workaround: Optional[str]
                                     ) -> None:
     if not expected_workaround and not unexpected_workaround:
       return
@@ -209,7 +207,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return True
 
   def _CompareAndCaptureDriverBugWorkarounds(
-      self) -> typing.Tuple[typing.List[str], typing.Optional[str]]:
+      self) -> Tuple[List[str], Optional[str]]:
     tab = self.tab
     if not tab.EvaluateJavaScript('chrome.gpuBenchmarking.hasGpuProcess()'):
       self.fail('No GPU process detected')
@@ -656,7 +654,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._NavigateAndWait(test_path)
 
   @classmethod
-  def ExpectationsFiles(cls) -> typing.List[str]:
+  def ExpectationsFiles(cls) -> List[str]:
     return [
         os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'test_expectations',
@@ -664,7 +662,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     ]
 
 
-def load_tests(loader: unittest.TestLoader, tests: typing.Any,
-               pattern: typing.Any) -> unittest.TestSuite:
+def load_tests(loader: unittest.TestLoader, tests: Any,
+               pattern: Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

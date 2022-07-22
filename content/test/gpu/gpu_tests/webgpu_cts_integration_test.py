@@ -11,7 +11,7 @@ import subprocess
 import sys
 import tempfile
 import threading
-import typing
+from typing import Any, List
 import unittest
 
 import websockets  # pylint:disable=import-error
@@ -375,7 +375,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return int(timeout)
 
   @classmethod
-  def GetPlatformTags(cls, browser: ct.Browser) -> typing.List[str]:
+  def GetPlatformTags(cls, browser: ct.Browser) -> List[str]:
     tags = super(WebGpuCtsIntegrationTest, cls).GetPlatformTags(browser)
     if cls._enable_dawn_backend_validation:
       tags.append('dawn-backend-validation')
@@ -393,7 +393,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return tags
 
   @classmethod
-  def ExpectationsFiles(cls) -> typing.List[str]:
+  def ExpectationsFiles(cls) -> List[str]:
     return [EXPECTATIONS_FILE]
 
 
@@ -401,6 +401,6 @@ def TestNameFromInputs(query: str, worker: bool) -> str:
   return 'worker_%s' % query if worker else query
 
 
-def load_tests(_loader: unittest.TestLoader, _tests: typing.Any,
-               _pattern: typing.Any) -> unittest.TestSuite:
+def load_tests(_loader: unittest.TestLoader, _tests: Any,
+               _pattern: Any) -> unittest.TestSuite:
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

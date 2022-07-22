@@ -6,7 +6,7 @@ from __future__ import print_function
 
 import sys
 import time
-import typing
+from typing import Any
 import unittest
 
 from gpu_tests import common_typing as ct
@@ -54,7 +54,7 @@ class NoopSleepIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     time.sleep(180)
 
 
-def load_tests(loader: unittest.TestLoader, tests: typing.Any,
-               pattern: typing.Any) -> unittest.TestSuite:
+def load_tests(loader: unittest.TestLoader, tests: Any,
+               pattern: Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

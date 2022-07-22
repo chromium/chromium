@@ -6,7 +6,7 @@ import os
 import sys
 import json
 import itertools
-import typing
+from typing import Any, List
 import unittest
 
 import gpu_path_util
@@ -196,14 +196,14 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.SetStaticServerDirs([html_path, data_path])
 
   @classmethod
-  def ExpectationsFiles(cls) -> typing.List[str]:
+  def ExpectationsFiles(cls) -> List[str]:
     return [
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'test_expectations', 'webcodecs_expectations.txt')
     ]
 
 
-def load_tests(loader: unittest.TestLoader, tests: typing.Any,
-               pattern: typing.Any) -> unittest.TestSuite:
+def load_tests(loader: unittest.TestLoader, tests: Any,
+               pattern: Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])

@@ -6,7 +6,7 @@ from __future__ import print_function
 
 import os
 import sys
-import typing
+from typing import Any, List
 import unittest
 
 from gpu_tests import common_browser_args as cba
@@ -67,7 +67,7 @@ class MediaPipeIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail(errors)
 
   @classmethod
-  def ExpectationsFiles(cls) -> typing.List[str]:
+  def ExpectationsFiles(cls) -> List[str]:
     return [
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'test_expectations', 'mediapipe_expectations.txt'),
@@ -78,7 +78,7 @@ def _get_test_html(entry: str) -> str:
   return '%s/_CLICK_ME_TO_RUN_%s_LOCALLY.html' % (entry, entry)
 
 
-def load_tests(loader: unittest.TestLoader, tests: typing.Any,
-               pattern: typing.Any) -> unittest.TestSuite:
+def load_tests(loader: unittest.TestLoader, tests: Any,
+               pattern: Any) -> unittest.TestSuite:
   del loader, tests, pattern  # Unused.
   return gpu_integration_test.LoadAllTestsInModule(sys.modules[__name__])
