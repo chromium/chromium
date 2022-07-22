@@ -1095,10 +1095,9 @@ class WebContents : public PageNavigator,
   // be called with the bitmaps received from the renderer.
   // If |is_favicon| is true, the cookies are not sent and not accepted during
   // download.
-  // Bitmaps with pixel sizes larger than |max_bitmap_size| are filtered out
-  // from the bitmap results. If there are no bitmap results <=
-  // |max_bitmap_size|, the smallest bitmap is resized to |max_bitmap_size| and
-  // is the only result. A |max_bitmap_size| of 0 means unlimited.
+  // If there are no bitmap results <= |max_bitmap_size|, the smallest bitmap
+  // is resized to |max_bitmap_size| and is the only result.
+  // A |max_bitmap_size| of 0 means unlimited.
   // For vector images, |preferred_size| will serve as a viewport into which
   // the image will be rendered. This would usually be the dimensions of the
   // rectangle where the bitmap will be rendered. If |preferred_size| is empty,

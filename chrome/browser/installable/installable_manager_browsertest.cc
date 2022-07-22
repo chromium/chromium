@@ -1950,6 +1950,32 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckScreenshots) {
 }
 
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
+                       CheckLargeScreenshotsFilteredOut) {
+  base::RunLoop run_loop;
+  std::unique_ptr<CallbackTester> tester(
+      new CallbackTester(run_loop.QuitClosure()));
+
+  InstallableParams params = GetManifestParams();
+  params.fetch_screenshots = true;
+
+  NavigateAndRunInstallableManager(
+      browser(), tester.get(), params,
+      GetURLOfPageWithServiceWorkerAndManifest(
+          "/banners/manifest_large_screenshot.json"));
+
+  run_loop.Run();
+
+  EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
+  EXPECT_FALSE(tester->manifest_url().is_empty());
+
+  EXPECT_FALSE(tester->valid_manifest());
+  EXPECT_EQ(1u, tester->screenshots().size());
+  EXPECT_EQ(551, tester->screenshots()[0].width());
+  EXPECT_EQ(541, tester->screenshots()[0].height());
+  EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
+}
+
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
                        ManifestLinkChangeReportsError) {
   InstallableManager* manager = GetManager(browser());
 

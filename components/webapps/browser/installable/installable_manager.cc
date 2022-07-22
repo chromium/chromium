@@ -897,9 +897,13 @@ void InstallableManager::CheckAndFetchScreenshots() {
     int ideal_size_in_px = url.sizes.empty() ? kMinimumScreenshotSizeInPx
                                              : std::max(url.sizes[0].width(),
                                                         url.sizes[0].height());
+    // Do not pass in a maximum icon size so that screenshots larger than
+    // kMaximumScreenshotSizeInPx are not downscaled to the maximum size by
+    // `ManifestIconDownloader::Download`. Screenshots with size larger than
+    // kMaximumScreenshotSizeInPx get filtered out by OnScreenshotFetched.
     bool can_download = content::ManifestIconDownloader::Download(
         GetWebContents(), url.src, ideal_size_in_px, kMinimumScreenshotSizeInPx,
-        kMaximumScreenshotSizeInPx,
+        /*maximum_icon_size_in_px=*/0,
         base::BindOnce(&InstallableManager::OnScreenshotFetched,
                        weak_factory_.GetWeakPtr(), url.src),
         /*square_only=*/false);
