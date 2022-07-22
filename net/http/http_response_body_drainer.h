@@ -33,8 +33,8 @@ class NET_EXPORT_PRIVATE HttpResponseBodyDrainer {
   ~HttpResponseBodyDrainer();
 
   // Starts reading the body until completion, or we hit the buffer limit, or we
-  // timeout.  After Start(), |this| will eventually delete itself.  If it
-  // doesn't complete immediately, it will add itself to |session|.
+  // timeout.  After Start(), |this| will eventually delete itself via
+  // HttpNetworkSession::RemoveResponseDrainer().
   void Start(HttpNetworkSession* session);
 
  private:

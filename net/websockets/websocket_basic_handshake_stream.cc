@@ -23,6 +23,7 @@
 #include "crypto/random.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
+#include "net/http/http_network_session.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_body_drainer.h"
@@ -375,8 +376,8 @@ void WebSocketBasicHandshakeStream::PopulateNetErrorDetails(
 }
 
 void WebSocketBasicHandshakeStream::Drain(HttpNetworkSession* session) {
-  HttpResponseBodyDrainer* drainer = new HttpResponseBodyDrainer(this);
-  drainer->Start(session);
+  session->StartResponseDrainer(
+      std::make_unique<HttpResponseBodyDrainer>(this));
   // |drainer| will delete itself.
 }
 

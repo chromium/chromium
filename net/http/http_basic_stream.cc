@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "net/http/http_network_session.h"
 #include "net/http/http_raw_request_headers.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_body_drainer.h"
@@ -185,8 +186,8 @@ int HttpBasicStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
 }
 
 void HttpBasicStream::Drain(HttpNetworkSession* session) {
-  HttpResponseBodyDrainer* drainer = new HttpResponseBodyDrainer(this);
-  drainer->Start(session);
+  session->StartResponseDrainer(
+      std::make_unique<HttpResponseBodyDrainer>(this));
   // |drainer| will delete itself.
 }
 
