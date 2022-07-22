@@ -103,7 +103,7 @@
   {
     "name": "allow-disable-touchpad-haptic-feedback",
     "owners": [ "gavinwill", "cros-peripherals@google.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 112
   },
    {
     "name": "allow-dsp-based-aec",
