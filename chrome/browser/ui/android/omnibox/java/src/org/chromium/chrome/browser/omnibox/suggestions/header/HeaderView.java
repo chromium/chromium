@@ -54,7 +54,6 @@ public class HeaderView extends SimpleHorizontalLayoutView {
         mHeaderText.setLayoutParams(LayoutParams.forDynamicView());
         mHeaderText.setMaxLines(1);
         mHeaderText.setEllipsize(TruncateAt.END);
-        mHeaderText.setAllCaps(true);
         TextViewCompat.setTextAppearance(
                 mHeaderText, ChromeColors.getTextMediumThickSecondaryStyle(false));
         mHeaderText.setMinHeight(context.getResources().getDimensionPixelSize(
@@ -140,6 +139,17 @@ public class HeaderView extends SimpleHorizontalLayoutView {
      */
     void setShouldRemoveSuggestionHeaderChevron(boolean shouldRemoveSuggestionHeaderChevron) {
         mHeaderIcon.setVisibility(shouldRemoveSuggestionHeaderChevron ? GONE : VISIBLE);
+    }
+
+    /**
+     * Specifies whether suggestion header text should be capitalized.
+     *
+     * @param shouldRemoveSuggestionHeaderCapitalization true, if capitalization on the suggestion
+     *         header should be removed.
+     */
+    void setShouldRemoveSuggestionHeaderCapitalization(
+            boolean shouldRemoveSuggestionHeaderCapitalization) {
+        mHeaderText.setAllCaps(!shouldRemoveSuggestionHeaderCapitalization);
     }
 
     @Override

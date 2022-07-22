@@ -286,6 +286,11 @@ const base::Feature kNtpRealboxTailSuggest{"NtpRealboxTailSuggest",
 const base::Feature kOmniboxFuzzyUrlSuggestions{
     "OmniboxFuzzyUrlSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature used to remove the capitalization of the suggestion header text.
+const base::Feature kOmniboxRemoveSuggestionHeaderCapitalization{
+    "OmniboxRemoveSuggestionHeaderCapitalization",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Feature used to remove the chevron on the right side of suggestion list
 // header under omnibox.
 const base::Feature kOmniboxRemoveSuggestionHeaderChevron{

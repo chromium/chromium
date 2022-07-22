@@ -435,6 +435,8 @@ public abstract class ChromeFeatureList {
             "OmniboxMostVisitedTilesTitleWrapAround";
     public static final String OMNIBOX_REMOVE_SUGGESTION_HEADER_CHEVRON =
             "OmniboxRemoveSuggestionHeaderChevron";
+    public static final String OMNIBOX_REMOVE_SUGGESTION_HEADER_CAPITALIZATION =
+            "OmniboxRemoveSuggestionHeaderCapitalization";
     public static final String OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS =
             "OmniboxUpdatedConnectionSecurityIndicators";
     public static final String OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS =

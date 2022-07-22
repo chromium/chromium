@@ -154,4 +154,18 @@ public class HeaderViewBinderUnitTest {
         mModel.set(HeaderViewProperties.SHOULD_REMOVE_CHEVRON, false);
         verify(mHeaderView, times(1)).setShouldRemoveSuggestionHeaderChevron(false);
     }
+
+    @Test
+    public void headerView_removeSuggestionHeaderCapitalizationTrue() {
+        // Remove Capitalization.
+        mModel.set(HeaderViewProperties.SHOULD_REMOVE_CAPITALIZATION, true);
+        verify(mHeaderView, times(1)).setShouldRemoveSuggestionHeaderCapitalization(true);
+    }
+
+    @Test
+    public void headerView_removeSuggestionHeaderCapitalizationFalse() {
+        // Restore Capitalization.
+        mModel.set(HeaderViewProperties.SHOULD_REMOVE_CAPITALIZATION, false);
+        verify(mHeaderView, times(1)).setShouldRemoveSuggestionHeaderCapitalization(false);
+    }
 }

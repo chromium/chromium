@@ -1095,6 +1095,9 @@ extern const char kOmniboxOnDeviceHeadSuggestionsIncognitoDescription[];
 extern const char kOmniboxRemoveSuggestionHeaderChevronName[];
 extern const char kOmniboxRemoveSuggestionHeaderChevronDescription[];
 
+extern const char kOmniboxRemoveSuggestionHeaderCapitalizationName[];
+extern const char kOmniboxRemoveSuggestionHeaderCapitalizationDescription[];
+
 extern const char kOmniboxRichAutocompletionPromisingName[];
 extern const char kOmniboxRichAutocompletionPromisingDescription[];
 

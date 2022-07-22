@@ -22,6 +22,7 @@ public class HeaderProcessor implements DropdownItemProcessor {
     private final int mMinimumHeight;
     private boolean mShouldRemoveSuggestionHeaderChevron;
     private boolean mAllowGroupCollapsedState;
+    private boolean mShouldRemoveSuggestionHeaderCapitalization;
 
     /**
      * @param context An Android context.
@@ -59,6 +60,8 @@ public class HeaderProcessor implements DropdownItemProcessor {
         model.set(HeaderViewProperties.TITLE, headerText);
         model.set(HeaderViewProperties.IS_COLLAPSED, false);
         model.set(HeaderViewProperties.SHOULD_REMOVE_CHEVRON, mShouldRemoveSuggestionHeaderChevron);
+        model.set(HeaderViewProperties.SHOULD_REMOVE_CAPITALIZATION,
+                mShouldRemoveSuggestionHeaderCapitalization);
         if (mAllowGroupCollapsedState) {
             model.set(HeaderViewProperties.DELEGATE, new HeaderViewProperties.Delegate() {
                 @Override
@@ -86,7 +89,7 @@ public class HeaderProcessor implements DropdownItemProcessor {
 
     /**
      * Signals that native initialization has completed.
-     * And cache the mShouldRemoveSuggestionHeaderChevron value from the flag.
+     * And cache the feature flag value from the flag.
      */
     @Override
     public void onNativeInitialized() {
@@ -97,5 +100,8 @@ public class HeaderProcessor implements DropdownItemProcessor {
                 ChromeFeatureList.OMNIBOX_REMOVE_SUGGESTION_HEADER_CHEVRON,
                 "allow_group_collapsed_state",
                 /* default= */ true);
+
+        mShouldRemoveSuggestionHeaderCapitalization = ChromeFeatureList.isEnabled(
+                ChromeFeatureList.OMNIBOX_REMOVE_SUGGESTION_HEADER_CAPITALIZATION);
     }
 }

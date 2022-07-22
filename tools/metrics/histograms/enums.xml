@@ -56600,6 +56600,8 @@ from previous Chrome versions.
   <int value="-1408696172" label="CompositeBGColorAnimation:enabled"/>
   <int value="-1408370474" label="AssistantRoutines:enabled"/>
   <int value="-1408288176" label="enable-account-consistency"/>
+  <int value="-1407904527"
+      label="OmniboxRemoveSuggestionHeaderCapitalization:disabled"/>
   <int value="-1407568904" label="CrOSLabsFloatWindow:enabled"/>
   <int value="-1405349891" label="PictureInPictureAPI:enabled"/>
   <int value="-1405048637" label="OfflinePagesResourceBasedSnapshot:enabled"/>
@@ -59057,6 +59059,8 @@ from previous Chrome versions.
   <int value="168887810" label="ReadLaterReminderNotification:disabled"/>
   <int value="170101645" label="PageInfoAboutThisSiteMoreInfo:disabled"/>
   <int value="171273307" label="SystemEmojiPickerClipboard:disabled"/>
+  <int value="172878751"
+      label="OmniboxRemoveSuggestionHeaderCapitalization:enabled"/>
   <int value="173288154" label="PrintPdfAsImage:enabled"/>
   <int value="173339199" label="SmsReceiverCrossDevice:disabled"/>
   <int value="174759256" label="LockScreenMediaControls:enabled"/>
