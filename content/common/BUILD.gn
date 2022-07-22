@@ -357,7 +357,7 @@ source_set("common") {
     sources -= [ "font_list_fontconfig.cc" ]
   }
 
-  if (enable_plugins) {
+  if (enable_ppapi) {
     deps += [
       "//ppapi/proxy:ipc",
       "//ppapi/shared_impl",

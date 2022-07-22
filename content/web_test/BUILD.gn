@@ -203,7 +203,8 @@ static_library("web_test_browser") {
     "//url",
   ]
 
-  if (enable_plugins) {
+  # TODO(crbug.com/1103882): Blink test plugin must be migrated from PPAPI.
+  if (enable_ppapi) {
     deps += [
       "//content/ppapi_plugin",
       "//ppapi:blink_deprecated_test_plugin",

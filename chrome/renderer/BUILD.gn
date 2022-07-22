@@ -227,7 +227,9 @@ static_library("renderer") {
       deps += [ "//components/nacl/loader" ]
     }
   }
-  if (enable_plugins) {
+
+  # TODO(crbug.com/1306610): Split out files that only need `enable_plugins`.
+  if (enable_ppapi) {
     sources += [
       "pepper/chrome_renderer_pepper_host_factory.cc",
       "pepper/chrome_renderer_pepper_host_factory.h",

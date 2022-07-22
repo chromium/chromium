@@ -384,18 +384,7 @@ target(link_target_type, "renderer") {
     }
   }
 
-  if (enable_plugins) {
-    sources += [
-      "pepper/pepper_media_stream_audio_track_host.cc",
-      "pepper/pepper_media_stream_audio_track_host.h",
-      "pepper/pepper_media_stream_track_host_base.cc",
-      "pepper/pepper_media_stream_track_host_base.h",
-      "pepper/pepper_media_stream_video_track_host.cc",
-      "pepper/pepper_media_stream_video_track_host.h",
-    ]
-  }
-
-  if (enable_plugins) {
+  if (enable_ppapi) {
     sources += [
       "pepper/audio_helper.cc",
       "pepper/audio_helper.h",
@@ -443,6 +432,12 @@ target(link_target_type, "renderer") {
       "pepper/pepper_in_process_router.h",
       "pepper/pepper_media_device_manager.cc",
       "pepper/pepper_media_device_manager.h",
+      "pepper/pepper_media_stream_audio_track_host.cc",
+      "pepper/pepper_media_stream_audio_track_host.h",
+      "pepper/pepper_media_stream_track_host_base.cc",
+      "pepper/pepper_media_stream_track_host_base.h",
+      "pepper/pepper_media_stream_video_track_host.cc",
+      "pepper/pepper_media_stream_video_track_host.h",
       "pepper/pepper_platform_audio_input.cc",
       "pepper/pepper_platform_audio_input.h",
       "pepper/pepper_platform_audio_output.cc",

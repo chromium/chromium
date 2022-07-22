@@ -133,8 +133,6 @@ source_set("common_sources") {
     "page_type.h",
     "page_visibility_state.h",
     "page_zoom.h",
-    "pepper_plugin_info.cc",
-    "pepper_plugin_info.h",
     "persistent_notification_status.h",
     "process_type.h",
     "profiling.cc",
@@ -228,7 +226,6 @@ source_set("common_sources") {
     "//media",
     "//media/mojo/mojom",
     "//ppapi/buildflags",
-    "//ppapi/c",
     "//services/network/public/cpp",
     "//services/service_manager/public/cpp",
     "//skia",
@@ -284,12 +281,12 @@ source_set("common_sources") {
     "//content/common:mojo_bindings",
   ]
 
-  if (!enable_plugins) {
-    sources -= [
+  if (enable_ppapi) {
+    sources += [
       "pepper_plugin_info.cc",
       "pepper_plugin_info.h",
     ]
-    deps -= [ "//ppapi/c" ]
+    deps += [ "//ppapi/c" ]
   }
 
   if (use_clang_profiling_inside_sandbox) {

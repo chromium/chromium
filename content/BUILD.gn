@@ -69,7 +69,7 @@ content_shared_components = [
   "//content/public/utility:utility_sources",
 ]
 
-if (enable_plugins) {
+if (enable_ppapi) {
   content_shared_components += [ "//content/ppapi_plugin:ppapi_plugin_sources" ]
 }
 

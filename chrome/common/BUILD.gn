@@ -270,7 +270,7 @@ static_library("common_lib") {
     deps += [ "//components/pdf/common" ]
   }
 
-  if (enable_plugins) {
+  if (enable_ppapi) {
     public_deps += [ "//ppapi/shared_impl" ]
   }
 

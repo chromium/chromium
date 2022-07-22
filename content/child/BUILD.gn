@@ -147,7 +147,7 @@ target(link_target_type, "child") {
     ]
   }
 
-  if (enable_plugins) {
+  if (enable_ppapi) {
     deps += [
       "//ppapi/proxy",
       "//ppapi/shared_impl",

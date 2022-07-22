@@ -2689,7 +2689,8 @@ source_set("browser") {
     ]
   }
 
-  if (enable_plugins) {
+  # TODO(crbug.com/1306610): Split out files that only need `enable_plugins`.
+  if (enable_ppapi) {
     sources += [
       "../public/browser/plugin_service.h",
       "media/session/pepper_playback_observer.cc",

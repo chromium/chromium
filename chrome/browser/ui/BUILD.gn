@@ -5516,7 +5516,8 @@ static_library("ui") {
     deps += [ "//components/pdf/browser" ]
   }
 
-  if (enable_plugins) {
+  # TODO(crbug.com/1306610): Make `HungPluginTabHelper` usage conditional.
+  if (enable_ppapi) {
     sources += [
       "hung_plugin_tab_helper.cc",
       "hung_plugin_tab_helper.h",

@@ -147,7 +147,7 @@ group("gn_all") {
     ]
   }
 
-  if (enable_plugins) {
+  if (enable_ppapi) {
     deps += [
       "//ppapi:ppapi_unittests",
       "//ppapi/examples",
@@ -583,7 +583,7 @@ group("gn_all") {
     }
   }
 
-  if (enable_plugins) {
+  if (enable_ppapi) {
     deps += [
       "//ppapi:pepper_hash_for_uma",
       "//ppapi:ppapi_perftests",

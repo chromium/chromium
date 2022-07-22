@@ -627,7 +627,7 @@ static_library("test_support") {
     ]
   }
 
-  if (enable_plugins) {
+  if (enable_ppapi) {
     sources += [
       "../public/test/ppapi_test_utils.cc",
       "../public/test/ppapi_test_utils.h",
@@ -1659,7 +1659,8 @@ test("content_browsertests") {
     "//third_party/mesa_headers",
   ]
 
-  if (enable_plugins) {
+  # TODO(crbug.com/1306610): Split out files that only need `enable_plugins`.
+  if (enable_ppapi) {
     sources += [
       "../browser/plugin_service_impl_browsertest.cc",
       "../renderer/pepper/fake_pepper_plugin_instance.cc",
@@ -2777,7 +2778,7 @@ test("content_unittests") {
     ]
   }
 
-  if (enable_plugins) {
+  if (enable_ppapi) {
     sources += [
       "../browser/ppapi_plugin_sandboxed_process_launcher_delegate_unittest.cc",
       "../browser/renderer_host/pepper/browser_ppapi_host_test.cc",

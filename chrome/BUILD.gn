@@ -1421,7 +1421,7 @@ group("dependencies") {
     "//v8:v8_headers",
   ]
 
-  if (enable_plugins) {
+  if (enable_ppapi) {
     public_deps += [ "//ppapi/host" ]
   }
 

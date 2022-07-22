@@ -720,7 +720,7 @@ static_library("test_support") {
     public_deps += [ "//components/offline_pages/core:test_support" ]
   }
 
-  if (enable_plugins) {
+  if (enable_ppapi) {
     public_deps += [ "//ppapi/shared_impl" ]
   }
 }
@@ -2734,7 +2734,8 @@ if (!is_android) {
       sources += [ "../browser/webshare/share_service_browsertest.cc" ]
     }
 
-    if (enable_plugins) {
+    # TODO(crbug.com/1306610): Split out files that only need `enable_plugins`.
+    if (enable_ppapi) {
       sources += [
         "../browser/chrome_plugin_browsertest.cc",
         "../browser/plugins/plugin_response_interceptor_url_loader_throttle_browsertest.cc",
@@ -8951,7 +8952,7 @@ if (!is_android) {
       ]
     }
 
-    if (enable_plugins) {
+    if (enable_ppapi) {
       sources += [
         "ppapi/ppapi_test.cc",
         "ppapi/ppapi_test.h",
@@ -9319,7 +9320,7 @@ if (!is_android) {
       "//third_party/mesa_headers",
       "//ui/resources:ui_test_pak_data",
     ]
-    if (enable_plugins) {
+    if (enable_ppapi) {
       sources += [ "ppapi/ppapi_interactive_browsertest.cc" ]
       data += [
         "//ppapi/tests/test_case.html",

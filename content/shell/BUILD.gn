@@ -288,7 +288,8 @@ static_library("content_shell_lib") {
     ]
   }
 
-  if (enable_plugins) {
+  # TODO(crbug.com/1306610): Split out files that only need `enable_plugins`.
+  if (enable_ppapi) {
     sources += [
       "browser/shell_plugin_service_filter.cc",
       "browser/shell_plugin_service_filter.h",

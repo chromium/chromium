@@ -4,7 +4,7 @@
 
 import("//ppapi/buildflags/buildflags.gni")
 
-assert(enable_plugins, "PPAPI plugins must be enabled.")
+assert(enable_ppapi, "PPAPI plugins must be enabled.")
 
 group("ppapi_plugin") {
   visibility = [ "//content/*" ]  # This is an internal content API.
