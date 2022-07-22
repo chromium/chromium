@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
 #include "content/public/common/content_switches.h"
@@ -59,7 +60,14 @@ class MAYBE_WebRtcBrowserTest : public WebRtcContentBrowserTestBase {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, CanSetupAudioAndVideoCall) {
+// https://crbug.com/1346488 Flaky on linux-lacros-rel and mac-rel
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_CanSetupAudioAndVideoCall DISABLED_CanSetupAudioAndVideoCall
+#else
+#define MAYBE_CanSetupAudioAndVideoCall CanSetupAudioAndVideoCall
+#endif
+IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
+                       MAYBE_CanSetupAudioAndVideoCall) {
   MakeTypicalPeerConnectionCall("call({video: true, audio: true});");
 }
 
