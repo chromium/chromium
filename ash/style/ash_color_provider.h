@@ -57,11 +57,6 @@ class ASH_EXPORT AshColorProvider : public ColorProvider {
   std::pair<SkColor, float> GetInvertedInkDropBaseColorAndOpacity(
       SkColor background_color = gfx::kPlaceholderColor) const override;
 
-  // Gets the color of |type| of the corresponding layer based on the current
-  // inverted color mode. For views that need LIGHT colors while DARK mode is
-  // active, and vice versa.
-  SkColor GetInvertedBaseLayerColor(BaseLayerType type) const;
-
   // Gets the background color that can be applied on any layer. The returned
   // color will be different based on color mode and color theme (see
   // |is_themed_|).
@@ -73,13 +68,8 @@ class ASH_EXPORT AshColorProvider : public ColorProvider {
   SkColor GetBackgroundColorInMode(bool use_dark_color) const;
 
  private:
-  // Gets the color of |type| of the corresponding layer. Returns color based on
-  // the current inverted color mode if |inverted| is true.
-  SkColor GetShieldLayerColorImpl(ShieldLayerType type, bool inverted) const;
-  SkColor GetBaseLayerColorImpl(BaseLayerType type, bool inverted) const;
   // Gets the color of |type| of the corresponding layer. Returns the color on
   // dark mode if |use_dark_color| is true.
-  SkColor GetControlsLayerColorImpl(ControlsLayerType type) const;
   SkColor GetContentLayerColorImpl(ContentLayerType type,
                                    bool use_dark_color) const;
 

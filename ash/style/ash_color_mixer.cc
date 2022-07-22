@@ -16,6 +16,7 @@
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
+#include "ui/gfx/color_utils.h"
 
 namespace ash {
 
@@ -53,6 +54,8 @@ void AddShieldAndBaseColors(ui::ColorMixer& mixer,
   mixer[kColorAshShieldAndBase40] = {SkColorSetA(background_color, kAlpha40)};
   mixer[kColorAshShieldAndBase60] = {SkColorSetA(background_color, kAlpha60)};
   mixer[kColorAshShieldAndBase80] = {SkColorSetA(background_color, kAlpha80)};
+  mixer[kColorAshInvertedShieldAndBase80] = {
+      SkColorSetA(color_utils::InvertColor(background_color), kAlpha80)};
   mixer[kColorAshShieldAndBase90] = {SkColorSetA(background_color, kAlpha90)};
   mixer[kColorAshShieldAndBase95] = {SkColorSetA(background_color, kAlpha95)};
   mixer[kColorAshShieldAndBaseOpaque] = {

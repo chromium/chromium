@@ -128,16 +128,71 @@ SkColor AshColorProvider::GetSecondToneColor(SkColor color_of_first_tone) {
 }
 
 SkColor AshColorProvider::GetShieldLayerColor(ShieldLayerType type) const {
-  return GetShieldLayerColorImpl(type, /*inverted=*/false);
+  constexpr int kAlphas[] = {kAlpha20, kAlpha40, kAlpha60,
+                             kAlpha80, kAlpha90, kAlpha95};
+  DCHECK_LT(static_cast<size_t>(type), std::size(kAlphas));
+  return SkColorSetA(GetBackgroundColor(), kAlphas[static_cast<int>(type)]);
 }
 
 SkColor AshColorProvider::GetBaseLayerColor(BaseLayerType type) const {
-  return GetBaseLayerColorImpl(type, /*inverted=*/false);
+  // TODO(minch): Get all the colors from `GetColorProvider` as
+  // `kInvertedTransparent80`.
+  const auto color = GetBackgroundColor();
+  switch (type) {
+    case BaseLayerType::kTransparent20:
+      return SkColorSetA(color, kAlpha20);
+    case BaseLayerType::kTransparent40:
+      return SkColorSetA(color, kAlpha40);
+    case BaseLayerType::kTransparent60:
+      return SkColorSetA(color, kAlpha60);
+    case BaseLayerType::kTransparent80:
+      return SkColorSetA(color, kAlpha80);
+    case BaseLayerType::kInvertedTransparent80:
+      return GetColorProvider()->GetColor(kColorAshInvertedShieldAndBase80);
+    case BaseLayerType::kTransparent90:
+      return SkColorSetA(color, kAlpha90);
+    case BaseLayerType::kTransparent95:
+      return SkColorSetA(color, kAlpha95);
+    case BaseLayerType::kOpaque:
+      return SkColorSetA(color, SK_AlphaOPAQUE);
+  }
 }
 
 SkColor AshColorProvider::GetControlsLayerColor(ControlsLayerType type) const {
-  // TODO(skau): Delete this function
-  return GetControlsLayerColorImpl(type);
+  // TODO(crbug.com/1292244): Delete this function after all callers migrate.
+  auto* color_provider = GetColorProvider();
+  DCHECK(color_provider);
+
+  switch (type) {
+    case ControlsLayerType::kHairlineBorderColor:
+      return color_provider->GetColor(kColorAshHairlineBorderColor);
+    case ControlsLayerType::kControlBackgroundColorActive:
+      return color_provider->GetColor(kColorAshControlBackgroundColorActive);
+    case ControlsLayerType::kControlBackgroundColorInactive:
+      return color_provider->GetColor(kColorAshControlBackgroundColorInactive);
+    case ControlsLayerType::kControlBackgroundColorAlert:
+      return color_provider->GetColor(kColorAshControlBackgroundColorAlert);
+    case ControlsLayerType::kControlBackgroundColorWarning:
+      return color_provider->GetColor(kColorAshControlBackgroundColorWarning);
+    case ControlsLayerType::kControlBackgroundColorPositive:
+      return color_provider->GetColor(kColorAshControlBackgroundColorPositive);
+    case ControlsLayerType::kFocusAuraColor:
+      return color_provider->GetColor(kColorAshFocusAuraColor);
+    case ControlsLayerType::kFocusRingColor:
+      return color_provider->GetColor(ui::kColorAshFocusRing);
+    case ControlsLayerType::kHighlightColor1:
+      return color_provider->GetColor(ui::kColorAshSystemUIHighlightColor1);
+    case ControlsLayerType::kHighlightColor2:
+      return color_provider->GetColor(ui::kColorAshSystemUIHighlightColor2);
+    case ControlsLayerType::kHighlightColor3:
+      return color_provider->GetColor(ui::kColorAshSystemUIHighlightColor3);
+    case ControlsLayerType::kBorderColor1:
+      return color_provider->GetColor(ui::kColorAshSystemUIBorderColor1);
+    case ControlsLayerType::kBorderColor2:
+      return color_provider->GetColor(ui::kColorAshSystemUIBorderColor2);
+    case ControlsLayerType::kBorderColor3:
+      return color_provider->GetColor(ui::kColorAshSystemUIBorderColor3);
+  }
 }
 
 SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
@@ -177,10 +232,6 @@ AshColorProvider::GetInvertedInkDropBaseColorAndOpacity(
   return std::make_pair(base_color, opacity);
 }
 
-SkColor AshColorProvider::GetInvertedBaseLayerColor(BaseLayerType type) const {
-  return GetBaseLayerColorImpl(type, /*inverted=*/true);
-}
-
 SkColor AshColorProvider::GetBackgroundColor() const {
   return GetBackgroundThemedColorImpl(GetBackgroundDefaultColor(),
                                       IsDarkModeEnabled());
@@ -194,64 +245,6 @@ SkColor AshColorProvider::GetInvertedBackgroundColor() const {
 SkColor AshColorProvider::GetBackgroundColorInMode(bool use_dark_color) const {
   return cros_styles::ResolveColor(cros_styles::ColorName::kBgColor,
                                    use_dark_color);
-}
-
-SkColor AshColorProvider::GetShieldLayerColorImpl(ShieldLayerType type,
-                                                  bool inverted) const {
-  constexpr int kAlphas[] = {kAlpha20, kAlpha40, kAlpha60,
-                             kAlpha80, kAlpha90, kAlpha95};
-  DCHECK_LT(static_cast<size_t>(type), std::size(kAlphas));
-  return SkColorSetA(
-      inverted ? GetInvertedBackgroundColor() : GetBackgroundColor(),
-      kAlphas[static_cast<int>(type)]);
-}
-
-SkColor AshColorProvider::GetBaseLayerColorImpl(BaseLayerType type,
-                                                bool inverted) const {
-  constexpr int kAlphas[] = {kAlpha20, kAlpha40, kAlpha60, kAlpha80,
-                             kAlpha90, kAlpha95, 0xFF};
-  DCHECK_LT(static_cast<size_t>(type), std::size(kAlphas));
-  return SkColorSetA(
-      inverted ? GetInvertedBackgroundColor() : GetBackgroundColor(),
-      kAlphas[static_cast<int>(type)]);
-}
-
-SkColor AshColorProvider::GetControlsLayerColorImpl(
-    ControlsLayerType type) const {
-  // TODO(crbug.com/1292244): Delete this function after all callers migrate.
-  auto* color_provider = GetColorProvider();
-  DCHECK(color_provider);
-
-  switch (type) {
-    case ControlsLayerType::kHairlineBorderColor:
-      return color_provider->GetColor(kColorAshHairlineBorderColor);
-    case ControlsLayerType::kControlBackgroundColorActive:
-      return color_provider->GetColor(kColorAshControlBackgroundColorActive);
-    case ControlsLayerType::kControlBackgroundColorInactive:
-      return color_provider->GetColor(kColorAshControlBackgroundColorInactive);
-    case ControlsLayerType::kControlBackgroundColorAlert:
-      return color_provider->GetColor(kColorAshControlBackgroundColorAlert);
-    case ControlsLayerType::kControlBackgroundColorWarning:
-      return color_provider->GetColor(kColorAshControlBackgroundColorWarning);
-    case ControlsLayerType::kControlBackgroundColorPositive:
-      return color_provider->GetColor(kColorAshControlBackgroundColorPositive);
-    case ControlsLayerType::kFocusAuraColor:
-      return color_provider->GetColor(kColorAshFocusAuraColor);
-    case ControlsLayerType::kFocusRingColor:
-      return color_provider->GetColor(ui::kColorAshFocusRing);
-    case ControlsLayerType::kHighlightColor1:
-      return color_provider->GetColor(ui::kColorAshSystemUIHighlightColor1);
-    case ControlsLayerType::kHighlightColor2:
-      return color_provider->GetColor(ui::kColorAshSystemUIHighlightColor2);
-    case ControlsLayerType::kHighlightColor3:
-      return color_provider->GetColor(ui::kColorAshSystemUIHighlightColor3);
-    case ControlsLayerType::kBorderColor1:
-      return color_provider->GetColor(ui::kColorAshSystemUIBorderColor1);
-    case ControlsLayerType::kBorderColor2:
-      return color_provider->GetColor(ui::kColorAshSystemUIBorderColor2);
-    case ControlsLayerType::kBorderColor3:
-      return color_provider->GetColor(ui::kColorAshSystemUIBorderColor3);
-  }
 }
 
 SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,

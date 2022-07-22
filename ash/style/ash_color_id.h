@@ -17,6 +17,7 @@ namespace ash {
   E_CPONLY(kColorAshShieldAndBase40) \
   E_CPONLY(kColorAshShieldAndBase60) \
   E_CPONLY(kColorAshShieldAndBase80) \
+  E_CPONLY(kColorAshInvertedShieldAndBase80) \
   E_CPONLY(kColorAshShieldAndBase90) \
   E_CPONLY(kColorAshShieldAndBase95) \
   E_CPONLY(kColorAshShieldAndBaseOpaque) \

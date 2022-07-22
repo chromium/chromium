@@ -39,6 +39,7 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kTransparent40,
     kTransparent60,
     kTransparent80,
+    kInvertedTransparent80,
     kTransparent90,
     kTransparent95,
 
