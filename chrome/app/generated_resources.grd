@@ -6543,6 +6543,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_THEME_MANAGED_DIALOG_BODY" desc="Body text for the dialog informing users that their theme is managed when they try selecting a theme on the New Tab Page.">
         Your administrator has set a default theme which cannot be changed.
       </message>
+    <message name="IDS_NTP_THEMES_CONTAINER_LABEL" desc="The accessibility label description read by the screen reader for the Color and Theme container when customizing the New Tab Page.">
+      Pick a theme color
+    </message>
       <message name="IDS_NTP_CUSTOMIZE_DEFAULT_LABEL" desc="The label for the Default theme in the customization menu on the New Tab Page">
         Default color
       </message>

@@ -1368,6 +1368,7 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
     // Color picker strings:
     {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
     {"defaultThemeLabel", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
+    {"themesContainerLabel", IDS_SETTINGS_PICK_A_THEME_COLOR},
     {"thirdPartyThemeDescription", IDS_NTP_CUSTOMIZE_3PT_THEME_DESC},
     {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
 

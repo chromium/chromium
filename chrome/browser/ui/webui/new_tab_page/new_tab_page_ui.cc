@@ -262,6 +262,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesMenuItem", IDS_NTP_CUSTOMIZE_MENU_MODULES_LABEL},
       {"shortcutsOption", IDS_NTP_CUSTOMIZE_MENU_SHORTCUTS_LABEL},
       {"shortcutsSuggested", IDS_NTP_CUSTOMIZE_MOST_VISITED_DESC},
+      {"themesContainerLabel", IDS_NTP_THEMES_CONTAINER_LABEL},
       {"themesMenuItem", IDS_NTP_CUSTOMIZE_MENU_COLOR_LABEL},
       {"thirdPartyThemeDescription", IDS_NTP_CUSTOMIZE_3PT_THEME_DESC},
       {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},

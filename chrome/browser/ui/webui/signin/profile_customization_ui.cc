@@ -64,6 +64,8 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       // Color picker strings:
       {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
       {"defaultThemeLabel", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
+      {"themesContainerLabel",
+       IDS_PROFILE_CUSTOMIZATION_THEMES_CONTAINER_LABEL},
       {"thirdPartyThemeDescription", IDS_NTP_CUSTOMIZE_3PT_THEME_DESC},
       {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
   };
