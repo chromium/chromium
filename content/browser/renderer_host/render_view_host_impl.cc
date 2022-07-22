@@ -505,9 +505,6 @@ bool RenderViewHostImpl::CreateRenderView(
   bool is_guest_view = delegate_->IsGuest();
   bool is_fenced_frame = frame_tree_->type() == FrameTree::Type::kFencedFrame;
 
-  // GuestViews in the same StoragePartition need to find each other's frames.
-  params->renderer_wide_named_frame_lookup = is_guest_view;
-
   if (is_fenced_frame) {
     params->type = mojom::ViewWidgetType::kFencedFrame;
 

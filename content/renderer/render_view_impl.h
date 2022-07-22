@@ -120,10 +120,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient {
   // appropriate section, add it there. If not, there are some random functions
   // nearer to the top you can add it to.
 
-  bool renderer_wide_named_frame_lookup() {
-    return renderer_wide_named_frame_lookup_;
-  }
-
  protected:
   RenderViewImpl(AgentSchedulingGroup& agent_scheduling_group,
                  const mojom::CreateViewParams& params);
@@ -164,13 +160,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient {
   // Routing ID that allows us to communicate with the corresponding
   // RenderViewHost in the parent browser process.
   const int32_t routing_id_;
-
-  // Whether lookup of frames in the created RenderViewImpl (e.g. lookup via
-  // window.open or via <a target=...>) should be renderer-wide (i.e. going
-  // beyond the usual opener-relationship-based BrowsingInstance boundaries).
-  const bool renderer_wide_named_frame_lookup_;
-
-  // Settings ------------------------------------------------------------------
 
   // View ----------------------------------------------------------------------
 

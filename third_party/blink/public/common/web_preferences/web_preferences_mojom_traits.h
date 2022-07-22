@@ -758,6 +758,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.webxr_immersive_ar_allowed;
   }
 
+  static bool renderer_wide_named_frame_lookup(
+      const blink::web_pref::WebPreferences& r) {
+    return r.renderer_wide_named_frame_lookup;
+  }
+
   static bool Read(blink::mojom::WebPreferencesDataView r,
                    blink::web_pref::WebPreferences* out);
 };

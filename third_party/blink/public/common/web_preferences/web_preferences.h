@@ -352,6 +352,11 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // change depending on the enterprise policy if the platform supports it.
   bool webxr_immersive_ar_allowed = true;
 
+  // Whether lookup of frames in the associated WebView (e.g. lookup via
+  // window.open or via <a target=...>) should be renderer-wide (i.e. going
+  // beyond the usual opener-relationship-based BrowsingInstance boundaries).
+  bool renderer_wide_named_frame_lookup = false;
+
   // We try to keep the default values the same as the default values in
   // chrome, except for the cases where it would require lots of extra work for
   // the embedder to use the same default value.

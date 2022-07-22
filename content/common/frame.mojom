@@ -139,11 +139,6 @@ struct CreateViewParams {
   // Whether the window associated with this view was created by another window.
   bool window_was_opened_by_another_window;
 
-  // Whether lookup of frames in the created RenderView (e.g. lookup via
-  // window.open or via <a target=...>) should be renderer-wide (i.e. going
-  // beyond the usual opener-relationship-based BrowsingInstance boundaries).
-  bool renderer_wide_named_frame_lookup;
-
   // Indicates whether the view is a regular top-level widget or some other
   // nested "main frame" widget type.
   ViewWidgetType type;

@@ -1392,17 +1392,15 @@ blink::WebLocalFrame* RenderFrameImpl::UniqueNameFrameAdapter::GetWebFrame()
 // static
 RenderFrameImpl* RenderFrameImpl::Create(
     AgentSchedulingGroup& agent_scheduling_group,
-    RenderViewImpl* render_view,
     int32_t routing_id,
     mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker,
     const base::UnguessableToken& devtools_frame_token) {
   DCHECK(routing_id != MSG_ROUTING_NONE);
-  CreateParams params(agent_scheduling_group, render_view, routing_id,
-                      std::move(frame_receiver),
-                      std::move(browser_interface_broker),
-                      devtools_frame_token);
+  CreateParams params(
+      agent_scheduling_group, routing_id, std::move(frame_receiver),
+      std::move(browser_interface_broker), devtools_frame_token);
 
   if (g_create_render_frame_impl)
     return g_create_render_frame_impl(std::move(params));
@@ -1427,7 +1425,7 @@ RenderFrameImpl* RenderFrameImpl::FromRoutingID(int routing_id) {
 // static
 RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
     AgentSchedulingGroup& agent_scheduling_group,
-    RenderViewImpl* render_view,
+    blink::WebView* web_view,
     blink::WebFrame* opener,
     bool is_for_nested_main_frame,
     bool is_for_scalable_page,
@@ -1438,15 +1436,14 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   DCHECK_NE(MSG_ROUTING_NONE, params->widget_params->routing_id);
 
   RenderFrameImpl* render_frame = RenderFrameImpl::Create(
-      agent_scheduling_group, render_view, params->routing_id,
-      std::move(params->frame), std::move(params->interface_broker),
-      devtools_frame_token);
+      agent_scheduling_group, params->routing_id, std::move(params->frame),
+      std::move(params->interface_broker), devtools_frame_token);
   render_frame->InitializeBlameContext(nullptr);
 
   WebLocalFrame* web_frame = WebLocalFrame::CreateMainFrame(
-      render_view->GetWebView(), render_frame,
-      render_frame->blink_interface_registry_.get(), params->token,
-      ToWebPolicyContainer(std::move(params->policy_container)), opener,
+      web_view, render_frame, render_frame->blink_interface_registry_.get(),
+      params->token, ToWebPolicyContainer(std::move(params->policy_container)),
+      opener,
       // This conversion is a little sad, as this often comes from a
       // WebString...
       WebString::FromUTF8(replication_state->name),
@@ -1535,7 +1532,7 @@ void RenderFrameImpl::CreateFrame(
   // TODO(danakj): Split this method into two pieces. The first block makes a
   // WebLocalFrame and collects the RenderView and RenderFrame for it. The
   // second block uses that to make a RenderWidget, if needed.
-  RenderViewImpl* render_view = nullptr;
+  blink::WebView* web_view = nullptr;
   RenderFrameImpl* render_frame = nullptr;
   blink::WebLocalFrame* web_frame = nullptr;
   if (!previous_frame_token) {
@@ -1561,12 +1558,11 @@ void RenderFrameImpl::CreateFrame(
           blink::WebFrame::FromFrameToken(previous_sibling_frame_token.value());
     }
 
-    render_view = RenderViewImpl::FromWebView(parent_web_frame->View());
+    web_view = parent_web_frame->View();
     // Create the RenderFrame and WebLocalFrame, linking the two.
     render_frame = RenderFrameImpl::Create(
-        agent_scheduling_group, render_view, routing_id,
-        std::move(frame_receiver), std::move(browser_interface_broker),
-        devtools_frame_token);
+        agent_scheduling_group, routing_id, std::move(frame_receiver),
+        std::move(browser_interface_broker), devtools_frame_token);
     // Since `parent_web_frame` is remote we do not provide a parent_frame
     // for initializing the BlameContext.
     render_frame->InitializeBlameContext(/*parent_frame=*/nullptr);
@@ -1596,14 +1592,13 @@ void RenderFrameImpl::CreateFrame(
     if (!previous_web_frame)
       return;
 
-    render_view = RenderViewImpl::FromWebView(previous_web_frame->View());
+    web_view = previous_web_frame->View();
     // This path is creating a local frame. It may or may not be a local root,
     // depending if the frame's parent is local or remote. It may also be the
     // main frame, as in the case where a navigation to the current process'
     render_frame = RenderFrameImpl::Create(
-        agent_scheduling_group, render_view, routing_id,
-        std::move(frame_receiver), std::move(browser_interface_broker),
-        devtools_frame_token);
+        agent_scheduling_group, routing_id, std::move(frame_receiver),
+        std::move(browser_interface_broker), devtools_frame_token);
     render_frame->InitializeBlameContext(nullptr);
     web_frame = blink::WebLocalFrame::CreateProvisional(
         render_frame, render_frame->blink_interface_registry_.get(), token,
@@ -1618,7 +1613,7 @@ void RenderFrameImpl::CreateFrame(
         GetUniqueNameOfWebFrame(previous_web_frame));
   }
 
-  CHECK(render_view);
+  CHECK(web_view);
   CHECK(render_frame);
   CHECK(web_frame);
 
@@ -1644,8 +1639,7 @@ void RenderFrameImpl::CreateFrame(
     // WebViewImpl::SetInsidePortal - can we remove that path? Even better,
     // could the WebFrameWidget delegate to WebView/Page for this information?
     // https://crbug.com/1316535.
-    bool is_for_nested_main_frame =
-        render_view->GetWebView()->IsFencedFrameRoot();
+    bool is_for_nested_main_frame = web_view->IsFencedFrameRoot();
 
     // Non-owning pointer that is self-referencing and destroyed by calling
     // Close(). The RenderViewImpl has a RenderWidget already, but not a
@@ -1762,14 +1756,12 @@ blink::WebURL RenderFrameImpl::OverrideFlashEmbedWithHTML(
 
 RenderFrameImpl::CreateParams::CreateParams(
     AgentSchedulingGroup& agent_scheduling_group,
-    RenderViewImpl* render_view,
     int32_t routing_id,
     mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker,
     const base::UnguessableToken& devtools_frame_token)
     : agent_scheduling_group(&agent_scheduling_group),
-      render_view(render_view),
       routing_id(routing_id),
       frame_receiver(std::move(frame_receiver)),
       browser_interface_broker(std::move(browser_interface_broker)),
@@ -1786,7 +1778,6 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
       unique_name_frame_adapter_(this),
       unique_name_helper_(&unique_name_frame_adapter_),
       in_frame_tree_(false),
-      render_view_(params.render_view),
       routing_id_(params.routing_id),
       selection_text_offset_(0),
       selection_range_(gfx::Range::InvalidRange()),
@@ -3437,7 +3428,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
 
   // Create the RenderFrame and WebLocalFrame, linking the two.
   RenderFrameImpl* child_render_frame = RenderFrameImpl::Create(
-      agent_scheduling_group_, render_view_, child_routing_id,
+      agent_scheduling_group_, child_routing_id,
       std::move(pending_frame_receiver), std::move(browser_interface_broker),
       devtools_frame_token);
   child_render_frame->loader_factories_ = CloneLoaderFactories();
@@ -3559,7 +3550,7 @@ blink::WebRemoteFrame* RenderFrameImpl::CreateFencedFrame(
 }
 
 blink::WebFrame* RenderFrameImpl::FindFrame(const blink::WebString& name) {
-  if (render_view_->renderer_wide_named_frame_lookup()) {
+  if (GetBlinkPreferences().renderer_wide_named_frame_lookup) {
     for (const auto& it : g_routing_id_frame_map.Get()) {
       WebLocalFrame* frame = it.second->GetWebFrame();
       if (frame->AssignedName() == name)
@@ -4078,7 +4069,7 @@ bool RenderFrameImpl::SwapOutAndDeleteThis(
   blink::WebRemoteFrame* remote_frame = blink::WebRemoteFrame::Create(
       frame_->GetTreeScopeType(), proxy_frame_token);
 
-  RenderViewImpl* render_view = render_view_;
+  blink::WebView* web_view = GetWebView();
   bool is_main_frame = is_main_frame_;
 
   // The swap call deletes this RenderFrame via FrameDetached.  Do not access
@@ -4105,7 +4096,7 @@ bool RenderFrameImpl::SwapOutAndDeleteThis(
     // The RenderFrameProxy being swapped in here has now been attached to the
     // Page as its main frame and properly initialized by the WebFrame::Swap()
     // call, so we can call WebView's DidAttachRemoteMainFrame().
-    render_view->GetWebView()->DidAttachRemoteMainFrame(
+    web_view->DidAttachRemoteMainFrame(
         std::move(remote_main_frame_interfaces->main_frame_host),
         std::move(remote_main_frame_interfaces->main_frame));
   }
@@ -4883,7 +4874,7 @@ void RenderFrameImpl::DidCommitNavigationInternal(
   DCHECK(!(same_document_params && interface_params));
   UpdateStateForCommit(commit_type, transition);
 
-  if (render_view_->renderer_wide_named_frame_lookup())
+  if (GetBlinkPreferences().renderer_wide_named_frame_lookup)
     GetWebFrame()->SetAllowsCrossBrowsingInstanceFrameLookup();
 
   // This invocation must precede any calls to allowScripts(), allowImages(),

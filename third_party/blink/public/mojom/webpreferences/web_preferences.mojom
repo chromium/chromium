@@ -437,4 +437,9 @@ struct WebPreferences {
 
   // Controls whether WebXR's immersive-ar is allowed.
   bool webxr_immersive_ar_allowed;
+
+  // Whether lookup of frames in the associated WebView (e.g. lookup via
+  // window.open or via <a target=...>) should be renderer-wide (i.e. going
+  // beyond the usual opener-relationship-based BrowsingInstance boundaries).
+  bool renderer_wide_named_frame_lookup;
 };

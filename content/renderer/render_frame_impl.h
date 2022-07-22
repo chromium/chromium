@@ -162,7 +162,6 @@ class PepperPluginInstanceImpl;
 class RendererPpapiHost;
 class RenderAccessibilityManager;
 class RenderFrameObserver;
-class RenderViewImpl;
 
 class CONTENT_EXPORT RenderFrameImpl
     : public RenderFrame,
@@ -174,10 +173,10 @@ class CONTENT_EXPORT RenderFrameImpl
       public blink::WebLocalFrameClient,
       service_manager::mojom::InterfaceProvider {
  public:
-  // Creates a new RenderFrame as the main frame of |render_view|.
+  // Creates a new RenderFrame as the main frame of `web_view`.
   static RenderFrameImpl* CreateMainFrame(
       AgentSchedulingGroup& agent_scheduling_group,
-      RenderViewImpl* render_view,
+      blink::WebView* web_view,
       blink::WebFrame* opener,
       bool is_for_nested_main_frame,
       bool is_for_scalable_page,
@@ -235,7 +234,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // Constructor parameters are bundled into a struct.
   struct CONTENT_EXPORT CreateParams {
     CreateParams(AgentSchedulingGroup& agent_scheduling_group,
-                 RenderViewImpl* render_view,
                  int32_t routing_id,
                  mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
                  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
@@ -247,7 +245,6 @@ class CONTENT_EXPORT RenderFrameImpl
     CreateParams& operator=(CreateParams&&);
 
     AgentSchedulingGroup* agent_scheduling_group;
-    RenderViewImpl* render_view;
     int32_t routing_id;
     mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver;
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
@@ -271,10 +268,6 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // Returns the unique name of the RenderFrame.
   const std::string& unique_name() const { return unique_name_helper_.value(); }
-
-  // TODO(jam): this is a temporary getter until all the code is transitioned
-  // to using RenderFrame instead of RenderView.
-  RenderViewImpl* render_view() { return render_view_; }
 
   // Returns the blink::WebFrameWidget attached to the local root of this
   // frame.
@@ -815,13 +808,11 @@ class CONTENT_EXPORT RenderFrameImpl
 
   class FrameURLLoaderFactory;
 
-  // Creates a new RenderFrame. |render_view| is the RenderView object that this
-  // frame belongs to, and |browser_interface_broker| is the RenderFrameHost's
-  // BrowserInterfaceBroker through which services are exposed to the
-  // RenderFrame.
+  // Creates a new RenderFrame. |browser_interface_broker| is the
+  // RenderFrameHost's BrowserInterfaceBroker through which services are exposed
+  // to the RenderFrame.
   static RenderFrameImpl* Create(
       AgentSchedulingGroup& agent_scheduling_group,
-      RenderViewImpl* render_view,
       int32_t routing_id,
       mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
@@ -1177,7 +1168,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // Blink Web* layer to check for provisional frames.
   bool in_frame_tree_;
 
-  RenderViewImpl* render_view_;
   const int routing_id_;
 
   // Keeps track of which future subframes the browser process has history items

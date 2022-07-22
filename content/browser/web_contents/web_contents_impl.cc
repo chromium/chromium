@@ -2838,6 +2838,9 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
       static_cast<int>(min_width / display.device_scale_factor()));
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  // GuestViews in the same StoragePartition need to find each other's frames.
+  prefs.renderer_wide_named_frame_lookup = IsGuest();
+
   GetContentClient()->browser()->OverrideWebkitPrefs(this, &prefs);
   return prefs;
 }

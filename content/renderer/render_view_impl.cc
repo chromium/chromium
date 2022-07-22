@@ -102,8 +102,6 @@ content::mojom::WindowContainerType WindowFeaturesToContainerType(
 RenderViewImpl::RenderViewImpl(AgentSchedulingGroup& agent_scheduling_group,
                                const mojom::CreateViewParams& params)
     : routing_id_(params.view_id),
-      renderer_wide_named_frame_lookup_(
-          params.renderer_wide_named_frame_lookup),
       agent_scheduling_group_(agent_scheduling_group) {
   // Please put all logic in RenderViewImpl::Initialize().
 }
@@ -142,7 +140,7 @@ void RenderViewImpl::Initialize(
 
   if (local_main_frame) {
     RenderFrameImpl::CreateMainFrame(
-        agent_scheduling_group_, this, opener_frame,
+        agent_scheduling_group_, webview_, opener_frame,
         /*is_for_nested_main_frame=*/params->type !=
             mojom::ViewWidgetType::kTopLevel,
         /*is_for_scalable_page=*/params->type !=
@@ -375,7 +373,7 @@ WebView* RenderViewImpl::CreateView(
   mojom::CreateViewParamsPtr view_params = mojom::CreateViewParams::New();
 
   view_params->opener_frame_token = creator->GetFrameToken();
-  DCHECK_EQ(routing_id_, creator_frame->render_view()->routing_id_);
+  DCHECK_EQ(GetWebView(), creator->View());
 
   view_params->window_was_opened_by_another_window = true;
   view_params->renderer_preferences = webview_->GetRendererPreferences();
