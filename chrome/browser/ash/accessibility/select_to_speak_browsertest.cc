@@ -422,13 +422,9 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
   sm_.Replay();
 }
 
-// Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_BreaksAtParagraphBounds DISABLED_BreaksAtParagraphBounds
-#else
-#define MAYBE_BreaksAtParagraphBounds BreaksAtParagraphBounds
-#endif
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_BreaksAtParagraphBounds) {
+// Flaky on ChromeOS MSAN bots: https://crbug.com/1227368 and ChromeOS in
+// general: https://crbug.com/1225388
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, DISABLED_BreaksAtParagraphBounds) {
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<div><p>First paragraph</p>"
       "<p>Second paragraph</p></div>");
