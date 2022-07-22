@@ -18,11 +18,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
@@ -34,46 +31,14 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /** Unit tests for the {@code AdaptiveToolbarStatePredictor} */
-@Config(manifest = Config.NONE,
-        shadows = {AdaptiveToolbarStatePredictorTest.ShadowChromeFeatureList.class,
-                AdaptiveToolbarStatePredictorTest.ShadowVoiceRecognitionHandler.class})
+@Config(manifest = Config.NONE)
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
         ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR,
         ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
 @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 public class AdaptiveToolbarStatePredictorTest {
-    // TODO(crbug.com/1199025): Remove this shadow.
-    @Implements(ChromeFeatureList.class)
-    static class ShadowChromeFeatureList {
-        static final Map<String, String> sParamValues = new HashMap<>();
-
-        @Implementation
-        public static String getFieldTrialParamByFeature(String feature, String paramKey) {
-            Assert.assertTrue(ChromeFeatureList.isEnabled(feature));
-            return sParamValues.getOrDefault(paramKey, "");
-        }
-
-        public static void reset() {
-            sParamValues.clear();
-        }
-    }
-
-    @Implements(VoiceRecognitionUtil.class)
-    static class ShadowVoiceRecognitionHandler {
-        static boolean sIsVoiceRecognitionEnabled;
-
-        @Implementation
-        public static boolean isVoiceSearchEnabled(
-                AndroidPermissionDelegate androidPermissionDelegate) {
-            return sIsVoiceRecognitionEnabled;
-        }
-    }
-
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
@@ -83,15 +48,14 @@ public class AdaptiveToolbarStatePredictorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        LibraryLoader.getInstance().setLibrariesLoadedForNativeTests();
-        ShadowChromeFeatureList.reset();
+        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
-        ShadowVoiceRecognitionHandler.sIsVoiceRecognitionEnabled = true;
     }
 
     @After
     public void tearDown() {
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
+        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(null);
     }
 
     @Test
@@ -152,7 +116,7 @@ public class AdaptiveToolbarStatePredictorTest {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
         AdaptiveToolbarFeatures.setIgnoreSegmentationResultsForTesting(false);
 
-        ShadowVoiceRecognitionHandler.sIsVoiceRecognitionEnabled = false;
+        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(false);
         AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(true,
                 AdaptiveToolbarButtonVariant.UNKNOWN, true, AdaptiveToolbarButtonVariant.VOICE);
         UiState expected = new UiState(true, AdaptiveToolbarButtonVariant.SHARE,
