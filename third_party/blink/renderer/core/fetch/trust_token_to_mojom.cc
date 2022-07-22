@@ -7,46 +7,52 @@
 
 namespace blink {
 
+using OperationType = V8OperationType::Enum;
+using RefreshPolicy = V8RefreshPolicy::Enum;
+using SignRequestData = V8SignRequestData::Enum;
+
 bool ConvertTrustTokenToMojom(const TrustToken& in,
                               ExceptionState* exception_state,
                               network::mojom::blink::TrustTokenParams* out) {
   DCHECK(in.hasType());  // field is required in IDL
-  if (in.type() == "token-request") {
+  if (in.type().AsEnum() == OperationType::kTokenRequest) {
     out->type = network::mojom::blink::TrustTokenOperationType::kIssuance;
     return true;
   }
 
-  if (in.type() == "token-redemption") {
+  if (in.type().AsEnum() == OperationType::kTokenRedemption) {
     out->type = network::mojom::blink::TrustTokenOperationType::kRedemption;
 
     DCHECK(in.hasRefreshPolicy());  // default is defined
     out->include_timestamp_header = in.includeTimestampHeader();
 
-    if (in.refreshPolicy() == "none") {
+    if (in.refreshPolicy().AsEnum() == RefreshPolicy::kNone) {
       out->refresh_policy =
           network::mojom::blink::TrustTokenRefreshPolicy::kUseCached;
-    } else if (in.refreshPolicy() == "refresh") {
+    } else if (in.refreshPolicy().AsEnum() == RefreshPolicy::kRefresh) {
       out->refresh_policy =
           network::mojom::blink::TrustTokenRefreshPolicy::kRefresh;
     }
     return true;
   }
 
-  DCHECK_EQ(
-      in.type(),
-      "send-redemption-record");  // final possible value of the input enum
+  // The final possible value of the type enum.
+  DCHECK_EQ(in.type().AsEnum(), OperationType::kSendRedemptionRecord);
   out->type = network::mojom::blink::TrustTokenOperationType::kSigning;
 
   if (in.hasSignRequestData()) {
-    if (in.signRequestData() == "omit") {
-      out->sign_request_data =
-          network::mojom::blink::TrustTokenSignRequestData::kOmit;
-    } else if (in.signRequestData() == "include") {
-      out->sign_request_data =
-          network::mojom::blink::TrustTokenSignRequestData::kInclude;
-    } else if (in.signRequestData() == "headers-only") {
-      out->sign_request_data =
-          network::mojom::blink::TrustTokenSignRequestData::kHeadersOnly;
+    switch (in.signRequestData().AsEnum()) {
+      case SignRequestData::kOmit:
+        out->sign_request_data =
+            network::mojom::blink::TrustTokenSignRequestData::kOmit;
+        break;
+      case SignRequestData::kInclude:
+        out->sign_request_data =
+            network::mojom::blink::TrustTokenSignRequestData::kInclude;
+        break;
+      case SignRequestData::kHeadersOnly:
+        out->sign_request_data =
+            network::mojom::blink::TrustTokenSignRequestData::kHeadersOnly;
     }
   }
 
