@@ -59348,6 +59348,7 @@ from previous Chrome versions.
   <int value="354631905" label="RecoverFromNeverSaveAndroid:disabled"/>
   <int value="355367368" label="SharesheetCopyToClipboard:disabled"/>
   <int value="357138275" label="enable-floating-virtual-keyboard:disabled"/>
+  <int value="357165937" label="ShareToGoogleCollections:enabled"/>
   <int value="358399482" label="enable-high-dpi-fixed-position-compositing"/>
   <int value="358493847" label="BackgroundLoader:disabled"/>
   <int value="358906344" label="NotificationsRefresh:disabled"/>
@@ -60045,6 +60046,7 @@ from previous Chrome versions.
   <int value="797344274" label="OmniboxTriggerForPrerender2:disabled"/>
   <int value="797924041" label="DeferredShaping:enabled"/>
   <int value="798696013" label="ImeInputLogicMozc:enabled"/>
+  <int value="798803191" label="ShareToGoogleCollections:disabled"/>
   <int value="799680074" label="ContextualSearchTranslationModel:enabled"/>
   <int value="801865174" label="NetworkServiceInProcess2:enabled"/>
   <int value="802463708" label="WebViewSurfaceControl:enabled"/>

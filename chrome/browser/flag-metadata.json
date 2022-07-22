@@ -5684,6 +5684,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "sharing-desktop-share-to-google-collections",
+    "owners": ["mhatem", "chrome-with-friends-robots@google.com"],
+    "expiry_milestone": 108
+  },
+  {
     "name": "sharing-hub-desktop-app-menu",
     "owners": [ "kristipark", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 98

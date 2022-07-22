@@ -6247,6 +6247,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(share::kDesktopSharePreview,
                                     kDesktopSharePreviewVariations,
                                     "DesktopSharePreview")},
+    {"sharing-desktop-share-to-google-collections",
+     flag_descriptions::kSharingDesktopShareToGoogleCollectionsName,
+     flag_descriptions::kSharingDesktopShareToGoogleCollectionsDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(share::kShareToGoogleCollections)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

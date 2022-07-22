@@ -16,6 +16,7 @@ extern const base::Feature kPersistShareHubOnAppSwitch;
 extern const base::Feature kScreenshotsForAndroidV2;
 extern const base::Feature kSharingDesktopScreenshotsEdit;
 extern const base::Feature kUpcomingSharingFeatures;
+extern const base::Feature kShareToGoogleCollections;
 
 #if !BUILDFLAG(IS_ANDROID)
 extern const base::Feature kDesktopSharePreview;

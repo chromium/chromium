@@ -2368,6 +2368,9 @@ extern const char kSCTAuditingDescription[];
 extern const char kSharingDesktopSharePreviewName[];
 extern const char kSharingDesktopSharePreviewDescription[];
 
+extern const char kSharingDesktopShareToGoogleCollectionsName[];
+extern const char kSharingDesktopShareToGoogleCollectionsDescription[];
+
 extern const char kWebAuthenticationPermitEnterpriseAttestationName[];
 extern const char kWebAuthenticationPermitEnterpriseAttestationDescription[];
 

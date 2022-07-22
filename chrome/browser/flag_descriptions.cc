@@ -4141,6 +4141,11 @@ const char kSharingDesktopSharePreviewDescription[] =
     "Adds a preview section to the desktop sharing hub to make it clearer what "
     "is about to be shared.";
 
+const char kSharingDesktopShareToGoogleCollectionsName[] =
+    "Share to Google Collections";
+const char kSharingDesktopShareToGoogleCollectionsDescription[] =
+    "Adds an item to the sharing hub to allow sharing to Google Collections.";
+
 const char kWebAuthenticationPermitEnterpriseAttestationName[] =
     "Web Authentication Enterprise Attestation";
 const char kWebAuthenticationPermitEnterpriseAttestationDescription[] =

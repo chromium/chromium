@@ -18,6 +18,7 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/share/core/share_targets.h"
 #include "chrome/browser/share/proto/share_target.pb.h"
+#include "chrome/browser/share/share_features.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -44,6 +45,7 @@ namespace {
 
 const char kUrlReplace[] = "%(escaped_url)";
 const char kTitleReplace[] = "%(escaped_title)";
+const char kCollectionsNickname[] = "Collections";
 
 gfx::Image DecodeIcon(std::string str) {
   std::string icon_str;
@@ -60,6 +62,10 @@ bool IsEmailEnabled(const GURL& url) {
 #else
   return true;
 #endif
+}
+
+bool IsShareToGoogleCollectionsEnabled() {
+  return base::FeatureList::IsEnabled(share::kShareToGoogleCollections);
 }
 
 }  // namespace
@@ -252,6 +258,11 @@ void SharingHubModel::PopulateThirdPartyActions() {
       const GURL& url = GURL(target.url());
       // If an email handler is not available, do not show the email option.
       if (url.SchemeIs(url::kMailToScheme) && !IsEmailEnabled(url)) {
+        continue;
+      }
+
+      if (target.nickname() == kCollectionsNickname &&
+          !IsShareToGoogleCollectionsEnabled()) {
         continue;
       }
 
