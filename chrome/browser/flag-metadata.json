@@ -1001,7 +1001,7 @@
   {
     "name": "context-menu-popup-style",
     "owners": [ "wenyufu", "clank-app-team@google.com" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 108
   },
   {
     "name": "context-menu-search-and-shop-with-google-lens",
@@ -6147,7 +6147,7 @@
   {
     "name": "touch-drag-and-context-menu",
     "owners": [ "wenyufu", "clank-app-team@google.com" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 108
   },
   {
     "name": "touch-selection-strategy",
