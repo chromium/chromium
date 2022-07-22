@@ -607,6 +607,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Power.AmbientLightOnResume" units="lux"
+    expires_after="2023-02-01">
+  <owner>bkersten@chromium.org</owner>
+  <owner>slangley@chromium.org</owner>
+  <summary>
+    The Ambient Light Sensor reading sampled on resume from suspend. Only
+    applicable to Chrome OS.
+  </summary>
+</histogram>
+
 <histogram name="Power.ApproxCpuTimeSecondsPerCoreTypeAndFrequency"
     units="50 MHz" expires_after="2022-08-28">
   <obsolete>
