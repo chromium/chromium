@@ -531,14 +531,16 @@ void SearchBoxViewBase::MaybeSetAutocompleteGhostText(
   if (!features::IsAutocompleteExtendedSuggestionsEnabled())
     return;
 
-  if (title.empty()) {
+  if (title.empty() && category.empty()) {
     ghost_text_container_->SetVisible(false);
     autocomplete_ghost_text_->SetText(std::u16string());
     category_ghost_text_->SetText(std::u16string());
   } else {
     ghost_text_container_->SetVisible(true);
     autocomplete_ghost_text_->SetText(title);
+    separator_label_->SetVisible(!title.empty());
     category_ghost_text_->SetText(category);
+    category_separator_label_->SetVisible(!category.empty());
   }
 }
 
@@ -558,12 +560,13 @@ void SearchBoxViewBase::SetSearchBoxActive(bool active,
   UpdatePlaceholderTextStyle();
   search_box_->SetCursorEnabled(active);
 
+  // Clear ghost text when toggling search box active state.
+  MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
+
   if (active) {
     search_box_->RequestFocus();
     RecordSearchBoxActivationHistogram(event_type);
   } else {
-    // Clear ghost text when deactivating the search box.
-    MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
     search_box_->DestroyTouchSelection();
   }
 

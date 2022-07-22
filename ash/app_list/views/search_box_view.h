@@ -129,6 +129,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Sets the autocomplete text if autocomplete conditions are met.
   void ProcessAutocomplete(SearchResultBaseView* first_result_view);
 
+  // Sets up prefix match autocomplete. Returns true if successful.
+  bool ProcessPrefixMatchAutocomplete(SearchResult* search_result,
+                                      const std::u16string& user_typed_text);
+
   // Removes all autocomplete text.
   void ClearAutocompleteText();
 
@@ -169,6 +173,10 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
  private:
   class FocusRingLayer;
+
+  // Whether 'autocomplete_text' is a valid candidate for classic highlighted
+  // autocomplete.
+  bool IsValidAutocompleteText(const std::u16string& autocomplete_text);
 
   // Updates the text field text color.
   void UpdateTextColor();

@@ -734,42 +734,12 @@ void SearchBoxView::ProcessAutocomplete(
   if (user_typed_text == details || user_typed_text == search_text)
     return;
 
-  auto is_valid_autocomplete_text =
-      [this](const std::u16string& autocomplete_text) {
-        // Don't set autocomplete text if it's the same as current search box
-        // text.
-        if (autocomplete_text == search_box()->GetText())
-          return false;
-        // Don't set autocomplete text if the highlighted text is the same as
-        // before.
-        if (autocomplete_text.length() > highlight_range_.start() &&
-            autocomplete_text.substr(highlight_range_.start()) ==
-                search_box()->GetSelectedText()) {
-          return false;
-        }
-        return true;
-      };
-
-  if (base::StartsWith(details, user_typed_text,
-                       base::CompareCase::INSENSITIVE_ASCII) &&
-      is_valid_autocomplete_text(details)) {
-    // Current text in the search_box matches the first result's url.
-    SetAutocompleteText(details);
+  if (ProcessPrefixMatchAutocomplete(first_visible_result, user_typed_text)) {
     RecordAutocompleteMatchMetric(SearchBoxTextMatch::kPrefixMatch);
     return;
   }
 
-  if (base::StartsWith(search_text, user_typed_text,
-                       base::CompareCase::INSENSITIVE_ASCII) &&
-      is_valid_autocomplete_text(search_text)) {
-    // Current text in the search_box matches the first result's search result
-    // text.
-    SetAutocompleteText(search_text);
-    RecordAutocompleteMatchMetric(SearchBoxTextMatch::kPrefixMatch);
-    return;
-  }
-
-  if (is_valid_autocomplete_text(search_text)) {
+  if (IsValidAutocompleteText(search_text)) {
     // Setup autocomplete ghost text for eligible search_text.
     if (features::IsAutocompleteExtendedSuggestionsEnabled()) {
       MaybeSetAutocompleteGhostText(
@@ -795,9 +765,41 @@ void SearchBoxView::ProcessAutocomplete(
   ClearAutocompleteText();
 }
 
+bool SearchBoxView::ProcessPrefixMatchAutocomplete(
+    SearchResult* search_result,
+    const std::u16string& user_typed_text) {
+  const std::u16string& details = search_result->details();
+  const std::u16string& search_text = search_result->title();
+
+  if (base::StartsWith(details, user_typed_text,
+                       base::CompareCase::INSENSITIVE_ASCII) &&
+      IsValidAutocompleteText(details)) {
+    // Current text in the search_box matches the first result's url.
+    SetAutocompleteText(details);
+    MaybeSetAutocompleteGhostText(std::u16string(),
+                                  GetCategoryName(search_result));
+    return true;
+  }
+
+  if (base::StartsWith(search_text, user_typed_text,
+                       base::CompareCase::INSENSITIVE_ASCII) &&
+      IsValidAutocompleteText(search_text)) {
+    // Current text in the search_box matches the first result's search result
+    // text.
+    SetAutocompleteText(search_text);
+    MaybeSetAutocompleteGhostText(std::u16string(),
+                                  GetCategoryName(search_result));
+    return true;
+  }
+  return false;
+}
+
 void SearchBoxView::ClearAutocompleteText() {
   if (!ShouldProcessAutocomplete())
     return;
+
+  // Clear ghost text.
+  MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
 
   // Avoid triggering subsequent query by temporarily setting controller to
   // nullptr.
@@ -833,6 +835,22 @@ int SearchBoxView::GetSearchBoxButtonSize() {
   if (features::IsProductivityLauncherEnabled())
     return kBubbleLauncherSearchBoxButtonSizeDip;
   return kClassicSearchBoxButtonSizeDip;
+}
+
+bool SearchBoxView::IsValidAutocompleteText(
+    const std::u16string& autocomplete_text) {
+  // Don't set autocomplete text if it's the same as current search box
+  // text.
+  if (autocomplete_text == search_box()->GetText())
+    return false;
+  // Don't set autocomplete text if the highlighted text is the same as
+  // before.
+  if (autocomplete_text.length() > highlight_range_.start() &&
+      autocomplete_text.substr(highlight_range_.start()) ==
+          search_box()->GetSelectedText()) {
+    return false;
+  }
+  return true;
 }
 
 void SearchBoxView::UpdateTextColor() {
@@ -1199,8 +1217,18 @@ void SearchBoxView::UpdateSearchBoxForSelectedResult(
 
   if (features::IsAutocompleteExtendedSuggestionsEnabled()) {
     ClearAutocompleteText();
-    MaybeSetAutocompleteGhostText(selected_result->title(),
-                                  GetCategoryName(selected_result));
+
+    const std::u16string& details = selected_result->details();
+    const std::u16string& search_text = selected_result->title();
+
+    // Don't set autocomplete text if it's the same as user typed text.
+    if (current_query_ == details || current_query_ == search_text)
+      return;
+
+    if (!ProcessPrefixMatchAutocomplete(selected_result, current_query_)) {
+      MaybeSetAutocompleteGhostText(selected_result->title(),
+                                    GetCategoryName(selected_result));
+    }
   } else {
     if (selected_result->result_type() == AppListSearchResultType::kOmnibox &&
         !selected_result->is_omnibox_search() &&
