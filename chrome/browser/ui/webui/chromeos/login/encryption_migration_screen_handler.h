@@ -5,17 +5,16 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ENCRYPTION_MIGRATION_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ENCRYPTION_MIGRATION_SCREEN_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-
-namespace ash {
-class EncryptionMigrationScreen;
-}
 
 namespace chromeos {
 
-class EncryptionMigrationScreenView {
+class EncryptionMigrationScreenView
+    : public base::SupportsWeakPtr<EncryptionMigrationScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"encryption-migration"};
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "encryption-migration", "EncryptionMigrationScreen"};
 
   // Enumeration for migration UI state. These values must be kept in sync with
   // EncryptionMigrationUIState in JS code, and match the numbering for
@@ -30,11 +29,9 @@ class EncryptionMigrationScreenView {
     COUNT
   };
 
-  virtual ~EncryptionMigrationScreenView() {}
+  virtual ~EncryptionMigrationScreenView() = default;
 
   virtual void Show() = 0;
-  virtual void Hide() = 0;
-  virtual void SetDelegate(ash::EncryptionMigrationScreen* delegate) = 0;
   virtual void SetBatteryState(double batteryPercent,
                                bool isEnoughBattery,
                                bool isCharging) = 0;
@@ -63,8 +60,6 @@ class EncryptionMigrationScreenHandler : public EncryptionMigrationScreenView,
 
   // EncryptionMigrationScreenView implementation:
   void Show() override;
-  void Hide() override;
-  void SetDelegate(ash::EncryptionMigrationScreen* delegate) override;
   void SetBatteryState(double batteryPercent,
                        bool isEnoughBattery,
                        bool isCharging) override;
@@ -78,11 +73,6 @@ class EncryptionMigrationScreenHandler : public EncryptionMigrationScreenView,
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
-
- private:
-  ash::EncryptionMigrationScreen* delegate_ = nullptr;
-  bool show_on_init_ = false;
 };
 
 }  // namespace chromeos

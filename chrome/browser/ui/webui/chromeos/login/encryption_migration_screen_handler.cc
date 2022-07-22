@@ -13,37 +13,13 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId EncryptionMigrationScreenView::kScreenId;
-
 EncryptionMigrationScreenHandler::EncryptionMigrationScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated(
-      "login.EncryptionMigrationScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
-EncryptionMigrationScreenHandler::~EncryptionMigrationScreenHandler() {
-  if (delegate_)
-    delegate_->OnViewDestroyed(this);
-}
+EncryptionMigrationScreenHandler::~EncryptionMigrationScreenHandler() = default;
 
 void EncryptionMigrationScreenHandler::Show() {
-  if (!IsJavascriptAllowed() || !delegate_) {
-    show_on_init_ = true;
-    return;
-  }
   ShowInWebUI();
-}
-
-void EncryptionMigrationScreenHandler::Hide() {
-  show_on_init_ = false;
-}
-
-void EncryptionMigrationScreenHandler::SetDelegate(
-    EncryptionMigrationScreen* delegate) {
-  delegate_ = delegate;
-  BaseScreenHandler::SetBaseScreenDeprecated(delegate);
-  if (IsJavascriptAllowed())
-    InitializeDeprecated();
 }
 
 void EncryptionMigrationScreenHandler::DeclareLocalizedValues(
@@ -94,47 +70,35 @@ void EncryptionMigrationScreenHandler::DeclareLocalizedValues(
   builder->Add("gaiaLoading", IDS_LOGIN_GAIA_LOADING_MESSAGE);
 }
 
-void EncryptionMigrationScreenHandler::InitializeDeprecated() {
-  if (!IsJavascriptAllowed() || !delegate_)
-    return;
-
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
-}
-
 void EncryptionMigrationScreenHandler::SetBatteryState(double batteryPercent,
                                                        bool isEnoughBattery,
                                                        bool isCharging) {
-  CallJS("login.EncryptionMigrationScreen.setBatteryState", batteryPercent,
-         isEnoughBattery, isCharging);
+  CallExternalAPI("setBatteryState", batteryPercent, isEnoughBattery,
+                  isCharging);
 }
 
 void EncryptionMigrationScreenHandler::SetIsResuming(bool isResuming) {
-  CallJS("login.EncryptionMigrationScreen.setIsResuming", isResuming);
+  CallExternalAPI("setIsResuming", isResuming);
 }
 
 void EncryptionMigrationScreenHandler::SetUIState(UIState state) {
-  CallJS("login.EncryptionMigrationScreen.setUIState", static_cast<int>(state));
+  CallExternalAPI("setUIState", static_cast<int>(state));
 }
 
 void EncryptionMigrationScreenHandler::SetSpaceInfoInString(
     int64_t availableSpaceSize,
     int64_t necessarySpaceSize) {
-  CallJS("login.EncryptionMigrationScreen.setSpaceInfoInString",
-         ui::FormatBytes(availableSpaceSize),
-         ui::FormatBytes(necessarySpaceSize));
+  CallExternalAPI("setSpaceInfoInString", ui::FormatBytes(availableSpaceSize),
+                  ui::FormatBytes(necessarySpaceSize));
 }
 
 void EncryptionMigrationScreenHandler::SetNecessaryBatteryPercent(
     double batteryPercent) {
-  CallJS("login.EncryptionMigrationScreen.setNecessaryBatteryPercent",
-         batteryPercent);
+  CallExternalAPI("setNecessaryBatteryPercent", batteryPercent);
 }
 
 void EncryptionMigrationScreenHandler::SetMigrationProgress(double progress) {
-  CallJS("login.EncryptionMigrationScreen.setMigrationProgress", progress);
+  CallExternalAPI("setMigrationProgress", progress);
 }
 
 }  // namespace chromeos

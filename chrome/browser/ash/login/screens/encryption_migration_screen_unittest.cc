@@ -62,12 +62,30 @@ class FakeWakeLock : public device::mojom::WakeLock {
   bool has_wakelock_ = false;
 };
 
+class MockEncryptionMigrationScreenView : public EncryptionMigrationScreenView {
+ public:
+  MockEncryptionMigrationScreenView() = default;
+  ~MockEncryptionMigrationScreenView() override = default;
+
+  MOCK_METHOD(void, Show, ());
+  MOCK_METHOD(void,
+              SetBatteryState,
+              (double batteryPercent, bool isEnoughBattery, bool isCharging));
+  MOCK_METHOD(void, SetIsResuming, (bool isResuming));
+  MOCK_METHOD(void, SetUIState, (UIState state));
+  MOCK_METHOD(void,
+              SetSpaceInfoInString,
+              (int64_t availableSpaceSize, int64_t necessarySpaceSize));
+  MOCK_METHOD(void, SetNecessaryBatteryPercent, (double batteryPercent));
+  MOCK_METHOD(void, SetMigrationProgress, (double progress));
+};
+
 // Allows access to testing-only methods of EncryptionMigrationScreen.
 class TestEncryptionMigrationScreen : public EncryptionMigrationScreen {
  public:
-  explicit TestEncryptionMigrationScreen(EncryptionMigrationScreenView* view)
-      : EncryptionMigrationScreen(view) {
-  }
+  explicit TestEncryptionMigrationScreen(
+      base::WeakPtr<MockEncryptionMigrationScreenView> view)
+      : EncryptionMigrationScreen(std::move(view)) {}
 
   // Sets the free disk space seen by EncryptionMigrationScreen.
   void set_free_disk_space(int64_t free_disk_space) {
@@ -87,26 +105,6 @@ class TestEncryptionMigrationScreen : public EncryptionMigrationScreen {
   FakeWakeLock fake_wake_lock_;
 
   int64_t free_disk_space_;
-};
-
-class MockEncryptionMigrationScreenView : public EncryptionMigrationScreenView {
- public:
-  MockEncryptionMigrationScreenView() = default;
-  ~MockEncryptionMigrationScreenView() override = default;
-
-  MOCK_METHOD(void, Show, ());
-  MOCK_METHOD(void, Hide, ());
-  MOCK_METHOD(void, SetDelegate, (EncryptionMigrationScreen * delegate));
-  MOCK_METHOD(void,
-              SetBatteryState,
-              (double batteryPercent, bool isEnoughBattery, bool isCharging));
-  MOCK_METHOD(void, SetIsResuming, (bool isResuming));
-  MOCK_METHOD(void, SetUIState, (UIState state));
-  MOCK_METHOD(void,
-              SetSpaceInfoInString,
-              (int64_t availableSpaceSize, int64_t necessarySpaceSize));
-  MOCK_METHOD(void, SetNecessaryBatteryPercent, (double batteryPercent));
-  MOCK_METHOD(void, SetMigrationProgress, (double progress));
 };
 
 class EncryptionMigrationScreenTest : public testing::Test {
@@ -134,7 +132,7 @@ class EncryptionMigrationScreenTest : public testing::Test {
         Key(Key::KeyType::KEY_TYPE_SALTED_SHA256, "salt", "secret"));
 
     encryption_migration_screen_ =
-        std::make_unique<TestEncryptionMigrationScreen>(&mock_view_);
+        std::make_unique<TestEncryptionMigrationScreen>(std::move(mock_view_));
     encryption_migration_screen_->SetSkipMigrationCallback(
         base::BindOnce(&EncryptionMigrationScreenTest::OnContinueLogin,
                        base::Unretained(this)));
@@ -156,7 +154,7 @@ class EncryptionMigrationScreenTest : public testing::Test {
   std::unique_ptr<TestEncryptionMigrationScreen> encryption_migration_screen_;
 
   // Accessory objects needed by EncryptionMigrationScreen.
-  MockEncryptionMigrationScreenView mock_view_;
+  base::WeakPtr<MockEncryptionMigrationScreenView> mock_view_;
 
   // Must be the first member.
   base::test::TaskEnvironment task_environment_;
