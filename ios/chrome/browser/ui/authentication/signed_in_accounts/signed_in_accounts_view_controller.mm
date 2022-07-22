@@ -2,31 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/signed_in_accounts_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/signed_in_accounts/signed_in_accounts_view_controller.h"
 
-#import <MaterialComponents/MaterialDialogs.h>
-#import <MaterialComponents/MaterialTypography.h>
-
-#import "base/mac/foundation_util.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/signin/authentication_service.h"
-#include "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
-#include "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/chrome/browser/ui/collection_view/cells/collection_view_account_item.h"
-#import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
-#import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/ui/authentication/signed_in_accounts/signed_in_accounts_presentation_controller.h"
+#import "ios/chrome/browser/ui/authentication/signed_in_accounts/signed_in_accounts_table_view_controller.h"
+#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -35,165 +28,34 @@
 namespace {
 
 const size_t kMaxShownAccounts = 3;
-const CGFloat kAccountsExtraBottomInset = 16;
-const CGFloat kVerticalPadding = 24;
-const CGFloat kButtonVerticalPadding = 16;
-const CGFloat kHorizontalPadding = 24;
-const CGFloat kAccountsHorizontalPadding = 8;
-const CGFloat kButtonHorizontalPadding = 16;
-const CGFloat kBetweenButtonsPadding = 8;
-const CGFloat kMDCMinHorizontalPadding = 20;
-const CGFloat kDialogMaxWidth = 328;
-
-typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierAccounts = kSectionIdentifierEnumZero,
-};
-
-typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeAccount = kItemTypeEnumZero,
-};
+constexpr CGFloat kAccountsExtraBottomInset = 16;
+constexpr CGFloat kVerticalPadding = 24;
+constexpr CGFloat kButtonVerticalPadding = 16;
+constexpr CGFloat kHorizontalPadding = 24;
+constexpr CGFloat kAccountsHorizontalPadding = 8;
+constexpr CGFloat kButtonHorizontalPadding = 16;
+constexpr CGFloat kBetweenButtonsPadding = 8;
+constexpr CGFloat kViewControllerHorizontalPadding = 20;
+constexpr CGFloat kDialogMaxWidth = 328;
+constexpr CGFloat kDefaultCellHeight = 54;
 
 // Whether the Signed In Accounts view is currently being shown.
 BOOL gSignedInAccountsViewControllerIsShown = NO;
 
 }  // namespace
 
-@interface SignedInAccountsCollectionViewController
-    : CollectionViewController <ChromeAccountManagerServiceObserver> {
-  ChromeBrowserState* _browserState;  // Weak.
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
-
-  // Enable lookup of item corresponding to a given identity GAIA ID string.
-  NSDictionary<NSString*, CollectionViewItem*>* _identityMap;
-}
-
-// Account manager service to retrieve Chrome identities.
-@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
-
-@end
-
-@implementation SignedInAccountsCollectionViewController
-
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
-  UICollectionViewLayout* layout = [[MDCCollectionViewFlowLayout alloc] init];
-  self =
-      [super initWithLayout:layout style:CollectionViewControllerStyleDefault];
-  if (self) {
-    _browserState = browserState;
-    _accountManagerService =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(_browserState);
-    _accountManagerServiceObserver.reset(
-        new ChromeAccountManagerServiceObserverBridge(self,
-                                                      _accountManagerService));
-    // TODO(crbug.com/764578): -loadModel should not be called from
-    // initializer. A possible fix is to move this call to -viewDidLoad.
-    [self loadModel];
-  }
-  return self;
-}
-
-- (void)viewDidLoad {
-  [super viewDidLoad];
-
-  self.styler.shouldHideSeparators = YES;
-  self.collectionView.backgroundColor = UIColor.clearColor;
-
-  // Add an inset at the bottom so the user can see whether it is possible to
-  // scroll to see additional accounts.
-  UIEdgeInsets contentInset = self.collectionView.contentInset;
-  contentInset.bottom += kAccountsExtraBottomInset;
-  self.collectionView.contentInset = contentInset;
-}
-
-#pragma mark CollectionViewController
-
-- (void)loadModel {
-  [super loadModel];
-  CollectionViewModel* model = self.collectionViewModel;
-  [model addSectionWithIdentifier:SectionIdentifierAccounts];
-
-  NSMutableDictionary<NSString*, CollectionViewItem*>* mutableIdentityMap =
-      [[NSMutableDictionary alloc] init];
-
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(_browserState);
-  for (const auto& account : identityManager->GetAccountsWithRefreshTokens()) {
-    ChromeIdentity* identity =
-        self.accountManagerService->GetIdentityWithGaiaID(account.gaia);
-
-    // If the account with a refresh token is invalidated during this operation
-    // then `identity` will be nil. Do not process it in this case.
-    if (!identity) {
-      continue;
-    }
-    CollectionViewItem* item = [self accountItem:identity];
-    [model addItem:item toSectionWithIdentifier:SectionIdentifierAccounts];
-    [mutableIdentityMap setObject:item forKey:identity.gaiaID];
-  }
-  _identityMap = mutableIdentityMap;
-}
-
-#pragma mark Model objects
-
-- (CollectionViewItem*)accountItem:(ChromeIdentity*)identity {
-  CollectionViewAccountItem* item =
-      [[CollectionViewAccountItem alloc] initWithType:ItemTypeAccount];
-  [self updateAccountItem:item withIdentity:identity];
-  return item;
-}
-
-- (void)updateAccountItem:(CollectionViewAccountItem*)item
-             withIdentity:(ChromeIdentity*)identity {
-  item.image = self.accountManagerService->GetIdentityAvatarWithIdentity(
-      identity, IdentityAvatarSize::DefaultLarge);
-  item.text = [identity userFullName];
-  item.detailText = [identity userEmail];
-  item.chromeIdentity = identity;
-}
-
-#pragma mark MDCCollectionViewStylingDelegate
-
-- (BOOL)collectionView:(UICollectionView*)collectionView
-    shouldHideItemBackgroundAtIndexPath:(NSIndexPath*)indexPath {
-  return YES;
-}
-
-- (CGFloat)collectionView:(UICollectionView*)collectionView
-    cellHeightAtIndexPath:(NSIndexPath*)indexPath {
-  return MDCCellDefaultOneLineWithAvatarHeight;
-}
-
-- (BOOL)collectionView:(UICollectionView*)collectionView
-    hidesInkViewAtIndexPath:(NSIndexPath*)indexPath {
-  return YES;
-}
-
-#pragma mark ChromeAccountManagerServiceObserver
-
-- (void)identityChanged:(ChromeIdentity*)identity {
-  CollectionViewAccountItem* item =
-      base::mac::ObjCCastStrict<CollectionViewAccountItem>(
-          [_identityMap objectForKey:identity.gaiaID]);
-  [self updateAccountItem:item withIdentity:identity];
-  NSIndexPath* indexPath = [self.collectionViewModel indexPathForItem:item];
-  [self.collectionView reloadItemsAtIndexPaths:@[ indexPath ]];
-}
-
-@end
-
 @interface SignedInAccountsViewController () <
-    IdentityManagerObserverBridgeDelegate> {
+    IdentityManagerObserverBridgeDelegate,
+    UIViewControllerTransitioningDelegate> {
   ChromeBrowserState* _browserState;  // Weak.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
-  MDCDialogTransitionController* _transitionController;
 
   UILabel* _titleLabel;
-  SignedInAccountsCollectionViewController* _accountsCollection;
+  SignedInAccountsTableViewController* _accountTableView;
   UILabel* _infoLabel;
-  MDCButton* _primaryButton;
-  MDCButton* _secondaryButton;
+  UIButton* _primaryButton;
+  UIButton* _secondaryButton;
 }
 @property(nonatomic, readonly, weak) id<ApplicationSettingsCommands> dispatcher;
 @end
@@ -224,9 +86,8 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
             IdentityManagerFactory::GetForBrowserState(_browserState), self);
-    _transitionController = [[MDCDialogTransitionController alloc] init];
     self.modalPresentationStyle = UIModalPresentationCustom;
-    self.transitioningDelegate = _transitionController;
+    self.transitioningDelegate = self;
   }
   return self;
 }
@@ -253,7 +114,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
 - (CGSize)preferredContentSize {
   CGFloat width = std::min(
       kDialogMaxWidth, self.presentingViewController.view.bounds.size.width -
-                           2 * kMDCMinHorizontalPadding);
+                           2 * kViewControllerHorizontalPadding);
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(_browserState);
   int shownAccounts =
@@ -264,9 +125,9 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   CGSize infoSize = [_infoLabel sizeThatFits:maxSize];
   CGSize titleSize = [_titleLabel sizeThatFits:maxSize];
   CGFloat height = kVerticalPadding + titleSize.height + kVerticalPadding +
-                   shownAccounts * MDCCellDefaultOneLineWithAvatarHeight +
-                   kVerticalPadding + infoSize.height + kVerticalPadding +
-                   buttonSize.height + kButtonVerticalPadding;
+                   shownAccounts * kDefaultCellHeight + kVerticalPadding +
+                   infoSize.height + kVerticalPadding + buttonSize.height +
+                   kButtonVerticalPadding;
   return CGSizeMake(width, height);
 }
 
@@ -286,12 +147,12 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_titleLabel];
 
-  _accountsCollection = [[SignedInAccountsCollectionViewController alloc]
+  _accountTableView = [[SignedInAccountsTableViewController alloc]
       initWithBrowserState:_browserState];
-  _accountsCollection.view.translatesAutoresizingMaskIntoConstraints = NO;
-  [self addChildViewController:_accountsCollection];
-  [self.view addSubview:_accountsCollection.view];
-  [_accountsCollection didMoveToParentViewController:self];
+  _accountTableView.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [self addChildViewController:_accountTableView];
+  [self.view addSubview:_accountTableView.view];
+  [_accountTableView didMoveToParentViewController:self];
 
   _infoLabel = [[UILabel alloc] initWithFrame:CGRectZero];
   _infoLabel.text =
@@ -305,42 +166,43 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   _infoLabel.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_infoLabel];
 
-  _primaryButton = [[MDCFlatButton alloc] init];
+  _primaryButton = [[UIButton alloc] init];
   [_primaryButton addTarget:self
                      action:@selector(onPrimaryButtonPressed:)
            forControlEvents:UIControlEventTouchUpInside];
-  [_primaryButton
-      setTitle:l10n_util::GetNSString(IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_OK_BUTTON)
-      forState:UIControlStateNormal];
-  [_primaryButton setBackgroundColor:[UIColor colorNamed:kBlueColor]
-                            forState:UIControlStateNormal];
+  NSString* primaryButtonTitle =
+      l10n_util::GetNSString(IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_OK_BUTTON)
+          .uppercaseString;
+  [_primaryButton setTitle:primaryButtonTitle forState:UIControlStateNormal];
+  _primaryButton.backgroundColor = [UIColor colorNamed:kBlueColor];
   [_primaryButton setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
                        forState:UIControlStateNormal];
-  _primaryButton.underlyingColorHint = [UIColor colorNamed:kBackgroundColor];
-  _primaryButton.inkColor = [UIColor colorNamed:kMDCInkColor];
+  _primaryButton.titleLabel.font =
+      [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
+  _primaryButton.contentEdgeInsets = UIEdgeInsetsMake(8, 16, 8, 16);
   _primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_primaryButton];
 
-  _secondaryButton = [[MDCFlatButton alloc] init];
+  _secondaryButton = [[UIButton alloc] init];
   [_secondaryButton addTarget:self
                        action:@selector(onSecondaryButtonPressed:)
              forControlEvents:UIControlEventTouchUpInside];
-  [_secondaryButton
-      setTitle:l10n_util::GetNSString(
-                   IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_SETTINGS_BUTTON)
-      forState:UIControlStateNormal];
-  [_secondaryButton setBackgroundColor:UIColor.clearColor
-                              forState:UIControlStateNormal];
+  NSString* secondaryButtonTitle =
+      l10n_util::GetNSString(IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_SETTINGS_BUTTON)
+          .uppercaseString;
+  [_secondaryButton setTitle:secondaryButtonTitle
+                    forState:UIControlStateNormal];
   [_secondaryButton setTitleColor:[UIColor colorNamed:kBlueColor]
                          forState:UIControlStateNormal];
-  _secondaryButton.underlyingColorHint = [UIColor colorNamed:kBackgroundColor];
-  _secondaryButton.inkColor = [UIColor colorNamed:kMDCSecondaryInkColor];
+  _secondaryButton.titleLabel.font =
+      [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
+  _secondaryButton.contentEdgeInsets = UIEdgeInsetsMake(8, 16, 8, 16);
   _secondaryButton.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_secondaryButton];
 
   NSDictionary* views = @{
     @"title" : _titleLabel,
-    @"accounts" : _accountsCollection.view,
+    @"accounts" : _accountTableView.view,
     @"info" : _infoLabel,
     @"primaryButton" : _primaryButton,
     @"secondaryButton" : _secondaryButton,
@@ -375,6 +237,7 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   if ([self isBeingPresented] || [self isMovingToParentViewController]) {
     gSignedInAccountsViewControllerIsShown = YES;
   }
+  [_accountTableView loadModel];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -409,8 +272,20 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
     [self dismissWithCompletion:nil];
     return;
   }
-  [_accountsCollection loadModel];
-  [_accountsCollection.collectionView reloadData];
+  [_accountTableView loadModel];
+}
+
+#pragma mark - UIViewControllerTransitioningDelegate
+
+- (UIPresentationController*)
+    presentationControllerForPresentedViewController:
+        (UIViewController*)presented
+                            presentingViewController:
+                                (UIViewController*)presenting
+                                sourceViewController:(UIViewController*)source {
+  return [[SignedInAccountsPresentationController alloc]
+      initWithPresentedViewController:presented
+             presentingViewController:presenting];
 }
 
 @end

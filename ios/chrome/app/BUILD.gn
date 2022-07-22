@@ -406,6 +406,7 @@ source_set("app_internal") {
     "//ios/public/provider/chrome/browser/overrides:overrides_api",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ios/public/provider/chrome/browser/user_feedback",
+    "//ios/third_party/material_components_ios",
     "//ios/web/common:features",
     "//ios/web/common:uikit",
     "//ios/web/public/webui",

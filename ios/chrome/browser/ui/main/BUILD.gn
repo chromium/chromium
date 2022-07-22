@@ -173,6 +173,7 @@ source_set("scene") {
     "//ios/chrome/browser/ui/appearance",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
+    "//ios/chrome/browser/ui/authentication/signed_in_accounts",
     "//ios/chrome/browser/ui/authentication/signin",
     "//ios/chrome/browser/ui/blocking_overlay",
     "//ios/chrome/browser/ui/browser_view",
@@ -208,6 +209,7 @@ source_set("scene") {
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ios/public/provider/chrome/browser/user_feedback",
+    "//ios/third_party/material_components_ios",
     "//ui/base:base",
   ]
   public_deps = [

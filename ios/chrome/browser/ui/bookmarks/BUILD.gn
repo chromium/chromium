@@ -89,6 +89,7 @@ source_set("bookmarks") {
     "//ios/chrome/common/ui/favicon:favicon",
     "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/common/ui/util",
+    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
