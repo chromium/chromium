@@ -7,4 +7,7 @@ specific_include_rules = {
   "desks_controller.cc": [
     "+components/user_manager/user_manager.h",
   ],
+  "saved_desk_unittest.cc": [
+    "+cc/test/pixel_comparator.h",
+  ],
 }
