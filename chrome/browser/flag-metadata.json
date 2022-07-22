@@ -1226,7 +1226,7 @@
     "name": "deprecate-alt-click",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],
-    "expiry_milestone": 105
+    "expiry_milestone": 112
   },
   {
     "name": "deprecate-assistant-stylus-features",
