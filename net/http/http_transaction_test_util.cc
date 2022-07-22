@@ -204,7 +204,7 @@ MockHttpRequest::MockHttpRequest(const MockTransaction& t) {
 }
 
 std::string MockHttpRequest::CacheKey() {
-  return HttpCache::GenerateCacheKeyForRequest(this);
+  return *HttpCache::GenerateCacheKeyForRequest(this);
 }
 
 //-----------------------------------------------------------------------------

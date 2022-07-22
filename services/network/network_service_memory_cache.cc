@@ -96,12 +96,6 @@ void RecordEntryStatus(EntryStatus result) {
 absl::optional<std::string> GenerateCacheKeyForResourceRequest(
     const ResourceRequest& resource_request,
     const net::NetworkIsolationKey& network_isolation_key) {
-  // See the comment in HttpCache::Transaction::ShouldPassThrough().
-  if (net::HttpCache::IsSplitCacheEnabled() &&
-      network_isolation_key.IsTransient()) {
-    return absl::nullopt;
-  }
-
   const bool is_subframe_document_resource =
       resource_request.destination == mojom::RequestDestination::kIframe;
   return net::HttpCache::GenerateCacheKey(
@@ -113,11 +107,6 @@ absl::optional<std::string> GenerateCacheKeyForResourceRequest(
 absl::optional<std::string> GenerateCacheKeyForURLRequest(
     const net::URLRequest& url_request,
     mojom::RequestDestination request_destination) {
-  if (net::HttpCache::IsSplitCacheEnabled() &&
-      url_request.isolation_info().network_isolation_key().IsTransient()) {
-    return absl::nullopt;
-  }
-
   bool is_subframe_document_resource =
       request_destination == mojom::RequestDestination::kIframe;
   return net::HttpCache::GenerateCacheKey(

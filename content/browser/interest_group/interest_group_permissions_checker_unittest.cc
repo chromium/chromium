@@ -316,8 +316,8 @@ TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, DifferentFrameOrigin) {
   // NetworkIsolationKey.
   const url::Origin kOtherFrameOrigin =
       url::Origin::Create(GURL("https://other.frame.test"));
-  DCHECK_EQ(net::NetworkIsolationKey(kOtherFrameOrigin, kOtherFrameOrigin),
-            kNetworkIsolationKey);
+  DCHECK(net::NetworkIsolationKey(kOtherFrameOrigin, kOtherFrameOrigin) ==
+         kNetworkIsolationKey);
   const GURL kOtherValidationUrl(
       "https://group.test/.well-known/interest-group/permissions/"
       "?origin=https%3A%2F%2Fother.frame.test");

@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleElementBrowserTest, NetworkIsolationKey) {
   RenderFrameHost* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
   RenderFrameHost* urn_frame = ChildFrameAt(main_frame, 0);
   EXPECT_EQ("https://page.test https://bundle.test",
-            urn_frame->GetNetworkIsolationKey().ToString());
+            *urn_frame->GetNetworkIsolationKey().ToCacheKeyString());
 }
 
 IN_PROC_BROWSER_TEST_F(WebBundleElementBrowserTest, ReloadSubframe) {

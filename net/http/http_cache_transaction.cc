@@ -1043,7 +1043,7 @@ int HttpCache::Transaction::DoGetBackendComplete(int result) {
     // DoCacheReadResponseComplete(), even though `request_` will still have a
     // checksum. So it needs to be passed explicitly.
     cache_key_ =
-        cache_->GenerateCacheKeyForRequest(request_, use_single_keyed_cache_);
+        *cache_->GenerateCacheKeyForRequest(request_, use_single_keyed_cache_);
 
     // Requested cache access mode.
     if (effective_load_flags_ & LOAD_ONLY_FROM_CACHE) {

@@ -341,7 +341,7 @@ void HttpAuthCache::CopyProxyEntriesFrom(const HttpAuthCache& other) {
       continue;
 
     // Sanity check - proxy entries should have an empty NetworkIsolationKey.
-    DCHECK_EQ(NetworkIsolationKey(), it->first.network_isolation_key);
+    DCHECK(NetworkIsolationKey() == it->first.network_isolation_key);
 
     // Add an Entry with one of the original entry's paths.
     DCHECK(e.paths_.size() > 0);

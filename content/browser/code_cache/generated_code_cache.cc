@@ -108,8 +108,14 @@ std::string GetCacheKey(const GURL& resource_url,
 
   if (base::FeatureList::IsEnabled(
           net::features::kSplitCacheByNetworkIsolationKey)) {
-    key.append(kSeparator);
-    key.append(nik.ToString());
+    // TODO(https://crbug.com/1346188):  Transient NIKs return nullopt when
+    // their ToCacheKeyString() method is invoked, as they generally shouldn't
+    // be written to disk. This code is currently reached for transient NIKs,
+    // which needs to be fixed.
+    if (!nik.IsTransient()) {
+      key.append(kSeparator);
+      key.append(*nik.ToCacheKeyString());
+    }
   }
   return key;
 }

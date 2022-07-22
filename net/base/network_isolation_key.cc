@@ -79,9 +79,9 @@ NetworkIsolationKey NetworkIsolationKey::CreateWithNewFrameSite(
   return key;
 }
 
-std::string NetworkIsolationKey::ToString() const {
+absl::optional<std::string> NetworkIsolationKey::ToCacheKeyString() const {
   if (IsTransient())
-    return "";
+    return absl::nullopt;
 
   return top_frame_site_->Serialize() + " " + frame_site_->Serialize();
 }

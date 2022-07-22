@@ -36,6 +36,7 @@
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_transaction_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -258,8 +259,11 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // Get the URL from the entry's cache key.
   static std::string GetResourceURLFromHttpCacheKey(const std::string& key);
 
-  // Generates the cache key for a request.
-  static std::string GenerateCacheKey(
+  // Generates the cache key for a request. Returns nullopt if the cache is
+  // configured to be split by the NetworkIsolationKey, and the
+  // NetworkIsolationKey is transient, in which case nothing should generally be
+  // stored to disk.
+  static absl::optional<std::string> GenerateCacheKey(
       const GURL& url,
       int load_flags,
       const NetworkIsolationKey& network_isolation_key,
@@ -267,7 +271,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
       bool is_subframe_document_resource,
       bool use_single_keyed_cache,
       const std::string& single_key_checksum);
-  static std::string GenerateCacheKeyForRequest(
+  static absl::optional<std::string> GenerateCacheKeyForRequest(
       const HttpRequestInfo* request,
       bool use_single_keyed_cache = false);
 

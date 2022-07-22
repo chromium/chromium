@@ -77,7 +77,7 @@ TEST(ClientSocketPool, GroupIdOperators) {
         for (const auto& privacy_mode : kPrivacyModes) {
           SCOPED_TRACE(privacy_mode);
           for (const auto& network_isolation_key : kNetworkIsolationKeys) {
-            SCOPED_TRACE(network_isolation_key.ToString());
+            SCOPED_TRACE(network_isolation_key.ToDebugString());
             for (const auto& secure_dns_policy : kDisableSecureDnsValues) {
               ClientSocketPool::GroupId group_id(
                   url::SchemeHostPort(scheme, host, port), privacy_mode,

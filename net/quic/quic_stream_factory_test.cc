@@ -1325,7 +1325,7 @@ TEST_P(QuicStreamFactoryTest, CachedInitialRttWithNetworkIsolationKey) {
 
   for (const auto& network_isolation_key :
        {kNetworkIsolationKey1, kNetworkIsolationKey2, NetworkIsolationKey()}) {
-    SCOPED_TRACE(network_isolation_key.ToString());
+    SCOPED_TRACE(network_isolation_key.ToDebugString());
 
     ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
     crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);

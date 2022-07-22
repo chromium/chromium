@@ -101,7 +101,7 @@ TEST_P(IsolationInfoTest, RequestTypeMainFrame) {
   EXPECT_TRUE(isolation_info.network_isolation_key().IsFullyPopulated());
   EXPECT_FALSE(isolation_info.network_isolation_key().IsTransient());
   EXPECT_EQ("https://foo.test https://foo.test",
-            isolation_info.network_isolation_key().ToString());
+            isolation_info.network_isolation_key().ToCacheKeyString());
   EXPECT_TRUE(
       isolation_info.site_for_cookies().IsFirstParty(kOrigin1.GetURL()));
   EXPECT_EQ(kPartyContextEmpty, isolation_info.party_context());
@@ -122,8 +122,9 @@ TEST_P(IsolationInfoTest, RequestTypeMainFrame) {
   EXPECT_TRUE(
       redirected_isolation_info.network_isolation_key().IsFullyPopulated());
   EXPECT_FALSE(redirected_isolation_info.network_isolation_key().IsTransient());
-  EXPECT_EQ("https://baz.test https://baz.test",
-            redirected_isolation_info.network_isolation_key().ToString());
+  EXPECT_EQ(
+      "https://baz.test https://baz.test",
+      redirected_isolation_info.network_isolation_key().ToCacheKeyString());
   EXPECT_TRUE(redirected_isolation_info.site_for_cookies().IsFirstParty(
       kOrigin3.GetURL()));
   EXPECT_EQ(kPartyContextEmpty, redirected_isolation_info.party_context());
@@ -140,11 +141,11 @@ TEST_P(IsolationInfoTest, RequestTypeSubFrame) {
   if (ForceIsolationInfoFrameOriginToTopLevelFrameEnabled()) {
     EXPECT_EQ(kOrigin1, isolation_info.frame_origin());
     EXPECT_EQ("https://foo.test https://foo.test",
-              isolation_info.network_isolation_key().ToString());
+              isolation_info.network_isolation_key().ToCacheKeyString());
   } else {
     EXPECT_EQ(kOrigin2, isolation_info.frame_origin());
     EXPECT_EQ("https://foo.test https://bar.test",
-              isolation_info.network_isolation_key().ToString());
+              isolation_info.network_isolation_key().ToCacheKeyString());
   }
   EXPECT_TRUE(isolation_info.network_isolation_key().IsFullyPopulated());
   EXPECT_FALSE(isolation_info.network_isolation_key().IsTransient());
@@ -163,12 +164,14 @@ TEST_P(IsolationInfoTest, RequestTypeSubFrame) {
 
   if (ForceIsolationInfoFrameOriginToTopLevelFrameEnabled()) {
     EXPECT_EQ(kOrigin1, redirected_isolation_info.frame_origin());
-    EXPECT_EQ("https://foo.test https://foo.test",
-              redirected_isolation_info.network_isolation_key().ToString());
+    EXPECT_EQ(
+        "https://foo.test https://foo.test",
+        redirected_isolation_info.network_isolation_key().ToCacheKeyString());
   } else {
     EXPECT_EQ(kOrigin3, redirected_isolation_info.frame_origin());
-    EXPECT_EQ("https://foo.test https://baz.test",
-              redirected_isolation_info.network_isolation_key().ToString());
+    EXPECT_EQ(
+        "https://foo.test https://baz.test",
+        redirected_isolation_info.network_isolation_key().ToCacheKeyString());
   }
   EXPECT_TRUE(
       redirected_isolation_info.network_isolation_key().IsFullyPopulated());
@@ -193,7 +196,8 @@ TEST_P(IsolationInfoTest, RequestTypeMainFrameWithNonce) {
   }
   EXPECT_TRUE(isolation_info.network_isolation_key().IsFullyPopulated());
   EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
-  EXPECT_EQ("", isolation_info.network_isolation_key().ToString());
+  EXPECT_EQ(absl::nullopt,
+            isolation_info.network_isolation_key().ToCacheKeyString());
   EXPECT_TRUE(
       isolation_info.site_for_cookies().IsFirstParty(kOrigin1.GetURL()));
   EXPECT_EQ(kPartyContextEmpty, isolation_info.party_context());
@@ -214,7 +218,9 @@ TEST_P(IsolationInfoTest, RequestTypeMainFrameWithNonce) {
   EXPECT_TRUE(
       redirected_isolation_info.network_isolation_key().IsFullyPopulated());
   EXPECT_TRUE(redirected_isolation_info.network_isolation_key().IsTransient());
-  EXPECT_EQ("", redirected_isolation_info.network_isolation_key().ToString());
+  EXPECT_EQ(
+      absl::nullopt,
+      redirected_isolation_info.network_isolation_key().ToCacheKeyString());
   EXPECT_TRUE(redirected_isolation_info.site_for_cookies().IsFirstParty(
       kOrigin3.GetURL()));
   EXPECT_EQ(kPartyContextEmpty, redirected_isolation_info.party_context());
@@ -235,7 +241,8 @@ TEST_P(IsolationInfoTest, RequestTypeSubFrameWithNonce) {
   }
   EXPECT_TRUE(isolation_info.network_isolation_key().IsFullyPopulated());
   EXPECT_TRUE(isolation_info.network_isolation_key().IsTransient());
-  EXPECT_EQ("", isolation_info.network_isolation_key().ToString());
+  EXPECT_EQ(absl::nullopt,
+            isolation_info.network_isolation_key().ToCacheKeyString());
   EXPECT_TRUE(
       isolation_info.site_for_cookies().IsFirstParty(kOrigin1.GetURL()));
   EXPECT_EQ(kPartyContext1, isolation_info.party_context());
@@ -256,7 +263,9 @@ TEST_P(IsolationInfoTest, RequestTypeSubFrameWithNonce) {
   EXPECT_TRUE(
       redirected_isolation_info.network_isolation_key().IsFullyPopulated());
   EXPECT_TRUE(redirected_isolation_info.network_isolation_key().IsTransient());
-  EXPECT_EQ("", redirected_isolation_info.network_isolation_key().ToString());
+  EXPECT_EQ(
+      absl::nullopt,
+      redirected_isolation_info.network_isolation_key().ToCacheKeyString());
   EXPECT_TRUE(redirected_isolation_info.site_for_cookies().IsFirstParty(
       kOrigin1.GetURL()));
   EXPECT_EQ(kPartyContext1, redirected_isolation_info.party_context());
@@ -298,7 +307,7 @@ TEST_P(IsolationInfoTest, RequestTypeOtherWithSiteForCookies) {
   EXPECT_TRUE(isolation_info.network_isolation_key().IsFullyPopulated());
   EXPECT_FALSE(isolation_info.network_isolation_key().IsTransient());
   EXPECT_EQ("https://foo.test https://foo.test",
-            isolation_info.network_isolation_key().ToString());
+            isolation_info.network_isolation_key().ToCacheKeyString());
   EXPECT_TRUE(
       isolation_info.site_for_cookies().IsFirstParty(kOrigin1.GetURL()));
   EXPECT_EQ(kPartyContextEmpty, isolation_info.party_context());
@@ -322,11 +331,11 @@ TEST_P(IsolationInfoTest, RequestTypeOtherWithEmptySiteForCookies) {
   if (ForceIsolationInfoFrameOriginToTopLevelFrameEnabled()) {
     EXPECT_EQ(kOrigin1, isolation_info.frame_origin());
     EXPECT_EQ("https://foo.test https://foo.test",
-              isolation_info.network_isolation_key().ToString());
+              isolation_info.network_isolation_key().ToCacheKeyString());
   } else {
     EXPECT_EQ(kOrigin2, isolation_info.frame_origin());
     EXPECT_EQ("https://foo.test https://bar.test",
-              isolation_info.network_isolation_key().ToString());
+              isolation_info.network_isolation_key().ToCacheKeyString());
   }
   EXPECT_TRUE(isolation_info.network_isolation_key().IsFullyPopulated());
   EXPECT_FALSE(isolation_info.network_isolation_key().IsTransient());
@@ -376,7 +385,7 @@ TEST_P(IsolationInfoTest, CreateForInternalRequest) {
   EXPECT_TRUE(isolation_info.network_isolation_key().IsFullyPopulated());
   EXPECT_FALSE(isolation_info.network_isolation_key().IsTransient());
   EXPECT_EQ("https://foo.test https://foo.test",
-            isolation_info.network_isolation_key().ToString());
+            isolation_info.network_isolation_key().ToCacheKeyString());
   EXPECT_TRUE(
       isolation_info.site_for_cookies().IsFirstParty(kOrigin1.GetURL()));
   EXPECT_EQ(kPartyContextEmpty, isolation_info.party_context());
@@ -510,11 +519,11 @@ TEST_P(IsolationInfoTest, CustomSchemeRequestTypeOther) {
   if (ForceIsolationInfoFrameOriginToTopLevelFrameEnabled()) {
     EXPECT_EQ(kCustomOrigin, isolation_info.frame_origin());
     EXPECT_EQ("foo://a.foo.com foo://a.foo.com",
-              isolation_info.network_isolation_key().ToString());
+              isolation_info.network_isolation_key().ToCacheKeyString());
   } else {
     EXPECT_EQ(kOrigin1, isolation_info.frame_origin());
     EXPECT_EQ("foo://a.foo.com https://foo.test",
-              isolation_info.network_isolation_key().ToString());
+              isolation_info.network_isolation_key().ToCacheKeyString());
   }
   EXPECT_TRUE(isolation_info.network_isolation_key().IsFullyPopulated());
   EXPECT_FALSE(isolation_info.network_isolation_key().IsTransient());

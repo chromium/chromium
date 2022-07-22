@@ -48,6 +48,7 @@
 #include "net/http/http_util.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_server_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
@@ -365,7 +366,7 @@ void HttpCache::OnExternalCacheHit(
       request_info.load_flags |= ~LOAD_DO_NOT_SAVE_COOKIES;
   }
 
-  std::string key = GenerateCacheKeyForRequest(
+  std::string key = *GenerateCacheKeyForRequest(
       &request_info, /*use_single_keyed_cache=*/false);
   disk_cache_->OnExternalCacheHit(key);
 }
@@ -467,7 +468,7 @@ Error HttpCache::CheckResourceExistence(
 
   // TODO(https://crbug.com/1325315): Support looking in the single-keyed cache
   // for the resource.
-  std::string key = GenerateCacheKeyForRequest(
+  std::string key = *GenerateCacheKeyForRequest(
       &request_info, /*use_single_keyed_cache=*/false);
   disk_cache::EntryResult entry_result = disk_cache_->OpenEntry(
       key, net::IDLE,
@@ -482,7 +483,7 @@ Error HttpCache::CheckResourceExistence(
 
 // static
 // Generate a key that can be used inside the cache.
-std::string HttpCache::GenerateCacheKey(
+absl::optional<std::string> HttpCache::GenerateCacheKey(
     const GURL& url,
     int load_flags,
     const NetworkIsolationKey& network_isolation_key,
@@ -517,12 +518,13 @@ std::string HttpCache::GenerateCacheKey(
     // double-keyed (and makes it an invalid url so that it doesn't get
     // confused with a single-keyed entry). Separate the origin and url
     // with invalid whitespace character |kDoubleKeySeparator|.
-    DCHECK(!network_isolation_key.IsTransient());
+    if (network_isolation_key.IsTransient())
+      return absl::nullopt;
     std::string subframe_document_resource_prefix =
         is_subframe_document_resource ? kSubframeDocumentResourcePrefix : "";
-    isolation_key =
-        base::StrCat({kDoubleKeyPrefix, subframe_document_resource_prefix,
-                      network_isolation_key.ToString(), kDoubleKeySeparator});
+    isolation_key = base::StrCat(
+        {kDoubleKeyPrefix, subframe_document_resource_prefix,
+         *network_isolation_key.ToCacheKeyString(), kDoubleKeySeparator});
   }
 
   // The key format is:
@@ -537,7 +539,7 @@ std::string HttpCache::GenerateCacheKey(
 }
 
 // static
-std::string HttpCache::GenerateCacheKeyForRequest(
+absl::optional<std::string> HttpCache::GenerateCacheKeyForRequest(
     const HttpRequestInfo* request,
     bool use_single_keyed_cache) {
   DCHECK(request);
@@ -726,7 +728,7 @@ void HttpCache::DoomMainEntryForUrl(const GURL& url,
   // single-keyed cache, so therefore it is correct that use_single_keyed_cache
   // be false.
   std::string key =
-      GenerateCacheKeyForRequest(&temp_info, /*use_single_keyed_cache=*/false);
+      *GenerateCacheKeyForRequest(&temp_info, /*use_single_keyed_cache=*/false);
 
   // Defer to DoomEntry if there is an active entry, otherwise call
   // AsyncDoomEntry without triggering a callback.

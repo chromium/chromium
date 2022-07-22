@@ -389,8 +389,8 @@ void ReportingCacheImpl::OnParsedHeader(
 
     // Consistency check: the new client should have the same NIK and origin as
     // all groups parsed from this header.
-    DCHECK_EQ(new_group.group_key.network_isolation_key,
-              new_client.network_isolation_key);
+    DCHECK(new_group.group_key.network_isolation_key ==
+           new_client.network_isolation_key);
     DCHECK_EQ(new_group.group_key.origin, new_client.origin);
 
     for (const auto& parsed_endpoint_info : parsed_endpoint_group.endpoints) {
@@ -867,8 +867,8 @@ void ReportingCacheImpl::SetV1EndpointForTesting(
   DCHECK(!reporting_source.is_empty());
   DCHECK(group_key.IsDocumentEndpoint());
   DCHECK_EQ(reporting_source, group_key.reporting_source.value());
-  DCHECK_EQ(group_key.network_isolation_key,
-            isolation_info.network_isolation_key());
+  DCHECK(group_key.network_isolation_key ==
+         isolation_info.network_isolation_key());
 
   ReportingEndpoint::EndpointInfo info;
   info.url = url;

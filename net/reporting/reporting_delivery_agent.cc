@@ -135,13 +135,12 @@ class Delivery {
                   const ReportList::const_iterator reports_begin,
                   const ReportList::const_iterator reports_end) {
     DCHECK(reports_begin != reports_end);
-    DCHECK_EQ(endpoint.group_key.network_isolation_key,
-              network_isolation_key());
+    DCHECK(endpoint.group_key.network_isolation_key == network_isolation_key());
     DCHECK(IsSubdomainOf(target_.origin.host() /* subdomain */,
                          endpoint.group_key.origin.host() /* superdomain */));
     for (auto it = reports_begin; it != reports_end; ++it) {
       DCHECK_EQ((*reports_begin)->GetGroupKey(), (*it)->GetGroupKey());
-      DCHECK_EQ((*it)->network_isolation_key, network_isolation_key());
+      DCHECK((*it)->network_isolation_key == network_isolation_key());
       DCHECK_EQ(url::Origin::Create((*it)->url), target_.origin);
       DCHECK_EQ((*it)->group, endpoint.group_key.group_name);
       // Report origin is equal to, or a subdomain of, the endpoint

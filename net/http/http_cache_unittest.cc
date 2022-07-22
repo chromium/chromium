@@ -825,7 +825,7 @@ class HttpSplitCacheKeyTest : public HttpCacheTest {
     request_info.method = "GET";
     request_info.network_isolation_key = net::NetworkIsolationKey(site, site);
     MockHttpCache cache;
-    return cache.http_cache()->GenerateCacheKeyForRequest(&request_info);
+    return *cache.http_cache()->GenerateCacheKeyForRequest(&request_info);
   }
 };
 
@@ -5336,7 +5336,7 @@ TEST_F(HttpCacheTest, SimpleGET_ManyWriters_CancelFirst) {
   // All would have been added to writers.
   base::RunLoop().RunUntilIdle();
   std::string cache_key =
-      cache.http_cache()->GenerateCacheKeyForRequest(&request);
+      *cache.http_cache()->GenerateCacheKeyForRequest(&request);
   EXPECT_EQ(kNumTransactions, cache.GetCountWriterTransactions(cache_key));
 
   // The second transaction skipped validation, thus only one network
@@ -8311,7 +8311,7 @@ TEST_F(HttpCacheTest, Sparse_WaitForEntry) {
   disk_cache::Entry* entry;
   MockHttpRequest request(transaction);
   std::string cache_key =
-      cache.http_cache()->GenerateCacheKeyForRequest(&request);
+      *cache.http_cache()->GenerateCacheKeyForRequest(&request);
   ASSERT_TRUE(cache.OpenBackendEntry(cache_key, &entry));
   entry->CancelSparseIO();
 
@@ -10919,7 +10919,7 @@ TEST_F(HttpCacheTest, SplitCacheWithNetworkIsolationKey) {
   // Now make a request with an opaque subframe site.  It shouldn't be
   // cached.
   trans_info.network_isolation_key = NetworkIsolationKey(site_a, site_data);
-  EXPECT_TRUE(trans_info.network_isolation_key.ToString().empty());
+  EXPECT_EQ(absl::nullopt, trans_info.network_isolation_key.ToCacheKeyString());
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
@@ -11143,7 +11143,7 @@ TEST_F(HttpCacheTest, SplitCache) {
   // Now make a request with an opaque top frame origin.  It shouldn't be
   // cached.
   trans_info.network_isolation_key = NetworkIsolationKey(site_data, site_data);
-  EXPECT_TRUE(trans_info.network_isolation_key.ToString().empty());
+  EXPECT_EQ(absl::nullopt, trans_info.network_isolation_key.ToCacheKeyString());
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
