@@ -22,7 +22,7 @@ class XRPlane : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum Orientation { kHorizontal, kVertical };
+  enum class Orientation { kHorizontal, kVertical };
 
   XRPlane(uint64_t id,
           XRSession* session,
