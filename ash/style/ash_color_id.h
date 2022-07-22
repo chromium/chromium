@@ -20,13 +20,75 @@ namespace ash {
   E_CPONLY(kColorAshShieldAndBase90) \
   E_CPONLY(kColorAshShieldAndBase95) \
   E_CPONLY(kColorAshShieldAndBaseOpaque) \
+  /* Controls Layer colors. */ \
   E_CPONLY(kColorAshHairlineBorderColor) \
   E_CPONLY(kColorAshControlBackgroundColorActive) \
   E_CPONLY(kColorAshControlBackgroundColorAlert) \
   E_CPONLY(kColorAshControlBackgroundColorInactive) \
   E_CPONLY(kColorAshControlBackgroundColorWarning) \
   E_CPONLY(kColorAshControlBackgroundColorPositive) \
-  E_CPONLY(kColorAshFocusAuraColor)
+  E_CPONLY(kColorAshFocusAuraColor) \
+  /* Content layer colors. */ \
+  E_CPONLY(kColorAshScrollBarColor) \
+  E_CPONLY(kColorAshSeparatorColor) \
+  E_CPONLY(kColorAshTextColorPrimary) \
+  /* Inverted `kColorAshTextColorPrimary` on current color mode. */ \
+  E_CPONLY(kColorAshInvertedTextColorPrimary) \
+  E_CPONLY(kColorAshTextColorSecondary) \
+  E_CPONLY(kColorAshTextColorAlert) \
+  E_CPONLY(kColorAshTextColorWarning) \
+  E_CPONLY(kColorAshTextColorPositive) \
+  E_CPONLY(kColorAshTextColorURL) \
+  E_CPONLY(kColorAshIconColorPrimary) \
+  E_CPONLY(kColorAshIconColorSecondary) \
+  E_CPONLY(kColorAshIconColorAlert) \
+  E_CPONLY(kColorAshIconColorWarning) \
+  E_CPONLY(kColorAshIconColorPositive) \
+  /* Color for prominent icon, e.g, "Add connection" icon button inside
+     VPN detailed view. */ \
+  E_CPONLY(kColorAshIconColorProminent) \
+  /*  Background for kColorAshIconColorSecondary. */ \
+  E_CPONLY(kColorAshIconColorSecondaryBackground) \
+  /* The default color for button labels. */ \
+  E_CPONLY(kColorAshButtonLabelColor) \
+  /* Inverted `kColorAshButtonLabelColor` on current color mode. */ \
+  E_CPONLY(kColorAshInvertedButtonLabelColor) \
+  E_CPONLY(kColorAshButtonLabelColorPrimary) \
+  /* Color for blue button labels, e.g, 'Retry' button of the system toast. */ \
+  E_CPONLY(kColorAshButtonLabelColorBlue) \
+  E_CPONLY(kColorAshButtonIconColor) \
+  E_CPONLY(kColorAshButtonIconColorPrimary) \
+  E_CPONLY(kColorAshAppStateIndicatorColor) \
+  E_CPONLY(kColorAshAppStateIndicatorColorInactive) \
+  /* Color for the shelf drag handle in tablet mode. */ \
+  E_CPONLY(kColorAshShelfHandleColor) \
+  E_CPONLY(kColorAshSliderColorActive) \
+  E_CPONLY(kColorAshSliderColorInactive) \
+  E_CPONLY(kColorAshRadioColorActive) \
+  E_CPONLY(kColorAshRadioColorInactive) \
+  /* Colors for toggle button. */ \
+  E_CPONLY(kColorAshSwitchKnobColorActive) \
+  E_CPONLY(kColorAshSwitchKnobColorInactive) \
+  E_CPONLY(kColorAshSwitchTrackColorActive) \
+  E_CPONLY(kColorAshSwitchTrackColorInactive) \
+  /* Color for current active desk's border. */ \
+  E_CPONLY(kColorAshCurrentDeskColor) \
+  /* Color for the battery's badge (bolt, unreliable, X). */ \
+  E_CPONLY(kColorAshBatteryBadgeColor) \
+  /* Colors for the switch access's back button. */ \
+  E_CPONLY(kColorAshSwitchAccessInnerStrokeColor) \
+  E_CPONLY(kColorAshSwitchAccessOuterStrokeColor) \
+  /* Colors for the media controls. */ \
+  E_CPONLY(kColorAshProgressBarColorForeground) \
+  E_CPONLY(kColorAshProgressBarColorBackground) \
+  /* Color used to highlight a hovered view. */ \
+  E_CPONLY(kColorAshHighlightColorHover) \
+  /* Color for the background of battery system info view. */ \
+  E_CPONLY(kColorAshBatterySystemInfoBackgroundColor) \
+  /* Color for the battery icon in the system info view. */ \
+  E_CPONLY(kColorAshBatterySystemInfoIconColor) \
+  /* Color of the capture region in the capture session. */ \
+  E_CPONLY(kColorAshCaptureRegionColor)
 
 #include "ui/color/color_id_macros.inc"
 

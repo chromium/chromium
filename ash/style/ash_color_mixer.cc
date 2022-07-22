@@ -28,6 +28,15 @@ constexpr int kAlpha80 = SK_AlphaOPAQUE * 0.8f;
 constexpr int kAlpha90 = SK_AlphaOPAQUE * 0.9f;
 constexpr int kAlpha95 = SK_AlphaOPAQUE * 0.95f;
 
+constexpr int kLightInkDropOpacity = SK_AlphaOPAQUE * 0.08f;
+constexpr int kDarkInkDropOpacity = SK_AlphaOPAQUE * 0.06f;
+
+// Color of second tone is always 30% opacity of the color of first tone.
+constexpr int kSecondToneOpacity = SK_AlphaOPAQUE * 0.3f;
+
+// The disabled color is always 38% opacity of the enabled color.
+constexpr int kDisabledColorOpacity = SK_AlphaOPAQUE * 0.38f;
+
 void AddShieldAndBaseColors(ui::ColorMixer& mixer,
                             const ui::ColorProviderManager::Key& key) {
   const bool use_dark_color =
@@ -99,6 +108,92 @@ void AddControlsColors(ui::ColorMixer& mixer,
                      : ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x33));
   mixer[ui::kColorAshSystemUIHighlightColor3] = {
       ui::kColorAshSystemUIHighlightColor1};
+}
+
+// Mappings the Content layer colors for Material 2.
+void AddContentColors(ui::ColorMixer& mixer,
+                      const ui::ColorProviderManager::Key& key) {
+  const bool use_dark_color =
+      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
+
+  // ContentLayer colors.
+  mixer[kColorAshScrollBarColor] =
+      use_dark_color ? ui::ColorTransform(gfx::kGoogleGrey200)
+                     : ui::ColorTransform(gfx::kGoogleGrey700);
+  mixer[kColorAshSeparatorColor] =
+      use_dark_color ? ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x24))
+                     : ui::ColorTransform(SkColorSetA(SK_ColorBLACK, 0x24));
+  mixer[kColorAshTextColorPrimary] =
+      use_dark_color ? ui::ColorTransform(gfx::kGoogleGrey200)
+                     : ui::ColorTransform(gfx::kGoogleGrey900);
+  mixer[kColorAshTextColorSecondary] =
+      use_dark_color ? ui::ColorTransform(gfx::kGoogleGrey400)
+                     : ui::ColorTransform(gfx::kGoogleGrey700);
+  mixer[kColorAshTextColorAlert] = use_dark_color
+                                       ? ui::ColorTransform(gfx::kGoogleRed300)
+                                       : ui::ColorTransform(gfx::kGoogleRed600);
+  mixer[kColorAshTextColorWarning] =
+      use_dark_color ? ui::ColorTransform(gfx::kGoogleYellow300)
+                     : ui::ColorTransform(gfx::kGoogleYellow900);
+  mixer[kColorAshTextColorPositive] =
+      use_dark_color ? ui::ColorTransform(gfx::kGoogleGreen300)
+                     : ui::ColorTransform(gfx::kGoogleGreen600);
+  mixer[kColorAshTextColorURL] = use_dark_color
+                                     ? ui::ColorTransform(gfx::kGoogleBlue300)
+                                     : ui::ColorTransform(gfx::kGoogleBlue600);
+  mixer[kColorAshIconColorPrimary] = {kColorAshTextColorPrimary};
+  mixer[kColorAshIconColorSecondary] = {kColorAshTextColorSecondary};
+  mixer[kColorAshIconColorAlert] = {kColorAshTextColorAlert};
+  mixer[kColorAshIconColorWarning] = {kColorAshTextColorWarning};
+  mixer[kColorAshIconColorPositive] = {kColorAshTextColorPositive};
+  mixer[kColorAshIconColorProminent] = {kColorAshTextColorURL};
+  mixer[kColorAshIconColorSecondaryBackground] =
+      use_dark_color ? ui::ColorTransform(gfx::kGoogleGrey100)
+                     : ui::ColorTransform(gfx::kGoogleGrey800);
+  mixer[kColorAshButtonLabelColor] = {kColorAshTextColorPrimary};
+  mixer[kColorAshButtonLabelColorPrimary] =
+      use_dark_color ? ui::ColorTransform(gfx::kGoogleGrey900)
+                     : ui::ColorTransform(gfx::kGoogleGrey200);
+  mixer[kColorAshInvertedTextColorPrimary] = {kColorAshButtonLabelColorPrimary};
+  mixer[kColorAshInvertedButtonLabelColor] = {kColorAshButtonLabelColorPrimary};
+  mixer[kColorAshButtonLabelColorBlue] = {kColorAshTextColorURL};
+  mixer[kColorAshButtonIconColor] = {kColorAshTextColorPrimary};
+  mixer[kColorAshButtonIconColorPrimary] = {kColorAshButtonLabelColorPrimary};
+  mixer[kColorAshAppStateIndicatorColor] = {kColorAshTextColorPrimary};
+  mixer[kColorAshAppStateIndicatorColorInactive] =
+      ui::SetAlpha(kColorAshAppStateIndicatorColor, kDisabledColorOpacity);
+  mixer[kColorAshShelfHandleColor] = {kColorAshSeparatorColor};
+  mixer[kColorAshSliderColorActive] = {kColorAshTextColorURL};
+  mixer[kColorAshSliderColorInactive] = {kColorAshScrollBarColor};
+  mixer[kColorAshRadioColorActive] = {kColorAshTextColorURL};
+  mixer[kColorAshRadioColorInactive] = {kColorAshScrollBarColor};
+  mixer[kColorAshSwitchKnobColorActive] = {kColorAshTextColorURL};
+  mixer[kColorAshSwitchKnobColorInactive] =
+      use_dark_color ? ui::ColorTransform(gfx::kGoogleGrey400)
+                     : ui::ColorTransform(SK_ColorWHITE);
+  mixer[kColorAshSwitchTrackColorActive] =
+      ui::SetAlpha(kColorAshSwitchKnobColorActive, kSecondToneOpacity);
+  mixer[kColorAshSwitchTrackColorInactive] =
+      ui::SetAlpha(kColorAshScrollBarColor, kSecondToneOpacity);
+  mixer[kColorAshCurrentDeskColor] = use_dark_color
+                                         ? ui::ColorTransform(SK_ColorWHITE)
+                                         : ui::ColorTransform(SK_ColorBLACK);
+  mixer[kColorAshBatteryBadgeColor] = {kColorAshButtonLabelColorPrimary};
+  mixer[kColorAshSwitchAccessInnerStrokeColor] =
+      ui::ColorTransform(gfx::kGoogleBlue300);
+  mixer[kColorAshSwitchAccessOuterStrokeColor] =
+      ui::ColorTransform(gfx::kGoogleBlue900);
+  mixer[kColorAshProgressBarColorForeground] = {kColorAshTextColorURL};
+  mixer[kColorAshProgressBarColorBackground] =
+      ui::SetAlpha(kColorAshTextColorURL, 0x4C);
+  mixer[kColorAshHighlightColorHover] =
+      use_dark_color ? ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x0D))
+                     : ui::ColorTransform(SkColorSetA(SK_ColorBLACK, 0x14));
+  mixer[kColorAshBatterySystemInfoBackgroundColor] = {
+      kColorAshTextColorPositive};
+  mixer[kColorAshBatterySystemInfoIconColor] = {
+      kColorAshButtonLabelColorPrimary};
+  mixer[kColorAshCaptureRegionColor] = {kColorAshProgressBarColorBackground};
 }
 
 // Remaps colors generated by cros_colors.json5 to point to equivalent tokens.
@@ -261,11 +356,11 @@ void AddCrosStylesColorMixer(ui::ColorProvider* provider,
 
 void AddAshColorMixer(ui::ColorProvider* provider,
                       const ui::ColorProviderManager::Key& key) {
-  auto* ash_color_provider = AshColorProvider::Get();
   ui::ColorMixer& mixer = provider->AddMixer();
 
   AddShieldAndBaseColors(mixer, key);
   AddControlsColors(mixer, key);
+  AddContentColors(mixer, key);
 
   mixer[ui::kColorAshActionLabelFocusRingEdit] = {gfx::kGoogleBlue300};
   mixer[ui::kColorAshActionLabelFocusRingError] = {gfx::kGoogleRed300};
@@ -301,19 +396,13 @@ void AddAshColorMixer(ui::ColorProvider* provider,
     return;
   }
 
-  mixer[ui::kColorAshSystemUIMenuBackground] = {
-      ash_color_provider->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80)};
-  mixer[ui::kColorAshSystemUIMenuIcon] = {
-      ash_color_provider->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)};
-
-  auto [color, opacity] = ash_color_provider->GetInkDropBaseColorAndOpacity();
-  mixer[ui::kColorAshSystemUIMenuItemBackgroundSelected] = {
-      SkColorSetA(color, opacity * SK_AlphaOPAQUE)};
-  mixer[ui::kColorAshSystemUIMenuSeparator] = {
-      ash_color_provider->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kSeparatorColor)};
+  mixer[ui::kColorAshSystemUIMenuBackground] = {kColorAshShieldAndBase80};
+  mixer[ui::kColorAshSystemUIMenuIcon] = {kColorAshIconColorPrimary};
+  mixer[ui::kColorAshSystemUIMenuItemBackgroundSelected] =
+      key.color_mode == ui::ColorProviderManager::ColorMode::kDark
+          ? ui::SetAlpha(SK_ColorWHITE, kDarkInkDropOpacity)
+          : ui::SetAlpha(SK_ColorBLACK, kLightInkDropOpacity);
+  mixer[ui::kColorAshSystemUIMenuSeparator] = {kColorAshSeparatorColor};
 }
 
 }  // namespace ash
