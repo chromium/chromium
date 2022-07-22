@@ -3689,7 +3689,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Try again
       </message>
       <message name="IDS_IPH_PRICE_TRACKING_MENU_ITEM" desc="In-product-help text that describes that a user can track the price of a product in the overflow menu.">
-        Track price here
+        Track price
       </message>
       <message name="IDS_IPH_PRICE_TRACKING_MENU_ITEM_ACCESSIBILITY" is_accessibility_with_no_ui="true" desc="In-product-help accessibility text that describes that a user can track the price of a product in the overflow menu.">
         Track price from the More options button
