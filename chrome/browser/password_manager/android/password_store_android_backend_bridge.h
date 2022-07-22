@@ -53,26 +53,12 @@ class PasswordStoreAndroidBackendBridge {
     // Asynchronous response called with the `job_id` which was passed to the
     // corresponding call to `PasswordStoreAndroidBackendBridge`.
     virtual void OnError(JobId job_id, AndroidBackendError error) = 0;
-
-    // Asynchronous success called with the `job_id` which was passed to a
-    // subscribe call (or fake thereof) to `PasswordStoreAndroidBackendBridge`.
-    virtual void OnSubscribed(JobId job_id) = 0;
-    // Asynchronous failure called with the `job_id` which was passed to a
-    // subscribe call (or fake thereof) to `PasswordStoreAndroidBackendBridge`.
-    virtual void OnSubscribeFailed(JobId job_id, AndroidBackendError error) = 0;
   };
 
   virtual ~PasswordStoreAndroidBackendBridge() = default;
 
   // Sets the `consumer` that is notified on job completion.
   virtual void SetConsumer(base::WeakPtr<Consumer> consumer) = 0;
-
-  // Triggers an asynchronous request signaling interest in passwords. The
-  // registered `Consumer` is notified with `OnSubscribed` when the job with
-  // the returnde JobId has been completed. `syncing_account` is used to decide
-  // which storage to use. If `syncing_account` is absl::nullopt local storage
-  // will be used.
-  [[nodiscard]] virtual JobId Subscribe(Account account) = 0;
 
   // Triggers an asynchronous request to retrieve all stored passwords. The
   // registered `Consumer` is notified with `OnCompleteWithLogins` when the

@@ -57,16 +57,6 @@ base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
           .value());
 }
 
-password_manager::AndroidBackendError wrapInBackendError(jint error_type,
-                                                         jint api_error_code) {
-  password_manager::AndroidBackendError error{
-      static_cast<password_manager::AndroidBackendErrorType>(error_type)};
-  if (error.type == password_manager::AndroidBackendErrorType::kExternalError) {
-    error.api_error_code = static_cast<int>(api_error_code);
-  }
-  return error;
-}
-
 }  // namespace
 
 namespace password_manager {
@@ -113,46 +103,17 @@ void PasswordStoreAndroidBackendBridgeImpl::OnError(JNIEnv* env,
   DCHECK(consumer_);
   // Posting the tasks to the same sequence prevents that synchronous responses
   // try to finish tasks before their registration was completed.
+  password_manager::AndroidBackendError error{
+      static_cast<password_manager::AndroidBackendErrorType>(error_type)};
+
+  if (error.type == password_manager::AndroidBackendErrorType::kExternalError) {
+    error.api_error_code = static_cast<int>(api_error_code);
+  }
+
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&PasswordStoreAndroidBackendBridge::Consumer::OnError,
-                     consumer_, JobId(job_id),
-                     wrapInBackendError(error_type, api_error_code)));
-}
-
-void PasswordStoreAndroidBackendBridgeImpl::OnSubscribed(JNIEnv* env,
-                                                         jint job_id) {
-  DCHECK(consumer_);
-  // Posting the tasks to the same sequence prevents that synchronous responses
-  // try to finish tasks before their registration was completed.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PasswordStoreAndroidBackendBridge::Consumer::OnSubscribed,
-                     consumer_, JobId(job_id)));
-}
-
-void PasswordStoreAndroidBackendBridgeImpl::OnSubscribeFailed(
-    JNIEnv* env,
-    jint job_id,
-    jint error_type,
-    jint api_error_code) {
-  DCHECK(consumer_);
-  // Posting the tasks to the same sequence prevents that synchronous responses
-  // try to finish tasks before their registration was completed.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &PasswordStoreAndroidBackendBridge::Consumer::OnSubscribeFailed,
-          consumer_, JobId(job_id),
-          wrapInBackendError(error_type, api_error_code)));
-}
-
-JobId PasswordStoreAndroidBackendBridgeImpl::Subscribe(Account account) {
-  JobId job_id = GetNextJobId();
-  Java_PasswordStoreAndroidBackendBridgeImpl_subscribe(
-      base::android::AttachCurrentThread(), java_object_, job_id.value(),
-      GetJavaStringFromAccount(std::move(account)));
-  return job_id;
+                     consumer_, JobId(job_id), std::move(error)));
 }
 
 JobId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins(Account account) {

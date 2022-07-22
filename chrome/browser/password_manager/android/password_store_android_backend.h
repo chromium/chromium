@@ -158,16 +158,10 @@ class PasswordStoreAndroidBackend
                        PasswordChanges changes) override;
   void OnError(PasswordStoreAndroidBackendBridge::JobId job_id,
                AndroidBackendError error) override;
-  void OnSubscribed(PasswordStoreAndroidBackendBridge::JobId job_id) override;
-  void OnSubscribeFailed(PasswordStoreAndroidBackendBridge::JobId job_id,
-                         AndroidBackendError error) override;
 
   template <typename Callback>
   void QueueNewJob(JobId job_id, Callback callback, MetricInfix metric_infix);
   absl::optional<JobReturnHandler> GetAndEraseJob(JobId job_id);
-
-  // Initial, early ping to GMS. Calls completion with true iff successful.
-  void Subscribe(base::OnceCallback<void(bool)> completion);
 
   // Gets logins matching |form|.
   void GetLoginsAsync(const PasswordFormDigest& form,

@@ -376,11 +376,8 @@ void PasswordStoreAndroidBackend::InitBackend(
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
       &PasswordStoreAndroidBackend::OnForegroundSessionStart,
       base::Unretained(this)));
-
-  main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PasswordStoreAndroidBackend::Subscribe,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(completion)));
+  // TODO(https://crbug.com/1229650): Create subscription before completion.
+  std::move(completion).Run(/*success=*/true);
 }
 
 void PasswordStoreAndroidBackend::Shutdown(
@@ -734,41 +731,6 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   }
 }
 
-void PasswordStoreAndroidBackend::OnSubscribed(
-    PasswordStoreAndroidBackendBridge::JobId job_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  absl::optional<JobReturnHandler> reply = GetAndEraseJob(job_id);
-  if (!reply.has_value())
-    return;  // Task was cleaned up after returning from backgrounding.
-
-  reply->RecordMetrics(absl::nullopt);
-  // Without error, report a success back. The result can be omitted.
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(*reply).Get<LoginsOrErrorReply>(),
-                                LoginsResult()));
-}
-
-void PasswordStoreAndroidBackend::OnSubscribeFailed(
-    PasswordStoreAndroidBackendBridge::JobId job_id,
-    AndroidBackendError error) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  absl::optional<JobReturnHandler> reply = GetAndEraseJob(job_id);
-  if (!reply.has_value())
-    return;  // Task was cleaned up after returning from backgrounding.
-
-  if (error.api_error_code.has_value() && sync_service_) {
-    DCHECK_EQ(AndroidBackendErrorType::kExternalError, error.type);
-    RecordApiErrorInCombinationWithSyncStatus(error.api_error_code.value(),
-                                              sync_service_->GetAuthError());
-  }
-  PasswordStoreBackendError reported_error =
-      BackendErrorFromAndroidBackendError(error);
-  reply->RecordMetrics(std::move(error));
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(*reply).Get<LoginsOrErrorReply>(),
-                                reported_error));
-}
-
 template <typename Callback>
 void PasswordStoreAndroidBackend::QueueNewJob(JobId job_id,
                                               Callback callback,
@@ -791,20 +753,6 @@ PasswordStoreAndroidBackend::GetAndEraseJob(JobId job_id) {
   JobReturnHandler reply = std::move(iter->second);
   request_for_job_.erase(iter);
   return reply;
-}
-
-void PasswordStoreAndroidBackend::Subscribe(
-    base::OnceCallback<void(bool)> completion) {
-  // TODO(https://crbug.com/1229650): Once subscribe API exists, ensure this
-  // call repeats for sync changes.
-  JobId job_id =
-      bridge_->Subscribe(GetAccount(GetSyncingAccount(sync_service_)));
-  auto is_success = [](LoginsResultOrError logins_or_error) -> bool {
-    // Fake subscribe are successful if they have any result and no error.
-    return absl::holds_alternative<LoginsResult>(logins_or_error);
-  };
-  QueueNewJob(job_id, base::BindOnce(is_success).Then(std::move(completion)),
-              MetricInfix("InitialListAsync"));
 }
 
 void PasswordStoreAndroidBackend::GetLoginsAsync(const PasswordFormDigest& form,
