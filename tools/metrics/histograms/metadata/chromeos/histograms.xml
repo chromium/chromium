@@ -995,6 +995,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.Intents.LinkCapturingEvent" enum="LinkCapturingEvent"
     expires_after="2022-12-01">
+  <obsolete>
+    Replaced by ChromeOS.Intents.LinkCapturingEvent2 in M106.
+  </obsolete>
   <owner>vpao@google.com</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -1006,6 +1009,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.Intents.LinkCapturingEvent.{AppType}App"
     enum="LinkCapturingEvent" expires_after="2022-12-01">
+  <obsolete>
+    Replaced by ChromeOS.Intents.LinkCapturingEvent2 in M106.
+  </obsolete>
   <owner>vpao@google.com</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -1013,6 +1019,39 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     type, when a link is successfully captured and results in opening a/ an
     {AppType} app, and when the user changes their settings to automatically
     capture similar links in the future.
+  </summary>
+  <token key="AppType">
+    <variant name="Arc"/>
+    <variant name="Web"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Intents.LinkCapturingEvent2"
+    enum="LinkCapturingEvent" expires_after="2022-12-01">
+  <owner>vpao@google.com</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records when the link capturing entry point is shown, when a link is
+    successfully captured and results in opening an app, and when the user
+    changes their settings to automatically capture similar links in the future.
+
+    Replaces ChromeOS.Intents.LinkCapturingEvent, which incorrectly recorded
+    events when the user changed settings to stay in Chrome.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Intents.LinkCapturingEvent2.{AppType}App"
+    enum="LinkCapturingEvent" expires_after="2022-12-01">
+  <owner>vpao@google.com</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records when the link capturing entry point is shown for the {AppType} app
+    type, when a link is successfully captured and results in opening a/ an
+    {AppType} app, and when the user changes their settings to automatically
+    capture similar links in the future.
+
+    Replaces ChromeOS.Intents.LinkCapturingEvent.{AppType}App, which incorrectly
+    recorded events when the user changed settings to stay in Chrome.
   </summary>
   <token key="AppType">
     <variant name="Arc"/>

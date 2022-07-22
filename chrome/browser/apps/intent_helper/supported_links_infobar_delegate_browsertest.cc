@@ -92,10 +92,10 @@ IN_PROC_BROWSER_TEST_F(SupportedLinksInfoBarDelegateBrowserTest,
           test_web_app_id()));
 
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent.WebApp",
+      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent",
+      "ChromeOS.Intents.LinkCapturingEvent2",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
 }
 

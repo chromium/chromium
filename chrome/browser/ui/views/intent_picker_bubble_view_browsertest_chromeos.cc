@@ -911,26 +911,26 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 
   // WebApp histogram.
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent.WebApp",
+      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent.WebApp",
+      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 1);
 
   // ArcApp histogram.
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent.ArcApp",
+      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent.ArcApp",
+      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 0);
 
   // General histogram.
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent",
+      "ChromeOS.Intents.LinkCapturingEvent2",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 1);
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent",
+      "ChromeOS.Intents.LinkCapturingEvent2",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kAppOpened, 1);
 }
 
@@ -1208,13 +1208,13 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   // Check that the correct histograms are incremented for recording that
   // settings were changed.
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent.WebApp",
+      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent.ArcApp",
+      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 0);
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent",
+      "ChromeOS.Intents.LinkCapturingEvent2",
       apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
 }
 
