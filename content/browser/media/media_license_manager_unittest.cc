@@ -14,7 +14,6 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/token.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "content/browser/media/media_license_quota_client.h"
@@ -33,7 +32,7 @@ namespace content {
 
 namespace {
 
-const media::CdmType kCdmType{base::Token{1234, 5678}};
+const media::CdmType kCdmType{1234, 5678};
 
 const char kExampleOrigin[] = "https://example.com";
 

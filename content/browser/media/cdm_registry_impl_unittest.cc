@@ -21,7 +21,6 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/token.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"

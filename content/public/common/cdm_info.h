@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/token.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/token.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "media/cdm/cdm_type.h"

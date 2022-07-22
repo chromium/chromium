@@ -11,7 +11,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "base/token.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

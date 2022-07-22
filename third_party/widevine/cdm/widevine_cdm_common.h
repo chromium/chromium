@@ -5,7 +5,6 @@
 #ifndef WIDEVINE_CDM_WIDEVINE_CDM_COMMON_H_
 #define WIDEVINE_CDM_WIDEVINE_CDM_COMMON_H_
 
-#include "base/token.h"
 #include "build/build_config.h"
 #include "media/cdm/cdm_type.h"  // nogncheck
 
