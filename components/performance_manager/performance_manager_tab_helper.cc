@@ -141,8 +141,10 @@ void PerformanceManagerTabHelper::TearDown() {
     nodes.push_back(std::move(page_node));
   }
 
-  pages_.clear();
+  // primary_page ptr should be cleared before pages_ is cleared, otherwise
+  // it becomes dangling.
   primary_page_ = nullptr;
+  pages_.clear();
   frames_.clear();
 
   // Delete the page and its entire frame tree from the graph.
