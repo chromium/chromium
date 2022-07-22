@@ -86,7 +86,7 @@ struct ProbeError {
 
 // An enumeration of states a process can be in.
 //
-// NextMinVersion: 1, NextIndex: 8
+// NextMinVersion: 2, NextIndex: 9
 [Stable, Extensible]
 enum ProcessState {
   [Default] kUnknown = 7,
@@ -104,6 +104,8 @@ enum ProcessState {
   kTracingStop = 5,
   // The process is dead.
   kDead = 6,
+  // The process is idle.
+  [MinVersion=1] kIdle = 8,
 };
 
 // Process probe result. Can either be populated with the ProcessInfo or an
@@ -123,7 +125,7 @@ union ProcessResult {
 
 // Information related to a particular process.
 //
-// NextMinVersion: 1, NextIndex: 16
+// NextMinVersion: 2, NextIndex: 20
 [Stable]
 struct ProcessInfo {
   // Command which started the process.
@@ -170,6 +172,14 @@ struct ProcessInfo {
   // Number of bytes which this process caused to not happen, by truncating
   // pagecache.
   uint64 cancelled_bytes_written@15;
+  // Filename of the executable.
+  [MinVersion=1] string? name@16;
+  // PID of the parent of this process.
+  [MinVersion=1] uint32 parent_process_id@17;
+  // Process group ID of the group.
+  [MinVersion=1] uint32 process_group_id@18;
+  // Number of threads in this process.
+  [MinVersion=1] uint32 threads@19;
 };
 
 // Battery probe result. Can either be populated with the BatteryInfo or an
