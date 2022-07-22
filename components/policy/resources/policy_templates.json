@@ -16023,7 +16023,7 @@
 
       If you set this policy, users cannot change or override it.
 
-      Note: Currently, automatic reboots are only enabled while the login screen is being shown or a kiosk app session is in progress. This will change in the future and the policy will always apply, regardless of whether a session of any particular type is in progress or not.''',
+      Note: Currently, automatic reboots are only enabled while the login screen is being shown or a kiosk app session is in progress.''',
     },
     {
       'name': 'VariationsRestrictParameter',
