@@ -272,12 +272,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 @interface MainController () <PrefObserverDelegate, BlockingSceneCommands> {
   IBOutlet UIWindow* _window;
 
-  // Weak; owned by the ApplicationContext.
-  ios::ChromeBrowserStateManager* _browserStateManager;
-
   // The object that drives the Chrome startup/shutdown logic.
   std::unique_ptr<IOSChromeMain> _chromeMain;
-
 
   // True if the current session began from a cold start. False if the app has
   // entered the background at least once since start up.
@@ -447,6 +443,18 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   _chromeMain = [ChromeMainStarter startChromeMain];
 
+  // Remove the extra browser states as Chrome iOS is single profile in M48+.
+  ChromeBrowserStateRemovalController::GetInstance()
+      ->RemoveBrowserStatesIfNecessary();
+
+  ChromeBrowserState* chromeBrowserState = GetApplicationContext()
+                                               ->GetChromeBrowserStateManager()
+                                               ->GetLastUsedBrowserState();
+
+  // Initialize and set the main browser state.
+  [self initializeBrowserState:chromeBrowserState];
+  self.appState.mainBrowserState = chromeBrowserState;
+
   // Initialize the provider UI global state.
   ios::provider::InitializeUI();
 
@@ -501,14 +509,15 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   RegisterComponentsForUpdate();
 
-  // Remove the extra browser states as Chrome iOS is single profile in M48+.
-  ChromeBrowserStateRemovalController::GetInstance()
-      ->RemoveBrowserStatesIfNecessary();
-
-  _browserStateManager =
-      GetApplicationContext()->GetChromeBrowserStateManager();
-  ChromeBrowserState* chromeBrowserState =
-      _browserStateManager->GetLastUsedBrowserState();
+#if !defined(NDEBUG)
+  // Legacy code used GetLastUsedBrowserState() in this method. We changed it to
+  // use self.appState.mainBrowserState instead. The DCHECK ensures that
+  // invariant holds true.
+  ChromeBrowserState* chromeBrowserState = GetApplicationContext()
+                                               ->GetChromeBrowserStateManager()
+                                               ->GetLastUsedBrowserState();
+  DCHECK_EQ(chromeBrowserState, self.appState.mainBrowserState);
+#endif  // !defined(NDEBUG)
 
   // The CrashRestoreHelper must clean up the old browser state information.
   // `self.restoreHelper` must be kept alive until the BVC receives the
@@ -517,8 +526,9 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   if (isPostCrashLaunch) {
     NSSet<NSString*>* sessions =
         [[PreviousSessionInfo sharedInstance] connectedSceneSessionsIDs];
-    needRestoration = [CrashRestoreHelper moveAsideSessions:sessions
-                                            forBrowserState:chromeBrowserState];
+    needRestoration =
+        [CrashRestoreHelper moveAsideSessions:sessions
+                              forBrowserState:self.appState.mainBrowserState];
   }
   if (!base::ios::IsMultipleScenesSupported()) {
     NSSet<NSString*>* previousSessions =
@@ -527,10 +537,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     self.appState.previousSingleWindowSessionID = [previousSessions anyObject];
   }
   [[PreviousSessionInfo sharedInstance] resetConnectedSceneSessionIDs];
-
-  // Initialize and set the main browser state.
-  [self initializeBrowserState:chromeBrowserState];
-  self.appState.mainBrowserState = chromeBrowserState;
 
   if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
     [self startLoggingBreadcrumbs];
@@ -548,7 +554,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   // Send "Chrome Opened" event to the feature_engagement::Tracker on cold
   // start.
-  feature_engagement::TrackerFactory::GetForBrowserState(chromeBrowserState)
+  feature_engagement::TrackerFactory::GetForBrowserState(
+      self.appState.mainBrowserState)
       ->NotifyEvent(feature_engagement::events::kChromeOpened);
 
   _spotlightManager = [SpotlightManager
