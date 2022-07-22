@@ -311,7 +311,7 @@ WebView* RenderViewImpl::CreateView(
       // `openee_can_access_opener_origin` only matters for opener navigations,
       // so its value here is irrelevant.
       /*openee_can_access_opener_origin=*/true, !creator->IsAllowedToDownload(),
-      creator->IsAdSubframe());
+      creator->IsAdFrame());
 
   // We preserve this information before sending the message since |params| is
   // moved on send.

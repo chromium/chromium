@@ -19,14 +19,15 @@ namespace subresource_filter {
 class AsyncDocumentSubresourceFilter;
 
 // NavigationThrottle responsible for determining the activation state of
-// subresource filtering for a given navigation (either in the main frame or in
-// a subframe); and for deferring that navigation at WillProcessResponse until
-// the activation state computation on the ruleset's task runner is complete.
+// subresource filtering for a given navigation (either in the root frame or in
+// a child frame); and for deferring that navigation at WillProcessResponse
+// until the activation state computation on the ruleset's task runner is
+// complete.
 //
 // Interested parties can retrieve the activation state after this point (most
 // likely in ReadyToCommitNavigation).
 //
-// Note: for performance, activation computation for subframes is done
+// Note: for performance, activation computation for child frames is done
 // speculatively at navigation start and at every redirect. This is to reduce
 // the wait time (most likely to 0) by WillProcessResponse time. For main
 // frames, speculation will be done at the next navigation stage after
@@ -57,10 +58,10 @@ class ActivationStateComputingNavigationThrottle
 
   ~ActivationStateComputingNavigationThrottle() override;
 
-  // Notification for main frames when the page level activation is computed.
+  // Notification for root frames when the page level activation is computed.
   // Must be called at most once before WillProcessResponse is called on this
   // throttle. If it is never called, this object will never delay the
-  // navigation for main frames.
+  // navigation for root frames.
   //
   // Should never be called with DISABLED activation.
   //
@@ -81,8 +82,8 @@ class ActivationStateComputingNavigationThrottle
 
   // After the navigation is finished, the client may optionally choose to
   // continue using the DocumentSubresourceFilter that was used to compute the
-  // activation state for this frame. The transfered filter can be cached and
-  // used to calculate load policy for subframe navigations occuring in this
+  // activation state for this frame. The transferred filter can be cached and
+  // used to calculate load policy for child frame navigations occurring in this
   // frame.
   std::unique_ptr<AsyncDocumentSubresourceFilter> ReleaseFilter();
 
@@ -94,7 +95,7 @@ class ActivationStateComputingNavigationThrottle
   void CheckActivationState();
   void OnActivationStateComputed(mojom::ActivationState state);
 
-  // In the case when main frame navigations get notified of
+  // In the case when root frame navigations get notified of
   // mojom::ActivationState multiple times, a method is needed for overriding
   // previously computed results with a more accurate mojom::ActivationState.
   //
@@ -111,7 +112,7 @@ class ActivationStateComputingNavigationThrottle
 
   std::unique_ptr<AsyncDocumentSubresourceFilter> async_filter_;
 
-  // Must outlive this class. For main frame navigations, this member will be
+  // Must outlive this class. For root frame navigations, this member will be
   // nullptr until NotifyPageActivationWithRuleset is called.
   raw_ptr<VerifiedRuleset::Handle> ruleset_handle_;
 

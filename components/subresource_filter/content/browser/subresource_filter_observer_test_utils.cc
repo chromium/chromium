@@ -38,16 +38,16 @@ void TestSubresourceFilterObserver::OnPageActivationComputed(
   pending_activations_[navigation_handle] = level;
 }
 
-void TestSubresourceFilterObserver::OnSubframeNavigationEvaluated(
+void TestSubresourceFilterObserver::OnChildFrameNavigationEvaluated(
     content::NavigationHandle* navigation_handle,
     LoadPolicy load_policy) {
-  subframe_load_evaluations_[navigation_handle->GetURL()] = load_policy;
+  child_frame_load_evaluations_[navigation_handle->GetURL()] = load_policy;
 }
 
-void TestSubresourceFilterObserver::OnIsAdSubframeChanged(
+void TestSubresourceFilterObserver::OnIsAdFrameChanged(
     content::RenderFrameHost* render_frame_host,
-    bool is_ad_subframe) {
-  if (is_ad_subframe)
+    bool is_ad_frame) {
+  if (is_ad_frame)
     ad_frames_.insert(render_frame_host->GetFrameTreeNodeId());
   else
     ad_frames_.erase(render_frame_host->GetFrameTreeNodeId());
@@ -80,15 +80,14 @@ TestSubresourceFilterObserver::GetPageActivation(const GURL& url) const {
   return absl::nullopt;
 }
 
-bool TestSubresourceFilterObserver::GetIsAdSubframe(
-    int frame_tree_node_id) const {
+bool TestSubresourceFilterObserver::GetIsAdFrame(int frame_tree_node_id) const {
   return base::Contains(ad_frames_, frame_tree_node_id);
 }
 
-absl::optional<LoadPolicy> TestSubresourceFilterObserver::GetSubframeLoadPolicy(
-    const GURL& url) const {
-  auto it = subframe_load_evaluations_.find(url);
-  if (it != subframe_load_evaluations_.end())
+absl::optional<LoadPolicy>
+TestSubresourceFilterObserver::GetChildFrameLoadPolicy(const GURL& url) const {
+  auto it = child_frame_load_evaluations_.find(url);
+  if (it != child_frame_load_evaluations_.end())
     return it->second;
   return absl::optional<LoadPolicy>();
 }

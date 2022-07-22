@@ -33,7 +33,7 @@ bool IsKnownAdExecutionContext(ExecutionContext* execution_context) {
   // TODO(jkarlin): Do the same check for worker contexts.
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     LocalFrame* frame = window->GetFrame();
-    if (frame && frame->IsAdSubframe())
+    if (frame && frame->IsAdFrame())
       return true;
   }
   return false;

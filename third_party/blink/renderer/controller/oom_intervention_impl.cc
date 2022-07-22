@@ -68,7 +68,7 @@ void NavigateLocalAdsFrames(LocalFrame* frame) {
   for (Frame* child = frame->Tree().FirstChild(); child;
        child = child->Tree().TraverseNext(frame)) {
     if (auto* child_local_frame = DynamicTo<LocalFrame>(child)) {
-      if (child_local_frame->IsAdSubframe()) {
+      if (child_local_frame->IsAdFrame()) {
         FrameLoadRequest request(frame->DomWindow(),
                                  ResourceRequest(BlankURL()));
         child_local_frame->Navigate(request, WebFrameLoadType::kStandard);

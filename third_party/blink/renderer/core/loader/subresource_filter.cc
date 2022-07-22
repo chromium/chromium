@@ -47,7 +47,7 @@ SubresourceFilter::SubresourceFilter(
   // associated with an ad subframe.
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context_.Get())) {
     auto* frame = window->GetFrame();
-    if (frame->IsAdSubframe()) {
+    if (frame->IsAdFrame()) {
       ReportAdRequestId(
           frame->Loader().GetDocumentLoader()->GetResponse().RequestId());
     }

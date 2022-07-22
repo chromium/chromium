@@ -139,7 +139,7 @@ void ReportMetrics(WebMediaPlayer::LoadType load_type,
                             WebMediaPlayer::kLoadTypeMax + 1);
 
   // Report load type separately for ad frames.
-  if (frame.IsAdSubframe()) {
+  if (frame.IsAdFrame()) {
     UMA_HISTOGRAM_ENUMERATION("Ads.Media.LoadType", load_type,
                               WebMediaPlayer::kLoadTypeMax + 1);
   }

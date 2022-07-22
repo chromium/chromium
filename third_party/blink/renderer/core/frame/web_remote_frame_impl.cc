@@ -380,8 +380,8 @@ WebRemoteFrameImpl::GetPendingVisualPropertiesForTesting() const {
   return GetFrame()->GetPendingVisualPropertiesForTesting();
 }
 
-bool WebRemoteFrameImpl::IsAdSubframe() const {
-  return GetFrame()->IsAdSubframe();
+bool WebRemoteFrameImpl::IsAdFrame() const {
+  return GetFrame()->IsAdFrame();
 }
 
 WebRemoteFrameImpl::WebRemoteFrameImpl(mojom::blink::TreeScopeType scope,
@@ -424,7 +424,7 @@ void WebRemoteFrameImpl::SetReplicatedState(
       blink::WebString::FromUTF8(state->unique_name));
   remote_frame->SetInsecureRequestPolicy(state->insecure_request_policy);
   remote_frame->SetInsecureNavigationsSet(state->insecure_navigations_set);
-  remote_frame->SetReplicatedIsAdSubframe(state->is_ad_subframe);
+  remote_frame->SetReplicatedIsAdFrame(state->is_ad_frame);
   remote_frame->SetReplicatedPermissionsPolicyHeader(
       state->permissions_policy_header);
   if (state->has_active_user_gesture) {

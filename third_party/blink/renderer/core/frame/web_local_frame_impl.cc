@@ -917,9 +917,9 @@ WebPerformance WebLocalFrameImpl::Performance() const {
       DOMWindowPerformance::performance(*(GetFrame()->DomWindow())));
 }
 
-bool WebLocalFrameImpl::IsAdSubframe() const {
+bool WebLocalFrameImpl::IsAdFrame() const {
   DCHECK(GetFrame());
-  return GetFrame()->IsAdSubframe();
+  return GetFrame()->IsAdFrame();
 }
 
 bool WebLocalFrameImpl::IsAdScriptInStack() const {
@@ -938,9 +938,9 @@ const absl::optional<blink::FrameAdEvidence>& WebLocalFrameImpl::AdEvidence() {
   return GetFrame()->AdEvidence();
 }
 
-bool WebLocalFrameImpl::IsSubframeCreatedByAdScript() {
+bool WebLocalFrameImpl::IsFrameCreatedByAdScript() {
   DCHECK(GetFrame());
-  return GetFrame()->IsSubframeCreatedByAdScript();
+  return GetFrame()->IsFrameCreatedByAdScript();
 }
 
 void WebLocalFrameImpl::ExecuteScript(const WebScriptSource& source) {

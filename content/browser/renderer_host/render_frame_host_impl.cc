@@ -13543,8 +13543,8 @@ bool RenderFrameHostImpl::IsDOMContentLoaded() {
   return document_associated_data_->dom_content_loaded;
 }
 
-void RenderFrameHostImpl::UpdateIsAdSubframe(bool is_ad_subframe) {
-  browsing_context_state_->SetIsAdSubframe(is_ad_subframe);
+void RenderFrameHostImpl::UpdateIsAdFrame(bool is_ad_frame) {
+  browsing_context_state_->SetIsAdFrame(is_ad_frame);
 }
 
 #if BUILDFLAG(IS_ANDROID)

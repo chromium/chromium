@@ -79,7 +79,7 @@ ActivationStateComputingNavigationThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 ActivationStateComputingNavigationThrottle::WillProcessResponse() {
-  // If no parent activation, this is main frame that was never notified of
+  // If no parent activation, this is root frame that was never notified of
   // activation.
   if (!parent_activation_state_) {
     DCHECK(IsInSubresourceFilterRoot(navigation_handle()));
@@ -144,7 +144,7 @@ void ActivationStateComputingNavigationThrottle::OnActivationStateComputed(
 }
 
 void ActivationStateComputingNavigationThrottle::UpdateWithMoreAccurateState() {
-  // This method is only needed for main frame navigations that are notified of
+  // This method is only needed for root frame navigations that are notified of
   // page activation more than once. Even for those that are updated once, it
   // should be a no-op.
   DCHECK(IsInSubresourceFilterRoot(navigation_handle()));

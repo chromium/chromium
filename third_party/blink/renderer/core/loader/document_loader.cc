@@ -1861,7 +1861,7 @@ void DocumentLoader::DidCommitNavigation() {
   if (response_.IsLegacyTLSVersion()) {
     GetFrameLoader().ReportLegacyTLSVersion(response_.CurrentRequestUrl(),
                                             false /* is_subresource */,
-                                            frame_->IsAdSubframe());
+                                            frame_->IsAdFrame());
   }
 }
 

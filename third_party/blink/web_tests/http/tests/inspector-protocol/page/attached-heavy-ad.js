@@ -6,7 +6,7 @@
   session.evaluate(`
     ad_frame = document.createElement('iframe');
     document.body.appendChild(ad_frame);
-    internals.setIsAdSubframe(ad_frame);
+    internals.setIsAdFrame(ad_frame);
   `);
 
   await firstFrameAttached;

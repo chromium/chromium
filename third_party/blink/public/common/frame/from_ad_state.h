@@ -22,9 +22,9 @@ enum class FromAdState {
   kMaxValue = kNonAdScriptAndNonAdFrame,
 };
 
-// Returns the FromAdState corresponded to the cross product of |is_ad_subframe|
+// Returns the FromAdState corresponded to the cross product of |is_ad_frame|
 // and |is_ad_script_in_stack|.
-FromAdState BLINK_COMMON_EXPORT GetFromAdState(bool is_ad_subframe,
+FromAdState BLINK_COMMON_EXPORT GetFromAdState(bool is_ad_frame,
                                                bool is_ad_script_in_stack);
 
 }  // namespace blink

@@ -803,7 +803,7 @@ class WebLocalFrame : public WebFrame {
 
   // True if the frame is thought (heuristically) to be created for
   // advertising purposes.
-  bool IsAdSubframe() const override = 0;
+  bool IsAdFrame() const override = 0;
 
   // See blink::LocalFrame::SetAdEvidence()
   virtual void SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) = 0;
@@ -817,9 +817,9 @@ class WebLocalFrame : public WebFrame {
   virtual bool IsAdScriptInStack() const = 0;
 
   // True iff a script tagged as an ad was on the v8 stack when the frame was
-  // created and the frame is a subframe. This is not currently propagated when
-  // a frame navigates cross-origin.
-  virtual bool IsSubframeCreatedByAdScript() = 0;
+  // created. This is not currently propagated when a frame navigates
+  // cross-origin.
+  virtual bool IsFrameCreatedByAdScript() = 0;
 
   // User activation -----------------------------------------------------------
 

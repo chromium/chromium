@@ -69,8 +69,8 @@ void SubresourceFilterAgent::Initialize() {
 
   // We must check for provisional here because in that case 2 RenderFrames will
   // be created for the same FrameTreeNode in the browser. The browser service
-  // only expects us to call SendSubframeWasCreatedByAdScript() and
-  // SendFrameIsAdSubframe() a single time each for a newly created RenderFrame,
+  // only expects us to call SendFrameWasCreatedByAdScript() and
+  // SendFrameIsAd() a single time each for a newly created RenderFrame,
   // so we must choose one. A provisional frame is created when a navigation is
   // performed cross-site and the navigation is done there to isolate it from
   // the previous frame tree. We choose to send this message from the initial
@@ -83,13 +83,13 @@ void SubresourceFilterAgent::Initialize() {
     // Note: We intentionally exclude fenced-frame roots here since they do not
     // create a RenderFrame in the creating renderer. By the time the fenced
     // frame initializes its RenderFrame in a new process,
-    // IsSubframeCreatedByAdScript will not see the creating call stack. Fenced
+    // IsFrameCreatedByAdScript will not see the creating call stack. Fenced
     // frames compute and send this information to the browser from
     // DidCreateFencedFrame which is called by the creating RenderFrame.
     // Additionally, there's no need to set evidence for the initial empty
     // subframe since the fenced frame is isolated from its embedder.
-    if (IsSubframeCreatedByAdScript())
-      SendSubframeWasCreatedByAdScript();
+    if (IsFrameCreatedByAdScript())
+      SendFrameWasCreatedByAdScript();
 
     // As this is the initial empty document, we won't have received any message
     // from the browser and so we must populate the ad evidence here.
@@ -141,20 +141,20 @@ bool SubresourceFilterAgent::IsSubresourceFilterChild() {
          render_frame()->IsInFencedFrameTree();
 }
 
-bool SubresourceFilterAgent::IsParentAdSubframe() {
+bool SubresourceFilterAgent::IsParentAdFrame() {
   // A fenced frame root should never ask this since it can't see the outer
   // frame tree. Its AdEvidence is always computed by the browser.
   DCHECK(!IsMPArchFencedFrameRoot(render_frame()));
-  return render_frame()->GetWebFrame()->Parent()->IsAdSubframe();
+  return render_frame()->GetWebFrame()->Parent()->IsAdFrame();
 }
 
 bool SubresourceFilterAgent::IsProvisional() {
   return render_frame()->GetWebFrame()->IsProvisional();
 }
 
-bool SubresourceFilterAgent::IsSubframeCreatedByAdScript() {
+bool SubresourceFilterAgent::IsFrameCreatedByAdScript() {
   DCHECK(!IsMPArchFencedFrameRoot(render_frame()));
-  return render_frame()->GetWebFrame()->IsSubframeCreatedByAdScript();
+  return render_frame()->GetWebFrame()->IsFrameCreatedByAdScript();
 }
 
 void SubresourceFilterAgent::SetSubresourceFilterForCurrentDocument(
@@ -174,17 +174,17 @@ void SubresourceFilterAgent::SendDocumentLoadStatistics(
   GetSubresourceFilterHost()->SetDocumentLoadStatistics(statistics.Clone());
 }
 
-void SubresourceFilterAgent::SendFrameIsAdSubframe() {
-  GetSubresourceFilterHost()->FrameIsAdSubframe();
+void SubresourceFilterAgent::SendFrameIsAd() {
+  GetSubresourceFilterHost()->FrameIsAd();
 }
 
-void SubresourceFilterAgent::SendSubframeWasCreatedByAdScript() {
+void SubresourceFilterAgent::SendFrameWasCreatedByAdScript() {
   DCHECK(!IsMPArchFencedFrameRoot(render_frame()));
-  GetSubresourceFilterHost()->SubframeWasCreatedByAdScript();
+  GetSubresourceFilterHost()->FrameWasCreatedByAdScript();
 }
 
-bool SubresourceFilterAgent::IsAdSubframe() {
-  return render_frame()->GetWebFrame()->IsAdSubframe();
+bool SubresourceFilterAgent::IsAdFrame() {
+  return render_frame()->GetWebFrame()->IsAdFrame();
 }
 
 void SubresourceFilterAgent::SetAdEvidence(
@@ -289,20 +289,20 @@ void SubresourceFilterAgent::OnDestruct() {
 }
 
 void SubresourceFilterAgent::SetAdEvidenceForInitialEmptySubframe() {
-  DCHECK(!IsAdSubframe());
+  DCHECK(!IsAdFrame());
   DCHECK(!AdEvidence().has_value());
   DCHECK(!IsMPArchFencedFrameRoot(render_frame()));
 
-  blink::FrameAdEvidence ad_evidence(IsParentAdSubframe());
+  blink::FrameAdEvidence ad_evidence(IsParentAdFrame());
   ad_evidence.set_created_by_ad_script(
-      IsSubframeCreatedByAdScript()
+      IsFrameCreatedByAdScript()
           ? blink::mojom::FrameCreationStackEvidence::kCreatedByAdScript
           : blink::mojom::FrameCreationStackEvidence::kNotCreatedByAdScript);
   ad_evidence.set_is_complete();
   SetAdEvidence(ad_evidence);
 
-  if (ad_evidence.IndicatesAdSubframe()) {
-    SendFrameIsAdSubframe();
+  if (ad_evidence.IndicatesAdFrame()) {
+    SendFrameIsAd();
   }
 }
 

@@ -96,7 +96,7 @@ GURL GetURLWithFragment(const GURL& url, base::StringPiece fragment) {
 
 // This string comes from GetErrorStringForDisallowedLoad() in
 // blink/renderer/core/loader/subresource_filter.cc
-constexpr const char kBlinkDisallowSubframeConsoleMessageFormat[] =
+constexpr const char kBlinkDisallowChildFrameConsoleMessageFormat[] =
     "Chrome blocked resource %s on this site because this site tends to show "
     "ads that interrupt, distract, mislead, or prevent user control. Learn "
     "more at https://www.chromestatus.com/feature/5738264052891648";
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterListInsertingBrowserTest,
 
   EXPECT_FALSE(console_observer.messages().empty());
 
-  // The main frame document should never be filtered.
+  // The root frame document should never be filtered.
   SetRulesetToDisallowURLsWithPathSuffix("frame_with_included_script.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, MainFrameActivation) {
 
   EXPECT_FALSE(console_observer.messages().empty());
 
-  // The main frame document should never be filtered.
+  // The root frame document should never be filtered.
   SetRulesetToDisallowURLsWithPathSuffix("frame_with_included_script.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, SubFrameActivation) {
   std::string message_filter =
-      base::StringPrintf(kBlinkDisallowSubframeConsoleMessageFormat, "*");
+      base::StringPrintf(kBlinkDisallowChildFrameConsoleMessageFormat, "*");
   content::WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(message_filter);
 
@@ -274,17 +274,17 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, SubFrameActivation) {
       kSubresourceFilterActionsHistogram,
       subresource_filter::SubresourceFilterAction::kUIShown, 1);
 
-  // Console message for subframe blocking should be displayed.
+  // Console message for child frame blocking should be displayed.
   EXPECT_TRUE(base::MatchPattern(
       console_observer.GetMessageAt(0u),
-      base::StringPrintf(kBlinkDisallowSubframeConsoleMessageFormat,
+      base::StringPrintf(kBlinkDisallowChildFrameConsoleMessageFormat,
                          "*included_script.js")));
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                        ActivationDisabled_NoConsoleMessage) {
   std::string message_filter =
-      base::StringPrintf(kBlinkDisallowSubframeConsoleMessageFormat, "*");
+      base::StringPrintf(kBlinkDisallowChildFrameConsoleMessageFormat, "*");
   content::WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(message_filter);
 
@@ -300,15 +300,15 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // Console message for subframe blocking should not be displayed as filtering
-  // is disabled.
+  // Console message for child frame blocking should not be displayed as
+  // filtering is disabled.
   EXPECT_TRUE(console_observer.messages().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                        ActivationDryRun_NoConsoleMessage) {
   std::string message_filter =
-      base::StringPrintf(kBlinkDisallowSubframeConsoleMessageFormat, "*");
+      base::StringPrintf(kBlinkDisallowChildFrameConsoleMessageFormat, "*");
   content::WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(message_filter);
 
@@ -324,8 +324,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // Console message for subframe blocking should not be displayed as filtering
-  // is enabled in dryrun mode.
+  // Console message for child frame blocking should not be displayed as
+  // filtering is enabled in dryrun mode.
   EXPECT_TRUE(console_observer.messages().empty());
 }
 
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   GURL url(GetTestUrl(kTestFrameSetPath));
   ConfigureAsPhishingURL(url);
 
-  // Disallow loading subframe documents that in turn would end up loading
+  // Disallow loading child frame documents that in turn would end up loading
   // included_script.js, unless the document is loaded from an allowlisted
   // domain. This enables the third part of this test disallowing a load only
   // after the first redirect.
@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 }
 
 // The page-level activation state on the browser-side should not be reset when
-// a same document navigation starts in the main frame. Verify this by
+// a same document navigation starts in the root frame. Verify this by
 // dynamically inserting a subframe afterwards, and still expecting activation.
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                        PageLevelActivationOutlivesSameDocumentNavigation) {

@@ -270,9 +270,9 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
     return lifecycle_.GetState() == FrameLifecycle::kDetached;
   }
 
-  // Whether the frame is considered to be an ad subframe by Ad Tagging. Returns
-  // true for both root and child ad subframes.
-  virtual bool IsAdSubframe() const = 0;
+  // Whether the frame is considered to be an ad frame by Ad Tagging. Returns
+  // true for both root and child ad frames.
+  virtual bool IsAdFrame() const = 0;
 
   // Called to make a frame inert or non-inert. A frame is inert when there
   // is a modal dialog displayed within an ancestor frame, and this frame

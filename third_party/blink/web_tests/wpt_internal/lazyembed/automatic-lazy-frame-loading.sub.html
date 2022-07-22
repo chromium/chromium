@@ -36,7 +36,7 @@
       const iframe = _createSimpleFrame();
       // In order to mark the frame as ad, we need to append it in advance.
       parentElement.appendChild(iframe);
-      internals.setIsAdSubframe(iframe);
+      internals.setIsAdFrame(iframe);
       // After the ad tagging, set other attributes including src.
       _setAttributes(iframe, id, src);
     };

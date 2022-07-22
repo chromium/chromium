@@ -14,7 +14,7 @@ const appendAdFrame = (id, elm, loadingAttr) => {
   }
 
   elm.appendChild(frame);
-  internals.setIsAdSubframe(frame);
+  internals.setIsAdFrame(frame);
 
   // Simulate 3P domain
   const third_pary_origin = get_host_info().HTTPS_REMOTE_ORIGIN;

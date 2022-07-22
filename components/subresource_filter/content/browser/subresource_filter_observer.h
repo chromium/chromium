@@ -42,7 +42,7 @@ class SubresourceFilterObserver {
       std::vector<SubresourceFilterSafeBrowsingClient::CheckResult>;
 
   // Called when the SubresourceFilter Safe Browsing checks are available for
-  // this main frame navigation. Will be called at WillProcessResponse time at
+  // this root frame navigation. Will be called at WillProcessResponse time at
   // the latest. Right now it will only include phishing and subresource filter
   // threat types.
   virtual void OnSafeBrowsingChecksComplete(
@@ -57,17 +57,16 @@ class SubresourceFilterObserver {
 
   // Called before navigation commit, either at the WillStartRequest stage or
   // WillRedirectRequest stage.
-  virtual void OnSubframeNavigationEvaluated(
+  virtual void OnChildFrameNavigationEvaluated(
       content::NavigationHandle* navigation_handle,
       LoadPolicy load_policy) {}
 
   // Called when a frame is tagged or untagged as an ad, along with the frame's
-  // current status as an ad subframe and the evidence which resulted in the
+  // current status as an ad frame and the evidence which resulted in the
   // change. This will be called prior to commit time in the case of an initial
   // synchronous load or at ReadyToCommitNavigation otherwise.
-  virtual void OnIsAdSubframeChanged(
-      content::RenderFrameHost* render_frame_host,
-      bool is_ad_subframe) {}
+  virtual void OnIsAdFrameChanged(content::RenderFrameHost* render_frame_host,
+                                  bool is_ad_frame) {}
 };
 
 }  // namespace subresource_filter

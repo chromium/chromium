@@ -177,9 +177,8 @@ class CONTENT_EXPORT BrowsingContextState
   // update.
   void OnSetHadStickyUserActivationBeforeNavigation(bool value);
 
-  // Sets whether this is an ad subframe and notifies the proxies about the
-  // update.
-  void SetIsAdSubframe(bool is_ad_subframe);
+  // Sets whether this is an ad frame and notifies the proxies about the update.
+  void SetIsAdFrame(bool is_ad_frame);
 
   // Delete a RenderFrameProxyHost owned by this object.
   void DeleteRenderFrameProxyHost(

@@ -1340,7 +1340,7 @@ CreateOriginTrials(LocalDOMWindow* window) {
 protocol::Page::AdFrameType BuildAdFrameType(LocalFrame* frame) {
   if (frame->IsAdRoot())
     return protocol::Page::AdFrameTypeEnum::Root;
-  if (frame->IsAdSubframe())
+  if (frame->IsAdFrame())
     return protocol::Page::AdFrameTypeEnum::Child;
   return protocol::Page::AdFrameTypeEnum::None;
 }

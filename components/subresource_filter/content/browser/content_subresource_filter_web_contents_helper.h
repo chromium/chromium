@@ -167,7 +167,7 @@ class ContentSubresourceFilterWebContentsHelper
   void OnPageActivationComputed(
       content::NavigationHandle* navigation_handle,
       const mojom::ActivationState& activation_state) override;
-  void OnSubframeNavigationEvaluated(
+  void OnChildFrameNavigationEvaluated(
       content::NavigationHandle* navigation_handle,
       LoadPolicy load_policy) override;
 

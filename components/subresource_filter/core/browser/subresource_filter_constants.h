@@ -63,7 +63,7 @@ constexpr char kActivationWarningConsoleMessage[] =
     "https://www.chromestatus.com/feature/5738264052891648";
 
 // Console message to be displayed on disallowing subframe.
-constexpr char kDisallowSubframeConsoleMessageFormat[] =
+constexpr char kDisallowChildFrameConsoleMessageFormat[] =
     "Chrome blocked resource %s on this site because this site tends to show "
     "ads that interrupt, distract, mislead, or prevent user control. Learn "
     "more at https://www.chromestatus.com/feature/5738264052891648";

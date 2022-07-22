@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   console_activation_observer.SetPattern(kActivationConsoleMessage);
   WebContentsConsoleObserver console_blocked_observer(web_contents());
   console_blocked_observer.SetPattern(
-      base::StringPrintf(kDisallowSubframeConsoleMessageFormat, "*"));
+      base::StringPrintf(kDisallowChildFrameConsoleMessageFormat, "*"));
 
   // Configure filtering of `included_script.js` only on the prerendering URL.
   {
@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   {
     ad_rfh = CreateSrcFrameFromAdScript(prerender_rfh, kAdUrl);
     ASSERT_NE(ad_rfh, nullptr);
-    EXPECT_TRUE(observer.GetIsAdSubframe(ad_rfh->GetFrameTreeNodeId()));
+    EXPECT_TRUE(observer.GetIsAdFrame(ad_rfh->GetFrameTreeNodeId()));
     EXPECT_TRUE(EvidenceForFrameComprises(
         ad_rfh, /*parent_is_ad=*/false,
         blink::mojom::FilterListResult::kMatchedNoRules,
@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   {
     prerender_helper_.NavigatePrimaryPage(kPrerenderingUrl);
     ASSERT_EQ(kPrerenderingUrl, web_contents()->GetLastCommittedURL());
-    EXPECT_TRUE(observer.GetIsAdSubframe(ad_rfh->GetFrameTreeNodeId()));
+    EXPECT_TRUE(observer.GetIsAdFrame(ad_rfh->GetFrameTreeNodeId()));
     EXPECT_TRUE(EvidenceForFrameComprises(
         ad_rfh, /*parent_is_ad=*/false,
         blink::mojom::FilterListResult::kMatchedNoRules,

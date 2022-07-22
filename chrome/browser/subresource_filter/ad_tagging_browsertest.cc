@@ -300,17 +300,17 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   GURL ad_url = GetURL("frame_factory.html?2&ad=true");
   RenderFrameHost* ad_frame = CreateSrcFrame(GetWebContents(), ad_url);
 
-  // Verify that we are not evaluating subframe loads.
-  EXPECT_FALSE(observer.GetSubframeLoadPolicy(ad_url).has_value());
-  EXPECT_FALSE(observer.GetIsAdSubframe(ad_frame->GetFrameTreeNodeId()));
+  // Verify that we are not evaluating child frame loads.
+  EXPECT_FALSE(observer.GetChildFrameLoadPolicy(ad_url).has_value());
+  EXPECT_FALSE(observer.GetIsAdFrame(ad_frame->GetFrameTreeNodeId()));
 
   // Child frame created by ad script.
   RenderFrameHost* ad_frame_tagged_by_script = CreateSrcFrameFromAdScript(
       GetWebContents(), GetURL("frame_factory.html?1"));
 
   // No frames should be detected by script heuristics.
-  EXPECT_FALSE(observer.GetIsAdSubframe(
-      ad_frame_tagged_by_script->GetFrameTreeNodeId()));
+  EXPECT_FALSE(
+      observer.GetIsAdFrame(ad_frame_tagged_by_script->GetFrameTreeNodeId()));
 }
 
 IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
@@ -328,17 +328,17 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   GURL ad_url = GetURL("frame_factory.html?2&ad=true");
   RenderFrameHost* ad_frame = CreateSrcFrame(GetWebContents(), ad_url);
 
-  // Verify that we are evaluating subframe loads.
-  EXPECT_TRUE(observer.GetSubframeLoadPolicy(ad_url).has_value());
-  EXPECT_TRUE(observer.GetIsAdSubframe(ad_frame->GetFrameTreeNodeId()));
+  // Verify that we are evaluating child frame loads.
+  EXPECT_TRUE(observer.GetChildFrameLoadPolicy(ad_url).has_value());
+  EXPECT_TRUE(observer.GetIsAdFrame(ad_frame->GetFrameTreeNodeId()));
 
   // Child frame created by ad script.
   RenderFrameHost* ad_frame_tagged_by_script = CreateSrcFrameFromAdScript(
       GetWebContents(), GetURL("frame_factory.html?1"));
 
   // Frames should be detected by script heuristics.
-  EXPECT_TRUE(observer.GetIsAdSubframe(
-      ad_frame_tagged_by_script->GetFrameTreeNodeId()));
+  EXPECT_TRUE(
+      observer.GetIsAdFrame(ad_frame_tagged_by_script->GetFrameTreeNodeId()));
 }
 
 IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
@@ -347,18 +347,18 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
   // Main frame.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GetURL("frame_factory.html")));
-  EXPECT_FALSE(observer.GetIsAdSubframe(
+  EXPECT_FALSE(observer.GetIsAdFrame(
       GetWebContents()->GetPrimaryMainFrame()->GetFrameTreeNodeId()));
 
   // (1) Vanilla child.
   content::RenderFrameHost* vanilla_child =
       CreateSrcFrame(GetWebContents(), GetURL("frame_factory.html?1"));
-  EXPECT_FALSE(observer.GetIsAdSubframe(vanilla_child->GetFrameTreeNodeId()));
+  EXPECT_FALSE(observer.GetIsAdFrame(vanilla_child->GetFrameTreeNodeId()));
 
   // (2) Ad child.
   RenderFrameHost* ad_child =
       CreateSrcFrame(GetWebContents(), GetURL("frame_factory.html?2&ad=true"));
-  EXPECT_TRUE(observer.GetIsAdSubframe(ad_child->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(ad_child->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       ad_child, /*parent_is_ad=*/false,
       blink::mojom::FilterListResult::kMatchedBlockingRule,
@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
   // (3) Ad child of 2.
   RenderFrameHost* ad_child_2 =
       CreateSrcFrame(ad_child, GetURL("frame_factory.html?sub=1&3&ad=true"));
-  EXPECT_TRUE(observer.GetIsAdSubframe(ad_child_2->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(ad_child_2->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       ad_child_2, /*parent_is_ad=*/true,
       blink::mojom::FilterListResult::kMatchedBlockingRule,
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
   // (4) Vanilla child of 2.
   RenderFrameHost* vanilla_child_2 =
       CreateSrcFrame(ad_child, GetURL("frame_factory.html?4"));
-  EXPECT_TRUE(observer.GetIsAdSubframe(vanilla_child_2->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(vanilla_child_2->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       vanilla_child_2, /*parent_is_ad=*/true,
       blink::mojom::FilterListResult::kMatchedNoRules,
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
   // it's able to create an iframe that's not labeled as an ad.
   RenderFrameHost* vanilla_child_3 =
       CreateSrcFrame(vanilla_child, GetURL("frame_factory.html?5"));
-  EXPECT_FALSE(observer.GetIsAdSubframe(vanilla_child_3->GetFrameTreeNodeId()));
+  EXPECT_FALSE(observer.GetIsAdFrame(vanilla_child_3->GetFrameTreeNodeId()));
 }
 
 const char kSubresourceFilterOriginStatusHistogram[] =
@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FrameLoadedByAdScript) {
   // Child frame created by ad script.
   RenderFrameHost* ad_child = CreateSrcFrameFromAdScript(
       GetWebContents(), GetURL("frame_factory.html?1"));
-  EXPECT_TRUE(observer.GetIsAdSubframe(ad_child->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(ad_child->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       ad_child, /*parent_is_ad=*/false,
       blink::mojom::FilterListResult::kMatchedNoRules,
@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, SameOriginFrameTagging) {
   // (1) Vanilla child.
   content::RenderFrameHost* vanilla_frame =
       CreateDocWrittenFrame(GetWebContents());
-  EXPECT_FALSE(observer.GetIsAdSubframe(vanilla_frame->GetFrameTreeNodeId()));
+  EXPECT_FALSE(observer.GetIsAdFrame(vanilla_frame->GetFrameTreeNodeId()));
 
   // (2) Ad child.
   content::RenderFrameHost* ad_frame =
@@ -548,17 +548,16 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   // Vanilla frame and descendants
   content::RenderFrameHost* vanilla_frame =
       CreateDocWrittenFrame(GetWebContents());
-  EXPECT_FALSE(observer.GetIsAdSubframe(vanilla_frame->GetFrameTreeNodeId()));
+  EXPECT_FALSE(observer.GetIsAdFrame(vanilla_frame->GetFrameTreeNodeId()));
 
   content::RenderFrameHost* vanilla_child_of_vanilla =
       CreateSrcFrame(vanilla_frame, GetURL("frame_factory.html"));
   EXPECT_FALSE(
-      observer.GetIsAdSubframe(vanilla_child_of_vanilla->GetFrameTreeNodeId()));
+      observer.GetIsAdFrame(vanilla_child_of_vanilla->GetFrameTreeNodeId()));
 
   content::RenderFrameHost* ad_child_of_vanilla =
       CreateSrcFrameFromAdScript(vanilla_frame, GetURL("frame_factory.html"));
-  EXPECT_TRUE(
-      observer.GetIsAdSubframe(ad_child_of_vanilla->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(ad_child_of_vanilla->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       ad_child_of_vanilla, /*parent_is_ad=*/false,
       blink::mojom::FilterListResult::kMatchedNoRules,
@@ -574,8 +573,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
 
   content::RenderFrameHost* vanilla_child_of_ad =
       CreateSrcFrame(ad_frame, GetURL("frame_factory.html"));
-  EXPECT_TRUE(
-      observer.GetIsAdSubframe(vanilla_child_of_ad->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(vanilla_child_of_ad->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       vanilla_child_of_ad, /*parent_is_ad=*/true,
       blink::mojom::FilterListResult::kMatchedNoRules,
@@ -583,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
 
   content::RenderFrameHost* ad_child_of_ad =
       CreateSrcFrameFromAdScript(ad_frame, GetURL("frame_factory.html"));
-  EXPECT_TRUE(observer.GetIsAdSubframe(ad_child_of_ad->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(ad_child_of_ad->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       ad_child_of_ad, /*parent_is_ad=*/true,
       blink::mojom::FilterListResult::kMatchedNoRules,
@@ -603,14 +601,14 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   // Vanilla child.
   content::RenderFrameHost* vanilla_frame_with_aborted_load =
       CreateFrameWithDocWriteAbortedLoad(GetWebContents());
-  EXPECT_FALSE(observer.GetIsAdSubframe(
+  EXPECT_FALSE(observer.GetIsAdFrame(
       vanilla_frame_with_aborted_load->GetFrameTreeNodeId()));
 
   // Child created by ad script.
   content::RenderFrameHost* ad_frame_with_aborted_load =
       CreateFrameWithDocWriteAbortedLoadFromAdScript(GetWebContents());
-  EXPECT_TRUE(observer.GetIsAdSubframe(
-      ad_frame_with_aborted_load->GetFrameTreeNodeId()));
+  EXPECT_TRUE(
+      observer.GetIsAdFrame(ad_frame_with_aborted_load->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       ad_frame_with_aborted_load,
       /*parent_is_ad=*/false, blink::mojom::FilterListResult::kNotChecked,
@@ -621,8 +619,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
       GetWebContents(), GetURL("frame_factory.html"));
   content::RenderFrameHost* child_frame_of_ad_with_aborted_load =
       CreateFrameWithDocWriteAbortedLoad(ad_frame);
-  EXPECT_TRUE(observer.GetIsAdSubframe(ad_frame->GetFrameTreeNodeId()));
-  EXPECT_TRUE(observer.GetIsAdSubframe(
+  EXPECT_TRUE(observer.GetIsAdFrame(ad_frame->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(
       child_frame_of_ad_with_aborted_load->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       child_frame_of_ad_with_aborted_load,
@@ -643,14 +641,14 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
   // Vanilla child.
   content::RenderFrameHost* vanilla_frame_with_aborted_load =
       CreateFrameWithWindowStopAbortedLoad(GetWebContents());
-  EXPECT_FALSE(observer.GetIsAdSubframe(
+  EXPECT_FALSE(observer.GetIsAdFrame(
       vanilla_frame_with_aborted_load->GetFrameTreeNodeId()));
 
   // Child created by ad script.
   content::RenderFrameHost* ad_frame_with_aborted_load =
       CreateFrameWithWindowStopAbortedLoadFromAdScript(GetWebContents());
-  EXPECT_TRUE(observer.GetIsAdSubframe(
-      ad_frame_with_aborted_load->GetFrameTreeNodeId()));
+  EXPECT_TRUE(
+      observer.GetIsAdFrame(ad_frame_with_aborted_load->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       ad_frame_with_aborted_load,
       /*parent_is_ad=*/false, blink::mojom::FilterListResult::kNotChecked,
@@ -661,8 +659,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
       GetWebContents(), GetURL("frame_factory.html"));
   content::RenderFrameHost* child_frame_of_ad_with_aborted_load =
       CreateFrameWithWindowStopAbortedLoad(ad_frame);
-  EXPECT_TRUE(observer.GetIsAdSubframe(ad_frame->GetFrameTreeNodeId()));
-  EXPECT_TRUE(observer.GetIsAdSubframe(
+  EXPECT_TRUE(observer.GetIsAdFrame(ad_frame->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(
       child_frame_of_ad_with_aborted_load->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       child_frame_of_ad_with_aborted_load,
@@ -689,12 +687,11 @@ IN_PROC_BROWSER_TEST_F(
   content::RenderFrameHost* vanilla_child_of_vanilla = CreateSrcFrame(
       vanilla_frame_with_aborted_load, GetURL("frame_factory.html"));
   EXPECT_FALSE(
-      observer.GetIsAdSubframe(vanilla_child_of_vanilla->GetFrameTreeNodeId()));
+      observer.GetIsAdFrame(vanilla_child_of_vanilla->GetFrameTreeNodeId()));
 
   content::RenderFrameHost* ad_child_of_vanilla = CreateSrcFrameFromAdScript(
       vanilla_frame_with_aborted_load, GetURL("frame_factory.html"));
-  EXPECT_TRUE(
-      observer.GetIsAdSubframe(ad_child_of_vanilla->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(ad_child_of_vanilla->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       ad_child_of_vanilla, /*parent_is_ad=*/false,
       blink::mojom::FilterListResult::kMatchedNoRules,
@@ -704,8 +701,8 @@ IN_PROC_BROWSER_TEST_F(
   // this ad frame should be tagged as ads.
   content::RenderFrameHost* ad_frame_with_aborted_load =
       CreateFrameWithDocWriteAbortedLoadFromAdScript(GetWebContents());
-  EXPECT_TRUE(observer.GetIsAdSubframe(
-      ad_frame_with_aborted_load->GetFrameTreeNodeId()));
+  EXPECT_TRUE(
+      observer.GetIsAdFrame(ad_frame_with_aborted_load->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       ad_frame_with_aborted_load,
       /*parent_is_ad=*/false, blink::mojom::FilterListResult::kNotChecked,
@@ -713,8 +710,7 @@ IN_PROC_BROWSER_TEST_F(
 
   content::RenderFrameHost* vanilla_child_of_ad =
       CreateSrcFrame(ad_frame_with_aborted_load, GetURL("frame_factory.html"));
-  EXPECT_TRUE(
-      observer.GetIsAdSubframe(vanilla_child_of_ad->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(vanilla_child_of_ad->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       vanilla_child_of_ad, /*parent_is_ad=*/true,
       blink::mojom::FilterListResult::kMatchedNoRules,
@@ -722,7 +718,7 @@ IN_PROC_BROWSER_TEST_F(
 
   content::RenderFrameHost* ad_child_of_ad = CreateSrcFrameFromAdScript(
       ad_frame_with_aborted_load, GetURL("frame_factory.html"));
-  EXPECT_TRUE(observer.GetIsAdSubframe(ad_child_of_ad->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(ad_child_of_ad->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       ad_child_of_ad, /*parent_is_ad=*/true,
       blink::mojom::FilterListResult::kMatchedNoRules,
@@ -749,12 +745,11 @@ IN_PROC_BROWSER_TEST_F(
   content::RenderFrameHost* vanilla_child_of_vanilla = CreateSrcFrame(
       vanilla_frame_with_aborted_load, GetURL("frame_factory.html"));
   EXPECT_FALSE(
-      observer.GetIsAdSubframe(vanilla_child_of_vanilla->GetFrameTreeNodeId()));
+      observer.GetIsAdFrame(vanilla_child_of_vanilla->GetFrameTreeNodeId()));
 
   content::RenderFrameHost* ad_child_of_vanilla = CreateSrcFrameFromAdScript(
       vanilla_frame_with_aborted_load, GetURL("frame_factory.html"));
-  EXPECT_TRUE(
-      observer.GetIsAdSubframe(ad_child_of_vanilla->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(ad_child_of_vanilla->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       ad_child_of_vanilla, /*parent_is_ad=*/false,
       blink::mojom::FilterListResult::kMatchedNoRules,
@@ -764,8 +759,8 @@ IN_PROC_BROWSER_TEST_F(
   // this ad frame should be tagged as ads.
   content::RenderFrameHost* ad_frame_with_aborted_load =
       CreateFrameWithWindowStopAbortedLoadFromAdScript(GetWebContents());
-  EXPECT_TRUE(observer.GetIsAdSubframe(
-      ad_frame_with_aborted_load->GetFrameTreeNodeId()));
+  EXPECT_TRUE(
+      observer.GetIsAdFrame(ad_frame_with_aborted_load->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       ad_frame_with_aborted_load,
       /*parent_is_ad=*/false, blink::mojom::FilterListResult::kNotChecked,
@@ -773,8 +768,7 @@ IN_PROC_BROWSER_TEST_F(
 
   content::RenderFrameHost* vanilla_child_of_ad =
       CreateSrcFrame(ad_frame_with_aborted_load, GetURL("frame_factory.html"));
-  EXPECT_TRUE(
-      observer.GetIsAdSubframe(vanilla_child_of_ad->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(vanilla_child_of_ad->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       vanilla_child_of_ad, /*parent_is_ad=*/true,
       blink::mojom::FilterListResult::kMatchedNoRules,
@@ -782,7 +776,7 @@ IN_PROC_BROWSER_TEST_F(
 
   content::RenderFrameHost* ad_child_of_ad = CreateSrcFrameFromAdScript(
       ad_frame_with_aborted_load, GetURL("frame_factory.html"));
-  EXPECT_TRUE(observer.GetIsAdSubframe(ad_child_of_ad->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(ad_child_of_ad->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       vanilla_child_of_ad, /*parent_is_ad=*/true,
       blink::mojom::FilterListResult::kMatchedNoRules,
@@ -802,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(
 
   content::RenderFrameHost* test_frame = CreateSrcFrame(
       GetWebContents(), GetURL("frame_factory.html?allowed=true"));
-  EXPECT_FALSE(observer.GetIsAdSubframe(test_frame->GetFrameTreeNodeId()));
+  EXPECT_FALSE(observer.GetIsAdFrame(test_frame->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       test_frame, /*parent_is_ad=*/false,
       /*latest_filter_list_result=*/
@@ -812,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(
       blink::mojom::FrameCreationStackEvidence::kNotCreatedByAdScript));
 
   NavigateFrame(test_frame, GetURL("frame_factory.html"));
-  EXPECT_FALSE(observer.GetIsAdSubframe(test_frame->GetFrameTreeNodeId()));
+  EXPECT_FALSE(observer.GetIsAdFrame(test_frame->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       test_frame, /*parent_is_ad=*/false,
       /*latest_filter_list_result=*/
@@ -822,7 +816,7 @@ IN_PROC_BROWSER_TEST_F(
       blink::mojom::FrameCreationStackEvidence::kNotCreatedByAdScript));
 
   NavigateFrame(test_frame, GetURL("frame_factory.html?allowed=true"));
-  EXPECT_FALSE(observer.GetIsAdSubframe(test_frame->GetFrameTreeNodeId()));
+  EXPECT_FALSE(observer.GetIsAdFrame(test_frame->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       test_frame, /*parent_is_ad=*/false,
       /*latest_filter_list_result=*/
@@ -832,7 +826,7 @@ IN_PROC_BROWSER_TEST_F(
       blink::mojom::FrameCreationStackEvidence::kNotCreatedByAdScript));
 
   NavigateFrame(test_frame, GetURL("frame_factory.html?ad=true"));
-  EXPECT_TRUE(observer.GetIsAdSubframe(test_frame->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(test_frame->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       test_frame, /*parent_is_ad=*/false,
       /*latest_filter_list_result=*/
@@ -842,7 +836,7 @@ IN_PROC_BROWSER_TEST_F(
       blink::mojom::FrameCreationStackEvidence::kNotCreatedByAdScript));
 
   NavigateFrame(test_frame, GetURL("frame_factory.html"));
-  EXPECT_TRUE(observer.GetIsAdSubframe(test_frame->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(test_frame->GetFrameTreeNodeId()));
   EXPECT_TRUE(EvidenceForFrameComprises(
       test_frame, /*parent_is_ad=*/false,
       /*latest_filter_list_result=*/
@@ -889,32 +883,32 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
 }
 
 void ExpectWindowOpenUkmEntry(const ukm::TestUkmRecorder& ukm_recorder,
-                              bool from_main_frame,
-                              const GURL& main_frame_url,
-                              bool from_ad_subframe,
+                              bool from_root_frame,
+                              const GURL& root_frame_url,
+                              bool from_ad_frame,
                               bool from_ad_script) {
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::AbusiveExperienceHeuristic_WindowOpen::kEntryName);
   EXPECT_EQ(1u, entries.size());
 
-  // Check that the event is keyed to |main_frame_url| only if it was from the
+  // Check that the event is keyed to |root_frame_url| only if it was from the
   // top frame.
-  if (from_main_frame) {
-    ukm_recorder.ExpectEntrySourceHasUrl(entries.back(), main_frame_url);
+  if (from_root_frame) {
+    ukm_recorder.ExpectEntrySourceHasUrl(entries.back(), root_frame_url);
   } else {
     EXPECT_FALSE(ukm_recorder.GetSourceForSourceId(entries.back()->source_id));
   }
 
   // Check that a DocumentCreated entry was created, and it's keyed to
-  // |main_frame_url| only if it was from the top frame. However, we can always
-  // use the navigation source ID to link this source to |main_frame_url|.
+  // |root_frame_url| only if it was from the top frame. However, we can always
+  // use the navigation source ID to link this source to |root_frame_url|.
   const ukm::mojom::UkmEntry* dc_entry =
       ukm_recorder.GetDocumentCreatedEntryForSourceId(
           entries.back()->source_id);
   EXPECT_TRUE(dc_entry);
   EXPECT_EQ(entries.back()->source_id, dc_entry->source_id);
-  if (from_main_frame) {
-    ukm_recorder.ExpectEntrySourceHasUrl(dc_entry, main_frame_url);
+  if (from_root_frame) {
+    ukm_recorder.ExpectEntrySourceHasUrl(dc_entry, root_frame_url);
   } else {
     EXPECT_FALSE(ukm_recorder.GetSourceForSourceId(dc_entry->source_id));
   }
@@ -922,16 +916,16 @@ void ExpectWindowOpenUkmEntry(const ukm::TestUkmRecorder& ukm_recorder,
   const ukm::UkmSource* navigation_source =
       ukm_recorder.GetSourceForSourceId(*ukm_recorder.GetEntryMetric(
           dc_entry, ukm::builders::DocumentCreated::kNavigationSourceIdName));
-  EXPECT_EQ(main_frame_url, navigation_source->url());
+  EXPECT_EQ(root_frame_url, navigation_source->url());
 
-  EXPECT_EQ(from_main_frame,
+  EXPECT_EQ(from_root_frame,
             *ukm_recorder.GetEntryMetric(
                 dc_entry, ukm::builders::DocumentCreated::kIsMainFrameName));
 
   ukm_recorder.ExpectEntryMetric(
       entries.back(),
       ukm::builders::AbusiveExperienceHeuristic_WindowOpen::kFromAdSubframeName,
-      from_ad_subframe);
+      from_ad_frame);
   ukm_recorder.ExpectEntryMetric(
       entries.back(),
       ukm::builders::AbusiveExperienceHeuristic_WindowOpen::kFromAdScriptName,
@@ -1031,34 +1025,33 @@ INSTANTIATE_TEST_SUITE_P(
 class AdTaggingEventFromSubframeBrowserTest
     : public AdTaggingBrowserTest,
       public ::testing::WithParamInterface<
-          std::tuple<bool /* cross_origin */, bool /* from_ad_subframe */>> {};
+          std::tuple<bool /* cross_origin */, bool /* from_ad_frame */>> {};
 
 // crbug.com/997410. The test is flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_P(AdTaggingEventFromSubframeBrowserTest,
                        DISABLED_WindowOpenFromSubframe) {
-  auto [cross_origin, from_ad_subframe] = GetParam();
-  SCOPED_TRACE(::testing::Message()
-               << "cross_origin = " << cross_origin << ", "
-               << "from_ad_subframe = " << from_ad_subframe);
+  auto [cross_origin, from_ad_frame] = GetParam();
+  SCOPED_TRACE(::testing::Message() << "cross_origin = " << cross_origin << ", "
+                                    << "from_ad_frame = " << from_ad_frame);
 
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::HistogramTester histogram_tester;
-  GURL main_frame_url =
+  GURL root_frame_url =
       embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), root_frame_url));
   content::WebContents* main_tab = GetWebContents();
 
   std::string hostname = cross_origin ? "b.com" : "a.com";
-  std::string suffix = from_ad_subframe ? "&ad=true" : "";
+  std::string suffix = from_ad_frame ? "&ad=true" : "";
   RenderFrameHost* child = CreateSrcFrame(
       main_tab, embedded_test_server()->GetURL(
                     hostname, "/ad_tagging/frame_factory.html?1" + suffix));
 
   EXPECT_TRUE(content::ExecJs(child, "window.open();"));
 
-  bool from_ad_script = from_ad_subframe;
-  ExpectWindowOpenUkmEntry(ukm_recorder, false /* from_main_frame */,
-                           main_frame_url, from_ad_subframe, from_ad_script);
+  bool from_ad_script = from_ad_frame;
+  ExpectWindowOpenUkmEntry(ukm_recorder, false /* from_root_frame */,
+                           root_frame_url, from_ad_frame, from_ad_script);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1078,8 +1071,8 @@ IN_PROC_BROWSER_TEST_P(AdTaggingEventWithScriptInStackBrowserTest,
 
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::HistogramTester histogram_tester;
-  GURL main_frame_url = GetURL("frame_factory.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+  GURL root_frame_url = GetURL("frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), root_frame_url));
   content::WebContents* main_tab = GetWebContents();
 
   std::string script = from_ad_script ? "windowOpenFromAdScript();"
@@ -1087,9 +1080,9 @@ IN_PROC_BROWSER_TEST_P(AdTaggingEventWithScriptInStackBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(main_tab, script));
 
-  bool from_ad_subframe = false;
-  ExpectWindowOpenUkmEntry(ukm_recorder, true /* from_main_frame */,
-                           main_frame_url, from_ad_subframe, from_ad_script);
+  bool from_ad_frame = false;
+  ExpectWindowOpenUkmEntry(ukm_recorder, true /* from_root_frame */,
+                           root_frame_url, from_ad_frame, from_ad_script);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1113,12 +1106,12 @@ class AdTaggingFencedFrameBrowserTest : public AdTaggingBrowserTest {
     ASSERT_TRUE(https_server_.Start());
   }
 
-  bool EvaluatedSubframeLoad(const GURL url) {
-    return observer_->GetSubframeLoadPolicy(url).has_value();
+  bool EvaluatedChildFrameLoad(const GURL url) {
+    return observer_->GetChildFrameLoadPolicy(url).has_value();
   }
 
-  bool IsAdSubframe(RenderFrameHost* host) {
-    return observer_->GetIsAdSubframe(host->GetFrameTreeNodeId());
+  bool IsAdFrame(RenderFrameHost* host) {
+    return observer_->GetIsAdFrame(host->GetFrameTreeNodeId());
   }
 
   RenderFrameHost* PrimaryMainFrame() {
@@ -1146,8 +1139,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
   const GURL kUrl = GetURL("frame_factory.html?fencedframe&ad=true");
   RenderFrameHost* fenced_frame = CreateFencedFrame(PrimaryMainFrame(), kUrl);
 
-  EXPECT_TRUE(EvaluatedSubframeLoad(kUrl));
-  EXPECT_TRUE(IsAdSubframe(fenced_frame));
+  EXPECT_TRUE(EvaluatedChildFrameLoad(kUrl));
+  EXPECT_TRUE(IsAdFrame(fenced_frame));
   EXPECT_TRUE(EvidenceForFrameComprises(
       fenced_frame, /*parent_is_ad=*/false,
       blink::mojom::FilterListResult::kMatchedBlockingRule,
@@ -1158,8 +1151,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
   GURL kInnerUrl = GetURL("test_div.html");
   RenderFrameHost* inner_frame = CreateSrcFrame(fenced_frame, kInnerUrl);
 
-  EXPECT_TRUE(EvaluatedSubframeLoad(kInnerUrl));
-  EXPECT_TRUE(IsAdSubframe(inner_frame));
+  EXPECT_TRUE(EvaluatedChildFrameLoad(kInnerUrl));
+  EXPECT_TRUE(IsAdFrame(inner_frame));
   // Note: kCreatedByAdScript is expected since any script running in an ad is
   // considered ad script.
   EXPECT_TRUE(EvidenceForFrameComprises(
@@ -1180,8 +1173,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
     RenderFrameHost* fenced_frame =
         CreateFencedFrameFromAdScript(PrimaryMainFrame(), kUrl);
 
-    EXPECT_TRUE(EvaluatedSubframeLoad(kUrl));
-    EXPECT_TRUE(IsAdSubframe(fenced_frame));
+    EXPECT_TRUE(EvaluatedChildFrameLoad(kUrl));
+    EXPECT_TRUE(IsAdFrame(fenced_frame));
     EXPECT_TRUE(EvidenceForFrameComprises(
         fenced_frame, /*parent_is_ad=*/false,
         blink::mojom::FilterListResult::kMatchedNoRules,
@@ -1192,8 +1185,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
     const GURL kInnerUrl = GetURL("test_div.html");
     RenderFrameHost* inner_frame = CreateSrcFrame(fenced_frame, kInnerUrl);
 
-    EXPECT_TRUE(EvaluatedSubframeLoad(kInnerUrl));
-    EXPECT_TRUE(IsAdSubframe(inner_frame));
+    EXPECT_TRUE(EvaluatedChildFrameLoad(kInnerUrl));
+    EXPECT_TRUE(IsAdFrame(inner_frame));
     EXPECT_TRUE(EvidenceForFrameComprises(
         inner_frame, /*parent_is_ad=*/true,
         blink::mojom::FilterListResult::kMatchedNoRules,
@@ -1205,8 +1198,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
     const GURL kUrl = GetURL("frame_factory.html?non+ad+fencedframe");
     RenderFrameHost* fenced_frame = CreateFencedFrame(PrimaryMainFrame(), kUrl);
 
-    EXPECT_TRUE(EvaluatedSubframeLoad(kUrl));
-    EXPECT_FALSE(IsAdSubframe(fenced_frame));
+    EXPECT_TRUE(EvaluatedChildFrameLoad(kUrl));
+    EXPECT_FALSE(IsAdFrame(fenced_frame));
   }
 }
 
@@ -1222,8 +1215,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
     const GURL kAdUrl = GetURL("frame_factory.html?fencedframe&ad=true");
     RenderFrameHost* ad_frame = CreateFencedFrame(PrimaryMainFrame(), kAdUrl);
 
-    ASSERT_TRUE(EvaluatedSubframeLoad(kAdUrl));
-    ASSERT_TRUE(IsAdSubframe(ad_frame));
+    ASSERT_TRUE(EvaluatedChildFrameLoad(kAdUrl));
+    ASSERT_TRUE(IsAdFrame(ad_frame));
 
     // Create another fenced frame, nested in the first one, that doesn't match
     // any rules. Since the first fenced frame was tagged as an ad, the inner
@@ -1231,8 +1224,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
     const GURL kInnerUrl = GetURL("test_div.html?nested+in+fenced+frame");
     RenderFrameHost* inner_frame = CreateFencedFrame(ad_frame, kInnerUrl);
 
-    EXPECT_TRUE(EvaluatedSubframeLoad(kInnerUrl));
-    EXPECT_TRUE(IsAdSubframe(inner_frame));
+    EXPECT_TRUE(EvaluatedChildFrameLoad(kInnerUrl));
+    EXPECT_TRUE(IsAdFrame(inner_frame));
     // Note: kCreatedByAdScript is expected since any script running in an ad
     // is considered ad script.
     EXPECT_TRUE(EvidenceForFrameComprises(
@@ -1246,8 +1239,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
     const GURL kAdUrl = GetURL("frame_factory.html?iframe&ad=true");
     RenderFrameHost* ad_frame = CreateSrcFrame(PrimaryMainFrame(), kAdUrl);
 
-    ASSERT_TRUE(EvaluatedSubframeLoad(kAdUrl));
-    ASSERT_TRUE(IsAdSubframe(ad_frame));
+    ASSERT_TRUE(EvaluatedChildFrameLoad(kAdUrl));
+    ASSERT_TRUE(IsAdFrame(ad_frame));
 
     // Create a fenced frame, nested in the ad iframe, that doesn't match any
     // rules. Since the iframe was tagged as an ad, the fenced frame should be
@@ -1255,8 +1248,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
     const GURL kInnerUrl = GetURL("test_div.html?nested+in+iframe");
     RenderFrameHost* inner_frame = CreateFencedFrame(ad_frame, kInnerUrl);
 
-    EXPECT_TRUE(EvaluatedSubframeLoad(kInnerUrl));
-    EXPECT_TRUE(IsAdSubframe(inner_frame));
+    EXPECT_TRUE(EvaluatedChildFrameLoad(kInnerUrl));
+    EXPECT_TRUE(IsAdFrame(inner_frame));
     // Note: kCreatedByAdScript is expected since any script running in an ad
     // is considered ad script.
     EXPECT_TRUE(EvidenceForFrameComprises(
@@ -1277,8 +1270,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
   RenderFrameHost* fenced_frame =
       CreateFencedFrame(PrimaryMainFrame(), kOuterUrl);
 
-  ASSERT_TRUE(EvaluatedSubframeLoad(kOuterUrl));
-  ASSERT_FALSE(IsAdSubframe(fenced_frame));
+  ASSERT_TRUE(EvaluatedChildFrameLoad(kOuterUrl));
+  ASSERT_FALSE(IsAdFrame(fenced_frame));
 
   // Create an iframe inside the fenced frame that matches an ad rule. It
   // should be tagged as an ad.
@@ -1286,8 +1279,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
     const GURL kAdUrl = GetURL("test_div.html?ad=true");
     RenderFrameHost* inner_frame = CreateSrcFrame(fenced_frame, kAdUrl);
 
-    EXPECT_TRUE(EvaluatedSubframeLoad(kAdUrl));
-    EXPECT_TRUE(IsAdSubframe(inner_frame));
+    EXPECT_TRUE(EvaluatedChildFrameLoad(kAdUrl));
+    EXPECT_TRUE(IsAdFrame(inner_frame));
     EXPECT_TRUE(EvidenceForFrameComprises(
         inner_frame, /*parent_is_ad=*/false,
         blink::mojom::FilterListResult::kMatchedBlockingRule,
@@ -1301,8 +1294,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
     RenderFrameHost* inner_frame =
         CreateSrcFrameFromAdScript(fenced_frame, kNotAdUrl);
 
-    EXPECT_TRUE(EvaluatedSubframeLoad(kNotAdUrl));
-    EXPECT_TRUE(IsAdSubframe(inner_frame));
+    EXPECT_TRUE(EvaluatedChildFrameLoad(kNotAdUrl));
+    EXPECT_TRUE(IsAdFrame(inner_frame));
     EXPECT_TRUE(EvidenceForFrameComprises(
         inner_frame, /*parent_is_ad=*/false,
         blink::mojom::FilterListResult::kMatchedNoRules,
@@ -1315,8 +1308,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
     const GURL kNotAdUrl = GetURL("test_div.html?also+not+an+ad");
     RenderFrameHost* inner_frame = CreateSrcFrame(fenced_frame, kNotAdUrl);
 
-    EXPECT_TRUE(EvaluatedSubframeLoad(kNotAdUrl));
-    EXPECT_FALSE(IsAdSubframe(inner_frame));
+    EXPECT_TRUE(EvaluatedChildFrameLoad(kNotAdUrl));
+    EXPECT_FALSE(IsAdFrame(inner_frame));
   }
 }
 
@@ -1331,8 +1324,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
   RenderFrameHost* fenced_frame =
       CreateFencedFrame(PrimaryMainFrame(), kOuterUrl);
 
-  ASSERT_TRUE(EvaluatedSubframeLoad(kOuterUrl));
-  ASSERT_FALSE(IsAdSubframe(fenced_frame));
+  ASSERT_TRUE(EvaluatedChildFrameLoad(kOuterUrl));
+  ASSERT_FALSE(IsAdFrame(fenced_frame));
 
   // Create a fenced frame inside the fenced frame that matches an ad rule. It
   // should be tagged as an ad.
@@ -1340,8 +1333,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
     const GURL kAdUrl = GetURL("test_div.html?ad=true");
     RenderFrameHost* inner_frame = CreateFencedFrame(fenced_frame, kAdUrl);
 
-    EXPECT_TRUE(EvaluatedSubframeLoad(kAdUrl));
-    EXPECT_TRUE(IsAdSubframe(inner_frame));
+    EXPECT_TRUE(EvaluatedChildFrameLoad(kAdUrl));
+    EXPECT_TRUE(IsAdFrame(inner_frame));
     EXPECT_TRUE(EvidenceForFrameComprises(
         inner_frame, /*parent_is_ad=*/false,
         blink::mojom::FilterListResult::kMatchedBlockingRule,
@@ -1355,8 +1348,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
     RenderFrameHost* inner_frame =
         CreateFencedFrameFromAdScript(fenced_frame, kNotAdUrl);
 
-    EXPECT_TRUE(EvaluatedSubframeLoad(kNotAdUrl));
-    EXPECT_TRUE(IsAdSubframe(inner_frame));
+    EXPECT_TRUE(EvaluatedChildFrameLoad(kNotAdUrl));
+    EXPECT_TRUE(IsAdFrame(inner_frame));
     EXPECT_TRUE(EvidenceForFrameComprises(
         inner_frame, /*parent_is_ad=*/false,
         blink::mojom::FilterListResult::kMatchedNoRules,
@@ -1369,8 +1362,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
     const GURL kNotAdUrl = GetURL("test_div.html?also+not+an+ad");
     RenderFrameHost* inner_frame = CreateFencedFrame(fenced_frame, kNotAdUrl);
 
-    EXPECT_TRUE(EvaluatedSubframeLoad(kNotAdUrl));
-    EXPECT_FALSE(IsAdSubframe(inner_frame));
+    EXPECT_TRUE(EvaluatedChildFrameLoad(kNotAdUrl));
+    EXPECT_FALSE(IsAdFrame(inner_frame));
   }
 }
 

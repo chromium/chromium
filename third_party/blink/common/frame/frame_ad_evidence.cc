@@ -21,7 +21,7 @@ FrameAdEvidence::FrameAdEvidence(const FrameAdEvidence&) = default;
 
 FrameAdEvidence::~FrameAdEvidence() = default;
 
-bool FrameAdEvidence::IndicatesAdSubframe() const {
+bool FrameAdEvidence::IndicatesAdFrame() const {
   DCHECK(is_complete_);
 
   // We tag a frame as an ad if its parent is one, it was created by ad script

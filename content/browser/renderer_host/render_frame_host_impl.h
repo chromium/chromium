@@ -447,7 +447,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::UserActivationNotificationType notification_type) override;
   bool Reload() override;
   bool IsDOMContentLoaded() override;
-  void UpdateIsAdSubframe(bool is_ad_subframe) override;
+  void UpdateIsAdFrame(bool is_ad_frame) override;
   void SetIsXrOverlaySetup() override;
   ukm::SourceId GetPageUkmSourceId() override;
   StoragePartitionImpl* GetStoragePartition() override;

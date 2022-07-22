@@ -910,7 +910,7 @@ bool HTMLFrameOwnerElement::IsAdRelated() const {
   if (!content_frame_)
     return false;
 
-  return content_frame_->IsAdSubframe();
+  return content_frame_->IsAdFrame();
 }
 
 bool HTMLFrameOwnerElement::IsEligibleForLazyAds(const KURL& url) {

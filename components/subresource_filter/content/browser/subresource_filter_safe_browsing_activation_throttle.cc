@@ -282,7 +282,7 @@ SubresourceFilterSafeBrowsingActivationThrottle::
     const auto selected_config_itr =
         std::find_if(decreasing_configs.begin(), decreasing_configs.end(),
                      [matched_list, this](const Configuration& config) {
-                       return DoesMainFrameURLSatisfyActivationConditions(
+                       return DoesRootFrameURLSatisfyActivationConditions(
                            config.activation_conditions, matched_list);
                      });
     if (selected_config_itr != decreasing_configs.end()) {
@@ -312,7 +312,7 @@ SubresourceFilterSafeBrowsingActivationThrottle::GetActivationDecision(
 }
 
 bool SubresourceFilterSafeBrowsingActivationThrottle::
-    DoesMainFrameURLSatisfyActivationConditions(
+    DoesRootFrameURLSatisfyActivationConditions(
         const Configuration::ActivationConditions& conditions,
         ActivationList matched_list) const {
   // Avoid copies when tracing disabled.
@@ -323,7 +323,7 @@ bool SubresourceFilterSafeBrowsingActivationThrottle::
   };
   TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SubresourceFilterSafeBrowsingActivationThrottle::"
-               "DoesMainFrameURLSatisfyActivationConditions",
+               "DoesRootFrameURLSatisfyActivationConditions",
                "matched_list", list_to_string(matched_list), "conditions",
                conditions.ToTracedValue());
   switch (conditions.activation_scope) {

@@ -169,10 +169,10 @@ const char* SubframeNavigationFilteringThrottle::GetNameForLogging() {
 void SubframeNavigationFilteringThrottle::HandleDisallowedLoad() {
   if (parent_frame_filter_->activation_state().enable_logging) {
     std::string console_message = base::StringPrintf(
-        kDisallowSubframeConsoleMessageFormat,
+        kDisallowChildFrameConsoleMessageFormat,
         navigation_handle()->GetURL().possibly_invalid_spec().c_str());
     // Use the parent's Page to log a message to the console so that if this
-    // subframe is the root of a nested frame tree (e.g. fenced frame), the log
+    // frame is the root of a nested frame tree (e.g. fenced frame), the log
     // message won't be associated with a to-be-destroyed Page.
     navigation_handle()
         ->GetParentFrameOrOuterDocument()
@@ -277,8 +277,8 @@ void SubframeNavigationFilteringThrottle::NotifyLoadPolicy() const {
   if (!observer_manager)
     return;
 
-  observer_manager->NotifySubframeNavigationEvaluated(navigation_handle(),
-                                                      load_policy_);
+  observer_manager->NotifyChildFrameNavigationEvaluated(navigation_handle(),
+                                                        load_policy_);
 }
 
 void SubframeNavigationFilteringThrottle::UpdateDeferInfo() {

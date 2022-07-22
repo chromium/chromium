@@ -48,7 +48,7 @@ namespace subresource_filter {
 // as needed).
 struct Configuration {
   // The conditions that determine whether subresource filtering should be
-  // activated for a given main frame navigation using this configuration.
+  // activated for a given root frame navigation using this configuration.
   struct ActivationConditions {
     // The activation scope. That is, the subset of page loads where subresource
     // filtering should be activated according to this configuration. When set
@@ -68,7 +68,7 @@ struct Configuration {
     std::unique_ptr<base::trace_event::TracedValue> ToTracedValue() const;
   };
 
-  // The details of how subresource filtering should operate for a given main
+  // The details of how subresource filtering should operate for a given root
   // frame navigation when it is activated using this configuration.
   struct ActivationOptions {
     // The maximum degree to which subresource filtering should be activated on

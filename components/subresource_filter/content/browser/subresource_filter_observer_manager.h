@@ -47,7 +47,7 @@ class SubresourceFilterObserverManager
   void RemoveObserver(SubresourceFilterObserver* observer);
 
   // Called when the SubresourceFilter Safe Browsing checks are available for
-  // this main frame navigation. Will be called at WillProcessResponse time at
+  // this root frame navigation. Will be called at WillProcessResponse time at
   // the latest. Right now it will only include phishing and subresource filter
   // threat types.
   virtual void NotifySafeBrowsingChecksComplete(
@@ -63,16 +63,16 @@ class SubresourceFilterObserverManager
 
   // Called in WillStartRequest or WillRedirectRequest stage from a
   // SubframeNavigationFilteringThrottle.
-  void NotifySubframeNavigationEvaluated(
+  void NotifyChildFrameNavigationEvaluated(
       content::NavigationHandle* navigation_handle,
       LoadPolicy load_policy);
 
   // Called in DidCreateNewDocument or ReadyToCommitNavigation to notify
   // observers that an frame with the associated RenderFrameHost has either been
   // detected as an ad or is no longer considered one. The frame's new status is
-  // passed as `is_ad_subframe`.
-  void NotifyIsAdSubframeChanged(content::RenderFrameHost* render_frame_host,
-                                 bool is_ad_subframe);
+  // passed as `is_ad_frame`.
+  void NotifyIsAdFrameChanged(content::RenderFrameHost* render_frame_host,
+                              bool is_ad_frame);
 
  private:
   friend class content::WebContentsUserData<SubresourceFilterObserverManager>;

@@ -32,7 +32,7 @@ void FakeRemoteFrame::SetReplicatedOrigin(
     const url::Origin& origin,
     bool is_potentially_trustworthy_unique_origin) {}
 
-void FakeRemoteFrame::SetReplicatedIsAdSubframe(bool is_ad_subframe) {}
+void FakeRemoteFrame::SetReplicatedIsAdFrame(bool is_ad_frame) {}
 
 void FakeRemoteFrame::SetReplicatedName(const std::string& name,
                                         const std::string& unique_name) {}

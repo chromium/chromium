@@ -103,5 +103,5 @@ struct FrameReplicationState {
   bool has_received_user_gesture_before_nav = false;
 
   // Whether this frame is an ad frame.
-  bool is_ad_subframe = false;
+  bool is_ad_frame = false;
 };

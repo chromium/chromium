@@ -55,8 +55,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
       subresource_filter::CreateSrcFrame(web_contents(), ad_url);
 
   // Verify that we are not evaluating subframe loads.
-  EXPECT_FALSE(observer.GetSubframeLoadPolicy(ad_url).has_value());
-  EXPECT_FALSE(observer.GetIsAdSubframe(ad_frame->GetFrameTreeNodeId()));
+  EXPECT_FALSE(observer.GetChildFrameLoadPolicy(ad_url).has_value());
+  EXPECT_FALSE(observer.GetIsAdFrame(ad_frame->GetFrameTreeNodeId()));
 
   // Child frame created by ad script.
   content::RenderFrameHost* ad_frame_tagged_by_script =
@@ -64,8 +64,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
           web_contents(), GetURL("frame_factory.html?1"));
 
   // No frames should be detected by script heuristics.
-  EXPECT_FALSE(observer.GetIsAdSubframe(
-      ad_frame_tagged_by_script->GetFrameTreeNodeId()));
+  EXPECT_FALSE(
+      observer.GetIsAdFrame(ad_frame_tagged_by_script->GetFrameTreeNodeId()));
 }
 
 // TODO(crbug.com/1210190): This test is flaky.
@@ -85,8 +85,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
       subresource_filter::CreateSrcFrame(web_contents(), ad_url);
 
   // Verify that we are evaluating subframe loads.
-  EXPECT_TRUE(observer.GetSubframeLoadPolicy(ad_url).has_value());
-  EXPECT_TRUE(observer.GetIsAdSubframe(ad_frame->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetChildFrameLoadPolicy(ad_url).has_value());
+  EXPECT_TRUE(observer.GetIsAdFrame(ad_frame->GetFrameTreeNodeId()));
 
   // Child frame created by ad script.
   content::RenderFrameHost* ad_frame_tagged_by_script =
@@ -94,8 +94,8 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
           web_contents(), GetURL("frame_factory.html?1"));
 
   // Frames should be detected by script heuristics.
-  EXPECT_TRUE(observer.GetIsAdSubframe(
-      ad_frame_tagged_by_script->GetFrameTreeNodeId()));
+  EXPECT_TRUE(
+      observer.GetIsAdFrame(ad_frame_tagged_by_script->GetFrameTreeNodeId()));
 }
 
 // TODO(crbug.com/1210190): This test is flaky.
@@ -104,18 +104,18 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, DISABLED_FramesByURL) {
 
   // Main frame.
   NavigateAndWaitForCompletion(GetURL("frame_factory.html"), shell());
-  EXPECT_FALSE(observer.GetIsAdSubframe(
+  EXPECT_FALSE(observer.GetIsAdFrame(
       web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId()));
 
   // (1) Vanilla child.
   content::RenderFrameHost* vanilla_child = subresource_filter::CreateSrcFrame(
       web_contents(), GetURL("frame_factory.html?1"));
-  EXPECT_FALSE(observer.GetIsAdSubframe(vanilla_child->GetFrameTreeNodeId()));
+  EXPECT_FALSE(observer.GetIsAdFrame(vanilla_child->GetFrameTreeNodeId()));
 
   // (2) Ad child.
   content::RenderFrameHost* ad_child = subresource_filter::CreateSrcFrame(
       web_contents(), GetURL("frame_factory.html?2&ad=true"));
-  EXPECT_TRUE(observer.GetIsAdSubframe(ad_child->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(ad_child->GetFrameTreeNodeId()));
   EXPECT_TRUE(subresource_filter::EvidenceForFrameComprises(
       ad_child, /*parent_is_ad=*/false,
       blink::mojom::FilterListResult::kMatchedBlockingRule,
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, DISABLED_FramesByURL) {
   // (3) Ad child of 2.
   content::RenderFrameHost* ad_child_2 = subresource_filter::CreateSrcFrame(
       ad_child, GetURL("frame_factory.html?sub=1&3&ad=true"));
-  EXPECT_TRUE(observer.GetIsAdSubframe(ad_child_2->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(ad_child_2->GetFrameTreeNodeId()));
   EXPECT_TRUE(subresource_filter::EvidenceForFrameComprises(
       ad_child_2, /*parent_is_ad=*/true,
       blink::mojom::FilterListResult::kMatchedBlockingRule,
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, DISABLED_FramesByURL) {
   content::RenderFrameHost* vanilla_child_2 =
       subresource_filter::CreateSrcFrame(ad_child,
                                          GetURL("frame_factory.html?4"));
-  EXPECT_TRUE(observer.GetIsAdSubframe(vanilla_child_2->GetFrameTreeNodeId()));
+  EXPECT_TRUE(observer.GetIsAdFrame(vanilla_child_2->GetFrameTreeNodeId()));
   EXPECT_TRUE(subresource_filter::EvidenceForFrameComprises(
       vanilla_child_2, /*parent_is_ad=*/true,
       blink::mojom::FilterListResult::kMatchedNoRules,
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, DISABLED_FramesByURL) {
   content::RenderFrameHost* vanilla_child_3 =
       subresource_filter::CreateSrcFrame(vanilla_child,
                                          GetURL("frame_factory.html?5"));
-  EXPECT_FALSE(observer.GetIsAdSubframe(vanilla_child_3->GetFrameTreeNodeId()));
+  EXPECT_FALSE(observer.GetIsAdFrame(vanilla_child_3->GetFrameTreeNodeId()));
 }
 
 }  // namespace weblayer

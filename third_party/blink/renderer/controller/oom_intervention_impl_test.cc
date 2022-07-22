@@ -311,8 +311,8 @@ TEST_F(OomInterventionImplTest, V1DetectionAdsNavigation) {
   auto* local_non_adframe =
       To<LocalFrame>(WebFrame::ToCoreFrame(*non_ad_iframe));
 
-  EXPECT_TRUE(local_adframe->IsAdSubframe());
-  EXPECT_FALSE(local_non_adframe->IsAdSubframe());
+  EXPECT_TRUE(local_adframe->IsAdFrame());
+  EXPECT_FALSE(local_non_adframe->IsAdFrame());
   EXPECT_EQ(local_adframe->GetDocument()->Url().GetString(), "data:text/html,");
   EXPECT_EQ(local_non_adframe->GetDocument()->Url().GetString(),
             "data:text/html,");

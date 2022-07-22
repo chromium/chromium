@@ -309,11 +309,11 @@ class CORE_EXPORT WebLocalFrameImpl final
                            bool skip_accelerated_content) override;
   bool ShouldSuppressKeyboardForFocusedElement() override;
   WebPerformance Performance() const override;
-  bool IsAdSubframe() const override;
+  bool IsAdFrame() const override;
   bool IsAdScriptInStack() const override;
   void SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) override;
   const absl::optional<blink::FrameAdEvidence>& AdEvidence() override;
-  bool IsSubframeCreatedByAdScript() override;
+  bool IsFrameCreatedByAdScript() override;
   gfx::Size SpoolSizeInPixelsForTesting(const gfx::Size& page_size_in_pixels,
                                         uint32_t page_count) override;
   void PrintPagesForTesting(cc::PaintCanvas*,

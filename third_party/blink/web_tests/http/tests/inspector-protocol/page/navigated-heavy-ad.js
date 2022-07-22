@@ -9,13 +9,13 @@
 
     let ad_frame = document.createElement('iframe');
     document.body.appendChild(ad_frame);
-    internals.setIsAdSubframe(ad_frame);
+    internals.setIsAdFrame(ad_frame);
     ad_frame.width = 100;
     ad_frame.height = 200;
     ad_frame.src = "about:blank";
   `);
 
-  // The first navigation will occur before the frame is set as an ad subframe.
+  // The first navigation will occur before the frame is set as an ad frame.
   // So, we wait for the second navigation before logging the adFrameType.
   await dp.Page.onceFrameNavigated();
   const { params } = await dp.Page.onceFrameNavigated();

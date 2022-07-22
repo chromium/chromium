@@ -228,7 +228,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
       window->IsSandboxed(network::mojom::blink::WebSandboxFlags::kDownloads);
   if (window->GetFrame()) {
     is_opener_navigation = window->GetFrame()->Opener() == this;
-    initiator_frame_is_ad = window->GetFrame()->IsAdSubframe();
+    initiator_frame_is_ad = window->GetFrame()->IsAdFrame();
     if (frame_request.ClientRedirectReason() != ClientNavigationReason::kNone) {
       probe::FrameRequestedNavigation(window->GetFrame(), this, url,
                                       frame_request.ClientRedirectReason(),
@@ -592,12 +592,12 @@ void RemoteFrame::SetReplicatedOrigin(
   }
 }
 
-bool RemoteFrame::IsAdSubframe() const {
-  return is_ad_subframe_;
+bool RemoteFrame::IsAdFrame() const {
+  return is_ad_frame_;
 }
 
-void RemoteFrame::SetReplicatedIsAdSubframe(bool is_ad_subframe) {
-  is_ad_subframe_ = is_ad_subframe;
+void RemoteFrame::SetReplicatedIsAdFrame(bool is_ad_frame) {
+  is_ad_frame_ = is_ad_frame;
 }
 
 void RemoteFrame::SetReplicatedName(const String& name,

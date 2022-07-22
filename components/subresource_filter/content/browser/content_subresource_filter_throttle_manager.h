@@ -71,8 +71,8 @@ enum class SubresourceFilterAction {
 };
 
 // The ContentSubresourceFilterThrottleManager manages NavigationThrottles in
-// order to calculate frame activation states and subframe navigation filtering,
-// within a given Page. It contains a mapping of all activated
+// order to calculate frame activation states and child frame navigation
+// filtering, within a given Page. It contains a mapping of all activated
 // RenderFrameHosts, along with their associated DocumentSubresourceFilters.
 //
 // This class is created for each Page that is a "subresource filter root".
@@ -85,7 +85,10 @@ enum class SubresourceFilterAction {
 // Portals also have their own Page but their behavior hasn't been considered
 // in detail yet; they are currently considered a root. See
 // IsInSubresourceFilterRoot in
-// content_subresource_filter_web_contents_helper.cc.
+// content_subresource_filter_web_contents_helper.cc. The term "main frame" is
+// avoided in subresource filter code to avoid ambiguity; instead, the main
+// frame of a page that is a subresource filter root is called a "root frame"
+// while other frames are called "child frames".
 //
 // Since this class is associated with a Page, cross document navigation to a
 // new Page will create a new instance of this class.
@@ -169,10 +172,11 @@ class ContentSubresourceFilterThrottleManager
   // This method inspects `navigation_handle` and attaches navigation throttles
   // appropriately, based on the current state of frame activation.
   //
-  // 1. Subframe navigation filtering throttles are appended if the parent
+  // 1. Child frame navigation filtering throttles are appended if the parent
   // frame is activated.
   // 2. Activation state computing throttles are appended if either the
-  // navigation is a main frame navigation, or if the parent frame is activated.
+  // navigation is a subresource filter root frame navigation, or if the parent
+  // frame is activated.
   //
   // Note that there is currently no constraints on the ordering of throttles.
   void MaybeAppendNavigationThrottles(
@@ -250,7 +254,7 @@ class ContentSubresourceFilterThrottleManager
   // SubresourceFilterObserver.
   void OnPageActivationComputed(content::NavigationHandle* navigation_handle,
                                 const mojom::ActivationState& activation_state);
-  void OnSubframeNavigationEvaluated(
+  void OnChildFrameNavigationEvaluated(
       content::NavigationHandle* navigation_handle,
       LoadPolicy load_policy);
 
@@ -309,15 +313,15 @@ class ContentSubresourceFilterThrottleManager
 
   // Registers `render_frame_host` as an ad frame. If the frame later moves to
   // a new process its RenderHost will be told that it's an ad.
-  void OnFrameIsAdSubframe(content::RenderFrameHost* render_frame_host);
+  void OnFrameIsAd(content::RenderFrameHost* render_frame_host);
 
   // Registers `frame_host` as a frame that was created by ad script.
   void OnChildFrameWasCreatedByAdScript(content::RenderFrameHost* frame_host);
 
   // mojom::SubresourceFilterHost:
   void DidDisallowFirstSubresource() override;
-  void FrameIsAdSubframe() override;
-  void SubframeWasCreatedByAdScript() override;
+  void FrameIsAd() override;
+  void FrameWasCreatedByAdScript() override;
   void AdScriptDidCreateFencedFrame(
       const blink::RemoteFrameToken& placeholder_token) override;
   void SetDocumentLoadStatistics(
@@ -345,8 +349,8 @@ class ContentSubresourceFilterThrottleManager
       content::NavigationHandle* navigation_handle,
       bool passed_through_ready_to_commit);
 
-  // Sets whether the frame is considered an ad subframe. If the value has
-  // changed, we also update the replication state and inform observers.
+  // Sets whether the frame is considered an ad frame. If the value has changed,
+  // we also update the replication state and inform observers.
   void SetIsAdFrame(content::RenderFrameHost* render_frame_host,
                     bool is_ad_frame);
 
@@ -369,13 +373,13 @@ class ContentSubresourceFilterThrottleManager
   base::flat_set<int64_t> ready_to_commit_navigations_;
 
   // Set of frames that have been identified as ads, identified by FrameTreeNode
-  // ID. A RenderFrameHost is an ad subframe iff the FrameAdEvidence
+  // ID. A RenderFrameHost is an ad frame iff the FrameAdEvidence
   // corresponding to the frame indicates that it is.
   base::flat_set<int> ad_frames_;
 
-  // Map of subframes, keyed by FrameTreeNode ID, with value being the evidence
-  // for or against the frames being ads. This evidence is updated whenever a
-  // navigation's LoadPolicy is calculated.
+  // Map of child frames, keyed by FrameTreeNode ID, with value being the
+  // evidence for or against the frames being ads. This evidence is updated
+  // whenever a navigation's LoadPolicy is calculated.
   std::map<int, blink::FrameAdEvidence> tracked_ad_evidence_;
 
   // Map of frames whose navigations have been identified as ads, keyed by

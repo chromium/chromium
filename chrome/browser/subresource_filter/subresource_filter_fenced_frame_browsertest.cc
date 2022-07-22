@@ -27,7 +27,7 @@ namespace subresource_filter {
 namespace {
 // This string comes from GetErrorStringForDisallowedLoad() in
 // blink/renderer/core/loader/subresource_filter.cc
-constexpr const char kBlinkDisallowSubframeConsoleMessageFormat[] =
+constexpr const char kBlinkDisallowChildFrameConsoleMessageFormat[] =
     "Chrome blocked resource %s on this site because this site tends to show "
     "ads that interrupt, distract, mislead, or prevent user control. Learn "
     "more at https://www.chromestatus.com/feature/5738264052891648";
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
 IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
                        OutermostFrameActivation) {
   const std::string kMessageFilter =
-      base::StringPrintf(kBlinkDisallowSubframeConsoleMessageFormat, "*");
+      base::StringPrintf(kBlinkDisallowChildFrameConsoleMessageFormat, "*");
   content::WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(kMessageFilter);
 
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterFencedFrameBrowserTest,
   // Console message for subframe blocking should be displayed.
   EXPECT_TRUE(base::MatchPattern(
       console_observer.GetMessageAt(0u),
-      base::StringPrintf(kBlinkDisallowSubframeConsoleMessageFormat,
+      base::StringPrintf(kBlinkDisallowChildFrameConsoleMessageFormat,
                          "*included_script.js")));
 }
 

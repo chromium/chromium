@@ -13,8 +13,9 @@ import "third_party/blink/public/mojom/tokens/tokens.mojom";
 interface SubresourceFilterAgent {
   // Instructs the renderer to activate subresource filtering at the specified
   // |activation_state| for the document load committed next in a frame. Also
-  // informs the renderer of the frame's ad evidence. If the frame is a main
-  // frame, `ad_evidence` should be null as only subframes can be tagged.
+  // informs the renderer of the frame's ad evidence. If the frame is a
+  // subresource filter root frame, `ad_evidence` should be null as only child
+  // frames can be tagged.
   //
   // Must be called just before mojom::FrameNavigationControl::CommitNavigation,
   // at ReadyToCommitNavigation time. If not called, the default behavior is
@@ -31,16 +32,16 @@ interface SubresourceFilterHost {
   // prompt to inform the user and allow them to turn off filtering.
   DidDisallowFirstSubresource();
 
-  // Called when a RenderFrame is created and is tagged as an ad subframe. The
+  // Called when a RenderFrame is created and is tagged as an ad frame. The
   // browser keeps track of this in case the frame later changes processes, at
   // which point it will inform the new RenderFrame that it has been tagged as
   // an ad via SubresourceFilterMsg_ActivateForNextCommittedLoad, at
   // ReadyToCommitNavigation time.
-  FrameIsAdSubframe();
+  FrameIsAd();
 
   // Called when a RenderFrame is created with ad script on the v8 stack. The
-  // browser keeps track of this for deciding whether to tag subframes as ads.
-  SubframeWasCreatedByAdScript();
+  // browser keeps track of this for deciding whether to tag frames as ads.
+  FrameWasCreatedByAdScript();
 
   // Notifies the host that an MPArch-based FencedFrame was created while an ad
   // script was on the v8 stack. Note that this is called from the owning

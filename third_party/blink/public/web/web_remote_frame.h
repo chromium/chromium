@@ -118,7 +118,7 @@ class WebRemoteFrame : public WebFrame {
 
   // True if the frame is thought (heuristically) to be created for
   // advertising purposes.
-  bool IsAdSubframe() const override = 0;
+  bool IsAdFrame() const override = 0;
 
  protected:
   explicit WebRemoteFrame(mojom::TreeScopeType scope,

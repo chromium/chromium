@@ -1061,7 +1061,7 @@ interface RemoteFrame {
 
   // Update the replicated ad status. Used when the frame is tagged or untagged
   // as an ad frame by Ad Tagging.
-  SetReplicatedIsAdSubframe(bool is_ad_subframe);
+  SetReplicatedIsAdFrame(bool is_ad_frame);
 
   // Sets the replicated name and unique name for the frame. Used when the
   // name of a frame changes.

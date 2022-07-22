@@ -217,7 +217,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
     // there are any script in the stack.
     DCHECK(!frame->GetAdTracker() || !frame->GetAdTracker()->IsAdScriptInStack(
                                          AdTracker::StackType::kBottomAndTop));
-    if (frame->IsAdSubframe()) {
+    if (frame->IsAdFrame()) {
       UseCounter::Count(node_->GetDocument(), WebFeature::kAdClick);
     }
   }

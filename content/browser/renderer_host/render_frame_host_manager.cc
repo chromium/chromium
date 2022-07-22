@@ -324,7 +324,7 @@ void RenderFrameHostManager::InitRoot(
               false /* has_potentially_trustworthy_unique_origin */,
               false /* has_active_user_gesture */,
               false /* has_received_user_gesture_before_nav */,
-              false /* is_ad_subframe */),
+              false /* is_ad_frame */),
           frame_tree_node_->parent(),
           features::GetBrowsingContextMode() ==
                   features::BrowsingContextStateImplementationType::
@@ -366,7 +366,7 @@ void RenderFrameHostManager::InitChild(
               false /* has_potentially_trustworthy_unique_origin */,
               false /* has_active_user_gesture */,
               false /* has_received_user_gesture_before_nav */,
-              false /* is_ad_subframe */),
+              false /* is_ad_frame */),
           frame_tree_node_->parent(),
           features::GetBrowsingContextMode() ==
                   features::BrowsingContextStateImplementationType::

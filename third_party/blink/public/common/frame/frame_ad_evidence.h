@@ -18,7 +18,7 @@ mojom::FilterListResult MoreRestrictiveFilterListEvidence(
     mojom::FilterListResult a,
     mojom::FilterListResult b);
 
-// Enumeration of evidence for or against a subframe being an ad.
+// Enumeration of evidence for or against a frame being an ad.
 class BLINK_COMMON_EXPORT FrameAdEvidence {
  public:
   explicit FrameAdEvidence(bool parent_is_ad = false);
@@ -27,9 +27,9 @@ class BLINK_COMMON_EXPORT FrameAdEvidence {
 
   ~FrameAdEvidence();
 
-  // Returns whether the fields indicate that the corresponding subframe is an
-  // ad or not. Should only be called once `is_complete()`.
-  bool IndicatesAdSubframe() const;
+  // Returns whether the fields indicate that the corresponding frame is an ad
+  // or not. Should only be called once `is_complete()`.
+  bool IndicatesAdFrame() const;
 
   // Indicates whether the fields on the class are ready to be used for
   // calculation. If false, some fields might represent defaults rather than the

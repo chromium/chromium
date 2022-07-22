@@ -1680,7 +1680,7 @@ bool IsVisibleIframe(const WebElement& element) {
 bool IsAdIframe(const WebElement& element) {
   DCHECK(element.HasHTMLTagName("iframe"));
   WebFrame* iframe = WebFrame::FromFrameOwnerElement(element);
-  return iframe && iframe->IsAdSubframe();
+  return iframe && iframe->IsAdFrame();
 }
 
 // A necessary condition for an iframe to be added to FormData::child_frames.

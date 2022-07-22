@@ -174,7 +174,7 @@ void ContentSubresourceFilterThrottleManager::FrameDeleted(
 
 // Pull the AsyncDocumentSubresourceFilter and its associated
 // mojom::ActivationState out of the activation state computing throttle. Store
-// it for later filtering of subframe navigations.
+// it for later filtering of child frame navigations.
 void ContentSubresourceFilterThrottleManager::ReadyToCommitInFrameNavigation(
     content::NavigationHandle* navigation_handle) {
   ready_to_commit_navigations_.insert(navigation_handle->GetNavigationId());
@@ -197,7 +197,7 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitInFrameNavigation(
     ad_evidence.set_is_complete();
     ad_evidence_for_navigation = ad_evidence;
 
-    SetIsAdFrame(frame_host, ad_evidence.IndicatesAdSubframe());
+    SetIsAdFrame(frame_host, ad_evidence.IndicatesAdFrame());
   }
 
   mojom::ActivationState activation_state =
@@ -296,8 +296,8 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
     return;
   }
 
-  // Finish setting FrameAdEvidence fields on initial subframe navigations that
-  // did not pass through `ReadyToCommitNavigation()`. Note that initial
+  // Finish setting FrameAdEvidence fields on initial child frame navigations
+  // that did not pass through `ReadyToCommitNavigation()`. Note that initial
   // navigations to about:blank commit synchronously. We handle navigations
   // there where possible to ensure that any messages to the renderer contain
   // the right ad status.
@@ -317,7 +317,7 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
     // update the DCHECK to verify that the evidence doesn't indicate a subframe
     // (regardless of the URL).
     DCHECK(!(navigation_handle->GetURL().IsAboutBlank() &&
-             EnsureFrameAdEvidence(navigation_handle).IndicatesAdSubframe()));
+             EnsureFrameAdEvidence(navigation_handle).IndicatesAdFrame()));
   } else {
     DCHECK(navigation_handle->IsInMainFrame() ||
            EnsureFrameAdEvidence(navigation_handle).is_complete());
@@ -377,7 +377,7 @@ void ContentSubresourceFilterThrottleManager::
       navigation_handle->HasCommitted());
   blink::mojom::FilterListResult latest_filter_list_result =
       EnsureFrameAdEvidence(navigation_handle).latest_filter_list_result();
-  bool is_same_domain_to_main_frame =
+  bool is_same_domain_to_outermost_main_frame =
       net::registry_controlled_domains::SameDomainOrHost(
           navigation_handle->GetURL(),
           navigation_handle->GetRenderFrameHost()
@@ -389,7 +389,7 @@ void ContentSubresourceFilterThrottleManager::
           blink::mojom::FilterListResult::kMatchedAllowingRule ||
       (latest_filter_list_result ==
            blink::mojom::FilterListResult::kMatchedNoRules &&
-       is_same_domain_to_main_frame);
+       is_same_domain_to_outermost_main_frame);
   if (is_restricted_navigation &&
       base::Contains(ad_frames_, navigation_handle->GetFrameTreeNodeId())) {
     base::UmaHistogramBoolean(
@@ -547,7 +547,7 @@ void ContentSubresourceFilterThrottleManager::OnPageActivationComputed(
                                               activation_state);
 }
 
-void ContentSubresourceFilterThrottleManager::OnSubframeNavigationEvaluated(
+void ContentSubresourceFilterThrottleManager::OnChildFrameNavigationEvaluated(
     content::NavigationHandle* navigation_handle,
     LoadPolicy load_policy) {
   DCHECK(!IsInSubresourceFilterRoot(navigation_handle));
@@ -749,7 +749,7 @@ void ContentSubresourceFilterThrottleManager::
   }
 }
 
-void ContentSubresourceFilterThrottleManager::OnFrameIsAdSubframe(
+void ContentSubresourceFilterThrottleManager::OnFrameIsAd(
     content::RenderFrameHost* render_frame_host) {
   EnsureFrameAdEvidence(render_frame_host).set_is_complete();
 
@@ -762,7 +762,7 @@ void ContentSubresourceFilterThrottleManager::SetIsAdFrame(
     bool is_ad_frame) {
   int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
   DCHECK(base::Contains(tracked_ad_evidence_, frame_tree_node_id));
-  DCHECK_EQ(tracked_ad_evidence_.at(frame_tree_node_id).IndicatesAdSubframe(),
+  DCHECK_EQ(tracked_ad_evidence_.at(frame_tree_node_id).IndicatesAdFrame(),
             is_ad_frame);
   DCHECK(render_frame_host->GetParentOrOuterDocument());
 
@@ -778,11 +778,11 @@ void ContentSubresourceFilterThrottleManager::SetIsAdFrame(
 
   // Replicate `is_ad_frame` to this frame's proxies, so that it can be
   // looked up in any process involved in rendering the current page.
-  render_frame_host->UpdateIsAdSubframe(is_ad_frame);
+  render_frame_host->UpdateIsAdFrame(is_ad_frame);
 
   SubresourceFilterObserverManager::FromWebContents(
       content::WebContents::FromRenderFrameHost(render_frame_host))
-      ->NotifyIsAdSubframeChanged(render_frame_host, is_ad_frame);
+      ->NotifyIsAdFrameChanged(render_frame_host, is_ad_frame);
 }
 
 void ContentSubresourceFilterThrottleManager::SetIsAdFrameForTesting(
@@ -796,11 +796,11 @@ void ContentSubresourceFilterThrottleManager::SetIsAdFrameForTesting(
 
   if (is_ad_frame) {
     // We mark the frame as matching a blocking rule so that the ad evidence
-    // indicates an ad subframe.
+    // indicates an ad frame.
     EnsureFrameAdEvidence(render_frame_host)
         .UpdateFilterListResult(
             blink::mojom::FilterListResult::kMatchedBlockingRule);
-    OnFrameIsAdSubframe(render_frame_host);
+    OnFrameIsAd(render_frame_host);
   } else {
     // There's currently no legal transition that can untag a frame. Instead, to
     // mimic future behavior, we simply replace the FrameAdEvidence.
@@ -824,10 +824,10 @@ void ContentSubresourceFilterThrottleManager::DidDisallowFirstSubresource() {
   MaybeShowNotification(receiver_.GetCurrentTargetFrame());
 }
 
-void ContentSubresourceFilterThrottleManager::FrameIsAdSubframe() {
-  // `FrameIsAdSubframe()` can only be called for an initial empty document. As
-  // it won't pass through `ReadyToCommitNavigation()` (and has not yet passed
-  // through `DidFinishNavigation()`), we know it won't be updated further.
+void ContentSubresourceFilterThrottleManager::FrameIsAd() {
+  // `FrameIsAd()` can only be called for an initial empty document. As it won't
+  // pass through `ReadyToCommitNavigation()` (and has not yet passed through
+  // `DidFinishNavigation()`), we know it won't be updated further.
   //
   // The fenced frame root will not report this for the initial empty document
   // as the fenced frame is isolated from the embedder cannot be scripted. In
@@ -837,7 +837,7 @@ void ContentSubresourceFilterThrottleManager::FrameIsAdSubframe() {
   content::RenderFrameHost* render_frame_host =
       receiver_.GetCurrentTargetFrame();
   DCHECK(!render_frame_host->IsFencedFrameRoot());
-  OnFrameIsAdSubframe(receiver_.GetCurrentTargetFrame());
+  OnFrameIsAd(receiver_.GetCurrentTargetFrame());
 }
 
 void ContentSubresourceFilterThrottleManager::SetDocumentLoadStatistics(
@@ -856,7 +856,7 @@ void ContentSubresourceFilterThrottleManager::OnAdsViolationTriggered(
   OnAdsViolationTriggered(&page_->GetMainDocument(), violation);
 }
 
-void ContentSubresourceFilterThrottleManager::SubframeWasCreatedByAdScript() {
+void ContentSubresourceFilterThrottleManager::FrameWasCreatedByAdScript() {
   OnChildFrameWasCreatedByAdScript(receiver_.GetCurrentTargetFrame());
 }
 
@@ -882,11 +882,11 @@ void ContentSubresourceFilterThrottleManager::AdScriptDidCreateFencedFrame(
   //
   // Normal frames compute this when the new RenderFrame initializes since that
   // happens synchronously during the CreateFrame call. At that time,
-  // SubresourceFilterAgent calls SubframeWasCreatedByAdScript if needed.
-  // However, creating an MPArch-based FencedFrame doesn't create a RenderFrame
-  // in the calling process; it creates a RenderFrame in another renderer via
-  // IPC at which point we cannot inspect the v8 stack so we use this special
-  // path for fenced frames.
+  // SubresourceFilterAgent calls FrameWasCreatedByAdScript if needed.  However,
+  // creating an MPArch-based FencedFrame doesn't create a RenderFrame in the
+  // calling process; it creates a RenderFrame in another renderer via IPC at
+  // which point we cannot inspect the v8 stack so we use this special path for
+  // fenced frames.
 
   content::RenderFrameHost* owner_frame = receiver_.GetCurrentTargetFrame();
   DCHECK(owner_frame);

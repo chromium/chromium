@@ -350,18 +350,18 @@ void BrowsingContextState::OnSetHadStickyUserActivationBeforeNavigation(
   replication_state_->has_received_user_gesture_before_nav = value;
 }
 
-void BrowsingContextState::SetIsAdSubframe(bool is_ad_subframe) {
-  if (is_ad_subframe == replication_state_->is_ad_subframe)
+void BrowsingContextState::SetIsAdFrame(bool is_ad_frame) {
+  if (is_ad_frame == replication_state_->is_ad_frame)
     return;
 
-  replication_state_->is_ad_subframe = is_ad_subframe;
+  replication_state_->is_ad_frame = is_ad_frame;
   ExecuteRemoteFramesBroadcastMethod(
       base::BindRepeating(
-          [](bool is_ad_subframe, RenderFrameProxyHost* proxy) {
-            proxy->GetAssociatedRemoteFrame()->SetReplicatedIsAdSubframe(
-                is_ad_subframe);
+          [](bool is_ad_frame, RenderFrameProxyHost* proxy) {
+            proxy->GetAssociatedRemoteFrame()->SetReplicatedIsAdFrame(
+                is_ad_frame);
           },
-          is_ad_subframe),
+          is_ad_frame),
       /*instance_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
 }
 

@@ -228,8 +228,8 @@ chromium-metrics-reviews@google.com.
     enum="SubresourceFilterActivationState" expires_after="2020-10-04">
   <owner>engedy@chromium.org</owner>
   <summary>
-    Whenever a document load is committed in a main frame or subframe, records
-    whether subresource filtering should be activated for that load.
+    Whenever a document load is committed in any frame, records whether
+    subresource filtering should be activated for that load.
   </summary>
 </histogram>
 
@@ -237,9 +237,8 @@ chromium-metrics-reviews@google.com.
     enum="BooleanAvailable" expires_after="M77">
   <owner>engedy@chromium.org</owner>
   <summary>
-    Whenever a document load is committed in a main frame or subframe and
-    subresource filtering should be activated, records whether the filtering
-    rules are available.
+    Whenever a document load is committed in any frame and subresource filtering
+    should be activated, records whether the filtering rules are available.
   </summary>
 </histogram>
 
@@ -248,9 +247,9 @@ chromium-metrics-reviews@google.com.
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    Records the total time a subframe navigation was delayed while calculating
-    whether it should be disallowed or not. Logged for all navigations that were
-    allowed.
+    Records the total time a child frame navigation was delayed while
+    calculating whether it should be disallowed or not. Logged for all
+    navigations that were allowed.
 
     This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
     clients with low-resolution clocks.
@@ -263,9 +262,9 @@ chromium-metrics-reviews@google.com.
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    Records the total time a subframe navigation was delayed while calculating
-    whether it should be disallowed or not. Logged for all navigations with the
-    disallowed load policy.
+    Records the total time a child frame navigation was delayed while
+    calculating whether it should be disallowed or not. Logged for all
+    navigations with the disallowed load policy.
 
     This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
     clients with low-resolution clocks.
@@ -278,9 +277,9 @@ chromium-metrics-reviews@google.com.
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    Records the total time a subframe navigation was delayed while calculating
-    whether it should be disallowed or not. Logged for all navigations with the
-    would_disallow load policy.
+    Records the total time a child frame navigation was delayed while
+    calculating whether it should be disallowed or not. Logged for all
+    navigations with the would_disallow load policy.
 
     This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
     clients with low-resolution clocks.
@@ -395,7 +394,7 @@ chromium-metrics-reviews@google.com.
   <owner>alexmt@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
-    Whenever a document load is committed in the main frame, records whether the
+    Whenever a document load is committed in the root frame, records whether the
     filtering rules are available. This is independent of whether or not
     subresource filtering should be activated.
   </summary>
@@ -417,8 +416,8 @@ chromium-metrics-reviews@google.com.
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    The ActivationList or NONE that the main frame navigation matched with.
-    Recorded at WillProcessResponse time for a main frame navigation.
+    The ActivationList or NONE that the root frame's navigation matched with.
+    Recorded at WillProcessResponse time for an outermost main frame navigation.
   </summary>
 </histogram>
 
@@ -427,7 +426,7 @@ chromium-metrics-reviews@google.com.
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    Whenever a document load is committed in a main frame, records whether
+    Whenever a document load is committed in a root frame, records whether
     subresource filtering should be activated for that load. Also records the
     same for the initial document load, even if it was not committed.
   </summary>
@@ -438,7 +437,7 @@ chromium-metrics-reviews@google.com.
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    Whenever a document load is committed in a main frame that inherits from its
+    Whenever a document load is committed in a root frame that inherits from its
     same-origin opener, records whether subresource filtering should be
     activated for that load. Also records the same for the initial document load
     (if it inherits its activation) even if it was not committed.

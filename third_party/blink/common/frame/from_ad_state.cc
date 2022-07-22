@@ -6,12 +6,14 @@
 
 namespace blink {
 
-FromAdState GetFromAdState(bool is_ad_subframe, bool is_ad_script_in_stack) {
-  return is_ad_subframe
+FromAdState GetFromAdState(bool is_ad_frame, bool is_ad_script_in_stack) {
+  // clang-format off
+  return is_ad_frame
              ? is_ad_script_in_stack ? FromAdState::kAdScriptAndAdFrame
                                      : FromAdState::kNonAdScriptAndAdFrame
              : is_ad_script_in_stack ? FromAdState::kAdScriptAndNonAdFrame
                                      : FromAdState::kNonAdScriptAndNonAdFrame;
+  // clang-format on
 }
 
 }  // namespace blink

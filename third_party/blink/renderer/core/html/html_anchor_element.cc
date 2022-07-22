@@ -83,7 +83,7 @@ bool ShouldInterveneDownloadByFramePolicy(LocalFrame* frame) {
   if (!has_gesture) {
     UseCounter::Count(document, WebFeature::kDownloadWithoutUserGesture);
   }
-  if (frame->IsAdSubframe()) {
+  if (frame->IsAdFrame()) {
     UseCounter::Count(document, WebFeature::kDownloadInAdFrame);
     if (!has_gesture) {
       UseCounter::Count(document,

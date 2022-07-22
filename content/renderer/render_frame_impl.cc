@@ -5500,7 +5500,7 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
   bool has_download_sandbox_flag =
       info->initiator_frame_has_download_sandbox_flag ||
       current_frame_has_download_sandbox_flag;
-  bool from_ad = info->initiator_frame_is_ad || frame_->IsAdSubframe();
+  bool from_ad = info->initiator_frame_is_ad || frame_->IsAdFrame();
 
   params->download_policy.ApplyDownloadFramePolicy(
       info->is_opener_navigation, info->url_request.HasUserGesture(),
@@ -5809,7 +5809,7 @@ void RenderFrameImpl::BeginNavigationInternal(
   bool has_download_sandbox_flag =
       info->initiator_frame_has_download_sandbox_flag ||
       current_frame_has_download_sandbox_flag;
-  bool from_ad = info->initiator_frame_is_ad || frame_->IsAdSubframe();
+  bool from_ad = info->initiator_frame_is_ad || frame_->IsAdFrame();
 
   mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>
       initiator_policy_container_keep_alive_handle =

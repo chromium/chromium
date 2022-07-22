@@ -170,7 +170,7 @@ class BLINK_EXPORT WebFrame {
 
   // True if the frame is thought (heuristically) to be created for
   // advertising purposes.
-  virtual bool IsAdSubframe() const = 0;
+  virtual bool IsAdFrame() const = 0;
 
   // Utility -------------------------------------------------------------
 

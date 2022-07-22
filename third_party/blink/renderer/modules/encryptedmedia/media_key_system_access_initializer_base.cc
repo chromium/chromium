@@ -220,7 +220,7 @@ void MediaKeySystemAccessInitializerBase::GenerateWarningAndReportMetrics()
   ukm::builders::Media_EME_RequestMediaKeySystemAccess builder(
       DomWindow()->UkmSourceID());
   builder.SetKeySystem(KeySystemForUkmLegacy::kWidevine);
-  builder.SetIsAdFrame(static_cast<int>(frame->IsAdSubframe()));
+  builder.SetIsAdFrame(static_cast<int>(frame->IsAdFrame()));
   builder.SetIsCrossOrigin(
       static_cast<int>(frame->IsCrossOriginToOutermostMainFrame()));
   builder.SetIsTopFrame(static_cast<int>(frame->IsOutermostMainFrame()));

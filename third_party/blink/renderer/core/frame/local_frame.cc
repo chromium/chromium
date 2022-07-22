@@ -379,7 +379,7 @@ LocalFrame::~LocalFrame() {
   // the frame owner.
   DCHECK(!view_);
   DCHECK(!frame_color_overlay_);
-  if (IsAdSubframe())
+  if (IsAdFrame())
     InstanceCounters::DecrementCounter(InstanceCounters::kAdSubframeCounter);
 }
 
@@ -1568,7 +1568,7 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
   absl::optional<AdScriptIdentifier> ad_script_on_stack;
   // See SubresourceFilterAgent::Initialize for why we don't set this here for
   // fenced frames.
-  is_subframe_created_by_ad_script_ =
+  is_frame_created_by_ad_script_ =
       !IsMainFrame() && ad_tracker_ &&
       ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
                                      /*out_ad_script=*/&ad_script_on_stack);
@@ -2249,23 +2249,23 @@ bool LocalFrame::IsProvisional() const {
   return Owner()->ContentFrame() != this;
 }
 
-bool LocalFrame::IsAdSubframe() const {
-  return ad_evidence_ && ad_evidence_->IndicatesAdSubframe();
+bool LocalFrame::IsAdFrame() const {
+  return ad_evidence_ && ad_evidence_->IndicatesAdFrame();
 }
 
 bool LocalFrame::IsAdRoot() const {
-  return IsAdSubframe() && !ad_evidence_->parent_is_ad();
+  return IsAdFrame() && !ad_evidence_->parent_is_ad();
 }
 
 void LocalFrame::SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) {
   DCHECK(!IsMainFrame() || IsInFencedFrameTree());
   DCHECK(ad_evidence.is_complete());
 
-  // Once set, `is_subframe_created_by_ad_script_` should not be unset.
-  DCHECK(!is_subframe_created_by_ad_script_ ||
+  // Once set, `is_frame_created_by_ad_script_` should not be unset.
+  DCHECK(!is_frame_created_by_ad_script_ ||
          ad_evidence.created_by_ad_script() ==
              blink::mojom::FrameCreationStackEvidence::kCreatedByAdScript);
-  is_subframe_created_by_ad_script_ =
+  is_frame_created_by_ad_script_ =
       ad_evidence.created_by_ad_script() ==
       blink::mojom::FrameCreationStackEvidence::kCreatedByAdScript;
 
@@ -2281,11 +2281,11 @@ void LocalFrame::SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) {
               ad_evidence.most_restrictive_filter_list_result());
   }
 
-  bool was_ad_subframe = IsAdSubframe();
-  bool is_ad_subframe = ad_evidence.IndicatesAdSubframe();
+  bool was_ad_frame = IsAdFrame();
+  bool is_ad_frame = ad_evidence.IndicatesAdFrame();
   ad_evidence_ = ad_evidence;
 
-  if (was_ad_subframe == is_ad_subframe)
+  if (was_ad_frame == is_ad_frame)
     return;
 
   if (auto* document = GetDocument()) {
@@ -2294,13 +2294,13 @@ void LocalFrame::SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) {
     // of sending an IPC.
     auto* document_resource_coordinator = document->GetResourceCoordinator();
     if (document_resource_coordinator)
-      document_resource_coordinator->SetIsAdFrame(is_ad_subframe);
+      document_resource_coordinator->SetIsAdFrame(is_ad_frame);
   }
 
   UpdateAdHighlight();
-  frame_scheduler_->SetIsAdFrame(is_ad_subframe);
+  frame_scheduler_->SetIsAdFrame(is_ad_frame);
 
-  if (is_ad_subframe) {
+  if (is_ad_frame) {
     UseCounter::Count(DomWindow(), WebFeature::kAdFrameDetected);
     InstanceCounters::IncrementCounter(InstanceCounters::kAdSubframeCounter);
   } else {
@@ -2649,7 +2649,7 @@ void LocalFrame::DidResume() {
 }
 
 void LocalFrame::MaybeLogAdClickNavigation() {
-  if (HasTransientUserActivation(this) && IsAdSubframe())
+  if (HasTransientUserActivation(this) && IsAdFrame())
     UseCounter::Count(GetDocument(), WebFeature::kAdClickNavigation);
 }
 

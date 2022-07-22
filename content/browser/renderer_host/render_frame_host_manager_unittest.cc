@@ -3629,13 +3629,11 @@ class AdTaggingSimulator : public WebContentsObserver {
 
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
     auto it = ad_urls_.find(navigation_handle->GetURL());
-    navigation_handle->GetRenderFrameHost()->UpdateIsAdSubframe(it !=
-                                                                ad_urls_.end());
+    navigation_handle->GetRenderFrameHost()->UpdateIsAdFrame(it !=
+                                                             ad_urls_.end());
   }
 
-  void SimulateOnFrameIsAdSubframe(RenderFrameHost* rfh) {
-    rfh->UpdateIsAdSubframe(true);
-  }
+  void SimulateOnFrameIsAd(RenderFrameHost* rfh) { rfh->UpdateIsAdFrame(true); }
 
  private:
   std::set<GURL> ad_urls_;
@@ -3643,19 +3641,19 @@ class AdTaggingSimulator : public WebContentsObserver {
 
 class AdStatusInterceptingRemoteFrame : public content::FakeRemoteFrame {
  public:
-  void SetReplicatedIsAdSubframe(bool is_ad_subframe) override {
-    is_ad_subframe_ = is_ad_subframe;
+  void SetReplicatedIsAdFrame(bool is_ad_frame) override {
+    is_ad_frame_ = is_ad_frame;
   }
 
   // These methods reset state back to default when they are called.
-  bool LastAdSubframe() {
-    bool is_ad_subframe = is_ad_subframe_;
-    is_ad_subframe_ = false;
-    return is_ad_subframe;
+  bool LastAdFrame() {
+    bool is_ad_frame = is_ad_frame_;
+    is_ad_frame_ = false;
+    return is_ad_frame;
   }
 
  private:
-  bool is_ad_subframe_ = false;
+  bool is_ad_frame_ = false;
 };
 
 class RenderFrameHostManagerAdTaggingSignalTest
@@ -3681,20 +3679,20 @@ class RenderFrameHostManagerAdTaggingSignalTest
 
     if (proxy_host->frame_tree_node()
             ->current_replication_state()
-            .is_ad_subframe) {
+            .is_ad_frame) {
       ad_frames_on_proxy_created_.insert(proxy_host);
     }
   }
 
   void ExpectAdSubframeSignalForFrameProxy(RenderFrameProxyHost* proxy_host,
-                                           bool expect_is_ad_subframe) {
+                                           bool expect_is_ad_frame) {
     base::RunLoop().RunUntilIdle();
 
     auto it = proxy_map_.find(proxy_host);
     EXPECT_TRUE(it != proxy_map_.end());
 
     AdStatusInterceptingRemoteFrame* remote_frame = it->second.get();
-    EXPECT_EQ(expect_is_ad_subframe, remote_frame->LastAdSubframe());
+    EXPECT_EQ(expect_is_ad_frame, remote_frame->LastAdFrame());
   }
 
   void ExpectAdStatusOnFrameProxyCreated(RenderFrameProxyHost* proxy_host) {
@@ -3754,7 +3752,7 @@ TEST_P(RenderFrameHostManagerAdTaggingSignalTest,
   ExpectAdStatusOnFrameProxyCreated(
       subframe_node->render_manager()->GetProxyToParent());
 
-  EXPECT_TRUE(subframe_node->current_replication_state().is_ad_subframe);
+  EXPECT_TRUE(subframe_node->current_replication_state().is_ad_frame);
 }
 
 // A page with top frame A that has subframes B and A1. A1 is an ad iframe that
@@ -3775,7 +3773,7 @@ TEST_P(RenderFrameHostManagerAdTaggingSignalTest,
                    ->GetPrimaryFrameTree()
                    .root()
                    ->current_replication_state()
-                   .is_ad_subframe);
+                   .is_ad_frame);
 
   AppendChildToFrame("subframe_b", kUrlB,
                      web_contents()->GetPrimaryMainFrame());
@@ -3786,13 +3784,13 @@ TEST_P(RenderFrameHostManagerAdTaggingSignalTest,
   FrameTreeNode* subframe_node_b = top_frame_node_a->child_at(0);
   FrameTreeNode* subframe_node_a1 = top_frame_node_a->child_at(1);
 
-  ad_tagging_simulator.SimulateOnFrameIsAdSubframe(
+  ad_tagging_simulator.SimulateOnFrameIsAd(
       subframe_node_a1->current_frame_host());
 
   RenderFrameProxyHost* proxy_a1_to_b =
       GetProxyHost(subframe_node_a1, subframe_node_b);
 
-  EXPECT_TRUE(subframe_node_a1->current_replication_state().is_ad_subframe);
+  EXPECT_TRUE(subframe_node_a1->current_replication_state().is_ad_frame);
   ExpectAdSubframeSignalForFrameProxy(proxy_a1_to_b, true);
 }
 
@@ -3818,7 +3816,7 @@ TEST_P(RenderFrameHostManagerAdTaggingSignalTest,
                    ->GetPrimaryFrameTree()
                    .root()
                    ->current_replication_state()
-                   .is_ad_subframe);
+                   .is_ad_frame);
 
   AppendChildToFrame("subframe_b", kUrlB,
                      web_contents()->GetPrimaryMainFrame());
@@ -3829,8 +3827,8 @@ TEST_P(RenderFrameHostManagerAdTaggingSignalTest,
   FrameTreeNode* subframe_node_b = top_frame_node_a->child_at(0);
   FrameTreeNode* subframe_node_c = top_frame_node_a->child_at(1);
 
-  EXPECT_FALSE(subframe_node_b->current_replication_state().is_ad_subframe);
-  EXPECT_FALSE(subframe_node_c->current_replication_state().is_ad_subframe);
+  EXPECT_FALSE(subframe_node_b->current_replication_state().is_ad_frame);
+  EXPECT_FALSE(subframe_node_c->current_replication_state().is_ad_frame);
 
   RenderFrameProxyHost* proxy_c_to_a =
       GetProxyHost(subframe_node_c, top_frame_node_a);
@@ -3848,7 +3846,7 @@ TEST_P(RenderFrameHostManagerAdTaggingSignalTest,
   NavigationSimulator::NavigateAndCommitFromDocument(
       kUrlD, subframe_node_c->current_frame_host());
 
-  EXPECT_TRUE(subframe_node_c->current_replication_state().is_ad_subframe);
+  EXPECT_TRUE(subframe_node_c->current_replication_state().is_ad_frame);
 
   ExpectAdSubframeSignalForFrameProxy(proxy_c_to_a, true);
   ExpectAdSubframeSignalForFrameProxy(proxy_c_to_b, true);
@@ -3929,8 +3927,8 @@ TEST_P(RenderFrameHostManagerAdTaggingSignalTest, RemoteGrandchildAdTagSignal) {
 
   NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, grandchild_host);
 
-  EXPECT_TRUE(subframe_node->current_replication_state().is_ad_subframe);
-  EXPECT_TRUE(grandchild_node->current_replication_state().is_ad_subframe);
+  EXPECT_TRUE(subframe_node->current_replication_state().is_ad_frame);
+  EXPECT_TRUE(grandchild_node->current_replication_state().is_ad_frame);
   ExpectAdSubframeSignalForFrameProxy(proxy_to_main_frame, true);
 }
 

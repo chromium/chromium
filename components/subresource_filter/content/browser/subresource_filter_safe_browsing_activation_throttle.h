@@ -57,7 +57,7 @@ class SubresourceFilterSafeBrowsingActivationThrottle
     // Note: |decision| is guaranteed to be non-nullptr, and can be modified by
     // this method if any decision changes.
     //
-    // Precondition: The navigation must be a main frame navigation.
+    // Precondition: The navigation must be a root frame navigation.
     virtual mojom::ActivationLevel OnPageActivationComputed(
         content::NavigationHandle* navigation_handle,
         mojom::ActivationLevel initial_activation_level,
@@ -122,9 +122,9 @@ class SubresourceFilterSafeBrowsingActivationThrottle
   // Returns it, or ACTIVATION_CONDITIONS_NOT_MET if no Configuration.
   ActivationDecision GetActivationDecision(const ConfigResult& configs);
 
-  // Returns whether a main-frame navigation satisfies the activation
+  // Returns whether a root-frame navigation satisfies the activation
   // |conditions| of a given configuration, except for |priority|.
-  bool DoesMainFrameURLSatisfyActivationConditions(
+  bool DoesRootFrameURLSatisfyActivationConditions(
       const Configuration::ActivationConditions& conditions,
       ActivationList matched_list) const;
 

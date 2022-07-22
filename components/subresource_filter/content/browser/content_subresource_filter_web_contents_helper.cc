@@ -525,14 +525,14 @@ void ContentSubresourceFilterWebContentsHelper::OnPageActivationComputed(
   }
 }
 
-void ContentSubresourceFilterWebContentsHelper::OnSubframeNavigationEvaluated(
+void ContentSubresourceFilterWebContentsHelper::OnChildFrameNavigationEvaluated(
     content::NavigationHandle* navigation_handle,
     LoadPolicy load_policy) {
   DCHECK(!IsInSubresourceFilterRoot(navigation_handle));
   if (ContentSubresourceFilterThrottleManager* throttle_manager =
           GetThrottleManager(*navigation_handle)) {
-    throttle_manager->OnSubframeNavigationEvaluated(navigation_handle,
-                                                    load_policy);
+    throttle_manager->OnChildFrameNavigationEvaluated(navigation_handle,
+                                                      load_policy);
   }
 }
 

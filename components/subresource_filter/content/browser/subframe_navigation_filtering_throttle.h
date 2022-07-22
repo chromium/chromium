@@ -49,6 +49,7 @@ struct CnameAliasMetricInfo {
 // to logic related to BLOCK_REQUEST_AND_COLLAPSE. However, there may be room
 // for optimization during AdTagging, or migrating BLOCK_REQUEST_AND_COLLAPSE to
 // be allowed during WillProcessResponse.
+// TODO(bokan): Rename to ChildFrameNavigationFilteringThrottle.
 class SubframeNavigationFilteringThrottle : public content::NavigationThrottle {
  public:
   SubframeNavigationFilteringThrottle(

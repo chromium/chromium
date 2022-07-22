@@ -88,7 +88,7 @@ class CORE_EXPORT WebRemoteFrameImpl final
   WebString UniqueName() const override;
   const FrameVisualProperties& GetPendingVisualPropertiesForTesting()
       const override;
-  bool IsAdSubframe() const override;
+  bool IsAdFrame() const override;
   void InitializeCoreFrame(
       Page&,
       FrameOwner*,
