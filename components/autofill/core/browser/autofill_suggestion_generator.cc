@@ -315,24 +315,9 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   suggestion.main_text = Suggestion::Text(credit_card.GetInfo(type, app_locale),
                                           Suggestion::Text::IsPrimary(true));
   suggestion.icon = credit_card.CardIconStringForAutofillSuggestion();
-  std::string backend_id = credit_card.guid();
+  suggestion.payload = credit_card.guid();
   suggestion.match = prefix_matched_suggestion ? Suggestion::PREFIX_MATCH
                                                : Suggestion::SUBSTRING_MATCH;
-
-  GURL card_art_url_for_virtual_card_option;
-  if (virtual_card_option &&
-      credit_card.record_type() == CreditCard::MASKED_SERVER_CARD) {
-    card_art_url_for_virtual_card_option = credit_card.card_art_url();
-  } else if (virtual_card_option &&
-             credit_card.record_type() == CreditCard::LOCAL_CARD) {
-    const CreditCard* server_duplicate_card =
-        GetServerCardForLocalCard(&credit_card);
-    DCHECK(server_duplicate_card);
-    card_art_url_for_virtual_card_option =
-        server_duplicate_card->card_art_url();
-    backend_id = server_duplicate_card->guid();
-  }
-  suggestion.payload = backend_id;
 
   // Get the nickname for the card suggestion, which may not be the same as
   // the card's nickname if there are duplicates of the card on file.
@@ -345,8 +330,8 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
       base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory) ? 2
                                                                          : 4;
   // If the value is the card number, the label is the expiration date.
-  // Otherwise the label is the card number, or if that is empty the
-  // cardholder name. The label should never repeat the value.
+  // Otherwise the label is the card number, or if that is empty the cardholder
+  // name. The label should never repeat the value.
   if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
     suggestion.main_text =
         Suggestion::Text(credit_card.CardIdentifierStringForAutofillDisplay(
@@ -391,10 +376,19 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
 #endif
   }
 
+  // For virtual cards, use issuer's card art icon instead of network icon.
   if (virtual_card_option) {
-#if BUILDFLAG(IS_ANDROID)
-    suggestion.custom_icon_url = credit_card.card_art_url();
-#endif  // BUILDFLAG(IS_ANDROID)
+    GURL card_art_url_for_virtual_card_option;
+    if (credit_card.record_type() == CreditCard::MASKED_SERVER_CARD) {
+      card_art_url_for_virtual_card_option = credit_card.card_art_url();
+    } else if (credit_card.record_type() == CreditCard::LOCAL_CARD) {
+      const CreditCard* server_duplicate_card =
+          GetServerCardForLocalCard(&credit_card);
+      DCHECK(server_duplicate_card);
+      card_art_url_for_virtual_card_option =
+          server_duplicate_card->card_art_url();
+      suggestion.payload = server_duplicate_card->guid();
+    }
 
     suggestion.frontend_id = POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY;
     suggestion.minor_text.value = suggestion.main_text.value;
@@ -404,10 +398,14 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     suggestion.feature_for_iph =
         feature_engagement::kIPHAutofillVirtualCardSuggestionFeature.name;
 
+#if BUILDFLAG(IS_ANDROID)
+    suggestion.custom_icon_url = card_art_url_for_virtual_card_option;
+#else
     gfx::Image* image = personal_data_->GetCreditCardArtImageForUrl(
         card_art_url_for_virtual_card_option);
     if (image)
       suggestion.custom_icon = *image;
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 #if BUILDFLAG(IS_ANDROID)
   // The card art icon should always be shown at the start of the suggestion.
