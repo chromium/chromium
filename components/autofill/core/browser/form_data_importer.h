@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_H_
 
-#include <deque>
 #include <map>
 #include <memory>
 #include <string>
@@ -13,10 +12,10 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
+#include "components/autofill/core/browser/form_data_importer_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
@@ -73,19 +72,6 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // duplicated field types in the form.
   CreditCard ExtractCreditCardFromForm(const FormStructure& form);
 
-  // Tries to infer the country |profile| is from, which can be useful to
-  // verify whether the data is sensible. Returns a two-letter ISO country code
-  // by considering, in decreasing order of priority:
-  // - The country specified in |profile|
-  // - The country determined by the variation service stored in
-  //   |variation_country_code|
-  // - The country code corresponding to |app_locale|
-  static std::string GetPredictedCountryCode(
-      const AutofillProfile& profile,
-      const std::string& variation_country_code,
-      const std::string& app_locale,
-      LogBuffer* import_log_buffer);
-
   // Checks suitability of |profile| for adding to the user's set of profiles.
   static bool IsValidLearnableProfile(const AutofillProfile& profile,
                                       const std::string& predicted_country_code,
@@ -106,10 +92,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
     return virtual_card_enrollment_manager_.get();
   }
 
-  void ClearMultiStepImportCandidates() {
-    multistep_candidates_.clear();
-    multistep_candidates_origin_.reset();
-  }
+  void ClearMultiStepImportCandidates() { multistep_importer_.Clear(); }
 
   // PersonalDataManagerObserver
   void OnBrowsingHistoryCleared(
@@ -262,33 +245,6 @@ class FormDataImporter : public PersonalDataManagerObserver {
       AutofillProfile& profile,
       const std::string& predicted_country_code);
 
-  // Removes updated multi-step candidates, merges |profile| with multi-step
-  // candidates and potentially stores it as a multi-step candidate itself.
-  // |profile| and |import_metadata| are updated accordingly, if the profile can
-  // be merged. See |MergeProfileWithMultiStepCandidates()| for details.
-  // Only applicable when |kAutofillEnableMultiStepImports| is enabled.
-  void ProcessMultiStepImport(AutofillProfile& profile,
-                              ProfileImportMetadata& import_metadata,
-                              const url::Origin& origin);
-
-  // Removes any MultiStepFormProfileCandidate from |multistep_candidates_| that
-  // reached their TTL or have a different |origin|.
-  void RemoveOutdatedMultiStepCandidates(const url::Origin& origin);
-
-  // Merges a given |profile| stepwise with |multistep_candidates_| to
-  // complete it. |profile| is assumed to contain no invalid information.
-  // Returns true if the resulting profile satisfies the minimum address
-  // requirements. |profile| and |import_metadata| are updated in this case with
-  // the result of merging all relevant candidates.
-  // Returns false otherwise and leaves |profile| and |import_metadata|
-  // unchanged.
-  // Any merged or colliding |multistep_candidates_| are cleared.
-  // |origin|: The origin of the form where |profile| was imported from.
-  bool MergeProfileWithMultiStepCandidates(
-      AutofillProfile& profile,
-      ProfileImportMetadata& import_metadata,
-      const url::Origin& origin);
-
   // Whether a dynamic change form is imported.
   bool from_dynamic_change_form_ = false;
 
@@ -333,22 +289,8 @@ class FormDataImporter : public PersonalDataManagerObserver {
   std::unique_ptr<VirtualCardEnrollmentManager>
       virtual_card_enrollment_manager_;
 
-  // Represents a submitted form, stored to be considered as a merge candidate
-  // for other candidate profiles in future submits in a multi-step import flow.
-  struct MultiStepFormProfileCandidate {
-    // The import candidate.
-    AutofillProfile profile;
-    // Metadata about how |profile| was constructed.
-    ProfileImportMetadata import_metadata;
-    // Timestamp when the submit happened.
-    base::Time timestamp;
-  };
-  // Current multi-step import candidates, in increasing order of their
-  // |timestamp|.
-  std::deque<MultiStepFormProfileCandidate> multistep_candidates_;
-  // All |multistep_candidates_| share the same origin. Has a value iff
-  // |multistep_candidates_| is not empty.
-  absl::optional<url::Origin> multistep_candidates_origin_;
+  // Enables importing from multi-step import flows.
+  MultiStepImportMerger multistep_importer_;
 
   friend class AutofillMergeTest;
   friend class FormDataImporterTest;

@@ -171,6 +171,8 @@ static_library("browser") {
     "field_types.h",
     "form_data_importer.cc",
     "form_data_importer.h",
+    "form_data_importer_utils.cc",
+    "form_data_importer_utils.h",
     "form_parsing/address_field.cc",
     "form_parsing/address_field.h",
     "form_parsing/autofill_parsing_utils.h",

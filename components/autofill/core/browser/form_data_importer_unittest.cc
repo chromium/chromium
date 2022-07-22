@@ -731,18 +731,11 @@ TEST_P(FormDataImporterTest, GetPredictedCountryCode) {
       ConstructProfileFromTypeValuePairs({{ADDRESS_HOME_COUNTRY, "US"}});
   const AutofillProfile empty_profile;
   // Test prioritization: profile > variation service state > app locale
-  EXPECT_EQ(FormDataImporter::GetPredictedCountryCode(us_profile, "DE", "de-AT",
-                                                      nullptr),
-            "US");
-  EXPECT_EQ(FormDataImporter::GetPredictedCountryCode(us_profile, "", "de-AT",
-                                                      nullptr),
-            "US");
-  EXPECT_EQ(FormDataImporter::GetPredictedCountryCode(empty_profile, "DE",
-                                                      "de-AT", nullptr),
+  EXPECT_EQ(GetPredictedCountryCode(us_profile, "DE", "de-AT", nullptr), "US");
+  EXPECT_EQ(GetPredictedCountryCode(us_profile, "", "de-AT", nullptr), "US");
+  EXPECT_EQ(GetPredictedCountryCode(empty_profile, "DE", "de-AT", nullptr),
             "DE");
-  EXPECT_EQ(FormDataImporter::GetPredictedCountryCode(empty_profile, "",
-                                                      "de-AT", nullptr),
-            "AT");
+  EXPECT_EQ(GetPredictedCountryCode(empty_profile, "", "de-AT", nullptr), "AT");
 }
 
 TEST_P(FormDataImporterTest, ComplementCountry) {
