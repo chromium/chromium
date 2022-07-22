@@ -92,7 +92,7 @@ const char kQuicHostWhitelist[] = "host_whitelist";
 const char kQuicEnableSocketRecvOptimization[] =
     "enable_socket_recv_optimization";
 const char kQuicVersion[] = "quic_version";
-const char kQuicObsoleteVersionsAllowed[] = "obsolete_versions_allowed";
+const char kQuicObsoleteVersionsAllowed[] = "obsolete_versions_allowed2";
 const char kQuicFlags[] = "set_quic_flags";
 const char kQuicIOSNetworkServiceType[] = "ios_network_service_type";
 const char kRetryWithoutAltSvcOnQuicErrors[] =
@@ -432,12 +432,6 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
           quic::ParsedQuicVersionVector obsolete_versions =
               net::ObsoleteQuicVersions();
           for (const quic::ParsedQuicVersion& version : supported_versions) {
-            if (version == quic::ParsedQuicVersion::Q043()) {
-              // TODO(dschinazi) Remove this special-casing of Q043 once we no
-              // longer have cronet applications that require it.
-              filtered_versions.push_back(version);
-              continue;
-            }
             if (std::find(obsolete_versions.begin(), obsolete_versions.end(),
                           version) == obsolete_versions.end()) {
               filtered_versions.push_back(version);

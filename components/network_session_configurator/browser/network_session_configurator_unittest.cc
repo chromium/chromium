@@ -581,7 +581,7 @@ TEST_F(NetworkSessionConfiguratorTest, QuicVersionFromFieldTrialParams) {
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] =
       quic::QuicVersionToString(version.transport_version);
-  field_trial_params["obsolete_versions_allowed"] = "true";
+  field_trial_params["obsolete_versions_allowed2"] = "true";
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
   base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
 
@@ -614,7 +614,7 @@ TEST_F(NetworkSessionConfiguratorTest,
 
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
-  field_trial_params["obsolete_versions_allowed"] = "true";
+  field_trial_params["obsolete_versions_allowed2"] = "true";
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
   base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
 
@@ -1077,7 +1077,7 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
   std::string quic_versions = quic::ParsedQuicVersionToString(version_);
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
-  field_trial_params["obsolete_versions_allowed"] = "true";
+  field_trial_params["obsolete_versions_allowed2"] = "true";
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
   base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
   ParseFieldTrials();
@@ -1122,7 +1122,7 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
                               quic::ParsedQuicVersionToString(good_version);
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
-  field_trial_params["obsolete_versions_allowed"] = "true";
+  field_trial_params["obsolete_versions_allowed2"] = "true";
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
   base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
   ParseFieldTrials();

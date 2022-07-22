@@ -321,7 +321,7 @@ TEST(URLRequestContextConfigTest, SetSupportedQuicVersion) {
   std::string experimental_options =
       "{\"QUIC\":{\"quic_version\":\"" +
       quic::QuicVersionToString(version.transport_version) +
-      "\",\"obsolete_versions_allowed\":true}}";
+      "\",\"obsolete_versions_allowed2\":true}}";
 
   std::unique_ptr<URLRequestContextConfig> config =
       URLRequestContextConfig::CreateURLRequestContextConfig(
@@ -562,7 +562,7 @@ TEST(URLRequestContextConfigTest, SetObsoleteQuicVersionWhenAllowed) {
           std::string("{\"QUIC\":{\"quic_version\":\"") +
               quic::ParsedQuicVersionToString(
                   net::ObsoleteQuicVersions().back()) +
-              "\",\"obsolete_versions_allowed\":true}}",
+              "\",\"obsolete_versions_allowed2\":true}}",
           // MockCertVerifier to use for testing purposes.
           std::unique_ptr<net::CertVerifier>(),
           // Enable network quality estimator.
