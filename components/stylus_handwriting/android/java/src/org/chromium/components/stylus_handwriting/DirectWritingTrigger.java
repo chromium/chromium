@@ -118,8 +118,12 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
     }
 
     @Override
-    public boolean isStylusWritingEnabled() {
-        return mDwServiceEnabled;
+    public boolean canShowSoftKeyboard() {
+        // We avoid showing soft keyboard during direct writing as there is widget toolbar provided
+        // by the service that allows options like add space, backspace, show/hide keyboard, and to
+        // perform editor actions like next, prev, search, go, etc. It can be noted that Platform
+        // Edit Text also does not show keyboard during direct writing.
+        return false;
     }
 
     private void updateDWServiceStatus(Context context) {
