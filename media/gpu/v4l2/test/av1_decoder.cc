@@ -36,85 +36,8 @@ inline void conditionally_set_flags(__u8* flags,
   *flags |= (condition ? mask : 0);
 }
 
-inline void conditionally_set_u32_flags(__u32* flags,
-                                        const bool condition,
-                                        const bool mask) {
-  *flags |= (condition ? mask : 0);
-}
-
-// Section 5.5. Sequence header OBU syntax in the AV1 spec.
+// Section 5.9.11. Loop filter params syntax in AV1 spec.
 // https://aomediacodec.github.io/av1-spec/av1-spec.pdf
-void FillSequenceParams(
-    struct v4l2_ctrl_av1_sequence* v4l2_seq_params,
-    const absl::optional<libgav1::ObuSequenceHeader>& seq_header) {
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->still_picture,
-                              V4L2_AV1_SEQUENCE_FLAG_STILL_PICTURE);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->use_128x128_superblock,
-                              V4L2_AV1_SEQUENCE_FLAG_USE_128X128_SUPERBLOCK);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->enable_filter_intra,
-                              V4L2_AV1_SEQUENCE_FLAG_ENABLE_FILTER_INTRA);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->enable_intra_edge_filter,
-                              V4L2_AV1_SEQUENCE_FLAG_ENABLE_INTRA_EDGE_FILTER);
-  conditionally_set_u32_flags(
-      &v4l2_seq_params->flags, seq_header->enable_interintra_compound,
-      V4L2_AV1_SEQUENCE_FLAG_ENABLE_INTERINTRA_COMPOUND);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->enable_masked_compound,
-                              V4L2_AV1_SEQUENCE_FLAG_ENABLE_MASKED_COMPOUND);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->enable_warped_motion,
-                              V4L2_AV1_SEQUENCE_FLAG_ENABLE_WARPED_MOTION);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->enable_dual_filter,
-                              V4L2_AV1_SEQUENCE_FLAG_ENABLE_DUAL_FILTER);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->enable_order_hint,
-                              V4L2_AV1_SEQUENCE_FLAG_ENABLE_ORDER_HINT);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->enable_jnt_comp,
-                              V4L2_AV1_SEQUENCE_FLAG_ENABLE_JNT_COMP);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->enable_ref_frame_mvs,
-                              V4L2_AV1_SEQUENCE_FLAG_ENABLE_REF_FRAME_MVS);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->enable_superres,
-                              V4L2_AV1_SEQUENCE_FLAG_ENABLE_SUPERRES);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags, seq_header->enable_cdef,
-                              V4L2_AV1_SEQUENCE_FLAG_ENABLE_CDEF);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->enable_restoration,
-                              V4L2_AV1_SEQUENCE_FLAG_ENABLE_RESTORATION);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->color_config.is_monochrome,
-                              V4L2_AV1_SEQUENCE_FLAG_MONO_CHROME);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->color_config.color_range,
-                              V4L2_AV1_SEQUENCE_FLAG_COLOR_RANGE);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->color_config.subsampling_x,
-                              V4L2_AV1_SEQUENCE_FLAG_SUBSAMPLING_X);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->color_config.subsampling_y,
-                              V4L2_AV1_SEQUENCE_FLAG_SUBSAMPLING_Y);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->film_grain_params_present,
-                              V4L2_AV1_SEQUENCE_FLAG_FILM_GRAIN_PARAMS_PRESENT);
-  conditionally_set_u32_flags(&v4l2_seq_params->flags,
-                              seq_header->color_config.separate_uv_delta_q,
-                              V4L2_AV1_SEQUENCE_FLAG_SEPARATE_UV_DELTA_Q);
-
-  v4l2_seq_params->seq_profile = seq_header->profile;
-  v4l2_seq_params->order_hint_bits = seq_header->order_hint_bits;
-  v4l2_seq_params->bit_depth = seq_header->color_config.bitdepth;
-  v4l2_seq_params->max_frame_width_minus_1 = seq_header->max_frame_width - 1;
-  v4l2_seq_params->max_frame_height_minus_1 = seq_header->max_frame_height - 1;
-}
-
-// Section 5.9.11. Loop filter params syntax.
 // Note that |update_ref_delta| and |update_mode_delta| flags in the spec
 // are not needed for V4L2 AV1 API.
 // TODO(stevecho): sanity check data structures in libgav1 against the AV1 spec.
@@ -694,15 +617,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
     ANALYZER_ALLOW_UNUSED(reference_id);
   }
 
-  std::vector<struct v4l2_ext_control> ext_ctrl_vectors;
-
-  struct v4l2_ctrl_av1_sequence v4l2_seq_params = {};
-
-  FillSequenceParams(&v4l2_seq_params, current_sequence_header_);
-
-  ext_ctrl_vectors.push_back({.id = V4L2_CID_STATELESS_AV1_SEQUENCE,
-                              .size = sizeof(v4l2_seq_params),
-                              .ptr = &v4l2_seq_params});
+  // TODO(b/239618516): add ext_ctrl for V4L2_CID_STATELESS_AV1_SEQUENCE
 
   struct v4l2_ctrl_av1_frame_header v4l2_frame_params = {};
 
@@ -735,12 +650,11 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
 
   // TODO(stevecho): V4L2_CID_STATELESS_AV1_FRAME_HEADER is trending to be
   // changed to V4L2_CID_STATELESS_AV1_FRAME
-  ext_ctrl_vectors.push_back({.id = V4L2_CID_STATELESS_AV1_FRAME_HEADER,
-                              .size = sizeof(v4l2_frame_params),
-                              .ptr = &v4l2_frame_params});
+  struct v4l2_ext_control ext_ctrl = {.id = V4L2_CID_STATELESS_AV1_FRAME_HEADER,
+                                      .size = sizeof(v4l2_frame_params),
+                                      .ptr = &v4l2_frame_params};
 
-  struct v4l2_ext_controls ext_ctrls = {.count = ext_ctrl_vectors.size(),
-                                        .controls = &ext_ctrl_vectors[0]};
+  struct v4l2_ext_controls ext_ctrls = {.count = 1, .controls = &ext_ctrl};
 
   if (!v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls))
     LOG(FATAL) << "VIDIOC_S_EXT_CTRLS failed.";
