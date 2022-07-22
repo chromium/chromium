@@ -30,7 +30,7 @@ TEST_P(PositiveSampleTest, SampleRegexes) {
   auto test_case = GetParam();
   SCOPED_TRACE(test_case.input);
   SCOPED_TRACE(test_case.pattern);
-  EXPECT_TRUE(MatchesPattern(test_case.input, test_case.pattern));
+  EXPECT_TRUE(MatchesPatternInMainThread(test_case.input, test_case.pattern));
 }
 
 INSTANTIATE_TEST_SUITE_P(AutofillRegexesTest,
@@ -58,7 +58,7 @@ TEST_P(NegativeSampleTest, SampleRegexes) {
   auto test_case = GetParam();
   SCOPED_TRACE(test_case.input);
   SCOPED_TRACE(test_case.pattern);
-  EXPECT_FALSE(MatchesPattern(test_case.input, test_case.pattern));
+  EXPECT_FALSE(MatchesPatternInMainThread(test_case.input, test_case.pattern));
 }
 
 INSTANTIATE_TEST_SUITE_P(AutofillRegexesTest,
@@ -89,8 +89,9 @@ class CaptureTest : public testing::TestWithParam<CapturePatternTestCase> {};
 TEST_P(CaptureTest, SampleRegexes) {
   auto test_case = GetParam();
   std::vector<std::u16string> groups;
-  EXPECT_EQ(test_case.matches,
-            MatchesPattern(test_case.input, test_case.pattern, &groups));
+  EXPECT_EQ(
+      test_case.matches,
+      MatchesPatternInMainThread(test_case.input, test_case.pattern, &groups));
   EXPECT_THAT(groups, testing::Eq(test_case.groups));
 }
 
@@ -125,7 +126,7 @@ TEST_P(ExpirationDate2DigitYearPositive, ExpirationDate2DigitYearRegexes) {
   auto test_case = GetParam();
   SCOPED_TRACE(test_case.input);
   const std::u16string pattern = kExpirationDate2DigitYearRe;
-  EXPECT_TRUE(MatchesPattern(test_case.input, pattern));
+  EXPECT_TRUE(MatchesPatternInMainThread(test_case.input, pattern));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -159,7 +160,7 @@ TEST_P(ExpirationDate2DigitYearNegative, ExpirationDate2DigitYearRegexes) {
   auto test_case = GetParam();
   SCOPED_TRACE(test_case.input);
   const std::u16string pattern = kExpirationDate2DigitYearRe;
-  EXPECT_FALSE(MatchesPattern(test_case.input, pattern));
+  EXPECT_FALSE(MatchesPatternInMainThread(test_case.input, pattern));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -199,7 +200,7 @@ TEST_P(ExpirationDate4DigitYearPositive, ExpirationDate4DigitYearRegexes) {
   auto test_case = GetParam();
   const std::u16string pattern = kExpirationDate4DigitYearRe;
   SCOPED_TRACE(test_case.input);
-  EXPECT_TRUE(MatchesPattern(test_case.input, pattern));
+  EXPECT_TRUE(MatchesPatternInMainThread(test_case.input, pattern));
 }
 
 INSTANTIATE_TEST_SUITE_P(AutofillRegexes,
@@ -234,7 +235,7 @@ TEST_P(ExpirationDate4DigitYearNegative, ExpirationDate4DigitYearRegexes) {
   auto test_case = GetParam();
   const std::u16string pattern = kExpirationDate4DigitYearRe;
   SCOPED_TRACE(test_case.input);
-  EXPECT_FALSE(MatchesPattern(test_case.input, pattern));
+  EXPECT_FALSE(MatchesPatternInMainThread(test_case.input, pattern));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -273,7 +274,7 @@ TEST_P(ZipCodePositive, ZipCodeRegexes) {
   auto test_case = GetParam();
   SCOPED_TRACE(test_case.input);
   const std::u16string pattern = kZipCodeRe;
-  EXPECT_TRUE(MatchesPattern(test_case.input, pattern));
+  EXPECT_TRUE(MatchesPatternInMainThread(test_case.input, pattern));
 }
 
 INSTANTIATE_TEST_SUITE_P(AutofillRegexes,
@@ -288,7 +289,7 @@ TEST_P(ZipCodeNegative, ZipCodeRegexes) {
   auto test_case = GetParam();
   SCOPED_TRACE(test_case.input);
   const std::u16string pattern = kZipCodeRe;
-  EXPECT_FALSE(MatchesPattern(test_case.input, pattern));
+  EXPECT_FALSE(MatchesPatternInMainThread(test_case.input, pattern));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -304,7 +305,7 @@ TEST_P(Zip4Positive, Zip4Regexes) {
   auto test_case = GetParam();
   SCOPED_TRACE(test_case.input);
   const std::u16string pattern = kZip4Re;
-  EXPECT_TRUE(MatchesPattern(test_case.input, pattern));
+  EXPECT_TRUE(MatchesPatternInMainThread(test_case.input, pattern));
 }
 
 INSTANTIATE_TEST_SUITE_P(AutofillRegexes,
@@ -317,7 +318,7 @@ TEST_P(Zip4Negative, Zip4Regexes) {
   auto test_case = GetParam();
   SCOPED_TRACE(test_case.input);
   const std::u16string pattern = kZip4Re;
-  EXPECT_FALSE(MatchesPattern(test_case.input, pattern));
+  EXPECT_FALSE(MatchesPatternInMainThread(test_case.input, pattern));
 }
 
 INSTANTIATE_TEST_SUITE_P(

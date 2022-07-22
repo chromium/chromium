@@ -86,7 +86,8 @@ size_t FindLongestCommonPrefixLengthInStringsWithMinimalLength(
 bool IsValidParseableName(const base::StringPiece16 parseable_name) {
   static const std::u16string kParseableNameValidationPattern =
       kParseableNameValidationRe;
-  return MatchesPattern(parseable_name, kParseableNameValidationPattern);
+  return MatchesPatternInMainThread(parseable_name,
+                                    kParseableNameValidationPattern);
 }
 
 // Tries to strip |offset_left| and |offset_right| from entriees in

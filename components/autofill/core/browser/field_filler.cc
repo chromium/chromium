@@ -776,8 +776,8 @@ std::u16string GetExpirationDateForInput(const CreditCard& credit_card,
     //                                      ^^^^^ optional separator
     //                                           ^^^ optional white space
     //                                                   ^^^^^ 4 digit year?
-    if (MatchesPattern(field.placeholder, kFormatRegEx, &groups) ||
-        MatchesPattern(field.label, kFormatRegEx, &groups)) {
+    if (MatchesPatternInMainThread(field.placeholder, kFormatRegEx, &groups) ||
+        MatchesPatternInMainThread(field.label, kFormatRegEx, &groups)) {
       bool is_two_digit_year = groups[2].empty();
       std::u16string expiration_candidate =
           base::StrCat({month, groups[1],

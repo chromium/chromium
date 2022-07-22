@@ -58,9 +58,14 @@ class AutofillRegexes {
 };
 
 // Calls MatchesPattern() for a global, thread-safe AutofillRegexes object.
-bool MatchesPattern(const base::StringPiece16& input,
-                    const base::StringPiece16& pattern,
-                    std::vector<std::u16string>* groups = nullptr);
+// Although this is thread-safe, this should only be called from the main thread
+// to avoid the UI being blocked on some worker task.
+// TODO(crbug.com/1345089): Merge FormField::MatchesPattern() and this function
+// one into a single MatchesPattern() that distinguishes between the main thread
+// and worker threads.
+bool MatchesPatternInMainThread(const base::StringPiece16& input,
+                                const base::StringPiece16& pattern,
+                                std::vector<std::u16string>* groups = nullptr);
 
 }  // namespace autofill
 

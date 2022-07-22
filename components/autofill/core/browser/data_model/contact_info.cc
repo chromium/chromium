@@ -389,8 +389,9 @@ bool CompanyInfo::IsValidOrVerified(const std::u16string& value) const {
       "Mlle|Mme|M\\.|"
       "Dr\\.?|Prof\\.?)$";
   return (profile_ && profile_->IsVerified()) ||
-         (!MatchesPattern(value, base::UTF8ToUTF16(kBirthyearRe)) &&
-          !MatchesPattern(value, base::UTF8ToUTF16(kSocialTitleRe)));
+         (!MatchesPatternInMainThread(value, base::UTF8ToUTF16(kBirthyearRe)) &&
+          !MatchesPatternInMainThread(value,
+                                      base::UTF8ToUTF16(kSocialTitleRe)));
 }
 
 }  // namespace autofill

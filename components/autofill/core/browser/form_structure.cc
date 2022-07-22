@@ -839,8 +839,8 @@ bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
   }
 
   // Rule out search forms.
-  if (MatchesPattern(base::UTF8ToUTF16(target_url_.path_piece()),
-                     kUrlSearchActionRe)) {
+  if (MatchesPatternInMainThread(base::UTF8ToUTF16(target_url_.path_piece()),
+                                 kUrlSearchActionRe)) {
     LOG_AF(log_manager) << LoggingScope::kAbortParsing
                         << LogMessage::kAbortParsingUrlMatchesSearchRegex
                         << *this;

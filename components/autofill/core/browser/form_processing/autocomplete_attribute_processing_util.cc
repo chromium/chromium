@@ -178,7 +178,7 @@ absl::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
 // Ignoring autocomplete="off" and alike is treated separately in
 // `ParseFieldTypesFromAutocompleteAttributes()`.
 bool ShouldIgnoreAutocompleteValue(const std::string& value) {
-  return MatchesPattern(base::UTF8ToUTF16(value), u"address");
+  return MatchesPatternInMainThread(base::UTF8ToUTF16(value), u"address");
 }
 
 // Returns the Chrome Autofill-supported field type corresponding to a given

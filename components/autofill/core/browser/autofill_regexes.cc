@@ -94,9 +94,9 @@ bool AutofillRegexes::MatchesPattern(const base::StringPiece16& input,
   return Match();
 }
 
-bool MatchesPattern(const base::StringPiece16& input,
-                    const base::StringPiece16& pattern,
-                    std::vector<std::u16string>* groups) {
+bool MatchesPatternInMainThread(const base::StringPiece16& input,
+                                const base::StringPiece16& pattern,
+                                std::vector<std::u16string>* groups) {
   static base::NoDestructor<AutofillRegexes> g_autofill_regexes(
       ThreadSafe(true));
   return g_autofill_regexes->MatchesPattern(input, pattern, groups);

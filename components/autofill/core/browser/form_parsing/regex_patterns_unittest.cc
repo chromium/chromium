@@ -61,7 +61,7 @@ MatchPatternRefTestApi test_api(MatchPatternRef p) {
 
 auto Matches(base::StringPiece16 pattern) {
   return ::testing::Truly([pattern](base::StringPiece actual) {
-    return MatchesPattern(base::UTF8ToUTF16(actual), pattern);
+    return MatchesPatternInMainThread(base::UTF8ToUTF16(actual), pattern);
   });
 }
 

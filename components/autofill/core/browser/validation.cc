@@ -154,7 +154,7 @@ bool IsValidEmailAddress(const std::u16string& text) {
   // E-Mail pattern as defined by the WhatWG. (4.10.7.1.5 E-Mail state)
   static constexpr char16_t kEmailPattern[] =
       u"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";
-  return MatchesPattern(text, kEmailPattern);
+  return MatchesPatternInMainThread(text, kEmailPattern);
 }
 
 bool IsValidState(const std::u16string& text) {
@@ -169,7 +169,7 @@ bool IsPossiblePhoneNumber(const std::u16string& text,
 
 bool IsValidZip(const std::u16string& text) {
   static constexpr char16_t kZipPattern[] = u"^\\d{5}(-\\d{4})?$";
-  return MatchesPattern(text, kZipPattern);
+  return MatchesPatternInMainThread(text, kZipPattern);
 }
 
 bool IsSSN(const std::u16string& text) {
@@ -299,7 +299,7 @@ bool IsValidForType(const std::u16string& value,
 
       // Expiration date was in an invalid format.
       if (temp.expiration_month() == 0 || temp.expiration_year() == 0 ||
-          !MatchesPattern(value, pattern)) {
+          !MatchesPatternInMainThread(value, pattern)) {
         if (error_message) {
           *error_message = l10n_util::GetStringUTF16(
               IDS_PAYMENTS_CARD_EXPIRATION_INVALID_VALIDATION_MESSAGE);
@@ -343,20 +343,21 @@ size_t GetCvcLengthForCardNetwork(const base::StringPiece card_network) {
 }
 
 bool IsUPIVirtualPaymentAddress(const std::u16string& value) {
-  return MatchesPattern(value, kUPIVirtualPaymentAddressRe);
+  return MatchesPatternInMainThread(value, kUPIVirtualPaymentAddressRe);
 }
 
 bool IsInternationalBankAccountNumber(const std::u16string& value) {
   std::u16string no_spaces;
   base::RemoveChars(value, u" ", &no_spaces);
-  return MatchesPattern(no_spaces, kInternationalBankAccountNumberRe);
+  return MatchesPatternInMainThread(no_spaces,
+                                    kInternationalBankAccountNumberRe);
 }
 
 bool IsPlausibleCreditCardCVCNumber(const std::u16string& value) {
-  return MatchesPattern(value, kCreditCardCVCPattern);
+  return MatchesPatternInMainThread(value, kCreditCardCVCPattern);
 }
 
 bool IsPlausible4DigitExpirationYear(const std::u16string& value) {
-  return MatchesPattern(value, kCreditCard4DigitExpYearPattern);
+  return MatchesPatternInMainThread(value, kCreditCard4DigitExpYearPattern);
 }
 }  // namespace autofill
