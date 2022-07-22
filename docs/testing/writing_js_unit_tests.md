@@ -357,9 +357,6 @@ necessary C++ code.
 Since these are relatively complex to use, it may help you to codesearch for
 examples. Here are some useful examples:
 
-[oobe_webui_browsertest.js](https://cs.chromium.org/chromium/src/chrome/test/data/chromeos/oobe_webui_browsertest.js) -
-makes the browser fullscreen before running the JS test.
-
 [saml_password_attributes_test.unitjs](https://cs.chromium.org/chromium/src/chrome/browser/resources/gaia_auth_host/saml_password_attributes_test.unitjs) -
 loads an XML file into a JS global variable before running the JS test.
 
