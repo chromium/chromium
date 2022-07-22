@@ -78,9 +78,9 @@ void EmptyTrashIOTask::Execute(IOTask::ProgressCallback progress_callback,
 void EmptyTrashIOTask::RemoveTrashSubDirectory(
     TrashPathsMap::const_iterator& trash_location,
     const std::string& folder_name_to_remove) {
+  const base::FilePath& trash_parent_path = trash_location->first;
   const base::FilePath trash_path =
-      trash_location->second.trash_parent_path.Append(
-          trash_location->second.relative_folder_path);
+      trash_parent_path.Append(trash_location->second.relative_folder_path);
   const storage::FileSystemURL trash_url =
       file_system_context_->CreateCrackedFileSystemURL(
           storage_key_, storage::FileSystemType::kFileSystemTypeLocal,

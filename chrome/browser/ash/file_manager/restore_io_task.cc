@@ -112,17 +112,17 @@ void RestoreIOTask::ValidateTrashInfo(size_t idx) {
   }
 
   // Ensures the trash location is parented at an enabled trash location.
-  base::FilePath trash_parent_path;
-  base::FilePath trash_relative_folder_path;
+  base::FilePath trash_folder_location;
+  base::FilePath mount_point_path;
   for (const auto& [parent_path, info] : enabled_trash_locations_) {
     if (parent_path.Append(info.relative_folder_path).IsParent(trash_info)) {
-      trash_parent_path = parent_path;
-      trash_relative_folder_path = info.relative_folder_path;
+      trash_folder_location = parent_path.Append(info.relative_folder_path);
+      mount_point_path = info.mount_point_path;
       break;
     }
   }
 
-  if (trash_parent_path.empty() || trash_relative_folder_path.empty()) {
+  if (mount_point_path.empty() || trash_folder_location.empty()) {
     progress_.sources[idx].error = base::File::FILE_ERROR_INVALID_OPERATION;
     Complete(State::kError);
     return;
@@ -131,21 +131,20 @@ void RestoreIOTask::ValidateTrashInfo(size_t idx) {
   // Ensure the corresponding file that this metadata file refers to actually
   // exists.
   base::FilePath trashed_file_location =
-      trash_parent_path.Append(trash_relative_folder_path)
-          .Append(kFilesFolderName)
+      trash_folder_location.Append(kFilesFolderName)
           .Append(trash_info.BaseName().RemoveFinalExtension());
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&base::PathExists, trashed_file_location),
       base::BindOnce(&RestoreIOTask::OnTrashedFileExists,
-                     weak_ptr_factory_.GetWeakPtr(), idx, trash_parent_path,
+                     weak_ptr_factory_.GetWeakPtr(), idx, mount_point_path,
                      trashed_file_location));
 }
 
 void RestoreIOTask::OnTrashedFileExists(
     size_t idx,
-    const base::FilePath& trash_parent_path,
+    const base::FilePath& mount_point_path,
     const base::FilePath& trashed_file_location,
     bool exists) {
   if (!exists) {
@@ -157,7 +156,7 @@ void RestoreIOTask::OnTrashedFileExists(
   auto complete_callback = base::BindPostTask(
       base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&RestoreIOTask::EnsureParentRestorePathExists,
-                     weak_ptr_factory_.GetWeakPtr(), idx, trash_parent_path,
+                     weak_ptr_factory_.GetWeakPtr(), idx, mount_point_path,
                      trashed_file_location));
 
   base::FilePath trashinfo_path =
@@ -187,7 +186,7 @@ void RestoreIOTask::OnGotFile(
 
 void RestoreIOTask::EnsureParentRestorePathExists(
     size_t idx,
-    const base::FilePath& trash_parent_path,
+    const base::FilePath& mount_point_path,
     const base::FilePath& trashed_file_location,
     base::File::Error status,
     const base::FilePath& restore_path,
@@ -209,8 +208,7 @@ void RestoreIOTask::EnsureParentRestorePathExists(
   // known trash parent path.
   base::StringPiece relative_path =
       base::StringPiece(restore_path.value()).substr(1);
-  base::FilePath absolute_restore_path =
-      trash_parent_path.Append(relative_path);
+  base::FilePath absolute_restore_path = mount_point_path.Append(relative_path);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},

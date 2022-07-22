@@ -29,11 +29,11 @@ extern const char kTrashInfoExtension[];
 
 struct TrashLocation {
   TrashLocation(const base::FilePath supplied_relative_folder_path,
-                const base::FilePath parent_path,
+                const base::FilePath supplied_mount_point_path,
                 const base::FilePath prefix_path);
   // Constructor used when no prefix path is required.
   TrashLocation(const base::FilePath supplied_relative_folder_path,
-                const base::FilePath parent_path);
+                const base::FilePath supplied_mount_point_path);
   ~TrashLocation();
 
   TrashLocation(TrashLocation&& other);
@@ -46,16 +46,21 @@ struct TrashLocation {
   storage::FileSystemURL trash_info;
 
   // The folder path for the Trash folder. This is parented by
-  // `trash_parent_path` and typically represents the .Trash folder. However, in
+  // `mount_point_path` and typically represents the .Trash folder. However, in
   // some cases this can represent a path instead. This path must be relative
-  // from the `trash_parent_path`, i.e. not an absolute path.
+  // from the `mount_point_path`, i.e. not an absolute path.
   base::FilePath relative_folder_path;
 
-  // The parent folder path of this trash entry.
-  base::FilePath trash_parent_path;
+  // The volume mount point for the trash folder. For example the Downloads and
+  // MyFiles entries have the same mount point path (~/MyFiles).
+  base::FilePath mount_point_path;
 
   // For some trash directories, the restore path requires a prefix to ensure
-  // restoration is done correctly.
+  // restoration is done correctly. This is used in Crostini to denote the
+  // user's local directory and in Downloads to prefix the reestoration path
+  // with /Downloads as MyFiles and Downloads share the same mount point. This
+  // prefix is prepended to the restore path when creating out the .trashinfo
+  // file.
   base::FilePath prefix_restore_path;
 
   // The free space on the underlying filesystem that .Trash is located on.
@@ -73,7 +78,12 @@ const base::FilePath GenerateTrashPath(const base::FilePath& trash_path,
                                        const std::string& file_name);
 
 // Generate the list of currently enabled paths for trashing. It includes
-// DriveFS and Crostini paths when they're enabled.
+// DriveFS and Crostini paths when they're enabled. The key is the parent path
+// where the `relative_folder_path` is located, this is used to match the trash
+// location to trashed files. The entries can contain nested folders (e.g.
+// ~/MyFiles and ~/MyFiles/Downloads) so it is important to order them with
+// parents folders preceding children. The `mount_point_path` is used to
+// identify locations that share the same volume.
 using TrashPathsMap = std::map<const base::FilePath, TrashLocation>;
 TrashPathsMap GenerateEnabledTrashLocationsForProfile(
     Profile* profile,

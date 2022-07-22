@@ -18,16 +18,16 @@ constexpr char kFilesFolderName[] = "files";
 constexpr char kTrashInfoExtension[] = ".trashinfo";
 
 TrashLocation::TrashLocation(const base::FilePath supplied_relative_folder_path,
-                             const base::FilePath parent_path,
+                             const base::FilePath supplied_mount_point_path,
                              const base::FilePath prefix_path)
     : relative_folder_path(supplied_relative_folder_path),
-      trash_parent_path(parent_path),
+      mount_point_path(supplied_mount_point_path),
       prefix_restore_path(prefix_path) {}
 
 TrashLocation::TrashLocation(const base::FilePath supplied_relative_folder_path,
-                             const base::FilePath parent_path)
+                             const base::FilePath supplied_mount_point_path)
     : relative_folder_path(supplied_relative_folder_path),
-      trash_parent_path(parent_path) {}
+      mount_point_path(supplied_mount_point_path) {}
 TrashLocation::~TrashLocation() = default;
 
 TrashLocation::TrashLocation(TrashLocation&& other) = default;
@@ -51,21 +51,28 @@ TrashPathsMap GenerateEnabledTrashLocationsForProfile(
 
   enabled_trash_locations.try_emplace(
       util::GetMyFilesFolderForProfile(profile),
-      TrashLocation(base::FilePath(kTrashFolderName),
-                    util::GetMyFilesFolderForProfile(profile)));
+      TrashLocation(
+          /*supplied_relative_folder_path=*/base::FilePath(kTrashFolderName),
+          /*supplied_mount_point_path=*/util::GetMyFilesFolderForProfile(
+              profile)));
   enabled_trash_locations.try_emplace(
       util::GetDownloadsFolderForProfile(profile),
-      TrashLocation(base::FilePath(kTrashFolderName),
-                    util::GetDownloadsFolderForProfile(profile),
-                    util::GetDownloadsFolderForProfile(profile).BaseName()));
+      TrashLocation(
+          /*supplied_relative_folder_path=*/base::FilePath(kTrashFolderName),
+          /*supplied_mount_point_path=*/
+          util::GetMyFilesFolderForProfile(profile),
+          /*prefix_path=*/
+          util::GetDownloadsFolderForProfile(profile).BaseName()));
 
   auto* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   if (integration_service) {
     enabled_trash_locations.try_emplace(
         integration_service->GetMountPointPath(),
-        TrashLocation(base::FilePath(".Trash-1000"),
-                      integration_service->GetMountPointPath()));
+        TrashLocation(
+            /*supplied_relative_folder_path=*/base::FilePath(".Trash-1000"),
+            /*supplied_mount_point_path=*/integration_service
+                ->GetMountPointPath()));
   }
 
   // Ensure Crostini is running before adding it as an enabled path.
@@ -86,8 +93,11 @@ TrashPathsMap GenerateEnabledTrashLocationsForProfile(
       enabled_trash_locations.try_emplace(
           crostini_mount_point,
           TrashLocation(
-              base::FilePath(".local").Append("share").Append("Trash"),
-              crostini_mount_point, volume->remote_mount_path()));
+              /*supplied_relative_folder_path=*/base::FilePath(".local")
+                  .Append("share")
+                  .Append("Trash"),
+              /*supplied_mount_point_path=*/crostini_mount_point,
+              /*prefix_path=*/volume->remote_mount_path()));
     }
   }
 

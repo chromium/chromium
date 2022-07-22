@@ -60,7 +60,7 @@ class RestoreIOTask : public IOTask {
   void ValidateTrashInfo(size_t idx);
 
   void OnTrashedFileExists(size_t idx,
-                           const base::FilePath& trash_parent_path,
+                           const base::FilePath& mount_point_path,
                            const base::FilePath& trashed_file_location,
                            bool exists);
 
@@ -68,7 +68,7 @@ class RestoreIOTask : public IOTask {
   // actually exists. In the event the file path has been removed, recreate it.
   void EnsureParentRestorePathExists(
       size_t idx,
-      const base::FilePath& trash_parent_path,
+      const base::FilePath& mount_point_path,
       const base::FilePath& trashed_file_location,
       base::File::Error status,
       const base::FilePath& restore_path,

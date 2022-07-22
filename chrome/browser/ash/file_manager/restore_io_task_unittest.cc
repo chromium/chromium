@@ -206,7 +206,8 @@ TEST_F(RestoreIOTaskTest, ValidRestorePathShouldSucceedAndCreateDirectory) {
   EnsureTrashDirectorySetup(downloads_dir_);
 
   std::string foo_contents = base::RandBytesAsString(kTestFileSize);
-  std::string foo_metadata_contents = GenerateTrashInfoContents("/bar/foo.txt");
+  std::string foo_metadata_contents =
+      GenerateTrashInfoContents("/Downloads/bar/foo.txt");
 
   const base::FilePath trash_path = downloads_dir_.Append(kTrashFolderName);
   const base::FilePath info_file_path =
@@ -241,7 +242,8 @@ TEST_F(RestoreIOTaskTest, ItemWithExistingConflictAreRenamed) {
   EnsureTrashDirectorySetup(downloads_dir_);
 
   std::string foo_contents = base::RandBytesAsString(kTestFileSize);
-  std::string foo_metadata_contents = GenerateTrashInfoContents("/bar/foo.txt");
+  std::string foo_metadata_contents =
+      GenerateTrashInfoContents("/Downloads/bar/foo.txt");
 
   const base::FilePath trash_path = downloads_dir_.Append(kTrashFolderName);
   const base::FilePath info_file_path =

@@ -253,7 +253,7 @@ void TrashIOTask::GetFreeDiskSpace(size_t source_idx,
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace,
-                     it->second.trash_parent_path),
+                     it->second.mount_point_path),
       base::BindOnce(&TrashIOTask::GotFreeDiskSpace,
                      weak_ptr_factory_.GetWeakPtr(), source_idx,
                      base::OwnedRef(it)));
@@ -276,10 +276,10 @@ base::FilePath TrashIOTask::MakeRelativeFromBasePath(
 void TrashIOTask::GotFreeDiskSpace(size_t source_idx,
                                    const TrashPathsMap::reverse_iterator& it,
                                    int64_t free_space) {
-  auto& trash_location = it->second;
-  base::FilePath trash_path =
-      MakeRelativeFromBasePath(trash_location.trash_parent_path.Append(
-          trash_location.relative_folder_path));
+  TrashLocation& trash_location = it->second;
+  const base::FilePath& trash_parent_path = it->first;
+  base::FilePath trash_path = MakeRelativeFromBasePath(
+      trash_parent_path.Append(trash_location.relative_folder_path));
   trash_location.trash_files = CreateFileSystemURL(
       progress_.sources[source_idx].url, trash_path.Append(kFilesFolderName));
   trash_location.trash_info = CreateFileSystemURL(
