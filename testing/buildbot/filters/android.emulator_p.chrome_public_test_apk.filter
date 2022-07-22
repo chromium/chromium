@@ -72,11 +72,6 @@
 # crbug.com/1062058
 -org.chromium.chrome.browser.customtabs.DetachedResourceRequestTest.testSafeBrowsingMainResourceWithSplitCache
 
-# crbug.com/1062838
--org.chromium.chrome.browser.offlinepages.prefetch.PrefetchFeedFlowTest.testPrefetchForbiddenByServer_FullBrowser
--org.chromium.chrome.browser.offlinepages.prefetch.PrefetchFeedFlowTest.testPrefetchSinglePageSuccess_FullBrowser
--org.chromium.chrome.browser.offlinepages.prefetch.PrefetchFeedFlowTest.testPrefetchPageReadyLater_FullBrowser
-
 # crbug.com/1062843
 -org.chromium.chrome.browser.banners.AppBannerManagerTest.testAppInstalledModalNativeAppBannerCustomTab
 -org.chromium.chrome.browser.banners.AppBannerManagerTest.testModalNativeAppBannerCanBeTriggeredMultipleTimesCustomTab
