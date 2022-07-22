@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -445,6 +446,11 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
     @Override
     public NativePage createNativePage(String url, NativePage candidatePage, Tab tab) {
+        // Navigation comes from user pressing "Back to safety" on an interstitial so close the tab.
+        // See crbug.com/1270695
+        if (UrlConstants.NTP_URL.equals(url) && tab.isShowingErrorPage()) {
+            mActivity.finish();
+        }
         // Custom tab does not create native pages.
         return null;
     }
