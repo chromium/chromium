@@ -4286,50 +4286,52 @@ StyleRecalcChange Element::RecalcOwnStyle(
     const StyleHighlightData* parent_highlights =
         parent_style ? parent_style->HighlightData().get() : nullptr;
 
-    if (RuntimeEnabledFeatures::HighlightInheritanceEnabled()) {
-      if (new_style->HasPseudoElementStyle(kPseudoIdSelection)) {
-        StyleHighlightData& highlights = new_style->MutableHighlightData();
-        const ComputedStyle* highlight_parent =
-            parent_highlights ? parent_highlights->Selection() : nullptr;
-        StyleRequest style_request{kPseudoIdSelection, highlight_parent};
-        style_request.originating_element_style = new_style.get();
-        highlights.SetSelection(
-            StyleForPseudoElement(new_style_recalc_context, style_request));
-      }
-
-      if (new_style->HasPseudoElementStyle(kPseudoIdTargetText)) {
-        StyleHighlightData& highlights = new_style->MutableHighlightData();
-        const ComputedStyle* highlight_parent =
-            parent_highlights ? parent_highlights->TargetText() : nullptr;
-        StyleRequest style_request{kPseudoIdTargetText, highlight_parent};
-        style_request.originating_element_style = new_style.get();
-        highlights.SetTargetText(
-            StyleForPseudoElement(new_style_recalc_context, style_request));
-      }
-
-      if (new_style->HasPseudoElementStyle(kPseudoIdSpellingError)) {
-        StyleHighlightData& highlights = new_style->MutableHighlightData();
-        const ComputedStyle* highlight_parent =
-            parent_highlights ? parent_highlights->SpellingError() : nullptr;
-        StyleRequest style_request{kPseudoIdSpellingError, highlight_parent};
-        style_request.originating_element_style = new_style.get();
-        highlights.SetSpellingError(
-            StyleForPseudoElement(new_style_recalc_context, style_request));
-      }
-
-      if (new_style->HasPseudoElementStyle(kPseudoIdGrammarError)) {
-        StyleHighlightData& highlights = new_style->MutableHighlightData();
-        const ComputedStyle* highlight_parent =
-            parent_highlights ? parent_highlights->GrammarError() : nullptr;
-        StyleRequest style_request{kPseudoIdGrammarError, highlight_parent};
-        style_request.originating_element_style = new_style.get();
-        highlights.SetGrammarError(
-            StyleForPseudoElement(new_style_recalc_context, style_request));
-      }
+    if (UsesHighlightPseudoInheritance(kPseudoIdSelection) &&
+        new_style->HasPseudoElementStyle(kPseudoIdSelection)) {
+      StyleHighlightData& highlights = new_style->MutableHighlightData();
+      const ComputedStyle* highlight_parent =
+          parent_highlights ? parent_highlights->Selection() : nullptr;
+      StyleRequest style_request{kPseudoIdSelection, highlight_parent};
+      style_request.originating_element_style = new_style.get();
+      highlights.SetSelection(
+          StyleForPseudoElement(new_style_recalc_context, style_request));
     }
-    // Use new inheritance model for custom highlights even if it is not enabled
-    // for other types of highlights.
-    if (new_style->HasPseudoElementStyle(kPseudoIdHighlight)) {
+
+    if (UsesHighlightPseudoInheritance(kPseudoIdTargetText) &&
+        new_style->HasPseudoElementStyle(kPseudoIdTargetText)) {
+      StyleHighlightData& highlights = new_style->MutableHighlightData();
+      const ComputedStyle* highlight_parent =
+          parent_highlights ? parent_highlights->TargetText() : nullptr;
+      StyleRequest style_request{kPseudoIdTargetText, highlight_parent};
+      style_request.originating_element_style = new_style.get();
+      highlights.SetTargetText(
+          StyleForPseudoElement(new_style_recalc_context, style_request));
+    }
+
+    if (UsesHighlightPseudoInheritance(kPseudoIdSpellingError) &&
+        new_style->HasPseudoElementStyle(kPseudoIdSpellingError)) {
+      StyleHighlightData& highlights = new_style->MutableHighlightData();
+      const ComputedStyle* highlight_parent =
+          parent_highlights ? parent_highlights->SpellingError() : nullptr;
+      StyleRequest style_request{kPseudoIdSpellingError, highlight_parent};
+      style_request.originating_element_style = new_style.get();
+      highlights.SetSpellingError(
+          StyleForPseudoElement(new_style_recalc_context, style_request));
+    }
+
+    if (UsesHighlightPseudoInheritance(kPseudoIdGrammarError) &&
+        new_style->HasPseudoElementStyle(kPseudoIdGrammarError)) {
+      StyleHighlightData& highlights = new_style->MutableHighlightData();
+      const ComputedStyle* highlight_parent =
+          parent_highlights ? parent_highlights->GrammarError() : nullptr;
+      StyleRequest style_request{kPseudoIdGrammarError, highlight_parent};
+      style_request.originating_element_style = new_style.get();
+      highlights.SetGrammarError(
+          StyleForPseudoElement(new_style_recalc_context, style_request));
+    }
+
+    if (UsesHighlightPseudoInheritance(kPseudoIdHighlight) &&
+        new_style->HasPseudoElementStyle(kPseudoIdHighlight)) {
       const HashSet<AtomicString>* custom_highlight_names =
           new_style->CustomHighlightNames();
       if (custom_highlight_names) {
