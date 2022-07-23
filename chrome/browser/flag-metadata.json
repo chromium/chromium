@@ -4912,7 +4912,7 @@
   {
     "name": "optimization-guide-push-notifications",
     "owners": [ "robertogden", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 109
+    "expiry_milestone": 110
   },
   {
     "name": "optimization-target-prediction",
@@ -4981,12 +4981,12 @@
   {
     "name": "page-content-annotations",
     "owners": [ "sophiechang", "mcrouse", "chrome-intelligence-core@google.com"],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "page-entities-page-content-annotations",
     "owners": [ "sophiechang", "mcrouse", "chrome-intelligence-core@google.com"],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "page-info-about-this-site",
@@ -5033,7 +5033,7 @@
   {
     "name": "page-visibility-page-content-annotations",
     "owners": [ "sophiechang", "mcrouse", "chrome-intelligence-core@google.com"],
-    "expiry_milestone": 102
+    "expiry_milestone": 110
   },
   {
     "name": "paint-preview-demo",
