@@ -11,6 +11,7 @@ import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//ui/webui/webui_features.gni")
 import("./cr_elements.gni")
 
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_elements"
@@ -43,12 +44,16 @@ if (include_polymer) {
 
 group("preprocess") {
   public_deps = [
-    ":preprocess_generated_ts",
-    ":preprocess_src_ts",
+    ":html_wrapper_files_native",
+    ":preprocess_ts",
   ]
 
   if (include_polymer) {
-    public_deps += [ ":preprocess_generated" ]
+    public_deps += [
+      ":css_wrapper_files",
+      ":html_wrapper_files",
+      ":preprocess_generated",
+    ]
   }
 
   if (is_chromeos_ash) {
@@ -79,12 +84,14 @@ if (is_chromeos_ash) {
 
 # TS files are passed to a separate target so that they are not listed in the
 # |out_manifest|.
-preprocess_if_expr("preprocess_src_ts") {
+preprocess_if_expr("preprocess_ts") {
   in_folder = "."
   out_folder = preprocess_folder
-  in_files = web_component_files_native_ts + non_web_component_files_ts
+  in_files = web_component_files_native_ts + native_html_files +
+             non_web_component_files_ts
   if (include_polymer) {
-    in_files += web_component_files_polymer_ts
+    in_files += web_component_files_polymer_ts + polymer_html_files +
+                icons_html_files + css_files
   }
 }
 
@@ -200,22 +207,6 @@ if (include_polymer) {
         "chromeos/cr_picture/icons.html.js",
       ]
     }
-  }
-}
-
-# TS files are passed to a separate target so that they are not listed in the
-# |out_manifest|.
-preprocess_if_expr("preprocess_generated_ts") {
-  deps = [ ":html_wrapper_files_native" ]
-  in_folder = target_gen_dir
-  out_folder = preprocess_folder
-  in_files = native_html_wrapper_files
-  if (include_polymer) {
-    deps += [
-      ":css_wrapper_files",
-      ":html_wrapper_files",
-    ]
-    in_files += polymer_html_wrapper_files + css_wrapper_files
   }
 }
 
@@ -409,16 +400,28 @@ if (is_chromeos_ash) {
 }
 
 html_to_wrapper("html_wrapper_files_native") {
+  deps = [ ":preprocess_ts" ]
+  in_folder = preprocess_folder
+  out_folder = preprocess_folder
   in_files = native_html_files
+  minify = optimize_webui
   template = "native"
 }
 
 if (include_polymer) {
   html_to_wrapper("html_wrapper_files") {
+    deps = [ ":preprocess_ts" ]
+    in_folder = preprocess_folder
+    out_folder = preprocess_folder
     in_files = polymer_html_files + icons_html_files
+    minify = optimize_webui
   }
 
   css_to_wrapper("css_wrapper_files") {
+    deps = [ ":preprocess_ts" ]
+    in_folder = preprocess_folder
+    out_folder = preprocess_folder
     in_files = css_files
+    minify = optimize_webui
   }
 }

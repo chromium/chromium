@@ -47,11 +47,8 @@ if (include_polymer) {
   ]
 
   if (is_chromeos) {
-    web_component_files_polymer_ts += [
-      # cr-searchable-drop-down is only used in smb and cups dialogs, both of
-      # which are chromeos only.
-      "cr_searchable_drop_down/cr_searchable_drop_down.ts",
-    ]
+    web_component_files_polymer_ts +=
+        [ "cr_searchable_drop_down/cr_searchable_drop_down.ts" ]
   }
 
   icons_html_files = [ "mwb_shared_icons.html" ]
@@ -103,7 +100,8 @@ if (include_polymer) {
   }
 }
 
-# List of all files above with the "cr_elements/" prefix to be used in a parent BUILD.gn file.
+# List of all files above with the "cr_elements/" prefix to be used in a parent
+# BUILD.gn file.
 cr_elements_files = []
 foreach(f,
         web_component_files_native_ts + native_html_wrapper_files +
