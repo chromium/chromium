@@ -61,7 +61,11 @@ namespace recordreplay {
 `
 );
 
+// ensure goma is started for cloud builds with engflow
 spawnChecked("goma_ctl", ["restart"]);
+
+// ensure that build configuration is written with correct paths
+spawnChecked("gn", ["gen", "out/Release"]);
 
 spawnChecked("autoninja", ["-C", "out/Release", "chrome"], {
   stdio: "inherit",
