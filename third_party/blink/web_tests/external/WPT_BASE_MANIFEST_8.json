@@ -243644,6 +243644,110 @@
       {}
      ]
     ],
+    "slot-fallback-content-001.html": [
+     "e6e8747c93a1e8d3e6c18d5d3aa440f5b818c0e3",
+     [
+      null,
+      [
+       [
+        "/shadow-dom/slot-fallback-content-001-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "slot-fallback-content-002.html": [
+     "16f2dea0811b2583d147e5896c2a16a1a26caec5",
+     [
+      null,
+      [
+       [
+        "/shadow-dom/slot-fallback-content-002-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "slot-fallback-content-003.html": [
+     "ab7b2af05aa1b7aee94e473aca98139ccaec1fbd",
+     [
+      null,
+      [
+       [
+        "/shadow-dom/slot-fallback-content-003-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "slot-fallback-content-004.html": [
+     "b7ca7144e4f76349b27d156f8a76a97b7f650ddc",
+     [
+      null,
+      [
+       [
+        "/shadow-dom/slot-fallback-content-004-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "slot-fallback-content-005.html": [
+     "37e383ac8cd7fd5779d0234c9047832d95ff9d3c",
+     [
+      null,
+      [
+       [
+        "/shadow-dom/slot-fallback-content-005-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "slot-fallback-content-006.html": [
+     "4708ee7b44ce36b32e03b27f003acacc4106d86a",
+     [
+      null,
+      [
+       [
+        "/shadow-dom/slot-fallback-content-006-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "slot-fallback-content-007.html": [
+     "16471113928d878a02541a49494eca77e0fc23cc",
+     [
+      null,
+      [
+       [
+        "/shadow-dom/slot-fallback-content-007-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "slot-fallback-content-008.html": [
+     "3f93620bba02f652f5e930e315e38f3a71d3a610",
+     [
+      null,
+      [
+       [
+        "/shadow-dom/slot-fallback-content-008-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
     "untriaged": {
      "shadow-trees": {
       "nested-shadow-trees": {
@@ -331197,6 +331301,38 @@
      "d86fd234ca321a762fff5017b4adc68301124bcd",
      []
     ],
+    "slot-fallback-content-001-ref.html": [
+     "5161f0df95f96b1c48a6185b5131589d15fc2b25",
+     []
+    ],
+    "slot-fallback-content-002-ref.html": [
+     "2940bcebaf005da9154c802e4d30f914b40d03ac",
+     []
+    ],
+    "slot-fallback-content-003-ref.html": [
+     "ad735ec81eda25b97c950ee2acaa0d76c8157daf",
+     []
+    ],
+    "slot-fallback-content-004-ref.html": [
+     "85d8f6ef2b7c3a80ae83a49e8d4300ca7235f358",
+     []
+    ],
+    "slot-fallback-content-005-ref.html": [
+     "23bfc2ca53e9d446206798b9d81dc8cbc824b286",
+     []
+    ],
+    "slot-fallback-content-006-ref.html": [
+     "85d53bf53bc687ea282b4713828215a297a65e6d",
+     []
+    ],
+    "slot-fallback-content-007-ref.html": [
+     "992b495273593b48ae1e43b82b248e951c8089c0",
+     []
+    ],
+    "slot-fallback-content-008-ref.html": [
+     "13a3d6b6c99230b4a4d619f04f42008dcca392ad",
+     []
+    ],
     "untriaged": {
      "README": [
       "5b7572bda4e2c2b2477a151345de3441265a8ca8",
@@ -389771,6 +389907,13 @@
       ],
       "auto-005.html": [
        "4a920ac806006524bea9f12f3e0d41ff4aa5d4dc",
+       [
+        null,
+        {}
+       ]
+      ],
+      "contain-intrinsic-size-028.html": [
+       "b65716142058a0b8aa2cd1139cb06cab2fcaa01a",
        [
         null,
         {}
