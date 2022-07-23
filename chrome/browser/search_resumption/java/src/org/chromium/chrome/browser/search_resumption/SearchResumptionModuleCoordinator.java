@@ -24,7 +24,7 @@ public class SearchResumptionModuleCoordinator {
             Profile profile, int moduleContainerStbuId) {
         OnSuggestionClickCallback callback = (gurl) -> {
             currentTab.loadUrl(new LoadUrlParams(gurl));
-            RecordUserAction.record(SearchResumptionModuleMediator.ACTION_CLICK);
+            RecordUserAction.record(SearchResumptionModuleUtils.ACTION_CLICK);
         };
         mTileBuilder = new SearchResumptionTileBuilder(callback);
         mMediator = new SearchResumptionModuleMediator(

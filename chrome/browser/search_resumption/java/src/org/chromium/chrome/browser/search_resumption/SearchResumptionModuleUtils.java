@@ -6,9 +6,13 @@ package org.chromium.chrome.browser.search_resumption;
 
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -19,14 +23,31 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeUnit;
 
 /**
  * This is a utility class for search resumption module.
  */
 public class SearchResumptionModuleUtils {
+    @IntDef({ModuleShowStatus.EXPANDED, ModuleShowStatus.COLLAPSED, ModuleShowStatus.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    // The ModuleShowStatus should be consistent with SearchResumptionModule.ModuleShowStatus in
+    // enums.xml.
+    public @interface ModuleShowStatus {
+        int EXPANDED = 0;
+        int COLLAPSED = 1;
+        int NUM_ENTRIES = 2;
+    }
+
     @VisibleForTesting
     static final String TAB_EXPIRATION_TIME_PARAM = "tab_expiration_time";
+    @VisibleForTesting
+    static final String UMA_MODULE_SHOW = "NewTabPage.SearchResumptionModule.Show";
+    static final String ACTION_CLICK = "SearchResumptionModule.NTP.Click";
+    static final String ACTION_COLLAPSE = "SearchResumptionModule.NTP.Collapse";
+    static final String ACTION_EXPAND = "SearchResumptionModule.NTP.Expand";
     static final String USE_NEW_SERVICE_PARAM = "use_new_service";
     private static final int LAST_TAB_EXPIRATION_TIME_SECONDS = 3600; // 1 Hour
 
@@ -109,5 +130,16 @@ public class SearchResumptionModuleUtils {
                 < ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                         ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
                         TAB_EXPIRATION_TIME_PARAM, LAST_TAB_EXPIRATION_TIME_SECONDS);
+    }
+
+    /**
+     * Records histogram when the search resumption module is shown.
+     */
+    static void recordModuleShown() {
+        boolean isCollapsed = SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP, false);
+        RecordHistogram.recordEnumeratedHistogram(UMA_MODULE_SHOW,
+                isCollapsed ? ModuleShowStatus.COLLAPSED : ModuleShowStatus.EXPANDED,
+                ModuleShowStatus.NUM_ENTRIES);
     }
 }

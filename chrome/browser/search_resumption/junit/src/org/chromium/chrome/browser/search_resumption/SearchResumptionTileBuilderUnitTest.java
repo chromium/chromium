@@ -20,7 +20,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
@@ -120,7 +119,6 @@ public class SearchResumptionTileBuilderUnitTest {
     private void createTileBuilder() {
         OnSuggestionClickCallback callback = (gUrl) -> {
             mTab.loadUrl(new LoadUrlParams(gUrl));
-            RecordUserAction.record(SearchResumptionModuleMediator.ACTION_CLICK);
         };
         mTileBuilder = new SearchResumptionTileBuilder(callback);
     }

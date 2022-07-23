@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewStub;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -33,8 +34,10 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
@@ -42,6 +45,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.On
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleUtils.ModuleShowStatus;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -124,6 +128,7 @@ public class SearchResumptionModuleMediatorUnitTest {
     @Mock
     private SigninManager mSignInManager;
 
+    private UserActionTester mActionTester;
     private SearchResumptionModuleMediator mMediator;
 
     @Before
@@ -152,6 +157,7 @@ public class SearchResumptionModuleMediatorUnitTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         doReturn(mSignInManager).when(mIdentityServicesProvider).getSigninManager(any());
 
+        mActionTester = new UserActionTester();
         mMediator =
                 new SearchResumptionModuleMediator(mParent, mTabToTrack, mProfile, mTileBuilder);
         verify(mAutocompleteController).addOnSuggestionsReceivedListener(mListener.capture());
@@ -171,6 +177,7 @@ public class SearchResumptionModuleMediatorUnitTest {
         IdentityServicesProvider.setInstanceForTests(null);
         ShadowChromeFeatureList.sEnableSearchResumptionModule = false;
         ShadowChromeFeatureList.sParamValues.clear();
+        mActionTester.tearDown();
     }
 
     @Test
@@ -181,6 +188,9 @@ public class SearchResumptionModuleMediatorUnitTest {
 
         mMediator.onSuggestionsReceived(mAutocompleteResult, "", true);
         verify(mParent, times(0)).inflate();
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SearchResumptionModuleUtils.UMA_MODULE_SHOW, ModuleShowStatus.EXPANDED));
     }
 
     @Test
@@ -193,6 +203,9 @@ public class SearchResumptionModuleMediatorUnitTest {
         mMediator.onSuggestionsReceived(mAutocompleteResult, "", true);
         verify(mParent, times(1)).inflate();
         Assert.assertEquals(View.VISIBLE, mSuggestionTilesContainerView.getVisibility());
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SearchResumptionModuleUtils.UMA_MODULE_SHOW, ModuleShowStatus.EXPANDED));
     }
 
     @Test
@@ -203,6 +216,9 @@ public class SearchResumptionModuleMediatorUnitTest {
 
         mMediator.onSuggestionsAvailable(texts, gUrls);
         verify(mParent, times(0)).inflate();
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SearchResumptionModuleUtils.UMA_MODULE_SHOW, ModuleShowStatus.EXPANDED));
     }
     @Test
     @MediumTest
@@ -213,6 +229,17 @@ public class SearchResumptionModuleMediatorUnitTest {
         mMediator.onSuggestionsAvailable(texts, gUrls);
         verify(mParent, times(1)).inflate();
         Assert.assertEquals(View.VISIBLE, mSuggestionTilesContainerView.getVisibility());
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SearchResumptionModuleUtils.UMA_MODULE_SHOW, ModuleShowStatus.EXPANDED));
+
+        mMediator.onExpandedOrCollapsed(true /* expand */);
+        Assert.assertTrue(
+                mActionTester.getActions().contains(SearchResumptionModuleUtils.ACTION_EXPAND));
+
+        mMediator.onExpandedOrCollapsed(false /* expand */);
+        Assert.assertTrue(
+                mActionTester.getActions().contains(SearchResumptionModuleUtils.ACTION_COLLAPSE));
     }
 
     @Test
@@ -235,7 +262,7 @@ public class SearchResumptionModuleMediatorUnitTest {
     }
 
     @Test
-    @MediumTest
+    @SmallTest
     public void testDestroy() {
         testShowModuleWithEnoughResults();
         mMediator.destroy();
