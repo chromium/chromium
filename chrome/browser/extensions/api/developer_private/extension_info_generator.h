@@ -64,6 +64,12 @@ class ExtensionInfoGenerator {
                             bool include_terminated,
                             ExtensionInfosCallback callback);
 
+  // Creates and synchronously returns a RuntimeHostPermissions object with the
+  // given extension's host permissions.
+  static api::developer_private::RuntimeHostPermissions
+  CreateRuntimeHostPermissionsInfo(content::BrowserContext* browser_context,
+                                   const Extension& extension);
+
  private:
   // Creates an ExtensionInfo for the given |extension| and |state|, and
   // asynchronously adds it to the |list|.

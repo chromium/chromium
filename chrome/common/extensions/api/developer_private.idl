@@ -380,12 +380,26 @@ namespace developerPrivate {
   };
 
   dictionary SiteInfo {
-    UserSiteSet siteList;
+    // The user specified site list that `site` belongs to, if any.
+    UserSiteSet? siteList;
+    // The number of extensions with access to `site`.
+    // TODO(crbug.com/1331137): A tricky edge case is when one extension
+    // specifies something like *.foo.com and another specifies foo.com.
+    // Patterns which match all subdomains should be represented differently.
+    long numExtensions;
+    // The site itself. This could either be a user specified site or an
+    // extension host permission pattern.
     DOMString site;
   };
 
   dictionary SiteGroup {
+    // The common effective top level domain plus one (eTLD+1) for all sites in
+    // `sites`.
     DOMString etldPlusOne;
+    // The number of extensions that can run on at least one site inside `sites`
+    // for this eTLD+1.
+    long numExtensions;
+    // The list of user or extension specified sites that share the same eTLD+1.
     SiteInfo[] sites;
   };
 
@@ -761,7 +775,6 @@ namespace developerPrivate {
 
     // Returns all hosts specified by user site settings, grouped by each host's
     // eTLD+1.
-    // TODO(crbug.com/1331137): Get extension specified sites as well.
     [supportsPromises] static void getUserAndExtensionSitesByEtld(
         optional UserAndExtensionSitesByEtldCallback callback);
 

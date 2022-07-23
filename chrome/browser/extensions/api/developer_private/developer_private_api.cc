@@ -283,11 +283,15 @@ std::string GetETldPlusOne(const GURL& site) {
   return etld_plus_one.empty() ? site.spec() : etld_plus_one;
 }
 
-developer::SiteInfo CreateSiteInfo(const std::string& site,
-                                   developer::UserSiteSet site_set) {
+developer::SiteInfo CreateSiteInfo(
+    const std::string& site,
+    absl::optional<developer::UserSiteSet> site_set) {
   developer::SiteInfo site_info;
   site_info.site = site;
-  site_info.site_list = site_set;
+  if (site_set.has_value())
+    site_info.site_list = *site_set;
+  else
+    site_info.num_extensions = 1;
   return site_info;
 }
 
@@ -296,11 +300,82 @@ void AddSiteToSiteGroups(
     std::map<std::string, developer::SiteGroup>* site_groups,
     const std::string& site,
     const std::string& etld_plus_one,
-    developer::UserSiteSet site_set) {
+    absl::optional<developer::UserSiteSet> site_set) {
   auto [it, inserted] = site_groups->try_emplace(etld_plus_one);
-  if (inserted)
+  if (inserted) {
     it->second.etld_plus_one = etld_plus_one;
-  it->second.sites.push_back(CreateSiteInfo(site, site_set));
+    it->second.sites.push_back(CreateSiteInfo(site, site_set));
+  } else {
+    auto site_info = std::find_if(
+        it->second.sites.begin(), it->second.sites.end(),
+        [site](const developer::SiteInfo& info) { return info.site == site; });
+
+    if (site_info == it->second.sites.end())
+      it->second.sites.push_back(CreateSiteInfo(site, site_set));
+    else
+      site_info->num_extensions++;
+  }
+}
+
+// Adds an extension's granted host permissions to `site_groups`,
+void ProcessSitesForRuntimeHostPermissions(
+    std::map<std::string, developer::SiteGroup>* site_groups,
+    const URLPatternSet& user_specified_sites,
+    const developer::RuntimeHostPermissions& permissions) {
+  // Track the set of eTLD+1s covered by the extension's granted host
+  // permissions.
+  std::set<std::string> etld_plus_ones;
+  for (const auto& host : permissions.hosts) {
+    // Convert the host permission pattern back to a URLPattern so it can
+    // be easily modified for comparing against user specified sites and for
+    // fetching the eTLD+1.
+    URLPattern pattern(Extension::kValidHostPermissionSchemes, host.host);
+    pattern.SetPath("");
+
+    // Ignore patterns that are empty, are not granted, or match with user
+    // specified sites.
+    if (pattern.host().empty() || !host.granted ||
+        user_specified_sites.ContainsPattern(pattern)) {
+      continue;
+    }
+
+    pattern.SetMatchSubdomains(false);
+    pattern.SetScheme("http");
+
+    std::string etld_plus_one = GetETldPlusOne(GURL(pattern.GetAsString()));
+    etld_plus_ones.insert(etld_plus_one);
+    AddSiteToSiteGroups(site_groups, host.host, etld_plus_one, absl::nullopt);
+  }
+
+  // Increment the extension count for each eTLD+1 covered by this extension's
+  // host permissions.
+  for (const auto& etld_plus_one : etld_plus_ones)
+    (*site_groups)[etld_plus_one].num_extensions++;
+}
+
+// Updates numExtensions counts in `site_groups` for `extension`. Note that this
+// should only be called for extensions with effective all hosts access.
+void UpdateSiteGroupCountsForExtension(
+    std::map<std::string, developer::SiteGroup>* site_groups,
+    const Extension* extension) {
+  const URLPatternSet extension_patterns =
+      extension->permissions_data()->GetEffectiveHostPermissions();
+  for (auto& entry : *site_groups) {
+    bool can_run_on_site_group = false;
+    for (developer::SiteInfo& site_info : entry.second.sites) {
+      if (site_info.site_list)
+        continue;
+
+      URLPattern pattern(Extension::kValidHostPermissionSchemes,
+                         site_info.site);
+      if (extension_patterns.ContainsPattern(pattern)) {
+        can_run_on_site_group = true;
+        site_info.num_extensions++;
+      }
+    }
+    if (can_run_on_site_group)
+      entry.second.num_extensions++;
+  }
 }
 
 }  // namespace
@@ -2265,22 +2340,76 @@ DeveloperPrivateGetUserAndExtensionSitesByEtldFunction::Run() {
   std::map<std::string, developer::SiteGroup> site_groups;
   const PermissionsManager::UserPermissionsSettings& settings =
       PermissionsManager::Get(browser_context())->GetUserPermissionsSettings();
+  URLPatternSet user_specified_sites;
   for (const url::Origin& site : settings.permitted_sites) {
+    user_specified_sites.AddOrigin(Extension::kValidHostPermissionSchemes,
+                                   site.GetURL());
     AddSiteToSiteGroups(&site_groups, site.Serialize(),
                         GetETldPlusOne(site.GetURL()),
                         developer::USER_SITE_SET_PERMITTED);
   }
 
   for (const url::Origin& site : settings.restricted_sites) {
+    user_specified_sites.AddOrigin(Extension::kValidHostPermissionSchemes,
+                                   site.GetURL());
     AddSiteToSiteGroups(&site_groups, site.Serialize(),
                         GetETldPlusOne(site.GetURL()),
                         developer::USER_SITE_SET_RESTRICTED);
   }
 
+  std::vector<const Extension*> extensions_with_all_hosts;
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
+
+  // Note: we are only counting enabled extensions as the returned extension
+  // counts will reflect how many extensions can actually run on each site at
+  // the current moment.
+  for (const auto& extension : registry->enabled_extensions()) {
+    // TODO(crbug.com/1331137): Some extensions can access certain sites even if
+    // the user cannot modify their permissions. These also need to be added to
+    // another list so the frontend knows that their site access cannot be
+    // modified.
+    if (!ui_util::ShouldDisplayInExtensionSettings(*extension) ||
+        !ScriptingPermissionsModifier(browser_context(), extension)
+             .CanAffectExtension()) {
+      continue;
+    }
+
+    developer::RuntimeHostPermissions permissions =
+        ExtensionInfoGenerator::CreateRuntimeHostPermissionsInfo(
+            browser_context(), *extension);
+
+    bool has_specific_hosts =
+        (!permissions.has_all_hosts &&
+         permissions.host_access == developer::HOST_ACCESS_ON_ALL_SITES) ||
+        permissions.host_access == developer::HOST_ACCESS_ON_SPECIFIC_SITES;
+
+    if (permissions.host_access == developer::HOST_ACCESS_ON_ALL_SITES &&
+        permissions.has_all_hosts) {
+      extensions_with_all_hosts.push_back(extension.get());
+    } else if (has_specific_hosts) {
+      ProcessSitesForRuntimeHostPermissions(&site_groups, user_specified_sites,
+                                            permissions);
+    }
+  }
+
+  // Specifying a "broad enough" host permission like "*://*.com/*" makes an
+  // extension "match all hosts". However, the extension does not truly have
+  // access to all sites, hence we iterate over all populated sites in
+  // `site_groups` and update the count for the extension for each site that it
+  // has access to.
+  for (const Extension* extension : extensions_with_all_hosts)
+    UpdateSiteGroupCountsForExtension(&site_groups, extension);
+
   std::vector<developer::SiteGroup> site_group_list;
   site_group_list.reserve(site_groups.size());
-  for (auto& entry : site_groups)
+  for (auto& entry : site_groups) {
+    // Sort the sites in each SiteGroup in ascending order by site.
+    std::sort(entry.second.sites.begin(), entry.second.sites.end(),
+              [](const developer::SiteInfo& a, const developer::SiteInfo& b) {
+                return b.site > a.site;
+              });
     site_group_list.push_back(std::move(entry.second));
+  }
 
   return RespondNow(
       ArgumentList(developer::GetUserAndExtensionSitesByEtld::Results::Create(

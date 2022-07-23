@@ -452,7 +452,8 @@ chrome.developerPrivate.UserSiteSettings;
 
 /**
  * @typedef {{
- *   siteList: !chrome.developerPrivate.UserSiteSet,
+ *   siteList: (!chrome.developerPrivate.UserSiteSet|undefined),
+ *   numExtensions: number,
  *   site: string
  * }}
  */
@@ -461,6 +462,7 @@ chrome.developerPrivate.SiteInfo;
 /**
  * @typedef {{
  *   etldPlusOne: string,
+ *   numExtensions: number,
  *   sites: !Array<!chrome.developerPrivate.SiteInfo>
  * }}
  */
@@ -845,7 +847,7 @@ chrome.developerPrivate.removeUserSpecifiedSites = function(options, callback) {
 
 /**
  * Returns all hosts specified by user site settings, grouped by each host's
- * eTLD+1. TODO(crbug.com/1331137): Get extension specified sites as well.
+ * eTLD+1.
  * @param {function(!Array<!chrome.developerPrivate.SiteGroup>): void=} callback
  */
 chrome.developerPrivate.getUserAndExtensionSitesByEtld = function(callback) {};

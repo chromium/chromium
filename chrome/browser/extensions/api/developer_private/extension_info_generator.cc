@@ -360,45 +360,10 @@ void AddPermissionsInfo(content::BrowserContext* browser_context,
                                             extension.GetType()));
   permissions->simple_permissions = get_permission_messages(api_messages);
 
-  auto runtime_host_permissions =
-      std::make_unique<developer::RuntimeHostPermissions>();
-
-  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser_context);
-  // "Effective" granted permissions are stored in different prefs, based on
-  // whether host permissions are withheld.
-  // TODO(devlin): Create a common helper method to retrieve granted prefs based
-  // on whether host permissions are withheld?
-  std::unique_ptr<const PermissionSet> granted_permissions;
-  // Add the host access data, including the mode and any runtime-granted
-  // hosts.
-  if (!permissions_modifier.HasWithheldHostPermissions()) {
-    granted_permissions =
-        extension_prefs->GetGrantedPermissions(extension.id());
-    runtime_host_permissions->host_access = developer::HOST_ACCESS_ON_ALL_SITES;
-  } else {
-    granted_permissions =
-        extension_prefs->GetRuntimeGrantedPermissions(extension.id());
-    if (granted_permissions->effective_hosts().is_empty()) {
-      runtime_host_permissions->host_access = developer::HOST_ACCESS_ON_CLICK;
-    } else if (granted_permissions->ShouldWarnAllHosts(false)) {
-      runtime_host_permissions->host_access =
-          developer::HOST_ACCESS_ON_ALL_SITES;
-    } else {
-      runtime_host_permissions->host_access =
-          developer::HOST_ACCESS_ON_SPECIFIC_SITES;
-    }
-  }
-
-  runtime_host_permissions->hosts = GetSpecificSiteControls(
-      *granted_permissions,
-      extension.permissions_data()->withheld_permissions());
-  constexpr bool kIncludeApiPermissions = false;
-  runtime_host_permissions->has_all_hosts =
-      extension.permissions_data()->withheld_permissions().ShouldWarnAllHosts(
-          kIncludeApiPermissions) ||
-      granted_permissions->ShouldWarnAllHosts(kIncludeApiPermissions);
-
-  permissions->runtime_host_permissions = std::move(runtime_host_permissions);
+  permissions->runtime_host_permissions =
+      std::make_unique<developer::RuntimeHostPermissions>(
+          ExtensionInfoGenerator::CreateRuntimeHostPermissionsInfo(
+              browser_context, extension));
 }
 
 }  // namespace
@@ -487,6 +452,51 @@ void ExtensionInfoGenerator::CreateExtensionsInfo(
   } else {
     callback_ = std::move(callback);
   }
+}
+
+developer::RuntimeHostPermissions
+ExtensionInfoGenerator::CreateRuntimeHostPermissionsInfo(
+    content::BrowserContext* browser_context,
+    const Extension& extension) {
+  ScriptingPermissionsModifier permissions_modifier(
+      browser_context, base::WrapRefCounted(&extension));
+  developer::RuntimeHostPermissions runtime_host_permissions;
+
+  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser_context);
+  // "Effective" granted permissions are stored in different prefs, based on
+  // whether host permissions are withheld.
+  // TODO(devlin): Create a common helper method to retrieve granted prefs based
+  // on whether host permissions are withheld?
+  std::unique_ptr<const PermissionSet> granted_permissions;
+  // Add the host access data, including the mode and any runtime-granted
+  // hosts.
+  if (!permissions_modifier.HasWithheldHostPermissions()) {
+    granted_permissions =
+        extension_prefs->GetGrantedPermissions(extension.id());
+    runtime_host_permissions.host_access = developer::HOST_ACCESS_ON_ALL_SITES;
+  } else {
+    granted_permissions =
+        extension_prefs->GetRuntimeGrantedPermissions(extension.id());
+    if (granted_permissions->effective_hosts().is_empty()) {
+      runtime_host_permissions.host_access = developer::HOST_ACCESS_ON_CLICK;
+    } else if (granted_permissions->ShouldWarnAllHosts(false)) {
+      runtime_host_permissions.host_access =
+          developer::HOST_ACCESS_ON_ALL_SITES;
+    } else {
+      runtime_host_permissions.host_access =
+          developer::HOST_ACCESS_ON_SPECIFIC_SITES;
+    }
+  }
+
+  runtime_host_permissions.hosts = GetSpecificSiteControls(
+      *granted_permissions,
+      extension.permissions_data()->withheld_permissions());
+  constexpr bool kIncludeApiPermissions = false;
+  runtime_host_permissions.has_all_hosts =
+      extension.permissions_data()->withheld_permissions().ShouldWarnAllHosts(
+          kIncludeApiPermissions) ||
+      granted_permissions->ShouldWarnAllHosts(kIncludeApiPermissions);
+  return runtime_host_permissions;
 }
 
 void ExtensionInfoGenerator::CreateExtensionInfoHelper(
