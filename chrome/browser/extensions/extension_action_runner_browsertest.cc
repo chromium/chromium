@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
@@ -27,8 +28,10 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "extensions/browser/extension_action.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,6 +41,7 @@ namespace extensions {
 namespace {
 
 using SiteAccess = SitePermissionsHelper::SiteAccess;
+using UserSiteSetting = PermissionsManager::UserSiteSetting;
 
 const char kAllHostsScheme[] = "*://*/*";
 const char kExplicitHostsScheme[] = "http://127.0.0.1/*";
@@ -74,20 +78,18 @@ bool RunAllPendingInRenderer(content::WebContents* web_contents) {
   return content::ExecuteScript(web_contents, "1 == 1;");
 }
 
-// For use with blocked actions browsertests that put the result in
-// window.localStorage. Returns whether the extension injected a script.
+// Returns whether the extension injected a script by checking the document
+// title.
 bool DidInjectScript(content::WebContents* web_contents) {
-  std::string out;
-  bool exec = content::ExecuteScriptAndExtractString(
-      web_contents,
-      "var res = window.localStorage.getItem('extResult') || 'undefined';"
-      "window.localStorage.removeItem('extResult');"
-      "window.domAutomationController.send(res);",
-      &out);
-  EXPECT_TRUE(exec);
-  EXPECT_TRUE(out == "success" || out == "undefined")
-      << "Unexpected script value: " << out;
-  return out == "success";
+  const std::u16string& title = web_contents->GetTitle();
+  if (title == u"success")
+    return true;
+  // The original page title is "OK"; this indicates the script didn't
+  // inject.
+  if (title == u"OK")
+    return false;
+  ADD_FAILURE() << "Unexpected page title found: " << title;
+  return false;
 }
 
 }  // namespace
@@ -679,6 +681,242 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerFencedFrameBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(0, action_runner->num_page_requests());
   EXPECT_EQ(0U, action_runner->pending_scripts_.size());
+}
+
+class ExtensionActionRunnerWithUserHostControlsBrowserTest
+    : public ExtensionActionRunnerBrowserTest {
+ public:
+  ExtensionActionRunnerWithUserHostControlsBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionsMenuAccessControl);
+  }
+  ~ExtensionActionRunnerWithUserHostControlsBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ExtensionActionRunnerBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    permissions_manager_ = PermissionsManager::Get(browser()->profile());
+    ASSERT_TRUE(permissions_manager_);
+  }
+
+  void HandleUserSiteSettingModified(const ExtensionId& extension_id,
+                                     const url::Origin url_origin,
+                                     UserSiteSetting user_site_setting,
+                                     bool accept_bubble) {
+    ExtensionActionRunner* runner =
+        ExtensionActionRunner::GetForWebContents(web_contents());
+    ASSERT_TRUE(runner);
+    runner->accept_bubble_for_testing(accept_bubble);
+
+    if (accept_bubble) {
+      PermissionsManagerWaiter waiter(
+          extensions::PermissionsManager::Get(profile()));
+      runner->HandleUserSiteSettingModified({extension_id}, url_origin,
+                                            user_site_setting);
+      waiter.WaitForUserPermissionsSettingsChange();
+
+      // Wait for page reload.
+      EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+    } else {
+      runner->HandleUserSiteSettingModified({extension_id}, url_origin,
+                                            user_site_setting);
+      // Make sure we tried to modified user site settings by verifying waiting
+      // for the task to be posted.
+      base::RunLoop().RunUntilIdle();
+      EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+    }
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+  PermissionsManager* permissions_manager() { return permissions_manager_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  PermissionsManager* permissions_manager_;
+};
+
+// Tests changing user site settings when the extension has site access (which
+// is either 'on all sites' or 'on site'). Note that we don't check if extension
+// `WantsToRun` because on user-restricted sites, actions are blocked rather
+// than withheld.
+IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerWithUserHostControlsBrowserTest,
+                       HandleUserSiteSettingModified_ExtensionHasAccess) {
+  // Load an extension that wants to run on every page at document start.
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("blocked_actions/content_scripts"));
+  ASSERT_TRUE(extension);
+
+  // Navigate to a page where the extension can run.
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+  const url::Origin url_origin = url::Origin::Create(url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // By default, the page should have "customize by extension" user site
+  // setting and the extensions should have "on all sites" site access. The
+  // extension should have injected.
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kCustomizeByExtension);
+  EXPECT_EQ(SitePermissionsHelper(profile()).GetSiteAccess(*extension, url),
+            SiteAccess::kOnAllSites);
+  EXPECT_TRUE(DidInjectScript(web_contents()));
+
+  // "customize by extension (on site) -> "grant all extensions":
+  // maintains current site access and keeps the script injected. No refresh is
+  // required.
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kGrantAllExtensions, false);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kGrantAllExtensions);
+  EXPECT_TRUE(DidInjectScript(web_contents()));
+
+  // "grant all extensions" -> "block all extensions":
+  // not accepting the page reload bubble maintains the same user site
+  // setting and keeps the script injected.
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kBlockAllExtensions, false);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kGrantAllExtensions);
+  EXPECT_TRUE(DidInjectScript(web_contents()));
+
+  // "grant all extensions" -> "block all extensions":
+  // accepting the page reload bubble revokes site access, refreshes the page
+  // and does not inject the script. (Note: we will accept all the next reload
+  // page bubbles since we previously checked the behavior of not accepting the
+  // dialog).
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kBlockAllExtensions, true);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kBlockAllExtensions);
+  EXPECT_FALSE(DidInjectScript(web_contents()));
+
+  // "block all extensions" -> "customize by extension (on site)":
+  // grants site access, refreshes the page and injects the script.
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kCustomizeByExtension, true);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kCustomizeByExtension);
+  EXPECT_TRUE(DidInjectScript(web_contents()));
+
+  // "customize by extension (on site)" -> "block all extensions":
+  // revokes site access, refreshes the page and does not inject
+  // the script.
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kBlockAllExtensions, true);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kBlockAllExtensions);
+  EXPECT_FALSE(DidInjectScript(web_contents()));
+
+  // "block all extensions" -> "grant all extensions":
+  // grants site access, refreshes the page and injects the script.
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kGrantAllExtensions, true);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kGrantAllExtensions);
+  EXPECT_TRUE(DidInjectScript(web_contents()));
+
+  // "grant all extensions" -> "customize by extension (on site)":
+  // maintains current site access and keeps the script injected. No refresh is
+  // required.
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kCustomizeByExtension, false);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kCustomizeByExtension);
+  EXPECT_TRUE(DidInjectScript(web_contents()));
+}
+
+// Tests changing user site settings when the extension does not have site
+// access ('on click'). Note that we don't check if extension
+// `WantsToRun` because on user-restricted sites, actions are blocked rather
+// than withheld.
+IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerWithUserHostControlsBrowserTest,
+                       HandleUserSiteSettingModified_ExtensionHasNoAccess) {
+  // Load an extension that wants to run on every page at document start.
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("blocked_actions/content_scripts"));
+  ASSERT_TRUE(extension);
+
+  // Withheld extension's host permission, so extension has "on click" site
+  // access.
+  ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  // Navigate to a page where the extension wants to run.
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+  const url::Origin url_origin = url::Origin::Create(url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // The page should have "customize by extension" user site setting and "on
+  // click" site access. The extension should not have injected.
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kCustomizeByExtension);
+  EXPECT_EQ(SitePermissionsHelper(profile()).GetSiteAccess(*extension, url),
+            SiteAccess::kOnClick);
+  EXPECT_FALSE(DidInjectScript(web_contents()));
+
+  // "customize by extension (on click) -> "grant all extensions":
+  // grants site access, refreshes the page and injects the script.
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kGrantAllExtensions, true);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kGrantAllExtensions);
+  EXPECT_TRUE(DidInjectScript(web_contents()));
+
+  // "grant all extensions" -> "block all extensions":
+  // not accepting the page reload bubble maintains the same user site
+  // setting and keeps the script injected.
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kBlockAllExtensions, false);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kGrantAllExtensions);
+  EXPECT_TRUE(DidInjectScript(web_contents()));
+
+  // "grant all extensions" -> "block all extensions":
+  // accepting the page reload bubble revokes site access, refreshes the page
+  // and does not inject the script. (Note: we will accept all the next reload
+  // page bubbles since we previously checked the behavior of not accepting the
+  // dialog).
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kBlockAllExtensions, true);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kBlockAllExtensions);
+  EXPECT_FALSE(DidInjectScript(web_contents()));
+
+  // "block all extensions" -> "customize by extension (on click)":
+  // maintains current site access, refreshes the page and still does not inject
+  // the script.
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kCustomizeByExtension, true);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kCustomizeByExtension);
+  EXPECT_FALSE(DidInjectScript(web_contents()));
+
+  // "customize by extension (on click)" -> "block all extensions":
+  // maintains current site access, refreshes the page and still does not inject
+  // the script.
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kBlockAllExtensions, true);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kBlockAllExtensions);
+  EXPECT_FALSE(DidInjectScript(web_contents()));
+
+  // "block all extensions" -> "grant all extensions":
+  // grants site access, refreshes the page and injects the script.
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kGrantAllExtensions, true);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kGrantAllExtensions);
+  EXPECT_TRUE(DidInjectScript(web_contents()));
+
+  // "grant all extensions" -> "customize by extension (on click)":
+  // revokes site access, refreshes tha page and does not inject the script.
+  HandleUserSiteSettingModified(extension->id(), url_origin,
+                                UserSiteSetting::kCustomizeByExtension, true);
+  EXPECT_EQ(permissions_manager()->GetUserSiteSetting(url_origin),
+            UserSiteSetting::kCustomizeByExtension);
+  EXPECT_FALSE(DidInjectScript(web_contents()));
 }
 
 }  // namespace extensions

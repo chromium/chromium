@@ -4,6 +4,12 @@
 
 // If the script was really injected at document_start, then document.body will
 // be null. If it's not null, then we didn't inject at document_start.
-// Store the result in window.localStorage so that it's accessible from the
-// main world script context in the browsertest.
-window.localStorage.setItem('extResult', document.body ? 'failure' : 'success');
+var isDocumentStart = !document.body;
+
+// Set the title of the document to the success state (so that it's easily
+// readable from the C++ side). Of course, since this is (hopefully!)
+// document start, we need to wait for the page to load before setting
+// it. That's fine; we calculated the success value at the right moment.
+window.onload = () => {
+  document.title = isDocumentStart ? 'success' : 'failure';
+};
