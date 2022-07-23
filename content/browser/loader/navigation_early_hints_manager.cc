@@ -31,6 +31,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -552,6 +553,8 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
       static_cast<int>(blink::mojom::ResourceType::kSubResource);
   request.mode = CalculateRequestMode(link);
   request.credentials_mode = CalculateCredentialsMode(link);
+
+  blink::network_utils::SetAcceptHeader(request.headers, request.destination);
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       CreateContentBrowserURLLoaderThrottles(

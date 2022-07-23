@@ -17,6 +17,8 @@
 #include "content/public/test/test_storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -175,6 +177,14 @@ TEST_F(NavigationEarlyHintsManagerTest, SimpleResponse) {
   status.error_code = net::OK;
   loader_factory().AddResponse(GURL(kPreloadPath), std::move(head),
                                kPreloadBody, status);
+
+  loader_factory().SetInterceptor(base::BindLambdaForTesting(
+      [&](const network::ResourceRequest& resource_request) {
+        std::string accept_value;
+        ASSERT_TRUE(resource_request.headers.GetHeader(
+            net::HttpRequestHeaders::kAccept, &accept_value));
+        EXPECT_EQ(accept_value, network::kDefaultAcceptHeaderValue);
+      }));
 
   early_hints_manager().HandleEarlyHints(CreateEarlyHintWithPreload(),
                                          CreateNavigationResourceRequest());
