@@ -528,14 +528,14 @@ uint16_t GetPort(const HostResolver::Host& host) {
   return absl::get<HostPortPair>(host).port();
 }
 
-// Only use scheme/port in JobKey if `features::kUseDnsHttpsSvcb` is enabled
+// Only use scheme/port in JobKey if `https_svcb_options_enabled` is true
 // (or the query is explicitly for HTTPS). Otherwise DNS will not give different
 // results for the same hostname.
 absl::variant<url::SchemeHostPort, std::string> CreateHostForJobKey(
     const HostResolver::Host& input,
-    DnsQueryType query_type) {
-  if ((base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb) ||
-       query_type == DnsQueryType::HTTPS) &&
+    DnsQueryType query_type,
+    bool https_svcb_options_enabled) {
+  if ((https_svcb_options_enabled || query_type == DnsQueryType::HTTPS) &&
       absl::holds_alternative<url::SchemeHostPort>(input)) {
     return absl::get<url::SchemeHostPort>(input);
   }
@@ -615,7 +615,7 @@ class HostResolverManager::RequestImpl
         request_host_(std::move(request_host)),
         network_isolation_key_(
             base::FeatureList::IsEnabled(
-                net::features::kSplitHostCacheByNetworkIsolationKey)
+                features::kSplitHostCacheByNetworkIsolationKey)
                 ? std::move(network_isolation_key)
                 : NetworkIsolationKey()),
         parameters_(optional_parameters ? std::move(optional_parameters).value()
@@ -1258,7 +1258,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
           Delegate* delegate,
           const NetLogWithSource& job_net_log,
           const base::TickClock* tick_clock,
-          bool fallback_available)
+          bool fallback_available,
+          const HostResolver::HttpsSvcbOptions& https_svcb_options)
       : client_(client),
         host_(std::move(host)),
         resolve_context_(resolve_context->AsSafeRef()),
@@ -1268,7 +1269,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         net_log_(job_net_log),
         tick_clock_(tick_clock),
         task_start_time_(tick_clock_->NowTicks()),
-        fallback_available_(fallback_available) {
+        fallback_available_(fallback_available),
+        https_svcb_options_(https_svcb_options) {
     DCHECK(client_);
     DCHECK(delegate_);
 
@@ -1404,7 +1406,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       return types;
 
     if (types.Has(DnsQueryType::HTTPS)) {
-      if (!secure_ && (!features::kUseDnsHttpsSvcbEnableInsecure.Get() ||
+      if (!secure_ && (!https_svcb_options_.enable_insecure ||
                        !client_->CanQueryAdditionalTypesViaInsecureDns())) {
         types.Remove(DnsQueryType::HTTPS);
       } else {
@@ -1951,24 +1953,22 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     base::TimeDelta timeout_min;
 
     if (AnyOfTypeTransactionsRemain({DnsQueryType::HTTPS})) {
-      DCHECK(base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb));
+      DCHECK(https_svcb_options_.enable);
 
       if (secure_) {
-        timeout_max = features::kUseDnsHttpsSvcbSecureExtraTimeMax.Get();
-        extra_time_percent =
-            features::kUseDnsHttpsSvcbSecureExtraTimePercent.Get();
-        timeout_min = features::kUseDnsHttpsSvcbSecureExtraTimeMin.Get();
+        timeout_max = https_svcb_options_.secure_extra_time_max;
+        extra_time_percent = https_svcb_options_.secure_extra_time_percent;
+        timeout_min = https_svcb_options_.secure_extra_time_min;
       } else {
-        timeout_max = features::kUseDnsHttpsSvcbInsecureExtraTimeMax.Get();
-        extra_time_percent =
-            features::kUseDnsHttpsSvcbInsecureExtraTimePercent.Get();
-        timeout_min = features::kUseDnsHttpsSvcbInsecureExtraTimeMin.Get();
+        timeout_max = https_svcb_options_.insecure_extra_time_max;
+        extra_time_percent = https_svcb_options_.insecure_extra_time_percent;
+        timeout_min = https_svcb_options_.insecure_extra_time_min;
       }
 
       if (timeout_max.is_zero() && extra_time_percent == 0 &&
           timeout_min.is_zero()) {
-        timeout_max = features::kUseDnsHttpsSvcbExtraTimeAbsolute.Get();
-        extra_time_percent = features::kUseDnsHttpsSvcbExtraTimePercent.Get();
+        timeout_max = https_svcb_options_.extra_time_absolute;
+        extra_time_percent = https_svcb_options_.extra_time_percent;
       }
 
       // Skip timeout for secure requests if the timeout would be a fatal
@@ -2103,6 +2103,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   // task completes unsuccessfully. Used as a signal that underlying
   // transactions should timeout more quickly.
   bool fallback_available_;
+
+  const HostResolver::HttpsSvcbOptions https_svcb_options_;
 };
 
 //-----------------------------------------------------------------------------
@@ -2175,7 +2177,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       RequestPriority priority,
       scoped_refptr<base::TaskRunner> proc_task_runner,
       const NetLogWithSource& source_net_log,
-      const base::TickClock* tick_clock)
+      const base::TickClock* tick_clock,
+      const HostResolver::HttpsSvcbOptions& https_svcb_options)
       : resolver_(resolver),
         key_(std::move(key)),
         cache_usage_(cache_usage),
@@ -2184,6 +2187,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
         priority_tracker_(priority),
         proc_task_runner_(std::move(proc_task_runner)),
         tick_clock_(tick_clock),
+        https_svcb_options_(https_svcb_options),
         net_log_(
             NetLogWithSource::Make(source_net_log.net_log(),
                                    NetLogSourceType::HOST_RESOLVER_IMPL_JOB)) {
@@ -2671,7 +2675,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     dns_task_ = std::make_unique<DnsTask>(
         resolver_->dns_client_.get(), key_.host, key_.query_types,
         &*key_.resolve_context, secure, key_.secure_dns_mode, this, net_log_,
-        tick_clock_, !tasks_.empty() /* fallback_available */);
+        tick_clock_, !tasks_.empty() /* fallback_available */,
+        https_svcb_options_);
     dns_task_->StartNextTransaction();
     // Schedule a second transaction, if needed. DoH queries can bypass the
     // dispatcher and start all of their transactions immediately.
@@ -3072,6 +3077,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   raw_ptr<const base::TickClock> tick_clock_;
   base::TimeTicks start_time_;
 
+  HostResolver::HttpsSvcbOptions https_svcb_options_;
+
   NetLogWithSource net_log_;
 
   // Resolves the host using a HostResolverProc.
@@ -3120,7 +3127,11 @@ HostResolverManager::HostResolverManager(
       system_dns_config_notifier_(system_dns_config_notifier),
       target_network_(target_network),
       check_ipv6_on_wifi_(options.check_ipv6_on_wifi),
-      tick_clock_(base::DefaultTickClock::GetInstance()) {
+      tick_clock_(base::DefaultTickClock::GetInstance()),
+      https_svcb_options_(
+          options.https_svcb_options
+              ? *options.https_svcb_options
+              : HostResolver::HttpsSvcbOptions::FromFeatures()) {
   PrioritizedDispatcher::Limits job_limits = GetDispatcherLimits(options);
   dispatcher_ = std::make_unique<PrioritizedDispatcher>(job_limits);
   max_queued_jobs_ = job_limits.total_jobs * 100u;
@@ -3412,7 +3423,8 @@ int HostResolverManager::Resolve(RequestImpl* request) {
   const auto& parameters = request->parameters();
   JobKey job_key(request->resolve_context());
   job_key.host =
-      CreateHostForJobKey(request->request_host(), parameters.dns_query_type);
+      CreateHostForJobKey(request->request_host(), parameters.dns_query_type,
+                          https_svcb_options_.enable);
   job_key.network_isolation_key = request->network_isolation_key();
   job_key.source = parameters.source;
 
@@ -3580,10 +3592,10 @@ HostResolverManager::Job* HostResolverManager::AddJobWithoutRequest(
     std::deque<TaskType> tasks,
     RequestPriority priority,
     const NetLogWithSource& source_net_log) {
-  auto new_job =
-      std::make_unique<Job>(weak_ptr_factory_.GetWeakPtr(), key, cache_usage,
-                            host_cache, std::move(tasks), priority,
-                            proc_task_runner_, source_net_log, tick_clock_);
+  auto new_job = std::make_unique<Job>(
+      weak_ptr_factory_.GetWeakPtr(), key, cache_usage, host_cache,
+      std::move(tasks), priority, proc_task_runner_, source_net_log,
+      tick_clock_, https_svcb_options_);
   auto insert_result = jobs_.emplace(std::move(key), std::move(new_job));
   auto& iterator = insert_result.first;
   bool is_new = insert_result.second;
@@ -4047,9 +4059,9 @@ void HostResolverManager::GetEffectiveParametersForRequest(
   // Optimistically enable feature-controlled queries. These queries may be
   // skipped at a later point.
 
-  // `features::kUseDnsHttpsSvcb` has precedence, so if enabled, ignore any
+  // `https_svcb_options_.enable` has precedence, so if enabled, ignore any
   // other related features.
-  if (base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb)) {
+  if (https_svcb_options_.enable) {
     static const char* const kSchemesForHttpsQuery[] = {
         url::kHttpScheme, url::kHttpsScheme, url::kWsScheme, url::kWssScheme};
     if (base::Contains(kSchemesForHttpsQuery, GetScheme(host)))

@@ -15,8 +15,10 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time_delta_from_string.h"
 #include "base/values.h"
 #include "net/base/address_list.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_client.h"
@@ -36,6 +38,21 @@
 namespace net {
 
 namespace {
+
+// The experiment settings of features::kUseDnsHttpsSvcb. See the comments in
+// net/base/features.h for more details.
+const char kUseDnsHttpsSvcbEnable[] = "enable";
+const char kUseDnsHttpsSvcbEnableInsecure[] = "enable_insecure";
+const char kUseDnsHttpsSvcbInsecureExtraTimeMax[] = "insecure_extra_time_max";
+const char kUseDnsHttpsSvcbInsecureExtraTimePercent[] =
+    "insecure_extra_time_percent";
+const char kUseDnsHttpsSvcbInsecureExtraTimeMin[] = "insecure_extra_time_min";
+const char kUseDnsHttpsSvcbSecureExtraTimeMax[] = "secure_extra_time_max";
+const char kUseDnsHttpsSvcbSecureExtraTimePercent[] =
+    "secure_extra_time_percent";
+const char kUseDnsHttpsSvcbSecureExtraTimeMin[] = "secure_extra_time_min";
+const char kUseDnsHttpsSvcbExtraTimeAbsolute[] = "extra_time_absolute";
+const char kUseDnsHttpsSvcbExtraTimePercent[] = "extra_time_percent";
 
 class FailingRequestImpl : public HostResolver::ResolveHostRequest,
                            public HostResolver::ProbeRequest {
@@ -92,7 +109,89 @@ bool EndpointResultIsNonProtocol(const HostResolverEndpointResult& result) {
   return result.metadata.supported_protocol_alpns.empty();
 }
 
+void GetTimeDeltaFromDictString(const base::Value::Dict& args,
+                                base::StringPiece key,
+                                base::TimeDelta* out) {
+  const std::string* value_string = args.FindString(key);
+  if (!value_string)
+    return;
+  *out = base::TimeDeltaFromString(*value_string).value_or(*out);
+}
+
 }  // namespace
+
+HostResolver::HttpsSvcbOptions::HttpsSvcbOptions() = default;
+
+HostResolver::HttpsSvcbOptions::HttpsSvcbOptions(
+    const HttpsSvcbOptions& other) = default;
+HostResolver::HttpsSvcbOptions::HttpsSvcbOptions(HttpsSvcbOptions&& other) =
+    default;
+
+HostResolver::HttpsSvcbOptions::~HttpsSvcbOptions() = default;
+
+// static
+HostResolver::HttpsSvcbOptions HostResolver::HttpsSvcbOptions::FromDict(
+    const base::Value::Dict& dict) {
+  net::HostResolver::HttpsSvcbOptions options;
+  options.enable =
+      dict.FindBool(kUseDnsHttpsSvcbEnable).value_or(options.enable);
+  options.enable_insecure = dict.FindBool(kUseDnsHttpsSvcbEnableInsecure)
+                                .value_or(options.enable_insecure);
+  GetTimeDeltaFromDictString(dict, kUseDnsHttpsSvcbInsecureExtraTimeMax,
+                             &options.insecure_extra_time_max);
+
+  options.insecure_extra_time_percent =
+      dict.FindInt(kUseDnsHttpsSvcbInsecureExtraTimePercent)
+          .value_or(options.insecure_extra_time_percent);
+  GetTimeDeltaFromDictString(dict, kUseDnsHttpsSvcbInsecureExtraTimeMin,
+                             &options.insecure_extra_time_min);
+
+  GetTimeDeltaFromDictString(dict, kUseDnsHttpsSvcbSecureExtraTimeMax,
+                             &options.secure_extra_time_max);
+
+  options.secure_extra_time_percent =
+      dict.FindInt(kUseDnsHttpsSvcbSecureExtraTimePercent)
+          .value_or(options.secure_extra_time_percent);
+  GetTimeDeltaFromDictString(dict, kUseDnsHttpsSvcbSecureExtraTimeMin,
+                             &options.secure_extra_time_min);
+
+  GetTimeDeltaFromDictString(dict, kUseDnsHttpsSvcbExtraTimeAbsolute,
+                             &options.extra_time_absolute);
+  options.extra_time_percent = dict.FindInt(kUseDnsHttpsSvcbExtraTimePercent)
+                                   .value_or(options.extra_time_percent);
+  return options;
+}
+
+// static
+HostResolver::HttpsSvcbOptions HostResolver::HttpsSvcbOptions::FromFeatures() {
+  net::HostResolver::HttpsSvcbOptions options;
+  options.enable = base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb);
+  options.enable_insecure = features::kUseDnsHttpsSvcbEnableInsecure.Get();
+  options.insecure_extra_time_max =
+      features::kUseDnsHttpsSvcbInsecureExtraTimeMax.Get();
+  options.insecure_extra_time_percent =
+      features::kUseDnsHttpsSvcbInsecureExtraTimePercent.Get();
+  options.insecure_extra_time_min =
+      features::kUseDnsHttpsSvcbInsecureExtraTimeMin.Get();
+  options.secure_extra_time_max =
+      features::kUseDnsHttpsSvcbSecureExtraTimeMax.Get();
+  options.secure_extra_time_percent =
+      features::kUseDnsHttpsSvcbSecureExtraTimePercent.Get();
+  options.secure_extra_time_min =
+      features::kUseDnsHttpsSvcbSecureExtraTimeMin.Get();
+  options.extra_time_absolute =
+      features::kUseDnsHttpsSvcbExtraTimeAbsolute.Get();
+  options.extra_time_percent = features::kUseDnsHttpsSvcbExtraTimePercent.Get();
+  return options;
+}
+
+HostResolver::ManagerOptions::ManagerOptions() = default;
+
+HostResolver::ManagerOptions::ManagerOptions(const ManagerOptions& other) =
+    default;
+HostResolver::ManagerOptions::ManagerOptions(ManagerOptions&& other) = default;
+
+HostResolver::ManagerOptions::~ManagerOptions() = default;
 
 const std::vector<bool>*
 HostResolver::ResolveHostRequest::GetExperimentalResultsForTesting() const {

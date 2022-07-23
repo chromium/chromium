@@ -150,12 +150,6 @@ std::string HttpssvcMetrics::BuildMetricName(
 }
 
 void HttpssvcMetrics::RecordMetrics() {
-  // The HTTPSSVC experiment and its feature param indicating INTEGRITY must
-  // both be enabled.
-  DCHECK(features::kDnsHttpssvcUseIntegrity.Get() ||
-         features::kDnsHttpssvcUseHttpssvc.Get() ||
-         base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb));
-
   DCHECK(!already_recorded_);
   already_recorded_ = true;
 

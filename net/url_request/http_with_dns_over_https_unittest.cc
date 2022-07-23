@@ -370,6 +370,7 @@ TEST_F(HttpsWithDnsOverHttpsTest, HttpsUpgrade) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+  ResetContext();
 
   GURL https_url = https_server_.GetURL(kHostname, "/test");
   EXPECT_TRUE(https_url.SchemeIs(url::kHttpsScheme));
@@ -413,6 +414,7 @@ TEST_F(HttpsWithDnsOverHttpsTest, HttpsMetadata) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+  ResetContext();
 
   GURL main_url = https_server_.GetURL(kHostname, "/test");
   EXPECT_TRUE(main_url.SchemeIs(url::kHttpsScheme));
@@ -514,6 +516,7 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloStaleKey) {
       /*enabled_features=*/{features::kEncryptedClientHello,
                             features::kUseDnsHttpsSvcb},
       /*disabled_features=*/{});
+  ResetContext();
 
   static constexpr char kRealNameStale[] = "secret1.example";
   static constexpr char kRealNameWrongPublicName[] = "secret2.example";
@@ -594,6 +597,7 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloFallback) {
       /*enabled_features=*/{features::kEncryptedClientHello,
                             features::kUseDnsHttpsSvcb},
       /*disabled_features=*/{});
+  ResetContext();
 
   static constexpr char kRealNameStale[] = "secret1.example";
   static constexpr char kRealNameWrongPublicName[] = "secret2.example";
@@ -664,6 +668,7 @@ TEST_F(DnsOverHttpsIntegrationTest, EncryptedClientHelloFallbackTLS12) {
       /*enabled_features=*/{features::kEncryptedClientHello,
                             features::kUseDnsHttpsSvcb},
       /*disabled_features=*/{});
+  ResetContext();
 
   static constexpr char kRealNameStale[] = "secret1.example";
   static constexpr char kRealNameWrongPublicName[] = "secret2.example";

@@ -15026,16 +15026,16 @@ class HostResolverManagerBootstrapTest : public HostResolverManagerDnsTest {
   using MockResult = MockDnsClientRule::ResultType;
 
   void SetUp() override {
+    // The request host scheme and port are only preserved if the SVCB feature
+    // is enabled.
+    features.InitAndEnableFeature(features::kUseDnsHttpsSvcb);
+
     HostResolverManagerDnsTest::SetUp();
 
     // MockHostResolverProc only returns failure if there is at least one
     // non-matching rule.
     proc_->AddRuleForAllFamilies("other_name", {});
     proc_->SignalMultiple(1u);  // Allow up to one proc query.
-
-    // The request host scheme and port are only preserved if the SVCB feature
-    // is enabled.
-    features.InitAndEnableFeature(features::kUseDnsHttpsSvcb);
   }
 
   const NetworkIsolationKey kIsolationKey;

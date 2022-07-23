@@ -182,6 +182,9 @@ const char kSpdyGoAwayOnIpChange[] = "spdy_go_away_on_ip_change";
 const char kBidiStreamDetectBrokenConnection[] =
     "bidi_stream_detect_broken_connection";
 
+const char kUseDnsHttpsSvcbFieldTrialName[] = "UseDnsHttpsSvcb";
+const char kUseDnsHttpsSvcbUseAlpn[] = "use_alpn";
+
 // "goaway_sessions_on_ip_change" is default on for iOS unless overridden via
 // experimental options explicitly.
 #if BUILDFLAG(IS_IOS)
@@ -407,6 +410,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
   bool nel_enable = false;
   bool is_network_bound =
       bound_network != net::NetworkChangeNotifier::kInvalidNetworkHandle;
+  absl::optional<net::HostResolver::HttpsSvcbOptions> https_svcb_options;
 
   StaleHostResolver::StaleOptions stale_dns_options;
   const std::string* host_resolver_rules_string;
@@ -678,6 +682,18 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
       host_resolver_rules_string =
           host_resolver_rules_args.FindString(kHostResolverRules);
       host_resolver_rules_enable = !!host_resolver_rules_string;
+    } else if (iter->first == kUseDnsHttpsSvcbFieldTrialName) {
+      if (!iter->second.is_dict()) {
+        LOG(ERROR) << "\"" << iter->first << "\" config params \""
+                   << iter->second << "\" is not a dictionary value";
+        effective_experimental_options.Remove(iter->first);
+        continue;
+      }
+      const base::Value::Dict& args = iter->second.GetDict();
+      https_svcb_options = net::HostResolver::HttpsSvcbOptions::FromDict(args);
+      session_params->use_dns_https_svcb_alpn =
+          args.FindBool(kUseDnsHttpsSvcbUseAlpn)
+              .value_or(session_params->use_dns_https_svcb_alpn);
     } else if (iter->first == kNetworkErrorLoggingFieldTrialName) {
       if (!iter->second.is_dict()) {
         LOG(ERROR) << "\"" << iter->first << "\" config params \""
@@ -759,11 +775,14 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
   }
 
   if (async_dns_enable || stale_dns_enable || host_resolver_rules_enable ||
-      disable_ipv6_on_wifi || is_network_bound) {
+      disable_ipv6_on_wifi || is_network_bound || https_svcb_options) {
     net::HostResolver::ManagerOptions host_resolver_manager_options;
     host_resolver_manager_options.insecure_dns_client_enabled =
         async_dns_enable;
     host_resolver_manager_options.check_ipv6_on_wifi = !disable_ipv6_on_wifi;
+    if (https_svcb_options) {
+      host_resolver_manager_options.https_svcb_options = https_svcb_options;
+    }
 
     if (!is_network_bound) {
       std::unique_ptr<net::HostResolver> host_resolver;

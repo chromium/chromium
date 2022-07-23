@@ -172,9 +172,41 @@ class NET_EXPORT HostResolver {
     virtual int Start() = 0;
   };
 
+  // The options for features::kUseDnsHttpsSvcb experiment. See the comments
+  // in net/base/features.h for more details.
+  struct NET_EXPORT HttpsSvcbOptions {
+    HttpsSvcbOptions();
+    HttpsSvcbOptions(const HttpsSvcbOptions&);
+    HttpsSvcbOptions(HttpsSvcbOptions&&);
+    HttpsSvcbOptions& operator=(const HttpsSvcbOptions&) = default;
+    HttpsSvcbOptions& operator=(HttpsSvcbOptions&&) = default;
+    ~HttpsSvcbOptions();
+
+    static HttpsSvcbOptions FromDict(const base::Value::Dict& dict);
+    static HttpsSvcbOptions FromFeatures();
+
+    bool enable = false;
+    bool enable_insecure = false;
+    base::TimeDelta insecure_extra_time_max;
+    int insecure_extra_time_percent = 0;
+    base::TimeDelta insecure_extra_time_min;
+    base::TimeDelta secure_extra_time_max;
+    int secure_extra_time_percent = 0;
+    base::TimeDelta secure_extra_time_min;
+    base::TimeDelta extra_time_absolute;
+    int extra_time_percent = 0;
+  };
+
   // Parameter-grouping struct for additional optional parameters for creation
   // of HostResolverManagers and stand-alone HostResolvers.
   struct NET_EXPORT ManagerOptions {
+    ManagerOptions();
+    ManagerOptions(const ManagerOptions&);
+    ManagerOptions(ManagerOptions&&);
+    ManagerOptions& operator=(const ManagerOptions&) = default;
+    ManagerOptions& operator=(ManagerOptions&&) = default;
+    ~ManagerOptions();
+
     // Set |max_concurrent_resolves| to this to select a default level
     // of concurrency.
     static const size_t kDefaultParallelism = 0;
@@ -208,6 +240,10 @@ class NET_EXPORT HostResolver {
     // unreachable without actually checking. See https://crbug.com/696569 for
     // further context.
     bool check_ipv6_on_wifi = true;
+
+    // An experimental options for features::kUseDnsHttpsSvcb
+    // and features::kUseDnsHttpsSvcbAlpn.
+    absl::optional<HostResolver::HttpsSvcbOptions> https_svcb_options;
   };
 
   // Factory class. Useful for classes that need to inject and override resolver

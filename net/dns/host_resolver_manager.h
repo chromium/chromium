@@ -241,6 +241,10 @@ class NET_EXPORT HostResolverManager
     return target_network_;
   }
 
+  const HostResolver::HttpsSvcbOptions& https_svcb_options_for_testing() const {
+    return https_svcb_options_;
+  }
+
   // Public to be called from std::make_unique. Not to be called directly.
   HostResolverManager(base::PassKey<HostResolverManager>,
                       const HostResolver::ManagerOptions& options,
@@ -544,6 +548,9 @@ class NET_EXPORT HostResolverManager
 
   // Helper for metrics associated with `features::kDnsHttpssvc`.
   HttpssvcExperimentDomainCache httpssvc_domain_cache_;
+
+  // An experimental flag for features::kUseDnsHttpsSvcb.
+  HostResolver::HttpsSvcbOptions https_svcb_options_;
 
   THREAD_CHECKER(thread_checker_);
 

@@ -815,7 +815,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
     DCHECK_NE(quic_version, quic::ParsedQuicVersion::Unsupported());
   }
   const bool dns_alpn_h3_job_enabled =
-      base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcbAlpn) &&
+      session_->params().use_dns_https_svcb_alpn &&
       base::EqualsCaseInsensitiveASCII(origin_url.scheme(),
                                        url::kHttpsScheme) &&
       session_->IsQuicEnabled() && proxy_info_.is_direct() &&
