@@ -274,6 +274,8 @@ public final class ProfileImpl
             long toMillis, @NonNull IObjectWrapper completionCallback) {
         StrictModeWorkaround.apply();
         checkNotDestroyed();
+        // `toMillis` should be greater than `fromMillis`
+        assert fromMillis < toMillis;
         // Handle ContentCapture data clearing.
         PlatformContentCaptureController controller =
                 PlatformContentCaptureController.getInstance();
