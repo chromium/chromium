@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -31,7 +32,7 @@ PaintPropertyChangeType TransformPaintPropertyNode::State::ComputeChange(
       compositor_element_id != other.compositor_element_id ||
       scroll != other.scroll ||
       scroll_translation_for_fixed != other.scroll_translation_for_fixed ||
-      !StickyConstraintEquals(other) ||
+      !base::ValuesEquivalent(sticky_constraint, other.sticky_constraint) ||
       anchor_scroll_container != other.anchor_scroll_container ||
       visible_frame_element_id != other.visible_frame_element_id) {
     return PaintPropertyChangeType::kChangedOnlyValues;

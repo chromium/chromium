@@ -192,13 +192,6 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     PaintPropertyChangeType ComputeChange(
         const State& other,
         const AnimationState& animation_state) const;
-
-    bool StickyConstraintEquals(const State& other) const {
-      if (!sticky_constraint && !other.sticky_constraint)
-        return true;
-      return sticky_constraint && other.sticky_constraint &&
-             *sticky_constraint == *other.sticky_constraint;
-    }
   };
 
   // This node is really a sentinel, and does not represent a real transform
