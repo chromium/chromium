@@ -273,6 +273,8 @@ DemoAppInstallerPolicy::GetInstallerAttributes() const {
       prefs->GetString(prefs::kDemoModeRetailerId);
   demo_app_installer_attributes["store_id"] =
       prefs->GetString(prefs::kDemoModeStoreId);
+  demo_app_installer_attributes["demo_country"] =
+      prefs->GetString(prefs::kDemoModeCountry);
   return demo_app_installer_attributes;
 }
 
