@@ -61,6 +61,7 @@ generate_grd("build_grd") {
     "demos/cr_dialog_demo.html",
     "demos/cr_input/cr_input_demo.html",
     "demos/cr_radio_demo.html",
+    "demos/cr_slider/cr_slider_demo.html",
     "demos/cr_toggle_demo.html",
     "webui_gallery.html",
   ]

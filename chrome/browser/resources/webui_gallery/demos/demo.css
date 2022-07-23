@@ -18,6 +18,12 @@ h1 {
   margin-block-end: 16px;
 }
 
+h2 {
+  font-size: 1.2em;
+  margin-block-end: 12px;
+  margin-block-start: 16px;
+}
+
 .demos {
   align-items: flex-start;
   display: flex;
