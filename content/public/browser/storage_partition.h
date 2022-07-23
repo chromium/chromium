@@ -113,8 +113,6 @@ class CONTENT_EXPORT StoragePartition {
   // from RenderFrameHost::CreateNetworkServiceDefaultFactory).
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactoryForBrowserProcess() = 0;
-  virtual scoped_refptr<network::SharedURLLoaderFactory>
-  GetURLLoaderFactoryForBrowserProcessWithCORBEnabled() = 0;
   virtual std::unique_ptr<network::PendingSharedURLLoaderFactory>
   GetURLLoaderFactoryForBrowserProcessIOThread() = 0;
   virtual network::mojom::CookieManager*

@@ -28,11 +28,6 @@ TestStoragePartition::GetURLLoaderFactoryForBrowserProcess() {
   return nullptr;
 }
 
-scoped_refptr<network::SharedURLLoaderFactory>
-TestStoragePartition::GetURLLoaderFactoryForBrowserProcessWithCORBEnabled() {
-  return nullptr;
-}
-
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 TestStoragePartition::GetURLLoaderFactoryForBrowserProcessIOThread() {
   return nullptr;

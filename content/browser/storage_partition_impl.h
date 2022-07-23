@@ -153,8 +153,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   network::mojom::NetworkContext* GetNetworkContext() override;
   scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactoryForBrowserProcess() override;
-  scoped_refptr<network::SharedURLLoaderFactory>
-  GetURLLoaderFactoryForBrowserProcessWithCORBEnabled() override;
   std::unique_ptr<network::PendingSharedURLLoaderFactory>
   GetURLLoaderFactoryForBrowserProcessIOThread() override;
   network::mojom::CookieManager* GetCookieManagerForBrowserProcess() override;
@@ -582,7 +580,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   bool is_in_memory() { return config_.in_memory(); }
 
   network::mojom::URLLoaderFactory*
-  GetURLLoaderFactoryForBrowserProcessInternal(bool corb_enabled);
+  GetURLLoaderFactoryForBrowserProcessInternal();
 
   // If `local_trust_token_fulfiller_` is bound, returns immediately.
   //
@@ -695,8 +693,6 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   scoped_refptr<URLLoaderFactoryForBrowserProcess>
       shared_url_loader_factory_for_browser_process_;
-  scoped_refptr<URLLoaderFactoryForBrowserProcess>
-      shared_url_loader_factory_for_browser_process_with_corb_;
 
   // URLLoaderFactory/CookieManager for use in the browser process only.
   // See the method comment for
@@ -705,9 +701,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   mojo::Remote<network::mojom::URLLoaderFactory>
       url_loader_factory_for_browser_process_;
   bool is_test_url_loader_factory_for_browser_process_ = false;
-  mojo::Remote<network::mojom::URLLoaderFactory>
-      url_loader_factory_for_browser_process_with_corb_;
-  bool is_test_url_loader_factory_for_browser_process_with_corb_ = false;
   mojo::Remote<network::mojom::CookieManager>
       cookie_manager_for_browser_process_;
 
