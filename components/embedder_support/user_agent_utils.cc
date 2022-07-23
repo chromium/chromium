@@ -193,9 +193,21 @@ bool ShouldReduceUserAgentMinorVersion(
 // reducing the user agent platform and oscpu.
 bool ShouldReduceUserAgentPlatformOsCpu(
     UserAgentReductionEnterprisePolicyState user_agent_reduction) {
+// For legacy windows, only reduce the user agent platform and oscpu when
+// kLegacyWindowsPlatform parameter set to true.
+#if BUILDFLAG(IS_WIN)
+  if (base::win::GetVersion() < base::win::Version::WIN10) {
+    return ShouldReduceUserAgentMinorVersion(user_agent_reduction) &&
+           base::FeatureList::IsEnabled(
+               blink::features::kReduceUserAgentPlatformOsCpu) &&
+           blink::features::kLegacyWindowsPlatform.Get();
+  }
+#endif
+
   return ShouldReduceUserAgentMinorVersion(user_agent_reduction) &&
          base::FeatureList::IsEnabled(
-             blink::features::kReduceUserAgentPlatformOsCpu);
+             blink::features::kReduceUserAgentPlatformOsCpu) &&
+         blink::features::kAllExceptLegacyWindowsPlatform.Get();
 }
 #endif
 

@@ -666,6 +666,36 @@ TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
               GetUserAgent());
   }
 
+  // Verify disable reduce legacy windows platform
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kReduceUserAgentMinorVersion, {}},
+       {blink::features::kReduceUserAgentPlatformOsCpu,
+        {{"all_except_legacy_windows_platform", "true"},
+         {"legacy_windows_platform", "false"}}}},
+      {});
+  {
+#if BUILDFLAG(IS_WIN)
+    if (base::win::GetVersion() < base::win::Version::WIN10) {
+      EXPECT_NE(base::StringPrintf(
+                    kDesktop, version_info::GetMajorVersionNumber().c_str()),
+                GetUserAgent());
+      EXPECT_NE("Windows NT 10.0; Win64; x64",
+                GetUserAgentPlatformOsCpu(GetUserAgent()));
+    } else {
+      EXPECT_EQ(base::StringPrintf(
+                    kDesktop, version_info::GetMajorVersionNumber().c_str()),
+                GetUserAgent());
+      EXPECT_EQ("Windows NT 10.0; Win64; x64",
+                GetUserAgentPlatformOsCpu(GetUserAgent()));
+    }
+#else
+    EXPECT_EQ(base::StringPrintf(kDesktop,
+                                 version_info::GetMajorVersionNumber().c_str()),
+              GetUserAgent());
+#endif
+  }
+
   // Verify that the reduced user agent string respects
   // --force-major-version-to-minor
   scoped_feature_list.Reset();

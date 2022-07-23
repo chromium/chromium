@@ -1427,6 +1427,10 @@ const base::FeatureParam<std::string> kUserAgentFrozenBuildVersion{
 
 const base::Feature kReduceUserAgentPlatformOsCpu{
     "ReduceUserAgentPlatformOsCpu", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<bool> kAllExceptLegacyWindowsPlatform = {
+    &kReduceUserAgentPlatformOsCpu, "all_except_legacy_windows_platform", true};
+const base::FeatureParam<bool> kLegacyWindowsPlatform = {
+    &kReduceUserAgentPlatformOsCpu, "legacy_windows_platform", true};
 
 const base::Feature kReportFCPOnlyOnSuccessfulCommit{
     "ReportFCPOnlyOnSuccessfulCommit", base::FEATURE_DISABLED_BY_DEFAULT};
