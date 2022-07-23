@@ -35,6 +35,7 @@ class NaClBrokerListener : public content::SandboxedProcessLauncherDelegate,
 
   // content::SandboxedProcessLauncherDelegate implementation:
   sandbox::mojom::Sandbox GetSandboxType() override;
+  std::string GetSandboxTag() override;
 
   // IPC::Listener implementation.
   void OnChannelConnected(int32_t peer_pid) override;

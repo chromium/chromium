@@ -85,6 +85,7 @@
 #include "base/win/windows_version.h"
 #include "components/nacl/browser/nacl_broker_service_win.h"
 #include "components/nacl/common/nacl_debug_exception_handler_win.h"
+#include "sandbox/policy/win/sandbox_win.h"
 #endif
 
 using content::BrowserThread;
@@ -179,6 +180,11 @@ class NaClSandboxedProcessLauncherDelegate
     if (!nacl::AllocateAddressSpaceASLR(process, kNaClSandboxSize)) {
       DLOG(WARNING) << "Failed to reserve address space for Native Client";
     }
+  }
+
+  std::string GetSandboxTag() override {
+    return sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
+        "nacl-process-host", GetSandboxType());
   }
 
   bool CetCompatible() override {

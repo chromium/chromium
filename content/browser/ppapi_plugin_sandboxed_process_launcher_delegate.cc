@@ -20,6 +20,11 @@
 
 namespace content {
 #if BUILDFLAG(IS_WIN)
+std::string PpapiPluginSandboxedProcessLauncherDelegate::GetSandboxTag() {
+  return sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
+      "ppapi", GetSandboxType());
+}
+
 bool PpapiPluginSandboxedProcessLauncherDelegate::PreSpawnTarget(
     sandbox::TargetPolicy* policy) {
   // The Pepper process is as locked-down as a renderer except that it can

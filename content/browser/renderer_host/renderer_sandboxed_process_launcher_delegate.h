@@ -39,6 +39,8 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegateWin
   RendererSandboxedProcessLauncherDelegateWin(base::CommandLine* cmd_line,
                                               bool is_jit_disabled);
 
+  std::string GetSandboxTag() override;
+
   bool PreSpawnTarget(sandbox::TargetPolicy* policy) override;
   void PostSpawnTarget(base::ProcessHandle process) override;
 

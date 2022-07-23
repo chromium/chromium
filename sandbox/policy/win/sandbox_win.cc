@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -1128,19 +1129,25 @@ ResultCode SandboxWin::StartSandboxedProcess(
     SandboxDelegate* delegate,
     base::Process* process) {
   const base::ElapsedTimer timer;
-  auto policy = g_broker_services->CreatePolicy();
-  auto time_policy_created = timer.Elapsed();
 
-  ResultCode result = GeneratePolicyForSandboxedProcess(
-      cmd_line, process_type, handles_to_inherit, delegate, policy.get());
-  auto time_policy_generated = timer.Elapsed();
-
-  if (ResultCode::SBOX_ERROR_UNSANDBOXED_PROCESS == result) {
+  // Avoid making a policy if we won't use it.
+  if (IsUnsandboxedProcess(delegate->GetSandboxType(), cmd_line,
+                           *base::CommandLine::ForCurrentProcess())) {
     return LaunchWithoutSandbox(cmd_line, handles_to_inherit, delegate,
                                 process);
   }
+
+  std::string tag;
+  if (base::FeatureList::IsEnabled(features::kSharedSandboxPolicies))
+    tag = delegate->GetSandboxTag();
+
+  auto policy = g_broker_services->CreatePolicy(tag);
+  auto time_policy_created = timer.Elapsed();
+  ResultCode result = GeneratePolicyForSandboxedProcess(
+      cmd_line, process_type, handles_to_inherit, delegate, policy.get());
   if (SBOX_ALL_OK != result)
     return result;
+  auto time_policy_generated = timer.Elapsed();
 
   TRACE_EVENT_BEGIN0("startup", "StartProcessWithAccess::LAUNCHPROCESS");
 
@@ -1272,6 +1279,16 @@ std::string SandboxWin::GetSandboxTypeInEnglish(Sandbox sandbox_type) {
     case Sandbox::kWindowsSystemProxyResolver:
       return "Windows System Proxy Resolver";
   }
+}
+
+// static
+std::string SandboxWin::GetSandboxTagForDelegate(
+    base::StringPiece prefix,
+    sandbox::mojom::Sandbox sandbox_type) {
+  // sandbox.mojom.Sandbox has an operator << we can use for non-human values.
+  std::ostringstream stream;
+  stream << prefix << "!" << sandbox_type;
+  return stream.str();
 }
 
 }  // namespace policy

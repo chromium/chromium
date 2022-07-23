@@ -39,6 +39,9 @@ const base::Feature kGpuLPAC{"GpuLPAC", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kRendererAppContainer{"RendererAppContainer",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables shared/fixed policy for Windows sandbox policies.
+const base::Feature kSharedSandboxPolicies{"SharedSandboxPolicies",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)

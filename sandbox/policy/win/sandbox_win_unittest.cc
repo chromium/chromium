@@ -369,6 +369,7 @@ class TestSandboxDelegate : public SandboxDelegate {
 
   MOCK_METHOD1(PreSpawnTarget, bool(TargetPolicy* policy));
 
+  std::string GetSandboxTag() override { return std::string(); }
   void PostSpawnTarget(base::ProcessHandle process) override {}
 
   bool ShouldUnsandboxedRunInJob() override { return false; }

@@ -32,6 +32,7 @@ class UtilitySandboxedProcessLauncherDelegate
   sandbox::mojom::Sandbox GetSandboxType() override;
 
 #if BUILDFLAG(IS_WIN)
+  std::string GetSandboxTag() override;
   bool GetAppContainerId(std::string* appcontainer_id) override;
   bool DisableDefaultPolicy() override;
   bool ShouldLaunchElevated() override;

@@ -40,6 +40,12 @@ class NaClBrokerSandboxedProcessLauncherDelegate
   sandbox::mojom::Sandbox GetSandboxType() override {
     return sandbox::mojom::Sandbox::kNoSandbox;
   }
+
+  std::string GetSandboxTag() override {
+    // kNoSandbox does not use a TargetPolicy, if the sandbox type is changed
+    // then provide a unique tag here.
+    return "";
+  }
 };
 }  // namespace
 

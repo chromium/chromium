@@ -80,6 +80,13 @@ RendererSandboxedProcessLauncherDelegateWin::
   }
 }
 
+std::string RendererSandboxedProcessLauncherDelegateWin::GetSandboxTag() {
+  // PDF renderers may have jit disabled while normal renderers will not.
+  return sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
+      dynamic_code_can_be_disabled_ ? "renderer-jitless" : "renderer",
+      GetSandboxType());
+}
+
 bool RendererSandboxedProcessLauncherDelegateWin::PreSpawnTarget(
     sandbox::TargetPolicy* policy) {
   sandbox::policy::SandboxWin::AddBaseHandleClosePolicy(policy);

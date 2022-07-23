@@ -28,6 +28,13 @@ class SandboxDelegate {
   virtual sandbox::mojom::Sandbox GetSandboxType() = 0;
 
 #if BUILDFLAG(IS_WIN)
+  // Returns a tag for the sandbox. All targets with the same tag will share
+  // their FixedPolicy configuration - the delegate can call
+  // FixedPolicy::IsFixed() to skip setting this configuration after the first
+  // such policy has been configured. Provide an empty string to force every
+  // policy to be unique.
+  virtual std::string GetSandboxTag() = 0;
+
   // Whether to disable the default policy specified in
   // AddPolicyForSandboxedProcess.
   virtual bool DisableDefaultPolicy() = 0;
@@ -37,6 +44,8 @@ class SandboxDelegate {
   virtual bool GetAppContainerId(std::string* appcontainer_id) = 0;
 
   // Called right before spawning the process. Returns false on failure.
+  // Methods in FixedPolicy only need to be called if IsFixed() returns
+  // false.
   virtual bool PreSpawnTarget(TargetPolicy* policy) = 0;
 
   // Called right after the process is launched, but before its thread is run.

@@ -90,6 +90,8 @@ base::Value FetchSandboxFeatures() {
       FeatureToValue(sandbox::policy::features::kNetworkServiceSandbox));
   features.Append(
       FeatureToValue(sandbox::policy::features::kRendererAppContainer));
+  features.Append(
+      FeatureToValue(sandbox::policy::features::kSharedSandboxPolicies));
   features.Append(FeatureToValue(
       sandbox::policy::features::kWinSboxDisableExtensionPoints));
   features.Append(

@@ -107,6 +107,11 @@ bool PrintBackendPreSpawnTarget(sandbox::TargetPolicy* policy) {
 }
 }  // namespace
 
+std::string UtilitySandboxedProcessLauncherDelegate::GetSandboxTag() {
+  return sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
+      "utility", GetSandboxType());
+}
+
 bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
     std::string* appcontainer_id) {
   if (sandbox_type_ == sandbox::mojom::Sandbox::kNetwork) {

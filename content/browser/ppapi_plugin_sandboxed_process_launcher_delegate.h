@@ -29,6 +29,7 @@ class CONTENT_EXPORT PpapiPluginSandboxedProcessLauncherDelegate
   ~PpapiPluginSandboxedProcessLauncherDelegate() override = default;
 
 #if BUILDFLAG(IS_WIN)
+  std::string GetSandboxTag() override;
   bool PreSpawnTarget(sandbox::TargetPolicy* policy) override;
 #endif  // BUILDFLAG(IS_WIN)
 

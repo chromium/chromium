@@ -364,6 +364,11 @@ class GpuSandboxedProcessLauncherDelegate
 #if BUILDFLAG(IS_WIN)
   bool DisableDefaultPolicy() override { return true; }
 
+  std::string GetSandboxTag() override {
+    return sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
+        "gpu", GetSandboxType());
+  }
+
   enum GPUAppContainerEnableState{
       AC_ENABLED = 0,
       AC_DISABLED_GL = 1,

@@ -113,6 +113,11 @@ class SANDBOX_POLICY_EXPORT SandboxWin {
   // Provides a friendly name for the sandbox for chrome://sandbox and tracing.
   static std::string GetSandboxTypeInEnglish(
       sandbox::mojom::Sandbox sandbox_type);
+
+  // Helper for sandbox delegates to generate a SandboxTag
+  static std::string GetSandboxTagForDelegate(
+      base::StringPiece prefix,
+      sandbox::mojom::Sandbox sandbox_type);
 };
 
 SANDBOX_POLICY_EXPORT

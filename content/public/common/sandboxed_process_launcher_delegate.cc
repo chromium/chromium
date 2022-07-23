@@ -10,6 +10,11 @@
 namespace content {
 
 #if BUILDFLAG(IS_WIN)
+std::string SandboxedProcessLauncherDelegate::GetSandboxTag() {
+  // This implies that policies will not share backing data.
+  return "";
+}
+
 bool SandboxedProcessLauncherDelegate::DisableDefaultPolicy() {
   return false;
 }
