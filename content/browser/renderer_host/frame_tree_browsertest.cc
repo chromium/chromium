@@ -3503,6 +3503,9 @@ class FencedFrameReportEventBrowserTest : public FencedFrameTreeBrowserTest {
   // First, we navigate the fenced frame to a new URL.
   // Second, we call reportEvent and validate the results.
   struct Step {
+    // Whether the navigation should target a nested iframe rather than the
+    // fenced frame root.
+    bool is_target_nested_iframe = false;
     // Whether the navigation should be embedder-initiated or fenced-frame
     // initiated.
     bool is_embedder_initiated = false;
@@ -3510,18 +3513,18 @@ class FencedFrameReportEventBrowserTest : public FencedFrameTreeBrowserTest {
     // (This should always be false when `!is_embedder_initiated`.
     bool is_opaque = false;
 
-    struct Target {
+    struct Destination {
       // The origin for the navigation.
       std::string origin;
       // The path for the resource to load.
       std::string path;
     };
 
-    // The initial navigation target (may be redirected).
-    Target target;
+    // The initial navigation destination (may be redirected).
+    Destination destination;
     // A list of redirects that the navigation should take. The last redirect
-    // target will be the ultimate destination of the navigation.
-    std::vector<Target> redirects;
+    // destination will be the ultimate destination of the navigation.
+    std::vector<Destination> redirects;
 
     // Whether the reportEvent should succeed.
     bool should_have_metadata = false;
@@ -3550,19 +3553,23 @@ class FencedFrameReportEventBrowserTest : public FencedFrameTreeBrowserTest {
     {
       std::set<std::string> paths;
       for (auto& step : steps) {
-        ASSERT_FALSE(step.target.origin.empty());
-        ASSERT_FALSE(step.target.path.empty());
+        if (step.is_target_nested_iframe) {
+          ASSERT_FALSE(step.is_embedder_initiated);
+          ASSERT_FALSE(step.is_opaque);
+        }
+        ASSERT_FALSE(step.destination.origin.empty());
+        ASSERT_FALSE(step.destination.path.empty());
         int redirect_index = 0;
-        for (auto& redirect_target : step.redirects) {
-          ASSERT_TRUE(paths.find(redirect_target.path) == paths.end());
-          ASSERT_FALSE(redirect_target.origin.empty());
-          ASSERT_FALSE(redirect_target.path.empty());
-          paths.insert(redirect_target.path);
+        for (auto& redirect_destination : step.redirects) {
+          ASSERT_TRUE(paths.find(redirect_destination.path) == paths.end());
+          ASSERT_FALSE(redirect_destination.origin.empty());
+          ASSERT_FALSE(redirect_destination.path.empty());
+          paths.insert(redirect_destination.path);
 
-          // Intercept the previous navigation target in the chain.
+          // Intercept the previous navigation destination in the chain.
           std::string previous_path =
               redirect_index ? step.redirects[redirect_index - 1].path
-                             : step.target.path;
+                             : step.destination.path;
           redirects.emplace_back(
               std::make_unique<net::test_server::ControllableHttpResponse>(
                   https_server(), previous_path));
@@ -3599,13 +3606,16 @@ class FencedFrameReportEventBrowserTest : public FencedFrameTreeBrowserTest {
     FencedFrameURLMapping& url_mapping =
         root->current_frame_host()->GetPage().fenced_frame_urls_map();
 
+    // Create a holder for a nested iframe.
+    absl::optional<FrameTreeNode*> nested_iframe_node = absl::nullopt;
+
     int navigation_index = 0;
     int response_index = 0;
     int redirect_index = 0;
     for (auto& step : steps) {
       // Configure the navigation.
-      GURL navigate_url =
-          https_server()->GetURL(step.target.origin, step.target.path);
+      GURL navigate_url = https_server()->GetURL(step.destination.origin,
+                                                 step.destination.path);
       GURL expect_url = navigate_url;
       if (step.is_opaque) {
         GURL urn_uuid =
@@ -3613,10 +3623,31 @@ class FencedFrameReportEventBrowserTest : public FencedFrameTreeBrowserTest {
         EXPECT_TRUE(urn_uuid.is_valid());
         navigate_url = urn_uuid;
       }
+      FrameTreeNode* navigation_target_node = fenced_frame_root_node;
+
+      // Add a nested iframe inside the fenced frame if necessary (or clear the
+      // handle to it, if the navigation will remove it).
+      if (step.is_target_nested_iframe) {
+        if (!nested_iframe_node) {
+          EXPECT_TRUE(
+              ExecJs(fenced_frame_root_node,
+                     "var iframe_within_ff = document.createElement('iframe');"
+                     "document.body.appendChild(iframe_within_ff);"));
+          EXPECT_EQ(1U, fenced_frame_root_node->child_count());
+          nested_iframe_node = fenced_frame_root_node->child_at(0);
+        }
+        navigation_target_node = *nested_iframe_node;
+      } else {
+        nested_iframe_node = absl::nullopt;
+      }
 
       // Initiate the navigation.
-      TestFrameNavigationObserver observer(fenced_frame_root_node);
-      if (step.is_embedder_initiated) {
+      TestFrameNavigationObserver observer(navigation_target_node);
+      if (step.is_target_nested_iframe) {
+        EXPECT_TRUE(
+            ExecJs(fenced_frame_root_node,
+                   JsReplace("iframe_within_ff.src = $1", navigate_url)));
+      } else if (step.is_embedder_initiated) {
         EXPECT_TRUE(ExecJs(root, JsReplace("f.src = $1", navigate_url)));
       } else {
         EXPECT_TRUE(ExecJs(fenced_frame_root_node,
@@ -3624,9 +3655,9 @@ class FencedFrameReportEventBrowserTest : public FencedFrameTreeBrowserTest {
       }
 
       // Redirect the navigation if relevant.
-      for (auto& redirect_target : step.redirects) {
-        GURL redirect_url = https_server()->GetURL(redirect_target.origin,
-                                                   redirect_target.path);
+      for (auto& redirect_destination : step.redirects) {
+        GURL redirect_url = https_server()->GetURL(redirect_destination.origin,
+                                                   redirect_destination.path);
         expect_url = redirect_url;
         auto& redirect = *redirects[redirect_index];
         redirect.WaitForRequest();
@@ -3642,9 +3673,9 @@ class FencedFrameReportEventBrowserTest : public FencedFrameTreeBrowserTest {
       observer.WaitForCommit();
       EXPECT_EQ(
           expect_url,
-          fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
+          navigation_target_node->current_frame_host()->GetLastCommittedURL());
       EXPECT_EQ(url::Origin::Create(expect_url),
-                fenced_frame_root_node->current_frame_host()
+                navigation_target_node->current_frame_host()
                     ->GetLastCommittedOrigin());
       navigation_index++;
 
@@ -3656,7 +3687,7 @@ class FencedFrameReportEventBrowserTest : public FencedFrameTreeBrowserTest {
           destination: ['buyer'],
         });
       )";
-      EXPECT_TRUE(ExecJs(fenced_frame_root_node,
+      EXPECT_TRUE(ExecJs(navigation_target_node,
                          JsReplace(report_event_script, navigation_index)));
 
       // If relevant, check that the event report succeeded.
@@ -3689,8 +3720,47 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
       {
           .is_embedder_initiated = true,
           .is_opaque = true,
-          .target = {"a.test", "/fenced_frames/title1.html"},
+          .destination = {"a.test", "/fenced_frames/title1.html"},
           .should_have_metadata = true,
+      },
+  };
+  RunTest(config);
+}
+
+// reportEvent should work in same-origin subframes.
+IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
+                       FencedFrameReportEventNestedIframeSameOriginNavigation) {
+  std::vector<Step> config = {
+      {
+          .is_embedder_initiated = true,
+          .is_opaque = true,
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .should_have_metadata = true,
+      },
+      {
+          .is_target_nested_iframe = true,
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .should_have_metadata = true,
+      },
+  };
+  RunTest(config);
+}
+
+// reportEvent shouldn't work in cross-origin subframes.
+IN_PROC_BROWSER_TEST_P(
+    FencedFrameReportEventBrowserTest,
+    FencedFrameReportEventNestedIframeCrossOriginNavigation) {
+  std::vector<Step> config = {
+      {
+          .is_embedder_initiated = true,
+          .is_opaque = true,
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .should_have_metadata = true,
+      },
+      {
+          .is_target_nested_iframe = true,
+          .destination = {"b.test", "/fenced_frames/title1.html"},
+          .should_have_metadata = false,
       },
   };
   RunTest(config);
@@ -3704,11 +3774,11 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
       {
           .is_embedder_initiated = true,
           .is_opaque = true,
-          .target = {"a.test", "/fenced_frames/title1.html"},
+          .destination = {"a.test", "/fenced_frames/title1.html"},
           .should_have_metadata = true,
       },
       {
-          .target = {"a.test", "/fenced_frames/title1.html?foo"},
+          .destination = {"a.test", "/fenced_frames/title1.html?foo"},
           .should_have_metadata = true,
       },
   };
@@ -3723,17 +3793,17 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
       {
           .is_embedder_initiated = true,
           .is_opaque = true,
-          .target = {"a.test", "/fenced_frames/title1.html"},
+          .destination = {"a.test", "/fenced_frames/title1.html"},
           .should_have_metadata = true,
       },
       {
-          .target = {"b.test", "/fenced_frames/title1.html"},
+          .destination = {"b.test", "/fenced_frames/title1.html"},
           .should_have_metadata = false,
       },
       {
           .is_embedder_initiated = true,
           .is_opaque = true,
-          .target = {"a.test", "/fenced_frames/title1.html"},
+          .destination = {"a.test", "/fenced_frames/title1.html"},
           .should_have_metadata = true,
       },
   };
@@ -3756,13 +3826,13 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
       {
           .is_embedder_initiated = true,
           .is_opaque = true,
-          .target = {"a.test", "/fenced_frames/title1.html"},
+          .destination = {"a.test", "/fenced_frames/title1.html"},
           .should_have_metadata = true,
       },
       {
           .is_embedder_initiated = true,
           .is_opaque = false,
-          .target = {"a.test", "/fenced_frames/title1.html"},
+          .destination = {"a.test", "/fenced_frames/title1.html"},
           .should_have_metadata = false,
       },
   };
@@ -3777,7 +3847,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
       {
           .is_embedder_initiated = true,
           .is_opaque = true,
-          .target = {"a.test", "/fenced_frames/redirect1.html"},
+          .destination = {"a.test", "/fenced_frames/redirect1.html"},
           .redirects =
               {
                   {"a.test", "/fenced_frames/redirect2.html"},
@@ -3797,7 +3867,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
       {
           .is_embedder_initiated = true,
           .is_opaque = true,
-          .target = {"a.test", "/fenced_frames/redirect1.html"},
+          .destination = {"a.test", "/fenced_frames/redirect1.html"},
           .redirects =
               {
                   {"b.test", "/fenced_frames/redirect2.html"},
@@ -3817,11 +3887,11 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
       {
           .is_embedder_initiated = true,
           .is_opaque = true,
-          .target = {"a.test", "/fenced_frames/title1.html"},
+          .destination = {"a.test", "/fenced_frames/title1.html"},
           .should_have_metadata = true,
       },
       {
-          .target = {"a.test", "/fenced_frames/redirect1.html"},
+          .destination = {"a.test", "/fenced_frames/redirect1.html"},
           .redirects =
               {
                   {"a.test", "/fenced_frames/redirect2.html"},
@@ -3841,11 +3911,11 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
       {
           .is_embedder_initiated = true,
           .is_opaque = true,
-          .target = {"a.test", "/fenced_frames/title1.html"},
+          .destination = {"a.test", "/fenced_frames/title1.html"},
           .should_have_metadata = true,
       },
       {
-          .target = {"a.test", "/fenced_frames/redirect1.html"},
+          .destination = {"a.test", "/fenced_frames/redirect1.html"},
           .redirects =
               {
                   {"b.test", "/fenced_frames/redirect2.html"},
@@ -3923,70 +3993,6 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
                                             "  eventData: $1,"
                                             "  destination: ['buyer']});",
                                             event_data)));
-
-  response.WaitForRequest();
-  EXPECT_EQ(response.http_request()->content, event_data);
-}
-
-IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
-                       NestedIframeReportEvent) {
-  net::test_server::ControllableHttpResponse response(https_server(),
-                                                      "/title2.html");
-  ASSERT_TRUE(https_server()->Start());
-
-  GURL main_url = https_server()->GetURL("b.test", "/hello.html");
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  // It is safe to obtain the root frame tree node here, as it doesn't change.
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetPrimaryFrameTree()
-                            .root();
-
-  EXPECT_TRUE(ExecJs(root,
-                     "var f = document.createElement('fencedframe');"
-                     "f.mode = 'opaque-ads';"
-                     "document.body.appendChild(f);"));
-  EXPECT_EQ(1U, root->child_count());
-  FrameTreeNode* fenced_frame_root_node =
-      GetFencedFrameRootNode(root->child_at(0));
-
-  EXPECT_TRUE(fenced_frame_root_node->IsFencedFrameRoot());
-  EXPECT_TRUE(fenced_frame_root_node->IsInFencedFrameTree());
-
-  // Add reporting metadata.
-  ReportingMetadata fenced_frame_reporting;
-  GURL reporting_url(https_server()->GetURL("c.test", "/title2.html"));
-  fenced_frame_reporting.metadata[blink::mojom::ReportingDestination::kBuyer]
-                                 ["mouse interaction"] = reporting_url;
-
-  GURL https_url(
-      https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
-  FencedFrameURLMapping& url_mapping =
-      root->current_frame_host()->GetPage().fenced_frame_urls_map();
-  GURL urn_uuid =
-      url_mapping.AddFencedFrameURL(https_url, fenced_frame_reporting);
-  EXPECT_TRUE(urn_uuid.is_valid());
-
-  // Navigate the fenced frame.
-  std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
-  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
-      fenced_frame_root_node, urn_uuid, navigate_urn_script);
-
-  // Add a nested iframe inside the fenced frame and navigate.
-  AddIframeInFencedFrame(fenced_frame_root_node, 0);
-  EXPECT_EQ(1U, fenced_frame_root_node->child_count());
-  FrameTreeNode* nested_iframe_node = fenced_frame_root_node->child_at(0);
-
-  GURL iframe_url(
-      https_server()->GetURL("a.test", "/fenced_frames/title0.html"));
-  NavigateIframeInFencedFrame(nested_iframe_node, iframe_url);
-
-  std::string event_data = "this is a click";
-  EXPECT_TRUE(
-      ExecJs(nested_iframe_node, JsReplace("window.fence.reportEvent({"
-                                           "  eventType: 'mouse interaction',"
-                                           "  eventData: $1,"
-                                           "  destination: ['buyer']});",
-                                           event_data)));
 
   response.WaitForRequest();
   EXPECT_EQ(response.http_request()->content, event_data);

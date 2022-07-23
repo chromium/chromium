@@ -83,8 +83,16 @@ void Fence::reportEvent(ScriptState* script_state,
       return;
     }
 
-    fenced_frame = DynamicTo<LocalFrame>(
-        DomWindow()->GetFrame()->Top(FrameTreeBoundary::kFenced));
+    Frame* possibly_remote_fenced_frame =
+        DomWindow()->GetFrame()->Top(FrameTreeBoundary::kFenced);
+    if (!frame->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
+            possibly_remote_fenced_frame->GetSecurityContext()
+                ->GetSecurityOrigin())) {
+      AddConsoleMessage(
+          "fence.reportEvent is only available in same-origin subframes.");
+      return;
+    }
+    fenced_frame = DynamicTo<LocalFrame>(possibly_remote_fenced_frame);
   }
 
   DCHECK(fenced_frame);
