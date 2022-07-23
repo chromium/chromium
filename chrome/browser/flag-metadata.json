@@ -4897,7 +4897,7 @@
   {
     "name": "oobe-hid-detection-revamp",
     "owners": [ "gordonseto", "cros-connectivity@google.com"],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "optimization-guide-debug-logs",
