@@ -2135,7 +2135,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // container, returns that container, so that at paint time, we can apply an
   // offset to this element when the returned scroll container is scrolled.
   // Returns nullptr otherwise.
-  const LayoutBlock* AnchorScrollContainer() const;
+  const LayoutBox* AnchorScrollContainer() const;
 
  protected:
   ~LayoutBox() override;

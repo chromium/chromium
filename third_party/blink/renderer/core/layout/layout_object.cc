@@ -1564,14 +1564,17 @@ const LayoutBlock* LayoutObject::InclusiveContainingBlock() const {
   return layout_block ? layout_block : ContainingBlock();
 }
 
-const LayoutBlock* LayoutObject::EnclosingScrollportBox() const {
+const LayoutBox* LayoutObject::ContainingScrollContainer() const {
   NOT_DESTROYED();
-  const LayoutBlock* ancestor = ContainingBlock();
-  for (; ancestor; ancestor = ancestor->ContainingBlock()) {
-    if (ancestor->IsScrollContainer())
-      return ancestor;
+  if (auto* layer = EnclosingLayer()) {
+    if (auto* box = layer->GetLayoutBox()) {
+      if (box != this && box->IsScrollContainer())
+        return box;
+    }
+    if (auto* scroll_container_layer = layer->ContainingScrollContainerLayer())
+      return scroll_container_layer->GetLayoutBox();
   }
-  return ancestor;
+  return nullptr;
 }
 
 LayoutObject* LayoutObject::NonAnonymousAncestor() const {

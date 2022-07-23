@@ -1653,4 +1653,44 @@ TEST_F(LayoutObjectTest, HasTransformRelatedProperty) {
   test("foreign", true, true, false);
 }
 
+TEST_F(LayoutObjectTest, ContainingScrollContainer) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .scroller { width: 100px; height: 100px; overflow: scroll; }
+    </style>
+    <div id="scroller1" class="scroller" style="position: relative">
+      <div id="child1"></div>
+      <div id="scroller2" class="scroller">
+        <div id="child2" style="position: relative"></div>
+        <div id="fixed" style="position: fixed">
+          <div id="under-fixed"></div>
+        </div>
+        <div id="absolute" style="position: absolute">
+          <div id="under-absolute"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* scroller1 = GetLayoutObjectByElementId("scroller1");
+  auto* scroller2 = GetLayoutObjectByElementId("scroller2");
+
+  EXPECT_EQ(&GetLayoutView(), scroller1->ContainingScrollContainer());
+  EXPECT_EQ(scroller1,
+            GetLayoutObjectByElementId("child1")->ContainingScrollContainer());
+  EXPECT_EQ(scroller1, scroller2->ContainingScrollContainer());
+  EXPECT_EQ(scroller2,
+            GetLayoutObjectByElementId("child2")->ContainingScrollContainer());
+  EXPECT_EQ(&GetLayoutView(),
+            GetLayoutObjectByElementId("fixed")->ContainingScrollContainer());
+  EXPECT_EQ(
+      &GetLayoutView(),
+      GetLayoutObjectByElementId("under-fixed")->ContainingScrollContainer());
+  EXPECT_EQ(
+      scroller1,
+      GetLayoutObjectByElementId("absolute")->ContainingScrollContainer());
+  EXPECT_EQ(scroller1, GetLayoutObjectByElementId("under-absolute")
+                           ->ContainingScrollContainer());
+}
+
 }  // namespace blink

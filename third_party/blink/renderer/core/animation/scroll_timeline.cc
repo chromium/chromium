@@ -335,13 +335,11 @@ Element* ScrollTimeline::SourceInternal() const {
   if (!layout_box)
     return nullptr;
 
-  // TODO(crbug.com/1329159): Consider Using cached AncestorScrollContainerLayer
-  // for efficiency.
-  const LayoutBox* scrollport_layout_box = layout_box->EnclosingScrollportBox();
-  if (!scrollport_layout_box)
-    return layout_box->GetDocument().ScrollingElementNoLayout();
+  const LayoutBox* scroll_container = layout_box->ContainingScrollContainer();
+  if (!scroll_container)
+    return scroll_container->GetDocument().ScrollingElementNoLayout();
 
-  Node* node = scrollport_layout_box->GetNode();
+  Node* node = scroll_container->GetNode();
   if (node->IsElementNode())
     return DynamicTo<Element>(node);
   if (node->IsDocumentNode())

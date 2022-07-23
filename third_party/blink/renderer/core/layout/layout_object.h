@@ -2413,7 +2413,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   const LayoutBlock* InclusiveContainingBlock() const;
 
-  const LayoutBlock* EnclosingScrollportBox() const;
+  const LayoutBox* ContainingScrollContainer() const;
 
   bool CanContainAbsolutePositionObjects() const {
     NOT_DESTROYED();
