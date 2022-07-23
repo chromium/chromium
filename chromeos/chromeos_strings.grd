@@ -3440,6 +3440,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_FEEDBACK_TOOL_USER_EMAIL_LABEL" desc="Label showing the e-mail address that will be reported.">
         Email
       </message>
+      <message name="IDS_FEEDBACK_TOOL_USER_EMAIL_ARIA_LABEL" desc="Aria Label of the e-mail dropdown listing e-mail addresses to be selected to report.">
+        Select email
+      </message>
       <message name="IDS_FEEDBACK_TOOL_SEND_BUTTON_LABEL" desc="label for the send button to send feedback.">
         Send
       </message>

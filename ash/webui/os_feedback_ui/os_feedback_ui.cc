@@ -63,6 +63,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"replaceFileLabel", IDS_FEEDBACK_TOOL_REPLACE_FILE_LABEL},
       {"replaceFileArialLabel", IDS_FEEDBACK_TOOL_REPLACE_FILE_ARIA_LABEL},
       {"userEmailLabel", IDS_FEEDBACK_TOOL_USER_EMAIL_LABEL},
+      {"userEmailAriaLabel", IDS_FEEDBACK_TOOL_USER_EMAIL_ARIA_LABEL},
       {"shareDiagnosticDataLabel",
        IDS_FEEDBACK_TOOL_SHARE_DIAGNOSTIC_DATA_LABEL},
       {"sharePageUrlLabel", IDS_FEEDBACK_TOOL_SHARE_PAGE_URL_LABEL},
