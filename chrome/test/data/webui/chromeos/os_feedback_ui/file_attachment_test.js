@@ -67,7 +67,7 @@ export function fileAttachmentTestSuite() {
     // Verify the i18n string is added.
     assertTrue(page.i18nExists('addFileLabel'));
     // Verify the replace file label is in the page.
-    assertEquals('Replace', getElementContent('#replaceFileLabel'));
+    assertEquals('Replace', getElementContent('#replaceFileButton'));
     // The addFileContainer should be visible when no file is selected.
     assertTrue(isVisible(getElement('#addFileContainer')));
     // The replaceFileContainer should be invisible when no file is selected.
@@ -101,11 +101,11 @@ export function fileAttachmentTestSuite() {
 
   // Test that when the replace file label is clicked, the file dialog is
   // opened.
-  test('canOpenFileDialogByClickReplaceFileLabel', async () => {
+  test('canOpenFileDialogByClickReplaceFileButton', async () => {
     await initializePage();
     // Verify the add file label is in the page.
-    const replaceFileLabel = getElement('#replaceFileLabel');
-    assertTrue(!!replaceFileLabel);
+    const replaceFileButton = getElement('#replaceFileButton');
+    assertTrue(!!replaceFileButton);
     /**@type {!HTMLInputElement} */
     const fileDialog =
         /**@type {!HTMLInputElement} */ (getElement('#selectFileDialog'));
@@ -117,7 +117,7 @@ export function fileAttachmentTestSuite() {
       fileDialogClicked = true;
     });
 
-    replaceFileLabel.click();
+    replaceFileButton.click();
 
     await fileDialogClickPromise;
     assertTrue(fileDialogClicked);
@@ -149,6 +149,10 @@ export function fileAttachmentTestSuite() {
     assertFalse(isVisible(getElement('#addFileContainer')));
     // The replaceFileContainer should be visible.
     assertTrue(isVisible(getElement('#replaceFileContainer')));
+    // The aria label of the replace file button is set.
+    assertEquals('Replace file', getElement('#replaceFileButton').ariaLabel);
+    // Verify the i18n string is added.
+    assertTrue(page.i18nExists('replaceFileArialLabel'));
   });
 
   // Test that when there is not a file selected, getAttachedFile returns null.
