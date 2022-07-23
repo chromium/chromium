@@ -68,6 +68,7 @@ public class TileRenderer {
     private final int mMinIconSize;
     private final float mIconCornerRadius;
     private int mTitleLinesCount;
+    private boolean mNativeInitializationComplete;
 
     @LayoutRes
     private final int mLayout;
@@ -219,7 +220,7 @@ public class TileRenderer {
 
         tileView.initialize(tile, mTitleLinesCount);
 
-        if (!LibraryLoader.getInstance().isInitialized() || setupDelegate == null) {
+        if (!mNativeInitializationComplete || setupDelegate == null) {
             return tileView;
         }
 
@@ -283,6 +284,14 @@ public class TileRenderer {
         TemplateUrlService searchService = TemplateUrlServiceFactory.get();
         return searchService != null
                 && searchService.isSearchResultsPageFromDefaultSearchProvider(tile.getUrl());
+    }
+
+    /**
+     * Notify the component that the native initialization has completed and the component can
+     * safely execute native code.
+     */
+    public void onNativeInitializationReady() {
+        mNativeInitializationComplete = true;
     }
 
     /**

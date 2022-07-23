@@ -127,6 +127,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
             mRenderer.setImageFetcher(suggestionsUiDelegate.getImageFetcher());
             mRenderer.setTitleLines(titleLines);
         }
+        mRenderer.onNativeInitializationReady();
 
         mContextMenuManager = new ContextMenuManager(suggestionsUiDelegate.getNavigationDelegate(),
                 touchEnabledDelegate, mActivity::closeContextMenu, CONTEXT_MENU_USER_ACTION_PREFIX);

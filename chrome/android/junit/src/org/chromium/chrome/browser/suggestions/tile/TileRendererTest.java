@@ -33,7 +33,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDrawable;
 
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.chrome.R;
@@ -129,7 +128,6 @@ public class TileRendererTest {
         mPostTaskRunner = new ShadowPostTaskImpl();
         ShadowPostTask.setTestImpl(mPostTaskRunner);
 
-        LibraryLoader.getInstance().setLibrariesLoadedForNativeTests();
         TemplateUrlServiceFactory.setInstanceForTesting(mMockTemplateUrlService);
 
         mSharedParent = new LinearLayout(mActivity);
@@ -151,6 +149,7 @@ public class TileRendererTest {
             TileRenderer tileRenderer =
                     new TileRenderer(mActivity, style, titleLines, mMockImageFetcher);
             tileRenderer.setIconGeneratorForTesting(mIconGenerator);
+            tileRenderer.onNativeInitializationReady();
             SuggestionsTileView tileView =
                     tileRenderer.buildTileView(mTile, mSharedParent, mTileSetupDelegate);
             Assert.assertNotNull(tileView);
