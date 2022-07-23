@@ -76,8 +76,8 @@ class SnapshotSessionControllerTest : public testing::Test {
 
   void LoginAsPublicSession() {
     auto account_id = AccountId::FromUserEmail(kPublicAccountEmail);
-    user_manager()->AddPublicAccountUser(account_id);
-    user_manager()->UserLoggedIn(account_id, account_id.GetUserEmail(), false,
+    auto* user = user_manager()->AddPublicAccountUser(account_id);
+    user_manager()->UserLoggedIn(account_id, user->username_hash(), false,
                                  false);
   }
 
@@ -86,6 +86,7 @@ class SnapshotSessionControllerTest : public testing::Test {
   }
 
   void LogoutPublicSession() {
+    user_manager()->LogoutAllUsers();
     auto account_id = AccountId::FromUserEmail(kPublicAccountEmail);
     user_manager()->RemoveUserFromList(account_id);
     session_manager_.SetSessionState(session_manager::SessionState::LOCKED);

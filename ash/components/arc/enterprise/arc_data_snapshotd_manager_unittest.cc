@@ -276,6 +276,7 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
   }
 
   void LogoutPublicSession() {
+    user_manager()->LogoutAllUsers();
     auto account_id = AccountId::FromUserEmail(kPublicAccountEmail);
     user_manager()->RemoveUserFromList(account_id);
   }

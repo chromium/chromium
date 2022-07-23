@@ -148,16 +148,16 @@ void FakeUserManager::UserLoggedIn(const AccountId& account_id,
                                    const std::string& username_hash,
                                    bool browser_restart,
                                    bool is_child) {
-  for (UserList::const_iterator it = users_.begin(); it != users_.end(); ++it) {
-    if ((*it)->username_hash() == username_hash) {
-      (*it)->set_is_logged_in(true);
-      (*it)->SetProfileIsCreated();
-      logged_in_users_.push_back(*it);
-
+  for (auto* user : users_) {
+    if (user->GetAccountId() == account_id) {
+      user->set_is_logged_in(true);
+      user->set_username_hash(username_hash);
+      user->SetProfileIsCreated();
+      logged_in_users_.push_back(user);
       if (!primary_user_)
-        primary_user_ = *it;
+        primary_user_ = user;
       if (!active_user_)
-        active_user_ = *it;
+        active_user_ = user;
       break;
     }
   }
