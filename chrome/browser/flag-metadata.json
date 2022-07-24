@@ -2250,8 +2250,8 @@
   },
   {
     "name": "enable-force-dark",
-    "owners": [ "pdr", "khorimoto@chromium.org", "jessejames@chromium.org" ],
-    "expiry_milestone": 105
+    "owners": [ "beverloo", "pdr" ],
+    "expiry_milestone": 115
   },
   {
     "name": "enable-fre-default-browser-screen-testing",
