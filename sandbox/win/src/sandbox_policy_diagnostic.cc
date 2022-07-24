@@ -370,6 +370,7 @@ base::Value::Dict GetHandlesToClose(const HandleMap& handle_map) {
 // quickly in the BrokerServices tracker thread.
 PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
   DCHECK(policy);
+  ConfigBase* config = policy->config();
   // TODO(crbug/997273) Add more fields once webui plumbing is complete.
   process_id_ = base::strict_cast<uint32_t>(policy->target_->ProcessId());
   lockdown_level_ = policy->lockdown_level_;
@@ -397,17 +398,18 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
     app_container_type_ = policy->app_container_->GetAppContainerType();
   }
 
-  if (policy->policy_) {
-    size_t policy_mem_size = policy->policy_->data_size + sizeof(PolicyGlobal);
+  if (config->policy_) {
+    PolicyGlobal* policy_rules = config->policy_;
+    size_t policy_mem_size = policy_rules->data_size + sizeof(PolicyGlobal);
     policy_rules_.reset(
         static_cast<sandbox::PolicyGlobal*>(::operator new(policy_mem_size)));
-    memcpy(policy_rules_.get(), policy->policy_, policy_mem_size);
+    memcpy(policy_rules_.get(), policy_rules, policy_mem_size);
     // Fixup pointers (see |PolicyGlobal| in policy_low_level.h).
-    PolicyBuffer** original_entries = policy->policy_->entry;
-    PolicyBuffer** copy_base = policy_rules_->entry;
+    PolicyBuffer** original_entries = policy_rules->entry;
+    PolicyBuffer** copy_base = policy_rules->entry;
     for (size_t i = 0; i < kMaxServiceCount; i++) {
-      if (policy_rules_->entry[i]) {
-        policy_rules_->entry[i] = reinterpret_cast<PolicyBuffer*>(
+      if (policy_rules->entry[i]) {
+        policy_rules->entry[i] = reinterpret_cast<PolicyBuffer*>(
             reinterpret_cast<char*>(copy_base) +
             (reinterpret_cast<char*>(original_entries[i]) -
              reinterpret_cast<char*>(original_entries)));

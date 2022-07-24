@@ -4253,11 +4253,14 @@ bool ChromeContentBrowserClient::PreSpawnChild(
   if (result != sandbox::SBOX_ALL_OK)
     return false;
 
+  if (policy->GetConfig()->IsConfigured())
+    return true;
+
   // Allow loading Chrome's DLLs.
   for (const auto* dll : {chrome::kBrowserResourcesDll, chrome::kElfDll}) {
-    result = policy->AddRule(sandbox::SubSystem::kSignedBinary,
-                             sandbox::Semantics::kSignedAllowLoad,
-                             GetModulePath(dll).value().c_str());
+    result = policy->GetConfig()->AddRule(sandbox::SubSystem::kSignedBinary,
+                                          sandbox::Semantics::kSignedAllowLoad,
+                                          GetModulePath(dll).value().c_str());
     if (result != sandbox::SBOX_ALL_OK)
       return false;
   }

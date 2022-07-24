@@ -48,6 +48,11 @@ class TestTargetConfig : public TargetConfig {
  public:
   ~TestTargetConfig() override {}
   bool IsConfigured() const override { return false; }
+  ResultCode AddRule(SubSystem subsystem,
+                     Semantics semantics,
+                     const wchar_t* pattern) override {
+    return SBOX_ALL_OK;
+  }
 };
 
 class TestTargetPolicy : public TargetPolicy {
@@ -99,11 +104,6 @@ class TestTargetPolicy : public TargetPolicy {
   void SetStrictInterceptions() override {}
   ResultCode SetStdoutHandle(HANDLE handle) override { return SBOX_ALL_OK; }
   ResultCode SetStderrHandle(HANDLE handle) override { return SBOX_ALL_OK; }
-  ResultCode AddRule(SubSystem subsystem,
-                     Semantics semantics,
-                     const wchar_t* pattern) override {
-    return SBOX_ALL_OK;
-  }
   ResultCode AddDllToUnload(const wchar_t* dll_name) override {
     blocklisted_dlls_.push_back(dll_name);
     return SBOX_ALL_OK;

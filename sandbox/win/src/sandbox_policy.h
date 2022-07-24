@@ -63,6 +63,21 @@ class [[clang::lto_visibility_public]] TargetConfig {
   // Returns `false` if TargetConfig methods do need to be called to configure
   // this policy object.
   virtual bool IsConfigured() const = 0;
+
+  // Adds a policy rule effective for processes spawned using this policy.
+  // subsystem: One of the above enumerated windows subsystems.
+  // semantics: One of the above enumerated FileSemantics.
+  // pattern: A specific full path or a full path with wildcard patterns.
+  //   The valid wildcards are:
+  //   '*' : Matches zero or more character. Only one in series allowed.
+  //   '?' : Matches a single character. One or more in series are allowed.
+  // Examples:
+  //   "c:\\documents and settings\\vince\\*.dmp"
+  //   "c:\\documents and settings\\*\\crashdumps\\*.dmp"
+  //   "c:\\temp\\app_log_?????_chrome.txt"
+  virtual ResultCode AddRule(SubSystem subsystem,
+                             Semantics semantics,
+                             const wchar_t* pattern) = 0;
 };
 
 // We need [[clang::lto_visibility_public]] because instances of this class are
@@ -217,21 +232,6 @@ class [[clang::lto_visibility_public]] TargetPolicy {
   // file handles, but not console handles.
   virtual ResultCode SetStdoutHandle(HANDLE handle) = 0;
   virtual ResultCode SetStderrHandle(HANDLE handle) = 0;
-
-  // Adds a policy rule effective for processes spawned using this policy.
-  // subsystem: One of the above enumerated windows subsystems.
-  // semantics: One of the above enumerated FileSemantics.
-  // pattern: A specific full path or a full path with wildcard patterns.
-  //   The valid wildcards are:
-  //   '*' : Matches zero or more character. Only one in series allowed.
-  //   '?' : Matches a single character. One or more in series are allowed.
-  // Examples:
-  //   "c:\\documents and settings\\vince\\*.dmp"
-  //   "c:\\documents and settings\\*\\crashdumps\\*.dmp"
-  //   "c:\\temp\\app_log_?????_chrome.txt"
-  virtual ResultCode AddRule(SubSystem subsystem,
-                             Semantics semantics,
-                             const wchar_t* pattern) = 0;
 
   // Adds a dll that will be unloaded in the target process before it gets
   // a chance to initialize itself. Typically, dlls that cause the target

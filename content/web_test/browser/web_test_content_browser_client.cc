@@ -590,14 +590,17 @@ bool WebTestContentBrowserClient::PreSpawnChild(
     sandbox::mojom::Sandbox sandbox_type,
     ChildSpawnFlags flags) {
   if (sandbox_type == sandbox::mojom::Sandbox::kRenderer) {
+    if (policy->GetConfig()->IsConfigured())
+      return true;
+
     // Add sideloaded font files for testing. See also DIR_WINDOWS_FONTS
     // addition in |StartSandboxedProcess|.
     std::vector<std::string> font_files = switches::GetSideloadFontFiles();
     for (std::vector<std::string>::const_iterator i(font_files.begin());
          i != font_files.end(); ++i) {
-      policy->AddRule(sandbox::SubSystem::kFiles,
-                      sandbox::Semantics::kFilesAllowReadonly,
-                      base::UTF8ToWide(*i).c_str());
+      policy->GetConfig()->AddRule(sandbox::SubSystem::kFiles,
+                                   sandbox::Semantics::kFilesAllowReadonly,
+                                   base::UTF8ToWide(*i).c_str());
     }
   }
   return true;

@@ -93,13 +93,16 @@ ConfigBase::ConfigBase() noexcept
 #if DCHECK_IS_ON()
       creating_thread_id_(GetCurrentThreadId()),
 #endif  // DCHECK_IS_ON()
-      configured_(false) {
+      configured_(false),
+      policy_maker_(nullptr),
+      policy_(nullptr) {
 }
 
 bool ConfigBase::IsOnCreatingThread() const {
 #if DCHECK_IS_ON()
   return GetCurrentThreadId() == creating_thread_id_;
 #else  // DCHECK_IS_ON()
+  NOTREACHED();
   return true;
 #endif
 }
@@ -111,8 +114,118 @@ bool ConfigBase::IsConfigured() const {
 bool ConfigBase::Freeze() {
   DCHECK(IsOnCreatingThread());
   DCHECK(!configured_);
+
+  if (policy_) {
+    if (!policy_maker_->Done())
+      return false;
+    // Policy maker is not needed once rules are compiled.
+    policy_maker_.reset();
+  }
   configured_ = true;
   return true;
+}
+
+PolicyGlobal* ConfigBase::policy() {
+  DCHECK(configured_);
+  return policy_;
+}
+
+ConfigBase::~ConfigBase() {
+  delete policy_;  // Allocated by MakeBrokerPolicyMemory.
+}
+
+ResultCode ConfigBase::AddRule(SubSystem subsystem,
+                               Semantics semantics,
+                               const wchar_t* pattern) {
+  DCHECK(IsOnCreatingThread());
+  DCHECK(!configured_);
+  ResultCode result = AddRuleInternal(subsystem, semantics, pattern);
+  LOG_IF(ERROR, result != SBOX_ALL_OK)
+      << "Failed to add sandbox rule."
+      << " error = " << result
+      << ", subsystem = " << static_cast<int>(subsystem)
+      << ", semantics = " << static_cast<int>(semantics) << ", pattern = '"
+      << pattern << "'";
+  return result;
+}
+
+ResultCode ConfigBase::AddRuleInternal(SubSystem subsystem,
+                                       Semantics semantics,
+                                       const wchar_t* pattern) {
+  DCHECK(!configured_);
+  if (!policy_) {
+    policy_ = MakeBrokerPolicyMemory();
+    policy_maker_ = std::make_unique<LowLevelPolicy>(policy_);
+  }
+  DCHECK(policy_maker_);
+
+  switch (subsystem) {
+    case SubSystem::kFiles: {
+      if (!FileSystemPolicy::GenerateRules(pattern, semantics,
+                                           policy_maker_.get())) {
+        NOTREACHED();
+        return SBOX_ERROR_BAD_PARAMS;
+      }
+      break;
+    }
+    case SubSystem::kNamedPipes: {
+      if (!NamedPipePolicy::GenerateRules(pattern, semantics,
+                                          policy_maker_.get())) {
+        NOTREACHED();
+        return SBOX_ERROR_BAD_PARAMS;
+      }
+      break;
+    }
+    case SubSystem::kWin32kLockdown: {
+      // Win32k intercept rules only supported on Windows 8 and above. This must
+      // match the version checks in process_mitigations.cc for consistency.
+      if (base::win::GetVersion() >= base::win::Version::WIN8) {
+        // TODO(549319) Re-enable dcheck once mitigations move to TargetConfig.
+        // DCHECK_EQ(MITIGATION_WIN32K_DISABLE,
+        //          mitigations_ & MITIGATION_WIN32K_DISABLE)
+        //    << "Enable MITIGATION_WIN32K_DISABLE before adding win32k policy "
+        //       "rules.";
+        if (!ProcessMitigationsWin32KLockdownPolicy::GenerateRules(
+                pattern, semantics, policy_maker_.get())) {
+          NOTREACHED();
+          return SBOX_ERROR_BAD_PARAMS;
+        }
+      }
+      break;
+    }
+    case SubSystem::kSignedBinary: {
+      // Signed intercept rules only supported on Windows 10 TH2 and above. This
+      // must match the version checks in process_mitigations.cc for
+      // consistency.
+      if (base::win::GetVersion() >= base::win::Version::WIN10_TH2) {
+        // TODO(549319) Re-enable dcheck once mitigations move to TargetConfig.
+        // DCHECK_EQ(MITIGATION_FORCE_MS_SIGNED_BINS,
+        //          mitigations_ & MITIGATION_FORCE_MS_SIGNED_BINS)
+        //    << "Enable MITIGATION_FORCE_MS_SIGNED_BINS before adding signed "
+        //       "policy rules.";
+        if (!SignedPolicy::GenerateRules(pattern, semantics,
+                                         policy_maker_.get())) {
+          NOTREACHED();
+          return SBOX_ERROR_BAD_PARAMS;
+        }
+      }
+      break;
+    }
+    case SubSystem::kSocket: {
+      // Only one semantic is supported for this subsystem; to allow socket
+      // brokering.
+      DCHECK_EQ(Semantics::kSocketAllowBroker, semantics);
+      // A very simple policy that just allows socket brokering if present.
+      PolicyRule socket_policy(ASK_BROKER);
+      policy_maker_->AddRule(IpcTag::WS2SOCKET, &socket_policy);
+      break;
+    }
+    case SubSystem::kProcess: {
+      return SBOX_ERROR_UNSUPPORTED;
+    }
+  }
+
+  return SBOX_ALL_OK;
 }
 
 PolicyBase::PolicyBase(base::StringPiece tag)
@@ -134,8 +247,6 @@ PolicyBase::PolicyBase(base::StringPiece tag)
       mitigations_(0),
       delayed_mitigations_(0),
       is_csrss_connected_(true),
-      policy_maker_(nullptr),
-      policy_(nullptr),
       lockdown_default_dacl_(false),
       add_restricting_random_sid_(false),
       effective_token_(nullptr),
@@ -144,10 +255,7 @@ PolicyBase::PolicyBase(base::StringPiece tag)
   dispatcher_ = std::make_unique<TopLevelDispatcher>(this);
 }
 
-PolicyBase::~PolicyBase() {
-  delete policy_maker_;
-  delete policy_;
-}
+PolicyBase::~PolicyBase() {}
 
 TargetConfig* PolicyBase::GetConfig() {
   return config();
@@ -397,19 +505,6 @@ ResultCode PolicyBase::SetStderrHandle(HANDLE handle) {
   return SBOX_ALL_OK;
 }
 
-ResultCode PolicyBase::AddRule(SubSystem subsystem,
-                               Semantics semantics,
-                               const wchar_t* pattern) {
-  ResultCode result = AddRuleInternal(subsystem, semantics, pattern);
-  LOG_IF(ERROR, result != SBOX_ALL_OK)
-      << "Failed to add sandbox rule."
-      << " error = " << result
-      << ", subsystem = " << static_cast<int>(subsystem)
-      << ", semantics = " << static_cast<int>(semantics) << ", pattern = '"
-      << pattern << "'";
-  return result;
-}
-
 ResultCode PolicyBase::AddDllToUnload(const wchar_t* dll_name) {
   blocklisted_dlls_.push_back(dll_name);
   return SBOX_ALL_OK;
@@ -554,11 +649,8 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
 ResultCode PolicyBase::ApplyToTarget(std::unique_ptr<TargetProcess> target) {
   if (target_)
     return SBOX_ERROR_UNEXPECTED_CALL;
-
-  if (policy_) {
-    if (!policy_maker_->Done())
-      return SBOX_ERROR_NO_SPACE;
-  }
+  // Policy rules are compiled when the underlying ConfigBase is frozen.
+  DCHECK(config()->IsConfigured());
 
   if (!ApplyProcessMitigationsToSuspendedProcess(target->Process(),
                                                  mitigations_)) {
@@ -576,8 +668,8 @@ ResultCode PolicyBase::ApplyToTarget(std::unique_ptr<TargetProcess> target) {
   DWORD win_error = ERROR_SUCCESS;
   // Initialize the sandbox infrastructure for the target.
   // TODO(wfh) do something with win_error code here.
-  ret = target->Init(dispatcher_.get(), policy_, kIPCMemSize, kPolMemSize,
-                     &win_error);
+  ret = target->Init(dispatcher_.get(), config()->policy(), kIPCMemSize,
+                     kPolMemSize, &win_error);
 
   if (ret != SBOX_ALL_OK)
     return ret;
@@ -634,8 +726,9 @@ ResultCode PolicyBase::SetDisconnectCsrss() {
 
 EvalResult PolicyBase::EvalPolicy(IpcTag service,
                                   CountedParameterSetBase* params) {
-  if (policy_) {
-    if (!policy_->entry[static_cast<size_t>(service)]) {
+  PolicyGlobal* policy = config()->policy();
+  if (policy) {
+    if (!policy->entry[static_cast<size_t>(service)]) {
       // There is no policy for this particular service. This is not a big
       // deal.
       return DENY_ACCESS;
@@ -646,7 +739,7 @@ EvalResult PolicyBase::EvalPolicy(IpcTag service,
         return SIGNAL_ALARM;
       }
     }
-    PolicyProcessor pol_evaluator(policy_->entry[static_cast<size_t>(service)]);
+    PolicyProcessor pol_evaluator(policy->entry[static_cast<size_t>(service)]);
     PolicyResult result =
         pol_evaluator.Evaluate(kShortEval, params->parameters, params->count);
     if (POLICY_MATCH == result)
@@ -712,10 +805,10 @@ void PolicyBase::SetEffectiveToken(HANDLE token) {
 
 ResultCode PolicyBase::SetupAllInterceptions(TargetProcess& target) {
   InterceptionManager manager(target, relaxed_interceptions_);
-
-  if (policy_) {
+  PolicyGlobal* policy = config()->policy();
+  if (policy) {
     for (size_t i = 0; i < kMaxIpcTag; i++) {
-      if (policy_->entry[i] &&
+      if (policy->entry[i] &&
           !dispatcher_->SetupService(&manager, static_cast<IpcTag>(i)))
         return SBOX_ERROR_SETUP_INTERCEPTION_SERVICE;
     }
@@ -740,80 +833,6 @@ ResultCode PolicyBase::SetupAllInterceptions(TargetProcess& target) {
 
 bool PolicyBase::SetupHandleCloser(TargetProcess& target) {
   return handle_closer_.InitializeTargetHandles(target);
-}
-
-ResultCode PolicyBase::AddRuleInternal(SubSystem subsystem,
-                                       Semantics semantics,
-                                       const wchar_t* pattern) {
-  if (!policy_) {
-    policy_ = MakeBrokerPolicyMemory();
-    DCHECK(policy_);
-    policy_maker_ = new LowLevelPolicy(policy_);
-    DCHECK(policy_maker_);
-  }
-
-  switch (subsystem) {
-    case SubSystem::kFiles: {
-      if (!FileSystemPolicy::GenerateRules(pattern, semantics, policy_maker_)) {
-        NOTREACHED();
-        return SBOX_ERROR_BAD_PARAMS;
-      }
-      break;
-    }
-    case SubSystem::kNamedPipes: {
-      if (!NamedPipePolicy::GenerateRules(pattern, semantics, policy_maker_)) {
-        NOTREACHED();
-        return SBOX_ERROR_BAD_PARAMS;
-      }
-      break;
-    }
-    case SubSystem::kWin32kLockdown: {
-      // Win32k intercept rules only supported on Windows 8 and above. This must
-      // match the version checks in process_mitigations.cc for consistency.
-      if (base::win::GetVersion() >= base::win::Version::WIN8) {
-        DCHECK_EQ(MITIGATION_WIN32K_DISABLE,
-                  mitigations_ & MITIGATION_WIN32K_DISABLE)
-            << "Enable MITIGATION_WIN32K_DISABLE before adding win32k policy "
-               "rules.";
-        if (!ProcessMitigationsWin32KLockdownPolicy::GenerateRules(
-                pattern, semantics, policy_maker_)) {
-          NOTREACHED();
-          return SBOX_ERROR_BAD_PARAMS;
-        }
-      }
-      break;
-    }
-    case SubSystem::kSignedBinary: {
-      // Signed intercept rules only supported on Windows 10 TH2 and above. This
-      // must match the version checks in process_mitigations.cc for
-      // consistency.
-      if (base::win::GetVersion() >= base::win::Version::WIN10_TH2) {
-        DCHECK_EQ(MITIGATION_FORCE_MS_SIGNED_BINS,
-                  mitigations_ & MITIGATION_FORCE_MS_SIGNED_BINS)
-            << "Enable MITIGATION_FORCE_MS_SIGNED_BINS before adding signed "
-               "policy rules.";
-        if (!SignedPolicy::GenerateRules(pattern, semantics, policy_maker_)) {
-          NOTREACHED();
-          return SBOX_ERROR_BAD_PARAMS;
-        }
-      }
-      break;
-    }
-    case SubSystem::kSocket: {
-      // Only one semantic is supported for this subsystem; to allow socket
-      // brokering.
-      DCHECK_EQ(Semantics::kSocketAllowBroker, semantics);
-      // A very simple policy that just allows socket brokering if present.
-      PolicyRule socket_policy(ASK_BROKER);
-      policy_maker_->AddRule(IpcTag::WS2SOCKET, &socket_policy);
-      break;
-    }
-    case SubSystem::kProcess: {
-      return SBOX_ERROR_UNSUPPORTED;
-    }
-  }
-
-  return SBOX_ALL_OK;
 }
 
 void PolicyBase::SetAllowNoSandboxJob() {

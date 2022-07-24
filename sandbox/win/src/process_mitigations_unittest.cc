@@ -123,16 +123,16 @@ void TestWin10MsSigned(int expected,
     dll_path = dll_path.Append(hooking_dll::g_hook_dll_file);
 
     if (add_dll_permission) {
-      EXPECT_EQ(sandbox::SBOX_ALL_OK,
-                policy->AddRule(sandbox::SubSystem::kSignedBinary,
-                                sandbox::Semantics::kSignedAllowLoad,
-                                dll_path.value().c_str()));
+      EXPECT_EQ(sandbox::SBOX_ALL_OK, policy->GetConfig()->AddRule(
+                                          sandbox::SubSystem::kSignedBinary,
+                                          sandbox::Semantics::kSignedAllowLoad,
+                                          dll_path.value().c_str()));
     }
     if (add_directory_permission) {
       base::FilePath exe_path;
       EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
       EXPECT_EQ(sandbox::SBOX_ALL_OK,
-                policy->AddRule(
+                policy->GetConfig()->AddRule(
                     sandbox::SubSystem::kSignedBinary,
                     sandbox::Semantics::kSignedAllowLoad,
                     exe_path.DirName().AppendASCII("*.dll").value().c_str()));
@@ -876,11 +876,11 @@ TEST(ProcessMitigationsTest, DISABLED_CheckWin10MsSignedPolicySuccess) {
   base::FilePath exe_path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   // Allow all *.dll in current directory to load.
-  EXPECT_EQ(
-      sandbox::SBOX_ALL_OK,
-      policy->AddRule(sandbox::SubSystem::kSignedBinary,
-                      sandbox::Semantics::kSignedAllowLoad,
-                      exe_path.DirName().AppendASCII("*.dll").value().c_str()));
+  EXPECT_EQ(sandbox::SBOX_ALL_OK,
+            policy->GetConfig()->AddRule(
+                sandbox::SubSystem::kSignedBinary,
+                sandbox::Semantics::kSignedAllowLoad,
+                exe_path.DirName().AppendASCII("*.dll").value().c_str()));
 #endif  // defined(COMPONENT_BUILD)
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));

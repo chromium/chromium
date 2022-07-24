@@ -21,18 +21,19 @@ constexpr size_t maxParams = 2;
 // renderer sandbox in Chrome.
 std::unique_ptr<sandbox::PolicyBase> InitPolicy() {
   auto policy = std::make_unique<sandbox::PolicyBase>("");
+  auto* config = policy->GetConfig();
 
-  policy->AddRule(sandbox::SubSystem::kWin32kLockdown,
+  config->AddRule(sandbox::SubSystem::kWin32kLockdown,
                   sandbox::Semantics::kFakeGdiInit, nullptr);
 
-  policy->AddRule(sandbox::SubSystem::kFiles,
+  config->AddRule(sandbox::SubSystem::kFiles,
                   sandbox::Semantics::kFilesAllowAny, L"\\??\\pipe\\chrome.*");
 
-  policy->AddRule(sandbox::SubSystem::kNamedPipes,
+  config->AddRule(sandbox::SubSystem::kNamedPipes,
                   sandbox::Semantics::kNamedPipesAllowAny,
                   L"\\\\.\\pipe\\chrome.nacl.*");
 
-  policy->AddRule(sandbox::SubSystem::kNamedPipes,
+  config->AddRule(sandbox::SubSystem::kNamedPipes,
                   sandbox::Semantics::kNamedPipesAllowAny,
                   L"\\\\.\\pipe\\chrome.sync.*");
 

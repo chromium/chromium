@@ -46,16 +46,25 @@ struct PolicyGlobal;
 class ConfigBase final : public TargetConfig {
  public:
   ConfigBase() noexcept;
-  ~ConfigBase() override = default;
+  ~ConfigBase() override;
 
   ConfigBase(const ConfigBase&) = delete;
   ConfigBase& operator=(const ConfigBase&) = delete;
 
   bool IsConfigured() const override;
 
+  ResultCode AddRule(SubSystem subsystem,
+                     Semantics semantics,
+                     const wchar_t* pattern) override;
+
  private:
   // Can call Freeze()
   friend class BrokerServicesBase;
+  // Can examine private fields.
+  friend class PolicyDiagnostic;
+  // Can call private accessors.
+  friend class PolicyBase;
+
   // Promise that no further changes will be made to the configuration, and
   // this object can be reused by multiple policies.
   bool Freeze();
@@ -70,6 +79,19 @@ class ConfigBase final : public TargetConfig {
 
   // Once true the configuration is frozen and can be applied to later policies.
   bool configured_ = false;
+
+  ResultCode AddRuleInternal(SubSystem subsystem,
+                             Semantics semantics,
+                             const wchar_t* pattern);
+
+  // Should only be called once the object is configured.
+  PolicyGlobal* policy();
+
+  // Object in charge of generating the low level policy. Will be reset() when
+  // Freeze() is called.
+  std::unique_ptr<LowLevelPolicy> policy_maker_;
+  // Memory structure that stores the low level policy rules for proxied calls.
+  raw_ptr<PolicyGlobal> policy_;
 };
 
 class PolicyBase final : public TargetPolicy {
@@ -104,9 +126,6 @@ class PolicyBase final : public TargetPolicy {
   void SetStrictInterceptions() override;
   ResultCode SetStdoutHandle(HANDLE handle) override;
   ResultCode SetStderrHandle(HANDLE handle) override;
-  ResultCode AddRule(SubSystem subsystem,
-                     Semantics semantics,
-                     const wchar_t* pattern) override;
   ResultCode AddDllToUnload(const wchar_t* dll_name) override;
   ResultCode AddKernelObjectToClose(const wchar_t* handle_type,
                                     const wchar_t* handle_name) override;
@@ -174,10 +193,6 @@ class PolicyBase final : public TargetPolicy {
   // Sets up the handle closer for a new target. This policy must own |target|.
   bool SetupHandleCloser(TargetProcess& target);
 
-  ResultCode AddRuleInternal(SubSystem subsystem,
-                             Semantics semantics,
-                             const wchar_t* pattern);
-
   // TargetConfig will really be a ConfigBase.
   bool SetConfig(TargetConfig* config);
 
@@ -211,10 +226,6 @@ class PolicyBase final : public TargetPolicy {
   MitigationFlags mitigations_;
   MitigationFlags delayed_mitigations_;
   bool is_csrss_connected_;
-  // Object in charge of generating the low level policy.
-  raw_ptr<LowLevelPolicy> policy_maker_;
-  // Memory structure that stores the low level policy.
-  raw_ptr<PolicyGlobal> policy_;
   // The list of dlls to unload in the target process.
   std::vector<std::wstring> blocklisted_dlls_;
   // This is a map of handle-types to names that we need to close in the

@@ -146,7 +146,11 @@ bool TestRunner::AddRule(SubSystem subsystem,
   if (!is_init_)
     return false;
 
-  return (SBOX_ALL_OK == policy_->AddRule(subsystem, semantics, pattern));
+  if (policy_->GetConfig()->IsConfigured())
+    return false;
+
+  return (SBOX_ALL_OK ==
+          policy_->GetConfig()->AddRule(subsystem, semantics, pattern));
 }
 
 bool TestRunner::AddRuleSys32(Semantics semantics, const wchar_t* pattern) {

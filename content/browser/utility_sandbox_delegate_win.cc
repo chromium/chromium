@@ -191,13 +191,16 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     if (sandbox::SBOX_ALL_OK != policy->SetDelayedProcessMitigations(flags))
       return false;
 
-    // Allow file read. These should match IconLoader::GroupForFilepath().
-    policy->AddRule(sandbox::SubSystem::kFiles,
-                    sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.exe");
-    policy->AddRule(sandbox::SubSystem::kFiles,
-                    sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.dll");
-    policy->AddRule(sandbox::SubSystem::kFiles,
-                    sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.ico");
+    if (!policy->GetConfig()->IsConfigured()) {
+      auto* config = policy->GetConfig();
+      // Allow file read. These should match IconLoader::GroupForFilepath().
+      config->AddRule(sandbox::SubSystem::kFiles,
+                      sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.exe");
+      config->AddRule(sandbox::SubSystem::kFiles,
+                      sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.dll");
+      config->AddRule(sandbox::SubSystem::kFiles,
+                      sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.ico");
+    }
   }
 
   if (sandbox_type_ == sandbox::mojom::Sandbox::kXrCompositing &&

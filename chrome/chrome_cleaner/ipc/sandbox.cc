@@ -106,9 +106,10 @@ std::unique_ptr<sandbox::TargetPolicy> GetSandboxPolicy(
       sandbox::MITIGATION_DLL_SEARCH_ORDER);
   CHECK_EQ(sandbox::SBOX_ALL_OK, sandbox_result);
 
+  sandbox::TargetConfig* config = policy->GetConfig();
   // This rule is needed to allow user32.dll and gdi32.dll to initialize during
   // load, while still blocking other WIN32K calls.
-  sandbox_result = policy->AddRule(sandbox::SubSystem::kWin32kLockdown,
+  sandbox_result = config->AddRule(sandbox::SubSystem::kWin32kLockdown,
                                    sandbox::Semantics::kFakeGdiInit, nullptr);
   CHECK_EQ(sandbox::SBOX_ALL_OK, sandbox_result);
 
@@ -118,7 +119,7 @@ std::unique_ptr<sandbox::TargetPolicy> GetSandboxPolicy(
   if (!product_path.value().empty()) {
     // In developer builds, let the sandbox target process write logs to the
     // product directory.
-    sandbox_result = policy->AddRule(sandbox::SubSystem::kFiles,
+    sandbox_result = config->AddRule(sandbox::SubSystem::kFiles,
                                      sandbox::Semantics::kFilesAllowAny,
                                      product_path.Append(L"*").value().c_str());
     LOG_IF(ERROR, sandbox_result != sandbox::SBOX_ALL_OK)
