@@ -4671,6 +4671,13 @@
        {}
       ]
      ],
+     "chrome-bug-1345806.html": [
+      "afe3029d00bf0027b144574b933a26c8ca70541f",
+      [
+       null,
+       {}
+      ]
+     ],
      "firefox-bug-1688293.html": [
       "9ab1a88312683a66798cb52693c2ba4389222ff4",
       [
@@ -447826,14 +447833,14 @@
          ]
         ],
         "canvas-display-p3-drawImage-ImageBitmap-video.html": [
-         "11a136fd5007ca29fb3d23f1252f4f465c6e3f35",
+         "3e86bb55967367946c24eb9635942c15465c521c",
          [
           null,
           {}
          ]
         ],
         "canvas-display-p3-drawImage-video.html": [
-         "34c45d24672f7ac6a28c4940b92c33112df8b2ae",
+         "1b04cde779e0980d2eb49be970bb5d690ae8bf8c",
          [
           null,
           {}

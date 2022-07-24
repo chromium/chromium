@@ -2320,7 +2320,9 @@ crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body
 crbug.com/821455 editing/pasteboard/drag-files-to-editable-element.html [ Failure ]
 
 crbug.com/1170052 external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-audio-is-silence.https.html [ Pass Timeout ]
-crbug.com/1174937 virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-clone.https.html [ Crash ]
+crbug.com/1174937 [ Mac10.15 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-clone.https.html [ Crash ]
+crbug.com/1174937 [ Mac11 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-clone.https.html [ Crash ]
+crbug.com/1174937 [ Win10.20h2 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-clone.https.html [ Crash ]
 crbug.com/1174937 external/wpt/mediacapture-streams/MediaStream-clone.https.html [ Crash ]
 
 crbug.com/766135 fast/dom/Window/redirect-with-timer.html [ Pass Timeout ]

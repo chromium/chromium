@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Tests that cloning MediaStream objects works as expected
-FAIL Tests that cloning MediaStreamTrack objects works as expected promise_test: Unhandled rejection with value: object "NotReadableError: Could not start video source"
-Harness: the test ran to completion.
-
