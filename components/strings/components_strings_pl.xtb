@@ -998,7 +998,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3658742229777143148">Wersja</translation>
 <translation id="3664782872746246217">Słowa kluczowe:</translation>
 <translation id="3667704023705708645">Kapitał podwyższonego ryzyka</translation>
-<translation id="367108335512738711">Zakładki Chrome</translation>
 <translation id="3671540257457995106">Zezwolić na zmianę rozmiaru?</translation>
 <translation id="3675563144891642599">Rolka 3</translation>
 <translation id="3676592649209844519">Identyfikator urządzenia:</translation>
@@ -1279,7 +1278,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4435702339979719576">pocztówka)</translation>
 <translation id="443673843213245140">Korzystanie z serwera proxy jest wyłączone, ale podano konfigurację proxy.</translation>
 <translation id="4441832193888514600">Ignorowana, ponieważ tę zasadę można skonfigurować wyłącznie jako dotyczącą użytkowników i obowiązującą w chmurze.</translation>
-<translation id="4442470707340296952">Karty w Chrome</translation>
 <translation id="4450893287417543264">Nie pokazuj ponownie</translation>
 <translation id="4451135742916150903">Może prosić o zgodę na połączenie z urządzeniami HID</translation>
 <translation id="4452328064229197696">Użyte właśnie hasło znaleźliśmy jako ujawnione w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł Google zaleca sprawdzenie zapisanych haseł – pozwoli to zabezpieczyć Twoje konta.</translation>
@@ -2031,7 +2029,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6579630537141957243">Podłączyć urządzenie MIDI?</translation>
 <translation id="6579990219486187401">Jasnoróżowy</translation>
 <translation id="6583674473685352014">B6 (koperta)</translation>
-<translation id="6585526963651937128">Historia Chrome</translation>
 <translation id="6587182488465657433">Przeglądarka Chrome znalazła użyte właśnie hasło w naruszeniu bezpieczeństwa danych. W trosce o bezpieczeństwo Twoich kont zalecamy jak najszybszą jego zmianę i sprawdzenie zapisanych haseł.</translation>
 <translation id="6587923378399804057">Skopiowany link</translation>
 <translation id="6591833882275308647">Twoje urządzenie <ph name="DEVICE_TYPE" /> nie jest zarządzane</translation>
@@ -2823,7 +2820,6 @@ Dodatkowe informacje:
 <translation id="8805819170075074995">Pozycja na liście „<ph name="LANGUAGE_ID" />”: pozycja została zignorowana, ponieważ występuje też w zasadzie SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Produkty do kąpieli i pielęgnacji ciała</translation>
 <translation id="8807160976559152894">Przycięcie po każdej stronie</translation>
-<translation id="8808828119384186784">Ustawienia Chrome</translation>
 <translation id="8813277370772331957">Przypomnij później</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by zaktualizować przeglądarkę Chrome z poziomu jej ustawień.</translation>
 <translation id="8820817407110198400">Zakładki</translation>

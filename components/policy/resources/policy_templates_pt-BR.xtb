@@ -1103,6 +1103,7 @@ Web e PWAs. No momento, com suporte apenas no
       Se ela estiver ativada ou não for definida, a definição das Respostas rápidas ficará ativada.
       Se a política estiver desativada, a definição das Respostas rápidas ficará desativada.</translation>
 <translation id="209586405398070749">Canal Stable</translation>
+<translation id="2096932573113293941">Pedir permissão ao usuário para executar plug-ins que exigem autorização</translation>
 <translation id="2098658257603918882">Ativar relato de uso e dados relacionados a falhas</translation>
 <translation id="2104418465060359056">Fornecer informações sobre extensões e plug-ins</translation>
 <translation id="2106627642643925514">Modifica o modo padrão de impressão com PIN. Se o modo não estiver disponível, a política será ignorada.</translation>
@@ -1232,6 +1233,7 @@ Web e PWAs. No momento, com suporte apenas no
 <translation id="2223393221350938149">Não permitir que sites executem o JIT do JavaScript</translation>
 <translation id="2223582957891074498">Se a política for definida como verdadeira, não será permitido fazer capturas de tela com os atalhos do teclado ou APIs de extensão. Se ela for definida como falsa, as capturas de tela serão permitidas.</translation>
 <translation id="2223598546285729819">Configuração padrão de notificações</translation>
+<translation id="222673035924187991">Ativar Encrypted ClientHello do TLS</translation>
 <translation id="2231726854197443389">Esta política controla se os usuários podem ativar o HTTPS-Only Mode nas Configurações. O HTTPS-Only Mode faz upgrade de todas as navegações para HTTPS.
       Se esta configuração for deixada sem definição ou for permitida, os usuários poderão ativar o HTTPS-Only Mode.
       Se ela não for permitida, os usuários não poderão ativar o HTTPS-Only Mode.
@@ -1352,6 +1354,7 @@ Web e PWAs. No momento, com suporte apenas no
 <translation id="2349117476121456297">Se esta política for definida como verdadeira, a primeira linha de teclas do teclado funcionará como comandos de teclas de função. Pressionar a tecla de pesquisa faz com que elas voltem a funcionar como teclas de mídia.
 
       Se esta política for definida como falsa, as teclas funcionarão como comandos de teclas de mídia por padrão. Pressionar a tecla de pesquisa faz com que elas funcionem como teclas de função.</translation>
+<translation id="2354439478396602136">Mostrar recomendações de apps no acesso rápido do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2355876547176311490">Desativar o uso de servidores de redirecionamento pelo host de acesso remoto</translation>
 <translation id="2358176879566587521">Esta política foi removida. Ela não é compatível com esta versão do <ph name="PRODUCT_NAME" />. Leia mais em https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">Janela de tempo de reinicialização</translation>
@@ -1578,6 +1581,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Os usuários não podem mudar as pastas em que os favoritos estão, embora seja possível ocultá-las da barra de favoritos. O nome padrão da pasta de favoritos gerenciados é "Favoritos gerenciados", mas ele pode ser modificado ao adicionar um novo subdicionário à política com uma única chave chamada "<ph name="TOPLEVEL_NAME" />" usando o nome da pasta desejada como valor. Os favoritos gerenciados não são sincronizados com a conta do usuário, e as extensões não podem modificá-los.</translation>
 <translation id="2552966063069741410">Fuso horário</translation>
 <translation id="2555244983262829274">Ocultar o botão "Página inicial" na barra de ferramentas</translation>
+<translation id="2562213287271514629">Permitir que o <ph name="FLASH_PLUGIN_NAME" /> desatualizado seja usado como o <ph name="FLASH_PLUGIN_NAME" /> normal</translation>
 <translation id="2562339630163277285">Especifica o URL do mecanismo de pesquisa usado para fornecer resultados instantâneos. O URL deve conter a string <ph name="SEARCH_TERM_MARKER" />, que será substituída no instante da consulta pelo texto que o usuário digitou até o momento.
 
           Esta política é opcional. Se ela não for definida, nenhum resultado de pesquisa instantânea será fornecido.
@@ -1622,6 +1626,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2593762551209145088">O "Navegação segura" nunca está ativado.</translation>
 <translation id="26023406105317310">Configurar contas do Kerberos</translation>
 <translation id="2604182581880595781">Configurar políticas relacionadas ao Compartilhamento de arquivos de rede.</translation>
+<translation id="2608039968712973520">Pedir permissão ao usuário para executar o <ph name="FLASH_PLUGIN_NAME" /> desatualizado</translation>
 <translation id="2608535066974278204">Período (em minutos) que especifica a duração da janela de reinicialização.</translation>
 <translation id="2608887839902987727">Impedir que a autenticação do portal cativo ignore as configurações de proxy</translation>
 <translation id="2608985885792348429">Configuração padrão da área de transferência</translation>
@@ -1673,6 +1678,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Esta política foi removida na versão M77.
       Ela se aplica à tela de login. Consulte também a política <ph name="SITE_PER_PROCESS_POLICY_NAME" />, que se aplica à sessão do usuário. É recomendado definir as duas com o mesmo valor. Se os valores não forem iguais, poderá haver um atraso ao entrar em uma sessão enquanto o valor especificado pela política do usuário estiver sendo aplicado.
       </translation>
+<translation id="2697717608663878828">Ativar o experimento Encrypted ClientHello do TLS</translation>
 <translation id="2702023190395322609">Ativar recomendações de mídia</translation>
 <translation id="270582584528242502">Não mostrar uma caixa de diálogo de alerta quando o usuário tentar sair</translation>
 <translation id="2706708761587205154">Permitir impressão apenas com PIN</translation>
@@ -2269,6 +2275,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3255762580838224124">A definição da política faz com que cada tela gire para a orientação especificada em todas as reinicializações e na primeira vez que ela for conectada depois que o valor da política mudar. O usuário pode mudar a rotação da tela na página de configurações depois de fazer login, mas as mudanças serão revertidas após a próxima reinicialização. Esta política se aplica às telas primária e secundária.
 
       Se ela não for definida, o valor padrão será 0 graus e o usuário poderá mudá-lo. Neste caso, o valor padrão não será reaplicado após a reinicialização.</translation>
+<translation id="3258380413685430793">Executar todo o conteúdo do <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="325883417142483505">Se a política for definida, será possível definir uma lista de URLs de login corporativos (apenas protocolos HTTP e HTTPS). O serviço de proteção de senhas capturará hashes com sal de senhas nesses URLs e os usará para detectar a reutilização. Para que o <ph name="PRODUCT_NAME" /> capture hashes com sal de senhas corretamente, verifique se a página de login segue estas diretrizes (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
 
       Se a configuração for desativada ou não for definida, o serviço de proteção de senha capturará apenas hashes com sal de senhas em https://accounts.google.com.
@@ -2333,6 +2340,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Observação: leia mais sobre as políticas de mitigação de processos em https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="3339271789059866414">Configura a disponibilidade do serviço de proxy do sistema e as credenciais de proxy para os serviços do sistema.
       Se a política não for definida, o serviço de proxy do sistema não estará disponível.</translation>
+<translation id="334231891933432876">Desconectar o usuário assim que a conta perder a autenticação</translation>
 <translation id="3348799281602260763">Se ativadas, as conexões de ponto WebRTC podem fazer downgrade para versões
       obsoletas dos protocolos TLS/DTLS (DTLS 1.0, TLS 1.0 e TLS 1.1).
       Quando esta política estiver desativada ou não for definida, essas versões TLS/DTLS serão
@@ -2375,6 +2383,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se a política não for definida, o tempo limite de 0 milissegundos será usado.
 
       Se a <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> não for definida, esta política não terá efeito.</translation>
+<translation id="3397883909301547525">Não mostrar recomendações de apps no acesso rápido do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3399859571630358395">Forçar a desativação do Pareamento rápido (pareamento rápido por Bluetooth).</translation>
 <translation id="341285788698114069">Esta política controla a prioridade do processo de áudio no Windows.
       Se ela for ativada, o processo de áudio será executado com prioridade acima do normal.
@@ -2452,6 +2461,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       A disponibilidade da funcionalidade dependerá também da política do usuário correspondente.</translation>
 <translation id="3495602011142234826">Se for definida como verdadeira, essa extensão poderá usar todas as chaves designadas para uso corporativo para assinar dados arbitrários. Se definida como falsa, ela não poderá acessar nenhuma dessas chaves e o usuário também não poderá conceder permissão de acesso. No entanto, uma extensão poderá acessar uma chave uma única vez se a mesma extensão tiver gerado essa chave.</translation>
 <translation id="3496296378755072552">Gerenciador de senhas</translation>
+<translation id="3496761649331792755">Ativar a barra de favoritos</translation>
 <translation id="3498109920669229084">Se definida, a política especificará as extensões que não estão sujeitas à lista de bloqueio.
 
        Um valor da lista de bloqueio de <ph name="ALL_EXTENSIONS" /> significa que todas as extensões estão bloqueadas e que os usuários só podem instalar extensões que estejam na lista de permissões.
@@ -3288,6 +3298,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="449423975179525290">Configura políticas relacionadas ao <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="449784980858429908">Permitir automaticamente que os sites se conectem a todas as portas seriais.</translation>
 <translation id="450080746522343150">Bloquear todos os downloads.</translation>
+<translation id="45036050223225148">Desativar o experimento Encrypted ClientHello do TLS</translation>
 <translation id="4508728400492074981">Controla as políticas do recurso First-Party Sets.</translation>
 <translation id="4510923771103268849">O usuário tem permissão de acesso root aos contêineres do Crostini</translation>
 <translation id="4512407512989846472">Permite bloquear cópias para a área de transferência em URLs específicas</translation>
@@ -3324,6 +3335,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Se esta política não for definida, o usuário poderá desativar qualquer plug-in instalado no sistema.</translation>
 <translation id="4549405078915181477">Ativar o Tempo de Uso para sites</translation>
 <translation id="4554651132977135445">Modo de processamento loopback da política do usuário</translation>
+<translation id="4554991346503872538">Nunca oferecer tradução</translation>
 <translation id="4555850956567117258">Ativar declaração remota para o usuário</translation>
 <translation id="4557134566541205630">URL da página "Nova guia" do provedor de pesquisa padrão</translation>
 <translation id="4558166110367609724">Ignora os TOS automaticamente e carrega o navegador.</translation>
@@ -3769,6 +3781,7 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 <translation id="5109383437323376357">Determinar a disponibilidade de variações</translation>
 <translation id="5124368997194894978">Ativar inicialização em CA (corrente alternada)</translation>
 <translation id="5130213897914754028">Evitar que os sites usem o SharedArrayBuffers</translation>
+<translation id="5130935469849337738">Sempre oferecer tradução</translation>
 <translation id="5141670636904227950">Definir o tipo de lupa padrão ativada na tela de login</translation>
 <translation id="5142301680741828703">Sempre renderizar os seguintes padrões de URL no <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="5143258831402123447">As jornadas não ficarão visíveis em chrome://history/journeys.</translation>
@@ -3899,6 +3912,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se a política for definida como <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> em uma conta, ela vai ter permissão para fazer login apenas como conta principal, e não como secundária.</translation>
 <translation id="523505283826916779">Configurações de acessibilidade</translation>
+<translation id="5238275681097851753">Permitir que determinados conteúdos do <ph name="FLASH_PLUGIN_NAME" /> sejam bloqueados</translation>
 <translation id="5238976843489093540">Forçar a ativação do Pareamento rápido (pareamento rápido por Bluetooth).</translation>
 <translation id="52393120393725840">Se a política for definida como "Ativada", os usuários poderão fazer com que o <ph name="PRODUCT_NAME" /> se lembre de senhas e as forneça na próxima vez em que eles fizerem login em um site.
 
@@ -3965,6 +3979,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Não definir a política significa que os usuários não poderão jogar no <ph name="PRODUCT_OS_NAME" /> registrado, mas poderão fazer isso em outras circunstâncias.</translation>
 <translation id="529457411593078576">Ativar TOS durante a primeira execução do CCT</translation>
+<translation id="5297948043665200363">Permitir que o usuário permaneça conectado depois que a conta perder a autenticação</translation>
 <translation id="5298949392804966105">Nenhuma restrição em contas gerenciadas</translation>
 <translation id="530134925949808452">A hora do dia, no horário local, em que a cota de uso é renovada.</translation>
 <translation id="5303080953475303561">Se a política for definida, ela controlará a frequência com que a tela de bloqueio solicita a senha para o desbloqueio rápido. Quando a tela de bloqueio aparece, se a última senha digitada tiver sido inserida antes da janela de tempo especificada pelo valor escolhido, o desbloqueio rápido não ficará disponível. Se os usuários continuarem na tela de bloqueio após esse período, uma senha será solicitada na próxima vez que o código errado for digitado ou que eles acessarem a tela de bloqueio, o que ocorrer primeiro.
@@ -4573,6 +4588,13 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Em dispositivos <ph name="MS_WIN_NAME" /> ou <ph name="MAC_OS_NAME" />, esta política só tem efeito quando <ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME" /> também está ativada.</translation>
 <translation id="5932767795525445337">Esta política também pode ser usada para fixar apps Android.</translation>
+<translation id="5936193585187054065">O Encrypted ClientHello (ECH) é uma extensão do TLS para criptografar campos confidenciais do ClientHello e melhorar a privacidade.
+
+      Se esta política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> vai seguir o processo de lançamento padrão do ECH. Se ela for desativada, o <ph name="PRODUCT_NAME" /> não vai ativar o ECH.
+
+      Quando o recurso está ativado, o <ph name="PRODUCT_NAME" /> pode ou não usar o ECH, dependendo do suporte do servidor, da disponibilidade do registro DNS HTTPS ou do status de lançamento.
+
+      O ECH é um protocolo em evolução, o que significa que a implementação do <ph name="PRODUCT_NAME" /> está sujeita a mudanças. Assim, esta política é uma medida temporária para controlar a implementação experimental inicial. Ela vai ser substituída por controles finais quando o protocolo for finalizado.</translation>
 <translation id="5939656968921014919">Desativar o modo de desenvolvedor para apps isolados</translation>
 <translation id="5945312246863177268">Não permite que os usuários cliquem na notificação do recurso Seu smartphone para abrir o app Eche.</translation>
 <translation id="5946082169633555022">Canal Beta</translation>
@@ -5188,6 +5210,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
           Esta política não impede que administradores corporativos se conectem a dispositivos <ph name="PRODUCT_OS_NAME" /> gerenciados.
 
           Esta política não vai ter efeito se for ativada, deixada vazia ou não for definida.</translation>
+<translation id="6583249367505445969">Desativar a barra de favoritos</translation>
 <translation id="6584541828182430328">Desativar a exibição de alertas de tela cheia</translation>
 <translation id="6593350713192882944">Ativar Respostas rápidas</translation>
 <translation id="6594372503585248865">Ativar IUs relacionadas à conexão no computador do host remoto quando uma conexão estiver ativa</translation>
@@ -5663,6 +5686,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="7040229947030068419">Exemplo de valor:</translation>
 <translation id="7044883996351280650">Controlar o serviço de backup e restauração do Android</translation>
 <translation id="7047495632846973438">Especifica se a política de permissões de captura de tela foi marcada ou ignorada.</translation>
+<translation id="7055022222176591388">Não permitir o <ph name="FLASH_PLUGIN_NAME" /> desatualizado</translation>
 <translation id="7066292150801784098">Desativar a interação de usuários remotos com janelas elevadas em sessões de assistência remota</translation>
 <translation id="706669471845501145">Permitir que os sites exibam notificações da área de trabalho</translation>
 <translation id="70681795425744184">Não permitir que a Área de trabalho remota do Google Chrome execute solicitações de API do WebAuthn transmitidas por proxy de um host remoto.</translation>
@@ -6594,6 +6618,21 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
       Se a configuração estiver ativada ou não estiver definida, os sites terão permissão para verificar se o usuário salvou formas de pagamento.</translation>
 <translation id="8118665053362250806">Definir tamanho do cache de disco da mídia</translation>
 <translation id="8124468781472887384">Política de acesso à configuração de impressoras do dispositivo.</translation>
+<translation id="8128020091920875372">Se definida, a política vai especificar uma lista de apps e extensões com instalação silenciosa, sem interação do usuário, e que não podem ser desinstalados ou desativados. As permissões são concedidas implicitamente, inclusive para as API de extensão enterprise.deviceAttributes e enterprise.platformKeys. Essas duas APIs não estão disponíveis para apps e extensões que não sejam de instalação forçada.
+
+      Se a política não for definida, nenhum app ou extensão vai ser instalado automaticamente e o usuário poderá desinstalar qualquer app ou extensão no <ph name="PRODUCT_NAME" />.
+
+      Esta política substitui a <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Se um app ou extensão de instalação forçada for removido da lista, vai ser automaticamente desinstalado pelo <ph name="PRODUCT_NAME" />.
+
+      Em instâncias do <ph name="MS_WIN_NAME" />, apps e extensões de fora da Chrome Web Store vão poder ter a instalação forçada apenas se a instância for associada a um domínio do <ph name="MS_AD_NAME" />, executado no Windows 10 Pro, ou registrada no Gerenciamento de nuvem do navegador Chrome.
+
+      Em instâncias do <ph name="MAC_OS_NAME" />, apps e extensões de fora da Chrome Web Store vão poder ter a instalação forçada apenas se a instância for gerenciada por MDM ou associada a um domínio via MCX.
+
+      O código-fonte de qualquer extensão pode ser alterado pelos usuários usando as ferramentas para desenvolvedores, possivelmente prejudicando a funcionalidade da extensão. Se isso for uma preocupação, defina a política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
+
+      Cada item da lista da política é uma string que contém um ID de extensão e, opcionalmente, um URL de atualização separados por ponto e vírgula (;). O ID da extensão é a string de 32 letras encontrada, por exemplo, em chrome://extensions no modo de desenvolvedor. Se especificado, o URL de atualização vai apontar para um documento XML de manifesto de atualização (https://developer.chrome.com/extensions/autoupdate). Por padrão, o URL de atualização da Chrome Web Store é usado. O URL de atualização definido nesta política só é usado na instalação inicial. As atualizações subsequentes da extensão empregam o URL de atualização indicado no manifesto da extensão.
+
+       Observação: esta política não se aplica ao modo de navegação anônima. Leia sobre hospedagem de extensões (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="8128192446158421884">URLs em que é possível aplicar AutoOpenFileTypes</translation>
 <translation id="8131046602440880289">Permitir as vozes aprimoradas da conversão de texto em voz da rede ao usar o Selecionar para ouvir</translation>
 <translation id="8133152694354699657">Se a política for definida como verdadeira ou não for definida, a opção "Pesquisa por toque" ficará disponível para o usuário, e ele poderá ativar ou desativar esse recurso.
@@ -7479,6 +7518,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       Se essa política não for definida, ou se o valor dela não mapear para um Quick Fix Build, o dispositivo não será atualizado para um Quick Fix Build. Se o dispositivo já estiver executando um Quick Fix Build, e a política não estiver mais definida ou o valor não mapear mais para um Quick Fix Build, o dispositivo será atualizado para uma versão normal caso a atualização não seja bloqueada por outra política.</translation>
 <translation id="9051019223077908578">Configurar a lista de apps e extensões instalados na tela de login</translation>
+<translation id="9053841574218808519">Sempre executar plug-ins que não estão desatualizados</translation>
 <translation id="9055866143096316150">Rebaixar solicitações de wake lock da tela para solicitações de wake lock do sistema</translation>
 <translation id="9057444687284972605">Permite definir uma lista de padrões de URL que especificam sites para os quais um certificado do cliente é selecionado automaticamente na tela de login no frame que hospeda o fluxo SAML, se o site solicitar um certificado. Um exemplo de uso é configurar um certificado do dispositivo a ser apresentado para o provedor de identidade SAML.
 

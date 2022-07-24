@@ -998,7 +998,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3658742229777143148">Revisão</translation>
 <translation id="3664782872746246217">Palavras-chave:</translation>
 <translation id="3667704023705708645">Capital de risco</translation>
-<translation id="367108335512738711">Marcadores do Chrome</translation>
 <translation id="3671540257457995106">Permitir o redimensionamento?</translation>
 <translation id="3675563144891642599">Terceiro rolo</translation>
 <translation id="3676592649209844519">ID do dispositivo:</translation>
@@ -1279,7 +1278,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">A utilização de um proxy está desativada, mas existe uma configuração de proxy explícita especificada.</translation>
 <translation id="4441832193888514600">Ignorado porque a política só pode ser definida como uma Política do Utilizador da nuvem.</translation>
-<translation id="4442470707340296952">Separadores do Chrome</translation>
 <translation id="4450893287417543264">Não mostrar de novo</translation>
 <translation id="4451135742916150903">Pode solicitar a ligação a dispositivos HID</translation>
 <translation id="4452328064229197696">A palavra-passe que acabou de utilizar foi encontrada numa violação de dados. Para proteger as suas contas, o Gestor de palavras-passe da Google recomenda que verifique as suas palavras-passe guardadas.</translation>
@@ -1467,6 +1465,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4969341057194253438">Eliminar gravação</translation>
 <translation id="4973922308112707173">Perfuração dupla na parte superior</translation>
 <translation id="4976702386844183910">Última visita a <ph name="DATE" /></translation>
+<translation id="498323057460789381">Erro de validação do esquema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Pretende utilizar o microfone?</translation>
 <translation id="4984339528288761049">Prc5 (Envelope)</translation>
 <translation id="4989163558385430922">Ver tudo</translation>
@@ -2030,7 +2029,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6579630537141957243">Pretende ligar o dispositivo MIDI?</translation>
 <translation id="6579990219486187401">Rosa claro</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
-<translation id="6585526963651937128">Histórico do Chrome</translation>
 <translation id="6587182488465657433">O Chrome encontrou a palavra-passe que acabou de utilizar numa violação de dados. Para proteger as suas contas, recomendamos que a altere agora e que verifique as suas palavras-passe guardadas.</translation>
 <translation id="6587923378399804057">Link copiado por si</translation>
 <translation id="6591833882275308647">O seu <ph name="DEVICE_TYPE" /> não é gerido.</translation>
@@ -2260,6 +2258,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7238585580608191973">Impressão digital SHA-256</translation>
 <translation id="7240120331469437312">Nome alternativo do requerente do certificado</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
+<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# correspondência}other{# correspondências}}</translation>
 <translation id="724691107663265825">O site que pretende visitar contém software malicioso</translation>
 <translation id="724975217298816891">Introduza a data de validade e o Código de Segurança/CVC de <ph name="CREDIT_CARD" /> para atualizar os detalhes do cartão. Ao confirmar, os detalhes do cartão são partilhados com este site.</translation>
 <translation id="7251437084390964440">A configuração de rede não cumpre a norma ONC. Partes da configuração podem não ser importadas.
@@ -2821,7 +2820,6 @@ Detalhes adicionais:
 <translation id="8805819170075074995">Entrada da lista "<ph name="LANGUAGE_ID" />": a entrada foi ignorada porque também está incluída na política SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Produtos para o banho e o corpo</translation>
 <translation id="8807160976559152894">Cortar no fim de cada página</translation>
-<translation id="8808828119384186784">Definições do Chrome</translation>
 <translation id="8813277370772331957">Lembrar-me mais tarde</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para atualizar o Chrome nas Definições do Chrome.</translation>
 <translation id="8820817407110198400">Marcadores</translation>

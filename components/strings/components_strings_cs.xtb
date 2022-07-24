@@ -994,7 +994,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3658742229777143148">Verze</translation>
 <translation id="3664782872746246217">Klíčová slova:</translation>
 <translation id="3667704023705708645">Rizikový kapitál</translation>
-<translation id="367108335512738711">Záložky Chromu</translation>
 <translation id="3671540257457995106">Povolit změnu velikosti?</translation>
 <translation id="3675563144891642599">Třetí role</translation>
 <translation id="3676592649209844519">ID zařízení:</translation>
@@ -1275,7 +1274,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Využití proxy serveru je zakázáno, je však určena explicitní konfigurace proxy serveru.</translation>
 <translation id="4441832193888514600">Ignorováno, protože zásadu lze nastavit pouze jako zásadu cloudového uživatele.</translation>
-<translation id="4442470707340296952">Karty v Chromu</translation>
 <translation id="4450893287417543264">Tuto zprávu již nezobrazovat</translation>
 <translation id="4451135742916150903">Může žádat o připojení k zařízením HID</translation>
 <translation id="4452328064229197696">Právě použité heslo bylo nalezeno na seznamu hesel uniklých při incidentu porušení zabezpečení údajů. K zabezpečení vašich účtů doporučuje Správce hesel Google zkontrolovat uložená hesla.</translation>
@@ -1463,6 +1461,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4969341057194253438">Smazat nahrávku</translation>
 <translation id="4973922308112707173">Dvě díry nahoře</translation>
 <translation id="4976702386844183910">Naposledy navštíveno <ph name="DATE" /></translation>
+<translation id="498323057460789381">Chyba ověření schématu: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Použít mikrofon?</translation>
 <translation id="4984339528288761049">Prc5 (obálka)</translation>
 <translation id="4989163558385430922">Zobrazit vše</translation>
@@ -2025,7 +2024,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6579630537141957243">Připojit zařízení MIDI?</translation>
 <translation id="6579990219486187401">Světle růžová</translation>
 <translation id="6583674473685352014">B6 (obálka)</translation>
-<translation id="6585526963651937128">Historie Chromu</translation>
 <translation id="6587182488465657433">Chrome zjistil, že právě použité heslo bylo vyzrazeno při porušení zabezpečení údajů. Pokud chcete ochránit své účty, doporučujeme toto heslo ihned změnit a poté zkontrolovat uložená hesla.</translation>
 <translation id="6587923378399804057">Zkopírovaný odkaz</translation>
 <translation id="6591833882275308647">Vaše zařízení <ph name="DEVICE_TYPE" /> není spravováno</translation>
@@ -2725,6 +2723,7 @@ Další podrobnosti:
 <translation id="8508648098325802031">Ikona Vyhledávání</translation>
 <translation id="8511402995811232419">Spravovat soubory cookie</translation>
 <translation id="851353418319061866">Kontrola přesnosti</translation>
+<translation id="8513580896341796021">Stahování bylo zahájeno. Stažený soubor zobrazíte stisknutím klávesy |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Zařízení HID povolené administrátorem</translation>
 <translation id="8522552481199248698">Chrome vám může pomoci ochránit váš účet Google a změnit heslo.</translation>
 <translation id="8530813470445476232">Vymažte historii prohlížení, soubory cookie, mezipaměť a další data v nastavení Chromu</translation>
@@ -2816,7 +2815,6 @@ Další podrobnosti:
 <translation id="8805819170075074995">Položka seznamu „<ph name="LANGUAGE_ID" />“: Položka byla ignorována, protože je zahrnuta také v zásadě SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Koupelnové přípravky a péče o tělo</translation>
 <translation id="8807160976559152894">Oříznutí za každou stránkou</translation>
-<translation id="8808828119384186784">Nastavení Chromu</translation>
 <translation id="8813277370772331957">Připomenout později</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter aktualizujete Chrome v nastavení Chromu</translation>
 <translation id="8820817407110198400">Záložky</translation>

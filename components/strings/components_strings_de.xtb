@@ -996,7 +996,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3658742229777143148">Überarbeitung</translation>
 <translation id="3664782872746246217">Suchbegriffe:</translation>
 <translation id="3667704023705708645">Risikokapital</translation>
-<translation id="367108335512738711">Chrome-Lesezeichen</translation>
 <translation id="3671540257457995106">Größenanpassung zulassen?</translation>
 <translation id="3675563144891642599">Dritte Rolle</translation>
 <translation id="3676592649209844519">Geräte-ID:</translation>
@@ -1277,7 +1276,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4435702339979719576">Postkarte)</translation>
 <translation id="443673843213245140">Die Proxy-Nutzung ist deaktiviert, es ist jedoch eine explizite Proxy-Konfiguration festgelegt.</translation>
 <translation id="4441832193888514600">Ignoriert, da die Richtlinie nur als Cloud-Nutzerrichtlinie festgelegt werden kann.</translation>
-<translation id="4442470707340296952">Chrome-Tabs</translation>
 <translation id="4450893287417543264">Nicht mehr anzeigen</translation>
 <translation id="4451135742916150903">Darf nachfragen, wenn sie eine Verbindung mit HID-Geräten herstellen möchte</translation>
 <translation id="4452328064229197696">Das Passwort, das du gerade verwendet hast, wurde in einer Datenpanne gefunden. Zum besseren Schutz deiner Konten empfiehlt der Passwortmanager von Google, deine gespeicherten Passwörter zu prüfen.</translation>
@@ -2028,7 +2026,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6579630537141957243">MIDI-Gerät verbinden?</translation>
 <translation id="6579990219486187401">Hellrosa</translation>
 <translation id="6583674473685352014">B6 (Umschlag)</translation>
-<translation id="6585526963651937128">Chrome-Verlauf</translation>
 <translation id="6587182488465657433">Chrome hat das Passwort, das du gerade verwendet hast, in einer Datenpanne gefunden. Wir empfehlen dir, es jetzt zu ändern, und dann deine gespeicherten Passwörter zu prüfen, um deine Konten besser zu schützen.</translation>
 <translation id="6587923378399804057">Von dir kopierter Link</translation>
 <translation id="6591833882275308647">Dein <ph name="DEVICE_TYPE" /> wird nicht verwaltet</translation>
@@ -2820,7 +2817,6 @@ Weitere Details:
 <translation id="8805819170075074995">Listeneintrag "<ph name="LANGUAGE_ID" />": Der Eintrag wird ignoriert, weil er auch in der Richtlinie "SpellcheckLanguage" enthalten ist.</translation>
 <translation id="8806285662264631610">Bade- und Körperpflegeprodukte</translation>
 <translation id="8807160976559152894">Nach jeder Seite zuschneiden</translation>
-<translation id="8808828119384186784">Chrome-Einstellungen</translation>
 <translation id="8813277370772331957">Später erinnern</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um Chrome über die Chrome-Einstellungen zu aktualisieren</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>

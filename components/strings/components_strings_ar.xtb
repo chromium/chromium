@@ -999,7 +999,6 @@
 <translation id="3658742229777143148">التعديل</translation>
 <translation id="3664782872746246217">الكلمات الرئيسية:</translation>
 <translation id="3667704023705708645">رأس مال مُخاطر</translation>
-<translation id="367108335512738711">‏الإشارات المرجعية في Chrome</translation>
 <translation id="3671540257457995106">هل تريد السماح بتغيير الحجم؟</translation>
 <translation id="3675563144891642599">اللفافة الثالثة</translation>
 <translation id="3676592649209844519">معرِّف الجهاز:</translation>
@@ -1281,7 +1280,6 @@
 <translation id="4435702339979719576">بطاقة بريدية)</translation>
 <translation id="443673843213245140">تم إيقاف استخدام الخادم الوكيل ولكن تم تحديد إعداد صريح للخادم الوكيل.</translation>
 <translation id="4441832193888514600">تم التجاهل لأنّ هذه السياسة لا يمكن ضبطها كسياسة مستخدم على السحابة الإلكترونية.</translation>
-<translation id="4442470707340296952">‏علامات التبويب في متصفِّح Chrome</translation>
 <translation id="4450893287417543264">عدم الإظهار مرة أخرى</translation>
 <translation id="4451135742916150903">‏السماح للموقع الإلكتروني بطلب الاتصال بأجهزة HID</translation>
 <translation id="4452328064229197696">‏كلمة المرور التي استخدمتها للتو تم رصدها ضمن عملية اختراق للبيانات. ولتأمين حساباتك، ينصح "مدير كلمات المرور" من Google بالتحقّق من كلمات المرور المحفوظة.</translation>
@@ -2033,7 +2031,6 @@
 <translation id="6579630537141957243">‏هل تريد الاتصال بجهاز MIDI؟</translation>
 <translation id="6579990219486187401">وردي فاتح</translation>
 <translation id="6583674473685352014">‏B6 (مغلف)</translation>
-<translation id="6585526963651937128">‏سجلّ Chrome</translation>
 <translation id="6587182488465657433">‏لقد عثر Chrome في عمليّة اختراق للبيانات على كلمة المرور التي استخدمتها للتو. لحماية حساباتك، ننصحك بتغيير كلمة المرور الآن ثم التحقّق من كلمات مرورك المحفوظة.</translation>
 <translation id="6587923378399804057">الرابط الذي نسخته</translation>
 <translation id="6591833882275308647">لا تتم إدارة <ph name="DEVICE_TYPE" /></translation>
@@ -2827,7 +2824,6 @@
 <translation id="8805819170075074995">‏إدخال في القائمة "<ph name="LANGUAGE_ID" />": تم تجاهل الإدخال لأنه مضمّن في سياسة SpellcheckLanguage أيضًا.</translation>
 <translation id="8806285662264631610">منتجات الاستحمام والعناية بالجسم</translation>
 <translation id="8807160976559152894">القطع بعد كل صفحة</translation>
-<translation id="8808828119384186784">‏إعدادات Chrome</translation>
 <translation id="8813277370772331957">تذكيري لاحقًا</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لتحديث Chrome من إعدادات Chrome.</translation>
 <translation id="8820817407110198400">الإشارات المرجعية</translation>

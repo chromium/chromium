@@ -994,7 +994,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3658742229777143148">Verzia</translation>
 <translation id="3664782872746246217">Kľúčové slová:</translation>
 <translation id="3667704023705708645">Rizikový kapitál</translation>
-<translation id="367108335512738711">Záložky v Chrome</translation>
 <translation id="3671540257457995106">Chcete povoliť zmenu veľkosti?</translation>
 <translation id="3675563144891642599">Tretí kotúč</translation>
 <translation id="3676592649209844519">ID zariadenia:</translation>
@@ -1275,7 +1274,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4435702339979719576">pohľadnica)</translation>
 <translation id="443673843213245140">Použitie servera proxy je zakázané, ale je určená explicitná konfigurácia servera proxy.</translation>
 <translation id="4441832193888514600">Ignorované, pretože pravidlá sa dajú nastaviť iba pravidlami cloudu pre používateľov.</translation>
-<translation id="4442470707340296952">Karty Chromu</translation>
 <translation id="4450893287417543264">Nabudúce nezobrazovať</translation>
 <translation id="4451135742916150903">Môže žiadať o povolenie pripájať sa k zariadeniam HID</translation>
 <translation id="4452328064229197696">Heslo, ktoré ste práve použili, bolo nájdené v zozname hesiel odhalených pri porušení ochrany údajov. Ak chcete svoje účty zabezpečiť, správca hesiel od Googlu odporúča skontrolovať uložené heslá.</translation>
@@ -2026,7 +2024,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6579630537141957243">Chcete pripojiť zariadenie MIDI?</translation>
 <translation id="6579990219486187401">Svetloružová</translation>
 <translation id="6583674473685352014">B6 (obálka)</translation>
-<translation id="6585526963651937128">História Chromu</translation>
 <translation id="6587182488465657433">Chrome našiel heslo, ktoré ste práve použili, v zozname hesiel odhalených pri porušení ochrany údajov. V rámci zabezpečenia účtov vám odporúčame heslo okamžite zmeniť a skontrolovať všetky uložené heslá.</translation>
 <translation id="6587923378399804057">Skopírovaný odkaz</translation>
 <translation id="6591833882275308647">Zariadenie <ph name="DEVICE_TYPE" /> nie je spravované</translation>
@@ -2818,7 +2815,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8805819170075074995">Položka zoznamu <ph name="LANGUAGE_ID" />: položka bola ignorovaná, pretože je tiež zahrnutá v pravidle SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Výrobky do kúpeľa a na starostlivosť o telo</translation>
 <translation id="8807160976559152894">Orezať po každej strane</translation>
-<translation id="8808828119384186784">Nastavenia Chromu</translation>
 <translation id="8813277370772331957">Pripomenúť neskôr</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter aktualizujte Chrome v jeho nastaveniach</translation>
 <translation id="8820817407110198400">Záložky</translation>

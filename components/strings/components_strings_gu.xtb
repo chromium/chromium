@@ -998,7 +998,6 @@
 <translation id="3658742229777143148">પુનરાવર્તન</translation>
 <translation id="3664782872746246217">કીવર્ડ:</translation>
 <translation id="3667704023705708645">સાહસ મૂડી</translation>
-<translation id="367108335512738711">Chrome બુકમાર્ક</translation>
 <translation id="3671540257457995106">કદ બદલવાની મંજૂરી આપીએ?</translation>
 <translation id="3675563144891642599">ત્રીજો રોલ</translation>
 <translation id="3676592649209844519">ડિવાઇસ ID:</translation>
@@ -1279,7 +1278,6 @@
 <translation id="4435702339979719576">પોસ્ટકાર્ડ)</translation>
 <translation id="443673843213245140">પ્રૉક્સીનો ઉપયોગ બંધ કરેલો છે પણ એક સ્પષ્ટ પ્રૉક્સી ગોઠવણીનો ઉલ્લેખ કરેલો છે.</translation>
 <translation id="4441832193888514600">અવગણવામાં આવ્યું કારણ કે પૉલિસી માત્ર ક્લાઉડ વપરાશકર્તાની પૉલિસી તરીકે જ સેટ કરવામાં આવી શકે છે.</translation>
-<translation id="4442470707340296952">Chrome ટૅબ</translation>
 <translation id="4450893287417543264">ફરી બતાવશો નહીં</translation>
 <translation id="4451135742916150903">HID ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
 <translation id="4452328064229197696">તમે હાલમાં જ ઉપયોગમાં લીધેલો પાસવર્ડ ડેટા ઉલ્લંઘનમાં જોવા મળ્યો છે. તમારા એકાઉન્ટ સુરક્ષિત રાખવા માટે, Google પાસવર્ડ મેનેજર તમારા સાચવેલા પાસવર્ડને ચેક કરવાનો સુઝાવ આપે છે.</translation>
@@ -2030,7 +2028,6 @@
 <translation id="6579630537141957243">MIDI ડિવાઇસ કનેક્ટ કરીએ?</translation>
 <translation id="6579990219486187401">આછો ગુલાબી</translation>
 <translation id="6583674473685352014">B6 (એન્વલપ)</translation>
-<translation id="6585526963651937128">Chrome ઇતિહાસ</translation>
 <translation id="6587182488465657433">Chromeને તમે હમણાં જ ડેટા ઉલ્લંઘનમાં ઉપયોગમાં લીધેલો પાસવર્ડ મળ્યો છે. તમારા એકાઉન્ટને સુરક્ષિત રાખવા માટે, અમે હમણાં જ તેને બદલવાનો અને પછી તમારા સાચવેલા પાસવર્ડને ચેક કરવાનો સુઝાવ આપીએ છીએ.</translation>
 <translation id="6587923378399804057">તમે કૉપિ કરેલી લિંક</translation>
 <translation id="6591833882275308647">તમારું <ph name="DEVICE_TYPE" /> મેનેજ કરવામાં આવતું નથી</translation>
@@ -2821,7 +2818,6 @@
 <translation id="8805819170075074995">સૂચિ એન્ટ્રી "<ph name="LANGUAGE_ID" />": એન્ટ્રીને અવગણવામાં આવી, કારણ કે તેનો SpellcheckLanguage નીતિમાં પણ સમાવેશ કરવામાં આવ્યો છે.</translation>
 <translation id="8806285662264631610">સ્નાન અને શરીરની સંભાળ રાખતી પ્રોડક્ટ</translation>
 <translation id="8807160976559152894">પ્રત્યેક પેજ પછી ટ્રિમ કરો</translation>
-<translation id="8808828119384186784">Chrome સેટિંગ</translation>
 <translation id="8813277370772331957">મને પછીથી યાદ કરાવો</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમારા Chrome સેટિંગમાંથી Chrome અપડેટ કરવા માટે Tab પછી Enter દબાવો</translation>
 <translation id="8820817407110198400">બુકમાર્ક</translation>

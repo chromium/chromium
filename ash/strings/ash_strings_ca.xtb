@@ -1146,6 +1146,7 @@ Instal·lació nova</translation>
 <translation id="7749443890790263709">S'ha assolit el nombre màxim d'escriptoris.</translation>
 <translation id="7749640678855296659">El micròfon està desactivat</translation>
 <translation id="776344839111254542">Fes clic per veure els detalls de l'actualització</translation>
+<translation id="7768784765476638775">Escolta la selecció</translation>
 <translation id="7780094051999721182">dreceres</translation>
 <translation id="7780159184141939021">Gira la pantalla</translation>
 <translation id="7796353162336583443">Toca el botó del llapis òptic al prestatge per escriure una nota, fer una captura de pantalla, utilitzar l'Assistent de Google o fer-lo servir com a punter làser o lupa.</translation>
@@ -1181,7 +1182,6 @@ Instal·lació nova</translation>
 <translation id="79341161159229895">Compte gestionat per <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Prem <ph name="SHORTCUT_KEY_NAME" />+V per veure el porta-retalls. Els 5 darrers elements que has copiat estan desats al porta-retalls.</translation>
 <translation id="7942349550061667556">Vermell</translation>
-<translation id="7955885781510802139">Mode d'alt contrast</translation>
 <translation id="7968693143708939792">Selecciona una carpeta...</translation>
 <translation id="7977927628060636163">S'estan cercant xarxes mòbils…</translation>
 <translation id="7982789257301363584">Xarxa</translation>
@@ -1293,7 +1293,6 @@ Instal·lació nova</translation>
 <translation id="8641805545866562088">S'està actualitzant la llista de perfils. Espera uns minuts.</translation>
 <translation id="8646417893960517480">Temporitzador de: <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Per afegir una persona, introdueix el codi d'accés parental de Family Link</translation>
-<translation id="8649101189709089199">Escolta la selecció</translation>
 <translation id="8649597172973390955">El prestatge es mostra sempre</translation>
 <translation id="8652175077544655965">Tanca la configuració</translation>
 <translation id="8653151467777939995">Mostra la configuració de notificacions. Les notificacions estan activades.</translation>

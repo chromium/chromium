@@ -993,7 +993,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3658742229777143148">Versiya</translation>
 <translation id="3664782872746246217">Kalit soʻzlar:</translation>
 <translation id="3667704023705708645">Venchur kapitali</translation>
-<translation id="367108335512738711">Chrome xatchoʻplari</translation>
 <translation id="3671540257457995106">Oʻlchami oʻzgaraversinmi?</translation>
 <translation id="3675563144891642599">Uchinchi oʻram</translation>
 <translation id="3676592649209844519">Qurilma identifikatori:</translation>
@@ -1274,7 +1273,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Proksi-server o‘chiq, lekin uning sozlamalari aniq belgilangan.</translation>
 <translation id="4441832193888514600">Parametr faqat bulutdagi foydalanuvchilar siyosati tomonidan belgilanishi mumkinligi uchun inkor etildi.</translation>
-<translation id="4442470707340296952">Chrome varaqlari</translation>
 <translation id="4450893287417543264">Boshqa ko‘rsatilmasin</translation>
 <translation id="4451135742916150903">HID qurilmalarga ulanish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="4452328064229197696">Hozirgina siz foydalangan parol oshkor qilingan. Hisoblaringizni himoyalash maqsadida Google Parollar menejeri saqlangan parollaringizni tekshirishni tavsiya etadi.</translation>
@@ -2025,7 +2023,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6579630537141957243">MIDI qurilma ulansinmi?</translation>
 <translation id="6579990219486187401">Och pushti</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
-<translation id="6585526963651937128">Chrome tarixi</translation>
 <translation id="6587182488465657433">Chrome hozirgina oshkor qilingan parol ishlatganini aniqladi. Hisoblaringiz himoyasi uchun parolni hoziroq yangilang va saqlangan parollaringizni tekshiring.</translation>
 <translation id="6587923378399804057">Nusxalangan havola</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> qurilmangiz mustaqil</translation>
@@ -2726,6 +2723,7 @@ Batafsil axborot:
 <translation id="8508648098325802031">Qidiruv ikonkasi</translation>
 <translation id="8511402995811232419">Cookie fayllarni boshqarish</translation>
 <translation id="851353418319061866">Aniqlik tekshiruvi</translation>
+<translation id="8513580896341796021">Yuklab olish boshlandi. Uni koʻrish |<ph name="ACCELERATOR" />| ustiga bosing.</translation>
 <translation id="8519753333133776369">HID qurilmaga administrator ruxsat bergan</translation>
 <translation id="8522552481199248698">Chrome Google hisobingizni himoyalash va parolni almashtirish uchun yordam beradi.</translation>
 <translation id="8530813470445476232">Brauzer tarixi, cookie fayllar, kesh va boshqa Chrome sozlamalarini tozalang</translation>
@@ -2816,7 +2814,6 @@ Batafsil axborot:
 <translation id="8805819170075074995">“<ph name="LANGUAGE_ID" />” tili: Bu til SpellcheckLanguage parametrida borligi uchun inkor etildi.</translation>
 <translation id="8806285662264631610">Vanna va tana parvarishi mahsulotlari</translation>
 <translation id="8807160976559152894">Har bir sahifa chekkasini qirqish</translation>
-<translation id="8808828119384186784">Chrome sozlamalari</translation>
 <translation id="8813277370772331957">Keyinroq eslatilsin</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali Chromeni yangilash uchun Enter tugmasini bosing</translation>
 <translation id="8820817407110198400">Bukmarklar</translation>

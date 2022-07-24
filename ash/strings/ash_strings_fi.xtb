@@ -1149,6 +1149,7 @@ Uusi asennus</translation>
 <translation id="7749443890790263709">Työpöytiä on enimmäismäärä.</translation>
 <translation id="7749640678855296659">Mikrofoni ei ole tällä hetkellä päällä</translation>
 <translation id="776344839111254542">Klikkaa nähdäksesi päivityksen tiedot</translation>
+<translation id="7768784765476638775">Teksti puhuttuna</translation>
 <translation id="7780094051999721182">pikakuvakkeista</translation>
 <translation id="7780159184141939021">Käännä näyttö</translation>
 <translation id="7796353162336583443">Napauttamalla hyllyn näyttökynäpainiketta voit tehdä muistiinpanoja, tallentaa kuvakaappauksen ja käyttää Google Assistantia, laserosoitinta tai suurennuslasia.</translation>
@@ -1184,7 +1185,6 @@ Uusi asennus</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> ja <ph name="SECOND_PARENT_EMAIL" /> hallinnoivat tiliä</translation>
 <translation id="793716872548410480">Katso leikepöytä painamalla <ph name="SHORTCUT_KEY_NAME" /> + V. Viisi viimeksi kopioimaasi kohdetta tallennetaan leikepöydälle.</translation>
 <translation id="7942349550061667556">Punainen</translation>
-<translation id="7955885781510802139">Suurikontrastinen tila</translation>
 <translation id="7968693143708939792">Valitse kansio…</translation>
 <translation id="7977927628060636163">Haetaan mobiiliverkkoja…</translation>
 <translation id="7982789257301363584">Verkko</translation>
@@ -1296,7 +1296,6 @@ Uusi asennus</translation>
 <translation id="8641805545866562088">Päivitetään profiililistaa. Odota muutama minuutti.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> ajastin</translation>
 <translation id="8647931990447795414">Voit lisätä henkilön vanhemman Family Link ‑käyttökoodilla</translation>
-<translation id="8649101189709089199">Teksti puhuttuna</translation>
 <translation id="8649597172973390955">Hylly näytetään aina</translation>
 <translation id="8652175077544655965">Sulje asetukset</translation>
 <translation id="8653151467777939995">Näytä ilmoitusasetukset. Ilmoitukset ovat päällä</translation>

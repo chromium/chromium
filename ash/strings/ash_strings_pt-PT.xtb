@@ -306,6 +306,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
 <translation id="2819276065543622893">A sessão será terminada agora.</translation>
+<translation id="2822551631199737692">A câmara está a ser usada</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> não suporta <ph name="SPECIFIED_RESOLUTION" />. A resolução foi alterada para <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Prateleira</translation>
 <translation id="2831035692318564937">Ativado até ao nascer do sol</translation>
@@ -807,6 +808,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5682642926269496722">O Assistente Google não está disponível para a conta do utilizador atual.</translation>
 <translation id="5689633613396158040">A Luz noturna torna mais fácil olhar para o ecrã ou ler com pouca luz. Toque para alterar a hora em que a Luz noturna é ativada ou desativada totalmente.</translation>
 <translation id="5691772641933328258">Impressão digital não reconhecida</translation>
+<translation id="5693255400847650006">O microfone está a ser usado</translation>
 <translation id="570390244361237317">Todas as apps, navegue com as teclas de seta para aceder a todas as apps</translation>
 <translation id="5707775774148071965">O dispositivo suporta uma taxa de dados mais elevada do que o cabo. O desempenho do dispositivo pode estar limitado.</translation>
 <translation id="5710450975648804523">Modo Não incomodar ativado</translation>
@@ -981,6 +983,7 @@ Nova instalação</translation>
 <translation id="6723839937902243910">Alimentação</translation>
 <translation id="6727969043791803658">Ligado, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">A câmara e o microfone estão a ser usados</translation>
 <translation id="6739144137573853180">ACEDER ÀS DEFINIÇÕES</translation>
 <translation id="6751052314767925245">Aplicada pelo seu administrador.</translation>
 <translation id="6751826523481687655">O rastreio do desempenho está ativado.</translation>
@@ -1149,6 +1152,7 @@ Nova instalação</translation>
 <translation id="7749443890790263709">Atingiu o número máximo de espaços de trabalho.</translation>
 <translation id="7749640678855296659">O seu microfone está atualmente desativado</translation>
 <translation id="776344839111254542">Clique para ver os detalhes da atualização</translation>
+<translation id="7768784765476638775">Selecionar para ativar voz</translation>
 <translation id="7780094051999721182">atalhos</translation>
 <translation id="7780159184141939021">Rodar ecrã</translation>
 <translation id="7796353162336583443">Toque no botão da caneta stylus na prateleira para tirar uma nota, criar uma captura de ecrã ou utilizar o Assistente Google, o ponteiro de laser ou a lupa.</translation>
@@ -1184,7 +1188,6 @@ Nova instalação</translation>
 <translation id="79341161159229895">Conta gerida por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" />.</translation>
 <translation id="793716872548410480">Prima <ph name="SHORTCUT_KEY_NAME" /> + V para ver a sua área de transferência. Os últimos 5 itens que copiou são guardados na sua área de transferência.</translation>
 <translation id="7942349550061667556">Vermelho</translation>
-<translation id="7955885781510802139">Modo de alto contraste</translation>
 <translation id="7968693143708939792">Selecionar pasta…</translation>
 <translation id="7977927628060636163">A pesquisar redes móveis...</translation>
 <translation id="7982789257301363584">Rede</translation>
@@ -1296,7 +1299,6 @@ Nova instalação</translation>
 <translation id="8641805545866562088">A atualizar a lista de perfis. Aguarde alguns minutos.</translation>
 <translation id="8646417893960517480">Temporizador de <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Para adicionar uma pessoa, introduza o código de acesso parental do Family Link</translation>
-<translation id="8649101189709089199">Selecionar para falar</translation>
 <translation id="8649597172973390955">Prateleira apresentada sempre</translation>
 <translation id="8652175077544655965">Fechar definições</translation>
 <translation id="8653151467777939995">Mostrar definições de notificação. As notificações estão ativadas</translation>

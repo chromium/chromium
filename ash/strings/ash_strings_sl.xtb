@@ -1149,6 +1149,7 @@ Nova namestitev</translation>
 <translation id="7749443890790263709">Doseženo je največje dovoljeno število namizij.</translation>
 <translation id="7749640678855296659">Mikrofon je trenutno izklopljen.</translation>
 <translation id="776344839111254542">Kliknite, če si želite ogledati podrobnosti o posodobitvi</translation>
+<translation id="7768784765476638775">Izberite in poslušajte</translation>
 <translation id="7780094051999721182">bližnjicah</translation>
 <translation id="7780159184141939021">Zasuk zaslona</translation>
 <translation id="7796353162336583443">Dotaknite se gumba pisala na polici, če želite ustvariti zapisek, posneti posnetek zaslona ali uporabiti Pomočnika Google, laserski kazalnik ali povečevalno steklo.</translation>
@@ -1184,7 +1185,6 @@ Nova namestitev</translation>
 <translation id="79341161159229895">Račun upravljata <ph name="FIRST_PARENT_EMAIL" /> in <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Pritisnite <ph name="SHORTCUT_KEY_NAME" /> + V, če si želite ogledati odložišče. Zadnjih pet kopiranih elementov je shranjenih v odložišču.</translation>
 <translation id="7942349550061667556">Rdeča</translation>
-<translation id="7955885781510802139">Visokokontrastni način</translation>
 <translation id="7968693143708939792">Izberite mapo …</translation>
 <translation id="7977927628060636163">Iskanje mobilnih omrežij ...</translation>
 <translation id="7982789257301363584">Omrežje</translation>
@@ -1296,7 +1296,6 @@ Nova namestitev</translation>
 <translation id="8641805545866562088">Osveževanje seznama profilov. Počakajte nekaj minut.</translation>
 <translation id="8646417893960517480">Časovnik (<ph name="TOTAL_TIME" />)</translation>
 <translation id="8647931990447795414">Če želite dodati osebo, vnesite kodo za starševski dostop za Family Link</translation>
-<translation id="8649101189709089199">Izberite in poslušajte</translation>
 <translation id="8649597172973390955">Polica je vedno prikazana</translation>
 <translation id="8652175077544655965">Zapiranje nastavitev</translation>
 <translation id="8653151467777939995">Prikaz nastavitev obvestil. Obvestila so vklopljena.</translation>

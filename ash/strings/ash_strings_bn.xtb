@@ -1152,6 +1152,7 @@
 <translation id="7749443890790263709">সর্বাধিক সংখ্যক ডেস্ক যোগ করা হয়ে গেছে।</translation>
 <translation id="7749640678855296659">বর্তমানে আপনার মাইক্রোফোন বন্ধ করা আছে</translation>
 <translation id="776344839111254542">আপডেটের বিশদ বিবরণ জানার জন্য ক্লিক করুন</translation>
+<translation id="7768784765476638775">বাছুন ও শুনুন</translation>
 <translation id="7780094051999721182">শর্টকাট</translation>
 <translation id="7780159184141939021">স্ক্রিন ঘোরান</translation>
 <translation id="7796353162336583443">একটি নোট, স্ক্রিনশট নিতে, Google অ্যাসিস্ট্যান্ট, লেজার পয়েন্টার বা ম্যাগনিফিকেশনের কাচ ব্যবহার করার জন্য শেলফের স্টাইলাস বোতামটি ট্যাপ করুন।</translation>
@@ -1187,7 +1188,6 @@
 <translation id="79341161159229895">অ্যাকাউন্টটি <ph name="FIRST_PARENT_EMAIL" /> এবং <ph name="SECOND_PARENT_EMAIL" /> ম্যানেজ করছেন</translation>
 <translation id="793716872548410480">আপনার ক্লিপবোর্ড দেখতে <ph name="SHORTCUT_KEY_NAME" /> + V প্রেস করুন। আপনার কপি করা শেষ ৫টি আইটেম ক্লিপবোর্ডে সেভ করা হয়েছে।</translation>
 <translation id="7942349550061667556">লাল</translation>
-<translation id="7955885781510802139">হাই-কনট্রাস্ট মোড</translation>
 <translation id="7968693143708939792">ফোল্ডার বেছে নিন...</translation>
 <translation id="7977927628060636163">মোবাইল নেটওয়ার্কগুলির জন্য সার্চ করছে...</translation>
 <translation id="7982789257301363584">নেটওয়ার্ক</translation>
@@ -1299,7 +1299,6 @@
 <translation id="8641805545866562088">প্রোফাইলের তালিকা রিফ্রেশ করা হচ্ছে। কয়েক মিনিট অপেক্ষা করুন।</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" />-এর টাইমার</translation>
 <translation id="8647931990447795414">কাউকে যোগ করতে চাইলে, আপনার Family Link-এর অভিভাবকীয় অ্যাক্সেস কোডটি লিখুন</translation>
-<translation id="8649101189709089199">বাছুন ও শুনুন</translation>
 <translation id="8649597172973390955">শেল্ফ সবসময় দেখানো হয়</translation>
 <translation id="8652175077544655965">সেটিংস বন্ধ করুন</translation>
 <translation id="8653151467777939995">বিজ্ঞপ্তি সেটিংস দেখান। বিজ্ঞপ্তি চালু আছে</translation>

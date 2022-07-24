@@ -998,7 +998,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3658742229777143148">Endurskoðun</translation>
 <translation id="3664782872746246217">Leitarorð:</translation>
 <translation id="3667704023705708645">Áhættufjárfestingar</translation>
-<translation id="367108335512738711">Bókamerki í Chrome</translation>
 <translation id="3671540257457995106">Leyfa breytingar á stærð?</translation>
 <translation id="3675563144891642599">Þriðja rúlla</translation>
 <translation id="3676592649209844519">Auðkenni tækis:</translation>
@@ -1279,7 +1278,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4435702339979719576">póstkort)</translation>
 <translation id="443673843213245140">Slökkt er á notkun proxy-þjóns en sérstök proxy-stilling er tilgreind.</translation>
 <translation id="4441832193888514600">Hunsað vegna þess að aðeins er hægt að stilla regluna sem notendareglu í skýi.</translation>
-<translation id="4442470707340296952">Chrome flipar</translation>
 <translation id="4450893287417543264">Ekki sýna þetta aftur</translation>
 <translation id="4451135742916150903">Getur beðið um að tengjast HID-tækjum</translation>
 <translation id="4452328064229197696">Aðgangsorðið sem þú varst að nota fannst nýverið í öryggisbroti. Aðgangsorðastjórnun Google mælir með að þú athugir vistuð aðgangsorð til að tryggja öryggi reikninganna þinna.</translation>
@@ -1467,6 +1465,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4969341057194253438">Eyða upptöku</translation>
 <translation id="4973922308112707173">Tvö göt efst</translation>
 <translation id="4976702386844183910">Síðast skoðað <ph name="DATE" /></translation>
+<translation id="498323057460789381">Villa við staðfestingu skema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Nota hljóðnema?</translation>
 <translation id="4984339528288761049">Prc5 (umslag)</translation>
 <translation id="4989163558385430922">Sjá allt</translation>
@@ -2030,7 +2029,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6579630537141957243">Tengja MIDI-tæki?</translation>
 <translation id="6579990219486187401">Ljósbleikur</translation>
 <translation id="6583674473685352014">B6 (umslag)</translation>
-<translation id="6585526963651937128">Chrome ferill</translation>
 <translation id="6587182488465657433">Chrome fann aðgangsorðið sem þú varst að nota í öryggisbroti. Til að tryggja öryggi reikninganna þinna mælum við með að þú breytir þeim núna og athugir svo vistuðu aðgangsorðin þín.</translation>
 <translation id="6587923378399804057">Tengill sem þú afritaðir</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> er ekki stjórnað</translation>
@@ -2821,7 +2819,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8805819170075074995">Listafærslan „<ph name="LANGUAGE_ID" />“: Færslan er hunsuð því hún kemur einnig fram í reglunni „SpellcheckLanguage“.</translation>
 <translation id="8806285662264631610">Bað- og líkamsvörur</translation>
 <translation id="8807160976559152894">Klippa eftir hverja síðu</translation>
-<translation id="8808828119384186784">Stillingar Chrome</translation>
 <translation id="8813277370772331957">Minna mig á seinna</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að uppfæra Chrome úr stillingum Chrome</translation>
 <translation id="8820817407110198400">Bókamerki</translation>

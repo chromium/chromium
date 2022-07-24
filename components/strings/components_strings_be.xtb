@@ -997,7 +997,6 @@
 <translation id="3658742229777143148">Рэдакцыя</translation>
 <translation id="3664782872746246217">Ключавыя словы:</translation>
 <translation id="3667704023705708645">Венчурны капітал</translation>
-<translation id="367108335512738711">Закладкі Chrome</translation>
 <translation id="3671540257457995106">Дазволіць змяняць памер?</translation>
 <translation id="3675563144891642599">Трэці рулон</translation>
 <translation id="3676592649209844519">Ідэнтыфікатар прылады:</translation>
@@ -1278,7 +1277,6 @@
 <translation id="4435702339979719576">паштоўка)</translation>
 <translation id="443673843213245140">Выкарыстанне проксі-сервера выключана, але яўная канфігурацыя проксі вызначана.</translation>
 <translation id="4441832193888514600">Ігнаруецца, бо гэтыя правілы могуць задавацца толькі як палітыка для карыстальнікаў на ўзроўні воблака.</translation>
-<translation id="4442470707340296952">Укладкі Chrome</translation>
 <translation id="4450893287417543264">Больш не паказваць</translation>
 <translation id="4451135742916150903">Сайт можа запытваць дазвол на падключэнне да прылад з HID</translation>
 <translation id="4452328064229197696">Пароль, які вы толькі што выкарысталі, быў раскрыты пры ўцечцы даных. Каб абараніць свае ўліковыя запісы, праверце захаваныя паролі ў Менеджары пароляў Google.</translation>
@@ -2029,7 +2027,6 @@
 <translation id="6579630537141957243">Падключыць прыладу MIDI?</translation>
 <translation id="6579990219486187401">Светла-ружовы</translation>
 <translation id="6583674473685352014">B6 (канверт)</translation>
-<translation id="6585526963651937128">Гісторыя Chrome</translation>
 <translation id="6587182488465657433">Браўзер Chrome выявіў, што пароль, які вы толькі што выкарысталі, быў раскрыты пры ўцечцы даных. Мы рэкамендуем вам абараніць свае ўліковыя запісы, змяніўшы гэты пароль і праверыўшы тыя, якія вы захавалі.</translation>
 <translation id="6587923378399804057">Скапіраваная вамі спасылка</translation>
 <translation id="6591833882275308647">Прылада <ph name="DEVICE_TYPE" /> не знаходзіцца пад кіраваннем</translation>
@@ -2821,7 +2818,6 @@
 <translation id="8805819170075074995">Элемент спіса "<ph name="LANGUAGE_ID" />": запіс ігнаруецца, бо ён уключаны і ў палітыку "SpellcheckLanguage".</translation>
 <translation id="8806285662264631610">Тавары для ванны і цела</translation>
 <translation id="8807160976559152894">Абрэзка пасля кожнай старонкі</translation>
-<translation id="8808828119384186784">Налады Chrome</translation>
 <translation id="8813277370772331957">Нагадаць пазней</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб абнавіць браўзер Chrome праз яго налады, націсніце Tab, затым Enter</translation>
 <translation id="8820817407110198400">Закладкі</translation>

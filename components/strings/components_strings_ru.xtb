@@ -997,7 +997,6 @@
 <translation id="3658742229777143148">Версия</translation>
 <translation id="3664782872746246217">Ключевые слова:</translation>
 <translation id="3667704023705708645">Венчурный капитал</translation>
-<translation id="367108335512738711">Закладки в Chrome</translation>
 <translation id="3671540257457995106">Разрешить изменение размера?</translation>
 <translation id="3675563144891642599">Третий рулон</translation>
 <translation id="3676592649209844519">Идентификатор устройства:</translation>
@@ -1278,7 +1277,6 @@
 <translation id="4435702339979719576">Открытка</translation>
 <translation id="443673843213245140">Прокси-сервер отключен, но при этом его конфигурация задана явным образом.</translation>
 <translation id="4441832193888514600">Игнорируется, так как правило может быть настроено только на уровне облака.</translation>
-<translation id="4442470707340296952">Вкладки Chrome</translation>
 <translation id="4450893287417543264">Больше не показывать</translation>
 <translation id="4451135742916150903">Разрешено отправлять запрос на подключение к HID-устройствам</translation>
 <translation id="4452328064229197696">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в Диспетчере паролей Google.</translation>
@@ -1466,6 +1464,7 @@
 <translation id="4969341057194253438">Удалить запись</translation>
 <translation id="4973922308112707173">Два отверстия сверху</translation>
 <translation id="4976702386844183910">Последнее посещение: <ph name="DATE" /></translation>
+<translation id="498323057460789381">Ошибка проверки схемы: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Использовать микрофон?</translation>
 <translation id="4984339528288761049">Prc5 (конверт)</translation>
 <translation id="4989163558385430922">Показать все</translation>
@@ -2029,7 +2028,6 @@
 <translation id="6579630537141957243">Подключить MIDI-устройство?</translation>
 <translation id="6579990219486187401">Светло-розовый</translation>
 <translation id="6583674473685352014">B6 (конверт)</translation>
-<translation id="6585526963651937128">История Chrome</translation>
 <translation id="6587182488465657433">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, измените его прямо сейчас и проверьте надежность сохраненных паролей.</translation>
 <translation id="6587923378399804057">Скопированная ссылка</translation>
 <translation id="6591833882275308647">Это устройство <ph name="DEVICE_TYPE" /> не управляется администратором.</translation>
@@ -2820,7 +2818,6 @@
 <translation id="8805819170075074995">Элемент списка "<ph name="LANGUAGE_ID" />": элемент проигнорирован, поскольку он уже включен в правило SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Товары для ухода за телом</translation>
 <translation id="8807160976559152894">Подрезать после каждой страницы</translation>
-<translation id="8808828119384186784">Настройки Chrome</translation>
 <translation id="8813277370772331957">Напомнить позже</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы обновить Chrome.</translation>
 <translation id="8820817407110198400">Закладки</translation>

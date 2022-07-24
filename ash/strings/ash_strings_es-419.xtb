@@ -1150,6 +1150,7 @@ Nueva instalación</translation>
 <translation id="7749443890790263709">Se alcanzó la cantidad máxima de escritorios.</translation>
 <translation id="7749640678855296659">Tu micrófono está apagado.</translation>
 <translation id="776344839111254542">Haz clic para ver los detalles de la actualización</translation>
+<translation id="7768784765476638775">Seleccionar para pronunciar</translation>
 <translation id="7780094051999721182">accesos directos</translation>
 <translation id="7780159184141939021">Girar pantalla</translation>
 <translation id="7796353162336583443">Presiona el botón de la pluma stylus en la biblioteca para tomar notas o capturas de pantalla, usar el Asistente de Google y activar las funciones de puntero láser o lupa.</translation>
@@ -1185,7 +1186,6 @@ Nueva instalación</translation>
 <translation id="79341161159229895">Cuenta administrada por <ph name="FIRST_PARENT_EMAIL" /> y <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Presiona <ph name="SHORTCUT_KEY_NAME" /> + V para ver el contenido de tu portapapeles. Los últimos 5 elementos que copiaste se guardan en el portapapeles.</translation>
 <translation id="7942349550061667556">Rojo</translation>
-<translation id="7955885781510802139">Modo de contraste alto</translation>
 <translation id="7968693143708939792">Seleccionar carpeta…</translation>
 <translation id="7977927628060636163">Buscando redes móviles…</translation>
 <translation id="7982789257301363584">Red</translation>
@@ -1297,7 +1297,6 @@ Nueva instalación</translation>
 <translation id="8641805545866562088">Se está actualizando la lista de perfiles. Espera unos minutos.</translation>
 <translation id="8646417893960517480">Temporizador: <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Para agregar una persona, ingresa tu código de acceso parental de Family Link.</translation>
-<translation id="8649101189709089199">Seleccionar para pronunciar</translation>
 <translation id="8649597172973390955">La biblioteca se muestra siempre</translation>
 <translation id="8652175077544655965">Cerrar configuración</translation>
 <translation id="8653151467777939995">Mostrar la configuración de las notificaciones: Están activadas</translation>

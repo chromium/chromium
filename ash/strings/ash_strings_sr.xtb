@@ -1152,6 +1152,7 @@
 <translation id="7749443890790263709">Достигли сте максималан број радних површина.</translation>
 <translation id="7749640678855296659">Микрофон је тренутно искључен</translation>
 <translation id="776344839111254542">Кликните за приказ детаља ажурирања</translation>
+<translation id="7768784765476638775">Изаберите за говор</translation>
 <translation id="7780094051999721182">пречице</translation>
 <translation id="7780159184141939021">Ротирајте екран</translation>
 <translation id="7796353162336583443">Додирните дугме писаљке на полици да бисте направили белешку и снимак екрана и да бисте користили Google помоћник, ласерски показивач или лупу.</translation>
@@ -1187,7 +1188,6 @@
 <translation id="79341161159229895">Налогом управљају <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Притисните <ph name="SHORTCUT_KEY_NAME" /> + V да бисте видели привремену меморију. Последњих 5 ставки које сте копирали се чувају у привременој меморији.</translation>
 <translation id="7942349550061667556">Црвена</translation>
-<translation id="7955885781510802139">Режим високог контраста</translation>
 <translation id="7968693143708939792">Изаберите фолдер…</translation>
 <translation id="7977927628060636163">Траже се мобилне мреже…</translation>
 <translation id="7982789257301363584">Мрежа</translation>
@@ -1299,7 +1299,6 @@
 <translation id="8641805545866562088">Листа профила се освежава. Сачекајте неколико минута.</translation>
 <translation id="8646417893960517480">Тајмер за <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Да бисте додали особу, унесите приступни кôд родитеља за Family Link</translation>
-<translation id="8649101189709089199">Изаберите за говор</translation>
 <translation id="8649597172973390955">Полица се увек приказује</translation>
 <translation id="8652175077544655965">Затворите подешавања</translation>
 <translation id="8653151467777939995">Прегледајте подешавања обавештења. Обавештења су укључена</translation>

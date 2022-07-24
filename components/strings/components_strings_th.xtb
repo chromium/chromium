@@ -997,7 +997,6 @@
 <translation id="3658742229777143148">การแก้ไข</translation>
 <translation id="3664782872746246217">คีย์เวิร์ด:</translation>
 <translation id="3667704023705708645">ธุรกิจเงินร่วมลงทุน</translation>
-<translation id="367108335512738711">บุ๊กมาร์กใน Chrome</translation>
 <translation id="3671540257457995106">อนุญาตให้ปรับขนาดไหม</translation>
 <translation id="3675563144891642599">ม้วนกระดาษ 3</translation>
 <translation id="3676592649209844519">รหัสอุปกรณ์:</translation>
@@ -1278,7 +1277,6 @@
 <translation id="4435702339979719576">โปสการ์ด)</translation>
 <translation id="443673843213245140">การใช้พร็อกซีถูกปิดใช้งาน แต่มีการระบุการกำหนดค่าพร็อกซีอย่างชัดเจน</translation>
 <translation id="4441832193888514600">ถูกละเว้นเนื่องจากนโยบายจะต้องตั้งค่าเป็นนโยบายผู้ใช้ระบบคลาวด์เท่านั้น</translation>
-<translation id="4442470707340296952">แท็บ Chrome</translation>
 <translation id="4450893287417543264">ไม่ต้องแสดงอีก</translation>
 <translation id="4451135742916150903">สามารถขอเชื่อมต่อกับอุปกรณ์ HID ได้</translation>
 <translation id="4452328064229197696">ระบบพบว่ารหัสผ่านที่คุณเพิ่งใช้มีการรั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เพื่อรักษาความปลอดภัยของบัญชี เครื่องมือจัดการรหัสผ่านของ Google แนะนำให้ตรวจสอบรหัสผ่านที่บันทึกไว้</translation>
@@ -2030,7 +2028,6 @@
 <translation id="6579630537141957243">เชื่อมต่ออุปกรณ์ MIDI ไหม</translation>
 <translation id="6579990219486187401">ชมพูอ่อน</translation>
 <translation id="6583674473685352014">B6 (ซองจดหมาย)</translation>
-<translation id="6585526963651937128">ประวัติการเข้าชมใน Chrome</translation>
 <translation id="6587182488465657433">Chrome พบว่ารหัสผ่านที่คุณเพิ่งใช้รั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เราขอแนะนำให้เปลี่ยนรหัสผ่านดังกล่าวทันทีและตรวจสอบรหัสผ่านที่บันทึกไว้เพื่อรักษาความปลอดภัยของบัญชี</translation>
 <translation id="6587923378399804057">ลิงก์ที่คุณคัดลอก</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> ของคุณไม่มีการจัดการ</translation>
@@ -2822,7 +2819,6 @@
 <translation id="8805819170075074995">รายการ "<ph name="LANGUAGE_ID" />": ระบบไม่สนใจรายการนี้เพราะมีอยู่ในนโยบาย SpellcheckLanguage เช่นกัน</translation>
 <translation id="8806285662264631610">ผลิตภัณฑ์ชำระล้างร่างกาย</translation>
 <translation id="8807160976559152894">ตัดออกหลังหน้าแต่ละหน้า</translation>
-<translation id="8808828119384186784">การตั้งค่า Chrome</translation>
 <translation id="8813277370772331957">เตือนฉันภายหลัง</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่ออัปเดต Chrome จากการตั้งค่า Chrome</translation>
 <translation id="8820817407110198400">บุ๊กมาร์ก</translation>

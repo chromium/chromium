@@ -997,7 +997,6 @@
 <translation id="3658742229777143148">പുനരവലോകനം</translation>
 <translation id="3664782872746246217">കീവേഡുകൾ:</translation>
 <translation id="3667704023705708645">വെഞ്ച്വർ കാപ്പിറ്റൽ</translation>
-<translation id="367108335512738711">Chrome ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="3671540257457995106">വലുപ്പം മാറ്റാൻ അനുവദിക്കണോ?</translation>
 <translation id="3675563144891642599">മൂന്നാമത്തെ റോൾ</translation>
 <translation id="3676592649209844519">ഉപകരണ ഐഡി:</translation>
@@ -1278,7 +1277,6 @@
 <translation id="4435702339979719576">പോസ്‌റ്റ്‌ കാർഡ്)</translation>
 <translation id="443673843213245140">പ്രോക്‌സി ഉപയോഗം അപ്രാപ്‌തമാക്കി പക്ഷെ ഒരു വ്യക്തമായ പ്രോക്‌സി കോൺഫിഗറേഷൻ നിർദ്ദേശിച്ചു.</translation>
 <translation id="4441832193888514600">ക്ലൗഡ് ഉപയോക്തൃ നയം ആയി മാത്രമേ നയം സജ്ജീകരിക്കാനാകൂ എന്നതിനാൽ അവഗണിക്കൂ.</translation>
-<translation id="4442470707340296952">Chrome ടാബുകൾ</translation>
 <translation id="4450893287417543264">വീണ്ടും കാണിക്കരുത്</translation>
 <translation id="4451135742916150903">HID ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ ആവശ്യപ്പെടാം</translation>
 <translation id="4452328064229197696">നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. നിങ്ങളുടെ അക്കൗണ്ടുകൾ സുരക്ഷിതമാക്കാൻ, സംരക്ഷിച്ച പാസ്‌വേഡുകൾ പരിശോധിക്കാൻ Google പാസ്‌വേഡ് മാനേജർ നിർദ്ദേശിക്കുന്നു.</translation>
@@ -2029,7 +2027,6 @@
 <translation id="6579630537141957243">MIDI ഉപകരണം കണക്റ്റ് ചെയ്യണോ?</translation>
 <translation id="6579990219486187401">ഇളം പിങ്ക്</translation>
 <translation id="6583674473685352014">B6 (എൻവലപ്പ്)</translation>
-<translation id="6585526963651937128">Chrome ചരിത്രം</translation>
 <translation id="6587182488465657433">Chrome, നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. നിങ്ങളുടെ അക്കൗണ്ടുകൾ സുരക്ഷിതമാക്കാൻ ഇപ്പോൾ തന്നെ ഈ പാസ്‌വേഡ് മാറ്റി, സംരക്ഷിച്ച പാസ്‌വേഡുകൾ പരിശോധിക്കാൻ ഞങ്ങൾ നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="6587923378399804057">നിങ്ങൾ പകർത്തിയ ലിങ്ക്</translation>
 <translation id="6591833882275308647">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യപ്പെടുന്നില്ല</translation>
@@ -2818,7 +2815,6 @@
 <translation id="8805819170075074995">ലിസ്‌റ്റ് എൻട്രി "<ph name="LANGUAGE_ID" />": SpellcheckLanguage നയത്തിലും ഉൾപ്പെടുത്തിയിരിക്കുന്നതിനാൽ എൻട്രി അവഗണിച്ചു.</translation>
 <translation id="8806285662264631610">കുളിക്കാനും ശരീര സംരക്ഷണത്തിനുമുള്ള ഉൽപ്പന്നങ്ങൾ</translation>
 <translation id="8807160976559152894">ഓരോ പേജിന് ശേഷവും ട്രിം ചെയ്യുക</translation>
-<translation id="8808828119384186784">Chrome ക്രമീകരണം</translation>
 <translation id="8813277370772331957">എന്നെ പിന്നീട് ഓർമ്മിപ്പിക്കുക</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Chrome ക്രമീകരണത്തിൽ Chrome അപ്ഡേറ്റ് ചെയ്യാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="8820817407110198400">Bookmarks</translation>

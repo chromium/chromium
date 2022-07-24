@@ -998,7 +998,6 @@
 <translation id="3658742229777143148">変更履歴</translation>
 <translation id="3664782872746246217">キーワード:</translation>
 <translation id="3667704023705708645">ベンチャー キャピタル</translation>
-<translation id="367108335512738711">Chrome のブックマーク</translation>
 <translation id="3671540257457995106">サイズ変更を許可しますか？</translation>
 <translation id="3675563144891642599">ロール 3</translation>
 <translation id="3676592649209844519">デバイス ID:</translation>
@@ -1279,7 +1278,6 @@
 <translation id="4435702339979719576">ポストカード</translation>
 <translation id="443673843213245140">プロキシの使用は無効ですが、プロキシの設定が明示的に指定されています。</translation>
 <translation id="4441832193888514600">ポリシーは、クラウド ユーザー ポリシーとしてのみ設定可能なため無視されました。</translation>
-<translation id="4442470707340296952">Chrome のタブ</translation>
 <translation id="4450893287417543264">次回から表示しない</translation>
 <translation id="4451135742916150903">HID デバイスへの接続を要求できる</translation>
 <translation id="4452328064229197696">たった今使用したパスワードがデータ侵害で検出されました。Google パスワード マネージャーでは、アカウントを保護するために保存したパスワードを確認することをおすすめします。</translation>
@@ -2030,7 +2028,6 @@
 <translation id="6579630537141957243">MIDI デバイスを使用しますか？</translation>
 <translation id="6579990219486187401">ライトピンク</translation>
 <translation id="6583674473685352014">B6（封筒）</translation>
-<translation id="6585526963651937128">Chrome 履歴</translation>
 <translation id="6587182488465657433">たった今使用したパスワードがデータ侵害で検出されました。アカウントを保護するため、このパスワードを今すぐ変更し、保存したパスワードを確認することをおすすめします。</translation>
 <translation id="6587923378399804057">コピーしたリンク</translation>
 <translation id="6591833882275308647">ご使用の <ph name="DEVICE_TYPE" /> は管理されていません</translation>
@@ -2822,7 +2819,6 @@
 <translation id="8805819170075074995">リスト項目「<ph name="LANGUAGE_ID" />」: SpellcheckLanguage ポリシーにも含まれているため、この項目は無視されます。</translation>
 <translation id="8806285662264631610">バス、ボディ商品</translation>
 <translation id="8807160976559152894">トリミング（ページ単位）</translation>
-<translation id="8808828119384186784">Chrome の設定</translation>
 <translation id="8813277370772331957">後で通知</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で Chrome を更新します</translation>
 <translation id="8820817407110198400">ブックマーク</translation>

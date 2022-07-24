@@ -995,7 +995,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3658742229777143148">Revisione</translation>
 <translation id="3664782872746246217">Parole chiave:</translation>
 <translation id="3667704023705708645">Venture capital</translation>
-<translation id="367108335512738711">Preferiti di Chrome</translation>
 <translation id="3671540257457995106">Consentire ridimensionamento?</translation>
 <translation id="3675563144891642599">Terzo rullo</translation>
 <translation id="3676592649209844519">ID dispositivo:</translation>
@@ -1276,7 +1275,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">L'utilizzo di un proxy è stato disattivato ma è stata specificata una configurazione proxy esplicita.</translation>
 <translation id="4441832193888514600">Ignorato perché il criterio può essere impostato solo da un utente cloud.</translation>
-<translation id="4442470707340296952">Schede di Chrome</translation>
 <translation id="4450893287417543264">Non mostrare più</translation>
 <translation id="4451135742916150903">Può chiedere di connettersi ai dispositivi HID</translation>
 <translation id="4452328064229197696">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. Per proteggere i tuoi account, Gestore delle password di Google consiglia di controllare le password salvate.</translation>
@@ -1464,6 +1462,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4969341057194253438">Elimina la registrazione</translation>
 <translation id="4973922308112707173">Perforatura doppia in alto</translation>
 <translation id="4976702386844183910">Ultima visita: <ph name="DATE" /></translation>
+<translation id="498323057460789381">Errore di convalida dello schema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Usare il microfono?</translation>
 <translation id="4984339528288761049">Prc5 (Envelope)</translation>
 <translation id="4989163558385430922">Mostra tutto</translation>
@@ -2026,7 +2025,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6579630537141957243">Connettere un dispositivo MIDI?</translation>
 <translation id="6579990219486187401">Rosa chiaro</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
-<translation id="6585526963651937128">Cronologia di Chrome</translation>
 <translation id="6587182488465657433">Chrome ha rilevato che la password appena usata è stata esposta a una violazione dei dati. Per proteggere i tuoi account, ti consigliamo di cambiarla subito e di controllare le password che hai salvato.</translation>
 <translation id="6587923378399804057">Link copiato</translation>
 <translation id="6591833882275308647">Il tuo dispositivo <ph name="DEVICE_TYPE" /> non è gestito</translation>
@@ -2818,7 +2816,6 @@ Ulteriori dettagli:
 <translation id="8805819170075074995">Voce "<ph name="LANGUAGE_ID" />": voce ignorata perché è inclusa anche nella norma SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Prodotti per il corpo e per il bagno</translation>
 <translation id="8807160976559152894">Taglia dopo ciascuna pagina</translation>
-<translation id="8808828119384186784">Impostazioni di Chrome</translation>
 <translation id="8813277370772331957">Ricordamelo dopo</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per aggiornare Chrome dalle relative impostazioni</translation>
 <translation id="8820817407110198400">Preferiti</translation>

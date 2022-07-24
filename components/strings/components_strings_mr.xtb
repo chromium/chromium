@@ -997,7 +997,6 @@
 <translation id="3658742229777143148">पुनरावृत्ती</translation>
 <translation id="3664782872746246217">कीवर्ड:</translation>
 <translation id="3667704023705708645">व्हेंचर कॅपिटल</translation>
-<translation id="367108335512738711">Chrome बुकमार्क</translation>
 <translation id="3671540257457995106">आकार बदलण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="3675563144891642599">तिसरा रोल</translation>
 <translation id="3676592649209844519">डिव्हाइस आयडी:</translation>
@@ -1278,7 +1277,6 @@
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">प्रॉक्सीचा वापर अक्षम करण्‍यात आला आहे पण एक सुस्पष्‍ट प्रॉक्सी कॉन्‍फिगरेशन निर्दिष्‍ट करण्‍यात आले आहे.</translation>
 <translation id="4441832193888514600">दुर्लक्ष केले आहे, कारण हे धोरण फक्त क्लाउड वापरकर्ता धोरण म्हणून सेट केले जाऊ शकते.</translation>
-<translation id="4442470707340296952">Chrome टॅब</translation>
 <translation id="4450893287417543264">पुन्हा दाखवू नका</translation>
 <translation id="4451135742916150903">HID डिव्हाइसशी कनेक्ट करण्याची विनंती करू शकते</translation>
 <translation id="4452328064229197696">तुम्ही नुकताच वापरलेला पासवर्ड डेटा भंगामध्ये आढळला होता. तुमची खाती सुरक्षित करण्यासाठ, Google पासवर्ड व्यवस्थापक तुमचे सेव्ह केलेले पासवर्ड तपासण्याची शिफारस करतो.</translation>
@@ -2030,7 +2028,6 @@
 <translation id="6579630537141957243">MIDI डिव्‍हाइस कनेक्ट करायचे का?</translation>
 <translation id="6579990219486187401">फिकट गुलाबी</translation>
 <translation id="6583674473685352014">B6 (Envelope)B6 (Envelope)</translation>
-<translation id="6585526963651937128">Chrome इतिहास</translation>
 <translation id="6587182488465657433">Chrome ला तुम्ही नुकताच डेटा भंगामध्ये वापरलेला पासवर्ड आढळळा आहे. तुमची खाती सुरक्षित करण्यासाठी, आम्ही तो आताच बदलण्याची आणि त्यानंतर तुमचे सेव्ह केलेले पासवर्ड तपासण्याची शिफारस करतो.</translation>
 <translation id="6587923378399804057">तुम्ही कॉपी केलेली लिंक</translation>
 <translation id="6591833882275308647">तुमचे <ph name="DEVICE_TYPE" /> व्यवस्थापित केलेले नाही</translation>
@@ -2821,7 +2818,6 @@
 <translation id="8805819170075074995">सूची एंट्री "<ph name="LANGUAGE_ID" />": एंट्री SpellcheckLanguage धोरणामध्येदेखील समाविष्ट असल्यामुळे तिच्याकडे दुर्लक्ष केले गेले आहे.</translation>
 <translation id="8806285662264631610">प्रसाधने</translation>
 <translation id="8807160976559152894">प्रत्येक पेजनंतर ट्रिम करा</translation>
-<translation id="8808828119384186784">Chrome सेटिंग्ज</translation>
 <translation id="8813277370772331957">मला नंतर आठवण करून द्या</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या Chrome सेटिंग्जमधून Chrome अपडेट करण्यासाठी टॅब आणि त्यानंतर एंटर दाबा</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>

@@ -996,7 +996,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3658742229777143148">Ellenőrzés</translation>
 <translation id="3664782872746246217">Kulcsszavak:</translation>
 <translation id="3667704023705708645">Kockázati tőke</translation>
-<translation id="367108335512738711">Chrome-könyvjelzők</translation>
 <translation id="3671540257457995106">Engedélyezi az újraméretezést?</translation>
 <translation id="3675563144891642599">3. tekercs</translation>
 <translation id="3676592649209844519">Eszközazonosító:</translation>
@@ -1277,7 +1276,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4435702339979719576">képeslap)</translation>
 <translation id="443673843213245140">A proxy használata le van tiltva, de kifejezett proxykonfiguráció van megadva.</translation>
 <translation id="4441832193888514600">Figyelmen kívül hagyva, mert a szabályzatot csak felhőalapú felhasználói szabályzatként lehet beállítani.</translation>
-<translation id="4442470707340296952">Chrome-lapok</translation>
 <translation id="4450893287417543264">Ne jelenjen meg többé</translation>
 <translation id="4451135742916150903">Engedélyt kérhet a HID-eszközökhöz való csatlakozásra</translation>
 <translation id="4452328064229197696">Kiderült, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Fiókjai biztonságának megőrzése érdekében a Google Jelszókezelő a mentett jelszavak ellenőrzését javasolja.</translation>
@@ -2029,7 +2027,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6579630537141957243">Csatlakoztatja a MIDI-eszközt?</translation>
 <translation id="6579990219486187401">Világos rózsaszín</translation>
 <translation id="6583674473685352014">B6 (boríték)</translation>
-<translation id="6585526963651937128">Chrome-előzmények</translation>
 <translation id="6587182488465657433">A Chrome észlelte, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Fiókjai biztonsága érdekében javasoljuk ennek a jelszónak az azonnali módosítását, majd a mentett jelszavai ellenőrzését.</translation>
 <translation id="6587923378399804057">Vágólapra másolt link</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> eszköze nem áll felügyelet alatt</translation>
@@ -2822,7 +2819,6 @@ További részletek:
 <translation id="8805819170075074995">„<ph name="LANGUAGE_ID" />” listabejegyzés: A bejegyzést figyelmen kívül hagyja a rendszer, mert szerepel a SpellcheckLanguage házirendben is.</translation>
 <translation id="8806285662264631610">Fürdő- és testápolási termékek</translation>
 <translation id="8807160976559152894">Vágás minden oldal után</translation>
-<translation id="8808828119384186784">A Chrome beállításai</translation>
 <translation id="8813277370772331957">Emlékeztessen később</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, nyomja le a Tab, majd az Enter billentyűt a Chrome-nak a Chrome beállításaiban való frissítéséhez</translation>
 <translation id="8820817407110198400">Könyvjelzők</translation>

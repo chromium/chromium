@@ -306,6 +306,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
 <translation id="2814448776515246190">Regjistrim i pjesshëm</translation>
 <translation id="2819276065543622893">Do të dalësh nga llogaria tani.</translation>
+<translation id="2822551631199737692">Kamera në përdorim</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> nuk e mbështet <ph name="SPECIFIED_RESOLUTION" />. Rezolucioni është ndryshuar në <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Rafti</translation>
 <translation id="2831035692318564937">Aktive deri në agim</translation>
@@ -807,6 +808,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5682642926269496722">"Asistenti i Google" nuk ofrohet për llogarinë aktuale të përdoruesit.</translation>
 <translation id="5689633613396158040">"Drita e natës" e bën më të lehtë shikimin e ekranit ose leximin në dritë të zbehtë. Trokit për të ndryshuar se kur aktivizohet ose çaktivizohet plotësisht "Drita e natës".</translation>
 <translation id="5691772641933328258">Gjurma e gishtit nuk njihet</translation>
+<translation id="5693255400847650006">Mikrofoni në përdorim</translation>
 <translation id="570390244361237317">Të gjitha aplikacionet; navigo me tastet e shigjetave për t'u qasur te të gjitha aplikacionet</translation>
 <translation id="5707775774148071965">Pajisja jote mbështet një shpejtësi më të lartë të të dhënave sesa kablloja. Cilësia e funksionimit të pajisjes mund të jetë e kufizuar.</translation>
 <translation id="5710450975648804523">"Mos shqetëso" është aktiv</translation>
@@ -981,6 +983,7 @@ Instalim i ri</translation>
 <translation id="6723839937902243910">Energjia</translation>
 <translation id="6727969043791803658">E lidhur, bateria <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Kamera dhe mikrofoni në përdorim</translation>
 <translation id="6739144137573853180">SHKO TE CILËSIMET</translation>
 <translation id="6751052314767925245">E zbatuar nga administratori yt</translation>
 <translation id="6751826523481687655">Gjurmimi i cilësisë së funksionimit është aktivizuar</translation>
@@ -1149,6 +1152,7 @@ Instalim i ri</translation>
 <translation id="7749443890790263709">Është arritur numri maksimal i tavolinave të punës.</translation>
 <translation id="7749640678855296659">Mikrofoni yt është aktualisht i fikur</translation>
 <translation id="776344839111254542">Kliko për të parë detajet e përditësimit</translation>
+<translation id="7768784765476638775">Zgjidh që të thuhet</translation>
 <translation id="7780094051999721182">shkurtoret</translation>
 <translation id="7780159184141939021">Rrotullo ekranin</translation>
 <translation id="7796353162336583443">Trokit te butoni i stilolapsit në raft për të mbajtur një shënim, për të nxjerrë një pamje të ekranit, për të përdorur "Asistentin e Google", treguesin me lazer ose xhamin zmadhues.</translation>
@@ -1184,7 +1188,6 @@ Instalim i ri</translation>
 <translation id="79341161159229895">Llogaria menaxhohet nga <ph name="FIRST_PARENT_EMAIL" /> dhe <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Shtyp <ph name="SHORTCUT_KEY_NAME" /> + V për të parë kujtesën tënde të fragmenteve. 5 artikujt e fundit që ke kopjuar janë ruajtur në kujtesën tënde të fragmenteve.</translation>
 <translation id="7942349550061667556">E kuqe</translation>
-<translation id="7955885781510802139">Modaliteti i kontrastit të lartë</translation>
 <translation id="7968693143708939792">Zgjidh dosje...</translation>
 <translation id="7977927628060636163">Po kërkon për rrjete celulare...</translation>
 <translation id="7982789257301363584">Rrjeti</translation>
@@ -1296,7 +1299,6 @@ Instalim i ri</translation>
 <translation id="8641805545866562088">Lista e profilit po rifreskohet. Prit disa minuta.</translation>
 <translation id="8646417893960517480">Kohëmatësi: <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Për të shtuar një person, fut kodin e qasjes së prindit për Family Link.</translation>
-<translation id="8649101189709089199">Zgjidh që të thuhet</translation>
 <translation id="8649597172973390955">Rafti shfaqet gjithmonë</translation>
 <translation id="8652175077544655965">Mbyll "Cilësimet"</translation>
 <translation id="8653151467777939995">Shfaq cilësimet e njoftimeve. Njoftimet janë aktive</translation>

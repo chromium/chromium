@@ -306,6 +306,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2805756323405976993">Izinhlelo zokusebenza</translation>
 <translation id="2814448776515246190">Ukuthatha okuyingxenye</translation>
 <translation id="2819276065543622893">Uzokhishwa ngemvume manje.</translation>
+<translation id="2822551631199737692">Ikhamera esetshenziswayo</translation>
 <translation id="2825224105325558319">I-<ph name="DISPLAY_NAME" /> ayisekeli i-<ph name="SPECIFIED_RESOLUTION" />. Ukulungiswa kuguqulelwe ku-<ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Ishelufu</translation>
 <translation id="2831035692318564937">Iyavulwa kuze kuphume ilanga</translation>
@@ -807,6 +808,7 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="5682642926269496722">Umsizi we-Google akatholakaleli i-akhawunti yamanje yomsebenzisi.</translation>
 <translation id="5689633613396158040">Ukukhanya kwasebusuku kwenza kubelula ukubheka esikrinini sakho noma ukufunda ngomkhanyo ofiphele. Thepha ukuze ushintshe ukuthi ukukhanya kwasebusuku kuvula noma kuvala nini ngokuphelele.</translation>
 <translation id="5691772641933328258">Isigxivizo somunwe asaziwa</translation>
+<translation id="5693255400847650006">Imakrofoni iyasebenza</translation>
 <translation id="570390244361237317">Wonke ama-App, funa ngokhiye bomcibisholo ukuze ufinyeele wonke ama-app</translation>
 <translation id="5707775774148071965">Idivayisi yakho isekela isilinganiso sedatha esiphezulu kunekhebuli lakho. Ukusebenza kwedivayisi kungase kukhawulelwe.</translation>
 <translation id="5710450975648804523">Ukungaphazamisi kuvuliwe</translation>
@@ -981,6 +983,7 @@ Ukufaka okusha</translation>
 <translation id="6723839937902243910">Amandla</translation>
 <translation id="6727969043791803658">Ixhunyiwe, ibhethri ngu-<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Ikhamera nemakrofoni kuyasebenza</translation>
 <translation id="6739144137573853180">IYA KUMASETHINGI</translation>
 <translation id="6751052314767925245">Kulawulwa umphathi wakho</translation>
 <translation id="6751826523481687655">Ukulandelela kokusebenza kuvuliwe</translation>
@@ -1149,6 +1152,7 @@ Ukufaka okusha</translation>
 <translation id="7749443890790263709">Inombolo enkulu yamadeski ifinyelelwe.</translation>
 <translation id="7749640678855296659">Imakrofoni yakho okwamanje ivaliwe</translation>
 <translation id="776344839111254542">Chofoza ukuze ubuke imininingwane yokubuyekeza</translation>
+<translation id="7768784765476638775">Khetha ukuze ukhulume</translation>
 <translation id="7780094051999721182">izinqamuleli</translation>
 <translation id="7780159184141939021">Zungezisa isikrini</translation>
 <translation id="7796353162336583443">Thepha inkinobho ye-stylus kushelufu ukuze uthathe amanothi, isithombe-skrini, usebenzise umsizi, isikhombi se-pointer, noma ingilazi yokusondeza.</translation>
@@ -1184,7 +1188,6 @@ Ukufaka okusha</translation>
 <translation id="79341161159229895">I-akhawunti iphethwe ngu-<ph name="FIRST_PARENT_EMAIL" /> no-<ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Cindezela u-<ph name="SHORTCUT_KEY_NAME" /> + V ukubuka ibhodi lakho lokunamathisela. Izinto ezi-5 zokugcina ozikopishile zilondolozwe ebhodini lakho lokunamathisela.</translation>
 <translation id="7942349550061667556">Okubomvu</translation>
-<translation id="7955885781510802139">Imodi yokugqama okuphezulu</translation>
 <translation id="7968693143708939792">Khetha ifolda...</translation>
 <translation id="7977927628060636163">Isesha amanethiwekhi eselula...</translation>
 <translation id="7982789257301363584">Inethiwekhi</translation>
@@ -1296,7 +1299,6 @@ Ukufaka okusha</translation>
 <translation id="8641805545866562088">Ivuselela uhlu lwephrofayela. Linda imizuzu embalwa.</translation>
 <translation id="8646417893960517480">isibali sikhathi se-<ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Ukuze ungeze umuntu, faka ikhodi yakho yokufinyelela komzali ye-Family Link</translation>
-<translation id="8649101189709089199">Khetha ukuze ukhulume</translation>
 <translation id="8649597172973390955">Ishelufu ihlala iboniswa</translation>
 <translation id="8652175077544655965">Vala izilungiselelo</translation>
 <translation id="8653151467777939995">Bonisa izilungiselelo zesaziso. Izaziso zivuliwe</translation>

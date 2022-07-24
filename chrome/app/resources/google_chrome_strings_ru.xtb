@@ -65,6 +65,7 @@
 <translation id="2139300032719313227">Перезапустите Chrome OS</translation>
 <translation id="2151406531797534936">Перезапустите Chrome</translation>
 <translation id="2174917724755363426">Установка не завершена. Отменить ее?</translation>
+<translation id="223889379102603431">Информация о том, как Chrome управляет корневыми сертификатами</translation>
 <translation id="2258103955319320201">Чтобы получить доступ к данным в браузере Chrome на всех своих устройствах, войдите в аккаунт и включите синхронизацию.</translation>
 <translation id="2290014774651636340">Отсутствуют ключи API Google. Некоторые функции Google Chrome могут не работать.</translation>
 <translation id="2290095356545025170">Вы действительно хотите удалить Google Chrome?</translation>
@@ -347,6 +348,7 @@
 <translation id="8129812357326543296">О браузере &amp;Google Chrome</translation>
 <translation id="813913629614996137">Инициализация...</translation>
 <translation id="8255190535488645436">Google Chrome использует камеру и микрофон.</translation>
+<translation id="8270775718612349140">Сертификаты, которыми управляет Chrome</translation>
 <translation id="8286862437124483331">Чтобы просмотреть пароли, введите пароль своего аккаунта Windows.</translation>
 <translation id="828798499196665338">Родители отключили в Chrome параметр "Разрешения для сайтов, приложений и расширений". Включать это <ph name="EXTENSION_TYPE_PARAMETER" /> запрещено.</translation>
 <translation id="8290100596633877290">Произошел сбой Google Chrome. Перезапустить?</translation>

@@ -1067,6 +1067,7 @@
       如果此政策已启用或未设置，系统将启用快速解答定义功能。
       如果此政策已停用，系统将停用快速解答定义功能。</translation>
 <translation id="209586405398070749">稳定版</translation>
+<translation id="2096932573113293941">请求用户许可运行需要授权的插件</translation>
 <translation id="2098658257603918882">启用关于使用情况和崩溃相关数据的报告</translation>
 <translation id="2104418465060359056">报告扩展程序和插件信息</translation>
 <translation id="2106627642643925514">替换默认 PIN 码打印模式。如果这种模式不适用，系统会忽略此政策。</translation>
@@ -1195,6 +1196,7 @@
 <translation id="2223393221350938149">不允许任何网站运行 JavaScript JIT</translation>
 <translation id="2223582957891074498">如果此政策设为 True，用户无法使用键盘快捷键或扩展程序 API 截取屏幕截图。如果此政策设为 False，用户可以截取屏幕截图。</translation>
 <translation id="2223598546285729819">默认通知设置</translation>
+<translation id="222673035924187991">启用经过 TLS 加密的 ClientHello</translation>
 <translation id="2231726854197443389">此政策用于控制用户能否在“设置”中启用纯 HTTPS 模式。纯 HTTPS 模式会将所有导航路径升级到 HTTPS。
       如果此设置未配置或设为“允许”，用户将能启用纯 HTTPS 模式。
       如果此设置设为“禁止”，用户将无法启用纯 HTTPS 模式。
@@ -1315,6 +1317,7 @@
 <translation id="2349117476121456297">将此政策设为 True 时，系统会让键盘顶行中的各个键充当功能键命令。按搜索键可将这些键的行为改回媒体键。
 
       如果此政策设为 False 或未设置，键盘会默认发出媒体键命令。按搜索键可将这些键改为功能键。</translation>
+<translation id="2354439478396602136">在 <ph name="PRODUCT_OS_NAME" /> 启动器中显示推荐的应用</translation>
 <translation id="2355876547176311490">禁止远程访问主机使用中继服务器</translation>
 <translation id="2358176879566587521">此政策已被移除。它与这个版本的 <ph name="PRODUCT_NAME" /> 不兼容。如需了解详情，请访问 https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">重新启动时间范围</translation>
@@ -1541,6 +1544,7 @@
       用户无法更改用于放置书签的文件夹，但可从书签栏中将其隐藏。受管理书签的默认文件夹名称为“受管理的书签”，但用户可以更改该名称，方法是：向此政策中添加一个新的仅包含“<ph name="TOPLEVEL_NAME" />”键的子字典条目，并将键值设为所需的文件夹名称。受管理的书签不会同步到用户帐号中，且无法由扩展程序修改。</translation>
 <translation id="2552966063069741410">时区</translation>
 <translation id="2555244983262829274">从工具栏中隐藏首页按钮</translation>
+<translation id="2562213287271514629">允许像运行正常 <ph name="FLASH_PLUGIN_NAME" /> 一样使用已过时的 <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="2562339630163277285">指定用于提供即搜即得结果的搜索引擎网址。该网址应包含字符串“<ph name="SEARCH_TERM_MARKER" />”，系统会在用户进行查询时将该字符串替换为用户输入的文字。
 
           此政策是可选的，如果未设置，系统将不会提供任何即搜即得结果。
@@ -1585,6 +1589,7 @@
 <translation id="2593762551209145088">“安全浏览”功能会一直处于关闭状态。</translation>
 <translation id="26023406105317310">配置 Kerberos 帐号</translation>
 <translation id="2604182581880595781">配置网络文件共享功能相关政策。</translation>
+<translation id="2608039968712973520">请求用户许可运行已过时的 <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="2608535066974278204">用于指定重新启动时间范围长度的时间段（以分钟为单位）。</translation>
 <translation id="2608887839902987727">禁止强制门户身份验证忽略代理设置</translation>
 <translation id="2608985885792348429">默认剪贴板设置</translation>
@@ -1636,6 +1641,7 @@
       此政策已从 M77 中移除。
       此政策适用于登录屏幕。另请参阅适用于用户会话的 <ph name="SITE_PER_PROCESS_POLICY_NAME" /> 政策。最好将这两项政策设为相同的值。如果这两项政策的值不一致，当进入用户会话时，系统便可能会因正在应用由用户政策指定的值而出现延迟。
       </translation>
+<translation id="2697717608663878828">启用经过 TLS 加密的 ClientHello 实验</translation>
 <translation id="2702023190395322609">启用媒体推荐内容</translation>
 <translation id="270582584528242502">在用户尝试退出时不显示警告对话框</translation>
 <translation id="2706708761587205154">仅允许在有 PIN 码的情况下打印</translation>
@@ -2229,6 +2235,7 @@
 <translation id="3255762580838224124">如果您设置了此政策，那么每当重新启动时或在此政策的值更改后首次连接时，每个显示屏都会旋转到指定方向。用户可在登录后通过“设置”页面更改显示屏旋转角度，但下次重新启动时显示屏仍会遵从更改前的设置。此政策适用于主要显示屏和次要显示屏。
 
       如果此政策未设置，默认值便是 0 度，但用户可以随意更改此值。如果用户更改了默认值，显示屏在重启时将不会重新应用此值。</translation>
+<translation id="3258380413685430793">运行所有 <ph name="FLASH_PLUGIN_NAME" /> 内容</translation>
 <translation id="325883417142483505">通过设置此政策，您可以配置企业登录网址（仅限 HTTP 和 HTTPS 协议）列表。密码保护服务会在这些网址上捕获密码的加盐哈希值，以用于检测密码重用情况。为了使 <ph name="PRODUCT_NAME" /> 能够正确捕获密码的加盐哈希值，请务必确保您的登录页面遵循了这些准则 ( https://www.chromium.org/developers/design-documents/create-amazing-password-forms )。
 
       如果您停用了或未配置此设置，密码保护服务将仅在 https://accounts.google.com 上捕获密码的加盐哈希值。
@@ -2293,6 +2300,7 @@
       注意：不妨详细了解一下进程缓解政策 ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies )。</translation>
 <translation id="3339271789059866414">配置系统代理服务的可用情况以及系统服务的代理凭据。
       如果此政策未设置，系统代理服务将不可用。</translation>
+<translation id="334231891933432876">一旦用户的帐号身份验证失效，就立即强制用户退出登录</translation>
 <translation id="3348799281602260763">如果此政策已启用，WebRTC 对等连接可以降级至已过时的 TLS/DTLS（DTLS 1.0、TLS 1.0 和 TLS 1.1）协议版本。
       如果此政策已停用或未设置，这些 TLS/DTLS 版本会被停用。
 
@@ -2332,6 +2340,7 @@
       如果您不设置此政策，则超时时间为 0 毫秒。
 
       如果 <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> 政策未设置，则此政策不会产生任何效力。</translation>
+<translation id="3397883909301547525">不在 <ph name="PRODUCT_OS_NAME" /> 启动器中显示推荐的应用</translation>
 <translation id="3399859571630358395">强制停用快速配对（快速蓝牙配对）。</translation>
 <translation id="341285788698114069">此政策用于控制音频进程在 Windows 上的优先级。
       如果已启用，音频进程将以高于普通优先级的优先级运行。
@@ -2410,6 +2419,7 @@
       此功能是否可用还取决于相应的用户规范。</translation>
 <translation id="3495602011142234826">如果值设为 true，该扩展程序便能够使用被指定为供企业使用的所有密钥签署任意数据。如果值设为 false，该扩展程序将无法使用任何此类密钥，用户也无法授予此类权限。例外情况是：如果某个扩展程序生成了一个此类密钥，该密钥只能供这个扩展程序使用 1 次。</translation>
 <translation id="3496296378755072552">密码管理器</translation>
+<translation id="3496761649331792755">启用书签栏</translation>
 <translation id="3498109920669229084">通过设置此政策，您可以指定哪些扩展程序不受屏蔽名单影响。
 
        屏蔽名单值“<ph name="ALL_EXTENSIONS" />”表示所有扩展程序均已被屏蔽，用户只能安装许可名单中列出的扩展程序。
@@ -3233,6 +3243,7 @@
 <translation id="449423975179525290">配置与 <ph name="PLUGIN_VM_NAME" /> 相关的政策。</translation>
 <translation id="449784980858429908">自动授权网站连接所有串行端口。</translation>
 <translation id="450080746522343150">拦截所有下载内容。</translation>
+<translation id="45036050223225148">停用经过 TLS 加密的 ClientHello 实验</translation>
 <translation id="4508728400492074981">控制 First-Party Sets 功能的相关政策。</translation>
 <translation id="4510923771103268849">允许用户拥有 Crostini 容器的 root 权限</translation>
 <translation id="4512407512989846472">允许禁止指定网址向剪贴板中复制数据</translation>
@@ -3269,6 +3280,7 @@
       如果未设置此政策，则用户可以停用系统中安装的任何插件。</translation>
 <translation id="4549405078915181477">为网站启用“设备使用时间”功能</translation>
 <translation id="4554651132977135445">用户政策环回处理模式</translation>
+<translation id="4554991346503872538">一律不提供翻译</translation>
 <translation id="4555850956567117258">为该用户启用远程认证</translation>
 <translation id="4557134566541205630">默认搜索服务提供商新标签页网址</translation>
 <translation id="4558166110367609724">自动跳过《服务条款》并加载浏览器。</translation>
@@ -3712,6 +3724,7 @@
 <translation id="5109383437323376357">确定变体的可用情况</translation>
 <translation id="5124368997194894978">启用“接通 AC（交流电）时启动”</translation>
 <translation id="5130213897914754028">阻止网站使用 SharedArrayBuffers</translation>
+<translation id="5130935469849337738">一律提供翻译</translation>
 <translation id="5141670636904227950">设置登录屏幕上启用的默认放大镜类型</translation>
 <translation id="5142301680741828703">总是通过“<ph name="PRODUCT_FRAME_NAME" />”呈现以下网址格式</translation>
 <translation id="5143258831402123447">不将历程显示在 chrome://history/journeys 页面上。</translation>
@@ -3844,6 +3857,7 @@
 
       如果此政策在某个帐号中设为<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" />，系统将仅允许该帐号作为主帐号登录，而不允许它作为辅助帐号登录。</translation>
 <translation id="523505283826916779">无障碍设置</translation>
+<translation id="5238275681097851753">允许屏蔽特定的 <ph name="FLASH_PLUGIN_NAME" /> 内容</translation>
 <translation id="5238976843489093540">强制启用快速配对（快速蓝牙配对）。</translation>
 <translation id="52393120393725840">如果此政策已启用，用户便可让 <ph name="PRODUCT_NAME" /> 记住密码并在自己下次登录相应网站时提供密码。
 
@@ -3910,6 +3924,7 @@
 
       如果此政策未设置，用户无法在已注册的 <ph name="PRODUCT_OS_NAME" />上玩恐龙游戏，但可在其他环境下玩这款游戏。</translation>
 <translation id="529457411593078576">在 CCT 首次运行期间启用《服务条款》</translation>
+<translation id="5297948043665200363">允许用户在帐号身份验证失效后继续保持登录状态</translation>
 <translation id="5298949392804966105">不针对受管理的帐号添加限制</translation>
 <translation id="530134925949808452">应在一天中的什么时间（以当地时间为准）更新用量配额。</translation>
 <translation id="5303080953475303561">通过设置此政策，您可以控制锁定屏幕将会按照什么样的频率要求用户输入密码以实现快速解锁。每当系统显示锁定屏幕时，如果与上次输入密码相距的时间超出了所选值指定的时长，便无法快速解锁。如果用户在锁定屏幕上的停留时长超过了此时长，那么当用户下次输错代码或重新进入锁定屏幕时（以先发生者为准），系统就会要求输入密码。
@@ -4497,6 +4512,13 @@
 
       对于 <ph name="MS_WIN_NAME" /> 或 <ph name="MAC_OS_NAME" />，此政策仅在也启用了 <ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME" /> 的情况下有效。</translation>
 <translation id="5932767795525445337">此政策也可用于固定 Android 应用。</translation>
+<translation id="5936193585187054065">经过加密的 ClientHello (ECH) 是 TLS 的一项扩展功能，用于加密 ClientHello 的敏感字段并加强隐私保护。
+
+      如果您未配置或已启用此政策，<ph name="PRODUCT_NAME" /> 将会遵循 ECH 的默认发布流程。如果您已停用此政策，<ph name="PRODUCT_NAME" /> 将不会启用 ECH。
+
+      当这项功能处于启用状态时，<ph name="PRODUCT_NAME" /> 未必会使用 ECH，具体取决于服务器支持情况、HTTPS DNS 记录的可用性或发布状态。
+
+      ECH 是一种会不断演变的协议，因此 <ph name="PRODUCT_NAME" /> 的实现可能会发生变化。所以，此政策只是一项临时措施，用于控制最初的实验性实现。待该协议演变完毕后，此政策将被替换为最终控件。</translation>
 <translation id="5939656968921014919">停用已隔离应用的开发者模式</translation>
 <translation id="5945312246863177268">禁止用户通过点击 Phone Hub 通知来启动 Eche 应用。</translation>
 <translation id="5946082169633555022">测试版</translation>
@@ -5096,6 +5118,7 @@
           此政策不会阻止企业管理员连接到受管 <ph name="PRODUCT_OS_NAME" /> 设备。
 
           启用、留空或未设置此政策时，它不会产生任何影响。</translation>
+<translation id="6583249367505445969">停用书签栏</translation>
 <translation id="6584541828182430328">停用“显示全屏提醒”功能</translation>
 <translation id="6593350713192882944">启用快速解答功能</translation>
 <translation id="6594372503585248865">允许远程主机桌面在处于已连接状态时显示与连接相关的界面</translation>
@@ -5573,6 +5596,7 @@
 <translation id="7040229947030068419">值示例：</translation>
 <translation id="7044883996351280650">控制 Android 备份和恢复服务</translation>
 <translation id="7047495632846973438">指定是让系统遵循还是忽略显示面截取权限政策。</translation>
+<translation id="7055022222176591388">禁止使用已过时的 <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="7066292150801784098">禁止远程用户在远程协助会话中操控提权后的窗口</translation>
 <translation id="706669471845501145">允许网站显示桌面通知</translation>
 <translation id="70681795425744184">不允许 CRD 执行远程主机通过代理发送的 WebAuthn API 请求。</translation>
@@ -7376,6 +7400,7 @@
 
       如果未设置此政策，或者此政策的值不与 Quick Fix Build 对应，该设备便不会更新至 Quick Fix Build。如果该设备已在运行 Quick Fix Build，并且您已不再设置此政策或者此政策的值已不再与 Quick Fix Build 对应，那么只要更新未被其他政策阻止，该设备就会更新至常规版本。</translation>
 <translation id="9051019223077908578">配置会在登录屏幕上安装的应用和扩展程序的列表</translation>
+<translation id="9053841574218808519">始终运行未过时的插件</translation>
 <translation id="9055866143096316150">将屏幕唤醒锁定请求降级为系统唤醒锁定请求</translation>
 <translation id="9057444687284972605">让您能够指定一系列网址格式，从而指定要在 SAML 流程托管框架的登录屏幕上自动为哪些网站选择客户端证书（如果相应网站要求提供证书）。例如，配置一个要向 SAML IdP 出示的设备级证书。
 

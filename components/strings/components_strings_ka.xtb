@@ -998,7 +998,6 @@
 <translation id="3658742229777143148">რედაქცია</translation>
 <translation id="3664782872746246217">საკვანძო სიტყვები:</translation>
 <translation id="3667704023705708645">სარისკო კაპიტალდაბანდება</translation>
-<translation id="367108335512738711">Chrome-ის სანიშნები</translation>
 <translation id="3671540257457995106">გსურთ ზომის შეცვლის დაშვება?</translation>
 <translation id="3675563144891642599">მესამე რულონი</translation>
 <translation id="3676592649209844519">მოწყობილობის ID:</translation>
@@ -1279,7 +1278,6 @@
 <translation id="4435702339979719576">ღია ბარათი)</translation>
 <translation id="443673843213245140">პროქსის გამოყენება გამორთულია, მაგრამ მითითებულია პროქსის დეტალური კონფიგურაცია.</translation>
 <translation id="4441832193888514600">იგნორირებულია, რადგან წესების განსაზღვრა შესაძლებელია მხოლოდ ღრუბლოვან სამომხმარებლო წესების სახით.</translation>
-<translation id="4442470707340296952">Chrome-ის ჩანართები</translation>
 <translation id="4450893287417543264">აღარ გამოჩნდეს</translation>
 <translation id="4451135742916150903">შეუძლია HID-მოწყობილობებთან დაკავშირების თხოვნა</translation>
 <translation id="4452328064229197696">თქვენ მიერ ახლახან გამოყენებული პაროლი ნაპოვნია გაჟონილ მონაცემებში. თქვენი ანგარიშის დაცვის მიზნით, Google პაროლების მმართველი გირჩევთ, შეამოწმოთ თქვენი შენახული პაროლები.</translation>
@@ -2031,7 +2029,6 @@
 <translation id="6579630537141957243">გსურთ MIDI მოწყობილობასთან დაკავშირება?</translation>
 <translation id="6579990219486187401">ღია ვარდისფერი</translation>
 <translation id="6583674473685352014">B6 (კონვერტი)</translation>
-<translation id="6585526963651937128">Chrome-ის ისტორია</translation>
 <translation id="6587182488465657433">თქვენ მიერ ახლახან გამოყენებული პაროლი Chrome-მა გაჟონილ მონაცემებში იპოვა. თქვენი ანგარიშების დაცვის მიზნით, გირჩევთ, ახლავე შეცვალოთ ის, შემდეგ კი შეამოწმოთ თქვენი შენახული პაროლები.</translation>
 <translation id="6587923378399804057">თქვენ მიერ კოპირებული ბმული</translation>
 <translation id="6591833882275308647">თქვენი <ph name="DEVICE_TYPE" /> არ არის მართული</translation>
@@ -2822,7 +2819,6 @@
 <translation id="8805819170075074995">სიის ჩანაწერი „<ph name="LANGUAGE_ID" />“: ჩანაწერი იგნორირებულია, ვინაიდან მას შეიცავს „SpellcheckLanguage“ წესებიც.</translation>
 <translation id="8806285662264631610">სააბაზანოს და ტანის პროდუქცია</translation>
 <translation id="8807160976559152894">შემოჭრა თითოეული გვერდის შემდეგ</translation>
-<translation id="8808828119384186784">Chrome-ის პარამეტრები</translation>
 <translation id="8813277370772331957">მოგვიანებით შეხსენება</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის პარამეტრებიდან Chrome-ის გასაახლებლად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="8820817407110198400">სანიშნეები</translation>

@@ -995,7 +995,6 @@
 <translation id="3658742229777143148">ପୁନରାବୃତ୍ତି</translation>
 <translation id="3664782872746246217">କୀୱାର୍ଡଗୁଡ଼ିକ:</translation>
 <translation id="3667704023705708645">ଭେଞ୍ଚର କ୍ୟାପିଟାଲ</translation>
-<translation id="367108335512738711">Chrome ବୁକମାର୍କ</translation>
 <translation id="3671540257457995106">ରିସାଇଜ୍ କରିବା ପାଇଁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="3675563144891642599">ତୃତୀୟ ରୋଲ୍</translation>
 <translation id="3676592649209844519">ଡିଭାଇସ୍‌ ID:</translation>
@@ -1276,7 +1275,6 @@
 <translation id="4435702339979719576">ପୋଷ୍ଟକାର୍ଡ)</translation>
 <translation id="443673843213245140">ଏକ ପ୍ରୋକ୍ସିର ବ୍ୟବହାର ଅକ୍ଷମ କରାଯାଇଛି କିନ୍ତୁ ଏକ ସୁନିର୍ଦ୍ଦିଷ୍ଟ ପ୍ରକ୍ସି କନ୍‌ଫିଗ୍‌ରେସନ୍ ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="4441832193888514600">ଏହି ନୀତିକୁ କେବଳ ଏକ କ୍ଲାଉଡ ଉପଯୋଗକର୍ତ୍ତା ନୀତି ଭାବରେ ସେଟ କରାଯାଇପାରୁଥିବା ଯୋଗୁଁ ଏହାକୁ ଅଣଦେଖା କରାଯାଇଛି।</translation>
-<translation id="4442470707340296952">Chrome ଟାବ</translation>
 <translation id="4450893287417543264">ଆଉ ଦେଖାନ୍ତୁ ନାହିଁ</translation>
 <translation id="4451135742916150903">HID ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="4452328064229197696">ଆପଣ ଏବେ ବ୍ୟବହାର କରିଥିବା ପାସୱାର୍ଡ ଏକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଛି। ଆପଣଙ୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ, Google ପାସୱାର୍ଡ ମ୍ୟାନେଜର ଆପଣଙ୍କ ଦ୍ୱାରା ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକର ଯାଞ୍ଚ କରିବାକୁ ସୁପାରିଶ କରେ।</translation>
@@ -2027,7 +2025,6 @@
 <translation id="6579630537141957243">MIDI ଡିଭାଇସ୍ ସଂଯୋଗ କରିବେ?</translation>
 <translation id="6579990219486187401">ହାଲ୍‌କା ଗୋଲାପି</translation>
 <translation id="6583674473685352014">B6 (ଏନଭଲପ୍)</translation>
-<translation id="6585526963651937128">Chrome ଇତିହାସ</translation>
 <translation id="6587182488465657433">ଆପଣ ଏକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ଏବେ ବ୍ୟବହାର କରିଥିବା ପାସୱାର୍ଡ Chromeକୁ ମିଳିଛି। ଆପଣଙ୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ, ବର୍ତ୍ତମାନ ଏହାକୁ ପରିବର୍ତ୍ତନ କରିବାକୁ ଏବଂ ତା'ପରେ ଆପଣଙ୍କର ସେଭ୍ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିବାକୁ ଆମେ ସୁପାରିଶ କରୁ।</translation>
 <translation id="6587923378399804057">ଆପଣ କପି କରିଥିବା ଲିଙ୍କ୍</translation>
 <translation id="6591833882275308647">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ପରିଚାଳିତ ହେଉ ନାହିଁ</translation>
@@ -2818,7 +2815,6 @@
 <translation id="8805819170075074995">ତାଲିକା ଏଣ୍ଟ୍ରି "<ph name="LANGUAGE_ID" />": ଏଣ୍ଟ୍ରିକୁ ଅଣଦେଖା କରାଗଲା କାରଣ ଏହାକୁ ମଧ୍ୟ SpellcheckLanguage ନୀତିରେ ସାମିଲ୍ କରାଯାଇଛି।</translation>
 <translation id="8806285662264631610">ସ୍ନାନ ଏବଂ ବଡି ପ୍ରଡକ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="8807160976559152894">ପ୍ରତ୍ୟେକ ଡକ୍ୟୁମେଣ୍ଟ ପରେ ଟ୍ରିମ୍ କରନ୍ତୁ</translation>
-<translation id="8808828119384186784">Chrome ସେଟିଂସ</translation>
 <translation id="8813277370772331957">ମୋତେ ପରେ ରିମାଇଣ୍ଡ କରନ୍ତୁ</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଆପଣଙ୍କ Chrome ସେଟିଂସରୁ Chrome ଅପଡେଟ୍ କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="8820817407110198400">Bookmarks</translation>

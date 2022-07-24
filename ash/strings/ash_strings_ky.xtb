@@ -1149,6 +1149,7 @@
 <translation id="7749443890790263709">Иш такталардын саны эң жогорку чегине жетти.</translation>
 <translation id="7749640678855296659">Микрофонуңуз учурда өчүк</translation>
 <translation id="776344839111254542">Жаңыртуунун чоо-жайын көрүү үчүн чыкылдатыңыз</translation>
+<translation id="7768784765476638775">Басып туруп угуу</translation>
 <translation id="7780094051999721182">ыкчам баскычтар</translation>
 <translation id="7780159184141939021">Экранды буруу</translation>
 <translation id="7796353162336583443">Бир нерсе жазуу, скриншот тартуу, Google Жардамчыны, лазердик көрсөткүчтү же чоңойтуучу айнекти колдонуу үчүн стилус баскычын таптап коюңуз.</translation>
@@ -1184,7 +1185,6 @@
 <translation id="79341161159229895">Аккаунтту башкарган: <ph name="FIRST_PARENT_EMAIL" /> жана <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Алмашуу буфериңизди көрүү үчүн <ph name="SHORTCUT_KEY_NAME" /> + V баскычтарын басыңыз. Көчүрүлгөн акыркы 5 объект алмашуу буфериңизге сакталды.</translation>
 <translation id="7942349550061667556">Кызыл</translation>
-<translation id="7955885781510802139">Жогорку контраст режими</translation>
 <translation id="7968693143708939792">Папка тандоо…</translation>
 <translation id="7977927628060636163">Мобилдик тармактар изделүүдө…</translation>
 <translation id="7982789257301363584">Тармак</translation>
@@ -1296,7 +1296,6 @@
 <translation id="8641805545866562088">Профилдин тизмеси жаңыртылууда. Бир нече мүнөт күтө туруңуз.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> таймер</translation>
 <translation id="8647931990447795414">Бирөөнү кошуу үчүн, Family Link'теги ата-эненин кирүү кодун териңиз</translation>
-<translation id="8649101189709089199">Басып туруп угуңуз</translation>
 <translation id="8649597172973390955">Текче ар дайым көрсөтүлүп турат</translation>
 <translation id="8652175077544655965">Жөндөөлөрдү жабуу</translation>
 <translation id="8653151467777939995">Билдирмелердин жөндөөлөрүн көрсөтүү. Билдирмелер күйүк</translation>

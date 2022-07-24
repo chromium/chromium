@@ -1152,6 +1152,7 @@ Novo instaliranje</translation>
 <translation id="7749443890790263709">Dosegnut je maksimalan broj radnih površina.</translation>
 <translation id="7749640678855296659">Mikrofon je trenutačno isključen</translation>
 <translation id="776344839111254542">Kliknite da biste vidjeli pojedinosti o ažuriranju</translation>
+<translation id="7768784765476638775">Odabir za govor</translation>
 <translation id="7780094051999721182">prečace</translation>
 <translation id="7780159184141939021">Zakretanje zaslona</translation>
 <translation id="7796353162336583443">Dodirnite gumb pisaljke na polici da biste napisali bilješku, izradili snimku zaslona ili upotrijebili Google asistent, laserski pokazivač ili povećalo.</translation>
@@ -1187,7 +1188,6 @@ Novo instaliranje</translation>
 <translation id="79341161159229895">Računom upravljaju <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Pritisnite <ph name="SHORTCUT_KEY_NAME" /> + V da biste vidjeli međuspremnik. Posljednjih pet kopiranih stavki spremljeno je u međuspremnik.</translation>
 <translation id="7942349550061667556">Crvena</translation>
-<translation id="7955885781510802139">Način visokog kontrasta</translation>
 <translation id="7968693143708939792">Odabir mape...</translation>
 <translation id="7977927628060636163">Traženje mobilnih mreža...</translation>
 <translation id="7982789257301363584">Mreža</translation>
@@ -1299,7 +1299,6 @@ Novo instaliranje</translation>
 <translation id="8641805545866562088">Osvježava se popis profila. Pričekajte nekoliko minuta.</translation>
 <translation id="8646417893960517480">Odbrojavanje: <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Da biste dodali osobu, unesite kôd za roditeljski pristup za Family Link</translation>
-<translation id="8649101189709089199">Odabir za govor</translation>
 <translation id="8649597172973390955">Polica se uvijek prikazuje</translation>
 <translation id="8652175077544655965">Zatvaranje postavki</translation>
 <translation id="8653151467777939995">Prikaz postavki obavijesti. Obavijesti su uključene</translation>

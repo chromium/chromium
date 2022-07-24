@@ -998,7 +998,6 @@
 <translation id="3658742229777143148">개정</translation>
 <translation id="3664782872746246217">키워드:</translation>
 <translation id="3667704023705708645">벤처 자본</translation>
-<translation id="367108335512738711">Chrome 북마크</translation>
 <translation id="3671540257457995106">크기 조절을 허용하시겠습니까?</translation>
 <translation id="3675563144891642599">3번째 롤</translation>
 <translation id="3676592649209844519">기기 ID:</translation>
@@ -1279,7 +1278,6 @@
 <translation id="4435702339979719576">엽서)</translation>
 <translation id="443673843213245140">프록시 사용은 중지되었지만 명시적 프록시 설정이 지정되어 있습니다.</translation>
 <translation id="4441832193888514600">클라우드 사용자 정책으로만 설정할 수 있는 정책이므로 무시되었습니다.</translation>
-<translation id="4442470707340296952">Chrome 탭</translation>
 <translation id="4450893287417543264">다시 표시하지 않음</translation>
 <translation id="4451135742916150903">HID 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="4452328064229197696">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하기 위해 Google 비밀번호 관리자에서 저장된 비밀번호를 확인하시기 바랍니다.</translation>
@@ -2030,7 +2028,6 @@
 <translation id="6579630537141957243">MIDI 기기에 연결하시겠습니까?</translation>
 <translation id="6579990219486187401">연한 분홍색</translation>
 <translation id="6583674473685352014">B6(봉투)</translation>
-<translation id="6585526963651937128">Chrome 방문 기록</translation>
 <translation id="6587182488465657433">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하려면 지금 바로 비밀번호를 변경한 후 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
 <translation id="6587923378399804057">복사한 링크</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> 기기는 관리 대상 기기가 아닙니다.</translation>
@@ -2820,7 +2817,6 @@
 <translation id="8805819170075074995">목록 항목 '<ph name="LANGUAGE_ID" />': SpellcheckLanguage 정책에도 포함되었기 때문에 항목이 무시되었습니다.</translation>
 <translation id="8806285662264631610">목욕 및 바디 제품</translation>
 <translation id="8807160976559152894">각 페이지 뒤에 트림</translation>
-<translation id="8808828119384186784">Chrome 설정</translation>
 <translation id="8813277370772331957">나중에 알림</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 Chrome을 업데이트하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="8820817407110198400">북마크</translation>

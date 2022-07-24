@@ -6554,6 +6554,21 @@ De URL-lijsten <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTE
       Als de instelling is toegepast of niet is ingesteld, mogen websites controleren of de gebruiker betaalmethoden heeft opgeslagen.</translation>
 <translation id="8118665053362250806">Grootte voor mediaschijfcache instellen</translation>
 <translation id="8124468781472887384">Toegangsbeleid voor configuratie van apparaatprinters.</translation>
+<translation id="8128020091920875372">Als je het beleid instelt, wordt een lijst met apps en extensies gespecificeerd die op de achtergrond worden geïnstalleerd zonder interactie met de gebruiker en die niet kunnen worden verwijderd of uitgezet door gebruikers. Rechten worden impliciet verleend, waaronder voor de extensie-API's enterprise.deviceAttributes en enterprise.platformKeys. (Deze 2 API's zijn niet beschikbaar voor apps en extensies die niet afgedwongen geïnstalleerd zijn.)
+
+      Als je dit beleid niet instelt, worden apps of extensies niet automatisch geïnstalleerd en kunnen gebruikers elke app of extensie in <ph name="PRODUCT_NAME" /> verwijderen.
+
+      Dit beleid vervangt het beleid <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Als een eerder afgedwongen geïnstalleerde app of extensie wordt verwijderd uit deze lijst, verwijdert <ph name="PRODUCT_NAME" /> de app of extensie automatisch.
+
+      In <ph name="MS_WIN_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie is gekoppeld aan een <ph name="MS_AD_NAME" />-domein, wordt uitgevoerd in Windows 10 Pro of is ingeschreven voor Cloudbeheer voor de Chrome-browser.
+
+      In <ph name="MAC_OS_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie wordt beheerd via MDM of aan een domein is gekoppeld via MCX.
+
+      Gebruikers kunnen de broncode van een extensie wijzigen via de ontwikkelaarstools, waardoor de extensie mogelijk niet meer functioneert. Als je je hierover zorgen maakt, moet je het beleid <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> instellen.
+
+      Elk lijstitem van het beleid is een tekenreeks die een extensie-ID en optioneel een update-URL bevat, gescheiden door een puntkomma (;). De extensie-ID is de tekenreeks van 32 letters die bijvoorbeeld op chrome://extensions kan worden gevonden als de ontwikkelaarsmodus actief is. De update-URL, indien opgegeven, moet verwijzen naar een XML-updatedocument voor het manifest ( https://developer.chrome.com/extensions/autoupdate ). Standaard wordt de update-URL van de Chrome Web Store gebruikt. De update-URL die in dit beleid is ingesteld, wordt alleen voor de eerste installatie gebruikt. Daaropvolgende updates van de extensie gebruiken de update-URL die in het manifest van de extensie wordt aangegeven.
+
+       Opmerking: Dit beleid is niet van toepassing op de incognitomodus. Bekijk meer informatie over het hosten van extensies ( https://developer.chrome.com/extensions/hosting ).</translation>
 <translation id="8128192446158421884">URL's waarbij AutoOpenFileTypes van toepassing kan zijn</translation>
 <translation id="8131046602440880289">Stemmen voor verbeterde tekst-naar-spraak via netwerk toestaan bij gebruik van Selecteer om uitgesproken te worden</translation>
 <translation id="8133152694354699657">Als je het beleid instelt op True of niet instelt, wordt 'Tikken om te zoeken' beschikbaar voor gebruikers. Ze kunnen de functie aan- of uitzetten.

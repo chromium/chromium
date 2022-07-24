@@ -998,7 +998,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3658742229777143148">Revizija</translation>
 <translation id="3664782872746246217">Ključne reči:</translation>
 <translation id="3667704023705708645">Akcijski kapital</translation>
-<translation id="367108335512738711">Chrome obeleživači</translation>
 <translation id="3671540257457995106">Želite da dozvolite promenu veličine?</translation>
 <translation id="3675563144891642599">Treći kotur</translation>
 <translation id="3676592649209844519">ID uređaja:</translation>
@@ -1279,7 +1278,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4435702339979719576">razglednica)</translation>
 <translation id="443673843213245140">Korišćenje proksija je onemogućeno, ali je navedena eksplicitna konfiguracija proksija.</translation>
 <translation id="4441832193888514600">Ignoriše se jer smernice mogu da se podese samo kao smernice za korisnika u klaudu.</translation>
-<translation id="4442470707340296952">Chrome kartice</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
 <translation id="4451135742916150903">Može da traži da se povezuje sa HID uređajima</translation>
 <translation id="4452328064229197696">Lozinka koju ste upravo koristili je pronađena pri povredi podataka. Da biste zaštitili naloge, Google menadžer lozinki preporučuje da proverite sačuvane lozinke.</translation>
@@ -2030,7 +2028,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6579630537141957243">Želite da povežete MIDI uređaj?</translation>
 <translation id="6579990219486187401">Svetloroze</translation>
 <translation id="6583674473685352014">B6 (koverat)</translation>
-<translation id="6585526963651937128">Istorija Chrome-a</translation>
 <translation id="6587182488465657433">Chrome je pronašao lozinku koju ste upravo koristili pri povredi podataka. Da biste zaštitili naloge, preporučujemo vam da odmah promenite lozinku, pa da proverite sačuvane lozinke.</translation>
 <translation id="6587923378399804057">Link koji ste kopirali</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" />-om se ne upravlja</translation>
@@ -2822,7 +2819,6 @@ Dodatni detalji:
 <translation id="8805819170075074995">Unos na listi „<ph name="LANGUAGE_ID" />“: Unos se zanemaruje jer je obuhvaćen i smernicama SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Proizvodi za kupanje i negu tela</translation>
 <translation id="8807160976559152894">Skraćivanje posle svake stranice</translation>
-<translation id="8808828119384186784">Podešavanje Chrome-a</translation>
 <translation id="8813277370772331957">Podseti me kasnije</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste ažurirali Chrome iz podešavanja Chrome-a</translation>
 <translation id="8820817407110198400">Obeleživači</translation>

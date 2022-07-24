@@ -999,7 +999,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3658742229777143148">Revisión</translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
 <translation id="3667704023705708645">Capital de riesgo</translation>
-<translation id="367108335512738711">Favoritos de Chrome</translation>
 <translation id="3671540257457995106">¿Deseas permitir el cambio de tamaño?</translation>
 <translation id="3675563144891642599">Tercer rollo</translation>
 <translation id="3676592649209844519">ID de dispositivo:</translation>
@@ -1280,7 +1279,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Se inhabilitó el uso de un proxy, pero se especificó una configuración explícita de proxy.</translation>
 <translation id="4441832193888514600">Se ignoró porque la política puede establecerse solo como política del usuario basada en la nube.</translation>
-<translation id="4442470707340296952">Pestañas de Chrome</translation>
 <translation id="4450893287417543264">No volver a mostrar</translation>
 <translation id="4451135742916150903">Puede solicitar permiso para conectarse a dispositivos HID</translation>
 <translation id="4452328064229197696">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. A fin de asegurar tu cuenta, el Administrador de contraseñas de Google te recomienda revisar las contraseñas guardadas.</translation>
@@ -2031,7 +2029,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6579630537141957243">¿Quieres conectar un dispositivo MIDI?</translation>
 <translation id="6579990219486187401">Rosa claro</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
-<translation id="6585526963651937128">Historial de Chrome</translation>
 <translation id="6587182488465657433">Chrome encontró la contraseña que acabas de usar en una violación de la seguridad de los datos. Para proteger tus cuentas, te recomendamos cambiarla ahora y revisar las contraseñas guardadas.</translation>
 <translation id="6587923378399804057">Vínculo que copiaste</translation>
 <translation id="6591833882275308647">Tu <ph name="DEVICE_TYPE" /> no está administrado.</translation>
@@ -2823,7 +2820,6 @@ Detalles adicionales:
 <translation id="8805819170075074995">Entrada de lista "<ph name="LANGUAGE_ID" />": Se ignorará la entrada porque también se incluye en la política SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Productos para el baño y el cuerpo</translation>
 <translation id="8807160976559152894">Cortar después de cada página</translation>
-<translation id="8808828119384186784">Configuración de Chrome</translation>
 <translation id="8813277370772331957">Recordarme más tarde</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para actualizar Chrome desde la configuración del navegador</translation>
 <translation id="8820817407110198400">Favoritos</translation>

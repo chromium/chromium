@@ -997,7 +997,6 @@
 <translation id="3658742229777143148">Карап чыгуу</translation>
 <translation id="3664782872746246217">Ачкыч сөздөр:</translation>
 <translation id="3667704023705708645">Венчурдук капитал</translation>
-<translation id="367108335512738711">Chrome'догу кыстармалар</translation>
 <translation id="3671540257457995106">Өлчөмү өзгөрсүнбү?</translation>
 <translation id="3675563144891642599">Үчүнчү барабан</translation>
 <translation id="3676592649209844519">Түзмөктүн идентификатору:</translation>
@@ -1278,7 +1277,6 @@
 <translation id="4435702339979719576">Ачык кат)</translation>
 <translation id="443673843213245140">Прокси пайдалануу мүмкүнчүлүгү өчүрүлгөнү менен, ачык-айкын прокси конфигурациясы белгиленген.</translation>
 <translation id="4441832193888514600">Четке кагылды, анткени саясатты булуттагы колдонуучулар үчүн саясат катары гана коюуга болот.</translation>
-<translation id="4442470707340296952">Chrome өтмөктөрү</translation>
 <translation id="4450893287417543264">Экинчи көрүнбөсүн</translation>
 <translation id="4451135742916150903">HID түзмөктөрүнө туташууга уруксат сурай алат</translation>
 <translation id="4452328064229197696">Жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганы аныкталды. Аккаунттарыңыздын коопсуздугун коргоо үчүн Google'дун Сырсөздөрдү башкаргычы сакталган сырсөздөрүңүздү текшерүүнү сунуштайт.</translation>
@@ -2029,7 +2027,6 @@
 <translation id="6579630537141957243">MIDI түзмөгү туташтырылсынбы?</translation>
 <translation id="6579990219486187401">Мала кызгылтым</translation>
 <translation id="6583674473685352014">B6 (Конверт)</translation>
-<translation id="6585526963651937128">Chrome´до көрүлгөн вебсайттар</translation>
 <translation id="6587182488465657433">Chrome жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганын аныктады. Аккаунттарыңызды коопсуздандыруу үчүн аны азыр өзгөртүп, андан кийин сакталган сырсөздөрүңүздү текшерүүнү сунуштайбыз.</translation>
 <translation id="6587923378399804057">Сиз көчүргөн шилтеме</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> түзмөгүңүз башкарылган жок</translation>
@@ -2820,7 +2817,6 @@
 <translation id="8805819170075074995">Тизмедеги жазуу "<ph name="LANGUAGE_ID" />": SpellcheckLanguage саясатында камтылгандыктан, киргизүү этибарга алынган жок.</translation>
 <translation id="8806285662264631610">Ваннага жана денеге арналган буюмдар</translation>
 <translation id="8807160976559152894">Ар бир барактан кийин кыркуу</translation>
-<translation id="8808828119384186784">Chrome'дун параметрлери</translation>
 <translation id="8813277370772331957">Кийинчерээк эскертүү</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome жөндөөлөрүңүздөн Chrome'ду жаңыртуу үчүн, Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="8820817407110198400">Кыстармалар</translation>

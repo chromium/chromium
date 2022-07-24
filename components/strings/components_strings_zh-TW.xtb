@@ -998,7 +998,6 @@
 <translation id="3658742229777143148">修訂版本</translation>
 <translation id="3664782872746246217">關鍵字：</translation>
 <translation id="3667704023705708645">創業投資</translation>
-<translation id="367108335512738711">Chrome 書籤</translation>
 <translation id="3671540257457995106">要允許調整大小嗎？</translation>
 <translation id="3675563144891642599">第三卷</translation>
 <translation id="3676592649209844519">裝置 ID：</translation>
@@ -1279,7 +1278,6 @@
 <translation id="4435702339979719576">明信片)</translation>
 <translation id="443673843213245140">雖然已停用 Proxy，不過已指定明確 Proxy 設定。</translation>
 <translation id="4441832193888514600">由於這項政策只能設為雲端使用者政策，因此系統予以忽略。</translation>
-<translation id="4442470707340296952">Chrome 分頁</translation>
 <translation id="4450893287417543264">不要再顯示</translation>
 <translation id="4451135742916150903">可以要求連線至 HID 裝置</translation>
 <translation id="4452328064229197696">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。為確保帳戶安全，Google 密碼管理員建議你立即檢查已儲存的密碼。</translation>
@@ -2030,7 +2028,6 @@
 <translation id="6579630537141957243">要連接 MIDI 裝置嗎？</translation>
 <translation id="6579990219486187401">淺粉紅色</translation>
 <translation id="6583674473685352014">B6 (信封)</translation>
-<translation id="6585526963651937128">Chrome 歷史記錄</translation>
 <translation id="6587182488465657433">Chrome 發現你剛才使用的密碼因為資料侵害事件而遭到外洩。如要確保帳戶安全，建議你立即變更密碼，並檢查已儲存的密碼。</translation>
 <translation id="6587923378399804057">你複製的連結</translation>
 <translation id="6591833882275308647">你的 <ph name="DEVICE_TYPE" /> 未受管理</translation>
@@ -2822,7 +2819,6 @@
 <translation id="8805819170075074995">清單項目「<ph name="LANGUAGE_ID" />」：這個項目同時也納入在 SpellcheckLanguage 政策中，因此系統已予以忽略。</translation>
 <translation id="8806285662264631610">沐浴與身體護理產品</translation>
 <translation id="8807160976559152894">每完成一頁後裁切</translation>
-<translation id="8808828119384186784">Chrome 設定</translation>
 <translation id="8813277370772331957">稍後提醒我</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵再按下 Enter 鍵即可透過 Chrome 設定來更新 Chrome</translation>
 <translation id="8820817407110198400">書籤</translation>

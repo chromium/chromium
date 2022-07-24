@@ -306,6 +306,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2805756323405976993">App</translation>
 <translation id="2814448776515246190">Acquisizione parziale</translation>
 <translation id="2819276065543622893">Verrai disconnesso ora.</translation>
+<translation id="2822551631199737692">Fotocamera in uso</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> non supporta la risoluzione <ph name="SPECIFIED_RESOLUTION" />. È stata impostata la risoluzione <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Barra delle app</translation>
 <translation id="2831035692318564937">Attivato fino all'alba</translation>
@@ -808,6 +809,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5682642926269496722">L'Assistente Google non è disponibile per l'attuale account utente.</translation>
 <translation id="5689633613396158040">Con la funzione Luminosità notturna, potrai guardare lo schermo senza sforzare la vista o leggere in condizioni di luce attenuata. Tocca per cambiare l'ora di attivazione della funzione Luminosità notturna o disattiva completamente la funzione.</translation>
 <translation id="5691772641933328258">Impronta digitale non riconosciuta</translation>
+<translation id="5693255400847650006">Microfono in uso</translation>
 <translation id="570390244361237317">Tutte le app: usa i tasti freccia per accedere a tutte le app</translation>
 <translation id="5707775774148071965">Il dispositivo supporta una velocità dati superiore rispetto al cavo. Le prestazioni del dispositivo potrebbero essere limitate.</translation>
 <translation id="5710450975648804523">Funzione Non disturbare attiva</translation>
@@ -982,6 +984,7 @@ Nuova installazione</translation>
 <translation id="6723839937902243910">Alimentazione</translation>
 <translation id="6727969043791803658">Dispositivo connesso. Livello batteria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Videocamera e microfono in uso</translation>
 <translation id="6739144137573853180">VAI A IMPOSTAZIONI</translation>
 <translation id="6751052314767925245">Applicata dall'amministratore</translation>
 <translation id="6751826523481687655">La traccia delle prestazioni è attiva</translation>
@@ -1150,6 +1153,7 @@ Nuova installazione</translation>
 <translation id="7749443890790263709">Numero massimo di scrivanie raggiunto.</translation>
 <translation id="7749640678855296659">Al momento il microfono non è attivo</translation>
 <translation id="776344839111254542">Fai clic per visualizzare i dettagli dell'aggiornamento</translation>
+<translation id="7768784765476638775">Seleziona per ascoltare</translation>
 <translation id="7780094051999721182">scorciatoie</translation>
 <translation id="7780159184141939021">Ruota lo schermo</translation>
 <translation id="7796353162336583443">Tocca il pulsante dello stilo nella barra delle app per creare note, acquisire screenshot, usare l'Assistente Google, il puntatore laser o la lente d'ingrandimento.</translation>
@@ -1185,7 +1189,6 @@ Nuova installazione</translation>
 <translation id="79341161159229895">Account gestito da <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Premi <ph name="SHORTCUT_KEY_NAME" /> + V per visualizzare gli appunti. Gli ultimi 5 elementi copiati sono stati salvati negli appunti.</translation>
 <translation id="7942349550061667556">Rosso</translation>
-<translation id="7955885781510802139">Modalità ad alto contrasto</translation>
 <translation id="7968693143708939792">Seleziona cartella…</translation>
 <translation id="7977927628060636163">Ricerca di reti mobili...</translation>
 <translation id="7982789257301363584">Rete</translation>
@@ -1297,7 +1300,6 @@ Nuova installazione</translation>
 <translation id="8641805545866562088">Aggiornamento dell'elenco di profili in corso… Attendi qualche minuto.</translation>
 <translation id="8646417893960517480">Timer: <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Per aggiungere una persona, inserisci il codice accesso genitori di Family Link</translation>
-<translation id="8649101189709089199">Seleziona per ascoltare</translation>
 <translation id="8649597172973390955">Barra delle app sempre visualizzata</translation>
 <translation id="8652175077544655965">Chiudi impostazioni</translation>
 <translation id="8653151467777939995">Mostra impostazioni di notifica. Le notifiche sono attive</translation>

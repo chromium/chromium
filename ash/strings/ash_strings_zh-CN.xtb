@@ -1146,6 +1146,7 @@
 <translation id="7749443890790263709">已达到桌面数量上限。</translation>
 <translation id="7749640678855296659">您的麦克风目前处于关闭状态</translation>
 <translation id="776344839111254542">点击即可查看相关更新的详情</translation>
+<translation id="7768784765476638775">随选朗读</translation>
 <translation id="7780094051999721182">快捷方式</translation>
 <translation id="7780159184141939021">旋转屏幕</translation>
 <translation id="7796353162336583443">点按任务栏中的触控笔按钮可开始记事、截取屏幕截图，以及使用 Google 助理、激光笔或放大镜。</translation>
@@ -1181,7 +1182,6 @@
 <translation id="79341161159229895">该帐号由 <ph name="FIRST_PARENT_EMAIL" /> 和 <ph name="SECOND_PARENT_EMAIL" /> 管理</translation>
 <translation id="793716872548410480">按<ph name="SHORTCUT_KEY_NAME" /> + V 可查看您的剪贴板。您复制的最后 5 项内容会保存到您的剪贴板中。</translation>
 <translation id="7942349550061667556">红色</translation>
-<translation id="7955885781510802139">高对比度模式</translation>
 <translation id="7968693143708939792">选择文件夹…</translation>
 <translation id="7977927628060636163">正在搜索移动网络…</translation>
 <translation id="7982789257301363584">网络</translation>
@@ -1293,7 +1293,6 @@
 <translation id="8641805545866562088">正在刷新配置文件列表。请稍等几分钟。</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" />定时器</translation>
 <translation id="8647931990447795414">若要添加人员，请输入您的 Family Link 家长访问码</translation>
-<translation id="8649101189709089199">随选朗读</translation>
 <translation id="8649597172973390955">一律显示任务栏</translation>
 <translation id="8652175077544655965">关闭设置</translation>
 <translation id="8653151467777939995">显示通知设置。通知已开启</translation>

@@ -1151,6 +1151,7 @@
 <translation id="7749443890790263709">הגעת למספר המקסימלי של שולחנות עבודה.</translation>
 <translation id="7749640678855296659">המיקרופון כבוי כרגע</translation>
 <translation id="776344839111254542">יש ללחוץ כדי להציג את פרטי העדכון</translation>
+<translation id="7768784765476638775">הקראה</translation>
 <translation id="7780094051999721182">קיצורי הדרך</translation>
 <translation id="7780159184141939021">סיבוב המסך</translation>
 <translation id="7796353162336583443">‏כדי לרשום הערה או לצלם צילום מסך, או כדי להשתמש ב-Google Assistant, בסמן הלייזר או בזכוכית המגדלת, צריך להקיש על לחצן הסטיילוס במדף.</translation>
@@ -1186,7 +1187,6 @@
 <translation id="79341161159229895">החשבון מנוהל על-ידי <ph name="FIRST_PARENT_EMAIL" /> ועל-ידי <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">‏לצפייה בלוח העריכה, יש ללחוץ על <ph name="SHORTCUT_KEY_NAME" /> + V. בלוח העריכה שמורים חמשת הפריטים האחרונים שהעתקת.</translation>
 <translation id="7942349550061667556">אדום</translation>
-<translation id="7955885781510802139">מצב ניגודיות גבוהה</translation>
 <translation id="7968693143708939792">בחירת תיקייה…</translation>
 <translation id="7977927628060636163">המערכת מחפשת רשתות סלולריות...</translation>
 <translation id="7982789257301363584">רשת</translation>
@@ -1298,7 +1298,6 @@
 <translation id="8641805545866562088">רענון רשימת הפרופילים מתבצע. יש להמתין מספר דקות.</translation>
 <translation id="8646417893960517480">טיימר של <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">‏כדי להוסיף משתמש, יש להזין קוד גישה להורים ב-Family Link</translation>
-<translation id="8649101189709089199">הקראה</translation>
 <translation id="8649597172973390955">המדף תמיד מוצג</translation>
 <translation id="8652175077544655965">סגירת ההגדרות</translation>
 <translation id="8653151467777939995">צפייה בהגדרות של הודעות. ההודעות מופעלות</translation>

@@ -998,7 +998,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3658742229777143148">Revizija</translation>
 <translation id="3664782872746246217">Ključne riječi:</translation>
 <translation id="3667704023705708645">Poduzetnički kapital</translation>
-<translation id="367108335512738711">Oznake za Chrome</translation>
 <translation id="3671540257457995106">Dozvoliti promjenu veličine?</translation>
 <translation id="3675563144891642599">Treća rolna</translation>
 <translation id="3676592649209844519">ID uređaja:</translation>
@@ -1279,7 +1278,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4435702339979719576">Razglednica)</translation>
 <translation id="443673843213245140">Korištenje proksi servera je onemogućeno ali je određena eksplicitna konfiguracija proksi servera.</translation>
 <translation id="4441832193888514600">Zanemareno jer se pravilo može postaviti samo kao korisničko pravilo oblaka.</translation>
-<translation id="4442470707340296952">Chromeove kartice</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
 <translation id="4451135742916150903">Može tražiti da se poveže na HID uređaje</translation>
 <translation id="4452328064229197696">Lozinka koju ste upravo koristili pronađena je prilikom narušavanja podataka. Da osigura vaše račune, Googleov Upravitelj lozinki preporučuje da provjerite sačuvane lozinke.</translation>
@@ -1467,7 +1465,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4969341057194253438">Izbrisati snimak?</translation>
 <translation id="4973922308112707173">Dvostruko bušenje na gornjoj strani</translation>
 <translation id="4976702386844183910">Posljednji put je posjećeno <ph name="DATE" /></translation>
-<translation id="498323057460789381">Pogreška provjere sheme: <ph name="ERROR" /></translation>
+<translation id="498323057460789381">Greška prilikom potvrđivanja šeme: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Koristiti mikrofon?</translation>
 <translation id="4984339528288761049">Prc5 (koverta)</translation>
 <translation id="4989163558385430922">Prikaži sve</translation>
@@ -2031,7 +2029,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6579630537141957243">Povezati MIDI uređaj?</translation>
 <translation id="6579990219486187401">Svijetlo ružičasta</translation>
 <translation id="6583674473685352014">B6 (koverta)</translation>
-<translation id="6585526963651937128">Historija Chromea</translation>
 <translation id="6587182488465657433">Chrome je u narušavanju podataka pronašao lozinku koju ste upravo koristili. Da zaštitite račune, preporučujemo da je odmah promijenite i da provjerite sačuvane lozinke.</translation>
 <translation id="6587923378399804057">Link koji ste kopirali</translation>
 <translation id="6591833882275308647">Vašim uređajem <ph name="DEVICE_TYPE" /> se ne upravlja</translation>
@@ -2822,7 +2819,6 @@ Dodatni detalji:
 <translation id="8805819170075074995">Unos na listi "<ph name="LANGUAGE_ID" />": Unos je zanemaren jer je uključen i u pravilo SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Proizvodi za kupanje i tijelo</translation>
 <translation id="8807160976559152894">Skraćivanje nakon svake stranice</translation>
-<translation id="8808828119384186784">Postavke za Chrome</translation>
 <translation id="8813277370772331957">Podsjeti me kasnije</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pritisnite Tab, a zatim Enter da ažurirate Chrome iz postavki Chromea</translation>
 <translation id="8820817407110198400">Oznake</translation>

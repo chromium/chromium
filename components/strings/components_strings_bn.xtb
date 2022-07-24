@@ -999,7 +999,6 @@
 <translation id="3658742229777143148">পুনর্বিবেচনা</translation>
 <translation id="3664782872746246217">কীওয়ার্ড:</translation>
 <translation id="3667704023705708645">ঝুঁকিপূর্ণ উদ্যোগের মূলধন</translation>
-<translation id="367108335512738711">Chrome বুকমার্ক</translation>
 <translation id="3671540257457995106">ছোট বড় করতে অনুমতি দেবেন?</translation>
 <translation id="3675563144891642599">Third Roll</translation>
 <translation id="3676592649209844519">ডিভাইস আইডি:</translation>
@@ -1280,7 +1279,6 @@
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">প্রক্সির ব্যবহার অক্ষম করা হয়েছে কিন্তু কোনো স্পষ্ট প্রক্সি কনফিগারেশান নির্দিষ্ট করা হয়েছে৷</translation>
 <translation id="4441832193888514600">উপেক্ষা করা হয়েছে কারণ নীতিটি শুধুমাত্র ক্লাউড ব্যবহারকারী নীতি হিসেবে সেট করা যেতে পারে।</translation>
-<translation id="4442470707340296952">Chrome ট্যাব</translation>
 <translation id="4450893287417543264">আর দেখতে চাই না</translation>
 <translation id="4451135742916150903">HID ডিভাইসের সাথে কানেক্ট করার অনুমতি চাইতে পারে</translation>
 <translation id="4452328064229197696">আপনি এইমাত্র যে পাসওয়ার্ড ব্যবহার করলেন, সেটি হ্যাক হওয়া কোনও ডেটাবেসে পাওয়া গেছে। আপনার অ্যাকাউন্ট সুরক্ষিত করতে, Google পাসওয়ার্ড ম্যানেজার আপনার সেভ করা পাসওয়ার্ড চেক করার সাজেশন দিচ্ছে।</translation>
@@ -2031,7 +2029,6 @@
 <translation id="6579630537141957243">MIDI ডিভাইস কানেক্ট করবেন?</translation>
 <translation id="6579990219486187401">হালকা গোলাপি</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
-<translation id="6585526963651937128">Chrome ইতিহাস</translation>
 <translation id="6587182488465657433">Chrome-এর হিসেবে আপনার এখনই ব্যবহার করা পাসওয়ার্ডের তথ্য চুরি হয়ে গেছে। আপনার অ্যাকাউন্ট সুরক্ষিত রাখতে আমাদের সাজেশন, পাসওয়ার্ড এখনই পরিবর্তন করুন এবং সেভ করা পাসওয়ার্ড চেক করুন।</translation>
 <translation id="6587923378399804057">আপনার কপি করা লিঙ্ক</translation>
 <translation id="6591833882275308647">আপনার <ph name="DEVICE_TYPE" /> ম্যানেজ করা হয়নি</translation>
@@ -2822,7 +2819,6 @@
 <translation id="8805819170075074995">তালিকার এন্ট্রি "<ph name="LANGUAGE_ID" />": এন্ট্রিটি SpellcheckLanguage নীতিতেও অন্তর্ভুক্ত থাকার জন্য এটি অগ্রাহ্য করা হয়েছে।</translation>
 <translation id="8806285662264631610">স্নান এবং বডিতে ব্যবহার করার প্রোডাক্ট</translation>
 <translation id="8807160976559152894">প্রতিটি পৃষ্ঠার পর ট্রিম করুন</translation>
-<translation id="8808828119384186784">Chrome সেটিংস</translation>
 <translation id="8813277370772331957">আমাকে পরে মনে করানো হোক</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Chrome সেটিংসে Chrome আপডেট করতে, প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
 <translation id="8820817407110198400">Bookmarks</translation>

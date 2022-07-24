@@ -998,7 +998,6 @@
 <translation id="3658742229777143148">Տարբերակ</translation>
 <translation id="3664782872746246217">Հիմնաբառեր՝</translation>
 <translation id="3667704023705708645">Վենչուրային կապիտալ</translation>
-<translation id="367108335512738711">Chrome-ի էջանիշներ</translation>
 <translation id="3671540257457995106">Թույլատրե՞լ չափի փոփոխումը</translation>
 <translation id="3675563144891642599">Երրորդ գլանափաթեթ</translation>
 <translation id="3676592649209844519">Սարքի ID-ն՝</translation>
@@ -1279,7 +1278,6 @@
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Պրոքսի-սերվերի օգտագործումն անջատված է, բայց հատկորոշված է ուղղակի կազմաձևում:</translation>
 <translation id="4441832193888514600">Անտեսվում է, քանի որ այս կանոնը կարելի է կարգավորել միայն ամպի մակարդակում։</translation>
-<translation id="4442470707340296952">Chrome-ի ներդիրներ</translation>
 <translation id="4450893287417543264">Այլևս ցույց չտալ</translation>
 <translation id="4451135742916150903">Կարող է հայցել HID սարքերին միանալու թույլտվություն</translation>
 <translation id="4452328064229197696">Գաղտնաբառը, որ հենց նոր օգտագործեցիք, կոտրվել է տվյալների արտահոսքի պատճառով։ Ձեր հաշիվները պաշտպանելու համար Google Գաղտնաբառերի կառավարիչը խորհուրդ է տալիս ստուգել պահված գաղտնաբառերը։</translation>
@@ -1468,6 +1466,7 @@
 </translation>
 <translation id="4973922308112707173">Երկու անցք վերևում</translation>
 <translation id="4976702386844183910">Վերջին այցելությունը՝ <ph name="DATE" /></translation>
+<translation id="498323057460789381">Սխեմայի ստուգման սխալ՝ <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Օգտագործե՞լ խոսափողը</translation>
 <translation id="4984339528288761049">Prc5 (ծրար)</translation>
 <translation id="4989163558385430922">Տեսնել բոլորը</translation>
@@ -2031,7 +2030,6 @@
 <translation id="6579630537141957243">Միացնե՞լ MIDI սարքը</translation>
 <translation id="6579990219486187401">Բաց վարդագույն</translation>
 <translation id="6583674473685352014">B6 (ծրար)</translation>
-<translation id="6585526963651937128">Chrome-ի պատմություն</translation>
 <translation id="6587182488465657433">Chrome-ը հայտնաբերել է, որ գաղտնաբառը, որ հենց նոր օգտագործեցիք, կոտրվել է տվյալների արտահոսքի պատճառով։ Ձեր հաշիվները պաշտպանելու համար խորհուրդ ենք տալիս անհապաղ փոխել այն, ապա ստուգել պահված գաղտնաբառերի անվտանգությունը։</translation>
 <translation id="6587923378399804057">Ձեր պատճենած հղումը</translation>
 <translation id="6591833882275308647">Ձեր <ph name="DEVICE_TYPE" /> սարքը չի կառավարվում</translation>
@@ -2822,7 +2820,6 @@
 <translation id="8805819170075074995">«<ph name="LANGUAGE_ID" />» ցանկի տարր․ անտեսված է, քանի որ այն արդեն ներառված է SpellcheckLanguage կանոնում։</translation>
 <translation id="8806285662264631610">Լոգանքի և մարմնի խնամքի կոսմետիկ միջոցներ</translation>
 <translation id="8807160976559152894">Կտրել յուրաքանչյուր էջից հետո</translation>
-<translation id="8808828119384186784">Chrome-ի կարգավորումներ</translation>
 <translation id="8813277370772331957">Հիշեցնել ավելի ուշ</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ը թարմացելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="8820817407110198400">Էջանիշներ</translation>

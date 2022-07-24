@@ -1149,6 +1149,7 @@
 <translation id="7749443890790263709">ડેસ્કની મહત્તમ સંખ્યા પર પહોંચી ગયા.</translation>
 <translation id="7749640678855296659">તમારું માઇક્રોફોન હાલમાં બંધ છે</translation>
 <translation id="776344839111254542">અપડેટની વિગતો જોવા માટે ક્લિક કરો</translation>
+<translation id="7768784765476638775">સાંભળવા માટે પસંદ કરો</translation>
 <translation id="7780094051999721182">શૉર્ટકટ</translation>
 <translation id="7780159184141939021">સ્ક્રીનને ફેરવો</translation>
 <translation id="7796353162336583443">એક નોંધ અથવા સ્ક્રીનશૉટ લેવા, Google Assistant, લૅઝર પૉઇન્ટર અથવા બૃહદદર્શક કાચનો ઉપયોગ કરવા માટે શેલ્ફ પરના સ્ટાઇલસ બટનને ટૅપ કરો.</translation>
@@ -1184,7 +1185,6 @@
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> અને <ph name="SECOND_PARENT_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>
 <translation id="793716872548410480">તમારું ક્લિપબોર્ડ જોવા માટે <ph name="SHORTCUT_KEY_NAME" /> + V દબાવો. તમે કૉપિ કરેલી છેલ્લી 5 આઇટમ તમારા ક્લિપબોર્ડ પર સાચવવામાં આવી છે.</translation>
 <translation id="7942349550061667556">લાલ</translation>
-<translation id="7955885781510802139">ઉચ્ચ કોન્ટ્રાસ્ટ મોડ</translation>
 <translation id="7968693143708939792">ફોલ્ડર પસંદ કરો...</translation>
 <translation id="7977927628060636163">મોબાઇલ નેટવર્કની શોધ કરી રહ્યું છે...</translation>
 <translation id="7982789257301363584">નેટવર્ક</translation>
@@ -1296,7 +1296,6 @@
 <translation id="8641805545866562088">પ્રોફાઇલની સૂચિ રિફ્રેશ કરી રહ્યાં છીએ. થોડીવાર રાહ જુઓ.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> ટાઇમર</translation>
 <translation id="8647931990447795414">કોઈ વ્યક્તિને ઉમેરવા માટે, તમારી Family Linkનો માતાપિતા માટેનો ઍક્સેસ કોડ દાખલ કરો</translation>
-<translation id="8649101189709089199">બોલીને-પસંદ-કરો</translation>
 <translation id="8649597172973390955">શેલ્ફ હંમેશાં બતાવવામાં આવે છે</translation>
 <translation id="8652175077544655965">સેટિંગ બંધ કરો</translation>
 <translation id="8653151467777939995">નોટિફિકેશન સેટિંગ બતાવો. નોટિફિકેશન ચાલુ છે</translation>

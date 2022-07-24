@@ -1149,6 +1149,7 @@ Nouvelle installation</translation>
 <translation id="7749443890790263709">Vous avez atteint le nombre maximal de bureaux.</translation>
 <translation id="7749640678855296659">Votre micro est actuellement désactivé</translation>
 <translation id="776344839111254542">Cliquer pour afficher les informations relatives à la mise à jour</translation>
+<translation id="7768784765476638775">Sélectionner pour prononcer</translation>
 <translation id="7780094051999721182">raccourcis</translation>
 <translation id="7780159184141939021">Rotation d'écran</translation>
 <translation id="7796353162336583443">Appuyez sur le bouton du stylet situé sur l'étagère pour prendre des notes, effectuer des captures d'écran et utiliser l'Assistant Google, le pointeur laser ou la loupe.</translation>
@@ -1184,7 +1185,6 @@ Nouvelle installation</translation>
 <translation id="79341161159229895">Compte géré par <ph name="FIRST_PARENT_EMAIL" /> et <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Appuyez sur <ph name="SHORTCUT_KEY_NAME" />+V pour afficher le presse-papiers. Les cinq derniers éléments que vous avez copiés y sont enregistrés.</translation>
 <translation id="7942349550061667556">Rouge</translation>
-<translation id="7955885781510802139">Mode Contraste élevé</translation>
 <translation id="7968693143708939792">Sélectionner un dossier…</translation>
 <translation id="7977927628060636163">Recherche de réseaux mobiles…</translation>
 <translation id="7982789257301363584">Réseau</translation>
@@ -1296,7 +1296,6 @@ Nouvelle installation</translation>
 <translation id="8641805545866562088">Actualisation de la liste de profils… Attendez quelques minutes.</translation>
 <translation id="8646417893960517480">Minuteur de <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Pour ajouter une personne, saisissez le code d'accès parental Family Link.</translation>
-<translation id="8649101189709089199">Sélectionner pour prononcer</translation>
 <translation id="8649597172973390955">Étagère toujours affichée</translation>
 <translation id="8652175077544655965">Fermer les paramètres</translation>
 <translation id="8653151467777939995">Afficher les paramètres de notification. Les notifications sont activées</translation>

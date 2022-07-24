@@ -998,7 +998,6 @@
 <translation id="3658742229777143148">Ревизија</translation>
 <translation id="3664782872746246217">Кључне речи:</translation>
 <translation id="3667704023705708645">Акцијски капитал</translation>
-<translation id="367108335512738711">Chrome обележивачи</translation>
 <translation id="3671540257457995106">Желите да дозволите промену величине?</translation>
 <translation id="3675563144891642599">Трећи котур</translation>
 <translation id="3676592649209844519">ИД уређаја:</translation>
@@ -1279,7 +1278,6 @@
 <translation id="4435702339979719576">разгледница)</translation>
 <translation id="443673843213245140">Коришћење проксија је онемогућено, али је наведена експлицитна конфигурација проксија.</translation>
 <translation id="4441832193888514600">Игнорише се јер смернице могу да се подесе само као смернице за корисника у клауду.</translation>
-<translation id="4442470707340296952">Chrome картице</translation>
 <translation id="4450893287417543264">Не приказуј поново</translation>
 <translation id="4451135742916150903">Може да тражи да се повезује са HID уређајима</translation>
 <translation id="4452328064229197696">Лозинка коју сте управо користили је пронађена при повреди података. Да бисте заштитили налоге, Google менаџер лозинки препоручује да проверите сачуване лозинке.</translation>
@@ -2030,7 +2028,6 @@
 <translation id="6579630537141957243">Желите да повежете MIDI уређај?</translation>
 <translation id="6579990219486187401">Светлорозе</translation>
 <translation id="6583674473685352014">B6 (коверат)</translation>
-<translation id="6585526963651937128">Историја Chrome-а</translation>
 <translation id="6587182488465657433">Chrome је пронашао лозинку коју сте управо користили при повреди података. Да бисте заштитили налоге, препоручујемо вам да одмах промените лозинку, па да проверите сачуване лозинке.</translation>
 <translation id="6587923378399804057">Линк који сте копирали</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" />-ом се не управља</translation>
@@ -2822,7 +2819,6 @@
 <translation id="8805819170075074995">Унос на листи „<ph name="LANGUAGE_ID" />“: Унос се занемарује јер је обухваћен и смерницама SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Производи за купање и негу тела</translation>
 <translation id="8807160976559152894">Скраћивање после сваке странице</translation>
-<translation id="8808828119384186784">Подешавање Chrome-а</translation>
 <translation id="8813277370772331957">Подсети ме касније</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте ажурирали Chrome из подешавања Chrome-а</translation>
 <translation id="8820817407110198400">Обележивачи</translation>

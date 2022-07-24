@@ -329,7 +329,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3775743491439407556">Sinhronizacija ne funkcionira</translation>
 <translation id="3779810277399252432">Nema internetske veze.</translation>
 <translation id="3783017676699494206">Sačuvaj sliku</translation>
-<translation id="3789294999358192700">Slijedite upute u nastavku:</translation>
+<translation id="3789294999358192700">Slijedite korake ispod:</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803696231112616155">Ponudi prijevod ove web lokacije</translation>
@@ -942,7 +942,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8870413625673593573">Nedavno zatvoreno</translation>
 <translation id="8876882697946675716">Kontinuirano sinhronizirajte uređaje</translation>
 <translation id="8881801611828450202">Pretraži <ph name="SEARCH_ENGINE" /> za ovu sliku</translation>
-<translation id="8891935667620843985">Veze u Chromeu možete otvoriti automatski tako da ga postavite kao zadanu aplikaciju preglednika.</translation>
+<translation id="8891935667620843985">Možete automatski otvarati linkove u Chromeu ako ga postavite kao zadanu aplikaciju preglednika.</translation>
 <translation id="8898822736010347272">Šalje Googleu URL-ove nekih stranica koje posjetite, ograničene informacije sistema i sadržaj nekih stranica radi lakšeg otkrivanja novih prijetnji te zaštite svakoga na webu.</translation>
 <translation id="8909135823018751308">Dijeljenje…</translation>
 <translation id="8917490105272468696">Pristajem</translation>

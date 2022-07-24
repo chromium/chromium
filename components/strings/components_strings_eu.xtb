@@ -994,7 +994,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3658742229777143148">Zuzenketa</translation>
 <translation id="3664782872746246217">Gako-hitzak:</translation>
 <translation id="3667704023705708645">Arrisku-kapitala</translation>
-<translation id="367108335512738711">Chrome-ko laster-markak</translation>
 <translation id="3671540257457995106">Tamaina aldatzeko baimena ematen duzu?</translation>
 <translation id="3675563144891642599">Hirugarren arrabola</translation>
 <translation id="3676592649209844519">Gailuaren IDa:</translation>
@@ -1275,7 +1274,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Proxya erabiltzeko aukera desgaitu da, baina proxy-konfigurazio esplizitua zehaztu da.</translation>
 <translation id="4441832193888514600">Ez ikusi egin zaio hodeiko erabiltzaile-gidalerro gisa soilik ezar daitekeelako gidalerroa.</translation>
-<translation id="4442470707340296952">Chrome-ko fitxak</translation>
 <translation id="4450893287417543264">Ez erakutsi berriro</translation>
 <translation id="4451135742916150903">HID gailuetara konektatzea eska dezake</translation>
 <translation id="4452328064229197696">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Kontuak babesteko, Google-ren Pasahitz-kudeatzailea zerbitzuak gordeta dauzkazun pasahitzak seguruak direla egiaztatzea gomendatzen du.</translation>
@@ -2025,7 +2023,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6579630537141957243">MIDI gailua konektatu nahi duzu?</translation>
 <translation id="6579990219486187401">Arrosa argia</translation>
 <translation id="6583674473685352014">B6 (gutun-azala)</translation>
-<translation id="6585526963651937128">Chrome-ko historia</translation>
 <translation id="6587182488465657433">Chrome-k erabili berri duzun pasahitza aurkitu du datuen isilpekotasunaren urratze batean. Zure kontuak babesteko, pasahitz hori aldatzea eta gordeta dauzkazun pasahitzak egiaztatzea gomendatzen dizugu.</translation>
 <translation id="6587923378399804057">Kopiatu duzun esteka</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> gailuak ez du kudeatzailerik</translation>
@@ -2816,7 +2813,6 @@ Xehetasun gehiago:
 <translation id="8805819170075074995">"<ph name="LANGUAGE_ID" />" zerrenda-sarrera: sarrerari ez ikusi egin zaio, SpellcheckLanguage gidalerroan ere agertzen delako.</translation>
 <translation id="8806285662264631610">Bainugelarako eta gorputzerako produktuak</translation>
 <translation id="8807160976559152894">Moztu orri bakoitzaren amaieran</translation>
-<translation id="8808828119384186784">Chrome-ren ezarpenak</translation>
 <translation id="8813277370772331957">Gogorarazi geroago</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu Sartu Chrome eguneratzeko Chrome-ren ezarpenetan</translation>
 <translation id="8820817407110198400">Laster-markak</translation>

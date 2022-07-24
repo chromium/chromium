@@ -999,7 +999,6 @@
 <translation id="3658742229777143148">Засвар хийгдсэн</translation>
 <translation id="3664782872746246217">Түлхүүр үг:</translation>
 <translation id="3667704023705708645">Эрсдэлт хөрөнгө</translation>
-<translation id="367108335512738711">Chrome-н хавчуурга</translation>
 <translation id="3671540257457995106">Хэмжээг өөрчлөхийг зөвшөөрөх үү?</translation>
 <translation id="3675563144891642599">Гурав дахь хуйлмал</translation>
 <translation id="3676592649209844519">Төхөөрөмжийн ID:</translation>
@@ -1280,7 +1279,6 @@
 <translation id="4435702339979719576">Ил захидал)</translation>
 <translation id="443673843213245140">Орлон ашиглах эрхийг хаасан байгаа боловч тодорхой түвшинд орлон ашиглах тохиргоог тусгасан байна.</translation>
 <translation id="4441832193888514600">Бодлогыг зөвхөн үүлний хэрэглэгчийн бодлого байдлаар тохируулах боломжтой тул үл хэрэгссэн.</translation>
-<translation id="4442470707340296952">Chrome-н табууд</translation>
 <translation id="4450893287417543264">Дахиж бүү харуул</translation>
 <translation id="4451135742916150903">HID төхөөрөмжүүдэд холбогдохыг хүсэх боломжтой</translation>
 <translation id="4452328064229197696">Таны дөнгөж сая ашигласан нууц үгийг өгөгдлийн зөрчлөөс оллоо. Таны бүртгэлүүдийг хамгаалахын тулд Google-н Нууц үгний менежер нь хадгалсан нууц үгнүүдээ шалгахыг зөвлөж байна.</translation>
@@ -2031,7 +2029,6 @@
 <translation id="6579630537141957243">MIDI төхөөрөмжийг холбох уу?</translation>
 <translation id="6579990219486187401">Бүдэг ягаан</translation>
 <translation id="6583674473685352014">B6 (Дугтуй)</translation>
-<translation id="6585526963651937128">Chrome-н түүх</translation>
 <translation id="6587182488465657433">Chrome таны дөнгөж сая ашигласан нууц үгийг өгөгдлийн зөрчлөөс оллоо. Бүртгэлүүдээ хамгаалахын тулд бид таныг үүнийг одоо өөрчилж, дараа нь хадгалсан нууц үгнүүдээ шалгахыг зөвлөж байна.</translation>
 <translation id="6587923378399804057">Таны хуулсан холбоос</translation>
 <translation id="6591833882275308647">Таны <ph name="DEVICE_TYPE" />-г удирдаагүй байна</translation>
@@ -2732,6 +2729,7 @@
 <translation id="8508648098325802031">Хайлтын дүрс тэмдэг</translation>
 <translation id="8511402995811232419">Күүки удирдах</translation>
 <translation id="851353418319061866">Нарийвчлалын шалгалт</translation>
+<translation id="8513580896341796021">Татаж эхэллээ. Үүнийг харахын тулд |<ph name="ACCELERATOR" />| дээр дарна уу.</translation>
 <translation id="8519753333133776369">Танай администраторын зөвшөөрсөн HID төхөөрөмж</translation>
 <translation id="8522552481199248698">Chrome танд Google Бүртгэлээ хамгаалах болон нууц үгээ солиход туслах боломжтой.</translation>
 <translation id="8530813470445476232">Chrome тохиргооноос хөтчийн түүх, күүки, завсрын санах ой болон бусад зүйлийг устгах</translation>
@@ -2822,7 +2820,6 @@
 <translation id="8805819170075074995">Жагсаалтын оролт "<ph name="LANGUAGE_ID" />": Энэ оролт SpellcheckLanguage удирдамжид мөн адил багтсан тул үүнийг үл хэрэгссэн болно.</translation>
 <translation id="8806285662264631610">Усанд орох, биеийн бүтээгдэхүүн</translation>
 <translation id="8807160976559152894">Хуудас бүрийн дараа тайрах</translation>
-<translation id="8808828119384186784">Chrome-н тохиргоо</translation>
 <translation id="8813277370772331957">Надад дараа сануулах</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-н тохиргооноосоо Chrome-г шинэчлэхийн тулд эхлээд Таб дээр, дараа нь Enter дарна уу</translation>
 <translation id="8820817407110198400">Хавчуургууд</translation>

@@ -999,7 +999,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3658742229777143148">Päivitetty versio</translation>
 <translation id="3664782872746246217">Avainsanat:</translation>
 <translation id="3667704023705708645">Pääomasijoitus</translation>
-<translation id="367108335512738711">Chrome-kirjanmerkit</translation>
 <translation id="3671540257457995106">Sallitaanko koon muuttaminen?</translation>
 <translation id="3675563144891642599">Kolmas rulla</translation>
 <translation id="3676592649209844519">Laitteen tunnus:</translation>
@@ -1280,7 +1279,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4435702339979719576">Postikortti</translation>
 <translation id="443673843213245140">Välityspalvelinta ei saa käyttää, mutta erilliset välityspalvelimen asetukset on määritetty.</translation>
 <translation id="4441832193888514600">Ohitettu, koska käytäntö voidaan asettaa vain pilvikäyttäjäkäytäntönä.</translation>
-<translation id="4442470707340296952">Chrome-välilehdet</translation>
 <translation id="4450893287417543264">Älä näytä uudelleen</translation>
 <translation id="4451135742916150903">Saa pyytää lupaa yhdistää HID-laitteisiin</translation>
 <translation id="4452328064229197696">Juuri käyttämäsi salasana löytyi tietosuojaloukkauksesta. Tiliesi suojaamiseksi Googlen Salasanojen ylläpito suosittelee, että tarkistat tallennetut salasanasi.</translation>
@@ -2031,7 +2029,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6579630537141957243">Yhdistetäänkö MIDI-laite?</translation>
 <translation id="6579990219486187401">Vaaleanpinkki</translation>
 <translation id="6583674473685352014">B6 (kirjekuori)</translation>
-<translation id="6585526963651937128">Chrome-historia</translation>
 <translation id="6587182488465657433">Chrome löysi juuri käyttämäsi salasanan tietosuojaloukkauksesta. Suosittelemme vaihtamaan sen heti ja tarkistamaan tallennetut salasanasi tilisi suojaamiseksi.</translation>
 <translation id="6587923378399804057">Kopioimasi linkki</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> ei ole ylläpidetty</translation>
@@ -2823,7 +2820,6 @@ Lisätietoja:
 <translation id="8805819170075074995">Luettelokohde <ph name="LANGUAGE_ID" />: Kohde on ohitettu, koska se sisältyy myös SpellcheckLanguage-käytäntöön.</translation>
 <translation id="8806285662264631610">Kylpy- ja vartalonhoitotuotteet</translation>
 <translation id="8807160976559152894">Leikkaa jokaisen sivun jälkeen</translation>
-<translation id="8808828119384186784">Chromen asetukset</translation>
 <translation id="8813277370772331957">Muistuta myöhemmin</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, päivitä Chrome sen asetuksista painamalla sarkainta ja sitten Enter</translation>
 <translation id="8820817407110198400">Kirjanmerkit</translation>

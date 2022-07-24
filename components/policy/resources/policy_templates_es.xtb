@@ -1109,6 +1109,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
       Si se habilita esta política o no se establece, se activará la definición de Respuestas rápidas.
       Si se inhabilita esta política, se desactivará la definición de Respuestas rápidas.</translation>
 <translation id="209586405398070749">Canal estable</translation>
+<translation id="2096932573113293941">Pedir permiso al usuario para ejecutar complementos que requieran autorización</translation>
 <translation id="2098658257603918882">Habilitar informes de uso y de datos sobre fallos</translation>
 <translation id="2104418465060359056">Recoger información sobre extensiones y complementos</translation>
 <translation id="2106627642643925514">Anula el modo predeterminado de impresión con PIN Si este modo no está disponible, se ignorará esta política.</translation>
@@ -1238,6 +1239,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2223393221350938149">No permitir que JavaScript use JIT en ningún sitio</translation>
 <translation id="2223582957891074498">Si se asigna el valor "Verdadero" a esta política, no se permitirá hacer capturas de pantalla utilizando combinaciones de teclas ni API de extensiones. Si se le asigna el valor "Falso", se permitirán las capturas de pantalla.</translation>
 <translation id="2223598546285729819">Configuración de notificación predeterminada</translation>
+<translation id="222673035924187991">Habilitar Encrypted ClientHello de TLS</translation>
 <translation id="2231726854197443389">Esta política controla si los usuarios pueden habilitar el modo solo‑HTTPS en Configuración. El modo solo‑HTTPS cambia todos los accesos a páginas al protocolo HTTPS.
       Si esta política no se establece o se le asigna el valor allowed, los usuarios podrán habilitar el modo solo‑HTTPS.
       Si se le asigna el valor disallowed, los usuarios no podrán habilitar el modo solo‑HTTPS.
@@ -1359,6 +1361,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2349117476121456297">Si se asigna el valor "true" a esta política, las teclas de la fila superior del teclado actúan como comandos de teclas de funciones. Cuando se pulsa la tecla de búsqueda, su comportamiento cambia al de teclas multimedia.
 
       Si se le asigna el valor "false" o no se le asigna ningún valor, las teclas del teclado vuelven a producir comandos de teclas multimedia. Cuando se pulsa la tecla de búsqueda, su comportamiento cambia al de teclas de funciones.</translation>
+<translation id="2354439478396602136">Mostrar recomendaciones de aplicaciones en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2355876547176311490">Inhabilitar el uso de servidores de retransmisión por parte del host de acceso remoto</translation>
 <translation id="2358176879566587521">Se ha retirado esta política. No es compatible con esta versión de <ph name="PRODUCT_NAME" />. Consulta https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">Periodo de reinicio</translation>
@@ -1585,6 +1588,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Los usuarios no podrán cambiar las carpetas en las que están colocados los marcadores, pero podrán ocultarlas de la barra de marcadores. El nombre predeterminado de la carpeta de marcadores administrados es "Marcadores administrados", pero se puede cambiar si se añade un nuevo subdiccionario a la política con una única clave llamada "<ph name="TOPLEVEL_NAME" />" que tenga asignado como valor el nombre que se quiera asignar a la carpeta. Los marcadores administrados no se sincronizan con la cuenta de usuario y las extensiones no pueden modificarlos.</translation>
 <translation id="2552966063069741410">Zona horaria</translation>
 <translation id="2555244983262829274">Ocultar el botón de inicio de la barra de herramientas</translation>
+<translation id="2562213287271514629">Permitir que se utilice una versión obsoleta de <ph name="FLASH_PLUGIN_NAME" /> como si fuera una versión normal de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="2562339630163277285">Especifica la URL del motor de búsqueda utilizada para proporcionar resultados instantáneos. La URL debe contener la cadena <ph name="SEARCH_TERM_MARKER" />, que se sustituirá en el momento de la consulta por el texto que el usuario haya introducido hasta el momento.
 
           Esta política es opcional. Si no se establece, no se proporcionarán resultados de búsqueda instantánea.
@@ -1629,6 +1633,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2593762551209145088">Navegación segura nunca está activa.</translation>
 <translation id="26023406105317310">Configurar las cuentas de Kerberos</translation>
 <translation id="2604182581880595781">Configura las políticas relacionadas con el uso compartido de archivos del sistema.</translation>
+<translation id="2608039968712973520">Pedir permiso al usuario para ejecutar una versión obsoleta de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="2608535066974278204">Valor (en minutos) que especifica la duración del periodo de reinicio.</translation>
 <translation id="2608887839902987727">Evitar que la autenticación de portales cautivos ignore la configuración de proxy</translation>
 <translation id="2608985885792348429">Configuración de portapapeles predeterminada</translation>
@@ -1680,6 +1685,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Esta política se retiró en la versión M77.
       Esta política se aplica a la pantalla de inicio de sesión. También puedes consultar la política <ph name="SITE_PER_PROCESS_POLICY_NAME" />, que se aplica a la sesión del usuario. Se recomienda asignar el mismo valor a ambas políticas. Si los valores de las dos políticas no coinciden, es posible que se produzca un retraso al acceder a una sesión de usuario mientras se aplica el valor especificado por la política del usuario.
       </translation>
+<translation id="2697717608663878828">Habilitar el experimento Encrypted ClientHello de TLS</translation>
 <translation id="2702023190395322609">Habilitar recomendaciones de contenido multimedia</translation>
 <translation id="270582584528242502">No mostrar un cuadro de diálogo de advertencia cuando el usuario intenta salir</translation>
 <translation id="2706708761587205154">Permitir imprimir solo con PIN</translation>
@@ -2277,6 +2283,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3255762580838224124">Si se asigna un valor a esta política, cada pantalla rotará después de cada reinicio según la orientación especificada y también rotará la primera vez que se conecte después de que cambies el valor de la política. Los usuarios podrán cambiar la rotación de la pantalla a través de la página de configuración después de iniciar sesión, pero, en el siguiente reinicio, se volverá a establecer el valor definido en la política. Esta política se aplica a las pantallas principales y secundarias.
 
       Si no se le asigna ningún valor, el valor predeterminado será 0 grados y los usuarios podrán cambiarlo. En este caso, no se volverá a aplicar el valor predeterminado tras reiniciar.</translation>
+<translation id="3258380413685430793">Ejecutar todo el contenido de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="325883417142483505">Si se define esta política, se configura la lista de las URL de acceso empresarial (únicamente con protocolos HTTP y HTTPS). El servicio de protección de contraseñas capturará los hashes con salt de las contraseñas en estas URL y las usará para detectar si la contraseña se reutiliza. Para que <ph name="PRODUCT_NAME" /> capture correctamente los hashes con salt de las contraseñas, tus páginas de inicio de sesión deben seguir las directrices incluidas en https://www.chromium.org/developers/design-documents/create-amazing-password-forms.
 
       Si se desactiva esta opción o no se define, el servicio de protección de contraseñas solo capturará los hashes con salt de las contraseñas en https://accounts.google.com.
@@ -2345,6 +2352,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Nota: Consulta más información sobre las políticas de mitigación de procesos en la página https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="3339271789059866414">Configura la disponibilidad del servicio de proxy del sistema y las credenciales de proxy para los servicios del sistema.
       Si no se establece esta política, el servicio de proxy del sistema no estará disponible.</translation>
+<translation id="334231891933432876">Cerrar la sesión del usuario cuando su cuenta deje de estar autenticada</translation>
 <translation id="3348799281602260763">Si se habilita la política, las conexiones de punto a punto WebRTC podrán cambiar a versiones
       obsoletas de los protocolos TLS/DTLS (DTLS 1.0, TLS 1.0 y TLS 1.1).
       Si se inhabilita la política o no se establece, estas versiones de TLS/DTLS se
@@ -2387,6 +2395,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si no se le asigna ningún valor, el tiempo de espera será de 0 (cero) milisegundos.
 
       Esta política no tendrá efecto si no se define la política <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.</translation>
+<translation id="3397883909301547525">No mostrar recomendaciones de aplicaciones en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3399859571630358395">Forzar que se inhabilite Emparejamiento rápido (función que permite emparejar rápidamente mediante Bluetooth).</translation>
 <translation id="341285788698114069">Esta política controla la prioridad del proceso de audio en Windows.
       Si se habilita la política, el proceso de audio se ejecutará con una prioridad superior a la normal.
@@ -2466,6 +2475,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       La disponibilidad de esta función dependerá también de la política de usuarios correspondiente.</translation>
 <translation id="3495602011142234826">Si se le asigna el valor true, esta extensión podrá firmar datos arbitrarios usando todas las claves designadas para uso corporativo. Si se le asigna el valor false, la extensión no podrá acceder a las claves y el usuario no podrá dar el permiso. De forma excepcional, una extensión podrá acceder a una clave una sola vez si esa extensión ha generado la clave.</translation>
 <translation id="3496296378755072552">Gestor de contraseñas</translation>
+<translation id="3496761649331792755">Habilitar barra de marcadores</translation>
 <translation id="3498109920669229084">Si se define esta política, se especificarán las extensiones que no están sujetas a la lista de bloqueadas.
 
        Si el valor de una lista de extensiones bloqueadas es <ph name="ALL_EXTENSIONS" />, se bloquearán todas las extensiones y los usuarios solo podrán instalar extensiones de la lista de permitidas.
@@ -3304,6 +3314,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="449423975179525290">Configura las políticas relacionadas con <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="449784980858429908">Permite conceder permiso automáticamente a sitios para conectarse a todos los puertos serie.</translation>
 <translation id="450080746522343150">Bloquear todas las descargas.</translation>
+<translation id="45036050223225148">Inhabilitar el experimento Encrypted ClientHello de TLS</translation>
 <translation id="4508728400492074981">Controla políticas para la función Conjuntos propios.</translation>
 <translation id="4510923771103268849">El usuario puede tener acceso root a los contenedores de Crostini</translation>
 <translation id="4512407512989846472">Permitir bloquear la copia en el portapapeles en URLs especificadas</translation>
@@ -3340,6 +3351,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       Si no se asigna ningún valor a esta política, el usuario puede inhabilitar cualquier complemento instalado en el sistema.</translation>
 <translation id="4549405078915181477">Habilitar Tiempo de uso para sitios web</translation>
 <translation id="4554651132977135445">Modo de procesamiento loopback de políticas del usuario</translation>
+<translation id="4554991346503872538">No ofrecer traducción nunca</translation>
 <translation id="4555850956567117258">Habilitar confirmación remota para el usuario</translation>
 <translation id="4557134566541205630">URL de la página Nueva pestaña del proveedor de búsqueda predeterminado</translation>
 <translation id="4558166110367609724">Omite los Términos del Servicio automáticamente y carga el navegador.</translation>
@@ -3785,6 +3797,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="5109383437323376357">Determinar la disponibilidad de variaciones</translation>
 <translation id="5124368997194894978">Habilitar el inicio con CA (corriente alterna)</translation>
 <translation id="5130213897914754028">Impedir que los sitios usen SharedArrayBuffers</translation>
+<translation id="5130935469849337738">Ofrecer traducción siempre</translation>
 <translation id="5141670636904227950">Establecer el tipo de lupa predeterminada habilitada en la pantalla de inicio de sesión</translation>
 <translation id="5142301680741828703">Mostrar siempre los patrones de URL indicados a continuación en <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="5143258831402123447">Los recorridos no serán visibles en chrome://history/journeys.</translation>
@@ -3917,6 +3930,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si se asigna el valor <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> a esta política en una cuenta, solo se podrá iniciar sesión en esa cuenta como cuenta principal. No se podrá iniciar sesión en esa cuenta como cuenta secundaria.</translation>
 <translation id="523505283826916779">Ajustes de accesibilidad</translation>
+<translation id="5238275681097851753">Permitir que se bloquee un contenido concreto de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="5238976843489093540">Forzar que se habilite Emparejamiento rápido (función que permite emparejar rápidamente mediante Bluetooth).</translation>
 <translation id="52393120393725840">Si se habilita esta política, los usuarios deberán hacer que <ph name="PRODUCT_NAME" /> recuerde las contraseñas y se las proporcione la próxima vez que inicien sesión en un sitio web.
 
@@ -3983,6 +3997,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si no se le asigna ningún valor, los usuarios no podrán jugar al juego del dinosaurio en dispositivos <ph name="PRODUCT_OS_NAME" /> registrados, pero podrán hacerlo en otras circunstancias.</translation>
 <translation id="529457411593078576">Habilitar los Términos del Servicio cuando CCT se ejecute por primera vez</translation>
+<translation id="5297948043665200363">Permitir que el usuario mantenga la sesión iniciada después de que su cuenta deje de estar autenticada</translation>
 <translation id="5298949392804966105">Sin restricciones en las cuentas gestionadas</translation>
 <translation id="530134925949808452">La hora del día (en la zona horaria local) en la que se renovará la cuota de uso.</translation>
 <translation id="5303080953475303561">Esta política controla la frecuencia con la que la pantalla de bloqueo solicita la contraseña para el desbloqueo rápido. Cuando aparece la pantalla de bloqueo, si el tiempo transcurrido desde la última vez que se introdujo la contraseña es mayor al del valor elegido, el desbloqueo rápido no estará disponible. Si los usuarios permanecen en la pantalla de bloqueo pasado ese tiempo, la próxima vez que introduzcan un código incorrecto o vuelvan a acceder a la pantalla de bloqueo (lo que suceda primero), se les pedirá la contraseña.
@@ -4594,6 +4609,13 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       En <ph name="MS_WIN_NAME" /> o <ph name="MAC_OS_NAME" />, esta política solo tiene efecto si también se ha habilitado <ph name="PRINT_PDF_AS_IMAGE_AVAILABILITY_POLICY_NAME" />.</translation>
 <translation id="5932767795525445337">Esta política también se puede utilizar para fijar aplicaciones de Android.</translation>
+<translation id="5936193585187054065">Encrypted ClientHello (ECH) es una extensión de TLS para cifrar campos sensibles de ClientHello y mejorar la privacidad.
+
+      Si esta política se habilita o no se configura, <ph name="PRODUCT_NAME" /> seguirá el proceso de lanzamiento predeterminado de ECH. Si se inhabilita, <ph name="PRODUCT_NAME" /> no habilitará ECH.
+
+      Cuando esta función esté habilitada, <ph name="PRODUCT_NAME" /> podrá usar o no ECH en función de la compatibilidad del servidor, de la disponibilidad del registro DNS HTTPS o del estado de lanzamiento.
+
+      ECH es un protocolo en constante evolución. Esto implica que la implementación de <ph name="PRODUCT_NAME" /> está sujeta a cambios. Por lo tanto, esta política es una medida temporal para controlar la implementación experimental inicial. Se sustituirá por unos controles finales cuando se complete el protocolo.</translation>
 <translation id="5939656968921014919">Inhabilitar el modo desarrollador de aplicaciones aisladas</translation>
 <translation id="5945312246863177268">No permitir que los usuarios hagan clic en una notificación de la función Mi teléfono para abrir la aplicación Eche.</translation>
 <translation id="5946082169633555022">Canal beta</translation>
@@ -5212,6 +5234,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
           Esta política no impide a los administradores de empresa conectarse a dispositivos <ph name="PRODUCT_OS_NAME" /> gestionados.
 
           Esta política no tendrá efecto si se habilita, se deja vacía o no se establece.</translation>
+<translation id="6583249367505445969">Inhabilitar barra de marcadores</translation>
 <translation id="6584541828182430328">Inhabilitar que se muestre la alerta en pantalla completa</translation>
 <translation id="6593350713192882944">Habilitar Respuestas rápidas</translation>
 <translation id="6594372503585248865">Habilitar la UI relacionada con la conexión en el escritorio del host remoto cuando una conexión esté activa</translation>
@@ -5689,6 +5712,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7040229947030068419">Valor de ejemplo:</translation>
 <translation id="7044883996351280650">Controlar el servicio de copia de seguridad y restauración de Android</translation>
 <translation id="7047495632846973438">Especifica si se comprobará o se saltará la política de permisos mostrar-capturar.</translation>
+<translation id="7055022222176591388">No permitir versiones obsoletas de <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="7066292150801784098">Inhabilitar la interacción de los usuarios remotos con ventanas con permisos de administrador en sesiones de asistencia remota</translation>
 <translation id="706669471845501145">Permitir que los sitios muestren notificaciones de escritorio</translation>
 <translation id="70681795425744184">No permitir que CRD ejecute las solicitudes a la API WebAuthn mediante un proxy desde un host remoto.</translation>
@@ -7519,6 +7543,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 
       Si no se le asigna ningún valor a la política, o su valor no se asocia a ninguna versión Quick Fix, el dispositivo no se actualizará a ninguna versión Quick Fix. Si el dispositivo utiliza una versión Quick Fix y la política no está configurada o su valor no se asocia a una versión Quick Fix, el dispositivo se actualizará a una versión normal, a no ser que otra política bloquee la actualización.</translation>
 <translation id="9051019223077908578">Configurar la lista de aplicaciones y extensiones instaladas en la pantalla de inicio de sesión</translation>
+<translation id="9053841574218808519">Ejecutar siempre los complementos que no estén obsoletos</translation>
 <translation id="9055866143096316150">Disminuir el nivel de las solicitudes de wake lock de pantalla a solicitudes de wake lock del sistema</translation>
 <translation id="9057444687284972605">Permite definir una lista de patrones de URL que especifican los sitios web para los que se selecciona automáticamente un certificado de cliente en la pantalla de inicio de sesión, en el marco que aloja el flujo SAML (si el sitio web solicita un certificado). Por ejemplo, se puede configurar un certificado que abarque todos los dispositivos para presentarlo al proveedor de identidad SAML.
 

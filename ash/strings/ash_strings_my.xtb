@@ -1157,6 +1157,7 @@
 <translation id="7749443890790263709">အများဆုံးသတ်မှတ်ထားသည့် စားပွဲအရေအတွက် ပြည့်သွားပါပြီ။</translation>
 <translation id="7749640678855296659">သင့်မိုက်ခရိုဖုန်းကို လက်ရှိတွင် ပိတ်ထားသည်</translation>
 <translation id="776344839111254542">အပ်ဒိတ်အသေးစိတ် အချက်အလက်များကို ကြည့်ရန် နှိပ်ပါ</translation>
+<translation id="7768784765476638775">စကားပြော-ရွေးရန်</translation>
 <translation id="7780094051999721182">ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="7780159184141939021">မျက်နှာပြင် လှည့်ခြင်း</translation>
 <translation id="7796353162336583443">မှတ်စုရေးရန်၊ ဖန်သားပြင်ဓာတ်ပုံ ရိုက်ရန်၊ Google Assistant ကို သုံးရန်၊ လေဆာညွှန်ပြကိရိယာ သို့မဟုတ် မှန်ဘီလူးတို့ကို သုံးရန် စင်ပေါ်ရှိ စတိုင်လပ်စ်ခလုတ်ကို တို့ပါ။</translation>
@@ -1193,7 +1194,6 @@
 <translation id="79341161159229895">အကောင့်ကို <ph name="FIRST_PARENT_EMAIL" /> နှင့် <ph name="SECOND_PARENT_EMAIL" /> က စီမံပါသည်</translation>
 <translation id="793716872548410480">သင်၏ကလစ်ဘုတ်ကို ကြည့်ရန် <ph name="SHORTCUT_KEY_NAME" /> + V နှိပ်ပါ။ သင်မိတ္တူကူးထားသည့် နောက်ဆုံး ၅ ခုကို သင်၏ကလစ်ဘုတ်တွင် သိမ်းလိုက်သည်။</translation>
 <translation id="7942349550061667556">အနီရောင်</translation>
-<translation id="7955885781510802139">အရောင်ခြားနားချက်မြင့်သော မုဒ်</translation>
 <translation id="7968693143708939792">ဖိုင်တွဲရွေးရန်...</translation>
 <translation id="7977927628060636163">မိုဘိုင်းကွန်ရက်ကို ရှာဖွေနေသည်...</translation>
 <translation id="7982789257301363584">ကွန်ရက်</translation>
@@ -1306,7 +1306,6 @@
 <translation id="8641805545866562088">ပရိုဖိုင်စာရင်းကို ပြန်လည် စတင်နေသည်။ မိနစ်အနည်းငယ် စောင့်ပါ။</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> တိုင်မာ</translation>
 <translation id="8647931990447795414">လူတစ်ဦးထည့်ရန် သင်၏ Family Link မိဘသုံးကုဒ်ထည့်ပါ</translation>
-<translation id="8649101189709089199">စကားပြော ရွေးရန်</translation>
 <translation id="8649597172973390955">စင်ကို အမြဲတမ်း ပြထားပါသည်</translation>
 <translation id="8652175077544655965">ဆက်တင်များအား ပိတ်ပါ</translation>
 <translation id="8653151467777939995">အကြောင်းကြားချက်ဆက်တင်များကို ပြရန်။ အကြောင်းကြားချက်များကို ဖွင့်ထားသည်</translation>

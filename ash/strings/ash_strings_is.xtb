@@ -306,6 +306,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2805756323405976993">Forrit</translation>
 <translation id="2814448776515246190">Myndataka að hluta til</translation>
 <translation id="2819276065543622893">Þú verður skráð(ur) út núna.</translation>
+<translation id="2822551631199737692">Myndavél í notkun</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> styður ekki <ph name="SPECIFIED_RESOLUTION" />. Upplausninni var breytt í <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Hilla</translation>
 <translation id="2831035692318564937">Kveikt til sólarupprásar</translation>
@@ -807,6 +808,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5682642926269496722">Google hjálparinn er ekki í boði fyrir núverandi notandareikning.</translation>
 <translation id="5689633613396158040">Næturljós auðveldar þér að horfa á skjáinn og lesa af honum í lítilli birtu. Ýttu til að breyta klukkan hvað næturljósið kviknar eða til að slökkva alveg á því.</translation>
 <translation id="5691772641933328258">Fingrafar þekkist ekki</translation>
+<translation id="5693255400847650006">Hljóðnemi í notkun</translation>
 <translation id="570390244361237317">Öll forrit, flettu með örvalyklunum til að fara á milli allra forrita</translation>
 <translation id="5707775774148071965">Tækið þitt styður meiri gagnahraða en snúran. Afköst tækisins kunna að vera takmörkuð.</translation>
 <translation id="5710450975648804523">Kveikt er á „Ónáðið ekki“</translation>
@@ -981,6 +983,7 @@ Ný uppsetning</translation>
 <translation id="6723839937902243910">Orka</translation>
 <translation id="6727969043791803658">Tengt, <ph name="BATTERY_PERCENTAGE" />% rafhlaða</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Myndavél og hljóðnemi í notkun</translation>
 <translation id="6739144137573853180">OPNA STILLINGAR</translation>
 <translation id="6751052314767925245">Framfylgt af kerfisstjóra</translation>
 <translation id="6751826523481687655">Kveikt er á afkastarakningu</translation>
@@ -1149,6 +1152,7 @@ Ný uppsetning</translation>
 <translation id="7749443890790263709">Hámarksfjölda skjáborða náð.</translation>
 <translation id="7749640678855296659">Slökkt er á hljóðnemanum</translation>
 <translation id="776344839111254542">Smelltu til að skoða upplýsingar um uppfærsluna</translation>
+<translation id="7768784765476638775">Textaupplestur</translation>
 <translation id="7780094051999721182">flýtileiðir</translation>
 <translation id="7780159184141939021">Snúa skjánum</translation>
 <translation id="7796353162336583443">Ýttu á pennahnappinn á hillunni til að skrifa niður glósu, taka skjámynd, nota Google hjálparann, leysigeislabendilinn eða stækkunarglerið.</translation>
@@ -1184,7 +1188,6 @@ Ný uppsetning</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> og <ph name="SECOND_PARENT_EMAIL" /> stjórna þessum reikningi</translation>
 <translation id="793716872548410480">Ýttu á <ph name="SHORTCUT_KEY_NAME" /> + V til að skoða klippiborðið. Síðustu 5 atriðin sem þú afritaðir eru vistuð á klippiborðinu.</translation>
 <translation id="7942349550061667556">Rauður</translation>
-<translation id="7955885781510802139">Mikil birtuskil</translation>
 <translation id="7968693143708939792">Veldu möppu...</translation>
 <translation id="7977927628060636163">Leitar að farsímakerfum...</translation>
 <translation id="7982789257301363584">Net</translation>
@@ -1296,7 +1299,6 @@ Ný uppsetning</translation>
 <translation id="8641805545866562088">Endurnýjar prófílalista. Hinkraðu í nokkrar mínútur.</translation>
 <translation id="8646417893960517480"><ph name="TOTAL_TIME" /> teljari</translation>
 <translation id="8647931990447795414">Til að bæta við einstaklingi skaltu slá inn aðgangskóða foreldris fyrir Family Link</translation>
-<translation id="8649101189709089199">Textaupplestur</translation>
 <translation id="8649597172973390955">Hilla alltaf sýnileg</translation>
 <translation id="8652175077544655965">Loka stillingum</translation>
 <translation id="8653151467777939995">Sýna tilkynningastillingar. Kveikt er á tilkynningum</translation>

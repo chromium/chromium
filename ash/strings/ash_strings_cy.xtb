@@ -1149,6 +1149,7 @@ Gosodiad newydd</translation>
 <translation id="7749443890790263709">Wedi cyrraedd y nifer uchaf o ddesgiau.</translation>
 <translation id="7749640678855296659">Mae eich meicroffon wedi'i ddiffodd ar hyn o bryd</translation>
 <translation id="776344839111254542">Cliciwch i weld manylion y diweddariad</translation>
+<translation id="7768784765476638775">Dewis i siarad</translation>
 <translation id="7780094051999721182">llwybrau byr</translation>
 <translation id="7780159184141939021">Cylchdroi'r Sgrîn</translation>
 <translation id="7796353162336583443">Tapiwch y botwm pwyntil ysgrifennu ar y silff i gymryd nodiadau, tynnu sgrinlun, defnyddio Google Assistant, pwyntydd laser neu chwyddwydr.</translation>
@@ -1184,7 +1185,6 @@ Gosodiad newydd</translation>
 <translation id="79341161159229895">Rheolir y cyfrif gan <ph name="FIRST_PARENT_EMAIL" /> a <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Pwyswch <ph name="SHORTCUT_KEY_NAME" /> a V i weld eich clipfwrdd. Mae'r 5 eitem ddiwethaf a gopïoch wedi'u cadw i'ch clipfwrdd.</translation>
 <translation id="7942349550061667556">Coch</translation>
-<translation id="7955885781510802139">Modd cyferbyniad uchel</translation>
 <translation id="7968693143708939792">Dewis ffolder…</translation>
 <translation id="7977927628060636163">Wrthi'n chwilio am rwydweithiau symudol...</translation>
 <translation id="7982789257301363584">Rhwydwaith</translation>
@@ -1296,7 +1296,6 @@ Gosodiad newydd</translation>
 <translation id="8641805545866562088">Wrthi'n ail-lwytho'r rhestr proffiliau. Arhoswch ychydig funudau.</translation>
 <translation id="8646417893960517480">Amserydd <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">I ychwanegu person, rhowch eich cod mynediad rhiant Family Link</translation>
-<translation id="8649101189709089199">Dewis i Siarad</translation>
 <translation id="8649597172973390955">Silff yn cael ei dangos bob amser</translation>
 <translation id="8652175077544655965">Cau'r gosodiadau</translation>
 <translation id="8653151467777939995">Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u troi ymlaen</translation>

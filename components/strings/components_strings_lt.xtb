@@ -999,7 +999,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3658742229777143148">Peržiūrėtas ir pataisytas leidimas</translation>
 <translation id="3664782872746246217">Raktiniai žodžiai:</translation>
 <translation id="3667704023705708645">Rizikos kapitalas</translation>
-<translation id="367108335512738711">„Chrome“ žymės</translation>
 <translation id="3671540257457995106">Leisti keisti dydį?</translation>
 <translation id="3675563144891642599">Trečias ritinėlis</translation>
 <translation id="3676592649209844519">Įrenginio ID:</translation>
@@ -1280,7 +1279,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4435702339979719576">Atvirukas</translation>
 <translation id="443673843213245140">Įgaliotojo serverio naudojimas neleidžiamas, bet nurodyta aiški įgaliotojo serverio konfigūracija.</translation>
 <translation id="4441832193888514600">Nepaisoma, nes politika gali būti nustatyta tik kaip debesies naudotojo politika.</translation>
-<translation id="4442470707340296952">„Chrome“ skirtukai</translation>
 <translation id="4450893287417543264">Daugiau neberodyti</translation>
 <translation id="4451135742916150903">Gali būti prašoma prisijungti prie HID įrenginių</translation>
 <translation id="4452328064229197696">Slaptažodis, kurį ką tik naudojote, buvo atskleistas įvykus duomenų saugos pažeidimui. Siekiant užtikrinti paskyrų saugumą, „Google“ slaptažodžių tvarkytuvė rekomenduoja patikrinti išsaugotus slaptažodžius.</translation>
@@ -2032,7 +2030,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6579630537141957243">Prijungti MIDI įrenginį?</translation>
 <translation id="6579990219486187401">Šviesiai rausva spalva</translation>
 <translation id="6583674473685352014">B6 (vokas)</translation>
-<translation id="6585526963651937128">„Chrome“ istorija</translation>
 <translation id="6587182488465657433">„Chrome“ aptiko, kad slaptažodis, kurį ką tik naudojote, buvo atskleistas įvykus duomenų saugos pažeidimui. Kad galėtumėte apsaugoti paskyras, rekomenduojame dabar jį pakeisti ir tada patikrinti išsaugotus slaptažodžius.</translation>
 <translation id="6587923378399804057">Nukopijuota nuoroda</translation>
 <translation id="6591833882275308647">Jūsų „<ph name="DEVICE_TYPE" />“ netvarkomas</translation>
@@ -2824,7 +2821,6 @@ Papildoma išsami informacija:
 <translation id="8805819170075074995">Sąrašo įrašas „<ph name="LANGUAGE_ID" />“: įrašo nepaisoma, nes jis taip pat įtrauktas į politiką „SpellcheckLanguage“.</translation>
 <translation id="8806285662264631610">Vonios ir kūno priežiūros produktai</translation>
 <translation id="8807160976559152894">Apkarpymas po kiekvieno puslapio</translation>
-<translation id="8808828119384186784">„Chrome“ nustatymai</translation>
 <translation id="8813277370772331957">Priminti vėliau</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, kad „Chrome“ nustatymuose būtų atnaujinta naršyklė „Chrome“</translation>
 <translation id="8820817407110198400">Žymės</translation>

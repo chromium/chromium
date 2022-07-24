@@ -998,7 +998,6 @@
 <translation id="3658742229777143148">पुनरीक्षण</translation>
 <translation id="3664782872746246217">कीवर्ड:</translation>
 <translation id="3667704023705708645">वेंचर कैपिटल</translation>
-<translation id="367108335512738711">Chrome के बुकमार्क</translation>
 <translation id="3671540257457995106">डिसप्ले का साइज़ बदलना चाहते हैं?</translation>
 <translation id="3675563144891642599">तीसरा रोल</translation>
 <translation id="3676592649209844519">डिवाइस आईडी:</translation>
@@ -1279,7 +1278,6 @@
 <translation id="4435702339979719576">पोस्टकार्ड)</translation>
 <translation id="443673843213245140">प्रॉक्‍सी का उपयोग अक्षम है लेकिन कोई स्‍पष्ट प्रॉक्‍सी कॉन्फ़िगरेशन दर्ज किया गया है.</translation>
 <translation id="4441832193888514600">अनदेखा किया गया है, क्योंकि इस नीति को सिर्फ़ क्लाउड की उपयोगकर्ता नीति के तौर पर सेट किया जा सकता है.</translation>
-<translation id="4442470707340296952">Chrome टैब</translation>
 <translation id="4450893287417543264">फिर से न दिखाएं</translation>
 <translation id="4451135742916150903">साइट, एचआईडी डिवाइसों से कनेक्ट करने की अनुमति मांग सकती है</translation>
 <translation id="4452328064229197696">आपने अभी जो पासवर्ड इस्तेमाल किया है वह लीक हो चुका है. Google के पासवर्ड मैनेजर का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें. इस तरह आपके खाते सुरक्षित रहेंगे.</translation>
@@ -2030,7 +2028,6 @@
 <translation id="6579630537141957243">क्या आप एमआईडीआई डिवाइस को कनेक्ट करना चाहते हैं?</translation>
 <translation id="6579990219486187401">हल्का गुलाबी रंग</translation>
 <translation id="6583674473685352014">बी6 (एन्वेलप)</translation>
-<translation id="6585526963651937128">Chrome इतिहास</translation>
 <translation id="6587182488465657433">Chrome के मुताबिक, आपने अभी जो पासवर्ड इस्तेमाल किया है वह लीक हो चुका है. आपके खातों को सुरक्षित रखने के लिए, हमारा सुझाव है कि आप इस पासवर्ड को अभी बदल दें. साथ ही, अपने सेव किए गए अन्य पासवर्ड की जांच करें.</translation>
 <translation id="6587923378399804057">आपका कॉपी किया हुआ लिंक</translation>
 <translation id="6591833882275308647">आपका <ph name="DEVICE_TYPE" /> प्रबंधित नहीं किया जाता</translation>
@@ -2822,7 +2819,6 @@
 <translation id="8805819170075074995">सूची एंट्री "<ph name="LANGUAGE_ID" />": एंट्री को अनदेखा किया गया क्योंकि इसे SpellcheckLanguage नीति में भी शामिल किया गया है.</translation>
 <translation id="8806285662264631610">नहाने और शरीर की देखभाल से जुड़े प्रॉडक्ट</translation>
 <translation id="8807160976559152894">हर एक पेज के बाद ट्रिम करें</translation>
-<translation id="8808828119384186784">Chrome की सेटिंग</translation>
 <translation id="8813277370772331957">मुझे बाद में याद दिलाएं</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग से Chrome अपडेट करने के लिए, Tab के बाद Enter दबाएं</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>

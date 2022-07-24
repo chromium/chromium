@@ -993,7 +993,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3658742229777143148">Revisie</translation>
 <translation id="3664782872746246217">Zoekwoorden:</translation>
 <translation id="3667704023705708645">Durfkapitaal</translation>
-<translation id="367108335512738711">Chrome-bookmarks</translation>
 <translation id="3671540257457995106">Formaat aanpassen toestaan?</translation>
 <translation id="3675563144891642599">3e rol</translation>
 <translation id="3676592649209844519">Apparaat-ID:</translation>
@@ -1274,7 +1273,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4435702339979719576">Briefkaart</translation>
 <translation id="443673843213245140">Er kan geen proxy worden gebruikt, maar er is wel een expliciete proxyconfiguratie opgegeven.</translation>
 <translation id="4441832193888514600">Genegeerd omdat het beleid alleen kan worden ingesteld als cloudgebruikersbeleid.</translation>
-<translation id="4442470707340296952">Chrome-tabbladen</translation>
 <translation id="4450893287417543264">Niet meer bekijken</translation>
 <translation id="4451135742916150903">Kan vragen of deze site verbinding mag maken met HID-apparaten</translation>
 <translation id="4452328064229197696">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Google Wachtwoordmanager raadt je aan je opgeslagen wachtwoorden te checken om je accounts te beveiligen.</translation>
@@ -2025,7 +2023,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6579630537141957243">MIDI-apparaat verbinden?</translation>
 <translation id="6579990219486187401">Lichtroze</translation>
 <translation id="6583674473685352014">B6 (envelop)</translation>
-<translation id="6585526963651937128">Chrome-geschiedenis</translation>
 <translation id="6587182488465657433">Chrome heeft het wachtwoord dat je net hebt gebruikt, gevonden bij een gegevenslek. We raden je aan dit wachtwoord nu te wijzigen en je opgeslagen wachtwoorden te checken.</translation>
 <translation id="6587923378399804057">Link die je hebt gekopieerd</translation>
 <translation id="6591833882275308647">Je <ph name="DEVICE_TYPE" /> wordt niet beheerd</translation>
@@ -2726,6 +2723,7 @@ Aanvullende informatie:
 <translation id="8508648098325802031">Zoekpictogram</translation>
 <translation id="8511402995811232419">Cookies beheren</translation>
 <translation id="851353418319061866">Nauwkeurigheidscheck</translation>
+<translation id="8513580896341796021">Download gestart. Druk op |<ph name="ACCELERATOR" />| om deze te bekijken.</translation>
 <translation id="8519753333133776369">HID-apparaat toegestaan door je beheerder</translation>
 <translation id="8522552481199248698">Chrome kan je helpen je Google-account te beschermen en je wachtwoord te wijzigen.</translation>
 <translation id="8530813470445476232">Je browsegeschiedenis, cookies, cache en meer wissen in de Chrome-instellingen</translation>
@@ -2816,7 +2814,6 @@ Aanvullende informatie:
 <translation id="8805819170075074995">Lijstitem '<ph name="LANGUAGE_ID" />': Item is genegeerd omdat dit ook is opgenomen in het beleid SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Bad- en lichaamsverzorgingsproducten</translation>
 <translation id="8807160976559152894">Bijsnijden na elke pagina</translation>
-<translation id="8808828119384186784">Chrome-instellingen</translation>
 <translation id="8813277370772331957">Later herinneren</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om Chrome te updaten via je Chrome-instellingen</translation>
 <translation id="8820817407110198400">Bookmarks</translation>

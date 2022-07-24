@@ -994,7 +994,6 @@
 <translation id="3658742229777143148">Versiya</translation>
 <translation id="3664782872746246217">Açar sözlər:</translation>
 <translation id="3667704023705708645">Vençur kapitalı</translation>
-<translation id="367108335512738711">Chrome Əlfəcinləri</translation>
 <translation id="3671540257457995106">Ölçünü dəyişməyə icazə verilsin?</translation>
 <translation id="3675563144891642599">Üçüncü Rulon</translation>
 <translation id="3676592649209844519">Cihaz ID'si:</translation>
@@ -1275,7 +1274,6 @@
 <translation id="4435702339979719576">Postkart)</translation>
 <translation id="443673843213245140">Proksi istifadəsi deaktiv edilib, amma ətraflı proksi konfiqurasiyası müəyyən edilib.</translation>
 <translation id="4441832193888514600">Siyasət yalnız bulud istifadəçisi siyasəti kimi təyin oluna bildiyi üçün nəzərə alınmadı.</translation>
-<translation id="4442470707340296952">Chrome Tabları</translation>
 <translation id="4450893287417543264">Göstərilməsin</translation>
 <translation id="4451135742916150903">Saytlar HID cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="4452328064229197696">İndicə istifadə etdiyiniz parol bir data pozuntusunda tapılıb. Hesablarınızı qorumaq üçün Google Parol Meneceri yadda saxladığınız parolları yoxlamağı tövsiyə edir.</translation>
@@ -2027,7 +2025,6 @@
 <translation id="6579630537141957243">MIDI cihazı qoşulsun?</translation>
 <translation id="6579990219486187401">Açıq-çəhrayı</translation>
 <translation id="6583674473685352014">B6 (Zərf)</translation>
-<translation id="6585526963651937128">Chrome Tarixçəsi</translation>
 <translation id="6587182488465657433">Chrome indicə istifadə etdiyiniz parolu bir data pozuntusunda tapıb. Hesablarınızı qorumaq üçün onu indi dəyişdirməyinizi, sonra isə yadda saxlanmış parollarınızı yoxlamağınızı tövsiyə edirik.</translation>
 <translation id="6587923378399804057">Kopyalanmış link</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> idarə edilmir</translation>
@@ -2257,6 +2254,7 @@
 <translation id="7238585580608191973">SHA-256 Barmaqizi</translation>
 <translation id="7240120331469437312">Sertifikat Subyekti Alternativ Adı</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
+<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# uyğunluq}other{# uyğunluq}}</translation>
 <translation id="724691107663265825">Sonrakı sayda virus var</translation>
 <translation id="724975217298816891">Detallarınızı güncəlləmək məqsədi ilə <ph name="CREDIT_CARD" /> üçün bitmə tarixi və CVC nömrəsini daxil edin. Təsdiq etdikdən sonra, kart detallarınız bu sayt ilə paylaşılacaq.</translation>
 <translation id="7251437084390964440">Şəbəkə konfiqurasiyası ONC standartına uyğun deyil. Konfiqurasiyanın hissələri import edilə bilməz.
@@ -2819,7 +2817,6 @@
 <translation id="8805819170075074995">Siyahı daxiletməsi "<ph name="LANGUAGE_ID" />": Daxiletmə SpellcheckLanguage siyasətində də əlavə edildiyinə görə qəbul edilmədi.</translation>
 <translation id="8806285662264631610">Hamam və bədənə qulluq məhsulları</translation>
 <translation id="8807160976559152894">Hər səhifədən sonra kəsin</translation>
-<translation id="8808828119384186784">Chrome Ayarları</translation>
 <translation id="8813277370772331957">Sonra xatırladın</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome ayarlarında Chrome'u güncəlləyin</translation>
 <translation id="8820817407110198400">Əlfəcinlər</translation>

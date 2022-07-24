@@ -1001,7 +1001,6 @@
 <translation id="3658742229777143148">កំណែប្រែ</translation>
 <translation id="3664782872746246217">ពាក្យ​គន្លឹះ៖</translation>
 <translation id="3667704023705708645">ទុនវិនិយោគ​ប្រថុយប្រថាន</translation>
-<translation id="367108335512738711">ចំណាំ Chrome</translation>
 <translation id="3671540257457995106">អនុញ្ញាតឱ្យប្ដូរទំហំ?</translation>
 <translation id="3675563144891642599">ដុំទីបី</translation>
 <translation id="3676592649209844519">លេខ​សម្គាល់​ឧបករណ៍៖</translation>
@@ -1283,7 +1282,6 @@
 <translation id="4435702339979719576">បណ្ណប្រៃសណីយ៍)</translation>
 <translation id="443673843213245140">ការប្រើប្រូកស៊ីត្រូវបានបិទដំណើរការ ប៉ុន្តែការកំណត់ប្រូកស៊ីដែលច្បាស់លាស់ត្រូវបានបញ្ជាក់។</translation>
 <translation id="4441832193888514600">បានមិនអើពើ ដោយសារអាចកំណត់​គោលការណ៍​ជាគោលការណ៍​អ្នកប្រើប្រាស់ពពក​តែប៉ុណ្ណោះ។</translation>
-<translation id="4442470707340296952">ផ្ទាំង Chrome</translation>
 <translation id="4450893287417543264">កុំបង្ហាញម្ដងទៀត</translation>
 <translation id="4451135742916150903">អាចស្នើសុំ​ភ្ជាប់ជាមួយ​ឧបករណ៍ HID</translation>
 <translation id="4452328064229197696">ពាក្យសម្ងាត់ដែលអ្នកទើបតែប្រើត្រូវបានរកឃើញនៅក្នុងការបែកធ្លាយទិន្នន័យ។ ដើម្បីការពារសុវត្ថិភាពគណនីរបស់អ្នក កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់ Google ណែនាំឱ្យពិនិត្យមើលពាក្យសម្ងាត់ដែលអ្នកបានរក្សាទុក។</translation>
@@ -2034,7 +2032,6 @@
 <translation id="6579630537141957243">ភ្ជាប់ឧបករណ៍ MIDI ឬ?</translation>
 <translation id="6579990219486187401">ផ្កាឈូកខ្ចី</translation>
 <translation id="6583674473685352014">B6 (ស្រោម​សំបុត្រ)</translation>
-<translation id="6585526963651937128">ប្រវត្តិ Chrome</translation>
 <translation id="6587182488465657433">Chrome បានរកឃើញ​ពាក្យសម្ងាត់​ដែលអ្នកទើបតែប្រើ នៅក្នុង​ការបែកធ្លាយ​ទិន្នន័យ។ ដើម្បី​រក្សាសុវត្ថិភាព​គណនីរបស់អ្នក យើងសូមណែនាំឱ្យប្ដូរ​ពាក្យសម្ងាត់នោះឥឡូវនេះ រួចពិនិត្យមើល​ពាក្យសម្ងាត់​ដែលអ្នកបានរក្សាទុក។</translation>
 <translation id="6587923378399804057">តំណដែលអ្នក​បានចម្លង</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> មិនត្រូវបាន​គ្រប់គ្រងទេ</translation>
@@ -2827,7 +2824,6 @@
 <translation id="8805819170075074995">ធាតុបញ្ជី "<ph name="LANGUAGE_ID" />"៖ ធាតុមិនត្រូវបាន​អើពើទេ ដោយសារធាតុនេះ​ក៏ត្រូវបានរួមបញ្ចូល​នៅក្នុងគោលការណ៍ SpellcheckLanguage ផងដែរ។</translation>
 <translation id="8806285662264631610">ផលិតផល​ថែទាំដងខ្លួន និង​សម្រាប់សម្អាតខ្លួន</translation>
 <translation id="8807160976559152894">តម្រឹម​បន្ទាប់ពី​ទំព័រ​នីមួយៗ</translation>
-<translation id="8808828119384186784">ការកំណត់ Chrome</translation>
 <translation id="8813277370772331957">រំលឹក​ខ្ញុំ​ពេលក្រោយ</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីដំឡើងកំណែ Chrome ពីការកំណត់ Chrome របស់អ្នក</translation>
 <translation id="8820817407110198400">ចំណាំ</translation>

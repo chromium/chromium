@@ -998,7 +998,6 @@
 <translation id="3658742229777143148">Редакція</translation>
 <translation id="3664782872746246217">Ключові слова:</translation>
 <translation id="3667704023705708645">Венчурний капітал</translation>
-<translation id="367108335512738711">Закладки Chrome</translation>
 <translation id="3671540257457995106">Дозволити змінити розмір?</translation>
 <translation id="3675563144891642599">Третій рулон</translation>
 <translation id="3676592649209844519">Ідентифікатор пристрою:</translation>
@@ -1279,7 +1278,6 @@
 <translation id="4435702339979719576">Листівка)</translation>
 <translation id="443673843213245140">Використання проксі-сервера вимкнено, але чітко вказано налаштування проксі-сервера.</translation>
 <translation id="4441832193888514600">Ігнорується, оскільки це правило можна налаштувати лише як хмарне правило для користувачів.</translation>
-<translation id="4442470707340296952">Вкладки Chrome</translation>
 <translation id="4450893287417543264">Більше не показувати</translation>
 <translation id="4451135742916150903">Може просити дозвіл підключатися до пристроїв HID</translation>
 <translation id="4452328064229197696">Введений пароль розкрито через порушення безпеки даних. Щоб захистити ваші облікові записи, Менеджер паролів Google радить перевірити збережені паролі.</translation>
@@ -2030,7 +2028,6 @@
 <translation id="6579630537141957243">Підключити пристрій MIDI?</translation>
 <translation id="6579990219486187401">Світло-рожевий</translation>
 <translation id="6583674473685352014">B6 (конверт)</translation>
-<translation id="6585526963651937128">Історія Chrome</translation>
 <translation id="6587182488465657433">Веб-переглядач Chrome виявив, що введений пароль розкрито через порушення безпеки даних. Щоб захистити свої облікові записи, радимо негайно змінити його й перевірити надійність збережених паролів.</translation>
 <translation id="6587923378399804057">Скопійоване посилання</translation>
 <translation id="6591833882275308647">Пристроєм <ph name="DEVICE_TYPE" /> не керує адміністратор</translation>
@@ -2822,7 +2819,6 @@
 <translation id="8805819170075074995">Елемент списку <ph name="LANGUAGE_ID" />: елемент ігнорується, оскільки його також включено в правило SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Косметика для ванної та догляду за тілом</translation>
 <translation id="8807160976559152894">Обрізати після кожної сторінки</translation>
-<translation id="8808828119384186784">Налаштування Chrome</translation>
 <translation id="8813277370772331957">Нагадати пізніше</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб оновити веб-переглядач Chrome у його налаштуваннях</translation>
 <translation id="8820817407110198400">Закладки</translation>

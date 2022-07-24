@@ -998,7 +998,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3658742229777143148">Versjon</translation>
 <translation id="3664782872746246217">Nøkkelord:</translation>
 <translation id="3667704023705708645">Risikokapital</translation>
-<translation id="367108335512738711">Chrome-bokmerker</translation>
 <translation id="3671540257457995106">Vil du tillate størrelsesendringer?</translation>
 <translation id="3675563144891642599">Tredje rull</translation>
 <translation id="3676592649209844519">Enhets-ID:</translation>
@@ -1279,7 +1278,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4435702339979719576">postkort)</translation>
 <translation id="443673843213245140">Bruk av proxy-tjener er deaktivert, men det er angitt en uttrykkelig proxy-tjenerkonfigurasjon.</translation>
 <translation id="4441832193888514600">Ignorert fordi regelen kun kan angis som brukerinnstillinger i nettskyen.</translation>
-<translation id="4442470707340296952">Chrome-faner</translation>
 <translation id="4450893287417543264">Ikke vis igjen</translation>
 <translation id="4451135742916150903">Kan be om å få koble til HID-enheter</translation>
 <translation id="4452328064229197696">Passordet du nettopp brukte, er funnet i et databrudd. For å sikre kontoene dine anbefaler Google Passordlagring at du sjekker de lagrede passordene dine.</translation>
@@ -2031,7 +2029,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6579630537141957243">Vil du koble til MIDI-enheten din?</translation>
 <translation id="6579990219486187401">Lys rosa</translation>
 <translation id="6583674473685352014">B6 (konvolutt)</translation>
-<translation id="6585526963651937128">Chrome-logg</translation>
 <translation id="6587182488465657433">Chrome har funnet passordet du nettopp brukte, i et databrudd. For å sikre kontoene dine anbefaler vi at du endrer passordet nå, og deretter sjekker de lagrede passordene dine.</translation>
 <translation id="6587923378399804057">Linken du kopierte</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> administreres ikke</translation>
@@ -2821,7 +2818,6 @@ Mer informasjon:
 <translation id="8805819170075074995">Listeoppføringen «<ph name="LANGUAGE_ID" />»: Oppføringen er ignorert fordi den også er inkludert i regelen SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Bade- og kroppsprodukter</translation>
 <translation id="8807160976559152894">Beskjær etter hver side</translation>
-<translation id="8808828119384186784">Chrome-innstillinger</translation>
 <translation id="8813277370772331957">Påminn meg senere</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å oppdatere Chrome fra Chrome-innstillingene</translation>
 <translation id="8820817407110198400">Bokmerker</translation>

@@ -994,7 +994,6 @@
 <translation id="3658742229777143148">修订版本</translation>
 <translation id="3664782872746246217">关键字：</translation>
 <translation id="3667704023705708645">风险投资</translation>
-<translation id="367108335512738711">Chrome 书签</translation>
 <translation id="3671540257457995106">允许调整大小？</translation>
 <translation id="3675563144891642599">第 3 卷</translation>
 <translation id="3676592649209844519">设备 ID：</translation>
@@ -1275,7 +1274,6 @@
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">已停用代理，但是指定了明确的代理配置。</translation>
 <translation id="4441832193888514600">被忽略了，因为此政策只能设为云端用户政策。</translation>
-<translation id="4442470707340296952">Chrome 标签页</translation>
 <translation id="4450893287417543264">不再显示</translation>
 <translation id="4451135742916150903">可以询问能否连接到 HID 设备</translation>
 <translation id="4452328064229197696">您刚才使用的密码遭遇了数据泄露。为确保您的帐号安全，Google 密码管理器建议您检查已保存的所有密码。</translation>
@@ -2025,7 +2023,6 @@
 <translation id="6579630537141957243">连接 MIDI 设备？</translation>
 <translation id="6579990219486187401">浅粉色</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
-<translation id="6585526963651937128">Chrome 历史记录</translation>
 <translation id="6587182488465657433">Chrome 发现您刚才使用的密码已遭遇数据泄露。为确保您的帐号安全，建议您立即更改此密码，然后检查您保存的密码。</translation>
 <translation id="6587923378399804057">您复制的链接</translation>
 <translation id="6591833882275308647">您的 <ph name="DEVICE_TYPE" /> 不受管理</translation>
@@ -2817,7 +2814,6 @@
 <translation id="8805819170075074995">列表条目“<ph name="LANGUAGE_ID" />”：该条目因同时存在于 SpellcheckLanguage 政策中而被忽略。</translation>
 <translation id="8806285662264631610">沐浴与身体护理产品</translation>
 <translation id="8807160976559152894">完成每页后裁切</translation>
-<translation id="8808828119384186784">Chrome 设置</translation>
 <translation id="8813277370772331957">稍后提醒我</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可前往 Chrome 设置以更新 Chrome</translation>
 <translation id="8820817407110198400">书签</translation>

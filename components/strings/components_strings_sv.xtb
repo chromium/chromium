@@ -998,7 +998,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3658742229777143148">Version</translation>
 <translation id="3664782872746246217">Sökord:</translation>
 <translation id="3667704023705708645">Riskkapital</translation>
-<translation id="367108335512738711">Bokmärken i Chrome</translation>
 <translation id="3671540257457995106">Vill du tillåta att storleken ändras?</translation>
 <translation id="3675563144891642599">Tredje rullen</translation>
 <translation id="3676592649209844519">Enhets-id:</translation>
@@ -1279,7 +1278,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4435702339979719576">vykort)</translation>
 <translation id="443673843213245140">Användning av proxy är inaktiverad men en explicit proxykonfiguration har angetts.</translation>
 <translation id="4441832193888514600">Ignoreras eftersom principen bara kan ställas in som en princip för molnanvändare.</translation>
-<translation id="4442470707340296952">Chrome-flikar</translation>
 <translation id="4450893287417543264">Visa inte igen</translation>
 <translation id="4451135742916150903">Får begära tillstånd att ansluta till HID-enheter</translation>
 <translation id="4452328064229197696">Lösenordet som du precis använde har läckt ut vid ett dataintrång. Du bör se över dina sparade lösenord för att skydda dina konton.</translation>
@@ -1467,6 +1465,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4969341057194253438">Radera inspelningen</translation>
 <translation id="4973922308112707173">Två hål högst upp</translation>
 <translation id="4976702386844183910">Besöktes senast <ph name="DATE" /></translation>
+<translation id="498323057460789381">Schemavalideringsfel: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Vill du använda mikrofonen?</translation>
 <translation id="4984339528288761049">Prc5 (kuvert)</translation>
 <translation id="4989163558385430922">Visa alla</translation>
@@ -2030,7 +2029,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6579630537141957243">Vill du ansluta MIDI-enhet?</translation>
 <translation id="6579990219486187401">Ljusrosa</translation>
 <translation id="6583674473685352014">B6 (kuvert)</translation>
-<translation id="6585526963651937128">Chrome-historik</translation>
 <translation id="6587182488465657433">Chrome upptäckte att lösenordet som du precis använde har läckt ut vid ett dataintrång. Vi rekommenderar att du byter det nu och kontrollerar dina sparade lösenord för att skydda dina konton.</translation>
 <translation id="6587923378399804057">Länk som du har kopierat</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> hanteras inte</translation>
@@ -2731,6 +2729,7 @@ Mer information:
 <translation id="8508648098325802031">Sökikon</translation>
 <translation id="8511402995811232419">Hantera cookies</translation>
 <translation id="851353418319061866">Källkontroll</translation>
+<translation id="8513580896341796021">Nedladdning har påbörjats. Visa den genom att trycka på |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">HID-enhet som tillåts av administratören</translation>
 <translation id="8522552481199248698">Du kan skydda Google-kontot genom att byta lösenord.</translation>
 <translation id="8530813470445476232">Rensa webbhistorik, cookies, cache med mera i inställningarna för Chrome</translation>
@@ -2822,7 +2821,6 @@ Mer information:
 <translation id="8805819170075074995">Listposten <ph name="LANGUAGE_ID" />: Posten ignorerades eftersom den även ingår i principen SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Dusch- och badprodukter</translation>
 <translation id="8807160976559152894">Beskär efter varje sida</translation>
-<translation id="8808828119384186784">Inställningar för Chrome</translation>
 <translation id="8813277370772331957">Påminn mig senare</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill uppdatera Chrome i inställningarna för Chrome</translation>
 <translation id="8820817407110198400">Bokmärken</translation>

@@ -306,6 +306,7 @@
 <translation id="2805756323405976993">Հավելվածներ</translation>
 <translation id="2814448776515246190">Էկրանի մի մասի տեսագրում</translation>
 <translation id="2819276065543622893">Դուք հիմա դուրս կգրվեք:</translation>
+<translation id="2822551631199737692">Տեսախցիկը ներկայումս օգտագործվում է</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />-ը չի աջակցում <ph name="SPECIFIED_RESOLUTION" /> լուծաչափը։ Լուծաչափը փոխվել է <ph name="FALLBACK_RESOLUTION" />-ի։</translation>
 <translation id="2825619548187458965">Դարակ</translation>
 <translation id="2831035692318564937">Միացված է մինչև մայրամուտ</translation>
@@ -807,6 +808,7 @@
 <translation id="5682642926269496722">Google Օգնականը հասանելի չէ տվյալ օգտատիրոջ հաշվի համար:</translation>
 <translation id="5689633613396158040">Գիշերային լույսը թույլ է տալիս ավելի հանգիստ նայել էկրանին և կարդալ թույլ լուսավորության պայմաններում։ Հպեք՝ գիշերային լույսի միացման ժամը փոխելու կամ այն ամբողջությամբ անջատելու համար։</translation>
 <translation id="5691772641933328258">Չհաջողվեց ճանաչել մատնահետքը</translation>
+<translation id="5693255400847650006">Խոսափողը ներկայումս օգտագործվում է</translation>
 <translation id="570390244361237317">Բոլոր հավելվածները․ սլաքների ստեղների օգնությամբ կարող եք բացել բոլոր հավելվածների ցանկը</translation>
 <translation id="5707775774148071965">Ձեր սարքն աջակցում է տվյալների փոխանցման ավելի բարձր արագություն, քան ձեր մալուխը։ Սարքի աշխատանքի արդյունավետությունը կարող է սահմանափակվել։</translation>
 <translation id="5710450975648804523">«Չանհանգստացնել» ռեժիմն ակտիվ է</translation>
@@ -981,6 +983,7 @@
 <translation id="6723839937902243910">Սնուցում</translation>
 <translation id="6727969043791803658">Միացված է, մարտկոցի լիցքը՝ <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Տեսախցիկն ու խոսափողը ներկայումս օգտագործվում են</translation>
 <translation id="6739144137573853180">ԲԱՑԵԼ ԿԱՐԳԱՎՈՐՈՒՄՆԵՐԸ</translation>
 <translation id="6751052314767925245">Պարտադրված է ադմինիստրատորի կողմից</translation>
 <translation id="6751826523481687655">Արդյունավետության հետագծումը միացված է</translation>
@@ -1148,6 +1151,7 @@
 <translation id="7749443890790263709">Աշխատասեղանների առավելագույն թույլատրելի քանակը լրացել է:</translation>
 <translation id="7749640678855296659">Ձեր խոսափողն այժմ անջատված է</translation>
 <translation id="776344839111254542">Հպեք՝ թարմացման մանրամասները դիտելու համար</translation>
+<translation id="7768784765476638775">Ընտրեք և լսեք</translation>
 <translation id="7780094051999721182">դյուրանցումներ</translation>
 <translation id="7780159184141939021">Էկրանի պտտում</translation>
 <translation id="7796353162336583443">Հպեք դարակի վրայի ստիլուսի կոճակը՝ գրառում կատարելու կամ սքրինշոթ լուսանկարելու, ինչպես նաև Օգնականը, լազերային ցուցիչը կամ խոշորացույցն օգտագործելու համար:</translation>
@@ -1183,7 +1187,6 @@
 <translation id="79341161159229895">Հաշվի կառավարիչներ՝ <ph name="FIRST_PARENT_EMAIL" /> և <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Սեղմեք <ph name="SHORTCUT_KEY_NAME" /> + V՝ սեղմատախտակը տեսնելու համար։ Վերջին 5 պատճենված տարրերը պահվել են սեղմատախտակում։</translation>
 <translation id="7942349550061667556">Կարմիր</translation>
-<translation id="7955885781510802139">Բարձր կոնտրաստի ռեժիմ</translation>
 <translation id="7968693143708939792">Ընտրել պանակ</translation>
 <translation id="7977927628060636163">Բջջային ցանցերի որոնում...</translation>
 <translation id="7982789257301363584">Ցանց</translation>
@@ -1295,7 +1298,6 @@
 <translation id="8641805545866562088">Պրոֆիլների ցանկը թարմացվում է։ Մի փոքր սպասեք։</translation>
 <translation id="8646417893960517480">Ժամաչափ՝ <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Օգտատեր ավելացնելու համար մուտքագրեք Family Link-ի ծնողի մուտքի կոդը</translation>
-<translation id="8649101189709089199">Ընտրեք և լսեք</translation>
 <translation id="8649597172973390955">Դարակը միշտ ցուցադրված է</translation>
 <translation id="8652175077544655965">Փակել կարգավորումները</translation>
 <translation id="8653151467777939995">Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումները միացված են:</translation>

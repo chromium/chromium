@@ -998,7 +998,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3658742229777143148">Rishikim</translation>
 <translation id="3664782872746246217">Fjalët kyçe:</translation>
 <translation id="3667704023705708645">Kapitali sipermarrës</translation>
-<translation id="367108335512738711">Faqeshënuesit e Chrome</translation>
 <translation id="3671540257457995106">Të lejohet ndryshimi i përmasave?</translation>
 <translation id="3675563144891642599">Ruli i tretë</translation>
 <translation id="3676592649209844519">ID-ja e pajisjes:</translation>
@@ -1279,7 +1278,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Përdorimi i një përfaqësuesi është i çaktivizuar, por është specifikuar një konfigurim i qartë përfaqësuesi.</translation>
 <translation id="4441832193888514600">Shpërfillur për shkak se politika mund të shtohet vetëm si politikë e përdoruesit të resë kompjuterike.</translation>
-<translation id="4442470707340296952">Skedat e Chrome</translation>
 <translation id="4450893287417543264">Mos e shfaq përsëri</translation>
 <translation id="4451135742916150903">Mund të kërkojë të lidhet me pajisjet HID</translation>
 <translation id="4452328064229197696">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve" i Google rekomandon të kontrollosh fjalëkalimet e ruajtura.</translation>
@@ -1467,6 +1465,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4969341057194253438">Fshi regjistrimin</translation>
 <translation id="4973922308112707173">Dy shpime lart</translation>
 <translation id="4976702386844183910">Vizituar së fundi më <ph name="DATE" /></translation>
+<translation id="498323057460789381">Gabim gjatë verifikimit të skemës: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Të përdoret mikrofoni?</translation>
 <translation id="4984339528288761049">Prc5 (Zarf)</translation>
 <translation id="4989163558385430922">Shiko të gjitha</translation>
@@ -2029,7 +2028,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6579630537141957243">Të lidhet pajisja MIDI?</translation>
 <translation id="6579990219486187401">Rozë e çelur</translation>
 <translation id="6583674473685352014">B6 (Zarf)</translation>
-<translation id="6585526963651937128">Historiku i Chrome</translation>
 <translation id="6587182488465657433">Chrome e gjeti fjalëkalimin që sapo përdore në një nxjerrje të paautorizuar të të dhënave. Për t'i siguruar llogaritë e tua, ne rekomandojmë ta ndryshosh atë tani dhe më pas të kontrollosh fjalëkalimet e tua të ruajtura.</translation>
 <translation id="6587923378399804057">Lidhja që kopjove</translation>
 <translation id="6591833882275308647">Pajisja jote <ph name="DEVICE_TYPE" /> nuk është e menaxhuar</translation>
@@ -2820,7 +2818,6 @@ Detaje shtesë:
 <translation id="8805819170075074995">Hyrja e listës "<ph name="LANGUAGE_ID" />": Hyrja është shpërfillur sepse është e përfshirë edhe në politikën e SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Produktet për larjen dhe trupin</translation>
 <translation id="8807160976559152894">Prerje pas çdo faqeje</translation>
-<translation id="8808828119384186784">Cilësimet e Chrome</translation>
 <translation id="8813277370772331957">Më kujto më vonë</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për të përditësuar Chrome nga cilësimet e tua të Chrome</translation>
 <translation id="8820817407110198400">Faqeshënuesit</translation>

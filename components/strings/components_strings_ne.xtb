@@ -995,7 +995,6 @@
 <translation id="3658742229777143148">संशोधन</translation>
 <translation id="3664782872746246217">किवर्डहरू:</translation>
 <translation id="3667704023705708645">उद्यम पुँजी</translation>
-<translation id="367108335512738711">Chrome का बुकमार्क</translation>
 <translation id="3671540257457995106">आकार बदल्न दिने हो?</translation>
 <translation id="3675563144891642599">तेस्रो रोल</translation>
 <translation id="3676592649209844519">यन्त्रको ID:</translation>
@@ -1276,7 +1275,6 @@
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">प्रोक्सीको प्रयोग असक्षम गरिएको छ तर एक सुस्पष्ट प्रोक्सी विन्यास तोकिएको छ।</translation>
 <translation id="4441832193888514600">क्लाउडका प्रयोगकर्ताले मात्र नीति तय गर्न मिल्ने भएकाले वेवास्ता गरिएको छ।</translation>
-<translation id="4442470707340296952">Chrome का ट्याबहरू</translation>
 <translation id="4450893287417543264">फेरि नदेखाउनुहोस्</translation>
 <translation id="4451135742916150903">HID डिभाइसमा कनेक्ट गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="4452328064229197696">तपाईंले भर्खरै प्रयोग गर्नुभएको पासवर्ड चोरी भएको डेटाको सङ्ग्रहमा भेटिएको छ। Google पासवर्ड म्यानेजरले तपाईंका खाता सुरक्षित राख्ने प्रयोजनका लागि तपाईंले सेभ गरेका पासवर्डहरू सुरक्षित छन् कि छैनन् जाँच्न सिफारिस गर्छ।</translation>
@@ -1464,6 +1462,7 @@
 <translation id="4969341057194253438">रेकर्डिङ मेटाउनुहोस्</translation>
 <translation id="4973922308112707173">सिरानमा दुई प्वाल</translation>
 <translation id="4976702386844183910">पछिल्लो पटक खोलिएको मिति: <ph name="DATE" /></translation>
+<translation id="498323057460789381">योजना प्रमाणीकरणसम्बन्धी त्रुटि: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">माइक्रोफोन प्रयोग गर्ने हो?</translation>
 <translation id="4984339528288761049">Prc5 (Envelope)</translation>
 <translation id="4989163558385430922">सबै हेर्नुहोस्</translation>
@@ -2027,7 +2026,6 @@
 <translation id="6579630537141957243">MIDI डिभाइस कनेक्ट गर्ने हो?</translation>
 <translation id="6579990219486187401">हल्का गुलाबी</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
-<translation id="6585526963651937128">Chrome को ब्राउजिङ इतिहास</translation>
 <translation id="6587182488465657433">Chrome ले तपाईंले भर्खरै प्रयोग गर्नुभएको पासवर्ड डेटा चोरीको घटनामा खुलासा गरिएको पत्ता लगायो। हामी तपाईंलाई अहिले नै उक्त पासवर्ड बदलेर र त्यसपछि आफूले सुरक्षित गरेका पासवर्डहरू जाँच गरेर आफ्ना खाता सुरक्षित राख्न सिफारिस गर्छौँ।</translation>
 <translation id="6587923378399804057">तपाईंले प्रतिलिपि गर्नुभएको लिंक</translation>
 <translation id="6591833882275308647">तपाईंको <ph name="DEVICE_TYPE" /> व्यवस्थित छैन</translation>
@@ -2818,7 +2816,6 @@
 <translation id="8805819170075074995">सूचीको प्रविष्टि "<ph name="LANGUAGE_ID" />": प्रविष्टिलाई SpellcheckLanguage नीतिमा पनि समावेश गरिएका कारण यसलाई बेवास्ता गरियो।</translation>
 <translation id="8806285662264631610">नुहाउने तथा शरीरमा लगाइने उत्पादनहरू</translation>
 <translation id="8807160976559152894">हरेक पृष्ठपछि छाँटकाँट गर्नुहोस्</translation>
-<translation id="8808828119384186784">Chrome का सेटिङ</translation>
 <translation id="8813277370772331957">मलाई पछि सम्झाउनुहोस्</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफ्नो Chrome का सेटिङमा गई Chrome अपडेट गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="8820817407110198400">बुकमार्कहरू</translation>

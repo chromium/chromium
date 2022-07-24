@@ -998,7 +998,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3658742229777143148">Različica</translation>
 <translation id="3664782872746246217">Ključne besede:</translation>
 <translation id="3667704023705708645">Tvegani kapital</translation>
-<translation id="367108335512738711">Zaznamki v Chromu</translation>
 <translation id="3671540257457995106">Želite omogočiti spreminjanje velikosti?</translation>
 <translation id="3675563144891642599">Kolut 3</translation>
 <translation id="3676592649209844519">ID naprave:</translation>
@@ -1279,7 +1278,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Uporaba strežnika proxy je onemogočena, vendar je njegova konfiguracija izrecno določena.</translation>
 <translation id="4441832193888514600">Prezrto, ker je pravilnik mogoče nastaviti samo kot uporabniški pravilnik za oblak.</translation>
-<translation id="4442470707340296952">Zavihki v Chromu</translation>
 <translation id="4450893287417543264">Tega ne prikaži več</translation>
 <translation id="4451135742916150903">Lahko zahteva vzpostavitev povezave z napravami HID.</translation>
 <translation id="4452328064229197696">Geslo, ki ste ga pravkar uporabili, je bilo najdeno v podatkovni kršitvi. Zaradi zavarovanja računov Google Upravitelj gesel priporoča, da preverite shranjena gesla.</translation>
@@ -2030,7 +2028,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6579630537141957243">Želite povezati napravo MIDI?</translation>
 <translation id="6579990219486187401">Svetlo rožnata</translation>
 <translation id="6583674473685352014">B6 (Envelope)</translation>
-<translation id="6585526963651937128">Zgodovina v Chromu</translation>
 <translation id="6587182488465657433">Chrome je geslo, ki ste ga pravkar uporabili, našel v podatkovni kršitvi. Zaradi zavarovanja računov priporočamo, da ga takoj spremenite in nato preverite shranjena gesla.</translation>
 <translation id="6587923378399804057">Povezava, ki ste jo kopirali</translation>
 <translation id="6591833882275308647">Naprava <ph name="DEVICE_TYPE" /> ni upravljana</translation>
@@ -2821,7 +2818,6 @@ Dodatne podrobnosti:
 <translation id="8805819170075074995">Vnos na seznamu »<ph name="LANGUAGE_ID" />«: vnos je prezrt, ker je vključen tudi v pravilnik SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Izdelki za pripravo kopeli in nego telesa</translation>
 <translation id="8807160976559152894">Obrezovanje po vsaki strani</translation>
-<translation id="8808828119384186784">Chromove nastavitve</translation>
 <translation id="8813277370772331957">Opomni me pozneje</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite posodobiti Chrome v Chromovih nastavitvah</translation>
 <translation id="8820817407110198400">Zaznamki</translation>

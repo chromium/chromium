@@ -998,7 +998,6 @@
 <translation id="3658742229777143148">ပြင်ဆင်ချက်</translation>
 <translation id="3664782872746246217">အဓိကစကားလုံးများ-</translation>
 <translation id="3667704023705708645">လုပ်ငန်း ရင်းနှီးငွေ</translation>
-<translation id="367108335512738711">Chrome လိပ်စာများ</translation>
 <translation id="3671540257457995106">အရွယ်အစားပြန်ပြင်ရန် ခွင့်ပြုမလား။</translation>
 <translation id="3675563144891642599">သုံးခုမြောက်အလိပ်</translation>
 <translation id="3676592649209844519">စက်ပစ္စည်း ID-</translation>
@@ -1280,7 +1279,6 @@
 <translation id="4435702339979719576">ပို့စ်ကတ်)</translation>
 <translation id="443673843213245140">ပရောက်စီ သုံးရန်ပိတ်ထားသော်လည်း တိကျသည့် ပရောက်စီ စီစဉ်ဖွဲ့စည်းမှုကို သတ်မှတ်ထားသည်။</translation>
 <translation id="4441832193888514600">မူဝါဒကို cloud အသုံးပြုသူလိုက်နာရမည့် မူဝါဒအဖြစ်သာ သတ်မှတ်နိုင်သောကြောင့် လျစ်လျူရှုထားသည်။</translation>
-<translation id="4442470707340296952">Chrome တဘ်များ</translation>
 <translation id="4450893287417543264">ထပ်မပြပါနှင့်</translation>
 <translation id="4451135742916150903">HID ကိရိယာများနှင့် ချိတ်ဆက်ရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="4452328064229197696">သင်သုံးလိုက်သောစကားဝှက်ကို ဒေတာကျိုးပေါက်မှုတွင် တွေ့ရှိထားသည်။ သင့်အကောင့်များကို လုံခြုံစေရန် ‘Google စကားဝှက်မန်နေဂျာ’ က သင်သိမ်းထားသော စကားဝှက်များကို စစ်ဆေးရန် အကြံပြုပါသည်။</translation>
@@ -2031,7 +2029,6 @@
 <translation id="6579630537141957243">MIDI ကိရိယာကို ချိတ်ဆက်မလား။</translation>
 <translation id="6579990219486187401">ပန်းရောင်ဖျော့</translation>
 <translation id="6583674473685352014">B6 (စာအိတ်)</translation>
-<translation id="6585526963651937128">Chrome မှတ်တမ်း</translation>
 <translation id="6587182488465657433">သင်သုံးလိုက်သောစကားဝှက်ကို ဒေတာကျိုးပေါက်မှုတွင် Chrome က တွေ့ရှိထားသည်။ သင့်အကောင့်များ လုံခြုံစေရန်အတွက် ၎င်းကို ယခုစစ်ဆေးပြီး သိမ်းထားသောစကားဝှက်များကို စစ်ဆေးရန် အကြံပြုပါသည်။</translation>
 <translation id="6587923378399804057">သင် မိတ္တူကူးထားသော လင့်ခ်</translation>
 <translation id="6591833882275308647">သင်၏ <ph name="DEVICE_TYPE" /> ကို စီမံခန့်ခွဲမထားပါ</translation>
@@ -2825,7 +2822,6 @@
 <translation id="8805819170075074995">စာရင်းထည့်သွင်းမှု "<ph name="LANGUAGE_ID" />"- SpellcheckLanguage မူဝါဒတွင်လည်း ပါဝင်နေသောကြောင့် ထည့်သွင်းမှုကို လျစ်လျူရှုထားသည်။</translation>
 <translation id="8806285662264631610">ရေချိုးစရာနှင့် လိမ်းကျံစရာများ</translation>
 <translation id="8807160976559152894">တစ်မျက်နှာအပြီး ဖြတ်ထုတ်ရန်</translation>
-<translation id="8808828119384186784">Chrome ဆက်တင်များ</translation>
 <translation id="8813277370772331957">နောက်မှ သတိပေးရန်</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင့် Chrome ဆက်တင်များမှတစ်ဆင့် Chrome ကို အပ်ဒိတ်လုပ်ရန် Tab နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="8820817407110198400">စာညှပ်များ</translation>

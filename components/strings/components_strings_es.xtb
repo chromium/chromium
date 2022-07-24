@@ -998,7 +998,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3658742229777143148">Revisión</translation>
 <translation id="3664782872746246217">Palabras clave:</translation>
 <translation id="3667704023705708645">Capital riesgo</translation>
-<translation id="367108335512738711">Marcadores de Chrome</translation>
 <translation id="3671540257457995106">¿Permitir cambio de tamaño?</translation>
 <translation id="3675563144891642599">Tercer rollo</translation>
 <translation id="3676592649209844519">ID del dispositivo:</translation>
@@ -1279,7 +1278,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Se ha inhabilitado el uso de un servidor proxy, pero se han especificado ajustes de proxy explícitos.</translation>
 <translation id="4441832193888514600">Se ignora porque la política solo se puede establecer como una política de usuarios basada en la nube.</translation>
-<translation id="4442470707340296952">Pestañas de Chrome</translation>
 <translation id="4450893287417543264">No volver a mostrar</translation>
 <translation id="4451135742916150903">Puede solicitar permiso para conectarse a dispositivos HID</translation>
 <translation id="4452328064229197696">La contraseña que acabas de usar se ha visto expuesta en una quiebra de seguridad de datos. Para proteger tus cuentas, el gestor de contraseñas de Google te recomienda que compruebes las contraseñas que tengas guardadas.</translation>
@@ -2030,7 +2028,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6579630537141957243">¿Conectar dispositivo MIDI?</translation>
 <translation id="6579990219486187401">Rosa claro</translation>
 <translation id="6583674473685352014">B6 (sobre)</translation>
-<translation id="6585526963651937128">Historial de Chrome</translation>
 <translation id="6587182488465657433">Chrome ha detectado que la contraseña que acabas de usar se ha visto expuesta en una quiebra de seguridad de datos. Para proteger tus cuentas, te recomendamos que la cambies ahora y que después compruebes las contraseñas que tengas guardadas.</translation>
 <translation id="6587923378399804057">Enlace copiado</translation>
 <translation id="6591833882275308647">Tu <ph name="DEVICE_TYPE" /> no está administrado</translation>
@@ -2821,7 +2818,6 @@ Más información:
 <translation id="8805819170075074995">Entrada de lista "<ph name="LANGUAGE_ID" />": se ha ignorado la entrada porque también está incluida en la política SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Productos para el baño y el cuerpo</translation>
 <translation id="8807160976559152894">Recortar después de cada página</translation>
-<translation id="8808828119384186784">Configuración de Chrome</translation>
 <translation id="8813277370772331957">Recordar más tarde</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para actualizar Chrome desde la configuración de Chrome</translation>
 <translation id="8820817407110198400">Marcadores</translation>

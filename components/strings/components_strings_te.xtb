@@ -1000,7 +1000,6 @@
 <translation id="3658742229777143148">పునర్విమర్శ</translation>
 <translation id="3664782872746246217">కీవర్డ్‌లు:</translation>
 <translation id="3667704023705708645">వెంచర్ క్యాపిటల్</translation>
-<translation id="367108335512738711">Chrome బుక్‌మార్క్‌లు</translation>
 <translation id="3671540257457995106">పరిమాణం మార్చడానికి అనుమతించాలా?</translation>
 <translation id="3675563144891642599">థర్డ్ రోల్</translation>
 <translation id="3676592649209844519">పరికర ID:</translation>
@@ -1281,7 +1280,6 @@
 <translation id="4435702339979719576">పోస్ట్‌కార్డ్)</translation>
 <translation id="443673843213245140">ప్రాక్సీని ఉపయోగించడం ఆపివేయబడింది కానీ స్పష్టమైన ప్రాక్సీ కాన్ఫిగరేషన్ పేర్కొనబడింది.</translation>
 <translation id="4441832193888514600">క్లౌడ్ యూజర్ పాలసీ ద్వారా మాత్రమే పాలసీని సెట్ చేయాలి కాబట్టి ఇది విస్మరించబడింది.</translation>
-<translation id="4442470707340296952">Chrome ట్యాబ్‌లు</translation>
 <translation id="4450893287417543264">మళ్లీ చూపవద్దు</translation>
 <translation id="4451135742916150903">HID పరికరాలకు కనెక్ట్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="4452328064229197696">మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్, డేటా ఉల్లంఘనలో కనగొనబడింది. మీ ఖాతాలను సురక్షితం చేయడానికి, మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయమని Google పాస్‌వర్డ్ మేనేజర్ సిఫార్సు చేస్తోంది.</translation>
@@ -2033,7 +2031,6 @@
 <translation id="6579630537141957243">MIDI పరికరానికి కనెక్ట్ చేయాలా?</translation>
 <translation id="6579990219486187401">లేత గులాబీ రంగు</translation>
 <translation id="6583674473685352014">B6 (ఎన్వలప్)</translation>
-<translation id="6585526963651937128">Chrome హిస్టరీ</translation>
 <translation id="6587182488465657433">డేటా ఉల్లంఘనలో మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్‌ను Chrome కనుగొనింది. మీ ఖాతాలను సురక్షించడానికి, వాటిని మార్చుకుని, ఆపై సేవ్ చేయబడిన పాస్‌వర్డ్‌లను చెక్ చేయమని మేము సిఫార్సు చేస్తున్నాము.</translation>
 <translation id="6587923378399804057">మీరు కాపీ చేసిన లింక్</translation>
 <translation id="6591833882275308647">మీ <ph name="DEVICE_TYPE" /> నిర్వహించబడటం లేదు</translation>
@@ -2824,7 +2821,6 @@
 <translation id="8805819170075074995">లిస్ట్‌ నమోదు "<ph name="LANGUAGE_ID" />": నమోదు విస్మరించబడింది, ఎందుకంటే ఇది SpellcheckLanguage విధానంలో కూడా ఉంది.</translation>
 <translation id="8806285662264631610">స్నానానికి వినియోగించే &amp; శరీర ప్రోడక్ట్‌లు</translation>
 <translation id="8807160976559152894">ప్రతి పేజీ తర్వాత కత్తిరించండి</translation>
-<translation id="8808828119384186784">Chrome సెట్టింగ్‌లు</translation>
 <translation id="8813277370772331957">నాకు తర్వాత గుర్తు చేయి</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Chrome సెట్టింగ్‌ల నుండి Chromeని అప్‌డేట్ చేయడానికి 'Tab' నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="8820817407110198400">బుక్‌మార్క్‌లు</translation>
