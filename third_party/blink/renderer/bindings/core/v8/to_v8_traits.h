@@ -358,14 +358,6 @@ struct ToV8Traits<NotShared<T>> {
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<T>::ToV8(script_state, value);
   }
-
-  // TODO(canonmukai): Remove this overload.
-  [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const ScriptValue& script_value) {
-    DCHECK(!script_value.IsEmpty());
-    return ToV8Traits<IDLAny>::ToV8(script_state, script_value);
-  }
 };
 
 // MaybeShared
@@ -850,15 +842,6 @@ struct ToV8Traits<IDLNullable<NotShared<T>>> {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<NotShared<T>>::ToV8(script_state, value);
-  }
-
-  // TODO(canonmukai): Remove this overload.
-  [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const ScriptValue& script_value) {
-    if (script_value.IsEmpty())
-      return v8::Null(script_state->GetIsolate());
-    return ToV8Traits<NotShared<T>>::ToV8(script_state, script_value);
   }
 };
 

@@ -610,30 +610,28 @@ class _IRBuilder(object):
         iter_map[Identifier('entries')].is_iterator = True
         iter_ops = list(iter_map.values())
         read_ops = [
-            self._create_operation(
-                Identifier('get'),
-                arguments=self._create_arguments([
-                    (Identifier('key'), key_type),
-                ]),
-                return_type=value_type,
-                extended_attributes={
-                    'CallWith': 'ScriptState',
-                    'RaisesException': None,
-                    'ImplementedAs': 'getForBinding',
-                },
-                node=node),
-            self._create_operation(
-                Identifier('has'),
-                arguments=self._create_arguments([
-                    (Identifier('key'), key_type),
-                ]),
-                return_type='boolean',
-                extended_attributes={
-                    'CallWith': 'ScriptState',
-                    'RaisesException': None,
-                    'ImplementedAs': 'hasForBinding',
-                },
-                node=node),
+            self._create_operation(Identifier('get'),
+                                   arguments=self._create_arguments([
+                                       (Identifier('key'), key_type),
+                                   ]),
+                                   return_type='any',
+                                   extended_attributes={
+                                       'CallWith': 'ScriptState',
+                                       'RaisesException': None,
+                                       'ImplementedAs': 'getForBinding',
+                                   },
+                                   node=node),
+            self._create_operation(Identifier('has'),
+                                   arguments=self._create_arguments([
+                                       (Identifier('key'), key_type),
+                                   ]),
+                                   return_type='boolean',
+                                   extended_attributes={
+                                       'CallWith': 'ScriptState',
+                                       'RaisesException': None,
+                                       'ImplementedAs': 'hasForBinding',
+                                   },
+                                   node=node),
         ]
         write_ops = [
             self._create_operation(
