@@ -672,6 +672,9 @@ void FakeUserDataAuthClient::StartAuthSession(
   DCHECK_EQ(auth_sessions_.count(auth_session_id), 0u);
   AuthSessionData& session = auth_sessions_[auth_session_id];
   session.id = auth_session_id;
+  session.ephemeral =
+      (request.flags() & ::user_data_auth::AUTH_SESSION_FLAGS_EPHEMERAL_USER) !=
+      0;
   session.account = request.account_id();
 
   if (cryptohome_error_ !=
@@ -808,30 +811,35 @@ void FakeUserDataAuthClient::PrepareEphemeralVault(
     const ::user_data_auth::PrepareEphemeralVaultRequest& request,
     PrepareEphemeralVaultCallback callback) {
   ::user_data_auth::PrepareEphemeralVaultReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
 
-  cryptohome::AccountIdentifier account;
-  auto auth_session = auth_sessions_.find(request.auth_session_id());
-  if (auth_session == auth_sessions_.end()) {
+  const auto session_it = auth_sessions_.find(request.auth_session_id());
+  if (session_it == auth_sessions_.end()) {
     LOG(ERROR) << "AuthSession not found";
     reply.set_sanitized_username(std::string());
     reply.set_error(::user_data_auth::CryptohomeErrorCode::
                         CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
-  } else {
-    account = auth_session->second.account;
-    // Ephemeral mount does not require session to be authenticated;
-    // It authenticates session instead.
-    if (auth_session->second.authenticated) {
-      LOG(ERROR) << "AuthSession is authenticated";
-      reply.set_error(::user_data_auth::CryptohomeErrorCode::
-                          CRYPTOHOME_ERROR_INVALID_ARGUMENT);
-    } else {
-      auth_session->second.authenticated = true;
-    }
-
-    reply.set_sanitized_username(GetStubSanitizedUsername(account));
+    return;
   }
+  AuthSessionData& auth_session = session_it->second;
+  if (!auth_session.ephemeral) {
+    LOG(ERROR) << "Non-ephemeral AuthSession used with PrepareEphemeralVault";
+    reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                        CRYPTOHOME_ERROR_INVALID_ARGUMENT);
+    return;
+  }
+  cryptohome::AccountIdentifier account = auth_session.account;
+  // Ephemeral mount does not require session to be authenticated;
+  // It authenticates session instead.
+  if (auth_session.authenticated) {
+    LOG(ERROR) << "AuthSession is authenticated";
+    reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                        CRYPTOHOME_ERROR_INVALID_ARGUMENT);
+    return;
+  }
+  auth_session.authenticated = true;
 
-  ReturnProtobufMethodCallback(reply, std::move(callback));
+  reply.set_sanitized_username(GetStubSanitizedUsername(account));
 }
 
 void FakeUserDataAuthClient::CreatePersistentUser(
@@ -849,6 +857,13 @@ void FakeUserDataAuthClient::CreatePersistentUser(
     return;
   }
   AuthSessionData& auth_session = session_it->second;
+
+  if (auth_session.ephemeral) {
+    LOG(ERROR) << "Ephemeral AuthSession used with CreatePersistentUser";
+    reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                        CRYPTOHOME_ERROR_INVALID_ARGUMENT);
+    return;
+  }
 
   const auto [_, was_inserted] =
       users_.insert({auth_session.account, UserCryptohomeState()});
@@ -875,6 +890,13 @@ void FakeUserDataAuthClient::PreparePersistentVault(
 
   if (authenticated_auth_session == nullptr) {
     reply.set_error(error);
+    return;
+  }
+
+  if (authenticated_auth_session->ephemeral) {
+    LOG(ERROR) << "Ephemeral AuthSession used with PreparePersistentVault";
+    reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                        CRYPTOHOME_ERROR_INVALID_ARGUMENT);
     return;
   }
 
