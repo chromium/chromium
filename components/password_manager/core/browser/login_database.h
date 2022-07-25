@@ -41,6 +41,9 @@ class SQLTableBuilder;
 extern const int kCurrentVersionNumber;
 extern const int kCompatibleVersionNumber;
 
+using PrimaryKeyToFormMap =
+    std::map<FormPrimaryKey, std::unique_ptr<PasswordForm>>;
+
 // Interface to the database storage of login information, intended as a helper
 // for PasswordStore on platforms that need internal storage of some or all of
 // the login information.
@@ -74,7 +77,7 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // case of error, it sets |error| if |error| isn't null.
   [[nodiscard]] PasswordStoreChangeList AddLogin(
       const PasswordForm& form,
-      AddLoginError* error = nullptr);
+      AddCredentialError* error = nullptr);
 
   // Updates existing password form. Returns the list of applied changes ({},
   // {UPDATE}). The password is looked up by the tuple {origin,
@@ -83,7 +86,7 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // null.
   [[nodiscard]] PasswordStoreChangeList UpdateLogin(
       const PasswordForm& form,
-      UpdateLoginError* error = nullptr);
+      UpdateCredentialError* error = nullptr);
 
   // Removes |form| from the list of remembered password forms. Returns true if
   // |form| was successfully removed from the database. If |changes| is not be

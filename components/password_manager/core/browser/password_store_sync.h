@@ -16,15 +16,17 @@ namespace syncer {
 class MetadataBatch;
 }
 
+namespace sync_pb {
+class PasswordSpecificsData;
+}
+
 namespace password_manager {
 
-struct PasswordForm;
-
-using PrimaryKeyToFormMap =
-    std::map<FormPrimaryKey, std::unique_ptr<PasswordForm>>;
+using PrimaryKeyToPasswordSpecificsDataMap =
+    std::map<FormPrimaryKey, std::unique_ptr<sync_pb::PasswordSpecificsData>>;
 
 // This enum is used to determine result status when deleting undecryptable
-// logins from database.
+// credentials from database.
 enum class DatabaseCleanupResult {
   kSuccess,
   kItemFailure,
@@ -45,12 +47,12 @@ enum class FormRetrievalResult {
   kEncryptionServiceFailureWithPartialData,
 };
 
-// Error values for adding a login to the store.
+// Error values for adding a credential to the store.
 // Used in metrics: "PasswordManager.MergeSyncData.AddLoginSyncError" and
 // "PasswordManager.ApplySyncChanges.AddLoginSyncError". These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
-enum class AddLoginError {
+enum class AddCredentialError {
   // Success.
   kNone = 0,
   // Database not available.
@@ -66,12 +68,12 @@ enum class AddLoginError {
   kMaxValue = kDbError,
 };
 
-// Error values for updating a login in the store.
+// Error values for updating a credential in the store.
 // Used in metrics: "PasswordManager.MergeSyncData.UpdateLoginSyncError" and
 // "PasswordManager.ApplySyncChanges.UpdateLoginSyncError". These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
-enum class UpdateLoginError {
+enum class UpdateCredentialError {
   // Success.
   kNone = 0,
   // Database not available.
@@ -121,30 +123,32 @@ class PasswordStoreSync {
   PasswordStoreSync(const PasswordStoreSync&) = delete;
   PasswordStoreSync& operator=(const PasswordStoreSync&) = delete;
 
-  // Overwrites |key_to_form_map| with a map from the DB primary key to the
+  // Overwrites |key_to_specifics_map| with a map from the DB primary key to the
   // corresponding form for all stored credentials. Returns true on success.
-  [[nodiscard]] virtual FormRetrievalResult ReadAllLogins(
-      PrimaryKeyToFormMap* key_to_form_map) = 0;
+  [[nodiscard]] virtual FormRetrievalResult ReadAllCredentials(
+      PrimaryKeyToPasswordSpecificsDataMap* key_to_specifics_map) = 0;
 
-  // Deletes logins that cannot be decrypted.
-  virtual DatabaseCleanupResult DeleteUndecryptableLogins() = 0;
+  // Deletes credentials that cannot be decrypted.
+  virtual DatabaseCleanupResult DeleteUndecryptableCredentials() = 0;
 
-  // Synchronous implementation to add the given login.
-  virtual PasswordStoreChangeList AddLoginSync(
-      const PasswordForm& form,
-      AddLoginError* error = nullptr) = 0;
+  // Synchronous implementation to add the given credential.
+  virtual PasswordStoreChangeList AddCredentialSync(
+      const sync_pb::PasswordSpecificsData& specifics,
+      AddCredentialError* error = nullptr) = 0;
 
-  // Synchronous implementation to update the given login.
-  virtual PasswordStoreChangeList UpdateLoginSync(
-      const PasswordForm& form,
-      UpdateLoginError* error = nullptr) = 0;
+  // Synchronous implementation to update the given credential.
+  virtual PasswordStoreChangeList UpdateCredentialSync(
+      const sync_pb::PasswordSpecificsData& specifics,
+      UpdateCredentialError* error = nullptr) = 0;
 
-  // Synchronous implementation to remove the login with the given primary key.
-  virtual PasswordStoreChangeList RemoveLoginByPrimaryKeySync(
+  // Synchronous implementation to remove the credential with the given primary
+  // key.
+  virtual PasswordStoreChangeList RemoveCredentialByPrimaryKeySync(
       FormPrimaryKey primary_key) = 0;
 
   // Notifies observers that password store data may have been changed.
-  virtual void NotifyLoginsChanged(const PasswordStoreChangeList& changes) = 0;
+  virtual void NotifyCredentialsChanged(
+      const PasswordStoreChangeList& changes) = 0;
 
   // Notifies any waiting callback that all pending deletions have been
   // committed to the Sync server now, or that Sync definitely won't commit
@@ -160,8 +164,8 @@ class PasswordStoreSync {
   // The methods below adds transaction support to the password store that's
   // required by sync to guarantee atomic writes of data and sync metadata.
   // TODO(crbug.com/902349): The introduction of the three functions below
-  // question the existence of NotifyLoginsChanged() above and all the round
-  // trips with PasswordStoreChangeList in the earlier functions. Instead,
+  // question the existence of NotifyCredentialsChanged() above and all the
+  // round trips with PasswordStoreChangeList in the earlier functions. Instead,
   // observers could be notified inside CommitTransaction().
   virtual bool BeginTransaction() = 0;
   virtual void RollbackTransaction() = 0;

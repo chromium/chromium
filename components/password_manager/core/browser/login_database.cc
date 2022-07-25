@@ -990,15 +990,15 @@ void LoginDatabase::ReportMetrics() {
 }
 
 PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
-                                                AddLoginError* error) {
+                                                AddCredentialError* error) {
   TRACE_EVENT0("passwords", "LoginDatabase::AddLogin");
   if (error) {
-    *error = AddLoginError::kNone;
+    *error = AddCredentialError::kNone;
   }
   PasswordStoreChangeList list;
   if (!DoesMatchConstraints(form)) {
     if (error) {
-      *error = AddLoginError::kConstraintViolation;
+      *error = AddCredentialError::kConstraintViolation;
     }
     return list;
   }
@@ -1014,7 +1014,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     if (DecryptedString(form.encrypted_password, &decrypted_password) !=
         ENCRYPTION_RESULT_SUCCESS) {
       if (error) {
-        *error = AddLoginError::kEncryptionServiceFailure;
+        *error = AddCredentialError::kEncryptionServiceFailure;
       }
       return list;
     }
@@ -1024,7 +1024,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     if (EncryptedString(form.password_value, &encrypted_password) !=
         ENCRYPTION_RESULT_SUCCESS) {
       if (error) {
-        *error = AddLoginError::kEncryptionServiceFailure;
+        *error = AddCredentialError::kEncryptionServiceFailure;
       }
       return list;
     }
@@ -1081,25 +1081,26 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
                       password_changed, insecure_changed);
   } else if (error) {
     if (db_error_handler.get_error_code() == 19 /*SQLITE_CONSTRAINT*/) {
-      *error = AddLoginError::kConstraintViolation;
+      *error = AddCredentialError::kConstraintViolation;
     } else {
-      *error = AddLoginError::kDbError;
+      *error = AddCredentialError::kDbError;
     }
   }
   return list;
 }
 
-PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
-                                                   UpdateLoginError* error) {
+PasswordStoreChangeList LoginDatabase::UpdateLogin(
+    const PasswordForm& form,
+    UpdateCredentialError* error) {
   TRACE_EVENT0("passwords", "LoginDatabase::UpdateLogin");
   if (error) {
-    *error = UpdateLoginError::kNone;
+    *error = UpdateCredentialError::kNone;
   }
   std::string encrypted_password;
   if (EncryptedString(form.password_value, &encrypted_password) !=
       ENCRYPTION_RESULT_SUCCESS) {
     if (error) {
-      *error = UpdateLoginError::kEncryptionServiceFailure;
+      *error = UpdateCredentialError::kEncryptionServiceFailure;
     }
     return PasswordStoreChangeList();
   }
@@ -1159,7 +1160,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
 
   if (!s.Run()) {
     if (error) {
-      *error = UpdateLoginError::kDbError;
+      *error = UpdateCredentialError::kDbError;
     }
     return PasswordStoreChangeList();
   }
@@ -1169,7 +1170,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
   // the notes table.
   if (db_.GetLastChangeCount() == 0) {
     if (error) {
-      *error = UpdateLoginError::kNoUpdatedRecords;
+      *error = UpdateCredentialError::kNoUpdatedRecords;
     }
     return PasswordStoreChangeList();
   }

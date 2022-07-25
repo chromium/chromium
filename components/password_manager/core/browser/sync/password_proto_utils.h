@@ -52,7 +52,9 @@ sync_pb::PasswordSpecifics SpecificsFromPassword(
 
 // Returns sync_pb::PasswordSpecificsData based on given `password_form`.
 // `base_password_data` is intended for carrying over unknown and unsupported
-// fields when there is a local modification to an existing sync entity.
+// fields when there is a local modification to an existing sync entity. The
+// resulting proto contains all supported fields from `password_form` combined
+// with unsupported from `base_password_data`
 sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
     const PasswordForm& password_form,
     const sync_pb::PasswordSpecificsData& base_password_data);

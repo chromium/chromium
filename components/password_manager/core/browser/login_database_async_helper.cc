@@ -8,6 +8,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/password_manager/core/browser/login_database.h"
+#include "components/password_manager/core/browser/sync/password_proto_utils.h"
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_controller_delegate.h"
@@ -136,8 +137,8 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::AddLogin(
     const PasswordForm& form) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BeginTransaction();
-  AddLoginError error = AddLoginError::kNone;
-  PasswordStoreChangeList changes = AddLoginSync(form, &error);
+  AddCredentialError error = AddCredentialError::kNone;
+  PasswordStoreChangeList changes = AddLoginImpl(form, &error);
   if (sync_bridge_ && !changes.empty())
     sync_bridge_->ActOnPasswordStoreChanges(changes);
   // Sync metadata get updated in ActOnPasswordStoreChanges(). Therefore,
@@ -145,7 +146,7 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::AddLogin(
   // because sync codebase needs to update metadata atomically together with
   // the login data.
   CommitTransaction();
-  return error == AddLoginError::kNone
+  return error == AddCredentialError::kNone
              ? changes
              : PasswordChangesOrError(
                    PasswordStoreBackendError::kUnrecoverable);
@@ -155,8 +156,8 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::UpdateLogin(
     const PasswordForm& form) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BeginTransaction();
-  UpdateLoginError error = UpdateLoginError::kNone;
-  PasswordStoreChangeList changes = UpdateLoginSync(form, &error);
+  UpdateCredentialError error = UpdateCredentialError::kNone;
+  PasswordStoreChangeList changes = UpdateLoginImpl(form, &error);
   if (sync_bridge_ && !changes.empty())
     sync_bridge_->ActOnPasswordStoreChanges(changes);
   // Sync metadata get updated in ActOnPasswordStoreChanges(). Therefore,
@@ -164,7 +165,7 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::UpdateLogin(
   // because sync codebase needs to update metadata atomically together with
   // the login data.
   CommitTransaction();
-  return error == UpdateLoginError::kNone
+  return error == UpdateCredentialError::kNone
              ? changes
              : PasswordChangesOrError(
                    PasswordStoreBackendError::kUnrecoverable);
@@ -343,33 +344,21 @@ LoginDatabaseAsyncHelper::GetSyncControllerDelegate() {
   return sync_bridge_->change_processor()->GetControllerDelegate();
 }
 
-PasswordStoreChangeList LoginDatabaseAsyncHelper::AddLoginSync(
-    const PasswordForm& form,
-    AddLoginError* error) {
+PasswordStoreChangeList LoginDatabaseAsyncHelper::AddCredentialSync(
+    const sync_pb::PasswordSpecificsData& password,
+    AddCredentialError* error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!login_db_) {
-    if (error) {
-      *error = AddLoginError::kDbNotAvailable;
-    }
-    return PasswordStoreChangeList();
-  }
-  return login_db_->AddLogin(form, error);
+  return AddLoginImpl(PasswordFromSpecifics(password), error);
 }
 
-PasswordStoreChangeList LoginDatabaseAsyncHelper::UpdateLoginSync(
-    const PasswordForm& form,
-    UpdateLoginError* error) {
+PasswordStoreChangeList LoginDatabaseAsyncHelper::UpdateCredentialSync(
+    const sync_pb::PasswordSpecificsData& password,
+    UpdateCredentialError* error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!login_db_) {
-    if (error) {
-      *error = UpdateLoginError::kDbNotAvailable;
-    }
-    return PasswordStoreChangeList();
-  }
-  return login_db_->UpdateLogin(form, error);
+  return UpdateLoginImpl(PasswordFromSpecifics(password), error);
 }
 
-void LoginDatabaseAsyncHelper::NotifyLoginsChanged(
+void LoginDatabaseAsyncHelper::NotifyCredentialsChanged(
     const PasswordStoreChangeList& changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!remote_forms_changes_received_callback_)
@@ -427,15 +416,25 @@ bool LoginDatabaseAsyncHelper::CommitTransaction() {
   return false;
 }
 
-FormRetrievalResult LoginDatabaseAsyncHelper::ReadAllLogins(
-    PrimaryKeyToFormMap* key_to_form_map) {
+FormRetrievalResult LoginDatabaseAsyncHelper::ReadAllCredentials(
+    PrimaryKeyToPasswordSpecificsDataMap* key_to_specifics_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!login_db_)
     return FormRetrievalResult::kDbError;
-  return login_db_->GetAllLogins(key_to_form_map);
+  PrimaryKeyToFormMap key_to_form_map;
+  FormRetrievalResult result = login_db_->GetAllLogins(&key_to_form_map);
+  for (const auto& [primary_key, form] : key_to_form_map) {
+    key_to_specifics_map->emplace(
+        primary_key,
+        std::make_unique<sync_pb::PasswordSpecificsData>(
+            SpecificsDataFromPassword(*form, /*base_password_data=*/{})));
+  }
+
+  return result;
 }
 
-PasswordStoreChangeList LoginDatabaseAsyncHelper::RemoveLoginByPrimaryKeySync(
+PasswordStoreChangeList
+LoginDatabaseAsyncHelper::RemoveCredentialByPrimaryKeySync(
     FormPrimaryKey primary_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PasswordStoreChangeList changes;
@@ -460,11 +459,38 @@ bool LoginDatabaseAsyncHelper::DeleteAndRecreateDatabaseFile() {
   return login_db_ && login_db_->DeleteAndRecreateDatabaseFile();
 }
 
-DatabaseCleanupResult LoginDatabaseAsyncHelper::DeleteUndecryptableLogins() {
+DatabaseCleanupResult
+LoginDatabaseAsyncHelper::DeleteUndecryptableCredentials() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!login_db_)
     return DatabaseCleanupResult::kDatabaseUnavailable;
   return login_db_->DeleteUndecryptableLogins();
+}
+
+PasswordStoreChangeList LoginDatabaseAsyncHelper::AddLoginImpl(
+    const PasswordForm& form,
+    AddCredentialError* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!login_db_) {
+    if (error) {
+      *error = AddCredentialError::kDbNotAvailable;
+    }
+    return PasswordStoreChangeList();
+  }
+  return login_db_->AddLogin(form, error);
+}
+
+PasswordStoreChangeList LoginDatabaseAsyncHelper::UpdateLoginImpl(
+    const PasswordForm& form,
+    UpdateCredentialError* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!login_db_) {
+    if (error) {
+      *error = UpdateCredentialError::kDbNotAvailable;
+    }
+    return PasswordStoreChangeList();
+  }
+  return login_db_->UpdateLogin(form, error);
 }
 
 // Reports password store metrics that aren't reported by the

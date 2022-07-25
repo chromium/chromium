@@ -447,10 +447,6 @@ struct PasswordForm {
   // Returns true when |password_value| or |new_password_value| are non-empty.
   bool HasNonEmptyPasswordValue() const;
 
-  // Utility method to check whether the form represents an insecure credential
-  // of insecure type `type`.
-  bool IsInsecureCredential(InsecureType insecure_type) const;
-
   PasswordForm();
   PasswordForm(const PasswordForm& other);
   PasswordForm(PasswordForm&& other);
