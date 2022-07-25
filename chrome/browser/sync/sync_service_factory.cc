@@ -281,7 +281,7 @@ bool SyncServiceFactory::IsSyncAllowed(Profile* profile) {
   // infer the accessible state by looking at prefs/command line flags.
   syncer::SyncPrefs prefs(profile->GetPrefs());
   return syncer::IsSyncAllowedByFlag() &&
-         (!prefs.IsManaged() || prefs.IsLocalSyncEnabled());
+         (!prefs.IsSyncClientDisabledByPolicy() || prefs.IsLocalSyncEnabled());
 }
 
 // static

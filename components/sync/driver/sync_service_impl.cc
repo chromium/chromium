@@ -591,7 +591,7 @@ SyncService::DisableReasonSet SyncServiceImpl::GetDisableReasons() const {
 
   // If local sync is enabled, most disable reasons don't apply.
   if (!IsLocalSyncEnabled()) {
-    if (sync_prefs_.IsManaged() || sync_disabled_by_admin_) {
+    if (sync_prefs_.IsSyncClientDisabledByPolicy() || sync_disabled_by_admin_) {
       result.Put(DISABLE_REASON_ENTERPRISE_POLICY);
     }
     if (!IsSignedIn()) {

@@ -68,16 +68,16 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
   EXPECT_CALL(mock_sync_pref_observer, OnSyncRequestedPrefChange(true));
   EXPECT_CALL(mock_sync_pref_observer, OnSyncRequestedPrefChange(false));
 
-  ASSERT_FALSE(sync_prefs_->IsManaged());
+  ASSERT_FALSE(sync_prefs_->IsSyncClientDisabledByPolicy());
   ASSERT_FALSE(sync_prefs_->IsFirstSetupComplete());
   ASSERT_FALSE(sync_prefs_->IsSyncRequested());
 
   sync_prefs_->AddSyncPrefObserver(&mock_sync_pref_observer);
 
-  sync_prefs_->SetManagedForTest(true);
-  EXPECT_TRUE(sync_prefs_->IsManaged());
-  sync_prefs_->SetManagedForTest(false);
-  EXPECT_FALSE(sync_prefs_->IsManaged());
+  pref_service_.SetBoolean(prefs::kSyncManaged, true);
+  EXPECT_TRUE(sync_prefs_->IsSyncClientDisabledByPolicy());
+  pref_service_.SetBoolean(prefs::kSyncManaged, false);
+  EXPECT_FALSE(sync_prefs_->IsSyncClientDisabledByPolicy());
 
   sync_prefs_->SetFirstSetupComplete();
   EXPECT_TRUE(sync_prefs_->IsFirstSetupComplete());

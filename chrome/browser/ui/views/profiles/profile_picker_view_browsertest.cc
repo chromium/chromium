@@ -84,6 +84,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -1391,8 +1392,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   Profile* profile_being_created = StartDiceSignIn();
 
   // Set the device as managed in prefs.
-  syncer::SyncPrefs prefs(profile_being_created->GetPrefs());
-  prefs.SetManagedForTest(true);
+  profile_being_created->GetPrefs()->SetBoolean(syncer::prefs::kSyncManaged,
+                                                true);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_being_created);
 

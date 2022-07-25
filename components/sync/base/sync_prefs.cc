@@ -263,7 +263,7 @@ void SyncPrefs::SetAppsSyncEnabledByOs(bool apps_sync_enabled) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-bool SyncPrefs::IsManaged() const {
+bool SyncPrefs::IsSyncClientDisabledByPolicy() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pref_service_->GetBoolean(prefs::kSyncManaged);
 }
@@ -331,11 +331,6 @@ void SyncPrefs::OnSyncRequestedPrefChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (SyncPrefObserver& observer : sync_pref_observers_)
     observer.OnSyncRequestedPrefChange(*pref_sync_requested_);
-}
-
-void SyncPrefs::SetManagedForTest(bool is_managed) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetBoolean(prefs::kSyncManaged, is_managed);
 }
 
 // static
