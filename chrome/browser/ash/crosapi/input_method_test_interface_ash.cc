@@ -56,6 +56,17 @@ void InputMethodTestInterfaceAsh::CommitText(const std::string& text,
   std::move(callback).Run();
 }
 
+void InputMethodTestInterfaceAsh::SetComposition(
+    const std::string& text,
+    uint32_t index,
+    SetCompositionCallback callback) {
+  ui::CompositionText composition;
+  composition.text = base::UTF8ToUTF16(text);
+
+  input_method_->UpdateCompositionText(composition, index, /*visible=*/true);
+  std::move(callback).Run();
+}
+
 void InputMethodTestInterfaceAsh::OnTextInputStateChanged(
     const ui::TextInputClient* client) {
   // Focus is actually propagated via OnTextInputStateChanged, not

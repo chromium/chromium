@@ -16,6 +16,9 @@
 
 namespace {
 
+using ::crosapi::mojom::InputMethodTestInterface;
+using ::crosapi::mojom::InputMethodTestInterfaceAsyncWaiter;
+
 bool IsInputMethodTestInterfaceAvailable() {
   return chromeos::LacrosService::Get()
              ->IsAvailable<crosapi::mojom::TestController>() &&
@@ -26,12 +29,24 @@ bool IsInputMethodTestInterfaceAvailable() {
                      kBindInputMethodTestInterfaceMinVersion);
 }
 
+int GetInputMethodTestInterfaceVersion() {
+  return chromeos::LacrosService::Get()->GetInterfaceVersion(
+      crosapi::mojom::InputMethodTestInterface::Uuid_);
+}
+
 // Binds an InputMethodTestInterface to Ash-Chrome, which allows these tests to
 // execute IME operations from Ash-Chrome.
-mojo::Remote<crosapi::mojom::InputMethodTestInterface>
-BindInputMethodTestInterface() {
-  mojo::Remote<crosapi::mojom::InputMethodTestInterface> remote;
-  if (!IsInputMethodTestInterfaceAvailable()) {
+// `required_versions` are the `MethodMinVersion` values of all the test methods
+// from InputMethodTestInterface that will be used by the test.
+// Returns an unbound remote if the current version of InputMethodTestInterface
+// does not support the required test methods.
+mojo::Remote<InputMethodTestInterface> BindInputMethodTestInterface(
+    std::initializer_list<InputMethodTestInterface::MethodMinVersions>
+        required_versions) {
+  mojo::Remote<InputMethodTestInterface> remote;
+  if (!IsInputMethodTestInterfaceAvailable() ||
+      GetInputMethodTestInterfaceVersion() <
+          static_cast<int>(std::max(required_versions))) {
     return remote;
   }
 
@@ -75,24 +90,34 @@ content::WebContents* GetActiveWebContents(Browser* browser) {
 }
 
 // Waits for the contents of an input field with ID `element_id` to become
-// `expected_text`. Returns true if the contents become `expected_text`
-// within 3 seconds. Returns false otherwise.
+// `expected_text`, with the selection as `expected_selection`.
+// For checking the text, this uses the DOM property `value`.
+// For checking the selection, this uses the DOM properties
+// `selectionStart` and `selectionEnd`.
+// Returns true if the conditions are met within 3 seconds.
+// Returns false otherwise.
 bool WaitUntilInputFieldHasText(content::WebContents* web_content,
                                 base::StringPiece element_id,
-                                base::StringPiece expected_text) {
+                                base::StringPiece expected_text,
+                                const gfx::Range& expected_selection) {
   const std::string script = content::JsReplace(
       R"(new Promise((resolve) => {
         let retriesLeft = 10;
         elem = document.getElementById($1);
         function checkValue() {
-          if (elem.value == $2) return resolve(true);
+          if (elem.value == $2 &&
+              elem.selectionStart == $3 &&
+              elem.selectionEnd == $4) {
+            return resolve(true);
+          }
           if (retriesLeft == 0) return resolve(false);
           retriesLeft--;
           setTimeout(checkValue, 300);
         }
         checkValue();
       }))",
-      element_id, expected_text);
+      element_id, expected_text, static_cast<int>(expected_selection.start()),
+      static_cast<int>(expected_selection.end()));
   return ExecJs(web_content, script);
 }
 
@@ -100,12 +125,15 @@ using InputMethodLacrosBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                        FocusingInputFieldSendsFocus) {
-  if (!IsInputMethodTestInterfaceAvailable())
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          {InputMethodTestInterface::MethodMinVersions::
+               kWaitForFocusMinVersion});
+  if (!input_method.is_bound()) {
     GTEST_SKIP() << "Unsupported ash version";
+  }
   RenderAutofocusedInputFieldInLacros(browser());
-  mojo::Remote<crosapi::mojom::InputMethodTestInterface> input_method =
-      BindInputMethodTestInterface();
-  crosapi::mojom::InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
       input_method.get());
 
   input_method_async_waiter.WaitForFocus();
@@ -113,19 +141,65 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                        CommitTextInsertsTextInInputField) {
-  if (!IsInputMethodTestInterfaceAvailable())
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::kCommitTextMinVersion});
+  if (!input_method.is_bound()) {
     GTEST_SKIP() << "Unsupported ash version";
+  }
   const std::string id = RenderAutofocusedInputFieldInLacros(browser());
-  mojo::Remote<crosapi::mojom::InputMethodTestInterface> input_method =
-      BindInputMethodTestInterface();
-  crosapi::mojom::InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
       input_method.get());
   input_method_async_waiter.WaitForFocus();
 
   input_method_async_waiter.CommitText("hello");
 
-  EXPECT_TRUE(
-      WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id, "hello"));
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "hello", gfx::Range(5)));
+}
+
+IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+                       SetCompositionInsertsCompositionInInputField) {
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kSetCompositionMinVersion});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+
+  input_method_async_waiter.SetComposition("hello", 3);
+
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "hello", gfx::Range(3)));
+}
+
+IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+                       SetCompositionReplacesCompositionInInputField) {
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kSetCompositionMinVersion});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+  input_method_async_waiter.SetComposition("hello", 4);
+
+  input_method_async_waiter.SetComposition("abc", 2);
+
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "abc", gfx::Range(2)));
 }
 
 }  // namespace

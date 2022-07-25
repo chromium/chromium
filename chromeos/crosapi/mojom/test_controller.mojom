@@ -115,8 +115,8 @@ interface ShillClientTestInterface {
 
 // This interface is implemented by Ash-Chrome.
 // It enables tests in Lacros-Chrome to send commands as an input method.
-// Next version: 1
-// Next method id: 2
+// Next version: 2
+// Next method id: 3
 [Stable, Uuid="c214f4f5-c583-44d1-9547-bb2456d9e70b"]
 interface InputMethodTestInterface {
   // Calls the callback when the input method has focused on some input field.
@@ -125,6 +125,9 @@ interface InputMethodTestInterface {
   // Calls ui::InputMethodAsh::CommitText with
   // InsertTextCursorBehavior::kMoveCursorAfterText.
   CommitText@1(string text) => ();
+
+  // Calls ui::InputMethodAsh::UpdateComposition.
+  [MinVersion=1] SetComposition@2(string text, uint32 index) => ();
 };
 
 // This interface is implemented by Ash-Chrome.

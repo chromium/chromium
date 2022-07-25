@@ -28,6 +28,9 @@ class InputMethodTestInterfaceAsh : public mojom::InputMethodTestInterface,
   void WaitForFocus(WaitForFocusCallback callback) override;
   void CommitText(const std::string& text,
                   CommitTextCallback callback) override;
+  void SetComposition(const std::string& text,
+                      uint32_t index,
+                      SetCompositionCallback callback) override;
 
   // ui::InputMethodObserver:
   void OnFocus() override {}
