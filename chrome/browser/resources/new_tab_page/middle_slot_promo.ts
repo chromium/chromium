@@ -5,21 +5,24 @@
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Command} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getTemplate} from './middle_slot_promo.html.js';
 
+import {getTemplate} from './middle_slot_promo.html.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {WindowProxy} from './window_proxy.js';
 
 /**
  * If a promo exists with content and can be shown, an element containing
- * the rendered promo is returned with an id #container. Otherwise, null is
+ * the rendered promo is returned with an id #promoContainer. Otherwise, null is
  * returned.
  */
-export async function renderPromo(): Promise<Element|null> {
+export async function renderPromo():
+    Promise<{container: Element, id: string | undefined}|null> {
   const browserHandler = NewTabPageProxy.getInstance().handler;
   const promoBrowserCommandHandler = BrowserCommandProxy.getInstance().handler;
   const {promo} = await browserHandler.getPromo();
@@ -68,8 +71,8 @@ export async function renderPromo(): Promise<Element|null> {
   }
 
   let hasContent = false;
-  const container = document.createElement('div');
-  container.id = 'container';
+  const promoContainer = document.createElement('div');
+  promoContainer.id = 'promoContainer';
   promo.middleSlotParts.forEach(({image, link, text}) => {
     let el;
     if (image) {
@@ -97,7 +100,7 @@ export async function renderPromo(): Promise<Element|null> {
     }
     if (el) {
       hasContent = true;
-      container.appendChild(el);
+      promoContainer.appendChild(el);
     }
   });
 
@@ -109,7 +112,7 @@ export async function renderPromo(): Promise<Element|null> {
   if (hasContent && canShow) {
     browserHandler.onPromoRendered(
         WindowProxy.getInstance().now(), promo.logUrl || null);
-    return container;
+    return {container: promoContainer, id: promo.id};
   }
   return null;
 }
@@ -126,15 +129,49 @@ export class MiddleSlotPromoElement extends PolymerElement {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      middleSlotPromoId_: {
+        type: String,
+        reflectToAttribute: true,
+      },
+    };
+  }
+
+  private middleSlotPromoId_: string;
+
   override ready() {
     super.ready();
-    renderPromo().then(container => {
-      if (container) {
-        this.shadowRoot!.appendChild(container);
+
+    renderPromo().then(promo => {
+      if (promo) {
+        const promoId = promo.id;
+        if (loadTimeData.getBoolean('middleSlotPromoDismissalEnabled') &&
+            promoId) {
+          this.middleSlotPromoId_ = promoId;
+        }
+
+        const promoAndDismissContainer =
+            this.shadowRoot!.getElementById('promoAndDismissContainer');
+        assert(promoAndDismissContainer);
+        const promoContainer = promo.container;
+        if (promoContainer) {
+          promoAndDismissContainer.prepend(promoContainer);
+          promoAndDismissContainer.hidden = false;
+        }
       }
       this.dispatchEvent(new Event(
           'ntp-middle-slot-promo-loaded', {bubbles: true, composed: true}));
     });
+  }
+
+  private onDismissPromoButtonClick_() {
+    const promoAndDismissContainer =
+        this.shadowRoot!.getElementById('promoAndDismissContainer');
+    assert(promoAndDismissContainer);
+    promoAndDismissContainer.hidden = true;
+    NewTabPageProxy.getInstance().handler.blocklistPromo(
+        this.middleSlotPromoId_);
   }
 }
 

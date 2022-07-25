@@ -43,7 +43,8 @@ const char kNewTabPromosApiPath[] = "/async/newtab_promos";
 const char kXSSIResponsePreamble[] = ")]}'";
 
 bool CanBlockPromos() {
-  return base::FeatureList::IsEnabled(ntp_features::kDismissPromos);
+  return base::FeatureList::IsEnabled(
+      ntp_features::kNtpMiddleSlotPromoDismissal);
 }
 
 GURL GetGoogleBaseUrl() {
@@ -255,6 +256,7 @@ void PromoService::BlocklistPromo(const std::string& promo_id) {
 
   DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kNtpPromoBlocklist);
   double now = base::Time::Now().ToDeltaSinceWindowsEpoch().InSecondsF();
+  // TODO(crbug.com/1003508): verify that promo_id belongs to valid promo.
   update->SetDoubleKey(promo_id, now);
 
   if (promo_data_ && promo_data_->promo_id == promo_id) {

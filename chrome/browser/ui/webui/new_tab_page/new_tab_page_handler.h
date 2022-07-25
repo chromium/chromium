@@ -98,6 +98,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void ChooseLocalCustomBackground(
       ChooseLocalCustomBackgroundCallback callback) override;
   void GetPromo(GetPromoCallback callback) override;
+  void BlocklistPromo(const std::string& promo_id) override;
   void OnDismissModule(const std::string& module_id) override;
   void OnRestoreModule(const std::string& module_id) override;
   void SetModulesVisible(bool visible) override;

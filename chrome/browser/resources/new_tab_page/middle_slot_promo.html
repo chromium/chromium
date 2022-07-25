@@ -1,11 +1,11 @@
-<style>
+<style include="cr-hidden-style cr-icons">
   :host {
     font-size: 12px;
     max-width: 537px;
     white-space: pre;
   }
 
-  #container {
+  #promoAndDismissContainer {
     align-items: center;
     background-color: var(--ntp-background-override-color);
     border: solid var(--ntp-border-color) 1px;
@@ -18,6 +18,15 @@
     justify-content: center;
     padding-inline-end: 8px;
     padding-inline-start: 8px;
+  }
+
+  :host([middle-slot-promo-id_]) #promoAndDismissContainer {
+    padding-inline-end: 12px;
+  }
+
+  #promoContainer {
+    align-items: center;
+    display: flex;
   }
 
   a {
@@ -53,9 +62,36 @@
     }
   }
 
-  #container > :last-child {
+  #dismissPromoButton {
+    --cr-icon-button-fill-color: transparent;
+    background: url(chrome://resources/images/icon_clear.svg)
+      no-repeat center center;
+    background-size: 10px;
+    height: 24px;
+    margin-inline-start: 4px;
+    width: 24px;
+  }
+
+  #dismissPromoButton:hover {
+    background-color: rgba(var(--google-grey-900-rgb), .1);
+    border-color: var(--ntp-background-override-color);
+    border-radius: 24px;
+    cursor: pointer;
+  }
+
+  #promoAndDismissContainer > :last-child {
     overflow: hidden;
     text-overflow: ellipsis;
   }
 </style>
-<!-- Promo parts are added by JS. -->
+<!-- Visibility is toggled in TS -->
+<div id="promoAndDismissContainer" hidden>
+  <!-- Promo parts are added by TS. -->
+  <template is="dom-if" if="[[middleSlotPromoId_]]">
+    <cr-icon-button id="dismissPromoButton"
+        class="icon-clear"
+        aria-label="$i18n{close}"
+        on-click="onDismissPromoButtonClick_">
+    </cr-icon-button>
+  </template>
+</div>

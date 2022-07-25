@@ -129,6 +129,7 @@ TEST_F(PromoServiceTest, GoodPromoResponse) {
   PromoData promo;
   promo.promo_html = "<style></style><div><script></script></div>";
   promo.promo_log_url = GURL("https://www.google.com/log_url?id=42");
+  promo.promo_id = "42";
 
   EXPECT_EQ(service()->promo_data(), promo);
   EXPECT_EQ(service()->promo_status(), PromoService::Status::OK_WITH_PROMO);
@@ -136,7 +137,7 @@ TEST_F(PromoServiceTest, GoodPromoResponse) {
 
 TEST_F(PromoServiceTest, GoodPromoResponseCanDismiss) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ntp_features::kDismissPromos);
+  feature_list.InitAndEnableFeature(ntp_features::kNtpMiddleSlotPromoDismissal);
 
   std::string response_string =
       "{\"update\":{\"promos\":{\"middle\":\"<style></style><div><script></"
@@ -159,7 +160,7 @@ TEST_F(PromoServiceTest, GoodPromoResponseCanDismiss) {
 
 TEST_F(PromoServiceTest, GoodPromoResponseNoIdField) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ntp_features::kDismissPromos);
+  feature_list.InitAndEnableFeature(ntp_features::kNtpMiddleSlotPromoDismissal);
 
   std::string response_string =
       "{\"update\":{\"promos\":{\"middle\":\"<style></style><div><script></"
@@ -182,7 +183,7 @@ TEST_F(PromoServiceTest, GoodPromoResponseNoIdField) {
 
 TEST_F(PromoServiceTest, GoodPromoResponseNoIdFieldNorLogUrl) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ntp_features::kDismissPromos);
+  feature_list.InitAndEnableFeature(ntp_features::kNtpMiddleSlotPromoDismissal);
 
   std::string response_string =
       "{\"update\":{\"promos\":{\"middle\":\"<style></style><div><script></"
@@ -203,7 +204,7 @@ TEST_F(PromoServiceTest, GoodPromoResponseNoIdFieldNorLogUrl) {
 
 TEST_F(PromoServiceTest, GoodPromoWithBlockedID) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ntp_features::kDismissPromos);
+  feature_list.InitAndEnableFeature(ntp_features::kNtpMiddleSlotPromoDismissal);
 
   {
     DictionaryPrefUpdate update(prefs(), prefs::kNtpPromoBlocklist);
@@ -227,7 +228,7 @@ TEST_F(PromoServiceTest, GoodPromoWithBlockedID) {
 
 TEST_F(PromoServiceTest, BlocklistPromo) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ntp_features::kDismissPromos);
+  feature_list.InitAndEnableFeature(ntp_features::kNtpMiddleSlotPromoDismissal);
 
   std::string response_string =
       "{\"update\":{\"promos\":{\"middle\":\"<style></style><div><script></"
@@ -261,7 +262,7 @@ TEST_F(PromoServiceTest, BlocklistPromo) {
 
 TEST_F(PromoServiceTest, BlocklistExpiration) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ntp_features::kDismissPromos);
+  feature_list.InitAndEnableFeature(ntp_features::kNtpMiddleSlotPromoDismissal);
 
   {
     DictionaryPrefUpdate update(prefs(), prefs::kNtpPromoBlocklist);
@@ -295,7 +296,7 @@ TEST_F(PromoServiceTest, BlocklistExpiration) {
 
 TEST_F(PromoServiceTest, BlocklistWrongExpiryType) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ntp_features::kDismissPromos);
+  feature_list.InitAndEnableFeature(ntp_features::kNtpMiddleSlotPromoDismissal);
 
   {
     DictionaryPrefUpdate update(prefs(), prefs::kNtpPromoBlocklist);

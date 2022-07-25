@@ -249,6 +249,8 @@ interface PageHandler {
   ChooseLocalCustomBackground() => (bool success);
   // Get the middle slot promo if it exists.
   GetPromo() => (Promo? promo);
+  // Blocklists a promo.
+  BlocklistPromo(string promo_id);
   // Called when a module the given id is dismissed.
   OnDismissModule(string module_id);
   // Called when a module the given id is restored.

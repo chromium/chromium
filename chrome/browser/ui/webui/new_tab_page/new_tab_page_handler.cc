@@ -648,6 +648,10 @@ void NewTabPageHandler::GetPromo(GetPromoCallback callback) {
   promo_service_->Refresh();
 }
 
+void NewTabPageHandler::BlocklistPromo(const std::string& promo_id) {
+  promo_service_->BlocklistPromo(promo_id);
+}
+
 void NewTabPageHandler::OnDismissModule(const std::string& module_id) {
   const std::string histogram_prefix(kModuleDismissedHistogram);
   base::UmaHistogramExactLinear(histogram_prefix, 1, 1);
