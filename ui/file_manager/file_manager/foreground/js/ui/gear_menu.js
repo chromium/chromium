@@ -8,6 +8,11 @@ import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {str, strf, util} from '../../../common/js/util.js';
 
+/**
+ * @typedef {{totalSize: number, usedSize: number, warningMessage: string}}
+ */
+export let SpaceInfo;
+
 export class GearMenu {
   /**
    * @param {!HTMLElement} element
@@ -63,12 +68,20 @@ export class GearMenu {
      * @const
      * @private
      */
+    this.volumeSpaceWarning_ =
+        queryRequiredElement('#volume-space-info-warning', element);
+
+    /**
+     * @type {!HTMLElement}
+     * @const
+     * @private
+     */
     this.providersMenuItem_ =
         queryRequiredElement('#gear-menu-providers', element);
 
     /**
-     * Volume space info.
-     * @type {Promise<chrome.fileManagerPrivate.MountPointSizeStats|undefined>}
+     * Promise to be resolved with volume space info.
+     * @type {Promise<SpaceInfo|undefined>}
      * @private
      */
     this.spaceInfoPromise_ = null;
@@ -86,21 +99,20 @@ export class GearMenu {
   }
 
   /**
-   * @param {Promise<chrome.fileManagerPrivate.MountPointSizeStats|undefined>}
-   * spaceInfoPromise Promise to be fulfilled with space info.
-   * @param {boolean} showLoadingCaption Whether show loading caption or not.
+   * @param {Promise<SpaceInfo|undefined>} spaceInfoPromise Promise to be
+   *     fulfilled with space info.
+   * @param {boolean} showLoadingCaption Whether to show the loading caption or
+   *     not.
    */
   setSpaceInfo(spaceInfoPromise, showLoadingCaption) {
     this.spaceInfoPromise_ = spaceInfoPromise;
 
     if (!spaceInfoPromise || loadTimeData.getBoolean('HIDE_SPACE_INFO')) {
-      this.volumeSpaceInfo.hidden = true;
-      this.volumeSpaceInfoSeparator_.hidden = true;
+      this.hideVolumeSpaceInfo_();
       return;
     }
 
-    this.volumeSpaceInfo.hidden = false;
-    this.volumeSpaceInfoSeparator_.hidden = false;
+    this.showVolumeSpaceInfo_();
     this.volumeSpaceInnerBar_.setAttribute('pending', '');
     if (showLoadingCaption) {
       this.volumeSpaceInfoLabel_.innerText = str('WAITING_FOR_SPACE_INFO');
@@ -112,26 +124,51 @@ export class GearMenu {
           if (this.spaceInfoPromise_ != spaceInfoPromise) {
             return;
           }
+
           this.volumeSpaceInnerBar_.removeAttribute('pending');
           this.volumeSpaceOuterBar_.hidden = true;
-          if (spaceInfo) {
-            const sizeStr = util.bytesToString(spaceInfo.remainingSize);
-            this.volumeSpaceInfoLabel_.textContent =
-                strf('SPACE_AVAILABLE', sizeStr);
+          this.volumeSpaceWarning_.hidden = true;
 
-            if (spaceInfo.totalSize > 0) {
-              const usedSpace = spaceInfo.totalSize - spaceInfo.remainingSize;
-              this.volumeSpaceInnerBar_.style.width =
-                  (100 * usedSpace / spaceInfo.totalSize) + '%';
-
-              this.volumeSpaceOuterBar_.hidden = false;
-            }
-          } else {
+          if (!spaceInfo) {
             this.volumeSpaceInfoLabel_.textContent = str('FAILED_SPACE_INFO');
+            return;
+          }
+
+          if (spaceInfo.totalSize >= 0) {
+            const usedSpace = spaceInfo.usedSize;
+            this.volumeSpaceInnerBar_.style.width =
+                Math.min(100, 100 * usedSpace / spaceInfo.totalSize) + '%';
+
+            this.volumeSpaceOuterBar_.hidden = false;
+
+            this.volumeSpaceInfoLabel_.textContent = strf(
+                'SPACE_AVAILABLE',
+                util.bytesToString(
+                    Math.max(0, spaceInfo.totalSize - spaceInfo.usedSize)));
+          } else {
+            // User has unlimited individual storage.
+            this.volumeSpaceInfoLabel_.textContent =
+                strf('SPACE_USED', util.bytesToString(spaceInfo.usedSize));
+          }
+
+          if (spaceInfo.warningMessage) {
+            this.volumeSpaceWarning_.hidden = false;
+            this.volumeSpaceWarning_.textContent =
+                '*' + spaceInfo.warningMessage;
           }
         },
         error => {
           console.warn('Failed get space info', error);
         });
+  }
+
+  hideVolumeSpaceInfo_() {
+    this.volumeSpaceInfo.hidden = true;
+    this.volumeSpaceInfoSeparator_.hidden = true;
+  }
+
+  showVolumeSpaceInfo_() {
+    this.volumeSpaceInfo.hidden = false;
+    this.volumeSpaceInfoSeparator_.hidden = false;
   }
 }
