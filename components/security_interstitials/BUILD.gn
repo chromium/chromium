@@ -7,8 +7,5 @@ import("//third_party/closure_compiler/compile_js.gni")
 assert(enable_js_type_check)
 
 group("closure_compile") {
-  deps = [
-    "content/resources:closure_compile",
-    "core/common/resources:closure_compile",
-  ]
+  deps = [ "core/common/resources:closure_compile" ]
 }
