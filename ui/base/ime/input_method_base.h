@@ -79,10 +79,6 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
   virtual void OnDidChangeFocusedClient(TextInputClient* focused_before,
                                         TextInputClient* focused) {}
 
-  // Sends a fake key event for IME composing without physical key events.
-  // Returns true if the faked key event is stopped propagation.
-  bool SendFakeProcessKeyEvent(bool pressed) const;
-
   // Returns true if |client| is currently focused.
   bool IsTextInputClientFocused(const TextInputClient* client);
 
@@ -105,9 +101,6 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase
   // Convenience method to notify all observers of CaretBounds changes on
   // |client| which is the text input client with focus.
   void NotifyTextInputCaretBoundsChanged(const TextInputClient* client);
-
-  // Gets the bounds of the composition text or cursor in |client|.
-  std::vector<gfx::Rect> GetCompositionBounds(const TextInputClient* client);
 
   ImeKeyEventDispatcher* ime_key_event_dispatcher() {
     return ime_key_event_dispatcher_;

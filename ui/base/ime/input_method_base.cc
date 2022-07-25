@@ -171,28 +171,4 @@ void InputMethodBase::SetFocusedTextInputClientInternal(
     text_input_client_->EnsureCaretNotInRect(keyboard_bounds_);
 }
 
-std::vector<gfx::Rect> InputMethodBase::GetCompositionBounds(
-    const TextInputClient* client) {
-  std::vector<gfx::Rect> bounds;
-  if (client->HasCompositionText()) {
-    uint32_t i = 0;
-    gfx::Rect rect;
-    while (client->GetCompositionCharacterBounds(i++, &rect))
-      bounds.push_back(rect);
-  } else {
-    // For case of no composition at present, use caret bounds which is required
-    // by the IME extension for certain features (e.g. physical keyboard
-    // auto-correct).
-    bounds.push_back(client->GetCaretBounds());
-  }
-  return bounds;
-}
-
-bool InputMethodBase::SendFakeProcessKeyEvent(bool pressed) const {
-  KeyEvent evt(pressed ? ET_KEY_PRESSED : ET_KEY_RELEASED,
-               pressed ? VKEY_PROCESSKEY : VKEY_UNKNOWN, EF_IME_FABRICATED_KEY);
-  std::ignore = DispatchKeyEventPostIME(&evt);
-  return evt.stopped_propagation();
-}
-
 }  // namespace ui
