@@ -479,7 +479,8 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
 
   CheckActiveDirectoryCredentialsShown();
   CheckConfigurationSelectionVisible(false);
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(
+      LoginDisplayHost::default_host()->GetOobeWebContents());
   SetupActiveDirectoryJSNotifications();
   SetExpectedJoinRequest("machine_name", "" /* machine_domain */,
                          authpolicy::KerberosEncryptionTypes::ENC_TYPES_ALL,
@@ -507,7 +508,8 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
 
   UpstartClient::Get()->StartAuthPolicyService();
 
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(
+      LoginDisplayHost::default_host()->GetOobeWebContents());
   SetupActiveDirectoryJSNotifications();
   SetExpectedJoinRequest(
       "machine_name", kAdMachineDomain,
@@ -540,7 +542,8 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
 
   UpstartClient::Get()->StartAuthPolicyService();
 
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(
+      LoginDisplayHost::default_host()->GetOobeWebContents());
   // Checking error in case of empty password. Whether password is not empty
   // being checked in the UI. Machine name length is checked after that in the
   // authpolicyd.
@@ -585,7 +588,8 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
 
   UpstartClient::Get()->StartAuthPolicyService();
 
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(
+      LoginDisplayHost::default_host()->GetOobeWebContents());
   SetupActiveDirectoryJSNotifications();
   // Legacy type triggers error card.
   SubmitActiveDirectoryCredentials("machine_name", "" /* machine_dn */,
@@ -610,7 +614,8 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
   UpstartClient::Get()->StartAuthPolicyService();
 
   ExecutePendingJavaScript();
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(
+      LoginDisplayHost::default_host()->GetOobeWebContents());
   SetupActiveDirectoryJSNotifications();
 
   // Unlock password step should we shown.
