@@ -210,6 +210,9 @@ class EnterpriseConnectorsPolicyHandlerLocalTest
     if (policy_pref() != kOnFileAttachedPref ||
         policy_pref() != kOnFileDownloadedPref ||
         policy_pref() != kOnBulkDataEntryPref ||
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        policy_pref() != kOnFileTransferPref ||
+#endif
         policy_pref() != kOnPrintPref) {
       return false;
     }
@@ -253,6 +256,9 @@ INSTANTIATE_TEST_SUITE_P(
                                      kOnFileDownloadedPref,
                                      kOnBulkDataEntryPref,
                                      kOnPrintPref,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                                     kOnFileTransferPref,
+#endif
                                      kOnSecurityEventPref,
                                      kSendDownloadToCloudPref),
                      testing::Bool()));

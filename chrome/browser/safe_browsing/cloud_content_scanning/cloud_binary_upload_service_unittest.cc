@@ -621,13 +621,17 @@ TEST_F(CloudBinaryUploadServiceTest, IsAuthorizedMultipleDMTokens) {
   service_->SetAuthForTesting("valid_dm_token", true);
   service_->SetAuthForTesting("invalid_dm_token", false);
 
-  for (auto connector :
-       {enterprise_connectors::AnalysisConnector::
-            ANALYSIS_CONNECTOR_UNSPECIFIED,
-        enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
-        enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
-        enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
-        enterprise_connectors::AnalysisConnector::PRINT}) {
+  for (auto connector : {
+         enterprise_connectors::AnalysisConnector::
+             ANALYSIS_CONNECTOR_UNSPECIFIED,
+             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
+             enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
+             enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
+             enterprise_connectors::AnalysisConnector::PRINT,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+             enterprise_connectors::AnalysisConnector::FILE_TRANSFER,
+#endif
+       }) {
     service_->IsAuthorized(
         GURL(), /*per_profile_request*/ false,
         base::BindOnce([](bool authorized) { EXPECT_TRUE(authorized); }),
@@ -812,6 +816,22 @@ TEST_F(CloudBinaryUploadServiceTest, ConnectorUrlParams) {
                    "scan?device_token=fake_token5"),
               request.GetUrlWithParams());
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  {
+    MockRequest request(
+        base::DoNothing(),
+        CloudAnalysisSettingsWithUrl(
+            "https://safebrowsing.google.com/safebrowsing/uploads/scan"));
+    request.set_device_token("fake_token6");
+    request.set_analysis_connector(enterprise_connectors::FILE_TRANSFER);
+    request.add_tag("malware");
+
+    ASSERT_EQ(GURL("https://safebrowsing.google.com/safebrowsing/uploads/"
+                   "scan?device_token=fake_token6&connector=OnFileTransfer&"
+                   "tag=malware"),
+              request.GetUrlWithParams());
+  }
+#endif
 }
 
 TEST_F(CloudBinaryUploadServiceTest, UrlOverride) {

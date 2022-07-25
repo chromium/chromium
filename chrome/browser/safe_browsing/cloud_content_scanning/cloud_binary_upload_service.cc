@@ -726,13 +726,17 @@ void CloudBinaryUploadService::Shutdown() {
 
 void CloudBinaryUploadService::SetAuthForTesting(const std::string& dm_token,
                                                  bool authorized) {
-  for (enterprise_connectors::AnalysisConnector connector :
-       {enterprise_connectors::AnalysisConnector::
-            ANALYSIS_CONNECTOR_UNSPECIFIED,
-        enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
-        enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
-        enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
-        enterprise_connectors::AnalysisConnector::PRINT}) {
+  for (enterprise_connectors::AnalysisConnector connector : {
+         enterprise_connectors::AnalysisConnector::
+             ANALYSIS_CONNECTOR_UNSPECIFIED,
+             enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
+             enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
+             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
+             enterprise_connectors::AnalysisConnector::PRINT,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+             enterprise_connectors::AnalysisConnector::FILE_TRANSFER,
+#endif
+       }) {
     TokenAndConnector token_and_connector = {dm_token, connector};
     can_upload_enterprise_data_[token_and_connector] = authorized;
   }
