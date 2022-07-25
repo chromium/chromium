@@ -12,7 +12,7 @@ namespace content::features {
 
 // If enabled, then prefetch requests from speculation rules should use the code
 // in content/browser/preloading/prefetch/ instead of
-// chrome/browser/prefetch/prefetch_proxy/.
+// chrome/browser/preloadingprefetch/prefetch_proxy/.
 extern CONTENT_EXPORT const base::Feature kPrefetchUseContentRefactor;
 
 }  // namespace content::features

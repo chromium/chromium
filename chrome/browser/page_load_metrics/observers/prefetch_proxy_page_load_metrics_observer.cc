@@ -9,7 +9,7 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_url_loader_interceptor.h"
+#include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_url_loader_interceptor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"

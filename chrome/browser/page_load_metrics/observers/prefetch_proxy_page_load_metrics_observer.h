@@ -13,7 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
-#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.h"
+#include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "net/cookies/canonical_cookie.h"

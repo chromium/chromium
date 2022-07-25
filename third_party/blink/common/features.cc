@@ -437,7 +437,7 @@ const base::Feature kServiceWorkerUpdateDelay{
     "ServiceWorkerUpdateDelay", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable the use of Speculation Rules in access the private prefetch proxy
-// (chrome/browser/prefetch/prefetch_proxy/).
+// (chrome/browser/preloading/prefetch/prefetch_proxy/).
 // https://crbug.com/1190167
 const base::Feature kSpeculationRulesPrefetchProxy {
   "SpeculationRulesPrefetchProxy",

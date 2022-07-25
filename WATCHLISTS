@@ -1637,7 +1637,7 @@
       'filepath': '[pP]recache'
     },
     'prefetch_proxy': {
-      'filepath': 'chrome/browser/prefetch/prefetch_proxy',
+      'filepath': 'chrome/browser/preloading/prefetch/prefetch_proxy',
     },
     'prepopulated_engines': {
       'filepath': 'components/search_engines/prepopulated_engines.json',
