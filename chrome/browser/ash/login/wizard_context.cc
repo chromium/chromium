@@ -6,6 +6,7 @@
 
 #include "ash/components/login/auth/public/user_context.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ui/webui/chromeos/login/family_link_notice_screen_handler.h"
 
 namespace ash {
@@ -21,5 +22,10 @@ WizardContext::WizardContext()
     : screen_after_managed_tos(FamilyLinkNoticeView::kScreenId) {}
 
 WizardContext::~WizardContext() = default;
+
+bool IsRollbackFlow(const WizardContext& context) {
+  return context.configuration.FindBoolKey(configuration::kRestoreAfterRollback)
+      .value_or(false);
+}
 
 }  // namespace ash

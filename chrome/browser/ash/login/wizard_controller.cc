@@ -1558,19 +1558,11 @@ void WizardController::OnEnrollmentScreenExit(EnrollmentScreen::Result result) {
 void WizardController::OnEnrollmentDone() {
   PerformOOBECompletedActions();
 
-  // Fetch the rollback flag from `oobe_configuration_`.
-  bool enrollment_mode_rollback = false;
-  auto* restore_after_rollback_value =
-      wizard_context_->configuration.FindKeyOfType(
-          configuration::kRestoreAfterRollback, base::Value::Type::BOOLEAN);
-  if (restore_after_rollback_value)
-    enrollment_mode_rollback = restore_after_rollback_value->GetBool();
-
   // Restart to make the login page pick up the policy changes resulting from
   // enrollment recovery.  (Not pretty, but this codepath is rarely exercised.)
   if (prescribed_enrollment_config_.mode ==
           policy::EnrollmentConfig::MODE_RECOVERY ||
-      enrollment_mode_rollback) {
+      IsRollbackFlow(*wizard_context_)) {
     LOG(WARNING) << "Restart Chrome to pick up the policy changes";
     EnrollmentScreen* screen = EnrollmentScreen::Get(screen_manager());
     screen->OnBrowserRestart();
@@ -1908,15 +1900,6 @@ void WizardController::OnDeviceDisabledChecked(bool device_disabled) {
       configuration::kWizardAutoEnroll, base::Value::Type::BOOLEAN);
   if (start_enrollment_value)
     configuration_forced_enrollment = start_enrollment_value->GetBool();
-
-  // Fetch the rollback flag from `configuration`. It is not stored in the
-  // `prescribed_enrollment_config_`. To restore after rollback the enrollment
-  // screen needs to be started. (crbug.com/1093928)
-  auto* restore_after_rollback_value =
-      wizard_context_->configuration.FindKeyOfType(
-          configuration::kRestoreAfterRollback, base::Value::Type::BOOLEAN);
-  if (restore_after_rollback_value)
-    configuration_forced_enrollment |= restore_after_rollback_value->GetBool();
 
   if (device_disabled) {
     demo_setup_controller_.reset();

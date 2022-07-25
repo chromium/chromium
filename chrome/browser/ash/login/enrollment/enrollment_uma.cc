@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 
 namespace ash {
 namespace {
@@ -25,6 +26,10 @@ const char* const kMetricEnrollmentForcedManualFallback =
 const char* const kMetricEnrollmentForcedInitialManualFallback =
     "Enterprise.EnrollmentForcedInitialManualFallback";
 const char* const kMetricEnrollmentRecovery = "Enterprise.EnrollmentRecovery";
+const char* const kMetricEnrollmentRollbackAttestation =
+    "Enterprise.EnrollmentRollbackAttestation";
+const char* const kMetricEnrollmentRollbackManualFallback =
+    "Enterprise.EnrollmentRollbackManualFallback";
 
 }  // namespace
 
@@ -64,6 +69,12 @@ void EnrollmentUMA(policy::MetricEnrollment sample,
       break;
     case policy::EnrollmentConfig::MODE_RECOVERY:
       base::UmaHistogramSparse(kMetricEnrollmentRecovery, sample);
+      break;
+    case policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED:
+      base::UmaHistogramSparse(kMetricEnrollmentRollbackAttestation, sample);
+      break;
+    case policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK:
+      base::UmaHistogramSparse(kMetricEnrollmentRollbackManualFallback, sample);
       break;
     case policy::EnrollmentConfig::OBSOLETE_MODE_ENROLLED_ROLLBACK:
     case policy::EnrollmentConfig::MODE_OFFLINE_DEMO_DEPRECATED:

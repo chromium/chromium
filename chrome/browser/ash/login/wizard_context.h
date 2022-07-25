@@ -120,6 +120,9 @@ class WizardContext {
   absl::optional<bool> is_owner_flow;
 };
 
+// Returns |true| if this is an OOBE flow after enterprise enrollment.
+bool IsRollbackFlow(const WizardContext& context);
+
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_WIZARD_CONTEXT_H_

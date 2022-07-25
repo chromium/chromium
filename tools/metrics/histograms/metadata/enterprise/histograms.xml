@@ -1422,6 +1422,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.EnrollmentRollbackAttestation"
+    enum="EnterpriseEnrollmentType" expires_after="2023-07-14">
+  <owner>crisguerrero@google.com</owner>
+  <owner>mpolzer@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Events related to attestation based re-enrollment after enterprise rollback.
+
+    Events are recorded during enrollment after rollback and types are listed in
+    the MetricEnrollment enum.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnrollmentRollbackManualFallback"
+    enum="EnterpriseEnrollmentType" expires_after="2023-07-14">
+  <owner>crisguerrero@google.com</owner>
+  <owner>mpolzer@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Events related to manual re-enrollment after enterprise rollback. This is
+    used when attestation based enrollment fails.
+
+    Events are recorded during enrollment after rollback and types are listed in
+    the MetricEnrollment enum.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.EnrollmentTime.Cancel" units="ms"
     expires_after="2023-02-01">
   <owner>raleksandrov@google.com</owner>

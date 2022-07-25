@@ -19,8 +19,14 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/webui_login_view.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
+#include "chrome/browser/ui/webui/chromeos/login/tpm_error_screen_handler.h"
+#include "chromeos/dbus/tpm_manager/fake_tpm_manager_client.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/test/chromeos_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -40,11 +46,11 @@ using ::testing::Mock;
 
 class EnrollmentScreenTest : public OobeBaseTest {
  public:
-  EnrollmentScreenTest() = default;
-
   EnrollmentScreenTest(const EnrollmentScreenTest&) = delete;
   EnrollmentScreenTest& operator=(const EnrollmentScreenTest&) = delete;
 
+ protected:
+  EnrollmentScreenTest() = default;
   ~EnrollmentScreenTest() override = default;
 
   // OobeBaseTest:
@@ -52,8 +58,8 @@ class EnrollmentScreenTest : public OobeBaseTest {
     if (!OobeBaseTest::SetUpUserDataDirectory())
       return false;
 
-    // Make sure chrome paths are overridden before proceeding - this is usually
-    // done in chrome main, which has not happened yet.
+    // Make sure chrome paths are overridden before proceeding - this is
+    // usually done in chrome main, which has not happened yet.
     base::FilePath user_data_dir;
     EXPECT_TRUE(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
     ash::RegisterStubPathOverrides(user_data_dir);
@@ -77,8 +83,8 @@ class EnrollmentScreenTest : public OobeBaseTest {
     return enrollment_screen;
   }
 
-  test::EnrollmentHelperMixin enrollment_helper_{&mixin_host_};
   test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};
+  test::EnrollmentHelperMixin enrollment_helper_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TestCancel) {
@@ -116,6 +122,119 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, EnrollmentSpinner) {
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
 }
 
+IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, EnrollAfterRollbackSuccess) {
+  enrollment_ui_.SetExitHandler();
+  policy::EnrollmentConfig enrollment_config;
+  enrollment_config.mode =
+      policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
+  enrollment_config.auth_mechanism =
+      policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+
+  enrollment_helper_.ExpectEnrollmentMode(
+      policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED);
+  enrollment_helper_.ExpectAttestationEnrollmentSuccess();
+  enrollment_helper_.DisableAttributePromptUpdate();
+
+  enrollment_screen()->SetEnrollmentConfig(enrollment_config);
+
+  WizardContext context;
+  enrollment_screen()->Show(&context);
+
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
+
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+}
+
+IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
+                       EnrollAfterRollbackManualFallback) {
+  enrollment_ui_.SetExitHandler();
+  policy::EnrollmentConfig enrollment_config;
+  enrollment_config.mode =
+      policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
+  enrollment_config.auth_mechanism =
+      policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+
+  enrollment_helper_.ExpectEnrollmentMode(
+      policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED);
+  // Manual fallback automatically happens if the device is not found, otherwise
+  // error screen is shown.
+  enrollment_helper_.ExpectAttestationEnrollmentError(
+      policy::EnrollmentStatus::ForRegistrationError(
+          policy::DeviceManagementStatus::DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
+  enrollment_helper_.SetupClearAuth();
+
+  enrollment_screen()->SetEnrollmentConfig(enrollment_config);
+
+  WizardContext context;
+  enrollment_screen()->Show(&context);
+
+  // Expect that the screen ends up on the gaia sign-in page as a manual
+  // fallback for the failed automatic enrollment.
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+
+  // Enrollment helper mock is owned by enrollment screen and released when
+  // enrollment config changes. Need to prepare a new mock to be consumed.
+  enrollment_helper_.ResetMock();
+
+  enrollment_helper_.ExpectEnrollmentMode(
+      policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK);
+  enrollment_helper_.ExpectSuccessfulOAuthEnrollment();
+  enrollment_helper_.DisableAttributePromptUpdate();
+  enrollment_helper_.SetupClearAuth();
+
+  enrollment_screen()->OnLoginDone(
+      "testuser@test.com", static_cast<int>(policy::LicenseType::kEnterprise),
+      test::EnrollmentHelperMixin::kTestAuthCode);
+
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+}
+
+IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
+                       ErrorInEnrollmentAfterRollbackThenRetry) {
+  enrollment_ui_.SetExitHandler();
+  policy::EnrollmentConfig enrollment_config;
+  enrollment_config.mode =
+      policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
+  enrollment_config.auth_mechanism =
+      policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+
+  enrollment_helper_.ExpectEnrollmentMode(
+      policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED);
+  enrollment_helper_.ExpectAttestationEnrollmentError(
+      policy::EnrollmentStatus::ForRegistrationError(
+          policy::DeviceManagementStatus::DM_STATUS_HTTP_STATUS_ERROR));
+  enrollment_helper_.SetupClearAuth();
+
+  enrollment_screen()->SetEnrollmentConfig(enrollment_config);
+
+  WizardContext context;
+  enrollment_screen()->Show(&context);
+
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+
+  // Retry enrollment and finish successfully.
+
+  // Enrollment helper mock is owned by enrollment screen and released when
+  // enrollment config changes. Need to prepare a new mock to be consumed.
+  enrollment_helper_.ResetMock();
+
+  enrollment_helper_.ExpectEnrollmentMode(
+      policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED);
+  enrollment_helper_.ExpectAttestationEnrollmentSuccess();
+  enrollment_helper_.DisableAttributePromptUpdate();
+
+  enrollment_screen()->SetEnrollmentConfig(enrollment_config);
+
+  enrollment_screen()->OnRetry();
+
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
+
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+}
+
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, AttestationEnrollmentSuccess) {
   enrollment_ui_.SetExitHandler();
   policy::EnrollmentConfig enrollment_config;
@@ -150,8 +269,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
 
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED);
-  // Manual fallback only happens if the device is not found, otherwise
-  // attestation is retried.
+  // Manual fallback automatically happens if the device is not found, otherwise
+  // error screen is shown.
   enrollment_helper_.ExpectAttestationEnrollmentError(
       policy::EnrollmentStatus::ForRegistrationError(
           policy::DeviceManagementStatus::DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
@@ -251,6 +370,8 @@ class EnrollmentErrorScreenTest
       case policy::EnrollmentConfig::MODE_INITIAL_SERVER_FORCED:
       case policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED:
       case policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK:
+      case policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED:
+      case policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK:
       case policy::EnrollmentConfig::MODE_RECOVERY:
         return false;
     }
@@ -349,6 +470,8 @@ INSTANTIATE_TEST_SUITE_P(
         {policy::EnrollmentConfig::MODE_ATTESTATION_MANUAL_FALLBACK,
          policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
         {policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK,
+         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
+        {policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK,
          policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE}}));
 
 INSTANTIATE_TEST_SUITE_P(
@@ -436,6 +559,8 @@ INSTANTIATE_TEST_SUITE_P(
         {policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED,
          policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION},
         {policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED,
+         policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE},
+        {policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED,
          policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE},
         {policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED,
          policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE}}));

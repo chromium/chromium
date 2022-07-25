@@ -23,6 +23,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/system/fake_statistics_provider.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -84,6 +85,9 @@ class EnrollmentScreenUnitTest : public testing::Test {
 
   policy::EnrollmentConfig enrollment_config_;
 
+  // Objects required by the EnrollmentScreen that can be re-used.
+  MockEnrollmentScreenView mock_view_;
+
  private:
   void HandleScreenExit(EnrollmentScreen::Result screen_result) {
     EXPECT_FALSE(last_screen_result_.has_value());
@@ -99,10 +103,27 @@ class EnrollmentScreenUnitTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
 
   chromeos::system::FakeStatisticsProvider statistics_provider_;
-
-  // Objects required by the EnrollmentScreen that can be re-used.
-  MockEnrollmentScreenView mock_view_;
 };
+
+TEST_F(EnrollmentScreenUnitTest, ConfigAfterRollback) {
+  enrollment_config_.mode =
+      policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
+  enrollment_config_.auth_mechanism =
+      policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE;
+
+  // Expect that rollback enrollment config is passed to the view.
+  EXPECT_CALL(
+      mock_view_,
+      SetEnrollmentConfig(testing::AllOf(
+          testing::Field(
+              &policy::EnrollmentConfig::mode,
+              policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED),
+          testing::Field(
+              &policy::EnrollmentConfig::auth_mechanism,
+              policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE))));
+
+  EnrollmentScreenUnitTest::SetUpEnrollmentScreen();
+}
 
 class ZeroTouchEnrollmentScreenUnitTest : public EnrollmentScreenUnitTest {
  public:

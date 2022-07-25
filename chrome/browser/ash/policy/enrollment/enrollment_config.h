@@ -84,6 +84,14 @@ struct EnrollmentConfig {
     // Forced enrollment triggered as a fallback to attestation initial
     // enrollment, user can't skip.
     MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK = 16,
+    // An enterprise rollback just took place and the device was wiped.
+    // Attempt to re-enroll with attestation. This is forced from the
+    // client side. Cannot be skipped.
+    MODE_ATTESTATION_ROLLBACK_FORCED = 17,
+    // An enterprise rollback just took place and the device was wiped.
+    // Attestation re-enrollment just failed, attempt manual enrollment as
+    // fallback. Cannot be skipped.
+    MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK = 18,
   };
 
   // An enumeration of authentication mechanisms that can be used for
@@ -114,6 +122,10 @@ struct EnrollmentConfig {
       const ash::InstallAttributes& install_attributes,
       chromeos::system::StatisticsProvider* statistics_provider);
 
+  // Returns the respective manual fallback enrollment mode when given an
+  // attestation mode.
+  static Mode GetManualFallbackMode(Mode attestation_mode);
+
   EnrollmentConfig();
   EnrollmentConfig(const EnrollmentConfig& config);
   ~EnrollmentConfig();
@@ -134,7 +146,8 @@ struct EnrollmentConfig {
   // Whether we fell back into manual enrollment.
   bool is_manual_fallback() const {
     return mode == MODE_ATTESTATION_MANUAL_FALLBACK ||
-           mode == MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK;
+           mode == MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK ||
+           mode == MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK;
   }
 
   // Whether enrollment is forced. The user can't skip the enrollment step
@@ -145,7 +158,8 @@ struct EnrollmentConfig {
            mode == MODE_ATTESTATION_SERVER_FORCED ||
            mode == MODE_INITIAL_SERVER_FORCED ||
            mode == MODE_ATTESTATION_INITIAL_SERVER_FORCED ||
-           mode == MODE_RECOVERY || is_manual_fallback();
+           mode == MODE_ATTESTATION_ROLLBACK_FORCED || mode == MODE_RECOVERY ||
+           is_manual_fallback();
   }
 
   // Whether attestation-based authentication is forced. The user cannot enroll
@@ -160,10 +174,23 @@ struct EnrollmentConfig {
            mode == MODE_ATTESTATION_INITIAL_SERVER_FORCED;
   }
 
+  // Whether this configuration is in attestation mode per client request.
+  bool is_mode_attestation_client() const {
+    return mode == MODE_ATTESTATION || mode == MODE_ATTESTATION_LOCAL_FORCED ||
+           mode == MODE_ATTESTATION_ROLLBACK_FORCED;
+  }
+
+  // Whether this configuration is an attestation mode that has a manual
+  // fallback. I.e. after a failed attempt at automatic enrolling, manual
+  // enrollment will be triggered.
+  bool is_mode_attestation_with_manual_fallback() const {
+    return is_mode_attestation_server() ||
+           mode == MODE_ATTESTATION_ROLLBACK_FORCED;
+  }
+
   // Whether this configuration is in attestation mode.
   bool is_mode_attestation() const {
-    return mode == MODE_ATTESTATION || mode == MODE_ATTESTATION_LOCAL_FORCED ||
-           is_mode_attestation_server();
+    return is_mode_attestation_client() || is_mode_attestation_server();
   }
 
   // Whether this configuration is in OAuth mode.
