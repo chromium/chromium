@@ -286,7 +286,15 @@ void ProjectorClientImpl::OnEnablementPolicyChanged() {
   if (!is_enabled)
     CloseProjectorApp();
 
-  auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile);
-  web_app_provider->sync_bridge().SetAppIsDisabled(
-      ash::kChromeUITrustedProjectorSwaAppId, !is_enabled);
+  auto* web_app_provider = ash::SystemWebAppManager::GetWebAppProvider(profile);
+  web_app_provider->on_registry_ready().Post(
+      FROM_HERE, base::BindOnce(&ProjectorClientImpl::SetAppIsDisabled,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                web_app_provider, !is_enabled));
+}
+
+void ProjectorClientImpl::SetAppIsDisabled(web_app::WebAppProvider* provider,
+                                           bool disabled) {
+  provider->sync_bridge().SetAppIsDisabled(
+      ash::kChromeUITrustedProjectorSwaAppId, disabled);
 }

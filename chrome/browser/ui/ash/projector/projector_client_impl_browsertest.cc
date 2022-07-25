@@ -377,6 +377,12 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest, DisableThenEnablePolicy) {
   profile->GetPrefs()->SetBoolean(GetPolicy(), false);
   // The Projector app immediately closes to prevent further access.
   EXPECT_TRUE(app_browser->IsAttemptingToCloseBrowser());
+
+  auto* web_app_provider = web_app::WebAppProvider::GetForTest(profile);
+  base::RunLoop loop;
+  web_app_provider->on_registry_ready().Post(FROM_HERE, loop.QuitClosure());
+  loop.Run();
+
   // We can't uninstall the Projector SWA until the next session, but the icon
   // is greyed out and disabled.
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
@@ -387,6 +393,11 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest, DisableThenEnablePolicy) {
   // The app can re-enable too if it's already installed and the policy flips to
   // true.
   profile->GetPrefs()->SetBoolean(GetPolicy(), true);
+
+  base::RunLoop loop2;
+  web_app_provider->on_registry_ready().Post(FROM_HERE, loop2.QuitClosure());
+  loop2.Run();
+
   EXPECT_EQ(apps::Readiness::kReady,
             GetAppReadiness(kChromeUITrustedProjectorSwaAppId));
   EXPECT_FALSE(apps::IconEffects::kBlocked &

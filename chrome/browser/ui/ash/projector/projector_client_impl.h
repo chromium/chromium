@@ -26,6 +26,10 @@ namespace views {
 class WebView;
 }  // namespace views
 
+namespace web_app {
+class WebAppProvider;
+}  // namespace web_app
+
 class OnDeviceSpeechRecognizer;
 
 // The client implementation for the ProjectorController in ash/. This client is
@@ -100,6 +104,9 @@ class ProjectorClientImpl
   // Called when any of the policies change that control whether the Projector
   // app is enabled.
   void OnEnablementPolicyChanged();
+
+  // Called when app registry becomes ready.
+  void SetAppIsDisabled(web_app::WebAppProvider* provider, bool disabled);
 
   ash::ProjectorController* const controller_;
   ash::AnnotatorMessageHandler* message_handler_;
