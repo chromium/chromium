@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/process/process.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/token.h"
@@ -19,11 +20,10 @@ namespace content {
 
 namespace {
 
-ServiceProcessInfo MakeFakeAudioServiceProcessInfo(base::ProcessId pid) {
-  ServiceProcessInfo fake_audio_process_info;
-  fake_audio_process_info.pid = pid;
-  fake_audio_process_info.service_interface_name =
-      audio::mojom::AudioService::Name_;
+ServiceProcessInfo MakeFakeAudioServiceProcessInfo() {
+  ServiceProcessInfo fake_audio_process_info(audio::mojom::AudioService::Name_,
+                                             content::ServiceProcessId(),
+                                             base::Process::Current());
   return fake_audio_process_info;
 }
 
@@ -45,10 +45,12 @@ struct AudioServiceListenerTest : public testing::Test {
 
 TEST_F(AudioServiceListenerTest, OnInitWithAudioService_ProcessIdNotNull) {
   AudioServiceListener audio_service_listener;
-  constexpr base::ProcessId pid(42);
-  ServiceProcessInfo audio_process_info = MakeFakeAudioServiceProcessInfo(pid);
-  audio_service_listener.Init({audio_process_info});
-  EXPECT_EQ(pid, audio_service_listener.GetProcessId());
+  ServiceProcessInfo audio_process_info = MakeFakeAudioServiceProcessInfo();
+  std::vector<ServiceProcessInfo> info;
+  info.push_back(std::move(audio_process_info));
+  audio_service_listener.Init(std::move(info));
+  EXPECT_EQ(base::Process::Current().Pid(),
+            audio_service_listener.GetProcess().Pid());
 }
 
 }  // namespace content

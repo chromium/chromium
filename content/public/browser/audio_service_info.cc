@@ -4,6 +4,8 @@
 
 #include "content/public/browser/audio_service_info.h"
 
+#include "base/process/process.h"
+#include "base/process/process_handle.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/audio_service_listener.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
@@ -20,7 +22,10 @@ base::ProcessId GetProcessIdForAudioService() {
 
   MediaStreamManager* manager =
       BrowserMainLoop::GetInstance()->media_stream_manager();
-  return manager->audio_service_listener()->GetProcessId();
+  base::Process audio_process = manager->audio_service_listener()->GetProcess();
+  if (audio_process.IsValid())
+    return audio_process.Pid();
+  return base::kNullProcessId;
 }
 
 }  // namespace content

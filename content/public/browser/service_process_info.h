@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/process/process_handle.h"
+#include "base/process/process.h"
 #include "base/types/id_type.h"
 #include "content/common/content_export.h"
 
@@ -25,27 +25,51 @@ using ServiceProcessId =
     base::IdType<internal::ServiceProcessIdTypeMarker, uint64_t, 0u>;
 
 // Information about a running (or very recently running) service process.
-struct CONTENT_EXPORT ServiceProcessInfo {
-  ServiceProcessInfo();
-  ServiceProcessInfo(const ServiceProcessInfo&);
+//
+// This class is move-only but can be copied by calling the Duplicate() method.
+// This is explicitly defined to prevent accidental copying, as the Duplicate()
+// operation will call Duplicate() on the underlying base::Process.
+class CONTENT_EXPORT ServiceProcessInfo {
+ public:
+  ServiceProcessInfo(const std::string& name,
+                     const ServiceProcessId& id,
+                     base::Process process);
+  ServiceProcessInfo(const ServiceProcessInfo&) = delete;
+  ServiceProcessInfo(ServiceProcessInfo&&);
+  ServiceProcessInfo& operator=(const ServiceProcessInfo&) = delete;
+  ServiceProcessInfo& operator=(ServiceProcessInfo&&);
+
   ~ServiceProcessInfo();
 
   // Template helper for testing whether this ServiceProcessInfo corresponds to
   // a service process launched to run the |Interface|.
   template <typename Interface>
   bool IsService() const {
-    return service_interface_name == Interface::Name_;
+    return service_interface_name_ == Interface::Name_;
   }
+
+  // Duplicates the ServiceProcessInfo since this struct is non-copyable. This
+  // Duplicates the underlying `process_`.
+  ServiceProcessInfo Duplicate() const;
+
+  const ServiceProcessId service_process_id() const {
+    return service_process_id_;
+  }
+  const std::string service_interface_name() const {
+    return service_interface_name_;
+  }
+  const base::Process& GetProcess() const { return process_; }
+
+ private:
+  // The name of the service interface for which the process was launched.
+  std::string service_interface_name_;
 
   // A unique identifier for this service process instance. ServiceProcessIds
   // are never reused.
-  ServiceProcessId service_process_id;
+  ServiceProcessId service_process_id_;
 
-  // The system-dependent process ID of the service process.
-  base::ProcessId pid;
-
-  // The name of the service interface for which the process was launched.
-  std::string service_interface_name;
+  // The service process.
+  base::Process process_;
 };
 
 }  // namespace content

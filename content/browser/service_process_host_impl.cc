@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -20,10 +21,15 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/browser/service_process_info.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
+
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
+#include "base/process/process_handle.h"
+#endif
 
 namespace content {
 
@@ -48,17 +54,16 @@ class ServiceProcessTracker {
 
   ~ServiceProcessTracker() = default;
 
-  ServiceProcessInfo AddProcess(const base::Process& process,
+  ServiceProcessInfo AddProcess(base::Process process,
                                 const std::string& service_interface_name) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     auto id = GenerateNextId();
-    ServiceProcessInfo& info = processes_[id];
-    info.service_process_id = id;
-    info.pid = process.Pid();
-    info.service_interface_name = service_interface_name;
+    ServiceProcessInfo info(service_interface_name, id, std::move(process));
+    auto info_dup = info.Duplicate();
+    processes_.insert({id, std::move(info)});
     for (auto& observer : observers_)
-      observer.OnServiceProcessLaunched(info);
-    return info;
+      observer.OnServiceProcessLaunched(info_dup);
+    return info_dup;
   }
 
   void NotifyTerminated(ServiceProcessId id) {
@@ -67,7 +72,7 @@ class ServiceProcessTracker {
     DCHECK(iter != processes_.end());
 
     for (auto& observer : observers_)
-      observer.OnServiceProcessTerminatedNormally(iter->second);
+      observer.OnServiceProcessTerminatedNormally(iter->second.Duplicate());
     processes_.erase(iter);
   }
 
@@ -76,7 +81,7 @@ class ServiceProcessTracker {
     auto iter = processes_.find(id);
     DCHECK(iter != processes_.end());
     for (auto& observer : observers_)
-      observer.OnServiceProcessCrashed(iter->second);
+      observer.OnServiceProcessCrashed(iter->second.Duplicate());
     processes_.erase(iter);
   }
 
@@ -96,7 +101,7 @@ class ServiceProcessTracker {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     std::vector<ServiceProcessInfo> processes;
     for (const auto& entry : processes_)
-      processes.push_back(entry.second);
+      processes.push_back(entry.second.Duplicate());
     return processes;
   }
 
@@ -138,8 +143,8 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
   // UtilityProcessHost::Client:
   void OnProcessLaunched(const base::Process& process) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    process_info_ =
-        GetServiceProcessTracker().AddProcess(process, service_interface_name_);
+    process_info_.emplace(GetServiceProcessTracker().AddProcess(
+        process.Duplicate(), service_interface_name_));
     if (process_callback_) {
       std::move(process_callback_).Run(process);
     }
@@ -147,7 +152,7 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
 
   void OnProcessTerminatedNormally() override {
     GetServiceProcessTracker().NotifyTerminated(
-        process_info_->service_process_id);
+        process_info_->service_process_id());
   }
 
   void OnProcessCrashed() override {
@@ -157,7 +162,8 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
     if (!process_info_)
       return;
 
-    GetServiceProcessTracker().NotifyCrashed(process_info_->service_process_id);
+    GetServiceProcessTracker().NotifyCrashed(
+        process_info_->service_process_id());
   }
 
  private:

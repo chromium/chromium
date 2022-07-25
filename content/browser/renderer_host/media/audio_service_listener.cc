@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/process/process.h"
 #include "base/time/default_tick_clock.h"
 #include "content/browser/media/audio_log_factory.h"
 #include "content/public/browser/audio_service.h"
@@ -30,16 +31,18 @@ AudioServiceListener::~AudioServiceListener() {
   ServiceProcessHost::RemoveObserver(this);
 }
 
-base::ProcessId AudioServiceListener::GetProcessId() const {
+base::Process AudioServiceListener::GetProcess() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  return process_id_;
+  if (!audio_process_.IsValid())
+    return base::Process();
+  return audio_process_.Duplicate();
 }
 
 void AudioServiceListener::Init(
     std::vector<ServiceProcessInfo> running_service_processes) {
   for (const auto& info : running_service_processes) {
     if (info.IsService<audio::mojom::AudioService>()) {
-      process_id_ = info.pid;
+      audio_process_ = info.GetProcess().Duplicate();
       MaybeSetLogFactory();
       break;
     }
@@ -52,7 +55,7 @@ void AudioServiceListener::OnServiceProcessLaunched(
   if (!info.IsService<audio::mojom::AudioService>())
     return;
 
-  process_id_ = info.pid;
+  audio_process_ = info.GetProcess().Duplicate();
   MaybeSetLogFactory();
 }
 
@@ -62,7 +65,7 @@ void AudioServiceListener::OnServiceProcessTerminatedNormally(
   if (!info.IsService<audio::mojom::AudioService>())
     return;
 
-  process_id_ = base::kNullProcessId;
+  audio_process_ = base::Process();
   log_factory_is_set_ = false;
 }
 
@@ -72,7 +75,7 @@ void AudioServiceListener::OnServiceProcessCrashed(
   if (!info.IsService<audio::mojom::AudioService>())
     return;
 
-  process_id_ = base::kNullProcessId;
+  audio_process_ = base::Process();
   log_factory_is_set_ = false;
 }
 
