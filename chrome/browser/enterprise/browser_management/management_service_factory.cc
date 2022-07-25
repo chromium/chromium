@@ -16,9 +16,6 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_status_provider.h"
 #endif
 
@@ -37,12 +34,9 @@ ManagementService* ManagementServiceFactory::GetForPlatform() {
   // defined in `components/policy/`, also we need we need the
   // `g_browser_process->platform_part()`.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!instance->has_cros_status_provider() && g_browser_process &&
-      g_browser_process->platform_part()) {
+  if (!instance->has_cros_status_provider()) {
     instance->AddChromeOsStatusProvider(
-        std::make_unique<DeviceManagementStatusProvider>(
-            g_browser_process->platform_part()
-                ->browser_policy_connector_ash()));
+        std::make_unique<DeviceManagementStatusProvider>());
   }
 #endif
   return instance;

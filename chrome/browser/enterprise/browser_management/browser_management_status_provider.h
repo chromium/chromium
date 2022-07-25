@@ -62,16 +62,12 @@ class ProfileCloudManagementStatusProvider final
 class DeviceManagementStatusProvider final
     : public policy::ManagementStatusProvider {
  public:
-  explicit DeviceManagementStatusProvider(
-      policy::BrowserPolicyConnectorAsh* browser_policy_connector);
+  DeviceManagementStatusProvider();
   ~DeviceManagementStatusProvider() final;
 
  protected:
   // ManagementStatusProvider impl
   EnterpriseManagementAuthority FetchAuthority() final;
-
- private:
-  policy::BrowserPolicyConnectorAsh* browser_policy_connector_;
 };
 #endif
 

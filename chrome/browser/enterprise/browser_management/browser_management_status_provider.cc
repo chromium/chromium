@@ -15,7 +15,10 @@
 #if BUILDFLAG(IS_WIN)
 #include "components/policy/core/common/management/platform_management_status_provider_win.h"
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -100,15 +103,17 @@ ProfileCloudManagementStatusProvider::FetchAuthority() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-DeviceManagementStatusProvider::DeviceManagementStatusProvider(
-    policy::BrowserPolicyConnectorAsh* browser_policy_connector)
-    : browser_policy_connector_(browser_policy_connector) {}
+DeviceManagementStatusProvider::DeviceManagementStatusProvider() = default;
 
 DeviceManagementStatusProvider::~DeviceManagementStatusProvider() = default;
 
 EnterpriseManagementAuthority DeviceManagementStatusProvider::FetchAuthority() {
-  return browser_policy_connector_ &&
-                 browser_policy_connector_->IsDeviceEnterpriseManaged()
+  return g_browser_process && g_browser_process->platform_part() &&
+                 g_browser_process->platform_part()
+                     ->browser_policy_connector_ash() &&
+                 g_browser_process->platform_part()
+                     ->browser_policy_connector_ash()
+                     ->IsDeviceEnterpriseManaged()
              ? EnterpriseManagementAuthority::CLOUD_DOMAIN
              : EnterpriseManagementAuthority::NONE;
 }
