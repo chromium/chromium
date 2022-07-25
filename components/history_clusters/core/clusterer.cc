@@ -50,11 +50,10 @@ Clusterer::~Clusterer() = default;
 
 std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
     std::vector<history::ClusterVisit>* visits) {
-  // Sort visits by visit ID.
+  // Sort visits by visit time.
   std::sort(visits->begin(), visits->end(),
             [](const history::ClusterVisit& a, const history::ClusterVisit& b) {
-              return a.annotated_visit.visit_row.visit_id <
-                     b.annotated_visit.visit_row.visit_id;
+              return a.annotated_visit.visit_row < b.annotated_visit.visit_row;
             });
 
   base::flat_map<std::string, size_t> url_to_cluster_map;

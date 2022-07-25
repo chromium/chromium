@@ -34,8 +34,8 @@ TEST_F(ClustererTest, ClusterOneVisit) {
   std::vector<history::ClusterVisit> visits;
 
   // Fill in the visits vector with 1 visit.
-  history::AnnotatedVisit visit =
-      testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/"));
+  history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
+      1, GURL("https://google.com/"), base::Time::FromTimeT(1));
   visits.push_back(testing::CreateClusterVisit(visit));
 
   std::vector<history::Cluster> result_clusters =
@@ -48,12 +48,12 @@ TEST_F(ClustererTest, ClusterTwoVisitsTiedByReferringVisit) {
   std::vector<history::ClusterVisit> visits;
 
   // Visit2's referrer is visit 1 and are close together.
-  history::AnnotatedVisit visit =
-      testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/"));
+  history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
+      1, GURL("https://google.com/"), base::Time::FromTimeT(1));
   visits.push_back(testing::CreateClusterVisit(visit));
 
-  history::AnnotatedVisit visit2 =
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/next"));
+  history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
+      2, GURL("https://google.com/next"), base::Time::FromTimeT(2));
   visit2.referring_visit_of_redirect_chain_start = 1;
   visits.push_back(testing::CreateClusterVisit(visit2));
 
@@ -67,20 +67,22 @@ TEST_F(ClustererTest, ClusterTwoVisitsTiedByReferringVisit) {
 TEST_F(ClustererTest, ClusterTwoVisitsTiedByOpenerVisit) {
   std::vector<history::ClusterVisit> visits;
 
-  // Visit2's referrer is visit 1 and are close together.
-  history::AnnotatedVisit visit =
-      testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/"));
+  // Visit2's referrer is visit 5 and are close together. Have the visit IDs be
+  // misordered to ensure that the visits are sorted by visit time rather than
+  // by ID.
+  history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
+      5, GURL("https://google.com/"), base::Time::FromTimeT(1));
   visits.push_back(testing::CreateClusterVisit(visit));
 
-  history::AnnotatedVisit visit2 =
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/next"));
-  visit2.opener_visit_of_redirect_chain_start = 1;
+  history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
+      2, GURL("https://google.com/next"), base::Time::FromTimeT(2));
+  visit2.opener_visit_of_redirect_chain_start = 5;
   visits.push_back(testing::CreateClusterVisit(visit2));
 
   std::vector<history::Cluster> result_clusters =
       CreateInitialClustersFromVisits(visits);
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
-              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
+              ElementsAre(ElementsAre(testing::VisitResult(5, 1.0),
                                       testing::VisitResult(2, 1.0))));
 }
 
@@ -88,12 +90,12 @@ TEST_F(ClustererTest, ClusterTwoVisitsTiedByURL) {
   std::vector<history::ClusterVisit> visits;
 
   // Visit2 has the same URL as Visit1.
-  history::AnnotatedVisit visit =
-      testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/"));
+  history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
+      1, GURL("https://google.com/"), base::Time::FromTimeT(1));
   visits.push_back(testing::CreateClusterVisit(visit));
 
-  history::AnnotatedVisit visit2 =
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/"));
+  history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
+      2, GURL("https://google.com/"), base::Time::FromTimeT(2));
   visits.push_back(testing::CreateClusterVisit(visit2));
 
   std::vector<history::Cluster> result_clusters =
@@ -108,12 +110,13 @@ TEST_F(ClustererTest, ClusterTwoVisitsTiedByNormalizedURL) {
 
   // Visit2 has the same URL as Visit1.
   history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
-      1, GURL("https://example.com/normalized?q=whatever"));
+      1, GURL("https://example.com/normalized?q=whatever"),
+      base::Time::FromTimeT(1));
   visits.push_back(testing::CreateClusterVisit(
       visit, GURL("https://example.com/normalized")));
 
   history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
-      2, GURL("https://example.com/normalized"));
+      2, GURL("https://example.com/normalized"), base::Time::FromTimeT(2));
   visits.push_back(testing::CreateClusterVisit(visit2));
 
   std::vector<history::Cluster> result_clusters =
@@ -130,30 +133,30 @@ TEST_F(ClustererTest, MultipleClusters) {
   // Visit 3 is a different journey altogether. Visit 10 is referring to a
   // missing visit and should be considered as in its own cluster.
   // Also, make sure these aren't sorted so we test that we are sorting the
-  // visits by visit ID.
-  history::AnnotatedVisit visit =
-      testing::CreateDefaultAnnotatedVisit(1, GURL("https://github.com/"));
+  // visits by time.
+  history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
+      1, GURL("https://github.com/"), base::Time::FromTimeT(1));
   visits.push_back(testing::CreateClusterVisit(visit));
 
-  history::AnnotatedVisit visit2 =
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/"));
+  history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
+      2, GURL("https://google.com/"), base::Time::FromTimeT(2));
   visit2.referring_visit_of_redirect_chain_start = 1;
   // Set the visit duration to be 2x the default so it has the same duration
   // after |visit| and |visit4| are deduped.
   visit2.visit_row.visit_duration = base::Seconds(20);
   visits.push_back(testing::CreateClusterVisit(visit2));
 
-  history::AnnotatedVisit visit4 =
-      testing::CreateDefaultAnnotatedVisit(4, GURL("https://github.com/"));
+  history::AnnotatedVisit visit4 = testing::CreateDefaultAnnotatedVisit(
+      4, GURL("https://github.com/"), base::Time::FromTimeT(4));
   visits.push_back(testing::CreateClusterVisit(visit4));
 
   history::AnnotatedVisit visit5 = testing::CreateDefaultAnnotatedVisit(
-      10, GURL("https://nonexistentreferrer.com/"));
+      10, GURL("https://nonexistentreferrer.com/"), base::Time::FromTimeT(10));
   visit5.referring_visit_of_redirect_chain_start = 6;
   visits.push_back(testing::CreateClusterVisit(visit5));
 
-  history::AnnotatedVisit visit3 =
-      testing::CreateDefaultAnnotatedVisit(3, GURL("https://whatever.com/"));
+  history::AnnotatedVisit visit3 = testing::CreateDefaultAnnotatedVisit(
+      3, GURL("https://whatever.com/"), base::Time::FromTimeT(3));
   visits.push_back(testing::CreateClusterVisit(visit3));
 
   std::vector<history::Cluster> result_clusters =

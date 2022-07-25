@@ -202,14 +202,14 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
   std::vector<history::AnnotatedVisit> visits;
 
   // Visit2's referrer is visit 1 and are close together.
-  history::AnnotatedVisit visit =
-      testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/"));
+  history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
+      1, GURL("https://google.com/"), base::Time::FromTimeT(1));
   visit.content_annotations.model_annotations.categories = {
       {"google-category", 100}, {"com", 100}};
   visits.push_back(visit);
 
-  history::AnnotatedVisit visit2 =
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/next"));
+  history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
+      2, GURL("https://google.com/next"), base::Time::FromTimeT(2));
   visit2.content_annotations.model_annotations.entities = {
       {"google-entity", 100}, {"com", 100}};
   visit2.referring_visit_of_redirect_chain_start = 1;
@@ -218,8 +218,8 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
   std::vector<history::Cluster> result_clusters =
       ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
-              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
-                                      testing::VisitResult(2, 1.0))));
+              ElementsAre(ElementsAre(testing::VisitResult(2, 1.0),
+                                      testing::VisitResult(1, 1.0))));
   ASSERT_EQ(result_clusters.size(), 1u);
   EXPECT_THAT(result_clusters.at(0).GetKeywords(),
               UnorderedElementsAre(std::u16string(u"google-category"),
@@ -242,20 +242,20 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
   std::vector<history::AnnotatedVisit> visits;
 
   // Visit2's referrer is visit 1 and are close together.
-  history::AnnotatedVisit visit =
-      testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/"));
+  history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
+      1, GURL("https://google.com/"), base::Time::FromTimeT(1));
   visits.push_back(visit);
 
-  history::AnnotatedVisit visit2 =
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/next"));
+  history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
+      2, GURL("https://google.com/next"), base::Time::FromTimeT(2));
   visit2.opener_visit_of_redirect_chain_start = 1;
   visits.push_back(visit2);
 
   std::vector<history::Cluster> result_clusters =
       ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
-              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
-                                      testing::VisitResult(2, 1.0))));
+              ElementsAre(ElementsAre(testing::VisitResult(2, 1.0),
+                                      testing::VisitResult(1, 1.0))));
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Min", 2, 1);
   histogram_tester.ExpectUniqueSample(
@@ -271,12 +271,12 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest, ClusterTwoVisitsTiedByURL) {
   std::vector<history::AnnotatedVisit> visits;
 
   // Visit2 has the same URL as Visit1.
-  history::AnnotatedVisit visit =
-      testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/"));
+  history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
+      1, GURL("https://google.com/"), base::Time::FromTimeT(1));
   visits.push_back(visit);
 
-  history::AnnotatedVisit visit2 =
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/"));
+  history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
+      2, GURL("https://google.com/"), base::Time::FromTimeT(2));
   visits.push_back(visit2);
 
   std::vector<history::Cluster> result_clusters =
@@ -298,12 +298,12 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest, DedupeClusters) {
   std::vector<history::AnnotatedVisit> visits;
 
   // Visit2 has the same URL as Visit1.
-  history::AnnotatedVisit visit =
-      testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/"));
+  history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
+      1, GURL("https://google.com/"), base::Time::FromTimeT(1));
   visits.push_back(visit);
 
-  history::AnnotatedVisit visit2 =
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/"));
+  history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
+      2, GURL("https://google.com/"), base::Time::FromTimeT(2));
   visits.push_back(visit2);
 
   std::vector<history::Cluster> result_clusters =
@@ -318,20 +318,20 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
   std::vector<history::AnnotatedVisit> visits;
 
   // Visit2 has a different URL but is linked by referring id.
-  history::AnnotatedVisit visit =
-      testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/"));
+  history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
+      1, GURL("https://google.com/"), base::Time::FromTimeT(1));
   visits.push_back(visit);
 
-  history::AnnotatedVisit visit2 =
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://foo.com/"));
+  history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
+      2, GURL("https://foo.com/"), base::Time::FromTimeT(2));
   visit2.referring_visit_of_redirect_chain_start = 1;
   visits.push_back(visit2);
 
   std::vector<history::Cluster> result_clusters =
       ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
-              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
-                                      testing::VisitResult(2, 1.0))));
+              ElementsAre(ElementsAre(testing::VisitResult(2, 1.0),
+                                      testing::VisitResult(1, 1.0))));
 }
 
 TEST_F(OnDeviceClusteringWithoutContentBackendTest, MultipleClusters) {
@@ -343,42 +343,43 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest, MultipleClusters) {
   // missing visit and should be considered as in its own cluster.
   // Also, make sure these aren't sorted so we test that we are sorting the
   // visits by visit ID.
-  history::AnnotatedVisit visit =
-      testing::CreateDefaultAnnotatedVisit(1, GURL("https://github.com/"));
+  history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
+      1, GURL("https://github.com/"), base::Time::FromTimeT(1));
   visits.push_back(visit);
 
-  history::AnnotatedVisit visit2 =
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/"));
+  history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
+      2, GURL("https://google.com/"), base::Time::FromTimeT(2));
   visit2.referring_visit_of_redirect_chain_start = 1;
   // Set the visit duration to be 2x the default so it has the same duration
   // after |visit| and |visit4| are deduped.
   visit2.visit_row.visit_duration = base::Seconds(20);
   visits.push_back(visit2);
 
-  history::AnnotatedVisit visit4 =
-      testing::CreateDefaultAnnotatedVisit(4, GURL("https://github.com/"));
+  history::AnnotatedVisit visit4 = testing::CreateDefaultAnnotatedVisit(
+      4, GURL("https://github.com/"), base::Time::FromTimeT(4));
   visits.push_back(visit4);
 
   history::AnnotatedVisit visit5 = testing::CreateDefaultAnnotatedVisit(
-      10, GURL("https://nonexistentreferrer.com/"));
+      10, GURL("https://nonexistentreferrer.com/"), base::Time::FromTimeT(10));
   visit5.referring_visit_of_redirect_chain_start = 6;
   visits.push_back(visit5);
 
   // Although it says shouldskip, it should not be skipped since there is no
   // optimization guide decider.
   history::AnnotatedVisit visit3 = testing::CreateDefaultAnnotatedVisit(
-      3, GURL("https://shouldskip.com/butnotsincenodecider"));
+      3, GURL("https://shouldskip.com/butnotsincenodecider"),
+      base::Time::FromTimeT(3));
   visits.push_back(visit3);
 
   std::vector<history::Cluster> result_clusters =
       ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
   EXPECT_THAT(
       testing::ToVisitResults(result_clusters),
-      ElementsAre(ElementsAre(testing::VisitResult(2, 1.0),
-                              testing::VisitResult(
-                                  4, 1.0, {testing::VisitResult(1, 0.0)})),
-                  ElementsAre(testing::VisitResult(3, 1.0)),
-                  ElementsAre(testing::VisitResult(10, 1.0))));
+      ElementsAre(ElementsAre(testing::VisitResult(10, 1.0)),
+                  ElementsAre(testing::VisitResult(
+                                  4, 1.0, {testing::VisitResult(1, 0.0)}),
+                              testing::VisitResult(2, 1.0)),
+                  ElementsAre(testing::VisitResult(3, 1.0))));
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Min", 1, 1);
   histogram_tester.ExpectUniqueSample(
@@ -454,14 +455,14 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, ClusterOnContent) {
   // missing visit and should be considered as in its own cluster.
   // Also, make sure these aren't sorted so we test that we are sorting the
   // visits by visit ID.
-  history::AnnotatedVisit visit =
-      testing::CreateDefaultAnnotatedVisit(1, GURL("https://github.com/"));
+  history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
+      1, GURL("https://github.com/"), base::Time::FromTimeT(1));
   visit.content_annotations.model_annotations.entities = {{"github", 100}};
   visit.content_annotations.model_annotations.categories = {{"category", 100}};
   visits.push_back(visit);
 
-  history::AnnotatedVisit visit2 =
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/"));
+  history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
+      2, GURL("https://google.com/"), base::Time::FromTimeT(2));
   visit2.content_annotations.model_annotations.entities = {{"github", 100}};
   visit2.content_annotations.model_annotations.categories = {{"category", 100}};
   visit2.referring_visit_of_redirect_chain_start = 1;
@@ -470,8 +471,8 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, ClusterOnContent) {
   visit2.visit_row.visit_duration = base::Seconds(20);
   visits.push_back(visit2);
 
-  history::AnnotatedVisit visit4 =
-      testing::CreateDefaultAnnotatedVisit(4, GURL("https://github.com/"));
+  history::AnnotatedVisit visit4 = testing::CreateDefaultAnnotatedVisit(
+      4, GURL("https://github.com/"), base::Time::FromTimeT(4));
   visit4.content_annotations.model_annotations.entities = {{"github", 100}};
   visit4.content_annotations.model_annotations.categories = {
       {"category", 100}, {"category2", 100}};
@@ -481,8 +482,10 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, ClusterOnContent) {
   // visit, visit2, and visit4 but all of the visits have the same entities
   // and categories so they will be clustered in the content pass.
   history::AnnotatedVisit visit5 = testing::CreateDefaultAnnotatedVisit(
-      10, GURL("https://shouldskip.com/butnotsincehostcheckingisfalse/"
-               "andhasnonexistentreferrer"));
+      10,
+      GURL("https://shouldskip.com/butnotsincehostcheckingisfalse/"
+           "andhasnonexistentreferrer"),
+      base::Time::FromTimeT(10));
   visit5.content_annotations.model_annotations.entities = {{"github", 100}};
   visit5.content_annotations.model_annotations.categories = {
       {"category", 100}, {"category2", 100}};
@@ -491,11 +494,11 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, ClusterOnContent) {
 
   std::vector<history::Cluster> result_clusters =
       ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
-  EXPECT_THAT(testing::ToVisitResults(result_clusters),
-              ElementsAre(ElementsAre(
-                  testing::VisitResult(2, 1.0),
-                  testing::VisitResult(4, 1.0, {testing::VisitResult(1, 0.0)}),
-                  testing::VisitResult(10, 0.5))));
+  EXPECT_THAT(
+      testing::ToVisitResults(result_clusters),
+      ElementsAre(ElementsAre(
+          testing::VisitResult(4, 1.0, {testing::VisitResult(1, 0.0)}),
+          testing::VisitResult(2, 1.0), testing::VisitResult(10, 0.5))));
 }
 
 TEST_F(OnDeviceClusteringWithContentBackendTest,
@@ -508,14 +511,14 @@ TEST_F(OnDeviceClusteringWithContentBackendTest,
   // missing visit and should be considered as in its own cluster.
   // Also, make sure these aren't sorted so we test that we are sorting the
   // visits by visit ID.
-  history::AnnotatedVisit visit =
-      testing::CreateDefaultAnnotatedVisit(1, GURL("https://github.com/"));
+  history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
+      1, GURL("https://github.com/"), base::Time::FromTimeT(1));
   visit.content_annotations.model_annotations.entities = {{"github", 100}};
   visit.content_annotations.model_annotations.categories = {{"category", 100}};
   visits.push_back(visit);
 
-  history::AnnotatedVisit visit2 =
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/"));
+  history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
+      2, GURL("https://google.com/"), base::Time::FromTimeT(2));
   visit2.referring_visit_of_redirect_chain_start = 1;
   // Set the visit duration to be 2x the default so it has the same duration
   // after |visit| and |visit4| are deduped.
@@ -525,15 +528,15 @@ TEST_F(OnDeviceClusteringWithContentBackendTest,
   // After the context clustering, visit4 will not be in the same cluster as
   // visit and visit2 but should be clustered together since they have the same
   // title.
-  history::AnnotatedVisit visit4 =
-      testing::CreateDefaultAnnotatedVisit(4, GURL("https://github.com/"));
+  history::AnnotatedVisit visit4 = testing::CreateDefaultAnnotatedVisit(
+      4, GURL("https://github.com/"), base::Time::FromTimeT(4));
   visit4.content_annotations.model_annotations.entities = {{"github", 100}};
   visit4.content_annotations.model_annotations.categories = {{"category", 100}};
   visits.push_back(visit4);
 
   // This visit has a different title and shouldn't be grouped with the others.
   history::AnnotatedVisit visit5 = testing::CreateDefaultAnnotatedVisit(
-      10, GURL("https://nonexistentreferrer.com/"));
+      10, GURL("https://nonexistentreferrer.com/"), base::Time::FromTimeT(10));
   visit5.referring_visit_of_redirect_chain_start = 6;
   visit5.content_annotations.model_annotations.entities = {{"irrelevant", 100}};
   visits.push_back(visit5);
@@ -542,10 +545,10 @@ TEST_F(OnDeviceClusteringWithContentBackendTest,
       ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
   EXPECT_THAT(
       testing::ToVisitResults(result_clusters),
-      ElementsAre(ElementsAre(testing::VisitResult(2, 1.0),
-                              testing::VisitResult(
-                                  4, 1.0, {testing::VisitResult(1, 0.0)})),
-                  ElementsAre(testing::VisitResult(10, 1.0))));
+      ElementsAre(ElementsAre(testing::VisitResult(10, 1.0)),
+                  ElementsAre(testing::VisitResult(
+                                  4, 1.0, {testing::VisitResult(1, 0.0)}),
+                              testing::VisitResult(2, 1.0))));
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Min", 1, 1);
   histogram_tester.ExpectUniqueSample(
@@ -627,7 +630,8 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
 
   // Visit2 has the same search URL as Visit1.
   history::AnnotatedVisit visit = testing::CreateDefaultAnnotatedVisit(
-      1, GURL("http://default-engine.com/?q=foo&otherstuff"));
+      1, GURL("http://default-engine.com/?q=foo&otherstuff"),
+      base::Time::FromTimeT(1));
   visit.content_annotations.model_annotations.visibility_score = 0.5;
   visit.content_annotations.search_terms = u"foo";
   visit.content_annotations.search_normalized_url =
@@ -635,7 +639,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   visits.push_back(visit);
 
   history::AnnotatedVisit visit2 = testing::CreateDefaultAnnotatedVisit(
-      2, GURL("http://default-engine.com/?q=foo"));
+      2, GURL("http://default-engine.com/?q=foo"), base::Time::FromTimeT(2));
   visit2.content_annotations.model_annotations.entities = {
       history::VisitContentModelAnnotations::Category("foo", 70),
       history::VisitContentModelAnnotations::Category("nometadata", 100),
@@ -648,7 +652,8 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   visits.push_back(visit2);
 
   history::AnnotatedVisit visit3 = testing::CreateDefaultAnnotatedVisit(
-      3, GURL("http://non-default-engine.com/?q=nometadata#whatever"));
+      3, GURL("http://non-default-engine.com/?q=nometadata#whatever"),
+      base::Time::FromTimeT(3));
   visit3.content_annotations.model_annotations.entities = {
       history::VisitContentModelAnnotations::Category("nometadata", 100),
       // This is too low and should not be added as a keyword despite it
@@ -662,7 +667,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   visits.push_back(visit3);
 
   history::AnnotatedVisit should_skip = testing::CreateDefaultAnnotatedVisit(
-      11, GURL("https://shouldskip.com/whatever"));
+      11, GURL("https://shouldskip.com/whatever"), base::Time::FromTimeT(11));
   visits.push_back(should_skip);
 
   std::vector<history::Cluster> result_clusters =
@@ -670,15 +675,28 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   EXPECT_THAT(
       testing::ToVisitResults(result_clusters),
       ElementsAre(
+          ElementsAre(testing::VisitResult(3, 1.0, {}, u"nometadata")),
           ElementsAre(testing::VisitResult(
-              2, 1.0, {testing::VisitResult(1, 0.0, {}, u"foo")}, u"foo")),
-          ElementsAre(testing::VisitResult(3, 1.0, {}, u"nometadata"))));
+              2, 1.0, {testing::VisitResult(1, 0.0, {}, u"foo")}, u"foo"))));
   // Make sure visits are normalized.
   history::Cluster cluster = result_clusters.at(0);
   ASSERT_EQ(cluster.visits.size(), 1u);
+  // The third visit should have its original URL as the normalized URL and
+  // also have its entities rewritten.
+  history::ClusterVisit third_result_visit = cluster.visits.at(0);
+  EXPECT_EQ(third_result_visit.normalized_url,
+            GURL("http://non-default-engine.com/?q=nometadata"));
+  EXPECT_TRUE(third_result_visit.annotated_visit.content_annotations
+                  .model_annotations.entities.empty());
+  EXPECT_TRUE(third_result_visit.annotated_visit.content_annotations
+                  .model_annotations.categories.empty());
+  EXPECT_TRUE(cluster.keyword_to_data_map.empty());
+
+  history::Cluster cluster2 = result_clusters.at(1);
+  ASSERT_EQ(cluster2.visits.size(), 1u);
   // The first visit should have its original URL as the normalized URL and
   // also have its entities rewritten.
-  history::ClusterVisit better_visit = cluster.visits.at(0);
+  history::ClusterVisit better_visit = cluster2.visits.at(0);
   EXPECT_EQ(better_visit.normalized_url,
             GURL("http://default-engine.com/?q=foo"));
   std::vector<history::VisitContentModelAnnotations::Category> entities =
@@ -696,30 +714,17 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
                   .visibility_score,
               FloatEq(0.5));
   // The second visit should have a normalized URL, but be the worse duplicate.
-  EXPECT_EQ(cluster.visits.at(0).duplicate_visits.at(0).normalized_url,
+  EXPECT_EQ(cluster2.visits.at(0).duplicate_visits.at(0).normalized_url,
             GURL("http://default-engine.com/?q=foo"));
-  EXPECT_THAT(cluster.visits.at(0)
+  EXPECT_THAT(cluster2.visits.at(0)
                   .duplicate_visits.at(0)
                   .annotated_visit.content_annotations.model_annotations
                   .visibility_score,
               FloatEq(0.5));
   // Cluster should have 3 keywords.
   EXPECT_THAT(
-      cluster.GetKeywords(),
+      cluster2.GetKeywords(),
       UnorderedElementsAre(u"rewritten-foo", u"category-foo", u"alias-foo"));
-
-  history::Cluster cluster2 = result_clusters.at(1);
-  ASSERT_EQ(cluster2.visits.size(), 1u);
-  // The third visit should have its original URL as the normalized URL and
-  // also have its entities rewritten.
-  history::ClusterVisit third_result_visit = cluster2.visits.at(0);
-  EXPECT_EQ(third_result_visit.normalized_url,
-            GURL("http://non-default-engine.com/?q=nometadata"));
-  EXPECT_TRUE(third_result_visit.annotated_visit.content_annotations
-                  .model_annotations.entities.empty());
-  EXPECT_TRUE(third_result_visit.annotated_visit.content_annotations
-                  .model_annotations.categories.empty());
-  EXPECT_TRUE(cluster2.keyword_to_data_map.empty());
 
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Min", 1, 1);
