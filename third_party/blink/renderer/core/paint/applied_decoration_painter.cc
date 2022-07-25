@@ -11,19 +11,15 @@
 namespace blink {
 
 void AppliedDecorationPainter::Paint(const cc::PaintFlags* flags) {
-  ETextDecorationStyle decoration_style = decoration_info_.DecorationStyle();
-
   context_.SetStrokeStyle(decoration_info_.StrokeStyle());
   context_.SetStrokeColor(decoration_info_.LineColor());
 
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(decoration_info_.TargetStyle(),
                         DarkModeFilter::ElementRole::kForeground));
-
-  // TODO(crbug.com/1346281) make other decoration styles work with PaintFlags
-  switch (decoration_style) {
+  switch (decoration_info_.DecorationStyle()) {
     case ETextDecorationStyle::kWavy:
-      PaintWavyTextDecoration();
+      StrokeWavyTextDecoration(flags);
       break;
     case ETextDecorationStyle::kDotted:
     case ETextDecorationStyle::kDashed:
@@ -42,7 +38,8 @@ void AppliedDecorationPainter::Paint(const cc::PaintFlags* flags) {
   }
 }
 
-void AppliedDecorationPainter::PaintWavyTextDecoration() {
+void AppliedDecorationPainter::StrokeWavyTextDecoration(
+    const cc::PaintFlags* flags) {
   // We need this because of the clipping we're doing below, as we paint both
   // overlines and underlines here. That clip would hide the overlines, when
   // painting the underlines.
@@ -52,21 +49,16 @@ void AppliedDecorationPainter::PaintWavyTextDecoration() {
 
   // The wavy line is larger than the line, as we add whole waves before and
   // after the line in TextDecorationInfo::PrepareWavyStrokePath().
-  gfx::PointF origin = decoration_info_.Bounds().origin();
+  context_.Clip(decoration_info_.Bounds());
 
+  absl::optional<Path> path = decoration_info_.StrokePath();
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(decoration_info_.TargetStyle(),
                         DarkModeFilter::ElementRole::kForeground));
-  cc::PaintFlags flags;
-
-  flags.setAntiAlias(true);
-  flags.setShader(PaintShader::MakePaintRecord(
-      decoration_info_.WavyTileRecord(),
-      gfx::RectFToSkRect(decoration_info_.WavyTileRect()), SkTileMode::kRepeat,
-      SkTileMode::kDecal, nullptr));
-  context_.Translate(origin.x(), origin.y());
-  context_.DrawRect(gfx::RectFToSkRect(decoration_info_.WavyPaintRect()), flags,
-                    auto_dark_mode);
+  if (flags)
+    context_.DrawPath(path->GetSkPath(), *flags, auto_dark_mode);
+  else
+    context_.StrokePath(path.value(), auto_dark_mode);
 }
 
 }  // namespace blink

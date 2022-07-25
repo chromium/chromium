@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TEXT_DECORATION_INFO_H_
 
 #include "base/types/strong_alias.h"
-#include "cc/paint/paint_op_buffer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
@@ -143,10 +142,8 @@ class CORE_EXPORT TextDecorationInfo {
   // Compute bounds for the given line and the current decoration.
   gfx::RectF Bounds() const;
 
-  // Returns tile record and coordinates for wavy decorations.
-  sk_sp<cc::PaintRecord> WavyTileRecord() const;
-  gfx::RectF WavyPaintRect() const;
-  gfx::RectF WavyTileRect() const;
+  // Return a path for current decoration.
+  absl::optional<Path> StrokePath() const;
 
   // Overrides the line color with the given topmost active highlight ‘color’.
   void SetHighlightOverrideColor(const absl::optional<Color>&);
@@ -157,12 +154,14 @@ class CORE_EXPORT TextDecorationInfo {
   float ComputeUnderlineThickness(
       const TextDecorationThickness& applied_decoration_thickness,
       const ComputedStyle* decorating_box_style) const;
-  void ComputeWavyLineData(gfx::RectF& pattern_rect,
-                           sk_sp<cc::PaintRecord>& tile_record) const;
 
   gfx::RectF BoundsForDottedOrDashed() const;
   gfx::RectF BoundsForWavy() const;
+  float WavyDecorationSizing() const;
+  float ControlPointDistanceFromResolvedThickness() const;
+  float StepFromResolvedThickness() const;
   Path PrepareDottedOrDashedStrokePath() const;
+  Path PrepareWavyStrokePath() const;
   bool IsSpellingOrGrammarError() const {
     return line_data_.line == TextDecorationLine::kSpellingError ||
            line_data_.line == TextDecorationLine::kGrammarError;
@@ -229,14 +228,8 @@ class CORE_EXPORT TextDecorationInfo {
     TextDecorationLine line;
     float line_offset;
     float double_offset;
-
-    // Only used for kDotted and kDashed lines.
-    absl::optional<Path> stroke_path;
-
-    // Only used for kWavy lines.
     int wavy_offset_factor;
-    gfx::RectF wavy_pattern_rect;
-    sk_sp<cc::PaintRecord> wavy_tile_record;
+    absl::optional<Path> stroke_path;
   };
   LineData line_data_;
   absl::optional<Color> highlight_override_;

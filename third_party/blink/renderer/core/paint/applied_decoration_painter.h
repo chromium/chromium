@@ -26,7 +26,7 @@ class AppliedDecorationPainter final {
   void Paint(const cc::PaintFlags* flags = nullptr);
 
  private:
-  void PaintWavyTextDecoration();
+  void StrokeWavyTextDecoration(const cc::PaintFlags* flags);
 
   GraphicsContext& context_;
   const TextDecorationInfo& decoration_info_;
