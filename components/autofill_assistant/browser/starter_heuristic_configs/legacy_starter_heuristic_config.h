@@ -42,8 +42,6 @@ class LegacyStarterHeuristicConfig : public StarterHeuristicConfig {
   absl::optional<std::pair<base::Value, std::string>>
   ReadConditionSetsAndIntent(const base::Value::Dict& dict) const;
 
-  const base::Value empty_condition_sets_ =
-      base::Value(base::Value::Type::LIST);
   std::string intent_;
   base::Value condition_sets_ = base::Value(base::Value::Type::LIST);
   base::flat_set<std::string> denylisted_domains_;

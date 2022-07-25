@@ -5,6 +5,7 @@
 #include "components/autofill_assistant/browser/starter_heuristic_configs/legacy_starter_heuristic_config.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/starter_heuristic_configs/finch_starter_heuristic_config.h"
 
@@ -27,17 +28,19 @@ const std::string& LegacyStarterHeuristicConfig::GetIntent() const {
 const base::Value::List&
 LegacyStarterHeuristicConfig::GetConditionSetsForClientState(
     StarterPlatformDelegate* platform_delegate) const {
+  static const base::NoDestructor<base::Value> empty_list(
+      base::Value::Type::LIST);
   if (platform_delegate->GetIsSupervisedUser()) {
-    return empty_condition_sets_.GetList();
+    return empty_list->GetList();
   }
 
   if (!platform_delegate->GetProactiveHelpSettingEnabled()) {
-    return empty_condition_sets_.GetList();
+    return empty_list->GetList();
   }
 
   if (platform_delegate->GetIsCustomTab() &&
       !platform_delegate->GetIsTabCreatedByGSA()) {
-    return empty_condition_sets_.GetList();
+    return empty_list->GetList();
   }
 
   // The legacy config used a separate finch feature to gate CCT vs. non-CCT
@@ -45,20 +48,20 @@ LegacyStarterHeuristicConfig::GetConditionSetsForClientState(
   if (platform_delegate->GetIsCustomTab() &&
       !base::FeatureList::IsEnabled(
           features::kAutofillAssistantInCCTTriggering)) {
-    return empty_condition_sets_.GetList();
+    return empty_list->GetList();
   }
 
   if (!platform_delegate->GetIsCustomTab() &&
       !base::FeatureList::IsEnabled(
           features::kAutofillAssistantInTabTriggering)) {
-    return empty_condition_sets_.GetList();
+    return empty_list->GetList();
   }
 
   // The legacy config used to only be available for signed-in users in
   // weblayer.
   if (platform_delegate->GetIsWebLayer() &&
       !platform_delegate->GetIsLoggedIn()) {
-    return empty_condition_sets_.GetList();
+    return empty_list->GetList();
   }
 
   return condition_sets_.GetList();
