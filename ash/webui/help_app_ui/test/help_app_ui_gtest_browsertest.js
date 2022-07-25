@@ -180,6 +180,10 @@ TEST_F('HelpAppUIGtestBrowserTest', 'GuestHasLang', () => {
   runHelpAppTestInGuest('GuestHasLang');
 });
 
+TEST_F('HelpAppUIGtestBrowserTest', 'GuestLoadsLoadTimeData', () => {
+  runHelpAppTestInGuest('GuestLoadsLoadTimeData');
+});
+
 TEST_F('HelpAppUIGtestBrowserTest', 'GuestCanSearchWithHeadings', () => {
   runHelpAppTestInGuest('GuestCanSearchWithHeadings');
 });
