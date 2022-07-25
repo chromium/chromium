@@ -267,13 +267,15 @@ void WebAppCommandManager::OnCommandComplete(
   DCHECK(command_it != commands_.end());
   commands_.erase(command_it);
 
-  auto lock_free =
-      lock_manager_.TestLock(WebAppCommandLock::GetSharedWebContentsLock());
-  DCHECK_NE(lock_free,
-            content::DisjointRangeLockManager::TestLockResult::kInvalid);
-  if (lock_free == content::DisjointRangeLockManager::TestLockResult::kFree) {
-    AddValueToLog(base::Value("Destroying the shared web contents."));
-    shared_web_contents_.reset();
+  if (shared_web_contents_) {
+    auto lock_free =
+        lock_manager_.TestLock(WebAppCommandLock::GetSharedWebContentsLock());
+    DCHECK_NE(lock_free,
+              content::DisjointRangeLockManager::TestLockResult::kInvalid);
+    if (lock_free == content::DisjointRangeLockManager::TestLockResult::kFree) {
+      AddValueToLog(base::Value("Destroying the shared web contents."));
+      shared_web_contents_.reset();
+    }
   }
 
   std::move(completion_callback).Run();
