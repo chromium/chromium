@@ -160,31 +160,21 @@ static LayoutUnit AdjustLineOffsetForHanging(NGLineInfo* line_info,
   if (IsLtr(line_info->BaseDirection()))
     return LayoutUnit();
 
-  // If the hang_width cause overflow, we don't want to adjust the line_offset
-  // so that it becomes negative, which causes some difficulties for the
-  // NGLayoutOverflowCalculator to apply its own adjustements in the
-  // AdjustOverflowForHanging function. Instead, we'll shift the line items so
-  // that we ignore the hanging width when the NGInlineLayoutStateStack computes
-  // their positions in ComputeInlinePositions function.
+  // If !line_info->ShouldHangTrailingSpaces(), the hang width is not considered
+  // in ApplyTextAlign, and so line_offset points to where the left edge of the
+  // hanging spaces should be. Since the line box rect has to start at the left
+  // edge of the text instead (needed for caret positioning), we increase
+  // line_offset.
   LayoutUnit hang_width = line_info->HangWidth();
-  if (line_offset < hang_width) {
-    // If we haven't considered the hang_width in ApplyTextAlign, we might end
-    // up with a negative line_offset, so shift the offset to ignore hanging
-    // spaces.
-    if (!line_info->ShouldHangTrailingSpaces())
-      line_offset += hang_width;
-    return -hang_width;
+  if (!line_info->ShouldHangTrailingSpaces()) {
+    line_offset += hang_width;
   }
 
-  // At this point we have a RTL line with hanging spaces that shouldn't be
-  // ignored based on the text-align property. Hence the final line_offset value
-  // should consider the hang_width. Note that this line_offset will be used
-  // later to compute the caret position in ComputeLocalCaretRectAtTextOffset,
-  // that's why we need to adjust the offset. Once we adjust the line_offset, we
-  // can use 0 as initial position for the line items, as we do in the case of a
-  // LTR line.
-  line_offset -= hang_width;
-  return LayoutUnit();
+  // Now line_offset always points to where the left edge of the text should be.
+  // If there are any hanging spaces, the starting position of the line must be
+  // offset by the width of the hanging spaces so that the text starts at
+  // line_offset.
+  return -hang_width;
 }
 
 void NGInlineLayoutAlgorithm::RebuildBoxStates(

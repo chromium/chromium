@@ -153,6 +153,24 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const NGInlineCursor& cursor,
       line_box.Current().OffsetInContainerFragment();
   const PhysicalRect line_box_rect(line_box_offset, line_box.Current().Size());
 
+  // If there are hanging spaces, grow the line rect to encompass them so the
+  // caret can be placed there. Note that per UAX#9 L1 and L2, trailing spaces
+  // are always visually at the end of the line in the paragraph direction.
+  const LayoutUnit hanging_inline_size =
+      line_box.Current()->LineBoxHangingInlineSize();
+  PhysicalRect line_box_rect_with_hanging = line_box_rect;
+  if (UNLIKELY(hanging_inline_size)) {
+    if (is_horizontal) {
+      if (IsRtl(line_box.Current().BaseDirection()))
+        line_box_rect_with_hanging.offset.left -= hanging_inline_size;
+      line_box_rect_with_hanging.size.width += hanging_inline_size;
+    } else {
+      if (IsRtl(line_box.Current().BaseDirection()))
+        line_box_rect_with_hanging.offset.top -= hanging_inline_size;
+      line_box_rect_with_hanging.size.height += hanging_inline_size;
+    }
+  }
+
   const NGInlineBreakToken* break_token = line_box.Current().InlineBreakToken();
   const bool is_last_line = !break_token || break_token->IsForcedBreak();
   const ComputedStyle& block_style = fragment.Style();
@@ -162,29 +180,39 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const NGInlineCursor& cursor,
       (style.GetUnicodeBidi() != UnicodeBidi::kPlaintext ||
        IsLtr(ResolvedDirection(cursor)));
 
-  // For horizontal text, adjust the location in the x direction to ensure that
-  // it completely falls in the union of line box and containing block, and
-  // then round it to the nearest pixel.
+  // Adjust the location in the inline direction to ensure that it falls either
+  // on the line box proper, or on the intersection of the line's hanging text
+  // and the containing block. Then round the location to the nearest pixel.
+  // Additionally, since we don't want the caret to go past the start of the
+  // line or past the end of the container, we subtract the width of the caret
+  // in some cases.
   if (is_horizontal) {
-    if (should_align_caret_right) {
-      const LayoutUnit left_edge = std::min(LayoutUnit(), line_box_rect.X());
-      const LayoutUnit right_limit = line_box_rect.Right() - caret_width;
-      caret_location.left =
-          ClampAndRound(caret_location.left, left_edge, right_limit);
-    } else {
-      const LayoutUnit right_limit =
-          std::max(fragment.Size().width, line_box_rect.Right()) - caret_width;
-      caret_location.left =
-          ClampAndRound(caret_location.left, line_box_rect.X(), right_limit);
-    }
-    return PhysicalRect(caret_location, caret_size);
+    const LayoutUnit right_aligned_caret =
+        should_align_caret_right ? caret_width : LayoutUnit();
+    const LayoutUnit left_limit =
+        std::min(line_box_rect.X(),
+                 std::max(line_box_rect_with_hanging.X() - right_aligned_caret,
+                          LayoutUnit()));
+    const LayoutUnit right_limit = std::max(
+        line_box_rect.Right() - caret_width,
+        std::min(line_box_rect_with_hanging.Right() - right_aligned_caret,
+                 fragment.Size().width - caret_width));
+    caret_location.left =
+        ClampAndRound(caret_location.left, left_limit, right_limit);
+  } else {
+    const LayoutUnit bottom_aligned_caret =
+        should_align_caret_right ? caret_height : LayoutUnit();
+    const LayoutUnit top_limit =
+        std::min(line_box_rect.Y(),
+                 std::max(line_box_rect_with_hanging.Y() - bottom_aligned_caret,
+                          LayoutUnit()));
+    const LayoutUnit bottom_limit = std::max(
+        line_box_rect.Bottom() - caret_height,
+        std::min(line_box_rect_with_hanging.Bottom() - bottom_aligned_caret,
+                 fragment.Size().height - caret_height));
+    caret_location.top =
+        ClampAndRound(caret_location.top, top_limit, bottom_limit);
   }
-
-  // Similar adjustment and rounding for vertical text.
-  const LayoutUnit min_y = std::min(LayoutUnit(), line_box_offset.top);
-  const LayoutUnit bottom_limit =
-      std::max(fragment.Size().height, line_box_rect.Bottom()) - caret_height;
-  caret_location.top = ClampAndRound(caret_location.top, min_y, bottom_limit);
   return PhysicalRect(caret_location, caret_size);
 }
 

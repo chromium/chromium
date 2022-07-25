@@ -433,7 +433,6 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
           other.depends_on_percentage_block_size_),
       children_valid_(other.children_valid_),
       has_propagated_descendants_(other.has_propagated_descendants_),
-      has_hanging_(other.has_hanging_),
       type_(other.type_),
       sub_type_(other.sub_type_),
       style_variant_(other.style_variant_),
