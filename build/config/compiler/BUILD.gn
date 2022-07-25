@@ -1536,20 +1536,16 @@ config("default_warnings") {
       ]
 
       if (!is_nacl) {
-        # TODO(https://crbug.com/1300731) Clean up and enable.
-        cflags += [ "-Wno-unqualified-std-cast-call" ]
+        cflags += [
+          # TODO(https://crbug.com/1300731) Clean up and enable.
+          "-Wno-unqualified-std-cast-call",
 
-        # Do not set the below flags if it's nacl as nacl-clang doesn't have the
-        # patches that require these flags.
-        if (llvm_force_head_revision) {
-          cflags += [
-            # TODO(crbug.com/1343303) Evaluate and possibly enable.
-            "-Wno-array-parameter",
+          # TODO(crbug.com/1343303) Evaluate and possibly enable.
+          "-Wno-array-parameter",
 
-            # TODO(crbug.com/1343975) Evaluate and possibly enable.
-            "-Wno-deprecated-builtins",
-          ]
-        }
+          # TODO(crbug.com/1343975) Evaluate and possibly enable.
+          "-Wno-deprecated-builtins",
+        ]
       }
 
       if (is_fuchsia) {

@@ -4,6 +4,14 @@
 
 import("//build/config/android/config.gni")
 
+# In a separate config so that the -Wno flag shows up after -Wall.
+config("apr_warnings") {
+  if (is_clang) {
+    # TODO(https://crbug.com/1347085): Investigate, fix.
+    cflags = [ "-Wno-int-conversion" ]
+  }
+}
+
 # Builds 'Apache Portable Runtime'. See http://apr.apache.org
 static_library("apr") {
   sources = [
@@ -107,5 +115,9 @@ static_library("apr") {
     "src/include",
     "src/include/arch/unix",
   ]
+
+  # TODO(thakis): Move this target to no_chromium_code instead.
   cflags = [ "-w" ]
+
+  configs += [ ":apr_warnings" ]
 }
