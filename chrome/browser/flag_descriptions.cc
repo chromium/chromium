@@ -2164,12 +2164,6 @@ const char kPasswordImportName[] = "Password import";
 const char kPasswordImportDescription[] =
     "Import functionality in password settings.";
 
-const char kPasswordsAccountStorageRevisedOptInFlowName[] =
-    "Revised opt-in flow for account-scoped passwore storage";
-const char kPasswordsAccountStorageRevisedOptInFlowDescription[] =
-    "Enables the revised opt-in flow for the account-scoped passwords storage "
-    "during first-time save.";
-
 const char kPasswordDomainCapabilitiesFetchingName[] =
     "Fetch credentials' password change capabilities";
 const char kPasswordDomainCapabilitiesFetchingDescription[] =

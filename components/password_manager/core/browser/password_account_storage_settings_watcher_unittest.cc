@@ -55,14 +55,8 @@ TEST(PasswordAccountStorageSettingsWatcherTest, NotifiesOnChanges) {
   EXPECT_CALL(change_callback, Run()).WillOnce([&]() {
     EXPECT_FALSE(feature_manager.IsOptedInForAccountStorage());
     EXPECT_FALSE(feature_manager.IsDefaultPasswordStoreSet());
-    if (base::FeatureList::IsEnabled(
-            features::kPasswordsAccountStorageRevisedOptInFlow)) {
-      EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
-                PasswordForm::Store::kProfileStore);
-    } else {
-      EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
-                PasswordForm::Store::kAccountStore);
-    }
+    EXPECT_EQ(feature_manager.GetDefaultPasswordStore(),
+              PasswordForm::Store::kProfileStore);
   });
   sync_service.FireStateChanged();
 

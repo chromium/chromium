@@ -8290,13 +8290,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillFillMerchantPromoCodeFields)},
 
-    {"passwords-account-storage-revised-opt-in-flow",
-     flag_descriptions::kPasswordsAccountStorageRevisedOptInFlowName,
-     flag_descriptions::kPasswordsAccountStorageRevisedOptInFlowDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kPasswordsAccountStorageRevisedOptInFlow)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"traffic-counters", flag_descriptions::kTrafficCountersEnabledName,
      flag_descriptions::kTrafficCountersEnabledDescription, kOsCrOS,

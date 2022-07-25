@@ -5108,11 +5108,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "passwords-account-storage-revised-opt-in-flow",
-    "owners": [ "mamir", "treib" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "pcie-billboard-notification",
     "owners": [ "jimmyxgong", "cros-peripherals@google.com"],
     "expiry_milestone": 106

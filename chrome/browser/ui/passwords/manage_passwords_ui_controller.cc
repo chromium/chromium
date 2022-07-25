@@ -700,8 +700,6 @@ void ManagePasswordsUIController::
 
 void ManagePasswordsUIController::
     AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword() {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordsAccountStorageRevisedOptInFlow));
   DCHECK(GetState() == password_manager::ui::MANAGE_STATE) << GetState();
   // Note: While saving the password locally earlier, the FormManager has been
   // updated with any edits the user made in the Save bubble. So at this point,
@@ -936,9 +934,6 @@ void ManagePasswordsUIController::
 void ManagePasswordsUIController::MoveJustSavedPasswordAfterAccountStoreOptIn(
     password_manager::PasswordForm form,
     password_manager::PasswordManagerClient::ReauthSucceeded reauth_succeeded) {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordsAccountStorageRevisedOptInFlow));
-
   // Successful opt-in means that the just-saved password should be moved to the
   // account.
   if (reauth_succeeded) {

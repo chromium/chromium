@@ -66,9 +66,7 @@ bool PasswordFeatureManagerImpl::ShouldShowAccountStorageBubbleUi() const {
 
 bool PasswordFeatureManagerImpl::
     ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const {
-  return base::FeatureList::IsEnabled(
-             features::kPasswordsAccountStorageRevisedOptInFlow) &&
-         ShouldShowAccountStorageOptIn() && !IsDefaultPasswordStoreSet();
+  return ShouldShowAccountStorageOptIn() && !IsDefaultPasswordStoreSet();
 }
 
 PasswordForm::Store PasswordFeatureManagerImpl::GetDefaultPasswordStore()

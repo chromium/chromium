@@ -356,10 +356,6 @@ PasswordForm::Store GetDefaultPasswordStore(
   // If none of the early-outs above triggered, then we *can* save to the
   // account store in principle (though the user might not have opted in to that
   // yet).
-  // Note: Check the feature flag unconditionally to make sure there's no bias
-  // in group assignments.
-  bool revised_opt_in_flow_enabled = base::FeatureList::IsEnabled(
-      features::kPasswordsAccountStorageRevisedOptInFlow);
   if (default_store == PasswordForm::Store::kNotSet) {
     // In the original flow: Always default to saving to the account if the user
     //   hasn't made an explicit choice yet. (If they haven't opted in, they'll
@@ -369,7 +365,6 @@ PasswordForm::Store GetDefaultPasswordStore(
     //   default. If the user *has* opted in, then they've chosen to save to the
     //   account, so that becomes the default.
     bool save_to_profile_store =
-        revised_opt_in_flow_enabled &&
         !IsOptedInForAccountStorage(pref_service, sync_service);
     return save_to_profile_store ? PasswordForm::Store::kProfileStore
                                  : PasswordForm::Store::kAccountStore;

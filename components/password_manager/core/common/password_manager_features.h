@@ -50,7 +50,6 @@ extern const base::Feature kPasswordChangeWellKnown;
 extern const base::Feature kPasswordDomainCapabilitiesFetching;
 extern const base::Feature kPasswordImport;
 extern const base::Feature kPasswordReuseDetectionEnabled;
-extern const base::Feature kPasswordsAccountStorageRevisedOptInFlow;
 extern const base::Feature kPasswordScriptsFetching;
 extern const base::Feature kPasswordStrengthIndicator;
 extern const base::Feature kRecoverFromNeverSaveAndroid;
