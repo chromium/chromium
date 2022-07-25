@@ -101,6 +101,13 @@ TEST_F(ChildProcessTaskTest, TestAll) {
   content::RunAllPendingInMessageLoop();
   ASSERT_TRUE(provided_tasks_.empty());
 
+  // The following process which has handle = base::kNullProcessHandle, won't be
+  // added.
+  ChildProcessData data1(0);
+  ASSERT_FALSE(data1.GetProcess().IsValid());
+  provider.BrowserChildProcessLaunchedAndConnected(data1);
+  EXPECT_TRUE(provided_tasks_.empty());
+
   const int unique_id = 245;
   const std::u16string name(u"Test Task");
   const std::u16string expected_name(
