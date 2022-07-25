@@ -127,9 +127,9 @@ cr.define('cr.login', function() {
   const GAIA_MESSAGE_SAML_CLOSE_VIEW = 'ChromeOS.Gaia.Message.Saml.CloseView';
   const GAIA_MESSAGE_GAIA_CLOSE_VIEW = 'ChromeOS.Gaia.Message.Gaia.CloseView';
 
-  // Regular expressions used to check for Azure AD-related hosts
+  // Regular expressions used to check for 3P IdP-related hosts
   const AZURE_AD_HOST = /login\.microsoftonline\.com$/;
-  const AZURE_AD_B2B_HOST = /b2clogin\.com$/;
+  const OKTA_HOST = /\.okta\.com$/;
 
   /**
    * The source URL parameter for the constrained signin flow.
@@ -891,21 +891,21 @@ cr.define('cr.login', function() {
     }
 
     /**
-     * Check url's host to determine if it comes from Azure AD
+     * Check url's host to determine if it comes from a know IdP
      * @param {URL?} url
      * @private
      */
-    isAzureAD_(url) {
+    isKnownIdP_(url) {
       return Boolean(
-          url.host.match(AZURE_AD_HOST) || url.host.match(AZURE_AD_B2B_HOST));
+          url.host.match(AZURE_AD_HOST) || url.host.match(OKTA_HOST));
     }
 
     /**
-     * Try to auto-fill email on sign-in page if IdP is Azure AD
+     * Try to auto-fill email on sign-in page for supported identity providers
      * @param {string} url url from location header
      * @private
      */
-    maybeAutofillUsernameIfAzureAD_(url) {
+    maybeAutofillUsernameIfKnownIdP_(url) {
       if (!this.urlParameterToAutofillSAMLUsername_ ||
           this.urlParameterToAutofillSAMLUsername_.length === 0) {
         return;
@@ -916,7 +916,7 @@ cr.define('cr.login', function() {
       if (!this.email_) {
         return;
       }
-      if (this.isAzureAD_(new URL(url))) {
+      if (this.isKnownIdP_(new URL(url))) {
         url = appendParam(
             url, this.urlParameterToAutofillSAMLUsername_, this.email_);
         this.webview_.src = url;
@@ -964,7 +964,7 @@ cr.define('cr.login', function() {
           assert(header.value !== undefined);
           const location = decodeURIComponent(header.value);
           this.chooseWhatToSync_ = !!location.match(/(\?|&)source=3($|&)/);
-          this.maybeAutofillUsernameIfAzureAD_(header.value);
+          this.maybeAutofillUsernameIfKnownIdP_(header.value);
         }
       }
     }
