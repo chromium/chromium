@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -60,18 +61,18 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   FirstPartySetsDatabase& operator=(const FirstPartySetsDatabase&&) = delete;
   ~FirstPartySetsDatabase();
 
-  // Stores the `sites` into sites_to_clear table, and returns true on
-  // success.
+  // Stores the `sites` to be cleared for the `browser_context_id` into
+  // database, and returns true on success.
   [[nodiscard]] bool InsertSitesToClear(
-      const std::vector<net::SchemefulSite>& sites);
+      const std::string& browser_context_id,
+      const base::flat_set<net::SchemefulSite>& sites);
 
   // Stores the `browser_context_id` that has performed clearing into
   // browser_contexts_cleared table, and returns true on success.
   [[nodiscard]] bool InsertBrowserContextCleared(
       const std::string& browser_context_id);
 
-  // Gets the list of sites to clear for the `browser_context_id`. Returns an
-  // empty vector if `browser_context_id` does not exist in the database before.
+  // Gets the list of sites to clear for the `browser_context_id`.
   [[nodiscard]] std::vector<net::SchemefulSite> FetchSitesToClear(
       const std::string& browser_context_id);
 
@@ -96,10 +97,6 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // called once during DB initialization.  The value of `run_count` should
   // never be negative.
   void IncreaseRunCount() VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  // Returns whether an entry exists for the `browser_context_id`.
-  [[nodiscard]] bool HasEntryFor(const std::string& browser_context_id) const
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Deletes the database and returns whether the operation was successful.
   //
