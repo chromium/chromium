@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("font_size") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -28,16 +28,6 @@ source_set("font_size") {
     "//services/metrics/public/cpp:ukm_builders",
   ]
   public_deps = [ "//ios/web/public/js_messaging" ]
-}
-
-optimize_js("font_size_js") {
-  visibility = [
-    ":font_size",
-    ":unit_tests",
-  ]
-
-  primary_script = "resources/font_size.js"
-  sources = [ "resources/font_size.js" ]
 }
 
 source_set("unit_tests") {
@@ -66,4 +56,15 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//ui/base",
   ]
+}
+
+optimize_ts("font_size_js") {
+  visibility = [
+    ":font_size",
+    ":unit_tests",
+  ]
+
+  sources = [ "resources/font_size.ts" ]
+
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
