@@ -168,7 +168,7 @@
 <translation id="1153636665119721804">Google Advanced Protection programme</translation>
 <translation id="1155545602507378023">No, this device only</translation>
 <translation id="1155816283571436363">Connecting to your phone</translation>
-<translation id="1158080958325422608">Make upper case</translation>
+<translation id="1158080958325422608">Make Upper Case</translation>
 <translation id="1158238185437008462">See memories</translation>
 <translation id="1161575384898972166">Please sign in to <ph name="TOKEN_NAME" /> to export the client certificate.</translation>
 <translation id="116173250649946226">Your administrator has set a default theme which cannot be changed.</translation>
@@ -604,7 +604,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1588870296199743671">Open Link With...</translation>
 <translation id="1588919647604819635">Right-click card</translation>
-<translation id="1589055389569595240">Show spelling and grammar</translation>
+<translation id="1589055389569595240">Show Spelling and Grammar</translation>
 <translation id="1591679663873027990">Give Parallels Desktop permission to access USB devices. Parallels Desktop won't remember a USB device after it's removed.</translation>
 <translation id="1592074621872221573"><ph name="MANAGER" /> has disabled ADB debugging, which will reset your <ph name="DEVICE_TYPE" />. Back up your files before restarting.</translation>
 <translation id="1592126057537046434">Quick Answers translation</translation>
@@ -1137,7 +1137,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2079545284768500474">Undo</translation>
 <translation id="2080070583977670716">More settings</translation>
 <translation id="2081816110395725788">Idle power on battery</translation>
-<translation id="2082187087049518845">Group tab</translation>
+<translation id="2082187087049518845">Group Tab</translation>
 <translation id="2082510809738716738">Pick a theme colour</translation>
 <translation id="208586643495776849">Please try again</translation>
 <translation id="208634871997892083">Always-on VPN</translation>
@@ -2522,7 +2522,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3406396172897554194">Search by language or input name</translation>
 <translation id="3406605057700382950">&amp;Show bookmarks bar</translation>
 <translation id="3409785640040772790">Maps</translation>
-<translation id="3412265149091626468">Jump to selection</translation>
+<translation id="3412265149091626468">Jump to Selection</translation>
 <translation id="3413122095806433232">CA Issuers: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">Size:</translation>
 <translation id="3414966631182382431">Your <ph name="BEGIN_LINK" />browser is managed<ph name="END_LINK" /> by <ph name="MANAGER" /></translation>
@@ -2816,7 +2816,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3691231116639905343">Keyboard apps</translation>
 <translation id="369135240373237088">Sign in again with a school account</translation>
 <translation id="3693415264595406141">Password:</translation>
-<translation id="3694027410380121301">Select previous tab</translation>
+<translation id="3694027410380121301">Select Previous Tab</translation>
 <translation id="369489984217678710">Passwords and other sign-in data</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Security checks are complete. Your data will be uploaded.}=1{Security checks are complete. Your file will be uploaded.}other{Security checks are complete. Your files will be uploaded.}}</translation>
 <translation id="3698471669415859717">Review complete</translation>
@@ -3828,7 +3828,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4681930562518940301">Open original image in new tab</translation>
 <translation id="4682551433947286597">Wallpapers appear on the sign-in screen.</translation>
 <translation id="4682830185876172415">Recent downloads</translation>
-<translation id="4683629100208651599">Make lower case</translation>
+<translation id="4683629100208651599">Make Lower Case</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (default)</translation>
 <translation id="4684427112815847243">Sync everything</translation>
 <translation id="4684471265911890182"><ph name="APP_NAME" /> is trying to access the camera. Turn off the camera privacy switch to allow access.</translation>
@@ -3937,7 +3937,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="480990236307250886">Open the homepage</translation>
 <translation id="4809927044794281115">Light theme</translation>
 <translation id="4811212958317149293">Switch Access keyboard auto-scan</translation>
-<translation id="4811503964269049987">Group selected tab</translation>
+<translation id="4811503964269049987">Group Selected Tab</translation>
 <translation id="4813136279048157860">My Images</translation>
 <translation id="4813512666221746211">Network error</translation>
 <translation id="4814378367953456825">Enter a name for this fingerprint</translation>
@@ -4156,7 +4156,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5032430150487044192">Can't create QR code</translation>
 <translation id="5033137252639132982">Not allowed to use motion sensors</translation>
 <translation id="5033266061063942743">Geometric shapes</translation>
-<translation id="5037676449506322593">Select all</translation>
+<translation id="5037676449506322593">Select All</translation>
 <translation id="5038022729081036555">You can use it for <ph name="TIME_LIMIT" /> tomorrow.</translation>
 <translation id="5038818366306248416">You previously chose not to allow any extensions on <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">View and manage saved passwords in your Google Account</translation>
@@ -5580,7 +5580,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6459488832681039634">Use Selection for Find</translation>
 <translation id="6459799433792303855">Active window moved to another display.</translation>
 <translation id="6460566145397380451">Allowed to connect to MIDI devices</translation>
-<translation id="6460601847208524483">Find next</translation>
+<translation id="6460601847208524483">Find Next</translation>
 <translation id="6461170143930046705">Searching for networks...</translation>
 <translation id="6463795194797719782">&amp;Edit</translation>
 <translation id="6464825623202322042">This device</translation>
@@ -7698,7 +7698,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8571213806525832805">Last 4 weeks</translation>
 <translation id="8571687764447439720">Add Kerberos ticket</translation>
 <translation id="8574990355410201600">Always allow sound on <ph name="HOST" /></translation>
-<translation id="8575286410928791436">Hold <ph name="KEY_EQUIVALENT" /> to quit</translation>
+<translation id="8575286410928791436">Hold <ph name="KEY_EQUIVALENT" /> to Quit</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Add tab to reading list}other{Add tabs to reading list}}</translation>
 <translation id="8578639784464423491">Cannot exceed 99 letters</translation>
 <translation id="857943718398505171">Allowed (recommended)</translation>
@@ -8041,7 +8041,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8893928184421379330">Sorry, the device <ph name="DEVICE_LABEL" /> could not be recognised.</translation>
 <translation id="8894761918470382415">Data access protection for peripherals</translation>
 <translation id="8895454554629927345">Bookmark list</translation>
-<translation id="8898786835233784856">Select next tab</translation>
+<translation id="8898786835233784856">Select Next Tab</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
 <translation id="8899851313684471736">Open link in new &amp;window</translation>
 <translation id="8900413463156971200">Enable mobile</translation>

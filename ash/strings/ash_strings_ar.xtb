@@ -470,7 +470,8 @@
 <translation id="371370241367527062">الميكروفون الأمامي</translation>
 <translation id="3713734891607377840">فتح الملف بعد اكتمال تنزيله</translation>
 <translation id="3726171378575546917">التطبيقات <ph name="UNAVAILABLE_APPS_ONE" /> و<ph name="UNAVAILABLE_APPS_TWO" /> و<ph name="UNAVAILABLE_APPS_COUNT" /> غير مثبَّتة على هذا الجهاز.</translation>
-<translation id="3735740477244556633">ترتيب بحسب</translation>
+<translation id="3735740477244556633">الترتيب حسب
+</translation>
 <translation id="3742055079367172538">تم التقاط لقطة الشاشة</translation>
 <translation id="3765841986579723851">تم تعديله اليوم.</translation>
 <translation id="3771549900096082774">وضع التباين العالي</translation>
@@ -757,7 +758,7 @@
 <translation id="5523434445161341166">جارٍ اتصال <ph name="FEATURE_NAME" />.</translation>
 <translation id="5532994612895037630">انقر في أي مكان للتسجيل في وضع ملء الشاشة.</translation>
 <translation id="553675580533261935">جارٍ الخروج من الجلسة</translation>
-<translation id="5537725057119320332">إرسال</translation>
+<translation id="5537725057119320332">بث</translation>
 <translation id="554893713779400387">تبديل الإملاء</translation>
 <translation id="556042886152191864">زر</translation>
 <translation id="5571066253365925590">تم تفعيل البلوتوث</translation>
