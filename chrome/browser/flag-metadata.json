@@ -790,23 +790,23 @@
   },
   {
     "name": "cct-resizable-90-maximum-height",
-    "owners": ["ctzsm", "peconn"],
-    "expiry_milestone": 105
+    "owners": ["jinsukkim", "twellington"],
+    "expiry_milestone": 110
   },
   {
     "name": "cct-resizable-allow-resize-by-user-gesture",
-    "owners": ["ctzsm", "peconn"],
-    "expiry_milestone": 105
+    "owners": ["jinsukkim", "twellington"],
+    "expiry_milestone": 110
   },
   {
     "name": "cct-resizable-for-first-parties",
-    "owners": ["ctzsm", "peconn"],
-    "expiry_milestone": 105
+    "owners": ["jinsukkim", "twellington"],
+    "expiry_milestone": 110
   },
   {
     "name": "cct-resizable-for-third-parties",
-    "owners": ["ctzsm", "peconn"],
-    "expiry_milestone": 105
+    "owners": ["jinsukkim", "twellington"],
+    "expiry_milestone": 110
   },
   {
     "name": "cellular-bypass-esim-installation-connectivity-check",
