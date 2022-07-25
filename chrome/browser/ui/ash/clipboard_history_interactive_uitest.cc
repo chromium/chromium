@@ -34,6 +34,9 @@ const std::list<ash::ClipboardHistoryItem>& GetClipboardItems() {
 
 }  // namespace
 
+// Use the interactive ui test rather than the browser test. Otherwise, the
+// clipboard history menu could be closed unexpectedly due to the window capture
+// change when multiple browser tests run in parallel.
 // TODO(crbug.com/1304484): Make this class inherit from
 // `ClipboardHistoryBrowserTest` instead if possible.
 class ClipboardHistoryWebContentsInteractiveTest : public InProcessBrowserTest {
@@ -56,7 +59,6 @@ class ClipboardHistoryWebContentsInteractiveTest : public InProcessBrowserTest {
 // Verifies that the images rendered from the copied web contents should
 // show in the clipboard history menu. Switching the auto resize mode is covered
 // in this test case.
-// Flaky: crbug/1224777
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsInteractiveTest,
                        VerifyHTMLRendering) {
   // Load the web page which contains images and text.
