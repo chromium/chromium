@@ -915,9 +915,6 @@ crbug.com/1271275 external/wpt/css/compositing/background-blending/background-bl
 # Minor pixel differences
 crbug.com/1056492 external/wpt/svg/painting/reftests/marker-path-001.svg [ Failure ]
 
-# Flaky test.
-crbug.com/1054894 [ Mac ] http/tests/images/image-decode-in-frame.html [ Failure Pass ]
-
 crbug.com/819617 [ Linux ] virtual/text-antialias/descent-clip-in-scaled-page.html [ Failure ]
 
 crbug.com/1196414 compositing/composited-replaced-subpixel-location.html [ Failure ]
