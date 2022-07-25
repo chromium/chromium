@@ -77,11 +77,18 @@ OptimizationMetadata MockOptGuideDecider::BuildPriceTrackingResponse(
   PriceTrackingData price_tracking_data;
   BuyableProduct* buyable_product =
       price_tracking_data.mutable_buyable_product();
-  buyable_product->set_title(title);
-  buyable_product->set_image_url(image_url);
+
+  if (!title.empty())
+    buyable_product->set_title(title);
+
+  if (!image_url.empty())
+    buyable_product->set_image_url(image_url);
+
   buyable_product->set_offer_id(offer_id);
   buyable_product->set_product_cluster_id(product_cluster_id);
-  buyable_product->set_country_code(country_code);
+
+  if (!country_code.empty())
+    buyable_product->set_country_code(country_code);
 
   Any any;
   any.set_type_url(price_tracking_data.GetTypeName());
@@ -157,6 +164,11 @@ ShoppingServiceTestBase::~ShoppingServiceTestBase() = default;
 
 void ShoppingServiceTestBase::TestBody() {}
 
+void ShoppingServiceTestBase::TearDown() {
+  // Reset the enabled/disabled features after each test.
+  test_features_.Reset();
+}
+
 void ShoppingServiceTestBase::DidNavigatePrimaryMainFrame(WebWrapper* web) {
   shopping_service_->DidNavigatePrimaryMainFrame(web);
 }
@@ -172,6 +184,12 @@ void ShoppingServiceTestBase::DidNavigateAway(WebWrapper* web,
 
 void ShoppingServiceTestBase::WebWrapperDestroyed(WebWrapper* web) {
   shopping_service_->WebWrapperDestroyed(web);
+}
+
+void ShoppingServiceTestBase::MergeProductInfoData(
+    ProductInfo* info,
+    base::Value& on_page_data_map) {
+  ShoppingService::MergeProductInfoData(info, on_page_data_map);
 }
 
 int ShoppingServiceTestBase::GetProductInfoCacheOpenURLCount(const GURL& url) {

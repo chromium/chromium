@@ -79581,6 +79581,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="PromiseRejected"/>
 </enum>
 
+<enum name="ProductImageAvailability">
+  <summary>
+    The different possible states of product image availability for the product
+    info API in the shopping service.
+  </summary>
+  <int value="0" label="Server Only"/>
+  <int value="1" label="Local Only"/>
+  <int value="2" label="Both Available"/>
+  <int value="3" label="Neither Available"/>
+</enum>
+
 <enum name="Profile">
   <int value="0" label="Guest Profile"/>
   <int value="1" label="Profile 01"/>
