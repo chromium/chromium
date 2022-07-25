@@ -112,6 +112,7 @@ extern const base::Feature kLensOnQuickActionSearchWidget;
 extern const base::Feature kLocationBarModelOptimizations;
 extern const base::Feature kMostRecentTabOnBackgroundCloseTab;
 extern const base::Feature kNewInstanceFromDraggedLink;
+extern const base::Feature kNewTabPageTilesTitleWrapAround;
 extern const base::Feature kNewWindowAppMenu;
 extern const base::Feature kNotificationPermissionVariant;
 extern const base::Feature kOmniboxModernizeVisualUpdate;

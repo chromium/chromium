@@ -12,6 +12,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -123,6 +124,11 @@ public class TileView extends FrameLayout {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     int getRoundingRadiusForTesting() {
         return mRoundingOutline.getRadiusForTesting();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public @NonNull TextView getTitleView() {
+        return mTitleView;
     }
 
     @Override

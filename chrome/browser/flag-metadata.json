@@ -4626,6 +4626,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "ntp-tiles-title-wrap-around",
+    "owners": [ "ender", "chrome-omnibox-team" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "ntp-view-hierarchy-repair",
     "owners": [ "adamta", "sczs" ],
     "expiry_milestone": 98

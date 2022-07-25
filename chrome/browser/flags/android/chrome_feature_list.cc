@@ -252,6 +252,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kLocationBarModelOptimizations,
     &kMostRecentTabOnBackgroundCloseTab,
     &kNewInstanceFromDraggedLink,
+    &kNewTabPageTilesTitleWrapAround,
     &kNewWindowAppMenu,
     &kNotificationPermissionVariant,
     &kPageAnnotationsService,
@@ -720,6 +721,9 @@ const base::Feature kMostRecentTabOnBackgroundCloseTab{
 
 const base::Feature kNewInstanceFromDraggedLink{
     "NewInstanceFromDraggedLink", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kNewTabPageTilesTitleWrapAround{
+    "NewTabPageTilesTitleWrapAround", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kNewWindowAppMenu{"NewWindowAppMenu",
                                       base::FEATURE_ENABLED_BY_DEFAULT};

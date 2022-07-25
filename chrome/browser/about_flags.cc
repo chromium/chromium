@@ -6214,6 +6214,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"ntp-tiles-title-wrap-around",
+     flag_descriptions::kNewTabPageTilesTitleWrapAroundName,
+     flag_descriptions::kNewTabPageTilesTitleWrapAroundDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kNewTabPageTilesTitleWrapAround)},
+
     {"new-window-app-menu", flag_descriptions::kNewWindowAppMenuName,
      flag_descriptions::kNewWindowAppMenuDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNewWindowAppMenu)},
