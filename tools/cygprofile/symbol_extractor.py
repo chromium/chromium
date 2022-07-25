@@ -188,7 +188,9 @@ def SymbolInfosFromBinary(binary_filename):
   """
   command = [_TOOL_PREFIX + 'objdump', '-t', '-w', binary_filename]
   try:
-    p = subprocess.Popen(command, stdout=subprocess.PIPE)
+    p = subprocess.Popen(command,
+                         stdout=subprocess.PIPE,
+                         universal_newlines=True)
   except OSError as error:
     logging.error("Failed to execute the command: path=%s, binary_filename=%s",
                   command[0], binary_filename)
