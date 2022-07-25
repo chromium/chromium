@@ -306,7 +306,9 @@ void JsSandboxIsolate::DeleteSelf() {
 void JsSandboxIsolate::InitializeIsolateOnThread() {
   isolate_holder_ = std::make_unique<gin::IsolateHolder>(
       base::ThreadTaskRunnerHandle::Get(),
-      gin::IsolateHolder::IsolateType::kUtility);
+      gin::IsolateHolder::AccessMode::kSingleThread,
+      gin::IsolateHolder::IsolateType::kUtility,
+      gin::IsolateHolder::getDefaultIsolateParams());
   v8::Isolate* isolate = isolate_holder_->isolate();
   v8::Isolate::Scope isolate_scope(isolate);
   isolate->SetMicrotasksPolicy(v8::MicrotasksPolicy::kAuto);

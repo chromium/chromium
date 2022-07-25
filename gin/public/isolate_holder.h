@@ -14,6 +14,7 @@
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-callbacks.h"
 #include "v8/include/v8-forward.h"
+#include "v8/include/v8-isolate.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -83,6 +84,12 @@ class GIN_EXPORT IsolateHolder {
       IsolateCreationMode isolate_creation_mode = IsolateCreationMode::kNormal,
       v8::CreateHistogramCallback create_histogram_callback = nullptr,
       v8::AddHistogramSampleCallback add_histogram_sample_callback = nullptr);
+  IsolateHolder(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      AccessMode access_mode,
+      IsolateType isolate_type,
+      std::unique_ptr<v8::Isolate::CreateParams> params,
+      IsolateCreationMode isolate_creation_mode = IsolateCreationMode::kNormal);
   IsolateHolder(const IsolateHolder&) = delete;
   IsolateHolder& operator=(const IsolateHolder&) = delete;
   ~IsolateHolder();
@@ -108,6 +115,9 @@ class GIN_EXPORT IsolateHolder {
   // Initialization is a one-way operation (i.e., this method cannot return
   // false after returning true).
   static bool Initialized();
+
+  // Should only be called after v8::IsolateHolder::Initialize() is invoked.
+  static std::unique_ptr<v8::Isolate::CreateParams> getDefaultIsolateParams();
 
   v8::Isolate* isolate() { return isolate_; }
 
