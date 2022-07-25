@@ -32,9 +32,8 @@ class POLICY_EXPORT PolicyLoaderLacros
   // task_runner is used to have in sequence the process of policy parsing and
   // validation. The |per_profile| parameter specifies which policy should be
   // installed.
-  explicit PolicyLoaderLacros(
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      PolicyPerProfileFilter per_profile);
+  PolicyLoaderLacros(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                     PolicyPerProfileFilter per_profile);
   // Not copyable or movable
   PolicyLoaderLacros(const PolicyLoaderLacros&) = delete;
   PolicyLoaderLacros& operator=(const PolicyLoaderLacros&) = delete;
