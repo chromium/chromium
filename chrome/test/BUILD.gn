@@ -2439,7 +2439,10 @@ if (!is_android) {
       deps += [ "//components/safe_browsing/content/common/proto:download_file_types_proto" ]
     }
 
-    if (enable_basic_printing && enable_pdf) {
+    # TODO(crbug.com/1240796): Page.printToPdf is currently available only when
+    # Chrome is running in headless mode and native headless mode is currently
+    # available only on Linux, Windows and Mac platforms.
+    if (enable_basic_printing && enable_pdf && (is_linux || is_win || is_mac)) {
       sources +=
           [ "../browser/devtools/protocol/devtools_printtopdf_browsertest.cc" ]
     }

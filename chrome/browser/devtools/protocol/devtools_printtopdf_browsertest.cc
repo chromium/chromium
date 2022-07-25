@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
-
-// Native headless is currently available only on Linux platform. More
-// platforms will be added soon, so avoid function level clutter by
-// ifdefing the entire file.
-#if BUILDFLAG(IS_LINUX)
-
 #include <string>
 #include <vector>
 
@@ -44,8 +37,6 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest {
   static constexpr int kDpi = 300;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(crbug.com/1240796): Page.printToPdf is currently available only when
-    // Chrome is running in headless mode.
     DevToolsProtocolTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII("headless", "chrome");
   }
@@ -455,5 +446,3 @@ IN_PROC_BROWSER_TEST_F(PrintToPdfProtocolTest, PrintToPdfAsStream) {
 }
 
 }  // namespace
-
-#endif  // BUILDFLAG(IS_LINUX)
