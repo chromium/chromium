@@ -27,7 +27,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {getTemplate} from './password_edit_dialog.html.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {PasswordRequestorMixin} from './password_requestor_mixin.js';
@@ -267,12 +266,12 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     };
   }
 
-  existingEntry: MultiStorePasswordUiEntry|null;
+  existingEntry: chrome.passwordsPrivate.PasswordUiEntry|null;
   isAccountStoreUser: boolean;
   accountEmail: string|null;
   readonly storeOptionAccountValue: string;
   readonly storeOptionDeviceValue: string;
-  savedPasswords: MultiStorePasswordUiEntry[];
+  savedPasswords: chrome.passwordsPrivate.PasswordUiEntry[];
   private usernamesByOrigin_: Map<string, Set<string>>|null = null;
   dialogMode: PasswordDialogMode;
   private isInFederatedViewMode_: boolean;
@@ -450,7 +449,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         // credential.
         return this.existingEntry!.federationText!;
       case PasswordDialogMode.EDIT:
-        return this.existingEntry!.password;
+        return this.existingEntry!.password || '';
       case PasswordDialogMode.ADD:
         return '';
       default:
@@ -702,7 +701,8 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         }, () => {});
   }
 
-  private switchToEditMode_(existingEntry: MultiStorePasswordUiEntry) {
+  private switchToEditMode_(existingEntry:
+                                chrome.passwordsPrivate.PasswordUiEntry) {
     this.existingEntry = existingEntry;
     this.initDialog_();
     this.$.dialog.focus();

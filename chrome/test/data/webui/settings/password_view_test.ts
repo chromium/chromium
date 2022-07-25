@@ -15,7 +15,7 @@ import {SettingsRoutes} from 'chrome://settings/settings_routes.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {createMultiStorePasswordEntry, createPasswordEntry} from './passwords_and_autofill_fake_data.js';
+import {createPasswordEntry} from './passwords_and_autofill_fake_data.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
 // clang-format on
@@ -453,8 +453,13 @@ suite('PasswordViewTest', function() {
         const dialog = page.shadowRoot!.querySelector('password-remove-dialog');
         assertTrue(!!dialog);
         assertDeepEquals(
-            createMultiStorePasswordEntry(
-                {url: SITE, username: USERNAME, deviceId: ID, accountId: ID}),
+            createPasswordEntry({
+              url: SITE,
+              username: USERNAME,
+              id: ID,
+              inAccountStore: true,
+              inProfileStore: true,
+            }),
             dialog.duplicatedPassword);
 
         // click delete on the dialog.

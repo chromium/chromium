@@ -37,7 +37,6 @@ import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
-import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {AccountStorageOptInStateChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_device_section.html.js';
 import {PasswordsListHandlerElement} from './passwords_list_handler.js';
@@ -213,11 +212,11 @@ export class PasswordsDeviceSectionElement extends
 
   subpageRoute: Route;
   filter: string;
-  private deviceOnlyPasswords_: MultiStorePasswordUiEntry[];
-  private deviceAndAccountPasswords_: MultiStorePasswordUiEntry[];
-  private allDevicePasswords_: MultiStorePasswordUiEntry[];
+  private deviceOnlyPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
+  private deviceAndAccountPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
+  private allDevicePasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
   private shouldShowMoveMultiplePasswordsBanner_: boolean;
-  private lastFocused_: MultiStorePasswordUiEntry;
+  private lastFocused_: chrome.passwordsPrivate.PasswordUiEntry;
   private listBlurred_: boolean;
   private accountEmail_: string;
   private isUserAllowedToAccessPage_: boolean;
@@ -272,17 +271,20 @@ export class PasswordsDeviceSectionElement extends
     this.accountStorageOptInStateListener_ = null;
   }
 
-  private computeAllDevicePasswords_(): MultiStorePasswordUiEntry[] {
+  private computeAllDevicePasswords_():
+      chrome.passwordsPrivate.PasswordUiEntry[] {
     return this.savedPasswords.filter(
         p => p.storedIn !== chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT);
   }
 
-  private computeDeviceOnlyPasswords_(): MultiStorePasswordUiEntry[] {
+  private computeDeviceOnlyPasswords_():
+      chrome.passwordsPrivate.PasswordUiEntry[] {
     return this.savedPasswords.filter(
         p => p.storedIn === chrome.passwordsPrivate.PasswordStoreSet.DEVICE);
   }
 
-  private computeDeviceAndAccountPasswords_(): MultiStorePasswordUiEntry[] {
+  private computeDeviceAndAccountPasswords_():
+      chrome.passwordsPrivate.PasswordUiEntry[] {
     return this.savedPasswords.filter(
         p => p.storedIn ===
             chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT);
@@ -354,13 +356,14 @@ export class PasswordsDeviceSectionElement extends
     this.accountStorageOptInStateListener_ = setOptedIn;
   }
 
-  private isNonEmpty_(passwords: MultiStorePasswordUiEntry[]): boolean {
+  private isNonEmpty_(passwords: chrome.passwordsPrivate.PasswordUiEntry[]):
+      boolean {
     return passwords.length > 0;
   }
 
   private getFilteredPasswords_(
-      passwords: MultiStorePasswordUiEntry[],
-      filter: string): MultiStorePasswordUiEntry[] {
+      passwords: chrome.passwordsPrivate.PasswordUiEntry[],
+      filter: string): chrome.passwordsPrivate.PasswordUiEntry[] {
     if (!filter) {
       return passwords.slice();
     }

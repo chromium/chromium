@@ -4,13 +4,12 @@
 
 /**
  * @fileoverview This mixin bundles the functionality for removal of a
- * MultiStorePasswordUIEntry. The UI elements inheriting this mixin should also
- * have a child PasswordRemoveDialogElement.
+ * chrome.passwordsPrivate.PasswordUiEntry. The UI elements inheriting this
+ * mixin should also have a child PasswordRemoveDialogElement.
  */
 
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {PasswordRemoveDialogPasswordsRemovedEvent} from './password_remove_dialog.js';
 
@@ -28,7 +27,8 @@ export const PasswordRemovalMixin = dedupingMixin(
 
         showPasswordRemoveDialog: boolean;
 
-        removePassword(password: MultiStorePasswordUiEntry): boolean {
+        removePassword(password: chrome.passwordsPrivate.PasswordUiEntry):
+            boolean {
           // TODO(https://crbug.com/1298027): Use Promise API to simplify the
           // logic.
           if (password.storedIn ===
@@ -67,7 +67,7 @@ export interface PasswordRemovalMixinInterface {
    * to remove.
    * @return Whether the password was removed.
    */
-  removePassword(password: MultiStorePasswordUiEntry): boolean;
+  removePassword(password: chrome.passwordsPrivate.PasswordUiEntry): boolean;
 
 
   /** Sets the property |showPasswordRemoveDialog| to false. */

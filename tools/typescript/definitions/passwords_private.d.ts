@@ -86,11 +86,12 @@ declare global {
       export interface PasswordUiEntry {
         urls: UrlCollection;
         username: string;
+        password?: string;
         federationText?: string;
         id: number;
         storedIn: PasswordStoreSet;
         isAndroidCredential: boolean;
-        passwordNote: string;
+        note: string;
       }
 
       export interface ExceptionEntry {

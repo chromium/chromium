@@ -415,7 +415,7 @@ void PasswordsPrivateDelegateImpl::SetCredentials(
       api::passwords_private::PasswordUiEntry entry;
       entry.urls = CreateUrlCollectionFromCredential(credential);
       entry.username = base::UTF16ToUTF8(credential.username);
-      entry.password_note = base::UTF16ToUTF8(credential.note.value);
+      entry.note = base::UTF16ToUTF8(credential.note.value);
       entry.id = id;
       entry.stored_in = ConvertToAPIStore(credential.stored_in);
       entry.is_android_credential =

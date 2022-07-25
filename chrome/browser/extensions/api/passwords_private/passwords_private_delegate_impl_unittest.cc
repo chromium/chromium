@@ -197,7 +197,7 @@ password_manager::PasswordForm CreateSampleForm(
 MATCHER_P(PasswordUiEntryDataEquals, expected, "") {
   return testing::Value(expected.get().urls.link, arg.urls.link) &&
          testing::Value(expected.get().username, arg.username) &&
-         testing::Value(expected.get().password_note, arg.password_note) &&
+         testing::Value(expected.get().note, arg.note) &&
          testing::Value(expected.get().stored_in, arg.stored_in) &&
          testing::Value(expected.get().is_android_credential,
                         arg.is_android_credential);
@@ -381,13 +381,13 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
   api::passwords_private::PasswordUiEntry expected_entry1;
   expected_entry1.urls.link = "https://example1.com/";
   expected_entry1.username = "username1";
-  expected_entry1.password_note = "";
+  expected_entry1.note = "";
   expected_entry1.stored_in =
       api::passwords_private::PASSWORD_STORE_SET_ACCOUNT;
   api::passwords_private::PasswordUiEntry expected_entry2;
   expected_entry2.urls.link = "http://example2.com/login";
   expected_entry2.username = "";
-  expected_entry2.password_note = "note";
+  expected_entry2.note = "note";
   expected_entry2.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
   EXPECT_CALL(callback,
               Run(testing::UnorderedElementsAre(
@@ -473,7 +473,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {
   EXPECT_CALL(callback, Run(SizeIs(1)))
       .WillOnce([](const PasswordsPrivateDelegate::UiEntries& passwords) {
         EXPECT_EQ("new_user", passwords[0].username);
-        EXPECT_EQ("", passwords[0].password_note);
+        EXPECT_EQ("", passwords[0].note);
       });
   delegate.GetSavedPasswordsList(callback.Get());
 }
@@ -500,7 +500,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordWithNote) {
         EXPECT_EQ(sample_form.username_value,
                   base::UTF8ToUTF16(passwords[0].username));
         EXPECT_EQ(sample_form.notes[1].value,
-                  base::UTF8ToUTF16(passwords[0].password_note));
+                  base::UTF8ToUTF16(passwords[0].note));
       });
   delegate.GetSavedPasswordsList(callback.Get());
   int sample_form_id = delegate.GetIdForCredential(
@@ -527,7 +527,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPasswordWithNote) {
   EXPECT_CALL(callback, Run(SizeIs(1)))
       .WillOnce([](const PasswordsPrivateDelegate::UiEntries& passwords) {
         EXPECT_EQ("new_user", passwords[0].username);
-        EXPECT_EQ("new note", passwords[0].password_note);
+        EXPECT_EQ("new note", passwords[0].note);
       });
   delegate.GetSavedPasswordsList(callback.Get());
 }
@@ -966,7 +966,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, AndroidCredential) {
   expected_entry.urls.link =
       "https://play.google.com/store/apps/details?id=example.com";
   expected_entry.username = "test@gmail.com";
-  expected_entry.password_note = "";
+  expected_entry.note = "";
   expected_entry.is_android_credential = true;
   expected_entry.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
   EXPECT_CALL(callback, Run(testing::ElementsAre(PasswordUiEntryDataEquals(

@@ -10,11 +10,11 @@ import 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PasswordDialogMode, PasswordEditDialogElement, SettingsTextareaElement} from 'chrome://settings/lazy_load.js';
-import {PasswordManagerImpl, MultiStorePasswordUiEntry} from 'chrome://settings/settings.js';
+import {PasswordManagerImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {createPasswordEntry, createMultiStorePasswordEntry, PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.js';
+import {createPasswordEntry, PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
 // clang-format on
@@ -220,8 +220,8 @@ suite('PasswordEditDialog', function() {
   });
 
   test('hasCorrectInitialStateWhenViewFederatedCredential', function() {
-    const federationEntry = createMultiStorePasswordEntry(
-        {federationText: 'with chromium.org', username: 'bart', deviceId: 42});
+    const federationEntry = createPasswordEntry(
+        {federationText: 'with chromium.org', username: 'bart', id: 42});
     const passwordDialog =
         elementFactory.createPasswordEditDialog(federationEntry);
     assertFederatedDialogParts(passwordDialog);
@@ -240,8 +240,8 @@ suite('PasswordEditDialog', function() {
   test('hasCorrectInitialStateWhenEditAndroidCredential', function() {
     const androidEntry = createPasswordEntry(
         {url: 'app.com', username: 'bart', isAndroidCredential: true});
-    const passwordDialog = elementFactory.createPasswordEditDialog(
-        new MultiStorePasswordUiEntry(androidEntry));
+    const passwordDialog =
+        elementFactory.createPasswordEditDialog(androidEntry);
     assertEquals(androidEntry.urls.shown, passwordDialog.$.websiteInput.value);
     assertEquals(
         passwordDialog.i18n('editPasswordAppLabel'),
@@ -249,8 +249,8 @@ suite('PasswordEditDialog', function() {
   });
 
   test('hasCorrectInitialStateWhenEditPassword', function() {
-    const commonEntry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', accountId: 42});
+    const commonEntry =
+        createPasswordEntry({url: 'goo.gl', username: 'bart', id: 42});
     const passwordDialog = elementFactory.createPasswordEditDialog(commonEntry);
     assertEditDialogParts(passwordDialog);
     assertEquals(commonEntry.urls.link, passwordDialog.$.websiteInput.value);
@@ -262,27 +262,36 @@ suite('PasswordEditDialog', function() {
         passwordDialog.$.footnote.innerText.trim());
   });
 
-  test('changesPasswordForAccountId', function() {
-    const accountEntry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', accountId: 42});
+  test('changesPasswordForAccountStore', function() {
+    const accountEntry = createPasswordEntry({
+      url: 'goo.gl',
+      username: 'bart',
+      id: 42,
+      inAccountStore: true,
+    });
     const editDialog = elementFactory.createPasswordEditDialog(accountEntry);
 
     return changeSavedPasswordTestHelper(
         editDialog, accountEntry.id, passwordManager);
   });
 
-  test('changesPasswordForDeviceId', function() {
-    const deviceEntry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', deviceId: 42});
+  test('changesPasswordForProfileStore', function() {
+    const deviceEntry =
+        createPasswordEntry({url: 'goo.gl', username: 'bart', id: 42});
     const editDialog = elementFactory.createPasswordEditDialog(deviceEntry);
 
     return changeSavedPasswordTestHelper(
         editDialog, deviceEntry.id, passwordManager);
   });
 
-  test('changesPasswordForBothId', function() {
-    const multiEntry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', accountId: 41, deviceId: 41});
+  test('changesPasswordForBothStores', function() {
+    const multiEntry = createPasswordEntry({
+      url: 'goo.gl',
+      username: 'bart',
+      id: 41,
+      inProfileStore: true,
+      inAccountStore: true,
+    });
     const editDialog = elementFactory.createPasswordEditDialog(multiEntry);
 
     return changeSavedPasswordTestHelper(
@@ -291,10 +300,8 @@ suite('PasswordEditDialog', function() {
 
   test('changeUsernameFailsWhenReused', function() {
     const accountPasswords = [
-      createMultiStorePasswordEntry(
-          {url: 'goo.gl', username: 'bart', accountId: 0}),
-      createMultiStorePasswordEntry(
-          {url: 'goo.gl', username: 'mark', accountId: 1}),
+      createPasswordEntry({url: 'goo.gl', username: 'bart', id: 0}),
+      createPasswordEntry({url: 'goo.gl', username: 'mark', id: 1}),
     ];
     const editDialog = elementFactory.createPasswordEditDialog(
         accountPasswords[0]!, accountPasswords);
@@ -313,10 +320,10 @@ suite('PasswordEditDialog', function() {
 
   test('changesUsernameWhenReusedForDifferentStore', async function() {
     const passwords = [
-      createMultiStorePasswordEntry(
-          {url: 'goo.gl', username: 'bart', accountId: 0}),
-      createMultiStorePasswordEntry(
-          {url: 'goo.gl', username: 'mark', deviceId: 1}),
+      createPasswordEntry(
+          {url: 'goo.gl', username: 'bart', id: 0, inAccountStore: true}),
+      createPasswordEntry(
+          {url: 'goo.gl', username: 'mark', id: 1, inProfileStore: true}),
     ];
     const editDialog =
         elementFactory.createPasswordEditDialog(passwords[0], passwords);
@@ -331,8 +338,8 @@ suite('PasswordEditDialog', function() {
   // Test verifies that the edit dialog informs the password is stored in the
   // account.
   test('showsStorageDetailsForAccountPassword', function() {
-    const accountPassword = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', accountId: 42});
+    const accountPassword = createPasswordEntry(
+        {url: 'goo.gl', username: 'bart', id: 42, inAccountStore: true});
     const accountPasswordDialog =
         elementFactory.createPasswordEditDialog(accountPassword);
 
@@ -351,8 +358,8 @@ suite('PasswordEditDialog', function() {
   // Test verifies that the edit dialog informs the password is stored on the
   // device.
   test('showsStorageDetailsForDevicePassword', function() {
-    const devicePassword = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', deviceId: 42});
+    const devicePassword =
+        createPasswordEntry({url: 'goo.gl', username: 'bart', id: 42});
     const devicePasswordDialog =
         elementFactory.createPasswordEditDialog(devicePassword);
 
@@ -371,8 +378,13 @@ suite('PasswordEditDialog', function() {
   // Test verifies that the edit dialog informs the password is stored both on
   // the device and in the account.
   test('showsStorageDetailsForBothLocations', function() {
-    const accountAndDevicePassword = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', deviceId: 42, accountId: 43});
+    const accountAndDevicePassword = createPasswordEntry({
+      url: 'goo.gl',
+      username: 'bart',
+      id: 42,
+      inAccountStore: true,
+      inProfileStore: true,
+    });
     const accountAndDevicePasswordDialog =
         elementFactory.createPasswordEditDialog(accountAndDevicePassword);
 
@@ -521,8 +533,8 @@ suite('PasswordEditDialog', function() {
   });
 
   test('validatesUsernameWhenWebsiteOriginChanges', async function() {
-    const passwords = [createMultiStorePasswordEntry(
-        {url: 'website.com', username: 'username', accountId: 0})];
+    const passwords = [createPasswordEntry(
+        {url: 'website.com', username: 'username', id: 0})];
     const addDialog = elementFactory.createPasswordEditDialog(null, passwords);
 
     addDialog.$.usernameInput.value = 'username';
@@ -537,8 +549,8 @@ suite('PasswordEditDialog', function() {
   });
 
   test('validatesUsernameWhenUsernameChanges', async function() {
-    const passwords = [createMultiStorePasswordEntry(
-        {url: 'website.com', username: 'username', accountId: 0})];
+    const passwords = [createPasswordEntry(
+        {url: 'website.com', username: 'username', id: 0})];
     const addDialog = elementFactory.createPasswordEditDialog(null, passwords);
 
     await updateWebsiteInput(addDialog, passwordManager, 'website.com');
@@ -553,10 +565,18 @@ suite('PasswordEditDialog', function() {
 
   test('addPasswordFailsWhenUsernameReusedForAnyStore', async function() {
     const passwords = [
-      createMultiStorePasswordEntry(
-          {url: 'website.com', username: 'username1', accountId: 0}),
-      createMultiStorePasswordEntry(
-          {url: 'website.com', username: 'username2', deviceId: 0}),
+      createPasswordEntry({
+        url: 'website.com',
+        username: 'username1',
+        id: 0,
+        inAccountStore: true,
+      }),
+      createPasswordEntry({
+        url: 'website.com',
+        username: 'username2',
+        id: 0,
+        inProfileStore: true,
+      }),
     ];
     const addDialog = elementFactory.createPasswordEditDialog(null, passwords);
     await updateWebsiteInput(addDialog, passwordManager, 'website.com');
@@ -610,8 +630,8 @@ suite('PasswordEditDialog', function() {
   test(
       'requestsPlaintextPasswordAndSwitchesToEditModeOnViewPasswordClick',
       async function() {
-        const existingEntry = createMultiStorePasswordEntry(
-            {url: 'website.com', username: 'username', accountId: 0});
+        const existingEntry = createPasswordEntry(
+            {url: 'website.com', username: 'username', id: 0});
         const addDialog =
             elementFactory.createPasswordEditDialog(null, [existingEntry]);
         assertFalse(isElementVisible(addDialog.$.viewExistingPasswordLink));
@@ -638,8 +658,8 @@ suite('PasswordEditDialog', function() {
 
   test('hasCorrectInitialStateWhenEditModeWhenNotesEnabled', async function() {
     loadTimeData.overrideValues({enablePasswordNotes: true});
-    const commonEntry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', accountId: 42});
+    const commonEntry =
+        createPasswordEntry({url: 'goo.gl', username: 'bart', id: 42});
     const passwordDialog = elementFactory.createPasswordEditDialog(commonEntry);
     assertEditDialogParts(passwordDialog);
     const noteElement =
@@ -652,8 +672,8 @@ suite('PasswordEditDialog', function() {
   test('changesPasswordWithNote', async function() {
     loadTimeData.overrideValues({enablePasswordNotes: true});
     loadTimeData.overrideValues({enablePasswordViewPage: true});
-    const entry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', accountId: 42, note: 'some note'});
+    const entry = createPasswordEntry(
+        {url: 'goo.gl', username: 'bart', id: 42, note: 'some note'});
     const editDialog = elementFactory.createPasswordEditDialog(entry);
     const noteElement =
         editDialog.shadowRoot!.querySelector<SettingsTextareaElement>('#note')!;
@@ -687,8 +707,8 @@ suite('PasswordEditDialog', function() {
 
   test('noChangesWhenNotesIsNotEnabled', async function() {
     loadTimeData.overrideValues({enablePasswordNotes: false});
-    const commonEntry = createMultiStorePasswordEntry(
-        {url: 'goo.gl', username: 'bart', accountId: 42});
+    const commonEntry =
+        createPasswordEntry({url: 'goo.gl', username: 'bart', id: 42});
     const passwordDialog = elementFactory.createPasswordEditDialog(commonEntry);
     assertEditDialogParts(passwordDialog);
     assertFalse(
@@ -698,8 +718,8 @@ suite('PasswordEditDialog', function() {
 
   test('federatedCredentialDoesntHaveNotes', async function() {
     loadTimeData.overrideValues({enablePasswordNotes: true});
-    const federationEntry = createMultiStorePasswordEntry(
-        {federationText: 'with chromium.org', username: 'bart', deviceId: 42});
+    const federationEntry = createPasswordEntry(
+        {federationText: 'with chromium.org', username: 'bart', id: 42});
     const passwordDialog =
         elementFactory.createPasswordEditDialog(federationEntry);
     assertFederatedDialogParts(passwordDialog);
@@ -710,10 +730,10 @@ suite('PasswordEditDialog', function() {
 
   test('showNoteWarningInEditModeWhen900Characters', async function() {
     loadTimeData.overrideValues({enablePasswordNotes: true});
-    const commonEntry = createMultiStorePasswordEntry({
+    const commonEntry = createPasswordEntry({
       url: 'goo.gl',
       username: 'bart',
-      accountId: 42,
+      id: 42,
       note: 'a'.repeat(900),
     });
     const passwordDialog =
@@ -734,10 +754,10 @@ suite('PasswordEditDialog', function() {
 
   test('disableActionButtonWhenNoteIsLargerThan1000Chars', async function() {
     loadTimeData.overrideValues({enablePasswordNotes: true});
-    const commonEntry = createMultiStorePasswordEntry({
+    const commonEntry = createPasswordEntry({
       url: 'goo.gl',
       username: 'bart',
-      accountId: 42,
+      id: 42,
       note: 'a'.repeat(1001),
     });
     const passwordDialog =
@@ -750,10 +770,10 @@ suite('PasswordEditDialog', function() {
 
   test('changingTheTextInTextareaChangesActionButtonStatus', async function() {
     loadTimeData.overrideValues({enablePasswordNotes: true});
-    const commonEntry = createMultiStorePasswordEntry({
+    const commonEntry = createPasswordEntry({
       url: 'goo.gl',
       username: 'bart',
-      accountId: 42,
+      id: 42,
       note: 'a'.repeat(1000),
     });
     const passwordDialog =
@@ -777,10 +797,10 @@ suite('PasswordEditDialog', function() {
 
   test('changingUsernameResetsNote', async function() {
     loadTimeData.overrideValues({enablePasswordNotes: true});
-    const commonEntry = createMultiStorePasswordEntry({
+    const commonEntry = createPasswordEntry({
       url: 'goo.gl',
       username: 'bart',
-      accountId: 42,
+      id: 42,
       note: 'personal account',
     });
     const passwordDialog =
@@ -799,8 +819,8 @@ suite('PasswordEditDialog', function() {
   test(
       'notSwitchToEditModeOnViewPasswordClickWhenRequestPlaintextPasswordFailed',
       async function() {
-        const existingEntry = createMultiStorePasswordEntry(
-            {url: 'website.com', username: 'username', accountId: 0});
+        const existingEntry = createPasswordEntry(
+            {url: 'website.com', username: 'username', id: 0});
         const addDialog =
             elementFactory.createPasswordEditDialog(null, [existingEntry]);
         assertFalse(isElementVisible(addDialog.$.viewExistingPasswordLink));

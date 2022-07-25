@@ -55,7 +55,6 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
-import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
 import {AddCredentialFromSettingsUserInteractions, PasswordEditDialogElement} from './password_edit_dialog.js';
 import {PasswordCheckReferrer, PasswordExceptionListChangedListener, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
@@ -635,7 +634,8 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   }
   // </if>
 
-  private passwordFilter_(): ((entry: MultiStorePasswordUiEntry) => boolean) {
+  private passwordFilter_():
+      ((entry: chrome.passwordsPrivate.PasswordUiEntry) => boolean) {
     return password => [password.urls.shown, password.username].some(
                term => term.toLowerCase().includes(
                    this.filter.trim().toLowerCase()));

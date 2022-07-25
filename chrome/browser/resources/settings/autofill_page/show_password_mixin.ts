@@ -6,7 +6,6 @@ import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/pol
 
 import {loadTimeData} from '../i18n_setup.js';
 
-import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
 
 type Constructor<T> = new (...args: any[]) => T;
@@ -27,7 +26,7 @@ export const ShowPasswordMixin = dedupingMixin(
           };
         }
 
-        entry: MultiStorePasswordUiEntry;
+        entry: chrome.passwordsPrivate.PasswordUiEntry;
 
         getPasswordInputType() {
           return this.entry.password || this.entry.federationText ? 'text' :
@@ -84,7 +83,7 @@ export const ShowPasswordMixin = dedupingMixin(
 
 
 export interface ShowPasswordMixinInterface {
-  entry: MultiStorePasswordUiEntry;
+  entry: chrome.passwordsPrivate.PasswordUiEntry;
 
   /**
    * Gets the password input's type. Should be 'text' when password is visible

@@ -12,7 +12,6 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/js/list_property_update_mixin.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 
 type Constructor<T> = new (...args: any[]) => T;
@@ -36,7 +35,7 @@ export const MergePasswordsStoreCopiesMixin = dedupingMixin(
           };
         }
 
-        savedPasswords: MultiStorePasswordUiEntry[] = [];
+        savedPasswords: chrome.passwordsPrivate.PasswordUiEntry[] = [];
         private setSavedPasswordsListener_:
             ((entries: chrome.passwordsPrivate.PasswordUiEntry[]) =>
                  void)|null = null;
@@ -44,8 +43,11 @@ export const MergePasswordsStoreCopiesMixin = dedupingMixin(
         override connectedCallback() {
           super.connectedCallback();
           this.setSavedPasswordsListener_ = passwordList => {
-            this.savedPasswords =
-                passwordList.map(entry => new MultiStorePasswordUiEntry(entry));
+            for (const item of passwordList) {
+              item.password = '';
+            }
+            this.savedPasswords = passwordList;
+            this.notifySplices('savedPasswords', passwordList);
           };
 
           PasswordManagerImpl.getInstance().getSavedPasswordList(
@@ -70,5 +72,5 @@ export const MergePasswordsStoreCopiesMixin = dedupingMixin(
 
 export interface MergePasswordsStoreCopiesMixinInterface extends
     ListPropertyUpdateMixinInterface {
-  savedPasswords: MultiStorePasswordUiEntry[];
+  savedPasswords: chrome.passwordsPrivate.PasswordUiEntry[];
 }

@@ -23,7 +23,6 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './autofill_page.html.js';
-import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordCheckMixin} from './password_check_mixin.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 
@@ -87,7 +86,7 @@ export class SettingsAutofillPageElement extends
   private focusConfig_: Map<string, string>;
   private passwordManagerSubLabel_: string;
   private enablePasswordViewPage_: string;
-  credential: MultiStorePasswordUiEntry|null;
+  credential: chrome.passwordsPrivate.PasswordUiEntry|null;
 
   /**
    * Shows the manage addresses sub page.

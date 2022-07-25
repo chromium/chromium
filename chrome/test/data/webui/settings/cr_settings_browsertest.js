@@ -267,18 +267,6 @@ TEST_F('CrSettingsPasswordsSectionTest', 'MAYBE_All', function() {
 });
 GEN('#undef MAYBE_All');
 
-var CrSettingsMultiStorePasswordUiEntryTest =
-    class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/multi_store_password_ui_entry_test.js';
-  }
-};
-
-TEST_F('CrSettingsMultiStorePasswordUiEntryTest', 'All', function() {
-  mocha.run();
-});
-
 var CrSettingsPasswordsDeviceSectionTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {

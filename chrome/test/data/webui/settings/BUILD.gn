@@ -70,7 +70,6 @@ non_preprocessed_files = [
   "fake_settings_private.ts",
   "help_page_test.ts",
   "idle_load_tests.ts",
-  "multi_store_password_ui_entry_test.ts",
   "on_startup_page_tests.ts",
   "passwords_and_autofill_fake_data.ts",
   "passwords_device_section_test.ts",

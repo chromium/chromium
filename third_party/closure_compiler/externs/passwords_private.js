@@ -72,10 +72,9 @@ chrome.passwordsPrivate.PasswordCheckState = {
 chrome.passwordsPrivate.ImportResultsStatus = {
   SUCCESS: 'SUCCESS',
   IO_ERROR: 'IO_ERROR',
-  BAD_FILE_FORMAT: 'BAD_FILE_FORMAT',
+  BAD_FORMAT: 'BAD_FORMAT',
   DISMISSED: 'DISMISSED',
 };
-
 
 /**
  * @enum {string}
@@ -92,24 +91,22 @@ chrome.passwordsPrivate.ImportEntryStatus = {
 
 /**
  * @typedef {{
- *   status: chrome.passwordsPrivate.ImportEntryStatus,
+ *   status: !chrome.passwordsPrivate.ImportEntryStatus,
  *   url: string,
  *   username: string
  * }}
  */
 chrome.passwordsPrivate.ImportEntry;
 
-
 /**
  * @typedef {{
- *   status: chrome.passwordsPrivate.ImportResultsStatus,
+ *   status: !chrome.passwordsPrivate.ImportResultsStatus,
  *   numberImported: number,
- *   failedImports: (!Array<!chrome.passwordsPrivate.ImportEntry>),
+ *   failedImports: !Array<!chrome.passwordsPrivate.ImportEntry>,
  *   fileName: string
  * }}
  */
 chrome.passwordsPrivate.ImportResults;
-
 
 /**
  * @typedef {{
@@ -124,11 +121,12 @@ chrome.passwordsPrivate.UrlCollection;
  * @typedef {{
  *   urls: !chrome.passwordsPrivate.UrlCollection,
  *   username: string,
+ *   password: (string|undefined),
  *   federationText: (string|undefined),
  *   id: number,
  *   storedIn: !chrome.passwordsPrivate.PasswordStoreSet,
  *   isAndroidCredential: boolean,
- *   passwordNote: string
+ *   note: string
  * }}
  */
 chrome.passwordsPrivate.PasswordUiEntry;

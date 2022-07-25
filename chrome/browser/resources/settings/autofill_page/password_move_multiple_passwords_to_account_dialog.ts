@@ -17,7 +17,6 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './password_move_multiple_passwords_to_account_dialog.html.js';
 import {MoveToAccountStoreTrigger} from './password_move_to_account_dialog.js';
@@ -51,7 +50,7 @@ export class PasswordMoveMultiplePasswordsToAccountDialogElement extends
     };
   }
 
-  passwordsToMove: MultiStorePasswordUiEntry[];
+  passwordsToMove: chrome.passwordsPrivate.PasswordUiEntry[];
   accountEmail: string;
 
   /** @return Whether the user confirmed the dialog. */

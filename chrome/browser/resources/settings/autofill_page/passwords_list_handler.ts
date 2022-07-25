@@ -33,7 +33,6 @@ import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_p
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
-import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PASSWORD_MORE_ACTIONS_CLICKED_EVENT_NAME, PASSWORD_VIEW_PAGE_CLICKED_EVENT_NAME, PasswordListItemElement, PasswordMoreActionsClickedEvent, PasswordViewPageClickedEvent} from './password_list_item.js';
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {PasswordRemovalMixin, PasswordRemovalMixinInterface} from './password_removal_mixin.js';
@@ -161,7 +160,7 @@ export class PasswordsListHandlerElement extends
     };
   }
 
-  savedPasswords: MultiStorePasswordUiEntry[];
+  savedPasswords: chrome.passwordsPrivate.PasswordUiEntry[];
   isAccountStoreUser: boolean;
   allowMoveToAccountOption: boolean;
 

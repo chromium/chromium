@@ -24,7 +24,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 
-import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './password_remove_dialog.html.js';
 
@@ -86,7 +85,7 @@ export class PasswordRemoveDialogElement extends
     };
   }
 
-  duplicatedPassword: MultiStorePasswordUiEntry;
+  duplicatedPassword: chrome.passwordsPrivate.PasswordUiEntry;
   private removeFromAccountChecked_: boolean;
   private removeFromDeviceChecked_: boolean;
   private accountEmail_: string;

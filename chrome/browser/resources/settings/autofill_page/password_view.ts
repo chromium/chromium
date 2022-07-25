@@ -35,7 +35,6 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
-import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {SavedPasswordEditedEvent} from './password_edit_dialog.js';
 import {PasswordRemovalMixin, PasswordRemovalMixinInterface} from './password_removal_mixin.js';
 import {PasswordRemoveDialogPasswordsRemovedEvent} from './password_remove_dialog.js';
@@ -167,7 +166,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
   private id_: number|null|undefined;
   private activeDialogAnchorStack_: HTMLElement[];
   private toastText_: string;
-  credential: MultiStorePasswordUiEntry|null;
+  credential: chrome.passwordsPrivate.PasswordUiEntry|null;
   private isPasswordNotesEnabled_: boolean;
   private isPasswordVisible_: boolean;
   private password_: string;
@@ -402,9 +401,10 @@ export class PasswordViewElement extends PasswordViewElementBase {
     if (!this.savedPasswords.length || this.id_ === undefined) {
       return;
     }
-    const item = this.savedPasswords.find((item: MultiStorePasswordUiEntry) => {
-      return item.id === this.id_;
-    });
+    const item = this.savedPasswords.find(
+        (item: chrome.passwordsPrivate.PasswordUiEntry) => {
+          return item.id === this.id_;
+        });
 
     if (!item) {
       if (!this.recentlyEdited_) {
