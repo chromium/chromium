@@ -1199,7 +1199,7 @@
   {
     "name": "default-link-capturing-in-browser",
     "owners": [ "tsergeant", "chromeos-apps-foundation-team@google.com"],
-    "expiry_milestone": 105
+    "expiry_milestone": 108
   },
   {
     "name": "default-mode-ua",
