@@ -150,6 +150,17 @@ class DeviceOAuth2TokenServiceTest : public testing::Test {
            "  \"user_id\": \"1234567890\" }";
   }
 
+  std::string GetInvalidScopeResponse(const std::string& scope) {
+    return "{ \"error\": \"invalid_scope\", "
+           "\"error_description\": \"Some requested scopes were invalid. "
+           "{invalid\\u003d[" +
+           scope +
+           "}\", "
+           "\"error_uri\": "
+           "\"https://developers.google.com/identity/protocols/oauth2\""
+           "}";
+  }
+
   bool RefreshTokenIsAvailable() {
     return oauth2_service_->RefreshTokenIsAvailable();
   }
@@ -331,6 +342,27 @@ TEST_F(DeviceOAuth2TokenServiceTest,
                                GetValidTokenResponse("ignored", 3600));
 
   AssertConsumerTokensAndErrors(0, 1);
+}
+
+TEST_F(DeviceOAuth2TokenServiceTest,
+       RefreshTokenValidation_Failure_InvalidScope) {
+  SetUpDefaultValues();
+  std::unique_ptr<OAuth2AccessTokenManager::Request> request =
+      StartTokenRequest();
+
+  PerformURLFetchesWithResults(
+      net::HTTP_OK, GetValidTokenResponse("tokeninfo_access_token", 3600),
+      net::HTTP_OK, GetValidTokenInfoResponse(kRobotEmail),
+      net::HTTP_BAD_REQUEST, GetInvalidScopeResponse("test_scope"));
+
+  AssertConsumerTokensAndErrors(0, 1);
+  EXPECT_EQ(consumer_.last_error_.state(),
+            GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR);
+  EXPECT_EQ(
+      consumer_.last_error_.error_message(),
+      "{ \"error\": \"invalid_scope\", \"error_description\": \"Some requested "
+      "scopes were invalid. {invalid\\u003d[test_scope}\", \"error_uri\": "
+      "\"https://developers.google.com/identity/protocols/oauth2\"}");
 }
 
 TEST_F(DeviceOAuth2TokenServiceTest,
