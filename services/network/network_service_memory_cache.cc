@@ -536,9 +536,8 @@ void NetworkServiceMemoryCache::CreateLoaderAndStart(
   CHECK(it != entries_.end());
 
   auto loader = std::make_unique<NetworkServiceMemoryCacheURLLoader>(
-      this, GetNextTraceId(), resource_request.url, net_log,
-      std::move(receiver), std::move(client), it->second->content,
-      it->second->encoded_body_length);
+      this, GetNextTraceId(), resource_request, net_log, std::move(receiver),
+      std::move(client), it->second->content, it->second->encoded_body_length);
   NetworkServiceMemoryCacheURLLoader* raw_loader = loader.get();
   url_loaders_.insert(std::move(loader));
 

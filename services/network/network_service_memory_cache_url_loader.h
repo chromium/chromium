@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/log/net_log_with_source.h"
+#include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -36,7 +37,7 @@ class NetworkServiceMemoryCacheURLLoader : public mojom::URLLoader {
   NetworkServiceMemoryCacheURLLoader(
       NetworkServiceMemoryCache* memory_cache,
       uint64_t trace_id,
-      const GURL& url,
+      const ResourceRequest& resource_request,
       const net::NetLogWithSource& net_log,
       mojo::PendingReceiver<mojom::URLLoader> receiver,
       mojo::PendingRemote<mojom::URLLoaderClient> client,
@@ -54,6 +55,8 @@ class NetworkServiceMemoryCacheURLLoader : public mojom::URLLoader {
   // Adjusts load timings and cache related fields in `response_head`.
   void UpdateResponseHead(const ResourceRequest& resource_request,
                           mojom::URLResponseHeadPtr& response_head);
+
+  void MaybeNotifyRawResponse(const mojom::URLResponseHead& response_head);
 
   // Sends response body to the client via a mojo data pipe.
   void WriteMore();
@@ -89,6 +92,9 @@ class NetworkServiceMemoryCacheURLLoader : public mojom::URLLoader {
 
   mojo::Receiver<mojom::URLLoader> receiver_;
   mojo::Remote<mojom::URLLoaderClient> client_;
+
+  const absl::optional<std::string> devtools_request_id_;
+  mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
 
   // The response body to be served.
   scoped_refptr<base::RefCountedBytes> content_;

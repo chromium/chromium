@@ -123,6 +123,11 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
 
   const std::string devtools_request_id() { return devtools_request_id_; }
 
+  const std::vector<network::mojom::HttpRawHeaderPairPtr>& response_headers()
+      const {
+    return response_headers_;
+  }
+
   const absl::optional<std::string> raw_response_headers() const {
     return raw_response_headers_;
   }
@@ -186,6 +191,7 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   network::mojom::IPAddressSpace resource_address_space_;
   std::string devtools_request_id_;
   absl::optional<std::string> raw_response_headers_;
+  std::vector<network::mojom::HttpRawHeaderPairPtr> response_headers_;
   int32_t raw_response_http_status_code_ = -1;
 
   bool got_raw_request_ = false;

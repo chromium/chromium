@@ -55,6 +55,7 @@ void MockDevToolsObserver::OnRawResponse(
   devtools_request_id_ = devtools_request_id;
   resource_address_space_ = resource_address_space;
 
+  response_headers_ = std::move(headers);
   raw_response_headers_ = raw_response_headers;
   raw_response_http_status_code_ = http_status_code;
 

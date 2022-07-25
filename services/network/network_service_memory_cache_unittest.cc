@@ -29,10 +29,12 @@
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/http_raw_headers.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
+#include "services/network/test/mock_devtools_observer.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -236,6 +238,7 @@ class NetworkServiceMemoryCacheTest : public testing::Test {
     auto factory_params = network::mojom::URLLoaderFactoryParams::New();
     constexpr int kProcessId = 123;
     factory_params->process_id = kProcessId;
+    factory_params->is_trusted = true;
     factory_params->request_initiator_origin_lock =
         url::Origin::Create(test_server_.base_url());
     if (HasFactoryOverride()) {
@@ -815,13 +818,34 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_UnsupportedMultipleVaryHeader) {
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_DevToolsAttached) {
-  ResourceRequest request = CreateRequest("/cacheable");
+  ResourceRequest request = CreateRequest("/cacheable?max-age=120");
   request.devtools_request_id = "fake-id";
   StoreResponseToMemoryCache(request);
 
-  // TODO(https://crbug.com/1339708): Change the the expectation when the
-  // in-memory supports DevTools.
-  ASSERT_FALSE(CanServeFromMemoryCache(request));
+  MockDevToolsObserver devtools_observer;
+  request.trusted_params = ResourceRequest::TrustedParams();
+  request.trusted_params->devtools_observer = devtools_observer.Bind();
+
+  LoaderPair pair = CreateLoaderAndStart(request);
+  pair.client->RunUntilComplete();
+  const URLLoaderCompletionStatus& status = pair.client->completion_status();
+  ASSERT_EQ(status.error_code, net::OK);
+  ASSERT_TRUE(status.exists_in_memory_cache);
+
+  devtools_observer.WaitUntilRawResponse(0u);
+  ASSERT_EQ(200, devtools_observer.raw_response_http_status_code());
+
+  // Check whether the cached response has `Cache-Control: max-age=120` as the
+  // original response had.
+  bool has_expected_header = false;
+  for (const auto& pair : devtools_observer.response_headers()) {
+    if (base::EqualsCaseInsensitiveASCII(pair->key, "cache-control") &&
+        pair->value == "max-age=120") {
+      has_expected_header = true;
+      break;
+    }
+  }
+  ASSERT_TRUE(has_expected_header);
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, UpdateStoredCache) {
