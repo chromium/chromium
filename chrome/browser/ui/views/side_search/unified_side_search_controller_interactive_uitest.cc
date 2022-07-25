@@ -247,12 +247,11 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
   EXPECT_FALSE(side_panel->GetVisible());
 }
 
-// TODO(yuhengh): Currently if a side search side panel WebContents crashes
-// with the unified side panel in a background tab, switching to the tab will
-// re-open the side panel and reload the side panel WebContents. Determine if
-// this is expected behavior and update this test.
-IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
-                       DISABLED_SidePanelCrashesCloseSidePanel) {
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SidePanelCrashesCloseSidePanel) {
+  auto* browser_view = BrowserViewFor(browser());
+  auto* coordinator = browser_view->side_panel_coordinator();
+  coordinator->SetNoDelaysForTesting();
+
   // Open two tabs with the side panel open.
   NavigateToMatchingSearchPageAndOpenSidePanel(browser());
   AppendTab(browser(), GetNonMatchingUrl());
@@ -278,9 +277,23 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
   // Side panel should be closed and the WebContents cleared.
   EXPECT_FALSE(side_panel->GetVisible());
   EXPECT_EQ(nullptr, GetSidePanelContentsFor(browser(), 1));
+  EXPECT_EQ(nullptr, GetSidePanelContentsFor(browser(), 0));
+
+  // Reopen side panel.
+  coordinator->Show();
+
+  // Since the side panel contents of the first tab is already cleared,
+  // switch back to the first tab to reload side panel contents.
+  ActivateTabAt(browser(), 0);
+  EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
+  ActivateTabAt(browser(), 1);
+
+  // Side panel is still open.
+  EXPECT_TRUE(side_panel->GetVisible());
 
   // Simulate a crash in the side panel contents of the first tab which is not
   // currently active.
+  EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
   auto* rph_first_tab = GetSidePanelContentsFor(browser(), 0)
                             ->GetPrimaryMainFrame()
                             ->GetProcess();

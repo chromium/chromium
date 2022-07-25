@@ -70,6 +70,12 @@ content::WebContents* UnifiedSideSearchController::OpenURLFromTab(
 void UnifiedSideSearchController::SidePanelAvailabilityChanged(
     bool should_close) {
   if (should_close) {
+    auto* registry = SidePanelRegistry::Get(web_contents());
+    if (registry && registry->active_entry().has_value() &&
+        registry->active_entry().value()->id() ==
+            SidePanelEntry::Id::kSideSearch) {
+      registry->ResetActiveEntry();
+    }
     CloseSidePanel();
   } else {
     UpdateSidePanel();
