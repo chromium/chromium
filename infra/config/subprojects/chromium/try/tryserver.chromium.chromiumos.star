@@ -239,6 +239,7 @@ try_.builder(
     ],
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
+    check_for_flakiness = True,
     cores = 16,
     ssd = True,
     goma_jobs = goma.jobs.J300,
