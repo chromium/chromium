@@ -168,6 +168,10 @@ ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_GetFromTab(
     JNIEnv* env,
     const JavaParamRef<jobject>& jtab) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
+  if (!tab || !tab->web_contents() || tab->web_contents()->IsBeingDestroyed()) {
+    return ScopedJavaLocalRef<jobject>(env, nullptr);
+  }
+
   auto* recorder =
       TabInteractionRecorderAndroid::FromWebContents(tab->web_contents());
   return Java_TabInteractionRecorder_create(
@@ -178,6 +182,10 @@ ScopedJavaLocalRef<jobject> JNI_TabInteractionRecorder_CreateForTab(
     JNIEnv* env,
     const JavaParamRef<jobject>& jtab) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
+  if (!tab || !tab->web_contents() || tab->web_contents()->IsBeingDestroyed()) {
+    return ScopedJavaLocalRef<jobject>(env, nullptr);
+  }
+
   TabInteractionRecorderAndroid::CreateForWebContents(tab->web_contents());
 
   auto* recorder =
