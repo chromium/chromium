@@ -296,37 +296,27 @@ bool IsEligibleForLazyEmbeds(const KURL& url, const Document& document) {
   return false;
 }
 
-// If kAutomaticLazyFrameLoadingToAds is enabled, calculate the timeout in
-// advance from the field trial param, otherwise return 0;
-base::TimeDelta CalculateTimeoutMs(const base::Feature& feature) {
-  static constexpr base::TimeDelta kDefaultTimeout{base::Milliseconds(0)};
-  if (!base::FeatureList::IsEnabled(feature))
-    return kDefaultTimeout;
-
-  const String timeout =
-      base::GetFieldTrialParamValueByFeature(feature, "timeout").c_str();
-  if (timeout.IsEmpty())
-    return kDefaultTimeout;
-
-  bool success;
-  const int timeout_ms = timeout.ToInt(&success);
-  DCHECK(success);
-
-  return base::Milliseconds(timeout_ms);
-}
-
 const base::TimeDelta GetLazyEmbedsTimeoutMs() {
-  DEFINE_STATIC_LOCAL(
-      base::TimeDelta, timeoutMs,
-      (CalculateTimeoutMs(features::kAutomaticLazyFrameLoadingToEmbeds)));
-  return timeoutMs;
+  if (!base::FeatureList::IsEnabled(
+          features::kAutomaticLazyFrameLoadingToEmbeds))
+    return base::Milliseconds(0);
+
+  static const base::FeatureParam<int> kTimeout(
+      &features::kAutomaticLazyFrameLoadingToEmbeds, "timeout", 0);
+
+  static const base::TimeDelta timeout_ms = base::Milliseconds(kTimeout.Get());
+  return timeout_ms;
 }
 
 const base::TimeDelta GetLazyAdsTimeoutMs() {
-  DEFINE_STATIC_LOCAL(
-      base::TimeDelta, timeoutMs,
-      (CalculateTimeoutMs(features::kAutomaticLazyFrameLoadingToAds)));
-  return timeoutMs;
+  if (!base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds))
+    return base::Milliseconds(0);
+
+  static const base::FeatureParam<int> kTimeout(
+      &features::kAutomaticLazyFrameLoadingToAds, "timeout", 0);
+
+  static const base::TimeDelta timeout_ms = base::Milliseconds(kTimeout.Get());
+  return timeout_ms;
 }
 
 }  // namespace
