@@ -1156,11 +1156,25 @@ void InspectorIndexedDBAgent::clearObjectStore(
 }
 
 void InspectorIndexedDBAgent::deleteDatabase(
-    const String& security_origin,
+    protocol::Maybe<String> security_origin,
+    protocol::Maybe<String> storage_key,
     const String& database_name,
     std::unique_ptr<DeleteDatabaseCallback> request_callback) {
-  LocalFrame* frame =
-      inspected_frames_->FrameWithSecurityOrigin(security_origin);
+  LocalFrame* frame = nullptr;
+  if (security_origin.isJust() == storage_key.isJust()) {
+    request_callback->sendFailure(
+        Response::InvalidParams("At least and at most one of security_origin, "
+                                "storage_key must be specified."));
+    return;
+  }
+  if (security_origin.isJust()) {
+    frame =
+        inspected_frames_->FrameWithSecurityOrigin(security_origin.fromJust());
+  } else if (storage_key.isJust()) {
+    frame = inspected_frames_->FrameWithStorageKey(storage_key.fromJust());
+  } else {
+    NOTREACHED();
+  }
   if (!frame) {
     request_callback->sendFailure(Response::ServerError(kNoDocumentError));
     return;

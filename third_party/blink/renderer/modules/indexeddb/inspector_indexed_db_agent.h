@@ -86,7 +86,8 @@ class MODULES_EXPORT InspectorIndexedDBAgent final
                         const String& database_name,
                         const String& object_store_name,
                         std::unique_ptr<ClearObjectStoreCallback>) override;
-  void deleteDatabase(const String& security_origin,
+  void deleteDatabase(protocol::Maybe<String> security_origin,
+                      protocol::Maybe<String> storage_key,
                       const String& database_name,
                       std::unique_ptr<DeleteDatabaseCallback>) override;
 
