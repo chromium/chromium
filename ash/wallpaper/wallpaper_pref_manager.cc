@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
@@ -272,6 +273,18 @@ class WallpaperProfileHelperImpl : public WallpaperProfileHelper {
     return Shell::Get()->session_controller()->IsActiveUserSessionStarted();
   }
 
+  bool IsEphemeral(const AccountId& account_id) const override {
+    const UserSession* user_session =
+        Shell::Get()->session_controller()->GetUserSessionByAccountId(
+            account_id);
+    if (!user_session) {
+      // User is not logged in. Thus, they are not ephemeral.
+      return false;
+    }
+
+    return user_session->user_info.is_ephemeral;
+  }
+
  private:
   base::raw_ptr<WallpaperControllerClient> wallpaper_controller_client_ =
       nullptr;  // not owned
@@ -294,9 +307,8 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
   }
 
   bool GetUserWallpaperInfo(const AccountId& account_id,
-                            bool ephemeral,
                             WallpaperInfo* info) const override {
-    if (ephemeral) {
+    if (profile_helper_->IsEphemeral(account_id)) {
       // Ephemeral users do not save anything to local state. Return true if the
       // info can be found in the map, otherwise return false.
       auto it = ephemeral_users_wallpaper_info_.find(account_id);
@@ -311,9 +323,8 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
   }
 
   bool SetUserWallpaperInfo(const AccountId& account_id,
-                            bool ephemeral,
                             const WallpaperInfo& info) override {
-    if (ephemeral) {
+    if (profile_helper_->IsEphemeral(account_id)) {
       ephemeral_users_wallpaper_info_.insert_or_assign(account_id, info);
       return true;
     }

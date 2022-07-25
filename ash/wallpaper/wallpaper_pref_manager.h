@@ -48,6 +48,9 @@ class WallpaperProfileHelper {
 
   // Returns true if at least one user is logged in.
   virtual bool IsActiveUserSessionStarted() const = 0;
+
+  // Returns true if the user should store data in memory only.
+  virtual bool IsEphemeral(const AccountId& id) const = 0;
 };
 
 // Manages wallpaper preferences and tracks the currently configured wallpaper.
@@ -90,21 +93,14 @@ class ASH_EXPORT WallpaperPrefManager
   virtual void SetClient(WallpaperControllerClient* client) = 0;
 
   // Retrieve the wallpaper preference value for |account_id| and use it to
-  // populate |info|. If |ephemeral| is true, data is stored in an in memory
-  // map. If |ephemeral| is false, |info| is persisted to user prefs. Returns
-  // true if |info| was populated successfully.
+  // populate |info|. Returns true if |info| was populated successfully.
   //
   // NOTE: WallpaperPrefManager does not enforce any checks for policy
   // enforcement. Callers must check that the user is allowed to commit the pref
   // change.
-  //
-  // TODO(crbug.com/1329567): Remove the |ephemeral| parameter when we've safely
-  // moved to SessionController for user type.
   virtual bool GetUserWallpaperInfo(const AccountId& account_id,
-                                    bool ephemeral,
                                     WallpaperInfo* info) const = 0;
   virtual bool SetUserWallpaperInfo(const AccountId& account_id,
-                                    bool ephemeral,
                                     const WallpaperInfo& info) = 0;
 
   // Remove the wallpaper entry for |account_id|.

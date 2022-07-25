@@ -143,6 +143,9 @@ class TestProfileHelper : public WallpaperProfileHelper {
     return is_sync_enabled;
   }
 
+  bool IsEphemeral(const AccountId&) const override { return is_ephemeral; }
+
+  bool is_ephemeral = false;
   bool is_session_started = true;
   bool is_sync_enabled = true;
   AccountId active_account;
@@ -187,37 +190,38 @@ class WallpaperPrefManagerTest : public testing::Test {
 
 TEST_F(WallpaperPrefManagerTest, GetWallpaperInfo_Normal) {
   WallpaperInfo expected_info = InfoWithType(WallpaperType::kDaily);
-  pref_manager_->SetUserWallpaperInfo(account_id_1, false, expected_info);
+  pref_manager_->SetUserWallpaperInfo(account_id_1, expected_info);
 
   WallpaperInfo actual_info;
-  EXPECT_TRUE(
-      pref_manager_->GetUserWallpaperInfo(account_id_1, false, &actual_info));
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(account_id_1, &actual_info));
   EXPECT_EQ(expected_info, actual_info);
 }
 
 TEST_F(WallpaperPrefManagerTest, GetWallpaperInfo_Ephemeral) {
+  profile_helper_->is_ephemeral = true;
   WallpaperInfo expected_info = InfoWithType(WallpaperType::kDaily);
-  pref_manager_->SetUserWallpaperInfo(account_id_1, true, expected_info);
+  pref_manager_->SetUserWallpaperInfo(account_id_1, expected_info);
 
   WallpaperInfo actual_info;
-  EXPECT_TRUE(
-      pref_manager_->GetUserWallpaperInfo(account_id_1, true, &actual_info));
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(account_id_1, &actual_info));
   EXPECT_EQ(expected_info, actual_info);
 }
 
 TEST_F(WallpaperPrefManagerTest, GetWallpaperInfoNothingToGet_Normal) {
   WallpaperInfo info;
-  EXPECT_FALSE(pref_manager_->GetUserWallpaperInfo(account_id_1, false, &info));
+  EXPECT_FALSE(pref_manager_->GetUserWallpaperInfo(account_id_1, &info));
 }
 
 TEST_F(WallpaperPrefManagerTest, GetWallpaperInfoNothingToGet_Ephemeral) {
+  profile_helper_->is_ephemeral = true;
   WallpaperInfo info;
-  EXPECT_FALSE(pref_manager_->GetUserWallpaperInfo(account_id_1, true, &info));
+  EXPECT_FALSE(pref_manager_->GetUserWallpaperInfo(account_id_1, &info));
 }
 
 TEST_F(WallpaperPrefManagerTest, SetWallpaperInfo_EphemeralDoesNotChangeLocal) {
+  profile_helper_->is_ephemeral = true;
   WallpaperInfo expected_info = InfoWithType(WallpaperType::kDaily);
-  pref_manager_->SetUserWallpaperInfo(account_id_1, true, expected_info);
+  pref_manager_->SetUserWallpaperInfo(account_id_1, expected_info);
 
   // Local state is expected to be untouched for ephemeral users.
   EXPECT_EQ(nullptr, local_state_->GetUserPrefValue(prefs::kUserWallpaperInfo));
@@ -227,7 +231,7 @@ TEST_F(WallpaperPrefManagerTest, SetWallpaperInfoLocal) {
   WallpaperInfo info(
       GetDummyFileName(account_id_1), WALLPAPER_LAYOUT_CENTER_CROPPED,
       WallpaperType::kThirdParty, base::Time::Now().LocalMidnight());
-  EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, false, info));
+  EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, info));
   AssertWallpaperInfoInPrefs(local_state_.get(), prefs::kUserWallpaperInfo,
                              account_id_1, info);
 }
@@ -236,7 +240,7 @@ TEST_F(WallpaperPrefManagerTest, SetWallpaperInfoSynced) {
   profile_helper_->RegisterPrefsForAccount(account_id_1);
 
   WallpaperInfo info = InfoWithType(WallpaperType::kOnline);
-  EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, false, info));
+  EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, info));
   AssertWallpaperInfoInPrefs(
       profile_helper_->GetUserPrefServiceSyncable(account_id_1),
       prefs::kSyncableWallpaperInfo, account_id_1, info);
@@ -255,7 +259,7 @@ TEST_F(WallpaperPrefManagerTest, SetWallpaperInfoSyncDisabled) {
                           prefs::kSyncableWallpaperInfo);
 
   WallpaperInfo info = InfoWithType(WallpaperType::kOnline);
-  EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, false, info));
+  EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, info));
 
   // Verify that calling SetUserWallpaperInfo does NOT change what is in synced
   // prefs when sync is disabled.
@@ -273,7 +277,7 @@ TEST_F(WallpaperPrefManagerTest, SetWallpaperInfoCustom) {
       prefs::kSyncableWallpaperInfo);
 
   WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
-  EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, false, info));
+  EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, info));
 
   // Custom wallpaper infos should not be propagated to synced preferences until
   // the image is uploaded to drivefs. That is not done in

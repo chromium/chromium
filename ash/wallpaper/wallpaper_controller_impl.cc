@@ -922,14 +922,12 @@ bool WallpaperControllerImpl::SetUserWallpaperInfo(const AccountId& account_id,
         FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache, account_id));
   }
 
-  return pref_manager_->SetUserWallpaperInfo(account_id,
-                                             IsEphemeralUser(account_id), info);
+  return pref_manager_->SetUserWallpaperInfo(account_id, info);
 }
 
 bool WallpaperControllerImpl::GetUserWallpaperInfo(const AccountId& account_id,
                                                    WallpaperInfo* info) const {
-  return pref_manager_->GetUserWallpaperInfo(account_id,
-                                             IsEphemeralUser(account_id), info);
+  return pref_manager_->GetUserWallpaperInfo(account_id, info);
 }
 
 bool WallpaperControllerImpl::GetWallpaperFromCache(const AccountId& account_id,
