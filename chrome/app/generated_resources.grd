@@ -13137,8 +13137,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_BODY_HEADER_1"  desc="1 of 2 subtitles on the page. We want to write for users who skim the page. That means that the page title, the sub titles, and the button label all work well together as a mini story: 1) Help us build a more private web How? 2) Limit sharing between sites 3) More control over the ads you see 4) Yes, I’ll try it">
       Limited sharing between sites
     </message>
-    <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION" desc="The body text of the bubble. * “During the trials”: The trials happen in addition to today’s current system (which is based on third-party cookies). In other words, even by agreeing to or remaining in a trial, the user’s core experience doesn’t change much. This is an experiment, and we need the user to understand as much. ">
-      During trials, Chrome is exploring ways to limit spam, fraud, and sharing between sites. Chrome also <ph name="ESTIMATE_INTERESTS_LINK">$1<ex>estimates your interests</ex></ph> that sites can use to show you ads. You can manage your interests in settings.
+    <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION" desc="The body text of the bubble. * “ad spam”: spam related to web advertising">
+      Chrome is exploring ways to limit ad spam, fraud, and sharing between sites. Chrome also <ph name="ESTIMATE_INTERESTS_LINK">$1<ex>estimates your interests</ex></ph> that sites can use to show you ads. You can manage your interests in settings.
     </message>
     <message name="IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_SETTINGS_LINK" desc="The user can choose “Go to settings” to visit chrome://settings/privacySandbox. If they do, they’ll find the toggle on for Sandbox trials, which include everything they’ve read above. They can leave trials on or turn them off on this page. Choosing “Go to settings”, the user will navigate away from this page and won’t be able to return here.">
       Go to settings
