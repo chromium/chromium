@@ -1240,15 +1240,6 @@ class Port(object):
 
         return [tryint(chunk) for chunk in re.split(r'(\d+)', string_to_split)]
 
-    def test_dirs(self):
-        """Returns the list of top-level test directories."""
-        web_tests_dir = self.web_tests_dir()
-        fs = self._filesystem
-        return [
-            d for d in fs.listdir(web_tests_dir)
-            if fs.isdir(fs.join(web_tests_dir, d))
-        ]
-
     def read_test(self, test_name, encoding="utf8"):
         """Returns the contents of the given test according to the given encoding.
         If no corresponding file can be found, returns None instead.

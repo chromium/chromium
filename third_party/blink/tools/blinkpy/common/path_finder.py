@@ -114,13 +114,6 @@ def add_blink_tools_dir_to_sys_path():
         sys.path.insert(0, path)
 
 
-def _does_blink_web_tests_exist():
-    return os.path.exists(
-        os.path.join(get_chromium_src_dir(), 'third_party', 'blink',
-                     'web_tests'))
-
-
-TESTS_IN_BLINK = _does_blink_web_tests_exist()
 # web_tests path relative to the repository root.
 # Path separators are always '/', and this contains the trailing '/'.
 RELATIVE_WEB_TESTS = 'third_party/blink/web_tests/'
