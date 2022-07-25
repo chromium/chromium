@@ -50,6 +50,7 @@ constexpr int kDescriptionId2 = 17;
 
 }  // namespace
 
+using ::testing::_;
 using ::testing::DoAll;
 using ::testing::SaveArg;
 using ::testing::StrEq;
@@ -270,7 +271,7 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_Success) {
   base::OnceCallback<void(
       autofill_assistant::HeadlessScriptController::ScriptResult)>
       external_script_controller_callback;
-  EXPECT_CALL(*external_script_controller(), StartScript)
+  EXPECT_CALL(*external_script_controller(), StartScript(_, _))
       .Times(1)
       .WillOnce(MoveArg<1>(&external_script_controller_callback));
 
@@ -300,7 +301,7 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_fromSettings) {
   // Prepare to extract the script_params to the external script
   // controller.
   base::flat_map<std::string, std::string> params_map;
-  EXPECT_CALL(*external_script_controller(), StartScript)
+  EXPECT_CALL(*external_script_controller(), StartScript(_, _))
       .Times(1)
       .WillOnce(MoveArg<0>(&params_map));
 
@@ -327,7 +328,7 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_fromLeakWarning) {
   // Prepare to extract the script_params to the external script
   // controller.
   base::flat_map<std::string, std::string> params_map;
-  EXPECT_CALL(*external_script_controller(), StartScript)
+  EXPECT_CALL(*external_script_controller(), StartScript(_, _))
       .Times(1)
       .WillOnce(MoveArg<0>(&params_map));
 
@@ -354,7 +355,7 @@ TEST_F(ApcClientImplTest, CreateAndStartApcFlow_withDebugInformation) {
   // Prepare to extract the script_params to the external script
   // controller.
   base::flat_map<std::string, std::string> params_map;
-  EXPECT_CALL(*external_script_controller(), StartScript)
+  EXPECT_CALL(*external_script_controller(), StartScript(_, _))
       .Times(1)
       .WillOnce(MoveArg<0>(&params_map));
 

@@ -200,7 +200,8 @@ void StarterDelegateAndroid::ShowOnboarding(
                               base::android::ConvertUTF8ToJavaString(
                                   env, trigger_context.GetExperimentIds()),
                               base::android::ToJavaArrayOfStrings(env, keys),
-                              base::android::ToJavaArrayOfStrings(env, values));
+                              base::android::ToJavaArrayOfStrings(env, values),
+                              trigger_context.GetIsExternallyTriggered());
 }
 
 void StarterDelegateAndroid::HideOnboarding() {

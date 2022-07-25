@@ -40,6 +40,11 @@ class HeadlessScriptControllerImpl : public HeadlessScriptController {
   void StartScript(
       const base::flat_map<std::string, std::string>& script_parameters,
       base::OnceCallback<void(ScriptResult)> script_ended_callback) override;
+  void StartScript(
+      const base::flat_map<std::string, std::string>& script_parameters,
+      base::OnceCallback<void(ScriptResult)> script_ended_callback,
+      bool use_autofill_assistant_onboarding,
+      base::OnceCallback<void()> onboarding_successful_callback) override;
 
   // Notifies the external caller that the script has ended. Note that the
   // external caller can decide to destroy this instance once it has been
@@ -54,6 +59,8 @@ class HeadlessScriptControllerImpl : public HeadlessScriptController {
   std::unique_ptr<ClientHeadless> client_;
 
   base::OnceCallback<void(ScriptResult)> script_ended_callback_;
+
+  base::OnceCallback<void()> onboarding_successful_callback_;
 
   base::WeakPtrFactory<HeadlessScriptControllerImpl> weak_ptr_factory_{this};
 };

@@ -85,7 +85,9 @@ public class AssistantOnboardingHelperTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mOnboardingHelper.showOnboarding(/* useDialogOnboarding = */ false, "",
-                                Collections.emptyMap(), mOnboardingCallback));
+                                Collections.emptyMap(),
+                                /* hideBottomSheetOnOnboardingAccepted = */ false,
+                                mOnboardingCallback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
 
         onView(withId(R.id.button_init_ok)).perform(click());
@@ -98,7 +100,9 @@ public class AssistantOnboardingHelperTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mOnboardingHelper.showOnboarding(/* useDialogOnboarding = */ true, "",
-                                Collections.emptyMap(), mOnboardingCallback));
+                                Collections.emptyMap(),
+                                /* hideBottomSheetOnOnboardingAccepted = */ false,
+                                mOnboardingCallback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
 
         // Check that the UI is shown in a dialog.
@@ -116,7 +120,9 @@ public class AssistantOnboardingHelperTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mOnboardingHelper.showOnboarding(/* useDialogOnboarding = */ false, "",
-                                Collections.emptyMap(), mOnboardingCallback));
+                                Collections.emptyMap(),
+                                /* hideBottomSheetOnOnboardingAccepted = */ false,
+                                mOnboardingCallback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mOnboardingHelper.hideOnboarding());
@@ -131,7 +137,9 @@ public class AssistantOnboardingHelperTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mOnboardingHelper.showOnboarding(/* useDialogOnboarding = */ true, "",
-                                Collections.emptyMap(), mOnboardingCallback));
+                                Collections.emptyMap(),
+                                /* hideBottomSheetOnOnboardingAccepted = */ false,
+                                mOnboardingCallback));
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mOnboardingHelper.hideOnboarding());

@@ -21,6 +21,14 @@ class MockHeadlessScriptController : public HeadlessScriptController {
               ((const base::flat_map<std::string, std::string>&),
                (base::OnceCallback<void(ScriptResult)>)),
               (override));
+
+  MOCK_METHOD(void,
+              StartScript,
+              ((const base::flat_map<std::string, std::string>&),
+               (base::OnceCallback<void(ScriptResult)>),
+               (bool),
+               (base::OnceCallback<void()>)),
+              (override));
 };
 
 }  // namespace autofill_assistant

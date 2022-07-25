@@ -15,6 +15,8 @@
 #include "components/autofill_assistant/browser/public/mock_headless_script_controller.h"
 #include "ui/gfx/native_widget_types.h"
 
+using ::testing::_;
+
 namespace {
 constexpr char kUrl[] = "https://www.example.com";
 }
@@ -193,13 +195,26 @@ TEST_F(FastCheckoutClientImplTest, Start_FeatureEnabled_RunsSuccessfully) {
   // `FastCheckoutClient` is not running initially.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
-  // Prepare to extract the callback to the external script controller.
+  // Prepare to extract the callbacks to the external script controller.
   base::OnceCallback<void(
       autofill_assistant::HeadlessScriptController::ScriptResult)>
       external_script_controller_callback;
-  EXPECT_CALL(*external_script_controller(), StartScript)
+  base::OnceCallback<void()> onboarding_successful_callback;
+  EXPECT_CALL(*external_script_controller(), StartScript(_, _, _, _))
       .Times(1)
-      .WillOnce(MoveArg<1>(&external_script_controller_callback));
+      .WillOnce(
+          [&](const base::flat_map<std::string, std::string>& script_parameters,
+              base::OnceCallback<void(
+                  autofill_assistant::HeadlessScriptController::ScriptResult)>
+                  script_ended_callback,
+              bool use_autofill_assistant_onboarding,
+              base::OnceCallback<void()>
+                  onboarding_successful_callback_parameter) {
+            external_script_controller_callback =
+                std::move(script_ended_callback);
+            onboarding_successful_callback =
+                std::move(onboarding_successful_callback_parameter);
+          });
 
   // Expect bottomsheet to show up.
   EXPECT_CALL(*fast_checkout_controller(), Show);
@@ -214,8 +229,44 @@ TEST_F(FastCheckoutClientImplTest, Start_FeatureEnabled_RunsSuccessfully) {
   EXPECT_FALSE(fast_checkout_client()->Start(GURL(kUrl)));
 
   // Successful run.
+  std::move(onboarding_successful_callback).Run();
   autofill_assistant::HeadlessScriptController::ScriptResult script_result = {
       /* success= */ true};
+  std::move(external_script_controller_callback).Run(script_result);
+
+  // `FastCheckoutClient` state was reset after run finished.
+  EXPECT_FALSE(fast_checkout_client()->IsRunning());
+}
+
+TEST_F(FastCheckoutClientImplTest,
+       Start_OnboardingNotSuccessful_BottomsheetNotShowing) {
+  // `FastCheckoutClient` is not running initially.
+  EXPECT_FALSE(fast_checkout_client()->IsRunning());
+
+  // Prepare to extract the callbacks to the external script controller.
+  base::OnceCallback<void(
+      autofill_assistant::HeadlessScriptController::ScriptResult)>
+      external_script_controller_callback;
+  base::OnceCallback<void()> onboarding_successful_callback;
+  EXPECT_CALL(*external_script_controller(), StartScript(_, _, _, _))
+      .Times(1)
+      .WillOnce(MoveArg<1>(&external_script_controller_callback));
+
+  // Expect bottomsheet NOT to show up.
+  EXPECT_CALL(*fast_checkout_controller(), Show).Times(0);
+
+  // Starting the run successfully.
+  EXPECT_TRUE(fast_checkout_client()->Start(GURL(kUrl)));
+
+  // `FastCheckoutClient` is running.
+  EXPECT_TRUE(fast_checkout_client()->IsRunning());
+
+  // Cannot start another run.
+  EXPECT_FALSE(fast_checkout_client()->Start(GURL(kUrl)));
+
+  // Failed run.
+  autofill_assistant::HeadlessScriptController::ScriptResult script_result = {
+      /* success= */ false};
   std::move(external_script_controller_callback).Run(script_result);
 
   // `FastCheckoutClient` state was reset after run finished.

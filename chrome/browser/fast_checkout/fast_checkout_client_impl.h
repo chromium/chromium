@@ -57,7 +57,9 @@ class FastCheckoutClientImpl
   void OnRunComplete(
       autofill_assistant::HeadlessScriptController::ScriptResult result);
 
-  void OnOnboardingComplete(bool success);
+  // Registers when onboarding was completed successfully and the scripts are
+  // ready to run.
+  void OnOnboardingCompletedSuccessfully();
 
   // The delegate is responsible for handling protos received from backend DSL
   // actions.

@@ -246,7 +246,7 @@ public class Starter implements AssistantTabObserver, UserData {
     @CalledByNative
     private void showOnboarding(AssistantOnboardingHelper onboardingHelper,
             boolean useDialogOnboarding, String experimentIds, String[] parameterKeys,
-            String[] parameterValues) {
+            String[] parameterValues, boolean hideBottomSheetOnOnboardingAccepted) {
         if (!AutofillAssistantPreferencesUtil.getShowOnboarding()) {
             safeNativeOnOnboardingFinished(
                     /* shown = */ false, 3 /* AssistantOnboardingResult.ACCEPTED*/);
@@ -259,6 +259,7 @@ public class Starter implements AssistantTabObserver, UserData {
             parameters.put(parameterKeys[i], parameterValues[i]);
         }
         onboardingHelper.showOnboarding(useDialogOnboarding, experimentIds, parameters,
+                hideBottomSheetOnOnboardingAccepted,
                 result -> safeNativeOnOnboardingFinished(true, result));
     }
 

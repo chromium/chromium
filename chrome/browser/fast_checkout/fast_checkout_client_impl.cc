@@ -37,18 +37,6 @@ bool FastCheckoutClientImpl::Start(const GURL& url) {
   is_running_ = true;
   url_ = url;
 
-  // TODO(crbug.com/1338507): Don't run if onboarding was not successful.
-  OnOnboardingComplete(/*success=*/true);
-
-  return true;
-}
-
-void FastCheckoutClientImpl::OnOnboardingComplete(bool success) {
-  if (!success) {
-    Stop();
-    return;
-  }
-
   base::flat_map<std::string, std::string> params_map{
       {autofill_assistant::public_script_parameters::kIntentParameterName,
        kIntentValue},
@@ -69,14 +57,21 @@ void FastCheckoutClientImpl::OnOnboardingComplete(bool success) {
   fast_checkout_external_action_delegate_ =
       CreateFastCheckoutExternalActionDelegate();
   external_script_controller_ = CreateHeadlessScriptController();
-  fast_checkout_controller_ = CreateFastCheckoutController();
 
-  // Show bottomsheet and start script in parallel. This reduces the delay due
-  // to server requests after selections in the bottomsheet were made.
-  fast_checkout_controller_->Show();
   external_script_controller_->StartScript(
-      params_map, base::BindOnce(&FastCheckoutClientImpl::OnRunComplete,
-                                 base::Unretained(this)));
+      params_map,
+      base::BindOnce(&FastCheckoutClientImpl::OnRunComplete,
+                     base::Unretained(this)),
+      /*use_autofill_assistant_onboarding=*/true,
+      base::BindOnce(&FastCheckoutClientImpl::OnOnboardingCompletedSuccessfully,
+                     base::Unretained(this)));
+
+  return true;
+}
+
+void FastCheckoutClientImpl::OnOnboardingCompletedSuccessfully() {
+  fast_checkout_controller_ = CreateFastCheckoutController();
+  fast_checkout_controller_->Show();
 }
 
 void FastCheckoutClientImpl::OnRunComplete(

@@ -30,6 +30,14 @@ class HeadlessScriptController {
       const base::flat_map<std::string, std::string>& script_parameters,
       base::OnceCallback<void(ScriptResult)> script_ended_callback) = 0;
 
+  // Adds parameters for using autofill assistant's onboarding before a script
+  // would run.
+  virtual void StartScript(
+      const base::flat_map<std::string, std::string>& script_parameters,
+      base::OnceCallback<void(ScriptResult)> script_ended_callback,
+      bool use_autofill_assistant_onboarding,
+      base::OnceCallback<void()> onboarding_successful_callback) = 0;
+
   virtual ~HeadlessScriptController() = default;
 };
 

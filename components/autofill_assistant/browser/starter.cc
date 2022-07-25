@@ -330,6 +330,7 @@ void Starter::OnHeuristicMatch(const GURL& url,
           /* initial_url = */ std::string(),
           /* is_in_chrome_triggered = */ true,
           /* is_externally_triggered = */ false,
+          /* skip_autofill_assistant_onboarding = */ false,
       }));
 }
 
@@ -717,9 +718,10 @@ void Starter::OnTriggerScriptFinished(
 
 void Starter::MaybeShowOnboarding(
     absl::optional<TriggerScriptProto> trigger_script) {
-  // The onboarding is handled externally for external runs.
+  // For external runs, the onboarding is handled externally unless specified
+  // otherwise.
   if (pending_trigger_context_ &&
-      pending_trigger_context_->GetIsExternallyTriggered()) {
+      pending_trigger_context_->GetSkipAutofillAssistantOnboarding()) {
     Metrics::RecordRegularScriptOnboarding(ukm_recorder_,
                                            current_ukm_source_id_,
                                            Metrics::Onboarding::OB_EXTERNAL);

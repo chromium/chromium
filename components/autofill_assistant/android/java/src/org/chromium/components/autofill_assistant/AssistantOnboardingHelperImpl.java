@@ -48,7 +48,8 @@ public class AssistantOnboardingHelperImpl implements AssistantOnboardingHelper 
      */
     @Override
     public void showOnboarding(boolean useDialogOnboarding, String experimentIds,
-            Map<String, String> parameters, Callback<Integer> callback) {
+            Map<String, String> parameters, boolean hideBottomSheetOnOnboardingAccepted,
+            Callback<Integer> callback) {
         hideOnboarding();
         if (useDialogOnboarding) {
             mOnboardingCoordinator =
@@ -63,7 +64,8 @@ public class AssistantOnboardingHelperImpl implements AssistantOnboardingHelper 
         mOnboardingCoordinator.show(result -> {
             // Note: only transfer the controls in the ACCEPTED case, as it will prevent
             // the bottom sheet from hiding after the callback is done.
-            if (result == AssistantOnboardingResult.ACCEPTED) {
+            if (result == AssistantOnboardingResult.ACCEPTED
+                    && !hideBottomSheetOnOnboardingAccepted) {
                 mOnboardingOverlayCoordinator = mOnboardingCoordinator.transferControls();
             }
             callback.onResult(result);

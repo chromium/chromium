@@ -18,10 +18,13 @@ public interface AssistantOnboardingHelper {
      * @param useDialogOnboarding whether to show the dialog or bottom-sheet onboarding.
      * @param experimentIds the list of active experiment ids.
      * @param parameters the key/value map of script parameters use.
+     * @param hideBottomSheetOnOnboardingAccepted true if the bottomsheet is hidden right after
+     *         onboarding was accepted.
      * @param callback the callback to invoke with the {@code OnboardingResult}.
      */
     void showOnboarding(boolean useDialogOnboarding, String experimentIds,
-            Map<String, String> parameters, Callback<Integer> callback);
+            Map<String, String> parameters, boolean hideBottomSheetOnOnboardingAccepted,
+            Callback<Integer> callback);
 
     /**
      * Hides the onboarding, if currently shown. Does not invoke the callback that was associated
