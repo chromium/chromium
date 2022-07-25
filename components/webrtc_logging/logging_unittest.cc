@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc_overrides/rtc_base/logging.h"
@@ -163,27 +162,4 @@ TEST_F(WebRtcTextLogTest, LogEverythingConfiguration) {
   EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_VERBOSE)));
   EXPECT_TRUE(ContainsString(contents_of_file, AsString(rtc::LS_SENSITIVE)));
 #endif  // BUILDFLAG(USE_RUNTIME_VLOG)
-}
-
-TEST_F(WebRtcTextLogTest, SuppressLogEverythingWithFlag) {
-  base::test::ScopedFeatureList scoped_feature(blink::kSuppressAllWebRtcLogs);
-
-  // Verbosity at level 2 normally allows LS_SENSITIVE (as per above test), but
-  // the kSuppressAllWebRtcLogs flag should suppress them.
-  ASSERT_TRUE(Initialize(2));
-
-  RTC_LOG_V(rtc::LS_ERROR) << AsString(rtc::LS_ERROR);
-  RTC_LOG_V(rtc::LS_WARNING) << AsString(rtc::LS_WARNING);
-  RTC_LOG(LS_INFO) << AsString(rtc::LS_INFO);
-  RTC_LOG_V(rtc::LS_VERBOSE) << AsString(rtc::LS_VERBOSE);
-  RTC_LOG_V(rtc::LS_SENSITIVE) << AsString(rtc::LS_SENSITIVE);
-
-  std::string contents_of_file;
-  base::ReadFileToString(log_file_path_, &contents_of_file);
-
-  EXPECT_FALSE(ContainsString(contents_of_file, AsString(rtc::LS_ERROR)));
-  EXPECT_FALSE(ContainsString(contents_of_file, AsString(rtc::LS_WARNING)));
-  EXPECT_FALSE(ContainsString(contents_of_file, AsString(rtc::LS_INFO)));
-  EXPECT_FALSE(ContainsString(contents_of_file, AsString(rtc::LS_VERBOSE)));
-  EXPECT_FALSE(ContainsString(contents_of_file, AsString(rtc::LS_SENSITIVE)));
 }
