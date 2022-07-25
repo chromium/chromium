@@ -54,8 +54,6 @@ class ASH_EXPORT AshColorProvider : public ColorProvider {
   SkColor GetInactiveDialogTitleBarColor() const override;
   std::pair<SkColor, float> GetInkDropBaseColorAndOpacity(
       SkColor background_color = gfx::kPlaceholderColor) const override;
-  std::pair<SkColor, float> GetInvertedInkDropBaseColorAndOpacity(
-      SkColor background_color = gfx::kPlaceholderColor) const override;
 
   // Gets the background color that can be applied on any layer. The returned
   // color will be different based on color mode and color theme (see

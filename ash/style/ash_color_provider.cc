@@ -220,18 +220,6 @@ std::pair<SkColor, float> AshColorProvider::GetInkDropBaseColorAndOpacity(
   return std::make_pair(base_color, opacity);
 }
 
-std::pair<SkColor, float>
-AshColorProvider::GetInvertedInkDropBaseColorAndOpacity(
-    SkColor background_color) const {
-  if (background_color == gfx::kPlaceholderColor)
-    background_color = GetBackgroundColor();
-
-  const bool is_light = !color_utils::IsDark(background_color);
-  const SkColor base_color = is_light ? SK_ColorWHITE : SK_ColorBLACK;
-  const float opacity = is_light ? kLightInkDropOpacity : kDarkInkDropOpacity;
-  return std::make_pair(base_color, opacity);
-}
-
 SkColor AshColorProvider::GetBackgroundColor() const {
   return GetBackgroundThemedColorImpl(GetBackgroundDefaultColor(),
                                       IsDarkModeEnabled());
