@@ -733,6 +733,8 @@ void VolumeManager::Initialize() {
   // Subscribe to FileSystemProviderService and register currently mounted
   // volumes for the profile.
   if (file_system_provider_service_) {
+    file_system_provider_service_->AddObserver(this);
+
     auto restore_provided_file_systems =
         base::BindOnce(&VolumeManager::RestoreProvidedFileSystems,
                        weak_ptr_factory_.GetWeakPtr());
@@ -1266,13 +1268,11 @@ void VolumeManager::OnRenameEvent(
 }
 
 void VolumeManager::RestoreProvidedFileSystems() {
-  using ash::file_system_provider::ProvidedFileSystemInfo;
-
   DCHECK(file_system_provider_service_);
-  file_system_provider_service_->AddObserver(this);
 
-  std::vector<ProvidedFileSystemInfo> file_system_info_list =
-      file_system_provider_service_->GetProvidedFileSystemInfoList();
+  std::vector<ash::file_system_provider::ProvidedFileSystemInfo>
+      file_system_info_list =
+          file_system_provider_service_->GetProvidedFileSystemInfoList();
   for (const auto& file_system_info : file_system_info_list) {
     OnProvidedFileSystemMount(file_system_info,
                               ash::file_system_provider::MOUNT_CONTEXT_RESTORE,
