@@ -105,6 +105,7 @@ class FontDataCache final {
   Cache cache_ GUARDED_BY(lock_);
   LinkedHashSet<scoped_refptr<SimpleFontData>> inactive_font_data_
       GUARDED_BY(lock_);
+  bool is_purging_ = false;
 };
 
 }  // namespace blink

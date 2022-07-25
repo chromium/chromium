@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_data_cache.h"
 
+#include "base/auto_reset.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 
@@ -140,13 +141,12 @@ bool FontDataCache::Purge(PurgeSeverity purge_severity) {
 bool FontDataCache::PurgeLeastRecentlyUsed(int count) {
   // Guard against reentry when e.g. a deleted FontData releases its small caps
   // FontData.
-  static bool is_purging;
-  if (is_purging)
+  if (is_purging_)
     return false;
 
   lock_.AssertAcquired();
 
-  is_purging = true;
+  base::AutoReset<bool> is_purging_auto_reset(&is_purging_, true);
 
   Vector<scoped_refptr<SimpleFontData>, 20> font_data_to_delete;
   auto end = inactive_font_data_.end();
@@ -170,8 +170,6 @@ bool FontDataCache::PurgeLeastRecentlyUsed(int count) {
   bool did_work = font_data_to_delete.size();
 
   font_data_to_delete.clear();
-
-  is_purging = false;
 
   return did_work;
 }
