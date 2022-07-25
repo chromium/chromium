@@ -5,7 +5,6 @@
 #include "ui/wm/core/capture_controller.h"
 
 #include "base/observer_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
