@@ -71,7 +71,7 @@ bool UserNoteDatabase::Init() {
 }
 
 UserNoteMetadataSnapshot UserNoteDatabase::GetNoteMetadataForUrls(
-    std::vector<GURL> urls) {
+    const UserNoteStorage::UrlSet& urls) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!EnsureDBInit())
@@ -122,7 +122,7 @@ UserNoteMetadataSnapshot UserNoteDatabase::GetNoteMetadataForUrls(
 }
 
 std::vector<std::unique_ptr<UserNote>> UserNoteDatabase::GetNotesById(
-    std::vector<base::UnguessableToken> ids) {
+    const UserNoteStorage::IdSet& ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::unique_ptr<UserNote>> user_notes;
 

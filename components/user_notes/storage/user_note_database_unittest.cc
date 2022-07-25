@@ -4,6 +4,9 @@
 
 #include "components/user_notes/storage/user_note_database.h"
 
+#include <algorithm>
+#include <vector>
+
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -213,10 +216,12 @@ TEST_F(UserNoteDatabaseTest, GetNotesById) {
   EXPECT_TRUE(user_note_db.Init());
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_note_db.sequence_checker_);
 
+  UserNoteStorage::IdSet id_set;
   std::vector<base::UnguessableToken> ids;
   for (int i = 0; i < 3; i++) {
     base::UnguessableToken note_id = base::UnguessableToken::Create();
     ids.emplace_back(note_id);
+    id_set.emplace(note_id);
     std::u16string original_text =
         u"original text " + base::NumberToString16(i);
     std::string selector = "selector " + base::NumberToString(i);
@@ -233,12 +238,15 @@ TEST_F(UserNoteDatabaseTest, GetNotesById) {
     delete user_note;
   }
 
-  std::vector<std::unique_ptr<UserNote>> notes = user_note_db.GetNotesById(ids);
+  std::vector<std::unique_ptr<UserNote>> notes =
+      user_note_db.GetNotesById(id_set);
   EXPECT_EQ(3u, notes.size());
 
-  int i = 0;
   for (std::unique_ptr<UserNote>& note : notes) {
-    EXPECT_EQ(ids[i].ToString(), note->id().ToString());
+    const auto& vector_it = std::find(ids.begin(), ids.end(), note->id());
+    EXPECT_NE(vector_it, ids.end());
+    EXPECT_NE(id_set.find(note->id()), id_set.end());
+    int i = vector_it - ids.begin();
     EXPECT_EQ("https://www.test.com/", note->target().target_page().spec());
     EXPECT_EQ(u"original text " + base::NumberToString16(i),
               note->target().original_text());
@@ -246,7 +254,6 @@ TEST_F(UserNoteDatabaseTest, GetNotesById) {
     EXPECT_EQ(u"new test note " + base::NumberToString16(i),
               note->body().plain_text_value());
     EXPECT_EQ(UserNoteTarget::TargetType::kPageText, note->target().type());
-    i++;
   }
 }
 
@@ -254,10 +261,10 @@ TEST_F(UserNoteDatabaseTest, DeleteAllNotes) {
   UserNoteDatabase user_note_db(db_dir());
   EXPECT_TRUE(user_note_db.Init());
 
-  std::vector<base::UnguessableToken> ids;
+  UserNoteStorage::IdSet ids;
   for (int i = 0; i < 3; i++) {
     base::UnguessableToken note_id = base::UnguessableToken::Create();
-    ids.emplace_back(note_id);
+    ids.emplace(note_id);
     UserNote* user_note =
         new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                      GetTestUserNotePageTarget());
@@ -278,10 +285,10 @@ TEST_F(UserNoteDatabaseTest, DeleteAllForOrigin) {
   UserNoteDatabase user_note_db(db_dir());
   EXPECT_TRUE(user_note_db.Init());
 
-  std::vector<base::UnguessableToken> ids;
+  UserNoteStorage::IdSet ids;
   for (int i = 0; i < 3; i++) {
     base::UnguessableToken note_id = base::UnguessableToken::Create();
-    ids.emplace_back(note_id);
+    ids.emplace(note_id);
     UserNote* user_note =
         new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                      GetTestUserNotePageTarget("https://www.test.com"));
@@ -304,10 +311,10 @@ TEST_F(UserNoteDatabaseTest, DeleteAllForUrl) {
   UserNoteDatabase user_note_db(db_dir());
   EXPECT_TRUE(user_note_db.Init());
 
-  std::vector<base::UnguessableToken> ids;
+  UserNoteStorage::IdSet ids;
   for (int i = 0; i < 3; i++) {
     base::UnguessableToken note_id = base::UnguessableToken::Create();
-    ids.emplace_back(note_id);
+    ids.emplace(note_id);
     UserNote* user_note =
         new UserNote(note_id, GetTestUserNoteMetadata(), GetTestUserNoteBody(),
                      GetTestUserNotePageTarget("https://www.test.com"));
@@ -330,7 +337,7 @@ TEST_F(UserNoteDatabaseTest, GetNoteMetadataForUrls) {
   EXPECT_TRUE(user_note_db.Init());
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_note_db.sequence_checker_);
 
-  std::set<base::UnguessableToken> ids;
+  UserNoteStorage::IdSet ids;
   base::Time time = base::Time::FromDoubleT(1600000000);
   int note_version = 1;
   for (int i = 0; i < 3; i++) {
@@ -347,13 +354,17 @@ TEST_F(UserNoteDatabaseTest, GetNoteMetadataForUrls) {
     delete user_note;
   }
 
-  GURL url = GURL("https://www.test.com");
-  std::vector<GURL> urls{url};
+  GURL url1 = GURL("https://www.test.com");
+  GURL url2 = GURL("https://www.test.com");
+  GURL url3 = GURL("https://www.test.com/2");
+  UserNoteStorage::UrlSet urls{url1, url2, url3};
   UserNoteMetadataSnapshot metadata_snapshot =
       user_note_db.GetNoteMetadataForUrls(urls);
   const UserNoteMetadataSnapshot::IdToMetadataMap* metadata_map =
-      metadata_snapshot.GetMapForUrl(url);
+      metadata_snapshot.GetMapForUrl(url1);
   EXPECT_EQ(3u, metadata_map->size());
+  EXPECT_EQ(3u, metadata_snapshot.GetMapForUrl(url2)->size());
+  EXPECT_EQ(nullptr, metadata_snapshot.GetMapForUrl(url3));
 
   for (const auto& metadata_it : *metadata_map) {
     EXPECT_TRUE(base::Contains(ids, metadata_it.first));

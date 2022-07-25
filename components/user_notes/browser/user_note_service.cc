@@ -69,10 +69,11 @@ void UserNoteService::OnFrameNavigated(content::RenderFrameHost* rfh) {
   DCHECK(UserNoteManager::GetForPage(rfh->GetPage()));
 
   std::vector<content::RenderFrameHost*> frames = {rfh};
-  std::vector<GURL> urls = {rfh->GetLastCommittedURL()};
+  UserNoteStorage::UrlSet urls = {rfh->GetLastCommittedURL()};
   storage_->GetNoteMetadataForUrls(
-      urls, base::BindOnce(&UserNoteService::OnNoteMetadataFetchedForNavigation,
-                           weak_ptr_factory_.GetWeakPtr(), frames, rfh));
+      std::move(urls),
+      base::BindOnce(&UserNoteService::OnNoteMetadataFetchedForNavigation,
+                     weak_ptr_factory_.GetWeakPtr(), frames, rfh));
 }
 
 void UserNoteService::OnNoteInstanceAddedToPage(
@@ -257,15 +258,16 @@ void UserNoteService::OnNoteEdited(const base::UnguessableToken& id,
 void UserNoteService::OnNotesChanged() {
   std::vector<content::RenderFrameHost*> all_frames =
       delegate_->GetAllFramesForUserNotes();
-  std::vector<GURL> urls;
+  UserNoteStorage::UrlSet urls;
 
   for (content::RenderFrameHost* frame : all_frames) {
-    urls.emplace_back(frame->GetLastCommittedURL());
+    urls.emplace(frame->GetLastCommittedURL());
   }
 
   storage_->GetNoteMetadataForUrls(
-      urls, base::BindOnce(&UserNoteService::OnNoteMetadataFetched,
-                           weak_ptr_factory_.GetWeakPtr(), all_frames));
+      std::move(urls),
+      base::BindOnce(&UserNoteService::OnNoteMetadataFetched,
+                     weak_ptr_factory_.GetWeakPtr(), all_frames));
 }
 
 void UserNoteService::InitializeNewNoteForCreation(
@@ -421,24 +423,24 @@ void UserNoteService::OnNoteMetadataFetched(
   // All added and modified notes must be fetched from storage to eventually be
   // put in the model map. For removed notes there is no need to update the
   // model map at this point; it will be done later when applying the changes.
-  std::vector<base::UnguessableToken> notes_to_fetch;
-  std::unordered_set<base::UnguessableToken, base::UnguessableTokenHash>
-      new_notes;
+  IdSet notes_to_fetch;
+  IdSet new_notes;
 
   for (const std::unique_ptr<FrameUserNoteChanges>& diff : note_changes) {
     for (const base::UnguessableToken& note_id : diff->notes_added()) {
-      notes_to_fetch.emplace_back(note_id);
+      notes_to_fetch.emplace(note_id);
       new_notes.emplace(note_id);
     }
     for (const base::UnguessableToken& note_id : diff->notes_modified()) {
-      notes_to_fetch.emplace_back(note_id);
+      notes_to_fetch.emplace(note_id);
     }
   }
 
   storage_->GetNotesById(
-      notes_to_fetch, base::BindOnce(&UserNoteService::OnNoteModelsFetched,
-                                     weak_ptr_factory_.GetWeakPtr(), new_notes,
-                                     std::move(note_changes)));
+      std::move(notes_to_fetch),
+      base::BindOnce(&UserNoteService::OnNoteModelsFetched,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(new_notes),
+                     std::move(note_changes)));
 }
 
 void UserNoteService::OnNoteModelsFetched(

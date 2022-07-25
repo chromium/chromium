@@ -7,7 +7,8 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/unguessable_token.h"
@@ -22,6 +23,10 @@ namespace user_notes {
 // Interface that callers can use to interact with the UserNotes in storage.
 class UserNoteStorage {
  public:
+  using UrlSet = std::unordered_set<GURL, GURLHash>;
+  using IdSet =
+      std::unordered_set<base::UnguessableToken, base::UnguessableTokenHash>;
+
   // Observer class for the notes storage. Notifies implementers when the notes
   // have changed on disk so they can update their model.
   class Observer {
@@ -44,13 +49,13 @@ class UserNoteStorage {
   // results are returned via `callback`, mapped by URL and by note
   // ID.
   virtual void GetNoteMetadataForUrls(
-      const std::vector<GURL>& urls,
+      const UrlSet& urls,
       base::OnceCallback<void(UserNoteMetadataSnapshot)> callback) = 0;
 
   // Fetches all `UserNotes` corresponding to the given IDs from disk. The
   // results are returned via `callback`.
   virtual void GetNotesById(
-      const std::vector<base::UnguessableToken>& ids,
+      const IdSet& ids,
       base::OnceCallback<void(std::vector<std::unique_ptr<UserNote>>)>
           callback) = 0;
 

@@ -37,13 +37,13 @@ namespace {
 class MockUserNoteStorage : public user_notes::UserNoteStorage {
  public:
   void GetNoteMetadataForUrls(
-      const std::vector<GURL>& urls,
+      const user_notes::UserNoteStorage::UrlSet& urls,
       base::OnceCallback<void(user_notes::UserNoteMetadataSnapshot)> callback)
       override {
     std::move(callback).Run(user_notes::UserNoteMetadataSnapshot());
   }
 
-  void GetNotesById(const std::vector<base::UnguessableToken>& ids,
+  void GetNotesById(const user_notes::UserNoteStorage::IdSet& ids,
                     base::OnceCallback<void(
                         std::vector<std::unique_ptr<user_notes::UserNote>>)>
                         callback) override {
