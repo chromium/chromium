@@ -2900,7 +2900,6 @@
 <translation id="4228745249339680042">このポリシーでは、セキュリティ キーの構成証明がリクエストされたときにメッセージを表示しない URL とドメインを指定できます。このとき、セキュリティ キーには、個別の構成が使用されることを示すシグナルも送られます。このポリシーで指定しないサイトからセキュリティ キーの構成がリクエストされた場合、<ph name="PRODUCT_NAME" /> バージョン 65 以降では、ユーザーにメッセージが表示されます。
 
       URL は U2F の appID が一致するもののみが対象となります。ドメインは WebAuthn の RP ID が一致するもののみが対象となります。U2F と WebAuthn API の両方に対応するには、サイトの appID URL とドメインを指定してください。</translation>
-<translation id="4239112794240794697">このポリシーは、企業ユーザーの場合、画面録画の文字起こしの作成と Google ドライブへのアップロードの権限を Projector に付与します。このポリシーは、ファミリー リンクのユーザーには影響しません。このポリシーは、ファミリー リンクのユーザー向けの <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> ポリシーには影響しません。ポリシーを有効にした場合、Projector は有効になります。ポリシーを無効にした場合、Projector は無効になります。ポリシーを未設定のままにした場合、Projector はデフォルトで無効になります。</translation>
 <translation id="4239720644496144453">キャッシュは Android アプリには使用されません。複数のユーザーが同じ Android アプリをインストールする場合、アプリはユーザーごとに新しくダウンロードされます。</translation>
 <translation id="4247914291127524388">このポリシーを有効に設定した場合、モバイル接続時に <ph name="PRODUCT_OS_NAME" /> ファイルアプリで <ph name="GOOGLE_DRIVE_NAME" /> の同期がオフになります。この場合、データは Wi-Fi またはイーサネット接続時にのみドライブに同期されます。
 
@@ -4656,6 +4655,8 @@
       このポリシーを無効に設定した場合、WPAD の最適化は無効になり、DNS ベースの WPAD サーバーに対する <ph name="PRODUCT_NAME" /> の待機間隔が長くなります。
 
       このポリシーを設定したかどうかに関係なく、ユーザーは WPAD の最適化設定を変更できません。</translation>
+<translation id="6365249741643189510">このポリシーは、企業ユーザーの場合、画面録画の文字起こしの作成と Google ドライブへのアップロードの権限を Projector に付与します。このポリシーは、ファミリー リンクのユーザーには影響しません。このポリシーは、ファミリー リンクのユーザー向けの <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> ポリシーには影響しません。ポリシーを未設定のままにするか有効にすると、Projector が有効になります。
+      ポリシーを無効にした場合、Projector は無効になります。</translation>
 <translation id="6366574325767783825">このポリシーを True に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> では Signed HTTP Exchange として配信されるウェブ コンテンツが許可されます。
 
       このポリシーを False に設定した場合、Signed HTTP Exchange は読み込まれません。</translation>

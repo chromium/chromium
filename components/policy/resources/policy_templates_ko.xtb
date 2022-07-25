@@ -3064,13 +3064,6 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 알림을 사용�
 <translation id="4228745249339680042">정책을 설정하면 보안 키의 증명 인증서 요청 시 메시지를 표시하지 않을 URL과 도메인을 지정합니다. 또한 개별 증명이 사용될 수 있음을 나타내는 신호가 보안 키로 전송됩니다. 정책을 설정하지 않으면 사이트에서 보안 키의 증명을 요청할 때 <ph name="PRODUCT_NAME" /> 버전 65 이상에서 사용자에게 메시지가 표시됩니다.
 
       URL은 U2F appID로만 일치합니다. 도메인은 webauthn RP ID로만 일치합니다. U2F와 webauthn API를 모두 처리하려면 주어진 사이트의 appID URL과 도메인을 목록에 포함하세요.</translation>
-<translation id="4239112794240794697">이 정책은 화면 녹화 파일을 만들고, 스크립트를 작성하고, 이러한 항목을 Drive에 업로드하는 Projector 권한을 기업 사용자에게 부여합니다.
-      이 정책은 Family Link 사용자에게 영향을 주지 않습니다.
-      이 정책은 Family Link 사용자를 위한 <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> 정책에 영향을 주지 않습니다.
-
-      정책을 사용 설정하면 Projector가 사용 설정됩니다.
-      정책을 사용 중지하면 Projector가 사용 중지됩니다.
-      정책을 설정하지 않으면 Projector가 기본적으로 사용 중지됩니다.</translation>
 <translation id="4239720644496144453">이 캐시는 Android 앱에 사용되지 않습니다. 여러 사용자가 동일한 Android 앱을 설치하는 경우 앱이 각 사용자마다 새로 다운로드됩니다.</translation>
 <translation id="4247914291127524388">정책을 '사용'으로 설정하면 모바일 데이터에 연결되어 있을 때 <ph name="PRODUCT_OS_NAME" /> 파일 앱에서 <ph name="GOOGLE_DRIVE_NAME" /> 동기화가 사용 중지됩니다. Wi-Fi 또는 이더넷으로 연결되어 있을 때만 데이터가 드라이브와 동기화됩니다.
 
@@ -4942,6 +4935,12 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
       사용 중지하면 WPAD 최적화가 사용 중지되어 <ph name="PRODUCT_NAME" /> 제품이 DNS 기반 WPAD 서버를 더 오래 기다리게 됩니다.
 
       정책의 설정 여부와 관계없이 사용자는 WPAD 최적화 설정을 변경할 수 없습니다.</translation>
+<translation id="6365249741643189510">이 정책은 화면 녹화 파일을 만들고, 스크립트를 작성하고, 이러한 항목을 Drive에 업로드하는 Projector 권한을 기업 사용자에게 부여합니다.
+      이 정책은 Family Link 사용자에게 영향을 주지 않습니다.
+      이 정책은 Family Link 사용자를 위한 <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> 정책에 영향을 주지 않습니다.
+
+      정책을 설정하지 않거나 사용 설정하면 Projector가 사용 설정됩니다.
+      정책을 사용 중지하면 Projector가 사용 중지됩니다.</translation>
 <translation id="6366574325767783825">정책을 True로 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 서명된 HTTP 교환(SXG)으로 제공된 웹 콘텐츠를 허용합니다.
 
       정책을 False로 설정하면 서명된 HTTP 교환(SXG)이 로드되지 않습니다.</translation>

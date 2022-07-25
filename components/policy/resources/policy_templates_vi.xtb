@@ -3057,13 +3057,6 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
 <translation id="4228745249339680042">Việc đặt chính sách này sẽ chỉ định các URL và miền không hiển thị lời nhắc khi có yêu cầu về chứng chỉ chứng thực của Khóa bảo mật. Một tín hiệu cũng sẽ được gửi tới Khóa bảo mật để cho biết có thể sử dụng chứng thực riêng lẻ. Nếu không có tín hiệu này thì khi các trang web yêu cầu chứng thực của Khóa bảo mật, người dùng sẽ được nhắc trong <ph name="PRODUCT_NAME" /> phiên bản 65 trở lên.
 
       Các URL sẽ chỉ khớp ở dạng U2F appID. Các miền chỉ khớp ở dạng webauthn RP ID. Do đó, để bao gồm cả API U2F và API webauthn, hãy liệt kê cả miền và URL appID của một trang web cụ thể.</translation>
-<translation id="4239112794240794697">Chính sách này cấp quyền Projector để tạo và chép lời trình ghi màn hình rồi tải lên Drive cho người dùng doanh nghiệp.
-      Chính sách này không ảnh hưởng đến người dùng Family Link.
-      Chính sách này không ảnh hưởng đến chính sách <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> cho người dùng Family Link.
-
-      Nếu bật chính sách này, Projector sẽ được bật.
-      Nếu bật chính sách này, Projector sẽ bị tắt.
-      Nếu không thiết lập chính sách này, Projector sẽ được tắt theo mặc định.</translation>
 <translation id="4239720644496144453">Bộ nhớ đệm không được sử dụng cho các ứng dụng Android. Nếu nhiều người dùng cài đặt cùng một ứng dụng Android thì ứng dụng sẽ được tải xuống lại cho từng người dùng.</translation>
 <translation id="4247914291127524388">Nếu bạn đặt chính sách này thành Bật, thì tính năng đồng bộ hóa <ph name="GOOGLE_DRIVE_NAME" /> trong ứng dụng Files <ph name="PRODUCT_OS_NAME" /> sẽ bị tắt khi dùng kết nối di động. Dữ liệu chỉ được đồng bộ hóa với Drive khi dùng kết nối Wi-Fi hoặc Ethernet.
 
@@ -4927,6 +4920,12 @@ Nếu bạn đặt chính sách thành Tắt, thì <ph name="PRODUCT_NAME" /> s�
       Nếu bạn đặt chính sách này thành Tắt, tính năng tối ưu hóa WPAD sẽ tắt. Điều này khiến <ph name="PRODUCT_NAME" /> phải đợi máy chủ WPAD dựa trên DNS trong khoảng thời gian lâu hơn.
 
       Cho dù bạn có đặt chính sách này hay không thì người dùng cũng không thể thay đổi tùy chọn cài đặt tối ưu hóa WPAD.</translation>
+<translation id="6365249741643189510">Chính sách này cấp quyền Projector để tạo và chép lời trên bản ghi màn hình rồi tải lên Drive cho người dùng doanh nghiệp.
+      Chính sách này không ảnh hưởng đến người dùng Family Link.
+      Chính sách này không ảnh hưởng đến chính sách <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> cho người dùng Family Link.
+
+      Nếu bạn chưa đặt hoặc đã bật chính sách này, Projector sẽ được bật.
+      Nếu bạn tắt chính sách này, Projector sẽ bị tắt.</translation>
 <translation id="6366574325767783825">Nếu bạn không đặt hoặc đặt chính sách này thành True, thì <ph name="PRODUCT_NAME" /> sẽ chấp nhận nội dung web được phân phối dưới dạng Signed HTTP Exchanges.
 
       Nếu bạn đặt chính sách này thành False, thì Signed HTTP Exchanges sẽ không tải được.</translation>
