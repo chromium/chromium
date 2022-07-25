@@ -7,8 +7,8 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
@@ -32,7 +32,7 @@
 #endif
 
 @interface PasswordDetailsCoordinator () <PasswordDetailsHandler> {
-  password_manager::PasswordForm _password;
+  password_manager::CredentialUIEntry _credential;
 
   // Manager responsible for password check feature.
   IOSChromePasswordCheckManager* _manager;
@@ -68,8 +68,9 @@
     initWithBaseNavigationController:
         (UINavigationController*)navigationController
                              browser:(Browser*)browser
-                            password:
-                                (const password_manager::PasswordForm&)password
+                          credential:
+                              (const password_manager::CredentialUIEntry&)
+                                  credential
                         reauthModule:(ReauthenticationModule*)reauthModule
                 passwordCheckManager:(IOSChromePasswordCheckManager*)manager {
   self = [super initWithBaseViewController:navigationController
@@ -79,13 +80,13 @@
     DCHECK(manager);
 
     _baseNavigationController = navigationController;
-    _password = password;
+    _credential = credential;
     _manager = manager;
     _reauthenticationModule = reauthModule;
-    _credentialType = password.blocked_by_user ? CredentialTypeBlocked
-                                               : CredentialTypeRegular;
+    _credentialType = credential.blocked_by_user ? CredentialTypeBlocked
+                                                 : CredentialTypeRegular;
     if (_credentialType == CredentialTypeRegular &&
-        !_password.federation_origin.opaque()) {
+        !credential.federation_origin.opaque()) {
       _credentialType = CredentialTypeFederation;
     }
   }
@@ -97,7 +98,7 @@
       initWithCredentialType:_credentialType
             syncingUserEmail:nil];
 
-  self.mediator = [[PasswordDetailsMediator alloc] initWithPassword:_password
+  self.mediator = [[PasswordDetailsMediator alloc] initWithPassword:_credential
                                                passwordCheckManager:_manager];
   self.mediator.consumer = self.viewController;
   self.viewController.handler = self;
@@ -232,7 +233,7 @@
 // Notifies delegate about password deletion and records metric if needed.
 - (void)passwordDeletionConfirmedForCompromised:(BOOL)compromised {
   [self.delegate passwordDetailsCoordinator:self
-                             deletePassword:self.mediator.password];
+                           deleteCredential:self.mediator.credential];
   if (compromised) {
     base::UmaHistogramEnumeration(
         "PasswordManager.BulkCheck.UserAction",

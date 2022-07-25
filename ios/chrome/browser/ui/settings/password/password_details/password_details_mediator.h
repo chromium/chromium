@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 
 namespace password_manager {
-struct PasswordForm;
+struct CredentialUIEntry;
 }  // namespace password_manager
 
 class IOSChromePasswordCheckManager;
@@ -20,9 +20,10 @@ class IOSChromePasswordCheckManager;
 @interface PasswordDetailsMediator
     : NSObject <PasswordDetailsTableViewControllerDelegate>
 
-// PasswordForm is converted to the PasswordDetails and passed to a consumer.
+// CredentialUIEntry is converted to the PasswordDetails and passed to a
+// consumer.
 - (instancetype)initWithPassword:
-                    (const password_manager::PasswordForm&)passwordForm
+                    (const password_manager::CredentialUIEntry&)credential
             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
     NS_DESIGNATED_INITIALIZER;
 
@@ -32,7 +33,7 @@ class IOSChromePasswordCheckManager;
 @property(nonatomic, weak) id<PasswordDetailsConsumer> consumer;
 
 // Password passed to the mediator.
-@property(nonatomic, readonly) password_manager::PasswordForm password;
+@property(nonatomic, readonly) password_manager::CredentialUIEntry credential;
 
 // Disconnects the mediator from all observers.
 - (void)disconnect;

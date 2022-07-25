@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
 namespace password_manager {
-struct PasswordForm;
+struct CredentialUIEntry;
 }  // namespace password_manager
 
 @protocol ApplicationCommands;
@@ -27,7 +27,7 @@ class IOSChromePasswordCheckManager;
 // Called when the user deleted password. Returns whether presenter will
 // handle it or not.
 - (BOOL)willHandlePasswordDeletion:
-    (const password_manager::PasswordForm&)password;
+    (const password_manager::CredentialUIEntry&)credential;
 
 @end
 

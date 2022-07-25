@@ -122,7 +122,7 @@
   self.passwordDetails = [[PasswordDetailsCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser
-                              password:form
+                            credential:password_manager::CredentialUIEntry(form)
                           reauthModule:self.reauthModule
                   passwordCheckManager:_manager];
   self.passwordDetails.delegate = self;
@@ -140,10 +140,10 @@
 }
 
 - (void)passwordDetailsCoordinator:(PasswordDetailsCoordinator*)coordinator
-                    deletePassword:
-                        (const password_manager::PasswordForm&)password {
-  if (![self.delegate willHandlePasswordDeletion:password]) {
-    [self.mediator deletePassword:password];
+                  deleteCredential:
+                      (const password_manager::CredentialUIEntry&)credential {
+  if (![self.delegate willHandlePasswordDeletion:credential]) {
+    [self.mediator deleteCredential:credential];
   }
   [self.baseNavigationController popViewControllerAnimated:YES];
 }

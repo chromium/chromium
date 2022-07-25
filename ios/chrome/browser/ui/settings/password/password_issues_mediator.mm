@@ -66,17 +66,9 @@
   [self fetchPasswordIssues];
 }
 
-- (void)deletePassword:(const password_manager::PasswordForm&)password {
-  for (const auto& credential : _unmutedCompromisedCredentials) {
-    if (std::tie(credential.signon_realm, credential.username,
-                 credential.password) == std::tie(password.signon_realm,
-                                                  password.username_value,
-                                                  password.password_value)) {
-      _manager->DeleteCompromisedPasswordForm(password);
-      return;
-    }
-  }
-  _manager->DeletePasswordForm(password);
+- (void)deleteCredential:
+    (const password_manager::CredentialUIEntry&)credential {
+  _manager->GetSavedPasswordsPresenter()->RemoveCredential(credential);
   // TODO:(crbug.com/1075494) - Update list of compromised passwords without
   // awaiting compromisedCredentialsDidChange.
 }

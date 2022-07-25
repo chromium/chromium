@@ -149,8 +149,9 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
                                            .size()];
 }
 
-- (void)deletePasswordForm:(const password_manager::PasswordForm&)form {
-  _savedPasswordsPresenter->RemovePassword(form);
+- (void)deleteCredential:
+    (const password_manager::CredentialUIEntry&)credential {
+  _savedPasswordsPresenter->RemoveCredential(credential);
 }
 
 - (void)disconnect {

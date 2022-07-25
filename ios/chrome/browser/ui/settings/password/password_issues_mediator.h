@@ -12,7 +12,7 @@
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 namespace password_manager {
-struct PasswordForm;
+struct CredentialUIEntry;
 }  // namespace password_manager
 
 class FaviconLoader;
@@ -34,7 +34,7 @@ class IOSChromePasswordCheckManager;
 @property(nonatomic, weak) id<PasswordIssuesConsumer> consumer;
 
 // Deletes password from the password store.
-- (void)deletePassword:(const password_manager::PasswordForm&)password;
+- (void)deleteCredential:(const password_manager::CredentialUIEntry&)credential;
 
 @end
 

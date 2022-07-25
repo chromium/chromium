@@ -281,7 +281,7 @@
 }
 
 - (BOOL)willHandlePasswordDeletion:
-    (const password_manager::PasswordForm&)password {
+    (const password_manager::CredentialUIEntry&)credential {
   return NO;
 }
 

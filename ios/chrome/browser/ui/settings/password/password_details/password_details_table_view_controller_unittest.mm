@@ -10,7 +10,8 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
@@ -192,8 +193,8 @@ class PasswordDetailsTableViewControllerTest
     form.username_element = u"email";
     form.scheme = password_manager::PasswordForm::Scheme::kHtml;
 
-    PasswordDetails* passwordDetails =
-        [[PasswordDetails alloc] initWithPasswordForm:form];
+    PasswordDetails* passwordDetails = [[PasswordDetails alloc]
+        initWithCredential:password_manager::CredentialUIEntry(form)];
     passwordDetails.compromised = isCompromised;
 
     PasswordDetailsTableViewController* passwords_controller =
@@ -209,8 +210,8 @@ class PasswordDetailsTableViewControllerTest
     form.signon_realm = form.url.spec();
     form.federation_origin =
         url::Origin::Create(GURL("http://www.example.com/"));
-    PasswordDetails* password =
-        [[PasswordDetails alloc] initWithPasswordForm:form];
+    PasswordDetails* password = [[PasswordDetails alloc]
+        initWithCredential:password_manager::CredentialUIEntry(form)];
     PasswordDetailsTableViewController* passwords_controller =
         static_cast<PasswordDetailsTableViewController*>(controller());
     [passwords_controller setPassword:password];
@@ -222,8 +223,8 @@ class PasswordDetailsTableViewControllerTest
     form.url = GURL("http://www.example.com/");
     form.blocked_by_user = true;
     form.signon_realm = form.url.spec();
-    PasswordDetails* password =
-        [[PasswordDetails alloc] initWithPasswordForm:form];
+    PasswordDetails* password = [[PasswordDetails alloc]
+        initWithCredential:password_manager::CredentialUIEntry(form)];
     PasswordDetailsTableViewController* passwords_controller =
         static_cast<PasswordDetailsTableViewController*>(controller());
     [passwords_controller setPassword:password];

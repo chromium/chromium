@@ -20,6 +20,10 @@ class IOSChromePasswordCheckManager;
 @protocol PasswordsConsumer;
 class SyncSetupService;
 
+namespace password_manager {
+struct CredentialUIEntry;
+}
+
 // This mediator fetches and organises the passwords for its consumer.
 @interface PasswordsMediator : NSObject <PasswordAutoFillStatusObserver,
                                          PasswordManagerViewControllerDelegate,
@@ -38,7 +42,7 @@ class SyncSetupService;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Deletes 'form' and its duplicates.
-- (void)deletePasswordForm:(const password_manager::PasswordForm&)form;
+- (void)deleteCredential:(const password_manager::CredentialUIEntry&)credential;
 
 // Disconnect the observers.
 - (void)disconnect;

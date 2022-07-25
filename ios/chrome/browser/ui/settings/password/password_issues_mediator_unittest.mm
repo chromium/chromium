@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -167,7 +168,7 @@ TEST_F(PasswordIssuesMediatorTest, TestPasswordDeletion) {
   EXPECT_EQ(1u, [[consumer() passwords] count]);
 
   auto password = store()->stored_passwords().at(kExampleCom).at(0);
-  [mediator() deletePassword:password];
+  [mediator() deleteCredential:password_manager::CredentialUIEntry(password)];
   RunUntilIdle();
   EXPECT_EQ(0u, [[consumer() passwords] count]);
 }

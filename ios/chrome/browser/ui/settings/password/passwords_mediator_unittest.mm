@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -211,7 +212,7 @@ TEST_F(PasswordsMediatorTest, DeleteFormWithDuplicates) {
   RunUntilIdle();
   ASSERT_THAT([consumer() savedForms], testing::ElementsAre(form));
 
-  [mediator() deletePasswordForm:form];
+  [mediator() deleteCredential:password_manager::CredentialUIEntry(form)];
   RunUntilIdle();
   EXPECT_THAT([consumer() savedForms], testing::IsEmpty());
 }

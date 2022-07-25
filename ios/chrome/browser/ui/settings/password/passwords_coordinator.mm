@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
@@ -176,7 +177,7 @@
   self.passwordDetailsCoordinator = [[PasswordDetailsCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser
-                              password:form
+                            credential:password_manager::CredentialUIEntry(form)
                           reauthModule:self.reauthModule
                   passwordCheckManager:[self passwordCheckManager].get()];
   self.passwordDetailsCoordinator.delegate = self;
@@ -221,8 +222,8 @@
 }
 
 - (BOOL)willHandlePasswordDeletion:
-    (const password_manager::PasswordForm&)password {
-  [self.mediator deletePasswordForm:password];
+    (const password_manager::CredentialUIEntry&)credential {
+  [self.mediator deleteCredential:credential];
   return YES;
 }
 
@@ -237,10 +238,10 @@
 }
 
 - (void)passwordDetailsCoordinator:(PasswordDetailsCoordinator*)coordinator
-                    deletePassword:
-                        (const password_manager::PasswordForm&)password {
+                  deleteCredential:
+                      (const password_manager::CredentialUIEntry&)credential {
   DCHECK_EQ(self.passwordDetailsCoordinator, coordinator);
-  [self.mediator deletePasswordForm:password];
+  [self.mediator deleteCredential:credential];
   [self.baseNavigationController popViewControllerAnimated:YES];
 }
 
