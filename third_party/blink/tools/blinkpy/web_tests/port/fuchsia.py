@@ -292,7 +292,8 @@ class FuchsiaPort(base.Port):
     def start_http_server(self, additional_dirs, number_of_drivers):
         additional_dirs['/third_party/blink/PerformanceTests'] = \
             self._perf_tests_dir()
-        additional_dirs[WEB_TESTS_PATH_PREFIX] = self.web_tests_dir()
+        additional_dirs[WEB_TESTS_PATH_PREFIX] = \
+            self._path_finder.web_tests_dir()
         additional_dirs['/gen'] = self.generated_sources_directory()
         additional_dirs['/third_party/blink'] = \
             self._path_from_chromium_base('third_party', 'blink')
@@ -354,9 +355,9 @@ class ChromiumFuchsiaDriver(driver.Driver):
                         self)._command_from_driver_input(driver_input)
         if command.startswith('/'):
             relative_test_filename = \
-                os.path.relpath(command, self._port.web_tests_dir())
-            command = 'http://127.0.0.1:8000' + WEB_TESTS_PATH_PREFIX + \
-                '/' + relative_test_filename
+                os.path.relpath(command,
+                                self._port._path_finder.chromium_base())
+            command = 'http://127.0.0.1:8000' + '/' + relative_test_filename
         return command
 
 

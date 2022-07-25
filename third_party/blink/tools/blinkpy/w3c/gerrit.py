@@ -8,9 +8,10 @@ import logging
 from six.moves.urllib.error import HTTPError
 
 from blinkpy.common.net.network_transaction import NetworkTimeout
+from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
 from blinkpy.w3c.chromium_commit import ChromiumCommit
 from blinkpy.w3c.chromium_finder import absolute_chromium_dir
-from blinkpy.w3c.common import CHROMIUM_WPT_DIR, is_file_exportable
+from blinkpy.w3c.common import is_file_exportable
 
 _log = logging.getLogger(__name__)
 URL_BASE = 'https://chromium-review.googlesource.com'
@@ -186,7 +187,7 @@ class GerritCL(object):
         if 'NOEXPORT=true' in self.current_revision['commit_with_footers']:
             return False
 
-        files_in_wpt = [f for f in files if f.startswith(CHROMIUM_WPT_DIR)]
+        files_in_wpt = [f for f in files if f.startswith(RELATIVE_WPT_TESTS)]
         if not files_in_wpt:
             return False
 

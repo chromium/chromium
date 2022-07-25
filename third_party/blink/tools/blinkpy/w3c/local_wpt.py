@@ -5,9 +5,9 @@
 
 import logging
 
+from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.w3c.common import (
-    CHROMIUM_WPT_DIR,
     DEFAULT_WPT_COMMITTER_EMAIL,
     DEFAULT_WPT_COMMITTER_NAME,
     WPT_GH_SSH_URL_TEMPLATE,
@@ -99,7 +99,7 @@ class LocalWPT(object):
         self.run(['git', 'checkout', '-b', branch_name])
 
         # Remove Chromium WPT directory prefix.
-        patch = patch.replace(CHROMIUM_WPT_DIR, '')
+        patch = patch.replace(RELATIVE_WPT_TESTS, '')
 
         _log.info('Author: %s', author)
         if '<' in author:
@@ -107,7 +107,7 @@ class LocalWPT(object):
         else:
             author_str = '%s <%s>' % (author, author)
 
-        # TODO(jeffcarp): Use git am -p<n> where n is len(CHROMIUM_WPT_DIR.split(/'))
+        # TODO(jeffcarp): Use git am -p<n> where n is len(RELATIVE_WPT_TESTS.split(/'))
         # or something not off-by-one.
         self.run(['git', 'apply', '-'], input=patch)
         self.run(['git', 'add', '.'])
@@ -150,7 +150,7 @@ class LocalWPT(object):
             A string containing error messages from git, empty if the patch applies cleanly.
         """
         # Remove Chromium WPT directory prefix.
-        patch = patch.replace(CHROMIUM_WPT_DIR, '')
+        patch = patch.replace(RELATIVE_WPT_TESTS, '')
         try:
             self.run(['git', 'apply', '-'], input=patch)
             self.run(['git', 'add', '.'])

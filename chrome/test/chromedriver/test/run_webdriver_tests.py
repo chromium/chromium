@@ -36,8 +36,8 @@ sys.path.insert(0, BLINK_TOOLS_ABS_PATH)
 from blinkpy.common import exit_codes
 from blinkpy.common.host import Host
 from blinkpy.common.path_finder import PathFinder
+from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
 from blinkpy.common.system.log_utils import configure_logging
-from blinkpy.w3c.common import CHROMIUM_WPT_DIR
 from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.models.typ_types import ResultType
 
@@ -208,7 +208,7 @@ def set_up_config(path_finder, chromedriver_server):
   # /blinkpy/web_tests/servers/wptserve.py?l=23&rcl=375b34c6ba64
   # 5d00c1413e4c6106c7bb74581c85
   server_config_dict = {
-    "doc_root": path_finder.path_from_chromium_base(CHROMIUM_WPT_DIR),
+    "doc_root": path_finder.path_from_chromium_base(RELATIVE_WPT_TESTS),
     "browser_host": "web-platform.test",
     "domains": {"": {"": "web-platform.test",
                      "www": "www.web-platform.test",

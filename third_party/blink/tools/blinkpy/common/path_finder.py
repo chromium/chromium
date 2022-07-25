@@ -117,6 +117,7 @@ def add_blink_tools_dir_to_sys_path():
 # web_tests path relative to the repository root.
 # Path separators are always '/', and this contains the trailing '/'.
 RELATIVE_WEB_TESTS = 'third_party/blink/web_tests/'
+RELATIVE_WPT_TESTS = 'third_party/blink/web_tests/external/wpt/'
 WEB_TESTS_LAST_COMPONENT = 'web_tests'
 
 

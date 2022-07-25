@@ -6,11 +6,10 @@ import unittest
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
+from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.executive_mock import MockExecutive, mock_git_commands
 from blinkpy.w3c.chromium_commit import ChromiumCommit
-
-CHROMIUM_WPT_DIR = RELATIVE_WEB_TESTS + 'external/wpt/'
 
 
 class ChromiumCommitTest(unittest.TestCase):
@@ -61,7 +60,7 @@ class ChromiumCommitTest(unittest.TestCase):
         host = MockHost()
 
         fake_files = ['file1', 'MANIFEST.json', 'file3', 'OWNERS']
-        qualified_fake_files = [CHROMIUM_WPT_DIR + f for f in fake_files]
+        qualified_fake_files = [RELATIVE_WPT_TESTS + f for f in fake_files]
 
         host.executive = mock_git_commands({
             'diff-tree':
@@ -77,7 +76,7 @@ class ChromiumCommitTest(unittest.TestCase):
 
         expected_files = ['file1', 'file3']
         qualified_expected_files = [
-            CHROMIUM_WPT_DIR + f for f in expected_files
+            RELATIVE_WPT_TESTS + f for f in expected_files
         ]
 
         self.assertEqual(files, qualified_expected_files)

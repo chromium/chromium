@@ -5,7 +5,7 @@
 import unittest
 
 from blinkpy.common.host_mock import MockHost
-from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
+from blinkpy.common.path_finder import RELATIVE_WEB_TESTS, RELATIVE_WPT_TESTS
 from blinkpy.common.system.executive_mock import mock_git_commands
 from blinkpy.w3c.gerrit import GerritAPI, GerritCL
 from blinkpy.w3c.gerrit_mock import MockGerritAPI
@@ -124,7 +124,7 @@ class GerritCLTest(unittest.TestCase):
                 '1': {
                     'commit_with_footers': 'fake subject',
                     'files': {
-                        RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html': '',
+                        RELATIVE_WPT_TESTS + 'foo/bar.html': '',
                     }
                 }
             },
@@ -166,7 +166,7 @@ class GerritCLTest(unittest.TestCase):
                 '1': {
                     'commit_with_footers': 'fake subject\nNo-Export: true',
                     'files': {
-                        RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html': '',
+                        RELATIVE_WPT_TESTS + 'foo/bar.html': '',
                     }
                 }
             },
@@ -187,7 +187,7 @@ class GerritCLTest(unittest.TestCase):
                 '1': {
                     'commit_with_footers': 'fake subject\nNOEXPORT=true',
                     'files': {
-                        RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html': '',
+                        RELATIVE_WPT_TESTS + 'foo/bar.html': '',
                     }
                 }
             },
@@ -208,7 +208,7 @@ class GerritCLTest(unittest.TestCase):
                 '1': {
                     'commit_with_footers': 'fake subject',
                     'files': {
-                        RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html': '',
+                        RELATIVE_WPT_TESTS + 'foo/bar.html': '',
                     }
                 }
             },
