@@ -107,6 +107,7 @@ public class CronetSmokeTestRule implements TestRule {
      *
      * @throws Exception if the class cannot be instantiated.
      */
+    @SuppressWarnings("DiscouragedApi")
     private void initTestSupport() throws Exception {
         Context ctx = InstrumentationRegistry.getTargetContext();
         String packageName = ctx.getPackageName();

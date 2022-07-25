@@ -215,6 +215,8 @@ public abstract class CronetProvider {
      *         {@link #RES_KEY_CRONET_IMPL_CLASS} key.
      * @throws RuntimeException if the provider cannot be found or instantiated.
      */
+    // looking up resources from other apps requires the use of getIdentifier()
+    @SuppressWarnings("DiscouragedApi")
     private static boolean addCronetProviderFromResourceFile(
             Context context, Set<CronetProvider> providers) {
         int resId = context.getResources().getIdentifier(
