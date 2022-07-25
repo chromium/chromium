@@ -3485,8 +3485,8 @@
   },
   {
     "name": "files-trash",
-    "owners": [ "joelhockey", "noel", "simmonsjosh@google.com" ],
-    "expiry_milestone": 105
+    "owners": [ "benreich", "joelhockey", "noel", "simmonsjosh@google.com" ],
+    "expiry_milestone": 115
   },
   {
     "name": "files-web-drive-office",
