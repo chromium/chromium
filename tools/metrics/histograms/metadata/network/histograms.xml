@@ -3000,6 +3000,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.MemoryCache.BlockedByRequestHeaderReason"
+    enum="NetworkServiceMemoryCacheBlockedByRequestHeaderReason"
+    expires_after="2022-10-05">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records a reason why a request cannot be served from the in-memory cache due
+    to request header checks. Recorded when the in-memory cache tries to serve a
+    stored response.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.MemoryCache.ContentLength.{RequestDestination}"
     units="bytes" expires_after="2022-10-05">
   <owner>bashi@chromium.org</owner>
