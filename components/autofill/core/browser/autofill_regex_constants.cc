@@ -576,7 +576,7 @@ const char16_t kUPIVirtualPaymentAddressRe[] =
     u"yesbankltd"
     u")$";
 
-const char16_t kInternationalBankAccountNumberValueRe[] =
+const char16_t kInternationalBankAccountNumberRe[] =
     u"^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}$";
 
 // Matches all 3 and 4 digit numbers.
@@ -615,11 +615,5 @@ const char16_t kEmailValueRe[] =
     u"^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";
 const char16_t kPhoneValueRe[] = u"^[0-9()+-]{6,25}$";
 const char16_t kUsernameLikeValueRe[] = u"[A-Za-z0-9_\\-.]{7,30}";
-
-/////////////////////////////////////////////////////////////////////////////
-// iban_field.cc
-/////////////////////////////////////////////////////////////////////////////
-const char16_t kIbanRe[] =
-    u"(\\biban(\\b|_)|international bank account number)";
 
 }  // namespace autofill

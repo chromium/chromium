@@ -350,7 +350,7 @@ bool IsInternationalBankAccountNumber(const std::u16string& value) {
   std::u16string no_spaces;
   base::RemoveChars(value, u" ", &no_spaces);
   return MatchesPatternInMainThread(no_spaces,
-                                    kInternationalBankAccountNumberValueRe);
+                                    kInternationalBankAccountNumberRe);
 }
 
 bool IsPlausibleCreditCardCVCNumber(const std::u16string& value) {
