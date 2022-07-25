@@ -632,7 +632,7 @@ void MainThreadSchedulerImpl::Shutdown() {
   main_thread_only().metrics_helper.OnRendererShutdown(now);
   // This needs to be after metrics helper, to prevent it being confused by
   // potential virtual time domain shutdown!
-  ThreadSchedulerImpl::Shutdown();
+  ThreadSchedulerBase::Shutdown();
 
   ShutdownAllQueues();
 
@@ -1074,8 +1074,8 @@ void MainThreadSchedulerImpl::OnAudioStateChanged() {
                        : power_scheduler::PowerMode::kIdle);
 }
 
-std::unique_ptr<ThreadScheduler::RendererPauseHandle>
-MainThreadSchedulerImpl::PauseRenderer() {
+std::unique_ptr<MainThreadScheduler::RendererPauseHandle>
+MainThreadSchedulerImpl::PauseScheduler() {
   return std::make_unique<RendererPauseHandleImpl>(this);
 }
 
@@ -2071,6 +2071,10 @@ MainThreadSchedulerImpl::GetPendingUserInputInfo(
   return any_thread().pending_input_monitor.Info(include_continuous);
 }
 
+blink::MainThreadScheduler* MainThreadSchedulerImpl::ToMainThreadScheduler() {
+  return this;
+}
+
 void MainThreadSchedulerImpl::RunIdleTask(Thread::IdleTask task,
                                           base::TimeTicks deadline) {
   std::move(task).Run(deadline);
@@ -2132,6 +2136,14 @@ WebAgentGroupScheduler*
 MainThreadSchedulerImpl::GetCurrentAgentGroupScheduler() {
   helper_.CheckOnValidThread();
   return current_agent_group_scheduler_;
+}
+
+void MainThreadSchedulerImpl::SetV8Isolate(v8::Isolate* isolate) {
+  ThreadSchedulerBase::SetV8Isolate(isolate);
+}
+
+base::TimeTicks MainThreadSchedulerImpl::MonotonicallyIncreasingVirtualTime() {
+  return GetTickClock()->NowTicks();
 }
 
 void MainThreadSchedulerImpl::BeginAgentGroupSchedulerScope(
@@ -2220,11 +2232,6 @@ void MainThreadSchedulerImpl::EndAgentGroupSchedulerScope() {
           agent_group_scheduler_scope.current_agent_group_scheduler));
 
   main_thread_only().agent_group_scheduler_scope_stack.pop_back();
-}
-
-std::unique_ptr<ThreadScheduler::RendererPauseHandle>
-MainThreadSchedulerImpl::PauseScheduler() {
-  return PauseRenderer();
 }
 
 WebThreadScheduler* MainThreadSchedulerImpl::GetWebMainThreadScheduler() {

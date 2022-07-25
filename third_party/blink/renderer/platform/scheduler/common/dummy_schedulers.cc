@@ -286,10 +286,6 @@ class DummyThreadScheduler : public ThreadScheduler {
                                Thread::IdleTask) override {}
   void AddRAILModeObserver(RAILModeObserver*) override {}
   void RemoveRAILModeObserver(RAILModeObserver const*) override {}
-  std::unique_ptr<WebThreadScheduler::RendererPauseHandle> PauseScheduler()
-      override {
-    return nullptr;
-  }
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override {
     return base::TimeTicks::Now();
   }

@@ -54,9 +54,6 @@ class MockIdleDeadlineScheduler final : public ThreadScheduler {
       override {
     return nullptr;
   }
-  std::unique_ptr<RendererPauseHandle> PauseScheduler() override {
-    return nullptr;
-  }
 
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override {
     return base::TimeTicks();

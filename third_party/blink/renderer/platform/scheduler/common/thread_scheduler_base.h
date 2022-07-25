@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THREAD_SCHEDULER_IMPL_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THREAD_SCHEDULER_IMPL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THREAD_SCHEDULER_BASE_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THREAD_SCHEDULER_BASE_H_
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -30,16 +30,13 @@ class AutoAdvancingVirtualTimeDomain;
 // Scheduler-internal interface for the common methods between
 // MainThreadSchedulerImpl and NonMainThreadSchedulerImpl which should
 // not be exposed outside the scheduler.
-class PLATFORM_EXPORT ThreadSchedulerImpl : public ThreadScheduler,
-                                            public WebThreadScheduler,
+// This class does not implement the public ThreadScheduler interface
+// but provides functionality so that subclasses such as MainThreadScheduler
+// can extend ThreadScheduler and not end up in with diamond inheritenance.
+class PLATFORM_EXPORT ThreadSchedulerBase : public WebThreadScheduler,
                                             public VirtualTimeController,
                                             public SchedulerHelper::Observer {
  public:
-  // This type is defined in both ThreadScheduler and WebThreadScheduler,
-  // so the use of this type causes ambiguous lookup. Redefine this again
-  // to hide the base classes' ones.
-  using RendererPauseHandle = WebThreadScheduler::RendererPauseHandle;
-
   // Returns the idle task runner. Tasks posted to this runner may be reordered
   // relative to other task types and may be starved for an arbitrarily long
   // time if no idle time is available.
@@ -54,12 +51,10 @@ class PLATFORM_EXPORT ThreadSchedulerImpl : public ThreadScheduler,
   // only once per task.
   void ExecuteAfterCurrentTask(base::OnceClosure on_completion_task);
 
-  void SetV8Isolate(v8::Isolate* isolate) override { isolate_ = isolate; }
+  void SetV8Isolate(v8::Isolate* isolate) { isolate_ = isolate; }
   v8::Isolate* isolate() const { return isolate_; }
 
-  // ThreadScheduler implementation.
   void Shutdown() override;
-  base::TimeTicks MonotonicallyIncreasingVirtualTime() override;
 
   // VirtualTimeController implementation.
   base::TimeTicks EnableVirtualTime(base::Time initial_time) override;
@@ -85,8 +80,8 @@ class PLATFORM_EXPORT ThreadSchedulerImpl : public ThreadScheduler,
   }
 
  protected:
-  ThreadSchedulerImpl();
-  ~ThreadSchedulerImpl() override;
+  ThreadSchedulerBase();
+  ~ThreadSchedulerBase() override;
 
   // Returns the list of callbacks to execute after the current task.
   virtual WTF::Vector<base::OnceClosure>& GetOnTaskCompletionCallbacks() = 0;
@@ -147,4 +142,4 @@ class PLATFORM_EXPORT ThreadSchedulerImpl : public ThreadScheduler,
 }  // namespace scheduler
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THREAD_SCHEDULER_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THREAD_SCHEDULER_BASE_H_

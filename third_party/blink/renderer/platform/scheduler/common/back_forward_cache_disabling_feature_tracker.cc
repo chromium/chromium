@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/scheduler/common/back_forward_cache_disabling_feature_tracker.h"
 
-#include "third_party/blink/renderer/platform/scheduler/common/thread_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/common/thread_scheduler_base.h"
 
 namespace blink {
 namespace scheduler {
@@ -12,7 +12,7 @@ namespace scheduler {
 BackForwardCacheDisablingFeatureTracker::
     BackForwardCacheDisablingFeatureTracker(
         TraceableVariableController* tracing_controller,
-        ThreadSchedulerImpl* scheduler)
+        ThreadSchedulerBase* scheduler)
     : opted_out_from_back_forward_cache_{false,
                                          "FrameScheduler."
                                          "OptedOutFromBackForwardCache",

@@ -41,11 +41,6 @@ void WebFakeThreadScheduler::SetRendererHidden(bool hidden) {}
 
 void WebFakeThreadScheduler::SetRendererBackgrounded(bool backgrounded) {}
 
-std::unique_ptr<WebFakeThreadScheduler::RendererPauseHandle>
-WebFakeThreadScheduler::PauseRenderer() {
-  return nullptr;
-}
-
 #if BUILDFLAG(IS_ANDROID)
 void WebFakeThreadScheduler::PauseTimersForAndroidWebView() {}
 

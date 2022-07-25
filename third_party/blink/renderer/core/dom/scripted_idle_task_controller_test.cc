@@ -63,9 +63,6 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
     NOTREACHED();
     return nullptr;
   }
-  std::unique_ptr<RendererPauseHandle> PauseScheduler() override {
-    return nullptr;
-  }
   scheduler::WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override {
     NOTREACHED();
     return nullptr;

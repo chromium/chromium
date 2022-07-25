@@ -17,7 +17,7 @@
 namespace blink {
 namespace scheduler {
 
-class ThreadSchedulerImpl;
+class ThreadSchedulerBase;
 
 // Keeps track of feature usage that disables back/forward cache.
 //
@@ -34,7 +34,7 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   // instance except for tests.
   BackForwardCacheDisablingFeatureTracker(
       TraceableVariableController* tracing_controller,
-      ThreadSchedulerImpl* scheduler);
+      ThreadSchedulerBase* scheduler);
 
   // Sets the delegate to notify the feature usage update. This must be called
   // only once for initialization. `delegate` must not be null and must outlive
@@ -89,7 +89,7 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   bool feature_report_scheduled_ = false;
 
   FrameOrWorkerScheduler::Delegate* delegate_ = nullptr;
-  ThreadSchedulerImpl* scheduler_;
+  ThreadSchedulerBase* scheduler_;
 
   base::WeakPtrFactory<BackForwardCacheDisablingFeatureTracker> weak_factory_{
       this};

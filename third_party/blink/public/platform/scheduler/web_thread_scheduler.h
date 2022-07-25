@@ -111,24 +111,6 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   virtual void ResumeTimersForAndroidWebView();
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // RAII handle for pausing the renderer. Renderer is paused while
-  // at least one pause handle exists.
-  class BLINK_PLATFORM_EXPORT RendererPauseHandle {
-   public:
-    RendererPauseHandle() = default;
-    RendererPauseHandle(const RendererPauseHandle&) = delete;
-    RendererPauseHandle& operator=(const RendererPauseHandle&) = delete;
-    virtual ~RendererPauseHandle() = default;
-  };
-
-  // Tells the scheduler that the renderer process should be paused.
-  // Pausing means that all javascript callbacks should not fire.
-  // https://html.spec.whatwg.org/#pause
-  //
-  // Renderer will be resumed when the handle is destroyed.
-  // Handle should be destroyed before the renderer.
-  [[nodiscard]] virtual std::unique_ptr<RendererPauseHandle> PauseRenderer();
-
   // Sets the default blame context to which top level work should be
   // attributed in this renderer. |blame_context| must outlive this scheduler.
   virtual void SetTopLevelBlameContext(

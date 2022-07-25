@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/scheduler/common/thread_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/common/thread_scheduler_base.h"
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/auto_advancing_virtual_time_domain.h"
@@ -10,21 +10,17 @@
 namespace blink {
 namespace scheduler {
 
-void ThreadSchedulerImpl::ExecuteAfterCurrentTask(
+void ThreadSchedulerBase::ExecuteAfterCurrentTask(
     base::OnceClosure on_completion_task) {
   GetOnTaskCompletionCallbacks().push_back(std::move(on_completion_task));
 }
 
-void ThreadSchedulerImpl::Shutdown() {
+void ThreadSchedulerBase::Shutdown() {
   GetHelper().ResetTimeDomain();
   virtual_time_domain_.reset();
 }
 
-base::TimeTicks ThreadSchedulerImpl::MonotonicallyIncreasingVirtualTime() {
-  return GetTickClock()->NowTicks();
-}
-
-base::TimeTicks ThreadSchedulerImpl::EnableVirtualTime(
+base::TimeTicks ThreadSchedulerBase::EnableVirtualTime(
     base::Time initial_time) {
   if (virtual_time_domain_)
     return virtual_time_domain_->InitialTicks();
@@ -43,7 +39,7 @@ base::TimeTicks ThreadSchedulerImpl::EnableVirtualTime(
   return initial_ticks;
 }
 
-void ThreadSchedulerImpl::DisableVirtualTimeForTesting() {
+void ThreadSchedulerBase::DisableVirtualTimeForTesting() {
   if (!IsVirtualTimeEnabled())
     return;
   // Reset virtual time and all tasks queues back to their initial state.
@@ -58,12 +54,12 @@ void ThreadSchedulerImpl::DisableVirtualTimeForTesting() {
   OnVirtualTimeDisabled();
 }
 
-bool ThreadSchedulerImpl::VirtualTimeAllowedToAdvance() const {
+bool ThreadSchedulerBase::VirtualTimeAllowedToAdvance() const {
   DCHECK(!virtual_time_stopped_ || virtual_time_domain_);
   return !virtual_time_stopped_;
 }
 
-void ThreadSchedulerImpl::GrantVirtualTimeBudget(
+void ThreadSchedulerBase::GrantVirtualTimeBudget(
     base::TimeDelta budget,
     base::OnceClosure budget_exhausted_callback) {
   GetVirtualTimeTaskRunner()->PostDelayedTask(
@@ -74,13 +70,13 @@ void ThreadSchedulerImpl::GrantVirtualTimeBudget(
                                             budget);
 }
 
-void ThreadSchedulerImpl::SetVirtualTimePolicy(VirtualTimePolicy policy) {
+void ThreadSchedulerBase::SetVirtualTimePolicy(VirtualTimePolicy policy) {
   DCHECK(IsVirtualTimeEnabled());
   virtual_time_policy_ = policy;
   ApplyVirtualTimePolicy();
 }
 
-void ThreadSchedulerImpl::SetMaxVirtualTimeTaskStarvationCount(
+void ThreadSchedulerBase::SetMaxVirtualTimeTaskStarvationCount(
     int max_task_starvation_count) {
   DCHECK(IsVirtualTimeEnabled());
   max_virtual_time_task_starvation_count_ = max_task_starvation_count;
@@ -88,44 +84,44 @@ void ThreadSchedulerImpl::SetMaxVirtualTimeTaskStarvationCount(
 }
 
 WebScopedVirtualTimePauser
-ThreadSchedulerImpl::CreateWebScopedVirtualTimePauser(
+ThreadSchedulerBase::CreateWebScopedVirtualTimePauser(
     const WTF::String& name,
     WebScopedVirtualTimePauser::VirtualTaskDuration duration) {
   return WebScopedVirtualTimePauser(this, duration, name);
 }
 
-bool ThreadSchedulerImpl::IsVirtualTimeEnabled() const {
+bool ThreadSchedulerBase::IsVirtualTimeEnabled() const {
   return !!virtual_time_domain_;
 }
 
-base::TimeTicks ThreadSchedulerImpl::IncrementVirtualTimePauseCount() {
+base::TimeTicks ThreadSchedulerBase::IncrementVirtualTimePauseCount() {
   virtual_time_pause_count_++;
   if (IsVirtualTimeEnabled())
     ApplyVirtualTimePolicy();
   return GetTickClock()->NowTicks();
 }
 
-void ThreadSchedulerImpl::DecrementVirtualTimePauseCount() {
+void ThreadSchedulerBase::DecrementVirtualTimePauseCount() {
   virtual_time_pause_count_--;
   DCHECK_GE(virtual_time_pause_count_, 0);
   if (IsVirtualTimeEnabled())
     ApplyVirtualTimePolicy();
 }
 
-void ThreadSchedulerImpl::MaybeAdvanceVirtualTime(
+void ThreadSchedulerBase::MaybeAdvanceVirtualTime(
     base::TimeTicks new_virtual_time) {
   if (virtual_time_domain_)
     virtual_time_domain_->MaybeAdvanceVirtualTime(new_virtual_time);
 }
 
-AutoAdvancingVirtualTimeDomain* ThreadSchedulerImpl::GetVirtualTimeDomain() {
+AutoAdvancingVirtualTimeDomain* ThreadSchedulerBase::GetVirtualTimeDomain() {
   return virtual_time_domain_.get();
 }
 
-ThreadSchedulerImpl::ThreadSchedulerImpl() = default;
-ThreadSchedulerImpl::~ThreadSchedulerImpl() = default;
+ThreadSchedulerBase::ThreadSchedulerBase() = default;
+ThreadSchedulerBase::~ThreadSchedulerBase() = default;
 
-void ThreadSchedulerImpl::DispatchOnTaskCompletionCallbacks() {
+void ThreadSchedulerBase::DispatchOnTaskCompletionCallbacks() {
   for (auto& closure : GetOnTaskCompletionCallbacks()) {
     std::move(closure).Run();
   }
@@ -146,7 +142,7 @@ const char* VirtualTimePolicyToString(
 }
 }  // namespace
 
-void ThreadSchedulerImpl::WriteVirtualTimeInfoIntoTrace(
+void ThreadSchedulerBase::WriteVirtualTimeInfoIntoTrace(
     perfetto::TracedDictionary& dict) const {
   dict.Add("virtual_time_stopped", virtual_time_stopped_);
   dict.Add("virtual_time_pause_count", virtual_time_pause_count_);
@@ -155,7 +151,7 @@ void ThreadSchedulerImpl::WriteVirtualTimeInfoIntoTrace(
   dict.Add("virtual_time", !!virtual_time_domain_);
 }
 
-void ThreadSchedulerImpl::SetVirtualTimeStopped(bool virtual_time_stopped) {
+void ThreadSchedulerBase::SetVirtualTimeStopped(bool virtual_time_stopped) {
   DCHECK(virtual_time_domain_);
   if (virtual_time_stopped_ == virtual_time_stopped)
     return;
@@ -168,7 +164,7 @@ void ThreadSchedulerImpl::SetVirtualTimeStopped(bool virtual_time_stopped) {
     OnVirtualTimeResumed();
 }
 
-void ThreadSchedulerImpl::ApplyVirtualTimePolicy() {
+void ThreadSchedulerBase::ApplyVirtualTimePolicy() {
   DCHECK(virtual_time_domain_);
   switch (virtual_time_policy_) {
     case VirtualTimePolicy::kAdvance:
@@ -200,12 +196,12 @@ void ThreadSchedulerImpl::ApplyVirtualTimePolicy() {
   }
 }
 
-void ThreadSchedulerImpl::OnBeginNestedRunLoop() {
+void ThreadSchedulerBase::OnBeginNestedRunLoop() {
   if (IsVirtualTimeEnabled())
     ApplyVirtualTimePolicy();
 }
 
-void ThreadSchedulerImpl::OnExitNestedRunLoop() {
+void ThreadSchedulerBase::OnExitNestedRunLoop() {
   if (IsVirtualTimeEnabled())
     ApplyVirtualTimePolicy();
 }

@@ -72,7 +72,7 @@ using InputEventState = WidgetScheduler::InputEventState;
 // returns the PageScheduler as a PageSchedulerImpl.
 std::unique_ptr<PageSchedulerImpl> CreatePageScheduler(
     PageScheduler::Delegate* page_scheduler_delegate,
-    ThreadSchedulerImpl* scheduler,
+    ThreadSchedulerBase* scheduler,
     WebAgentGroupScheduler& agent_group_scheduler) {
   std::unique_ptr<PageScheduler> page_scheduler =
       agent_group_scheduler.AsAgentGroupScheduler().CreatePageScheduler(
@@ -2526,7 +2526,7 @@ TEST_F(MainThreadSchedulerImplTest, StopAndResumeRenderer) {
   Vector<String> run_order;
   PostTestTasks(&run_order, "T1 T2");
 
-  auto pause_handle = scheduler_->PauseRenderer();
+  auto pause_handle = scheduler_->PauseScheduler();
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre());
 
@@ -2539,7 +2539,7 @@ TEST_F(MainThreadSchedulerImplTest, StopAndThrottleThrottleableQueue) {
   Vector<String> run_order;
   PostTestTasks(&run_order, "T1 T2");
 
-  auto pause_handle = scheduler_->PauseRenderer();
+  auto pause_handle = scheduler_->PauseScheduler();
   base::RunLoop().RunUntilIdle();
   MainThreadTaskQueue::ThrottleHandle handle =
       throttleable_task_queue()->Throttle();
@@ -2551,9 +2551,9 @@ TEST_F(MainThreadSchedulerImplTest, MultipleStopsNeedMultipleResumes) {
   Vector<String> run_order;
   PostTestTasks(&run_order, "T1 T2");
 
-  auto pause_handle1 = scheduler_->PauseRenderer();
-  auto pause_handle2 = scheduler_->PauseRenderer();
-  auto pause_handle3 = scheduler_->PauseRenderer();
+  auto pause_handle1 = scheduler_->PauseScheduler();
+  auto pause_handle2 = scheduler_->PauseScheduler();
+  auto pause_handle3 = scheduler_->PauseScheduler();
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre());
 
@@ -2574,7 +2574,7 @@ TEST_F(MainThreadSchedulerImplTest, PauseRenderer) {
   // Tasks in some queues don't fire when the renderer is paused.
   Vector<String> run_order;
   PostTestTasks(&run_order, "D1 C1 L1 I1 T1");
-  auto pause_handle = scheduler_->PauseRenderer();
+  auto pause_handle = scheduler_->PauseScheduler();
   EnableIdleTasks();
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre("D1", "C1", "I1"));
@@ -2766,7 +2766,7 @@ TEST_F(
       FROM_HERE, base::BindOnce(SlowCountingTask, &count, test_task_runner_, 7,
                                 throttleable_task_runner_));
 
-  std::unique_ptr<WebThreadScheduler::RendererPauseHandle> paused;
+  std::unique_ptr<MainThreadScheduler::RendererPauseHandle> paused;
   for (int i = 0; i < 1000; i++) {
     viz::BeginFrameArgs begin_frame_args = viz::BeginFrameArgs::Create(
         BEGINFRAME_FROM_HERE, 0, next_begin_frame_number_++, Now(),
@@ -2799,7 +2799,7 @@ TEST_F(
     // throttleable queues are paused.
     if (count > 0 && !paused) {
       EXPECT_EQ(2u, count) << "i = " << i;
-      paused = scheduler_->PauseRenderer();
+      paused = scheduler_->PauseScheduler();
     }
   }
 
@@ -3106,7 +3106,7 @@ TEST_F(MainThreadSchedulerImplTest, UnthrottledTaskRunner) {
       base::BindOnce(
           SlowCountingTask, &unthrottled_count, test_task_runner_, 7,
           unthrottled_task_queue->GetTaskRunnerWithDefaultTaskType()));
-  auto handle = scheduler_->PauseRenderer();
+  auto handle = scheduler_->PauseScheduler();
 
   for (int i = 0; i < 1000; i++) {
     viz::BeginFrameArgs begin_frame_args = viz::BeginFrameArgs::Create(
@@ -3526,7 +3526,7 @@ TEST_F(MainThreadSchedulerImplTest, TaskQueueReferenceClearedOnShutdown) {
 
   scheduler_->OnShutdownTaskQueue(queue1);
 
-  auto pause_handle = scheduler_->PauseRenderer();
+  auto pause_handle = scheduler_->PauseScheduler();
 
   // queue2 should be disabled, as it is a regular queue and nothing should
   // change for queue1 because it was shut down.

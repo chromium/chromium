@@ -30,16 +30,15 @@ namespace scheduler {
 class NonMainThreadSchedulerImpl;
 }
 
+class MainThreadScheduler;
 class RAILModeObserver;
 
 // This class is used to submit tasks and pass other information from Blink to
 // the platform's scheduler.
-// TODO(skyostil): Replace this class with WebMainThreadScheduler.
+// TODO(dtapuska): Move methods that are intended only for the main thread
+// scheduler into MainThreadScheduler.
 class PLATFORM_EXPORT ThreadScheduler {
  public:
-  using RendererPauseHandle =
-      scheduler::WebThreadScheduler::RendererPauseHandle;
-
   // Return the current thread's ThreadScheduler.
   static ThreadScheduler* Current();
 
@@ -134,11 +133,6 @@ class PLATFORM_EXPORT ThreadScheduler {
   virtual scheduler::WebAgentGroupScheduler*
   GetCurrentAgentGroupScheduler() = 0;
 
-  // Pauses the scheduler. See WebThreadScheduler::PauseRenderer for
-  // details. May only be called from the main thread.
-  [[nodiscard]] virtual std::unique_ptr<RendererPauseHandle>
-  PauseScheduler() = 0;
-
   // Returns the current time recognized by the scheduler, which may perhaps
   // be based on a real or virtual time domain. Used by Timer.
   virtual base::TimeTicks MonotonicallyIncreasingVirtualTime() = 0;
@@ -165,6 +159,9 @@ class PLATFORM_EXPORT ThreadScheduler {
   virtual scheduler::TaskAttributionTracker* GetTaskAttributionTracker() {
     return nullptr;
   }
+
+  // Convert this into a MainThreadScheduler if it is one.
+  virtual MainThreadScheduler* ToMainThreadScheduler() { return nullptr; }
 
   // Test helpers.
 

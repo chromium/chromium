@@ -81,9 +81,8 @@ NonMainThreadSchedulerImpl::GetCurrentAgentGroupScheduler() {
   return nullptr;
 }
 
-std::unique_ptr<NonMainThreadSchedulerImpl::RendererPauseHandle>
-NonMainThreadSchedulerImpl::PauseScheduler() {
-  return nullptr;
+void NonMainThreadSchedulerImpl::SetV8Isolate(v8::Isolate* isolate) {
+  ThreadSchedulerBase::SetV8Isolate(isolate);
 }
 
 base::TimeTicks

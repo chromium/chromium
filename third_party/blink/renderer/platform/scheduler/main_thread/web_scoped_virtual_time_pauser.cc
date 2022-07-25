@@ -6,7 +6,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
-#include "third_party/blink/renderer/platform/scheduler/common/thread_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/common/thread_scheduler_base.h"
 
 namespace blink {
 
@@ -14,7 +14,7 @@ WebScopedVirtualTimePauser::WebScopedVirtualTimePauser()
     : scheduler_(nullptr) {}
 
 WebScopedVirtualTimePauser::WebScopedVirtualTimePauser(
-    scheduler::ThreadSchedulerImpl* scheduler,
+    scheduler::ThreadSchedulerBase* scheduler,
     VirtualTaskDuration duration,
     const WebString& name)
     : duration_(duration),

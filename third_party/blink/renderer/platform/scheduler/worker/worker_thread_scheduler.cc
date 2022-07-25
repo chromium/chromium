@@ -182,7 +182,7 @@ void WorkerThreadScheduler::RemoveTaskObserver(
 
 void WorkerThreadScheduler::Shutdown() {
   DCHECK(initialized_);
-  ThreadSchedulerImpl::Shutdown();
+  ThreadSchedulerBase::Shutdown();
   idle_helper_.Shutdown();
   GetHelper().Shutdown();
 }

@@ -76,12 +76,6 @@ void WebThreadScheduler::ResumeTimersForAndroidWebView() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-std::unique_ptr<WebThreadScheduler::RendererPauseHandle>
-WebThreadScheduler::PauseRenderer() {
-  NOTREACHED();
-  return nullptr;
-}
-
 void WebThreadScheduler::SetTopLevelBlameContext(
     base::trace_event::BlameContext* blame_context) {
   NOTREACHED();

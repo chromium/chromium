@@ -71,11 +71,6 @@ WebAgentGroupScheduler* SimpleThreadScheduler::GetCurrentAgentGroupScheduler() {
   return nullptr;
 }
 
-std::unique_ptr<ThreadScheduler::RendererPauseHandle>
-SimpleThreadScheduler::PauseScheduler() {
-  return nullptr;
-}
-
 base::TimeTicks SimpleThreadScheduler::MonotonicallyIncreasingVirtualTime() {
   return base::TimeTicks::Now();
 }

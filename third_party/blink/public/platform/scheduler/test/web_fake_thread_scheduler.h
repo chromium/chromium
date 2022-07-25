@@ -26,7 +26,6 @@ class WebFakeThreadScheduler : public WebThreadScheduler {
   WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
   void SetRendererHidden(bool hidden) override;
   void SetRendererBackgrounded(bool backgrounded) override;
-  std::unique_ptr<RendererPauseHandle> PauseRenderer() override;
 #if BUILDFLAG(IS_ANDROID)
   void PauseTimersForAndroidWebView() override;
   void ResumeTimersForAndroidWebView() override;

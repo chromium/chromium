@@ -66,9 +66,6 @@ class SimpleThreadScheduler : public ThreadScheduler {
   // Return nullptr
   WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override;
 
-  // Unsupported. Return nullptr, and it may cause a crash.
-  std::unique_ptr<RendererPauseHandle> PauseScheduler() override;
-
   // Return the current time.
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override;
 
