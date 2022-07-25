@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -112,8 +114,13 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
   using DialogEventSet =
       base::EnumSet<DialogEvent, DialogEvent::kStart, DialogEvent::kMaxValue>;
 
-  SigninInterceptFirstRunExperienceDialogBrowserTest()
-      : feature_list_(feature_engagement::kIPHProfileSwitchFeature) {}
+  SigninInterceptFirstRunExperienceDialogBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {feature_engagement::kIPHProfileSwitchFeature,
+         kSyncPromoAfterSigninIntercept},
+        {});
+  }
+
   ~SigninInterceptFirstRunExperienceDialogBrowserTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -267,7 +274,9 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
   CoreAccountId account_id() { return account_id_; }
 
  protected:
-  const GURL kSyncConfirmationUrl = GURL("chrome://sync-confirmation");
+  const GURL kSyncConfirmationUrl = AppendSyncConfirmationQueryParams(
+      GURL("chrome://sync-confirmation"),
+      SyncConfirmationStyle::kSigninInterceptModal);
   const GURL kProfileCustomizationUrl = GURL("chrome://profile-customization");
   const GURL kSyncSettingsUrl = GURL("chrome://settings/syncSetup");
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 
+#include <string>
+
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -11,9 +13,12 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
@@ -40,8 +45,7 @@
 
 SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
     : SigninWebDialogUI(web_ui), profile_(Profile::FromWebUI(web_ui)) {
-  bool is_modal =
-      IsSyncConfirmationModal(web_ui->GetWebContents()->GetVisibleURL());
+  const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
   const bool is_sync_allowed = SyncServiceFactory::IsSyncAllowed(profile_);
 
   content::WebUIDataSource* source =
@@ -64,7 +68,7 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
                     IDS_SYNC_LOADING_CONFIRMATION_TITLE);
 
   if (is_sync_allowed) {
-    InitializeForSyncConfirmation(source, is_modal);
+    InitializeForSyncConfirmation(source, GetSyncConfirmationStyle(url));
   } else {
     InitializeForSyncDisabled(source);
   }
@@ -86,7 +90,7 @@ void SyncConfirmationUI::InitializeMessageHandlerWithBrowser(Browser* browser) {
 
 void SyncConfirmationUI::InitializeForSyncConfirmation(
     content::WebUIDataSource* source,
-    bool is_modal_dialog) {
+    SyncConfirmationStyle style) {
   int title_id = IDS_SYNC_CONFIRMATION_TITLE;
   int info_title_id = IDS_SYNC_CONFIRMATION_SYNC_INFO_TITLE;
   int confirm_label_id = IDS_SYNC_CONFIRMATION_CONFIRM_BUTTON_LABEL;
@@ -94,9 +98,6 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   title_id = IDS_SYNC_CONFIRMATION_TITLE_LACROS_NON_FORCED;
 #endif
   AddStringResource(source, "syncConfirmationTitle", title_id);
-  AddStringResource(source, "syncConfirmationSyncInfoTitle", info_title_id);
-  AddStringResource(source, "syncConfirmationConfirmLabel", confirm_label_id);
-
   AddStringResource(source, "syncConfirmationSyncInfoDesc",
                     IDS_SYNC_CONFIRMATION_SYNC_INFO_DESC);
   AddStringResource(source, "syncConfirmationSettingsInfo",
@@ -111,32 +112,62 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   source->SetDefaultResource(
       IDR_SIGNIN_SYNC_CONFIRMATION_SYNC_CONFIRMATION_HTML);
 
-  source->AddBoolean("isModalDialog", is_modal_dialog);
+  source->AddBoolean("isModalDialog",
+                     style == SyncConfirmationStyle::kDefaultModal ||
+                         style == SyncConfirmationStyle::kSigninInterceptModal);
+  source->AddBoolean("isSigninInterceptFre",
+                     style == SyncConfirmationStyle::kSigninInterceptModal);
 
   source->AddString("accountPictureUrl",
                     profiles::GetPlaceholderAvatarIconUrl());
+  switch (style) {
+    case SyncConfirmationStyle::kSigninInterceptModal:
+      DCHECK(base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept));
+      // TODO(https://crbug.com/1282157): Add dynamic welcome title.
+      AddStringResource(source, "syncConfirmationSyncInfoTitle",
+                        IDS_SYNC_CONFIRMATION_SYNC_INFO_SIGNIN_INTERCEPT);
+      AddStringResource(source, "syncConfirmationConfirmLabel",
+                        IDS_SYNC_CONFIRMATION_TURN_ON_SYNC_BUTTON_LABEL);
+      AddStringResource(source, "syncConfirmationUndoLabel", IDS_NO_THANKS);
+      AddStringResource(source, "syncConfirmationSettingsLabel",
+                        IDS_SYNC_CONFIRMATION_MANAGE_SYNC_BUTTON_LABEL);
 
-  if (is_modal_dialog) {
-    AddStringResource(source, "syncConfirmationUndoLabel", IDS_CANCEL);
-    AddStringResource(source, "syncConfirmationSettingsLabel",
-                      IDS_SYNC_CONFIRMATION_SETTINGS_BUTTON_LABEL);
+      source->AddResourcePath(
+          "images/sync_confirmation_illustration.svg",
+          IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_SVG);
+      source->AddResourcePath(
+          "images/sync_confirmation_illustration_dark.svg",
+          IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_DARK_SVG);
+      break;
+    case SyncConfirmationStyle::kDefaultModal:
+      AddStringResource(source, "syncConfirmationSyncInfoTitle", info_title_id);
+      AddStringResource(source, "syncConfirmationConfirmLabel",
+                        confirm_label_id);
+      AddStringResource(source, "syncConfirmationUndoLabel", IDS_CANCEL);
+      AddStringResource(source, "syncConfirmationSettingsLabel",
+                        IDS_SYNC_CONFIRMATION_SETTINGS_BUTTON_LABEL);
 
-    source->AddResourcePath(
-        "images/sync_confirmation_illustration.svg",
-        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_SVG);
-    source->AddResourcePath(
-        "images/sync_confirmation_illustration_dark.svg",
-        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_DARK_SVG);
-  } else {
-    AddStringResource(source, "syncConfirmationUndoLabel", IDS_NO_THANKS);
-    AddStringResource(source, "syncConfirmationSettingsLabel",
-                      IDS_SYNC_CONFIRMATION_REFRESHED_SETTINGS_BUTTON_LABEL);
-    source->AddResourcePath(
-        "images/sync_confirmation_refreshed_illustration.svg",
-        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_REFRESHED_ILLUSTRATION_SVG);
-    source->AddResourcePath(
-        "images/sync_confirmation_refreshed_illustration_dark.svg",
-        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_REFRESHED_ILLUSTRATION_DARK_SVG);
+      source->AddResourcePath(
+          "images/sync_confirmation_illustration.svg",
+          IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_SVG);
+      source->AddResourcePath(
+          "images/sync_confirmation_illustration_dark.svg",
+          IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_DARK_SVG);
+      break;
+    case SyncConfirmationStyle::kWindow:
+      AddStringResource(source, "syncConfirmationSyncInfoTitle", info_title_id);
+      AddStringResource(source, "syncConfirmationConfirmLabel",
+                        confirm_label_id);
+      AddStringResource(source, "syncConfirmationUndoLabel", IDS_NO_THANKS);
+      AddStringResource(source, "syncConfirmationSettingsLabel",
+                        IDS_SYNC_CONFIRMATION_REFRESHED_SETTINGS_BUTTON_LABEL);
+      source->AddResourcePath(
+          "images/sync_confirmation_refreshed_illustration.svg",
+          IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_REFRESHED_ILLUSTRATION_SVG);
+      source->AddResourcePath(
+          "images/sync_confirmation_refreshed_illustration_dark.svg",
+          IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_REFRESHED_ILLUSTRATION_DARK_SVG);
+      break;
   }
 }
 

@@ -57,7 +57,8 @@ class SigninViewControllerDelegateViews
       const SigninViewControllerDelegateViews&) = delete;
 
   static std::unique_ptr<views::WebView> CreateSyncConfirmationWebView(
-      Browser* browser);
+      Browser* browser,
+      bool is_signin_intercept = false);
 
   static std::unique_ptr<views::WebView> CreateSigninErrorWebView(
       Browser* browser);

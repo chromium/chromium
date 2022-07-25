@@ -14,23 +14,36 @@
 
 TEST(SigninURLUtilsTest, ParseParameterlessSyncConfirmationURL) {
   GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
-  EXPECT_TRUE(IsSyncConfirmationModal(url));
+  EXPECT_EQ(SyncConfirmationStyle::kDefaultModal,
+            GetSyncConfirmationStyle(url));
 }
 
 TEST(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
   // Modal version.
   GURL url = AppendSyncConfirmationQueryParams(
-      GURL(chrome::kChromeUISyncConfirmationURL), /*is_modal=*/true);
+      GURL(chrome::kChromeUISyncConfirmationURL),
+      SyncConfirmationStyle::kDefaultModal);
   EXPECT_TRUE(url.is_valid());
   EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
-  EXPECT_TRUE(IsSyncConfirmationModal(url));
+  EXPECT_EQ(SyncConfirmationStyle::kDefaultModal,
+            GetSyncConfirmationStyle(url));
 
-  // Non-modal version.
+  // Signin Intercept version.
   url = AppendSyncConfirmationQueryParams(
-      GURL(chrome::kChromeUISyncConfirmationURL), /*is_modal=*/false);
+      GURL(chrome::kChromeUISyncConfirmationURL),
+      SyncConfirmationStyle::kSigninInterceptModal);
   EXPECT_TRUE(url.is_valid());
   EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
-  EXPECT_FALSE(IsSyncConfirmationModal(url));
+  EXPECT_EQ(SyncConfirmationStyle::kSigninInterceptModal,
+            GetSyncConfirmationStyle(url));
+
+  // Window version.
+  url = AppendSyncConfirmationQueryParams(
+      GURL(chrome::kChromeUISyncConfirmationURL),
+      SyncConfirmationStyle::kWindow);
+  EXPECT_TRUE(url.is_valid());
+  EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
+  EXPECT_EQ(SyncConfirmationStyle::kWindow, GetSyncConfirmationStyle(url));
 }
 
 class SigninURLUtilsReauthConfirmationURLTest

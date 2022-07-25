@@ -118,7 +118,7 @@ GURL ProfilePickerSignedInFlowController::GetSyncConfirmationURL(bool loading) {
   GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
   return AppendSyncConfirmationQueryParams(
       loading ? url.Resolve(chrome::kChromeUISyncConfirmationLoadingPath) : url,
-      /*is_modal=*/false);
+      SyncConfirmationStyle::kWindow);
 }
 
 std::unique_ptr<content::WebContents>

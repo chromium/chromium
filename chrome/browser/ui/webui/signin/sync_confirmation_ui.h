@@ -24,6 +24,8 @@ namespace ui {
 class WebUI;
 }
 
+enum class SyncConfirmationStyle;
+
 // WebUI controller for the sync confirmation dialog.
 //
 // Note: This controller does not set the WebUI message handler. It is
@@ -43,7 +45,7 @@ class SyncConfirmationUI : public SigninWebDialogUI {
 
  private:
   void InitializeForSyncConfirmation(content::WebUIDataSource* source,
-                                     bool is_modal_dialog);
+                                     SyncConfirmationStyle style);
   void InitializeForSyncDisabled(content::WebUIDataSource* source);
 
   // Adds a string resource with the given GRD |ids| to the WebUI data |source|

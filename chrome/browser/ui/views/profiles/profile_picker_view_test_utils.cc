@@ -160,9 +160,8 @@ void CompleteLacrosFirstRun(
   EnterpriseProfileWelcomeHandler* handler = ExpectPickerWelcomeScreenType(
       EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome);
   handler->HandleProceedForTesting(/*should_link_data=*/false);
-  WaitForPickerLoadStop(
-      AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
-                                        /*is_modal=*/false));
+  WaitForPickerLoadStop(AppendSyncConfirmationQueryParams(
+      GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow));
 
   if (result == LoginUIService::UI_CLOSED) {
     // `UI_CLOSED` is not provided via webui handlers. Instead, it gets sent

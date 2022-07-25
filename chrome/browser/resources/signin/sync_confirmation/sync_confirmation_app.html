@@ -64,6 +64,11 @@
     text-align: center;
   }
 
+  .signin-intercept-design .heading {
+    line-height: 24px;
+    margin-bottom: 24px;
+  }
+
   #content-container {
     /* Saves space for button row. */
     padding-bottom: 96px;
@@ -75,6 +80,19 @@
     line-height: 20px;
     margin-bottom: 16px;
     padding: 0 24px;
+  }
+
+  .signin-intercept-design .message-container {
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+    padding: 0 57px;
+    text-align: center;
+  }
+
+  .signin-intercept-design .secondary {
+    color: var(--cr-primary-text-color);
   }
 
   @media (prefers-color-scheme: light) {
@@ -227,7 +245,8 @@
     <div id="illustration"></div>
     <img src="[[accountImageSrc_]]">
   </div>
-  <div id="content-container">
+  <div id="content-container"
+      class$="[[getSigninInterceptDesignClass_(isSigninInterceptFre_)]]">
     <h1 id="syncConfirmationHeading" class="heading" consent-description>
       $i18n{syncConfirmationTitle}
     </h1>
@@ -237,9 +256,11 @@
         $i18n{syncConfirmationSyncInfoDesc}
       </div>
     </div>
-    <div id="modal-footer" class="message-container secondary">
-      $i18n{syncConfirmationSettingsInfo}
-    </div>
+    <template is="dom-if" if="[[!isSigninInterceptFre_]]">
+      <div id="modal-footer" class="message-container secondary">
+        $i18n{syncConfirmationSettingsInfo}
+      </div>
+    </template>
     <div class="action-row">
       <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
       <div class="action-container">

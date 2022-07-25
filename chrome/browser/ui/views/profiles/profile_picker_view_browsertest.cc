@@ -142,7 +142,7 @@ AccountInfo FillAccountInfo(
 
 GURL GetSyncConfirmationURL() {
   return AppendSyncConfirmationQueryParams(GURL("chrome://sync-confirmation/"),
-                                           /*is_modal=*/false);
+                                           SyncConfirmationStyle::kWindow);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

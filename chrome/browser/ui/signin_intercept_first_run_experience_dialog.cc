@@ -302,7 +302,8 @@ void SigninInterceptFirstRunExperienceDialog::DoTurnOnSync() {
 void SigninInterceptFirstRunExperienceDialog::DoSyncConfirmation() {
   RecordDialogEvent(DialogEvent::kShowSyncConfirmation);
   SetDialogDelegate(
-      SigninViewControllerDelegate::CreateSyncConfirmationDelegate(browser_));
+      SigninViewControllerDelegate::CreateSyncConfirmationDelegate(
+          browser_, /*is_signin_intercept=*/true));
   PreloadProfileCustomizationUI();
 }
 

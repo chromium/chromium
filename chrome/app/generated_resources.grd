@@ -9749,6 +9749,20 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
       </if>
 
+      <!--  Sync Confirmation section of the Signin Intercept first run experience flow -->
+      <message name="IDS_SYNC_CONFIRMATION_WELCOME_TITLE_SIGNIN_INTERCEPT" desc="Title of the sync confirmation dialog in the Signin Intercept flow, after the user creates a new profile through this flow.">
+        Welcome, <ph name="USERNAME">$1<ex>Bob</ex></ph>
+      </message>
+      <message name="IDS_SYNC_CONFIRMATION_SYNC_INFO_SIGNIN_INTERCEPT" desc="Information about sync on the sync confirmation dialog in the Signin Intercept flow">
+        Turn on sync to get your bookmarks, passwords, history, and more on this device and anywhere else you're syncing.
+      </message>
+      <message name="IDS_SYNC_CONFIRMATION_MANAGE_SYNC_BUTTON_LABEL" desc="Label of the button in the sync confirmation dialog of the Signin Intercept flow to open settings">
+        Manage sync
+      </message>
+      <message name="IDS_SYNC_CONFIRMATION_TURN_ON_SYNC_BUTTON_LABEL" desc="Label of the confirmation button in the sync confirmation dialog of the Signin Intercept flow">
+        Turn on sync
+      </message>
+
       <!--- Sync Confirmation section of the tab modal signin flow when sync is disabled by policy -->
       <message name="IDS_SYNC_DISABLED_CONFIRMATION_CHROME_SYNC_TITLE" desc="Title of the chrome sync section of the sync confirmation dialog in the tab modal signin flow when sync is disabled by policy">
         Sync is disabled by your administrator

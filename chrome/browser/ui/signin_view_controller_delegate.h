@@ -50,7 +50,8 @@ class SigninViewControllerDelegate {
   // displays the sync confirmation dialog. The returned object should delete
   // itself when the window it's managing is closed.
   static SigninViewControllerDelegate* CreateSyncConfirmationDelegate(
-      Browser* browser);
+      Browser* browser,
+      bool is_signin_intercept = false);
 
   // Returns a platform-specific SigninViewControllerDelegate instance that
   // displays the modal sign in error dialog. The returned object should delete

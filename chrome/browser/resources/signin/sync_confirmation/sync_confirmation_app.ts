@@ -57,6 +57,22 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
         },
       },
 
+      isSigninInterceptFre_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isSigninInterceptFre');
+        },
+      },
+
+      syncConfirmationWelcomeTitle_: {
+        type: String,
+        value() {
+          return loadTimeData.valueExists('syncConfirmationWelcomeTitle') ?
+              loadTimeData.getString('syncConfirmationWelcomeTitle') :
+              '';
+        },
+      },
+
       showEnterpriseBadge_: {
         type: Boolean,
         value: false,
@@ -67,6 +83,8 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   private accountImageSrc_: string;
   private anyButtonClicked_: boolean;
   private isModalDialog_: boolean;
+  private isSigninInterceptFre_: boolean;
+  private syncConfirmationWelcomeTitle_: string;
   private showEnterpriseBadge_: boolean;
   private syncConfirmationBrowserProxy_: SyncConfirmationBrowserProxy =
       SyncConfirmationBrowserProxyImpl.getInstance();
@@ -131,6 +149,11 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   private handleAccountInfoChanged_(accountInfo: AccountInfo) {
     this.accountImageSrc_ = accountInfo.src;
     this.showEnterpriseBadge_ = accountInfo.showEnterpriseBadge;
+  }
+
+  private getSigninInterceptDesignClass_(isSigninInterceptFre: boolean):
+      string {
+    return isSigninInterceptFre ? 'signin-intercept-design' : '';
   }
 }
 

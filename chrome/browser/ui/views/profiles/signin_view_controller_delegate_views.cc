@@ -102,9 +102,15 @@ class WidgetAutoResizingLayout : public views::FillLayout {
 // static
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateSyncConfirmationWebView(
-    Browser* browser) {
+    Browser* browser,
+    bool is_signin_intercept) {
+  GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
+  if (is_signin_intercept) {
+    url = AppendSyncConfirmationQueryParams(
+        url, SyncConfirmationStyle::kSigninInterceptModal);
+  }
   return CreateDialogWebView(
-      browser, GURL(chrome::kChromeUISyncConfirmationURL),
+      browser, url,
       GetSyncConfirmationDialogPreferredHeight(browser->profile()),
       kSyncConfirmationDialogWidth, InitializeSigninWebDialogUI(true));
 }
@@ -394,9 +400,12 @@ END_METADATA
 
 // static
 SigninViewControllerDelegate*
-SigninViewControllerDelegate::CreateSyncConfirmationDelegate(Browser* browser) {
+SigninViewControllerDelegate::CreateSyncConfirmationDelegate(
+    Browser* browser,
+    bool is_signin_intercept) {
   return new SigninViewControllerDelegateViews(
-      SigninViewControllerDelegateViews::CreateSyncConfirmationWebView(browser),
+      SigninViewControllerDelegateViews::CreateSyncConfirmationWebView(
+          browser, is_signin_intercept),
       browser, ui::MODAL_TYPE_WINDOW, true, false);
 }
 

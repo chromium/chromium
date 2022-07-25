@@ -9,13 +9,22 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "url/gurl.h"
 
-// Returns whether the sync confirmation page is using the design for modal
-// dialog.
-bool IsSyncConfirmationModal(const GURL& url);
+enum class SyncConfirmationStyle {
+  kDefaultModal,
+  kSigninInterceptModal,
+  kWindow
+};
 
-// Adds URL query parameters specified by `params` to `url`.
+// Returns which style the sync confirmation page is using, as a default modal
+// dialog, the signin intercept modal dialog version or as a window.
+SyncConfirmationStyle GetSyncConfirmationStyle(const GURL& url);
+
+// Adds the following URL query parameters to `url`.
 // `is_modal` specifies whether the style for modal dialog is used.
-GURL AppendSyncConfirmationQueryParams(const GURL& url, bool is_modal);
+// `is_signin_intercept` specifies whether the style for the signin intercept is
+// used.
+GURL AppendSyncConfirmationQueryParams(const GURL& url,
+                                       SyncConfirmationStyle style);
 
 // Returns `ReauthAccessPoint` encoded in the query of the reauth confirmation
 // URL.
