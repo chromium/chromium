@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -22,52 +23,46 @@ using autofill::features::kAutofillFixFillableFieldTypes;
 
 namespace autofill {
 
-namespace {
-FieldRendererId MakeFieldRendererId() {
-  static uint64_t id_counter_ = 0;
-  return FieldRendererId(++id_counter_);
-}
-
-// Sets both the field label and parseable label to |label|.
-void SetFieldLabels(AutofillField* field, const std::u16string& label) {
-  field->label = label;
-  field->set_parseable_label(label);
-}
-
-}  // namespace
-
 class FormFieldTest
-    : public testing::TestWithParam<std::tuple<bool, PatternSource>> {
+    : public FormFieldTestBase,
+      public ::testing::TestWithParam<PatternProviderFeatureState> {
  public:
-  FormFieldTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kAutofillParsingPatternProvider,
-        enable_parsing_pattern_provider());
-  }
+  FormFieldTest() : FormFieldTestBase(GetParam()) {}
   FormFieldTest(const FormFieldTest&) = delete;
   FormFieldTest& operator=(const FormFieldTest&) = delete;
-  ~FormFieldTest() override = default;
 
-  bool enable_parsing_pattern_provider() const {
-    return std::get<0>(GetParam());
+ protected:
+  // Parses all added fields using `ParseFormFields`.
+  // Returns the number of fields parsed.
+  int ParseFormFields() {
+    field_candidates_map_ = FormField::ParseFormFields(list_, LanguageCode(""),
+                                                       /*is_form_tag=*/true,
+                                                       GetActivePatternSource(),
+                                                       /*log_manager=*/nullptr);
+    return field_candidates_map_.size();
   }
 
-  PatternSource pattern_source() const { return std::get<1>(GetParam()); }
+  // Like `ParseFormFields()`, but using `ParseSingleFieldForms()` instead.
+  int ParseSingleFieldForms() {
+    FormField::ParseSingleFieldForms(
+        list_, LanguageCode(""),
+        /*is_form_tag=*/true, GetActivePatternSource(), &field_candidates_map_);
+    return field_candidates_map_.size();
+  }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  // FormFieldTestBase:
+  // This function is unused in these unit tests, because FormField is not a
+  // parser itself, but the infrastructure combining them.
+  std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
+                                   const LanguageCode& page_language) override {
+    return nullptr;
+  }
 };
 
-INSTANTIATE_TEST_SUITE_P(FormFieldTest,
-                         FormFieldTest,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Values(
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_HEADERS)
-                                                PatternSource::kDefault,
-                                                PatternSource::kExperimental,
-                                                PatternSource::kNextGen,
-#endif
-                                                PatternSource::kLegacy)));
+INSTANTIATE_TEST_SUITE_P(
+    FormFieldTest,
+    FormFieldTest,
+    ::testing::ValuesIn(PatternProviderFeatureState::All()));
 
 struct MatchTestCase {
   std::u16string label;
@@ -112,7 +107,8 @@ TEST_P(MatchTest, Match) {
   constexpr MatchParams kMatchLabel{{MatchAttribute::kLabel}, {}};
   AutofillField field;
   SCOPED_TRACE("label = " + base::UTF16ToUTF8(label));
-  SetFieldLabels(&field, label);
+  field.label = label;
+  field.set_parseable_label(label);
   for (const auto& pattern : positive_patterns) {
     SCOPED_TRACE("positive_pattern = " + base::UTF16ToUTF8(pattern));
     EXPECT_TRUE(FormField::MatchForTesting(&field, pattern, kMatchLabel));
@@ -124,90 +120,32 @@ TEST_P(MatchTest, Match) {
 }
 
 // Test that we ignore checkable elements.
-TEST_P(FormFieldTest, ParseFormFields) {
-  std::vector<std::unique_ptr<AutofillField>> fields;
-  FormFieldData field_data;
-  field_data.form_control_type = "text";
-
-  field_data.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
-  field_data.label = u"Is PO Box";
-  field_data.unique_renderer_id = MakeFieldRendererId();
-  fields.push_back(std::make_unique<AutofillField>(field_data));
-
-  // Does not parse since there are only field and it's checkable.
-  // An empty page_language means the language is unknown and patterns of all
-  // languages are used.
-  EXPECT_TRUE(FormField::ParseFormFields(fields, LanguageCode(""),
-                                         /*is_form_tag=*/true, pattern_source(),
-                                         /*log_manager=*/nullptr)
-                  .empty());
-
-  // reset |is_checkable| to false.
-  field_data.check_status = FormFieldData::CheckStatus::kNotCheckable;
-  field_data.label = u"Address line1";
-  field_data.unique_renderer_id = MakeFieldRendererId();
-  fields.push_back(std::make_unique<AutofillField>(field_data));
-
-  // Parse a single address line 1 field.
-  ASSERT_EQ(0u,
-            FormField::ParseFormFields(fields, LanguageCode(""),
-                                       /*is_form_tag=*/true, pattern_source(),
-                                       /*log_manager=*/nullptr)
-                .size());
-
-  // Parses address line 1 and 2.
-  field_data.label = u"Address line2";
-  field_data.unique_renderer_id = MakeFieldRendererId();
-  fields.push_back(std::make_unique<AutofillField>(field_data));
-
-  // An empty page_language means the language is unknown and patterns of
-  // all languages are used.
-  ASSERT_EQ(0u,
-            FormField::ParseFormFields(fields, LanguageCode(""),
-                                       /*is_form_tag=*/true, pattern_source(),
-                                       /*log_manager=*/nullptr)
-                .size());
+TEST_P(FormFieldTest, ParseFormFieldsIgnoreCheckableElements) {
+  AddFormFieldData("checkbox", "", "Is PO Box", UNKNOWN_TYPE);
+  // Add 3 dummy fields to reach kMinRequiredFieldsForHeuristics = 3.
+  AddTextFormFieldData("", "Address line 1", ADDRESS_HOME_LINE1);
+  AddTextFormFieldData("", "Address line 2", ADDRESS_HOME_LINE2);
+  AddTextFormFieldData("", "Address line 3", ADDRESS_HOME_LINE3);
+  EXPECT_EQ(3, ParseFormFields());
+  TestClassificationExpectations();
 }
 
 // Test that the minimum number of required fields for the heuristics considers
 // whether a field is actually fillable.
-TEST_P(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
-  std::vector<std::unique_ptr<AutofillField>> fields;
-  FormFieldData field_data;
-  field_data.form_control_type = "text";
-
-  field_data.label = u"Address line 1";
-  field_data.unique_renderer_id = MakeFieldRendererId();
-  fields.push_back(std::make_unique<AutofillField>(field_data));
-
-  field_data.label = u"Address line 2";
-  field_data.unique_renderer_id = MakeFieldRendererId();
-  fields.push_back(std::make_unique<AutofillField>(field_data));
-
+TEST_P(FormFieldTest, ParseFormFieldsEnforceMinFillableFields) {
+  AddTextFormFieldData("", "Address line 1", ADDRESS_HOME_LINE1);
+  AddTextFormFieldData("", "Address line 2", ADDRESS_HOME_LINE2);
   // Don't parse forms with 2 fields.
-  // An empty page_language means the language is unknown and patterns of all
-  // languages are used.
-  EXPECT_EQ(0u,
-            FormField::ParseFormFields(fields, LanguageCode(""),
-                                       /*is_form_tag=*/true, pattern_source(),
-                                       /*log_manager=*/nullptr)
-                .size());
+  EXPECT_EQ(0, ParseFormFields());
 
-  field_data.label = u"Search";
-  field_data.unique_renderer_id = MakeFieldRendererId();
-  fields.push_back(std::make_unique<AutofillField>(field_data));
-
+  AddTextFormFieldData("", "Search", SEARCH_TERM);
   // Before the fix in kAutofillFixFillableFieldTypes, we would parse the form
   // now, although a search field is not fillable.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(kAutofillFixFillableFieldTypes);
-    // An empty page_language means the language is unknown and patterns of all
-    // languages are used.
-    EXPECT_EQ(3u, FormField::ParseFormFields(
-                      fields, LanguageCode(""), /*is_form_tag=*/true,
-                      pattern_source(), /*log_manager=*/nullptr)
-                      .size());
+    EXPECT_EQ(3, ParseFormFields());
+    TestClassificationExpectations();
   }
 
   // With the fix, we don't parse the form because search fields are not
@@ -215,26 +153,14 @@ TEST_P(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(kAutofillFixFillableFieldTypes);
-    // An empty page_language means the language is unknown and patterns of all
-    // languages are used.
-    const FieldCandidatesMap field_candidates_map = FormField::ParseFormFields(
-        fields, LanguageCode(""), /*is_form_tag=*/true, pattern_source(),
-        /*log_manager=*/nullptr);
-    EXPECT_EQ(0u, FormField::ParseFormFields(
-                      fields, LanguageCode(""), /*is_form_tag=*/true,
-                      pattern_source(), /*log_manager=*/nullptr)
-                      .size());
+    EXPECT_EQ(0, ParseFormFields());
   }
 }
 
 // Test that the parseable label is used when the feature is enabled.
 TEST_P(FormFieldTest, TestParseableLabels) {
-  FormFieldData field_data;
-  field_data.form_control_type = "text";
-
-  field_data.label = u"not a parseable label";
-  field_data.unique_renderer_id = MakeFieldRendererId();
-  auto autofill_field = std::make_unique<AutofillField>(field_data);
+  AddTextFormFieldData("", "not a parseable label", UNKNOWN_TYPE);
+  AutofillField* autofill_field = list_.back().get();
   autofill_field->set_parseable_label(u"First Name");
 
   constexpr MatchParams kMatchLabel{{MatchAttribute::kLabel}, {}};
@@ -242,80 +168,50 @@ TEST_P(FormFieldTest, TestParseableLabels) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
         features::kAutofillEnableSupportForParsingWithSharedLabels);
-    EXPECT_TRUE(FormField::MatchForTesting(autofill_field.get(), u"First Name",
-                                           kMatchLabel));
+    EXPECT_TRUE(
+        FormField::MatchForTesting(autofill_field, u"First Name", kMatchLabel));
   }
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(
         features::kAutofillEnableSupportForParsingWithSharedLabels);
-    EXPECT_FALSE(FormField::MatchForTesting(autofill_field.get(), u"First Name",
-                                            kMatchLabel));
+    EXPECT_FALSE(
+        FormField::MatchForTesting(autofill_field, u"First Name", kMatchLabel));
   }
 }
 
-// Test to invoke |ParseSingleFieldForms| in the code path of |ParseFormFields|.
+// Tests that `ParseSingleFieldForms` is called as part of `ParseFormFields`.
 TEST_P(FormFieldTest, ParseSingleFieldFormsInsideParseFormField) {
   base::test::ScopedFeatureList scoped_feature;
   scoped_feature.InitAndEnableFeature(
       features::kAutofillParseMerchantPromoCodeFields);
 
-  std::vector<std::unique_ptr<AutofillField>> fields;
-  FormFieldData field_data;
-  field_data.form_control_type = "text";
+  AddTextFormFieldData("", "Phone", PHONE_HOME_WHOLE_NUMBER);
+  AddTextFormFieldData("", "Email", EMAIL_ADDRESS);
+  AddTextFormFieldData("", "Promo code", MERCHANT_PROMO_CODE);
 
-  field_data.label = u"phone";
-  field_data.unique_renderer_id = MakeFieldRendererId();
-  fields.push_back(std::make_unique<AutofillField>(field_data));
-
-  field_data.label = u"email";
-  field_data.unique_renderer_id = MakeFieldRendererId();
-  fields.push_back(std::make_unique<AutofillField>(field_data));
-
-  field_data.label = u"Promo code";
-  field_data.unique_renderer_id = MakeFieldRendererId();
-  fields.push_back(std::make_unique<AutofillField>(field_data));
-
-  // |ParseSingleFieldForms| should also detect promo code.
-  EXPECT_EQ(3u,
-            FormField::ParseFormFields(fields, LanguageCode(""),
-                                       /*is_form_tag=*/true, pattern_source())
-                .size());
+  // `ParseSingleFieldForms` should detect the promo code.
+  EXPECT_EQ(3, ParseFormFields());
+  TestClassificationExpectations();
 }
 
-// Test that |ParseSingleFieldForms| parses single field promo codes.
+// Test that `ParseSingleFieldForms` parses single field promo codes.
 TEST_P(FormFieldTest, ParseSingleFieldFormsPromoCode) {
   base::test::ScopedFeatureList scoped_feature;
   scoped_feature.InitAndEnableFeature(
       features::kAutofillParseMerchantPromoCodeFields);
 
-  std::vector<std::unique_ptr<AutofillField>> fields;
-  FormFieldData field_data;
-  field_data.form_control_type = "text";
-  FieldCandidatesMap field_candidates;
-
   // Parse single field promo code.
-  field_data.label = u"Promo code";
-  field_data.unique_renderer_id = MakeFieldRendererId();
-  fields.push_back(std::make_unique<AutofillField>(field_data));
-
-  FormField::ParseSingleFieldForms(fields, LanguageCode(""),
-                                   /*is_form_tag=*/true, pattern_source(),
-                                   &field_candidates);
-  EXPECT_EQ(1u, field_candidates.size());
-
-  field_candidates.clear();
+  AddTextFormFieldData("", "Promo code", MERCHANT_PROMO_CODE);
+  EXPECT_EQ(1, ParseSingleFieldForms());
+  TestClassificationExpectations();
 
   // Don't parse other fields.
-  field_data.label = u"Address line 1";
-  field_data.unique_renderer_id = MakeFieldRendererId();
-  fields.push_back(std::make_unique<AutofillField>(field_data));
-
-  // Still only the promo code field should be parsed.
-  FormField::ParseSingleFieldForms(fields, LanguageCode(""),
-                                   /*is_form_tag=*/true, pattern_source(),
-                                   &field_candidates);
-  EXPECT_EQ(1u, field_candidates.size());
+  // UNKNOWN_TYPE is used as the expected type, which prevents it from being
+  // part of the expectations in `TestClassificationExpectations()`.
+  AddTextFormFieldData("", "Address line 1", UNKNOWN_TYPE);
+  EXPECT_EQ(1, ParseSingleFieldForms());
+  TestClassificationExpectations();
 }
 
 struct ParseInAnyOrderTestcase {
