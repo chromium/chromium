@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/feed_wrapper_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -77,7 +78,10 @@
   [emptyCollectionView setShowsVerticalScrollIndicator:NO];
   [self.view addSubview:emptyCollectionView];
   self.contentCollectionView = emptyCollectionView;
-  self.contentCollectionView.backgroundColor = ntp_home::kNTPBackgroundColor();
+  self.contentCollectionView.backgroundColor =
+      IsContentSuggestionsUIModuleRefreshEnabled()
+          ? [UIColor clearColor]
+          : ntp_home::kNTPBackgroundColor();
   self.contentCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.contentCollectionView, self.view);
 }
