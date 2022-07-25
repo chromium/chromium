@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Worklets should generate Resource Timing Entries promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'addModule')"
-Harness: the test ran to completion.
-
