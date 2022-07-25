@@ -55,6 +55,9 @@ public final class AuthenticatorImpl implements Authenticator {
     /** The payment information to be added to the "clientDataJson". */
     private PaymentOptions mPayment;
 
+    /** Caches the GMS Core package version. */
+    private int mGmsCorePackageVersion;
+
     private MakeCredential_Response mMakeCredentialCallback;
     private GetAssertion_Response mGetAssertionCallback;
     // A queue is used to store pending IsUserVerifyingPlatformAuthenticatorAvailable request
@@ -87,6 +90,9 @@ public final class AuthenticatorImpl implements Authenticator {
         mRenderFrameHost = renderFrameHost;
         mSupportLevel = supportLevel;
         mOrigin = mRenderFrameHost.getLastCommittedOrigin();
+
+        Context context = ContextUtils.getApplicationContext();
+        mGmsCorePackageVersion = PackageUtils.getPackageVersion(context, GMSCORE_PACKAGE_NAME);
     }
 
     /**
@@ -116,9 +122,7 @@ public final class AuthenticatorImpl implements Authenticator {
 
         mMakeCredentialCallback = callback;
         mIsOperationPending = true;
-        Context context = ContextUtils.getApplicationContext();
-        if (PackageUtils.getPackageVersion(context, GMSCORE_PACKAGE_NAME)
-                < Fido2ApiHandler.GMSCORE_MIN_VERSION) {
+        if (mGmsCorePackageVersion < Fido2ApiHandler.GMSCORE_MIN_VERSION) {
             onError(AuthenticatorStatus.NOT_IMPLEMENTED);
             return;
         }
@@ -140,10 +144,8 @@ public final class AuthenticatorImpl implements Authenticator {
 
         mGetAssertionCallback = callback;
         mIsOperationPending = true;
-        Context context = ContextUtils.getApplicationContext();
 
-        if (PackageUtils.getPackageVersion(context, GMSCORE_PACKAGE_NAME)
-                < Fido2ApiHandler.GMSCORE_MIN_VERSION) {
+        if (mGmsCorePackageVersion < Fido2ApiHandler.GMSCORE_MIN_VERSION) {
             onError(AuthenticatorStatus.NOT_IMPLEMENTED);
             return;
         }
@@ -163,15 +165,7 @@ public final class AuthenticatorImpl implements Authenticator {
             callback.call(isUvpaa);
         };
 
-        Context context = ContextUtils.getApplicationContext();
-        // ChromeActivity could be null.
-        if (context == null) {
-            decoratedCallback.call(false);
-            return;
-        }
-
-        if (PackageUtils.getPackageVersion(context, GMSCORE_PACKAGE_NAME)
-                < Fido2ApiHandler.GMSCORE_MIN_VERSION) {
+        if (mGmsCorePackageVersion < Fido2ApiHandler.GMSCORE_MIN_VERSION) {
             decoratedCallback.call(false);
             return;
         }
