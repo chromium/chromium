@@ -1892,12 +1892,6 @@ extern const char kContextualTriggersSelectionSizeDescription[];
 extern const char kCpuAffinityRestrictToLittleCoresName[];
 extern const char kCpuAffinityRestrictToLittleCoresDescription[];
 
-extern const char kDynamicColorAndroidName[];
-extern const char kDynamicColorAndroidDescription[];
-
-extern const char kDynamicColorButtonsAndroidName[];
-extern const char kDynamicColorButtonsAndroidDescription[];
-
 extern const char kAutofillManualFallbackAndroidName[];
 extern const char kAutofillManualFallbackAndroidDescription[];
 

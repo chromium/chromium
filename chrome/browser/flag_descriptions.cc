@@ -3360,17 +3360,6 @@ const char kCpuAffinityRestrictToLittleCoresDescription[] =
     "Restricts Chrome threads to LITTLE cores on devices with big.LITTLE or "
     "similar CPU architectures.";
 
-const char kDynamicColorAndroidName[] = "Dynamic colors on Android";
-const char kDynamicColorAndroidDescription[] =
-    "Enabled dynamic colors on supported devices, such as Pixel devices "
-    "running Android 12.";
-
-const char kDynamicColorButtonsAndroidName[] =
-    "Dynamic colors for buttons on Android";
-const char kDynamicColorButtonsAndroidDescription[] =
-    "If enabled, dynamic colors will be enabled for call to action buttons, "
-    "links and clickable spans.";
-
 const char kAutofillManualFallbackAndroidName[] =
     "Enable Autofill manual fallback for Addresses and Payments (Android)";
 const char kAutofillManualFallbackAndroidDescription[] =

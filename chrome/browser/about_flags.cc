@@ -2290,13 +2290,6 @@ const FeatureEntry::FeatureVariation kLensContextMenuSearchVariations[] = {
      std::size(kLensContextMenuSearchOnTablet), nullptr},
 };
 
-const FeatureEntry::FeatureParam kDynamicColorFull[] = {
-    {"dynamic_color_full", "true"}};
-
-const FeatureEntry::FeatureVariation kDynamicColorAndroidVariations[] = {
-    {"(Full)", kDynamicColorFull, std::size(kDynamicColorFull), nullptr},
-};
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::Choice kNotificationSchedulerChoices[] = {
@@ -8242,18 +8235,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"https-only-mode-setting", flag_descriptions::kHttpsOnlyModeName,
      flag_descriptions::kHttpsOnlyModeDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kHttpsOnlyMode)},
-
-#if BUILDFLAG(IS_ANDROID)
-    {"dynamic-color-android", flag_descriptions::kDynamicColorAndroidName,
-     flag_descriptions::kDynamicColorAndroidDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kDynamicColorAndroid,
-                                    kDynamicColorAndroidVariations,
-                                    "AndroidDynamicColor")},
-    {"dynamic-color-buttons-android",
-     flag_descriptions::kDynamicColorButtonsAndroidName,
-     flag_descriptions::kDynamicColorButtonsAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kDynamicColorButtonsAndroid)},
-#endif  //   BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
     {"win-10-tab-search-caption-button",
