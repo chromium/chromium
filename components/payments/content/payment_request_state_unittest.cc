@@ -20,6 +20,7 @@
 #include "components/payments/content/payment_app_service_factory.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/test_content_payment_request_delegate.h"
+#include "components/payments/content/test_payment_app.h"
 #include "components/payments/core/journey_logger.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -31,49 +32,6 @@
 
 namespace payments {
 namespace {
-
-class TestApp : public PaymentApp {
- public:
-  explicit TestApp(const std::string& method)
-      : PaymentApp(/*icon_resource_id=*/0,
-                   PaymentApp::Type::SERVICE_WORKER_APP),
-        method_(method) {}
-
-  TestApp(const TestApp& other) = delete;
-  TestApp& operator=(const TestApp& other) = delete;
-
-  // PaymentApp:
-  void InvokePaymentApp(base::WeakPtr<Delegate> delegate) override {}
-  bool IsCompleteForPayment() const override { return true; }
-  uint32_t GetCompletenessScore() const override { return 0; }
-  bool CanPreselect() const override { return true; }
-  std::u16string GetMissingInfoLabel() const override {
-    return std::u16string();
-  }
-  bool HasEnrolledInstrument() const override { return true; }
-  void RecordUse() override {}
-  bool NeedsInstallation() const override { return false; }
-  std::string GetId() const override { return method_; }
-  std::u16string GetLabel() const override { return std::u16string(); }
-  std::u16string GetSublabel() const override { return std::u16string(); }
-  bool IsValidForModifier(
-      const std::string& method,
-      bool supported_networks_specified,
-      const std::set<std::string>& supported_networks) const override {
-    return false;
-  }
-  base::WeakPtr<PaymentApp> AsWeakPtr() override {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-  bool HandlesShippingAddress() const override { return false; }
-  bool HandlesPayerName() const override { return false; }
-  bool HandlesPayerEmail() const override { return false; }
-  bool HandlesPayerPhone() const override { return false; }
-
- private:
-  const std::string method_;
-  base::WeakPtrFactory<TestApp> weak_ptr_factory_{this};
-};
 
 class TestAppFactory : public PaymentAppFactory {
  public:
@@ -88,7 +46,7 @@ class TestAppFactory : public PaymentAppFactory {
     auto requested_methods =
         delegate->GetSpec()->payment_method_identifiers_set();
     if (requested_methods.find(method_) != requested_methods.end())
-      delegate->OnPaymentAppCreated(std::make_unique<TestApp>(method_));
+      delegate->OnPaymentAppCreated(std::make_unique<TestPaymentApp>(method_));
     delegate->OnDoneCreatingPaymentApps();
   }
 

@@ -236,6 +236,8 @@ source_set("unit_tests") {
       "service_worker_payment_app_unittest.cc",
       "test_content_payment_request_delegate.cc",
       "test_content_payment_request_delegate.h",
+      "test_payment_app.cc",
+      "test_payment_app.h",
     ]
   }
 
