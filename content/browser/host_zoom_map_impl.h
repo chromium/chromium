@@ -80,6 +80,12 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
 
   void SetClockForTesting(base::Clock* clock) override;
 
+#if BUILDFLAG(IS_ANDROID)
+  void SetDefaultZoomLevelPrefCallback(
+      HostZoomMap::DefaultZoomChangedCallback callback) override;
+  HostZoomMap::DefaultZoomChangedCallback* GetDefaultZoomLevelPrefCallback();
+#endif
+
  private:
   struct ZoomLevel {
     double level;
@@ -120,6 +126,11 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   // Callbacks called when zoom level changes.
   base::RepeatingCallbackList<void(const ZoomLevelChange&)>
       zoom_level_changed_callbacks_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Callback called when Java-side UI updates the default zoom level.
+  HostZoomMap::DefaultZoomChangedCallback default_zoom_level_pref_callback_;
+#endif
 
   // Copy of the pref data.
   HostZoomLevels host_zoom_levels_;

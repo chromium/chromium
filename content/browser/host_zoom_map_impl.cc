@@ -493,6 +493,16 @@ void HostZoomMapImpl::SetClockForTesting(base::Clock* clock) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+void HostZoomMapImpl::SetDefaultZoomLevelPrefCallback(
+    HostZoomMap::DefaultZoomChangedCallback callback) {
+  default_zoom_level_pref_callback_ = std::move(callback);
+}
+
+HostZoomMap::DefaultZoomChangedCallback*
+HostZoomMapImpl::GetDefaultZoomLevelPrefCallback() {
+  return &default_zoom_level_pref_callback_;
+}
+
 void JNI_HostZoomMapImpl_SetZoomLevel(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_web_contents,
@@ -523,6 +533,16 @@ void JNI_HostZoomMapImpl_SetDefaultZoomLevel(
 
   HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
       HostZoomMap::GetDefaultForBrowserContext(context));
+
+  // If a callback has been set (e.g. by chrome_zoom_level_prefs to store an
+  // updated value in Prefs), call this now with the chosen zoom level.
+  if (host_zoom_map->GetDefaultZoomLevelPrefCallback()) {
+    host_zoom_map->GetDefaultZoomLevelPrefCallback()->Run(
+        new_default_zoom_level);
+  }
+
+  // Update the default zoom level for existing tabs. This must be done after
+  // the Pref is updated due to guard clause in chrome_zoom_level_prefs.
   host_zoom_map->SetDefaultZoomLevel(new_default_zoom_level);
 }
 

@@ -239,4 +239,14 @@ void ChromeZoomLevelPrefs::InitHostZoomMap(
   zoom_subscription_ =
       host_zoom_map_->AddZoomLevelChangedCallback(base::BindRepeating(
           &ChromeZoomLevelPrefs::OnZoomLevelChanged, base::Unretained(this)));
+
+// On Android, the default zoom level is controlled by the Java-side UI and not
+// the settings flow as it is with other platforms. For Android, we will pass an
+// extra callback to the HostZoomMapImpl for setting the default zoom Pref when
+// Java sends an update through the JNI. The HostZoomMapImpl cannot directly
+// depend on this file, which will save the Pref to the storage partition.
+#if BUILDFLAG(IS_ANDROID)
+  host_zoom_map_->SetDefaultZoomLevelPrefCallback(base::BindRepeating(
+      &ChromeZoomLevelPrefs::SetDefaultZoomLevelPref, base::Unretained(this)));
+#endif
 }

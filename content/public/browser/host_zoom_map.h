@@ -178,6 +178,16 @@ class HostZoomMap {
 
   virtual void SetClockForTesting(base::Clock* clock) = 0;
 
+  // On Android only, set a callback for when the Java-side UI sets a default
+  // zoom level so the HostZoomMapImpl does not depend on Prefs or //chrome/.
+#if BUILDFLAG(IS_ANDROID)
+  using DefaultZoomChangedCallback =
+      base::RepeatingCallback<void(double new_level)>;
+
+  virtual void SetDefaultZoomLevelPrefCallback(
+      DefaultZoomChangedCallback callback) = 0;
+#endif
+
  protected:
   virtual ~HostZoomMap() {}
 };
