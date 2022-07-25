@@ -182,6 +182,8 @@ void OsAndPoliciesUpdateChecker::UpdateStatusChanged(
     case update_engine::Operation::UPDATE_AVAILABLE:
     case update_engine::Operation::CHECKING_FOR_UPDATE:
     case update_engine::Operation::ATTEMPTING_ROLLBACK:
+    case update_engine::Operation::CLEANUP_PREVIOUS_UPDATE:
+    case update_engine::Operation::UPDATED_BUT_DEFERRED:
       // Do nothing on intermediate states.
       break;
 

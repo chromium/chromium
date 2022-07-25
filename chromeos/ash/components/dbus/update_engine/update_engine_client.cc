@@ -691,6 +691,8 @@ class UpdateEngineClientDesktopFake : public UpdateEngineClient {
       case update_engine::Operation::ATTEMPTING_ROLLBACK:
       case update_engine::Operation::NEED_PERMISSION_TO_UPDATE:
       case update_engine::Operation::DISABLED:
+      case update_engine::Operation::UPDATED_BUT_DEFERRED:
+      case update_engine::Operation::CLEANUP_PREVIOUS_UPDATE:
         return;
       case update_engine::Operation::CHECKING_FOR_UPDATE:
         next_operation = update_engine::Operation::UPDATE_AVAILABLE;

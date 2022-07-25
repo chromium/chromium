@@ -108,6 +108,8 @@ ExtensionFunction::ResponseAction SystemPrivateGetUpdateStatusFunction::Run() {
     case update_engine::Operation::REPORTING_ERROR_EVENT:
     case update_engine::Operation::ATTEMPTING_ROLLBACK:
     case update_engine::Operation::NEED_PERMISSION_TO_UPDATE:
+    case update_engine::Operation::CLEANUP_PREVIOUS_UPDATE:
+    case update_engine::Operation::UPDATED_BUT_DEFERRED:
       state = kNotAvailableState;
       break;
     default:

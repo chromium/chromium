@@ -329,9 +329,11 @@ void UpdateRequiredScreen::UpdateInfoChanged(
     const VersionUpdater::UpdateInfo& update_info) {
   switch (update_info.status.current_operation()) {
     case update_engine::Operation::CHECKING_FOR_UPDATE:
+    case update_engine::Operation::CLEANUP_PREVIOUS_UPDATE:
     case update_engine::Operation::ATTEMPTING_ROLLBACK:
     case update_engine::Operation::DISABLED:
     case update_engine::Operation::IDLE:
+    case update_engine::Operation::UPDATED_BUT_DEFERRED:
       break;
     case update_engine::Operation::UPDATE_AVAILABLE:
     case update_engine::Operation::DOWNLOADING:

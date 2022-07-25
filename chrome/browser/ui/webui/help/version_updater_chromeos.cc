@@ -304,6 +304,7 @@ void VersionUpdaterCros::UpdateStatusChanged(
     case update_engine::Operation::ERROR:
     case update_engine::Operation::REPORTING_ERROR_EVENT:
     case update_engine::Operation::ATTEMPTING_ROLLBACK:
+    case update_engine::Operation::CLEANUP_PREVIOUS_UPDATE:
       // Update engine reports errors for some conditions that shouldn't
       // actually be displayed as errors to users so leave the status as
       // UPDATED. However for some specific errors use the specific FAILED
@@ -343,6 +344,7 @@ void VersionUpdaterCros::UpdateStatusChanged(
       progress = 100;
       my_status = UPDATING;
       break;
+    case update_engine::Operation::UPDATED_BUT_DEFERRED:
     case update_engine::Operation::UPDATED_NEED_REBOOT:
       my_status = NEARLY_UPDATED;
       break;

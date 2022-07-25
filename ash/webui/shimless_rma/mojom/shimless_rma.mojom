@@ -227,6 +227,8 @@ enum OsUpdateOperation {
   kAttemptingRollback = 8,
   kDisabled = 9,
   kNeedPermissionToUpdate = 10,
+  kCleanupPreviousUpdate = 11,
+  kUpdatedButDeferred = 12,
 };
 
 enum UpdateErrorCode {

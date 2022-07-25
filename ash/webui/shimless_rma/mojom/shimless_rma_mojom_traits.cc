@@ -403,6 +403,10 @@ EnumTraits<MojomOsUpdateOperation, ProtoOsUpdateOperation>::ToMojom(
       return MojomOsUpdateOperation::kDisabled;
     case update_engine::NEED_PERMISSION_TO_UPDATE:
       return MojomOsUpdateOperation::kNeedPermissionToUpdate;
+    case update_engine::CLEANUP_PREVIOUS_UPDATE:
+      return MojomOsUpdateOperation::kCleanupPreviousUpdate;
+    case update_engine::UPDATED_BUT_DEFERRED:
+      return MojomOsUpdateOperation::kUpdatedButDeferred;
     case update_engine::ERROR:
     case update_engine::Operation_INT_MIN_SENTINEL_DO_NOT_USE_:
     case update_engine::Operation_INT_MAX_SENTINEL_DO_NOT_USE_:
@@ -450,6 +454,12 @@ bool EnumTraits<MojomOsUpdateOperation, ProtoOsUpdateOperation>::FromMojom(
       return true;
     case MojomOsUpdateOperation::kNeedPermissionToUpdate:
       *out = update_engine::NEED_PERMISSION_TO_UPDATE;
+      return true;
+    case MojomOsUpdateOperation::kCleanupPreviousUpdate:
+      *out = update_engine::CLEANUP_PREVIOUS_UPDATE;
+      return true;
+    case MojomOsUpdateOperation::kUpdatedButDeferred:
+      *out = update_engine::UPDATED_BUT_DEFERRED;
       return true;
   }
   NOTREACHED();

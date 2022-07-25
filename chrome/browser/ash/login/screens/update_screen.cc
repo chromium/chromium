@@ -309,8 +309,10 @@ void UpdateScreen::UpdateInfoChanged(
       // Do nothing in these cases, we don't want to notify the user of the
       // check unless there is an update.
     case update_engine::Operation::ATTEMPTING_ROLLBACK:
+    case update_engine::Operation::CLEANUP_PREVIOUS_UPDATE:
     case update_engine::Operation::DISABLED:
     case update_engine::Operation::IDLE:
+    case update_engine::Operation::UPDATED_BUT_DEFERRED:
       break;
     case update_engine::Operation::UPDATE_AVAILABLE:
       if (view_)

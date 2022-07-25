@@ -237,9 +237,11 @@ void VersionUpdater::UpdateStatusChanged(
       if (!ignore_idle_status_)
         exit_update = true;
       break;
+    case update_engine::Operation::CLEANUP_PREVIOUS_UPDATE:
     case update_engine::Operation::DISABLED:
     case update_engine::Operation::ERROR:
     case update_engine::Operation::REPORTING_ERROR_EVENT:
+    case update_engine::Operation::UPDATED_BUT_DEFERRED:
       break;
     default:
       NOTREACHED();

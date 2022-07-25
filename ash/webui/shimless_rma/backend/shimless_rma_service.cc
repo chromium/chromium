@@ -1372,6 +1372,8 @@ void ShimlessRmaService::OnOsUpdateStatusCallback(
       case update_engine::Operation::NEED_PERMISSION_TO_UPDATE:
       case update_engine::Operation::UPDATED_NEED_REBOOT:
       case update_engine::Operation::VERIFYING:
+      case update_engine::Operation::CLEANUP_PREVIOUS_UPDATE:
+      case update_engine::Operation::UPDATED_BUT_DEFERRED:
         break;
       // Added to avoid lint error
       case update_engine::Operation::Operation_INT_MIN_SENTINEL_DO_NOT_USE_:
