@@ -31,7 +31,9 @@ TtsClientLacros::TtsClientLacros(content::BrowserContext* browser_context)
 
   // TODO(crbug.com/1251979): Support secondary profiles when it becomes
   // available for Lacros.
-  DCHECK(is_primary_profile);
+  if (!is_primary_profile)
+    return;
+
   service->GetRemote<crosapi::mojom::Tts>()->RegisterTtsClient(
       receiver_.BindNewPipeAndPassRemoteWithVersion(), browser_context_id_,
       /*is_primary_profile=*/is_primary_profile);
