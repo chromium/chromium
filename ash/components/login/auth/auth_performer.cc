@@ -13,6 +13,7 @@
 #include "ash/components/login/auth/public/user_context.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
@@ -33,7 +34,9 @@ bool IsKioskUserType(user_manager::UserType type) {
 }  // namespace
 
 AuthPerformer::AuthPerformer(base::raw_ptr<UserDataAuthClient> client)
-    : client_(client) {}
+    : client_(client) {
+  DCHECK(client_);
+}
 
 AuthPerformer::~AuthPerformer() = default;
 

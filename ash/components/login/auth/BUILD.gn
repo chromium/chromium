@@ -108,6 +108,8 @@ source_set("test_support") {
     "mock_auth_performer.h",
     "mock_auth_status_consumer.cc",
     "mock_auth_status_consumer.h",
+    "mock_safe_mode_delegate.cc",
+    "mock_safe_mode_delegate.h",
   ]
 }
 
@@ -116,6 +118,7 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":auth",
+    ":test_support",
     "//ash/components/cryptohome",
     "//ash/components/login/auth",
     "//base",
@@ -126,7 +129,9 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/userdataauth:test_support",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/dbus/cryptohome",
+    "//chromeos/dbus/cryptohome:cryptohome_proto",
     "//components/account_id",
+    "//components/password_manager/core/browser:password_hash_data",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/user_manager",
@@ -139,6 +144,7 @@ source_set("unit_tests") {
   ]
   sources = [
     "auth_performer_unittest.cc",
+    "auth_session_authenticator_unittest.cc",
     "challenge_response/cert_utils_unittest.cc",
     "public/key_unittest.cc",
     "public/operation_chain_runner_unittest.cc",

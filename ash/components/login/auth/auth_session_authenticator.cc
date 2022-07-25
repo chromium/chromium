@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
@@ -39,7 +40,10 @@ AuthSessionAuthenticator::AuthSessionAuthenticator(
       auth_factor_editor_(std::make_unique<AuthFactorEditor>()),
       auth_performer_(
           std::make_unique<AuthPerformer>(UserDataAuthClient::Get())),
-      mount_performer_(std::make_unique<MountPerformer>()) {}
+      mount_performer_(std::make_unique<MountPerformer>()) {
+  DCHECK(safe_mode_delegate_);
+  DCHECK(!user_recorder_.is_null());
+}
 
 AuthSessionAuthenticator::~AuthSessionAuthenticator() = default;
 
