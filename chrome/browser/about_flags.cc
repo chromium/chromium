@@ -1592,29 +1592,6 @@ const FeatureEntry::FeatureVariation kDiscountConsentV2Variations[] = {
      std::size(kDiscountConsentNtpNativeDialog), nullptr},
 };
 
-const FeatureEntry::FeatureParam kNtpRecipeTasksModuleFakeData[] = {
-    {ntp_features::kNtpRecipeTasksModuleDataParam, "fake"}};
-const FeatureEntry::FeatureParam kNtpRecipeTasksModuleHistorical7Days[] = {
-    {ntp_features::kNtpRecipeTasksModuleExperimentGroupParam, "historical-7"}};
-const FeatureEntry::FeatureParam kNtpRecipeTasksModuleHistorical14Days[] = {
-    {ntp_features::kNtpRecipeTasksModuleExperimentGroupParam, "historical-14"}};
-const FeatureEntry::FeatureParam kNtpRecipeTasksModuleMix7Days[] = {
-    {ntp_features::kNtpRecipeTasksModuleExperimentGroupParam, "mix-7"}};
-const FeatureEntry::FeatureParam kNtpRecipeTasksModuleMix14Days[] = {
-    {ntp_features::kNtpRecipeTasksModuleExperimentGroupParam, "mix-14"}};
-const FeatureEntry::FeatureVariation kNtpRecipeTasksModuleVariations[] = {
-    {"- Fake Data", kNtpRecipeTasksModuleFakeData,
-     std::size(kNtpRecipeTasksModuleFakeData), nullptr},
-    {"- Historical Arm (7 days)", kNtpRecipeTasksModuleHistorical7Days,
-     std::size(kNtpRecipeTasksModuleHistorical7Days), "t3349934"},
-    {"- Historical Arm (14 days)", kNtpRecipeTasksModuleHistorical14Days,
-     std::size(kNtpRecipeTasksModuleHistorical14Days), "t3349935"},
-    {"- Recommended Mix Arm (7 days)", kNtpRecipeTasksModuleMix7Days,
-     std::size(kNtpRecipeTasksModuleMix7Days), "t3349936"},
-    {"- Recommended Mix Arm (14 days)", kNtpRecipeTasksModuleMix14Days,
-     std::size(kNtpRecipeTasksModuleMix14Days), "t3349937"},
-};
-
 const FeatureEntry::FeatureParam kNtpDriveModuleFakeData[] = {
     {ntp_features::kNtpDriveModuleDataParam, "fake"}};
 const FeatureEntry::FeatureParam kNtpDriveModuleManagedUsersOnly[] = {
@@ -1708,6 +1685,29 @@ const FeatureEntry::FeatureParam kRealboxMatchSearchboxThemeRoundedCorners[] = {
 const FeatureEntry::FeatureVariation kRealboxMatchSearchboxThemeVariations[] = {
     {"(Rounded Corners)", kRealboxMatchSearchboxThemeRoundedCorners,
      std::size(kRealboxMatchSearchboxThemeRoundedCorners), nullptr}};
+
+const FeatureEntry::FeatureParam kNtpRecipeTasksModuleFakeData[] = {
+    {ntp_features::kNtpRecipeTasksModuleDataParam, "fake"}};
+const FeatureEntry::FeatureParam kNtpRecipeTasksModuleHistorical7Days[] = {
+    {ntp_features::kNtpRecipeTasksModuleExperimentGroupParam, "historical-7"}};
+const FeatureEntry::FeatureParam kNtpRecipeTasksModuleHistorical14Days[] = {
+    {ntp_features::kNtpRecipeTasksModuleExperimentGroupParam, "historical-14"}};
+const FeatureEntry::FeatureParam kNtpRecipeTasksModuleMix7Days[] = {
+    {ntp_features::kNtpRecipeTasksModuleExperimentGroupParam, "mix-7"}};
+const FeatureEntry::FeatureParam kNtpRecipeTasksModuleMix14Days[] = {
+    {ntp_features::kNtpRecipeTasksModuleExperimentGroupParam, "mix-14"}};
+const FeatureEntry::FeatureVariation kNtpRecipeTasksModuleVariations[] = {
+    {"- Fake Data", kNtpRecipeTasksModuleFakeData,
+     std::size(kNtpRecipeTasksModuleFakeData), nullptr},
+    {"- Historical Arm (7 days)", kNtpRecipeTasksModuleHistorical7Days,
+     std::size(kNtpRecipeTasksModuleHistorical7Days), "t3349934"},
+    {"- Historical Arm (14 days)", kNtpRecipeTasksModuleHistorical14Days,
+     std::size(kNtpRecipeTasksModuleHistorical14Days), "t3349935"},
+    {"- Recommended Mix Arm (7 days)", kNtpRecipeTasksModuleMix7Days,
+     std::size(kNtpRecipeTasksModuleMix7Days), "t3349936"},
+    {"- Recommended Mix Arm (14 days)", kNtpRecipeTasksModuleMix14Days,
+     std::size(kNtpRecipeTasksModuleMix14Days), "t3349937"},
+};
 
 const FeatureEntry::FeatureParam kNtpSafeBrowsingModuleFastCooldown[] = {
     {ntp_features::kNtpSafeBrowsingModuleCooldownPeriodDaysParam, "0.001"},

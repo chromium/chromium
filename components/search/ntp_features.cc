@@ -159,11 +159,6 @@ const base::Feature kNtpShortcuts{"NtpShortcuts",
 const char kNtpModulesLoadTimeoutMillisecondsParam[] =
     "NtpModulesLoadTimeoutMillisecondsParam";
 const char kNtpModulesOrderParam[] = "NtpModulesOrderParam";
-const char kNtpRecipeTasksModuleDataParam[] = "NtpRecipeTasksModuleDataParam";
-const char kNtpRecipeTasksModuleCacheMaxAgeSParam[] =
-    "NtpRecipeTasksModuleCacheMaxAgeSParam";
-const char kNtpRecipeTasksModuleExperimentGroupParam[] =
-    "NtpRecipeTasksModuleExperimentGroupParam";
 const char kNtpChromeCartModuleDataParam[] = "NtpChromeCartModuleDataParam";
 const char kNtpChromeCartModuleAbandonedCartDiscountParam[] =
     "NtpChromeCartModuleAbandonedCartDiscountParam";
@@ -191,6 +186,11 @@ const char kRealboxMatchOmniboxThemeVariantParam[] =
     "RealboxMatchOmniboxThemeVariantParam";
 const char kRealboxMatchSearchboxThemeParam[] =
     "RealboxMatchSearchboxThemeParam";
+const char kNtpRecipeTasksModuleDataParam[] = "NtpRecipeTasksModuleDataParam";
+const char kNtpRecipeTasksModuleCacheMaxAgeSParam[] =
+    "NtpRecipeTasksModuleCacheMaxAgeSParam";
+const char kNtpRecipeTasksModuleExperimentGroupParam[] =
+    "NtpRecipeTasksModuleExperimentGroupParam";
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(

@@ -61,14 +61,6 @@ extern const base::Feature kNtpHandleMostVisitedNavigationExplicitly;
 extern const char kNtpModulesLoadTimeoutMillisecondsParam[];
 // Parameter determining the module order.
 extern const char kNtpModulesOrderParam[];
-// Parameter determining the type of recipe data to request.
-extern const char kNtpRecipeTasksModuleDataParam[];
-// Parameter determining the max age in seconds of the cache for recipe tasks
-// data.
-extern const char kNtpRecipeTasksModuleCacheMaxAgeSParam[];
-// Parameter for communicating the experiment group of the recipe tasks module
-// experiment.
-extern const char kNtpRecipeTasksModuleExperimentGroupParam[];
 // Parameter determining the type of cart data used to render module.
 extern const char kNtpChromeCartModuleDataParam[];
 // Parameter for enabling the abandoned cart discount.
@@ -104,6 +96,14 @@ extern const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[];
 extern const char kRealboxMatchOmniboxThemeVariantParam[];
 // Parameter determining the variations of searchbox theme matching.
 extern const char kRealboxMatchSearchboxThemeParam[];
+// Parameter determining the type of recipe data to request.
+extern const char kNtpRecipeTasksModuleDataParam[];
+// Parameter determining the max age in seconds of the cache for recipe tasks
+// data.
+extern const char kNtpRecipeTasksModuleCacheMaxAgeSParam[];
+// Parameter for communicating the experiment group of the recipe tasks module
+// experiment.
+extern const char kNtpRecipeTasksModuleExperimentGroupParam[];
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
