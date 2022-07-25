@@ -29,4 +29,10 @@ const char kChromeUIUntrustedAnnotatorAppUrl[] =
 const char kChromeUITrustedProjectorSwaAppId[] =
     "fgnpbdobngpkonkajbmelfhjkemaddhp";
 
+const base::FilePath::CharType kProjectorMetadataFileExtension[] =
+    FILE_PATH_LITERAL(".projector");
+
+const base::FilePath::CharType kProjectorMediaFileExtension[] =
+    FILE_PATH_LITERAL(".webm");
+
 }  // namespace ash

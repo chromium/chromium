@@ -11,6 +11,7 @@ namespace ash {
 base::Value ProjectorScreencastVideo::ToValue() const {
   base::Value::Dict dict;
   dict.Set("srcUrl", src_url);
+  dict.Set("fileId", file_id);
   return base::Value(std::move(dict));
 }
 
@@ -27,6 +28,7 @@ base::Value ProjectorScreencast::ToValue() const {
   base::Value::Dict dict;
   dict.Set("containerFolderId", container_folder_id);
   dict.Set("name", name);
+  dict.Set("metadataFileId", metadata_file_id);
   dict.Set("video", video.ToValue());
 
   return base::Value(std::move(dict));

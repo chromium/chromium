@@ -18,6 +18,7 @@ struct ProjectorScreencastVideo {
   base::Value ToValue() const;
   // TODO(b/236857019): Add thumbnail link and video file id.
   std::string src_url;
+  std::string file_id;
 };
 
 // Struct of screencast model.
@@ -33,6 +34,9 @@ struct ProjectorScreencast {
   std::string container_folder_id;
 
   std::string name;
+
+  // The Drive server side item id of ".projector" file.
+  std::string metadata_file_id;
 
   ProjectorScreencastVideo video;
 

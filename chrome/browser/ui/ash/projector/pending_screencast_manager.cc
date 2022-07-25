@@ -10,7 +10,7 @@
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_metrics.h"
-#include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -35,8 +35,6 @@
 
 namespace {
 
-constexpr base::FilePath::CharType kMediaExtension[] =
-    FILE_PATH_LITERAL(".webm");
 constexpr char kOpenUrlBase[] = "https://drive.google.com/open";
 constexpr char kDriveRequestContentHintsKey[] = "contentHints";
 constexpr char kDriveRequestIndexableTextKey[] = "indexableText";
@@ -46,13 +44,9 @@ constexpr char kDriveRequestIndexableTextKey[] = "indexableText";
 // so put 3s here to allow Drive to populate the metadata.
 constexpr base::TimeDelta kDriveGetMetadataDelay = base::Seconds(3);
 
-const std::string GetMetadataFileExtension() {
-  return base::StrCat({".", ash::kProjectorMetadataFileExtension});
-}
-
 bool IsWebmOrProjectorFile(const base::FilePath& path) {
-  return path.MatchesExtension(kMediaExtension) ||
-         path.MatchesExtension(GetMetadataFileExtension());
+  return path.MatchesExtension(ash::kProjectorMediaFileExtension) ||
+         path.MatchesExtension(ash::kProjectorMetadataFileExtension);
 }
 
 drivefs::DriveFsHost* GetDriveFsHostForActiveProfile() {
@@ -234,19 +228,18 @@ absl::optional<ash::PendingScreencast> GetPendingScreencast(
 
   // Calculates the size of media file and metadata file, and the created time
   // of media.
-  const std::string metadata_extension = GetMetadataFileExtension();
   for (base::FilePath path = files.Next(); !path.empty(); path = files.Next()) {
-    if (path.MatchesExtension(metadata_extension)) {
+    if (path.MatchesExtension(ash::kProjectorMetadataFileExtension)) {
       total_size_in_bytes += files.GetInfo().GetSize();
-      media_file_count++;
-    } else if (path.MatchesExtension(kMediaExtension)) {
+      metadata_file_count++;
+    } else if (path.MatchesExtension(ash::kProjectorMediaFileExtension)) {
       base::File::Info info;
       if (!base::GetFileInfo(path, &info))
         continue;
       created_time = info.creation_time;
       total_size_in_bytes += files.GetInfo().GetSize();
       media_name = path.BaseName().RemoveExtension().value();
-      metadata_file_count++;
+      media_file_count++;
     }
 
     // Return null if the screencast is not valid.
@@ -405,7 +398,7 @@ void PendingScreencastManager::OnSyncingStatusUpdate(
     // "kCompleted" state for a file so that we could only update indexable text
     // once.
     if (ash::features::IsProjectorUpdateIndexableTextEnabled() &&
-        event_file.MatchesExtension(GetMetadataFileExtension())) {
+        event_file.MatchesExtension(ash::kProjectorMetadataFileExtension)) {
       syncing_metadata_files_.emplace(event_file);
     }
     pending_webm_or_projector_events.push_back(

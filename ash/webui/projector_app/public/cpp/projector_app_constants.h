@@ -5,6 +5,8 @@
 #ifndef ASH_WEBUI_PROJECTOR_APP_PUBLIC_CPP_PROJECTOR_APP_CONSTANTS_H_
 #define ASH_WEBUI_PROJECTOR_APP_PUBLIC_CPP_PROJECTOR_APP_CONSTANTS_H_
 
+#include "base/files/file_path.h"
+
 namespace ash {
 
 extern const char kChromeUIProjectorAppHost[];
@@ -22,6 +24,13 @@ extern const char kChromeUITrustedAnnotatorAppUrl[];
 extern const char kChromeUIUntrustedAnnotatorAppUrl[];
 
 extern const char kChromeUITrustedProjectorSwaAppId[];
+
+// File extension of Projector metadata file. It is used to identify Projector
+// screencasts at processing pending screencasts and fetching screencast list.
+extern const base::FilePath::CharType kProjectorMetadataFileExtension[];
+
+// File extension of Projector media file.
+extern const base::FilePath::CharType kProjectorMediaFileExtension[];
 
 }  // namespace ash
 

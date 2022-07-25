@@ -2244,6 +2244,7 @@ component("ash") {
     "//ash/webui/eche_app_ui/mojom:mojom",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
+    "//ash/webui/projector_app/public/cpp",
     "//base",
     "//base:i18n",
     "//base/third_party/dynamic_annotations",

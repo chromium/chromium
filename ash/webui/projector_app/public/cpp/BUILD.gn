@@ -10,4 +10,5 @@ source_set("cpp") {
     "projector_app_constants.cc",
     "projector_app_constants.h",
   ]
+  deps = [ "//base:base" ]
 }

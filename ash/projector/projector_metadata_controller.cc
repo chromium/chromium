@@ -8,6 +8,7 @@
 #include "ash/projector/projector_ui_controller.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
