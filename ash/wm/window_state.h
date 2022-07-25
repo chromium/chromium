@@ -61,10 +61,6 @@ constexpr float kTwoThirdPositionRatio = 0.67f;
 // accessing the window using |window()| is cheap.
 class ASH_EXPORT WindowState : public aura::WindowObserver {
  public:
-  // The default duration for an animation between two sets of bounds.
-  static constexpr base::TimeDelta kBoundsChangeSlideDuration =
-      base::Milliseconds(120);
-
   // A subclass of State class represents one of the window's states
   // that corresponds to chromeos::WindowStateType in Ash environment, e.g.
   // maximized, minimized or side snapped, as subclass.
@@ -105,6 +101,25 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
         const WindowState* window_state) const;
 #endif  // DCHECK_IS_ON()
   };
+
+  // Type of animation type to be applied when changing bounds locally.
+  // TODO(oshima): Use transform animation for snapping.
+  enum class BoundsChangeAnimationType {
+    // No animation (`SetBoundsDirect()`).
+    kNone,
+    // Cross fade animation. Copies old layer, and fades it out while fading the
+    // new layer in.
+    kCrossFade,
+    // Bounds animation.
+    kAnimate,
+    // Bounds animation with zero tween. Updates the bounds once at the end of
+    // the animation.
+    kAnimateZero,
+  };
+
+  // The default duration for an animation between two sets of bounds.
+  static constexpr base::TimeDelta kBoundsChangeSlideDuration =
+      base::Milliseconds(120);
 
   // Returns the WindowState for |window|. Creates WindowState if it doesn't
   // exist. The returned value is owned by |window| (you should not delete it).
@@ -418,11 +433,6 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest,
                            CrossFadeToBoundsFromTransform);
 
-  // Animation type of updating window bounds. "IMMEDIATE" means update bounds
-  // directly without animation. "STEP_END" means update bounds at the end of
-  // the animation.
-  enum class BoundsChangeAnimationType { DEFAULT, IMMEDIATE, STEP_END };
-
   // A class can temporarily change the window bounds change animation type.
   class ScopedBoundsChangeAnimation : public aura::WindowObserver {
    public:
@@ -606,7 +616,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   // The animation type for the bounds change.
   BoundsChangeAnimationType bounds_animation_type_ =
-      BoundsChangeAnimationType::DEFAULT;
+      BoundsChangeAnimationType::kAnimate;
 
   // When the current (or last) PIP session started.
   base::TimeTicks pip_start_time_;

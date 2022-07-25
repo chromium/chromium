@@ -1186,8 +1186,8 @@ bool ClientControlledShellSurface::OnPreWidgetCommit() {
     // Animate PIP window movement unless it is being dragged.
     client_controlled_state_->set_next_bounds_change_animation_type(
         window_state->IsPip() && !window_state->is_dragged()
-            ? ash::ClientControlledState::kAnimationAnimated
-            : ash::ClientControlledState::kAnimationNone);
+            ? ash::WindowState::BoundsChangeAnimationType::kAnimate
+            : ash::WindowState::BoundsChangeAnimationType::kNone);
     return true;
   }
 
@@ -1196,18 +1196,20 @@ bool ClientControlledShellSurface::OnPreWidgetCommit() {
     return true;
   }
 
-  auto animation_type = ash::ClientControlledState::kAnimationNone;
+  auto animation_type = ash::WindowState::BoundsChangeAnimationType::kNone;
   switch (pending_window_state_) {
     case chromeos::WindowStateType::kNormal:
       if (widget_->IsMaximized() || widget_->IsFullscreen()) {
-        animation_type = ash::ClientControlledState::kAnimationCrossFade;
+        animation_type =
+            ash::WindowState::BoundsChangeAnimationType::kCrossFade;
       }
       break;
 
     case chromeos::WindowStateType::kMaximized:
     case chromeos::WindowStateType::kFullscreen:
       if (!window_state->IsPip())
-        animation_type = ash::ClientControlledState::kAnimationCrossFade;
+        animation_type =
+            ash::WindowState::BoundsChangeAnimationType::kCrossFade;
       break;
 
     default:

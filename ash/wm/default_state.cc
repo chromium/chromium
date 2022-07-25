@@ -665,7 +665,7 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
   if (IsMinimizedWindowStateType(previous_state_type) ||
       window_state->IsFullscreen() || window_state->IsPinned() ||
       window_state->bounds_animation_type() ==
-          WindowState::BoundsChangeAnimationType::IMMEDIATE) {
+          WindowState::BoundsChangeAnimationType::kNone) {
     window_state->SetBoundsDirect(bounds_in_parent);
   } else if (window_state->IsMaximized() ||
              IsMaximizedOrFullscreenOrPinnedWindowStateType(
@@ -714,7 +714,7 @@ void DefaultState::UpdateBoundsForDisplayOrWorkAreaBoundsChange(
     return;
 
   if (window_state->bounds_animation_type() ==
-      WindowState::BoundsChangeAnimationType::IMMEDIATE) {
+      WindowState::BoundsChangeAnimationType::kNone) {
     window_state->SetBoundsDirect(bounds);
   } else {
     window_state->SetBoundsDirectAnimated(bounds);
