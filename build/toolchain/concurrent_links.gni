@@ -73,6 +73,16 @@ if (concurrent_links == -1) {
     _args = [ "--mem_per_link_gb=3" ]
   } else if (current_os == "zos") {
     _args = [ "--mem_per_link_gb=1" ]
+  } else if (is_fuchsia) {
+    # TODO(crbug.com/1347159): This was defaulting to 8GB. The number of
+    #    linker instances to run in parallel is calculated by diviging
+    #    the available memory by this value. On a 32GB machine with
+    #    roughly 29GB of available memory, this would cause three instances
+    #    to run. This started running out of memory and thrashing. This change
+    #    addresses that issue to get the SDk rollers running again but
+    #    could be optimized (maybe to 12GB or for different configs like
+    #    component build).
+    _args = [ "--mem_per_link_gb=16" ]
   } else {
     _args = []
   }
