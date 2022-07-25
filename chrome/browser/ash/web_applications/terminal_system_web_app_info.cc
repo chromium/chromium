@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/strings/strcat.h"
-#include "chrome/browser/ash/crostini/crostini_terminal.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -107,12 +107,12 @@ bool TerminalSystemAppDelegate::ShouldShowTabContextMenuShortcut(
     Profile* profile,
     int command_id) const {
   if (command_id == TabStripModel::CommandCloseTab) {
-    return crostini::GetTerminalSettingPassCtrlW(profile);
+    return guest_os::GetTerminalSettingPassCtrlW(profile);
   }
   return true;
 }
 
 bool TerminalSystemAppDelegate::ShouldPinTab(GURL url) const {
   return url == GURL(base::StrCat({chrome::kChromeUIUntrustedTerminalURL,
-                                   crostini::kTerminalHomePath}));
+                                   guest_os::kTerminalHomePath}));
 }

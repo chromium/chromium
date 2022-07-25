@@ -31,10 +31,10 @@
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
-#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/terminal/crostini_startup_status.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -635,7 +635,7 @@ ExtensionFunction::ResponseAction TerminalPrivateOpenWindowFunction::Run() {
       OpenWindow::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  const std::string* url = &crostini::GetTerminalHomeUrl();
+  const std::string* url = &guest_os::GetTerminalHomeUrl();
   bool as_tab = false;
 
   auto& data = params->data;
@@ -656,7 +656,7 @@ ExtensionFunction::ResponseAction TerminalPrivateOpenWindowFunction::Run() {
       LOG(ERROR) << "cannot find the browser";
     }
   } else {
-    crostini::LaunchTerminalWithUrl(
+    guest_os::LaunchTerminalWithUrl(
         Profile::FromBrowserContext(browser_context()),
         display::kInvalidDisplayId, GURL(*url));
   }
@@ -669,7 +669,7 @@ TerminalPrivateOpenOptionsPageFunction::
 
 ExtensionFunction::ResponseAction
 TerminalPrivateOpenOptionsPageFunction::Run() {
-  crostini::LaunchTerminalSettings(
+  guest_os::LaunchTerminalSettings(
       Profile::FromBrowserContext(browser_context()));
   return RespondNow(NoArguments());
 }
@@ -718,7 +718,7 @@ ExtensionFunction::ResponseAction TerminalPrivateGetPrefsFunction::Run() {
       continue;
     }
     if (path == guest_os::prefs::kGuestOsTerminalSettings) {
-      crostini::RecordTerminalSettingsChangesUMAs(
+      guest_os::RecordTerminalSettingsChangesUMAs(
           Profile::FromBrowserContext(browser_context()));
     }
     result.SetKey(path, service->Get(path)->Clone());

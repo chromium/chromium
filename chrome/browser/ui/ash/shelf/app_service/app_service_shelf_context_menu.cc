@@ -20,10 +20,10 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
-#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -169,7 +169,7 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       break;
 
     case ash::SHUTDOWN_GUEST_OS:
-      if (item().id.app_id == crostini::kTerminalSystemAppId) {
+      if (item().id.app_id == guest_os::kTerminalSystemAppId) {
         crostini::CrostiniManager::GetForProfile(controller()->profile())
             ->StopVm(crostini::kCrostiniDefaultVmName, base::DoNothing());
       } else if (item().id.app_id == plugin_vm::kPluginVmShelfAppId) {
@@ -207,8 +207,8 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
     }
 
     case ash::SETTINGS:
-      if (item().id.app_id == crostini::kTerminalSystemAppId) {
-        crostini::LaunchTerminalSettings(controller()->profile(), display_id());
+      if (item().id.app_id == guest_os::kTerminalSystemAppId) {
+        guest_os::LaunchTerminalSettings(controller()->profile(), display_id());
         ash::full_restore::FullRestoreService::MaybeCloseNotification(
             controller()->profile());
       }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crostini/crostini_terminal.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
@@ -50,7 +50,7 @@
 #include "ui/color/color_provider_utils.h"
 #include "ui/native_theme/native_theme.h"
 
-namespace crostini {
+namespace guest_os {
 
 // web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
 //     GURL("chrome-untrusted://terminal/html/terminal.html"))
@@ -172,7 +172,7 @@ GURL GenerateTerminalURL(Profile* profile,
   std::string container_name_param = escape(base::StringPrintf(
       "--target_container=%s", container_id.container_name.c_str()));
   std::string owner_id_param = escape(base::StringPrintf(
-      "--owner_id=%s", CryptohomeIdForProfile(profile).c_str()));
+      "--owner_id=%s", crostini::CryptohomeIdForProfile(profile).c_str()));
 
   std::vector<std::string> pieces = {start, vm_name_param, container_name_param,
                                      owner_id_param};
@@ -239,7 +239,7 @@ void LaunchTerminalWithIntent(
     base::OnceCallback<void(bool, const std::string&)> callback) {
   // Look for vm_name and container_name in intent->extras, and for backcompat
   // reasons default to the original crostini container if nothing is specified.
-  guest_os::GuestId guest_id = DefaultContainerId();
+  guest_os::GuestId guest_id = crostini::DefaultContainerId();
 
   // We only have vm and container name, so don't usually know the type. Don't
   // need it though so leave it as unknown.
@@ -262,14 +262,14 @@ void LaunchTerminalWithIntent(
   auto* provider = registry->Get(guest_id);
 
   if (!provider) {
-    if (guest_id.vm_name == DefaultContainerId().vm_name &&
-        !CrostiniFeatures::Get()->IsEnabled(profile)) {
+    if (guest_id.vm_name == crostini::DefaultContainerId().vm_name &&
+        !crostini::CrostiniFeatures::Get()->IsEnabled(profile)) {
       // It used to be that running the terminal without Crostini installed
       // would bring up the installer, so keep that behaviour. Only applies to
       // the default Crostini VM, anything else is only accessible if the target
       // VM is installed.
       crostini::CrostiniInstaller::GetForProfile(profile)->ShowDialog(
-          CrostiniUISurface::kAppList);
+          crostini::CrostiniUISurface::kAppList);
       return std::move(callback).Run(false, "Crostini not installed");
     } else {
       // Could happen if, e.g. a guest got disabled between listing and
@@ -537,7 +537,7 @@ std::vector<std::pair<std::string, std::string>> GetSSHConnections(
 void AddTerminalMenuItems(Profile* profile,
                           apps::mojom::MenuItemsPtr* menu_items) {
   apps::AddCommandItem(ash::SETTINGS, IDS_INTERNAL_APP_SETTINGS, menu_items);
-  if (IsCrostiniRunning(profile)) {
+  if (crostini::IsCrostiniRunning(profile)) {
     apps::AddCommandItem(ash::SHUTDOWN_GUEST_OS,
                          IDS_CROSTINI_SHUT_DOWN_LINUX_MENU_ITEM, menu_items);
   }
@@ -629,4 +629,4 @@ bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
   return true;
 }
 
-}  // namespace crostini
+}  // namespace guest_os

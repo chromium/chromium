@@ -6,7 +6,7 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
-#include "chrome/browser/ash/crostini/crostini_terminal.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 
@@ -37,7 +37,7 @@ bool CrostiniActiveWindowThrottleObserver::ProcessWindowActivation(
   // Return true if the ID is the terminal app's. Note that the terminal app is
   // a Chrome app although it provides a Crostini shell.
   const std::string* app_id = gained_active->GetProperty(ash::kAppIDKey);
-  return app_id && *app_id == crostini::kTerminalSystemAppId;
+  return app_id && *app_id == guest_os::kTerminalSystemAppId;
 }
 
 }  // namespace crostini

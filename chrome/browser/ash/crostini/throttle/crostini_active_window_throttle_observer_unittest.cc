@@ -7,7 +7,7 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/crostini/crostini_terminal.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -56,7 +56,7 @@ TEST_F(CrostiniActiveWindowThrottleObserverTest, TestOnWindowActivated) {
   terminal_window->SetProperty(aura::client::kAppType,
                                static_cast<int>(ash::AppType::CHROME_APP));
   terminal_window->SetProperty<std::string>(ash::kAppIDKey,
-                                            crostini::kTerminalSystemAppId);
+                                            guest_os::kTerminalSystemAppId);
   chrome_app_window->SetProperty(aura::client::kAppType,
                                  static_cast<int>(ash::AppType::CHROME_APP));
   chrome_app_window->SetProperty<std::string>(ash::kAppIDKey,

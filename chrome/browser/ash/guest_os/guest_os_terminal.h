@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_CROSTINI_CROSTINI_TERMINAL_H_
-#define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_TERMINAL_H_
+#ifndef CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_TERMINAL_H_
+#define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_TERMINAL_H_
 
 #include <vector>
 
@@ -17,7 +17,7 @@
 
 class Profile;
 
-namespace crostini {
+namespace guest_os {
 
 // web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
 //     GURL("chrome-untrusted://terminal/html/terminal.html"))
@@ -190,6 +190,6 @@ bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
                                         const std::string& shortcut_id,
                                         int64_t display_id);
 
-}  // namespace crostini
+}  // namespace guest_os
 
-#endif  // CHROME_BROWSER_ASH_CROSTINI_CROSTINI_TERMINAL_H_
+#endif  // CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_TERMINAL_H_

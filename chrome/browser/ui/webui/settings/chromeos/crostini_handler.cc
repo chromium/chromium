@@ -15,11 +15,11 @@
 #include "chrome/browser/ash/crostini/crostini_installer.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
-#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
@@ -406,7 +406,7 @@ void CrostiniHandler::OnCanDisableArcAdbSideloading(
 }
 
 void CrostiniHandler::LaunchTerminal(apps::IntentPtr intent) {
-  crostini::LaunchTerminalWithIntent(
+  guest_os::LaunchTerminalWithIntent(
       profile_, display::Screen::GetScreen()->GetPrimaryDisplay().id(),
       std::move(intent), base::DoNothing());
 }

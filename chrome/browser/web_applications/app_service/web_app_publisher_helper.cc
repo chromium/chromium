@@ -101,8 +101,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
@@ -615,7 +615,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
     app->intent_filters.push_back(apps_util::CreateLockScreenFilter());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (web_app->app_id() == crostini::kTerminalSystemAppId) {
+  if (web_app->app_id() == guest_os::kTerminalSystemAppId) {
     app->intent_filters.push_back(apps::ConvertMojomIntentFilterToIntentFilter(
         apps_util::CreateFileFilter(
             {apps_util::kIntentActionView},
@@ -881,10 +881,10 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (app_id == crostini::kTerminalSystemAppId) {
+  if (app_id == guest_os::kTerminalSystemAppId) {
     int64_t display_id =
         window_info ? window_info->display_id : display::kInvalidDisplayId;
-    crostini::LaunchTerminalWithIntent(
+    guest_os::LaunchTerminalWithIntent(
         profile_, display_id, std::move(intent),
         base::BindOnce(
             [](base::OnceCallback<void(bool)> callback, bool success,
@@ -932,8 +932,8 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Terminal SWA has custom launch code and manages its own restore data.
-  if (params.app_id == crostini::kTerminalSystemAppId) {
-    crostini::LaunchTerminalHome(profile_, params.display_id);
+  if (params.app_id == guest_os::kTerminalSystemAppId) {
+    guest_os::LaunchTerminalHome(profile_, params.display_id);
     return nullptr;
   }
 

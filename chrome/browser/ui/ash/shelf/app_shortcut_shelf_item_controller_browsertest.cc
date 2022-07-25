@@ -7,8 +7,8 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback_helpers.h"
-#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -76,7 +76,7 @@ class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
   }
 
   Browser* LaunchApp() {
-    crostini::LaunchTerminal(browser()->profile(), display::kInvalidDisplayId,
+    guest_os::LaunchTerminal(browser()->profile(), display::kInvalidDisplayId,
                              crostini::DefaultContainerId());
     return Waiter::WaitForNewBrowser();
   }

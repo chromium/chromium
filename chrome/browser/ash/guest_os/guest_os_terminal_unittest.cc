@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/crostini/crostini_terminal.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 
 #include "base/json/json_reader.h"
 #include "base/values.h"
@@ -10,29 +10,31 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-namespace crostini {
+namespace guest_os {
 
 using CrostiniTerminalTest = testing::Test;
 
 TEST_F(CrostiniTerminalTest, GenerateTerminalURL) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
-  EXPECT_EQ(GenerateTerminalURL(&profile, "", DefaultContainerId(), "", {}),
-            "chrome-untrusted://terminal/html/terminal.html"
-            "?command=vmshell"
-            "&args[]=--vm_name%3Dtermina"
-            "&args[]=--target_container%3Dpenguin"
-            "&args[]=--owner_id%3Dtest");
-  EXPECT_EQ(GenerateTerminalURL(&profile, "red",
-                                guest_os::GuestId(kCrostiniDefaultVmType,
-                                                  "test-vm", "test-container"),
-                                "/home/user", {"arg1"}),
+  EXPECT_EQ(
+      GenerateTerminalURL(&profile, "", crostini::DefaultContainerId(), "", {}),
+      "chrome-untrusted://terminal/html/terminal.html"
+      "?command=vmshell"
+      "&args[]=--vm_name%3Dtermina"
+      "&args[]=--target_container%3Dpenguin"
+      "&args[]=--owner_id%3Dtest");
+  EXPECT_EQ(GenerateTerminalURL(
+                &profile, "red",
+                guest_os::GuestId(VmType::TERMINA, "test-vm", "test-container"),
+                "/home/user", {"arg1"}),
             "chrome-untrusted://terminal/html/terminal.html"
             "?command=vmshell"
             "&settings_profile=red"
@@ -51,7 +53,7 @@ TEST_F(CrostiniTerminalTest, ShortcutIdForSSH) {
 TEST_F(CrostiniTerminalTest, ShortcutIdFromContainerId) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
-  guest_os::GuestId id(kCrostiniDefaultVmType, "test-vm", "test-container");
+  guest_os::GuestId id(VmType::TERMINA, "test-vm", "test-container");
   std::string shortcut = ShortcutIdFromContainerId(&profile, id);
   EXPECT_EQ(shortcut, R"({"container_name":"test-container",)"
                       R"("shortcut":"terminal",)"
@@ -147,4 +149,4 @@ TEST_F(CrostiniTerminalTest, GetTerminalSettingBackgroundColor) {
       "#202124");
 }
 
-}  // namespace crostini
+}  // namespace guest_os

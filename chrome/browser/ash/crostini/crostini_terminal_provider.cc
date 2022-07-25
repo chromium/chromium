@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/crostini/crostini_terminal_provider.h"
 
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 
 namespace crostini {
 
@@ -30,7 +30,7 @@ bool CrostiniTerminalProvider::RecoveryRequired(int64_t display_id) {
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
   if (crostini_manager->IsUncleanStartup()) {
     ShowCrostiniRecoveryView(profile_, crostini::CrostiniUISurface::kAppList,
-                             kTerminalSystemAppId, display_id, {},
+                             guest_os::kTerminalSystemAppId, display_id, {},
                              base::DoNothing());
     return true;
   }

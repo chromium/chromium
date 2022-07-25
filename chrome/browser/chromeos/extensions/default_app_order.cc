@@ -16,8 +16,8 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/page_break_constants.h"
@@ -180,7 +180,7 @@ void GetDefault(std::vector<std::string>* app_ids) {
     web_app::kGoogleNewsAppId,
     extensions::kWebStoreAppId,
 
-    crostini::kTerminalSystemAppId,
+    guest_os::kTerminalSystemAppId,
     web_app::kMediaAppId,
     ash::kChromeUITrustedProjectorSwaAppId,
 

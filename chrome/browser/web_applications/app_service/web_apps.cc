@@ -34,7 +34,7 @@
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crostini/crostini_terminal.h"
+#include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/grit/generated_resources.h"
@@ -410,8 +410,8 @@ void WebApps::GetMenuModel(const std::string& app_id,
         &menu_items);
   }
 
-  if (app_id == crostini::kTerminalSystemAppId) {
-    crostini::AddTerminalMenuItems(profile_, &menu_items);
+  if (app_id == guest_os::kTerminalSystemAppId) {
+    guest_os::AddTerminalMenuItems(profile_, &menu_items);
   }
 
   if (menu_type == apps::mojom::MenuType::kShelf &&
@@ -430,8 +430,8 @@ void WebApps::GetMenuModel(const std::string& app_id,
                          &menu_items);
   }
 
-  if (app_id == crostini::kTerminalSystemAppId) {
-    crostini::AddTerminalMenuShortcuts(profile_, ash::LAUNCH_APP_SHORTCUT_FIRST,
+  if (app_id == guest_os::kTerminalSystemAppId) {
+    guest_os::AddTerminalMenuShortcuts(profile_, ash::LAUNCH_APP_SHORTCUT_FIRST,
                                        std::move(menu_items),
                                        std::move(callback));
   } else {
@@ -524,8 +524,8 @@ void WebApps::ExecuteContextMenuCommand(const std::string& app_id,
                                         int command_id,
                                         const std::string& shortcut_id,
                                         int64_t display_id) {
-  if (app_id == crostini::kTerminalSystemAppId) {
-    if (crostini::ExecuteTerminalMenuShortcutCommand(profile_, shortcut_id,
+  if (app_id == guest_os::kTerminalSystemAppId) {
+    if (guest_os::ExecuteTerminalMenuShortcutCommand(profile_, shortcut_id,
                                                      display_id)) {
       return;
     }
