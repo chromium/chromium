@@ -2590,10 +2590,6 @@ crbug.com/1191718 external/wpt/css/css-fonts/size-adjust-text-decoration.tentati
 crbug.com/450619 external/wpt/css/css-fonts/font-feature-resolution-001.html [ Failure ]
 crbug.com/450619 external/wpt/css/css-fonts/font-feature-resolution-002.html [ Failure ]
 
-# CSS Forced Color Adjust preserve-parent-color is not implemented yet
-crbug.com/1242706 external/wpt/css/css-forced-color-adjust/parsing/forced-color-adjust-computed.html [ Failure ]
-crbug.com/1242706 external/wpt/css/css-forced-color-adjust/parsing/forced-color-adjust-valid.html [ Failure ]
-
 # Disabled briefly until test runner support lands.
 crbug.com/479533 accessibility/show-context-menu.html [ Skip ]
 crbug.com/479533 accessibility/show-context-menu-shadowdom.html [ Skip ]
