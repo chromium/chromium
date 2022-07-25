@@ -212,7 +212,6 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   gfx::Vector2d MinimumScrollOffsetInt() const override;
   gfx::Vector2d MaximumScrollOffsetInt() const override;
   ScrollOffset MaximumScrollOffset() const override;
-  ScrollOffset MaximumScrollOffsetAtScale(float scale) const;
   // Note: Because scrollbars are conceptually owned by the LayoutView,
   // ContentsSize includes the main frame's scrollbars. This is necessary for
   // correct cc Layer sizing.

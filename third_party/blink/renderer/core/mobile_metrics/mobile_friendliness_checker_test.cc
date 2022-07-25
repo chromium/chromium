@@ -110,7 +110,6 @@ class MobileFriendlinessCheckerTest : public testing::Test {
         .SetShrinksViewportContentToFit(true);
     helper->GetWebView()->GetPage()->GetSettings().SetViewportStyle(
         mojom::blink::ViewportStyle::kMobile);
-    helper->LoadAhem();
     return helper;
   }
 
@@ -548,28 +547,6 @@ TEST_F(MobileFriendlinessCheckerTest,
 )");
   // Automatic zoom-out makes text small and image fits in display.
   EXPECT_EQ(actual_mf.small_text_ratio, 100);
-  EXPECT_GE(actual_mf.text_content_outside_viewport_percentage, 10);
-}
-
-TEST_F(MobileFriendlinessCheckerTest, ZIndex) {
-  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  </head>
-  <body style="margin:240px;font-size: 12pt">
-    <div style="z-index: 1">
-      hello
-      <div style="z-index: 10">
-        foo
-        <img style="width:5000px; height:380px">
-        <p>Normal font text.</p>
-      </div>
-    </div>
-  </body>
-</html>
-)");
-  EXPECT_EQ(actual_mf.small_text_ratio, 0);
   EXPECT_GE(actual_mf.text_content_outside_viewport_percentage, 50);
 }
 
@@ -580,14 +557,14 @@ TEST_F(MobileFriendlinessCheckerTest, NormalTextAndWideImageWithInitialScale) {
   <head>
     <meta name="viewport" content="initial-scale=1.0">
   </head>
-  <body style="margin: 0px">
-    <img style="width:3000px; height:240px">
+  <body>
+    <img style="width:3000px; height:50px">
     <p style="font-size: 9pt">Normal font text.</p>
   </body>
 </html>
 )");
   EXPECT_EQ(actual_mf.small_text_ratio, 0);
-  EXPECT_GE(actual_mf.text_content_outside_viewport_percentage, 50);
+  EXPECT_GE(actual_mf.text_content_outside_viewport_percentage, 100);
 }
 
 TEST_F(MobileFriendlinessCheckerTest,
@@ -598,8 +575,8 @@ TEST_F(MobileFriendlinessCheckerTest,
   <head>
     <meta name="viewport" content="initial-scale=1.0">
   </head>
-  <body style="margin: 0px">
-    <img style="width:3000px; height:240px">
+  <body>
+    <img style="width:3000px; height:50px">
     <p style="font-size: 6pt">Illegible font text.</p>
   </body>
 </html>
@@ -668,77 +645,31 @@ TEST_F(MobileFriendlinessCheckerTest, TextTooWide) {
       R"(
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
     <meta name="viewport" content="initial-scale=1.0">
   </head>
   <body>
-    <pre style="font: 30px Ahem; line-height: 1">)" +
+    <pre>)" +
       std::string(10000, 'a') +
       R"(</pre>
   </body>
 </html>
 )");
-  EXPECT_GT(actual_mf.text_content_outside_viewport_percentage, 20);
+  EXPECT_NE(actual_mf.text_content_outside_viewport_percentage, 0);
 }
 
-TEST_F(MobileFriendlinessCheckerTest, TextAbsolutePositioning) {
+TEST_F(MobileFriendlinessCheckerTest, TextTooWideAbsolutePositioning) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
       R"(
 <html>
   <head>
     <meta name="viewport" content="initial-scale=1.0">
   </head>
-  <body style="font-size: 12px">
-    <pre style="position:absolute; left:2000px">)" +
-      std::string(10000, 'a') +
-      R"(</pre>
+  <body>
+    <pre style="position:absolute; left:2000px">a</pre>
   </body>
 </html>
 )");
-  EXPECT_GE(actual_mf.text_content_outside_viewport_percentage, 15);
-}
-
-TEST_F(MobileFriendlinessCheckerTest, ImageAbsolutePositioning) {
-  MobileFriendliness actual_mf_full_out = CalculateMetricsForHTMLString(
-      R"(
-<html>
-  <head>
-    <meta name="viewport" content="initial-scale=1.0">
-  </head>
-  <body style="margin: 0px">
-    <img style="width:480px; height:800px; position:absolute; left:480px">
-  </body>
-</html>
-)");
-  EXPECT_EQ(actual_mf_full_out.text_content_outside_viewport_percentage, 100);
-
-  MobileFriendliness actual_mf_half_out = CalculateMetricsForHTMLString(
-      R"(
-<html>
-  <head>
-    <meta name="viewport" content="initial-scale=1.0">
-  </head>
-  <body style="margin: 0px">
-    <img style="width:480px; height:800px; position:absolute; left:240px">
-  </body>
-</html>
-)");
-  EXPECT_EQ(actual_mf_half_out.text_content_outside_viewport_percentage, 50);
-}
-
-TEST_F(MobileFriendlinessCheckerTest, SmallTextOutsideViewportCeiling) {
-  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
-      R"(
-<html>
-  <head>
-    <meta name="viewport" content="initial-scale=1.0">
-  </head>
-  <body style="font-size: 12px">
-    <pre style="position:absolute; left:2000px">x</pre>
-  </body>
-</html>
-)");
-  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 1);
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 317);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, TextTooWideOverflowXHidden) {
@@ -749,7 +680,7 @@ TEST_F(MobileFriendlinessCheckerTest, TextTooWideOverflowXHidden) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
-    <pre style="overflow-x:hidden; font-size:12px">)" +
+    <pre style="overflow-x:hidden">)" +
       std::string(10000, 'a') + R"(</pre>
   </body>
 </html>
@@ -782,7 +713,7 @@ TEST_F(MobileFriendlinessCheckerTest, TextTooWideHiddenInDiv) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
-    <div style="overflow:hidden; font-size: 12px">
+    <div style="overflow:hidden">
       <pre>)" +
       std::string(10000, 'a') +
       R"(
@@ -798,9 +729,6 @@ TEST_F(MobileFriendlinessCheckerTest, TextTooWideHiddenInDivDiv) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
       R"(
 <html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  </head>
   <body>
     <div style="overflow:hidden">
       <div>
@@ -838,37 +766,7 @@ TEST_F(MobileFriendlinessCheckerTest, ImageTooWide) {
   </body>
 </html>
 )");
-  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 20);
-}
-
-TEST_F(MobileFriendlinessCheckerTest, ImageTooWide100) {
-  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
-<html>
-  <head>
-    <meta name="viewport" content="initial-scale=1.0">
-  </head>
-  <body style="margin:0px;">
-    <img style="width:960px; height:800px">
-  </body>
-</html>
-)");
-  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 100);
-}
-
-TEST_F(MobileFriendlinessCheckerTest, WideImageClipped) {
-  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
-<html>
-  <head>
-    <meta name="viewport" content="initial-scale=1.0">
-  </head>
-  <body>
-    <div style="overflow: hidden">
-      <img style="width:2000px; height:50px">
-    </div>
-  </body>
-</html>
-)");
-  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 0);
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 319);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, ImageTooWideTwoImages) {
@@ -877,13 +775,13 @@ TEST_F(MobileFriendlinessCheckerTest, ImageTooWideTwoImages) {
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
-  <body style="width:4036px">
+  <body style="width:4000px">
     <img style="width:2000px; height:50px">
     <img style="width:2000px; height:50px">
   </body>
 </html>
 )");
-  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 46);
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 735);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, ImageTooWideAbsolutePosition) {
@@ -897,7 +795,7 @@ TEST_F(MobileFriendlinessCheckerTest, ImageTooWideAbsolutePosition) {
   </body>
 </html>
 )");
-  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 100);
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 417);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, ImageTooWideDisplayNone) {
@@ -915,10 +813,9 @@ TEST_F(MobileFriendlinessCheckerTest, ScaleTextOutsideViewport) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
     <meta name="viewport" content="minimum-scale=1, initial-scale=3">
   </head>
-  <body style="font: 76px Ahem; width: 480">
+  <body style="font-size: 76px; width: 480">
     foo foo foo foo foo foo foo foo foo foo
     foo foo foo foo foo foo foo foo foo foo
     foo foo foo foo foo foo foo foo foo foo
@@ -933,20 +830,17 @@ TEST_F(MobileFriendlinessCheckerTest, ScaleTextOutsideViewport) {
 </html>
 )");
   EXPECT_EQ(actual_mf.viewport_initial_scale_x10, 30);
-  EXPECT_GT(actual_mf.text_content_outside_viewport_percentage, 90);
+  EXPECT_GE(actual_mf.text_content_outside_viewport_percentage, 100.0);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, ScrollerOutsideViewport) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
     <style>
-      body {
-        margin: 0px;
-      }
       div.scrollmenu {
         background-color: #333;
+        overflow: auto;
         white-space: nowrap;
       }
       div.scrollmenu a {
@@ -955,9 +849,9 @@ TEST_F(MobileFriendlinessCheckerTest, ScrollerOutsideViewport) {
         padding: 14px;
       }
     </style>
-    <meta name="viewport" content="width=480px, initial-scale=1.0 minimum-scale=1.0">f
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 minimum-scale=1.0">
   </head>
-  <body style="font: 40px/1 Ahem; line-height: 1">
+  <body style="font-size: 18px">
   <div class="scrollmenu">
     <a href="#1">First text</a>
     <a href="#2">Second text</a>
@@ -969,59 +863,12 @@ TEST_F(MobileFriendlinessCheckerTest, ScrollerOutsideViewport) {
     <a href="#8">Eighth text</a>
     <a href="#9">Ninth text</a>
     <a href="#10">Tenth text</a>
-    <a href="#11">Eleventh text</a>
-    <a href="#12">Twelveth text</a>
   </div>
   </body>
 </html>
 )");
   // the viewport
-  EXPECT_GT(actual_mf.text_content_outside_viewport_percentage, 10);
-}
-
-TEST_F(MobileFriendlinessCheckerTest, SubScroller) {
-  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
-<html>
-  <head>
-    <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
-    <style>
-      body {
-        margin: 0px;
-      }
-      div.scrollmenu {
-        width: 480px;
-        background-color: #333;
-        overflow: scroll;
-        white-space: nowrap;
-      }
-      div.scrollmenu a {
-        display: inline-block;
-        color: white;
-        padding: 14px;
-      }
-    </style>
-    <meta name="viewport" content="width=480px, initial-scale=1.0 minimum-scale=1.0">
-  </head>
-  <body style="font: 40px/1 Ahem; line-height: 1">
-  <div class="scrollmenu">
-    <a href="#1">First text</a>
-    <a href="#2">Second text</a>
-    <a href="#3">Third text</a>
-    <a href="#4">Fourth text</a>
-    <a href="#5">Fifth text</a>
-    <a href="#6">Sixth text</a>
-    <a href="#7">Seventh text</a>
-    <a href="#8">Eighth text</a>
-    <a href="#9">Ninth text</a>
-    <a href="#10">Tenth text</a>
-    <a href="#11">Eleventh text</a>
-    <a href="#12">Twelveth text</a>
-  </div>
-  </body>
-</html>
-)");
-  // Fits within the viewport by scrollbar.
-  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 0);
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 0.0);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, SingleTapTarget) {
@@ -1650,7 +1497,7 @@ TEST_F(MobileFriendlinessCheckerTest, TapTargetPositionFixed) {
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
 }
 
-TEST_F(MobileFriendlinessCheckerTest, IFrame) {
+TEST_F(MobileFriendlinessCheckerTest, IFrameTest) {
   url_test_helpers::RegisterMockedURLLoadFromBase(
       WebString::FromUTF8(kBaseUrl), blink::test::CoreTestDataPath(),
       WebString::FromUTF8("visible_iframe.html"));

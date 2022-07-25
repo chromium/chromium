@@ -141,23 +141,6 @@ void ScopedBoxContentsPaintState::AdjustForBoxContents(const LayoutBox& box) {
       box.Layer()->SetPreviousPaintResult(kMayBeClippedByCullRect);
     }
   }
-
-  if (input_paint_info_.phase == PaintPhase::kForeground) {
-    // We treat horizontal-scrollable scrollers like replaced objects.
-    if (auto* scrollable_area = box.GetScrollableArea()) {
-      if (scrollable_area->HasHorizontalScrollbar()) {
-        if (auto* mf_checker =
-                MobileFriendlinessChecker::From(box.GetDocument())) {
-          PhysicalRect content_rect = box.LocalVisualRect();
-          content_rect.Move(paint_offset_);
-          content_rect.Intersect(
-              PhysicalRect(input_paint_info_.GetCullRect().Rect()));
-          mf_checker->NotifyPaintReplaced(content_rect);
-          mf_ignore_scope_.emplace(*mf_checker);
-        }
-      }
-    }
-  }
 }
 
 }  // namespace blink
