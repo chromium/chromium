@@ -32,7 +32,7 @@ XlibXcbLoader* GetXlibXcbLoader() {
 
 }  // namespace
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 void InitXlib() {
   auto* xlib_loader = GetXlibLoader();
   if (xlib_loader->loaded())
@@ -53,17 +53,17 @@ void InitXlib() {
   SetXlibErrorHandler();
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 void SetXlibErrorHandler() {
   GetXlibLoader()->XSetErrorHandler(XlibErrorHandler);
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 void XlibFree(void* data) {
   GetXlibLoader()->XFree(data);
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 XlibDisplay::XlibDisplay(const std::string& address) {
   InitXlib();
 
@@ -71,7 +71,7 @@ XlibDisplay::XlibDisplay(const std::string& address) {
                                                            : address.c_str());
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 XlibDisplay::~XlibDisplay() {
   if (!display_)
     return;
@@ -84,7 +84,7 @@ XlibDisplay::~XlibDisplay() {
   loader->XCloseDisplay(display_);
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 XlibDisplayWrapper::XlibDisplayWrapper(struct _XDisplay* display,
                                        XlibDisplayType type)
     : display_(display), type_(type) {
@@ -94,7 +94,7 @@ XlibDisplayWrapper::XlibDisplayWrapper(struct _XDisplay* display,
     GetXlibLoader()->XSynchronize(display_, true);
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 XlibDisplayWrapper::~XlibDisplayWrapper() {
   if (!display_)
     return;
@@ -119,7 +119,7 @@ XlibDisplayWrapper& XlibDisplayWrapper::operator=(XlibDisplayWrapper&& other) {
   return *this;
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 struct xcb_connection_t* XlibDisplayWrapper::GetXcbConnection() {
   return GetXlibXcbLoader()->XGetXCBConnection(display_);
 }

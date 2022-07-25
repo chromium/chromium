@@ -18,7 +18,7 @@
 namespace gtk {
 
 // IMPORTANT: All functions in this file that call dlsym()'ed
-// functions should be annotated with DISABLE_CFI_ICALL.
+// functions should be annotated with DISABLE_CFI_DLSYM.
 
 namespace {
 
@@ -150,7 +150,7 @@ bool GtkCheckVersion(uint32_t major, uint32_t minor, uint32_t micro) {
   return GtkVersion() >= base::Version({major, minor, micro});
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 bool GtkInitCheck(int* argc, char** argv) {
   static void* gtk_init_check = DlSym(GetLibGtk(), "gtk_init_check");
   if (GtkCheckVersion(4))
@@ -163,7 +163,7 @@ bool GtkInitCheck(int* argc, char** argv) {
   }
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 gfx::Insets GtkStyleContextGetPadding(GtkStyleContext* context) {
   static void* get_padding =
       DlSym(GetLibGtk(), "gtk_style_context_get_padding");
@@ -177,7 +177,7 @@ gfx::Insets GtkStyleContextGetPadding(GtkStyleContext* context) {
   return InsetsFromGtkBorder(padding);
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 gfx::Insets GtkStyleContextGetBorder(GtkStyleContext* context) {
   static void* get_border = DlSym(GetLibGtk(), "gtk_style_context_get_border");
   GtkBorder border;
@@ -190,7 +190,7 @@ gfx::Insets GtkStyleContextGetBorder(GtkStyleContext* context) {
   return InsetsFromGtkBorder(border);
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 gfx::Insets GtkStyleContextGetMargin(GtkStyleContext* context) {
   static void* get_margin = DlSym(GetLibGtk(), "gtk_style_context_get_margin");
   GtkBorder margin;
@@ -203,7 +203,7 @@ gfx::Insets GtkStyleContextGetMargin(GtkStyleContext* context) {
   return InsetsFromGtkBorder(margin);
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 SkColor GtkStyleContextGetColor(GtkStyleContext* context) {
   static void* get_color = DlSym(GetLibGtk(), "gtk_style_context_get_color");
   if (GtkCheckVersion(4)) {
@@ -217,7 +217,7 @@ SkColor GtkStyleContextGetColor(GtkStyleContext* context) {
   return GdkRgbaToSkColor(color);
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 SkColor GtkStyleContextGetBackgroundColor(GtkStyleContext* context) {
   DCHECK(!GtkCheckVersion(4));
   static void* get_bg_color =
@@ -228,7 +228,7 @@ SkColor GtkStyleContextGetBackgroundColor(GtkStyleContext* context) {
   return GdkRgbaToSkColor(color);
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 absl::optional<SkColor> GtkStyleContextLookupColor(GtkStyleContext* context,
                                                    const gchar* color_name) {
   DCHECK(!GtkCheckVersion(4));
@@ -242,7 +242,7 @@ absl::optional<SkColor> GtkStyleContextLookupColor(GtkStyleContext* context,
   return absl::nullopt;
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 bool GtkImContextFilterKeypress(GtkIMContext* context, GdkEventKey* event) {
   static void* filter = DlSym(GetLibGtk(), "gtk_im_context_filter_keypress");
   if (GtkCheckVersion(4)) {
@@ -252,7 +252,7 @@ bool GtkImContextFilterKeypress(GtkIMContext* context, GdkEventKey* event) {
   return DlCast<bool(GtkIMContext*, GdkEventKey*)>(filter)(context, event);
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 bool GtkFileChooserSetCurrentFolder(GtkFileChooser* dialog,
                                     const base::FilePath& path) {
   static void* set = DlSym(GetLibGtk(), "gtk_file_chooser_set_current_folder");
@@ -265,7 +265,7 @@ bool GtkFileChooserSetCurrentFolder(GtkFileChooser* dialog,
                                                           path.value().c_str());
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 void GtkRenderIcon(GtkStyleContext* context,
                    cairo_t* cr,
                    GdkPixbuf* pixbuf,
@@ -284,7 +284,7 @@ void GtkRenderIcon(GtkStyleContext* context,
   }
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 GtkWidget* GtkToplevelWindowNew() {
   static void* window_new = DlSym(GetLibGtk(), "gtk_window_new");
   if (GtkCheckVersion(4))
@@ -292,7 +292,7 @@ GtkWidget* GtkToplevelWindowNew() {
   return DlCast<GtkWidget*(GtkWindowType)>(window_new)(GTK_WINDOW_TOPLEVEL);
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 void GtkCssProviderLoadFromData(GtkCssProvider* css_provider,
                                 const char* data,
                                 gssize length) {
@@ -327,7 +327,7 @@ void GtkStyleContextGetStyle(GtkStyleContext* context, ...) {
   va_end(args);
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 ScopedGObject<GtkIconInfo> Gtk3IconThemeLookupByGiconForScale(
     GtkIconTheme* theme,
     GIcon* icon,
@@ -342,7 +342,7 @@ ScopedGObject<GtkIconInfo> Gtk3IconThemeLookupByGiconForScale(
           lookup)(theme, icon, size, scale, flags));
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 ScopedGObject<GtkIconPaintable> Gtk4IconThemeLookupIcon(
     GtkIconTheme* theme,
     const char* icon_name,
@@ -358,7 +358,7 @@ ScopedGObject<GtkIconPaintable> Gtk4IconThemeLookupIcon(
           lookup)(theme, icon_name, fallbacks, size, scale, direction, flags));
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 ScopedGObject<GtkIconPaintable> Gtk4IconThemeLookupByGicon(
     GtkIconTheme* theme,
     GIcon* icon,
@@ -374,7 +374,7 @@ ScopedGObject<GtkIconPaintable> Gtk4IconThemeLookupByGicon(
           theme, icon, size, scale, direction, flags));
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 GtkWidget* GtkFileChooserDialogNew(const gchar* title,
                                    GtkWindow* parent,
                                    GtkFileChooserAction action,
@@ -389,19 +389,19 @@ GtkWidget* GtkFileChooserDialogNew(const gchar* title,
       second_button_text, second_response, nullptr);
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 GtkTreeStore* GtkTreeStoreNew(GType type) {
   static void* create = DlSym(GetLibGtk(), "gtk_tree_store_new");
   return DlCast<GtkTreeStore*(gint, ...)>(create)(1, type);
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 GdkEventType GdkEventGetEventType(GdkEvent* event) {
   static void* get = DlSym(GetLibGtk(), "gdk_event_get_event_type");
   return DlCast<GdkEventType(GdkEvent*)>(get)(event);
 }
 
-DISABLE_CFI_ICALL
+DISABLE_CFI_DLSYM
 guint32 GdkEventGetTime(GdkEvent* event) {
   static void* get = DlSym(GetLibGtk(), "gdk_event_get_time");
   return DlCast<guint32(GdkEvent*)>(get)(event);

@@ -170,6 +170,8 @@
 #endif
 
 // DISABLE_CFI_ICALL -- Disable Control Flow Integrity indirect call checks.
+// Security Note: if you just need to allow calling of dlsym functions use
+// DISABLE_CFI_DLSYM.
 #if !defined(DISABLE_CFI_ICALL)
 #if BUILDFLAG(IS_WIN)
 // Windows also needs __declspec(guard(nocf)).
@@ -180,6 +182,21 @@
 #endif
 #if !defined(DISABLE_CFI_ICALL)
 #define DISABLE_CFI_ICALL
+#endif
+
+// DISABLE_CFI_DLSYM -- applies DISABLE_CFI_ICALL on platforms where dlsym
+// functions must be called. Retains CFI checks on platforms where loaded
+// modules participate in CFI (e.g. Windows).
+#if !defined(DISABLE_CFI_DLSYM)
+#if BUILDFLAG(IS_WIN)
+// Windows modules register functions when loaded so can be checked by CFG.
+#define DISABLE_CFI_DLSYM
+#else
+#define DISABLE_CFI_DLSYM DISABLE_CFI_ICALL
+#endif
+#endif
+#if !defined(DISABLE_CFI_DLSYM)
+#define DISABLE_CFI_DLSYM
 #endif
 
 // Macro useful for writing cross-platform function pointers.
