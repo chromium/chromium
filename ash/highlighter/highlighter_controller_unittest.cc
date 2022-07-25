@@ -306,7 +306,14 @@ TEST_F(HighlighterControllerTest, MAYBE_HighlighterGestures) {
   controller_->RemoveObserver(&observer);
 }
 
-TEST_F(HighlighterControllerTest, HighlighterGesturesScaled) {
+// TODO(1346951): Disable HighlighterGesturesScaled on Linux Chromium OS Asan
+// Lsan Tests.
+#if defined(LEAK_SANITIZER) && BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_HighlighterGesturesScaled DISABLED_HighlighterGesturesScaled
+#else
+#define MAYBE_HighlighterGesturesScaled HighlighterGesturesScaled
+#endif
+TEST_F(HighlighterControllerTest, MAYBE_HighlighterGesturesScaled) {
   controller_test_api_->SetEnabled(true);
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->EnterPenPointerMode();
