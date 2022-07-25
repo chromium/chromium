@@ -68,10 +68,11 @@ class BatchingDelegate
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(is_observing_default_network_);
 
-    owner_->OnReadyToStart();
-
     net::NetworkChangeNotifier::RemoveDefaultNetworkActiveObserver(this);
     is_observing_default_network_ = false;
+
+    // `owner_` deletes `this`.
+    owner_->OnReadyToStart();
   }
 
   // Must outlive `this`.
@@ -170,6 +171,7 @@ void SimpleURLLoaderThrottle::NotifyWhenReady(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback_.is_null());
   DCHECK(!timeout_timer_.IsRunning());
+  DCHECK(delegate_);
 
   bool should_throttle = delegate_->ShouldThrottle();
   base::UmaHistogramBoolean("Network.Radio.SimpleURLLoaderIsThrottled",
@@ -193,6 +195,7 @@ void SimpleURLLoaderThrottle::OnReadyToStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback_);
   timeout_timer_.Stop();
+  delegate_.reset();
 
   base::TimeDelta throttled_time =
       base::TimeTicks::Now() - throttling_start_time_;
