@@ -64,8 +64,8 @@ const double kAppListRelevance = 0.5;
 const char16_t kExampleKeyword[] = u"example.com";
 
 // Verify that it's safe to create static instances of the following.
-static_assert(std::is_destructible<ACMatchClassification>::value &&
-              std::is_destructible<ash::SearchResultTag>::value);
+static_assert(std::is_trivially_destructible<ACMatchClassification>::value &&
+              std::is_trivially_destructible<ash::SearchResultTag>::value);
 
 // Example contents is a URL, and includes a substring matching the example
 // query.
