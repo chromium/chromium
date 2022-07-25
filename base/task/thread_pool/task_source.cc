@@ -165,5 +165,26 @@ TransactionWithRegisteredTaskSource::FromTaskSource(
                                              std::move(transaction));
 }
 
+TaskSourceAndTransaction::TaskSourceAndTransaction(
+    TaskSourceAndTransaction&& other) = default;
+
+TaskSourceAndTransaction::~TaskSourceAndTransaction() = default;
+
+TaskSourceAndTransaction::TaskSourceAndTransaction(
+    scoped_refptr<TaskSource> task_source_in,
+    TaskSource::Transaction transaction_in)
+    : task_source(std::move(task_source_in)),
+      transaction(std::move(transaction_in)) {
+  DCHECK_EQ(task_source.get(), transaction.task_source());
+}
+
+// static:
+TaskSourceAndTransaction TaskSourceAndTransaction::FromTaskSource(
+    scoped_refptr<TaskSource> task_source_in) {
+  auto transaction = task_source_in->BeginTransaction();
+  return TaskSourceAndTransaction(std::move(task_source_in),
+                                  std::move(transaction));
+}
+
 }  // namespace internal
 }  // namespace base

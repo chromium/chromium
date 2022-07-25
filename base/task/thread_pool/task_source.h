@@ -321,6 +321,23 @@ struct BASE_EXPORT TransactionWithRegisteredTaskSource {
   TaskSource::Transaction transaction;
 };
 
+struct BASE_EXPORT TaskSourceAndTransaction {
+ public:
+  TaskSourceAndTransaction(scoped_refptr<TaskSource> task_source_in,
+                           TaskSource::Transaction transaction_in);
+
+  TaskSourceAndTransaction(TaskSourceAndTransaction&& other);
+  TaskSourceAndTransaction(const TaskSourceAndTransaction&) = delete;
+  TaskSourceAndTransaction& operator=(const TaskSourceAndTransaction&) = delete;
+  ~TaskSourceAndTransaction();
+
+  static TaskSourceAndTransaction FromTaskSource(
+      scoped_refptr<TaskSource> task_source_in);
+
+  scoped_refptr<TaskSource> task_source;
+  TaskSource::Transaction transaction;
+};
+
 }  // namespace internal
 }  // namespace base
 
