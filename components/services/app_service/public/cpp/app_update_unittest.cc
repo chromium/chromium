@@ -4,10 +4,8 @@
 
 #include "components/services/app_service/public/cpp/app_update.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/services/app_service/public/cpp/app_update.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
@@ -41,11 +39,6 @@ PermissionPtr MakePermission(PermissionType permission_type,
 
 class AppUpdateTest : public testing::Test {
  protected:
-  AppUpdateTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        kAppServiceOnAppUpdateWithoutMojom);
-  }
-
   Readiness expect_readiness_;
   Readiness expect_prior_readiness_;
   bool expect_readiness_changed_;
@@ -1135,9 +1128,6 @@ class AppUpdateTest : public testing::Test {
       CheckExpects(u);
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AppUpdateTest, StateIsNonNull) {

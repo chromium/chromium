@@ -327,7 +327,6 @@ source_set("unit_tests") {
     "app_launch_util_unittest.cc",
     "app_registry_cache_unittest.cc",
     "app_registry_cache_wrapper_unittest.cc",
-    "app_update_mojom_unittest.cc",
     "app_update_unittest.cc",
     "capability_access_update_unittest.cc",
     "icon_cache_unittest.cc",

@@ -372,17 +372,8 @@ class AppServiceProxyPreferredAppsTest : public AppServiceProxyTest {
   // Shortcut for adding apps to App Service without going through a real
   // Publisher.
   void OnApps(std::vector<AppPtr> apps, AppType type) {
-    if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
-      proxy_->OnApps(std::move(apps), type,
-                     /*should_notify_initialized=*/false);
-    } else {
-      std::vector<mojom::AppPtr> mojom_apps;
-      for (const auto& app : apps) {
-        mojom_apps.push_back(ConvertAppToMojomApp(app));
-      }
-      proxy_->OnApps(std::move(mojom_apps), ConvertAppTypeToMojomAppType(type),
-                     /*should_notify_initialized=*/false);
-    }
+    proxy_->OnApps(std::move(apps), type,
+                   /*should_notify_initialized=*/false);
   }
 
   PreferredAppsList& GetPreferredAppsList() {
