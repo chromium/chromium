@@ -20,7 +20,8 @@ class CardUnmaskPromptViewBridge;
 // new CVC and expiration date. Once the card is verified the prompt is
 // dismissed and the operation requiring the card verification is continued
 // (e.g: the card is autofilled in a payment form).
-@interface CardUnmaskPromptViewController : ChromeTableViewController
+@interface CardUnmaskPromptViewController
+    : ChromeTableViewController <UIAdaptivePresentationControllerDelegate>
 // Designated initializer. `bridge` must not be null.
 - (instancetype)initWithBridge:(autofill::CardUnmaskPromptViewBridge*)bridge
     NS_DESIGNATED_INITIALIZER;

@@ -49,9 +49,9 @@ class LegacyCardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   // Closes the view.
   void PerformClose();
 
-  // Deletes self. This should only be called by CardUnmaskPromptViewController
-  // after it finishes dismissing its own UI elements.
-  void DeleteSelf();
+  // Called when `view_controller` was dismissed.
+  // This call destroys `this`.
+  void NavigationControllerDismissed();
 
  protected:
   // The presented UINavigationController.
@@ -61,6 +61,10 @@ class LegacyCardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   LegacyCardUnmaskPromptViewController* card_view_controller_;
 
  private:
+  // Deletes self. Called after LegacyCardUnmaskPromptViewController finishes
+  // dismissing its own UI elements.
+  void DeleteSelf();
+
   // The controller `this` queries for logic and state.
   CardUnmaskPromptController* controller_;  // weak
 

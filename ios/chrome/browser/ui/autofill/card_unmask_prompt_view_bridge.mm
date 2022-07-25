@@ -32,22 +32,19 @@ CardUnmaskPromptViewBridge::~CardUnmaskPromptViewBridge() {
 }
 
 void CardUnmaskPromptViewBridge::Show() {
-  view_controller_ =
+  prompt_view_controller_ =
       [[CardUnmaskPromptViewController alloc] initWithBridge:this];
 
-  UINavigationController* navigation_controller =
-      [[UINavigationController alloc]
-          initWithRootViewController:view_controller_];
-  [navigation_controller
+  navigation_controller_ = [[UINavigationController alloc]
+      initWithRootViewController:prompt_view_controller_];
+  [navigation_controller_
       setModalPresentationStyle:UIModalPresentationFormSheet];
-  [navigation_controller
+  [navigation_controller_
       setModalTransitionStyle:UIModalTransitionStyleCoverVertical];
-  // If this prompt is swiped away, it cannot be opened again. Work
-  // around this bug by preventing swipe-to-dismiss.
-  // TODO(crbug.com/1346060)
-  [navigation_controller setModalInPresentation:YES];
+  navigation_controller_.presentationController.delegate =
+      prompt_view_controller_;
 
-  [base_view_controller_ presentViewController:navigation_controller
+  [base_view_controller_ presentViewController:navigation_controller_
                                       animated:YES
                                     completion:nil];
 }
@@ -74,13 +71,17 @@ CardUnmaskPromptController* CardUnmaskPromptViewBridge::GetController() {
 void CardUnmaskPromptViewBridge::PerformClose() {
   base::WeakPtr<CardUnmaskPromptViewBridge> weak_this =
       weak_ptr_factory_.GetWeakPtr();
-  [view_controller_.navigationController
+  [navigation_controller_
       dismissViewControllerAnimated:YES
                          completion:^{
                            if (weak_this) {
-                             weak_this->DeleteSelf();
+                             weak_this->NavigationControllerDismissed();
                            }
                          }];
+}
+
+void CardUnmaskPromptViewBridge::NavigationControllerDismissed() {
+  DeleteSelf();
 }
 
 void CardUnmaskPromptViewBridge::DeleteSelf() {

@@ -10,6 +10,7 @@
 
 @class CardUnmaskPromptViewController;
 @class UIViewController;
+@class UINavigationController;
 
 namespace autofill {
 
@@ -38,13 +39,20 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   // Closes the view.
   void PerformClose();
 
+  // Called when `navigation_controller_` was dismissed.
+  // This call destroys `this`.
+  void NavigationControllerDismissed();
+
  protected:
+  // The presented UINavigationController containing `prompt_view_controller_`.
+  UINavigationController* navigation_controller_;
+
   // Created on `Show` and destroyed when 'this' is destroyed.
-  CardUnmaskPromptViewController* view_controller_;
+  CardUnmaskPromptViewController* prompt_view_controller_;
 
  private:
-  // Deletes self. This should only be called by CardUnmaskPromptViewController
-  // after it finishes dismissing its own UI elements.
+  // Deletes self. Called after CardUnmaskPromptViewController finishes
+  // dismissing its own UI elements.
   void DeleteSelf();
 
   // The controller `this` queries for logic and state.

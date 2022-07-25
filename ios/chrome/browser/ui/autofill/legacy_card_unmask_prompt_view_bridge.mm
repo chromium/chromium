@@ -73,9 +73,12 @@ void LegacyCardUnmaskPromptViewBridge::Show() {
   [view_controller_ setModalPresentationStyle:UIModalPresentationFormSheet];
   [view_controller_
       setModalTransitionStyle:UIModalTransitionStyleCoverVertical];
-  // If this prompt is swiped away, it cannot be opened again. Work
-  // around this bug by preventing swipe-to-dismiss.
-  [view_controller_ setModalInPresentation:YES];
+  // This will notify the prompt vc when its navigation vc is dismissed,
+  // so `this` can be released and `controller_` notified that the prompt
+  // was dismissed.
+  view_controller_.presentationController.delegate =
+      static_cast<id<UIAdaptivePresentationControllerDelegate>>(
+          card_view_controller_);
 
   [base_view_controller_ presentViewController:view_controller_
                                       animated:YES
@@ -118,12 +121,17 @@ CardUnmaskPromptController* LegacyCardUnmaskPromptViewBridge::GetController() {
 void LegacyCardUnmaskPromptViewBridge::PerformClose() {
   base::WeakPtr<LegacyCardUnmaskPromptViewBridge> weak_this =
       weak_ptr_factory_.GetWeakPtr();
-  [view_controller_ dismissViewControllerAnimated:YES
-                                       completion:^{
-                                         if (weak_this) {
-                                           weak_this->DeleteSelf();
-                                         }
-                                       }];
+  [view_controller_
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           if (weak_this) {
+                             weak_this->NavigationControllerDismissed();
+                           }
+                         }];
+}
+
+void LegacyCardUnmaskPromptViewBridge::NavigationControllerDismissed() {
+  DeleteSelf();
 }
 
 void LegacyCardUnmaskPromptViewBridge::DeleteSelf() {
@@ -132,7 +140,9 @@ void LegacyCardUnmaskPromptViewBridge::DeleteSelf() {
 
 }  // namespace autofill
 
-@interface LegacyCardUnmaskPromptViewController () <UITextFieldDelegate> {
+@interface LegacyCardUnmaskPromptViewController () <
+    UIAdaptivePresentationControllerDelegate,
+    UITextFieldDelegate> {
   UIBarButtonItem* _cancelButton;
   UIBarButtonItem* _verifyButton;
   CVCItem* _CVCItem;
@@ -527,4 +537,11 @@ void LegacyCardUnmaskPromptViewBridge::DeleteSelf() {
   }
 }
 
+#pragma mark - UIAdaptivePresentationControllerDelegate
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  // Notify bridge that UI was dismissed.
+  _bridge->NavigationControllerDismissed();
+  _bridge = nullptr;
+}
 @end

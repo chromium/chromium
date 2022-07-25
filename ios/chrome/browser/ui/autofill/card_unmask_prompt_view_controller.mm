@@ -31,4 +31,12 @@
   return self;
 }
 
+#pragma mark - UIAdaptivePresentationControllerDelegate
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  // Notify bridge that UI was dismissed.
+  _bridge->NavigationControllerDismissed();
+  _bridge = nullptr;
+}
+
 @end
