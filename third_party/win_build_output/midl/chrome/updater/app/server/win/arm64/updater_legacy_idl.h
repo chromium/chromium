@@ -154,6 +154,30 @@ typedef struct GoogleUpdate3WebSystemClass GoogleUpdate3WebSystemClass;
 #endif 	/* __GoogleUpdate3WebSystemClass_FWD_DEFINED__ */
 
 
+#ifndef __PolicyStatusUserClass_FWD_DEFINED__
+#define __PolicyStatusUserClass_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class PolicyStatusUserClass PolicyStatusUserClass;
+#else
+typedef struct PolicyStatusUserClass PolicyStatusUserClass;
+#endif /* __cplusplus */
+
+#endif 	/* __PolicyStatusUserClass_FWD_DEFINED__ */
+
+
+#ifndef __PolicyStatusSystemClass_FWD_DEFINED__
+#define __PolicyStatusSystemClass_FWD_DEFINED__
+
+#ifdef __cplusplus
+typedef class PolicyStatusSystemClass PolicyStatusSystemClass;
+#else
+typedef struct PolicyStatusSystemClass PolicyStatusSystemClass;
+#endif /* __cplusplus */
+
+#endif 	/* __PolicyStatusSystemClass_FWD_DEFINED__ */
+
+
 #ifndef __ProcessLauncherClass_FWD_DEFINED__
 #define __ProcessLauncherClass_FWD_DEFINED__
 
@@ -2747,6 +2771,22 @@ EXTERN_C const CLSID CLSID_GoogleUpdate3WebSystemClass;
 
 class DECLSPEC_UUID("8A1D4361-2C08-4700-A351-3EAA9CBFF5E4")
 GoogleUpdate3WebSystemClass;
+#endif
+
+EXTERN_C const CLSID CLSID_PolicyStatusUserClass;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("6DDCE70D-A4AE-4E97-908C-BE7B2DB750AD")
+PolicyStatusUserClass;
+#endif
+
+EXTERN_C const CLSID CLSID_PolicyStatusSystemClass;
+
+#ifdef __cplusplus
+
+class DECLSPEC_UUID("521FDB42-7130-4806-822A-FC5163FAD983")
+PolicyStatusSystemClass;
 #endif
 
 EXTERN_C const CLSID CLSID_ProcessLauncherClass;

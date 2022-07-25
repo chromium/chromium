@@ -667,6 +667,18 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
     Microsoft::WRL::ComPtr<IDispatch> dispatch;
     EXPECT_HRESULT_SUCCEEDED(google_update->createAppBundleWeb(&dispatch));
     EXPECT_HRESULT_SUCCEEDED(dispatch.As(&app_bundle));
+
+    Microsoft::WRL::ComPtr<IUnknown> policy_status_server;
+    EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(
+        scope == UpdaterScope::kSystem ? __uuidof(PolicyStatusSystemClass)
+                                       : __uuidof(PolicyStatusUserClass),
+        nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&policy_status_server)));
+    Microsoft::WRL::ComPtr<IPolicyStatus2> policy_status2;
+    EXPECT_HRESULT_SUCCEEDED(policy_status_server.As(&policy_status2));
+    base::win::ScopedBstr updater_version;
+    EXPECT_HRESULT_SUCCEEDED(
+        policy_status2->get_updaterVersion(updater_version.Receive()));
+    EXPECT_STREQ(updater_version.Get(), kUpdaterVersionUtf16);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   }
 

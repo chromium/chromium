@@ -528,6 +528,22 @@ library UpdaterLegacyLib {
   }
 
   [
+    uuid(6DDCE70D-A4AE-4E97-908C-BE7B2DB750AD),
+    helpstring("Policy Status for per-user applications.")
+  ]
+  coclass PolicyStatusUserClass {
+    [default] interface IUnknown;
+  }
+
+  [
+    uuid(521FDB42-7130-4806-822A-FC5163FAD983),
+    helpstring("Policy Status for system applications.")
+  ]
+  coclass PolicyStatusSystemClass {
+    [default] interface IUnknown;
+  }
+
+  [
     uuid(ABC01078-F197-4b0b-ADBC-CFE684B39C82),
     helpstring("ProcessLauncherClass Class")
   ]

@@ -43,6 +43,10 @@ CoCreatableClassWithFactoryEx(
     ProcessLauncherClass,
     Microsoft::WRL::SimpleClassFactory<LegacyProcessLauncherImpl>,
     ActiveSystem);
+CoCreatableClassWithFactoryEx(
+    PolicyStatusSystemClass,
+    Microsoft::WRL::SimpleClassFactory<PolicyStatusImpl>,
+    ActiveSystem);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 CoCreatableClassWithFactoryEx(UpdaterUserClass,
@@ -53,6 +57,10 @@ CoCreatableClassWithFactoryEx(UpdaterUserClass,
 CoCreatableClassWithFactoryEx(
     GoogleUpdate3WebUserClass,
     Microsoft::WRL::SimpleClassFactory<LegacyOnDemandImpl>,
+    ActiveUser);
+CoCreatableClassWithFactoryEx(
+    PolicyStatusUserClass,
+    Microsoft::WRL::SimpleClassFactory<PolicyStatusImpl>,
     ActiveUser);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

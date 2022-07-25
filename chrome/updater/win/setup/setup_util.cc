@@ -144,7 +144,8 @@ std::vector<CLSID> GetActiveServers(UpdaterScope scope) {
         __uuidof(UpdaterUserClass),
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-            __uuidof(GoogleUpdate3WebUserClass)
+            __uuidof(GoogleUpdate3WebUserClass),
+            __uuidof(PolicyStatusUserClass),
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       };
     case UpdaterScope::kSystem:
@@ -153,7 +154,7 @@ std::vector<CLSID> GetActiveServers(UpdaterScope scope) {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
             __uuidof(GoogleUpdate3WebSystemClass),
-            __uuidof(ProcessLauncherClass)
+            __uuidof(PolicyStatusSystemClass), __uuidof(ProcessLauncherClass),
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       };
   }
