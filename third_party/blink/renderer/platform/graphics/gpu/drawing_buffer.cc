@@ -579,7 +579,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
 
   // Populate the output mailbox and callback.
   {
-    bool is_overlay_candidate = !!color_buffer_for_mailbox->gpu_memory_buffer;
+    bool is_overlay_candidate = color_buffer_for_mailbox->has_usage_scanout;
     *out_resource = viz::TransferableResource::MakeGL(
         color_buffer_for_mailbox->mailbox, GL_LINEAR, texture_target_,
         color_buffer_for_mailbox->produce_sync_token, size_,
@@ -826,6 +826,7 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
     const gfx::ColorSpace& color_space,
     viz::ResourceFormat format,
     GLuint texture_id,
+    bool has_usage_scanout,
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     gpu::Mailbox mailbox)
     : owning_thread_ref(base::PlatformThread::CurrentRef()),
@@ -834,6 +835,7 @@ DrawingBuffer::ColorBuffer::ColorBuffer(
       color_space(color_space),
       format(format),
       texture_id(texture_id),
+      has_usage_scanout(has_usage_scanout),
       gpu_memory_buffer(std::move(gpu_memory_buffer)),
       mailbox(mailbox) {}
 
@@ -1828,6 +1830,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2 |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
                    gpu::SHARED_IMAGE_USAGE_DISPLAY;
+  bool has_usage_scanout = false;
   GrSurfaceOrigin origin = opengl_flip_y_extension_
                                ? kTopLeft_GrSurfaceOrigin
                                : kBottomLeft_GrSurfaceOrigin;
@@ -1848,39 +1851,51 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     front_buffer_mailbox = mailboxes.front_buffer;
   } else {
     if (ShouldUseChromiumImage()) {
-      gfx::BufferFormat buffer_format;
-      if (allocate_alpha_channel_) {
-        buffer_format = use_half_float_storage_ ? gfx::BufferFormat::RGBA_F16
-                                                : gfx::BufferFormat::RGBA_8888;
-      } else {
-        DCHECK(!use_half_float_storage_);
-        buffer_format = gfx::BufferFormat::RGBX_8888;
+      // TODO(https://crbug.com/911176): RGB emulation is only implemented by
+      // the path that explicitly allocates a GpuMemoryBuffer. It can be removed
+      // once the validating command decoder is removed (for the passthrough
+      // command decoder, its implementation is pushed into ANGLE).
+      // TODO(https://crbug.com/1346737): Low latency canvas on ChromeOS is
+      // broken in the SharedImage path.
+      const bool allocate_gmb_explicitly =
+          (!allocate_alpha_channel_ && have_alpha_channel_) ||
+          low_latency_enabled();
+      if (allocate_gmb_explicitly) {
+        gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBX_8888;
         if (gpu::IsImageFromGpuMemoryBufferFormatSupported(
                 gfx::BufferFormat::BGRX_8888,
                 ContextProvider()->GetCapabilities())) {
           buffer_format = gfx::BufferFormat::BGRX_8888;
         }
-      }
-      // TODO(crbug.com/911176): When RGB emulation is not needed, we should use
-      // the non-GMB CreateSharedImage with gpu::SHARED_IMAGE_USAGE_SCANOUT in
-      // order to allocate the GMB service-side and avoid a synchronous
-      // round-trip to the browser process here.
-      gfx::BufferUsage buffer_usage = gfx::BufferUsage::SCANOUT;
-      uint32_t additional_usage_flags = gpu::SHARED_IMAGE_USAGE_SCANOUT;
-      if (low_latency_enabled()) {
-        buffer_usage = gfx::BufferUsage::SCANOUT_FRONT_RENDERING;
-        additional_usage_flags = gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-      }
-
-      if (gpu::IsImageFromGpuMemoryBufferFormatSupported(
-              buffer_format, ContextProvider()->GetCapabilities())) {
-        gpu_memory_buffer = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
-            size, buffer_format, buffer_usage, gpu::kNullSurfaceHandle,
-            nullptr);
-        if (gpu_memory_buffer) {
-          back_buffer_mailbox = sii->CreateSharedImage(
-              gpu_memory_buffer.get(), gpu_memory_buffer_manager, color_space_,
-              origin, kPremul_SkAlphaType, usage | additional_usage_flags);
+        gfx::BufferUsage buffer_usage = gfx::BufferUsage::SCANOUT;
+        uint32_t additional_usage_flags = gpu::SHARED_IMAGE_USAGE_SCANOUT;
+        if (low_latency_enabled()) {
+          buffer_usage = gfx::BufferUsage::SCANOUT_FRONT_RENDERING;
+          additional_usage_flags =
+              gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+        }
+        if (gpu::IsImageFromGpuMemoryBufferFormatSupported(
+                buffer_format, ContextProvider()->GetCapabilities())) {
+          gpu_memory_buffer = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
+              size, buffer_format, buffer_usage, gpu::kNullSurfaceHandle,
+              nullptr);
+          if (gpu_memory_buffer) {
+            has_usage_scanout = true;
+            back_buffer_mailbox = sii->CreateSharedImage(
+                gpu_memory_buffer.get(), gpu_memory_buffer_manager,
+                color_space_, origin, kPremul_SkAlphaType,
+                usage | additional_usage_flags);
+          }
+        }
+      } else {
+        if (gpu::IsImageFromGpuMemoryBufferFormatSupported(
+                viz::BufferFormat(format),
+                ContextProvider()->GetCapabilities())) {
+          usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+          has_usage_scanout = true;
+          if (low_latency_enabled()) {
+            usage |= gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+          }
         }
       }
     }
@@ -1911,7 +1926,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         front_buffer_mailbox.name);
     front_color_buffer_ = base::MakeRefCounted<ColorBuffer>(
         weak_factory_.GetWeakPtr(), size, color_space_, format, texture_id,
-        nullptr, front_buffer_mailbox);
+        /*has_usage_scanout=*/false, nullptr, front_buffer_mailbox);
   }
   // Import the backbuffer of swap chain or allocated SharedImage into GL.
   texture_id =
@@ -1940,7 +1955,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
 
   return base::MakeRefCounted<ColorBuffer>(
       weak_factory_.GetWeakPtr(), size, color_space_, format, texture_id,
-      std::move(gpu_memory_buffer), back_buffer_mailbox);
+      has_usage_scanout, std::move(gpu_memory_buffer), back_buffer_mailbox);
 }
 
 void DrawingBuffer::AttachColorBufferToReadFramebuffer() {
