@@ -16,6 +16,7 @@
 
 #include <fcntl.h>
 #include <mach/mach.h>
+#include <string.h>
 #include <unistd.h>
 
 #include <algorithm>
@@ -31,16 +32,15 @@ namespace crashpad {
 namespace internal {
 
 // Similar to LoggingWriteFile but with CRASHPAD_RAW_LOG.
-bool RawLoggingWriteFile(int fd, const void* buffer, size_t size) {
-  uintptr_t buffer_int = reinterpret_cast<uintptr_t>(buffer);
+bool RawLoggingWriteFile(int fd, const void* data, size_t size) {
+  const char* data_char = static_cast<const char*>(data);
   while (size > 0) {
-    ssize_t bytes_written = HANDLE_EINTR(
-        write(fd, reinterpret_cast<const char*>(buffer_int), size));
+    ssize_t bytes_written = HANDLE_EINTR(write(fd, data_char, size));
     if (bytes_written < 0 || bytes_written == 0) {
       CRASHPAD_RAW_LOG_ERROR(bytes_written, "RawLoggingWriteFile");
       return false;
     }
-    buffer_int += bytes_written;
+    data_char += bytes_written;
     size -= bytes_written;
   }
   return true;
@@ -56,7 +56,7 @@ bool RawLoggingCloseFile(int fd) {
 }
 
 IOSIntermediateDumpWriter::~IOSIntermediateDumpWriter() {
-  DCHECK_EQ(fd_, -1) << "Call Close() before this object is destroyed.";
+  CHECK_EQ(fd_, -1) << "Call Close() before this object is destroyed.";
 }
 
 bool IOSIntermediateDumpWriter::Open(const base::FilePath& path) {
@@ -82,6 +82,9 @@ bool IOSIntermediateDumpWriter::Open(const base::FilePath& path) {
 bool IOSIntermediateDumpWriter::Close() {
   if (fd_ < 0) {
     return true;
+  }
+  if (!FlushWriteBuffer()) {
+    return false;
   }
   int fd = fd_;
   fd_ = -1;
@@ -157,49 +160,100 @@ bool IOSIntermediateDumpWriter::AddPropertyInternal(IntermediateDumpKey key,
 
 bool IOSIntermediateDumpWriter::ArrayMapStart() {
   const CommandType command_type = CommandType::kMapStart;
-  return RawLoggingWriteFile(fd_, &command_type, sizeof(command_type));
+  return BufferedWrite(&command_type, sizeof(command_type));
 }
 
 bool IOSIntermediateDumpWriter::MapStart(IntermediateDumpKey key) {
   const CommandType command_type = CommandType::kMapStart;
-  return RawLoggingWriteFile(fd_, &command_type, sizeof(command_type)) &&
-         RawLoggingWriteFile(fd_, &key, sizeof(key));
+  return BufferedWrite(&command_type, sizeof(command_type)) &&
+         BufferedWrite(&key, sizeof(key));
 }
 
 bool IOSIntermediateDumpWriter::ArrayStart(IntermediateDumpKey key) {
   const CommandType command_type = CommandType::kArrayStart;
-  return RawLoggingWriteFile(fd_, &command_type, sizeof(command_type)) &&
-         RawLoggingWriteFile(fd_, &key, sizeof(key));
+  return BufferedWrite(&command_type, sizeof(command_type)) &&
+         BufferedWrite(&key, sizeof(key));
 }
 
 bool IOSIntermediateDumpWriter::MapEnd() {
   const CommandType command_type = CommandType::kMapEnd;
-  return RawLoggingWriteFile(fd_, &command_type, sizeof(command_type));
+  return BufferedWrite(&command_type, sizeof(command_type));
 }
 
 bool IOSIntermediateDumpWriter::ArrayEnd() {
   const CommandType command_type = CommandType::kArrayEnd;
-  return RawLoggingWriteFile(fd_, &command_type, sizeof(command_type));
+  return BufferedWrite(&command_type, sizeof(command_type));
 }
 
 bool IOSIntermediateDumpWriter::RootMapStart() {
   const CommandType command_type = CommandType::kRootMapStart;
-  return RawLoggingWriteFile(fd_, &command_type, sizeof(command_type));
+  return BufferedWrite(&command_type, sizeof(command_type));
 }
 
 bool IOSIntermediateDumpWriter::RootMapEnd() {
   const CommandType command_type = CommandType::kRootMapEnd;
-  return RawLoggingWriteFile(fd_, &command_type, sizeof(command_type));
+  return BufferedWrite(&command_type, sizeof(command_type));
 }
 
 bool IOSIntermediateDumpWriter::Property(IntermediateDumpKey key,
                                          const void* value,
                                          size_t value_length) {
   const CommandType command_type = CommandType::kProperty;
-  return RawLoggingWriteFile(fd_, &command_type, sizeof(command_type)) &&
-         RawLoggingWriteFile(fd_, &key, sizeof(key)) &&
-         RawLoggingWriteFile(fd_, &value_length, sizeof(size_t)) &&
-         RawLoggingWriteFile(fd_, value, value_length);
+  return BufferedWrite(&command_type, sizeof(command_type)) &&
+         BufferedWrite(&key, sizeof(key)) &&
+         BufferedWrite(&value_length, sizeof(size_t)) &&
+         BufferedWrite(value, value_length);
+}
+
+bool IOSIntermediateDumpWriter::FlushWriteBuffer() {
+  size_t size = buffer_occupied_;
+  buffer_occupied_ = 0;
+  return RawLoggingWriteFile(fd_, buffer_, size);
+}
+
+bool IOSIntermediateDumpWriter::BufferedWrite(const void* data,
+                                              size_t data_size) {
+  const char* data_char = static_cast<const char*>(data);
+  // If `buffer_` is occupied, fill it up first, and flush if full.
+  if (buffer_occupied_ > 0) {
+    size_t data_size_to_copy =
+        std::min(kBufferSize - buffer_occupied_, data_size);
+    memcpy(buffer_ + buffer_occupied_, data_char, data_size_to_copy);
+    buffer_occupied_ += data_size_to_copy;
+    data_char += data_size_to_copy;
+    data_size -= data_size_to_copy;
+
+    if (buffer_occupied_ == kBufferSize) {
+      if (!FlushWriteBuffer()) {
+        return false;
+      }
+    }
+  }
+
+  // Either `data_size` is big enough that it could fill `buffer_`, trigger
+  // a FlushWriteBuffer, and reset `buffer_occuppied_` to zero, or there is no
+  // data left to process.
+  DCHECK(buffer_occupied_ == 0 || data_size == 0);
+
+  // Write the rest of the `data` in an increment of kBufferSize.
+  if (data_size >= kBufferSize) {
+    DCHECK_EQ(buffer_occupied_, 0u);
+    size_t data_size_to_write = data_size - (data_size % kBufferSize);
+    if (!RawLoggingWriteFile(fd_, data_char, data_size_to_write)) {
+      return false;
+    }
+    data_char += data_size_to_write;
+    data_size -= data_size_to_write;
+  }
+
+  // If there's any `data` left, put it in `buffer_`.
+  if (data_size > 0) {
+    DCHECK_EQ(buffer_occupied_, 0u);
+    memcpy(buffer_, data_char, data_size);
+    buffer_occupied_ = data_size;
+  }
+
+  return true;
 }
 
 }  // namespace internal

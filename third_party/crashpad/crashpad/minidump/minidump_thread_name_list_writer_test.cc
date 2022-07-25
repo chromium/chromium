@@ -91,10 +91,19 @@ void ExpectThreadName(const MINIDUMP_THREAD_NAME* expected,
                       const MINIDUMP_THREAD_NAME* observed,
                       const std::string& file_contents,
                       const std::string& expected_thread_name) {
+  // Copy RvaOfThreadName into a local variable because
+  // |MINIDUMP_THREAD_NAME::RvaOfThreadName| requires 8-byte alignment but the
+  // struct itself is 4-byte algined.
+  const auto rva_of_thread_name = [&observed] {
+    RVA64 data = 0;
+    memcpy(&data, &observed->RvaOfThreadName, sizeof(RVA64));
+    return data;
+  }();
+
   EXPECT_EQ(observed->ThreadId, expected->ThreadId);
-  EXPECT_NE(observed->RvaOfThreadName, 0u);
+  EXPECT_NE(rva_of_thread_name, 0u);
   const std::string observed_thread_name = base::UTF16ToUTF8(
-      MinidumpStringAtRVAAsString(file_contents, observed->RvaOfThreadName));
+      MinidumpStringAtRVAAsString(file_contents, rva_of_thread_name));
   EXPECT_EQ(observed_thread_name, expected_thread_name);
 }
 

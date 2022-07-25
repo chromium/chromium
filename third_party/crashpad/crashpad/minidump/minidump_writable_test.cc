@@ -698,16 +698,25 @@ class TTestLocationDescriptorMinidumpWritable final
 template <typename MinidumpLocationDescriptorType>
 struct TLocationDescriptorAndData {
   MinidumpLocationDescriptorType location_descriptor;
-  char string[1];
+  const char* string;
 };
 
 template <typename MinidumpLocationDescriptorType>
-const TLocationDescriptorAndData<MinidumpLocationDescriptorType>* TLDDAtIndex(
-    const std::string& string,
+TLocationDescriptorAndData<MinidumpLocationDescriptorType> TLDDAtIndex(
+    const std::string& str,
     size_t index) {
-  return reinterpret_cast<
-      const TLocationDescriptorAndData<MinidumpLocationDescriptorType>*>(
-      &string[index]);
+  const MinidumpLocationDescriptorType* location_descriptor =
+      reinterpret_cast<const MinidumpLocationDescriptorType*>(&str[index]);
+
+  const char* string = reinterpret_cast<const char*>(
+      &str[index] +
+      offsetof(TLocationDescriptorAndData<MinidumpLocationDescriptorType>,
+               string));
+
+  return TLocationDescriptorAndData<MinidumpLocationDescriptorType>{
+      *location_descriptor,
+      string,
+  };
 }
 
 template <typename MinidumpLocationDescriptorType>
@@ -746,9 +755,9 @@ TYPED_TEST(MinidumpWritableLocationDescriptor, LocationDescriptor) {
     EXPECT_TRUE(location_descriptor_writable.WriteEverything(&string_file));
 
     ASSERT_EQ(string_file.string().size(), kMinidumpLocationDescriptorSize + 1);
-    const LocationDescriptorAndData* ldd = LDDAtIndex(string_file.string(), 0);
-    EXPECT_EQ(ldd->location_descriptor.DataSize, 0u);
-    EXPECT_EQ(ldd->location_descriptor.Rva, 0u);
+    LocationDescriptorAndData ldd = LDDAtIndex(string_file.string(), 0);
+    EXPECT_EQ(ldd.location_descriptor.DataSize, 0u);
+    EXPECT_EQ(ldd.location_descriptor.Rva, 0u);
     location_descriptor_writable.Verify();
   }
 
@@ -761,10 +770,10 @@ TYPED_TEST(MinidumpWritableLocationDescriptor, LocationDescriptor) {
     EXPECT_TRUE(location_descriptor_writable.WriteEverything(&string_file));
 
     ASSERT_EQ(string_file.string().size(), kMinidumpLocationDescriptorSize + 1);
-    const LocationDescriptorAndData* ldd = LDDAtIndex(string_file.string(), 0);
-    EXPECT_EQ(ldd->location_descriptor.DataSize,
+    LocationDescriptorAndData ldd = LDDAtIndex(string_file.string(), 0);
+    EXPECT_EQ(ldd.location_descriptor.DataSize,
               kMinidumpLocationDescriptorSize + 1);
-    EXPECT_EQ(ldd->location_descriptor.Rva, 0u);
+    EXPECT_EQ(ldd.location_descriptor.Rva, 0u);
     location_descriptor_writable.Verify();
   }
 
@@ -778,11 +787,11 @@ TYPED_TEST(MinidumpWritableLocationDescriptor, LocationDescriptor) {
     EXPECT_TRUE(location_descriptor_writable.WriteEverything(&string_file));
 
     ASSERT_EQ(string_file.string().size(), kMinidumpLocationDescriptorSize + 3);
-    const LocationDescriptorAndData* ldd = LDDAtIndex(string_file.string(), 0);
-    EXPECT_EQ(ldd->location_descriptor.DataSize,
+    LocationDescriptorAndData ldd = LDDAtIndex(string_file.string(), 0);
+    EXPECT_EQ(ldd.location_descriptor.DataSize,
               kMinidumpLocationDescriptorSize + 3);
-    EXPECT_EQ(ldd->location_descriptor.Rva, 0u);
-    EXPECT_STREQ("zz", ldd->string);
+    EXPECT_EQ(ldd.location_descriptor.Rva, 0u);
+    EXPECT_STREQ("zz", ldd.string);
     location_descriptor_writable.Verify();
   }
 
@@ -800,17 +809,19 @@ TYPED_TEST(MinidumpWritableLocationDescriptor, LocationDescriptor) {
 
     ASSERT_EQ(string_file.string().size(),
               kMinidumpLocationDescriptorSize * 2 + 6);
-    const LocationDescriptorAndData* ldd = LDDAtIndex(string_file.string(), 0);
-    EXPECT_EQ(ldd->location_descriptor.DataSize,
+    LocationDescriptorAndData ldd = LDDAtIndex(string_file.string(), 0);
+
+    EXPECT_EQ(ldd.location_descriptor.DataSize,
               kMinidumpLocationDescriptorSize + 3);
-    EXPECT_EQ(ldd->location_descriptor.Rva, 0u);
-    EXPECT_STREQ("yy", ldd->string);
+    EXPECT_EQ(ldd.location_descriptor.Rva, 0u);
+    EXPECT_STREQ("yy", ldd.string);
     ldd = LDDAtIndex(string_file.string(), kMinidumpLocationDescriptorSize + 4);
-    EXPECT_EQ(ldd->location_descriptor.DataSize,
+
+    EXPECT_EQ(ldd.location_descriptor.DataSize,
               kMinidumpLocationDescriptorSize + 2);
-    EXPECT_EQ(ldd->location_descriptor.Rva,
-              kMinidumpLocationDescriptorSize + 4);
-    EXPECT_STREQ("x", ldd->string);
+
+    EXPECT_EQ(ldd.location_descriptor.Rva, kMinidumpLocationDescriptorSize + 4);
+    EXPECT_STREQ("x", ldd.string);
     parent.Verify();
   }
 
@@ -827,16 +838,18 @@ TYPED_TEST(MinidumpWritableLocationDescriptor, LocationDescriptor) {
 
     ASSERT_EQ(string_file.string().size(),
               kMinidumpLocationDescriptorSize * 2 + 7);
-    const LocationDescriptorAndData* ldd = LDDAtIndex(string_file.string(), 0);
-    EXPECT_EQ(ldd->location_descriptor.DataSize,
+    LocationDescriptorAndData ldd = LDDAtIndex(string_file.string(), 0);
+
+    EXPECT_EQ(ldd.location_descriptor.DataSize,
               kMinidumpLocationDescriptorSize + 3);
-    EXPECT_EQ(ldd->location_descriptor.Rva,
-              kMinidumpLocationDescriptorSize + 4);
-    EXPECT_STREQ("www", ldd->string);
+
+    EXPECT_EQ(ldd.location_descriptor.Rva, kMinidumpLocationDescriptorSize + 4);
+    EXPECT_STREQ("www", ldd.string);
     ldd = LDDAtIndex(string_file.string(), kMinidumpLocationDescriptorSize + 4);
-    EXPECT_EQ(ldd->location_descriptor.DataSize, 0u);
-    EXPECT_EQ(ldd->location_descriptor.Rva, 0u);
-    EXPECT_STREQ("vv", ldd->string);
+
+    EXPECT_EQ(ldd.location_descriptor.DataSize, 0u);
+    EXPECT_EQ(ldd.location_descriptor.Rva, 0u);
+    EXPECT_STREQ("vv", ldd.string);
     parent.Verify();
   }
 
@@ -854,17 +867,16 @@ TYPED_TEST(MinidumpWritableLocationDescriptor, LocationDescriptor) {
 
     ASSERT_EQ(string_file.string().size(),
               kMinidumpLocationDescriptorSize * 2 + 13);
-    const LocationDescriptorAndData* ldd = LDDAtIndex(string_file.string(), 0);
-    EXPECT_EQ(ldd->location_descriptor.DataSize,
+    LocationDescriptorAndData ldd = LDDAtIndex(string_file.string(), 0);
+    EXPECT_EQ(ldd.location_descriptor.DataSize,
               kMinidumpLocationDescriptorSize + 5);
-    EXPECT_EQ(ldd->location_descriptor.Rva,
-              kMinidumpLocationDescriptorSize + 8);
-    EXPECT_STREQ("uuuu", ldd->string);
+    EXPECT_EQ(ldd.location_descriptor.Rva, kMinidumpLocationDescriptorSize + 8);
+    EXPECT_STREQ("uuuu", ldd.string);
     ldd = LDDAtIndex(string_file.string(), kMinidumpLocationDescriptorSize + 8);
-    EXPECT_EQ(ldd->location_descriptor.DataSize,
+    EXPECT_EQ(ldd.location_descriptor.DataSize,
               kMinidumpLocationDescriptorSize + 5);
-    EXPECT_EQ(ldd->location_descriptor.Rva, 0u);
-    EXPECT_STREQ("tttt", ldd->string);
+    EXPECT_EQ(ldd.location_descriptor.Rva, 0u);
+    EXPECT_STREQ("tttt", ldd.string);
     parent.Verify();
   }
 
@@ -893,37 +905,33 @@ TYPED_TEST(MinidumpWritableLocationDescriptor, LocationDescriptor) {
 
     ASSERT_EQ(string_file.string().size(),
               kMinidumpLocationDescriptorSize * 5 + 18);
-    const LocationDescriptorAndData* ldd = LDDAtIndex(string_file.string(), 0);
-    EXPECT_EQ(ldd->location_descriptor.DataSize,
+    LocationDescriptorAndData ldd = LDDAtIndex(string_file.string(), 0);
+    EXPECT_EQ(ldd.location_descriptor.DataSize,
               kMinidumpLocationDescriptorSize + 2);
-    EXPECT_EQ(ldd->location_descriptor.Rva,
-              kMinidumpLocationDescriptorSize + 4);
-    EXPECT_STREQ("s", ldd->string);
+    EXPECT_EQ(ldd.location_descriptor.Rva, kMinidumpLocationDescriptorSize + 4);
+    EXPECT_STREQ("s", ldd.string);
     ldd = LDDAtIndex(string_file.string(), kMinidumpLocationDescriptorSize + 4);
-    EXPECT_EQ(ldd->location_descriptor.DataSize, 0u);
-    EXPECT_EQ(ldd->location_descriptor.Rva, 0u);
-    EXPECT_STREQ("r", ldd->string);
+    EXPECT_EQ(ldd.location_descriptor.DataSize, 0u);
+    EXPECT_EQ(ldd.location_descriptor.Rva, 0u);
+    EXPECT_STREQ("r", ldd.string);
     ldd = LDDAtIndex(string_file.string(),
                      kMinidumpLocationDescriptorSize * 2 + 8);
-    EXPECT_EQ(ldd->location_descriptor.DataSize,
+    EXPECT_EQ(ldd.location_descriptor.DataSize,
               kMinidumpLocationDescriptorSize + 2);
-    EXPECT_EQ(ldd->location_descriptor.Rva,
-              kMinidumpLocationDescriptorSize + 4);
-    EXPECT_STREQ("q", ldd->string);
+    EXPECT_EQ(ldd.location_descriptor.Rva, kMinidumpLocationDescriptorSize + 4);
+    EXPECT_STREQ("q", ldd.string);
     ldd = LDDAtIndex(string_file.string(),
                      kMinidumpLocationDescriptorSize * 3 + 12);
-    EXPECT_EQ(ldd->location_descriptor.DataSize,
+    EXPECT_EQ(ldd.location_descriptor.DataSize,
               kMinidumpLocationDescriptorSize + 2);
-    EXPECT_EQ(ldd->location_descriptor.Rva,
-              kMinidumpLocationDescriptorSize + 4);
-    EXPECT_STREQ("p", ldd->string);
+    EXPECT_EQ(ldd.location_descriptor.Rva, kMinidumpLocationDescriptorSize + 4);
+    EXPECT_STREQ("p", ldd.string);
     ldd = LDDAtIndex(string_file.string(),
                      kMinidumpLocationDescriptorSize * 4 + 16);
-    EXPECT_EQ(ldd->location_descriptor.DataSize,
+    EXPECT_EQ(ldd.location_descriptor.DataSize,
               kMinidumpLocationDescriptorSize + 2);
-    EXPECT_EQ(ldd->location_descriptor.Rva,
-              kMinidumpLocationDescriptorSize + 4);
-    EXPECT_STREQ("o", ldd->string);
+    EXPECT_EQ(ldd.location_descriptor.Rva, kMinidumpLocationDescriptorSize + 4);
+    EXPECT_STREQ("o", ldd.string);
     parent.Verify();
   }
 }
