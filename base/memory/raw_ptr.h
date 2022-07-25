@@ -796,7 +796,7 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
     return *this;
   }
 
-  ALWAYS_INLINE raw_ptr& operator=(raw_ptr&& p) {
+  ALWAYS_INLINE raw_ptr& operator=(raw_ptr&& p) noexcept {
     if (LIKELY(this != &p)) {
       Impl::ReleaseWrappedPtr(wrapped_ptr_);
       wrapped_ptr_ = p.wrapped_ptr_;
