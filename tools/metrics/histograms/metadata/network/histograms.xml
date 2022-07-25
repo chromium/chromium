@@ -645,10 +645,18 @@ chromium-metrics-reviews@google.com.
   <token key="SimPinOperation">
     <variant name="ChangeSuccess"/>
     <variant name="LockSuccess" summary="Deprecated on 2022-07-16."/>
+    <variant name="Managed.UnblockSuccess"/>
+    <variant name="Managed.UnlockSuccess"/>
     <variant name="RemoveLockSuccess"/>
     <variant name="RequireLockSuccess"/>
-    <variant name="UnblockSuccess"/>
-    <variant name="UnlockSuccess"/>
+    <variant name="Restricted.UnblockSuccess"/>
+    <variant name="Restricted.UnlockSuccess"/>
+    <variant name="UnblockSuccess" summary="Deprecated on 2022-07-14."/>
+    <variant name="UnlockSuccess" summary="Deprecated on 2022-07-14."/>
+    <variant name="Unmanaged.UnblockSuccess"/>
+    <variant name="Unmanaged.UnlockSuccess"/>
+    <variant name="Unrestricted.UnblockSuccess"/>
+    <variant name="Unrestricted.UnlockSuccess"/>
   </token>
 </histogram>
 

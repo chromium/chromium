@@ -75,12 +75,20 @@ const char CellularMetricsLogger::kSimPinRemoveLockSuccessHistogram[] =
     "Network.Cellular.Pin.RemoveLockSuccess";
 
 // static
-const char CellularMetricsLogger::kSimPinUnlockSuccessHistogram[] =
-    "Network.Cellular.Pin.UnlockSuccess";
+const char CellularMetricsLogger::kUnmanagedSimPinUnlockSuccessHistogram[] =
+    "Network.Cellular.Pin.Unmanaged.UnlockSuccess";
 
 // static
-const char CellularMetricsLogger::kSimPinUnblockSuccessHistogram[] =
-    "Network.Cellular.Pin.UnblockSuccess";
+const char CellularMetricsLogger::kManagedSimPinUnlockSuccessHistogram[] =
+    "Network.Cellular.Pin.Managed.UnlockSuccess";
+
+// static
+const char CellularMetricsLogger::kUnmanagedSimPinUnblockSuccessHistogram[] =
+    "Network.Cellular.Pin.Unmanaged.UnblockSuccess";
+
+// static
+const char CellularMetricsLogger::kManagedSimPinUnblockSuccessHistogram[] =
+    "Network.Cellular.Pin.Managed.UnblockSuccess";
 
 // static
 const char CellularMetricsLogger::kSimPinChangeSuccessHistogram[] =
@@ -89,6 +97,22 @@ const char CellularMetricsLogger::kSimPinChangeSuccessHistogram[] =
 // static
 const char CellularMetricsLogger::kSimLockNotificationEventHistogram[] =
     "Network.Ash.Cellular.SimLock.Policy.Notification.Event";
+
+// static
+const char CellularMetricsLogger::kUnrestrictedSimPinUnlockSuccessHistogram[] =
+    "Network.Cellular.Pin.Unrestricted.UnlockSuccess";
+
+// static
+const char CellularMetricsLogger::kRestrictedSimPinUnlockSuccessHistogram[] =
+    "Network.Cellular.Pin.Restricted.UnlockSuccess";
+
+// static
+const char CellularMetricsLogger::kUnrestrictedSimPinUnblockSuccessHistogram[] =
+    "Network.Cellular.Pin.Unrestricted.UnblockSuccess";
+
+// static
+const char CellularMetricsLogger::kRestrictedSimPinUnblockSuccessHistogram[] =
+    "Network.Cellular.Pin.Restricted.UnblockSuccess";
 
 // static
 const base::TimeDelta CellularMetricsLogger::kInitializationTimeout =
@@ -129,11 +153,13 @@ void CellularMetricsLogger::RecordSimLockNotificationEvent(
 // static
 void CellularMetricsLogger::RecordSimPinOperationResult(
     const SimPinOperation& pin_operation,
+    const bool allow_cellular_sim_lock,
     const absl::optional<std::string>& shill_error_name) {
   SimPinOperationResult result =
       shill_error_name.has_value()
           ? GetSimPinOperationResultForShillError(*shill_error_name)
           : SimPinOperationResult::kSuccess;
+  bool is_enterprise_managed = NetworkHandler::Get()->is_enterprise_managed();
 
   switch (pin_operation) {
     case SimPinOperation::kRequireLock:
@@ -143,10 +169,30 @@ void CellularMetricsLogger::RecordSimPinOperationResult(
       base::UmaHistogramEnumeration(kSimPinRemoveLockSuccessHistogram, result);
       return;
     case SimPinOperation::kUnlock:
-      base::UmaHistogramEnumeration(kSimPinUnlockSuccessHistogram, result);
+      if (is_enterprise_managed) {
+        base::UmaHistogramEnumeration(kManagedSimPinUnlockSuccessHistogram,
+                                      result);
+        base::UmaHistogramEnumeration(
+            allow_cellular_sim_lock ? kUnrestrictedSimPinUnlockSuccessHistogram
+                                    : kRestrictedSimPinUnlockSuccessHistogram,
+            result);
+      } else {
+        base::UmaHistogramEnumeration(kUnmanagedSimPinUnlockSuccessHistogram,
+                                      result);
+      }
       return;
     case SimPinOperation::kUnblock:
-      base::UmaHistogramEnumeration(kSimPinUnblockSuccessHistogram, result);
+      if (is_enterprise_managed) {
+        base::UmaHistogramEnumeration(kManagedSimPinUnblockSuccessHistogram,
+                                      result);
+        base::UmaHistogramEnumeration(
+            allow_cellular_sim_lock ? kUnrestrictedSimPinUnblockSuccessHistogram
+                                    : kRestrictedSimPinUnblockSuccessHistogram,
+            result);
+      } else {
+        base::UmaHistogramEnumeration(kUnmanagedSimPinUnblockSuccessHistogram,
+                                      result);
+      }
       return;
     case SimPinOperation::kChange:
       base::UmaHistogramEnumeration(kSimPinChangeSuccessHistogram, result);

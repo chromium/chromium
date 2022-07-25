@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/network/cellular_metrics_logger.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_event_log.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
@@ -96,19 +97,22 @@ void SetDevicePropertyInternal(const std::string& device_path,
 
 void HandleSimPinOperationSuccess(
     const CellularMetricsLogger::SimPinOperation& pin_operation,
+    const bool allow_cellular_sim_lock,
     base::OnceClosure callback) {
-  CellularMetricsLogger::RecordSimPinOperationResult(pin_operation);
+  CellularMetricsLogger::RecordSimPinOperationResult(pin_operation,
+                                                     allow_cellular_sim_lock);
   std::move(callback).Run();
 }
 
 void HandleSimPinOperationFailure(
     const CellularMetricsLogger::SimPinOperation& pin_operation,
+    const bool allow_cellular_sim_lock,
     const std::string& device_path,
     network_handler::ErrorCallback error_callback,
     const std::string& shill_error_name,
     const std::string& shill_error_message) {
-  CellularMetricsLogger::RecordSimPinOperationResult(pin_operation,
-                                                     shill_error_message);
+  CellularMetricsLogger::RecordSimPinOperationResult(
+      pin_operation, allow_cellular_sim_lock, shill_error_message);
   HandleShillCallFailure(device_path, std::move(error_callback),
                          shill_error_name, shill_error_message);
 }
@@ -184,8 +188,9 @@ void NetworkDeviceHandlerImpl::RequirePin(
   ShillDeviceClient::Get()->RequirePin(
       dbus::ObjectPath(device_path), pin, require_pin,
       base::BindOnce(&HandleSimPinOperationSuccess, pin_operation,
-                     std::move(callback)),
-      base::BindOnce(&HandleSimPinOperationFailure, pin_operation, device_path,
+                     allow_cellular_sim_lock_, std::move(callback)),
+      base::BindOnce(&HandleSimPinOperationFailure, pin_operation,
+                     allow_cellular_sim_lock_, device_path,
                      std::move(error_callback)));
 }
 
@@ -194,22 +199,18 @@ void NetworkDeviceHandlerImpl::EnterPin(
     const std::string& pin,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
-  if (!allow_cellular_sim_lock_) {
-    // Remove the PIN lock requirement.
-    RequirePin(device_path, /*require_pin=*/false, pin, std::move(callback),
-               std::move(error_callback));
-    return;
-  }
-
   NET_LOG(USER) << "Device.EnterPin: " << device_path;
+
   ShillDeviceClient::Get()->EnterPin(
       dbus::ObjectPath(device_path), pin,
-      base::BindOnce(&HandleSimPinOperationSuccess,
+      base::BindOnce(&NetworkDeviceHandlerImpl::OnPinValidationSuccess,
+                     weak_ptr_factory_.GetWeakPtr(), device_path, pin,
                      CellularMetricsLogger::SimPinOperation::kUnlock,
                      std::move(callback)),
       base::BindOnce(&HandleSimPinOperationFailure,
                      CellularMetricsLogger::SimPinOperation::kUnlock,
-                     device_path, std::move(error_callback)));
+                     allow_cellular_sim_lock_, device_path,
+                     std::move(error_callback)));
 }
 
 void NetworkDeviceHandlerImpl::UnblockPin(
@@ -225,26 +226,32 @@ void NetworkDeviceHandlerImpl::UnblockPin(
   const std::string pin = allow_cellular_sim_lock_ ? new_pin : kDefaultSimPin;
   ShillDeviceClient::Get()->UnblockPin(
       dbus::ObjectPath(device_path), puk, pin,
-      base::BindOnce(&NetworkDeviceHandlerImpl::OnUnblockPinSuccess,
+      base::BindOnce(&NetworkDeviceHandlerImpl::OnPinValidationSuccess,
                      weak_ptr_factory_.GetWeakPtr(), device_path, pin,
+                     CellularMetricsLogger::SimPinOperation::kUnblock,
                      std::move(callback)),
       base::BindOnce(&HandleSimPinOperationFailure,
                      CellularMetricsLogger::SimPinOperation::kUnblock,
-                     device_path, std::move(error_callback)));
+                     allow_cellular_sim_lock_, device_path,
+                     std::move(error_callback)));
 }
 
-void NetworkDeviceHandlerImpl::OnUnblockPinSuccess(
+void NetworkDeviceHandlerImpl::OnPinValidationSuccess(
     const std::string& device_path,
     const std::string& pin,
+    const CellularMetricsLogger::SimPinOperation& pin_operation,
     base::OnceClosure callback) {
   if (allow_cellular_sim_lock_) {
-    HandleSimPinOperationSuccess(
-        CellularMetricsLogger::SimPinOperation::kUnblock, std::move(callback));
+    HandleSimPinOperationSuccess(pin_operation, allow_cellular_sim_lock_,
+                                 std::move(callback));
     return;
   }
 
   // Disable the SIM PIN lock setting.
-  RequirePin(device_path, false, pin, std::move(callback), base::DoNothing());
+  RequirePin(device_path, false, pin,
+             base::BindOnce(&HandleSimPinOperationSuccess, pin_operation,
+                            allow_cellular_sim_lock_, std::move(callback)),
+             base::DoNothing());
 }
 
 void NetworkDeviceHandlerImpl::ChangePin(
@@ -263,10 +270,11 @@ void NetworkDeviceHandlerImpl::ChangePin(
       dbus::ObjectPath(device_path), old_pin, new_pin,
       base::BindOnce(&HandleSimPinOperationSuccess,
                      CellularMetricsLogger::SimPinOperation::kChange,
-                     std::move(callback)),
+                     allow_cellular_sim_lock_, std::move(callback)),
       base::BindOnce(&HandleSimPinOperationFailure,
                      CellularMetricsLogger::SimPinOperation::kChange,
-                     device_path, std::move(error_callback)));
+                     allow_cellular_sim_lock_, device_path,
+                     std::move(error_callback)));
 }
 
 void NetworkDeviceHandlerImpl::SetAllowCellularSimLock(

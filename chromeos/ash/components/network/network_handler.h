@@ -85,6 +85,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   // primary user logs in.
   void SetIsEnterpriseManaged(bool is_enterprise_managed);
 
+  // Returns a flag indicating if the device is managed by an enterprise
+  // or not.
+  bool is_enterprise_managed() { return is_enterprise_managed_; }
+
   // Returns the task runner for posting NetworkHandler calls from other
   // threads.
   base::SingleThreadTaskRunner* task_runner() { return task_runner_.get(); }

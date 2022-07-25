@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ash/components/network/cellular_metrics_logger.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
@@ -170,10 +171,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
   // Resets MAC address source property for secondary USB Ethernet devices.
   void ResetMacAddressSourceForSecondaryUsbEthernetDevices() const;
 
-  // On a successful SIM PUK unblock.
-  void OnUnblockPinSuccess(const std::string& device_path,
-                           const std::string& pin,
-                           base::OnceClosure callback);
+  // On a successful SIM PIN unlock, or a successful SIM PUK unblock.
+  void OnPinValidationSuccess(
+      const std::string& device_path,
+      const std::string& pin,
+      const CellularMetricsLogger::SimPinOperation& pin_operation,
+      base::OnceClosure callback);
 
   // Get the DeviceState for the wifi device, if any.
   const DeviceState* GetWifiDeviceState();

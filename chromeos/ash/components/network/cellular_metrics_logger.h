@@ -49,11 +49,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
       public NetworkConnectionObserver {
  public:
   // Histograms associated with SIM Pin operations.
-  static const char kSimPinRequireLockSuccessHistogram[];
-  static const char kSimPinRemoveLockSuccessHistogram[];
-  static const char kSimPinUnlockSuccessHistogram[];
-  static const char kSimPinUnblockSuccessHistogram[];
   static const char kSimPinChangeSuccessHistogram[];
+  static const char kManagedSimPinUnblockSuccessHistogram[];
+  static const char kManagedSimPinUnlockSuccessHistogram[];
+  static const char kSimPinRemoveLockSuccessHistogram[];
+  static const char kSimPinRequireLockSuccessHistogram[];
+  static const char kRestrictedSimPinUnblockSuccessHistogram[];
+  static const char kRestrictedSimPinUnlockSuccessHistogram[];
+  static const char kUnmanagedSimPinUnblockSuccessHistogram[];
+  static const char kUnmanagedSimPinUnlockSuccessHistogram[];
+  static const char kUnrestrictedSimPinUnblockSuccessHistogram[];
+  static const char kUnrestrictedSimPinUnlockSuccessHistogram[];
 
   // Histograms associated with user initiated connection success.
   static const char kESimUserInitiatedConnectionResultHistogram[];
@@ -87,6 +93,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // Records the result of pin operations performed.
   static void RecordSimPinOperationResult(
       const SimPinOperation& pin_operation,
+      const bool allow_cellular_sim_lock,
       const absl::optional<std::string>& shill_error_name = absl::nullopt);
 
   static void RecordSimLockNotificationEvent(
@@ -141,8 +148,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
                            CellularDisconnectionsTest);
   FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, RequirePin);
-  FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, EnterPin);
-  FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, UnblockPin);
+  FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, EnterPinOnUnmanagedDevice);
+  FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, EnterPinOnManagedDevice);
+  FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest,
+                           UnblockPinOnUnmanagedDevice);
+  FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, UnblockPinOnManagedDevice);
   FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, ChangePin);
 
   // The amount of time after cellular device is added to device list,
