@@ -4289,7 +4289,7 @@
   {
     "name": "messages-for-android-offer-notification",
     "owners": [ "vishwasuppoor", "siashah" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 111
   },
   {
     "name": "messages-for-android-passwords",
