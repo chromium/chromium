@@ -6,6 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
 import("most_visited.gni")
 
 assert(!is_android && !is_ios)
@@ -25,6 +26,7 @@ mojom("mojom") {
 
 html_to_wrapper("html_wrapper_files") {
   in_files = html_files
+  minify = optimize_webui
 }
 
 copy("copy_mojom") {

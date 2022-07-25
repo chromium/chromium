@@ -7,6 +7,7 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
 import("customize_themes.gni")
 
 assert(!is_android && !is_ios)
@@ -22,15 +23,31 @@ mojom("mojom") {
   webui_module_path = "chrome://resources/cr_components/customize_themes/"
 }
 
-html_to_wrapper("html_wrapper_files") {
-  in_files = html_files
-}
-
 # Output folder used to hold preprocess_if_expr() output.
 preprocess_folder_tmp = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/customize_themes_tmp"
 
 # Output folder used to hold ts_library() output.
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/customize_themes"
+
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  out_folder = preprocess_folder_tmp
+  in_files = ts_files + html_files
+}
+
+html_to_wrapper("html_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = preprocess_folder_tmp
+  out_folder = preprocess_folder_tmp
+  in_files = html_files
+  minify = optimize_webui
+}
+
+copy("copy_mojom") {
+  deps = [ ":mojom_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/customize_themes/customize_themes.mojom-webui.js" ]
+  outputs = [ "$preprocess_folder_tmp/{{source_file_part}}" ]
+}
 
 ts_library("build_ts") {
   root_dir = preprocess_folder_tmp
@@ -46,28 +63,9 @@ ts_library("build_ts") {
   ]
   extra_deps = [
     ":copy_mojom",
-    ":preprocess_generated",
-    ":preprocess_src",
+    ":html_wrapper_files",
+    ":preprocess",
   ]
-}
-
-preprocess_if_expr("preprocess_src") {
-  in_folder = "."
-  out_folder = preprocess_folder_tmp
-  in_files = ts_files
-}
-
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":html_wrapper_files" ]
-  in_folder = target_gen_dir
-  out_folder = preprocess_folder_tmp
-  in_files = html_wrapper_files
-}
-
-copy("copy_mojom") {
-  deps = [ ":mojom_webui_js" ]
-  sources = [ "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/customize_themes/customize_themes.mojom-webui.js" ]
-  outputs = [ "$preprocess_folder_tmp/{{source_file_part}}" ]
 }
 
 generate_grd("build_grdp") {

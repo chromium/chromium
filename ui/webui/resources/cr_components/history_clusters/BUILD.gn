@@ -8,6 +8,7 @@ import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
 import("history_clusters.gni")
 
 assert(!is_android)
@@ -29,34 +30,32 @@ mojom("mojo_bindings") {
   webui_module_path = "chrome://resources/cr_components/history_clusters/"
 }
 
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  out_folder = preprocess_folder_tmp
+  in_files = ts_files + html_files + css_files
+}
+
 css_to_wrapper("css_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = preprocess_folder_tmp
+  out_folder = preprocess_folder_tmp
   in_files = css_files
+  minify = optimize_webui
 }
 
 html_to_wrapper("html_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = preprocess_folder_tmp
+  out_folder = preprocess_folder_tmp
   in_files = html_files
+  minify = optimize_webui
 }
 
 copy("copy_history_clusters_mojom") {
   sources = [ "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-webui.js" ]
   outputs = [ "$preprocess_folder_tmp/{{source_file_part}}" ]
   deps = [ ":mojo_bindings_webui_js" ]
-}
-
-preprocess_if_expr("preprocess") {
-  in_folder = "."
-  out_folder = preprocess_folder_tmp
-  in_files = ts_files
-}
-
-preprocess_if_expr("preprocess_generated") {
-  deps = [
-    ":css_wrapper_files",
-    ":html_wrapper_files",
-  ]
-  in_folder = target_gen_dir
-  out_folder = preprocess_folder_tmp
-  in_files = html_wrapper_files + css_wrapper_files
 }
 
 ts_library("build_ts") {
@@ -74,8 +73,9 @@ ts_library("build_ts") {
   definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
   extra_deps = [
     ":copy_history_clusters_mojom",
+    ":css_wrapper_files",
+    ":html_wrapper_files",
     ":preprocess",
-    ":preprocess_generated",
   ]
 }
 

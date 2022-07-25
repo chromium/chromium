@@ -8,21 +8,10 @@ import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
 import("app_management.gni")
 
 assert(!is_android && !is_ios)
-
-preprocess_folder_tmp = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/app_management_tmp"
-preprocess_folder =
-    "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/app_management"
-
-css_to_wrapper("css_wrapper_files") {
-  in_files = css_files
-}
-
-html_to_wrapper("html_wrapper_files") {
-  in_files = html_files + html_icons_files
-}
 
 mojom("mojo_bindings") {
   sources = [ "app_management.mojom" ]
@@ -86,22 +75,35 @@ mojom("mojo_bindings") {
   ]
 }
 
-preprocess_if_expr("preprocess_src") {
-  visibility = [ ":build_ts" ]
-  in_folder = "."
-  out_folder = preprocess_folder_tmp
-  in_files = ts_files
-}
+preprocess_folder_tmp = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/app_management_tmp"
+preprocess_folder =
+    "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/app_management"
 
-preprocess_if_expr("preprocess_generated") {
-  visibility = [ ":build_ts" ]
-  deps = [
+preprocess_if_expr("preprocess") {
+  visibility = [
+    ":build_ts",
     ":css_wrapper_files",
     ":html_wrapper_files",
   ]
-  in_folder = target_gen_dir
+  in_folder = "."
   out_folder = preprocess_folder_tmp
-  in_files = html_wrapper_files + css_wrapper_files
+  in_files = ts_files + html_files + html_icons_files + css_files
+}
+
+html_to_wrapper("html_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = preprocess_folder_tmp
+  out_folder = preprocess_folder_tmp
+  in_files = html_files + html_icons_files
+  minify = optimize_webui
+}
+
+css_to_wrapper("css_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = preprocess_folder_tmp
+  out_folder = preprocess_folder_tmp
+  in_files = css_files
+  minify = optimize_webui
 }
 
 copy("copy_mojo") {
@@ -131,8 +133,9 @@ ts_library("build_ts") {
   ]
   extra_deps = [
     ":copy_mojo",
-    ":preprocess_generated",
-    ":preprocess_src",
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+    ":preprocess",
   ]
 }
 
