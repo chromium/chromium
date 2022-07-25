@@ -5138,6 +5138,9 @@ crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrol
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Timeout ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/events/overscroll-event-fired-to-window.html [ Failure Timeout ]
 
+#fast/scroll-behavior/
+crbug.com/1345498 [ Mac10.14 ] virtual/scroll-unification-prefer_compositing_to_lcd_text/fast/scroll-behavior/smooth-scroll/mousewheel-scroll.html [ Failure Timeout Pass ]
+
 ### END PERCENT BASED SCROLLING TEST FAILURES
 
 # Sheriff 2020-02-28
