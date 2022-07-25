@@ -4974,9 +4974,11 @@
     "expiry_milestone": 105
   },
   {
+    // Suggests the Ozone platform to use (desktop Linux only).  Can be set on
+    // chrome://flags.  See https://crbug.com/1246928.
     "name": "ozone-platform-hint",
     "owners": [ "rjkroege", "thomasanderson", "msisov@igalia.com", "nickdiego@igalia.com", "adunaev@igalia.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "page-content-annotations",
