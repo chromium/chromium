@@ -6,7 +6,6 @@
 
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
-#include "base/values.h"
 
 namespace payments {
 
@@ -33,16 +32,11 @@ bool PaymentMethodData::operator!=(const PaymentMethodData& other) const {
   return !(*this == other);
 }
 
-bool PaymentMethodData::FromValue(const base::Value& value) {
-  if (!value.is_dict()) {
-    return false;
-  }
-
+bool PaymentMethodData::FromValueDict(const base::Value::Dict& dict) {
   supported_networks.clear();
 
   // The value of supportedMethods should be a string.
-  const std::string* supported_method_in =
-      value.FindStringKey(kSupportedMethods);
+  const std::string* supported_method_in = dict.FindString(kSupportedMethods);
   if (!supported_method_in || !base::IsStringASCII(*supported_method_in) ||
       supported_method_in->empty()) {
     return false;
@@ -51,16 +45,15 @@ bool PaymentMethodData::FromValue(const base::Value& value) {
 
   // Data is optional, but if a dictionary is present, save a stringified
   // version and attempt to parse supportedNetworks.
-  const base::Value* data_dict = value.FindDictKey(kMethodDataData);
+  const base::Value::Dict* data_dict = dict.FindDict(kMethodDataData);
   if (data_dict) {
     std::string json_data;
     base::JSONWriter::Write(*data_dict, &json_data);
     data = json_data;
-    const base::Value* supported_networks_list =
-        data_dict->FindListKey(kSupportedNetworks);
+    const base::Value::List* supported_networks_list =
+        data_dict->FindList(kSupportedNetworks);
     if (supported_networks_list) {
-      for (const base::Value& supported_network :
-           supported_networks_list->GetListDeprecated()) {
+      for (const base::Value& supported_network : *supported_networks_list) {
         if (!supported_network.is_string() ||
             !base::IsStringASCII(supported_network.GetString())) {
           return false;

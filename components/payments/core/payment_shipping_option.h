@@ -30,9 +30,9 @@ class PaymentShippingOption {
   bool operator!=(const PaymentShippingOption& other) const;
   PaymentShippingOption& operator=(const PaymentShippingOption& other);
 
-  // Populates the properties of this PaymentShippingOption from |value|.
+  // Populates the properties of this PaymentShippingOption from |dict|.
   // Returns true if the required values are present.
-  bool FromValue(const base::Value& value);
+  bool FromValueDict(const base::Value::Dict& dict);
 
   // An identifier used to reference this PaymentShippingOption. It is unique
   // for a given PaymentRequest.

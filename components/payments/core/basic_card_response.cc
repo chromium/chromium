@@ -39,14 +39,14 @@ bool BasicCardResponse::operator!=(const BasicCardResponse& other) const {
   return !(*this == other);
 }
 
-base::Value BasicCardResponse::ToValue() const {
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetStringKey(kCardCardholderName, cardholder_name);
-  result.SetStringKey(kCardCardNumber, card_number);
-  result.SetStringKey(kCardExpiryMonth, expiry_month);
-  result.SetStringKey(kCardExpiryYear, expiry_year);
-  result.SetStringKey(kCardCardSecurityCode, card_security_code);
-  result.SetKey(kCardBillingAddress, PaymentAddressToValue(*billing_address));
+base::Value::Dict BasicCardResponse::ToValueDict() const {
+  base::Value::Dict result;
+  result.Set(kCardCardholderName, cardholder_name);
+  result.Set(kCardCardNumber, card_number);
+  result.Set(kCardExpiryMonth, expiry_month);
+  result.Set(kCardExpiryYear, expiry_year);
+  result.Set(kCardCardSecurityCode, card_security_code);
+  result.Set(kCardBillingAddress, PaymentAddressToValueDict(*billing_address));
 
   return result;
 }

@@ -10,14 +10,14 @@
 namespace payments {
 
 // Tests the success case when populating a PaymentDetails from a dictionary.
-TEST(PaymentRequestTest, PaymentDetailsFromValueSuccess) {
+TEST(PaymentRequestTest, PaymentDetailsFromValueSuccessDict) {
   PaymentDetails expected;
   expected.error = "Error in details";
 
-  base::Value details_dict(base::Value::Type::DICTIONARY);
-  details_dict.SetStringKey("error", "Error in details");
+  base::Value::Dict details_dict;
+  details_dict.Set("error", "Error in details");
   PaymentDetails actual;
-  EXPECT_TRUE(actual.FromValue(details_dict, /*requires_total=*/false));
+  EXPECT_TRUE(actual.FromValueDict(details_dict, /*requires_total=*/false));
   EXPECT_EQ(expected, actual);
 
   expected.total = std::make_unique<PaymentItem>();
@@ -25,13 +25,13 @@ TEST(PaymentRequestTest, PaymentDetailsFromValueSuccess) {
   expected.total->amount->currency = "GBP";
   expected.total->amount->value = "6.66";
 
-  base::Value total_dict(base::Value::Type::DICTIONARY);
-  total_dict.SetStringKey("label", "TOTAL");
-  base::Value amount_dict(base::Value::Type::DICTIONARY);
-  amount_dict.SetStringKey("currency", "GBP");
-  amount_dict.SetStringKey("value", "6.66");
-  total_dict.SetKey("amount", std::move(amount_dict));
-  details_dict.SetKey("total", std::move(total_dict));
+  base::Value::Dict total_dict;
+  total_dict.Set("label", "TOTAL");
+  base::Value::Dict amount_dict;
+  amount_dict.Set("currency", "GBP");
+  amount_dict.Set("value", "6.66");
+  total_dict.Set("amount", std::move(amount_dict));
+  details_dict.Set("total", std::move(total_dict));
 
   PaymentItem display1;
   display1.label = "Handling";
@@ -40,9 +40,9 @@ TEST(PaymentRequestTest, PaymentDetailsFromValueSuccess) {
   display1.pending = true;
   expected.display_items.push_back(display1);
 
-  base::Value display_items_list(base::Value::Type::LIST);
-  display_items_list.Append(display1.ToValue());
-  details_dict.SetKey("displayItems", std::move(display_items_list));
+  base::Value::List display_items_list;
+  display_items_list.Append(display1.ToValueDict());
+  details_dict.Set("displayItems", std::move(display_items_list));
 
   PaymentShippingOption expect_shipping_option;
   expect_shipping_option.id = "Post office";
@@ -52,27 +52,27 @@ TEST(PaymentRequestTest, PaymentDetailsFromValueSuccess) {
   expect_shipping_option.amount->value = "5.0";
   expected.shipping_options.push_back(std::move(expect_shipping_option));
 
-  base::Value shipping_options_list(base::Value::Type::LIST);
-  base::Value shipping_option(base::Value::Type::DICTIONARY);
-  shipping_option.SetStringKey("id", "Post office");
-  shipping_option.SetStringKey("label", "Post office, one-week ground");
-  base::Value shipping_amount(base::Value::Type::DICTIONARY);
-  shipping_amount.SetStringKey("currency", "USD");
-  shipping_amount.SetStringKey("value", "5.0");
-  shipping_option.SetKey("amount", std::move(shipping_amount));
+  base::Value::List shipping_options_list;
+  base::Value::Dict shipping_option;
+  shipping_option.Set("id", "Post office");
+  shipping_option.Set("label", "Post office, one-week ground");
+  base::Value::Dict shipping_amount;
+  shipping_amount.Set("currency", "USD");
+  shipping_amount.Set("value", "5.0");
+  shipping_option.Set("amount", std::move(shipping_amount));
   shipping_options_list.Append(std::move(shipping_option));
-  details_dict.SetKey("shippingOptions", std::move(shipping_options_list));
+  details_dict.Set("shippingOptions", std::move(shipping_options_list));
 
-  EXPECT_TRUE(actual.FromValue(details_dict, /*requires_total=*/false));
+  EXPECT_TRUE(actual.FromValueDict(details_dict, /*requires_total=*/false));
   EXPECT_EQ(expected, actual);
 
-  EXPECT_TRUE(actual.FromValue(details_dict, /*requires_total=*/true));
+  EXPECT_TRUE(actual.FromValueDict(details_dict, /*requires_total=*/true));
   EXPECT_EQ(expected, actual);
 
   // Test specifying ID.
-  details_dict.SetStringKey("id", "1234");
+  details_dict.Set("id", "1234");
   expected.id = "1234";
-  EXPECT_TRUE(actual.FromValue(details_dict, /*requires_total=*/false));
+  EXPECT_TRUE(actual.FromValueDict(details_dict, /*requires_total=*/false));
   EXPECT_EQ(expected, actual);
 
   // Test without total when not requiring it.
@@ -80,67 +80,64 @@ TEST(PaymentRequestTest, PaymentDetailsFromValueSuccess) {
     PaymentDetails actual2;
     expected.total.reset();
 
-    details_dict.RemoveKey("total");
-    EXPECT_TRUE(actual2.FromValue(details_dict, /*requires_total=*/false));
+    details_dict.Remove("total");
+    EXPECT_TRUE(actual2.FromValueDict(details_dict, /*requires_total=*/false));
     EXPECT_EQ(expected, actual2);
   }
 }
 
 // Tests the failure case when populating a PaymentDetails from a dictionary.
-TEST(PaymentRequestTest, PaymentDetailsFromValueFailure) {
-  base::Value details_dict(base::Value::Type::DICTIONARY);
-  details_dict.SetStringKey("error", "Error in details");
+TEST(PaymentRequestTest, PaymentDetailsFromValueFailureDict) {
+  base::Value::Dict details_dict;
+  details_dict.Set("error", "Error in details");
 
   PaymentDetails actual;
-  EXPECT_FALSE(actual.FromValue(details_dict, /*requires_total=*/true));
+  EXPECT_FALSE(actual.FromValueDict(details_dict, /*requires_total=*/true));
 
   // Invalid total.
-  base::Value total_dict(base::Value::Type::DICTIONARY);
-  details_dict.SetKey("total", std::move(total_dict));
-  EXPECT_FALSE(actual.FromValue(details_dict, /*requires_total=*/false));
-  details_dict.RemoveKey("total");
+  base::Value::Dict total_dict;
+  details_dict.Set("total", std::move(total_dict));
+  EXPECT_FALSE(actual.FromValueDict(details_dict, /*requires_total=*/false));
+  details_dict.Remove("total");
 
   // Invalid display item.
-  base::Value display_items_list(base::Value::Type::LIST);
+  base::Value::List display_items_list;
   display_items_list.Append("huh");
-  details_dict.SetKey("displayItems", std::move(display_items_list));
-  EXPECT_FALSE(actual.FromValue(details_dict, /*requires_total=*/false));
-  details_dict.RemoveKey("displayItems");
+  details_dict.Set("displayItems", std::move(display_items_list));
+  EXPECT_FALSE(actual.FromValueDict(details_dict, /*requires_total=*/false));
+  details_dict.Remove("displayItems");
 
   // Invalid shipping option.
-  base::Value shipping_options_list(base::Value::Type::LIST);
+  base::Value::List shipping_options_list;
   shipping_options_list.Append("nonsense");
-  details_dict.SetKey("shippingOptions", std::move(shipping_options_list));
-  EXPECT_FALSE(actual.FromValue(details_dict, /*requires_total=*/false));
-  details_dict.RemoveKey("shippingOptions");
+  details_dict.Set("shippingOptions", std::move(shipping_options_list));
+  EXPECT_FALSE(actual.FromValueDict(details_dict, /*requires_total=*/false));
+  details_dict.Remove("shippingOptions");
 
   // Invalid modifiers.
-  base::Value modifiers_list(base::Value::Type::LIST);
+  base::Value::List modifiers_list;
   modifiers_list.Append("not a payment method dict");
-  details_dict.SetKey("modifiers", std::move(modifiers_list));
-  EXPECT_FALSE(actual.FromValue(details_dict, /*requires_total=*/false));
+  details_dict.Set("modifiers", std::move(modifiers_list));
+  EXPECT_FALSE(actual.FromValueDict(details_dict, /*requires_total=*/false));
 
   // Invalid modifier total.
-  details_dict.FindKey("modifiers")->ClearList();
-  base::Value payment_method(base::Value::Type::DICTIONARY);
-  payment_method.SetStringKey("supportedMethods", "MuenterCard");
-  base::Value invalid_total_dict(base::Value::Type::DICTIONARY);
-  payment_method.SetKey("total", std::move(invalid_total_dict));
-  details_dict.FindKey("modifiers")->Append(std::move(payment_method));
-  EXPECT_FALSE(actual.FromValue(details_dict, /*requires_total=*/false));
-  details_dict.FindKey("modifiers")->GetListDeprecated()[0].RemoveKey("total");
+  details_dict.FindList("modifiers")->clear();
+  base::Value::Dict payment_method;
+  payment_method.Set("supportedMethods", "MuenterCard");
+  base::Value::Dict invalid_total_dict;
+  payment_method.Set("total", std::move(invalid_total_dict));
+  details_dict.FindList("modifiers")->Append(std::move(payment_method));
+  EXPECT_FALSE(actual.FromValueDict(details_dict, /*requires_total=*/false));
+  details_dict.FindList("modifiers")->front().GetDict().Remove("total");
 
   // Invalid additional_display_item in modifiers.
-  base::Value additional_display_items_list(base::Value::Type::LIST);
+  base::Value::List additional_display_items_list;
   additional_display_items_list.Append("not a payment item");
-  details_dict.FindKey("modifiers")
-      ->GetListDeprecated()[0]
-      .SetKey("additionalDisplayItems",
-              std::move(additional_display_items_list));
-  EXPECT_FALSE(actual.FromValue(details_dict, /*requires_total=*/false));
-
-  // Check error-handling of non-dictionary input value.
-  EXPECT_FALSE(actual.FromValue(base::Value("hi"), /*requires_total=*/false));
+  details_dict.FindList("modifiers")
+      ->front()
+      .GetDict()
+      .Set("additionalDisplayItems", std::move(additional_display_items_list));
+  EXPECT_FALSE(actual.FromValueDict(details_dict, /*requires_total=*/false));
 }
 
 // Tests that two payment details objects are not equal if their property values

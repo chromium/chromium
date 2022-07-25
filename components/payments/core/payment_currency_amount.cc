@@ -17,20 +17,18 @@ static const char kPaymentCurrencyAmountValue[] = "value";
 
 }  // namespace
 
-bool PaymentCurrencyAmountFromValue(const base::Value& dictionary_value,
-                                    mojom::PaymentCurrencyAmount* amount) {
-  if (!dictionary_value.is_dict())
-    return false;
-
+bool PaymentCurrencyAmountFromValueDict(
+    const base::Value::Dict& dictionary_value,
+    mojom::PaymentCurrencyAmount* amount) {
   const std::string* currency =
-      dictionary_value.FindStringKey(kPaymentCurrencyAmountCurrency);
+      dictionary_value.FindString(kPaymentCurrencyAmountCurrency);
   if (!currency) {
     return false;
   }
   amount->currency = *currency;
 
   const std::string* value =
-      dictionary_value.FindStringKey(kPaymentCurrencyAmountValue);
+      dictionary_value.FindString(kPaymentCurrencyAmountValue);
   if (!value) {
     return false;
   }
@@ -39,11 +37,11 @@ bool PaymentCurrencyAmountFromValue(const base::Value& dictionary_value,
   return true;
 }
 
-base::Value PaymentCurrencyAmountToValue(
+base::Value::Dict PaymentCurrencyAmountToValueDict(
     const mojom::PaymentCurrencyAmount& amount) {
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetStringKey(kPaymentCurrencyAmountCurrency, amount.currency);
-  result.SetStringKey(kPaymentCurrencyAmountValue, amount.value);
+  base::Value::Dict result;
+  result.Set(kPaymentCurrencyAmountCurrency, amount.currency);
+  result.Set(kPaymentCurrencyAmountValue, amount.value);
 
   return result;
 }

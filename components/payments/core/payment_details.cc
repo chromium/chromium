@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/memory/values_equivalent.h"
-#include "base/values.h"
 
 namespace payments {
 
@@ -62,82 +61,85 @@ bool PaymentDetails::operator!=(const PaymentDetails& other) const {
   return !(*this == other);
 }
 
-bool PaymentDetails::FromValue(const base::Value& value, bool requires_total) {
+bool PaymentDetails::FromValueDict(const base::Value::Dict& dict,
+                                   bool requires_total) {
   display_items.clear();
   shipping_options.clear();
   modifiers.clear();
 
-  if (!value.is_dict()) {
-    return false;
-  }
-
   // ID is optional.
-  const std::string* specified_id = value.FindStringKey(kPaymentDetailsId);
+  const std::string* specified_id = dict.FindString(kPaymentDetailsId);
   if (specified_id)
     id = *specified_id;
 
-  const base::Value* total_dict = value.FindDictKey(kPaymentDetailsTotal);
+  const base::Value::Dict* total_dict = dict.FindDict(kPaymentDetailsTotal);
   if (!total_dict && requires_total) {
     return false;
   }
 
   if (total_dict) {
     total = std::make_unique<PaymentItem>();
-    if (!total->FromValue(*total_dict)) {
+    if (!total->FromValueDict(*total_dict)) {
       return false;
     }
   }
 
-  const base::Value* display_items_list =
-      value.FindListKey(kPaymentDetailsDisplayItems);
+  const base::Value::List* display_items_list =
+      dict.FindList(kPaymentDetailsDisplayItems);
   if (display_items_list) {
-    for (const base::Value& payment_item_dict :
-         display_items_list->GetListDeprecated()) {
+    for (const base::Value& payment_item_list_entry : *display_items_list) {
       PaymentItem payment_item;
-      if (!payment_item.FromValue(payment_item_dict)) {
+      if (!payment_item_list_entry.is_dict() ||
+          !payment_item.FromValueDict(payment_item_list_entry.GetDict())) {
         return false;
       }
       display_items.push_back(payment_item);
     }
   }
 
-  const base::Value* shipping_options_list =
-      value.FindListKey(kPaymentDetailsShippingOptions);
+  const base::Value::List* shipping_options_list =
+      dict.FindList(kPaymentDetailsShippingOptions);
   if (shipping_options_list) {
-    for (const base::Value& shipping_option_dict :
-         shipping_options_list->GetListDeprecated()) {
+    for (const base::Value& shipping_option_list_entry :
+         *shipping_options_list) {
       PaymentShippingOption shipping_option;
-      if (!shipping_option.FromValue(shipping_option_dict)) {
+      if (!shipping_option_list_entry.is_dict() ||
+          !shipping_option.FromValueDict(
+              shipping_option_list_entry.GetDict())) {
         return false;
       }
       shipping_options.push_back(shipping_option);
     }
   }
 
-  const base::Value* modifiers_list =
-      value.FindListKey(kPaymentDetailsModifiers);
+  const base::Value::List* modifiers_list =
+      dict.FindList(kPaymentDetailsModifiers);
   if (modifiers_list) {
-    for (const base::Value& modifier_dict :
-         modifiers_list->GetListDeprecated()) {
+    for (const base::Value& modifiers_list_element : *modifiers_list) {
+      if (!modifiers_list_element.is_dict())
+        return false;
+      const base::Value::Dict& modifier_dict = modifiers_list_element.GetDict();
       PaymentDetailsModifier modifier;
-      if (!modifier.method_data.FromValue(modifier_dict)) {
+      if (!modifier.method_data.FromValueDict(modifier_dict)) {
         return false;
       }
-      const base::Value* modifier_total_dict =
-          modifier_dict.FindDictKey(kPaymentDetailsTotal);
+      const base::Value::Dict* modifier_total_dict =
+          modifier_dict.FindDict(kPaymentDetailsTotal);
       if (modifier_total_dict) {
         modifier.total = std::make_unique<PaymentItem>();
-        if (!modifier.total->FromValue(*modifier_total_dict))
+        if (!modifier.total->FromValueDict(*modifier_total_dict))
           return false;
       }
-      const base::Value* additional_display_items_list =
-          modifier_dict.FindListKey(kPaymentDetailsAdditionalDisplayItems);
+      const base::Value::List* additional_display_items_list =
+          modifier_dict.FindList(kPaymentDetailsAdditionalDisplayItems);
       if (additional_display_items_list) {
-        for (const base::Value& additional_display_item_dict :
-             additional_display_items_list->GetListDeprecated()) {
+        for (const base::Value& additional_display_items_list_elem :
+             *additional_display_items_list) {
+          if (!additional_display_items_list_elem.is_dict())
+            return false;
           PaymentItem additional_display_item;
-          if (!additional_display_item.FromValue(
-                  additional_display_item_dict)) {
+          if (!additional_display_item.FromValueDict(
+                  additional_display_items_list_elem.GetDict())) {
             return false;
           }
           modifier.additional_display_items.push_back(additional_display_item);
@@ -148,8 +150,7 @@ bool PaymentDetails::FromValue(const base::Value& value, bool requires_total) {
   }
 
   // Error is optional.
-  const std::string* specified_error =
-      value.FindStringKey(kPaymentDetailsError);
+  const std::string* specified_error = dict.FindString(kPaymentDetailsError);
   if (specified_error)
     error = *specified_error;
 

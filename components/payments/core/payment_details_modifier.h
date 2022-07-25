@@ -8,16 +8,13 @@
 #include <memory>
 #include <vector>
 
+#include "base/values.h"
 #include "components/payments/core/payment_item.h"
 #include "components/payments/core/payment_method_data.h"
 
 // C++ bindings for the PaymentRequest API PaymentDetailsModifier. Conforms to
 // the following spec:
 // https://w3c.github.io/payment-request/#dom-paymentdetailsmodifier
-
-namespace base {
-class Value;
-}
 
 namespace payments {
 
@@ -35,7 +32,7 @@ class PaymentDetailsModifier {
 
   // Creates a dictionary base::Value with the properties of this
   // PaymentDetailsModifier.
-  base::Value ToValue() const;
+  base::Value::Dict ToValueDict() const;
 
   // A payment method identifier and any associated payment method specific
   // data. The remaining fields in the PaymentDetailsModifier apply only if the

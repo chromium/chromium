@@ -17,16 +17,16 @@ TEST(PaymentMethodData, FromValueSuccess_SupportedMethodsString) {
   expected.data = "{\"supportedNetworks\":[\"mastercard\"]}";
   expected.supported_networks.push_back("mastercard");
 
-  base::Value method_data_dict(base::Value::Type::DICTIONARY);
-  method_data_dict.SetStringKey("supportedMethods", "basic-card");
-  base::Value data_dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict method_data_dict;
+  method_data_dict.Set("supportedMethods", "basic-card");
+  base::Value::Dict data_dict;
   base::Value supported_networks_list(base::Value::Type::LIST);
   supported_networks_list.Append("mastercard");
-  data_dict.SetKey("supportedNetworks", std::move(supported_networks_list));
-  method_data_dict.SetKey("data", std::move(data_dict));
+  data_dict.Set("supportedNetworks", std::move(supported_networks_list));
+  method_data_dict.Set("data", std::move(data_dict));
 
   PaymentMethodData actual;
-  EXPECT_TRUE(actual.FromValue(method_data_dict));
+  EXPECT_TRUE(actual.FromValueDict(method_data_dict));
 
   EXPECT_EQ(expected, actual);
 }
@@ -36,49 +36,42 @@ TEST(PaymentMethodData, FromValueSuccess_SupportedMethodsString) {
 TEST(PaymentMethodData, FromValueFailure) {
   PaymentMethodData actual;
 
-  // Non-dictionary input fails.
-  EXPECT_FALSE(actual.FromValue(base::Value("hello")));
-
   // At least one supported method is required.
-  base::Value method_data_dict(base::Value::Type::DICTIONARY);
-  EXPECT_FALSE(actual.FromValue(method_data_dict));
+  base::Value::Dict method_data_dict;
+  EXPECT_FALSE(actual.FromValueDict(method_data_dict));
 
   // The value in the supported methods list must be a string.
   base::Value supported_methods_list1(base::Value::Type::LIST);
   supported_methods_list1.Append(13);
-  method_data_dict.SetKey("supportedMethods",
-                          std::move(supported_methods_list1));
-  EXPECT_FALSE(actual.FromValue(method_data_dict));
+  method_data_dict.Set("supportedMethods", std::move(supported_methods_list1));
+  EXPECT_FALSE(actual.FromValueDict(method_data_dict));
 
   // The value in the supported methods list must be a non-empty string.
   base::Value supported_methods_list2(base::Value::Type::LIST);
   supported_methods_list2.Append("");
-  method_data_dict.SetKey("supportedMethods",
-                          std::move(supported_methods_list2));
-  EXPECT_FALSE(actual.FromValue(method_data_dict));
+  method_data_dict.Set("supportedMethods", std::move(supported_methods_list2));
+  EXPECT_FALSE(actual.FromValueDict(method_data_dict));
 
   // The value in the supported methods must be a string.
-  method_data_dict.SetIntKey("supportedMethods", 13);
-  EXPECT_FALSE(actual.FromValue(method_data_dict));
+  method_data_dict.Set("supportedMethods", 13);
+  EXPECT_FALSE(actual.FromValueDict(method_data_dict));
 
   // The value in the supported methods must be a non-empty string.
-  method_data_dict.SetStringKey("supportedMethods", "");
-  EXPECT_FALSE(actual.FromValue(method_data_dict));
+  method_data_dict.Set("supportedMethods", "");
+  EXPECT_FALSE(actual.FromValueDict(method_data_dict));
 
   // Supported network list must include ASCII strings.
-  method_data_dict.SetStringKey("supportedMethods", "some finance thing");
-  base::Value data_dict(base::Value::Type::DICTIONARY);
+  method_data_dict.Set("supportedMethods", "some finance thing");
+  base::Value::Dict data_dict;
   base::Value supported_networks_list(base::Value::Type::LIST);
   supported_networks_list.Append(123456);
-  data_dict.SetKey("supportedNetworks", std::move(supported_networks_list));
-  method_data_dict.SetKey("data", std::move(data_dict));
-  EXPECT_FALSE(actual.FromValue(method_data_dict));
+  data_dict.Set("supportedNetworks", std::move(supported_networks_list));
+  method_data_dict.Set("data", std::move(data_dict));
+  EXPECT_FALSE(actual.FromValueDict(method_data_dict));
 
-  method_data_dict.FindKey("data")
-      ->FindKey("supportedNetworks")
-      ->GetListDeprecated()[0] =
+  method_data_dict.FindDict("data")->FindList("supportedNetworks")->front() =
       base::Value("\xD0\xA2\xD0\xB5\xD1\x81\xD1\x82");
-  EXPECT_FALSE(actual.FromValue(method_data_dict));
+  EXPECT_FALSE(actual.FromValueDict(method_data_dict));
 }
 
 // Tests that two method data objects are not equal if their property values

@@ -40,7 +40,7 @@ static const char* kBasicCardNetworks[] = {"amex",     "diners",     "discover",
 // PaymentAddress spec.
 TEST(PaymentRequestDataUtilTest, GetPaymentAddressFromAutofillProfile) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
-  base::Value address_value = payments::PaymentAddressToValue(
+  base::Value::Dict address_value = payments::PaymentAddressToValueDict(
       *payments::data_util::GetPaymentAddressFromAutofillProfile(address,
                                                                  "en-US"));
   std::string json_address;
@@ -65,10 +65,10 @@ TEST(PaymentRequestDataUtilTest, GetBasicCardResponseFromAutofillCreditCard) {
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
   autofill::CreditCard card = autofill::test::GetCreditCard();
   card.set_billing_address_id(address.guid());
-  base::Value response_value =
+  base::Value::Dict response_value =
       payments::data_util::GetBasicCardResponseFromAutofillCreditCard(
           card, u"123", address, "en-US")
-          ->ToValue();
+          ->ToValueDict();
   std::string json_response;
   base::JSONWriter::Write(response_value, &json_response);
   EXPECT_EQ(base::StringPrintf(

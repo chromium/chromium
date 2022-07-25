@@ -213,10 +213,10 @@ void AutofillPaymentApp::GenerateBasicCardResponse() {
   DCHECK(!is_waiting_for_card_unmask_);
 
   if (delegate_) {
-    base::Value response_value =
+    base::Value::Dict response_value =
         payments::data_util::GetBasicCardResponseFromAutofillCreditCard(
             credit_card_, cvc_, billing_address_, app_locale_)
-            ->ToValue();
+            ->ToValueDict();
     std::string stringified_details;
     base::JSONWriter::Write(response_value, &stringified_details);
     delegate_->OnInstrumentDetailsReady(method_name_, stringified_details,

@@ -26,8 +26,8 @@ struct BasicCardResponse {
   bool operator==(const BasicCardResponse& other) const;
   bool operator!=(const BasicCardResponse& other) const;
 
-  // Populates |value| with the properties of this BasicCardResponse.
-  base::Value ToValue() const;
+  // Returns a Value::Dict with the properties of this BasicCardResponse.
+  base::Value::Dict ToValueDict() const;
 
   // The cardholder's name as it appears on the card.
   std::u16string cardholder_name;

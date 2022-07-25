@@ -25,23 +25,24 @@ static const char kAddressSortingCode[] = "sortingCode";
 
 }  // namespace
 
-base::Value PaymentAddressToValue(const mojom::PaymentAddress& address) {
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetStringKey(kAddressCountry, address.country);
+base::Value::Dict PaymentAddressToValueDict(
+    const mojom::PaymentAddress& address) {
+  base::Value::Dict result;
+  result.Set(kAddressCountry, address.country);
   base::Value address_line_list(base::Value::Type::LIST);
   for (const std::string& address_line_string : address.address_line) {
     if (!address_line_string.empty())
       address_line_list.Append(address_line_string);
   }
-  result.SetKey(kAddressAddressLine, std::move(address_line_list));
-  result.SetStringKey(kAddressRegion, address.region);
-  result.SetStringKey(kAddressCity, address.city);
-  result.SetStringKey(kAddressDependentLocality, address.dependent_locality);
-  result.SetStringKey(kAddressPostalCode, address.postal_code);
-  result.SetStringKey(kAddressSortingCode, address.sorting_code);
-  result.SetStringKey(kAddressOrganization, address.organization);
-  result.SetStringKey(kAddressRecipient, address.recipient);
-  result.SetStringKey(kAddressPhone, address.phone);
+  result.Set(kAddressAddressLine, std::move(address_line_list));
+  result.Set(kAddressRegion, address.region);
+  result.Set(kAddressCity, address.city);
+  result.Set(kAddressDependentLocality, address.dependent_locality);
+  result.Set(kAddressPostalCode, address.postal_code);
+  result.Set(kAddressSortingCode, address.sorting_code);
+  result.Set(kAddressOrganization, address.organization);
+  result.Set(kAddressRecipient, address.recipient);
+  result.Set(kAddressPhone, address.phone);
 
   return result;
 }

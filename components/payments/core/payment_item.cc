@@ -47,36 +47,33 @@ PaymentItem& PaymentItem::operator=(const PaymentItem& other) {
   return *this;
 }
 
-bool PaymentItem::FromValue(const base::Value& value) {
-  if (!value.is_dict())
-    return false;
-
-  const std::string* label_val = value.FindStringKey(kPaymentItemLabel);
+bool PaymentItem::FromValueDict(const base::Value::Dict& dict) {
+  const std::string* label_val = dict.FindString(kPaymentItemLabel);
   if (!label_val) {
     return false;
   }
   label = *label_val;
 
-  const base::Value* amount_dict = value.FindDictKey(kPaymentItemAmount);
+  const base::Value::Dict* amount_dict = dict.FindDict(kPaymentItemAmount);
   if (!amount_dict) {
     return false;
   }
   amount = mojom::PaymentCurrencyAmount::New();
-  if (!PaymentCurrencyAmountFromValue(*amount_dict, amount.get())) {
+  if (!PaymentCurrencyAmountFromValueDict(*amount_dict, amount.get())) {
     return false;
   }
 
   // Pending is optional.
-  pending = value.FindBoolKey(kPaymentItemPending).value_or(pending);
+  pending = dict.FindBool(kPaymentItemPending).value_or(pending);
 
   return true;
 }
 
-base::Value PaymentItem::ToValue() const {
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.SetStringKey(kPaymentItemLabel, label);
-  result.SetKey(kPaymentItemAmount, PaymentCurrencyAmountToValue(*amount));
-  result.SetBoolKey(kPaymentItemPending, pending);
+base::Value::Dict PaymentItem::ToValueDict() const {
+  base::Value::Dict result;
+  result.Set(kPaymentItemLabel, label);
+  result.Set(kPaymentItemAmount, PaymentCurrencyAmountToValueDict(*amount));
+  result.Set(kPaymentItemPending, pending);
 
   return result;
 }
