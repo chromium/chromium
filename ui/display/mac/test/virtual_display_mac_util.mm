@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/mac/scoped_nsobject.h"
-#include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
@@ -391,14 +390,6 @@ void VirtualDisplayMacUtil::RemoveDisplay(int64_t display_id) {
 
 // static
 bool VirtualDisplayMacUtil::IsAPIAvailable() {
-  bool is_arch_cpu_arm_family = false;
-#if defined(ARCH_CPU_ARM_FAMILY)
-  is_arch_cpu_arm_family = true;
-#endif  // defined(ARCH_CPU_ARM_FAMILY)
-  if (is_arch_cpu_arm_family) {
-    return false;
-  }
-
   bool is_api_available = false;
   if (@available(macos 12.0, *)) {
     is_api_available = true;
