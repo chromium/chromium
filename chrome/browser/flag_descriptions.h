@@ -3200,6 +3200,9 @@ extern const char kSecondaryGoogleAccountUsageDescription[];
 extern const char kSharesheetCopyToClipboardName[];
 extern const char kSharesheetCopyToClipboardDescription[];
 
+extern const char kShelfAutoHideSeparationName[];
+extern const char kShelfAutoHideSeparationDescription[];
+
 extern const char kShimlessRMAFlowName[];
 extern const char kShimlessRMAFlowDescription[];
 

@@ -554,6 +554,8 @@ extern const base::Feature kSettingsAppNotificationSettings;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSettingsAppThemeChangeAnimation;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kShelfAutoHideSeparation;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kShelfGesturesWithVirtualKeyboard;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kShelfLauncherNudge;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kShelfParty;

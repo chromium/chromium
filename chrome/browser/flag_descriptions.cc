@@ -5590,6 +5590,12 @@ const char kSharesheetCopyToClipboardDescription[] =
     "Enables a share action in the sharesheet that copies the selected data to "
     "the clipboard.";
 
+const char kShelfAutoHideSeparationName[] =
+    "Enable separate shelf auto-hide preferences.";
+const char kShelfAutoHideSeparationDescription[] =
+    "Allows for the shelf's auto-hide preference to be specified separately "
+    "for clamshell and tablet mode.";
+
 const char kShimlessRMAFlowName[] = "Enable shimless RMA flow";
 const char kShimlessRMAFlowDescription[] = "Enable shimless RMA flow";
 

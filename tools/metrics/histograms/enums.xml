@@ -57573,6 +57573,7 @@ from previous Chrome versions.
   <int value="-810684526"
       label="AutofillToolkitViewsCreditCardDialogsMac:disabled"/>
   <int value="-810110236" label="EditPasswordsInSettings:enabled"/>
+  <int value="-809640965" label="ShelfAutoHideSeparation:enabled"/>
   <int value="-809456392" label="WebViewVulkanIntermediateBuffer:enabled"/>
   <int value="-808486493" label="NewWallpaperPicker:disabled"/>
   <int value="-806549905"
@@ -60691,6 +60692,7 @@ from previous Chrome versions.
   <int value="1205929554" label="SendTabToSelfOmniboxSendingAnimation:enabled"/>
   <int value="1206140820" label="RelatedSearchesInBar:disabled"/>
   <int value="1206486242" label="UseDnsHttpsSvcbAlpn:enabled"/>
+  <int value="1210118915" label="ShelfAutoHideSeparation:disabled"/>
   <int value="1210298193" label="FontAccessPersistent:enabled"/>
   <int value="1210343926" label="enable-drop-sync-credential"/>
   <int value="1211284676" label="V8NoTurbo:enabled"/>

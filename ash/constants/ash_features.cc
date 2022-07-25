@@ -1370,6 +1370,11 @@ const base::Feature kSettingsAppNotificationSettings{
 const base::Feature kSettingsAppThemeChangeAnimation{
     "SettingsAppThemeChangeAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Whether we should track auto-hide preferences separately between clamshell
+// and tablet.
+const base::Feature kShelfAutoHideSeparation{"ShelfAutoHideSeparation",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables shelf gestures (swipe to show hotseat, swipe to go home or overview)
 // in tablet mode when virtual keyboard is shown.
 const base::Feature kShelfGesturesWithVirtualKeyboard{

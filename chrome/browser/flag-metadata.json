@@ -5716,6 +5716,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "shelf-auto-hide-separation",
+    "owners": [ "etuck", "//ash/shelf/OWNERS" ],
+    "expiry_milestone": 108
+  },
+  {
     "name": "shelf-drag-to-pin",
     "owners": ["tbarzic", "//ash/shelf/OWNERS" ],
     "expiry_milestone": 106
