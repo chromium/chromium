@@ -228,7 +228,8 @@ class PLATFORM_EXPORT HeapAllocator {
                                  const T* const* backing_slot) {
     visitor->RegisterMovableReference(const_cast<const HeapVectorBacking<T>**>(
         reinterpret_cast<const HeapVectorBacking<T>* const*>(backing_slot)));
-    visitor->Trace(reinterpret_cast<const HeapVectorBacking<T>*>(backing));
+    visitor->TraceStrongContainer(
+        reinterpret_cast<const HeapVectorBacking<T>*>(backing));
   }
 
   template <typename T, typename HashTable>
@@ -239,7 +240,7 @@ class PLATFORM_EXPORT HeapAllocator {
         const_cast<const HeapHashTableBacking<HashTable>**>(
             reinterpret_cast<const HeapHashTableBacking<HashTable>* const*>(
                 backing_slot)));
-    visitor->Trace(
+    visitor->TraceStrongContainer(
         reinterpret_cast<const HeapHashTableBacking<HashTable>*>(backing));
   }
 
