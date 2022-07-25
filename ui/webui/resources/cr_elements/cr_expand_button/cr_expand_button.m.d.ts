@@ -9,6 +9,8 @@ interface CrExpandButtonElement extends LegacyElementMixin, HTMLElement {
   disabled: boolean;
   tabIndex: number;
   noink: boolean;
+  expandTitle?: string;
+  collapseTitle?: string;
   focus(): void;
 }
 

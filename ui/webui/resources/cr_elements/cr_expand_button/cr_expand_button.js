@@ -54,6 +54,28 @@ Polymer({
       value: 'cr:expand-less',
       observer: 'onIconChange_',
     },
+
+    expandTitle: String,
+    collapseTitle: String,
+
+    tooltipText_: {
+      type: String,
+      computed: 'computeTooltipText_(expandTitle, collapseTitle, expanded)',
+      observer: 'onTooltipTextChange_',
+    },
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeTooltipText_() {
+    return this.expanded ? this.collapseTitle : this.expandTitle;
+  },
+
+  /** @private */
+  onTooltipTextChange_() {
+    this.title = this.tooltipText_;
   },
 
   observers: [
