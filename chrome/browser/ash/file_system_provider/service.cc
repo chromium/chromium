@@ -300,7 +300,7 @@ ProvidedFileSystemInterface* Service::GetProvidedFileSystem(
   const auto file_system_it = file_system_map_.find(
       FileSystemKey(provider_id.ToString(), file_system_id));
   if (file_system_it == file_system_map_.end())
-    return NULL;
+    return nullptr;
 
   return file_system_it->second.get();
 }
@@ -404,11 +404,11 @@ ProvidedFileSystemInterface* Service::GetProvidedFileSystem(
 
   const auto mapping_it = mount_point_name_to_key_map_.find(mount_point_name);
   if (mapping_it == mount_point_name_to_key_map_.end())
-    return NULL;
+    return nullptr;
 
   const auto file_system_it = file_system_map_.find(mapping_it->second);
   if (file_system_it == file_system_map_.end())
-    return NULL;
+    return nullptr;
 
   return file_system_it->second.get();
 }
