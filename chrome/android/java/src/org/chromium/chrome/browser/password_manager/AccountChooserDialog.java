@@ -213,6 +213,8 @@ public class AccountChooserDialog
         mDialog.show();
     }
 
+    // status_bar_height is not a public framework resource, so we have to getIdentifier()
+    @SuppressWarnings("DiscouragedApi")
     private void showTooltip(View view, String message, int layoutId) {
         Context context = view.getContext();
         Resources resources = context.getResources();

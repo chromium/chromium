@@ -57,6 +57,7 @@ public abstract class AssistantDrawable {
 
     /** Returns whether {@code resourceId} is a valid resource identifier. */
     @CalledByNative
+    @SuppressWarnings("DiscouragedApi")
     public static boolean isValidDrawableResource(Context context, String resourceId) {
         int drawableId = context.getResources().getIdentifier(
                 resourceId, "drawable", context.getPackageName());
@@ -167,6 +168,7 @@ public abstract class AssistantDrawable {
         }
 
         @Override
+        @SuppressWarnings("DiscouragedApi")
         public void getDrawable(Context context, Callback<Drawable> callback) {
             int drawableId = context.getResources().getIdentifier(
                     mResourceId, "drawable", context.getPackageName());

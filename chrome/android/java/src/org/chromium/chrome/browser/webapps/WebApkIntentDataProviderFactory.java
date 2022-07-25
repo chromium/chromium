@@ -162,6 +162,8 @@ public class WebApkIntentDataProviderFactory {
      * @param resources
      * @return A list of shortcut items derived from the parser.
      */
+    // looking up resources from other apps requires the use of getIdentifier()
+    @SuppressWarnings("DiscouragedApi")
     private static List<ShortcutItem> parseShortcutItems(String webApkPackageName, Resources res) {
         int shortcutsResId =
                 res.getIdentifier(RESOURCE_SHORTCUTS, RESOURCE_XML_TYPE, webApkPackageName);
@@ -223,6 +225,8 @@ public class WebApkIntentDataProviderFactory {
      * @param shareData Shared information from the share intent.
      * @param shareDataActivityClassName Name of WebAPK activity which received share intent.
      */
+    // looking up resources from other apps requires the use of getIdentifier()
+    @SuppressWarnings("DiscouragedApi")
     public static BrowserServicesIntentDataProvider create(Intent intent, String webApkPackageName,
             String url, int source, boolean forceNavigation,
             boolean canUseSplashFromContentProvider, ShareData shareData,

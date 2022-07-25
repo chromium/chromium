@@ -784,6 +784,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         return displayMetrics.heightPixels;
     }
 
+    // status_bar_height is not a public framework resource, so we have to getIdentifier()
+    @SuppressWarnings("DiscouragedApi")
     private @Px int getStatusBarHeight() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             return mActivity.getWindowManager()

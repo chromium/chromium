@@ -97,6 +97,8 @@ public class TabUtils {
      * @param context The application context.
      * @return The estimated prerender size in pixels.
      */
+    // status_bar_height is not a public framework resource, so we have to getIdentifier()
+    @SuppressWarnings("DiscouragedApi")
     public static Rect estimateContentSize(Context context) {
         // The size is estimated as:
         // X = screenSizeX

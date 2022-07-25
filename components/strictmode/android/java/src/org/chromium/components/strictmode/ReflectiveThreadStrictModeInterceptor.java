@@ -107,7 +107,7 @@ final class ReflectiveThreadStrictModeInterceptor implements ThreadStrictModeInt
     }
 
     /** @param o {@code android.os.StrictMode.ViolationInfo} */
-    @SuppressWarnings({"unchecked", "DiscouragedPrivateApi", "PrivateApi"})
+    @SuppressWarnings({"unchecked", "DiscouragedPrivateApi", "PrivateApi", "BlockedPrivateApi"})
     private int getViolationType(Object violationInfo) {
         try {
             Class<?> violationInfoClass = Class.forName("android.os.StrictMode$ViolationInfo");

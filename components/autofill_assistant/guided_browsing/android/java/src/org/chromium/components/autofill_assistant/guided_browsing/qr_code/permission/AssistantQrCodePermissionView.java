@@ -42,6 +42,7 @@ public class AssistantQrCodePermissionView {
     /**
      * The AssistantQrCodePermissionView constructor.
      */
+    @SuppressWarnings("DiscouragedApi")
     public AssistantQrCodePermissionView(Context context, AssistantQrCodePermissionType permission,
             AssistantQrCodePermissionView.Delegate delegate,
             AssistantQrCodePermissionCallback permissionCallback) {

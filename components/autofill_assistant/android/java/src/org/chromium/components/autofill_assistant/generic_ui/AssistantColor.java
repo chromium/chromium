@@ -33,6 +33,7 @@ public abstract class AssistantColor {
     }
 
     @CalledByNative
+    @SuppressWarnings("DiscouragedApi")
     public static boolean isValidResourceIdentifier(Context context, String resourceIdentifier) {
         int colorId = context.getResources().getIdentifier(
                 resourceIdentifier, "color", context.getPackageName());
@@ -64,6 +65,7 @@ public abstract class AssistantColor {
     @Nullable
     @ColorInt
     @CalledByNative
+    @SuppressWarnings("DiscouragedApi")
     public static Integer createFromResource(Context context, String resourceIdentifier) {
         int colorId = context.getResources().getIdentifier(
                 resourceIdentifier, "color", context.getPackageName());

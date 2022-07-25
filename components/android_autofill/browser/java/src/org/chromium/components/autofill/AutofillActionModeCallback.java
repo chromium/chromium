@@ -19,6 +19,8 @@ public class AutofillActionModeCallback implements ActionMode.Callback {
     private final int mAutofillMenuItemTitle;
     private final int mAutofillMenuItem;
 
+    // using getIdentifier to work around not-exposed framework resource ID
+    @SuppressWarnings("DiscouragedApi")
     public AutofillActionModeCallback(Context context, AutofillProvider autofillProvider) {
         mContext = context;
         mAutofillProvider = autofillProvider;

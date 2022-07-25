@@ -24,6 +24,7 @@ public class LicenseActivity extends Activity {
     private static final String LICENSES_CONTENT_TYPE = "text/html";
 
     @Override
+    @SuppressWarnings("DiscouragedApi")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final String packageName = getPackageName();

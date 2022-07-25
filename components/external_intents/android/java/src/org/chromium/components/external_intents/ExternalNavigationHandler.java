@@ -2133,7 +2133,8 @@ public class ExternalNavigationHandler {
         return OverrideUrlLoadingResult.forExternalIntent();
     }
 
-    @SuppressWarnings("UseCompatLoadingForDrawables")
+    // looking up resources from other apps requires the use of getIdentifier()
+    @SuppressWarnings({"UseCompatLoadingForDrawables", "DiscouragedApi"})
     private OverrideUrlLoadingResult startActivityWithChooser(final Intent intent,
             QueryIntentActivitiesSupplier resolvingInfos, ResolveActivitySupplier resolveActivity,
             GURL browserFallbackUrl, GURL intentDataUrl, GURL referrerUrl, Context context,

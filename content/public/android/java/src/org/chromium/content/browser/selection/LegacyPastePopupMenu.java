@@ -32,6 +32,8 @@ public class LegacyPastePopupMenu implements OnClickListener, PastePopupMenu {
     private final int mLineOffsetY;
     private final int mWidthOffsetX;
 
+    // status_bar_height is not a public framework resource, so we have to getIdentifier()
+    @SuppressWarnings("DiscouragedApi")
     public LegacyPastePopupMenu(
             Context context, View parent, final PastePopupMenuDelegate delegate) {
         mParent = parent;

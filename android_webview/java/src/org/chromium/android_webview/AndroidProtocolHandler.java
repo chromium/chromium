@@ -93,6 +93,8 @@ public class AndroidProtocolHandler {
                 packageName + ".R$" + assetType);
     }
 
+    // file://android_res/ has no choice but to do name-based resource lookups
+    @SuppressWarnings("DiscouragedApi")
     private static int getFieldId(String assetType, String assetName)
             throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
         Context appContext = ContextUtils.getApplicationContext();
