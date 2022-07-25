@@ -51,6 +51,9 @@ extern const base::Feature kAllowAllSitesToInitiateMirroring;
 // TODO(crbug.com/1270509): Remove this base::Feature once fully launched.
 extern const base::Feature kDialEnforceUrlIPAddress;
 
+// If enabled, users can request Media Remoting without fullscreen-in-tab.
+extern const base::Feature kMediaRemotingWithoutFullscreen;
+
 // Registers |kMediaRouterCastAllowAllIPs| with local state pref |registry|.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

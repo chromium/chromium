@@ -40,6 +40,8 @@ const base::Feature kDialMediaRouteProvider{"DialMediaRouteProvider",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kDialEnforceUrlIPAddress{"DialEnforceUrlIPAddress",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kMediaRemotingWithoutFullscreen{
+    "MediaRemotingWithoutFullscreen", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_CHROMEOS)
 const base::Feature kGlobalMediaControlsCastStartStop{
