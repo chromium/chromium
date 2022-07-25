@@ -8,6 +8,7 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/util/process_version.gni")
+import("//build_overrides/build.gni")
 
 source_set("buildflag_header_h") {
   sources = [ "buildflag.h" ]
@@ -56,12 +57,14 @@ buildflag_header("chromeos_buildflags") {
   ]
 }
 
-group("gold_common_pytype") {
-  testonly = true
+if (build_with_chromium) {
+  group("gold_common_pytype") {
+    testonly = true
 
-  data = [ "//build/skia_gold_common/" ]
+    data = [ "//build/skia_gold_common/" ]
 
-  data_deps = [ "//testing:pytype_dependencies" ]
+    data_deps = [ "//testing:pytype_dependencies" ]
+  }
 }
 
 if (is_chromeos) {
