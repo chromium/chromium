@@ -445,7 +445,7 @@ const char* PolicyDiagnostic::JsonString() {
              base::AsStringPiece16(GetSidAsString(*app_container_sid_)));
     base::Value::List caps;
     for (const auto& sid : capabilities_) {
-      auto sid_value = base::AsStringPiece16(GetSidAsString(sid));
+      auto sid_value = base::Value(base::AsStringPiece16(GetSidAsString(sid)));
       caps.Append(std::move(sid_value));
     }
     if (!caps.empty()) {
@@ -453,7 +453,7 @@ const char* PolicyDiagnostic::JsonString() {
     }
     base::Value::List imp_caps;
     for (const auto& sid : initial_capabilities_) {
-      auto sid_value = base::AsStringPiece16(GetSidAsString(sid));
+      auto sid_value = base::Value(base::AsStringPiece16(GetSidAsString(sid)));
       imp_caps.Append(std::move(sid_value));
     }
     if (!imp_caps.empty()) {
