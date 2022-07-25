@@ -65,43 +65,41 @@ bool ScanRun(const VTTScanner::Run& value_run,
   return scanner.ScanRun(value_run, V8AlignSetting(align).AsString());
 }
 
-}  // namespace
-
-static const CSSValueID kDisplayWritingModeMap[] = {CSSValueID::kHorizontalTb,
-                                                    CSSValueID::kVerticalRl,
-                                                    CSSValueID::kVerticalLr};
+const CSSValueID kDisplayWritingModeMap[] = {CSSValueID::kHorizontalTb,
+                                             CSSValueID::kVerticalRl,
+                                             CSSValueID::kVerticalLr};
 static_assert(std::size(kDisplayWritingModeMap) ==
-                  VTTCue::kNumberOfWritingDirections,
+                  static_cast<size_t>(VTTCue::WritingDirection::kMaxValue) + 1,
               "displayWritingModeMap should have the same number of elements "
               "as VTTCue::NumberOfWritingDirections");
 
-static const CSSValueID kDisplayAlignmentMap[] = {
+const CSSValueID kDisplayAlignmentMap[] = {
     CSSValueID::kStart, CSSValueID::kCenter, CSSValueID::kEnd,
     CSSValueID::kLeft, CSSValueID::kRight};
 static_assert(std::size(kDisplayAlignmentMap) == V8AlignSetting::kEnumSize,
               "displayAlignmentMap should have the same number of elements as "
               "VTTCue::NumberOfAlignments");
 
-static const String& HorizontalKeyword() {
+const String& HorizontalKeyword() {
   return g_empty_string;
 }
 
-static const String& VerticalGrowingLeftKeyword() {
+const String& VerticalGrowingLeftKeyword() {
   DEFINE_STATIC_LOCAL(const String, verticalrl, ("rl"));
   return verticalrl;
 }
 
-static const String& VerticalGrowingRightKeyword() {
+const String& VerticalGrowingRightKeyword() {
   DEFINE_STATIC_LOCAL(const String, verticallr, ("lr"));
   return verticallr;
 }
 
-static bool IsInvalidPercentage(double value) {
+bool IsInvalidPercentage(double value) {
   DCHECK(std::isfinite(value));
   return value < 0 || value > 100;
 }
 
-static bool IsInvalidPercentage(double value, ExceptionState& exception_state) {
+bool IsInvalidPercentage(double value, ExceptionState& exception_state) {
   if (IsInvalidPercentage(value)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
@@ -112,6 +110,8 @@ static bool IsInvalidPercentage(double value, ExceptionState& exception_state) {
   }
   return false;
 }
+
+}  // namespace
 
 VTTCueBackgroundBox::VTTCueBackgroundBox(Document& document)
     : HTMLDivElement(document) {
@@ -143,7 +143,7 @@ VTTCue::VTTCue(Document& document,
       line_position_(std::numeric_limits<double>::quiet_NaN()),
       text_position_(std::numeric_limits<double>::quiet_NaN()),
       cue_size_(100),
-      writing_direction_(kHorizontal),
+      writing_direction_(WritingDirection::kHorizontal),
       vtt_node_tree_(nullptr),
       cue_background_box_(MakeGarbageCollected<VTTCueBackgroundBox>(document)),
       snap_to_lines_(true),
@@ -168,11 +168,11 @@ void VTTCue::CueDidChange(CueMutationAffectsOrder affects_order) {
 
 const String& VTTCue::vertical() const {
   switch (writing_direction_) {
-    case kHorizontal:
+    case WritingDirection::kHorizontal:
       return HorizontalKeyword();
-    case kVerticalGrowingLeft:
+    case WritingDirection::kVerticalGrowingLeft:
       return VerticalGrowingLeftKeyword();
-    case kVerticalGrowingRight:
+    case WritingDirection::kVerticalGrowingRight:
       return VerticalGrowingRightKeyword();
     default:
       NOTREACHED();
@@ -183,11 +183,11 @@ const String& VTTCue::vertical() const {
 void VTTCue::setVertical(const String& value) {
   WritingDirection direction = writing_direction_;
   if (value == HorizontalKeyword())
-    direction = kHorizontal;
+    direction = WritingDirection::kHorizontal;
   else if (value == VerticalGrowingLeftKeyword())
-    direction = kVerticalGrowingLeft;
+    direction = WritingDirection::kVerticalGrowingLeft;
   else if (value == VerticalGrowingRightKeyword())
-    direction = kVerticalGrowingRight;
+    direction = WritingDirection::kVerticalGrowingRight;
   else
     NOTREACHED();
 
@@ -534,7 +534,8 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
   // 'tb'. Otherwise, if the cue writing direction is vertical growing left,
   // then let block-flow be 'lr'. Otherwise, the cue writing direction is
   // vertical growing right; let block-flow be 'rl'.
-  display_parameters.writing_mode = kDisplayWritingModeMap[writing_direction_];
+  display_parameters.writing_mode =
+      kDisplayWritingModeMap[static_cast<size_t>(writing_direction_)];
 
   // Resolve the cue alignment to one of the values {start, end, center}.
   AlignSetting computed_cue_alignment = CalculateComputedCueAlignment();
@@ -568,7 +569,7 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
 
   // 7. Determine the value of x-position or y-position for cue as per the
   // appropriate rules from the following list:
-  if (writing_direction_ == kHorizontal) {
+  if (writing_direction_ == WritingDirection::kHorizontal) {
     switch (computed_cue_alignment) {
       case AlignSetting::kStart:
         display_parameters.position.set_x(computed_text_position);
@@ -611,12 +612,12 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
   // yet calculated for cue as per the appropriate rules from the following
   // list:
   if (!snap_to_lines_) {
-    if (writing_direction_ == kHorizontal)
+    if (writing_direction_ == WritingDirection::kHorizontal)
       display_parameters.position.set_y(computed_line_position);
     else
       display_parameters.position.set_x(computed_line_position);
   } else {
-    if (writing_direction_ == kHorizontal)
+    if (writing_direction_ == WritingDirection::kHorizontal)
       display_parameters.position.set_y(0);
     else
       display_parameters.position.set_x(0);
@@ -750,7 +751,7 @@ void VTTCue::UpdateDisplay(HTMLDivElement& container) {
 
   UseCounter::Count(GetDocument(), WebFeature::kVTTCueRender);
 
-  if (writing_direction_ != kHorizontal)
+  if (writing_direction_ != WritingDirection::kHorizontal)
     UseCounter::Count(GetDocument(), WebFeature::kVTTCueRenderVertical);
 
   if (!snap_to_lines_)
@@ -870,13 +871,13 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
         //    let cue's WebVTT cue writing direction be vertical
         //    growing left.
         if (input.ScanRun(value_run, VerticalGrowingLeftKeyword()))
-          writing_direction_ = kVerticalGrowingLeft;
+          writing_direction_ = WritingDirection::kVerticalGrowingLeft;
 
         // 2. Otherwise, if value is a case-sensitive match for the string
         //    "lr", then let cue's WebVTT cue writing direction be
         //    vertical growing right.
         else if (input.ScanRun(value_run, VerticalGrowingRightKeyword()))
-          writing_direction_ = kVerticalGrowingRight;
+          writing_direction_ = WritingDirection::kVerticalGrowingRight;
         break;
       }
       case kLine: {

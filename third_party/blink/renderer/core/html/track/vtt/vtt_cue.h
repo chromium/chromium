@@ -145,11 +145,11 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
 
   double CalculateComputedLinePosition() const;
 
-  enum WritingDirection {
+  enum class WritingDirection {
     kHorizontal = 0,
     kVerticalGrowingLeft,
     kVerticalGrowingRight,
-    kNumberOfWritingDirections
+    kMaxValue = kVerticalGrowingRight
   };
   WritingDirection GetWritingDirection() const { return writing_direction_; }
 
