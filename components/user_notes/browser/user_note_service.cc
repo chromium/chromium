@@ -452,7 +452,16 @@ void UserNoteService::OnNoteModelsFetched(
     const auto& creation_entry_it = creation_map_.find(id);
     const auto& model_entry_it = model_map_.find(id);
 
-    if (new_note_it == new_notes.end() || model_entry_it != model_map_.end()) {
+    if (creation_entry_it != creation_map_.end()) {
+      // This note was authored locally. It could also be in the list of new
+      // notes if the URL it's attached to was loaded in multiple tabs, but it
+      // cannot exist in the model map yet. Move it there from the creation map.
+      DCHECK(model_entry_it == model_map_.end());
+      creation_entry_it->second.model->Update(std::move(note));
+      model_map_.emplace(id, std::move(creation_entry_it->second));
+      creation_map_.erase(creation_entry_it);
+    } else if (new_note_it == new_notes.end() ||
+               model_entry_it != model_map_.end()) {
       // Either this note was updated or the URL it is attached to was already
       // loaded in another tab. Either way, its model already exists in the
       // model map, so simply update it with the latest model.
@@ -460,24 +469,12 @@ void UserNoteService::OnNoteModelsFetched(
       DCHECK(model_entry_it != model_map_.end());
       model_entry_it->second.model->Update(std::move(note));
     } else {
+      // This is a new note that wasn't authored locally. Simply add the model
+      // to the model map.
+      DCHECK(new_note_it != new_notes.end());
       DCHECK(model_entry_it == model_map_.end());
-
-      if (creation_entry_it == creation_map_.end()) {
-        // This is a new note that wasn't authored locally. Simply add the model
-        // to the model map.
-        UserNoteService::ModelMapEntry entry(std::move(note));
-        model_map_.emplace(id, std::move(entry));
-      } else {
-        // This is a new note that was authored locally, which means it has a
-        // partial model in the creation map. Update it with the new model from
-        // storage, then move it from the creation map to the model map. The new
-        // model from storage can't be used directly because the note instance
-        // for the page highlight has a reference to the partial model, and that
-        // connection must be maintained.
-        creation_entry_it->second.model->Update(std::move(note));
-        model_map_.emplace(id, std::move(creation_entry_it->second));
-        creation_map_.erase(creation_entry_it);
-      }
+      UserNoteService::ModelMapEntry entry(std::move(note));
+      model_map_.emplace(id, std::move(entry));
     }
   }
 

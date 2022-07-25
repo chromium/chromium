@@ -66,12 +66,14 @@ std::vector<std::unique_ptr<FrameUserNoteChanges>> CalculateNoteChanges(
 
         if (url == model.target().target_page()) {
           // Note has been removed.
-          removed.emplace_back(base::UnguessableToken(model.id()));
+          removed.emplace_back(model.id());
         }
       } else if (metadata_it->second->modification_date() >
-                 model.metadata().modification_date()) {
-        // Note has been modified.
-        modified.emplace_back(base::UnguessableToken(model.id()));
+                     model.metadata().modification_date() ||
+                 note_service.IsNoteInProgress(model.id())) {
+        // This note has been modified or created locally (which is treated as a
+        // modification since both the instance and the partial model exist).
+        modified.emplace_back(model.id());
       }
     }
 
@@ -81,7 +83,7 @@ std::vector<std::unique_ptr<FrameUserNoteChanges>> CalculateNoteChanges(
       const base::UnguessableToken& id = metadata_it.first;
       if (!notes_manager->GetNoteInstance(id)) {
         // This is a new note.
-        added.emplace_back(base::UnguessableToken(id));
+        added.emplace_back(id);
       }
     }
 
