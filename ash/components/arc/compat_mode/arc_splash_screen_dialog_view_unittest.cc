@@ -91,14 +91,16 @@ TEST_F(ArcSplashScreenDialogViewTest, TestEscKey) {
     ArcSplashScreenDialogView::TestApi dialog_view_test(dialog_view.get());
     auto* const bubble = ShowAsBubble(std::move(dialog_view));
     EXPECT_FALSE(on_close_callback_called);
-    EXPECT_NE(-1, anchor()->GetIndexOf(dialog_view_test.highlight_border()));
+    EXPECT_TRUE(
+        anchor()->GetIndexOf(dialog_view_test.highlight_border()).has_value());
 
     // Simulates esc key event to close the dialog.
     ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, ui::EF_NONE);
     bubble->OnKeyEvent(&event);
 
     EXPECT_TRUE(on_close_callback_called);
-    EXPECT_EQ(-1, anchor()->GetIndexOf(dialog_view_test.highlight_border()));
+    EXPECT_FALSE(
+        anchor()->GetIndexOf(dialog_view_test.highlight_border()).has_value());
   }
 }
 
@@ -108,9 +110,11 @@ TEST_F(ArcSplashScreenDialogViewTest, TestAnchorHighlight) {
         base::DoNothing(), parent_window(), anchor(), is_for_unresizable);
     ArcSplashScreenDialogView::TestApi dialog_view_test(dialog_view.get());
     ShowAsBubble(std::move(dialog_view));
-    EXPECT_NE(-1, anchor()->GetIndexOf(dialog_view_test.highlight_border()));
+    EXPECT_TRUE(
+        anchor()->GetIndexOf(dialog_view_test.highlight_border()).has_value());
     LeftClickOnView(parent_widget(), dialog_view_test.close_button());
-    EXPECT_EQ(-1, anchor()->GetIndexOf(dialog_view_test.highlight_border()));
+    EXPECT_FALSE(
+        anchor()->GetIndexOf(dialog_view_test.highlight_border()).has_value());
   }
 }
 

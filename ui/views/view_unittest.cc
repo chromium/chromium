@@ -3525,23 +3525,23 @@ TEST_F(ViewTest, GetIndexOf) {
 
   auto* foo1 = child1->AddChildView(std::make_unique<View>());
 
-  EXPECT_EQ(-1, root->GetIndexOf(nullptr));
-  EXPECT_EQ(-1, root->GetIndexOf(root.get()));
-  EXPECT_EQ(0, root->GetIndexOf(child1));
-  EXPECT_EQ(1, root->GetIndexOf(child2));
-  EXPECT_EQ(-1, root->GetIndexOf(foo1));
+  EXPECT_FALSE(root->GetIndexOf(nullptr).has_value());
+  EXPECT_FALSE(root->GetIndexOf(root.get()).has_value());
+  EXPECT_EQ(0u, root->GetIndexOf(child1));
+  EXPECT_EQ(1u, root->GetIndexOf(child2));
+  EXPECT_FALSE(root->GetIndexOf(foo1).has_value());
 
-  EXPECT_EQ(-1, child1->GetIndexOf(nullptr));
-  EXPECT_EQ(-1, child1->GetIndexOf(root.get()));
-  EXPECT_EQ(-1, child1->GetIndexOf(child1));
-  EXPECT_EQ(-1, child1->GetIndexOf(child2));
-  EXPECT_EQ(0, child1->GetIndexOf(foo1));
+  EXPECT_FALSE(child1->GetIndexOf(nullptr).has_value());
+  EXPECT_FALSE(child1->GetIndexOf(root.get()).has_value());
+  EXPECT_FALSE(child1->GetIndexOf(child1).has_value());
+  EXPECT_FALSE(child1->GetIndexOf(child2).has_value());
+  EXPECT_EQ(0u, child1->GetIndexOf(foo1));
 
-  EXPECT_EQ(-1, child2->GetIndexOf(nullptr));
-  EXPECT_EQ(-1, child2->GetIndexOf(root.get()));
-  EXPECT_EQ(-1, child2->GetIndexOf(child2));
-  EXPECT_EQ(-1, child2->GetIndexOf(child1));
-  EXPECT_EQ(-1, child2->GetIndexOf(foo1));
+  EXPECT_FALSE(child2->GetIndexOf(nullptr).has_value());
+  EXPECT_FALSE(child2->GetIndexOf(root.get()).has_value());
+  EXPECT_FALSE(child2->GetIndexOf(child2).has_value());
+  EXPECT_FALSE(child2->GetIndexOf(child1).has_value());
+  EXPECT_FALSE(child2->GetIndexOf(foo1).has_value());
 }
 
 // Verifies that the child views can be reordered correctly.
@@ -3557,27 +3557,27 @@ TEST_F(ViewTest, ReorderChildren) {
   foo2->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   foo3->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 
-  ASSERT_EQ(0, child->GetIndexOf(foo1));
-  ASSERT_EQ(1, child->GetIndexOf(foo2));
-  ASSERT_EQ(2, child->GetIndexOf(foo3));
+  ASSERT_EQ(0u, child->GetIndexOf(foo1));
+  ASSERT_EQ(1u, child->GetIndexOf(foo2));
+  ASSERT_EQ(2u, child->GetIndexOf(foo3));
   ASSERT_EQ(foo2, foo1->GetNextFocusableView());
   ASSERT_EQ(foo3, foo2->GetNextFocusableView());
   ASSERT_EQ(nullptr, foo3->GetNextFocusableView());
 
   // Move |foo2| at the end.
   child->ReorderChildView(foo2, -1);
-  ASSERT_EQ(0, child->GetIndexOf(foo1));
-  ASSERT_EQ(1, child->GetIndexOf(foo3));
-  ASSERT_EQ(2, child->GetIndexOf(foo2));
+  ASSERT_EQ(0u, child->GetIndexOf(foo1));
+  ASSERT_EQ(1u, child->GetIndexOf(foo3));
+  ASSERT_EQ(2u, child->GetIndexOf(foo2));
   ASSERT_EQ(foo3, foo1->GetNextFocusableView());
   ASSERT_EQ(foo2, foo3->GetNextFocusableView());
   ASSERT_EQ(nullptr, foo2->GetNextFocusableView());
 
   // Move |foo1| at the end.
   child->ReorderChildView(foo1, -1);
-  ASSERT_EQ(0, child->GetIndexOf(foo3));
-  ASSERT_EQ(1, child->GetIndexOf(foo2));
-  ASSERT_EQ(2, child->GetIndexOf(foo1));
+  ASSERT_EQ(0u, child->GetIndexOf(foo3));
+  ASSERT_EQ(1u, child->GetIndexOf(foo2));
+  ASSERT_EQ(2u, child->GetIndexOf(foo1));
   ASSERT_EQ(nullptr, foo1->GetNextFocusableView());
   ASSERT_EQ(foo2, foo1->GetPreviousFocusableView());
   ASSERT_EQ(foo2, foo3->GetNextFocusableView());
@@ -3585,9 +3585,9 @@ TEST_F(ViewTest, ReorderChildren) {
 
   // Move |foo2| to the front.
   child->ReorderChildView(foo2, 0);
-  ASSERT_EQ(0, child->GetIndexOf(foo2));
-  ASSERT_EQ(1, child->GetIndexOf(foo3));
-  ASSERT_EQ(2, child->GetIndexOf(foo1));
+  ASSERT_EQ(0u, child->GetIndexOf(foo2));
+  ASSERT_EQ(1u, child->GetIndexOf(foo3));
+  ASSERT_EQ(2u, child->GetIndexOf(foo1));
   ASSERT_EQ(nullptr, foo1->GetNextFocusableView());
   ASSERT_EQ(foo3, foo1->GetPreviousFocusableView());
   ASSERT_EQ(foo3, foo2->GetNextFocusableView());
@@ -3648,32 +3648,32 @@ TEST_F(ViewTest, AddExistingChild) {
 
   auto* v2 = v1->AddChildView(std::make_unique<View>());
   auto* v3 = v1->AddChildView(std::make_unique<View>());
-  EXPECT_EQ(0, v1->GetIndexOf(v2));
-  EXPECT_EQ(1, v1->GetIndexOf(v3));
+  EXPECT_EQ(0u, v1->GetIndexOf(v2));
+  EXPECT_EQ(1u, v1->GetIndexOf(v3));
 
   // Check that there's no change in order when adding at same index.
   v1->AddChildViewAt(v2, 0);
-  EXPECT_EQ(0, v1->GetIndexOf(v2));
-  EXPECT_EQ(1, v1->GetIndexOf(v3));
+  EXPECT_EQ(0u, v1->GetIndexOf(v2));
+  EXPECT_EQ(1u, v1->GetIndexOf(v3));
   v1->AddChildViewAt(v3, 1);
-  EXPECT_EQ(0, v1->GetIndexOf(v2));
-  EXPECT_EQ(1, v1->GetIndexOf(v3));
+  EXPECT_EQ(0u, v1->GetIndexOf(v2));
+  EXPECT_EQ(1u, v1->GetIndexOf(v3));
 
   // Add it at a different index and check for change in order.
   v1->AddChildViewAt(v2, 1);
-  EXPECT_EQ(1, v1->GetIndexOf(v2));
-  EXPECT_EQ(0, v1->GetIndexOf(v3));
+  EXPECT_EQ(1u, v1->GetIndexOf(v2));
+  EXPECT_EQ(0u, v1->GetIndexOf(v3));
   v1->AddChildViewAt(v2, 0);
-  EXPECT_EQ(0, v1->GetIndexOf(v2));
-  EXPECT_EQ(1, v1->GetIndexOf(v3));
+  EXPECT_EQ(0u, v1->GetIndexOf(v2));
+  EXPECT_EQ(1u, v1->GetIndexOf(v3));
 
   // Check that calling AddChildView() moves to the end.
   v1->AddChildView(v2);
-  EXPECT_EQ(1, v1->GetIndexOf(v2));
-  EXPECT_EQ(0, v1->GetIndexOf(v3));
+  EXPECT_EQ(1u, v1->GetIndexOf(v2));
+  EXPECT_EQ(0u, v1->GetIndexOf(v3));
   v1->AddChildView(v3);
-  EXPECT_EQ(0, v1->GetIndexOf(v2));
-  EXPECT_EQ(1, v1->GetIndexOf(v3));
+  EXPECT_EQ(0u, v1->GetIndexOf(v2));
+  EXPECT_EQ(1u, v1->GetIndexOf(v3));
 }
 
 TEST_F(ViewTest, UseMirroredLayoutDisableMirroring) {

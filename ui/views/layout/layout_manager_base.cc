@@ -172,7 +172,7 @@ void LayoutManagerBase::ApplyLayout(const ProposedLayout& layout) {
     // a non-const reference to the child.
     View* const child_view = child_layout.child_view;
     // Should not be attempting to modify a child view that has been removed.
-    DCHECK_GE(host_view()->GetIndexOf(child_view), 0);
+    DCHECK(host_view()->GetIndexOf(child_view).has_value());
     if (child_view->GetVisible() != child_layout.visible)
       SetViewVisibility(child_view, child_layout.visible);
 

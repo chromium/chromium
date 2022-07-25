@@ -336,9 +336,9 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
 TEST_F(AshNotificationViewTest, UpdateViewsOrderingTest) {
   EXPECT_NE(nullptr, title_row());
   EXPECT_NE(nullptr, GetMessageLabel(notification_view()));
-  EXPECT_EQ(0, GetLeftContent(notification_view())->GetIndexOf(title_row()));
-  EXPECT_EQ(1, GetLeftContent(notification_view())
-                   ->GetIndexOf(GetMessageLabel(notification_view())));
+  EXPECT_EQ(0u, GetLeftContent(notification_view())->GetIndexOf(title_row()));
+  EXPECT_EQ(1u, GetLeftContent(notification_view())
+                    ->GetIndexOf(GetMessageLabel(notification_view())));
 
   std::unique_ptr<Notification> notification = CreateTestNotification();
   notification->set_title(std::u16string());
@@ -347,8 +347,8 @@ TEST_F(AshNotificationViewTest, UpdateViewsOrderingTest) {
 
   EXPECT_EQ(nullptr, title_row());
   EXPECT_NE(nullptr, GetMessageLabel(notification_view()));
-  EXPECT_EQ(0, GetLeftContent(notification_view())
-                   ->GetIndexOf(GetMessageLabel(notification_view())));
+  EXPECT_EQ(0u, GetLeftContent(notification_view())
+                    ->GetIndexOf(GetMessageLabel(notification_view())));
 
   notification->set_title(u"title");
 
@@ -356,9 +356,9 @@ TEST_F(AshNotificationViewTest, UpdateViewsOrderingTest) {
 
   EXPECT_NE(nullptr, title_row());
   EXPECT_NE(nullptr, GetMessageLabel(notification_view()));
-  EXPECT_EQ(0, GetLeftContent(notification_view())->GetIndexOf(title_row()));
-  EXPECT_EQ(1, GetLeftContent(notification_view())
-                   ->GetIndexOf(GetMessageLabel(notification_view())));
+  EXPECT_EQ(0u, GetLeftContent(notification_view())->GetIndexOf(title_row()));
+  EXPECT_EQ(1u, GetLeftContent(notification_view())
+                    ->GetIndexOf(GetMessageLabel(notification_view())));
 }
 
 TEST_F(AshNotificationViewTest, CreateOrUpdateTitle) {

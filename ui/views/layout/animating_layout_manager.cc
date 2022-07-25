@@ -735,7 +735,7 @@ void AnimatingLayoutManager::UpdateCurrentLayout(double percent) {
 
   for (const LayoutFadeInfo& fade_info : fade_infos_) {
     // This shouldn't happen but we should ensure that with a check.
-    DCHECK_NE(-1, host_view()->GetIndexOf(fade_info.child_view));
+    DCHECK(host_view()->GetIndexOf(fade_info.child_view).has_value());
 
     // Views that were previously fading are animated as normal, so nothing to
     // do here.
@@ -947,7 +947,7 @@ void AnimatingLayoutManager::ResolveFades() {
   for (const LayoutFadeInfo& fade_info : fade_infos_) {
     View* const child = fade_info.child_view;
     if (fade_info.fade_type == LayoutFadeType::kFadingOut &&
-        host_view()->GetIndexOf(child) >= 0 &&
+        host_view()->GetIndexOf(child).has_value() &&
         !IsChildViewIgnoredByLayout(child) && !IsChildIncludedInLayout(child)) {
       SetViewVisibility(child, false);
     }

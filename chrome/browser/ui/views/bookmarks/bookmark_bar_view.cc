@@ -2063,8 +2063,8 @@ void BookmarkBarView::InsertBookmarkButtonAtIndex(
   DCHECK_EQ(*i++, overflow_button_);
   DCHECK_EQ(*i++, other_bookmarks_button_);
 #endif
-  AddChildViewAt(std::move(bookmark_button), GetIndexOf(saved_tab_group_bar_) +
-                                                 1 + static_cast<int>(index));
+  AddChildViewAt(std::move(bookmark_button),
+                 GetIndexOf(saved_tab_group_bar_).value() + 1 + index);
 }
 
 size_t BookmarkBarView::GetIndexForButton(views::View* button) {

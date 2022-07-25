@@ -750,8 +750,11 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealEnded() {
 
     // Add the web app frame toolbar at the end, but before the client view if
     // it exists.
-    if (client_view && GetIndexOf(client_view) >= 0)
-      AddChildViewAt(web_app_frame_toolbar(), GetIndexOf(client_view));
+    absl::optional<size_t> index;
+    if (client_view)
+      index = GetIndexOf(client_view);
+    if (index.has_value())
+      AddChildViewAt(web_app_frame_toolbar(), index.value());
     else
       AddChildView(web_app_frame_toolbar());
   }

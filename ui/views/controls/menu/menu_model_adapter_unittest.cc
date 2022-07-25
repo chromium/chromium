@@ -230,7 +230,7 @@ void CheckSubmenu(const RootModel& model,
       continue;
     }
     // Check placement.
-    EXPECT_EQ(i, static_cast<size_t>(submenu->GetSubmenu()->GetIndexOf(item)));
+    EXPECT_EQ(i, submenu->GetSubmenu()->GetIndexOf(item));
 
     // Check type.
     switch (model_item.type) {
@@ -314,7 +314,7 @@ TEST_F(MenuModelAdapterTest, BasicTest) {
     }
 
     // Check placement.
-    EXPECT_EQ(i, static_cast<size_t>(menu->GetSubmenu()->GetIndexOf(item)));
+    EXPECT_EQ(i, menu->GetSubmenu()->GetIndexOf(item));
 
     // Check type.
     switch (model_item.type) {

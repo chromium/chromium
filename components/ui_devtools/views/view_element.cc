@@ -132,7 +132,7 @@ void ViewElement::OnChildViewReordered(views::View* parent, views::View* view) {
     return;
   }
   UIElement* child_element = *iter;
-  ReorderChild(child_element, parent->GetIndexOf(view));
+  ReorderChild(child_element, parent->GetIndexOf(view).value());
 }
 
 void ViewElement::OnViewBoundsChanged(views::View* view) {

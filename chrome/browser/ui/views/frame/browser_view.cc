@@ -3974,8 +3974,10 @@ void BrowserView::UpdateDevToolsForContents(
     // When strategy.hide_inspected_contents() returns true, we are hiding
     // contents_web_view_ behind the devtools_web_view_. Otherwise,
     // contents_web_view_ should be right above the devtools_web_view_.
-    int devtools_index = contents_container_->GetIndexOf(devtools_web_view_);
-    int contents_index = contents_container_->GetIndexOf(contents_web_view_);
+    size_t devtools_index =
+        contents_container_->GetIndexOf(devtools_web_view_).value();
+    size_t contents_index =
+        contents_container_->GetIndexOf(contents_web_view_).value();
     bool devtools_is_on_top = devtools_index > contents_index;
     if (strategy.hide_inspected_contents() != devtools_is_on_top)
       contents_container_->ReorderChildView(contents_web_view_, devtools_index);

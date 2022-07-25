@@ -165,7 +165,7 @@ void BluetoothDetailedViewLegacy::ShowBluetoothDisabledPanel() {
     disabled_panel_ = CreateDisabledPanel();
     // Insert |disabled_panel_| before the scroller, since the scroller will
     // have unnecessary bottom border when it is not the last child.
-    AddChildViewAt(disabled_panel_, GetIndexOf(scroller()));
+    AddChildViewAt(disabled_panel_, GetIndexOf(scroller()).value());
     // |disabled_panel_| need to fill the remaining space below the title row
     // so that the inner contents of |disabled_panel_| are placed properly.
     box_layout()->SetFlexForView(disabled_panel_, 1);

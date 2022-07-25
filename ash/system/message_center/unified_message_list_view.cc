@@ -284,7 +284,7 @@ class UnifiedMessageListView::MessageViewContainer
 
     // Also update `above_view_`'s bottom and `below_view_`'s top corner radius
     // when sliding.
-    int index = list_view_->GetIndexOf(this);
+    size_t index = list_view_->GetIndexOf(this).value();
     auto list_child_views = list_view_->children();
 
     above_view_ = (index == 0) ? nullptr : AsMVC(list_child_views[index - 1]);
@@ -292,7 +292,7 @@ class UnifiedMessageListView::MessageViewContainer
       above_view_->message_view()->UpdateCornerRadius(
           kMessageCenterNotificationCornerRadius, kBubbleCornerRadius);
 
-    below_view_ = (index == static_cast<int>(list_child_views.size()) - 1)
+    below_view_ = (index == list_child_views.size() - 1)
                       ? nullptr
                       : AsMVC(list_child_views[index + 1]);
     if (below_view_)
@@ -305,14 +305,16 @@ class UnifiedMessageListView::MessageViewContainer
         notification_id != GetNotificationId())
       return;
 
-    int index = list_view_->GetIndexOf(this);
-    if (index < 0)
+    absl::optional<size_t> index = list_view_->GetIndexOf(this);
+    if (!index.has_value())
       return;
     auto list_child_views = list_view_->children();
-    above_view_ = (index == 0) ? nullptr : AsMVC(list_child_views[index - 1]);
-    below_view_ = (index == static_cast<int>(list_child_views.size()) - 1)
+    above_view_ = (index == size_t{0})
                       ? nullptr
-                      : AsMVC(list_child_views[index + 1]);
+                      : AsMVC(list_child_views[index.value() - 1]);
+    below_view_ = (index == list_child_views.size() - 1)
+                      ? nullptr
+                      : AsMVC(list_child_views[index.value() + 1]);
 
     // Reset the corner radius of views to their normal state.
     ResetCornerRadius();

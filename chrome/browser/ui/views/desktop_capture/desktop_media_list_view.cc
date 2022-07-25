@@ -131,11 +131,17 @@ bool DesktopMediaListView::OnKeyPressed(const ui::KeyEvent& event) {
   views::View* new_selected = nullptr;
 
   if (selected) {
-    int index = GetIndexOf(selected);
-    int new_index = base::clamp(index + position_increment, 0,
-                                static_cast<int>(children().size()) - 1);
+    size_t index = GetIndexOf(selected).value();
+    size_t new_index = index + static_cast<size_t>(position_increment);
+    if (position_increment < 0 &&
+        index < static_cast<size_t>(-position_increment)) {
+      new_index = 0;
+    } else if (position_increment > 0 &&
+               (index + position_increment) > (children().size() - 1)) {
+      new_index = children().size() - 1;
+    }
     if (index != new_index)
-      new_selected = children()[static_cast<size_t>(new_index)];
+      new_selected = children()[new_index];
   } else if (!children().empty()) {
     new_selected = children().front();
   }

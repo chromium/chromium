@@ -324,7 +324,7 @@ void BubbleFrameView::SizeConstraintsChanged() {}
 void BubbleFrameView::InsertClientView(ClientView* client_view) {
   // Place the client view before any footnote view for focus order.
   footnote_container_
-      ? AddChildViewAt(client_view, GetIndexOf(footnote_container_))
+      ? AddChildViewAt(client_view, GetIndexOf(footnote_container_).value())
       : AddChildView(client_view);
 }
 
@@ -335,7 +335,7 @@ void BubbleFrameView::SetTitleView(std::unique_ptr<View> title_view) {
   delete custom_title_;
   custom_title_ = title_view.get();
   // Keep the title after the icon for focus order.
-  AddChildViewAt(title_view.release(), GetIndexOf(title_icon_) + 1);
+  AddChildViewAt(title_view.release(), GetIndexOf(title_icon_).value() + 1);
 }
 
 void BubbleFrameView::SetProgress(absl::optional<double> progress) {

@@ -384,7 +384,7 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
     labels_.push_back(
         AddChildViewAt(std::make_unique<views::Label>(
                            params.body_text, delegate->GetBodyTextContext()),
-                       GetIndexOf(button_container)));
+                       GetIndexOf(button_container).value()));
   } else {
     labels_.push_back(
         top_text_container->AddChildView(std::make_unique<views::Label>(

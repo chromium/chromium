@@ -104,7 +104,7 @@ void BluetoothDetailedViewImpl::HandleViewClicked(views::View* view) {
   // device views. When |view| is a child of |pair_new_device_view_| we know the
   // "pair new device" button was clicked, otherwise it must have been an
   // individual device view.
-  if (pair_new_device_view_->GetIndexOf(view) != -1) {
+  if (pair_new_device_view_->GetIndexOf(view).has_value()) {
     delegate()->OnPairNewDeviceRequested();
     return;
   }
@@ -124,8 +124,8 @@ void BluetoothDetailedViewImpl::CreateDisabledView() {
   // spacing of views::ScrollView when it is not the last child.
   DCHECK(scroller());
 
-  disabled_view_ =
-      AddChildViewAt(new BluetoothDisabledDetailedView, GetIndexOf(scroller()));
+  disabled_view_ = AddChildViewAt(new BluetoothDisabledDetailedView,
+                                  GetIndexOf(scroller()).value());
   disabled_view_->SetID(
       static_cast<int>(BluetoothDetailedViewChildId::kDisabledView));
 
@@ -142,7 +142,7 @@ void BluetoothDetailedViewImpl::CreatePairNewDeviceView() {
   DCHECK(scroller());
 
   pair_new_device_view_ =
-      AddChildViewAt(new views::View(), GetIndexOf(scroller()));
+      AddChildViewAt(new views::View(), GetIndexOf(scroller()).value());
   pair_new_device_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   pair_new_device_view_->SetID(

@@ -113,12 +113,12 @@ class BluetoothDeviceListControllerTest : public AshTestBase {
       EXPECT_TRUE(previously_connected_sub_header);
       EXPECT_TRUE(device_list_separator);
 
-      const unsigned int connected_index =
-          device_list()->GetIndexOf(connected_sub_header);
-      const unsigned int previously_connected_index =
-          device_list()->GetIndexOf(previously_connected_sub_header);
-      const unsigned int separator_index =
-          device_list()->GetIndexOf(device_list_separator);
+      const size_t connected_index =
+          device_list()->GetIndexOf(connected_sub_header).value();
+      const size_t previously_connected_index =
+          device_list()->GetIndexOf(previously_connected_sub_header).value();
+      const size_t separator_index =
+          device_list()->GetIndexOf(device_list_separator).value();
 
       EXPECT_EQ(0u, connected_index);
       EXPECT_EQ(connected_device_count + 1, separator_index);
@@ -129,7 +129,7 @@ class BluetoothDeviceListControllerTest : public AshTestBase {
     if (connected_device_count) {
       const TriView* connected_sub_header = FindConnectedSubHeader();
       EXPECT_TRUE(connected_sub_header);
-      EXPECT_EQ(0, device_list()->GetIndexOf(connected_sub_header));
+      EXPECT_EQ(0u, device_list()->GetIndexOf(connected_sub_header));
       EXPECT_EQ(connected_device_count + 1, device_list()->children().size());
       return;
     }
@@ -138,7 +138,7 @@ class BluetoothDeviceListControllerTest : public AshTestBase {
       const TriView* previously_connected_sub_header =
           FindPreviouslyConnectedSubHeader();
       EXPECT_TRUE(previously_connected_sub_header);
-      EXPECT_EQ(0, device_list()->GetIndexOf(previously_connected_sub_header));
+      EXPECT_EQ(0u, device_list()->GetIndexOf(previously_connected_sub_header));
       EXPECT_EQ(previously_connected_device_count + 1,
                 device_list()->children().size());
       return;
@@ -147,7 +147,7 @@ class BluetoothDeviceListControllerTest : public AshTestBase {
     const TriView* no_device_connected_sub_header =
         FindNoDeviceConnectedSubHeader();
     EXPECT_TRUE(no_device_connected_sub_header);
-    EXPECT_EQ(0, device_list()->GetIndexOf(no_device_connected_sub_header));
+    EXPECT_EQ(0u, device_list()->GetIndexOf(no_device_connected_sub_header));
     EXPECT_EQ(1u, device_list()->children().size());
   }
 
@@ -295,7 +295,7 @@ TEST_F(BluetoothDeviceListControllerTest, ExistingDeviceViewsAreUpdated) {
   CheckNotifyDeviceListChangedCount(/*call_count=*/2u);
 
   EXPECT_EQ(2u, device_list()->children().size());
-  EXPECT_EQ(1, device_list()->GetIndexOf(first_item));
+  EXPECT_EQ(1u, device_list()->GetIndexOf(first_item));
   EXPECT_TRUE(first_item->device_properties()->nickname.has_value());
   EXPECT_STREQ(kDeviceNickname,
                first_item->device_properties()->nickname.value().c_str());

@@ -486,7 +486,8 @@ class RightPaneView : public NonAccessibleView {
         l10n_util::GetStringUTF16(
             IDS_ASH_LOGIN_PUBLIC_ACCOUNT_LANGUAGE_MENU_ACCESSIBLE_NAME));
 
-    const int index = advanced_view_->GetIndexOf(language_title_) + 1;
+    const size_t index =
+        advanced_view_->GetIndexOf(language_title_).value() + 1;
     language_menu_view_ =
         advanced_view_->AddChildViewAt(std::move(language_menu_view), index);
   }
@@ -520,7 +521,8 @@ class RightPaneView : public NonAccessibleView {
         l10n_util::GetStringUTF16(
             IDS_ASH_LOGIN_PUBLIC_ACCOUNT_KEYBOARD_MENU_ACCESSIBLE_NAME));
 
-    const int index = advanced_view_->GetIndexOf(keyboard_title_) + 1;
+    const size_t index =
+        advanced_view_->GetIndexOf(keyboard_title_).value() + 1;
     keyboard_menu_view_ =
         advanced_view_->AddChildViewAt(std::move(keyboard_menu_view), index);
   }

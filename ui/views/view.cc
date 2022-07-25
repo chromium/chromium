@@ -348,11 +348,11 @@ View::Views::const_iterator View::FindChild(const View* view) const {
   return std::find(children_.cbegin(), children_.cend(), view);
 }
 
-int View::GetIndexOf(const View* view) const {
+absl::optional<size_t> View::GetIndexOf(const View* view) const {
   const auto i = FindChild(view);
-  return i == children_.cend()
-             ? -1
-             : static_cast<int>(std::distance(children_.cbegin(), i));
+  return i == children_.cend() ? absl::nullopt
+                               : absl::make_optional(static_cast<size_t>(
+                                     std::distance(children_.cbegin(), i)));
 }
 
 // Size and disposition --------------------------------------------------------

@@ -567,7 +567,7 @@ void TabbedPane::SelectTab(Tab* new_selected_tab, bool animate) {
   }
 
   if (listener())
-    listener()->TabSelectedAt(tab_strip_->GetIndexOf(new_selected_tab));
+    listener()->TabSelectedAt(tab_strip_->GetIndexOf(new_selected_tab).value());
 }
 
 void TabbedPane::SelectTabAt(size_t index, bool animate) {

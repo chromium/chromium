@@ -1520,8 +1520,8 @@ void AshNotificationView::AnimateResizeAfterRemoval(
 
   int group_container_previous_height =
       grouped_notifications_container_->height();
-  int removed_index =
-      grouped_notifications_container_->GetIndexOf(to_be_removed);
+  size_t removed_index =
+      grouped_notifications_container_->GetIndexOf(to_be_removed).value();
   LOG(ERROR) << "Removed after animation";
   grouped_notifications_container_->RemoveChildViewT(to_be_removed).reset();
 

@@ -486,8 +486,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // not a child of this view.
   Views::const_iterator FindChild(const View* view) const;
 
-  // Returns the index of |view|, or -1 if |view| is not a child of this view.
-  int GetIndexOf(const View* view) const;
+  // Returns the index of |view|, or nullopt if |view| is not a child of this
+  // view.
+  absl::optional<size_t> GetIndexOf(const View* view) const;
 
   // Size and disposition ------------------------------------------------------
   // Methods for obtaining and modifying the position and size of the view.

@@ -13,7 +13,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -734,8 +734,9 @@ TEST_F(WidgetTestInteractive, ViewFocusOnHWNDEnabledChanges) {
   EXPECT_EQ(hwnd, ::GetActiveWindow());
 
   for (View* view : widget->GetContentsView()->children()) {
-    SCOPED_TRACE(base::StringPrintf(
-        "Child view %d", widget->GetContentsView()->GetIndexOf(view)));
+    SCOPED_TRACE("Child view " +
+                 base::NumberToString(
+                     widget->GetContentsView()->GetIndexOf(view).value()));
 
     view->RequestFocus();
     EXPECT_EQ(view, widget->GetFocusManager()->GetFocusedView());

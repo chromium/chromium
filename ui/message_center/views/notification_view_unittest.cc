@@ -321,8 +321,8 @@ class NotificationViewTest : public views::ViewObserver,
 TEST_F(NotificationViewTest, UpdateViewsOrderingTest) {
   EXPECT_NE(nullptr, title_view());
   EXPECT_NE(nullptr, message_label());
-  EXPECT_EQ(0, left_content()->GetIndexOf(title_view()));
-  EXPECT_EQ(1, left_content()->GetIndexOf(message_label()));
+  EXPECT_EQ(0u, left_content()->GetIndexOf(title_view()));
+  EXPECT_EQ(1u, left_content()->GetIndexOf(message_label()));
 
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_title(std::u16string());
@@ -331,7 +331,7 @@ TEST_F(NotificationViewTest, UpdateViewsOrderingTest) {
 
   EXPECT_EQ(nullptr, title_view());
   EXPECT_NE(nullptr, message_label());
-  EXPECT_EQ(0, left_content()->GetIndexOf(message_label()));
+  EXPECT_EQ(0u, left_content()->GetIndexOf(message_label()));
 
   notification->set_title(u"title");
 
@@ -339,8 +339,8 @@ TEST_F(NotificationViewTest, UpdateViewsOrderingTest) {
 
   EXPECT_NE(nullptr, title_view());
   EXPECT_NE(nullptr, message_label());
-  EXPECT_EQ(0, left_content()->GetIndexOf(title_view()));
-  EXPECT_EQ(1, left_content()->GetIndexOf(message_label()));
+  EXPECT_EQ(0u, left_content()->GetIndexOf(title_view()));
+  EXPECT_EQ(1u, left_content()->GetIndexOf(message_label()));
 }
 
 TEST_F(NotificationViewTest, CreateOrUpdateTitle) {

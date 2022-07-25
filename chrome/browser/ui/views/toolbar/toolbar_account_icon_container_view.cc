@@ -120,7 +120,7 @@ void ToolbarAccountIconContainerView::AddPageActionIcon(
     std::unique_ptr<views::View> icon) {
   // Add the page action icons to the end of the container, just before the
   // avatar icon.
-  AddChildViewAt(std::move(icon), GetIndexOf(avatar_));
+  AddChildViewAt(std::move(icon), GetIndexOf(avatar_).value());
 }
 
 BEGIN_METADATA(ToolbarAccountIconContainerView, ToolbarIconContainerView)
