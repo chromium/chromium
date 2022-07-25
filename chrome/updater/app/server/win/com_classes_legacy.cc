@@ -927,25 +927,37 @@ STDMETHODIMP PolicyStatusImpl::get_packageCacheExpirationTimeDays(
   return PolicyStatusValueImpl::Create(policy_status, value);
 }
 
-// TODO(crbug.com/1293203): Implement this method.
 STDMETHODIMP PolicyStatusImpl::get_proxyMode(IPolicyStatusValue** value) {
   DCHECK(value);
 
-  return E_NOTIMPL;
+  PolicyStatus<std::string> policy_status;
+  if (!policy_service_->GetProxyMode(&policy_status, nullptr)) {
+    return E_FAIL;
+  }
+
+  return PolicyStatusValueImpl::Create(policy_status, value);
 }
 
-// TODO(crbug.com/1293203): Implement this method.
 STDMETHODIMP PolicyStatusImpl::get_proxyPacUrl(IPolicyStatusValue** value) {
   DCHECK(value);
 
-  return E_NOTIMPL;
+  PolicyStatus<std::string> policy_status;
+  if (!policy_service_->GetProxyPacUrl(&policy_status, nullptr)) {
+    return E_FAIL;
+  }
+
+  return PolicyStatusValueImpl::Create(policy_status, value);
 }
 
-// TODO(crbug.com/1293203): Implement this method.
 STDMETHODIMP PolicyStatusImpl::get_proxyServer(IPolicyStatusValue** value) {
   DCHECK(value);
 
-  return E_NOTIMPL;
+  PolicyStatus<std::string> policy_status;
+  if (!policy_service_->GetProxyServer(&policy_status, nullptr)) {
+    return E_FAIL;
+  }
+
+  return PolicyStatusValueImpl::Create(policy_status, value);
 }
 
 STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppInstalls(
