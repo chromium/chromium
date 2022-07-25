@@ -47,6 +47,7 @@ namespace ash {
 
 class AppListTestHelper;
 class AmbientAshTestHelper;
+class AshTestUiStabilizer;
 class TestKeyboardControllerObserver;
 class TestNewWindowDelegateProvider;
 class TestWallpaperControllerClient;
@@ -70,6 +71,9 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     // If this is not set, a TestShellDelegate will be used automatically.
     std::unique_ptr<ShellDelegate> delegate;
     PrefService* local_state = nullptr;
+
+    // True if the initialized test is a pixel diff test.
+    bool is_pixel_test = false;
   };
 
   // Instantiates/destroys an AshTestHelper. This can happen in a
@@ -103,6 +107,12 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   void SetUp(InitParams init_params);
 
   display::Display GetSecondaryDisplay() const;
+
+  // Simulates a user sign-in. It creates a new user session, adds it to
+  // existing user sessions and makes it the active user session.
+  void SimulateUserLogin(
+      const AccountId& account_id,
+      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR);
 
   TestSessionControllerClient* test_session_controller_client() {
     return session_controller_client_.get();
@@ -174,6 +184,10 @@ class AshTestHelper : public aura::test::AuraTestHelper {
       test_keyboard_controller_observer_;
   std::unique_ptr<AmbientAshTestHelper> ambient_ash_test_helper_;
   std::unique_ptr<TestWallpaperControllerClient> wallpaper_controller_client_;
+
+  // Used only for pixel tests.
+  std::unique_ptr<AshTestUiStabilizer> ui_stabilizer_;
+
   chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper
       scoped_bluetooth_config_test_helper_;
 

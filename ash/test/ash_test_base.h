@@ -69,7 +69,6 @@ namespace ash {
 class AmbientAshTestHelper;
 class AppListTestHelper;
 class AshTestHelper;
-class AshTestUiStabilizer;
 class Shelf;
 class TestAppListClient;
 class TestShellDelegate;
@@ -333,6 +332,9 @@ class AshTestBase : public testing::Test {
   // SetUp() doesn't activate session if this is set to false.
   bool start_session_ = true;
 
+  // True if the test is a pixel diff test. Set by `PrepareForPixelDiffTest()`.
+  bool is_pixel_test_ = false;
+
   // |task_environment_| is initialized-once at construction time but
   // subclasses may elect to provide their own.
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
@@ -344,9 +346,6 @@ class AshTestBase : public testing::Test {
   std::unique_ptr<AshTestHelper> ash_test_helper_;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-
-  // Used only for pixel tests. Set by `PrepareForPixelDiffTest()`.
-  std::unique_ptr<AshTestUiStabilizer> ui_stabilizer_;
 };
 
 class NoSessionAshTestBase : public AshTestBase {

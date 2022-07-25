@@ -27,7 +27,6 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_helper.h"
-#include "ash/test/ash_test_ui_stabilizer.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/test_shell_delegate.h"
@@ -122,12 +121,6 @@ void AshTestBase::SetUp() {
 }
 
 void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
-  // In pixel tests, override the current time before setting up system UI
-  // components so that the components relying on the time, like the time view,
-  // show as expected.
-  if (ui_stabilizer_)
-    ui_stabilizer_->OverrideTime();
-
   // At this point, the task APIs should already be provided by
   // |task_environment_|.
   CHECK(base::ThreadTaskRunnerHandle::IsSet());
@@ -139,13 +132,9 @@ void AshTestBase::SetUp(std::unique_ptr<TestShellDelegate> delegate) {
   params.start_session = start_session_;
   params.delegate = std::move(delegate);
   params.local_state = local_state();
+  params.is_pixel_test = is_pixel_test_;
   ash_test_helper_ = std::make_unique<AshTestHelper>();
   ash_test_helper_->SetUp(std::move(params));
-
-  if (ui_stabilizer_) {
-    SimulateUserLogin(ui_stabilizer_->account_id());
-    ui_stabilizer_->StabilizeUi(GetPrimaryDisplay().size());
-  }
 }
 
 void AshTestBase::TearDown() {
@@ -335,11 +324,10 @@ void AshTestBase::PrepareForPixelDiffTest() {
   // stabilizes the system UI for pixel tests should be executed during setup.
   CHECK(!setup_called_);
 
-  CHECK(!ui_stabilizer_);
-  ui_stabilizer_ = std::make_unique<AshTestUiStabilizer>();
+  is_pixel_test_ = true;
 
   // In pixel tests, a fake user account is used to set the wallpaper.
-  // Therefore, do not start the session as default.
+  // Therefore, do not start the session by default.
   start_session_ = false;
 }
 
@@ -386,10 +374,7 @@ void AshTestBase::SimulateUserLogin(const std::string& user_email,
 
 void AshTestBase::SimulateUserLogin(const AccountId& account_id,
                                     user_manager::UserType user_type) {
-  TestSessionControllerClient* session = GetSessionControllerClient();
-  session->AddUserSession(account_id, account_id.GetUserEmail(), user_type);
-  session->SwitchActiveUser(account_id);
-  session->SetSessionState(SessionState::ACTIVE);
+  ash_test_helper_->SimulateUserLogin(account_id, user_type);
 }
 
 void AshTestBase::SimulateNewUserFirstLogin(const std::string& user_email) {

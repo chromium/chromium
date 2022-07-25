@@ -28,6 +28,7 @@
 #include "ash/system/message_center/session_state_notification_blocker.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/screen_layout_observer.h"
+#include "ash/test/ash_test_ui_stabilizer.h"
 #include "ash/test/ash_test_views_delegate.h"
 #include "ash/test/toplevel_window.h"
 #include "ash/test_shell_delegate.h"
@@ -232,6 +233,11 @@ aura::client::CaptureClient* AshTestHelper::GetCaptureClient() {
 }
 
 void AshTestHelper::SetUp(InitParams init_params) {
+  if (init_params.is_pixel_test) {
+    ui_stabilizer_ = std::make_unique<AshTestUiStabilizer>();
+    ui_stabilizer_->OverrideTime();
+  }
+
   // This block of objects are conditionally initialized here rather than in the
   // constructor to make it easier for test classes to override them.
   if (!input_method::InputMethodManager::Get()) {
@@ -360,11 +366,30 @@ void AshTestHelper::SetUp(InitParams init_params) {
   // Fake the |ec_lid_angle_driver_status_| in the unittests.
   AccelerometerReader::GetInstance()->SetECLidAngleDriverStatusForTesting(
       ECLidAngleDriverStatus::NOT_SUPPORTED);
+
+  if (init_params.is_pixel_test) {
+    SimulateUserLogin(ui_stabilizer_->account_id());
+
+    const gfx::Size primary_display_size =
+        display::Screen::GetScreen()
+            ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())
+            .size();
+    ui_stabilizer_->StabilizeUi(primary_display_size);
+  }
 }
 
 display::Display AshTestHelper::GetSecondaryDisplay() const {
   return display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
       .GetSecondaryDisplay();
+}
+
+void AshTestHelper::SimulateUserLogin(const AccountId& account_id,
+                                      user_manager::UserType user_type) {
+  session_controller_client_->AddUserSession(
+      account_id, account_id.GetUserEmail(), user_type);
+  session_controller_client_->SwitchActiveUser(account_id);
+  session_controller_client_->SetSessionState(
+      session_manager::SessionState::ACTIVE);
 }
 
 }  // namespace ash
