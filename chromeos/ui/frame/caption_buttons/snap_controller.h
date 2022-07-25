@@ -28,6 +28,12 @@ enum class SnapDirection {
                // top and secondary position is the bottom.
 };
 
+enum class SnapRatio {
+  kDefaultSnapRatio,   // 0.5f
+  kOneThirdSnapRatio,  // 0.33f
+  kTwoThirdSnapRatio   // 0.67f
+};
+
 // This interface handles snap actions to be performed on a top level window.
 // The singleton that implements the interface is provided by Ash.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) SnapController {
@@ -47,7 +53,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) SnapController {
 
   // Snaps the window in the given direction, if not kNone. Destroys the preview
   // window, if any.
-  virtual void CommitSnap(aura::Window* window, SnapDirection snap) = 0;
+  virtual void CommitSnap(
+      aura::Window* window,
+      SnapDirection snap,
+      SnapRatio snap_ratio = SnapRatio::kDefaultSnapRatio) = 0;
 
  protected:
   SnapController();

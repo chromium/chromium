@@ -6,7 +6,10 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/wm_event.h"
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/run_loop.h"
@@ -730,6 +733,40 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuHalfFunctionality) {
   generator->ClickLeftButton();
   EXPECT_TRUE(window_state()->GetStateType() ==
               WindowStateType::kPrimarySnapped);
+}
+
+// Test Partial Split Button Functionality.
+TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
+  EXPECT_TRUE(window_state()->IsNormalStateType());
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  const gfx::Rect work_area_bounds_in_screen =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+
+  // Snap to primary with 0.67f screen ratio.
+  ShowMultitaskMenu();
+  generator->MoveMouseTo(multitask_menu()
+                             ->partial_button_for_testing()
+                             ->GetBoundsInScreen()
+                             .left_center());
+  generator->ClickLeftButton();
+  EXPECT_TRUE(window_state()->GetStateType() ==
+              WindowStateType::kPrimarySnapped);
+  EXPECT_EQ(window_state()->window()->bounds().width(),
+            work_area_bounds_in_screen.width() * 0.67);
+
+  // Snap to secondary with 0.33f screen ratio.
+  ShowMultitaskMenu();
+  gfx::Rect partial_bounds(
+      multitask_menu()->partial_button_for_testing()->GetBoundsInScreen());
+  gfx::Point secondary_center(
+      gfx::Point(partial_bounds.x() + partial_bounds.width() * 0.67f,
+                 partial_bounds.y() + partial_bounds.y() / 2));
+  generator->MoveMouseTo(secondary_center);
+  generator->ClickLeftButton();
+  EXPECT_TRUE(window_state()->GetStateType() ==
+              WindowStateType::kSecondarySnapped);
+  EXPECT_EQ(window_state()->window()->bounds().width(),
+            work_area_bounds_in_screen.width() * 0.33);
 }
 
 // Test Full Button Functionality.

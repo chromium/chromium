@@ -132,7 +132,8 @@ void MultitaskMenu::SplitButtonPressed(SnapDirection snap) {
 }
 
 void MultitaskMenu::PartialButtonPressed(SnapDirection snap) {
-  // TODO(shidi/sophiewen): Link Partial Split function here.
+  SnapController::Get()->CommitSnap(parent_window(), snap,
+                                    chromeos::SnapRatio::kTwoThirdSnapRatio);
   HideBubble();
 }
 
