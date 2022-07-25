@@ -324,12 +324,6 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
 
 // Types JavaScript into Omnibox and verify that an alert is displayed.
 - (void)testTypeJavaScriptIntoOmnibox {
-// TODO(crbug.com/1067819): Test won't pass on iPad devices.
-#if !TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
-  }
-#endif
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
   [ChromeEarlGreyUI focusOmniboxAndType:@"javascript:alert('Hello');\n"];
@@ -351,12 +345,6 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
 // not displayed. WebUI pages have elevated privileges and should not allow
 // script execution.
 - (void)testTypeJavaScriptIntoOmniboxWithWebUIPage {
-// TODO(crbug.com/1067819): Test won't pass on iPad devices.
-#if !TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
-  }
-#endif
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
   [ChromeEarlGreyUI focusOmniboxAndType:@"javascript:alert('Hello');\n"];
 
