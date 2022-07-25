@@ -439,9 +439,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.Cors.AccessCheckResult" enum="CorsAccessCheckResult"
-    expires_after="2022-09-18">
+    expires_after="2023-01-15">
   <owner>toyoshim@chromium.org</owner>
-  <owner>yhirano@chromium.org</owner>
+  <owner>src/services/network/OWNERS</owner>
   <summary>
     The distribution of CORS access check results. This reports whenever CORS
     AccessCheck runs. This is recorded when a CORS enabled request receives a
@@ -450,9 +450,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.Cors.AccessCheckResult.NotSecureRequestor"
-    enum="CorsAccessCheckResult" expires_after="2022-11-27">
+    enum="CorsAccessCheckResult" expires_after="2023-01-15">
   <owner>carlosil@chromium.org</owner>
   <owner>estark@chromium.org</owner>
+  <owner>src/services/network/OWNERS</owner>
   <summary>
     The distribution of CORS access check results for not potentially
     trustworthy requestors. This reports whenever CORS AccessCheck runs and the
@@ -461,9 +462,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.Cors.PreflightCacheKeySize" units="bytes"
-    expires_after="2022-07-03">
+    expires_after="2023-01-15">
   <owner>toyoshim@chromium.org</owner>
-  <owner>yhirano@chromium.org</owner>
+  <owner>src/services/network/OWNERS</owner>
   <summary>
     The distribution of the key size in the CORS preflight cache. This counts
     each key size when a new entry is added to the cache.
@@ -471,9 +472,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.Cors.PreflightCacheResult" enum="CorsPreflightCacheResult"
-    expires_after="2022-08-28">
+    expires_after="2023-01-15">
   <owner>toyoshim@chromium.org</owner>
-  <owner>yhirano@chromium.org</owner>
+  <owner>src/services/network/OWNERS</owner>
   <summary>
     The distribution of the CORS preflight cache query results. This counts on
     each cache query.
@@ -483,7 +484,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.Cors.PreflightCheckError2" enum="CorsAccessCheckError"
     expires_after="2023-01-15">
   <owner>toyoshim@chromium.org</owner>
-  <owner>yhirano@chromium.org</owner>
+  <owner>src/services/network/OWNERS</owner>
   <summary>
     The distribution of CORS error types on preflight requests. This reports
     whenever CORS checks detect an error on a preflight request. The
@@ -493,9 +494,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.Cors.PreflightCheckWarning" enum="CorsAccessCheckError"
-    expires_after="2022-12-25">
+    expires_after="2023-01-15">
   <owner>titouan@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
+  <owner>src/services/network/OWNERS</owner>
   <summary>
     The distribution of CORS error types on preflight requests which are treated
     as warnings. This reports whenever CORS checks detect an error on a
