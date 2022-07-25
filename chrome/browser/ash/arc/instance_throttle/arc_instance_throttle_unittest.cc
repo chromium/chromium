@@ -32,7 +32,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/arc/test/fake_intent_helper_host.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
@@ -53,9 +52,6 @@ class ArcInstanceThrottleTest : public testing::Test {
 
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
-    // Need to initialize DBusThreadManager before ArcSessionManager's
-    // constructor calls DBusThreadManager::Get().
-    chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
     arc_session_manager_ =
@@ -100,7 +96,6 @@ class ArcInstanceThrottleTest : public testing::Test {
     arc_session_manager_.reset();
     arc_service_manager_.reset();
     ash::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
   }
 
@@ -385,9 +380,6 @@ class ArcInstanceThrottleVMTest : public testing::Test {
 
     run_loop_ = std::make_unique<base::RunLoop>();
 
-    // Need to initialize DBusThreadManager before ArcSessionManager's
-    // constructor calls DBusThreadManager::Get().
-    chromeos::DBusThreadManager::Initialize();
     chromeos::ConciergeClient::InitializeFake();
     DCHECK(GetConciergeClient());
 
@@ -408,7 +400,6 @@ class ArcInstanceThrottleVMTest : public testing::Test {
     testing_profile_.reset();
     arc_session_manager_.reset();
     arc_service_manager_.reset();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
  protected:

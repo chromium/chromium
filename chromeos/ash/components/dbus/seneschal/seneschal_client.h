@@ -38,7 +38,7 @@ class COMPONENT_EXPORT(SENESCHAL) SeneschalClient : public DBusClient {
   ~SeneschalClient() override;
 
   // Factory function, creates a new instance and returns ownership.
-  // For normal usage, access the singleton via DBusThreadManager::Get().
+  // For normal usage, access the singleton via Get().
   static std::unique_ptr<SeneschalClient> Create();
 
   // Registers |callback| to run when the Concierge service becomes available.

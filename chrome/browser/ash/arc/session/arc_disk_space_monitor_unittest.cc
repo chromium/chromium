@@ -14,7 +14,6 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,10 +30,6 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
   ArcDiskSpaceMonitorTest& operator=(const ArcDiskSpaceMonitorTest&) = delete;
 
   void SetUp() override {
-    // Need to initialize DBusThreadManager before ArcSessionManager's
-    // constructor calls DBusThreadManager::Get().
-    chromeos::DBusThreadManager::Initialize();
-
     // Initialize fake clients.
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ash::SpacedClient::InitializeFake();
@@ -79,7 +74,6 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
     testing_profile_.reset();
     ash::SpacedClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   ArcSessionManager* arc_session_manager() const {

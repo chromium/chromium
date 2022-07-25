@@ -36,7 +36,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -225,9 +224,6 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
   ~LockScreenProfileCreatorImplTest() override {}
 
   void SetUp() override {
-    // Need to initialize DBusThreadManager before ArcSessionManager's
-    // constructor calls DBusThreadManager::Get().
-    chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -263,7 +259,6 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
 
     ash::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   UnittestProfileManager* profile_manager() { return profile_manager_; }

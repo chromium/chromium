@@ -38,7 +38,7 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcDataSnapshotdClient
   using LoadSnapshotMethodCallback = base::OnceCallback<void(bool, bool)>;
 
   // Factory function, creates a new instance and returns ownership.
-  // For normal usage, access the singleton via DBusThreadManager::Get().
+  // For normal usage, access the singleton via Get().
   static std::unique_ptr<ArcDataSnapshotdClient> Create();
 
   // Generate key pair for an upcoming session.

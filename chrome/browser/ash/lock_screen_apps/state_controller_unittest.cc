@@ -41,7 +41,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -394,9 +393,6 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
   ~LockScreenAppStateTest() override = default;
 
   void SetUp() override {
-    // Need to initialize DBusThreadManager before ArcSessionManager's
-    // constructor calls DBusThreadManager::Get().
-    chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     command_line_ = std::make_unique<base::test::ScopedCommandLine>();
@@ -462,7 +458,6 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
     command_line_.reset();
     ash::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   TestingProfile* CreateProfile() override {

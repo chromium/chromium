@@ -27,7 +27,6 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -56,9 +55,6 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
   }
 
   void SetUpInternal(bool should_create_session_manager) {
-    // Need to initialize DBusThreadManager before ArcSessionManager's
-    // constructor calls DBusThreadManager::Get().
-    chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     SetArcAvailableCommandLineForTesting(
@@ -107,7 +103,6 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
     arc_service_manager_.reset();
 
     ash::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   ash::FakeChromeUserManager* GetFakeUserManager() {

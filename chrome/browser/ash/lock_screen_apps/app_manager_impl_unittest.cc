@@ -37,7 +37,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/disable_reason.h"
@@ -152,9 +151,6 @@ class LockScreenAppManagerImplTest
   ~LockScreenAppManagerImplTest() override = default;
 
   void SetUp() override {
-    // Need to initialize DBusThreadManager before ArcSessionManager's
-    // constructor calls DBusThreadManager::Get().
-    chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     // Initialize command line so `ash::NoteTakingHelper` thinks note taking
@@ -196,7 +192,6 @@ class LockScreenAppManagerImplTest
     extensions::ExtensionSystem::Get(profile())->Shutdown();
 
     ash::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   void InitExtensionSystem(Profile* profile) {

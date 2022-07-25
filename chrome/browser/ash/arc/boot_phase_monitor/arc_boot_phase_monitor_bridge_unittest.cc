@@ -21,7 +21,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -35,9 +34,6 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
  public:
   ArcBootPhaseMonitorBridgeTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
-    // Need to initialize DBusThreadManager before ArcSessionManager's
-    // constructor calls DBusThreadManager::Get().
-    chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ash::SessionManagerClient::InitializeFakeInMemory();
 
@@ -73,7 +69,6 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
     arc_service_manager_.reset();
     ash::SessionManagerClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
  protected:

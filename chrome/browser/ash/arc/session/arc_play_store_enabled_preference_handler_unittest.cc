@@ -31,7 +31,6 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -64,9 +63,6 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
       const ArcPlayStoreEnabledPreferenceHandlerTest&) = delete;
 
   void SetUp() override {
-    // Need to initialize DBusThreadManager before ArcSessionManager's
-    // constructor calls DBusThreadManager::Get().
-    chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ash::SessionManagerClient::InitializeFakeInMemory();
     ash::UpstartClient::InitializeFake();
@@ -115,7 +111,6 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
     ash::UpstartClient::Shutdown();
     ash::SessionManagerClient::Shutdown();
     ash::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   TestingProfile* profile() const { return profile_.get(); }

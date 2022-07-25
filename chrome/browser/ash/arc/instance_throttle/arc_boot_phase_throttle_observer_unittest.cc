@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/arc/test/fake_intent_helper_host.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -39,9 +38,6 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
  public:
   ArcBootPhaseThrottleObserverTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
-    // Need to initialize DBusThreadManager before ArcSessionManager's
-    // constructor calls DBusThreadManager::Get().
-    chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     arc_session_manager_ =
         CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
@@ -83,7 +79,6 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
     testing_profile_.reset();
     arc_session_manager_.reset();
     ash::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
  protected:
