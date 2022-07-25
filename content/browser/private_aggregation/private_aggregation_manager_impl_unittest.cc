@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -16,12 +17,14 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/common/aggregatable_report.mojom.h"
+#include "content/public/browser/storage_partition.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,6 +37,7 @@ namespace {
 
 using testing::_;
 using testing::Invoke;
+using testing::Return;
 
 using Checkpoint = testing::MockFunction<void(int step)>;
 
@@ -48,23 +52,73 @@ class MockPrivateAggregationBudgeter : public PrivateAggregationBudgeter {
               ConsumeBudget,
               (int,
                const PrivateAggregationBudgetKey&,
-               base::OnceCallback<void(bool)>));
+               base::OnceCallback<void(bool)>),
+              (override));
+};
+
+class MockPrivateAggregationHost : public PrivateAggregationHost {
+ public:
+  MockPrivateAggregationHost()
+      : PrivateAggregationHost(
+            /*on_report_request_received=*/base::DoNothing()) {}
+
+  MOCK_METHOD(bool,
+              BindNewReceiver,
+              (url::Origin,
+               PrivateAggregationBudgetKey::Api,
+               mojo::PendingReceiver<mojom::PrivateAggregationHost>),
+              (override));
+};
+
+class MockAggregationService : public AggregationService {
+ public:
+  MOCK_METHOD(void,
+              AssembleReport,
+              (AggregatableReportRequest report_request,
+               AssemblyCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              SendReport,
+              (const GURL& url,
+               const AggregatableReport& report,
+               SendCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              SendReport,
+              (const GURL& url,
+               const base::Value& contents,
+               SendCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              ClearData,
+              (base::Time delete_begin,
+               base::Time delete_end,
+               StoragePartition::StorageKeyMatcherFunction filter,
+               base::OnceClosure done),
+              (override));
+  MOCK_METHOD(void, ScheduleReport, (AggregatableReportRequest), (override));
 };
 
 class PrivateAggregationManagerImplUnderTest
     : public PrivateAggregationManagerImpl {
  public:
   explicit PrivateAggregationManagerImplUnderTest(
-      std::unique_ptr<PrivateAggregationBudgeter> budgeter)
+      std::unique_ptr<PrivateAggregationBudgeter> budgeter,
+      std::unique_ptr<PrivateAggregationHost> host,
+      std::unique_ptr<AggregationService> aggregation_service)
       : PrivateAggregationManagerImpl(std::move(budgeter),
-                                      /*host=*/nullptr) {}
+                                      std::move(host),
+                                      /*storage_partition=*/nullptr),
+        aggregation_service_(std::move(aggregation_service)) {}
 
   using PrivateAggregationManagerImpl::OnReportRequestReceivedFromHost;
 
-  // We're testing internal functions for now as the integration with the
-  // aggregation service is not complete.
-  // TODO(crbug.com/1323325): Switch over testing when that's complete.
-  MOCK_METHOD(void, OnConsumeBudgetReturned, (AggregatableReportRequest, bool));
+  AggregationService* GetAggregationService() override {
+    return aggregation_service_.get();
+  }
+
+ private:
+  std::unique_ptr<AggregationService> aggregation_service_;
 };
 
 }  // namespace
@@ -73,11 +127,17 @@ class PrivateAggregationManagerImplTest : public testing::Test {
  public:
   PrivateAggregationManagerImplTest()
       : budgeter_(new testing::StrictMock<MockPrivateAggregationBudgeter>()),
-        manager_(base::WrapUnique(budgeter_)) {}
+        host_(new testing::StrictMock<MockPrivateAggregationHost>()),
+        aggregation_service_(new testing::StrictMock<MockAggregationService>()),
+        manager_(base::WrapUnique(budgeter_),
+                 base::WrapUnique(host_),
+                 base::WrapUnique(aggregation_service_)) {}
 
  protected:
-  // Keep a pointer around for EXPECT_CALL.
+  // Keep pointers around for EXPECT_CALL.
   MockPrivateAggregationBudgeter* budgeter_;
+  MockPrivateAggregationHost* host_;
+  MockAggregationService* aggregation_service_;
 
   testing::StrictMock<PrivateAggregationManagerImplUnderTest> manager_;
 
@@ -114,13 +174,11 @@ TEST_F(PrivateAggregationManagerImplTest,
           std::move(on_done).Run(true);
         }));
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(manager_, OnConsumeBudgetReturned)
-        .WillOnce(
-            Invoke([&expected_request](AggregatableReportRequest report_request,
-                                       bool was_budget_use_approved) {
+    EXPECT_CALL(*aggregation_service_, ScheduleReport)
+        .WillOnce(Invoke(
+            [&expected_request](AggregatableReportRequest report_request) {
               EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
                   report_request, expected_request));
-              EXPECT_TRUE(was_budget_use_approved);
             }));
   }
 
@@ -170,13 +228,11 @@ TEST_F(PrivateAggregationManagerImplTest,
           std::move(on_done).Run(true);
         }));
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(manager_, OnConsumeBudgetReturned)
-        .WillOnce(
-            Invoke([&expected_request](AggregatableReportRequest report_request,
-                                       bool was_budget_use_approved) {
+    EXPECT_CALL(*aggregation_service_, ScheduleReport)
+        .WillOnce(Invoke(
+            [&expected_request](AggregatableReportRequest report_request) {
               EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
                   report_request, expected_request));
-              EXPECT_TRUE(was_budget_use_approved);
             }));
   }
 
@@ -187,7 +243,7 @@ TEST_F(PrivateAggregationManagerImplTest,
 }
 
 TEST_F(PrivateAggregationManagerImplTest,
-       BudgetRequestRejected_ResultPropagated) {
+       BudgetRequestRejected_RequestNotScheduled) {
   const url::Origin example_origin =
       url::Origin::Create(GURL(kExampleOriginUrl));
 
@@ -216,14 +272,7 @@ TEST_F(PrivateAggregationManagerImplTest,
           std::move(on_done).Run(false);
         }));
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(manager_, OnConsumeBudgetReturned)
-        .WillOnce(
-            Invoke([&expected_request](AggregatableReportRequest report_request,
-                                       bool was_budget_use_approved) {
-              EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
-                  report_request, expected_request));
-              EXPECT_FALSE(was_budget_use_approved);
-            }));
+    EXPECT_CALL(*aggregation_service_, ScheduleReport).Times(0);
   }
 
   checkpoint.Call(0);
@@ -260,8 +309,31 @@ TEST_F(PrivateAggregationManagerImplTest,
           .value();
 
   EXPECT_CALL(*budgeter_, ConsumeBudget).Times(0);
+  EXPECT_CALL(*aggregation_service_, ScheduleReport).Times(0);
   manager_.OnReportRequestReceivedFromHost(
       aggregation_service::CloneReportRequest(expected_request), example_key);
+}
+
+TEST_F(PrivateAggregationManagerImplTest,
+       BindNewReceiver_InvokesHostMethodIdentically) {
+  const url::Origin example_origin =
+      url::Origin::Create(GURL(kExampleOriginUrl));
+
+  EXPECT_CALL(*host_,
+              BindNewReceiver(example_origin,
+                              PrivateAggregationBudgetKey::Api::kFledge, _))
+      .WillOnce(Return(true));
+  EXPECT_TRUE(manager_.BindNewReceiver(
+      example_origin, PrivateAggregationBudgetKey::Api::kFledge,
+      mojo::PendingReceiver<mojom::PrivateAggregationHost>()));
+
+  EXPECT_CALL(*host_, BindNewReceiver(
+                          example_origin,
+                          PrivateAggregationBudgetKey::Api::kSharedStorage, _))
+      .WillOnce(Return(false));
+  EXPECT_FALSE(manager_.BindNewReceiver(
+      example_origin, PrivateAggregationBudgetKey::Api::kSharedStorage,
+      mojo::PendingReceiver<mojom::PrivateAggregationHost>()));
 }
 
 }  // namespace content

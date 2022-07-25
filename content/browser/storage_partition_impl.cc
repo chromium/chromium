@@ -1386,7 +1386,8 @@ void StoragePartitionImpl::Initialize(
 
   if (base::FeatureList::IsEnabled(kPrivateAggregationApi)) {
     private_aggregation_manager_ =
-        std::make_unique<PrivateAggregationManagerImpl>(is_in_memory(), path);
+        std::make_unique<PrivateAggregationManagerImpl>(is_in_memory(), path,
+                                                        this);
   }
 }
 

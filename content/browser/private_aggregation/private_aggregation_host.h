@@ -50,8 +50,8 @@ class CONTENT_EXPORT PrivateAggregationHost
   // Binds a new pending receiver for a worklet, allowing messages to be sent
   // and processed. However, the receiver is not bound if the `worklet_origin`
   // is not potentially trustworthy. The return value indicates whether the
-  // receiver was accepted.
-  [[nodiscard]] bool BindNewReceiver(
+  // receiver was accepted. Virtual for testing.
+  [[nodiscard]] virtual bool BindNewReceiver(
       url::Origin worklet_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
       mojo::PendingReceiver<mojom::PrivateAggregationHost> pending_receiver);

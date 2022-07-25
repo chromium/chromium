@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/common/content_export.h"
@@ -24,18 +25,21 @@ class Origin;
 namespace content {
 
 class AggregatableReportRequest;
+class AggregationService;
 class PrivateAggregationBudgeter;
 class PrivateAggregationHost;
+class StoragePartitionImpl;
 
 // UI thread class that manages the lifetime of the other classes,
 // coordinates report requests, and interfaces with other directories. Lifetime
 // is bound to lifetime of the `StoragePartitionImpl`.
-// TODO(crbug.com/1323325): Integrate with aggregation service.
 class CONTENT_EXPORT PrivateAggregationManagerImpl
     : public PrivateAggregationManager {
  public:
+  // `storage_partition` must outlive this.
   PrivateAggregationManagerImpl(bool exclusively_run_in_memory,
-                                const base::FilePath& user_data_directory);
+                                const base::FilePath& user_data_directory,
+                                StoragePartitionImpl* storage_partition);
   PrivateAggregationManagerImpl(const PrivateAggregationManagerImpl&) = delete;
   PrivateAggregationManagerImpl& operator=(
       const PrivateAggregationManagerImpl&) = delete;
@@ -49,23 +53,30 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
       override;
 
  protected:
-  // Protected for testing
+  // Protected for testing.
   PrivateAggregationManagerImpl(
       std::unique_ptr<PrivateAggregationBudgeter> budgeter,
-      std::unique_ptr<PrivateAggregationHost> host);
+      std::unique_ptr<PrivateAggregationHost> host,
+      StoragePartitionImpl* storage_partition);
+
+  // Virtual for testing.
+  virtual AggregationService* GetAggregationService();
 
   // Called when the `host_` has received and validated a report request.
   void OnReportRequestReceivedFromHost(AggregatableReportRequest report_request,
                                        PrivateAggregationBudgetKey budget_key);
 
+ private:
   // Called when the `budgeter_` has responded to a `ConsumeBudget()` call.
   // Virtual for testing.
   virtual void OnConsumeBudgetReturned(AggregatableReportRequest report_request,
                                        bool was_budget_use_approved);
 
- private:
   std::unique_ptr<PrivateAggregationBudgeter> budgeter_;
   std::unique_ptr<PrivateAggregationHost> host_;
+
+  // Can be nullptr in unit tests.
+  raw_ptr<StoragePartitionImpl> storage_partition_;
 };
 
 }  // namespace content

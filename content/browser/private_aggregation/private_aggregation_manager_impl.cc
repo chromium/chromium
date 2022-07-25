@@ -16,9 +16,11 @@
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/task_traits.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/common/aggregatable_report.mojom.h"
 #include "content/common/private_aggregation_host.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -44,7 +46,8 @@ base::LazyThreadPoolSequencedTaskRunner g_storage_task_runner =
 
 PrivateAggregationManagerImpl::PrivateAggregationManagerImpl(
     bool exclusively_run_in_memory,
-    const base::FilePath& user_data_directory)
+    const base::FilePath& user_data_directory,
+    StoragePartitionImpl* storage_partition)
     : PrivateAggregationManagerImpl(
           std::make_unique<PrivateAggregationBudgeter>(
               g_storage_task_runner.Get(),
@@ -54,13 +57,18 @@ PrivateAggregationManagerImpl::PrivateAggregationManagerImpl(
               /*on_report_request_received=*/base::BindRepeating(
                   &PrivateAggregationManagerImpl::
                       OnReportRequestReceivedFromHost,
-                  base::Unretained(this)))) {}
+                  base::Unretained(this))),
+          storage_partition) {}
 
 PrivateAggregationManagerImpl::PrivateAggregationManagerImpl(
     std::unique_ptr<PrivateAggregationBudgeter> budgeter,
-    std::unique_ptr<PrivateAggregationHost> host)
-    : budgeter_(std::move(budgeter)), host_(std::move(host)) {
+    std::unique_ptr<PrivateAggregationHost> host,
+    StoragePartitionImpl* storage_partition)
+    : budgeter_(std::move(budgeter)),
+      host_(std::move(host)),
+      storage_partition_(storage_partition) {
   DCHECK(budgeter_);
+  DCHECK(host_);
 }
 
 PrivateAggregationManagerImpl::~PrivateAggregationManagerImpl() = default;
@@ -69,9 +77,6 @@ bool PrivateAggregationManagerImpl::BindNewReceiver(
     url::Origin worklet_origin,
     PrivateAggregationBudgetKey::Api api_for_budgeting,
     mojo::PendingReceiver<mojom::PrivateAggregationHost> pending_receiver) {
-  // TODO(crbug.com/1323325): Move DCHECK to constructor when integration with
-  // the aggregation_service component is complete and testing is updated.
-  DCHECK(host_);
   return host_->BindNewReceiver(std::move(worklet_origin), api_for_budgeting,
                                 std::move(pending_receiver));
 }
@@ -101,14 +106,26 @@ void PrivateAggregationManagerImpl::OnReportRequestReceivedFromHost(
                      base::Unretained(this), std::move(report_request)));
 }
 
+AggregationService* PrivateAggregationManagerImpl::GetAggregationService() {
+  DCHECK(storage_partition_);
+  return AggregationService::GetService(storage_partition_->browser_context());
+}
+
 void PrivateAggregationManagerImpl::OnConsumeBudgetReturned(
     AggregatableReportRequest report_request,
     bool was_budget_use_approved) {
+  // TODO(alexmt): Consider adding metrics for success and the different errors
+  // here.
   if (!was_budget_use_approved) {
     return;
   }
 
-  // TODO(crbug.com/1323325): Integrate with aggregation_service component.
+  AggregationService* aggregation_service = GetAggregationService();
+  if (!aggregation_service) {
+    return;
+  }
+
+  aggregation_service->ScheduleReport(std::move(report_request));
 }
 
 }  // namespace content
