@@ -30,15 +30,15 @@ void AppProvisioningDataManager::PopulateFromDynamicUpdate(
     return;
   }
 
-  std::unique_ptr<proto::AppWithLocaleList> app_data =
+  std::unique_ptr<proto::AppWithLocaleList> app_with_locale_list =
       std::make_unique<proto::AppWithLocaleList>();
-  if (!app_data->ParseFromString(binary_pb)) {
+  if (!app_with_locale_list->ParseFromString(binary_pb)) {
     LOG(ERROR) << "Failed to parse protobuf";
     return;
   }
 
-  // TODO(melzhang) : Add check that version of |app_data| is newer.
-  app_data_ = std::move(app_data);
+  // TODO(melzhang) : Add check that version of |app_with_locale_list| is newer.
+  app_with_locale_list_ = std::move(app_with_locale_list);
   data_dir_ = install_dir;
   OnAppDataUpdated();
 }
@@ -48,7 +48,7 @@ const base::FilePath& AppProvisioningDataManager::GetDataFilePath() {
 }
 
 void AppProvisioningDataManager::OnAppDataUpdated() {
-  if (!app_data_) {
+  if (!app_with_locale_list_) {
     return;
   }
   for (auto& observer : observers_) {
@@ -58,7 +58,7 @@ void AppProvisioningDataManager::OnAppDataUpdated() {
 
 void AppProvisioningDataManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
-  if (app_data_) {
+  if (app_with_locale_list_) {
     NotifyObserver(*observer);
   }
 }
@@ -68,7 +68,7 @@ void AppProvisioningDataManager::RemoveObserver(Observer* observer) {
 }
 
 void AppProvisioningDataManager::NotifyObserver(Observer& observer) {
-  observer.OnAppDataUpdated(*app_data_.get());
+  observer.OnAppWithLocaleListUpdated(*app_with_locale_list_.get());
 }
 
 }  // namespace apps

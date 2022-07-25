@@ -36,9 +36,11 @@ class GameFetcher : public AppFetcher,
                GetIconCallback callback) override;
 
   // AppProvisioningDataManager::Observer:
-  void OnAppDataUpdated(const proto::AppWithLocaleList& app_data) override;
+  void OnAppWithLocaleListUpdated(
+      const proto::AppWithLocaleList& app_with_locale_list) override;
 
-  void SetResultsForTesting(const proto::AppWithLocaleList& app_data);
+  void SetResultsForTesting(
+      const proto::AppWithLocaleList& app_with_locale_list);
   void SetLocaleForTesting(const std::string& language,
                            const std::string& country);
 
