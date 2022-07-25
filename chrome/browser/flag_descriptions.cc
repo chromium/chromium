@@ -1587,6 +1587,11 @@ const char kHideShelfControlsInTabletModeDescription[] =
     "Hides home, back, and overview button from the shelf while the device is "
     "in tablet mode. Predicated on shelf-hotseat feature being enabled.";
 
+extern const char kHotspotName[] = "Hotspot";
+extern const char kHotspotDescription[] =
+    "Enables the Chromebook to share its cellular internet connection to other "
+    "devices through WiFi.";
+
 const char kTabAudioMutingName[] = "Tab audio muting UI control";
 const char kTabAudioMutingDescription[] =
     "When enabled, the audio indicators in the tab strip double as tab audio "

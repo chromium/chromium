@@ -57374,6 +57374,7 @@ from previous Chrome versions.
   <int value="-936308513" label="CompactBubbleLauncher:enabled"/>
   <int value="-934842188"
       label="AutofillEnableVirtualCardFidoEnrollment:disabled"/>
+  <int value="-934444201" label="Hotspot:enabled"/>
   <int value="-934163513" label="EcheSWA:enabled"/>
   <int value="-933377608"
       label="OmniboxUIExperimentHideSteadyStateUrlScheme:enabled"/>
@@ -60977,6 +60978,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentHideSuggestionUrlTrivialSubdomains:disabled"/>
   <int value="1387356699" label="PolicyAtomicGroup:enabled"/>
   <int value="1389729816" label="data-reduction-proxy-lo-fi"/>
+  <int value="1391313384" label="Hotspot:disabled"/>
   <int value="1392836587" label="DesktopPWAsElidedExtensionsMenu:disabled"/>
   <int value="1392935139" label="KidsManagementUrlClassification:enabled"/>
   <int value="1393413889" label="SeparatePointingStickSettings:disabled"/>

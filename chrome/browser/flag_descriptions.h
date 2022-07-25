@@ -3012,6 +3012,9 @@ extern const char kHelpAppDiscoverTabDescription[];
 extern const char kHelpAppLauncherSearchName[];
 extern const char kHelpAppLauncherSearchDescription[];
 
+extern const char kHotspotName[];
+extern const char kHotspotDescription[];
+
 extern const char kDiacriticsOnPhysicalKeyboardLongpressName[];
 extern const char kDiacriticsOnPhysicalKeyboardLongpressDescription[];
 

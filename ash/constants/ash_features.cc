@@ -866,6 +866,10 @@ const base::Feature kHoldingSpaceInProgressDownloadsNotificationSuppression{
     "HoldingSpaceInProgressNotificationSuppression",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Control whether the hotspot tethering is enabled. When enabled, it will allow
+// the Chromebook to share its cellular internet connection to other devices.
+const base::Feature kHotspot{"Hotspot", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the snooping protection prototype is enabled.
 const base::Feature kSnoopingProtection{"SnoopingProtection",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1963,6 +1967,10 @@ bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {
 
 bool IsHostnameSettingEnabled() {
   return base::FeatureList::IsEnabled(kEnableHostnameSetting);
+}
+
+bool IsHotspotEnabled() {
+  return base::FeatureList::IsEnabled(kHotspot);
 }
 
 bool IsSnoopingProtectionEnabled() {

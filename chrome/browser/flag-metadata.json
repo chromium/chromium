@@ -3770,6 +3770,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "hotspot",
+    "owners": [ "jiajunz@google.com", "cros-connectivity@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "http-cache-partitioning",
     "owners": [ "shivanisha" ],
     "expiry_milestone": 95
