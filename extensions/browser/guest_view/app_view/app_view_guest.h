@@ -27,6 +27,8 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
   AppViewGuest(const AppViewGuest&) = delete;
   AppViewGuest& operator=(const AppViewGuest&) = delete;
 
+  static GuestViewBase* Create(content::WebContents* owner_web_contents);
+
   // Completes the creation of a WebContents associated with the provided
   // |guest_extension_id| and |guest_instance_id| for the given
   // |browser_context|.
@@ -42,8 +44,6 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
       int guest_instance_id,
       const std::string& guest_extension_id,
       content::RenderProcessHost* guest_render_process_host);
-
-  static GuestViewBase* Create(content::WebContents* owner_web_contents);
 
   static std::vector<int> GetAllRegisteredInstanceIdsForTesting();
 

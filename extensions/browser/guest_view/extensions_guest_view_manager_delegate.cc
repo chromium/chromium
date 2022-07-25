@@ -43,8 +43,8 @@ ExtensionsGuestViewManagerDelegate::ExtensionsGuestViewManagerDelegate(
     : context_(context) {
 }
 
-ExtensionsGuestViewManagerDelegate::~ExtensionsGuestViewManagerDelegate() {
-}
+ExtensionsGuestViewManagerDelegate::~ExtensionsGuestViewManagerDelegate() =
+    default;
 
 void ExtensionsGuestViewManagerDelegate::OnGuestAdded(
     content::WebContents* guest_web_contents) const {
@@ -120,12 +120,21 @@ bool ExtensionsGuestViewManagerDelegate::IsOwnedByExtension(
       GetExtensionForWebContents(guest->owner_web_contents());
 }
 
-void ExtensionsGuestViewManagerDelegate::RegisterAdditionalGuestViewTypes() {
-  GuestViewManager* manager = GuestViewManager::FromBrowserContext(context_);
-  manager->RegisterGuestViewType<AppViewGuest>();
-  manager->RegisterGuestViewType<ExtensionOptionsGuest>();
-  manager->RegisterGuestViewType<MimeHandlerViewGuest>();
-  manager->RegisterGuestViewType<WebViewGuest>();
+void ExtensionsGuestViewManagerDelegate::RegisterAdditionalGuestViewTypes(
+    GuestViewManager* manager) {
+  manager->RegisterGuestViewType(AppViewGuest::Type,
+                                 base::BindRepeating(&AppViewGuest::Create),
+                                 base::NullCallback());
+  manager->RegisterGuestViewType(
+      ExtensionOptionsGuest::Type,
+      base::BindRepeating(&ExtensionOptionsGuest::Create),
+      base::NullCallback());
+  manager->RegisterGuestViewType(
+      MimeHandlerViewGuest::Type,
+      base::BindRepeating(&MimeHandlerViewGuest::Create), base::NullCallback());
+  manager->RegisterGuestViewType(WebViewGuest::Type,
+                                 base::BindRepeating(&WebViewGuest::Create),
+                                 base::BindRepeating(&WebViewGuest::CleanUp));
 }
 
 }  // namespace extensions

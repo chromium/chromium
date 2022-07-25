@@ -50,8 +50,7 @@ ExtensionOptionsGuest::ExtensionOptionsGuest(WebContents* owner_web_contents)
           extensions::ExtensionsAPIClient::Get()
               ->CreateExtensionOptionsGuestDelegate(this)) {}
 
-ExtensionOptionsGuest::~ExtensionOptionsGuest() {
-}
+ExtensionOptionsGuest::~ExtensionOptionsGuest() = default;
 
 // static
 GuestViewBase* ExtensionOptionsGuest::Create(WebContents* owner_web_contents) {

@@ -39,21 +39,22 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   WebViewGuest(const WebViewGuest&) = delete;
   WebViewGuest& operator=(const WebViewGuest&) = delete;
 
-  // Clean up state when this GuestView is being destroyed. See
-  // GuestViewBase::CleanUp().
+  static GuestViewBase* Create(content::WebContents* owner_web_contents);
+  // Cleans up state when this GuestView is being destroyed.
+  // Note that this cannot be done in the destructor since a GuestView could
+  // potentially be created and destroyed in JavaScript before getting a
+  // GuestViewBase instance.
   static void CleanUp(content::BrowserContext* browser_context,
                       int embedder_process_id,
                       int view_instance_id);
 
-  static GuestViewBase* Create(content::WebContents* owner_web_contents);
+  static const char Type[];
 
   // Returns the WebView partition ID associated with the render process
   // represented by |render_process_host|, if any. Otherwise, an empty string is
   // returned.
   static std::string GetPartitionID(
       content::RenderProcessHost* render_process_host);
-
-  static const char Type[];
 
   // Returns the stored rules registry ID of the given webview. Will generate
   // an ID for the first query.
@@ -316,13 +317,13 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   std::unique_ptr<ScriptExecutor> script_executor_;
 
   // True if the user agent is overridden.
-  bool is_overriding_user_agent_;
+  bool is_overriding_user_agent_ = false;
 
   // Stores the window name of the main frame of the guest.
   std::string name_;
 
   // Stores whether the contents of the guest can be transparent.
-  bool allow_transparency_;
+  bool allow_transparency_ = false;
 
   // Handles the JavaScript dialog requests.
   JavaScriptDialogHelper javascript_dialog_helper_;
@@ -360,17 +361,17 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   PendingWindowMap pending_new_windows_;
 
   // Determines if this guest accepts pinch-zoom gestures.
-  bool allow_scaling_;
-  bool is_guest_fullscreen_;
-  bool is_embedder_fullscreen_;
-  bool last_fullscreen_permission_was_allowed_by_embedder_;
+  bool allow_scaling_ = false;
+  bool is_guest_fullscreen_ = false;
+  bool is_embedder_fullscreen_ = false;
+  bool last_fullscreen_permission_was_allowed_by_embedder_ = false;
 
   // Tracks whether the webview has a pending zoom from before the first
   // navigation. This will be equal to 0 when there is no pending zoom.
-  double pending_zoom_factor_;
+  double pending_zoom_factor_ = 0.0;
 
   // Whether the GuestView set an explicit zoom level.
-  bool did_set_explicit_zoom_;
+  bool did_set_explicit_zoom_ = false;
 
   // Store spatial navigation status.
   bool is_spatial_navigation_enabled_;

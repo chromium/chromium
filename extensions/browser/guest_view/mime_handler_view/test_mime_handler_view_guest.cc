@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/time/time.h"
+#include "components/guest_view/browser/test_guest_view_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_utils.h"
@@ -18,7 +19,16 @@ TestMimeHandlerViewGuest::TestMimeHandlerViewGuest(
     content::WebContents* owner_web_contents)
     : MimeHandlerViewGuest(owner_web_contents) {}
 
-TestMimeHandlerViewGuest::~TestMimeHandlerViewGuest() {}
+TestMimeHandlerViewGuest::~TestMimeHandlerViewGuest() = default;
+
+// static
+void TestMimeHandlerViewGuest::RegisterTestGuestViewType(
+    guest_view::TestGuestViewManager* manager) {
+  manager->RegisterGuestViewType(
+      TestMimeHandlerViewGuest::Type,
+      base::BindRepeating(&TestMimeHandlerViewGuest::Create),
+      base::NullCallback());
+}
 
 // static
 GuestViewBase* TestMimeHandlerViewGuest::Create(

@@ -107,16 +107,15 @@ GuestViewBase* AppViewGuest::Create(WebContents* owner_web_contents) {
 
 AppViewGuest::AppViewGuest(WebContents* owner_web_contents)
     : GuestView<AppViewGuest>(owner_web_contents),
-      app_view_guest_delegate_(
-          ExtensionsAPIClient::Get()->CreateAppViewGuestDelegate()) {
+      app_view_guest_delegate_(base::WrapUnique(
+          ExtensionsAPIClient::Get()->CreateAppViewGuestDelegate())) {
   if (app_view_guest_delegate_) {
-    app_delegate_.reset(
+    app_delegate_ = base::WrapUnique(
         app_view_guest_delegate_->CreateAppDelegate(owner_web_contents));
   }
 }
 
-AppViewGuest::~AppViewGuest() {
-}
+AppViewGuest::~AppViewGuest() = default;
 
 bool AppViewGuest::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,

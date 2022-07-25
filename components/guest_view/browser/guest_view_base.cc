@@ -326,13 +326,6 @@ void GuestViewBase::SetSize(const SetSizeParams& params) {
 }
 
 // static
-void GuestViewBase::CleanUp(content::BrowserContext* browser_context,
-                            int embedder_process_id,
-                            int view_instance_id) {
-  // TODO(paulmeyer): Add in any general GuestView cleanup work here.
-}
-
-// static
 GuestViewBase* GuestViewBase::FromWebContents(const WebContents* web_contents) {
   WebContentsGuestViewMap* guest_map = g_webcontents_guestview_map.Pointer();
   auto it = guest_map->find(web_contents);

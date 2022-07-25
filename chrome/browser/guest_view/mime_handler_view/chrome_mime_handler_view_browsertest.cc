@@ -115,8 +115,7 @@ class ChromeMimeHandlerViewTest : public extensions::ExtensionApiTest {
 
   void RunTestWithUrl(const GURL& url) {
     // Use the testing subclass of MimeHandlerViewGuest.
-    GetGuestViewManager()->RegisterTestGuestViewType<MimeHandlerViewGuest>(
-        base::BindRepeating(&TestMimeHandlerViewGuest::Create));
+    TestMimeHandlerViewGuest::RegisterTestGuestViewType(GetGuestViewManager());
 
     const extensions::Extension* extension = LoadTestExtension();
     ASSERT_TRUE(extension);
@@ -363,8 +362,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, EmbedderFrameRemovedNoCrash) {
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
                        EmbedWithInitialFrameAcceptBeforeUnloadDialog) {
   // Use the testing subclass of MimeHandlerViewGuest.
-  GetGuestViewManager()->RegisterTestGuestViewType<MimeHandlerViewGuest>(
-      base::BindRepeating(&TestMimeHandlerViewGuest::Create));
+  TestMimeHandlerViewGuest::RegisterTestGuestViewType(GetGuestViewManager());
   const extensions::Extension* extension = LoadTestExtension();
   ASSERT_TRUE(extension);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -581,8 +579,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
 // blocked in sandboxed frames).
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, DoNotLoadInSandboxedFrame) {
   // Use the testing subclass of MimeHandlerViewGuest.
-  GetGuestViewManager()->RegisterTestGuestViewType<MimeHandlerViewGuest>(
-      base::BindRepeating(&TestMimeHandlerViewGuest::Create));
+  TestMimeHandlerViewGuest::RegisterTestGuestViewType(GetGuestViewManager());
 
   const extensions::Extension* extension = LoadTestExtension();
   ASSERT_TRUE(extension);
@@ -630,8 +627,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, DoNotLoadInSandboxedFrame) {
 
 // Tests that a MimeHandlerViewGuest auto-rejects pointer lock requests.
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, RejectPointLock) {
-  GetGuestViewManager()->RegisterTestGuestViewType<MimeHandlerViewGuest>(
-      base::BindRepeating(&TestMimeHandlerViewGuest::Create));
+  TestMimeHandlerViewGuest::RegisterTestGuestViewType(GetGuestViewManager());
 
   auto* extension = LoadTestExtension();
   ASSERT_TRUE(extension);

@@ -83,8 +83,7 @@ class ChromeMimeHandlerViewInteractiveUITest : public ExtensionApiTest {
 
   void RunTestWithUrl(const GURL& url) {
     // Use the testing subclass of MimeHandlerViewGuest.
-    GetGuestViewManager()->RegisterTestGuestViewType<MimeHandlerViewGuest>(
-        base::BindRepeating(&TestMimeHandlerViewGuest::Create));
+    TestMimeHandlerViewGuest::RegisterTestGuestViewType(GetGuestViewManager());
 
     const Extension* extension = LoadTestExtension();
     ASSERT_TRUE(extension);
@@ -141,8 +140,7 @@ void WaitForFullscreenAnimation() {
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewInteractiveUITest,
                        MAYBE_EscapeExitsFullscreen) {
   // Use the testing subclass of MimeHandlerViewGuest.
-  GetGuestViewManager()->RegisterTestGuestViewType<MimeHandlerViewGuest>(
-      base::BindRepeating(&TestMimeHandlerViewGuest::Create));
+  TestMimeHandlerViewGuest::RegisterTestGuestViewType(GetGuestViewManager());
 
   const Extension* extension = LoadTestExtension();
   ASSERT_TRUE(extension);

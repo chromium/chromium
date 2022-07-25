@@ -30,7 +30,8 @@ class ExtensionsGuestViewManagerDelegate
                      int instance_id) override;
   bool IsGuestAvailableToContext(guest_view::GuestViewBase* guest) override;
   bool IsOwnedByExtension(guest_view::GuestViewBase* guest) override;
-  void RegisterAdditionalGuestViewTypes() override;
+  void RegisterAdditionalGuestViewTypes(
+      guest_view::GuestViewManager* manager) override;
 
  private:
   const raw_ptr<content::BrowserContext> context_;

@@ -21,6 +21,7 @@ class WebContents;
 namespace guest_view {
 
 class GuestViewBase;
+class GuestViewManager;
 
 // A GuestViewManagerDelegate interface allows GuestViewManager to delegate
 // responsibilities to other modules in Chromium. Different builds of Chromium
@@ -52,7 +53,7 @@ class GuestViewManagerDelegate {
 
   // Registers additional GuestView types the delegator (GuestViewManger) can
   // create.
-  virtual void RegisterAdditionalGuestViewTypes() {}
+  virtual void RegisterAdditionalGuestViewTypes(GuestViewManager* manager) {}
 };
 
 }  // namespace guest_view

@@ -237,9 +237,6 @@ WebViewGuest::NewWindowInfo::~NewWindowInfo() = default;
 void WebViewGuest::CleanUp(content::BrowserContext* browser_context,
                            int embedder_process_id,
                            int view_instance_id) {
-  GuestViewBase::CleanUp(browser_context, embedder_process_id,
-                         view_instance_id);
-
   // Clean up rules registries for the WebView.
   WebViewKey key(embedder_process_id, view_instance_id);
   auto it = web_view_key_to_id_map.Get().find(key);
@@ -761,24 +758,14 @@ WebViewGuest::WebViewGuest(WebContents* owner_web_contents)
     : GuestView<WebViewGuest>(owner_web_contents),
       rules_registry_id_(RulesRegistryService::kInvalidRulesRegistryID),
       find_helper_(this),
-      is_overriding_user_agent_(false),
-      allow_transparency_(false),
       javascript_dialog_helper_(this),
-      allow_scaling_(false),
-      is_guest_fullscreen_(false),
-      is_embedder_fullscreen_(false),
-      last_fullscreen_permission_was_allowed_by_embedder_(false),
-      pending_zoom_factor_(0.0),
-      did_set_explicit_zoom_(false),
+      web_view_guest_delegate_(base::WrapUnique(
+          ExtensionsAPIClient::Get()->CreateWebViewGuestDelegate(this))),
       is_spatial_navigation_enabled_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kEnableSpatialNavigation)) {
-  web_view_guest_delegate_.reset(
-      ExtensionsAPIClient::Get()->CreateWebViewGuestDelegate(this));
-}
+              switches::kEnableSpatialNavigation)) {}
 
-WebViewGuest::~WebViewGuest() {
-}
+WebViewGuest::~WebViewGuest() = default;
 
 void WebViewGuest::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {

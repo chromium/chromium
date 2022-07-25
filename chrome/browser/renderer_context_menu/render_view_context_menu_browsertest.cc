@@ -439,8 +439,8 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
     WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     // Prepare to load a pdf plugin inside.
-    test_guest_view_manager_->RegisterTestGuestViewType<MimeHandlerViewGuest>(
-        base::BindRepeating(&TestMimeHandlerViewGuest::Create));
+    TestMimeHandlerViewGuest::RegisterTestGuestViewType(
+        test_guest_view_manager_);
     ASSERT_TRUE(
         content::ExecuteScript(web_contents,
                                "var l = document.getElementById('link1');"

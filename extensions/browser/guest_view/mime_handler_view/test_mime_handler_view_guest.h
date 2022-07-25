@@ -13,6 +13,10 @@ namespace content {
 class MessageLoopRunner;
 }  // namespace content
 
+namespace guest_view {
+class TestGuestViewManager;
+}  // namespace guest_view
+
 namespace extensions {
 
 // TestMimeHandlerViewGuest is used instead of its base class,
@@ -22,6 +26,11 @@ class TestMimeHandlerViewGuest : public MimeHandlerViewGuest {
  public:
   TestMimeHandlerViewGuest(const TestMimeHandlerViewGuest&) = delete;
   TestMimeHandlerViewGuest& operator=(const TestMimeHandlerViewGuest&) = delete;
+
+  // Have `manager` create TestMimeHandlerViewGuests in place of
+  // MimeHandlerViewGuests.
+  static void RegisterTestGuestViewType(
+      guest_view::TestGuestViewManager* manager);
 
   static GuestViewBase* Create(content::WebContents* owner_web_contents);
 

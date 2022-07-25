@@ -72,10 +72,7 @@ class GuestViewManager::EmbedderRenderProcessHostObserver
 GuestViewManager::GuestViewManager(
     content::BrowserContext* context,
     std::unique_ptr<GuestViewManagerDelegate> delegate)
-    : current_instance_id_(0),
-      last_instance_id_removed_(0),
-      context_(context),
-      delegate_(std::move(delegate)) {}
+    : context_(context), delegate_(std::move(delegate)) {}
 
 GuestViewManager::~GuestViewManager() {
   // It seems that ChromeOS OTR profiles may still have RenderProcessHosts at
@@ -336,10 +333,12 @@ void GuestViewManager::ViewCreated(int embedder_process_id,
   }
 
   // Register the cleanup callback for when this view is destroyed.
-  RegisterViewDestructionCallback(
-      embedder_process_id, view_instance_id,
-      base::BindOnce(view_it->second.cleanup_function, context_,
-                     embedder_process_id, view_instance_id));
+  if (view_it->second.cleanup_function) {
+    RegisterViewDestructionCallback(
+        embedder_process_id, view_instance_id,
+        base::BindOnce(view_it->second.cleanup_function, context_,
+                       embedder_process_id, view_instance_id));
+  }
 }
 
 void GuestViewManager::ViewGarbageCollected(int embedder_process_id,
@@ -399,7 +398,23 @@ GuestViewBase* GuestViewManager::CreateGuestInternal(
 }
 
 void GuestViewManager::RegisterGuestViewTypes() {
-  delegate_->RegisterAdditionalGuestViewTypes();
+  delegate_->RegisterAdditionalGuestViewTypes(this);
+}
+
+void GuestViewManager::RegisterGuestViewType(
+    const std::string& type,
+    GuestViewCreateFunction create_function,
+    GuestViewCleanUpFunction cleanup_function) {
+  // If the GuestView type `type` is already registered, then there is nothing
+  // more to do. If an existing entry in the registry was created by this
+  // function for `type`, then registering again would have no effect, and
+  // if it was registered elsewhere, then we do not want to overwrite it. Note
+  // that it is possible for tests to have special test factory methods
+  // registered here.
+  if (base::Contains(guest_view_registry_, type))
+    return;
+
+  guest_view_registry_.insert({type, {create_function, cleanup_function}});
 }
 
 void GuestViewManager::RegisterViewDestructionCallback(
@@ -563,6 +578,6 @@ GuestViewManager::GuestViewData::GuestViewData(
 GuestViewManager::GuestViewData::GuestViewData(const GuestViewData& other) =
     default;
 
-GuestViewManager::GuestViewData::~GuestViewData() {}
+GuestViewManager::GuestViewData::~GuestViewData() = default;
 
 }  // namespace guest_view

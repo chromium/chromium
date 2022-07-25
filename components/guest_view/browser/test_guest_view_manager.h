@@ -49,15 +49,6 @@ class TestGuestViewManager : public GuestViewManager {
   // Returns the size of the set of removed instance IDs.
   size_t GetNumRemovedInstanceIDs() const;
 
-  template <typename T>
-  void RegisterTestGuestViewType(
-      const GuestViewCreateFunction& create_function) {
-    auto registry_entry = std::make_pair(
-        T::Type,
-        GuestViewData(create_function, base::BindRepeating(&T::CleanUp)));
-    guest_view_registry_.insert(registry_entry);
-  }
-
   // Returns the number of times EmbedderWillBeDestroyed() was called.
   int num_embedder_processes_destroyed() const {
     return num_embedder_processes_destroyed_;

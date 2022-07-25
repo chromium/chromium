@@ -4587,8 +4587,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderAndFencedFrameTest,
   GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
 
-  GetGuestViewManager()->RegisterTestGuestViewType<MimeHandlerViewGuest>(
-      base::BindRepeating(&TestMimeHandlerViewGuest::Create));
+  TestMimeHandlerViewGuest::RegisterTestGuestViewType(GetGuestViewManager());
   // Set a 1s delay to delay MimeHandlerViewGuest's creation to ensure that the
   // fenced frame is loaded while the PDF stream is not yet consumed.
   const int creation_delay = TestTimeouts::tiny_timeout().InMilliseconds();
