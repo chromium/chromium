@@ -153,6 +153,7 @@
 
   #logSavedIconText {
     align-items: center;
+    display: flex;
   }
 </style>
 
@@ -185,7 +186,8 @@
     <div id="buttonContainer">
       <cr-button id="diagnosticsButton" class="button-card"
         on-click="onDiagnosticsButtonClick_" disabled="[[allButtonsDisabled]]">
-        <iron-icon icon$="[[getDiagnosticsIcon_(allButtonsDisabled)]]" class="button-icon">
+        <iron-icon icon$="[[getDiagnosticsIcon_(allButtonsDisabled)]]"
+            class="button-icon">
         </iron-icon>
         <div class="button-text">
           <div class="button-label">
@@ -198,7 +200,9 @@
       </cr-button>
       <cr-button id="rmaLogButton" class="button-card"
           on-click="onRmaLogButtonClick_" disabled="[[allButtonsDisabled]]">
-        <iron-icon icon$="[[getRmaLogIcon_(allButtonsDisabled)]]" class="button-icon"></iron-icon>
+        <iron-icon icon$="[[getRmaLogIcon_(allButtonsDisabled)]]"
+            class="button-icon">
+        </iron-icon>
         <div class="button-text">
           <div class="button-label">
             <span>[[i18n('repairCompletedLogsButtonText')]]</span>
@@ -214,7 +218,8 @@
             disabled$="[[disableBatteryCutButton_(pluggedIn_,
             allButtonsDisabled)]]">
           <iron-icon id="batteryCutoffIcon"
-              icon$="[[getBatteryCutoffIcon_(allButtonsDisabled)]]" class="button-icon">
+              icon$="[[getBatteryCutoffIcon_(allButtonsDisabled)]]"
+              class="button-icon">
           </iron-icon>
           <div class="button-text">
             <div class="button-label">
@@ -251,10 +256,10 @@
         slot="button-container"
         hidden="[[!shouldShowLogSaveAttemptContainer_(usbLogState_)]]">
     <div id="logSavedIconText">
-      <iron-icon id="verificationIcon" icon="shimless-icon:check"
-          class="small-icon">
+      <iron-icon id="verificationIcon" class="small-icon"
+          icon="[[getSaveLogResultIcon_(usbLogState_)]]">
       </iron-icon>
-      [[logSavedStatusText_]]
+      <span id="logSavedStatusText">[[logSavedStatusText_]]</span>
     </div>
     <cr-button id="logSaveDoneDialogButton" class="text-button action-button"
         on-click="closeLogsDialog_">
@@ -286,10 +291,12 @@
     [[i18n('repairCompletedBatteryCutoffCountdownDescription')]]
   </div>
   <div class="dialog-footer" slot="button-container">
-    <cr-button id="closeBatteryCutoffDialogButton" on-click="onCutoffCancelClick_">
+    <cr-button id="closeBatteryCutoffDialogButton"
+        on-click="onCutoffCancelClick_">
       [[i18n('cancelButtonLabel')]]
     </cr-button>
-    <cr-button id="batteryCutoffShutdownButton" class="text-button action-button"
+    <cr-button id="batteryCutoffShutdownButton"
+        class="text-button action-button"
         on-click="onCutoffShutdownButtonClick_">
       [[i18n('repairCompletedBatteryCutoffShutdownButton')]]
     </cr-button>

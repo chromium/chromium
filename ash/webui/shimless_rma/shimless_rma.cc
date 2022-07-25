@@ -242,6 +242,7 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"repairCompletedBatteryCutoffShutdownButton",
        IDS_SHIMLESS_RMA_REPAIR_COMPLETED_BATTERY_CUTOFF_SHUTDOWN_BUTTON},
       {"rmaLogsSaveSuccessText", IDS_SHIMLESS_RMA_LOGS_SAVE_SUCCESS},
+      {"rmaLogsSaveFailText", IDS_SHIMLESS_RMA_LOGS_SAVE_FAIL},
       // Powerwash dialog
       {"powerwashDialogTitle", IDS_SHIMLESS_RMA_POWERWASH_DIALOG_TITLE},
       {"powerwashDialogShutdownDescription",

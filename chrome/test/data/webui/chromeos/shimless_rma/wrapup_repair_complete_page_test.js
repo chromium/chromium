@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
@@ -350,7 +351,8 @@ export function wrapupRepairCompletePageTest() {
 
     // Attempt to save the logs.
     await clickButton('#saveLogDialogButton');
-    resolver.resolve({savePath: 'save/path', error: RmadErrorCode.kOk});
+    const savePath = 'save/path';
+    resolver.resolve({savePath: {path: savePath}, error: RmadErrorCode.kOk});
     await flushTasks();
 
     assertEquals(1, callCount);
@@ -360,6 +362,10 @@ export function wrapupRepairCompletePageTest() {
         isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
     assertTrue(isVisible(
         component.shadowRoot.querySelector('#logSaveDoneDialogButton')));
+    assertEquals(
+        loadTimeData.getStringF('rmaLogsSaveSuccessText', savePath),
+        component.shadowRoot.querySelector('#logSavedStatusText')
+            .textContent.trim());
 
     // Close the logs dialog.
     await clickButton('#logSaveDoneDialogButton');
@@ -371,6 +377,40 @@ export function wrapupRepairCompletePageTest() {
     resolver.resolve({savePath: 'save/path', error: RmadErrorCode.kOk});
     assertTrue(
         isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
+  });
+
+  test('SaveLogFails', async () => {
+    const resolver = new PromiseResolver();
+    await initializeRepairCompletePage();
+
+    let callCount = 0;
+    service.saveLog = () => {
+      callCount++;
+      return resolver.promise;
+    };
+
+    // Open the logs dialog.
+    await clickButton('#rmaLogButton');
+    assertTrue(
+        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
+
+    // Attempt to save the logs but it fails.
+    await clickButton('#saveLogDialogButton');
+    resolver.resolve(
+        {savePath: 'save/path', error: RmadErrorCode.kCannotSaveLog});
+    await flushTasks();
+
+    assertEquals(1, callCount);
+
+    // The save log button should be replaced by the done button.
+    assertFalse(
+        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
+    assertTrue(isVisible(
+        component.shadowRoot.querySelector('#logSaveDoneDialogButton')));
+    assertEquals(
+        loadTimeData.getString('rmaLogsSaveFailText'),
+        component.shadowRoot.querySelector('#logSavedStatusText')
+            .textContent.trim());
   });
 
   test('BatteryCutButtonDisabledByDefault', async () => {

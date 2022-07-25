@@ -304,6 +304,9 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
             this.logSavedStatusText_ =
                 this.i18n('rmaLogsSaveSuccessText', result.savePath.path);
             this.usbLogState_ = USBLogState.LOG_SAVE_SUCCESS;
+          } else {
+            this.logSavedStatusText_ = this.i18n('rmaLogsSaveFailText');
+            this.usbLogState_ = USBLogState.LOG_SAVE_FAIL;
           }
         });
   }
@@ -425,6 +428,21 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   shouldShowLogSaveAttemptContainer_() {
     return this.usbLogState_ === USBLogState.LOG_SAVE_SUCCESS ||
         this.usbLogState_ === USBLogState.LOG_SAVE_FAIL;
+  }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getSaveLogResultIcon_() {
+    switch (this.usbLogState_) {
+      case USBLogState.LOG_SAVE_SUCCESS:
+        return 'shimless-icon:check';
+      case USBLogState.LOG_SAVE_FAIL:
+        return 'shimless-icon:warning';
+      default:
+        return '';
+    }
   }
 }
 
