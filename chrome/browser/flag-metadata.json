@@ -5126,8 +5126,8 @@
   },
   {
     "name": "pdf-xfa-forms",
-    "owners": [ "carlosil", "tsepez" ],
-    "expiry_milestone": 105
+    "owners": [ "thestig", "//pdf/OWNERS" ],
+    "expiry_milestone": 115
   },
   {
     "name": "per-desk-wallpaper",
