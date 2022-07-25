@@ -130,6 +130,11 @@ class VisitRow {
   // `originator_cache_guid` is the originator machine's unique client ID. It's
   // called a "cache" just to match Chrome Sync's terminology.
   std::string originator_cache_guid;
+  // The visit ID of this visit on the originating device, which is *not*
+  // comparable to local visit IDs (as in `visit_id` / `referring_visit` /
+  // `opener_visit`).
+  // Note that even for synced visits, this may be 0, if the visit came from a
+  // "legacy" client (which was using Sessions sync rather than History sync).
   VisitID originator_visit_id = 0;
   // `originator_referring_visit` and `originator_opener_visit` are similar to
   // the non-"originator" versions, but their contents refer to originator visit
