@@ -118,6 +118,7 @@ class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
   ContainerQueryData* GetContainerQueryData() const {
     return container_query_data_;
   }
+  void ClearContainerQueryData() { container_query_data_ = nullptr; }
 
   // Returns the crop-ID if one was set, or nullptr otherwise.
   const RegionCaptureCropId* GetRegionCaptureCropId() const {
@@ -557,6 +558,10 @@ class ElementRareData final : public NodeRareData {
     if (super_rare_data_)
       return super_rare_data_->GetContainerQueryData();
     return nullptr;
+  }
+  void ClearContainerQueryData() {
+    if (super_rare_data_)
+      super_rare_data_->ClearContainerQueryData();
   }
 
   ContainerQueryEvaluator* GetContainerQueryEvaluator() const {
