@@ -51,6 +51,7 @@ try_.builder(
         "ci/Mac Builder",
         "ci/mac-osxbeta-rel",
     ],
+    builderless = False,
     os = os.MAC_DEFAULT,
 )
 

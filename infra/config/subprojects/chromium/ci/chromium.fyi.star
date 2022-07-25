@@ -750,6 +750,8 @@ ci.thin_tester(
         short_name = "beta",
     ),
     main_console_view = None,
+    builderless = False,
+    os = os.MAC_DEFAULT,
     triggered_by = ["ci/Mac Builder"],
 )
 
