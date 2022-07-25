@@ -16,18 +16,10 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId GaiaPasswordChangedView::kScreenId;
-
 GaiaPasswordChangedScreenHandler::GaiaPasswordChangedScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated(
-      "login.GaiaPasswordChangedScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
-GaiaPasswordChangedScreenHandler::~GaiaPasswordChangedScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+GaiaPasswordChangedScreenHandler::~GaiaPasswordChangedScreenHandler() = default;
 
 void GaiaPasswordChangedScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -60,11 +52,6 @@ void GaiaPasswordChangedScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_PASSWORD_CHANGED_CONTINUE_WITHOUT_LOCAL_DATA_BUTTON);
 }
 
-void GaiaPasswordChangedScreenHandler::InitializeDeprecated() {
-  AddCallback("migrateUserData",
-              &GaiaPasswordChangedScreenHandler::HandleMigrateUserData);
-}
-
 void GaiaPasswordChangedScreenHandler::GetAdditionalParameters(
     base::Value::Dict* dict) {
   dict->Set("isCryptohomeRecoveryUIFlowEnabled",
@@ -78,22 +65,6 @@ void GaiaPasswordChangedScreenHandler::Show(const std::string& email,
   data.Set("email", email);
   data.Set("showError", has_error);
   ShowInWebUI(std::move(data));
-}
-
-void GaiaPasswordChangedScreenHandler::Bind(GaiaPasswordChangedScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-}
-
-void GaiaPasswordChangedScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
-}
-
-void GaiaPasswordChangedScreenHandler::HandleMigrateUserData(
-    const std::string& old_password) {
-  if (screen_)
-    screen_->MigrateUserData(old_password);
 }
 
 }  // namespace chromeos

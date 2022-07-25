@@ -15,6 +15,7 @@ namespace {
 
 constexpr const char kUserActionCancelLogin[] = "cancel";
 constexpr const char kUserActionResyncData[] = "resync";
+constexpr const char kUserActionMigrateUserData[] = "migrate-user-data";
 
 }  // namespace
 
@@ -25,24 +26,13 @@ void RecordEulaScreenAction(GaiaPasswordChangedScreen::UserAction value) {
 
 GaiaPasswordChangedScreen::GaiaPasswordChangedScreen(
     const ScreenExitCallback& exit_callback,
-    GaiaPasswordChangedView* view)
+    base::WeakPtr<GaiaPasswordChangedView> view)
     : BaseScreen(GaiaPasswordChangedView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      exit_callback_(exit_callback) {
-  view_ = view;
-  if (view_)
-    view_->Bind(this);
-}
+      view_(std::move(view)),
+      exit_callback_(exit_callback) {}
 
-GaiaPasswordChangedScreen::~GaiaPasswordChangedScreen() {
-  if (view_)
-    view_->Unbind();
-}
-
-void GaiaPasswordChangedScreen::OnViewDestroyed(GaiaPasswordChangedView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
+GaiaPasswordChangedScreen::~GaiaPasswordChangedScreen() = default;
 
 void GaiaPasswordChangedScreen::ShowImpl() {
   DCHECK(account_id_.is_valid());
@@ -64,8 +54,9 @@ void GaiaPasswordChangedScreen::Configure(const AccountId& account_id,
     RecordEulaScreenAction(UserAction::kIncorrectOldPassword);
 }
 
-void GaiaPasswordChangedScreen::OnUserActionDeprecated(
-    const std::string& action_id) {
+void GaiaPasswordChangedScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
+
   if (action_id == kUserActionCancelLogin) {
     RecordEulaScreenAction(UserAction::kCancel);
     CancelPasswordChangedFlow();
@@ -74,6 +65,12 @@ void GaiaPasswordChangedScreen::OnUserActionDeprecated(
     // LDH will pass control to ExistingUserController to proceed with clearing
     // cryptohome.
     exit_callback_.Run(Result::RESYNC);
+  } else if (action_id == kUserActionMigrateUserData) {
+    CHECK_EQ(args.size(), 2);
+    const std::string& old_password = args[1].GetString();
+    MigrateUserData(old_password);
+  } else {
+    BaseScreen::OnUserAction(args);
   }
 }
 

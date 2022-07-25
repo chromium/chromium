@@ -134,8 +134,7 @@ class GaiaPasswordChanged extends GaiaPasswordChangedBase {
     }
     this.setUIStep(GaiaPasswordChangedUIState.PROGRESS);
     this.disabled = true;
-
-    chrome.send('migrateUserData', [this.passwordInput_.value]);
+    this.userActed(['migrate-user-data', this.passwordInput_.value]);
   }
 
   /** @private */

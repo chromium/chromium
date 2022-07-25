@@ -730,7 +730,7 @@ WizardController::CreateScreens() {
       std::make_unique<GaiaPasswordChangedScreen>(
           base::BindRepeating(&WizardController::OnPasswordChangeScreenExit,
                               weak_factory_.GetWeakPtr()),
-          oobe_ui->GetView<GaiaPasswordChangedScreenHandler>());
+          oobe_ui->GetView<GaiaPasswordChangedScreenHandler>()->AsWeakPtr());
   append(std::move(gaia_password_change_screen));
 
   append(std::make_unique<ActiveDirectoryPasswordChangeScreen>(
