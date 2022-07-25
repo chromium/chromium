@@ -3553,6 +3553,26 @@
             ]
         }
     ],
+    "DisableResourceScheduler": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220725",
+                    "enable_features": [
+                        "DisableResourceScheduler"
+                    ]
+                }
+            ]
+        }
+    ],
     "DiscardableMemoryExperiments": [
         {
             "platforms": [
