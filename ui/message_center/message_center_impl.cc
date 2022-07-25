@@ -160,33 +160,22 @@ Notification* MessageCenterImpl::FindNotificationById(const std::string& id) {
 Notification* MessageCenterImpl::FindParentNotification(
     Notification* notification) {
   // For a notification to have a parent notification, they must have identical
-  // origin urls and profile_ids. To make sure that the notifications come from
-  // the same website for the same user. If either fields are empty there can
-  // not be a parent notification. Also make sure to only group notifications
-  // from web pages.
+  // notifier_ids. To make sure that the notifications come from
+  // the same website for the same user. Also make sure to only group
+  // notifications from web pages with valid origin urls.
   if (notification->origin_url().is_empty() ||
-      notification->notifier_id().profile_id.empty() ||
       notification->notifier_id().type != NotifierType::WEB_PAGE) {
     return nullptr;
   }
 
   NotificationList::Notifications notifications =
-      notification_list_->GetNotificationsByOriginUrl(
-          notification->origin_url());
-
-  std::string account_id = notification->notifier_id().profile_id;
-  auto account_match = [&account_id](Notification* notification) {
-    return account_id == notification->notifier_id().profile_id;
-  };
+      notification_list_->GetNotificationsByNotifierId(
+          notification->notifier_id());
 
   // `notifications` keeps notifications ordered with the most recent one in the
-  // front. We do a lookup starting with the oldest notification to find the
-  // parent notification.
-  auto parent_notification =
-      std::find_if(notifications.rbegin(), notifications.rend(), account_match);
-
-  return parent_notification == notifications.rend() ? nullptr
-                                                     : *parent_notification;
+  // front. If we have notifications for this notifier_id we return the last
+  // notification..
+  return notifications.size() ? *notifications.rbegin() : nullptr;
 }
 
 Notification* MessageCenterImpl::FindPopupNotificationById(
