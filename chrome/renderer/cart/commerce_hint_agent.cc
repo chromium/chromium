@@ -209,7 +209,7 @@ bool IsCartHeuristicsImprovementEnabled() {
 #if !BUILDFLAG(IS_ANDROID)
   return base::GetFieldTrialParamByFeatureAsBool(
       ntp_features::kNtpChromeCartModule,
-      ntp_features::kNtpChromeCartModuleHeuristicsImprovementParam, false);
+      ntp_features::kNtpChromeCartModuleHeuristicsImprovementParam, true);
 #else
   return base::GetFieldTrialParamByFeatureAsBool(
       commerce::kCommerceHintAndroid,
