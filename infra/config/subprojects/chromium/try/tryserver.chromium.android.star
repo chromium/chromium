@@ -73,6 +73,16 @@ try_.compilator_builder(
 )
 
 try_.builder(
+    name = "android-12l-x86-rel",
+    mirrors = [
+        "ci/android-12l-x86-rel",
+    ],
+    tryjob = try_.job(
+        experiment_percentage = 2,
+    ),
+)
+
+try_.builder(
     name = "android-asan",
 )
 
