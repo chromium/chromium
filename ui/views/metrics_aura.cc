@@ -13,7 +13,7 @@ namespace views {
 
 int GetDoubleClickInterval() {
 #if BUILDFLAG(IS_WIN)
-  return ::GetDoubleClickTime();
+  return static_cast<int>(::GetDoubleClickTime());
 #else
   // TODO(jennyz): This value may need to be adjusted on different platforms.
   const int kDefaultDoubleClickIntervalMs = 500;
@@ -23,9 +23,12 @@ int GetDoubleClickInterval() {
 
 int GetMenuShowDelay() {
 #if BUILDFLAG(IS_WIN)
-  static DWORD delay = 0;
-  if (!delay && !SystemParametersInfo(SPI_GETMENUSHOWDELAY, 0, &delay, 0))
-    delay = kDefaultMenuShowDelay;
+  static int delay = []() {
+    DWORD show_delay;
+    return SystemParametersInfo(SPI_GETMENUSHOWDELAY, 0, &show_delay, 0)
+               ? static_cast<int>(show_delay)
+               : kDefaultMenuShowDelay;
+  }();
   return delay;
 #else
   return 0;

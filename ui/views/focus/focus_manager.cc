@@ -95,13 +95,13 @@ bool FocusManager::OnKeyEvent(const ui::KeyEvent& event) {
       View::Views::const_iterator i(
           std::find(views.begin(), views.end(), focused_view_));
       DCHECK(i != views.end());
-      size_t index = i - views.begin();
+      auto index = static_cast<size_t>(i - views.begin());
       if (next && index == views.size() - 1)
         index = 0;
       else if (!next && index == 0)
         index = views.size() - 1;
       else
-        index += next ? 1 : -1;
+        index = next ? (index + 1) : (index - 1);
       SetFocusedViewWithReason(views[index],
                                FocusChangeReason::kFocusTraversal);
       return false;
@@ -169,13 +169,13 @@ bool FocusManager::RotatePaneFocus(Direction direction,
 
   // Count the number of panes and set the default index if no pane
   // is initially focused.
-  if (panes.empty())
+  const size_t count = panes.size();
+  if (!count)
     return false;
-  int count = static_cast<int>(panes.size());
 
   // Initialize |index| to an appropriate starting index if nothing is
   // focused initially.
-  int index = direction == Direction::kBackward ? 0 : count - 1;
+  size_t index = (direction == Direction::kBackward) ? 0 : (count - 1);
 
   // Check to see if a pane already has focus and update the index accordingly.
   const views::View* focused_view = GetFocusedView();
@@ -185,41 +185,35 @@ bool FocusManager::RotatePaneFocus(Direction direction,
                                   return pane && pane->Contains(focused_view);
                                 });
     if (i != panes.cend())
-      index = i - panes.cbegin();
+      index = static_cast<size_t>(i - panes.cbegin());
   }
 
   // Rotate focus.
-  int start_index = index;
-  for (;;) {
-    if (direction == Direction::kBackward)
-      index--;
-    else
-      index++;
+  for (const size_t start_index = index;;) {
+    index = ((direction == Direction::kBackward) ? (index + count - 1)
+                                                 : (index + 1)) %
+            count;
 
-    if (wrapping == FocusCycleWrapping::kDisabled &&
-        (index >= count || index < 0))
+    if ((wrapping == FocusCycleWrapping::kDisabled) &&
+        (index == ((direction == Direction::kBackward) ? (count - 1) : 0))) {
       return false;
-    index = (index + count) % count;
+    }
 
     // Ensure that we don't loop more than once.
     if (index == start_index)
-      break;
+      return false;
 
     views::View* pane = panes[index];
     DCHECK(pane);
-
-    if (!pane->GetVisible())
-      continue;
-
-    pane->RequestFocus();
-    // |pane| may be in a different widget, so don't assume its focus manager
-    // is |this|.
-    focused_view = pane->GetWidget()->GetFocusManager()->GetFocusedView();
-    if (pane == focused_view || pane->Contains(focused_view))
-      return true;
+    if (pane->GetVisible()) {
+      pane->RequestFocus();
+      // |pane| may be in a different widget, so don't assume its focus manager
+      // is |this|.
+      focused_view = pane->GetWidget()->GetFocusManager()->GetFocusedView();
+      if (pane == focused_view || pane->Contains(focused_view))
+        return true;
+    }
   }
-
-  return false;
 }
 
 View* FocusManager::GetNextFocusableView(View* original_starting_view,

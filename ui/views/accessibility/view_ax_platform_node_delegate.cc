@@ -735,10 +735,10 @@ std::vector<int32_t> ViewAXPlatformNodeDelegate::GetColHeaderNodeIds() const {
 std::vector<int32_t> ViewAXPlatformNodeDelegate::GetColHeaderNodeIds(
     int col_index) const {
   std::vector<int32_t> columns = GetColHeaderNodeIds();
-  if (columns.size() <= static_cast<size_t>(col_index)) {
+  if (static_cast<size_t>(col_index) >= columns.size()) {
     return {};
   }
-  return {columns[col_index]};
+  return {columns[static_cast<size_t>(col_index)]};
 }
 
 absl::optional<int32_t> ViewAXPlatformNodeDelegate::GetCellId(
@@ -747,8 +747,8 @@ absl::optional<int32_t> ViewAXPlatformNodeDelegate::GetCellId(
   if (virtual_children().empty() || !GetAncestorTableView())
     return absl::nullopt;
 
-  AXVirtualView* ax_cell =
-      GetAncestorTableView()->GetVirtualAccessibilityCell(row_index, col_index);
+  AXVirtualView* ax_cell = GetAncestorTableView()->GetVirtualAccessibilityCell(
+      static_cast<size_t>(row_index), static_cast<size_t>(col_index));
   if (!ax_cell)
     return absl::nullopt;
 

@@ -17,7 +17,7 @@ ViewModelBase::~ViewModelBase() {
 
 void ViewModelBase::Remove(size_t index) {
   check_index(index);
-  entries_.erase(entries_.begin() + index);
+  entries_.erase(entries_.begin() + static_cast<ptrdiff_t>(index));
 }
 
 void ViewModelBase::Move(size_t index, size_t target_index) {
@@ -27,8 +27,9 @@ void ViewModelBase::Move(size_t index, size_t target_index) {
   if (index == target_index)
     return;
   Entry entry(entries_[index]);
-  entries_.erase(entries_.begin() + index);
-  entries_.insert(entries_.begin() + target_index, entry);
+  entries_.erase(entries_.begin() + static_cast<ptrdiff_t>(index));
+  entries_.insert(entries_.begin() + static_cast<ptrdiff_t>(target_index),
+                  entry);
 }
 
 void ViewModelBase::MoveViewOnly(size_t index, size_t target_index) {
@@ -67,7 +68,7 @@ void ViewModelBase::AddUnsafe(View* view, size_t index) {
   DCHECK_LE(index, entries_.size());
   Entry entry;
   entry.view = view;
-  entries_.insert(entries_.begin() + index, entry);
+  entries_.insert(entries_.begin() + static_cast<ptrdiff_t>(index), entry);
 }
 
 }  // namespace views

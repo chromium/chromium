@@ -67,7 +67,7 @@ class VIEWS_EXPORT SelectionController {
   // Offsets the double-clicked word's range. This is only used in the unusual
   // case where the text changes on the second mousedown of a double-click.
   // This is harmless if there is not a currently double-clicked word.
-  void OffsetDoubleClickWord(int offset);
+  void OffsetDoubleClickWord(size_t offset);
 
  private:
   // Tracks the mouse clicks for single/double/triple clicks.

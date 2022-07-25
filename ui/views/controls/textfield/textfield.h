@@ -498,7 +498,7 @@ class VIEWS_EXPORT Textfield : public View,
   // Offsets the double-clicked word's range. This is only used in the unusual
   // case where the text changes on the second mousedown of a double-click.
   // This is harmless if there is not a currently double-clicked word.
-  void OffsetDoubleClickWord(int offset);
+  void OffsetDoubleClickWord(size_t offset);
 
   // Returns true if the drop cursor is for insertion at a target text location,
   // the standard behavior/style. Returns false when drop will do something

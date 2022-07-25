@@ -61,7 +61,7 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   bool IsAnimatingImageSwap() const;
 
   // Sets the alpha to use for painting. Used to animate visibility changes.
-  void SetAlpha(int alpha);
+  void SetAlpha(SkAlpha alpha);
 
   // views::Button:
   void OnGestureEvent(ui::GestureEvent* event) override;
@@ -110,7 +110,7 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
 
   // Determines what alpha to use for the icon based on animation and
   // active state.
-  int GetAlphaForIcon(int base_alpha) const;
+  SkAlpha GetAlphaForIcon(SkAlpha base_alpha) const;
 
   void UpdateInkDropBaseColor();
 
@@ -124,7 +124,7 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   bool paint_as_active_ = false;
 
   // Current alpha to use for painting.
-  int alpha_ = 255;
+  SkAlpha alpha_ = SK_AlphaOPAQUE;
 
   // Radius of the ink drop highlight and mask.
   int ink_drop_corner_radius_ = kCaptionButtonInkDropDefaultCornerRadius;

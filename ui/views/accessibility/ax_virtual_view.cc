@@ -93,7 +93,8 @@ void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
   DCHECK_LE(index, children_.size());
 
   view->virtual_parent_view_ = this;
-  children_.insert(children_.begin() + index, std::move(view));
+  children_.insert(children_.begin() + static_cast<ptrdiff_t>(index),
+                   std::move(view));
   if (GetOwnerView()) {
     GetOwnerView()->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
                                              true);
@@ -114,8 +115,10 @@ void AXVirtualView::ReorderChildView(AXVirtualView* view, size_t index) {
 
   std::unique_ptr<AXVirtualView> child =
       std::move(children_[cur_index.value()]);
-  children_.erase(children_.begin() + cur_index.value());
-  children_.insert(children_.begin() + index, std::move(child));
+  children_.erase(children_.begin() +
+                  static_cast<ptrdiff_t>(cur_index.value()));
+  children_.insert(children_.begin() + static_cast<ptrdiff_t>(index),
+                   std::move(child));
 
   GetOwnerView()->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
                                            true);
@@ -152,7 +155,8 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
 
   std::unique_ptr<AXVirtualView> child =
       std::move(children_[cur_index.value()]);
-  children_.erase(children_.begin() + cur_index.value());
+  children_.erase(children_.begin() +
+                  static_cast<ptrdiff_t>(cur_index.value()));
   child->virtual_parent_view_ = nullptr;
   child->populate_data_callback_.Reset();
 

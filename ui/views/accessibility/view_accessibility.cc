@@ -100,7 +100,8 @@ void ViewAccessibility::AddVirtualChildViewAt(
                                                   "AXVirtualView parent. Call "
                                                   "RemoveChildView first.";
   virtual_view->set_parent_view(this);
-  auto insert_iterator = virtual_children_.begin() + index;
+  auto insert_iterator =
+      virtual_children_.begin() + static_cast<ptrdiff_t>(index);
   virtual_children_.insert(insert_iterator, std::move(virtual_view));
 }
 
@@ -113,7 +114,8 @@ std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
 
   std::unique_ptr<AXVirtualView> child =
       std::move(virtual_children_[cur_index.value()]);
-  virtual_children_.erase(virtual_children_.begin() + cur_index.value());
+  virtual_children_.erase(virtual_children_.begin() +
+                          static_cast<ptrdiff_t>(cur_index.value()));
   child->set_parent_view(nullptr);
   child->UnsetPopulateDataCallback();
   if (focused_virtual_child_ && child->Contains(focused_virtual_child_))

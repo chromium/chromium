@@ -163,7 +163,7 @@ bool FrameCaptionButton::IsAnimatingImageSwap() const {
   return swap_images_animation_->is_animating();
 }
 
-void FrameCaptionButton::SetAlpha(int alpha) {
+void FrameCaptionButton::SetAlpha(SkAlpha alpha) {
   if (alpha_ != alpha) {
     alpha_ = alpha;
     SchedulePaint();
@@ -272,8 +272,9 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
   constexpr SkAlpha kHighlightVisibleOpacity = 0x14;
   SkAlpha highlight_alpha = SK_AlphaTRANSPARENT;
   if (hover_animation().is_animating()) {
-    highlight_alpha = hover_animation().CurrentValueBetween(
-        SK_AlphaTRANSPARENT, kHighlightVisibleOpacity);
+    highlight_alpha =
+        static_cast<SkAlpha>(hover_animation().CurrentValueBetween(
+            SK_AlphaTRANSPARENT, kHighlightVisibleOpacity));
   } else if (GetState() == STATE_HOVERED || GetState() == STATE_PRESSED) {
     // Painting a circular highlight in both "hovered" and "pressed" states
     // simulates and ink drop highlight mode of
@@ -292,10 +293,14 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
     DrawHighlight(canvas, flags);
   }
 
-  int icon_alpha = swap_images_animation_->CurrentValueBetween(0, 255);
-  int crossfade_icon_alpha = 0;
-  if (icon_alpha < static_cast<int>(kFadeOutRatio * 255))
-    crossfade_icon_alpha = static_cast<int>(255 - icon_alpha / kFadeOutRatio);
+  SkAlpha icon_alpha =
+      static_cast<SkAlpha>(swap_images_animation_->CurrentValueBetween(
+          SK_AlphaTRANSPARENT, SK_AlphaOPAQUE));
+  SkAlpha crossfade_icon_alpha = 0;
+  if (icon_alpha < base::ClampRound<SkAlpha>(kFadeOutRatio * SK_AlphaOPAQUE)) {
+    crossfade_icon_alpha =
+        base::ClampRound<SkAlpha>(SK_AlphaOPAQUE - icon_alpha / kFadeOutRatio);
+  }
 
   int centered_origin_x = (width() - icon_image_.width()) / 2;
   int centered_origin_y = (height() - icon_image_.height()) / 2;
@@ -322,9 +327,9 @@ void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
   }
 }
 
-int FrameCaptionButton::GetAlphaForIcon(int base_alpha) const {
+SkAlpha FrameCaptionButton::GetAlphaForIcon(SkAlpha base_alpha) const {
   if (!GetEnabled())
-    return base_alpha * kDisabledButtonAlphaRatio;
+    return base::ClampRound<SkAlpha>(base_alpha * kDisabledButtonAlphaRatio);
 
   if (paint_as_active_)
     return base_alpha;
@@ -338,7 +343,7 @@ int FrameCaptionButton::GetAlphaForIcon(int base_alpha) const {
   } else if (GetState() == STATE_PRESSED || GetState() == STATE_HOVERED) {
     inactive_alpha = 1.0f;
   }
-  return base_alpha * inactive_alpha;
+  return base::ClampRound<SkAlpha>(base_alpha * inactive_alpha);
 }
 
 void FrameCaptionButton::UpdateInkDropBaseColor() {

@@ -382,7 +382,7 @@ void DialogClientView::SetupLayout() {
           DISTANCE_BUTTON_MAX_LINKABLE_WIDTH));
 
   // Track which columns to link sizes under MD.
-  constexpr int kViewToColumnIndex[] = {1, 3, 5};
+  constexpr size_t kViewToColumnIndex[] = {1, 3, 5};
   std::vector<size_t> columns_to_link;
 
   // Skip views that are not a button, or are a specific subclass of Button

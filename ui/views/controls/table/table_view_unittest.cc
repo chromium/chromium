@@ -67,7 +67,7 @@ class TableViewTestHelper {
 
   const gfx::FontList& font_list() { return table_->font_list_; }
 
-  AXVirtualView* GetVirtualAccessibilityBodyRow(int row) {
+  AXVirtualView* GetVirtualAccessibilityBodyRow(size_t row) {
     return table_->GetVirtualAccessibilityBodyRow(row);
   }
 
@@ -75,17 +75,18 @@ class TableViewTestHelper {
     return table_->GetVirtualAccessibilityHeaderRow();
   }
 
-  AXVirtualView* GetVirtualAccessibilityHeaderCell(int visible_column_index) {
+  AXVirtualView* GetVirtualAccessibilityHeaderCell(
+      size_t visible_column_index) {
     return table_->GetVirtualAccessibilityCellImpl(
         GetVirtualAccessibilityHeaderRow(), visible_column_index);
   }
 
-  AXVirtualView* GetVirtualAccessibilityCell(int row,
-                                             int visible_column_index) {
+  AXVirtualView* GetVirtualAccessibilityCell(size_t row,
+                                             size_t visible_column_index) {
     return table_->GetVirtualAccessibilityCell(row, visible_column_index);
   }
 
-  gfx::Rect GetCellBounds(int row, int visible_column_index) const {
+  gfx::Rect GetCellBounds(size_t row, size_t visible_column_index) const {
     return table_->GetCellBounds(row, visible_column_index);
   }
 

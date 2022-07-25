@@ -2046,7 +2046,7 @@ Textfield::EditCommandResult Textfield::DoExecuteTextEditCommand(
   return {changed, cursor_changed};
 }
 
-void Textfield::OffsetDoubleClickWord(int offset) {
+void Textfield::OffsetDoubleClickWord(size_t offset) {
   selection_controller_.OffsetDoubleClickWord(offset);
 }
 

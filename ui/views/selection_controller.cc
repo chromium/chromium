@@ -161,7 +161,7 @@ void SelectionController::OnMouseCaptureLost() {
     delegate_->UpdateSelectionClipboard();
 }
 
-void SelectionController::OffsetDoubleClickWord(int offset) {
+void SelectionController::OffsetDoubleClickWord(size_t offset) {
   double_click_word_.set_start(double_click_word_.start() + offset);
   double_click_word_.set_end(double_click_word_.end() + offset);
 }
