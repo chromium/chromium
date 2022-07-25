@@ -701,7 +701,10 @@ ci.builder(
     # This builder build 2 chrome(Ash and Lacros), so it need
     # more time.
     # TODO(crbug.com/1345687) We should reduce this timeout.
+    # And use normal machines.
     execution_timeout = 6 * time.hour,
+    cores = 16,
+    ssd = True,
 )
 
 ci.builder(
