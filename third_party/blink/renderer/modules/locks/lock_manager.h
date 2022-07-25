@@ -75,10 +75,22 @@ class LockManager final : public ScriptWrappable,
   void RemovePendingRequest(LockRequestImpl*);
   bool IsPendingRequest(LockRequestImpl*);
 
+  void QueryImpl(ScriptPromiseResolver* resolver);
+  void RequestImpl(ScriptPromiseResolver* resolver,
+                   const LockOptions* options,
+                   const String& name,
+                   V8LockGrantedCallback* callback,
+                   mojom::blink::LockMode mode);
+
   // Query the ContentSettingsClient to ensure access is allowed from
-  // this context. The first call invokes a synchronous IPC call, but
-  // the result is cached for subsequent accesses.
-  bool AllowLocks(ScriptState* script_state);
+  // this context. This invokes an asynchronous IPC call.
+  // The result is cached for subsequent accesses.
+  void CheckStorageAccessAllowed(ExecutionContext* context,
+                                 ScriptPromiseResolver* resolver,
+                                 base::OnceCallback<void()> callback);
+  void DidCheckStorageAccessAllowed(ScriptPromiseResolver* resolver,
+                                    base::OnceCallback<void()> callback,
+                                    bool allow_access);
 
   HeapHashSet<Member<LockRequestImpl>> pending_requests_;
   HeapHashSet<Member<Lock>> held_locks_;

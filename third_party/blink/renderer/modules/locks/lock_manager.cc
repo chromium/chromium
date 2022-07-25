@@ -43,6 +43,7 @@ namespace blink {
 namespace {
 
 constexpr char kRequestAbortedMessage[] = "The request was aborted.";
+constexpr char kSecurityErrorMessage[] = "The request was denied.";
 
 LockInfo* ToLockInfo(const mojom::blink::LockInfoPtr& record) {
   LockInfo* info = LockInfo::Create();
@@ -262,8 +263,7 @@ ScriptPromise LockManager::request(ScriptState* script_state,
 
   // 5. If origin is an opaque origin, then reject promise with a
   // "SecurityError" DOMException.
-  if (!context->GetSecurityOrigin()->CanAccessLocks() ||
-      !AllowLocks(script_state)) {
+  if (!context->GetSecurityOrigin()->CanAccessLocks()) {
     exception_state.ThrowSecurityError(
         "Access to the Locks API is denied in this context.");
     return ScriptPromise();
@@ -343,20 +343,35 @@ ScriptPromise LockManager::request(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  mojom::blink::LockManager::WaitMode wait =
-      options->steal() ? mojom::blink::LockManager::WaitMode::PREEMPT
-                       : options->ifAvailable()
-                             ? mojom::blink::LockManager::WaitMode::NO_WAIT
-                             : mojom::blink::LockManager::WaitMode::WAIT;
-
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
+
+  CheckStorageAccessAllowed(
+      context, resolver,
+      WTF::Bind(&LockManager::RequestImpl, WrapWeakPersistent(this),
+                WrapPersistent(resolver), WrapPersistent(options), name,
+                WrapPersistent(callback), mode));
+
+  // 12. Return promise.
+  return promise;
+}
+
+void LockManager::RequestImpl(ScriptPromiseResolver* resolver,
+                              const LockOptions* options,
+                              const String& name,
+                              V8LockGrantedCallback* callback,
+                              mojom::blink::LockMode mode) {
+  mojom::blink::LockManager::WaitMode wait =
+      options->steal()         ? mojom::blink::LockManager::WaitMode::PREEMPT
+      : options->ifAvailable() ? mojom::blink::LockManager::WaitMode::NO_WAIT
+                               : mojom::blink::LockManager::WaitMode::WAIT;
 
   mojo::PendingRemote<mojom::blink::ObservedFeature> lock_lifetime;
   observer_->Register(lock_lifetime.InitWithNewPipeAndPassReceiver(),
                       mojom::blink::ObservedFeatureType::kWebLock);
 
   mojo::PendingAssociatedRemote<mojom::blink::LockRequest> request_remote;
+
   // 11.1. Let request be the result of running the steps to request a lock with
   // promise, the current agent, environment’s id, origin, callback, name,
   // options’ mode dictionary member, options’ ifAvailable dictionary member,
@@ -377,24 +392,19 @@ ScriptPromise LockManager::request(ScriptState* script_state,
                                               WrapWeakPersistent(request),
                                               String(kRequestAbortedMessage)));
   }
-
   service_->RequestLock(name, mode, wait, std::move(request_remote));
-
-  // 12. Return promise.
-  return promise;
 }
 
 ScriptPromise LockManager::query(ScriptState* script_state,
                                  ExceptionState& exception_state) {
   // Observed context may be gone if frame is detached.
-  if (!GetExecutionContext())
+  if (!GetExecutionContext()) {
     return ScriptPromise();
-
+  }
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
 
-  if (!context->GetSecurityOrigin()->CanAccessLocks() ||
-      !AllowLocks(script_state)) {
+  if (!context->GetSecurityOrigin()->CanAccessLocks()) {
     exception_state.ThrowSecurityError(
         "Access to the Locks API is denied in this context.");
     return ScriptPromise();
@@ -417,6 +427,14 @@ ScriptPromise LockManager::query(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
+  CheckStorageAccessAllowed(
+      context, resolver,
+      WTF::Bind(&LockManager::QueryImpl, WrapWeakPersistent(this),
+                WrapPersistent(resolver)));
+  return promise;
+}
+
+void LockManager::QueryImpl(ScriptPromiseResolver* resolver) {
   service_->QueryState(WTF::Bind(
       [](ScriptPromiseResolver* resolver,
          Vector<mojom::blink::LockInfoPtr> pending,
@@ -427,8 +445,6 @@ ScriptPromise LockManager::query(ScriptState* script_state,
         resolver->Resolve(snapshot);
       },
       WrapPersistent(resolver)));
-
-  return promise;
 }
 
 void LockManager::AddPendingRequest(LockRequestImpl* request) {
@@ -466,36 +482,64 @@ void LockManager::OnLockReleased(Lock* lock) {
   held_locks_.erase(lock);
 }
 
-bool LockManager::AllowLocks(ScriptState* script_state) {
-  if (!cached_allowed_.has_value()) {
-    ExecutionContext* execution_context = ExecutionContext::From(script_state);
-    DCHECK(execution_context->IsContextThread());
-    SECURITY_DCHECK(execution_context->IsWindow() ||
-                    execution_context->IsWorkerGlobalScope());
-    if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-      LocalFrame* frame = window->GetFrame();
-      if (!frame) {
-        cached_allowed_ = false;
-      } else if (auto* settings_client = frame->GetContentSettingsClient()) {
-        // This triggers a sync IPC.
-        cached_allowed_ = settings_client->AllowStorageAccessSync(
-            WebContentSettingsClient::StorageType::kWebLocks);
-      } else {
-        cached_allowed_ = true;
-      }
-    } else {
-      WebContentSettingsClient* content_settings_client =
-          To<WorkerGlobalScope>(execution_context)->ContentSettingsClient();
-      if (!content_settings_client) {
-        cached_allowed_ = true;
-      } else {
-        // This triggers a sync IPC.
-        cached_allowed_ = content_settings_client->AllowStorageAccessSync(
-            WebContentSettingsClient::StorageType::kWebLocks);
-      }
-    }
+void LockManager::CheckStorageAccessAllowed(
+    ExecutionContext* context,
+    ScriptPromiseResolver* resolver,
+    base::OnceCallback<void()> callback) {
+  DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
+
+  auto wrapped_callback = WTF::Bind(
+      &LockManager::DidCheckStorageAccessAllowed, WrapWeakPersistent(this),
+      WrapPersistent(resolver), std::move(callback));
+
+  if (cached_allowed_.has_value()) {
+    std::move(wrapped_callback).Run(cached_allowed_.value());
+    return;
   }
-  return cached_allowed_.value();
+
+  WebContentSettingsClient* content_settings_client = nullptr;
+  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+    LocalFrame* frame = window->GetFrame();
+    if (!frame) {
+      std::move(wrapped_callback).Run(false);
+      return;
+    }
+    content_settings_client = frame->GetContentSettingsClient();
+  } else {
+    content_settings_client =
+        To<WorkerGlobalScope>(context)->ContentSettingsClient();
+  }
+
+  if (content_settings_client) {
+    content_settings_client->AllowStorageAccess(
+        WebContentSettingsClient::StorageType::kWebLocks,
+        std::move(wrapped_callback));
+    return;
+  }
+  std::move(wrapped_callback).Run(true);
+}
+
+void LockManager::DidCheckStorageAccessAllowed(
+    ScriptPromiseResolver* resolver,
+    base::OnceCallback<void()> callback,
+    bool allow_access) {
+  cached_allowed_ = allow_access;
+  ScriptState* script_state = resolver->GetScriptState();
+
+  if (!script_state->ContextIsValid()) {
+    return;
+  }
+
+  if (allow_access) {
+    std::move(callback).Run();
+    return;
+  }
+
+  ScriptState::Scope scope(script_state);
+
+  resolver->Reject(V8ThrowDOMException::CreateOrDie(
+      script_state->GetIsolate(), DOMExceptionCode::kSecurityError,
+      kSecurityErrorMessage));
 }
 
 }  // namespace blink
