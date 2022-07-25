@@ -87,9 +87,6 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
     if (arm_arch == "") {
       arm_arch = "armv7-a"
     }
-    if (arm_tune == "") {
-      arm_tune = "generic-armv7-a"
-    }
 
     if (arm_float_abi == "") {
       if (current_os == "linux" && target_cpu != v8_target_cpu) {
