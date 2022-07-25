@@ -281,10 +281,14 @@ const base::Feature kPrerender2 {
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 };
+const char kPrerender2MaxNumOfRunningSpeculationRules[] =
+    "max_num_of_running_speculation_rules";
 
 const base::Feature kPrerender2MemoryControls{"Prerender2MemoryControls",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 const char kPrerender2MemoryThresholdParamName[] = "memory_threshold_in_mb";
+const char kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName[] =
+    "acceptable_percent_of_system_memory";
 
 bool IsPrerender2Enabled() {
   return base::FeatureList::IsEnabled(blink::features::kPrerender2);
