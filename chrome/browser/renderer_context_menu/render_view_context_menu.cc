@@ -2187,9 +2187,7 @@ void RenderViewContextMenu::AppendClickToCallItem() {
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
 void RenderViewContextMenu::AppendRegionSearchItem() {
-  // IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT4 is the currently launched
-  // string for the regions search menu item.
-  int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT4;
+  int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;
 
   if (lens::features::UseRegionSearchMenuItemAltText1()) {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
