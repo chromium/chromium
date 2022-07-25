@@ -423,7 +423,7 @@ CastAppInfo CastAppInfo::ForCastStreamingAudio() {
 // static
 std::unique_ptr<CastMediaSource> CastMediaSource::FromMediaSource(
     const MediaSource& source) {
-  if (source.IsTabMirroringSource() || source.IsLocalFileSource())
+  if (source.IsTabMirroringSource())
     return CastMediaSourceForTabMirroring(source.id());
 
   if (source.IsDesktopMirroringSource())

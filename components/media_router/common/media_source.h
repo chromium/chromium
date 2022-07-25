@@ -89,7 +89,6 @@ class MediaSource {
 
   // Protocol-specific media source object creation.
   // Returns MediaSource URI depending on the type of source.
-  static MediaSource ForLocalFile();
   static MediaSource ForAnyTab();
   static MediaSource ForTab(int tab_id);
   static MediaSource ForPresentationUrl(const GURL& presentation_url);
@@ -113,9 +112,6 @@ class MediaSource {
 
   // Returns true if source outputs its content via desktop mirroring.
   bool IsDesktopMirroringSource() const;
-
-  // Returns true if the source is a local file.
-  bool IsLocalFileSource() const;
 
   // Returns true if this is represents a Cast Presentation URL.
   bool IsCastPresentationUrl() const;

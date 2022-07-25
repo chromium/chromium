@@ -60,7 +60,6 @@ TEST(MediaSourceTest, ForAnyTab) {
   EXPECT_EQ(-1, source.TabId());
   EXPECT_FALSE(source.IsDesktopMirroringSource());
   EXPECT_TRUE(source.IsTabMirroringSource());
-  EXPECT_FALSE(source.IsLocalFileSource());
   EXPECT_FALSE(source.IsCastPresentationUrl());
   EXPECT_FALSE(source.IsDialSource());
 }
@@ -71,17 +70,6 @@ TEST(MediaSourceTest, ForTab) {
   EXPECT_EQ(123, source.TabId());
   EXPECT_FALSE(source.IsDesktopMirroringSource());
   EXPECT_TRUE(source.IsTabMirroringSource());
-  EXPECT_FALSE(source.IsLocalFileSource());
-  EXPECT_FALSE(source.IsCastPresentationUrl());
-  EXPECT_FALSE(source.IsDialSource());
-}
-
-TEST(MediaSourceTest, ForLocalFile) {
-  auto source = MediaSource::ForLocalFile();
-  EXPECT_EQ("urn:x-org.chromium.media:source:tab:0", source.id());
-  EXPECT_FALSE(source.IsDesktopMirroringSource());
-  EXPECT_FALSE(source.IsTabMirroringSource());
-  EXPECT_TRUE(source.IsLocalFileSource());
   EXPECT_FALSE(source.IsCastPresentationUrl());
   EXPECT_FALSE(source.IsDialSource());
 }
@@ -94,7 +82,6 @@ TEST(MediaSourceTest, ForDesktopWithoutAudio) {
   EXPECT_EQ(media_id, source.DesktopStreamId());
   EXPECT_FALSE(source.IsDesktopSourceWithAudio());
   EXPECT_FALSE(source.IsTabMirroringSource());
-  EXPECT_FALSE(source.IsLocalFileSource());
   EXPECT_FALSE(source.IsCastPresentationUrl());
   EXPECT_FALSE(source.IsDialSource());
 }
@@ -109,7 +96,6 @@ TEST(MediaSourceTest, ForDesktopWithAudio) {
   EXPECT_EQ(media_id, source.DesktopStreamId());
   EXPECT_TRUE(source.IsDesktopSourceWithAudio());
   EXPECT_FALSE(source.IsTabMirroringSource());
-  EXPECT_FALSE(source.IsLocalFileSource());
   EXPECT_FALSE(source.IsCastPresentationUrl());
   EXPECT_FALSE(source.IsDialSource());
 }
@@ -121,7 +107,6 @@ TEST(MediaSourceTest, ForPresentationUrl) {
   EXPECT_EQ(kPresentationUrl, source.id());
   EXPECT_FALSE(source.IsDesktopMirroringSource());
   EXPECT_FALSE(source.IsTabMirroringSource());
-  EXPECT_FALSE(source.IsLocalFileSource());
   EXPECT_FALSE(source.IsCastPresentationUrl());
   EXPECT_FALSE(source.IsDialSource());
 }

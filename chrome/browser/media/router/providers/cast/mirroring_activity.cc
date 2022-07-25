@@ -56,8 +56,6 @@ constexpr char kHistogramSessionLength[] =
     "MediaRouter.CastStreaming.Session.Length";
 constexpr char kHistogramSessionLengthAccessCode[] =
     "MediaRouter.CastStreaming.Session.Length.AccessCode";
-constexpr char kHistogramSessionLengthFile[] =
-    "MediaRouter.CastStreaming.Session.Length.File";
 constexpr char kHistogramSessionLengthOffscreenTab[] =
     "MediaRouter.CastStreaming.Session.Length.OffscreenTab";
 constexpr char kHistogramSessionLengthScreen[] =
@@ -106,7 +104,7 @@ absl::optional<MirroringActivity::MirroringType> GetMirroringType(
     return absl::nullopt;
 
   const auto source = route.media_source();
-  if (source.IsTabMirroringSource() || source.IsLocalFileSource())
+  if (source.IsTabMirroringSource())
     return MirroringActivity::MirroringType::kTab;
   if (source.IsDesktopMirroringSource())
     return MirroringActivity::MirroringType::kDesktop;
@@ -164,11 +162,6 @@ MirroringActivity::~MirroringActivity() {
 
   auto cast_duration = base::Time::Now() - *did_start_mirroring_timestamp_;
   base::UmaHistogramLongTimes(kHistogramSessionLength, cast_duration);
-
-  if (route().media_source().IsLocalFileSource()) {
-    base::UmaHistogramLongTimes(kHistogramSessionLengthFile, cast_duration);
-    return;
-  }
 
   if (!mirroring_type_) {
     // The mirroring activity should always be set by now, but check anyway

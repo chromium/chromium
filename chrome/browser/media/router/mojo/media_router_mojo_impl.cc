@@ -260,7 +260,7 @@ void MediaRouterMojoImpl::CreateRoute(const MediaSource::Id& source_id,
   }
 
   const MediaSource source(source_id);
-  if (source.IsTabMirroringSource() || source.IsLocalFileSource()) {
+  if (source.IsTabMirroringSource()) {
     // Ensure the CastRemotingConnector is created before mirroring starts.
     CastRemotingConnector* const connector =
         CastRemotingConnector::Get(web_contents);

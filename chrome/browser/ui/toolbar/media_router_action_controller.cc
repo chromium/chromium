@@ -82,8 +82,7 @@ void MediaRouterActionController::OnRoutesUpdated(
                      // In other words, the Cast icon is shown when there are
                      // mirroring or local file sources.
                      return route.media_source().IsTabMirroringSource() ||
-                            route.media_source().IsDesktopMirroringSource() ||
-                            route.media_source().IsLocalFileSource();
+                            route.media_source().IsDesktopMirroringSource();
                    }) != routes.end();
   MaybeAddOrRemoveAction();
 }

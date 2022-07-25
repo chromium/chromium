@@ -33,8 +33,7 @@ bool ShouldHideNotification(const raw_ptr<Profile> profile,
   if (media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
     // Hide a route if it's a mirroring route.
     if (route.media_source().IsTabMirroringSource() ||
-        route.media_source().IsDesktopMirroringSource() ||
-        route.media_source().IsLocalFileSource())
+        route.media_source().IsDesktopMirroringSource())
       return true;
   } else if (route.controller_type() !=
              media_router::RouteControllerType::kGeneric) {
