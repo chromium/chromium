@@ -40,19 +40,15 @@ class JavacOutputProcessor:
                                 r'(?P<full_message> (?P<message>.*))$')
     self._marker_re = re.compile(r'\s*(?P<marker>\^)\s*$')
 
-    # First element in pair is bool which indicates whether the missing
-    # class/package is part of the error message.
     self._symbol_not_found_re_list = [
         # Example:
         # error: package org.chromium.components.url_formatter does not exist
-        (True,
-         re.compile(fileline_prefix +
-                    r'( error: package [\w.]+ does not exist)$')),
+        re.compile(fileline_prefix +
+                   r'( error: package [\w.]+ does not exist)$'),
         # Example: error: cannot find symbol
-        (False, re.compile(fileline_prefix + r'( error: cannot find symbol)$')),
+        re.compile(fileline_prefix + r'( error: cannot find symbol)$'),
         # Example: error: symbol not found org.chromium.url.GURL
-        (True,
-         re.compile(fileline_prefix + r'( error: symbol not found [\w.]+)$')),
+        re.compile(fileline_prefix + r'( error: symbol not found [\w.]+)$'),
     ]
 
     # Example: import org.chromium.url.GURL;
@@ -139,40 +135,37 @@ class JavacOutputProcessor:
     if not import_re_match:
       return
 
-    symbol_missing = False
-    has_missing_symbol_in_error_msg = False
-    for symbol_in_error_msg, regex in self._symbol_not_found_re_list:
+    for regex in self._symbol_not_found_re_list:
       if regex.match(line):
-        symbol_missing = True
-        has_missing_symbol_in_error_msg = symbol_in_error_msg
         break
-
-    if not symbol_missing:
+    else:
       return
 
+    if self._class_lookup_index is None:
+      self._class_lookup_index = lookup_dep.ClassLookupIndex(
+          pathlib.Path(os.getcwd()),
+          should_build=False,
+      )
+
     class_to_lookup = import_re_match.group('imported_class')
-    if self._class_lookup_index == None:
-      self._class_lookup_index = lookup_dep.ClassLookupIndex(pathlib.Path(
-          os.getcwd()),
-                                                             should_build=False)
     suggested_deps = self._class_lookup_index.match(class_to_lookup)
 
-    if len(suggested_deps) != 1:
-      suggested_deps = self._DisambiguateDeps(suggested_deps)
+    if not suggested_deps:
+      return
 
-    if len(suggested_deps) != 1:
-      suggested_target = ('one of: ' + ', '.join(s.target
-                                                 for s in suggested_deps))
-    else:
-      suggested_target = suggested_deps[0].target
+    suggested_deps = self._DisambiguateDeps(suggested_deps)
+    suggested_deps_str = ', '.join(s.target for s in suggested_deps)
 
-    if not has_missing_symbol_in_error_msg:
-      line = "{} {}".format(line, class_to_lookup)
+    if len(suggested_deps) > 1:
+      suggested_deps_str = 'one of: ' + suggested_deps_str
 
-    self._suggested_deps.add(suggested_target)
+    self._suggested_deps.add(suggested_deps_str)
 
   @staticmethod
   def _DisambiguateDeps(class_entries):
+    if len(class_entries) == 1:
+      return class_entries
+
     # android_library_factory() targets set low_classpath_priority=true, and any
     # target that is the "impl" side of a target that uses jar_excluded_patterns
     # should use this as well.
