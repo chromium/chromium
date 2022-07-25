@@ -30,51 +30,57 @@ void VisitIDRemapper::RegisterVisit(VisitID local_visit_id,
   if (originator_visit_id == 0) {
     return;
   }
-  visits_by_originator_id_[originator_cache_guid][originator_visit_id] = {
-      local_visit_id, originator_referring_visit_id,
-      originator_opener_visit_id};
+  visits_[originator_cache_guid].emplace_back(
+      originator_visit_id,
+      VisitInfo{local_visit_id, originator_referring_visit_id,
+                originator_opener_visit_id});
 }
 
 void VisitIDRemapper::RemapIDs() {
   // For each originator:
-  for (const auto& [originator_cache_guid, originator_visit_id_to_visit] :
-       visits_by_originator_id_) {
+  for (auto& [originator_cache_guid, originator_visit_ids_and_visits] :
+       visits_) {
+    // Build a lookup table of this originator's visits, indexed by originator
+    // visit ID. (Thankfully, they're already stored in the right format to
+    // create a flat_map in-place!)
+    base::flat_map<VisitID, VisitInfo> visits_by_originator_id(
+        std::move(originator_visit_ids_and_visits));
     // For each visit from this originator:
-    for (const auto& [originator_visit_id, visit] :
-         originator_visit_id_to_visit) {
+    for (const auto& [originator_visit_id, visit] : visits_by_originator_id) {
       // Find the local referrer/opener IDs (if any).
-      VisitID local_referrer_id = FindLocalVisitID(
-          originator_cache_guid, visit.originator_referring_visit_id);
-      VisitID local_opener_id = FindLocalVisitID(
-          originator_cache_guid, visit.originator_opener_visit_id);
+      VisitID local_referrer_id =
+          FindLocalVisitID(originator_cache_guid, visits_by_originator_id,
+                           visit.originator_referring_visit_id);
+      VisitID local_opener_id =
+          FindLocalVisitID(originator_cache_guid, visits_by_originator_id,
+                           visit.originator_opener_visit_id);
       // If either of the local IDs were found, write them to the DB.
       if (local_referrer_id != 0 || local_opener_id != 0) {
         history_backend_->UpdateVisitReferrerOpenerIDs(
             visit.local_visit_id, local_referrer_id, local_opener_id);
       }
-      // TODO(crbug.com/1335055): Also do the remapping the other way around -
-      // remap existing visits' originator_referring|opener_visit_ids if they
-      // refer to the newly-added visit.
+      // Note: Theoretically, the remapping might need to be done the other way
+      // around too - an existing visit's originator_referring|opener_visit_id
+      // might link to the just-added visit. In practice, that should be
+      // extremely rare though, so don't bother addressing that case here. (See
+      // also History.ForeignVisits* histograms.)
     }
   }
+  // Data has been moved out of `visits_`, so clear it just for consistency.
+  visits_.clear();
 }
 
 VisitID VisitIDRemapper::FindLocalVisitID(
     const std::string& originator_cache_guid,
+    const base::flat_map<VisitID, VisitInfo>& visits_by_originator_id,
     VisitID originator_visit_id) {
   if (originator_visit_id == 0) {
     return 0;
   }
 
-  // Get all the in-memory visits for this originator.
-  auto originator_it = visits_by_originator_id_.find(originator_cache_guid);
-  DCHECK(originator_it != visits_by_originator_id_.end());
-
-  std::map<VisitID, VisitInfo> originator_visits = originator_it->second;
-
   // Try to find the matching visit in the in-memory cache.
-  auto it = originator_visits.find(originator_visit_id);
-  if (it != originator_visits.end()) {
+  auto it = visits_by_originator_id.find(originator_visit_id);
+  if (it != visits_by_originator_id.end()) {
     // Found it!
     const VisitInfo& visit = it->second;
     return visit.local_visit_id;
