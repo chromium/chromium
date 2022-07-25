@@ -491,6 +491,11 @@ void SystemTrayClientImpl::ShowAboutChromeOS() {
       "?checkForUpdate=true");
 }
 
+void SystemTrayClientImpl::ShowAboutChromeOSDetails() {
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kDetailedBuildInfoSubpagePath);
+}
+
 void SystemTrayClientImpl::ShowAccessibilityHelp() {
   ash::AccessibilityManager::ShowAccessibilityHelp();
 }
@@ -806,6 +811,10 @@ void SystemTrayClientImpl::OnSystemClockChanged(
 
 ////////////////////////////////////////////////////////////////////////////////
 // UpgradeDetector::UpgradeObserver:
+void SystemTrayClientImpl::OnUpdateDeferred() {
+  system_tray_->SetUpdateDeferred(true);
+}
+
 void SystemTrayClientImpl::OnUpdateOverCellularAvailable() {
   // Requests that ash show the update over cellular available icon.
   system_tray_->SetUpdateOverCellularAvailableIconVisible(true);

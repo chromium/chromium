@@ -22,6 +22,7 @@ void UpdateModel::SetUpdateAvailable(UpdateSeverity severity,
                                      bool rollback,
                                      UpdateType update_type) {
   update_required_ = true;
+  update_deferred_ = false;
   severity_ = severity;
   factory_reset_required_ = factory_reset_required;
   rollback_ = rollback;
@@ -41,6 +42,11 @@ void UpdateModel::SetUpdateOverCellularAvailable(bool available) {
   NotifyUpdateAvailable();
 }
 
+void UpdateModel::SetUpdateDeferred(bool deferred) {
+  update_deferred_ = deferred;
+  NotifyUpdateAvailable();
+}
+
 UpdateSeverity UpdateModel::GetSeverity() const {
   // TODO(https://crbug.com/927010): adjust severity according the amount of
   // time passing after update is available over cellular connection. Use low
@@ -50,6 +56,7 @@ UpdateSeverity UpdateModel::GetSeverity() const {
 
 void UpdateModel::ResetUpdateAvailable() {
   update_required_ = false;
+  update_deferred_ = false;
   NotifyUpdateAvailable();
 }
 

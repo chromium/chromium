@@ -54,6 +54,8 @@ void TestSystemTrayClient::ShowWifiSyncSettings() {
 
 void TestSystemTrayClient::ShowAboutChromeOS() {}
 
+void TestSystemTrayClient::ShowAboutChromeOSDetails() {}
+
 void TestSystemTrayClient::ShowAccessibilityHelp() {}
 
 void TestSystemTrayClient::ShowAccessibilitySettings() {}

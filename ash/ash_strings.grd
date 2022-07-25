@@ -773,8 +773,17 @@ This file contains the strings for ash.
       <message name="IDS_UPDATE_NOTIFICATION_RESTART_BUTTON" meaning="button label" desc="The label used as the button to restart system and update. Displayed as the action button of the notification for system update.">
         Restart to update
       </message>
+      <message name="IDS_UPDATE_NOTIFICATION_APPLY_UPDATE_BUTTON" meaning="button label" desc="The label used as the button to apply deferred update. Displayed as the action button of the notification for deferred system update.">
+        Update
+      </message>
+      <message name="IDS_UPDATE_NOTIFICATION_AUTOMATIC_UPDATE_BUTTON" meaning="button label" desc="The label used as the button to take users to the settings page with the automatic update toggle. Displayed as the action button of the notification for deferred system update.">
+        Automatic updates
+      </message>
       <message name="IDS_ROLLBACK_NOTIFICATION_RESTART_BUTTON" meaning="button label" desc="The label used as the button to restart system to rollback. Displayed as the action button of the notification for system rollback.">
         Reset
+      </message>
+      <message name="IDS_UPDATE_NOTIFICATION_MESSAGE_DEFERRED_UPDATE"  desc="The notification message used in the system notification update when update is downloaded but deferred.">
+        Get the latest features and security improvements. Updates happen in the background.
       </message>
       <message name="IDS_UPDATE_NOTIFICATION_MESSAGE_POWERWASH" desc="The notification message used in the system notification update when user need to powerwash the device in order to update the system.">
         This update requires powerwashing your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. All data will be deleted. Learn more about the latest <ph name="SYSTEM_APP_NAME">$2<ex>ChromiumOS</ex></ph> update.

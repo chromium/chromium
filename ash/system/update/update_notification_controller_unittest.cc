@@ -685,4 +685,26 @@ TEST_F(UpdateNotificationControllerTest, VisibilityAfterLacrosUpdate) {
   EXPECT_EQ(1, GetSessionControllerClient()->attempt_restart_chrome_count());
 }
 
+TEST_F(UpdateNotificationControllerTest, VisibilityAfterDeferredUpdate) {
+  // Simulate a deferred update.
+  Shell::Get()->system_tray_model()->SetUpdateDeferred(true);
+
+  // Wait until everything is complete and then check if the notification is
+  // visible.
+  task_environment()->RunUntilIdle();
+
+  // The notification is now visible.
+  ASSERT_TRUE(HasNotification());
+  EXPECT_EQ(kSystemNotificationColorNormal, *GetNotificationColor());
+  EXPECT_TRUE(strcmp(kSystemMenuUpdateIcon.name, GetNotificationIcon().name) ==
+              0);
+  EXPECT_EQ("Update available", GetNotificationTitle());
+  EXPECT_EQ(
+      "Get the latest features and security improvements. Updates happen in "
+      "the background.",
+      GetNotificationMessage());
+  EXPECT_EQ("Update", GetNotificationButton(0));
+  EXPECT_EQ("Automatic updates", GetNotificationButton(1));
+}
+
 }  // namespace ash

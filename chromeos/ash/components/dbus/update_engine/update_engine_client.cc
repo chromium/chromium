@@ -264,6 +264,22 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
                        std::move(callback)));
   }
 
+  void ApplyDeferredUpdate(base::OnceClosure failure_callback) override {
+    dbus::MethodCall method_call(update_engine::kUpdateEngineInterface,
+                                 update_engine::kApplyDeferredUpdate);
+    dbus::MessageWriter writer(&method_call);
+
+    VLOG(1) << "Requesting UpdateEngine to apply deferred update.";
+
+    // TODO(yuanpengni): Add an option to shutdown after applied deferred
+    // update.
+    update_engine_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&UpdateEngineClientImpl::OnApplyDeferredUpdate,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(failure_callback)));
+  }
+
   void Init(dbus::Bus* bus) override {
     update_engine_proxy_ = bus->GetObjectProxy(
         update_engine::kUpdateEngineServiceName,
@@ -532,6 +548,18 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
     std::move(callback).Run(success);
   }
 
+  // Called when a response for `ApplyDeferredUpdate()` is received.
+  void OnApplyDeferredUpdate(base::OnceClosure failure_callback,
+                             dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << update_engine::kApplyDeferredUpdate << " call failed.";
+      std::move(failure_callback).Run();
+      return;
+    }
+
+    VLOG(1) << "Update is applied.";
+  }
+
   // Called when a status update signal is received.
   void StatusUpdateReceived(dbus::Signal* signal) {
     VLOG(1) << "Status update signal received: " << signal->ToString();
@@ -677,6 +705,10 @@ class UpdateEngineClientDesktopFake : public UpdateEngineClient {
                         IsFeatureEnabledCallback callback) override {
     VLOG(1) << "Requesting to get " << feature;
     std::move(callback).Run(absl::nullopt);
+  }
+
+  void ApplyDeferredUpdate(base::OnceClosure failure_callback) override {
+    VLOG(1) << "Applying deferred update.";
   }
 
  private:

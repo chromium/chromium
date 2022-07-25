@@ -21,6 +21,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -105,7 +106,14 @@ void UpdateNotificationController::GenerateUpdateNotification(
       RelaunchNotificationState::kRequired)
     notification->SetSystemPriority();
 
-  if (model_->update_required()) {
+  if (model_->update_deferred()) {
+    notification->set_buttons({
+        message_center::ButtonInfo(l10n_util::GetStringUTF16(
+            IDS_UPDATE_NOTIFICATION_APPLY_UPDATE_BUTTON)),
+        message_center::ButtonInfo(l10n_util::GetStringUTF16(
+            IDS_UPDATE_NOTIFICATION_AUTOMATIC_UPDATE_BUTTON)),
+    });
+  } else if (model_->update_required()) {
     std::vector<message_center::ButtonInfo> notification_actions;
     if (model_->rollback()) {
       notification_actions.push_back(message_center::ButtonInfo(
@@ -132,7 +140,8 @@ void UpdateNotificationController::OnUpdateAvailable() {
 }
 
 bool UpdateNotificationController::ShouldShowUpdate() const {
-  return model_->update_required() || model_->update_over_cellular_available();
+  return model_->update_required() ||
+         model_->update_over_cellular_available() || model_->update_deferred();
 }
 
 std::u16string UpdateNotificationController::GetTitle() const {
@@ -188,6 +197,11 @@ std::u16string UpdateNotificationController::GetTitle() const {
 std::u16string UpdateNotificationController::GetMessage() const {
   if (model_->update_type() == UpdateType::kLacros)
     return l10n_util::GetStringUTF16(IDS_UPDATE_NOTIFICATION_MESSAGE_LACROS);
+
+  if (model_->update_deferred()) {
+    return l10n_util::GetStringUTF16(
+        IDS_UPDATE_NOTIFICATION_MESSAGE_DEFERRED_UPDATE);
+  }
 
   const std::u16string system_app_name =
       l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME);
@@ -295,30 +309,38 @@ void UpdateNotificationController::HandleNotificationClick(
     return;
   }
 
-  // Restart
-  DCHECK(button_index.value() == 0);
-  message_center::MessageCenter::Get()->RemoveNotification(kNotificationId,
-                                                           false /* by_user */);
+  if (button_index.value() == 0) {
+    message_center::MessageCenter::Get()->RemoveNotification(
+        kNotificationId, false /* by_user */);
 
-  if (model_->update_required()) {
-    if (slow_boot_file_path_exists_) {
-      // An active dialog exists already.
-      if (confirmation_dialog_)
-        return;
+    if (model_->update_deferred()) {
+      // When the "update" button is clicked, apply the deferred update.
+      ash::UpdateEngineClient::Get()->ApplyDeferredUpdate(base::DoNothing());
+    } else if (model_->update_required()) {
+      // Restart
+      if (slow_boot_file_path_exists_) {
+        // An active dialog exists already.
+        if (confirmation_dialog_)
+          return;
 
-      confirmation_dialog_ = new ShutdownConfirmationDialog(
-          IDS_DIALOG_TITLE_SLOW_BOOT, IDS_DIALOG_MESSAGE_SLOW_BOOT,
-          base::BindOnce(&UpdateNotificationController::RestartForUpdate,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&UpdateNotificationController::RestartCancelled,
-                         weak_ptr_factory_.GetWeakPtr()));
+        confirmation_dialog_ = new ShutdownConfirmationDialog(
+            IDS_DIALOG_TITLE_SLOW_BOOT, IDS_DIALOG_MESSAGE_SLOW_BOOT,
+            base::BindOnce(&UpdateNotificationController::RestartForUpdate,
+                           weak_ptr_factory_.GetWeakPtr()),
+            base::BindOnce(&UpdateNotificationController::RestartCancelled,
+                           weak_ptr_factory_.GetWeakPtr()));
+      } else {
+        RestartForUpdate();
+      }
     } else {
-      RestartForUpdate();
+      // Shows the about chrome OS page and checks for update after the page is
+      // loaded.
+      Shell::Get()->system_tray_model()->client()->ShowAboutChromeOS();
     }
   } else {
-    // Shows the about chrome OS page and checks for update after the page is
-    // loaded.
-    Shell::Get()->system_tray_model()->client()->ShowAboutChromeOS();
+    // When the "automatic update" button is clicked, take user to the ChromeOS
+    // additional details page that has the automatic update toggle.
+    Shell::Get()->system_tray_model()->client()->ShowAboutChromeOSDetails();
   }
 }
 

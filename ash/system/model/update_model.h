@@ -50,6 +50,9 @@ class UpdateModel {
   // granted.
   void SetUpdateOverCellularAvailable(bool available);
 
+  // If `deferred` is true, an update is downloaded but deferred.
+  void SetUpdateDeferred(bool deferred);
+
   UpdateSeverity GetSeverity() const;
 
   // Sets |update_required_| back to false.
@@ -65,6 +68,7 @@ class UpdateModel {
   bool update_over_cellular_available() const {
     return update_over_cellular_available_;
   }
+  bool update_deferred() const { return update_deferred_; }
 
  private:
   void NotifyUpdateAvailable();
@@ -76,6 +80,7 @@ class UpdateModel {
   UpdateType update_type_ = UpdateType::kSystem;
   RelaunchNotificationState relaunch_notification_state_;
   bool update_over_cellular_available_ = false;
+  bool update_deferred_ = false;
 
   base::ObserverList<UpdateObserver>::Unchecked observers_;
 };

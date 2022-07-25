@@ -347,6 +347,15 @@ void UpgradeDetector::NotifyCriticalUpgradeInstalled() {
     observer.OnCriticalUpgradeInstalled();
 }
 
+void UpgradeDetector::NotifyUpdateDeferred() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (observer_list_.empty())
+    return;
+
+  for (auto& observer : observer_list_)
+    observer.OnUpdateDeferred();
+}
+
 void UpgradeDetector::NotifyUpdateOverCellularAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (observer_list_.empty())

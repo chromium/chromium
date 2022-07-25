@@ -80,6 +80,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // loaded.
   virtual void ShowAboutChromeOS() = 0;
 
+  // Shows the about chrome OS additional details page.
+  virtual void ShowAboutChromeOSDetails() = 0;
+
   // Shows accessibility help.
   virtual void ShowAccessibilityHelp() = 0;
 

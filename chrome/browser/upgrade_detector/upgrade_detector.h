@@ -254,6 +254,9 @@ class UpgradeDetector {
   // expected.
   void NotifyCriticalUpgradeInstalled();
 
+  // Notifies that an update is downloaded but deferred.
+  void NotifyUpdateDeferred();
+
   // The function that sends out a notification that lets the rest of the UI
   // know we should notify the user that a new update is available to download
   // over cellular connection.

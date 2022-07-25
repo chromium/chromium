@@ -2261,6 +2261,7 @@ component("ash") {
     "//chromeos/ash/components/dbus/rmad:rmad_proto",
     "//chromeos/ash/components/dbus/services",
     "//chromeos/ash/components/dbus/system_clock",
+    "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/dbus/usb",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/components/human_presence",

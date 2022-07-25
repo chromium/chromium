@@ -121,6 +121,9 @@ void FakeUpdateEngineClient::IsFeatureEnabled(
                                                    : absl::nullopt);
 }
 
+void FakeUpdateEngineClient::ApplyDeferredUpdate(
+    base::OnceClosure failure_callback) {}
+
 void FakeUpdateEngineClient::set_default_status(
     const update_engine::StatusResult& status) {
   default_status_ = status;

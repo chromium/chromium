@@ -81,6 +81,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowTetherNetworkSettings() override;
   void ShowWifiSyncSettings() override;
   void ShowAboutChromeOS() override;
+  void ShowAboutChromeOSDetails() override;
   void ShowAccessibilityHelp() override;
   void ShowAccessibilitySettings() override;
   void ShowGestureEducationHelp() override;
@@ -126,6 +127,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void OnSystemClockChanged(ash::system::SystemClock* clock) override;
 
   // UpgradeObserver implementation.
+  void OnUpdateDeferred() override;
   void OnUpdateOverCellularAvailable() override;
   void OnUpdateOverCellularOneTimePermissionGranted() override;
   void OnUpgradeRecommended() override;

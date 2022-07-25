@@ -41,6 +41,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowTetherNetworkSettings() override;
   void ShowWifiSyncSettings() override;
   void ShowAboutChromeOS() override;
+  void ShowAboutChromeOSDetails() override;
   void ShowAccessibilityHelp() override;
   void ShowAccessibilitySettings() override;
   void ShowGestureEducationHelp() override;

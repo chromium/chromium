@@ -208,6 +208,11 @@ void UpgradeDetectorChromeos::UpdateStatusChanged(
     // Update engine broadcasts this state only when update is available but
     // downloading over cellular connection requires user's agreement.
     NotifyUpdateOverCellularAvailable();
+  } else if (status.current_operation() ==
+             update_engine::Operation::UPDATED_BUT_DEFERRED) {
+    // Update engine broadcasts this state when update is downloaded but
+    // deferred.
+    NotifyUpdateDeferred();
   } else if (!update_in_progress_ &&
              status.current_operation() ==
                  update_engine::Operation::DOWNLOADING) {
