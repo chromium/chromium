@@ -1021,6 +1021,7 @@ crbug.com/1299442 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/c
 crbug.com/1299442 [ Mac12 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-composite.https.html [ Failure ]
 crbug.com/1299442 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-background-image-tiled-001.https.html [ Failure ]
 crbug.com/1299442 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-010.https.html [ Failure ]
+crbug.com/1299442 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-004.https.html [ Failure ]
 
 # ====== Paint team owned tests to here ======
 
@@ -2729,6 +2730,8 @@ crbug.com/630597 external/wpt/css/css-images/image-set/image-set-content-renderi
 
 crbug.com/604875 external/wpt/css/css-images/tiled-gradients.html [ Failure ]
 
+crbug.com/1347068 external/wpt/css/css-images/gradient/gradient-eval-004.html [ Failure ]
+
 crbug.com/808834 [ Linux ] external/wpt/css/css-pseudo/first-letter-001.html [ Failure ]
 crbug.com/808834 [ Win ] external/wpt/css/css-pseudo/first-letter-001.html [ Failure ]
 
@@ -3388,7 +3391,6 @@ crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/worker-interception.https.html [ Pass ]
 
 # ====== Test expectations added to unblock wpt-importer ======
-crbug.com/626703 virtual/no-alloc-direct-call/external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]
 crbug.com/626703 external/wpt/fetch/metadata/generated/worker-dedicated-constructor.sub.html [ Failure ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/worker-dedicated-constructor.sub.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/web-bundle/subresource-loading/script-reuse-web-bundle-resource.https.tentative.html [ Failure ]
@@ -3403,10 +3405,6 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac12 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-004.https.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-006.https.html [ Failure ]
-crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-001.https.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-images/gradient/gradient-eval-004.html [ Failure ]
 crbug.com/626703 [ Win11 ] virtual/conversions-debug-mode/wpt_internal/attribution-reporting/trigger-data-sanitization.sub.https.html?source-type=navigation [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/cssom/caretPositionFromPoint-with-transformation.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/key-scrolling.https.html [ Failure Timeout ]
@@ -6203,8 +6201,6 @@ crbug.com/1249176 [ Mac12-arm64 ] external/wpt/html/canvas/element/manual/drawin
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/largest-contentful-paint/image-src-change.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/images/document-policy-oversized-images-forced-layout.php [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] transforms/transformed-document-element.html [ Failure ]
-crbug.com/1249176 [ Mac11-arm64 ] virtual/no-alloc-direct-call/external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
-crbug.com/1249176 [ Mac12-arm64 ] virtual/no-alloc-direct-call/external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Failure ]
 crbug.com/1249176 [ Mac12-arm64 ] virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/threaded/http/tests/devtools/tracing/timeline-time/timeline-usertiming.js [ Failure ]
@@ -6591,6 +6587,7 @@ crbug.com/1281782 [ Mac ] virtual/no-alloc-direct-call/external/wpt/html/canvas/
 crbug.com/1281782 [ Mac ] virtual/no-alloc-direct-call/external/wpt/html/canvas/element/text-styles/2d.text.font.parse.tiny.html [ Crash Pass ]
 crbug.com/1281782 [ Mac ] virtual/no-alloc-direct-call/external/wpt/html/canvas/element/transformations/2d.transformation.transform.multiply.html [ Crash Pass ]
 crbug.com/1281782 [ Mac ] virtual/no-alloc-direct-call/external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-cloned.html [ Pass Timeout ]
+crbug.com/1281782 virtual/no-alloc-direct-call/external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Skip ]
 crbug.com/1281792 external/wpt/event-timing/min-duration-threshold.html [ Failure Pass ]
 
 crbug.com/1285857 plugins/plugin-destroyed-enumerate.html [ Failure Pass ]
