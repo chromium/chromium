@@ -134,7 +134,7 @@ class ExtensionsTabbedMenuView
   // newly-added extension.
   void CreateAndInsertInstalledExtension(
       const ToolbarActionsModel::ActionId& id,
-      int index);
+      size_t index);
 
   // Creates and adds a menu item for `id` in its corresponding site access
   // section if the associated extension has or requests access to the current

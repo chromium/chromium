@@ -1326,8 +1326,10 @@ void AshNotificationView::CreateOrUpdateSnoozeButton(
   if (snooze_button_) {
     DCHECK(snooze_button_spacer_);
     // Spacer and snooze button should be at the end of action buttons row.
-    action_buttons_row()->ReorderChildView(snooze_button_spacer_, -1);
-    action_buttons_row()->ReorderChildView(snooze_button_, -1);
+    action_buttons_row()->ReorderChildView(
+        snooze_button_spacer_, action_buttons_row()->children().size());
+    action_buttons_row()->ReorderChildView(
+        snooze_button_, action_buttons_row()->children().size());
     return;
   }
 

@@ -200,7 +200,7 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Returns the item view of the item at |index|, or nullptr if there is no
   // view at |index|.
-  AppListItemView* GetItemViewAt(int index) const;
+  AppListItemView* GetItemViewAt(size_t index) const;
 
   // Called to initiate drag for reparenting a folder item in root level grid
   // view.
@@ -382,14 +382,14 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   struct VisibleItemIndexRange {
     VisibleItemIndexRange();
-    VisibleItemIndexRange(int first_index, int last_index);
+    VisibleItemIndexRange(size_t first_index, size_t last_index);
     ~VisibleItemIndexRange();
 
     // The view index of the first visible item on the apps grid.
-    int first_index = 0;
+    size_t first_index = 0;
 
     // The view index of the last visible item on the apps grid.
-    int last_index = 0;
+    size_t last_index = 0;
   };
 
   // The duration in ms for most of the apps grid view animations.
@@ -730,7 +730,7 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Removes the AppListItemView at |index| in |view_model_|, removes it from
   // view structure as well and deletes it.
-  void DeleteItemViewAtIndex(int index);
+  void DeleteItemViewAtIndex(size_t index);
 
   // Returns true if |point| lies within the bounds of this grid view plus a
   // buffer area surrounding it that can trigger drop target change.
@@ -835,12 +835,12 @@ class ASH_EXPORT AppsGridView : public views::View,
   bool IsValidReorderTargetIndex(const GridIndex& index) const;
 
   // Returns model index of the item view of the specified item.
-  int GetModelIndexOfItem(const AppListItem* item) const;
+  size_t GetModelIndexOfItem(const AppListItem* item) const;
 
   // Returns the target model index based on item index. (Item index is the
   // index of an item in item list.) This should be used when the item is
   // updated in item list but its item view has not been updated in view model.
-  int GetTargetModelIndexFromItemIndex(size_t item_index);
+  size_t GetTargetModelIndexFromItemIndex(size_t item_index);
 
   // Returns the target GridIndex for a keyboard move.
   GridIndex GetTargetGridIndexForKeyboardMove(ui::KeyboardCode key_code) const;

@@ -172,7 +172,7 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
     std::vector<NetworkStatePropertiesPtr> networks) {
   // Indicates the current position a view will be added to in
   // NetworkDetailedNetworkView scroll list.
-  int index = 0;
+  size_t index = 0;
 
   // Store current views in |previous_network_views|, views which have
   // a corresponding network in |networks| will be added back to
@@ -288,8 +288,8 @@ void NetworkListViewControllerImpl::UpdateNetworkTypeExistence(
       model()->GetDeviceState(NetworkType::kWiFi) == DeviceStateType::kEnabled;
 }
 
-int NetworkListViewControllerImpl::ShowConnectionWarningIfVpnOrProxy(
-    int index) {
+size_t NetworkListViewControllerImpl::ShowConnectionWarningIfVpnOrProxy(
+    size_t index) {
   const NetworkStateProperties* default_network = model()->default_network();
   bool using_proxy =
       default_network && default_network->proxy_mode != ProxyMode::kDirect;
@@ -333,8 +333,8 @@ bool NetworkListViewControllerImpl::ShouldMobileDataSectionBeShown() {
   return true;
 }
 
-int NetworkListViewControllerImpl::CreateSeparatorIfMissingAndReorder(
-    int index,
+size_t NetworkListViewControllerImpl::CreateSeparatorIfMissingAndReorder(
+    size_t index,
     views::Separator** separator_view) {
   // Separator view should never be the first view in the list.
   DCHECK(index);
@@ -551,9 +551,9 @@ void NetworkListViewControllerImpl::CreateInfoLabelIfMissingAndUpdate(
           std::move(info));
 }
 
-int NetworkListViewControllerImpl::CreateItemViewsIfMissingAndReorder(
+size_t NetworkListViewControllerImpl::CreateItemViewsIfMissingAndReorder(
     NetworkType type,
-    int index,
+    size_t index,
     std::vector<NetworkStatePropertiesPtr>& networks,
     NetworkIdToViewMap* previous_views) {
   NetworkIdToViewMap id_to_view_map;

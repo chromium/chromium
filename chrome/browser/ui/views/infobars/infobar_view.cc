@@ -194,7 +194,7 @@ void InfoBarView::ViewHierarchyChanged(
   // Anything that needs to happen once after all subclasses add their children.
   if (details.is_add && (details.child == this)) {
     if (close_button_)
-      ReorderChildView(close_button_, -1);
+      ReorderChildView(close_button_, children().size());
     RecalculateHeight();
   }
 }

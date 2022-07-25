@@ -70,16 +70,16 @@ class BluetoothDetailedViewLegacy : public TrayDetailedView {
   // |sub_heading_view| or the newly created view.
   TriView* AddSubHeading(int text_id,
                          TriView* sub_heading_view,
-                         int child_index);
+                         size_t child_index);
 
   // Adds devices from |list| into the scroll list at given |child_index|.
   // To avoid disrupting a11y, list items are re-used from |old_device_list| if
   // it exists. Returns index position for next scroll list item.
-  int AddSameTypeDevicesToScrollList(
+  size_t AddSameTypeDevicesToScrollList(
       const BluetoothDeviceList& list,
       const std::unordered_map<HoverHighlightView*, BluetoothAddress>&
           old_device_list,
-      int child_index,
+      size_t child_index,
       bool highlight,
       bool checked);
 

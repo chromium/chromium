@@ -51,17 +51,17 @@ class ASH_EXPORT BluetoothDeviceListControllerImpl
   // returned.
   TriView* CreateSubHeaderIfMissingAndReorder(TriView* sub_header,
                                               int text_id,
-                                              int index);
+                                              size_t index);
 
   // Creates and initializes a view for each of the device properties within
   // |device_property_list| if a view does not already exist, otherwise re-using
   // the existing view to avoid disrupting a11y. Each view will be reordered to
   // start at |index| and will be removed from |previous_views|. The index of
   // the position after the final view that was added is returned.
-  int CreateViewsIfMissingAndReorder(
+  size_t CreateViewsIfMissingAndReorder(
       const PairedBluetoothDevicePropertiesPtrs& device_property_list,
       base::flat_map<std::string, BluetoothDeviceListItemView*>* previous_views,
-      int index);
+      size_t index);
 
   BluetoothDetailedView* const bluetooth_detailed_view_;
 

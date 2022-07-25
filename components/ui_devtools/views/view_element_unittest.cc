@@ -114,7 +114,7 @@ class SelfReorderingTestView : public views::View, public views::ViewObserver {
 
   // views::ViewObserver
   void OnChildViewAdded(View* observed_view, View* child) override {
-    ReorderChildView(always_on_top_view_, -1);
+    ReorderChildView(always_on_top_view_, children().size());
   }
 
  private:

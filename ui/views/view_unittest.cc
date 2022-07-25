@@ -3565,7 +3565,7 @@ TEST_F(ViewTest, ReorderChildren) {
   ASSERT_EQ(nullptr, foo3->GetNextFocusableView());
 
   // Move |foo2| at the end.
-  child->ReorderChildView(foo2, -1);
+  child->ReorderChildView(foo2, child->children().size());
   ASSERT_EQ(0u, child->GetIndexOf(foo1));
   ASSERT_EQ(1u, child->GetIndexOf(foo3));
   ASSERT_EQ(2u, child->GetIndexOf(foo2));
@@ -3574,7 +3574,7 @@ TEST_F(ViewTest, ReorderChildren) {
   ASSERT_EQ(nullptr, foo2->GetNextFocusableView());
 
   // Move |foo1| at the end.
-  child->ReorderChildView(foo1, -1);
+  child->ReorderChildView(foo1, child->children().size());
   ASSERT_EQ(0u, child->GetIndexOf(foo3));
   ASSERT_EQ(1u, child->GetIndexOf(foo2));
   ASSERT_EQ(2u, child->GetIndexOf(foo1));
@@ -4483,7 +4483,7 @@ TEST_F(ViewLayerTest, ReorderUnderWidget) {
   EXPECT_EQ(c2->layer(), parent_layer->children()[1]);
 
   // Move c1 to the front. The layers should have moved too.
-  content->ReorderChildView(c1, -1);
+  content->ReorderChildView(c1, content->children().size());
   EXPECT_EQ(c1->layer(), parent_layer->children()[1]);
   EXPECT_EQ(c2->layer(), parent_layer->children()[0]);
 }

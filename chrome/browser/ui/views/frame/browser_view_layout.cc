@@ -497,7 +497,8 @@ int BrowserViewLayout::LayoutBookmarkAndInfoBars(int top, int browser_view_y) {
       loading_bar_->SetBounds(vertical_layout_rect_.x(), top - 2,
                               vertical_layout_rect_.width(),
                               separator_height + 2);
-      top_container_->ReorderChildView(loading_bar_, -1);
+      top_container_->ReorderChildView(loading_bar_,
+                                       top_container_->children().size());
     }
     top += separator_height;
   } else {

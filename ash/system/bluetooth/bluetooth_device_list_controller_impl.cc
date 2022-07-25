@@ -80,7 +80,7 @@ void BluetoothDeviceListControllerImpl::UpdateDeviceList(
   // order of the devices we are provided with. We use |index| to keep track of
   // the next index within the device list where a view should be placed, i.e.
   // all views before |index| are in their final position.
-  int index = 0;
+  size_t index = 0;
 
   // The list of connected devices.
   if (!connected.empty()) {
@@ -150,7 +150,7 @@ void BluetoothDeviceListControllerImpl::UpdateDeviceList(
 TriView* BluetoothDeviceListControllerImpl::CreateSubHeaderIfMissingAndReorder(
     TriView* sub_header,
     int text_id,
-    int index) {
+    size_t index) {
   if (!sub_header) {
     sub_header = bluetooth_detailed_view_->AddDeviceListSubHeader(
         gfx::kNoneIcon, text_id);
@@ -159,10 +159,10 @@ TriView* BluetoothDeviceListControllerImpl::CreateSubHeaderIfMissingAndReorder(
   return sub_header;
 }
 
-int BluetoothDeviceListControllerImpl::CreateViewsIfMissingAndReorder(
+size_t BluetoothDeviceListControllerImpl::CreateViewsIfMissingAndReorder(
     const PairedBluetoothDevicePropertiesPtrs& device_property_list,
     base::flat_map<std::string, BluetoothDeviceListItemView*>* previous_views,
-    int index) {
+    size_t index) {
   DCHECK(previous_views);
 
   BluetoothDeviceListItemView* device_view = nullptr;

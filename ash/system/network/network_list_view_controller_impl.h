@@ -96,7 +96,7 @@ class ASH_EXPORT NetworkListViewControllerImpl
 
   // Adds a warning indicator if connected to a VPN or if the default network
   // has a proxy installed.
-  int ShowConnectionWarningIfVpnOrProxy(int index);
+  size_t ShowConnectionWarningIfVpnOrProxy(size_t index);
 
   // Returns true if mobile data section should be added to view.
   bool ShouldMobileDataSectionBeShown();
@@ -104,8 +104,8 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // Creates if missing and adds a Mobile or Wifi separator to the view.
   // Also reorders separator view in network list. A reference to the
   // separator is captured in |*separator_view|.
-  int CreateSeparatorIfMissingAndReorder(int index,
-                                         views::Separator** separator_view);
+  size_t CreateSeparatorIfMissingAndReorder(size_t index,
+                                            views::Separator** separator_view);
 
   // Updates Mobile data section, updates add eSIM button states and
   // calls UpdateMobileToggleAndSetStatusMessage().
@@ -126,9 +126,9 @@ class ASH_EXPORT NetworkListViewControllerImpl
 
   // Creates a NetworkListNetworkItem if it does not exist else uses the
   // existing view, also reorders it in NetworkDetailedNetworkView scroll list.
-  int CreateItemViewsIfMissingAndReorder(
+  size_t CreateItemViewsIfMissingAndReorder(
       chromeos::network_config::mojom::NetworkType type,
-      int index,
+      size_t index,
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>&
           networks,
       NetworkIdToViewMap* previous_views);

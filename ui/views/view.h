@@ -433,11 +433,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     return view;
   }
 
-  // Moves |view| to the specified |index|. A negative value for |index| moves
-  // the view at the end.
-  // TODO(crbug.com/1292951): Change `index` to size_t and remove negative
-  // indexing behavior.
-  void ReorderChildView(View* view, int index);
+  // Moves |view| to the specified |index|. An |index| at least as large as that
+  // of the last child moves the view to the end.
+  void ReorderChildView(View* view, size_t index);
 
   // Removes |view| from this view. The view's parent will change to null.
   void RemoveChildView(View* view);

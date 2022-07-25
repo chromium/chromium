@@ -1495,7 +1495,7 @@ void ShelfView::PrepareForDrag(Pointer pointer, const ui::LocatedEvent& event) {
   }
 
   // Move the view to the front so that it appears on top of other views.
-  ReorderChildView(drag_view_, -1);
+  ReorderChildView(drag_view_, children().size());
   bounds_animator_->StopAnimatingView(drag_view_);
 
   drag_view_->OnDragStarted(&event);

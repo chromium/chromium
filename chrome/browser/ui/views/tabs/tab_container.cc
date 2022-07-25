@@ -1172,13 +1172,13 @@ void TabContainer::OrderTabSlotView(TabSlotView* slot_view) {
       std::find(slots.begin(), slots.end(), slot_view) - slots.begin();
   // Find the index in children() that corresponds to |target_slot_index|.
   size_t view_index = 0;
-  for (size_t slot_index = 0; slot_index < target_slot_index; slot_index++) {
+  for (size_t slot_index = 0; slot_index < target_slot_index; ++slot_index) {
     // If we don't own this view, skip it *without* advancing in children().
     if (slots[slot_index]->parent() != this)
       continue;
     if (view_index == children().size())
       break;
-    view_index++;
+    ++view_index;
   }
 
   ReorderChildView(slot_view, view_index);

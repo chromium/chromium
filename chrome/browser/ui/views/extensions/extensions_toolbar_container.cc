@@ -558,7 +558,7 @@ void ExtensionsToolbarContainer::ReorderViews() {
     ReorderChildView(GetViewForId(drop_info_->action_id), drop_info_->index);
 
   // The extension button is always last.
-  ReorderChildView(main_item(), -1);
+  ReorderChildView(main_item(), children().size());
 }
 
 void ExtensionsToolbarContainer::CreateActions() {
@@ -701,16 +701,16 @@ int ExtensionsToolbarContainer::OnDragUpdated(
   // to display the dragged extension before. We also mirror the event.x() so
   // that our calculations are consistent with left-to-right.
   const int offset_into_icon_area = GetMirroredXInView(event.x());
-  const int before_icon_unclamped = WidthToIconCount(offset_into_icon_area);
+  const size_t before_icon_unclamped = WidthToIconCount(offset_into_icon_area);
 
-  int visible_icons = model_->pinned_action_ids().size();
+  const size_t visible_icons = model_->pinned_action_ids().size();
 
   // Because the user can drag outside the container bounds, we need to clamp
   // to the valid range. Note that the maximum allowable value is
   // |visible_icons|, not (|visible_icons| - 1), because we represent the
   // dragged extension being past the last icon as being "before the (last + 1)
   // icon".
-  before_icon = base::clamp(before_icon_unclamped, 0, visible_icons);
+  before_icon = std::min(before_icon_unclamped, visible_icons);
 
   if (!drop_info_.get() || drop_info_->index != before_icon) {
     drop_info_ = std::make_unique<DropInfo>(data.id(), before_icon);

@@ -199,12 +199,10 @@ class SimulatedExtensionsContainer : public SimulatedToolbarElement {
     }
   }
 
-  void MoveIcon(int from, int to) {
-    DCHECK_GE(from, 0);
-    DCHECK_GE(to, 0);
+  void MoveIcon(size_t from, size_t to) {
     DCHECK_NE(from, to);
-    DCHECK_LT(from, static_cast<int>(children().size()) - 1);
-    DCHECK_LT(to, static_cast<int>(children().size()) - 1);
+    DCHECK_LT(from, children().size() - 1);
+    DCHECK_LT(to, children().size() - 1);
     ReorderChildView(children()[from], to);
   }
 

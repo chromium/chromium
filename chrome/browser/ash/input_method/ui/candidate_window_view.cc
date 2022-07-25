@@ -277,7 +277,7 @@ void CandidateWindowView::UpdateCandidates(
       // If the new layout is vertical, the aux text should appear at the
       // bottom. If horizontal, it should appear between preedit and candidates.
       if (new_candidate_window.orientation() == ui::CandidateWindow::VERTICAL) {
-        ReorderChildView(auxiliary_text_, -1);
+        ReorderChildView(auxiliary_text_, children().size());
         auxiliary_text_->SetAlignment(gfx::ALIGN_RIGHT);
         auxiliary_text_->SetBorderFromPosition(InformationTextArea::TOP);
         candidate_area_->SetLayoutManager(std::make_unique<views::BoxLayout>(

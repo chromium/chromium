@@ -212,7 +212,7 @@ void SidePanel::OnChildViewAdded(View* observed_view, View* child) {
   UpdateVisibility();
   // Reorder `border_view_` to be last so that it gets painted on top, even if
   // an added child also paints to a layer.
-  ReorderChildView(border_view_, -1);
+  ReorderChildView(border_view_, children().size());
 }
 
 void SidePanel::OnChildViewRemoved(View* observed_view, View* child) {

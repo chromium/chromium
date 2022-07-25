@@ -156,16 +156,17 @@ ToolbarActionViewController* GetMenuItemViewController(views::View* view) {
 
 // Returns the current index or insert position of `extension_name` in
 // `parent_view`, based on alphabetical order.
-int FindIndex(views::View* parent_view, const std::u16string extension_name) {
+size_t FindIndex(views::View* parent_view,
+                 const std::u16string extension_name) {
   const auto& children = parent_view->children();
-  return std::find_if(
-             children.begin(), children.end(),
-             [extension_name](views::View* v) {
-               return base::i18n::ToLower(extension_name) <=
-                      base::i18n::ToLower(
-                          GetMenuItemViewController(v)->GetActionName());
-             }) -
-         children.begin();
+  return static_cast<size_t>(
+      std::find_if(children.begin(), children.end(),
+                   [extension_name](views::View* v) {
+                     return base::i18n::ToLower(extension_name) <=
+                            base::i18n::ToLower(
+                                GetMenuItemViewController(v)->GetActionName());
+                   }) -
+      children.begin());
 }
 
 // Returns the current site pointed by `web_contents`. This method should only
@@ -574,7 +575,7 @@ void ExtensionsTabbedMenuView::CreateExtensionsTab() {
 
 void ExtensionsTabbedMenuView::CreateAndInsertInstalledExtension(
     const ToolbarActionsModel::ActionId& id,
-    int index) {
+    size_t index) {
   std::unique_ptr<ExtensionActionViewController> controller =
       ExtensionActionViewController::Create(id, browser_,
                                             extensions_container_);
@@ -606,7 +607,7 @@ void ExtensionsTabbedMenuView::InsertSiteAccessItem(
     SiteAccessSection* section) {
   DCHECK(section);
 
-  int index =
+  size_t index =
       FindIndex(section->items, item->view_controller()->GetActionName());
   section->items->AddChildViewAt(std::move(item), index);
 }
@@ -660,7 +661,7 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessMenuItems(
     // Reorder item when it is in the same section.
     if (new_section == section) {
       item->Update();
-      int new_index =
+      size_t new_index =
           FindIndex(section->items, item->view_controller()->GetActionName());
       section->items->ReorderChildView(item, new_index);
       return;

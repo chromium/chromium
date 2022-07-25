@@ -134,10 +134,9 @@ constexpr int AppsGridView::kDefaultAnimationDuration;
 
 AppsGridView::VisibleItemIndexRange::VisibleItemIndexRange() = default;
 
-AppsGridView::VisibleItemIndexRange::VisibleItemIndexRange(
-    int input_first_index,
-    int input_last_index)
-    : first_index(input_first_index), last_index(input_last_index) {}
+AppsGridView::VisibleItemIndexRange::VisibleItemIndexRange(size_t first_index,
+                                                           size_t last_index)
+    : first_index(first_index), last_index(last_index) {}
 
 AppsGridView::VisibleItemIndexRange::~VisibleItemIndexRange() = default;
 
@@ -766,10 +765,9 @@ AppListItemView* AppsGridView::GetItemViewForItem(const std::string& item_id) {
   return GetItemViewAt(GetModelIndexOfItem(item));
 }
 
-AppListItemView* AppsGridView::GetItemViewAt(int index) const {
-  if (index < 0 || static_cast<size_t>(index) >= view_model_.view_size())
-    return nullptr;
-  return view_model_.view_at(index);
+AppListItemView* AppsGridView::GetItemViewAt(size_t index) const {
+  return (index < view_model_.view_size()) ? view_model_.view_at(index)
+                                           : nullptr;
 }
 
 void AppsGridView::InitiateDragFromReparentItemInRootLevelGridView(
@@ -1257,7 +1255,7 @@ AppListItemView* AppsGridView::GetViewAtIndex(const GridIndex& index) const {
   if (!IsValidIndex(index))
     return nullptr;
 
-  const int model_index = view_structure_.GetModelIndexFromIndex(index);
+  const size_t model_index = view_structure_.GetModelIndexFromIndex(index);
   return GetItemViewAt(model_index);
 }
 
@@ -2131,7 +2129,7 @@ views::AnimationBuilder AppsGridView::FadeInVisibleItemsForReorder(
 
   // Only show the visible items during animation to reduce the cost of painting
   // that is triggered by view bounds changes due to reorder.
-  for (int visible_view_index = range->first_index;
+  for (size_t visible_view_index = range->first_index;
        visible_view_index <= range->last_index; ++visible_view_index) {
     view_model_.view_at(visible_view_index)->SetVisible(true);
   }
@@ -2158,7 +2156,7 @@ views::AnimationBuilder AppsGridView::FadeInVisibleItemsForReorder(
   // The row of the first visible item.
   const int base_row = range->first_index / cols_;
 
-  for (int visible_view_index = range->first_index;
+  for (size_t visible_view_index = range->first_index;
        visible_view_index <= range->last_index; ++visible_view_index) {
     // Calculate translate offset for each view. NOTE: The items on the
     // different rows have different fade in offsets. The ratio between the
@@ -2215,7 +2213,7 @@ void AppsGridView::SlideVisibleItemsForHideContinueSection(int base_offset) {
       .SetDuration(base::Milliseconds(300));
 
   // Animate each row of app icons with a different offset.
-  for (int item_index = range->first_index; item_index <= range->last_index;
+  for (size_t item_index = range->first_index; item_index <= range->last_index;
        ++item_index) {
     const int row_index = item_index / cols_;
 
@@ -2514,7 +2512,7 @@ void AppsGridView::CancelContextMenusOnCurrentPage() {
     GetItemViewAt(i)->CancelContextMenu();
 }
 
-void AppsGridView::DeleteItemViewAtIndex(int index) {
+void AppsGridView::DeleteItemViewAtIndex(size_t index) {
   AppListItemView* item_view = GetItemViewAt(index);
   view_model_.Remove(index);
   view_structure_.Remove(item_view);
@@ -2623,8 +2621,8 @@ void AppsGridView::OnListItemMoved(size_t from_index,
     // The item is updated in the item list but the view_model is not updated,
     // so get current model index by looking up view_model and predict the
     // target model index based on its current item index.
-    int from_model_index = GetModelIndexOfItem(item);
-    int to_model_index = GetTargetModelIndexFromItemIndex(to_index);
+    size_t from_model_index = GetModelIndexOfItem(item);
+    size_t to_model_index = GetTargetModelIndexFromItemIndex(to_index);
     view_model_.Move(from_model_index, to_model_index);
     items_container_->ReorderChildView(view_model_.view_at(to_model_index),
                                        to_model_index);
@@ -3005,21 +3003,21 @@ bool AppsGridView::IsValidReorderTargetIndex(const GridIndex& index) const {
   return view_structure_.IsValidReorderTargetIndex(index);
 }
 
-int AppsGridView::GetModelIndexOfItem(const AppListItem* item) const {
+size_t AppsGridView::GetModelIndexOfItem(const AppListItem* item) const {
   const auto& entries = view_model_.entries();
   const auto iter =
       std::find_if(entries.begin(), entries.end(), [item](const auto& entry) {
         return static_cast<AppListItemView*>(entry.view)->item() == item;
       });
-  return std::distance(entries.begin(), iter);
+  return static_cast<size_t>(std::distance(entries.begin(), iter));
 }
 
-int AppsGridView::GetTargetModelIndexFromItemIndex(size_t item_index) {
+size_t AppsGridView::GetTargetModelIndexFromItemIndex(size_t item_index) {
   if (folder_delegate_)
     return item_index;
 
   CHECK(item_index <= item_list_->item_count());
-  int target_model_index = 0;
+  size_t target_model_index = 0;
   for (size_t i = 0; i < item_index; ++i) {
     if (!item_list_->item_at(i)->is_page_break())
       ++target_model_index;

@@ -512,7 +512,8 @@ void DocumentOverlayWindowViews::UpdateResizeHandleBounds(
       resize_handle_view_->SetQuadrant(quadrant);
       controls_container_view_->ReorderChildView(close_controls_view_, 0);
       controls_container_view_->ReorderChildView(back_to_tab_image_button_, 1);
-      controls_container_view_->ReorderChildView(resize_handle_view_, -1);
+      controls_container_view_->ReorderChildView(
+          resize_handle_view_, controls_container_view_->children().size());
       // FIXME: controls_container_view_->InvalidateLayout() isn't sufficient?
       controls_container_view_->Layout();
     }
@@ -526,8 +527,11 @@ void DocumentOverlayWindowViews::UpdateResizeHandleBounds(
     //   +-------------------------------------------+
     if (controls_container_view_->GetIndexOf(resize_handle_view_) != 0) {
       resize_handle_view_->SetQuadrant(quadrant);
-      controls_container_view_->ReorderChildView(back_to_tab_image_button_, -1);
-      controls_container_view_->ReorderChildView(close_controls_view_, -1);
+      controls_container_view_->ReorderChildView(
+          back_to_tab_image_button_,
+          controls_container_view_->children().size());
+      controls_container_view_->ReorderChildView(
+          close_controls_view_, controls_container_view_->children().size());
       controls_container_view_->ReorderChildView(resize_handle_view_, 0);
       // FIXME: controls_container_view_->InvalidateLayout() isn't sufficient?
       controls_container_view_->Layout();

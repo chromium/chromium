@@ -379,7 +379,7 @@ void NetworkListView::UpdateNetworkListInternal() {
 std::unique_ptr<std::set<std::string>>
 NetworkListView::UpdateNetworkListEntries() {
   // Keep an index where the next child should be inserted.
-  int index = 0;
+  size_t index = 0;
 
   const NetworkStateProperties* default_network = model()->default_network();
   bool using_proxy =
@@ -692,7 +692,7 @@ views::View* NetworkListView::CreatePolicyView(const NetworkInfo& info) {
 
 std::unique_ptr<std::set<std::string>> NetworkListView::UpdateNetworkChildren(
     NetworkType type,
-    int index) {
+    size_t index) {
   std::unique_ptr<std::set<std::string>> new_guids(new std::set<std::string>);
   for (const auto& info : network_list_) {
     if (!NetworkTypeMatchesType(info->type, type))
@@ -703,7 +703,8 @@ std::unique_ptr<std::set<std::string>> NetworkListView::UpdateNetworkChildren(
   return new_guids;
 }
 
-void NetworkListView::UpdateNetworkChild(int index, const NetworkInfo* info) {
+void NetworkListView::UpdateNetworkChild(size_t index,
+                                         const NetworkInfo* info) {
   HoverHighlightView* network_view = nullptr;
   NetworkGuidMap::const_iterator found = network_guid_map_.find(info->guid);
 
@@ -735,12 +736,11 @@ void NetworkListView::UpdateNetworkChild(int index, const NetworkInfo* info) {
   network_guid_map_[info->guid] = network_view;
 }
 
-void NetworkListView::PlaceViewAtIndex(views::View* view, int index) {
+void NetworkListView::PlaceViewAtIndex(views::View* view, size_t index) {
   if (view->parent() != scroll_content()) {
     scroll_content()->AddChildViewAt(view, index);
-  } else if (index > 0 &&
-             static_cast<size_t>(index) < scroll_content()->children().size() &&
-             scroll_content()->children()[static_cast<size_t>(index)] == view) {
+  } else if (index > 0 && index < scroll_content()->children().size() &&
+             scroll_content()->children()[index] == view) {
     // ReorderChildView() would no-op in this case, but we still want to avoid
     // setting |needs_relayout_|.
     return;
@@ -751,7 +751,7 @@ void NetworkListView::PlaceViewAtIndex(views::View* view, int index) {
 }
 
 void NetworkListView::UpdateInfoLabel(int message_id,
-                                      int insertion_index,
+                                      size_t insertion_index,
                                       TrayInfoLabel** info_label_ptr) {
   TrayInfoLabel* info_label = *info_label_ptr;
   if (!message_id) {
@@ -771,10 +771,10 @@ void NetworkListView::UpdateInfoLabel(int message_id,
   *info_label_ptr = info_label;
 }
 
-int NetworkListView::UpdateNetworkSectionHeader(
+size_t NetworkListView::UpdateNetworkSectionHeader(
     chromeos::network_config::mojom::NetworkType type,
     bool enabled,
-    int child_index,
+    size_t child_index,
     NetworkSectionHeaderView* view,
     views::Separator** separator_view) {
   // Show or hide a separator above the header. The separator should only be

@@ -215,7 +215,7 @@ void BluetoothDetailedViewLegacy::UpdateDeviceScrollList(
   bool has_paired_devices = !connected_devices.empty() ||
                             !connecting_devices.empty() ||
                             !paired_not_connected_devices.empty();
-  int index = 0;
+  size_t index = 0;
   if (has_paired_devices) {
     paired_devices_heading_ =
         AddSubHeading(IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_DEVICES,
@@ -292,7 +292,7 @@ void BluetoothDetailedViewLegacy::CreateItems() {
 
 TriView* BluetoothDetailedViewLegacy::AddSubHeading(int text_id,
                                                     TriView* sub_heading_view,
-                                                    int child_index) {
+                                                    size_t child_index) {
   if (!sub_heading_view) {
     sub_heading_view = AddScrollListSubHeader(text_id);
   }
@@ -300,11 +300,11 @@ TriView* BluetoothDetailedViewLegacy::AddSubHeading(int text_id,
   return sub_heading_view;
 }
 
-int BluetoothDetailedViewLegacy::AddSameTypeDevicesToScrollList(
+size_t BluetoothDetailedViewLegacy::AddSameTypeDevicesToScrollList(
     const BluetoothDeviceList& list,
     const std::unordered_map<HoverHighlightView*, BluetoothAddress>&
         old_device_list,
-    int child_index,
+    size_t child_index,
     bool highlight,
     bool checked) {
   for (const auto& device : list) {

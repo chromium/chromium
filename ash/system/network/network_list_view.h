@@ -90,12 +90,12 @@ class NetworkListView : public NetworkStateListDetailedView,
   // connections.
   std::unique_ptr<std::set<std::string>> UpdateNetworkChildren(
       chromeos::network_config::mojom::NetworkType type,
-      int child_index);
-  void UpdateNetworkChild(int index, const NetworkInfo* info);
+      size_t child_index);
+  void UpdateNetworkChild(size_t index, const NetworkInfo* info);
 
   // Reorders children of |scroll_content()| as necessary placing |view| at
   // |index|.
-  void PlaceViewAtIndex(views::View* view, int index);
+  void PlaceViewAtIndex(views::View* view, size_t index);
 
   // Creates an info label with text specified by |message_id| and adds it to
   // |scroll_content()| if necessary or updates the text and reorders the
@@ -104,17 +104,17 @@ class NetworkListView : public NetworkStateListDetailedView,
   // |scroll_content()| and destroys it. |info_label_ptr| is an in/out parameter
   // and is only modified if the info label is created or destroyed.
   void UpdateInfoLabel(int message_id,
-                       int insertion_index,
+                       size_t insertion_index,
                        TrayInfoLabel** info_label_ptr);
 
   // Updates a cellular/Wi-Fi header row |view| and reorders the
   // |scroll_content()| placing the |view| at |child_index|. Returns the index
   // where the next child should be inserted, i.e., the index directly after the
   // last inserted child.
-  int UpdateNetworkSectionHeader(
+  size_t UpdateNetworkSectionHeader(
       chromeos::network_config::mojom::NetworkType type,
       bool enabled,
-      int child_index,
+      size_t child_index,
       NetworkSectionHeaderView* view,
       views::Separator** separator_view);
 

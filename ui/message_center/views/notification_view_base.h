@@ -390,7 +390,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   // Counter for view layouting, which is used during the CreateOrUpdate*
   // phases to keep track of the view ordering. See crbug.com/901045
-  int left_content_count_;
+  size_t left_content_count_;
 
   std::unique_ptr<ui::EventHandler> click_activator_;
 

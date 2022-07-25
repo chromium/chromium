@@ -300,7 +300,7 @@ void DesignerExample::GrabHandle::UpdatePosition(bool reorder) {
   if (GetVisible() && attached_view_) {
     PositionOnView();
     if (reorder)
-      parent()->ReorderChildView(this, -1);
+      parent()->ReorderChildView(this, parent()->children().size());
   }
 }
 

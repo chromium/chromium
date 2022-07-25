@@ -286,16 +286,14 @@ Widget* View::GetWidget() {
   return const_cast<Widget*>(const_cast<const View*>(this)->GetWidget());
 }
 
-void View::ReorderChildView(View* view, int index) {
+void View::ReorderChildView(View* view, size_t index) {
   DCHECK_EQ(view->parent_, this);
   const auto i = std::find(children_.begin(), children_.end(), view);
   DCHECK(i != children_.end());
 
   // If |view| is already at the desired position, there's nothing to do.
-  const bool move_to_end =
-      (index < 0) || (static_cast<size_t>(index) >= children_.size());
-  const auto pos = move_to_end ? std::prev(children_.end())
-                               : std::next(children_.begin(), index);
+  const auto pos =
+      std::next(children_.begin(), std::min(index, children_.size() - 1));
   if (i == pos)
     return;
 

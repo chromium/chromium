@@ -97,24 +97,24 @@ TEST_F(WindowReordererTest, Basic) {
 
   // 2) Test the z-order of the windows and layers as a result of reordering the
   // views.
-  contents_view->ReorderChildView(host_view1, -1);
+  contents_view->ReorderChildView(host_view1, contents_view->children().size());
   EXPECT_EQ("w2 w1", ChildWindowNamesAsString(*parent_window));
   EXPECT_EQ("v w2 w1",
             ui::test::ChildLayerNamesAsString(*parent_window->layer()));
 
-  contents_view->ReorderChildView(host_view2, -1);
+  contents_view->ReorderChildView(host_view2, contents_view->children().size());
   EXPECT_EQ("w1 w2", ChildWindowNamesAsString(*parent_window));
   EXPECT_EQ("v w1 w2",
             ui::test::ChildLayerNamesAsString(*parent_window->layer()));
 
   // 3) Test the z-order of the windows and layers as a result of reordering the
   // views in situations where the window order remains unchanged.
-  contents_view->ReorderChildView(v, -1);
+  contents_view->ReorderChildView(v, contents_view->children().size());
   EXPECT_EQ("w1 w2", ChildWindowNamesAsString(*parent_window));
   EXPECT_EQ("w1 w2 v",
             ui::test::ChildLayerNamesAsString(*parent_window->layer()));
 
-  contents_view->ReorderChildView(host_view2, -1);
+  contents_view->ReorderChildView(host_view2, contents_view->children().size());
   EXPECT_EQ("w1 w2", ChildWindowNamesAsString(*parent_window));
   EXPECT_EQ("w1 v w2",
             ui::test::ChildLayerNamesAsString(*parent_window->layer()));
