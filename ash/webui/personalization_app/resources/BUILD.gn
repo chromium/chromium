@@ -66,8 +66,6 @@ non_web_component_files = [
   "trusted/wallpaper/wallpaper_reducers.ts",
   "trusted/wallpaper/wallpaper_state.ts",
   "trusted/wallpaper/index.ts",
-
-  "untrusted/setup.ts",
 ]
 
 # Files holding a Polymer element definition AND have an equivalent .html file.
