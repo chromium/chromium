@@ -13,8 +13,19 @@
  * @implements {OobeI18nBehaviorInterface}
  */
 const ThemeSelectionScreenElementBase = Polymer.mixinBehaviors(
-    [OobeDialogHostBehavior, OobeI18nBehavior, LoginScreenBehavior],
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
     Polymer.Element);
+
+/**
+ * Enum to represent steps on the theme selection screen.
+ * Currently there is only one step, but we still use
+ * MultiStepBehavior because it provides implementation of
+ * things like processing 'focus-on-show' class
+ * @enum {string}
+ */
+const ThemeSelectionStep = {
+  OVERVIEW: 'overview',
+};
 
 /**
  * Available themes. The values should be in sync with the enum
@@ -67,6 +78,14 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
 
   constructor() {
     super();
+  }
+
+  get UI_STEPS() {
+    return ThemeSelectionStep;
+  }
+
+  defaultUIStep() {
+    return ThemeSelectionStep.OVERVIEW;
   }
 
   get EXTERNAL_API() {

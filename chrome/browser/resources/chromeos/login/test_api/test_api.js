@@ -322,6 +322,12 @@ class MarketingOptInScreenTester extends ScreenElementApi {
   }
 }
 
+class ThemeSelectionScreenTester extends ScreenElementApi {
+  constructor() {
+    super('theme-selection');
+  }
+}
+
 class ConfirmSamlPasswordScreenTester extends ScreenElementApi {
   constructor() {
     super('saml-confirm-password');
@@ -593,6 +599,7 @@ class OobeApiProvider {
       OfflineLoginScreen: new OfflineLoginScreenTester(),
       DemoPreferencesScreen: new DemoPreferencesScreenTester(),
       ArcTosScreen: new ArcTosScreenTester(),
+      ThemeSelectionScreen: new ThemeSelectionScreenTester(),
     };
 
     this.loginWithPin = function(username, pin) {
