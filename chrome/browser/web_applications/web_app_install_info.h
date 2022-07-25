@@ -173,6 +173,13 @@ struct WebAppInstallInfo {
     MOBILE_CAPABLE_APPLE
   };
 
+  // Returns a copy of the |other| that has only the fields that should be
+  // copied/derived from various sources (e.g generated icons, manifest
+  // properties). This will strip out app-like fields such as file handlers etc.
+  static WebAppInstallInfo CreateInstallInfoForCreateShortcut(
+      const GURL& document_url,
+      const WebAppInstallInfo& other);
+
   WebAppInstallInfo();
 
   // TODO(b/227755254): Delete copy constructors and migrate to move assignment.

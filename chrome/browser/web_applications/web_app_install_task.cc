@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
@@ -638,6 +639,16 @@ void WebAppInstallTask::OnDidPerformInstallableCheck(
   if (opt_manifest)
     UpdateWebAppInfoFromManifest(*opt_manifest, manifest_url,
                                  web_app_info.get());
+
+  if (flow_ == WebAppInstallFlow::kCreateShortcut &&
+      base::FeatureList::IsEnabled(
+          webapps::features::kCreateShortcutIgnoresManifest)) {
+    // When creating a shortcut, the |manifest_id| is not part of the App's
+    // primary key. The only thing that identifies a shortcut is the start URL,
+    // which is always set to the current page.
+    *web_app_info = WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
+        web_contents()->GetLastCommittedURL(), *web_app_info);
+  }
 
   AppId app_id =
       GenerateAppId(web_app_info->manifest_id, web_app_info->start_url);

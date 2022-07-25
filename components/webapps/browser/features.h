@@ -24,6 +24,7 @@ extern const base::FeatureParam<int>
 extern const base::Feature kWebApkUniqueId;
 #endif  // BUILDFLAG(IS_ANDROID)
 
+extern const base::Feature kCreateShortcutIgnoresManifest;
 extern const base::Feature kSkipServiceWorkerCheckAll;
 extern const base::Feature kSkipServiceWorkerCheckInstallOnly;
 

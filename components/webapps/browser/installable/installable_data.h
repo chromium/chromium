@@ -40,9 +40,13 @@ struct InstallableData {
 
   ~InstallableData();
 
-  // Returns true if `errors` is empty or only has `WARN_NOT_OFFLINE_CAPABLE`.
+  // Returns true if `errors` is empty or only has `WARN_NOT_OFFLINE_CAPABLE`
+  // or `NO_MATCHING_SERVICE_WORKER`.
   // `WARN_NOT_OFFLINE_CAPABLE` only logs a warning message in DevTools and
   // should not change the behavior.
+  // `NO_MATCHING_SERVICE_WORKER` is optional if the feature
+  // `CreateShortcutIgnoresManifest` is active, since then the "Install" button
+  // should show for any website that has a manifest.
   // TODO(https://crbug.com/965802): Remove `WARN_NOT_OFFLINE_CAPABLE` once the
   // CheckOfflineCapability feature is enabled with 'enforce' mode by default in
   // M93.

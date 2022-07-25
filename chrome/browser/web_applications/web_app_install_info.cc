@@ -213,6 +213,31 @@ base::Value WebAppShortcutsMenuItemInfo::AsDebugValue() const {
 }
 
 // WebAppInstallInfo
+
+// static
+WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
+    const GURL& document_url,
+    const WebAppInstallInfo& other) {
+  WebAppInstallInfo create_shortcut_info;
+  create_shortcut_info.title = other.title;
+  create_shortcut_info.description = other.description;
+  create_shortcut_info.start_url = document_url;
+  create_shortcut_info.manifest_url = other.manifest_url;
+  create_shortcut_info.manifest_icons = other.manifest_icons;
+  create_shortcut_info.icon_bitmaps = other.icon_bitmaps;
+  create_shortcut_info.other_icon_bitmaps = other.other_icon_bitmaps;
+  create_shortcut_info.is_generated_icon = other.is_generated_icon;
+  create_shortcut_info.generated_icon_color = other.generated_icon_color;
+  create_shortcut_info.theme_color = other.theme_color;
+  create_shortcut_info.dark_mode_theme_color = other.dark_mode_theme_color;
+  create_shortcut_info.background_color = other.background_color;
+  create_shortcut_info.dark_mode_background_color =
+      other.dark_mode_background_color;
+  create_shortcut_info.display_mode = other.display_mode;
+  create_shortcut_info.additional_search_terms = other.additional_search_terms;
+  return create_shortcut_info;
+}
+
 WebAppInstallInfo::WebAppInstallInfo() = default;
 
 WebAppInstallInfo::WebAppInstallInfo(const WebAppInstallInfo& other) = default;

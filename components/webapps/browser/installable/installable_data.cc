@@ -5,7 +5,11 @@
 #include "components/webapps/browser/installable/installable_data.h"
 
 #include <utility>
-#include "installable_logging.h"
+
+#include "base/containers/flat_set.h"
+#include "base/feature_list.h"
+#include "components/webapps/browser/features.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 
 namespace webapps {
 
@@ -37,8 +41,23 @@ InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
 InstallableData::~InstallableData() = default;
 
 bool InstallableData::NoBlockingErrors() const {
-  return errors.empty() ||
-         (errors.size() == 1 && errors[0] == WARN_NOT_OFFLINE_CAPABLE);
+  for (auto e : errors) {
+    switch (e) {
+      case WARN_NOT_OFFLINE_CAPABLE:
+        continue;
+      case NO_MATCHING_SERVICE_WORKER:
+#if !BUILDFLAG(IS_ANDROID)
+        if (base::FeatureList::IsEnabled(
+                features::kCreateShortcutIgnoresManifest)) {
+          continue;
+        }
+#endif
+        return false;
+      default:
+        return false;
+    }
+  }
+  return true;
 }
 
 bool InstallableData::HasErrorOnlyServiceWorkerErrors() const {

@@ -53,6 +53,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -1135,6 +1136,54 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifestWithFallback_NoIcons) {
 
         run_loop.Quit();
       }));
+
+  run_loop.Run();
+}
+
+class WebAppInstallTaskWithShortcutFeatureTest : public WebAppInstallTaskTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      webapps::features::kCreateShortcutIgnoresManifest};
+};
+
+TEST_F(WebAppInstallTaskWithShortcutFeatureTest,
+       CreateShortcutUsesDocumentURL) {
+  InitializeInstallTaskAndRetriever(
+      webapps::WebappInstallSource::MENU_BROWSER_TAB);
+  SetInstallFinalizerForTesting();
+
+  const GURL manifest_start_url{"https://example.com/?pwa=true"};
+  const std::string title = "App Name";
+  const std::string description = "Description";
+  const GURL manifest_scope{"https://example.com/"};
+  const absl::optional<SkColor> theme_color = 0xAABBCCDD;
+
+  CreateRendererAppInfo(manifest_start_url, title, description, manifest_scope,
+                        theme_color,
+                        /*user_display_mode=*/UserDisplayMode::kStandalone);
+
+  base::RunLoop run_loop;
+
+  const GURL document_url{"https://example.com/my/special/document/"};
+  NavigateAndCommit(document_url);
+
+  install_task_->InstallWebAppFromManifestWithFallback(
+      web_contents(), WebAppInstallFlow::kCreateShortcut,
+      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindLambdaForTesting(
+          [&](const AppId& installed_app_id, webapps::InstallResultCode code) {
+            EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
+
+            std::unique_ptr<WebAppInstallInfo> final_web_app_info =
+                fake_install_finalizer().web_app_info();
+            EXPECT_EQ(document_url, final_web_app_info->start_url);
+            EXPECT_EQ(absl::nullopt, final_web_app_info->manifest_id);
+            EXPECT_EQ(GURL{}, final_web_app_info->scope);
+            EXPECT_EQ(theme_color, final_web_app_info->theme_color);
+            EXPECT_EQ(title, base::UTF16ToUTF8(final_web_app_info->title));
+
+            run_loop.Quit();
+          }));
 
   run_loop.Run();
 }
