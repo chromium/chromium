@@ -70,6 +70,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="2139300032719313227">Ailgychwyn ChromeOS</translation>
 <translation id="2151406531797534936">Ailgychwynnwch Chrome nawr</translation>
 <translation id="2174917724755363426">Gosod heb ei gwblhau. Ydych chi'n siŵr eich bod am ganslo?</translation>
+<translation id="223889379102603431">Gwybodaeth am sut mae Chrome yn rheoli ei dystysgrifau gwraidd</translation>
 <translation id="2258103955319320201">I gael mynediad at eich holl bethau porwr Chrome ar draws eich holl ddyfeisiau, mewngofnodwch, yna trowch gysoni ymlaen</translation>
 <translation id="2290014774651636340">Mae allweddi API Google ar goll. Bydd rhywfaint o swyddogaeth Google Chrome wedi'i hanalluogi.</translation>
 <translation id="2290095356545025170">Ydych chi'n siŵr eich bod eisiau dadosod Google Chrome?</translation>
@@ -356,6 +357,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8129812357326543296">Ynghylch &amp;Google Chrome</translation>
 <translation id="813913629614996137">Wrthi'n cychwyn…</translation>
 <translation id="8255190535488645436">Mae Google Chrome yn defnyddio'ch camera a'ch meicroffon.</translation>
+<translation id="8270775718612349140">Tystysgrifau a reolir gan Chrome</translation>
 <translation id="8286862437124483331">Mae Google Chrome yn ceisio dangos cyfrineiriau. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="828798499196665338">Mae dy riant wedi diffodd "Caniatadau ar gyfer gwefannau, apiau ac estyniadau" ar gyfer Chrome. Ni chaniateir galluogi'r <ph name="EXTENSION_TYPE_PARAMETER" /> hwn.</translation>
 <translation id="8290100596633877290">Whoa! Mae Google Chrome wedi torri. Ail-lansio nawr?</translation>

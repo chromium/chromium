@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">Түүх</translation>
 <translation id="1645954272419197032">Төхөөрөмжийн мэдээллийг баталгаажуулна уу</translation>
 <translation id="1662989795263954667">Зогссон - Хэвлэгчийн хор дууссан</translation>
+<translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />-г урьдчилан үзэх</translation>
 <translation id="1668469839109562275">Бүрэлдэхүүн VPN</translation>
 <translation id="1672499492233627739">Вебкамерын видео хангамж</translation>
 <translation id="1676557873873341166">Видео бичиж байна</translation>
@@ -798,6 +799,7 @@
 <translation id="7978412674231730200">Хувийн түлхүүр</translation>
 <translation id="7982789257301363584">Сүлжээ</translation>
 <translation id="7994702968232966508">EAP арга</translation>
+<translation id="8018928621986160031">"<ph name="FILE_LOCATION" />"-д хадгалсан</translation>
 <translation id="802154636333426148">Татаж чадсангүй</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Автомат өнгөний горимыг идэвхжүүлэх</translation>

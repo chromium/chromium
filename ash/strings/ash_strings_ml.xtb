@@ -306,6 +306,7 @@
 <translation id="2805756323405976993">ആപ്സ്</translation>
 <translation id="2814448776515246190">ഭാഗികമായി ക്യാപ്‌ചർ ചെയ്യൽ</translation>
 <translation id="2819276065543622893">നിങ്ങൾ ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്യും.</translation>
+<translation id="2822551631199737692">ക്യാമറ ഉപയോഗിക്കുന്നു</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> എന്നതിനെ പിന്തുണയ്‌ക്കുന്നില്ല. റെസല്യൂഷൻ <ph name="FALLBACK_RESOLUTION" /> എന്നതിലേക്ക് മാറ്റി.</translation>
 <translation id="2825619548187458965">ഷെൽഫ്</translation>
 <translation id="2831035692318564937">സൂര്യാസ്തമയം വരെ ഓണാണ്</translation>
@@ -807,6 +808,7 @@
 <translation id="5682642926269496722">നിലവിലെ ഉപയോക്തൃ അക്കൗണ്ടിന് Google അസിസ്‌റ്റന്റ് ലഭ്യമല്ല.</translation>
 <translation id="5689633613396158040">മങ്ങിയ വെളിച്ചത്തിൽ സ്‌ക്രീനിൽ നോക്കുന്നതോ വായിക്കുന്നതോ നൈറ്റ് ലൈറ്റ് എളുപ്പമാക്കുന്നു. നൈറ്റ് ലൈറ്റ് പൂർണ്ണമായി ഓഫാകുകയോ ഓണാകുകയോ ചെയ്യേണ്ട സമയം മാറ്റാൻ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="5691772641933328258">വിരലടയാളം തിരിച്ചറിഞ്ഞില്ല</translation>
+<translation id="5693255400847650006">മൈക്രോഫോൺ ഉപയോഗിക്കുന്നു</translation>
 <translation id="570390244361237317">എല്ലാ ആപ്പുകളും, എല്ലാ ആപ്പുകളും ആക്സസ് ചെയ്യാൻ അമ്പടയാള കീകൾ ഉപയോഗിച്ച് നാവിഗേറ്റ് ചെയ്യുക</translation>
 <translation id="5707775774148071965">നിങ്ങളുടെ ഉപകരണം, നിങ്ങളുടെ കേബിളിനേക്കാൾ കൂടുതൽ ഡാറ്റാ നിരക്കിനെ പിന്തുണയ്ക്കുന്നു. ഉപകരണ പ്രകടനം പരിമിതപ്പെട്ടേക്കാം.</translation>
 <translation id="5710450975648804523">'ശല്യപ്പെടുത്തരുത്' ഓണാണ്</translation>
@@ -981,6 +983,7 @@
 <translation id="6723839937902243910">പവർ</translation>
 <translation id="6727969043791803658">കണക്റ്റ് ചെയ്‌തു, <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /> എണ്ണം</translation>
+<translation id="6737983188036277605">ക്യാമറയും മൈക്രോഫോണും ഉപയോഗിക്കുന്നു</translation>
 <translation id="6739144137573853180">ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="6751052314767925245">നിങ്ങളുടെ അഡ്‌മിൻ നടപ്പിലാക്കിയതാണ്</translation>
 <translation id="6751826523481687655">പ്രകടനം പിന്തുടരൽ ഓണാണ്</translation>

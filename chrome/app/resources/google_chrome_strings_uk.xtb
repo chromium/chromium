@@ -66,6 +66,7 @@
 <translation id="2139300032719313227">Перезапустіть ОС Chrome</translation>
 <translation id="2151406531797534936">Перезапустіть Chrome</translation>
 <translation id="2174917724755363426">Встановлення не завершено. Скасувати його?</translation>
+<translation id="223889379102603431">Інформація про те, як Chrome керує кореневими сертифікатами</translation>
 <translation id="2258103955319320201">Щоб мати доступ до своїх даних у веб-переглядачі Chrome на всіх пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>
 <translation id="2290014774651636340">Ключі API Google відсутні. Деякі функції Google Chrome буде вимкнено.</translation>
 <translation id="2290095356545025170">Ви дійсно хочете видалити Google Chrome?</translation>
@@ -348,6 +349,7 @@
 <translation id="8129812357326543296">Про &amp;Google Chrome</translation>
 <translation id="813913629614996137">Ініціалізація...</translation>
 <translation id="8255190535488645436">Google Chrome використовує вашу камеру та мікрофон.</translation>
+<translation id="8270775718612349140">Сертифікати, якими керує Chrome</translation>
 <translation id="8286862437124483331">Google Chrome намагається показати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="828798499196665338">Хтось із твоїх батьків вимкнув "Дозволи для сайтів, додатків і розширень" у Chrome. Вмикати це <ph name="EXTENSION_TYPE_PARAMETER" /> заборонено.</translation>
 <translation id="8290100596633877290">Відбулося аварійне завершення роботи Google Chrome. Перезапустити зараз?</translation>

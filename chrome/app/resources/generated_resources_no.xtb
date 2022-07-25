@@ -3886,6 +3886,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4689421377817139245">Synkroniser dette bokmerket med iPhone</translation>
 <translation id="4690091457710545971">&lt;Fire filer genereres av Intel Wi-Fi-fastvaren: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. De tre første er binærfiler som inneholder registerdumper og kontrolleres av Intel for å sikre at de ikke inneholder personlig eller enhetsidentifiserende informasjon. Den siste filen er et kjøringsspor fra Intel-fastvaren. All personlig eller enhetsidentifiserende informasjon er fjernet fra filen, men den er for stor til å vises her. Disse filene ble generert som svar på nylige Wi-Fi-problemer med enheten din og deles med Intel for å bidra med feilsøking av disse problemene.&gt;</translation>
 <translation id="4691791363716065510">Da kan <ph name="ORIGIN" /> se <ph name="FILENAME" /> frem til du lukker alle fanene for dette nettstedet</translation>
+<translation id="4692342362587775867">Varsler fra dette nettstedet kan være forstyrrende</translation>
 <translation id="4692623383562244444">Søkemotorer</translation>
 <translation id="4692736633446859167">Du har tidligere valgt å ikke tillate noen utvidelser på <ph name="SITE" />. Hvis du legger til dette nettstedet her, kan andre utvidelser også be om å få lese og endre nettstedsdataene dine på <ph name="SITE" />.</translation>
 <translation id="4693155481716051732">Sushi</translation>

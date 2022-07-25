@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">History</translation>
 <translation id="1645954272419197032">Pakikumpirma ang impormasyon ng device</translation>
 <translation id="1662989795263954667">Huminto - Wala nang ink</translation>
+<translation id="1664796644829245314">I-preview ang <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Built-in na VPN</translation>
 <translation id="1672499492233627739">Video feed ng webcam</translation>
 <translation id="1676557873873341166">Pagkuha ng video</translation>
@@ -118,6 +119,7 @@
 <translation id="1851218745569890714">Pakikipagkumperensya Gamit ang Video</translation>
 <translation id="1852934301711881861">I-install ang ChromeOS Flex</translation>
 <translation id="1856388568474281774">Pababang arrow</translation>
+<translation id="1858620243986915808">I-attach ang screenshot</translation>
 <translation id="1871569928317311284">I-off ang madilim na tema</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">I-off ang dark mode</translation>
@@ -797,6 +799,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7978412674231730200">Private na key</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7994702968232966508">Pamamaraang EAP</translation>
+<translation id="8018928621986160031">Na-save sa "<ph name="FILE_LOCATION" />"</translation>
 <translation id="802154636333426148">Hindi na-download</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">I-enable ang auto color mode</translation>

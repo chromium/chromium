@@ -41,6 +41,7 @@
 <translation id="2018879682492276940">Помилка встановлення. Повторіть спробу.</translation>
 <translation id="2020032459870799438">Щоб перевірити, чи відомі порушення безпеки даних або інші проблеми не заторкнули інші ваші паролі, <ph name="BEGIN_LINK" />увійдіть у Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Укажіть, чи включати історію Chromium, щоб ми краще персоналізували роботу сервісів Google</translation>
+<translation id="2088953378266246249">Інформація про те, як Chromium керує кореневими сертифікатами</translation>
 <translation id="2174178932569897599">Налаштувати Chromium</translation>
 <translation id="2174917724755363426">Встановлення не завершено. Скасувати його?</translation>
 <translation id="2185166961232948079">Chromium – Вхід у мережу– <ph name="PAGE_TITLE" /></translation>
@@ -365,6 +366,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="9185526690718004400">Перезапустити, щоб оновити &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium може працювати неналежним чином, оскільки більше не підтримується у Windows XP та Windows Vista</translation>
+<translation id="942598560705308788">Сертифікати, якими керує Chromium</translation>
 <translation id="945990405696787151">Щоб отримувати майбутні оновлення Chromium, потрібна операційна система macOS 10.13 або новішої версії. На цьому комп’ютері встановлено OS X 10.11.</translation>
 <translation id="965162752251293939">Хто користується веб-переглядачем Chromium?</translation>
 <translation id="967427899662692980">Отримайте найвищий рівень безпеки в Chromium</translation>

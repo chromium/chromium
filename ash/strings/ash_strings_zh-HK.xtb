@@ -307,6 +307,7 @@
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="2814448776515246190">局部擷取</translation>
 <translation id="2819276065543622893">現在即將登出。</translation>
+<translation id="2822551631199737692">相機正在使用中</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" />，解像度已變更為 <ph name="FALLBACK_RESOLUTION" />。</translation>
 <translation id="2825619548187458965">捷徑列</translation>
 <translation id="2831035692318564937">開啟，直到日出</translation>
@@ -808,6 +809,7 @@
 <translation id="5682642926269496722">「Google 助理」不適用於目前的使用者帳戶。</translation>
 <translation id="5689633613396158040">「夜燈模式」讓您更易在光線昏暗的環境下觀看螢幕內容或閱讀。輕按即可變更「夜燈模式」的開啟時間，或完全關閉此功能。</translation>
 <translation id="5691772641933328258">識別唔到指紋</translation>
+<translation id="5693255400847650006">麥克風正在使用中</translation>
 <translation id="570390244361237317">所有應用程式，用方向鍵導覽就可以存取所有應用程式</translation>
 <translation id="5707775774148071965">您的裝置支援比連接線更高的資料傳輸速率。裝置效能可能受到限制。</translation>
 <translation id="5710450975648804523">「請勿騷擾」模式已開啟</translation>
@@ -982,6 +984,7 @@
 <translation id="6723839937902243910">電源</translation>
 <translation id="6727969043791803658">已連接，電量為 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">相機和麥克風正在使用中</translation>
 <translation id="6739144137573853180">前往「設定」</translation>
 <translation id="6751052314767925245">由管理員強制執行</translation>
 <translation id="6751826523481687655">效能追蹤已啟用</translation>

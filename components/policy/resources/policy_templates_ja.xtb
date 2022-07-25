@@ -13,6 +13,7 @@
       ポリシーの値が有効なドメインではない場合、ポリシーは適用されません。</translation>
 <translation id="1004590217607585595">ウェブアプリ管理設定</translation>
 <translation id="1006218396155867129">リモート アクセス ユーザーとリモートホストとの間のファイル転送を無効にする</translation>
+<translation id="1007149936182752368">ブックマークの編集を無効にする</translation>
 <translation id="1010151305531217567">マウスのメインボタンを右に切り替える</translation>
 <translation id="1011266755572744012">1 回の印刷ジョブでユーザーが印刷できる用紙の最大数を指定します。
 
@@ -71,6 +72,7 @@
       使用できる変数のリストについては、https://support.google.com/chrome/a?p=Supported_directory_variables をご覧ください。
 
       このポリシーを未設定のままにした場合は、デフォルトのプロファイル ディレクトリが使用されます。</translation>
+<translation id="1059069692400941670">初回実行時のデフォルトの検索エンジンのインポートを無効にする</translation>
 <translation id="1062011392452772310">デバイスのリモート認証を有効にする</translation>
 <translation id="1062407476771304334">置換</translation>
 <translation id="1069489575852947981">このポリシーを有効に設定するか未設定のままにした場合、デバイスのローカル アカウントは遅延なしで自動ログインするように設定されます。ただし、<ph name="PRODUCT_OS_NAME" /> では、自動ログインせずにログイン画面を表示するキーボード ショートカットの Ctrl+Alt+S キーが優先されます。
@@ -89,6 +91,7 @@
 <translation id="1082802595100075771">匿名の Google サービスを使用して、ラベル付けがない画像の説明を自動的に取得するかどうかをユーザーが選択できる</translation>
 <translation id="1087437665304381368">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> のデベロッパー モードのみを管理します。Android 開発者向けオプションへのアクセスを禁止するには、<ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> ポリシーを設定する必要があります。</translation>
 <translation id="1087707496788636333">Chrome Enterprise ポリシーのリストは別のページに移動しました。ブックマークを <ph name="POLICY_DOCUMENTATION_URL" /> に変更してください。</translation>
+<translation id="1089150222292592899">SAML IdP ページでユーザー名を自動入力する</translation>
 <translation id="1091765729282771296">サイトが HID デバイスへのアクセスをユーザーに要求することを許可する</translation>
 <translation id="1095209545735032039">シリアル API をブロックするサイトを指定します</translation>
 <translation id="1096105751829466145">デフォルトの検索プロバイダ</translation>
@@ -1774,6 +1777,7 @@
 
       このポリシーを無効に設定した場合、コンポーネントの更新は無効になります。ただし、一部のコンポーネント（実行可能コードを含まず、ブラウザのセキュリティ上重要なコンポーネント）はこのポリシーの適用外で、これらのコンポーネントの更新は無効にはなりません。
       適用外のコンポーネントの具体的な例としては、証明書失効リストやサブリソース フィルタが挙げられます。</translation>
+<translation id="2939335382784544151">初回実行時の閲覧履歴のインポートを有効にする</translation>
 <translation id="2940127076681735544">このポリシーが有効な URL に設定されている場合、<ph name="PRODUCT_NAME" /> はその URL からサイトリストをダウンロードし、<ph name="SITELIST_POLICY_NAME" /> ポリシーで設定されているものとしてルールを適用します。
 
       このポリシーが未設定のままか、無効な URL に設定されている場合、<ph name="PRODUCT_NAME" /> は、このポリシーをブラウザの切り替えを行うルールの参照元として使用しません。
@@ -2195,6 +2199,7 @@
 
       このポリシーを設定しない場合、ユーザーはデスクトップとログイン画面の背景に使用する画像を選択できます。</translation>
 <translation id="3315324240256767419">ゴースト ウィンドウ機能を有効にする</translation>
+<translation id="3323819750604111729">初回実行時のブックマークのインポートを有効にする</translation>
 <translation id="332771718998993005"><ph name="PRODUCT_NAME" /> のレシーバーとして表示する名前を指定します。
 
           このポリシーが空でない文字列に設定されている場合は、その文字列が <ph name="PRODUCT_NAME" /> のレシーバー名として使用されます。それ以外の場合、レシーバー名にはデバイス名が設定されます。このポリシーが未設定の場合、レシーバー名にはデバイス名が設定され、デバイスの所有者（またはデバイスを管理するドメインのユーザー）はその名前を変更できます。なお、名前は 24 文字以内で指定する必要があります。</translation>
@@ -2667,6 +2672,7 @@
       このポリシーを 2 に設定した場合、煩わしい広告が掲載されるサイトで広告の表示をブロックします。</translation>
 <translation id="3877517141460819966">統合 2 段階認証モード</translation>
 <translation id="3879208481373875102">強制的にインストールされるウェブアプリのリストを設定する</translation>
+<translation id="3879700444818346084">初回実行時の保存したパスワードのインポートを無効にする</translation>
 <translation id="388237772682176890">SPDY/3.1 がサポートされなくなるため、このポリシーは、M53 でサポート終了、M54 で廃止となります。
 
       <ph name="PRODUCT_NAME" /> で SPDY プロトコルを使用できないようにします。
@@ -2929,6 +2935,7 @@
       キオスク セッションの場合、猶予期間はなく、再起動に関する通知も行われません。
 </translation>
 <translation id="4187576366596772431">WebHID API をブロックするサイトを指定します</translation>
+<translation id="4190316993598857632">ブックマークの編集を有効にする</translation>
 <translation id="4192388905594723944">リモート アクセス クライアントの認証トークンを検証するための URL</translation>
 <translation id="4203055629055264833">このポリシーを有効に設定するか未設定のままにした場合、ユーザーはツールバーのアイコンを切り替えることでサイドパネルにデフォルトの検索エンジンの最新の検索結果ページを表示できるようになります。
 
@@ -3589,6 +3596,7 @@
 <translation id="5105313908130842249">画面がロックされるまでの時間（バッテリー電源での実行時）</translation>
 <translation id="5108031557082757679">無効な企業デバイス プリンタ</translation>
 <translation id="5109383437323376357">適用できるバリエーションを指定します</translation>
+<translation id="5120168808610189805">初回実行時のホームページのインポートを有効にする</translation>
 <translation id="5124368997194894978">AC（交流電流）電源接続時の起動を有効にします</translation>
 <translation id="5130213897914754028">サイトに SharedArrayBuffers の使用を許可しない</translation>
 <translation id="5130935469849337738">常に翻訳を表示する</translation>
@@ -4221,6 +4229,7 @@
       セーフ ブラウジングが（ポリシーまたはユーザーによって）無効に設定されている場合、この処理は行われません。セーフ ブラウジングを強制的に有効にするには、<ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> ポリシーまたは <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" /> ポリシーを使用してください。</translation>
 <translation id="5835312413892670446">スクリーン キャプチャの設定</translation>
 <translation id="5836064773277134605">リモート アクセス ホストが使用する UDP ポートの範囲を制限する</translation>
+<translation id="583627479140113555">初回実行時の保存したパスワードのインポートを有効にする</translation>
 <translation id="5837898601525273156"><ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> が設定されている場合に、<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> を有効に設定すると、詳細なバッテリー充電モードの電力管理ポリシーが有効になります（デバイスが対応している場合）。このモードでは、使用頻度の低い時間帯に、標準の充電アルゴリズムや他の技術を使用することでバッテリーの消耗を抑えます。使用頻度の高い時間帯は、急速充電によりバッテリー充電を高速化します。曜日ごとに、システムが最もよく使われている時間帯を、開始時間とその継続時間で指定します。
 
       このポリシーを無効に設定するか未設定のままにした場合、詳細なバッテリー充電モードは無効になります。
@@ -4525,6 +4534,13 @@
 <translation id="6181618732396778048">どのサイトにもファイルとディレクトリへの書き込みアクセスの要求を許可しない</translation>
 <translation id="6181783961196084973">アプリのアクティビティを収集するかどうかの切り替え値です。true に設定した場合、ユーザーによるアプリのアクティビティ レポートがサーバーに送信され、お子様と保護者の <ph name="PRODUCT_NAME" /> アプリに表示されます。false に設定した場合、アプリごとの利用時間の上限は引き続き有効ですが、レポートデータはサーバーに送信されず、<ph name="PRODUCT_NAME" /> にも表示されません。</translation>
 <translation id="6183327369896253878">このポリシーを設定した場合、<ph name="PRODUCT_OS_NAME" /> でランチャーバーに表示されるアプリケーション ID が固定され、ユーザーが変更できなくなります。Chrome アプリの場合は ID（「pjkljhegncpnkpknbcohdijeoejaedia」など）、Android アプリの場合はパッケージ名（「com.google.android.gm」など）、ウェブアプリの場合は <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> で使用する URL（「https://google.com/maps」など）を指定します。このポリシーが未設定の場合、ユーザーはランチャーの固定アプリのリストを変更できます。</translation>
+<translation id="6183409603139321084"><ph name="PRODUCT_OS_NAME" /> で、ログイン画面とロック画面でのオンライン認証中に、SAML IdP ページへのユーザー名の自動入力の試行を許可します。
+
+      ユーザーの <ph name="PRODUCT_OS_NAME" /> プロファイルに関連付けられたメールアドレスが使用されるため、SAML IdP ページで別のメールアドレスを使用する場合は、この設定を無効にする必要があります。
+
+      このポリシーで受け取った文字列は IdP ページで URL パラメータ名として使用され、ユーザーのメールアドレスが値として設定されます。
+
+      ID プロバイダとサポートされる URL パラメータのマッピングは、サーバー側で処理することが想定されています。</translation>
 <translation id="6190367314942602985">ユーザー識別情報に関するレポートを作成</translation>
 <translation id="6191963383731098056">このポリシーにより、管理者は <ph name="PRODUCT_NAME" /> のテーマの色を設定できます。入力する文字列は「#RRGGBB」の形式に沿った有効な 16 進数色コードである必要があります。
 
@@ -5017,6 +5033,7 @@
       * サーバー証明書の <ph name="SUBJECT_PUBLIC_KEY_INFO" /> で指定されている。
 
       * 証明書チェーンの CA（認証局）証明書に出現する <ph name="SUBJECT_PUBLIC_KEY_INFO" /> で指定されている。CA 証明書に X.509v3 nameConstraints 拡張による制約が適用され、permittedSubtrees に directoryName nameConstraints が 1 つ以上存在し、その directoryName に organizationName 属性が含まれている。* 証明書チェーン内の CA 証明書に出現する <ph name="SUBJECT_PUBLIC_KEY_INFO" /> で指定されていて、その CA 証明書のサブジェクトに organizationName 属性が 1 つ以上含まれていること。さらに、サーバーの証明書にも同じ数の organizationName 属性が同じ順序で含まれ、それらの値がバイト単位で同一である。<ph name="SUBJECT_PUBLIC_KEY_INFO" /> ハッシュは、ハッシュ アルゴリズム名とスラッシュに加え、指定された証明書の DER-エンコード済み <ph name="SUBJECT_PUBLIC_KEY_INFO" /> に適用されているハッシュ アルゴリズムの Base64 エンコードをリンクすることで指定します。Base64 エンコードの形式は、SPKI フィンガープリントの形式に一致します。認識されるハッシュ アルゴリズムは SHA256 だけです。その他は無視されます。ポリシーが未設定のまま、Certificate Transparency（証明書の透明性）による開示を必要とする証明書が開示されていない場合、<ph name="PRODUCT_NAME" /> はその証明書を信頼しません。</translation>
+<translation id="6703381779632216549">初回実行時のデフォルトの検索エンジンのインポートを有効にする</translation>
 <translation id="6704445641918520643">ログイン WebUI の遅延読み込みを有効にする。</translation>
 <translation id="6704515759227307131">このポリシーはサポートが終了しており、AdvancedProtectionAllowed に置き換えられました。
 
@@ -5958,6 +5975,7 @@
 <translation id="77379430721695807">このポリシーでは、リクエスト元 URL のセキュリティ オリジンと照合する URL パターン リストを指定できます。一致するものについては、動画キャプチャ デバイスへのアクセスが許可されます。その際、確認のメッセージは表示されません。
 
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。</translation>
+<translation id="7740644123648617252">初回実行時の自動入力フォームのデータのインポートを有効にする</translation>
 <translation id="7744253761377202223">AC 電源での使用中の画面の明るさの割合（%）</translation>
 <translation id="7747447585227954402">デバイスが <ph name="PRODUCT_OS_NAME" /> で <ph name="PLUGIN_VM_NAME" /> を使用できるようにする</translation>
 <translation id="7749024457938190837">chrome.printing API による印刷ジョブの送信時に確認ダイアログのスキップを許可する拡張機能です</translation>
@@ -6111,6 +6129,7 @@
 <translation id="7925224837072026018">このポリシーでは、拡張機能または Android アプリに対し、企業キーへのアクセスを許可します。管理対象アカウントで chrome.enterprise.platformKeys API を使用して生成したキーは、企業専用のキーと指定されます。ユーザーは、拡張機能または Android アプリに企業キーへのアクセス権を付与することはできず、拡張機能または Android アプリに付与された企業キーへのアクセス権を取り消すこともできません。
 
       デフォルトでは、拡張機能または Android アプリで企業用のキーを使用することはできません。この動作は、拡張機能または Android アプリに対して allowCorporateKeyUsage を False に設定した場合の結果と同じです。拡張機能または Android アプリに対して allowCorporateKeyUsage が True に設定されている場合のみ、その拡張機能または Android アプリでは企業用のプラットフォーム キーを任意のデータの署名に使用できます。対象の拡張機能または Android アプリがキーへのアクセスを攻撃から保護できると信頼できる場合にのみ、この許可を付与してください。</translation>
+<translation id="793188693675675950">初回実行時のホームページのインポートを無効にする</translation>
 <translation id="7933141401888114454">監視対象ユーザーを作成できるようにする</translation>
 <translation id="793473937901685727">ARC アプリで証明書を使用できるかどうかを設定します</translation>
 <translation id="7936302526928951356">ユーザー エージェント文字列のメジャー バージョンを固定しない。</translation>
@@ -6733,6 +6752,7 @@
       <ph name="PRODUCT_NAME" /> バージョン 92 以降、このポリシーはヘッドレス モードでもサポートされるようになりました。
 
       注: 「chrome://*」の内部 URL をブロックすると、予期しないエラーが発生する可能性があります。</translation>
+<translation id="8619748440665904084">初回実行時の自動入力フォームのデータのインポートを無効にする</translation>
 <translation id="8623672932476443039">このポリシーを有効に設定した場合、ユーザーは分離されたアプリのデベロッパー モードにアクセスできます。このポリシーを無効に設定した場合、ユーザーはこの機能を利用できません。このポリシーを未設定のままにした場合、デフォルトでは、Chrome OS 上で企業の管理対象ユーザーはこの機能を利用できず、他のすべてのユーザーと OS は利用できます。</translation>
 <translation id="8626826495474944836">すべてのサイトに対してサイト分離を必須にする</translation>
 <translation id="8631434304112909927">バージョン <ph name="UNTIL_VERSION" /> まで</translation>
@@ -6777,6 +6797,7 @@
       このポリシーを無効に設定するか未設定のままにした場合、リモート アクセス ホストは任意のローカル ユーザーと関連付けられます。</translation>
 <translation id="867708016260789630">YouTube の「中」以上の制限付きモードを強制的に適用する</translation>
 <translation id="8677853537025397834">WebHID API を許可するサイトを指定します</translation>
+<translation id="8685018726115727387">初回実行時の閲覧履歴のインポートを無効にする</translation>
 <translation id="8685024486845674965">パスワードが再使用されたときに、パスワード保護について警告する</translation>
 <translation id="8685680544554917389">このポリシーを True に設定した場合、<ph name="PRODUCT_NAME" /> でメディアの自動再生が可能になります。このポリシーを False に設定した場合、<ph name="PRODUCT_NAME" /> でメディアは自動再生されません。
 
@@ -7146,6 +7167,7 @@
 
       このポリシーを無効に設定すると、登録済みのデバイスはアクティブな期間を記録または報告しません。</translation>
 <translation id="9077227880520270584">デバイスのローカル アカウントの自動ログイン タイマー</translation>
+<translation id="9079531125758468956">初回実行時のブックマークのインポートを無効にする</translation>
 <translation id="9084985621503260744">動画操作を電源管理に関連付けるかどうかを指定する</translation>
 <translation id="9087434639296483430">登録されたデバイスでのユーザーのログイン / ログアウト イベント（失敗したログインを含む）を報告します。
 

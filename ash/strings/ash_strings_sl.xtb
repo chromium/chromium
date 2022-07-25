@@ -306,6 +306,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2814448776515246190">Delni zajem</translation>
 <translation id="2819276065543622893">Zdaj boste odjavljeni.</translation>
+<translation id="2822551631199737692">Kamera je v uporabi</translation>
 <translation id="2825224105325558319">Zaslon <ph name="DISPLAY_NAME" /> ne podpira te ločljivosti: <ph name="SPECIFIED_RESOLUTION" />. Ločljivost je bila spremenjena na: <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Polica</translation>
 <translation id="2831035692318564937">Vklopljeno do sončnega vzhoda</translation>
@@ -807,6 +808,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5682642926269496722">Pomočnik Google ni na voljo za trenutni uporabniški račun.</translation>
 <translation id="5689633613396158040">Nočna svetloba olajša gledanje na zaslon ali branje pri šibki svetlobi. Dotaknite se, če želite spremeniti uro, ob kateri se vklopi nočna svetloba, oziroma če želite popolnoma izklopiti to funkcijo.</translation>
 <translation id="5691772641933328258">Prstni odtis ni prepoznan</translation>
+<translation id="5693255400847650006">Mikrofon je v uporabi</translation>
 <translation id="570390244361237317">Vse aplikacije, s puščičnimi tipkami se premikate in dostopate do vseh aplikacij</translation>
 <translation id="5707775774148071965">Naprava podpira višjo podatkovno hitrost od kabla. Delovanje naprave bo morda omejeno.</translation>
 <translation id="5710450975648804523">Način »ne moti« je vklopljen</translation>
@@ -981,6 +983,7 @@ Nova namestitev</translation>
 <translation id="6723839937902243910">Napajanje</translation>
 <translation id="6727969043791803658">Povezano, <ph name="BATTERY_PERCENTAGE" /> % energije akumulatorja</translation>
 <translation id="6732800389263199929">In še <ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Kamera in mikrofon sta v uporabi</translation>
 <translation id="6739144137573853180">NASTAVITVE</translation>
 <translation id="6751052314767925245">Uveljavil vaš skrbnik</translation>
 <translation id="6751826523481687655">Sledenje učinkovitosti delovanja je vklopljeno</translation>

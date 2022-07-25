@@ -474,6 +474,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="4979397965658815378">Conectează-te folosind Contul Google pentru a accesa marcajele, parolele, istoricul și alte setări pe toate dispozitivele</translation>
 <translation id="4986678885919050584">Elimină de pe acest dispozitiv</translation>
 <translation id="4989542687859782284">Indisponibile</translation>
+<translation id="498985224078955265">Pentru a trimite fila pe alt dispozitiv, conectează-te la Chrome pe ambele dispozitive.</translation>
 <translation id="5005498671520578047">Copiază parola</translation>
 <translation id="5017828934289857214">Amintește-mi mai târziu</translation>
 <translation id="5037676449506322593">Selectează tot</translation>
@@ -525,6 +526,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5489208564673669003">Pentru a gestiona cookie-urile pentru toate site-urile, consultă <ph name="BEGIN_LINK" />Setări pentru cookie-uri<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blochează toate cookie-urile (nu este recomandat)</translation>
 <translation id="5513681519188741830">acum <ph name="TIME" /> h</translation>
+<translation id="5525095647255982834">Pentru a trimite fila pe alt dispozitiv, conectează-te la Chrome pe dispozitivul respectiv.</translation>
 <translation id="5525269841082836315">Creează o expresie de acces</translation>
 <translation id="5542540507657872337">S-au găsit <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Cu Handoff, începi să navighezi pe un site de pe acest dispozitiv, apoi continui cu ușurință de pe Mac. Site-ul deschis actual va apărea în Dock pe Mac.

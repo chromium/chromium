@@ -5873,6 +5873,7 @@
 <translation id="6709133671862442373">ニュース</translation>
 <translation id="6709357832553498500">「<ph name="EXTENSIONNAME" />」を使用して接続</translation>
 <translation id="6710213216561001401">前へ</translation>
+<translation id="6710394144992407503">ウェブページにテキストを入力するときにスペルミスがないか確認する</translation>
 <translation id="6711146141291425900">ダウンロードするには <ph name="WEB_DRIVE" /> アカウントをリンクしてください</translation>
 <translation id="6712943853047024245">このユーザー名で <ph name="WEBSITE" /> のパスワードはすでに保存されています</translation>
 <translation id="6713233729292711163">仕事用プロファイルを追加</translation>
@@ -6489,6 +6490,7 @@
 <translation id="7340757554212515731">障害レポート、診断データ、使用状況データを自動的に Google に送信します</translation>
 <translation id="7341834142292923918">このサイトへのアクセス許可が必要です</translation>
 <translation id="7343372807593926528">問題の詳細を記入してからフィードバックを送信してください。</translation>
+<translation id="7344585835349671209">デバイスの HTTPS / SSL 証明書を管理します</translation>
 <translation id="7345706641791090287">パスワードを再入力</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7347452120014970266"><ph name="ORIGIN_NAME" /> により保存されたすべてのデータと Cookie、インストールされたアプリが削除されます</translation>
@@ -6618,6 +6620,7 @@
 <translation id="7460045493116006516">インストールした現在のテーマ</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746216226901520237">次回から、スマートフォンで <ph name="DEVICE_TYPE" /> のロックを解除できます。Smart Lock を無効にするには [設定] をご利用ください。</translation>
+<translation id="7464153996453281700">コンポーネントはすでに最新です</translation>
 <translation id="7464637891177137294"><ph name="ACCOUNT" /> の Google アカウントに保存します</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{現在開いているタブは # 個で、このボタンを押すとタブバーを切り替えます}other{現在開いているタブは # 個で、このボタンを押すとタブバーを切り替えます}}</translation>
 <translation id="7465635034594602553">エラーが発生しました。数分後にもう一度 <ph name="APP_NAME" /> を実行してください。</translation>
@@ -7124,6 +7127,7 @@
 <translation id="793531125873261495">仮想マシンのダウンロード中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% 完了</translation>
 <translation id="7939062555109487992">詳細オプション</translation>
+<translation id="7939328347457537652">デバイス証明書の管理</translation>
 <translation id="7939412583708276221">続行する</translation>
 <translation id="7942349550061667556">赤</translation>
 <translation id="7943368935008348579">PDF をダウンロードする</translation>

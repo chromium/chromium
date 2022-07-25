@@ -306,6 +306,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
 <translation id="2819276065543622893">Ara se us tancarà la sessió.</translation>
+<translation id="2822551631199737692">Càmera en ús</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> no admet la resolució <ph name="SPECIFIED_RESOLUTION" />. La resolució ha canviat a <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Prestatge</translation>
 <translation id="2831035692318564937">Activat fins a l'alba</translation>
@@ -807,6 +808,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5682642926269496722">L'Assistent de Google no està disponible per al compte d'usuari actual.</translation>
 <translation id="5689633613396158040">Amb la funció Llum nocturna, és més fàcil mirar la pantalla i llegir-hi amb poca llum. Toca per canviar l'hora en què s'activa o per desactivar-la completament.</translation>
 <translation id="5691772641933328258">L'empremta digital no s'ha reconegut</translation>
+<translation id="5693255400847650006">Micròfon en ús</translation>
 <translation id="570390244361237317">Totes les aplicacions, navega amb les tecles de fletxa per accedir a totes les aplicacions</translation>
 <translation id="5707775774148071965">El dispositiu admet una velocitat de transferència de dades més alta que el cable. És possible que el rendiment del dispositiu es vegi limitat.</translation>
 <translation id="5710450975648804523">Mode No molestis activat</translation>
@@ -981,6 +983,7 @@ Instal·lació nova</translation>
 <translation id="6723839937902243910">Bateria</translation>
 <translation id="6727969043791803658">Connectat, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Càmera i micròfon en ús</translation>
 <translation id="6739144137573853180">VES A CONFIGURACIÓ</translation>
 <translation id="6751052314767925245">Funció aplicada per l'administrador</translation>
 <translation id="6751826523481687655">La traça del rendiment està activada</translation>
