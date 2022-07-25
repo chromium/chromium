@@ -27,7 +27,7 @@ class PolicyManager : public PolicyManagerInterface {
   // Overrides for PolicyManagerInterface.
   std::string source() const override;
 
-  bool IsManaged() const override;
+  bool HasActiveDevicePolicies() const override;
 
   bool GetLastCheckPeriodMinutes(int* minutes) const override;
   bool GetUpdatesSuppressedTimes(

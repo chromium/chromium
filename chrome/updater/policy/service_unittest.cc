@@ -18,12 +18,15 @@ namespace updater {
 // Policy and Device Management.
 class FakePolicyManager : public PolicyManagerInterface {
  public:
-  FakePolicyManager(bool is_managed, const std::string& source)
-      : is_managed_(is_managed), source_(source) {}
+  FakePolicyManager(bool has_active_device_policies, const std::string& source)
+      : has_active_device_policies_(has_active_device_policies),
+        source_(source) {}
   ~FakePolicyManager() override = default;
 
   std::string source() const override { return source_; }
-  bool IsManaged() const override { return is_managed_; }
+  bool HasActiveDevicePolicies() const override {
+    return has_active_device_policies_;
+  }
   bool GetLastCheckPeriodMinutes(int* minutes) const override { return false; }
   bool GetUpdatesSuppressedTimes(
       UpdatesSuppressedTimes* suppressed_times) const override {
@@ -98,7 +101,7 @@ class FakePolicyManager : public PolicyManagerInterface {
   }
 
  private:
-  bool is_managed_;
+  bool has_active_device_policies_;
   std::string source_;
   UpdatesSuppressedTimes suppressed_times_;
   std::string download_preference_;

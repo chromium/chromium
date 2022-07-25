@@ -20,7 +20,7 @@ class PolicyManagerTests : public ::testing::Test {};
 
 TEST_F(PolicyManagerTests, NoPolicySet) {
   auto policy_manager = std::make_unique<PolicyManager>(base::Value::Dict());
-  EXPECT_FALSE(policy_manager->IsManaged());
+  EXPECT_FALSE(policy_manager->HasActiveDevicePolicies());
 
   EXPECT_EQ(policy_manager->source(), "DictValuePolicy");
 
@@ -104,7 +104,7 @@ TEST_F(PolicyManagerTests, PolicyRead) {
 
   auto policy_manager = std::make_unique<PolicyManager>(std::move(policies));
 
-  EXPECT_TRUE(policy_manager->IsManaged());
+  EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 
   int check_period = 0;
   EXPECT_TRUE(policy_manager->GetLastCheckPeriodMinutes(&check_period));
@@ -204,7 +204,7 @@ TEST_F(PolicyManagerTests, WrongPolicyValueType) {
 
   auto policy_manager = std::make_unique<PolicyManager>(std::move(policies));
 
-  EXPECT_TRUE(policy_manager->IsManaged());
+  EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
 
   int check_period = 0;
   EXPECT_FALSE(policy_manager->GetLastCheckPeriodMinutes(&check_period));

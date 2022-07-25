@@ -49,7 +49,7 @@ void GroupPolicyManagerTests::DeletePolicyKey() {
 TEST_F(GroupPolicyManagerTests, NoPolicySet) {
   std::unique_ptr<PolicyManagerInterface> policy_manager =
       std::make_unique<GroupPolicyManager>();
-  EXPECT_FALSE(policy_manager->IsManaged());
+  EXPECT_FALSE(policy_manager->HasActiveDevicePolicies());
 
   EXPECT_EQ(policy_manager->source(), "GroupPolicy");
 
@@ -143,7 +143,8 @@ TEST_F(GroupPolicyManagerTests, PolicyRead) {
 
   std::unique_ptr<PolicyManagerInterface> policy_manager =
       std::make_unique<GroupPolicyManager>();
-  EXPECT_EQ(policy_manager->IsManaged(), base::win::IsEnrolledToDomain());
+  EXPECT_EQ(policy_manager->HasActiveDevicePolicies(),
+            base::win::IsEnrolledToDomain());
 
   int check_period = 0;
   EXPECT_TRUE(policy_manager->GetLastCheckPeriodMinutes(&check_period));

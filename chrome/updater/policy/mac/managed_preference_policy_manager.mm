@@ -29,7 +29,7 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
   // Overrides for PolicyManagerInterface.
   std::string source() const override;
 
-  bool IsManaged() const override;
+  bool HasActiveDevicePolicies() const override;
 
   bool GetLastCheckPeriodMinutes(int* minutes) const override;
   bool GetUpdatesSuppressedTimes(
@@ -65,7 +65,7 @@ ManagedPreferencePolicyManager::ManagedPreferencePolicyManager(
 
 ManagedPreferencePolicyManager::~ManagedPreferencePolicyManager() = default;
 
-bool ManagedPreferencePolicyManager::IsManaged() const {
+bool ManagedPreferencePolicyManager::HasActiveDevicePolicies() const {
   return [impl_ managed];
 }
 

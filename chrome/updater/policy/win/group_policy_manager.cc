@@ -77,8 +77,8 @@ GroupPolicyManager::GroupPolicyManager() : PolicyManager(LoadGroupPolicies()) {}
 
 GroupPolicyManager::~GroupPolicyManager() = default;
 
-bool GroupPolicyManager::IsManaged() const {
-  return PolicyManager::IsManaged() && base::IsManagedDevice();
+bool GroupPolicyManager::HasActiveDevicePolicies() const {
+  return PolicyManager::HasActiveDevicePolicies() && base::IsManagedDevice();
 }
 
 std::string GroupPolicyManager::source() const {

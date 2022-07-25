@@ -57,7 +57,7 @@ DMPolicyManager::DMPolicyManager(
 
 DMPolicyManager::~DMPolicyManager() = default;
 
-bool DMPolicyManager::IsManaged() const {
+bool DMPolicyManager::HasActiveDevicePolicies() const {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return base::IsManagedDevice();
 #else

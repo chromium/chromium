@@ -56,7 +56,7 @@ PolicyManager::PolicyManager(base::Value::Dict policies)
 
 PolicyManager::~PolicyManager() = default;
 
-bool PolicyManager::IsManaged() const {
+bool PolicyManager::HasActiveDevicePolicies() const {
   return !policies_.empty();
 }
 

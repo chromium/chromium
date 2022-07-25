@@ -50,7 +50,7 @@ class PolicyManagerInterface {
   // its policies are operational. For instance, the Device Management Policy
   // Manager will return |true| for this method if the machine is joined to
   // a DM server.
-  virtual bool IsManaged() const = 0;
+  virtual bool HasActiveDevicePolicies() const = 0;
 
   // Returns the policy for how often the Updater should check for updates.
   // Returns the time interval between update checks in minutes.

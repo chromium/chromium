@@ -58,7 +58,7 @@ class DefaultValuesPolicyManager : public PolicyManagerInterface {
 
   std::string source() const override;
 
-  bool IsManaged() const override;
+  bool HasActiveDevicePolicies() const override;
 
   bool GetLastCheckPeriodMinutes(int* minutes) const override;
   bool GetUpdatesSuppressedTimes(
@@ -88,7 +88,7 @@ DefaultValuesPolicyManager::DefaultValuesPolicyManager() = default;
 
 DefaultValuesPolicyManager::~DefaultValuesPolicyManager() = default;
 
-bool DefaultValuesPolicyManager::IsManaged() const {
+bool DefaultValuesPolicyManager::HasActiveDevicePolicies() const {
   return true;
 }
 

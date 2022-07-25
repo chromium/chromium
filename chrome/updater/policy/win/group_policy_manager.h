@@ -21,7 +21,7 @@ class GroupPolicyManager : public PolicyManager {
 
   // Overrides for PolicyManagerInterface.
   std::string source() const override;
-  bool IsManaged() const override;
+  bool HasActiveDevicePolicies() const override;
 };
 
 }  // namespace updater
