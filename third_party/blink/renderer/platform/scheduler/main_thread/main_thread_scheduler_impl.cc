@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 #include "base/bind.h"
@@ -80,6 +81,9 @@ constexpr const char kResourceFetchPriorityExperiment[] =
 
 constexpr base::TimeDelta kPrioritizeCompositingAfterDelay =
     base::Milliseconds(100);
+
+constexpr TaskQueue::QueuePriority kPrioritizeCompositingAfterDelayPriority =
+    TaskQueue::QueuePriority::kVeryHighPriority;
 
 v8::RAILMode RAILModeToV8RAILMode(RAILMode rail_mode) {
   switch (rail_mode) {
@@ -217,6 +221,26 @@ const char* InputEventStateToString(
       NOTREACHED();
       return nullptr;
   }
+}
+
+TaskQueue::QueuePriority
+GetPriorityFromCompositorTQPolicyDuringThreadedScrolling(
+    CompositorTQPolicyDuringThreadedScroll policy) {
+  switch (policy) {
+    case CompositorTQPolicyDuringThreadedScroll::kLowPriorityAlways:
+    case CompositorTQPolicyDuringThreadedScroll::kLowPriorityWithAntiStarvation:
+      return TaskQueue::QueuePriority::kLowPriority;
+    case CompositorTQPolicyDuringThreadedScroll::
+        kNormalPriorityWithAntiStarvation:
+      return TaskQueue::QueuePriority::kNormalPriority;
+    case CompositorTQPolicyDuringThreadedScroll::kVeryHighPriorityAlways:
+      return TaskQueue::QueuePriority::kVeryHighPriority;
+  }
+}
+
+TaskQueue::QueuePriority MaxPriority(TaskQueue::QueuePriority priority1,
+                                     TaskQueue::QueuePriority priority2) {
+  return std::min(priority1, priority2);
 }
 
 }  // namespace
@@ -580,6 +604,11 @@ MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
   mbi_compositor_task_runner_per_agent_scheduling_group =
       base::FeatureList::IsEnabled(
           kMbiCompositorTaskRunnerPerAgentSchedulingGroup);
+
+  compositor_tq_policy_during_threaded_scroll =
+      base::FeatureList::IsEnabled(kThreadedScrollPreventRenderingStarvation)
+          ? kCompositorTQPolicyDuringThreadedScroll.Get()
+          : CompositorTQPolicyDuringThreadedScroll::kLowPriorityAlways;
 }
 
 MainThreadSchedulerImpl::AnyThread::~AnyThread() = default;
@@ -2567,11 +2596,30 @@ TaskQueue::QueuePriority MainThreadSchedulerImpl::ComputeCompositorPriority()
   } else {
     absl::optional<TaskQueue::QueuePriority> computed_compositor_priority =
         ComputeCompositorPriorityFromUseCase();
+    // The default behavior for compositor gestures like compositor-driven
+    // scrolling is to deprioritize compositor TQ tasks (low priority) and not
+    // apply delay-based anti-starvation. This can lead to degraded user
+    // experience due to increased checkerboarding or scrolling blank content.
+    // When `kThreadedScrollPreventRenderingStarvation` is enabled, we use the
+    // priority computed in `ComputeCompositorPriorityFromUseCase()` as well as
+    // enable the delay-based anti-starvation to mitigate these issues.
+    //
+    // Note: for other use cases, the computed priority is higher, so they are
+    // not prone to rendering starvation in the same way.
+    if (current_use_case() == UseCase::kCompositorGesture &&
+        scheduling_settings().compositor_tq_policy_during_threaded_scroll !=
+            CompositorTQPolicyDuringThreadedScroll::kLowPriorityAlways &&
+        main_thread_only()
+            .should_prioritize_compositor_task_queue_after_delay) {
+      DCHECK(computed_compositor_priority);
+      return MaxPriority(kPrioritizeCompositingAfterDelayPriority,
+                         *computed_compositor_priority);
+    }
     if (computed_compositor_priority) {
       return computed_compositor_priority.value();
     } else if (main_thread_only()
                    .should_prioritize_compositor_task_queue_after_delay) {
-      return TaskQueue::QueuePriority::kVeryHighPriority;
+      return kPrioritizeCompositingAfterDelayPriority;
     }
   }
   return TaskQueue::QueuePriority::kNormalPriority;
@@ -2641,7 +2689,16 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
       // seem to be safe. Instead we do that by proxy by deprioritizing
       // compositor tasks. This should be safe since we've already gone to the
       // pain of fixing ordering issues with them.
-      return TaskQueue::QueuePriority::kLowPriority;
+      //
+      // During periods of main-thread contention, e.g. scrolling while loading
+      // new content, rendering can be indefinitely starved, leading user
+      // experience issues like scrolling blank/stale content and
+      // checkerboarding. We adjust the compositor TQ priority and enable
+      // delay-based rendering anti-starvation when the
+      // `kThreadedScrollPreventRenderingStarvation` experiment is enabled to
+      // mitigate these issues.
+      return GetPriorityFromCompositorTQPolicyDuringThreadedScrolling(
+          scheduling_settings().compositor_tq_policy_during_threaded_scroll);
 
     case UseCase::kSynchronizedGesture:
     case UseCase::kMainThreadCustomInputHandling:

@@ -68,6 +68,9 @@ using ::testing::Return;
 using ::testing::ReturnRef;
 using InputEventState = WidgetScheduler::InputEventState;
 
+constexpr base::TimeDelta kDelayForHighPriorityRendering =
+    base::Milliseconds(150);
+
 // This is a wrapper around MainThreadSchedulerImpl::CreatePageScheduler, that
 // returns the PageScheduler as a PageSchedulerImpl.
 std::unique_ptr<PageSchedulerImpl> CreatePageScheduler(
@@ -771,8 +774,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
     return scheduler_->any_thread().have_seen_a_blocking_gesture;
   }
 
-  void AdvanceTimeWithTask(double duration_seconds) {
-    base::TimeDelta duration = base::Seconds(duration_seconds);
+  void AdvanceTimeWithTask(base::TimeDelta duration) {
     RunTask(base::BindOnce(
         [](scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner,
            base::TimeDelta duration) {
@@ -3687,8 +3689,7 @@ TEST_F(MainThreadSchedulerImplTest,
 
 TEST_F(MainThreadSchedulerImplTest,
        TestCompositorPolicy_FirstCompositorTaskSetToVeryHighPriority) {
-  // 150ms task to complete the countdown and prioritze compositing.
-  AdvanceTimeWithTask(0.15);
+  AdvanceTimeWithTask(kDelayForHighPriorityRendering);
 
   Vector<String> run_order;
   PostTestTasks(&run_order, "D1 C1 D2 C2 P1");
@@ -3710,8 +3711,8 @@ TEST_F(MainThreadSchedulerImplTest,
 
 TEST_F(MainThreadSchedulerImplTest,
        TestCompositorPolicy_FirstCompositorTaskStaysAtNormalPriority) {
-  // 0.5ms task should not prioritize compositing.
-  AdvanceTimeWithTask(0.05);
+  // A short task should not cause compositor tasks to be prioritized.
+  AdvanceTimeWithTask(base::Milliseconds(5));
 
   Vector<String> run_order;
   PostTestTasks(&run_order, "I1 D1 C1 D2 C2 P1");
@@ -3738,6 +3739,107 @@ TEST_F(MainThreadSchedulerImplTest, ThrottleHandleThrottlesQueue) {
   }
   EXPECT_FALSE(throttleable_task_queue()->IsThrottled());
 }
+
+struct CompositorTQPolicyDuringThreadedScrollTestParam {
+  CompositorTQPolicyDuringThreadedScrollTestParam(
+      CompositorTQPolicyDuringThreadedScroll policy,
+      Vector<String> initial_order)
+      : policy(policy), expected_initial_order(std::move(initial_order)) {}
+
+  CompositorTQPolicyDuringThreadedScroll policy;
+  Vector<String> expected_initial_order;
+};
+
+class CompositorTQPolicyDuringThreadedScrollTest
+    : public MainThreadSchedulerImplTest,
+      public ::testing::WithParamInterface<
+          CompositorTQPolicyDuringThreadedScrollTestParam> {
+ public:
+  CompositorTQPolicyDuringThreadedScrollTest() {
+    if (GetParam().policy !=
+        CompositorTQPolicyDuringThreadedScroll::kLowPriorityAlways) {
+      feature_list_.Reset();
+      feature_list_.InitWithFeaturesAndParameters(
+          {{kThreadedScrollPreventRenderingStarvation,
+            base::FieldTrialParams(
+                {{"policy", kCompositorTQPolicyDuringThreadedScroll.GetName(
+                                GetParam().policy)}})}},
+          {});
+    }
+  }
+};
+
+TEST_P(CompositorTQPolicyDuringThreadedScrollTest, CompositorPriority) {
+  SimulateMainThreadGestureWithoutPreventDefault();
+  EXPECT_EQ(UseCase::kCompositorGesture, CurrentUseCase());
+
+  Vector<String> run_order;
+  PostTestTasks(&run_order, "D1 C1 D2 C2");
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(run_order, GetParam().expected_initial_order);
+  EXPECT_EQ(UseCase::kCompositorGesture, CurrentUseCase());
+
+  run_order.clear();
+  AdvanceTimeWithTask(kDelayForHighPriorityRendering);
+  PostTestTasks(&run_order, "D1 C1 D2 C2");
+
+  base::RunLoop().RunUntilIdle();
+  // The delay-based anti-starvation applies to all policies except
+  // kLowPriorityAlways, in which case the expected value doesn't change.
+  if (GetParam().policy ==
+      CompositorTQPolicyDuringThreadedScroll::kLowPriorityAlways) {
+    EXPECT_EQ(run_order, GetParam().expected_initial_order);
+  } else {
+    EXPECT_THAT(run_order, testing::ElementsAre("C1", "C2", "D1", "D2"));
+  }
+  EXPECT_EQ(UseCase::kCompositorGesture, CurrentUseCase());
+
+  // Reset the frame delay counter to let use-case-based priority determine task
+  // order again.
+  PostTestTasks(&run_order, "CM1");
+  base::RunLoop().RunUntilIdle();
+
+  run_order.clear();
+  PostTestTasks(&run_order, "D1 C1 D2 C2");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(run_order, GetParam().expected_initial_order);
+  EXPECT_EQ(UseCase::kCompositorGesture, CurrentUseCase());
+}
+
+INSTANTIATE_TEST_CASE_P(
+    ,
+    CompositorTQPolicyDuringThreadedScrollTest,
+    testing::Values(
+        CompositorTQPolicyDuringThreadedScrollTestParam(
+            CompositorTQPolicyDuringThreadedScroll::
+                kLowPriorityWithAntiStarvation,
+            Vector<String>({"D1", "D2", "C1", "C2"})),
+        CompositorTQPolicyDuringThreadedScrollTestParam(
+            CompositorTQPolicyDuringThreadedScroll::
+                kNormalPriorityWithAntiStarvation,
+            Vector<String>({"D1", "C1", "D2", "C2"})),
+        CompositorTQPolicyDuringThreadedScrollTestParam(
+            CompositorTQPolicyDuringThreadedScroll::kVeryHighPriorityAlways,
+            Vector<String>({"C1", "C2", "D1", "D2"})),
+        CompositorTQPolicyDuringThreadedScrollTestParam(
+            CompositorTQPolicyDuringThreadedScroll::kLowPriorityAlways,
+            Vector<String>({"D1", "D2", "C1", "C2"}))),
+    [](const testing::TestParamInfo<
+        CompositorTQPolicyDuringThreadedScrollTestParam>& info) {
+      switch (info.param.policy) {
+        case CompositorTQPolicyDuringThreadedScroll::kLowPriorityAlways:
+          return "LowPriorityAlways";
+        case CompositorTQPolicyDuringThreadedScroll::
+            kLowPriorityWithAntiStarvation:
+          return "LowPriorityWithAntiStarvation";
+        case CompositorTQPolicyDuringThreadedScroll::
+            kNormalPriorityWithAntiStarvation:
+          return "NormalPriorityWithAntiStarvation";
+        case CompositorTQPolicyDuringThreadedScroll::kVeryHighPriorityAlways:
+          return "VeryHighPriorityAlways";
+      }
+    });
 
 }  // namespace main_thread_scheduler_impl_unittest
 }  // namespace scheduler

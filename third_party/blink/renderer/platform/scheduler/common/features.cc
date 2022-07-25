@@ -109,5 +109,26 @@ const base::FeatureParam<DeprioritizeDOMTimersPhase>
                                 "phase",
                                 DeprioritizeDOMTimersPhase::kOnDOMContentLoaded,
                                 &kDeprioritizeDOMTimersPhaseOptions};
+
+const base::Feature kThreadedScrollPreventRenderingStarvation{
+    "ThreadedScrollPreventRenderingStarvation",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<CompositorTQPolicyDuringThreadedScroll>::Option
+    kCompositorTQPolicyDuringThreadedScrollOptions[] = {
+        {CompositorTQPolicyDuringThreadedScroll::kLowPriorityWithAntiStarvation,
+         "low-priority-with-anti-starvation"},
+        {CompositorTQPolicyDuringThreadedScroll::
+             kNormalPriorityWithAntiStarvation,
+         "normal-priority-with-anti-starvation"},
+        {CompositorTQPolicyDuringThreadedScroll::kVeryHighPriorityAlways,
+         "very-high-priority-always"}};
+
+const base::FeatureParam<CompositorTQPolicyDuringThreadedScroll>
+    kCompositorTQPolicyDuringThreadedScroll{
+        &kThreadedScrollPreventRenderingStarvation, "policy",
+        CompositorTQPolicyDuringThreadedScroll::kLowPriorityWithAntiStarvation,
+        &kCompositorTQPolicyDuringThreadedScrollOptions};
+
 }  // namespace scheduler
 }  // namespace blink

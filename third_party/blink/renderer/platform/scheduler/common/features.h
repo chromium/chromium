@@ -191,6 +191,36 @@ const base::Feature kDisablePrioritizedPostMessageForwarding{
     "DisablePrioritizedPostMessageForwarding",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Finch flag for preventing rendering starvation during threaded scrolling.
+// With this feature enabled, the existing delay-based rendering anti-starvation
+// applies, and the compositor task queue priority is controlled with the
+// `kCompositorTQPolicyDuringThreadedScroll` `FeatureParam`.
+PLATFORM_EXPORT extern const base::Feature
+    kThreadedScrollPreventRenderingStarvation;
+
+enum class CompositorTQPolicyDuringThreadedScroll {
+  // Compositor TQ has low priority, delay-based anti-starvation does not apply.
+  // This is the current behavior and it isn't exposed through
+  // `kCompositorTQPolicyDuringThreadedScrollOptions`; this exists to simplify
+  // the relayed policy logic.
+  kLowPriorityAlways,
+  // Compositor TQ has low priority, delay-based anti-starvation applies.
+  kLowPriorityWithAntiStarvation,
+  // Compositor TQ has normal priority, delay-based anti-starvation applies.
+  kNormalPriorityWithAntiStarvation,
+  // Compositor TQ has very high priority. Note that this is the same priority
+  // as used by the delay-based anti-starvation logic.
+  kVeryHighPriorityAlways,
+};
+
+PLATFORM_EXPORT extern const base::FeatureParam<
+    CompositorTQPolicyDuringThreadedScroll>::Option
+    kCompositorTQPolicyDuringThreadedScrollOptions[];
+
+PLATFORM_EXPORT extern const base::FeatureParam<
+    CompositorTQPolicyDuringThreadedScroll>
+    kCompositorTQPolicyDuringThreadedScroll;
+
 }  // namespace scheduler
 }  // namespace blink
 
