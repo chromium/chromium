@@ -92,6 +92,11 @@ bool ShouldAlwaysShowFirstFollow() {
       boolForKey:@"AlwaysShowFirstFollow"];
 }
 
+bool ShouldAlwaysShowFollowIPH() {
+  return
+      [[NSUserDefaults standardUserDefaults] boolForKey:@"AlwaysShowFollowIPH"];
+}
+
 bool IsForceBackgroundRefreshForFollowingFeedEnabled() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kForceBackgroundRefreshForFollowingFeedEnabled];

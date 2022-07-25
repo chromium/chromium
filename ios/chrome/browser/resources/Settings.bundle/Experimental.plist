@@ -53,6 +53,16 @@
 			<false/>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Always show Follow IPH</string>
+			<key>Key</key>
+			<string>AlwaysShowFollowIPH</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>Additional Feed Background Refresh Settings</string>
 			<key>Type</key>

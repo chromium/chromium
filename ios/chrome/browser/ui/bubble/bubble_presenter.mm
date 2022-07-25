@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/follow/follow_util.h"
+#import "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
@@ -355,8 +356,9 @@ presentBubbleForFeature:(const base::Feature&)feature
   presenter.voiceOverAnnouncement = voiceOverAnnouncement;
   if ([presenter canPresentInView:self.rootViewController.view
                       anchorPoint:anchorPoint] &&
-      feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
-          ->ShouldTriggerHelpUI(feature)) {
+      ([self shouldForcePresentBubbleForFeature:feature] ||
+       feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
+           ->ShouldTriggerHelpUI(feature))) {
     [presenter presentInViewController:self.rootViewController
                                   view:self.rootViewController.view
                            anchorPoint:anchorPoint];
@@ -520,29 +522,30 @@ bubblePresenterForFeature:(const base::Feature&)feature
                 alignment:(BubbleAlignment)alignment
                      text:(NSString*)text {
   DCHECK(self.browserState);
-  if (!feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
-           ->WouldTriggerHelpUI(feature)) {
-    return nil;
+  if ([self shouldForcePresentBubbleForFeature:feature] ||
+      feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
+          ->WouldTriggerHelpUI(feature)) {
+    // Capture `weakSelf` instead of the feature engagement tracker object
+    // because `weakSelf` will safely become `nil` if it is deallocated, whereas
+    // the feature engagement tracker will remain pointing to invalid memory if
+    // its owner (the ChromeBrowserState) is deallocated.
+    __weak BubblePresenter* weakSelf = self;
+    ProceduralBlockWithSnoozeAction dismissalCallback =
+        ^(feature_engagement::Tracker::SnoozeAction snoozeAction) {
+          [weakSelf featureDismissed:feature withSnooze:snoozeAction];
+        };
+
+    BubbleViewControllerPresenter* bubbleViewControllerPresenter =
+        [[BubbleViewControllerPresenter alloc]
+            initDefaultBubbleWithText:text
+                       arrowDirection:direction
+                            alignment:alignment
+                 isLongDurationBubble:[self isLongDurationBubble:feature]
+                    dismissalCallback:dismissalCallback];
+
+    return bubbleViewControllerPresenter;
   }
-  // Capture `weakSelf` instead of the feature engagement tracker object
-  // because `weakSelf` will safely become `nil` if it is deallocated, whereas
-  // the feature engagement tracker will remain pointing to invalid memory if
-  // its owner (the ChromeBrowserState) is deallocated.
-  __weak BubblePresenter* weakSelf = self;
-  ProceduralBlockWithSnoozeAction dismissalCallback =
-      ^(feature_engagement::Tracker::SnoozeAction snoozeAction) {
-        [weakSelf featureDismissed:feature withSnooze:snoozeAction];
-      };
-
-  BubbleViewControllerPresenter* bubbleViewControllerPresenter =
-      [[BubbleViewControllerPresenter alloc]
-          initDefaultBubbleWithText:text
-                     arrowDirection:direction
-                          alignment:alignment
-               isLongDurationBubble:[self isLongDurationBubble:feature]
-                  dismissalCallback:dismissalCallback];
-
-  return bubbleViewControllerPresenter;
+  return nil;
 }
 
 - (void)featureDismissed:(const base::Feature&)feature
@@ -559,6 +562,18 @@ bubblePresenterForFeature:(const base::Feature&)feature
   // Display follow iph bubble with long duration.
   return feature.name ==
          feature_engagement::kIPHFollowWhileBrowsingFeature.name;
+}
+
+// Return YES if the bubble should always be presented. Ex. if force present
+// bubble set by system experimental settings.
+- (BOOL)shouldForcePresentBubbleForFeature:(const base::Feature&)feature {
+  // Always present follow IPH if it's triggered by system experimental
+  // settings.
+  if (feature.name == feature_engagement::kIPHFollowWhileBrowsingFeature.name &&
+      experimental_flags::ShouldAlwaysShowFollowIPH()) {
+    return YES;
+  }
+  return NO;
 }
 
 @end

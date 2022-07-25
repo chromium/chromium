@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/follow/follow_menu_updater.h"
 #import "ios/chrome/browser/follow/follow_util.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/follow/follow_provider.h"
@@ -260,7 +261,9 @@ void FollowTabHelper::UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls) {
 void FollowTabHelper::PresentFollowIPH() {
   DCHECK(follow_iph_presenter_);
   [follow_iph_presenter_ presentFollowWhileBrowsingIPH];
-  StoreFollowIPHPresentingTime(recommended_rss_url_);
+  if (!experimental_flags::ShouldAlwaysShowFollowIPH()) {
+    StoreFollowIPHPresentingTime(recommended_rss_url_);
+  }
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(FollowTabHelper)
