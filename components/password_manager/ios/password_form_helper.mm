@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -316,6 +317,9 @@ constexpr char kCommandPrefix[] = "passwordForm";
       ->FillPasswordForm(mainFrame, formData, UTF16ToUTF8(usernameValue),
                          UTF16ToUTF8(passwordValue),
                          base::BindOnce(^(BOOL success) {
+                           base::UmaHistogramBoolean("PasswordManager."
+                                                     "FillingSuccessIOS",
+                                                     success);
                            if (success) {
                              weakSelf.fieldDataManager->UpdateFieldDataMap(
                                  usernameID, usernameValue,
@@ -388,6 +392,9 @@ constexpr char kCommandPrefix[] = "passwordForm";
       ->FillPasswordForm(
           mainFrame, fillData, fillUsername, UTF16ToUTF8(usernameValue),
           UTF16ToUTF8(passwordValue), base::BindOnce(^(BOOL success) {
+            base::UmaHistogramBoolean("PasswordManager."
+                                      "FillingSuccessIOS",
+                                      success);
             if (success) {
               weakSelf.fieldDataManager->UpdateFieldDataMap(
                   usernameID, usernameValue,

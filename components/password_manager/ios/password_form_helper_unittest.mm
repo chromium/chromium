@@ -10,6 +10,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/ios/wait_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
@@ -237,6 +238,7 @@ static NSString* kInputFieldValueVerificationScript =
 
 // Tests that filling password forms with fill data works correctly.
 TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillData) {
+  base::HistogramTester histogram_tester;
   LoadHtml(
       @"<form><input id='u1' type='text' name='un1'>"
        "<input id='p1' type='password' name='pw1'></form>");
@@ -261,11 +263,44 @@ TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillData) {
   }));
   id result = ExecuteJavaScript(kInputFieldValueVerificationScript);
   EXPECT_NSEQ(@"u1=john.doe@gmail.com;p1=super!secret;", result);
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.FillingSuccessIOS", true,
+                                      1);
+}
+
+// Tests that failure in filling password forms with fill data is recorded.
+TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillDataFillingFailure) {
+  base::HistogramTester histogram_tester;
+  LoadHtml(@"<form><input id='u1' type='text' name='un1'>"
+            "<input id='p1' type='password' name='pw1'></form>");
+
+  ASSERT_TRUE(SetUpUniqueIDs());
+  const std::string base_url = BaseUrl();
+  FieldRendererId username_field_id(2);
+  // The password renderer id does not exist, that's why the filling will fail
+  FieldRendererId password_field_id(404);
+  FillData fill_data;
+  SetFillData(base_url, 1, username_field_id.value(), "john.doe@gmail.com",
+              password_field_id.value(), "super!secret", &fill_data);
+
+  __block int call_counter = 0;
+  [helper_ fillPasswordFormWithFillData:fill_data
+                       triggeredOnField:username_field_id
+                      completionHandler:^(BOOL complete) {
+                        ++call_counter;
+                      }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return call_counter == 1;
+  }));
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.FillingSuccessIOS",
+                                      false, 1);
 }
 
 // Tests that a form is found and the found form is filled in with the given
 // username and password.
 TEST_F(PasswordFormHelperTest, FindAndFillOnePasswordForm) {
+  base::HistogramTester histogram_tester;
   LoadHtml(
       @"<form><input id='u1' type='text' name='un1'>"
        "<input id='p1' type='password' name='pw1'></form>");
@@ -292,6 +327,35 @@ TEST_F(PasswordFormHelperTest, FindAndFillOnePasswordForm) {
   EXPECT_EQ(1, success_counter);
   id result = ExecuteJavaScript(kInputFieldValueVerificationScript);
   EXPECT_NSEQ(@"u1=john.doe@gmail.com;p1=super!secret;", result);
+  histogram_tester.ExpectUniqueSample("PasswordManager.FillingSuccessIOS", true,
+                                      1);
+}
+
+// Tests that failure in filling password form with the given
+// username and password is recorded.
+TEST_F(PasswordFormHelperTest, FindAndFillOnePasswordFormFillingFailure) {
+  base::HistogramTester histogram_tester;
+  LoadHtml(@"<form><input id='u1' type='text' name='un1'>"
+            "<input id='p1' type='password' name='pw1'></form>");
+
+  ASSERT_TRUE(SetUpUniqueIDs());
+
+  PasswordFormFillData form_data;
+  // The password renderer id does not exist, that's why the filling will fail
+  SetPasswordFormFillData(BaseUrl(), "gChrome~form~0", 1, "u1", 2,
+                          "john.doe@gmail.com", "p404", 404, "super!secret",
+                          nullptr, nullptr, false, &form_data);
+
+  __block int call_counter = 0;
+  [helper_ fillPasswordForm:form_data
+          completionHandler:^(BOOL complete) {
+            ++call_counter;
+          }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return call_counter == 1;
+  }));
+  histogram_tester.ExpectUniqueSample("PasswordManager.FillingSuccessIOS",
+                                      false, 1);
 }
 
 // Tests that extractPasswordFormData extracts wanted form on page with mutiple
