@@ -148,7 +148,6 @@ new_tab_page::mojom::ThemePtr MakeTheme(
       ntp_custom_background_service
           ? ntp_custom_background_service->GetCustomBackground()
           : absl::nullopt;
-  theme->is_default = theme_service->UsingDefaultTheme();
   theme->background_color = color_provider.GetColor(kColorNewTabPageBackground);
   SkColor text_color;
   if (custom_background.has_value()) {

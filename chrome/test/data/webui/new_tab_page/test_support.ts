@@ -122,7 +122,6 @@ export function createTheme(): Theme {
     backgroundImageAttributionUrl: undefined,
     dailyRefreshCollectionId: '',
     isDark: false,
-    isDefault: true,
     logoColor: undefined,
     mostVisited: mostVisited,
     searchBox: searchBox,

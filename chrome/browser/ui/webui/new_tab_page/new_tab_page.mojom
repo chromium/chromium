@@ -54,8 +54,6 @@ struct BackgroundImage {
 struct Theme {
   skia.mojom.SkColor text_color;
   skia.mojom.SkColor background_color;
-  // True if the theme is default.
-  bool is_default;
   // True if the background is custom.
   bool is_custom_background;
   // True if the theme is dark (e.g. NTP background color is dark).

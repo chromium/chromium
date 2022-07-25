@@ -332,7 +332,6 @@ TEST_F(NewTabPageHandlerTest, SetTheme) {
   ASSERT_TRUE(theme);
   EXPECT_EQ(SkColorSetRGB(0, 0, 1), theme->background_color);
   EXPECT_EQ(SkColorSetRGB(0, 0, 2), theme->text_color);
-  EXPECT_FALSE(theme->is_default);
   EXPECT_FALSE(theme->is_custom_background);
   EXPECT_FALSE(theme->is_dark);
   EXPECT_EQ(SkColorSetRGB(0, 0, 3), theme->logo_color);
