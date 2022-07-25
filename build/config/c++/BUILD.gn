@@ -34,10 +34,6 @@ config("runtime_library") {
     "_LIBCPP_ABI_VERSION=2",
   ]
 
-  # Disable usages of __builtin_assume(...) when building libc++, as it causes
-  # some msan errors (crbug.com/1344905).
-  defines += [ "_LIBCPP_ASSERTIONS_DISABLE_ASSUME" ]
-
   if (!libcxx_is_shared) {
     # Don't leak any symbols on a static build.
     defines += [ "_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS" ]

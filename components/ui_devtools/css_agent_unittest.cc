@@ -38,7 +38,7 @@ class FakeUIElement : public UIElement {
 
  private:
   gfx::Rect bounds_;
-  bool visible_;
+  bool visible_ = false;
 };
 
 class FakeDOMAgent : public DOMAgent {
