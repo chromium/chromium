@@ -122,6 +122,9 @@ extern const base::FeatureParam<std::string>
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kReduceAcceptLanguage;
 
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kDisableResourceScheduler;
+
 }  // namespace features
 }  // namespace network
 

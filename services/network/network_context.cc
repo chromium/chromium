@@ -745,13 +745,15 @@ void NetworkContext::SetClient(
 void NetworkContext::CreateURLLoaderFactory(
     mojo::PendingReceiver<mojom::URLLoaderFactory> receiver,
     mojom::URLLoaderFactoryParamsPtr params) {
-  scoped_refptr<ResourceSchedulerClient> resource_scheduler_client =
-      base::MakeRefCounted<ResourceSchedulerClient>(
-          current_resource_scheduler_client_id_,
-          IsBrowserInitiated(params->process_id == mojom::kBrowserProcessId),
-          resource_scheduler_.get(),
-          url_request_context_->network_quality_estimator());
-  current_resource_scheduler_client_id_.Increment();
+  scoped_refptr<ResourceSchedulerClient> resource_scheduler_client;
+  if (!base::FeatureList::IsEnabled(features::kDisableResourceScheduler)) {
+    resource_scheduler_client = base::MakeRefCounted<ResourceSchedulerClient>(
+        current_resource_scheduler_client_id_,
+        IsBrowserInitiated(params->process_id == mojom::kBrowserProcessId),
+        resource_scheduler_.get(),
+        url_request_context_->network_quality_estimator());
+    current_resource_scheduler_client_id_.Increment();
+  }
   CreateURLLoaderFactory(std::move(receiver), std::move(params),
                          std::move(resource_scheduler_client));
 }

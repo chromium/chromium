@@ -292,5 +292,9 @@ constexpr base::FeatureParam<std::string> kCacheTransparencyPervasivePayloads{
 const base::Feature kReduceAcceptLanguage{"ReduceAcceptLanguage",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Disable ResourceScheduler.
+const base::Feature kDisableResourceScheduler{
+    "DisableResourceScheduler", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace network
