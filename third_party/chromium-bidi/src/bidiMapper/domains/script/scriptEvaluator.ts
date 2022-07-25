@@ -47,7 +47,7 @@ export class ScriptEvaluator {
     const cdpWebDriverValue: Protocol.Runtime.CallFunctionOnResponse =
       await this.#cdpClient.Runtime.callFunctionOn({
         functionDeclaration: String((obj: unknown) => obj),
-        awaitPromise: true,
+        awaitPromise: false,
         arguments: [cdpObject],
         generateWebDriverValue: true,
         objectId: await this.#getDummyContextId(),
@@ -70,7 +70,7 @@ export class ScriptEvaluator {
       ) {
         return String(obj);
       }),
-      awaitPromise: true,
+      awaitPromise: false,
       arguments: [cdpObject],
       returnByValue: true,
       objectId: await this.#getDummyContextId(),
@@ -311,7 +311,7 @@ export class ScriptEvaluator {
             }
             return result;
           }),
-          awaitPromise: true,
+          awaitPromise: false,
           arguments: keyValueArray,
           returnByValue: false,
           objectId: await this.#getDummyContextId(),
@@ -344,7 +344,7 @@ export class ScriptEvaluator {
             }
             return result;
           }),
-          awaitPromise: true,
+          awaitPromise: false,
           arguments: keyValueArray,
           returnByValue: false,
           objectId: await this.#getDummyContextId(),
@@ -363,7 +363,7 @@ export class ScriptEvaluator {
           functionDeclaration: String(function (...args: unknown[]) {
             return args;
           }),
-          awaitPromise: true,
+          awaitPromise: false,
           arguments: args,
           returnByValue: false,
           objectId: await this.#getDummyContextId(),
@@ -382,7 +382,7 @@ export class ScriptEvaluator {
           functionDeclaration: String(function (...args: unknown[]) {
             return new Set(args);
           }),
-          awaitPromise: true,
+          awaitPromise: false,
           arguments: args,
           returnByValue: false,
           objectId: await this.#getDummyContextId(),

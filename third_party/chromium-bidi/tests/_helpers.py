@@ -117,8 +117,8 @@ def any_string(expected):
 
 
 def any_timestamp(expected):
-    assert isinstance(expected, float), \
-        f"'{expected}' should be a float, " \
+    assert isinstance(expected, float) or isinstance(expected, int), \
+        f"'{expected}' should be a float or integer, " \
         f"but is {type(expected)} instead."
 
 
