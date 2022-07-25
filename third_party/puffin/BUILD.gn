@@ -113,6 +113,8 @@ executable("puffin_unittest") {
     "src/unittest_common.cc",
     "src/utils_unittest.cc",
   ]
+  data_deps =
+      [ "//chrome/test/data/updater/puffin_patch_test:puffin_patch_test_files" ]
   deps = [
     ":libpuffdiff",
     ":libpuffpatch",

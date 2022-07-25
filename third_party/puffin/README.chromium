@@ -33,3 +33,4 @@ Local Modifications:
 - Added puffin::Status enum to help disambiguate errors from puffin::PuffPatch
 - Added puffin::ApplyPuffPatch API which allows chromium libraries to call
     puffin::PuffPatch without having worry about UniqueStreamPtr's and Buffer's.
+- Added ApplyPuffPatchTest to patching_unittest to test the new method.
