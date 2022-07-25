@@ -238,6 +238,12 @@ NET_EXPORT extern const base::Feature
 NET_EXPORT extern const base::Feature
     kPartitionNelAndReportingByNetworkIsolationKey;
 
+// Creates a double keyed NetworkAnonymizationKey which is used to partition the
+// network state. This double key will have the following properties:
+// `top_frame_site` -> the schemeful site of the top level page.
+// `frame_site ` -> nullopt
+NET_EXPORT extern const base::Feature kEnableDoubleKeyNetworkAnonymizationKey;
+
 // Enables limiting the size of Expect-CT table.
 NET_EXPORT extern const base::Feature kExpectCTPruning;
 

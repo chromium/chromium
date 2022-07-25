@@ -130,6 +130,12 @@ class NET_EXPORT NetworkAnonymizationKey {
     return nonce_;
   }
 
+  // Returns true if the NetworkAnonymizationKey has a double keyed scheme. This
+  // means the values of the NetworkAnonymizationKey are as follows:
+  // `top_frame_site` -> the schemeful site of the top level page.
+  // `frame_site ` -> nullopt
+  static bool IsDoubleKeyingEnabled();
+
  private:
   std::string GetSiteDebugString(
       const absl::optional<SchemefulSite>& site) const;

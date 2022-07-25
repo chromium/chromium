@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "net/base/network_anonymization_key.h"
+#include "base/feature_list.h"
 #include "base/unguessable_token.h"
+#include "net/base/features.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -15,7 +17,7 @@ NetworkAnonymizationKey::NetworkAnonymizationKey(
     bool is_cross_site,
     const absl::optional<base::UnguessableToken> nonce)
     : top_frame_site_(top_frame_site),
-      frame_site_(frame_site),
+      frame_site_(IsDoubleKeyingEnabled() ? absl::nullopt : frame_site),
       is_cross_site_(is_cross_site),
       nonce_(nonce) {}
 
@@ -53,18 +55,22 @@ bool NetworkAnonymizationKey::IsEmpty() const {
 }
 
 bool NetworkAnonymizationKey::IsFullyPopulated() const {
-  // TODO @brgoldstein if NAK is a double key the key is fully populated if
-  // top_frame_site_ has value.
-  return top_frame_site_.has_value() && frame_site_.has_value();
+  return top_frame_site_.has_value() &&
+         (IsDoubleKeyingEnabled() || frame_site_.has_value());
 }
 
 bool NetworkAnonymizationKey::IsTransient() const {
   if (!IsFullyPopulated())
     return true;
-  // TODO @brgoldstein if NAK is a double key do not check if frame_site_ is
-  // opaque.
-  return top_frame_site_->opaque() || frame_site_->opaque() ||
+
+  return top_frame_site_->opaque() ||
+         (!IsDoubleKeyingEnabled() && frame_site_->opaque()) ||
          nonce_.has_value();
+}
+
+bool NetworkAnonymizationKey::IsDoubleKeyingEnabled() {
+  return base::FeatureList::IsEnabled(
+      net::features::kEnableDoubleKeyNetworkAnonymizationKey);
 }
 
 std::string NetworkAnonymizationKey::GetSiteDebugString(
