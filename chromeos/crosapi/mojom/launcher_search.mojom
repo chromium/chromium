@@ -36,8 +36,8 @@ enum SearchResultType {
 };
 
 // Struct represents search result.
-// Next min ID: 20
-// Next min version: 5
+// Next min ID: 22
+// Next min version: 6
 [Stable]
 struct SearchResult {
   // Type of the result. Used to distinguish between different types of result.
@@ -62,6 +62,9 @@ struct SearchResult {
   // Whether the result is an answer result or not. Used for kOmniboxResult
   // type results.
   OptionalBool is_answer@4;
+  // The Omnibox search result type as required for metrics logging. Used for
+  // kOmniboxResult type results. This defaults to kUnset.
+  [MinVersion=5] MetricsType metrics_type@20;
   // The Omnibox subtype of the result, used for kOmniboxResult type results.
   // This defaults to kUnset.
   OmniboxType omnibox_type@5;
@@ -74,8 +77,11 @@ struct SearchResult {
 
   // The image url of the result, if any. Used to download the result image.
   url.mojom.Url? image_url@7;
-  // Favicon of the result.
-  gfx.mojom.ImageSkia? favicon@8;
+  // Favicon of the result, if one had already been cached.
+  gfx.mojom.ImageSkia? cached_favicon@8;
+  // Handle through which to receive asynchronously-fetched data about this
+  // search result.
+  [MinVersion=5] pending_receiver<SearchResultConsumer>? receiver@21;
 
   // The accessibility label to use for the second image line, if one exists.
   [MinVersion=3] mojo_base.mojom.String16? description_a11y_label@19;
@@ -116,6 +122,23 @@ struct SearchResult {
     kHistory = 6,
     kCalculator = 7,
     [MinVersion=1] kOpenTab = 8,
+  };
+
+  // Enum representing the search result type as required for metrics logging.
+  [Stable, Extensible]
+  enum MetricsType {
+    [Default] kUnset = 0,
+    kWhatYouTyped = 1,
+    kRecentlyVisitedWebsite = 2,
+    kHistoryTitle = 3,
+    kSearchWhatYouTyped = 4,
+    kSearchHistory = 5,
+    kSearchSuggest = 6,
+    kSearchSuggestPersonalized = 7,
+    kBookmark = 8,
+    kSearchSuggestEntity = 9,
+    kNavSuggest = 10,
+    kCalculator = 11,
   };
 
   // Enum representing the Omnibox answer subtype.
@@ -185,4 +208,13 @@ interface SearchControllerRegistry {
   // start making calls.
   RegisterSearchController@0(
       pending_remote<SearchController> search_controller);
+};
+
+// Interface implemented by result objects to receive asynchronously-updated
+// data for one search result.
+// Next min method ID: 1
+[Stable, Uuid="d3294d1e-dadb-4bc2-a1ce-5b731f11cce1"]
+interface SearchResultConsumer {
+  // Called once with a favicon if it was successfully asynchronously fetched.
+  OnFaviconReceived@0(gfx.mojom.ImageSkia favicon);
 };

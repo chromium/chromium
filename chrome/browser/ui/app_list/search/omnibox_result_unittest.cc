@@ -20,6 +20,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
@@ -56,7 +57,7 @@ namespace {
 using testing::_;
 
 const char16_t kFullQuery[] = u"match";
-const char16_t kExampleContents[] = u"https://contentsmatchurl.com";
+const char16_t kExampleContents[] = u"matchurl.com/contents.com";
 const char16_t kExampleDescription[] = u"description match";
 const char kExampleUrl[] = "http://example.com/hello";
 const int kRelevance = 750;
@@ -69,19 +70,15 @@ static_assert(std::is_trivially_destructible<ACMatchClassification>::value &&
 
 // Example contents is a URL, and includes a substring matching the example
 // query.
-
 const ACMatchClassification kExampleContentsClass[] = {
-    {/*offset=*/0, /*style=*/ACMatchClassification::URL},
-    {/*offset=*/16,
+    {/*offset=*/0,
      /*style=*/ACMatchClassification::URL | ACMatchClassification::MATCH},
-    {/*offset=*/21, /*style=*/ACMatchClassification::URL},
+    {/*offset=*/5, /*style=*/ACMatchClassification::URL},
 };
 
 const ash::SearchResultTag kExpectedExampleContentsTags[] = {
-    {/*styles=*/ash::SearchResultTag::URL, /*start=*/0, /*end=*/16},
-    {/*styles=*/ash::SearchResultTag::URL | ash::SearchResultTag::MATCH,
-     /*start=*/16, /*end=*/21},
-    {/*styles=*/ash::SearchResultTag::URL, /*start=*/21, /*end=*/28},
+    {/*styles=*/ash::SearchResultTag::MATCH, /*start=*/0, /*end=*/5},
+    {/*styles=*/ash::SearchResultTag::URL, /*start=*/0, /*end=*/25},
 };
 
 // Example description is not a URL but does include a matching substring.
@@ -184,6 +181,11 @@ class OmniboxResultTest : public testing::Test {
 
     favicon_cache_ = std::make_unique<FaviconCache>(
         /*favicon_service=*/&favicon_service_, /*history_service=*/nullptr);
+
+    // Ensure the bookmark model is loaded.
+    bookmark_model_ =
+        BookmarkModelFactory::GetForBrowserContext(profile_.get());
+    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
   }
 
   std::unique_ptr<OmniboxResult> CreateOmniboxResult(
@@ -212,8 +214,12 @@ class OmniboxResultTest : public testing::Test {
     match.image_url = image_url;
 
     return std::make_unique<OmniboxResult>(
-        profile_.get(), app_list_controller_delegate_.get(), nullptr,
-        favicon_cache_.get(), input_, match, false);
+        profile_.get(), app_list_controller_delegate_.get(),
+        /*remove_closure=*/base::RepeatingClosure(),
+        crosapi::CreateResult(match, /*controller=*/nullptr,
+                              favicon_cache_.get(), bookmark_model_, input_),
+        /*query=*/kFullQuery,
+        /*is_zero_suggestion=*/false);
   }
 
   const GURL& GetLastOpenedUrl() const {
@@ -241,6 +247,8 @@ class OmniboxResultTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 
   testing::NiceMock<favicon::MockFaviconService> favicon_service_;
+
+  bookmarks::BookmarkModel* bookmark_model_;
 };
 
 TEST_F(OmniboxResultTest, Basic) {
@@ -277,11 +285,8 @@ TEST_F(OmniboxResultTest, Priority) {
 // answers.
 TEST_F(OmniboxResultTest, Metrics) {
   // Add a URL to our bookmarks.
-  bookmarks::BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(profile_.get());
-  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
-  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"Title",
-                         GURL("https://example.com"));
+  bookmark_model_->AddURL(bookmark_model_->bookmark_bar_node(), 0, u"Title",
+                          GURL("https://example.com"));
 
   // Bookmarked URLs belong to their own metrics category and have a specific
   // icon.
@@ -349,9 +354,14 @@ TEST_F(OmniboxResultTest, Favicon) {
   const auto result = CreateOmniboxResult("https://example.com",
                                           AutocompleteMatchType::HISTORY_URL);
 
+  // The mock fetch result.
   favicon_base::FaviconImageResult mock_icon_result;
   mock_icon_result.image = gfx::Image(TestIcon());
+
+  // Transmit fetched image back to the Omnibox result.
   std::move(return_icon_callback).Run(mock_icon_result);
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_TRUE(ImageSkiasEqual(TestIcon(), result->icon().icon));
 }
 

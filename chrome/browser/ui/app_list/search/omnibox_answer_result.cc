@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
+#include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
@@ -42,20 +43,6 @@ using TextType = ash::SearchResultTextItemType;
 using CrosApiSearchResult = crosapi::mojom::SearchResult;
 
 constexpr char kOmniboxAnswerSchema[] = "omnibox_answer://";
-
-// Convert from our Mojo page transition type into the UI equivalent.
-ui::PageTransition ToUiPageTransition(
-    CrosApiSearchResult::PageTransition transition) {
-  switch (transition) {
-    case CrosApiSearchResult::PageTransition::kTyped:
-      return ui::PAGE_TRANSITION_TYPED;
-    case CrosApiSearchResult::PageTransition::kGenerated:
-      return ui::PAGE_TRANSITION_GENERATED;
-    default:
-      NOTREACHED();
-      return ui::PAGE_TRANSITION_FIRST;
-  }
-}
 
 ChromeSearchResult::IconInfo CreateAnswerIconInfo(
     const gfx::VectorIcon& vector_icon) {
@@ -113,27 +100,6 @@ absl::optional<std::pair<std::u16string, std::u16string>> GetTemperature(
 
   size_t unit_start = digits_end + 1;
   return std::make_pair(text->substr(0, unit_start), text->substr(unit_start));
-}
-
-// Returns the tag vector for the given text type.
-ash::SearchResultTags TagsForText(const std::u16string& text,
-                                  CrosApiSearchResult::TextType type) {
-  ash::SearchResultTags tags;
-  const auto length = text.length();
-  switch (type) {
-    case CrosApiSearchResult::TextType::kPositive:
-      tags.push_back(Tag(Tag::GREEN, 0, length));
-      break;
-    case CrosApiSearchResult::TextType::kNegative:
-      tags.push_back(Tag(Tag::RED, 0, length));
-      break;
-    case CrosApiSearchResult::TextType::kUrl:
-      tags.push_back(Tag(Tag::URL, 0, length));
-      break;
-    default:
-      break;
-  }
-  return tags;
 }
 
 // Converts the given text into a TextItem and appends it to the supplied
@@ -198,10 +164,8 @@ OmniboxAnswerResult::OmniboxAnswerResult(
   // Derive relevance from omnibox relevance and normalize it to [0, 1].
   set_relevance(search_result_->relevance / kMaxOmniboxScore);
 
-  if (search_result_->is_omnibox_search ==
-      CrosApiSearchResult::OptionalBool::kTrue) {
+  if (crosapi::OptionalBoolIsTrue(search_result_->is_omnibox_search))
     SetIsOmniboxSearch(true);
-  }
 
   UpdateIcon();
 
@@ -222,7 +186,8 @@ OmniboxAnswerResult::~OmniboxAnswerResult() {
 void OmniboxAnswerResult::Open(int event_flags) {
   DCHECK(search_result_->destination_url.has_value());
   list_controller_->OpenURL(profile_, *search_result_->destination_url,
-                            ToUiPageTransition(search_result_->page_transition),
+                            crosapi::PageTransitionToUiPageTransition(
+                                search_result_->page_transition),
                             ui::DispositionFromEventFlags(event_flags));
 }
 

@@ -10,11 +10,14 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -206,9 +209,20 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
           profile_, list_controller_, &favicon_cache_,
           last_tokenized_query_.value(), match));
     } else {
+      // We can use an unretained pointer here since we own both the
+      // autocomplete controller (which lives for the entirety of our lifetime)
+      // and the results vector. Results are only externally-visible via the
+      // `results()` method, which doesn't transfer ownership.
+      auto remove_closure =
+          base::BindRepeating(&AutocompleteController::DeleteMatch,
+                              base::Unretained(controller_.get()), match);
+
       list_results.emplace_back(std::make_unique<OmniboxResult>(
-          profile_, list_controller_, controller_.get(), &favicon_cache_,
-          input_, match, is_zero_state_input_));
+          profile_, list_controller_, std::move(remove_closure),
+          crosapi::CreateResult(
+              match, controller_.get(), &favicon_cache_,
+              BookmarkModelFactory::GetForBrowserContext(profile_), input_),
+          last_query_, is_zero_state_input_));
     }
   }
 

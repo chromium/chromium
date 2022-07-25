@@ -5,10 +5,13 @@
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 
 namespace app_list {
 namespace {
+
+using CrosApiSearchResult = crosapi::mojom::SearchResult;
 
 int ACMatchStyleToTagStyle(int styles) {
   int tag_styles = 0;
@@ -76,6 +79,29 @@ void AppendMatchTags(const std::u16string& query,
                           /*non_match_style=*/ACMatchClassification::NONE);
 
   ACMatchClassificationsToTags(text, classes, tags);
+}
+
+ash::SearchResultTags TagsForText(const std::u16string& text,
+                                  CrosApiSearchResult::TextType type) {
+  ash::SearchResultTags tags;
+  const auto length = text.length();
+  switch (type) {
+    case CrosApiSearchResult::TextType::kPositive:
+      tags.push_back(
+          ash::SearchResultTag(ash::SearchResultTag::GREEN, 0, length));
+      break;
+    case CrosApiSearchResult::TextType::kNegative:
+      tags.push_back(
+          ash::SearchResultTag(ash::SearchResultTag::RED, 0, length));
+      break;
+    case CrosApiSearchResult::TextType::kUrl:
+      tags.push_back(
+          ash::SearchResultTag(ash::SearchResultTag::URL, 0, length));
+      break;
+    default:
+      break;
+  }
+  return tags;
 }
 
 }  // namespace app_list

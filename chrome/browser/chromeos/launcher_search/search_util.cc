@@ -13,6 +13,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/page_transition_types.h"
 
 namespace crosapi {
@@ -20,6 +21,7 @@ namespace {
 
 using mojom::SearchResult;
 using mojom::SearchResultPtr;
+using RemoteConsumer = mojo::Remote<crosapi::mojom::SearchResultConsumer>;
 
 SearchResult::AnswerType MatchTypeToAnswerType(const int type) {
   switch (static_cast<SuggestionAnswer::AnswerType>(type)) {
@@ -90,6 +92,38 @@ SearchResult::OmniboxType MatchTypeToOmniboxType(
     case AutocompleteMatchType::NUM_TYPES:
       // Not reached.
       return SearchResult::OmniboxType::kDomain;
+  }
+}
+
+SearchResult::MetricsType MatchTypeToMetricsType(
+    AutocompleteMatchType::Type type) {
+  switch (type) {
+    case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
+      return SearchResult::MetricsType::kWhatYouTyped;
+    case AutocompleteMatchType::HISTORY_URL:
+      // A recently-visited URL that is also a bookmark is handled manually when
+      // constructing the result.
+      return SearchResult::MetricsType::kRecentlyVisitedWebsite;
+    case AutocompleteMatchType::HISTORY_TITLE:
+      return SearchResult::MetricsType::kHistoryTitle;
+    case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:
+      return SearchResult::MetricsType::kSearchWhatYouTyped;
+    case AutocompleteMatchType::SEARCH_HISTORY:
+      return SearchResult::MetricsType::kSearchHistory;
+    case AutocompleteMatchType::SEARCH_SUGGEST:
+      return SearchResult::MetricsType::kSearchSuggest;
+    case AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED:
+      return SearchResult::MetricsType::kSearchSuggestPersonalized;
+    case AutocompleteMatchType::BOOKMARK_TITLE:
+      return SearchResult::MetricsType::kBookmark;
+    case AutocompleteMatchType::SEARCH_SUGGEST_ENTITY:
+      return SearchResult::MetricsType::kSearchSuggestEntity;
+    case AutocompleteMatchType::NAVSUGGEST:
+      return SearchResult::MetricsType::kNavSuggest;
+    case AutocompleteMatchType::CALCULATOR:
+      return SearchResult::MetricsType::kCalculator;
+    default:
+      return SearchResult::MetricsType::kUnset;
   }
 }
 
@@ -171,6 +205,20 @@ int ProviderTypes() {
   return providers;
 }
 
+// Convert from our Mojo page transition type into the UI equivalent.
+ui::PageTransition PageTransitionToUiPageTransition(
+    SearchResult::PageTransition transition) {
+  switch (transition) {
+    case SearchResult::PageTransition::kTyped:
+      return ui::PAGE_TRANSITION_TYPED;
+    case SearchResult::PageTransition::kGenerated:
+      return ui::PAGE_TRANSITION_GENERATED;
+    default:
+      NOTREACHED();
+      return ui::PAGE_TRANSITION_FIRST;
+  }
+}
+
 SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
                                    AutocompleteController* controller,
                                    base::StringPiece16 query,
@@ -246,6 +294,7 @@ SearchResultPtr CreateResult(const AutocompleteMatch& match,
                              const AutocompleteInput& input) {
   SearchResultPtr result = CreateBaseResult(match, controller, input);
 
+  result->metrics_type = MatchTypeToMetricsType(match.type);
   result->is_answer = SearchResult::OptionalBool::kFalse;
   result->contents = match.contents;
   result->contents_type = ClassesToType(match.contents_class);
@@ -265,11 +314,22 @@ SearchResultPtr CreateResult(const AutocompleteMatch& match,
         result->omnibox_type == SearchResult::OmniboxType::kDomain ||
         result->omnibox_type == SearchResult::OmniboxType::kOpenTab;
     if (use_favicon && favicon_cache) {
+      // Provide hook by which a result object can receive an
+      // asychronously-fetched favicon. Use a pointer so that our callback can
+      // own the remote interface.
+      RemoteConsumer consumer;
+      result->receiver = consumer.BindNewPipeAndPassReceiver();
+      auto emit_favicon = base::BindOnce(
+          [](RemoteConsumer consumer, const gfx::Image& icon) {
+            consumer->OnFaviconReceived(icon.AsImageSkia());
+          },
+          std::move(consumer));
+
       const auto icon = favicon_cache->GetFaviconForPageUrl(
-          match.destination_url, base::DoNothing());
+          match.destination_url, std::move(emit_favicon));
       if (!icon.IsEmpty()) {
         result->omnibox_type = SearchResult::OmniboxType::kFavicon;
-        result->favicon = icon.AsImageSkia();
+        result->cached_favicon = icon.AsImageSkia();
       }
     }
 
@@ -277,6 +337,7 @@ SearchResultPtr CreateResult(const AutocompleteMatch& match,
     if (result->omnibox_type != SearchResult::OmniboxType::kFavicon &&
         bookmark_model && bookmark_model->IsBookmarked(match.destination_url)) {
       result->omnibox_type = SearchResult::OmniboxType::kBookmark;
+      result->metrics_type = SearchResult::MetricsType::kBookmark;
     }
   }
 
