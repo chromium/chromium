@@ -3416,7 +3416,7 @@ void StyleEngine::MarkForLayoutTreeChangesAfterDetach() {
 }
 
 void StyleEngine::ReportUseOfLegacyLayoutWithContainerQueries() {
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGTableFragmentationEnabled());
+  DCHECK(!RuntimeEnabledFeatures::LayoutNGPrintingEnabled());
 
   // Only report once.
   if (legacy_layout_query_container_)

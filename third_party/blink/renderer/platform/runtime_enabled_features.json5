@@ -1318,6 +1318,7 @@
       // https://drafts.csswg.org/css-tables-3/#fragmentation
       name: "LayoutNGTableFragmentation",
       depends_on: ["LayoutNG"],
+      status: "test",
     },
     {
       name: "LayoutNGView",
