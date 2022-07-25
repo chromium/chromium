@@ -2246,6 +2246,7 @@ static_library("browser") {
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_search_api",
     "//components/safe_search_api:safe_search_client",
+    "//components/saved_tab_groups:core",
     "//components/schema_org/common:improved_mojom",
     "//components/search",
     "//components/search_engines",

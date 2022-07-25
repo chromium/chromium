@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -134,8 +135,6 @@ gfx::Range TabGroup::ListTabs() const {
 }
 
 void TabGroup::SaveGroup() {
-  is_saved_ = true;
-
   std::vector<SavedTabGroupTab> urls;
   const gfx::Range tab_range = ListTabs();
   for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
@@ -144,7 +143,8 @@ void TabGroup::SaveGroup() {
     const std::u16string& tab_title = web_contents->GetTitle();
     const gfx::Image& favicon =
         favicon::TabFaviconFromWebContents(web_contents);
-    urls.emplace_back(SavedTabGroupTab(url, tab_title, favicon));
+    urls.emplace_back(SavedTabGroupTab(url, tab_title, favicon,
+                                       base::GUID::GenerateRandomV4()));
   }
 
   SavedTabGroupKeyedService* backend =

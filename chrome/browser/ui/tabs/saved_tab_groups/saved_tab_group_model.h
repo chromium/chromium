@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group.h"
 
 #include "base/observer_list.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"

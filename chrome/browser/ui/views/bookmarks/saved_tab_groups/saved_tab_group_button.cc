@@ -10,13 +10,13 @@
 
 #include "base/bind.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_button_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -192,7 +192,7 @@ SavedTabGroupButton::CreateDialogModelForContextMenu() {
 
   for (const SavedTabGroupTab& tab : tabs_) {
     dialog_model.AddMenuItem(
-        ui::ImageModel::FromImage(tab.favicon), tab.tab_title,
+        ui::ImageModel::FromImage(tab.favicon()), tab.title(),
         base::BindRepeating(
             [](GURL url,
                base::RepeatingCallback<content::PageNavigator*()>
@@ -206,7 +206,7 @@ SavedTabGroupButton::CreateDialogModelForContextMenu() {
                   /*started_from_context_menu=*/true);
               page_navigator_callback.Run()->OpenURL(params);
             },
-            tab.url, page_navigator_callback_));
+            tab.url(), page_navigator_callback_));
   }
 
   return dialog_model.Build();

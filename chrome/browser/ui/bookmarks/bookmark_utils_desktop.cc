@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/simple_message_box.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -32,6 +31,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
@@ -304,7 +304,7 @@ void OpenSavedTabGroupHelper(
   TabStripModel* model_for_creation = browser->tab_strip_model();
 
   std::vector<GURL> urls;
-  auto get_urls = [&](SavedTabGroupTab saved_tab) { return saved_tab.url; };
+  auto get_urls = [&](SavedTabGroupTab saved_tab) { return saved_tab.url(); };
   base::ranges::transform(saved_group->saved_tabs(), std::back_inserter(urls),
                           get_urls);
   if (urls.empty())

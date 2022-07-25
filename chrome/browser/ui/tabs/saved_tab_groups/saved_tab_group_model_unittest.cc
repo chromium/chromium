@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_observer.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -79,7 +79,8 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
   SavedTabGroupTab CreateSavedTabGroupTab(const std::string& url,
                                           const std::u16string& title) {
     return SavedTabGroupTab(GURL(base_path_ + url), title,
-                            favicon::GetDefaultFavicon());
+                            favicon::GetDefaultFavicon(),
+                            base::GUID::GenerateRandomV4());
   }
 
   SavedTabGroup CreateTestSavedTabGroup() {
@@ -102,9 +103,9 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
     for (size_t i = 0; i < v1.size(); i++) {
       SavedTabGroupTab tab1 = v1[i];
       SavedTabGroupTab tab2 = v2[i];
-      EXPECT_EQ(tab1.url, tab2.url);
-      EXPECT_EQ(tab1.tab_title, tab2.tab_title);
-      EXPECT_EQ(tab1.favicon, tab2.favicon);
+      EXPECT_EQ(tab1.url(), tab2.url());
+      EXPECT_EQ(tab1.title(), tab2.title());
+      EXPECT_EQ(tab1.favicon(), tab2.favicon());
     }
   }
 
@@ -184,7 +185,8 @@ class SavedTabGroupModelTest : public ::testing::Test {
   SavedTabGroupTab CreateSavedTabGroupTab(const std::string& url,
                                           const std::u16string& title) {
     return SavedTabGroupTab(GURL(base_path_ + url), title,
-                            favicon::GetDefaultFavicon());
+                            favicon::GetDefaultFavicon(),
+                            base::GUID::GenerateRandomV4());
   }
 
   SavedTabGroup CreateSavedTabGroup(
@@ -201,9 +203,9 @@ class SavedTabGroupModelTest : public ::testing::Test {
     for (size_t i = 0; i < v1.size(); i++) {
       const SavedTabGroupTab& tab1 = v1[i];
       const SavedTabGroupTab& tab2 = v2[i];
-      EXPECT_EQ(tab1.url, tab2.url);
-      EXPECT_EQ(tab1.tab_title, tab2.tab_title);
-      EXPECT_EQ(tab1.favicon, tab2.favicon);
+      EXPECT_EQ(tab1.url(), tab2.url());
+      EXPECT_EQ(tab1.title(), tab2.title());
+      EXPECT_EQ(tab1.favicon(), tab2.favicon());
     }
   }
 

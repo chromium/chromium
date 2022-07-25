@@ -4,17 +4,19 @@
 
 #include <algorithm>
 #include <memory>
+
 #include "base/test/bind.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
     stg_model->Add(SavedTabGroup(
         std::u16string(u"test_title_1"), tab_groups::TabGroupColorId::kGrey,
         {SavedTabGroupTab(GURL("chrome://newtab"), u"Title",
-                          favicon::GetDefaultFavicon())},
+                          favicon::GetDefaultFavicon(), guid)},
         guid));
     chrome::OpenSavedTabGroup(
         browser(), base::BindLambdaForTesting([=]() {
@@ -82,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
     stg_model->Add(SavedTabGroup(
         std::u16string(u"test_title_1"), tab_groups::TabGroupColorId::kGrey,
         {SavedTabGroupTab(GURL("chrome://newtab"), u"Title",
-                          favicon::GetDefaultFavicon())},
+                          favicon::GetDefaultFavicon(), guid)},
         guid));
     chrome::OpenSavedTabGroup(
         browser(), base::BindLambdaForTesting([=]() {

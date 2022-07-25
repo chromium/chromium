@@ -2,34 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_H_
-#define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_H_
+#ifndef COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_H_
+#define COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_H_
 
 #include <string>
 #include <vector>
 
 #include "base/guid.h"
+#include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
-
-// A SavedTabGroupTab stores the url, title, and favicon of a tab.
-struct SavedTabGroupTab {
-  SavedTabGroupTab(const GURL& url,
-                   const std::u16string& tab_title,
-                   const gfx::Image& favicon);
-  SavedTabGroupTab(const SavedTabGroupTab& other);
-  ~SavedTabGroupTab();
-
-  // The link to navigate with.
-  GURL url;
-  // The title of the website this urls is associated with.
-  std::u16string tab_title;
-  // The favicon of the website this SavedTabGroupTab represents.
-  gfx::Image favicon;
-};
 
 // Preserves the state of a Tab group that was saved from the
 // tab_group_editor_bubble_view's save toggle button. Additionally, these values
@@ -61,11 +46,11 @@ class SavedTabGroup {
   SavedTabGroup& SetTitle(std::u16string title) {
     title_ = title;
     return *this;
-  }
+  };
   SavedTabGroup& SetColor(tab_groups::TabGroupColorId color) {
     color_ = color;
     return *this;
-  }
+  };
   SavedTabGroup& SetLocalGroupId(
       absl::optional<tab_groups::TabGroupId> tab_group_id) {
     tab_group_id_ = tab_group_id;
@@ -91,4 +76,4 @@ class SavedTabGroup {
   std::vector<SavedTabGroupTab> saved_tabs_;
 };
 
-#endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_H_
+#endif  // COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_H_

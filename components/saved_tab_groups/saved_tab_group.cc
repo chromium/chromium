@@ -2,22 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/saved_tab_group.h"
 
 #include <string>
 #include <vector>
 
 #include "base/guid.h"
+#include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
-
-SavedTabGroupTab::SavedTabGroupTab(const GURL& url,
-                                   const std::u16string& tab_title,
-                                   const gfx::Image& favicon)
-    : url(url), tab_title(tab_title), favicon(favicon) {}
 
 SavedTabGroup::SavedTabGroup(
     const std::u16string& title,
@@ -32,8 +28,6 @@ SavedTabGroup::SavedTabGroup(
       color_(color),
       saved_tabs_(urls) {}
 
-SavedTabGroupTab::SavedTabGroupTab(const SavedTabGroupTab& other) = default;
 SavedTabGroup::SavedTabGroup(const SavedTabGroup& other) = default;
 
-SavedTabGroupTab::~SavedTabGroupTab() = default;
 SavedTabGroup::~SavedTabGroup() = default;
