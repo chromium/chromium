@@ -296,7 +296,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
       identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
           signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS,
           signin_metrics::SignoutDelete::kIgnoreMetric);
-      Hide();
+      GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
       // Re-enable sync with the same primary account.
       signin_ui_util::EnableSyncFromSingleAccountPromo(
           profile,
@@ -306,7 +306,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
       break;
     }
     case AvatarSyncErrorType::kAuthError:
-      Hide();
+      GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
       signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
           browser()->profile(),
           signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
@@ -338,7 +338,7 @@ void ProfileMenuView::OnSigninAccountButtonClicked(CoreAccountInfo account) {
   RecordClick(ActionableItem::kSigninAccountButton);
   if (!perform_menu_actions())
     return;
-  Hide();
+  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   signin_ui_util::EnableSyncFromSingleAccountPromo(
       browser()->profile(), account,
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
@@ -349,7 +349,7 @@ void ProfileMenuView::OnSignoutButtonClicked() {
   RecordClick(ActionableItem::kSignoutButton);
   if (!perform_menu_actions())
     return;
-  Hide();
+  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Sign out from all accounts.
   browser()->signin_view_controller()->ShowGaiaLogoutTab(
@@ -370,7 +370,7 @@ void ProfileMenuView::OnSigninButtonClicked() {
   RecordClick(ActionableItem::kSigninButton);
   if (!perform_menu_actions())
     return;
-  Hide();
+  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 
   signin_ui_util::EnableSyncFromSingleAccountPromo(
       browser()->profile(), AccountInfo(),
@@ -382,7 +382,7 @@ void ProfileMenuView::OnOtherProfileSelected(
   RecordClick(ActionableItem::kOtherProfileButton);
   if (!perform_menu_actions())
     return;
-  Hide();
+  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   profiles::SwitchToProfile(profile_path, /*always_create=*/false);
 }
 

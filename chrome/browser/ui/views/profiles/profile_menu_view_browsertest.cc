@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
@@ -165,9 +166,9 @@ class FakeAccountManagerUITestObserver : public FakeAccountManagerUI::Observer {
 class ProfileMenuViewTestBase {
  public:
  protected:
-  void OpenProfileMenu(Browser* browser) {
-    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(
-        target_browser_ ? target_browser_ : browser);
+  void OpenProfileMenu() {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(target_browser_);
 
     // Click the avatar button to open the menu.
     views::View* avatar_button =
@@ -195,10 +196,10 @@ class ProfileMenuViewTestBase {
   }
 
   ProfileMenuViewBase* profile_menu_view() {
-    return static_cast<ProfileMenuViewBase*>(
-        ProfileMenuViewBase::GetBubbleForTesting());
+    auto* coordinator = ProfileMenuCoordinator::FromBrowser(target_browser_);
+    return coordinator ? coordinator->GetProfileMenuViewBaseForTesting()
+                       : nullptr;
   }
-
   void SetTargetBrowser(Browser* browser) { target_browser_ = browser; }
 
   void Click(views::View* clickable_view) {
@@ -228,6 +229,12 @@ class ProfileMenuViewExtensionsTest : public ProfileMenuViewTestBase,
                 &ProfileMenuViewExtensionsTest::RegisterTestTracker));
   }
 
+  // extensions::ExtensionBrowserTest:
+  void SetUpOnMainThread() override {
+    ExtensionBrowserTest::SetUpOnMainThread();
+    SetTargetBrowser(browser());
+  }
+
  private:
   static void RegisterTestTracker(content::BrowserContext* context) {
     feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
@@ -240,7 +247,7 @@ class ProfileMenuViewExtensionsTest : public ProfileMenuViewTestBase,
 // Make sure nothing bad happens when the browser theme changes while the
 // ProfileMenuView is visible. Regression test for crbug.com/737470
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, ThemeChanged) {
-  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu(browser()));
+  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
 
   // The theme change destroys the avatar button. Make sure the profile chooser
   // widget doesn't try to reference a stale observer during its shutdown.
@@ -249,10 +256,11 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, ThemeChanged) {
   InstallExtension(test_data_dir_.AppendASCII("theme"), 1);
   waiter.WaitForThemeChanged();
 
-  EXPECT_TRUE(ProfileMenuView::IsShowing());
+  auto* coordinator = ProfileMenuCoordinator::FromBrowser(browser());
+  EXPECT_TRUE(coordinator->IsShowing());
   profile_menu_view()->GetWidget()->Close();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(ProfileMenuView::IsShowing());
+  EXPECT_FALSE(coordinator->IsShowing());
 }
 
 // Profile chooser view should close when a tab is added.
@@ -262,12 +270,12 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseBubbleOnTadAdded) {
   ASSERT_EQ(1, tab_strip->count());
   ASSERT_EQ(0, tab_strip->active_index());
 
-  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu(browser()));
+  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
   ASSERT_FALSE(AddTabAtIndex(1, GURL("https://test_url.com"),
                              ui::PageTransition::PAGE_TRANSITION_LINK));
   EXPECT_EQ(1, tab_strip->active_index());
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(ProfileMenuView::IsShowing());
+  EXPECT_FALSE(ProfileMenuCoordinator::FromBrowser(browser())->IsShowing());
 }
 
 // Profile chooser view should close when active tab is changed.
@@ -280,10 +288,10 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
   ASSERT_EQ(2, tab_strip->count());
   ASSERT_EQ(1, tab_strip->active_index());
 
-  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu(browser()));
+  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
   tab_strip->ActivateTabAt(0);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(ProfileMenuView::IsShowing());
+  EXPECT_FALSE(ProfileMenuCoordinator::FromBrowser(browser())->IsShowing());
 }
 
 // Profile chooser view should close when active tab is closed.
@@ -296,11 +304,24 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
   ASSERT_EQ(2, tab_strip->count());
   ASSERT_EQ(1, tab_strip->active_index());
 
-  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu(browser()));
+  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
   tab_strip->CloseWebContentsAt(1, TabStripModel::CLOSE_NONE);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(ProfileMenuView::IsShowing());
+  EXPECT_FALSE(ProfileMenuCoordinator::FromBrowser(browser())->IsShowing());
 }
+
+// Used to test that the bubble widget is destroyed before the browser.
+class BubbleWidgetDestroyedObserver : public views::WidgetObserver {
+ public:
+  explicit BubbleWidgetDestroyedObserver(views::Widget* bubble_widget) {
+    bubble_widget->AddObserver(this);
+  }
+
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override {
+    ASSERT_EQ(BrowserList::GetInstance()->size(), 1UL);
+  }
+};
 
 // Profile chooser view should close when the last tab is closed.
 // Regression test for http://crbug.com/792845
@@ -310,10 +331,11 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
   ASSERT_EQ(1, tab_strip->count());
   ASSERT_EQ(0, tab_strip->active_index());
 
-  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu(browser()));
+  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
+  auto widget_destroyed_observer =
+      BubbleWidgetDestroyedObserver(profile_menu_view()->GetWidget());
   tab_strip->CloseWebContentsAt(0, TabStripModel::CLOSE_NONE);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(ProfileMenuView::IsShowing());
 }
 
 // Opening the profile menu dismisses any existing IPH.
@@ -340,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
       feature_engagement::kIPHProfileSwitchFeature));
 
   // Open the menu.
-  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu(browser()));
+  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
 
   // Check the IPH is no longer showing.
   EXPECT_FALSE(promo_controller->IsPromoActive(
@@ -357,7 +379,7 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
   CoreAccountId account_id() const { return account_id_; }
 
   bool Signout() {
-    OpenProfileMenu(browser());
+    OpenProfileMenu();
     if (HasFatalFailure())
       return false;
     static_cast<ProfileMenuView*>(profile_menu_view())
@@ -381,7 +403,11 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
   }
 #endif
 
+  // InProcessBrowserTest:
   void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    SetTargetBrowser(browser());
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Signout is not allowed on the main profile.
     UseSecondaryProfile();
@@ -559,7 +585,7 @@ class ProfileMenuViewSyncErrorButtonTest : public ProfileMenuViewTestBase,
   CoreAccountInfo account_info() const { return account_info_; }
 
   bool Reauth() {
-    OpenProfileMenu(browser());
+    OpenProfileMenu();
     if (HasFatalFailure())
       return false;
     // This test does not check that the reauth button is displayed in the menu,
@@ -574,7 +600,11 @@ class ProfileMenuViewSyncErrorButtonTest : public ProfileMenuViewTestBase,
     return true;
   }
 
+  // InProcessBrowserTest:
   void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    SetTargetBrowser(browser());
+
     // Add an account.
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
@@ -655,7 +685,11 @@ class ProfileMenuViewSigninErrorButtonTest : public ProfileMenuViewTestBase,
 
   CoreAccountInfo account_info() const { return account_info_; }
 
+  // InProcessBrowserTest:
   void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    SetTargetBrowser(browser());
+
     // Add an account, non-syncing and in authentication error.
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
@@ -672,7 +706,7 @@ class ProfileMenuViewSigninErrorButtonTest : public ProfileMenuViewTestBase,
   }
 
   void ClickTurnOnSync() {
-    OpenProfileMenu(browser());
+    OpenProfileMenu();
     // This test does not check that the sync button is displayed in the menu,
     // but this is tested in ProfileMenuClickTest.
     base::HistogramTester histogram_tester;
@@ -769,6 +803,12 @@ class ProfileMenuClickTest : public SyncTest,
         secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
   }
 
+  // SyncTest:
+  void SetUpOnMainThread() override {
+    SyncTest::SetUpOnMainThread();
+    SetTargetBrowser(browser());
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void UseSecondaryProfile() {
     profile_ = CreateAdditionalProfile();
@@ -813,7 +853,8 @@ class ProfileMenuClickTest : public SyncTest,
 
   void AdvanceFocus(int count) {
     for (int i = 0; i < count; i++)
-      profile_menu_view()->GetFocusManager()->AdvanceFocus(/*reverse=*/false);
+      profile_menu_view()->GetFocusManager()->AdvanceFocus(
+          /*reverse=*/false);
   }
 
   views::View* GetFocusedItem() {
@@ -822,7 +863,7 @@ class ProfileMenuClickTest : public SyncTest,
 
   // This should be called in the test body.
   void RunTest() {
-    ASSERT_NO_FATAL_FAILURE(OpenProfileMenu(browser()));
+    ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
     // These tests don't care about performing the actual menu actions, only
     // about the histogram recorded.
     ASSERT_TRUE(profile_menu_view());

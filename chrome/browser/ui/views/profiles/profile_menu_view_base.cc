@@ -27,10 +27,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/hover_button.h"
-#include "chrome/browser/ui/views/profiles/incognito_menu_view.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/user_education/common/feature_promo_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -60,13 +57,7 @@
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view_class_properties.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/views/profiles/profile_menu_view.h"
-#endif
-
 namespace {
-
-ProfileMenuViewBase* g_profile_bubble_ = nullptr;
 
 // Helpers --------------------------------------------------------------------
 
@@ -495,63 +486,12 @@ ProfileMenuViewBase::EditButtonParams::~EditButtonParams() = default;
 ProfileMenuViewBase::EditButtonParams::EditButtonParams(
     const EditButtonParams&) = default;
 
-// static
-void ProfileMenuViewBase::ShowBubble(views::Button* anchor_button,
-                                     Browser* browser,
-                                     bool is_source_accelerator) {
-  if (IsShowing())
-    return;
-
-  signin_ui_util::RecordProfileMenuViewShown(browser->profile());
-  // Close any existing IPH bubble for the profile menu.
-  browser->window()->CloseFeaturePromo(
-      feature_engagement::kIPHProfileSwitchFeature);
-
-  ProfileMenuViewBase* bubble = nullptr;
-  if (browser->profile()->IsIncognitoProfile()) {
-    bubble = new IncognitoMenuView(anchor_button, browser);
-  } else {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Note: on Ash, Guest Sessions have incognito profiles, and use
-    // BUBBLE_VIEW_MODE_INCOGNITO.
-    NOTREACHED() << "The profile menu is not implemented on Ash.";
-#else
-    bubble = new ProfileMenuView(anchor_button, browser);
-#endif
-  }
-
-  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
-  bubble->ax_widget_observer_ =
-      std::make_unique<AXMenuWidgetObserver>(bubble, widget);
-  widget->Show();
-  if (is_source_accelerator)
-    bubble->FocusFirstProfileButton();
-}
-
-// static
-bool ProfileMenuViewBase::IsShowing() {
-  return g_profile_bubble_ != nullptr;
-}
-
-// static
-void ProfileMenuViewBase::Hide() {
-  if (g_profile_bubble_)
-    g_profile_bubble_->GetWidget()->Close();
-}
-
-// static
-ProfileMenuViewBase* ProfileMenuViewBase::GetBubbleForTesting() {
-  return g_profile_bubble_;
-}
-
 ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
                                          Browser* browser)
     : BubbleDialogDelegateView(anchor_button, views::BubbleBorder::TOP_RIGHT),
       browser_(browser),
       anchor_button_(anchor_button),
       close_bubble_helper_(this, browser) {
-  DCHECK(!g_profile_bubble_);
-  g_profile_bubble_ = this;
   SetButtons(ui::DIALOG_BUTTON_NONE);
   // TODO(tluk): Remove when fixing https://crbug.com/822075
   // The sign in webview will be clipped on the bottom corners without these
@@ -575,11 +515,7 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
       &ProfileMenuViewBase::OnWindowClosing, base::Unretained(this)));
 }
 
-ProfileMenuViewBase::~ProfileMenuViewBase() {
-  // Items stored for menu generation are removed after menu is finalized, hence
-  // it's not expected to have while destroying the object.
-  DCHECK(g_profile_bubble_ != this);
-}
+ProfileMenuViewBase::~ProfileMenuViewBase() = default;
 
 gfx::ImageSkia ProfileMenuViewBase::GetSyncIcon() const {
   return gfx::ImageSkia();
@@ -1018,12 +954,11 @@ void ProfileMenuViewBase::OnThemeChanged() {
 }
 
 void ProfileMenuViewBase::OnWindowClosing() {
-  DCHECK_EQ(g_profile_bubble_, this);
-  if (anchor_button()) {
-    views::InkDrop::Get(anchor_button())
-        ->AnimateToState(views::InkDropState::DEACTIVATED, nullptr);
-  }
-  g_profile_bubble_ = nullptr;
+  if (!anchor_button())
+    return;
+
+  views::InkDrop::Get(anchor_button())
+      ->AnimateToState(views::InkDropState::DEACTIVATED, nullptr);
 }
 
 bool ProfileMenuViewBase::HandleContextMenu(
@@ -1038,6 +973,10 @@ void ProfileMenuViewBase::ButtonPressed(base::RepeatingClosure action) {
   DCHECK(action);
   signin_ui_util::RecordProfileMenuClick(browser()->profile());
   action.Run();
+}
+
+void ProfileMenuViewBase::CreateAXWidgetObserver(views::Widget* widget) {
+  ax_widget_observer_ = std::make_unique<AXMenuWidgetObserver>(this, widget);
 }
 
 // Despite ProfileMenuViewBase being a dialog, we are enforcing it to behave

@@ -130,7 +130,7 @@
 #include "chrome/browser/ui/views/permissions/permission_chip.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_indicator_icon.h"
-#include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/qrcode_generator/qrcode_generator_bubble.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_icon_view.h"
@@ -4283,14 +4283,8 @@ void BrowserView::UpdateAcceleratorMetrics(const ui::Accelerator& accelerator,
 }
 
 void BrowserView::ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) {
-  // Do not show avatar bubble if there is no avatar menu button.
-  views::Button* avatar_button =
-      toolbar_button_provider_->GetAvatarToolbarButton();
-  if (!avatar_button)
-    return;
-
-  ProfileMenuViewBase::ShowBubble(avatar_button, browser(),
-                                  is_source_accelerator);
+  ProfileMenuCoordinator::GetOrCreateForBrowser(browser())->Show(
+      is_source_accelerator);
 }
 
 void BrowserView::MaybeShowProfileSwitchIPH() {

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -146,8 +147,9 @@ class ProfileMenuInteractiveUiTest : public ProfileBubbleInteractiveUiTest {
   }
 
   ProfileMenuViewBase* profile_menu_view() {
-    return static_cast<ProfileMenuViewBase*>(
-        ProfileMenuViewBase::GetBubbleForTesting());
+    auto* coordinator = ProfileMenuCoordinator::FromBrowser(browser());
+    return coordinator ? coordinator->GetProfileMenuViewBaseForTesting()
+                       : nullptr;
   }
 };
 

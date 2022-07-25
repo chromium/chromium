@@ -84,20 +84,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // Size of the large identity image in the menu.
   static constexpr int kIdentityImageSize = 64;
 
-  // Shows the bubble if one is not already showing.  This allows us to easily
-  // make a button toggle the bubble on and off when clicked: we unconditionally
-  // call this function when the button is clicked and if the bubble isn't
-  // showing it will appear while if it is showing, nothing will happen here and
-  // the existing bubble will auto-close due to focus loss.
-  static void ShowBubble(views::Button* anchor_button,
-                         Browser* browser,
-                         bool is_source_accelerator);
-
-  static bool IsShowing();
-  static void Hide();
-
-  static ProfileMenuViewBase* GetBubbleForTesting();
-
   ProfileMenuViewBase(views::Button* anchor_button,
                       Browser* browser);
   ~ProfileMenuViewBase() override;
@@ -171,6 +157,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
  private:
   class AXMenuWidgetObserver;
 
+  friend class ProfileMenuCoordinator;
   friend class ProfileMenuViewExtensionsTest;
 
   void Reset();
@@ -193,6 +180,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
                          const content::ContextMenuParams& params) override;
 
   void ButtonPressed(base::RepeatingClosure action);
+
+  void CreateAXWidgetObserver(views::Widget* widget);
 
   const raw_ptr<Browser> browser_;
 
