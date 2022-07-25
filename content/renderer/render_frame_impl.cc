@@ -4513,15 +4513,6 @@ void RenderFrameImpl::MarkWebAXObjectDirty(
       ->MarkWebAXObjectDirty(obj, subtree, event_from, event_from_action);
 }
 
-void RenderFrameImpl::AddImageAnnotations(blink::WebAXObject& obj,
-                                          ui::AXNodeData* dst) {
-  if (!IsAccessibilityEnabled())
-    return;
-
-  render_accessibility_manager_->GetRenderAccessibilityImpl()
-      ->AddImageAnnotations(obj, dst);
-}
-
 void RenderFrameImpl::AddObserver(RenderFrameObserver* observer) {
   observers_.AddObserver(observer);
 }
