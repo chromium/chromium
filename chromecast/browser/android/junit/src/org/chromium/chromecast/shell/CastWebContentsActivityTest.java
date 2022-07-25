@@ -274,7 +274,7 @@ public class CastWebContentsActivityTest {
     public void testStopDoesNotCauseFinish() {
         mActivityLifecycle.create().start().resume();
         mActivityLifecycle.pause().stop();
-        Assert.assertFalse(mShadowActivity.isFinishing());
+        Assert.assertFalse(mActivity.isFinishing());
     }
 
     @Test
@@ -292,7 +292,7 @@ public class CastWebContentsActivityTest {
     public void testBackButtonDoesNotCauseFinish() {
         mActivityLifecycle.create().start().resume();
         mActivity.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));
-        Assert.assertFalse(mShadowActivity.isFinishing());
+        Assert.assertFalse(mActivity.isFinishing());
     }
 
     @Test
@@ -375,7 +375,7 @@ public class CastWebContentsActivityTest {
         verifyBroadcastedIntent(
                 filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED), () -> {
                     mActivityLifecycle.pause().stop();
-                    assertFalse(mShadowActivity.isFinishing());
+                    assertFalse(mActivity.isFinishing());
                 }, false);
     }
 
@@ -390,7 +390,7 @@ public class CastWebContentsActivityTest {
         verifyBroadcastedIntent(
                 filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED), () -> {
                     mActivityLifecycle.pause().stop();
-                    assertTrue(mShadowActivity.isFinishing());
+                    assertTrue(mActivity.isFinishing());
                 }, true);
     }
 
@@ -417,7 +417,7 @@ public class CastWebContentsActivityTest {
         verifyBroadcastedIntent(
                 filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED), () -> {
                     mActivityLifecycle.pause().stop();
-                    assertFalse(mShadowActivity.isFinishing());
+                    assertFalse(mActivity.isFinishing());
                 }, false);
     }
 
@@ -428,7 +428,7 @@ public class CastWebContentsActivityTest {
         verifyBroadcastedIntent(
                 filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED), () -> {
                     mActivityLifecycle.pause().stop();
-                    assertTrue(mShadowActivity.isFinishing());
+                    assertTrue(mActivity.isFinishing());
                 }, true);
     }
 
@@ -439,7 +439,7 @@ public class CastWebContentsActivityTest {
         verifyBroadcastedIntent(
                 filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED), () -> {
                     mActivityLifecycle.pause().stop();
-                    assertTrue(mShadowActivity.isFinishing());
+                    assertTrue(mActivity.isFinishing());
                 }, true);
     }
 
