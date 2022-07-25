@@ -84,6 +84,7 @@
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/u2f/u2f_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
@@ -128,6 +129,8 @@ void InitializeDBus() {
 
   // Initialize Chrome dbus clients.
   dbus::Bus* bus = chromeos::DBusThreadManager::Get()->GetSystemBus();
+
+  chromeos::shill_clients::Initialize(bus);
 
   // NOTE: base::Feature is not initialized yet, so any non MultiProcessMash
   // dbus client initialization for Ash should be done in Shell::Init.
@@ -325,6 +328,7 @@ void ShutdownDBus() {
   ArcAppfuseProviderClient::Shutdown();
   AnomalyDetectorClient::Shutdown();
 
+  chromeos::shill_clients::Shutdown();
   chromeos::DBusThreadManager::Shutdown();
   chromeos::SystemSaltGetter::Shutdown();
 }

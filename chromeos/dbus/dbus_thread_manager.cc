@@ -9,7 +9,6 @@
 
 #include "base/logging.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/shill/shill_clients.h"
 
 namespace chromeos {
 
@@ -22,10 +21,6 @@ DBusThreadManager::~DBusThreadManager() = default;
 void DBusThreadManager::InitializeClients() {
   // Some clients call DBusThreadManager::Get() during initialization.
   DCHECK(g_dbus_thread_manager);
-
-  // TODO(stevenjb): Move these to dbus_helper.cc in src/chrome and any tests
-  // that require Shill clients. https://crbug.com/948390.
-  shill_clients::Initialize(GetSystemBus());
 
   if (!IsUsingFakes())
     VLOG(1) << "DBusThreadManager initialized for ChromeOS";
@@ -49,9 +44,6 @@ bool DBusThreadManager::IsInitialized() {
 void DBusThreadManager::Shutdown() {
   // Ensure that we only shutdown DBusThreadManager once.
   CHECK(g_dbus_thread_manager);
-
-  // TODO(stevenjb): Remove. https://crbug.com/948390.
-  shill_clients::Shutdown();
 
   DBusThreadManager* dbus_thread_manager = g_dbus_thread_manager;
   g_dbus_thread_manager = nullptr;
