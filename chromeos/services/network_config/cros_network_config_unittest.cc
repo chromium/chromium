@@ -842,6 +842,7 @@ TEST_F(CrosNetworkConfigTest, GetNetworkState) {
   EXPECT_EQ(mojom::OncSource::kDevice, network->source);
   EXPECT_TRUE(cellular->sim_locked);
   EXPECT_TRUE(cellular->sim_lock_enabled);
+  EXPECT_EQ(shill::kSIMLockPin, cellular->sim_lock_type);
 
   network = GetNetworkState("vpn_l2tp_guid");
   ASSERT_TRUE(network);

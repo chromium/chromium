@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/time/tick_clock.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
@@ -115,6 +116,10 @@ const char CellularMetricsLogger::kRestrictedSimPinUnblockSuccessHistogram[] =
     "Network.Cellular.Pin.Restricted.UnblockSuccess";
 
 // static
+const char CellularMetricsLogger::kSimLockNotificationLockType[] =
+    "Network.Ash.Cellular.SimLock.Policy.Notification.LockType";
+
+// static
 const base::TimeDelta CellularMetricsLogger::kInitializationTimeout =
     base::Seconds(15);
 
@@ -148,6 +153,20 @@ void CellularMetricsLogger::RecordSimLockNotificationEvent(
     const SimLockNotificationEvent notification_event) {
   base::UmaHistogramEnumeration(kSimLockNotificationEventHistogram,
                                 notification_event);
+}
+
+// static
+void CellularMetricsLogger::RecordSimLockNotificationLockType(
+    const std::string& sim_lock_type) {
+  if (sim_lock_type == shill::kSIMLockPin) {
+    base::UmaHistogramEnumeration(kSimLockNotificationLockType,
+                                  SimPinLockType::kPinLocked);
+  } else if (sim_lock_type == shill::kSIMLockPuk) {
+    base::UmaHistogramEnumeration(kSimLockNotificationLockType,
+                                  SimPinLockType::kPukLocked);
+  } else {
+    NOTREACHED();
+  }
 }
 
 // static

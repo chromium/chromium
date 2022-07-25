@@ -652,6 +652,7 @@
           signalStrength: 0,
           simLockEnabled: false,
           simLocked: false,
+          simLockType: '',
         };
         break;
       case mojom.NetworkType.kEthernet:

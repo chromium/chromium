@@ -142,6 +142,10 @@ void ManagedSimLockNotifier::OnCellularNetworksList(
   for (auto& network : networks) {
     if (network->type_state->get_cellular()->sim_lock_enabled) {
       ShowNotification();
+      if (network->type_state->get_cellular()->sim_locked) {
+        chromeos::CellularMetricsLogger::RecordSimLockNotificationLockType(
+            network->type_state->get_cellular()->sim_lock_type);
+      }
       return;
     }
   }

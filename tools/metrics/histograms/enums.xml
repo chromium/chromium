@@ -89125,6 +89125,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Dismissed"/>
 </enum>
 
+<enum name="SimPinLockType">
+  <int value="0" label="PIN Locked"/>
+  <int value="1" label="PUK Locked"/>
+</enum>
+
 <enum name="SimPinOperationResult">
   <int value="0" label="Success"/>
   <int value="1" label="Error Device Missing"/>

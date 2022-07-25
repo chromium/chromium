@@ -71,6 +71,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Ash.Cellular.SimLock.Policy.Notification.LockType"
+    enum="SimPinLockType" expires_after="2022-12-31">
+  <owner>hsuregan@chromium.org</owner>
+  <owner>nikhilcn@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the type of SIM lock affecting a cellular network when a user is
+    notified that the cellular network is SIM locked.
+  </summary>
+</histogram>
+
 <histogram name="Network.Ash.VPN.{VPNProviderType}.ConfigurationSource"
     enum="VPNConfigurationSource" expires_after="2022-12-31">
   <owner>chadduffin@chromium.org</owner>

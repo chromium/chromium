@@ -195,6 +195,9 @@ struct CellularStateProperties {
   bool sim_lock_enabled = false;
   // True when a SIM is present and locked.
   bool sim_locked = false;
+  // String representing the SIM lock type. This will be empty when the SIM
+  // is unlocked.
+  string sim_lock_type;
 };
 
 struct EthernetStateProperties {
