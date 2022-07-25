@@ -196,13 +196,31 @@ TEST_P(FormFieldTest, ParseSingleFieldFormsInsideParseFormField) {
 }
 
 // Test that `ParseSingleFieldForms` parses single field promo codes.
-TEST_P(FormFieldTest, ParseSingleFieldFormsPromoCode) {
+TEST_P(FormFieldTest, ParseFormFieldsForSingleFieldPromoCode) {
   base::test::ScopedFeatureList scoped_feature;
   scoped_feature.InitAndEnableFeature(
       features::kAutofillParseMerchantPromoCodeFields);
 
   // Parse single field promo code.
   AddTextFormFieldData("", "Promo code", MERCHANT_PROMO_CODE);
+  EXPECT_EQ(1, ParseSingleFieldForms());
+  TestClassificationExpectations();
+
+  // Don't parse other fields.
+  // UNKNOWN_TYPE is used as the expected type, which prevents it from being
+  // part of the expectations in `TestClassificationExpectations()`.
+  AddTextFormFieldData("", "Address line 1", UNKNOWN_TYPE);
+  EXPECT_EQ(1, ParseSingleFieldForms());
+  TestClassificationExpectations();
+}
+
+// Test that `ParseSingleFieldForms` parses single field IBAN.
+TEST_P(FormFieldTest, ParseFormFieldsForSingleFieldIban) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(features::kAutofillParseIbanFields);
+
+  // Parse single field IBAN.
+  AddTextFormFieldData("", "IBAN", IBAN_VALUE);
   EXPECT_EQ(1, ParseSingleFieldForms());
   TestClassificationExpectations();
 

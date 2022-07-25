@@ -196,7 +196,9 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug.com/1277480): Remove once launched.
        autofill::features::kAutofillEnableNameSurenameParsing,
        // TODO(crbug.com/1190334): Remove once launched.
-       autofill::features::kAutofillParseMerchantPromoCodeFields},
+       autofill::features::kAutofillParseMerchantPromoCodeFields,
+       // TODO(crbug.com/1335549): Remove once launched.
+       autofill::features::kAutofillParseIbanFields},
       // Disabled
       {});
 }
