@@ -121,6 +121,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/passwords:eg_test_support+eg2",
     "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
     "//ios/chrome/browser/ui/passwords:constants",
+    "//ios/chrome/browser/ui/settings/privacy:privacy_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

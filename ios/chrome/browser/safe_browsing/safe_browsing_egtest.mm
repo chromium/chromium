@@ -12,6 +12,7 @@
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -31,6 +32,7 @@
 
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
+using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 namespace {
@@ -203,6 +205,24 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [super tearDown];
 }
 
+#pragma mark - Helper methods
+
+// Instantiates an ElementSelector to detect the enhanced protection message on
+// interstitial page.
+- (ElementSelector*)enhancedProtectionMessage {
+  NSString* selector =
+      @"(function() {"
+       "  var element = document.getElementById('enhanced-protection-message');"
+       "  if (element == null) return false;"
+       "  if (element.classList.contains('hidden')) return false;"
+       "  return true;"
+       "})()";
+  NSString* description = @"Enhanced Safe Browsing message.";
+  return [ElementSelector selectorWithScript:selector
+                         selectorDescription:description];
+}
+
+#pragma mark - Tests
 // Tests that safe pages are not blocked.
 - (void)testSafePage {
   [ChromeEarlGrey loadURL:_safeURL1];
@@ -417,17 +437,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // Disable Enhanced Safe Browsing and verify that a dark red box prompting to
   // turn on Enhanced Protection is visible.
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSafeBrowsingEnhanced];
-  NSString* selector =
-      @"(function() {"
-       "  var element = document.getElementById('enhanced-protection-message');"
-       "  if (element == null) return false;"
-       "  if (element.classList.contains('hidden')) return false;"
-       "  return true;"
-       "})()";
-  NSString* description = @"Enhanced Safe Browsing message.";
   ElementSelector* enhancedSafeBrowsingMessage =
-      [ElementSelector selectorWithScript:selector
-                      selectorDescription:description];
+      [self enhancedProtectionMessage];
 
   [ChromeEarlGrey loadURL:_safeURL1];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
@@ -440,6 +451,37 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey loadURL:_safeURL2];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
   [ChromeEarlGrey loadURL:_realTimePhishingURL];
+  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                                    IDS_PHISHING_V4_HEADING)];
+  [ChromeEarlGrey
+      waitForWebStateNotContainingElement:enhancedSafeBrowsingMessage];
+}
+
+- (void)testEnhancedSafeBrowsingLink {
+  // Disable Enhanced Safe Browsing and verify that a dark red box prompting to
+  // turn on Enhanced Protection is visible.
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSafeBrowsingEnhanced];
+  ElementSelector* enhancedSafeBrowsingMessage =
+      [self enhancedProtectionMessage];
+
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+  [ChromeEarlGrey loadURL:_phishingURL];
+  [ChromeEarlGrey waitForWebStateContainingElement:enhancedSafeBrowsingMessage];
+  [ChromeEarlGrey tapWebStateElementWithID:@"enhanced-protection-link"];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kSettingsSafeBrowsingEnhancedProtectionCellId)]
+      performAction:grey_tap()];
+  GREYAssertTrue([ChromeEarlGrey userBooleanPref:prefs::kSafeBrowsingEnhanced],
+                 @"Failed to toggle-on Enhanced Safe Browsing");
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  // Verify that a dark red box prompting to turn on Enhanced Protection is not
+  // visible.
+  [ChromeEarlGrey loadURL:_phishingURL];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_PHISHING_V4_HEADING)];
   [ChromeEarlGrey
