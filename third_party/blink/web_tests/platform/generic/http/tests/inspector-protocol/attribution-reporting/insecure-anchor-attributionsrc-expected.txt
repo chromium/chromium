@@ -3,10 +3,9 @@ Issue reported: {
     code : AttributionReportingIssue
     details : {
         attributionReportingIssueDetails : {
-            frame : <object>
             invalidParameter : http://insecure.com
             violatingNodeId : <number>
-            violationType : AttributionSourceUntrustworthyOrigin
+            violationType : UntrustworthyReportingOrigin
         }
     }
 }

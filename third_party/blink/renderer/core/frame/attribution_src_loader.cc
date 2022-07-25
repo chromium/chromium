@@ -22,6 +22,7 @@
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/attribution_response_parsing.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -64,23 +65,17 @@ void RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus status) {
                                 status);
 }
 
-void MaybeLogAuditIssue(LocalFrame* frame,
-                        AttributionReportingIssueType issue_type,
-                        const absl::optional<String>& string,
-                        HTMLElement* element,
-                        absl::optional<uint64_t> request_id) {
-  DCHECK(frame);
-
-  if (!frame->IsAttached())
-    return;
-
-  absl::optional<String> id_string;
+void LogAuditIssue(ExecutionContext* execution_context,
+                   AttributionReportingIssueType issue_type,
+                   HTMLElement* element,
+                   absl::optional<uint64_t> request_id,
+                   const String& invalid_parameter) {
+  String id_string;
   if (request_id)
     id_string = IdentifiersFactory::SubresourceRequestId(*request_id);
 
-  AuditsIssue::ReportAttributionIssue(frame->DomWindow(), issue_type,
-                                      frame->GetDevToolsFrameToken(), element,
-                                      id_string, string);
+  AuditsIssue::ReportAttributionIssue(execution_context, issue_type, element,
+                                      id_string, invalid_parameter);
 }
 
 }  // namespace
@@ -104,24 +99,19 @@ bool CanRegisterAttributionInContext(
 
   if (!feature_policy_enabled) {
     if (log_issues) {
-      MaybeLogAuditIssue(
-          frame, AttributionReportingIssueType::kPermissionPolicyDisabled,
-          /*string=*/absl::nullopt, element, request_id);
+      LogAuditIssue(window,
+                    AttributionReportingIssueType::kPermissionPolicyDisabled,
+                    element, request_id, /*invalid_parameter=*/String());
     }
     return false;
   }
 
-  // The API is only allowed in secure contexts.
   if (!window->IsSecureContext()) {
     if (log_issues) {
-      MaybeLogAuditIssue(
-          frame,
-          context == AttributionSrcLoader::RegisterContext::kAttributionSrc
-              ? AttributionReportingIssueType::
-                    kAttributionSourceUntrustworthyOrigin
-              : AttributionReportingIssueType::kAttributionUntrustworthyOrigin,
-          frame->GetSecurityContext()->GetSecurityOrigin()->ToString(), element,
-          request_id);
+      LogAuditIssue(
+          window, AttributionReportingIssueType::kInsecureContext, element,
+          request_id, /*invalid_parameter=*/
+          window->GetSecurityContext().GetSecurityOrigin()->ToString());
     }
     return false;
   }
@@ -344,12 +334,10 @@ bool AttributionSrcLoader::UrlCanRegisterAttribution(
   scoped_refptr<const SecurityOrigin> reporting_origin =
       SecurityOrigin::Create(url);
   if (!reporting_origin->IsPotentiallyTrustworthy()) {
-    LogAuditIssue(
-        context == RegisterContext::kAttributionSrc
-            ? AttributionReportingIssueType::
-                  kAttributionSourceUntrustworthyOrigin
-            : AttributionReportingIssueType::kAttributionUntrustworthyOrigin,
-        reporting_origin->ToString(), element, request_id);
+    LogAuditIssue(window,
+                  AttributionReportingIssueType::kUntrustworthyReportingOrigin,
+                  element, request_id,
+                  /*invalid_parameter=*/reporting_origin->ToString());
     return false;
   }
 
@@ -545,9 +533,10 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
 
   if (!attribution_response_parsing::ParseSourceRegistrationHeader(
           source_json, *source_data)) {
-    loader_->LogAuditIssue(AttributionReportingIssueType::kInvalidHeader,
-                           source_json,
-                           /*element=*/nullptr, request_id);
+    LogAuditIssue(loader_->local_frame_->DomWindow(),
+                  AttributionReportingIssueType::kInvalidHeader,
+                  /*element=*/nullptr, request_id,
+                  /*invalid_parameter=*/source_json);
     return;
   }
 
@@ -566,14 +555,6 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     return;
 
   data_host_->TriggerDataAvailable(std::move(trigger_data));
-}
-
-void AttributionSrcLoader::LogAuditIssue(
-    AttributionReportingIssueType issue_type,
-    const absl::optional<String>& string,
-    HTMLElement* element,
-    absl::optional<uint64_t> request_id) {
-  MaybeLogAuditIssue(local_frame_, issue_type, string, element, request_id);
 }
 
 }  // namespace blink

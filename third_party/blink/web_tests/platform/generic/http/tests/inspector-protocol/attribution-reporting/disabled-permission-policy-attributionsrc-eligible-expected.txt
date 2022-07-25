@@ -3,7 +3,6 @@ Issue reported: {
     code : AttributionReportingIssue
     details : {
         attributionReportingIssueDetails : {
-            frame : <object>
             violatingNodeId : <number>
             violationType : PermissionPolicyDisabled
         }

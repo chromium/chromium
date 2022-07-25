@@ -143,12 +143,12 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kPermissionPolicyDisabled:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           PermissionPolicyDisabled;
-    case AttributionReportingIssueType::kAttributionSourceUntrustworthyOrigin:
+    case AttributionReportingIssueType::kUntrustworthyReportingOrigin:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
-          AttributionSourceUntrustworthyOrigin;
-    case AttributionReportingIssueType::kAttributionUntrustworthyOrigin:
+          UntrustworthyReportingOrigin;
+    case AttributionReportingIssueType::kInsecureContext:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
-          AttributionUntrustworthyOrigin;
+          InsecureContext;
     case AttributionReportingIssueType::kInvalidHeader:
       return protocol::Audits::AttributionReportingIssueTypeEnum::InvalidHeader;
   }
@@ -156,33 +156,25 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
 
 }  // namespace
 
-void AuditsIssue::ReportAttributionIssue(
-    ExecutionContext* reporting_execution_context,
-    AttributionReportingIssueType type,
-    const absl::optional<base::UnguessableToken>& offending_frame_token,
-    Element* element,
-    const absl::optional<String>& request_id,
-    const absl::optional<String>& invalid_parameter) {
+void AuditsIssue::ReportAttributionIssue(ExecutionContext* execution_context,
+                                         AttributionReportingIssueType type,
+                                         Element* element,
+                                         const String& request_id,
+                                         const String& invalid_parameter) {
   auto details = protocol::Audits::AttributionReportingIssueDetails::create()
                      .setViolationType(BuildAttributionReportingIssueType(type))
                      .build();
 
-  if (offending_frame_token) {
-    details->setFrame(
-        protocol::Audits::AffectedFrame::create()
-            .setFrameId(IdentifiersFactory::IdFromToken(*offending_frame_token))
-            .build());
-  }
   if (element) {
     details->setViolatingNodeId(DOMNodeIds::IdForNode(element));
   }
-  if (request_id) {
+  if (!request_id.IsNull()) {
     details->setRequest(protocol::Audits::AffectedRequest::create()
-                            .setRequestId(*request_id)
+                            .setRequestId(request_id)
                             .build());
   }
-  if (invalid_parameter) {
-    details->setInvalidParameter(*invalid_parameter);
+  if (!invalid_parameter.IsNull()) {
+    details->setInvalidParameter(invalid_parameter);
   }
 
   auto issue_details =
@@ -194,7 +186,7 @@ void AuditsIssue::ReportAttributionIssue(
                                 AttributionReportingIssue)
                    .setDetails(std::move(issue_details))
                    .build();
-  reporting_execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
+  execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
 
 void AuditsIssue::ReportNavigatorUserAgentAccess(

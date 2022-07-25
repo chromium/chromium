@@ -97,11 +97,6 @@ class CORE_EXPORT AttributionSrcLoader
                                        SrcType src_type,
                                        bool associated_with_navigation);
 
-  void LogAuditIssue(AttributionReportingIssueType issue_type,
-                     const absl::optional<String>& string,
-                     HTMLElement* element,
-                     absl::optional<uint64_t> request_id);
-
   const Member<LocalFrame> local_frame_;
   size_t num_resource_clients_ = 0;
 };
