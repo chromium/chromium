@@ -53,10 +53,17 @@ void HandleLocalOverrideRequest(
           base::BindOnce(
               [](const std::string& url,
                  content::WebUIDataSource::GotDataCallback callback) {
-                base::FilePath path =
-                    base::FilePath(kCCALocalOverrideDirectoryPath).Append(url);
+                // The url passed in only contain path and query part.
+                auto parsed_url = GURL(kChromeUICameraAppURL + url);
+                // parsed_url.path() includes the leading "/" but
+                // FilePath::Append only allows relative path.
+                base::FilePath file_path =
+                    base::FilePath(kCCALocalOverrideDirectoryPath)
+                        .Append(base::TrimString(
+                            parsed_url.path_piece(), "/",
+                            base::TrimPositions::TRIM_LEADING));
                 std::string result;
-                if (base::ReadFileToString(path, &result)) {
+                if (base::ReadFileToString(file_path, &result)) {
                   std::move(callback).Run(
                       base::RefCountedString::TakeString(&result));
                 } else {
