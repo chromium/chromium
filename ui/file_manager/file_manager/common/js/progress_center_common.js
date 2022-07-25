@@ -38,6 +38,8 @@ export const ProgressItemType = {
   // The item is general file transfer operation.
   // This is used for the mixed operation of summarized item.
   TRANSFER: 'transfer',
+  // The item is being trashed.
+  TRASH: 'trash',
   // The item is external drive format operation.
   FORMAT: 'format',
   // The item is archive operation.

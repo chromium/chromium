@@ -341,6 +341,7 @@ js_library("entry_location_impl") {
 
 js_library("file_operation_handler") {
   deps = [
+    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:file_operation_common",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:util",

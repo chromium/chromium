@@ -1180,6 +1180,12 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
     if (!permanentlyDelete &&
         fileManager.fileOperationManager.willUseTrash(
             fileManager.volumeManager, entries)) {
+      if (window.isSWA) {
+        chrome.fileManagerPrivate.startIOTask(
+            chrome.fileManagerPrivate.IOTaskType.TRASH, entries,
+            /*params=*/ {});
+        return;
+      }
       fileManager.fileOperationManager.deleteEntries(entries);
       return;
     }
@@ -1292,8 +1298,10 @@ CommandHandler.registerUndoDeleteToast = function(fileManager) {
     });
   };
 
-  util.addEventListenerToBackgroundComponent(
-      assert(fileManager.fileOperationManager), 'delete', onDeleted);
+  if (!window.isSWA) {
+    util.addEventListenerToBackgroundComponent(
+        assert(fileManager.fileOperationManager), 'delete', onDeleted);
+  }
 };
 
 /**
@@ -1307,6 +1315,18 @@ CommandHandler.COMMANDS_['restore-from-trash'] =
       execute(event, fileManager) {
         const entries =
             CommandUtil.getCommandEntries(fileManager, event.target);
+
+        if (window.isSWA) {
+          const infoEntries = entries.map(e => {
+            const entry = /** @type {!TrashEntry} */ (e);
+            return entry.infoEntry;
+          });
+          startIOTask(
+              chrome.fileManagerPrivate.IOTaskType.RESTORE, infoEntries,
+              /*params=*/ {});
+          return;
+        }
+
         fileManager.fileOperationManager.restoreDeleted(entries.map(e => {
           return /** @type {!TrashEntry} */ (e);
         }));

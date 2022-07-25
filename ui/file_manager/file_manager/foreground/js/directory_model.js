@@ -1704,6 +1704,7 @@ export class DirectoryModel extends EventTarget {
       chrome.fileManagerPrivate.IOTaskType.DELETE,
       chrome.fileManagerPrivate.IOTaskType.EMPTY_TRASH,
       chrome.fileManagerPrivate.IOTaskType.MOVE,
+      chrome.fileManagerPrivate.IOTaskType.RESTORE,
     ]);
     /** @type {!Set<?VolumeManagerCommon.RootType>} */
     const rootTypesRequireRefresh = new Set([
