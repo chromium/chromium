@@ -496,7 +496,7 @@ int HttpCache::Writers::DoCacheWriteData(int num_bytes) {
                                        read_buf_.get(), num_bytes,
                                        std::move(io_callback), true);
   } else {
-    rv = partial->CacheWrite(entry_->disk_entry, read_buf_.get(), num_bytes,
+    rv = partial->CacheWrite(entry_->GetEntry(), read_buf_.get(), num_bytes,
                              std::move(io_callback));
   }
   return rv;

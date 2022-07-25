@@ -130,9 +130,7 @@ HttpCache::ActiveEntry::ActiveEntry(disk_cache::Entry* entry, bool opened_in)
   DCHECK(disk_entry);
 }
 
-HttpCache::ActiveEntry::~ActiveEntry() {
-  disk_entry->Close();
-}
+HttpCache::ActiveEntry::~ActiveEntry() = default;
 
 bool HttpCache::ActiveEntry::HasNoTransactions() {
   return (!writers || writers->IsEmpty()) && readers.empty() &&
@@ -685,7 +683,7 @@ int HttpCache::DoomEntry(const std::string& key, Transaction* transaction) {
   DCHECK_EQ(0u, doomed_entries_.count(entry_ptr));
   doomed_entries_[entry_ptr] = std::move(entry);
 
-  entry_ptr->disk_entry->Doom();
+  entry_ptr->GetEntry()->Doom();
   entry_ptr->doomed = true;
 
   DCHECK(!entry_ptr->SafeToDestroy());
@@ -770,7 +768,7 @@ void HttpCache::DeactivateEntry(ActiveEntry* entry) {
   DCHECK(!entry->doomed);
   DCHECK(entry->SafeToDestroy());
 
-  std::string key = entry->disk_entry->GetKey();
+  std::string key = entry->GetEntry()->GetKey();
   if (key.empty())
     return SlowDeactivateEntry(entry);
 
@@ -918,7 +916,7 @@ void HttpCache::DestroyEntry(ActiveEntry* entry) {
 int HttpCache::AddTransactionToEntry(ActiveEntry* entry,
                                      Transaction* transaction) {
   DCHECK(entry);
-  DCHECK(entry->disk_entry);
+  DCHECK(entry->GetEntry());
   // Always add a new transaction to the queue to maintain FIFO order.
   entry->add_to_entry_queue.push_back(transaction);
   ProcessQueuedTransactions(entry);
@@ -964,7 +962,7 @@ void HttpCache::DoneWithEntry(ActiveEntry* entry,
   bool is_mode_read_only = transaction->mode() == Transaction::READ;
 
   if (!entry_is_complete && !is_mode_read_only && is_partial)
-    entry->disk_entry->CancelSparseIO();
+    entry->GetEntry()->CancelSparseIO();
 
   // Transaction is waiting in the done_headers_queue.
   auto it = std::find(entry->done_headers_queue.begin(),
@@ -1061,12 +1059,12 @@ void HttpCache::DoomEntryValidationNoMatch(ActiveEntry* entry) {
 
   entry->headers_transaction = nullptr;
   if (entry->SafeToDestroy()) {
-    entry->disk_entry->Doom();
+    entry->GetEntry()->Doom();
     DestroyEntry(entry);
     return;
   }
 
-  DoomActiveEntry(entry->disk_entry->GetKey());
+  DoomActiveEntry(entry->GetEntry()->GetKey());
 
   // Restart only add_to_entry_queue transactions.
   // Post task here to avoid a race in creating the entry between |transaction|
@@ -1107,10 +1105,10 @@ void HttpCache::ProcessEntryFailure(ActiveEntry* entry) {
   RemoveAllQueuedTransactions(entry, &list);
 
   if (entry->SafeToDestroy()) {
-    entry->disk_entry->Doom();
+    entry->GetEntry()->Doom();
     DestroyEntry(entry);
   } else {
-    DoomActiveEntry(entry->disk_entry->GetKey());
+    DoomActiveEntry(entry->GetEntry()->GetKey());
   }
   // ERR_CACHE_RACE causes the transaction to restart the whole process.
   for (auto* queued_transaction : list)

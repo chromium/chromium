@@ -413,7 +413,7 @@ int HttpCache::Transaction::TransitionToReadingState() {
   // If it's a writer and a full request then it may read from the cache if its
   // offset is behind the current offset else from the network.
   int disk_entry_size =
-      safe_entry_.value()->disk_entry->GetDataSize(kResponseContentIndex);
+      safe_entry_.value()->GetEntry()->GetDataSize(kResponseContentIndex);
   if (read_offset_ == disk_entry_size ||
       safe_entry_.value()->writers->network_read_only()) {
     next_state_ = STATE_NETWORK_READ_CACHE_WRITE;
@@ -1488,7 +1488,7 @@ int HttpCache::Transaction::DoAddToEntryComplete(int result) {
   // already written, to avoid data race since cache thread can also access
   // this.
   if (!cache_->IsWritingInProgress(entry()))
-    open_entry_last_used_ = safe_entry_.value()->disk_entry->GetLastUsed();
+    open_entry_last_used_ = safe_entry_.value()->GetEntry()->GetLastUsed();
 
   // TODO(jkarlin): We should either handle the case or DCHECK.
   if (result != OK) {
@@ -1550,11 +1550,11 @@ int HttpCache::Transaction::DoCacheReadResponse() {
   TransitionToState(STATE_CACHE_READ_RESPONSE_COMPLETE);
 
   io_buf_len_ =
-      safe_entry_.value()->disk_entry->GetDataSize(kResponseInfoIndex);
+      safe_entry_.value()->GetEntry()->GetDataSize(kResponseInfoIndex);
   read_buf_ = base::MakeRefCounted<IOBuffer>(io_buf_len_);
 
   net_log_.BeginEvent(NetLogEventType::HTTP_CACHE_READ_INFO);
-  return safe_entry_.value()->disk_entry->ReadData(
+  return safe_entry_.value()->GetEntry()->ReadData(
       kResponseInfoIndex, 0, read_buf_.get(), io_buf_len_, io_callback_);
 }
 
@@ -1599,7 +1599,7 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
   // associated bug.
   if (!cache_->IsWritingInProgress(entry())) {
     int current_size =
-        safe_entry_.value()->disk_entry->GetDataSize(kResponseContentIndex);
+        safe_entry_.value()->GetEntry()->GetDataSize(kResponseContentIndex);
     int64_t full_response_length = response_.headers->GetContentLength();
 
     // Some resources may have slipped in as truncated when they're not.
@@ -1731,7 +1731,7 @@ int HttpCache::Transaction::DoCacheDispatchValidation() {
 
 int HttpCache::Transaction::DoCacheQueryData() {
   TransitionToState(STATE_CACHE_QUERY_DATA_COMPLETE);
-  return safe_entry_.value()->disk_entry->ReadyForSparseIO(io_callback_);
+  return safe_entry_.value()->GetEntry()->ReadyForSparseIO(io_callback_);
 }
 
 int HttpCache::Transaction::DoCacheQueryDataComplete(int result) {
@@ -1752,7 +1752,7 @@ int HttpCache::Transaction::DoStartPartialCacheValidation() {
   }
 
   TransitionToState(STATE_COMPLETE_PARTIAL_CACHE_VALIDATION);
-  return partial_->ShouldValidateCache(safe_entry_.value()->disk_entry,
+  return partial_->ShouldValidateCache(safe_entry_.value()->GetEntry(),
                                        io_callback_);
 }
 
@@ -1769,7 +1769,7 @@ int HttpCache::Transaction::DoCompletePartialCacheValidation(int result) {
     return result;
   }
 
-  partial_->PrepareCacheValidation(safe_entry_.value()->disk_entry,
+  partial_->PrepareCacheValidation(safe_entry_.value()->GetEntry(),
                                    &custom_request_->extra_headers);
 
   if (reading_ && partial_->IsCurrentRangeCached()) {
@@ -2225,7 +2225,7 @@ int HttpCache::Transaction::DoTruncateCachedData() {
     return OK;
   net_log_.BeginEvent(NetLogEventType::HTTP_CACHE_WRITE_DATA);
   // Truncate the stream.
-  return safe_entry_.value()->disk_entry->WriteData(
+  return safe_entry_.value()->GetEntry()->WriteData(
       kResponseContentIndex, /*offset=*/0,
       /*buf=*/nullptr, /*buf_len=*/0, io_callback_, /*truncate=*/true);
 }
@@ -2475,11 +2475,11 @@ int HttpCache::Transaction::DoCacheReadData() {
 
   net_log_.BeginEvent(NetLogEventType::HTTP_CACHE_READ_DATA);
   if (partial_) {
-    return partial_->CacheRead(safe_entry_.value()->disk_entry, read_buf_.get(),
+    return partial_->CacheRead(safe_entry_.value()->GetEntry(), read_buf_.get(),
                                read_buf_len_, io_callback_);
   }
 
-  return safe_entry_.value()->disk_entry->ReadData(
+  return safe_entry_.value()->GetEntry()->ReadData(
       kResponseContentIndex, read_offset_, read_buf_.get(), read_buf_len_,
       io_callback_);
 }
@@ -2851,7 +2851,7 @@ int HttpCache::Transaction::ValidateEntryHeadersAndContinue() {
   DCHECK_EQ(mode_, READ_WRITE);
 
   if (!partial_->UpdateFromStoredHeaders(
-          response_.headers.get(), safe_entry_.value()->disk_entry, truncated_,
+          response_.headers.get(), safe_entry_.value()->GetEntry(), truncated_,
           cache_->IsWritingInProgress(entry()))) {
     return DoRestartPartialRequest();
   }
@@ -3436,7 +3436,7 @@ int HttpCache::Transaction::WriteResponseInfoToEntry(
                         : 0);
   }
 
-  return safe_entry_.value()->disk_entry->WriteData(
+  return safe_entry_.value()->GetEntry()->WriteData(
       kResponseInfoIndex, 0, data.get(), io_buf_len_, io_callback_, true);
 }
 
@@ -3649,7 +3649,7 @@ HttpTransaction* HttpCache::Transaction::network_transaction() {
 bool HttpCache::Transaction::CanResume(bool has_data) {
   // Double check that there is something worth keeping.
   if (has_data &&
-      !safe_entry_.value()->disk_entry->GetDataSize(kResponseContentIndex))
+      !safe_entry_.value()->GetEntry()->GetDataSize(kResponseContentIndex))
     return false;
 
   if (method_ != "GET")

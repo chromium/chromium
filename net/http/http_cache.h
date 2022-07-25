@@ -36,6 +36,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
+#include "net/disk_cache/disk_cache.h"
 #include "net/http/http_transaction_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -44,14 +45,6 @@ class GURL;
 namespace base::android {
 class ApplicationStatusListener;
 }  // namespace base::android
-
-namespace disk_cache {
-class Backend;
-struct BackendResult;
-class BackendFileOperationsFactory;
-class Entry;
-class EntryResult;
-}  // namespace disk_cache
 
 namespace net {
 
@@ -374,9 +367,11 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
     bool TransactionInReaders(Transaction* transaction) const;
 
+    disk_cache::Entry* GetEntry() { return disk_entry.get(); }
+
     base::SafeRef<ActiveEntry> GetSafeRef() const;
 
-    const raw_ptr<disk_cache::Entry, DanglingUntriaged> disk_entry;
+    disk_cache::ScopedEntryPtr disk_entry;
 
     // Indicates if the disk_entry was opened or not (i.e.: created).
     // It is set to true when a transaction is added to an entry so that other,
