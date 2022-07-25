@@ -307,6 +307,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
 <translation id="2819276065543622893">Você sairá agora.</translation>
+<translation id="2822551631199737692">Câmera em uso</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> não é compatível com <ph name="SPECIFIED_RESOLUTION" />. A resolução foi modificada para <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Estante</translation>
 <translation id="2831035692318564937">Ativado até o amanhecer</translation>
@@ -809,6 +810,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5682642926269496722">O Google Assistente não está disponível para a conta de usuário atual.</translation>
 <translation id="5689633613396158040">O Modo noturno facilita a visualização da sua tela ou a leitura com pouca luz. Toque para mudar o horário de ativação do Modo noturno ou desative-o completamente.</translation>
 <translation id="5691772641933328258">Impressão digital não reconhecida</translation>
+<translation id="5693255400847650006">Microfone em uso</translation>
 <translation id="570390244361237317">Todos os apps: use as teclas de seta para acessar todos os apps</translation>
 <translation id="5707775774148071965">Seu dispositivo oferece suporte a uma taxa de dados mais alta do que seu cabo. O desempenho do dispositivo pode ser limitado.</translation>
 <translation id="5710450975648804523">O "Não perturbe" está ativado</translation>
@@ -984,6 +986,7 @@ Nova instalação</translation>
 <translation id="6723839937902243910">Energia</translation>
 <translation id="6727969043791803658">Conectado, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Câmera e microfone em uso</translation>
 <translation id="6739144137573853180">IR PARA CONFIGURAÇÕES</translation>
 <translation id="6751052314767925245">Aplicado pelo seu administrador</translation>
 <translation id="6751826523481687655">O acompanhamento de desempenho está ativado</translation>
@@ -1167,6 +1170,7 @@ Nova instalação</translation>
 <translation id="7842569679327885685">Aviso: recurso experimental</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7848989271541991537">Movido para página <ph name="PAGE_NUMBER" />, linha <ph name="ROW_NUMBER" />, coluna <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Deslize com três dedos para cima para abrir a Visão geral</translation>
 <translation id="7866482334467279021">ativada</translation>
 <translation id="7868900307798234037">Desbloqueio por impressão digital</translation>
@@ -1247,6 +1251,7 @@ Nova instalação</translation>
 <translation id="828708037801473432">Desativada</translation>
 <translation id="8297006494302853456">Fraco</translation>
 <translation id="8308637677604853869">Menu anterior</translation>
+<translation id="830868413617744215">Beta</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Janela <ph name="WINDOW_TITLE" /> selecionada</translation>
 <translation id="8351131234907093545">Criar nota</translation>

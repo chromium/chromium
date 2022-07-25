@@ -1276,7 +1276,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2191754378957563929">Włączono</translation>
 <translation id="2192505247865591433">Z:</translation>
 <translation id="2193365732679659387">Ustawienia zaufania</translation>
-<translation id="2194554416429452547">Podczas testów Chrome sprawdza, w jaki sposób można ograniczyć spam, oszustwa i udostępnianie treści między witrynami. Chrome również <ph name="ESTIMATE_INTERESTS_LINK" />, do których witryny mogą dostosowywać pokazywane Ci reklamy. Swoimi zainteresowaniami możesz zarządzać w ustawieniach.</translation>
 <translation id="2194856509914051091">Istotne kwestie</translation>
 <translation id="2195331105963583686">Po tej dacie nadal będzie można używać urządzenia <ph name="DEVICE_TYPE" />, ale nie będziesz już otrzymywać automatycznych aktualizacji zabezpieczeń i oprogramowania</translation>
 <translation id="2195729137168608510">Ochrona poczty e-mail</translation>
@@ -1941,7 +1940,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2806891468525657116">Skrót już istnieje</translation>
 <translation id="2807517655263062534">Tutaj wyświetlają się pobrane pliki</translation>
 <translation id="2809586584051668049">i jeszcze <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
-<translation id="2810235462964014915">Wysłano prośbę o odczytanie i zmianę strony <ph name="SITE_NAME" /></translation>
 <translation id="2811205483104563968">Konta</translation>
 <translation id="2811564570599779918">Ograniczanie spamu i oszustw</translation>
 <translation id="2812049959647166806">Standard Thunderbolt nie jest obsługiwany</translation>
@@ -3869,6 +3867,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4689421377817139245">Zsynchronizuj tę zakładkę ze swoim iPhonem</translation>
 <translation id="4690091457710545971">&lt;Cztery pliki wygenerowane przez oprogramowanie układowe Wi-Fi firmy Intel: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. Pierwsze trzy to pliki binarne zawierające zrzuty rejestru. Intel twierdzi, że nie zawierają żadnych danych umożliwiających identyfikację osoby lub urządzenia. Ostatni plik zawiera ślad wykonywania oprogramowania układowego firmy Intel. Wszelkie dane umożliwiające identyfikację osoby lub urządzenia zostały z niego usunięte, ale jest zbyt duży, by go tu wyświetlić. Te pliki zostały wygenerowane w reakcji na niedawne problemy z Wi-Fi na Twoim urządzeniu i zostaną przekazane firmie Intel, by pomóc w rozwiązaniu tych problemów.&gt;</translation>
 <translation id="4691791363716065510">Strona <ph name="ORIGIN" /> będzie mogła wyświetlać plik <ph name="FILENAME" />, dopóki nie zamkniesz wszystkich jej kart</translation>
+<translation id="4692342362587775867">Powiadomienia z tej strony mogą zakłócać działanie usług</translation>
 <translation id="4692623383562244444">Wyszukiwarki</translation>
 <translation id="4692736633446859167">Poprzednio nie zezwoliłeś(-aś) na żadne rozszerzenia na <ph name="SITE" />. Jeśli dodasz tutaj tę witrynę, inne rozszerzenia również będą mogły prosić o uprawnienia do odczytywania i zmieniania danych Twojej witryny na <ph name="SITE" />.</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -5256,6 +5255,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="6086846494333236931">Zainstalowane przez administratora</translation>
 <translation id="6087746524533454243">Szukasz strony z informacjami o przeglądarce? Wejdź na</translation>
 <translation id="6087960857463881712">Niesamowita twarz</translation>
+<translation id="6088535503330933227">Chrome sprawdza, w jaki sposób można ograniczyć spam, oszustwa i udostępnianie treści między witrynami. Chrome również <ph name="ESTIMATE_INTERESTS_LINK" />, do których witryny mogą dostosowywać pokazywane Ci reklamy. Swoimi zainteresowaniami możesz zarządzać w ustawieniach.</translation>
 <translation id="608912389580139775">Aby dodać tę stronę do listy Do przeczytania, kliknij ikonę Zakładka</translation>
 <translation id="6091761513005122595">Udział został podłączony.</translation>
 <translation id="6093888419484831006">Anulowanie aktualizacji...</translation>
@@ -7672,6 +7672,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8438566539970814960">Ulepsz wyszukiwanie i przeglądanie</translation>
 <translation id="8439506636278576865">Proponuj tłumaczenie stron w tym języku</translation>
 <translation id="8440630305826533614">Aplikacje na Linuksa</translation>
+<translation id="844063558976952706">Zawsze w tej witrynie</translation>
 <translation id="8443795068008423036">Sprawdź, czy urządzenie jest aktualne, i spróbuj ponownie</translation>
 <translation id="8446884382197647889">Więcej informacji</translation>
 <translation id="8447409163267621480">Uwzględnij Ctrl lub Alt</translation>

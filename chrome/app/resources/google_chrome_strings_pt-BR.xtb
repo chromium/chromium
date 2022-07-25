@@ -66,6 +66,7 @@
 <translation id="2139300032719313227">Reiniciar o ChromeOS</translation>
 <translation id="2151406531797534936">Reinicie o Chrome agora</translation>
 <translation id="2174917724755363426">A instalação não foi concluída. Tem certeza de que quer cancelar?</translation>
+<translation id="223889379102603431">Informações sobre como o Chrome gerencia os certificados raiz dele</translation>
 <translation id="2258103955319320201">Para ter acesso aos recursos do navegador Chrome em todos os seus dispositivos, faça login e ative a sincronização</translation>
 <translation id="2290014774651636340">As chaves da API do Google não foram encontradas. Algumas funcionalidades do Google Chrome serão desativadas.</translation>
 <translation id="2290095356545025170">Você quer mesmo desinstalar o Google Chrome?</translation>
@@ -348,6 +349,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8129812357326543296">Sobre o Google Chrome</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8255190535488645436">O Google Chrome está usando sua câmera e seu microfone.</translation>
+<translation id="8270775718612349140">Certificados gerenciados pelo Chrome</translation>
 <translation id="8286862437124483331">O Google Chrome está tentando mostrar senhas. Digite sua senha do Windows para permitir isso.</translation>
 <translation id="828798499196665338">Seu pai/mãe desativou "Permissões para sites, apps e extensões" no Chrome. Não é permitido ativar <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Nossa! Houve uma falha no Google Chrome. Reiniciar agora?</translation>

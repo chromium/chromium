@@ -1528,6 +1528,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5123063207673082822">Helg</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5125394840236832993">B-Plus</translation>
+<translation id="5125751979347152379">Ugyldig nettadresse.</translation>
 <translation id="512592033764059484">Fotball</translation>
 <translation id="5126510351761255129">Bekreft kortet ditt</translation>
 <translation id="512670116361803001">Det fungerer kanskje ikke så bra å endre størrelse på <ph name="APP_NAME" />. Bruk forhåndsinnstilte vindusstørrelser for å unngå at appen støter på problemer.</translation>
@@ -2729,6 +2730,7 @@ Mer informasjon:
 <translation id="8508648098325802031">Søkeikon</translation>
 <translation id="8511402995811232419">Administrer informasjonskapsler</translation>
 <translation id="851353418319061866">Nøyaktighetssjekk</translation>
+<translation id="8513580896341796021">Nedlastingen er startet. For å se den, trykk på |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">HID-enheten tillates av administratoren din</translation>
 <translation id="8522552481199248698">Chrome kan hjelpe deg med å beskytte Google-kontoen din og endre passordet ditt.</translation>
 <translation id="8530813470445476232">Tøm nettleserloggen, slett informasjonskapsler, tøm bufferen med mer i Chrome-innstillingene</translation>

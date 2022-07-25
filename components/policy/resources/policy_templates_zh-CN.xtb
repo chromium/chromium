@@ -13,6 +13,7 @@
       如果此政策的值不是一个有效的域名，系统便不会应用此政策。</translation>
 <translation id="1004590217607585595">Web 应用管理设置</translation>
 <translation id="1006218396155867129">禁止远程访问用户将文件传输到远程主机或从远程主机传输文件</translation>
+<translation id="1007149936182752368">禁止修改书签</translation>
 <translation id="1010151305531217567">将鼠标主键切换成右键</translation>
 <translation id="1011266755572744012">用于指定用户最多可以使用多少张纸来完成单个打印任务。
 
@@ -75,6 +76,7 @@
       如需查看可用变量的列表，请访问 https://support.google.com/chrome/a?p=Supported_directory_variables。
 
       如果您未设置此政策，系统将会使用默认的个人资料目录。</translation>
+<translation id="1059069692400941670">禁止在首次运行时导入默认搜索引擎</translation>
 <translation id="1062011392452772310">为设备启用远程认证</translation>
 <translation id="1062407476771304334">替换</translation>
 <translation id="1069489575852947981">如果此政策已启用或未设置，系统将设置设备本地帐号以实现零延迟的自动登录。<ph name="PRODUCT_OS_NAME" />支持利用键盘快捷键 Ctrl + Alt + S 绕过自动登录并显示登录屏幕。
@@ -93,6 +95,7 @@
 <translation id="1082802595100075771">允许用户选择使用匿名 Google 服务为无标签图片提供自动说明</translation>
 <translation id="1087437665304381368">此政策仅用于控制 <ph name="PRODUCT_OS_NAME" />开发者模式。如果您想阻止对 Android 开发者选项的访问，则需设置 <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> 政策。</translation>
 <translation id="1087707496788636333">Chrome 企业版政策列表迁址了！请更新您的书签以改用 <ph name="POLICY_DOCUMENTATION_URL" />。</translation>
+<translation id="1089150222292592899">在 SAML IdP 页面上自动填充用户名</translation>
 <translation id="1091765729282771296">允许网站请求用户授予对 HID 设备的访问权限</translation>
 <translation id="1095209545735032039">禁止在这些网站上使用 Serial API</translation>
 <translation id="1096105751829466145">默认搜索服务提供商</translation>
@@ -1857,6 +1860,7 @@
 
       如果此政策已停用，则无法更新组件。不过，某些组件不受此政策限制：只要相应组件不含可执行的代码，并且对浏览器的安全性至关重要，系统就不会禁止更新该组件。
       这类组件包括证书吊销列表、子资源过滤器，等等。</translation>
+<translation id="2939335382784544151">允许在首次运行时导入浏览记录</translation>
 <translation id="2940127076681735544">如果此政策设为一个有效网址，<ph name="PRODUCT_NAME" /> 就会从该网址下载网站列表，并参照 <ph name="SITELIST_POLICY_NAME" /> 政策的设定应用相应规则。
 
       如果此政策未设置（或设为一个无效网址），<ph name="PRODUCT_NAME" /> 便不会将它用作浏览器切换规则的来源。
@@ -2288,6 +2292,7 @@
 
       如果您不设置此政策，用户可以选择要在桌面和登录屏幕背景中显示的图片。</translation>
 <translation id="3315324240256767419">启用“ghost 窗口”功能。</translation>
+<translation id="3323819750604111729">允许在首次运行时导入书签</translation>
 <translation id="332771718998993005">将广告中宣传的名称确定为 <ph name="PRODUCT_NAME" /> 目标名称。
 
           如果此政策设为非空字符串，该字符串将被用作 <ph name="PRODUCT_NAME" /> 目标名称。否则，目标名称便是设备名称。如果此政策未设置，则目标名称将是设备名称，且设备所有者（或者该设备的托管网域内的用户）将能更改该名称。该名称的长度不得超过 24 个字符。</translation>
@@ -2761,6 +2766,7 @@
       如果此政策设为 2，系统会阻止含侵扰性广告的网站展示广告。</translation>
 <translation id="3877517141460819966">集成的双重身份验证模式</translation>
 <translation id="3879208481373875102">配置强制安装的 Web 应用的列表</translation>
+<translation id="3879700444818346084">禁止在首次运行时导入已保存的密码</translation>
 <translation id="388237772682176890">我们在 M53 中弃用了此政策，并在 M54 中移除了此政策（因为 SPDY/3.1 已不再受支持）。
 
       禁止在 <ph name="PRODUCT_NAME" /> 中使用 SPDY 协议。
@@ -3029,6 +3035,7 @@
       在自助服务终端会话中，没有宽限期，系统也不会发出关于重新启动设备的通知。
 </translation>
 <translation id="4187576366596772431">禁止在这些网站上使用 WebHID API</translation>
+<translation id="4190316993598857632">允许修改书签</translation>
 <translation id="4192388905594723944">验证远程访问客户端身份验证令牌时使用的网址</translation>
 <translation id="4203055629055264833">如果此政策已启用或未设置，用户便可通过切换工具栏中的图标来开启侧边栏以显示默认搜索引擎的最新搜索结果页面。
 
@@ -3722,6 +3729,7 @@
 <translation id="5105313908130842249">使用电池供电时的屏幕锁定延迟时间</translation>
 <translation id="5108031557082757679">已停用企业设备打印机</translation>
 <translation id="5109383437323376357">确定变体的可用情况</translation>
+<translation id="5120168808610189805">允许在首次运行时导入主页</translation>
 <translation id="5124368997194894978">启用“接通 AC（交流电）时启动”</translation>
 <translation id="5130213897914754028">阻止网站使用 SharedArrayBuffers</translation>
 <translation id="5130935469849337738">一律提供翻译</translation>
@@ -4393,6 +4401,7 @@
       如果“安全浏览”功能已（无论是被政策还是被用户）停用，此行为便不会触发。若要强制开启“安全浏览”功能，请使用 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 政策或 <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" /> 政策。</translation>
 <translation id="5835312413892670446">屏幕截取设置</translation>
 <translation id="5836064773277134605">限制远程访问主机使用的UDP端口范围</translation>
+<translation id="583627479140113555">允许在首次运行时导入已保存的密码</translation>
 <translation id="5837898601525273156">如果您设置了 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />，并且 <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> 已启用，高级电池充电模式电源管理政策会保持开启状态（如果相应设备支持的话）。在此模式下，系统可以在非工作时间使用标准充电算法和其他技术来最大限度地延长电池寿命。在工作时间，系统会使用快速充电，以加快充电速度。您应通过开始时间和持续时间指定每天系统使用量最大的时段。
 
       如果此政策已停用或未设置，高级电池充电模式会保持关闭状态。
@@ -4706,6 +4715,13 @@
       请按 ID（例如 pjkljhegncpnkpknbcohdijeoejaedia）指定 Chrome 应用，按应用包名称（例如 com.google.android.gm）指定 Android 应用，按 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 中使用的网址（例如 https://google.com/maps）指定 Web 应用。
 
       如果您不设置此政策，用户便可以更改启动器中的固定应用列表。</translation>
+<translation id="6183409603139321084">在登录屏幕和锁定的屏幕上进行在线身份验证期间，<ph name="PRODUCT_OS_NAME" /> 可以尝试自动填充 SAML IdP 页面上的用户名字段。
+
+      它会使用与用户的 <ph name="PRODUCT_OS_NAME" /> 个人资料关联的电子邮件地址，因此，如果用户需要在 SAML IdP 页面上使用不同的电子邮件地址，此设置应被停用。
+
+      通过此政策接收的字符串将用作 IdP 页面上的网址参数名称，并会以用户的电子邮件地址为值。
+
+      服务器端应负责在身份提供方与其支持的网址参数之间进行映射。</translation>
 <translation id="6190367314942602985">报告用户标识信息</translation>
 <translation id="6191963383731098056">此政策让管理员能够配置 <ph name="PRODUCT_NAME" /> 主题的颜色。输入的字符串应是有效的十六进制颜色字符串（采用“#RRGGBB”格式）。
 
@@ -5232,6 +5248,7 @@
       您只需将以下各项连结起来即可指定 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 哈希：哈希算法名称、“/”字符，以及相应哈希算法（对所指定证书的 DER 编码 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 应用的哈希算法）的 Base64 编码。Base64 编码的格式与 SPKI 指纹的格式一致。唯一得到认可的哈希算法是 sha256，其他算法都会被忽略。
 
       如果您不设置此政策，<ph name="PRODUCT_NAME" /> 便会将那些应按照证书透明度要求进行披露但却未予披露的证书视为不可信证书。</translation>
+<translation id="6703381779632216549">允许在首次运行时导入默认搜索引擎</translation>
 <translation id="6704445641918520643">启用延迟的登录 WebUI 加载。</translation>
 <translation id="6704515759227307131">此政策已被弃用，且已被 AdvancedProtectionAllowed 取代。
 
@@ -6178,15 +6195,6 @@
 <translation id="7687943045976362719">如果设置了此政策，则指定的内容类型由 <ph name="PRODUCT_FRAME_NAME" />处理。
 
           如果未设置此政策，系统将对所有网站使用默认渲染程序。（<ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> 政策可用于配置默认渲染程序。）</translation>
-<translation id="7694807474048279351">安排在应用 <ph name="PRODUCT_OS_NAME" />更新后自动重启。
-
-      如果此政策的值设为 True，则当应用 <ph name="PRODUCT_OS_NAME" />更新后需要重启才能完成更新过程时，系统会安排自动重启。系统会立即安排重启，但如果用户当前正在使用此设备，那么设备重启操作最多可能延迟 24 小时。
-
-      如果此政策的值设为 False，则当应用 <ph name="PRODUCT_OS_NAME" />更新后，系统不会安排自动重启。更新过程会在用户下次重启设备时完成。
-
-      如果您设置了此政策，那么用户将无法对其进行更改或覆盖。
-
-      请注意：目前，系统仅在显示登录屏幕或正在访问自助服务终端应用时才会启用自动重启。这在日后会有所改变，但此政策将始终适用，无论是否正在进行任何特殊类型的会话。</translation>
 <translation id="7696412993033202071">外部身份验证应用启动网址</translation>
 <translation id="7701341006446125684">设置应用和扩展程序缓存大小（以字节为单位）</translation>
 <translation id="770339941914297201">新行为：自助服务终端 Chrome 应用将仅使用政策提供的更新网址进行更新</translation>
@@ -6226,6 +6234,7 @@
 <translation id="77379430721695807">通过设置此政策，您可以指定一个网址列表，在其中列出与请求网址的安全来源匹配的网址格式。如果找到了匹配项，系统会在不提示用户的情况下直接允许相应网址使用录像设备
 
       如需详细了解有效的 <ph name="URL_LABEL" /> 格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
+<translation id="7740644123648617252">允许在首次运行时导入自动填充表单数据</translation>
 <translation id="7744253761377202223">使用交流电源供电时的屏幕亮度百分比</translation>
 <translation id="7747447585227954402">允许设备在 <ph name="PRODUCT_OS_NAME" />上使用 <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="7749024457938190837">能够在通过 chrome.printing API 发送打印任务时跳过确认对话框的扩展程序</translation>
@@ -6383,6 +6392,7 @@
 <translation id="7925224837072026018">通过设置此政策，您可以授权扩展程序或 Android 应用使用企业密钥。在受管理的帐号中使用 chrome.enterprise.platformKeys API 生成的密钥会被指定为仅供企业使用。用户无法授权/取消授权扩展程序或 Android 应用使用此类密钥。
 
       默认情况下，扩展程序或 Android 应用无权使用此类密钥（相当于针对扩展程序或 Android 应用将 allowCorporateKeyUsage 设为 False）。只有在针对某个扩展程序或 Android 应用将 allowCorporateKeyUsage 设为 True 的情况下，该扩展程序/应用才能利用被标记为供企业使用的平台密钥签署任意数据。为了防范黑客盗用密钥，切勿将这项权限授予不信任的扩展程序或 Android 应用。</translation>
+<translation id="793188693675675950">禁止在首次运行时导入主页</translation>
 <translation id="7933141401888114454">允许创建受监管用户</translation>
 <translation id="793473937901685727">为 ARC 应用设置证书可用性</translation>
 <translation id="7936302526928951356">User-Agent 字符串不会冻结主要版本。</translation>
@@ -7025,6 +7035,7 @@
       从 <ph name="PRODUCT_NAME" /> 92 版开始，此政策在无头模式中也受支持。
 
       注意：屏蔽内部 chrome://* 网址可能会导致意外的错误。</translation>
+<translation id="8619748440665904084">禁止在首次运行时导入自动填充表单数据</translation>
 <translation id="8623672932476443039">如果启用此政策，用户可以访问已隔离应用的开发者模式。
       如果停用此政策，用户将无法使用这些功能。
       如果未设置此政策，则默认情况下，受企业管理的用户无法在 Chrome 操作系统上使用该模式，但在其他操作系统上可以使用，而其他用户在任何操作系统上均可使用。</translation>
@@ -7071,6 +7082,7 @@
       如果此政策已停用或未设置，远程访问主机便能与任何本地用户关联。</translation>
 <translation id="867708016260789630">强制使用级别至少为“中等”的 YouTube 受限模式</translation>
 <translation id="8677853537025397834">允许在这些网站上使用 WebHID API</translation>
+<translation id="8685018726115727387">禁止在首次运行时导入浏览记录</translation>
 <translation id="8685024486845674965">重复使用密码可触发密码保护服务警告功能</translation>
 <translation id="8685680544554917389">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 将会自动播放媒体。如果此政策设为 False，<ph name="PRODUCT_NAME" /> 不会自动播放媒体。
 
@@ -7439,6 +7451,7 @@
 
       如果此政策已停用，已注册的设备将不会记录或报告活动时间。</translation>
 <translation id="9077227880520270584">设备本地帐号自动登录计时器</translation>
+<translation id="9079531125758468956">禁止在首次运行时导入书签</translation>
 <translation id="9084985621503260744">指定视频活动是否影响电源管理</translation>
 <translation id="9087434639296483430">旨在报告已注册的设备上发生的用户登录/退出事件（包括登录失败）。
 

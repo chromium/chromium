@@ -1278,7 +1278,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2191754378957563929">Activé</translation>
 <translation id="2192505247865591433">De :</translation>
 <translation id="2193365732679659387">Paramètres de confiance</translation>
-<translation id="2194554416429452547">Lors des essais, Chrome étudie différents moyens de limiter le spam, la fraude et le partage entre les sites. En outre, Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> que les sites peuvent utiliser pour vous proposer des annonces. Vous pouvez gérer vos centres d'intérêt dans les paramètres.</translation>
 <translation id="2194856509914051091">Éléments à prendre en compte</translation>
 <translation id="2195331105963583686">Vous pourrez toujours utiliser cet appareil <ph name="DEVICE_TYPE" /> par la suite, mais il ne recevra plus de mises à jour logicielles et de sécurité automatiques</translation>
 <translation id="2195729137168608510">Protection du courrier électronique</translation>
@@ -1954,7 +1953,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2806891468525657116">Le raccourci existe déjà</translation>
 <translation id="2807517655263062534">Les fichiers téléchargés s'affichent ici</translation>
 <translation id="2809586584051668049">ainsi que <ph name="NUMBER_ADDITIONAL_DISABLED" /> autre(s) extension(s)</translation>
-<translation id="2810235462964014915">Ayant demandé à consulter et modifier <ph name="SITE_NAME" /></translation>
 <translation id="2811205483104563968">Comptes</translation>
 <translation id="2811564570599779918">Réduction du spam et de la fraude</translation>
 <translation id="2812049959647166806">Le format Thunderbolt n'est pas compatible</translation>
@@ -5269,6 +5267,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6086846494333236931">Installée par votre administrateur</translation>
 <translation id="6087746524533454243">Vous recherchez des informations à propos du navigateur ? Accédez à la page</translation>
 <translation id="6087960857463881712">Visage "Génial"</translation>
+<translation id="6088535503330933227">Chrome étudie différents moyens de limiter le spam publicitaire, la fraude et le partage entre les sites. En outre, Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> que les sites peuvent utiliser pour vous proposer des annonces. Vous pouvez gérer vos centres d'intérêt dans les paramètres.</translation>
 <translation id="608912389580139775">Pour ajouter cette page à votre liste de lecture, cliquez sur l'icône Ajouter aux favoris</translation>
 <translation id="6091761513005122595">Le partage a bien été installé.</translation>
 <translation id="6093888419484831006">Annulation de la mise à jour...</translation>
@@ -7676,6 +7675,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8438566539970814960">Améliorer les recherches et la navigation</translation>
 <translation id="8439506636278576865">Proposer de traduire les pages dans cette langue</translation>
 <translation id="8440630305826533614">Applications Linux</translation>
+<translation id="844063558976952706">Toujours pour ce site</translation>
 <translation id="8443795068008423036">Veuillez vous assurer que votre appareil est à jour et réessayer</translation>
 <translation id="8446884382197647889">En savoir plus</translation>
 <translation id="8447409163267621480">Vous devez inclure la touche Ctrl ou la touche Alt</translation>

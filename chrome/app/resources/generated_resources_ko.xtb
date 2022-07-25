@@ -1290,7 +1290,6 @@
 <translation id="2191754378957563929">사용</translation>
 <translation id="2192505247865591433">웹 브라우저</translation>
 <translation id="2193365732679659387">신뢰 설정</translation>
-<translation id="2194554416429452547">무료 체험 기간 동안 Chrome에서는 스팸, 사기 및 사이트 간 공유를 제한하는 방법을 탐색합니다. 또한 Chrome의 <ph name="ESTIMATE_INTERESTS_LINK" />을 기반으로 사이트가 광고를 표시할 수 있습니다. 설정에서 관심분야를 관리할 수 있습니다.</translation>
 <translation id="2194856509914051091">고려사항</translation>
 <translation id="2195331105963583686">이후로도 이 <ph name="DEVICE_TYPE" /> 기기를 계속 사용할 수는 있지만, 소프트웨어 및 보안 업데이트를 자동으로 받을 수 없게 됩니다.</translation>
 <translation id="2195729137168608510">이메일 보호</translation>
@@ -1970,7 +1969,6 @@
 <translation id="2806891468525657116">바로가기가 이미 존재합니다.</translation>
 <translation id="2807517655263062534">다운로드한 파일이 여기에 표시됩니다.</translation>
 <translation id="2809586584051668049">외 <ph name="NUMBER_ADDITIONAL_DISABLED" />개</translation>
-<translation id="2810235462964014915"><ph name="SITE_NAME" /> 사이트를 읽고 변경할 수 있도록 요청함</translation>
 <translation id="2811205483104563968">계정</translation>
 <translation id="2811564570599779918">스팸 및 사기 감소</translation>
 <translation id="2812049959647166806">Thunderbolt가 지원되지 않음</translation>
@@ -5285,6 +5283,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6086846494333236931">관리자가 설치함</translation>
 <translation id="6087746524533454243">브라우저의 정보 페이지를 찾는다면 다음으로 이동하세요.</translation>
 <translation id="6087960857463881712">멋진 얼굴</translation>
+<translation id="6088535503330933227">Chrome에서는 광고 스팸, 사기 및 사이트 간 공유를 제한하는 방법을 연구합니다. 또한 Chrome은 사이트에서 광고를 표시하는 데 사용할 수 있는 <ph name="ESTIMATE_INTERESTS_LINK" />합니다. 설정에서 관심분야를 관리할 수 있습니다.</translation>
 <translation id="608912389580139775">읽기 목록에 이 페이지를 추가하려면 북마크 아이콘을 클릭하세요.</translation>
 <translation id="6091761513005122595">공유가 성공적으로 마운트되었습니다.</translation>
 <translation id="6093888419484831006">업데이트를 취소하는 중...</translation>
@@ -7698,6 +7697,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8438566539970814960">검색 및 탐색 기능 개선</translation>
 <translation id="8439506636278576865">이 언어로 된 페이지에 대한 번역 옵션 제공</translation>
 <translation id="8440630305826533614">Linux 앱</translation>
+<translation id="844063558976952706">항상 이 사이트에서</translation>
 <translation id="8443795068008423036">기기가 최신 상태인지 확인하고 다시 시도해 보세요</translation>
 <translation id="8446884382197647889">자세히 알아보기</translation>
 <translation id="8447409163267621480">Ctrl 또는 Alt 중 하나를 포함해야 합니다</translation>

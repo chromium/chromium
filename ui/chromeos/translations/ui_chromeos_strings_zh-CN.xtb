@@ -945,7 +945,6 @@
 <translation id="9034924485347205037">Linux 文件</translation>
 <translation id="9035012421917565900">这些内容一旦移出“<ph name="DESTINATION_NAME" />”便无法移回，因此您将无法撤消这项操作。</translation>
 <translation id="9035689366572880647">输入当前 PIN 码</translation>
-<translation id="9037777873893411148">*贵组织的存储空间已用尽</translation>
 <translation id="9038620279323455325">已有名为“<ph name="FILE_NAME" />”的文件。请另选一个名称。</translation>
 <translation id="9046895021617826162">连接失败</translation>
 <translation id="9065512565307033593">如果您未通过验证，我们将禁止您访问网络。</translation>

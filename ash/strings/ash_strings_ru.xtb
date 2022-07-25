@@ -1165,6 +1165,7 @@
 <translation id="7842569679327885685">Внимание! Экспериментальная функция</translation>
 <translation id="7846634333498149051">Клавиатура</translation>
 <translation id="7848989271541991537">Приложение перенесено на страницу <ph name="PAGE_NUMBER" />, строка <ph name="ROW_NUMBER" />, столбец <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Чтобы перейти в режим обзора, проведите тремя пальцами вверх.</translation>
 <translation id="7866482334467279021">включена</translation>
 <translation id="7868900307798234037">Экран разблокирован с помощью отпечатка пальца</translation>
@@ -1244,6 +1245,7 @@
 <translation id="828708037801473432">Отключено</translation>
 <translation id="8297006494302853456">Слабый</translation>
 <translation id="8308637677604853869">Предыдущее меню</translation>
+<translation id="830868413617744215">Бета</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Выбрано окно "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="8351131234907093545">Создать заметку</translation>

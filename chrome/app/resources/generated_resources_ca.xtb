@@ -1277,7 +1277,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2191754378957563929">Activat</translation>
 <translation id="2192505247865591433">De:</translation>
 <translation id="2193365732679659387">Configuració de confiança</translation>
-<translation id="2194554416429452547">Durant les proves, Chrome explora maneres de limitar el contingut brossa, el frau i la compartició entre llocs web. Chrome també <ph name="ESTIMATE_INTERESTS_LINK" />, que els llocs web poden utilitzar per mostrar-te anuncis. Pots gestionar els teus interessos a la configuració.</translation>
 <translation id="2194856509914051091">Aspectes que cal tenir en compte</translation>
 <translation id="2195331105963583686">Podràs continuar utilitzant aquest <ph name="DEVICE_TYPE" /> després d'aquest període de temps, pero no rebràs cap més actualització automàtica de programari i seguretat.</translation>
 <translation id="2195729137168608510">Protecció del correu electrònic</translation>
@@ -1953,7 +1952,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2806891468525657116">Aquesta drecera ja existeix</translation>
 <translation id="2807517655263062534">Aquí es mostren els fitxers baixats</translation>
 <translation id="2809586584051668049">i <ph name="NUMBER_ADDITIONAL_DISABLED" /> més</translation>
-<translation id="2810235462964014915">S'ha sol·licitat permís per llegir i canviar <ph name="SITE_NAME" /></translation>
 <translation id="2811205483104563968">Comptes</translation>
 <translation id="2811564570599779918">Reducció del frau i del contingut brossa</translation>
 <translation id="2812049959647166806">Els connectors Thunderbolt no s'admeten</translation>
@@ -5265,6 +5263,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6086846494333236931">Extensió instal·lada per l'administrador</translation>
 <translation id="6087746524533454243">Busques la pàgina d'informació del navegador? Ves a</translation>
 <translation id="6087960857463881712">Cara de fascinació</translation>
+<translation id="6088535503330933227">Chrome està explorant maneres de limitar el contingut brossa publicitari, el frau i la compartició entre llocs web. Chrome també <ph name="ESTIMATE_INTERESTS_LINK" />, que els llocs web poden utilitzar per mostrar-te anuncis. Pots gestionar els teus interessos a la configuració.</translation>
 <translation id="608912389580139775">Per afegir aquesta pàgina a la llista de lectura, fes clic a la icona d'adreça d'interès</translation>
 <translation id="6091761513005122595">L'ús compartit s'ha activat correctament.</translation>
 <translation id="6093888419484831006">S’està cancel·lant l’actualització...</translation>
@@ -7675,6 +7674,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8438566539970814960">Millora les cerques i la navegació</translation>
 <translation id="8439506636278576865">Proposa'm traduir pàgines en aquest idioma</translation>
 <translation id="8440630305826533614">Aplicacions per a Linux</translation>
+<translation id="844063558976952706">Sempre en aquest lloc</translation>
 <translation id="8443795068008423036">Comprova que el dispositiu estigui actualitzat i torna-ho a provar</translation>
 <translation id="8446884382197647889">Més informació</translation>
 <translation id="8447409163267621480">Inclou la tecla Ctrl o Alt</translation>

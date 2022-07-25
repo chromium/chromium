@@ -950,7 +950,6 @@
 <translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9035012421917565900">Eftersom det inte går att flytta tillbaka objekten till <ph name="DESTINATION_NAME" /> går det inte att ångra åtgärden.</translation>
 <translation id="9035689366572880647">Ange den nuvarande pinkoden</translation>
-<translation id="9037777873893411148">*Organisationens lagringsutrymme är fullt</translation>
 <translation id="9038620279323455325">Det finns redan en fil med namnet <ph name="FILE_NAME" />. Välj ett annat namn.</translation>
 <translation id="9046895021617826162">Anslutningen misslyckades</translation>
 <translation id="9065512565307033593">Nätverksåtkomsten kommer att inaktiveras om du misslyckas med verifieringen.</translation>

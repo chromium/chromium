@@ -980,6 +980,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1916502483199172559">Avatar rosso predefinito</translation>
 <translation id="1918141783557917887">Più &amp;piccolo</translation>
 <translation id="1920390473494685033">Contatti</translation>
+<translation id="1921544956190977703">Disponi della misura di sicurezza più efficace di Chrome contro estensioni, download e siti web pericolosi</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1923468477587371721">Per i siti Google come Gmail, Drive e YouTube viene usata la lingua del tuo Account Google, a meno che tu non abbia cambiato la lingua dei singoli prodotti</translation>
 <translation id="1923539912171292317">Clic automatici</translation>
@@ -1277,7 +1278,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2191754378957563929">On</translation>
 <translation id="2192505247865591433">Da:</translation>
 <translation id="2193365732679659387">Impostazioni di attendibilità</translation>
-<translation id="2194554416429452547">Durante le prove, Chrome esamina dei metodi per limitare spam, attività fraudolente e la condivisione tra siti. Inoltre, Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, che possono essere usati dai siti per mostrarti annunci. Puoi gestire i tuoi interessi nelle impostazioni.</translation>
 <translation id="2194856509914051091">Aspetti da considerare</translation>
 <translation id="2195331105963583686">Dopo tale periodo, potrai continuare a usare questo dispositivo <ph name="DEVICE_TYPE" />, che però non riceverà più automaticamente aggiornamenti software e di sicurezza.</translation>
 <translation id="2195729137168608510">Protezione email</translation>
@@ -1953,7 +1953,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2806891468525657116">Scorciatoia già presente</translation>
 <translation id="2807517655263062534">I file scaricati vengono mostrati qui</translation>
 <translation id="2809586584051668049">e altre <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
-<translation id="2810235462964014915">Richiesta di lettura e modifica del sito <ph name="SITE_NAME" /></translation>
 <translation id="2811205483104563968">Account</translation>
 <translation id="2811564570599779918">Riduzione di spam e attività fraudolente</translation>
 <translation id="2812049959647166806">Thunderbolt non è supportato</translation>
@@ -2078,6 +2077,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <ph name="DOMAIN" /> richiede di lasciare la smart card inserita.</translation>
 <translation id="2923234477033317484">Rimuovi questo account</translation>
 <translation id="2923644930701689793">Accedi al rullino del telefono</translation>
+<translation id="292371311537977079">Impostazioni di Chrome</translation>
 <translation id="2925658782192398150">Fine, nessun problema rilevato</translation>
 <translation id="2926085873880284723">Ripristina scorciatoie predefinite</translation>
 <translation id="2926620265753325858">Il dispositivo <ph name="DEVICE_NAME" /> non è supportato.</translation>
@@ -2661,6 +2661,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3511528412952710609">Breve</translation>
 <translation id="3514335087372914653">Controllo dei giochi</translation>
 <translation id="3514373592552233661">Le reti preferite avranno precedenza su altre reti note se ne sono disponibili più di una</translation>
+<translation id="3514647716686280777">È attiva la protezione standard. Per aumentare la protezione da estensioni, download e siti web pericolosi, attiva Navigazione sicura avanzata nelle impostazioni di Chrome.</translation>
 <translation id="3515983984924808886">Tocca nuovamente il token di sicurezza per confermare la reimpostazione. Tutte le informazioni memorizzate sul token di sicurezza, nonché il suo PIN, verranno eliminate.</translation>
 <translation id="3518985090088779359">Accetta e continua</translation>
 <translation id="3519564332031442870">Servizio di backend di stampa</translation>
@@ -3879,6 +3880,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4689421377817139245">Sincronizza il preferito con l'iPhone</translation>
 <translation id="4690091457710545971">&lt;Quattro file generati dal firmware Intel Wi-Fi: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. I primi tre sono file binari che contengono dump di registro e che, secondo quanto dichiarato da Intel, non contengono informazioni personali o di identificazione del dispositivo. L'ultimo file è una traccia di esecuzione dal firmware Intel, privato di ogni informazione personale o di identificazione del dispositivo, ma troppo grande per essere mostrato qui. Questi file sono stati generati in risposta ai recenti problemi del tuo dispositivo con la rete Wi-Fi e verranno condivisi con Intel per agevolare la risoluzione di tali problemi.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> potrà visualizzare il file <ph name="FILENAME" /> fino alla chiusura di tutte le schede di questo sito</translation>
+<translation id="4692342362587775867">Le notifiche di questo sito potrebbero essere improvvise</translation>
 <translation id="4692623383562244444">Motori di ricerca</translation>
 <translation id="4692736633446859167">In precedenza hai scelto di non consentire nessuna estensione su <ph name="SITE" /> Se aggiungi qui questo sito, le altre estensioni possono anche richiedere di leggere e modificare i dati dei tuoi siti su <ph name="SITE" />.</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -5264,6 +5266,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6086846494333236931">Installata dall'amministratore</translation>
 <translation id="6087746524533454243">Stai cercando la pagina delle informazioni sul browser? Visita la pagina</translation>
 <translation id="6087960857463881712">Faccina splendente</translation>
+<translation id="6088535503330933227">Chrome esamina dei metodi per limitare spam, attività fraudolente e la condivisione tra siti. Inoltre, Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, che possono essere usati dai siti per mostrarti annunci. Puoi gestire i tuoi interessi nelle impostazioni.</translation>
 <translation id="608912389580139775">Fai clic sull'icona dei preferiti per aggiungere questa pagina al tuo elenco di lettura</translation>
 <translation id="6091761513005122595">Condivisione montata correttamente.</translation>
 <translation id="6093888419484831006">Annullamento aggiornamento...</translation>
@@ -5452,6 +5455,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Cambia posizione</translation>
 <translation id="6279183038361895380">Premi |<ph name="ACCELERATOR" />| per mostrare il puntatore</translation>
+<translation id="6279595948631688299">E&amp;sporta certificato selezionato…</translation>
 <translation id="6280215091796946657">Accedi con un altro account</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Supera il limite di 1 foglio}other{Supera il limite di {COUNT} fogli}}</translation>
@@ -5566,6 +5570,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6398715114293939307">Rimuovi il Google Play Store</translation>
 <translation id="6398765197997659313">Esci da schermo intero</translation>
 <translation id="6399774419735315745">Spia</translation>
+<translation id="6401458660421980302">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su quel dispositivo</translation>
 <translation id="6401597285454423070">Il computer contiene un dispositivo di sicurezza TPM (Trusted Platform Module) che viene utilizzato per implementare in Chrome OS molte funzionalità di sicurezza fondamentali. Per scoprire di più, visita il Centro assistenza Chromebook all'indirizzo: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Giochi sui Chromebook</translation>
 <translation id="6404511346730675251">Modifica preferito</translation>
@@ -5802,6 +5807,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6619801788773578757">Aggiungi applicazione kiosk</translation>
 <translation id="6619990499523117484">Conferma il codice PIN</translation>
 <translation id="6620254580880484313">Nome container</translation>
+<translation id="6621391692573306628">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su entrambi i dispositivi</translation>
 <translation id="6622980291894852883">Continua a bloccare le immagini</translation>
 <translation id="6624036901798307345">In modalità tablet, tocca il pulsante della barra degli strumenti del contatore di schede per aprire una nuova tabstrip che mostra le miniature di ogni scheda.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> include contenuti sensibili o pericolosi. Chiedi al proprietario di risolvere il problema.</translation>
@@ -7673,6 +7679,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8438566539970814960">Migliora le ricerche e le attività di navigazione</translation>
 <translation id="8439506636278576865">Proponi di tradurre pagine in questa lingua</translation>
 <translation id="8440630305826533614">App Linux</translation>
+<translation id="844063558976952706">Sempre su questo sito</translation>
 <translation id="8443795068008423036">Assicurati che il dispositivo sia aggiornato e riprova</translation>
 <translation id="8446884382197647889">Ulteriori informazioni</translation>
 <translation id="8447409163267621480">Includi CTRL o ALT</translation>

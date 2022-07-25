@@ -1291,7 +1291,6 @@
 <translation id="2191754378957563929">চালু করা আছে</translation>
 <translation id="2192505247865591433">এর থেকে:</translation>
 <translation id="2193365732679659387">বিশ্বস্ততার সেটিংস</translation>
-<translation id="2194554416429452547">ট্রায়াল চলাকালীন, স্প্যাম, জালিয়াতি ও দুটি সাইটের মধ্যে শেয়ার সীমিত করার বিভিন্ন উপায় Chrome এক্সপ্লোর করছে। এছাড়া, Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> লিঙ্কও দেখায় যা ব্যবহার করে সাইট আপনাকে বিজ্ঞাপন দেখাতে পারে। সেটিংস থেকে আপনার আগ্রহের বিষয় ম্যানেজ করতে পারবেন।</translation>
 <translation id="2194856509914051091">যা যা দেখে নেওয়া প্রয়োজন</translation>
 <translation id="2195331105963583686">সেই সময়ের পরে এখনও আপনি এই <ph name="DEVICE_TYPE" /> ব্যবহার করতে পারবেন, কিন্তু এখানে সফ্টওয়্যার এবং নিরাপত্তা সংক্রান্ত অটোমেটিক আপডেট আর পাবেন না</translation>
 <translation id="2195729137168608510">ইমেল আইডির সুরক্ষা</translation>
@@ -1970,7 +1969,6 @@
 <translation id="2806891468525657116">শর্টকাটটি আগে থেকেই আছে</translation>
 <translation id="2807517655263062534">ডাউনলোড করা ফাইল এখানে দেখা যাবে</translation>
 <translation id="2809586584051668049">এবং আরও <ph name="NUMBER_ADDITIONAL_DISABLED" />টি</translation>
-<translation id="2810235462964014915"><ph name="SITE_NAME" /> পড়ার জন্য এবং তাতে পরিবর্তন করার অনুরোধ করা হয়েছে</translation>
 <translation id="2811205483104563968">অ্যাকাউন্ট</translation>
 <translation id="2811564570599779918">স্প্যাম এবং জালিয়াতি হ্রাস</translation>
 <translation id="2812049959647166806">Thunderbolt কাজ করে না</translation>
@@ -5289,6 +5287,7 @@
 <translation id="6086846494333236931">আপনার প্রশাসক দ্বারা ইনস্টল করা হয়েছে</translation>
 <translation id="6087746524533454243">ব্রাউজার সম্পর্কিত পৃষ্ঠা খুঁজছেন? দেখুন</translation>
 <translation id="6087960857463881712">দুর্দান্ত চেহারা</translation>
+<translation id="6088535503330933227">বিজ্ঞাপন স্প্যাম, জালিয়াতি ও দুটি সাইটের মধ্যে শেয়ার সীমিত করার বিভিন্ন উপায় Chrome এক্সপ্লোর করছে। এছাড়া, Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> লিঙ্কও দেখায় যা ব্যবহার করে সাইট আপনাকে বিজ্ঞাপন দেখাতে পারে। সেটিংস থেকে আপনার আগ্রহের বিষয় ম্যানেজ করতে পারবেন।</translation>
 <translation id="608912389580139775">আপনার পড়ার তালিকায় এই পৃষ্ঠাটি যোগ করতে বুকমার্ক আইকনে ক্লিক করুন</translation>
 <translation id="6091761513005122595">শেয়ার মাউন্ট করা হয়েছে।</translation>
 <translation id="6093888419484831006">আপডেট বাতিল হচ্ছে...</translation>
@@ -7703,6 +7702,7 @@
 <translation id="8438566539970814960">সার্চ এবং ব্রাউজিং অভিজ্ঞতা আরও উন্নত করুন</translation>
 <translation id="8439506636278576865">এই ভাষাতে পৃষ্ঠাগুলি অনুবাদ করার প্রস্তাব করে</translation>
 <translation id="8440630305826533614">Linux অ্যাপ</translation>
+<translation id="844063558976952706">সর্বদা এই সাইটে</translation>
 <translation id="8443795068008423036">আপনার ডিভাইসটি আপ-টু-ডেট আছে দেখে নিয়ে আবার চেষ্টা করুন</translation>
 <translation id="8446884382197647889">আরও জানুন</translation>
 <translation id="8447409163267621480">Ctrl অথবা Alt ব্যবহার করতে হবে</translation>

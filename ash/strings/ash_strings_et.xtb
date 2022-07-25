@@ -306,6 +306,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2805756323405976993">Rakendused</translation>
 <translation id="2814448776515246190">Osaline jäädvustamine</translation>
 <translation id="2819276065543622893">Teid logitakse nüüd välja.</translation>
+<translation id="2822551631199737692">Kaamera on kasutuses</translation>
 <translation id="2825224105325558319">Üksus <ph name="DISPLAY_NAME" /> ei toeta eraldusvõimet <ph name="SPECIFIED_RESOLUTION" />. Eraldusvõimeks määrati <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Riiul</translation>
 <translation id="2831035692318564937">Päikesetõusuni sees</translation>
@@ -808,6 +809,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5682642926269496722">Google'i assistent pole praeguse kasutajakonto jaoks saadaval.</translation>
 <translation id="5689633613396158040">Öövalgus muudab hämaras valguses ekraani vaatamise ja lugemise lihtsamaks. Puudutage, et muuta Öövalguse sisselülitumise aega või lülitada see täielikult välja.</translation>
 <translation id="5691772641933328258">Sõrmejälge ei tuntud ära</translation>
+<translation id="5693255400847650006">Mikrofon on kasutuses</translation>
 <translation id="570390244361237317">Kõik rakendused, kõigile rakendustele juurdepääsemiseks navigeerige nooleklahvidega</translation>
 <translation id="5707775774148071965">Teie seade toetab kiiremat andmesidet kui teie kaabel. Seadme toimivus võib olla piiratud.</translation>
 <translation id="5710450975648804523">Režiim Mitte segada on sees</translation>
@@ -982,6 +984,7 @@ Uus installimine</translation>
 <translation id="6723839937902243910">Toide</translation>
 <translation id="6727969043791803658">Ühendatud, <ph name="BATTERY_PERCENTAGE" />% akut</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Kaamera ja mikrofon on kasutuses</translation>
 <translation id="6739144137573853180">AVAGE SEADED</translation>
 <translation id="6751052314767925245">Jõustas administraator</translation>
 <translation id="6751826523481687655">Toimivuse jälgimine on sisse lülitatud</translation>
@@ -1163,6 +1166,7 @@ Uus installimine</translation>
 <translation id="7842569679327885685">Hoiatus: katseline funktsioon</translation>
 <translation id="7846634333498149051">Klaviatuur</translation>
 <translation id="7848989271541991537">Teisaldatud lehele <ph name="PAGE_NUMBER" />, reale <ph name="ROW_NUMBER" />, veergu <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7851768487828137624">Kanaarilind</translation>
 <translation id="7860671499921112077">Ülevaate avamiseks pühkige kolme sõrmega üles</translation>
 <translation id="7866482334467279021">sisse</translation>
 <translation id="7868900307798234037">Sõrmejäljega avamine</translation>
@@ -1242,6 +1246,7 @@ Uus installimine</translation>
 <translation id="828708037801473432">Väljas</translation>
 <translation id="8297006494302853456">Nõrk</translation>
 <translation id="8308637677604853869">Eelmine menüü</translation>
+<translation id="830868413617744215">Beeta</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Valitud on aken <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Märkme loomine</translation>

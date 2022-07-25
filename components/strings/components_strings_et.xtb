@@ -1465,6 +1465,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4969341057194253438">Kustuta salvestis</translation>
 <translation id="4973922308112707173">Kaks auku ülal</translation>
 <translation id="4976702386844183910">Viimati külastati <ph name="DATE" /></translation>
+<translation id="498323057460789381">Skeemi valideerimise viga: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Kas kasutada mikrofoni?</translation>
 <translation id="4984339528288761049">Prc5 (ümbrik)</translation>
 <translation id="4989163558385430922">Kuva kõik</translation>
@@ -1527,6 +1528,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5123063207673082822">Nädalavahetus</translation>
 <translation id="5123433949759960244">Korvpall</translation>
 <translation id="5125394840236832993">B-Plus</translation>
+<translation id="5125751979347152379">Vale URL.</translation>
 <translation id="512592033764059484">Jalgpall</translation>
 <translation id="5126510351761255129">Kaardi kinnitamine</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> ei pruugi hästi toimida, kui selle suurust muudetakse. Rakenduse probleemide vältimiseks kasutage akna eelseadistatud suurusi.</translation>

@@ -1279,7 +1279,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2191754378957563929">Iesl.</translation>
 <translation id="2192505247865591433">No:</translation>
 <translation id="2193365732679659387">Uzticamības iestatījumi</translation>
-<translation id="2194554416429452547">Izmēģinājumu laikā Chrome pēta veidus, kā ierobežot nevēlamu saturu, krāpšanu un kopīgošanu starp vietnēm. Chrome arī <ph name="ESTIMATE_INTERESTS_LINK" />, ko vietnes var izmantot, lai rādītu jums reklāmas. Intereses varat pārvaldīt iestatījumos.</translation>
 <translation id="2194856509914051091">Svarīgi apsvērumi</translation>
 <translation id="2195331105963583686">Jūs joprojām varēsiet izmantot šo ierīci <ph name="DEVICE_TYPE" /> pēc noteiktā laika, taču vairs nesaņemsiet automātiskus programmatūras un drošības atjauninājumus.</translation>
 <translation id="2195729137168608510">E-pasta aizsardzība</translation>
@@ -1955,7 +1954,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2806891468525657116">Saīsne jau pastāv</translation>
 <translation id="2807517655263062534">Šeit ir redzami lejupielādētie faili.</translation>
 <translation id="2809586584051668049">un vēl <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
-<translation id="2810235462964014915">Pieprasīta atļauja lasīt un mainīt saturu vietnē <ph name="SITE_NAME" /></translation>
 <translation id="2811205483104563968">Konti</translation>
 <translation id="2811564570599779918">Nevēlama satura un krāpšanas mazināšana</translation>
 <translation id="2812049959647166806">Thunderbolt savienojums netiek atbalstīts</translation>
@@ -5266,6 +5264,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6086846494333236931">Instalēja administrators.</translation>
 <translation id="6087746524533454243">Vai meklējat pārlūka lapu “Par”? Apmeklējiet vietni</translation>
 <translation id="6087960857463881712">Satriecoša seja</translation>
+<translation id="6088535503330933227">Chrome komanda pēta veidus, kā ierobežot ar reklāmām saistītas mēstules, krāpšanu un datu kopīgošanu starp vietnēm. Chrome arī <ph name="ESTIMATE_INTERESTS_LINK" />, ko vietnes var izmantot, lai rādītu jums reklāmas. Intereses varat pārvaldīt iestatījumos.</translation>
 <translation id="608912389580139775">Lai pievienotu šo lapu lasīšanas sarakstam, pieskarieties grāmatzīmes ikonai</translation>
 <translation id="6091761513005122595">Kopīgošana veiksmīgi iekļauta.</translation>
 <translation id="6093888419484831006">Notiek atjaunināšanas atcelšana...</translation>
@@ -7678,6 +7677,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8438566539970814960">Uzlabot meklēšanu un pārlūkošanu</translation>
 <translation id="8439506636278576865">Piedāvāt tulkot lapas šajā valodā</translation>
 <translation id="8440630305826533614">Linux lietotnes</translation>
+<translation id="844063558976952706">Vienmēr šajā vietnē</translation>
 <translation id="8443795068008423036">Gādājiet, lai ierīce būtu atjaunināta, un mēģiniet vēlreiz.</translation>
 <translation id="8446884382197647889">Uzziniet vairāk</translation>
 <translation id="8447409163267621480">Jāiekļauj “Ctrl” vai “Alt”</translation>

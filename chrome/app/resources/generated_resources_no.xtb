@@ -986,6 +986,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1916502483199172559">Rødt standardbrukerbilde</translation>
 <translation id="1918141783557917887">&amp;Mindre</translation>
 <translation id="1920390473494685033">Kontakter</translation>
+<translation id="1921544956190977703">Du har den sterkeste beskyttelsen i Chrome mot farlige nettsteder, nedlastinger og utvidelser</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> ppt</translation>
 <translation id="1923468477587371721">Google-nettsteder som Gmail, Disk og YouTube bruker Google-kontospråket ditt, med mindre du har endret det språket for det individuelle produktet</translation>
 <translation id="1923539912171292317">Automatiske klikk</translation>
@@ -1283,7 +1284,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2191754378957563929">På</translation>
 <translation id="2192505247865591433">Fra:</translation>
 <translation id="2193365732679659387">Klareringsinnstillinger</translation>
-<translation id="2194554416429452547">Mens prøveprosjekter pågår, utforsker Chrome måter å begrense nettsøppel, svindel og deling mellom nettsteder på. Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, som nettsteder kan bruke til å vise deg annonser. Du kan administrere interessene dine i innstillingene.</translation>
 <translation id="2194856509914051091">Ting å tenke på</translation>
 <translation id="2195331105963583686">Du kan fortsette å bruke <ph name="DEVICE_TYPE" />-enheten etter dette tidspunktet, men den kommer ikke til å få automatiske programvare- og sikkerhetsoppdateringer lenger</translation>
 <translation id="2195729137168608510">Beskyttelse av e-post </translation>
@@ -1962,7 +1962,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2806891468525657116">Snarveien finnes allerede</translation>
 <translation id="2807517655263062534">Filer du laster ned, vises her</translation>
 <translation id="2809586584051668049">og <ph name="NUMBER_ADDITIONAL_DISABLED" /> til</translation>
-<translation id="2810235462964014915">Forespørsel for å lese og endre <ph name="SITE_NAME" /></translation>
 <translation id="2811205483104563968">Kontoer</translation>
 <translation id="2811564570599779918">Reduksjon av nettsøppel og svindel</translation>
 <translation id="2812049959647166806">Thunderbolt støttes ikke</translation>
@@ -2087,6 +2086,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <ph name="DOMAIN" /> krever at smartkortet blir stående i.</translation>
 <translation id="2923234477033317484">Fjern denne kontoen</translation>
 <translation id="2923644930701689793">Få tilgang til kamerarullen på telefonen din</translation>
+<translation id="292371311537977079">Chrome-innstillinger</translation>
 <translation id="2925658782192398150">Ferdig – fant ingen problemer</translation>
 <translation id="2926085873880284723">Gjenopprett standardsnarveier</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> støttes ikke.</translation>
@@ -2670,6 +2670,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3511528412952710609">Kort</translation>
 <translation id="3514335087372914653">Spillkontroll</translation>
 <translation id="3514373592552233661">Foretrukne nettverk prioriteres fremfor andre kjente nettverk hvis mer enn ett nettverk er tilgjengelig</translation>
+<translation id="3514647716686280777">Du får standard sikkerhetsbeskyttelse. For å få mer beskyttelse mot farlige nettsteder, nedlastinger og utvidelser, slå på Safe Browsing med økt beskyttelse i Chrome-innstillingene.</translation>
 <translation id="3515983984924808886">Berør sikkerhetsnøkkelen en gang til for å bekrefte tilbakestillingen. All informasjon som er lagret på sikkerhetsnøkkelen, inkludert PIN-koden, blir slettet.</translation>
 <translation id="3518985090088779359">Godta og fortsett</translation>
 <translation id="3519564332031442870">Tjenerdeltjeneste for utskrift</translation>
@@ -5274,6 +5275,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6086846494333236931">Installert av administratoren din</translation>
 <translation id="6087746524533454243">Ser du etter nettleserens Om-side? Gå til</translation>
 <translation id="6087960857463881712">Fantastisk-fjes</translation>
+<translation id="6088535503330933227">Chrome utforsker måter å begrense søppelannonser, svindel og deling mellom nettsteder på. Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, som nettsteder kan bruke til å vise deg annonser. Du kan administrere interessene dine i innstillingene.</translation>
 <translation id="608912389580139775">For å legge til denne siden på leselisten din, klikk på Bokmerke-ikonet</translation>
 <translation id="6091761513005122595">Delingen er aktivert.</translation>
 <translation id="6093888419484831006">Avbryter oppdatering …</translation>
@@ -5462,6 +5464,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Endre plassering</translation>
 <translation id="6279183038361895380">Trykk på |<ph name="ACCELERATOR" />| for å se markøren</translation>
+<translation id="6279595948631688299">E&amp;ksporter det valgte sertifikatet…</translation>
 <translation id="6280215091796946657">Logg på med en annen konto</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Overskrider grensen på 1 ark}other{Overskrider grensen på {COUNT} ark}}</translation>
@@ -5576,6 +5579,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6398715114293939307">Fjern Google Play-butikken</translation>
 <translation id="6398765197997659313">Avslutt fullskjerm</translation>
 <translation id="6399774419735315745">Spion</translation>
+<translation id="6401458660421980302">For å sende denne fanen til en annen enhet, logg på Chrome der</translation>
 <translation id="6401597285454423070">Datamaskinen din inneholder en TPM-sikkerhetsenhet (Trusted Platform Module), som brukes til å implementere mange viktige sikkerhetsfunksjoner i ChromeOS. Gå til Chromebook-brukerstøtten for å finne ut mer: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chromebook Gaming</translation>
 <translation id="6404511346730675251">Rediger bokmerket</translation>
@@ -5812,6 +5816,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6619801788773578757">Legg til kioskapp</translation>
 <translation id="6619990499523117484">Bekreft PIN-koden din</translation>
 <translation id="6620254580880484313">Navnet på beholderen</translation>
+<translation id="6621391692573306628">For å sende denne fanen til en annen enhet, logg på Chrome på begge enhetene</translation>
 <translation id="6622980291894852883">Fortsett blokkering av bilder</translation>
 <translation id="6624036901798307345">I nettbrettmodus kan du trykke på fanetellerknappen på verktøyraden for å åpne den nye faneraden som viser miniatyrbilder av alle fanene.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> har sensitivt eller farlig innhold. Spør eieren om å fikse dette.</translation>
@@ -7682,6 +7687,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8438566539970814960">Gjør søking og surfing bedre</translation>
 <translation id="8439506636278576865">Tilby å oversette nettsider på dette språket</translation>
 <translation id="8440630305826533614">Linux-apper</translation>
+<translation id="844063558976952706">Alltid på dette nettstedet</translation>
 <translation id="8443795068008423036">Sørg for at enheten er oppdatert, og prøv på nytt</translation>
 <translation id="8446884382197647889">Les mer</translation>
 <translation id="8447409163267621480">Inkluder enten Ctrl eller Alt</translation>

@@ -43,6 +43,7 @@
 <translation id="2018879682492276940">Збой усталявання. Паўтарыце спробу.</translation>
 <translation id="2020032459870799438">Каб праверыць, ці не пагражае вашым іншым паролям раскрыццё ў выніку ўцечкі даных або іншых праблем з бяспекай, <ph name="BEGIN_LINK" />увайдзіце ў Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Выберыце, ці выкарыстоўваць гісторыю Chromium для персаналізацыі сэрвісаў Google</translation>
+<translation id="2088953378266246249">Інфармацыя пра тое, як Chromium кіруе сваімі каранёвымі сертыфікатамі</translation>
 <translation id="2174178932569897599">Наладзіць Chromium</translation>
 <translation id="2174917724755363426">Усталяванне не завершана. Вы сапраўды хочаце скасаваць яго?</translation>
 <translation id="2185166961232948079">Chromium – Уваход у сетку – <ph name="PAGE_TITLE" /></translation>
@@ -365,6 +366,7 @@
 <translation id="9185526690718004400">Перазапусціць, каб абнавіць &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Браўзер Chromium больш не падтрымліваецца на Windows XP і Windows Vista, таму можа працаваць няправільна</translation>
+<translation id="942598560705308788">Сертыфікаты, якімі кіруе Chromium</translation>
 <translation id="945990405696787151">Каб атрымліваць наступныя абнаўленні Chromium, вам патрэбная версія macOS 10.13 ці пазнейшая. На гэтым камп'ютары выкарыстоўваецца OS X 10.11.</translation>
 <translation id="965162752251293939">Хто выкарыстоўвае Chromium?</translation>
 <translation id="967427899662692980">Засцеражыце браўзер Chromium ад небяспек</translation>

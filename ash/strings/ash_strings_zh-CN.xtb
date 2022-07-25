@@ -306,6 +306,7 @@
 <translation id="2805756323405976993">应用</translation>
 <translation id="2814448776515246190">截取/录制局部屏幕</translation>
 <translation id="2819276065543622893">您将立即退出。</translation>
+<translation id="2822551631199737692">摄像头正在使用中</translation>
 <translation id="2825224105325558319">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />。分辨率已改为 <ph name="FALLBACK_RESOLUTION" />。</translation>
 <translation id="2825619548187458965">任务栏</translation>
 <translation id="2831035692318564937">已开启，直到日出</translation>
@@ -807,6 +808,7 @@
 <translation id="5682642926269496722">当前用户帐号无法使用 Google 助理。</translation>
 <translation id="5689633613396158040">护眼模式可让您更舒适地在黯淡的光线下查看屏幕或阅读文字。点按即可更改护眼模式的开启时间或彻底关闭护眼模式。</translation>
 <translation id="5691772641933328258">无法识别指纹</translation>
+<translation id="5693255400847650006">麦克风正在使用中</translation>
 <translation id="570390244361237317">“所有应用”：若要访问各个应用，请使用箭头键导航</translation>
 <translation id="5707775774148071965">您的设备支持的数据传输速率高于数据线的数据传输速率。设备性能可能会受到限制。</translation>
 <translation id="5710450975648804523">“请勿打扰”模式已开启</translation>
@@ -981,6 +983,7 @@
 <translation id="6723839937902243910">电源</translation>
 <translation id="6727969043791803658">已连接，剩余电量为 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">摄像头和麦克风正在使用中</translation>
 <translation id="6739144137573853180">转到“设置”</translation>
 <translation id="6751052314767925245">由您的管理员强制执行</translation>
 <translation id="6751826523481687655">已启用性能跟踪</translation>
@@ -1159,6 +1162,7 @@
 <translation id="7842569679327885685">警告：实验性功能</translation>
 <translation id="7846634333498149051">键盘</translation>
 <translation id="7848989271541991537">已移至第 <ph name="PAGE_NUMBER" /> 页中第 <ph name="ROW_NUMBER" /> 行与第 <ph name="COLUMN_NUMBER" /> 列的相交处。</translation>
+<translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">若要进入“概览”模式，请用三根手指向上滑动</translation>
 <translation id="7866482334467279021">开启</translation>
 <translation id="7868900307798234037">正在使用指纹解锁</translation>
@@ -1238,6 +1242,7 @@
 <translation id="828708037801473432">已关闭</translation>
 <translation id="8297006494302853456">弱</translation>
 <translation id="8308637677604853869">上一菜单</translation>
+<translation id="830868413617744215">测试版</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">已选择‘<ph name="WINDOW_TITLE" />’窗口</translation>
 <translation id="8351131234907093545">创建记事</translation>

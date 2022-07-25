@@ -1289,7 +1289,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2191754378957563929">Aktif</translation>
 <translation id="2192505247865591433">Dari:</translation>
 <translation id="2193365732679659387">Setelan kepercayaan</translation>
-<translation id="2194554416429452547">Selama uji coba, Chrome mengembangkan cara untuk membatasi spam, penipuan, dan berbagi antar-situs. Chrome juga <ph name="ESTIMATE_INTERESTS_LINK" /> yang dapat digunakan situs untuk menampilkan iklan kepada Anda. Anda dapat mengubah minat di setelan.</translation>
 <translation id="2194856509914051091">Hal-hal yang perlu dipertimbangkan</translation>
 <translation id="2195331105963583686">Anda tetap dapat menggunakan <ph name="DEVICE_TYPE" /> ini setelah waktu tersebut, tetapi perangkat ini tidak akan lagi mendapatkan update software dan keamanan secara otomatis</translation>
 <translation id="2195729137168608510">Perlindungan Email</translation>
@@ -1968,7 +1967,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2806891468525657116">Pintasan sudah ada</translation>
 <translation id="2807517655263062534">File yang Anda download muncul di sini</translation>
 <translation id="2809586584051668049">dan <ph name="NUMBER_ADDITIONAL_DISABLED" /> lainnya</translation>
-<translation id="2810235462964014915">Meminta untuk membaca dan mengubah <ph name="SITE_NAME" /></translation>
 <translation id="2811205483104563968">Akun</translation>
 <translation id="2811564570599779918">Pengurangan spam &amp; penipuan</translation>
 <translation id="2812049959647166806">Thunderbolt tidak didukung</translation>
@@ -5283,6 +5281,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6086846494333236931">Dipasang oleh administrator Anda</translation>
 <translation id="6087746524533454243">Mencari halaman tentang browser? Buka</translation>
 <translation id="6087960857463881712">Wajah keren</translation>
+<translation id="6088535503330933227">Chrome sedang mengembangkan cara untuk membatasi spam iklan, penipuan, dan berbagi antar-situs. Chrome juga <ph name="ESTIMATE_INTERESTS_LINK" /> yang dapat digunakan situs untuk menampilkan iklan kepada Anda. Anda dapat mengelola minat di setelan.</translation>
 <translation id="608912389580139775">Untuk menambahkan halaman ini ke daftar bacaan, klik ikon Bookmark</translation>
 <translation id="6091761513005122595">URL berbagi berhasil dipasang.</translation>
 <translation id="6093888419484831006">Membatalkan pembaruan...</translation>
@@ -7692,6 +7691,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8438566539970814960">Jadikan penelusuran dan penjelajahan lebih baik</translation>
 <translation id="8439506636278576865">Tawarkan penerjemahan halaman ke dalam bahasa ini</translation>
 <translation id="8440630305826533614">Aplikasi Linux</translation>
+<translation id="844063558976952706">Selalu di halaman ini</translation>
 <translation id="8443795068008423036">Pastikan perangkat sudah diupdate dan coba lagi</translation>
 <translation id="8446884382197647889">Pelajari Lebih Lanjut</translation>
 <translation id="8447409163267621480">Sertakan Ctrl atau Alt</translation>

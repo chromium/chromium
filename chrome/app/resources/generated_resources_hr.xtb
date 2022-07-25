@@ -1280,7 +1280,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2191754378957563929">Uključeno</translation>
 <translation id="2192505247865591433">Šalje:</translation>
 <translation id="2193365732679659387">Postavke pouzdanosti</translation>
-<translation id="2194554416429452547">Tijekom proba Chrome istražuje načine za ograničavanje neželjenog sadržaja, prijevara i dijeljenja između web-lokacija. Chrome također <ph name="ESTIMATE_INTERESTS_LINK" /> koje web-lokacije mogu upotrebljavati da bi vam prikazivale oglase. Svojim interesima možete upravljati u postavkama.</translation>
 <translation id="2194856509914051091">Važne napomene</translation>
 <translation id="2195331105963583686">Nakon tog razdoblja i dalje ćete moći upotrebljavati uređaj <ph name="DEVICE_TYPE" />, no on više neće primati automatska ažuriranja softvera i sigurnosna ažuriranja</translation>
 <translation id="2195729137168608510">Zaštita e-pošte</translation>
@@ -1957,7 +1956,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2806891468525657116">Prečac već postoji</translation>
 <translation id="2807517655263062534">Ovdje se prikazuju datoteke koje ste preuzeli</translation>
 <translation id="2809586584051668049">i još <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
-<translation id="2810235462964014915">Zahtijeva čitanje i promjenu web-lokacije <ph name="SITE_NAME" /></translation>
 <translation id="2811205483104563968">Računi</translation>
 <translation id="2811564570599779918">Smanjenje količine neželjenog sadržaja i prijevara</translation>
 <translation id="2812049959647166806">Thunderbolt nije podržan</translation>
@@ -5270,6 +5268,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6086846494333236931">Instalirao vaš administrator</translation>
 <translation id="6087746524533454243">Tražite li stranicu s informacijama o pregledniku? Otvorite</translation>
 <translation id="6087960857463881712">Oduševljeno lice</translation>
+<translation id="6088535503330933227">Chrome istražuje načine za ograničavanje neželjenih oglasa, prijevara i dijeljenja između web-lokacija. Chrome također <ph name="ESTIMATE_INTERESTS_LINK" /> koje web-lokacije mogu upotrebljavati da bi vam prikazivale oglase. Svojim interesima možete upravljati u postavkama.</translation>
 <translation id="608912389580139775">Da biste dodali ovu stranicu na popis za čitanje, kliknite ikonu Oznaka</translation>
 <translation id="6091761513005122595">Dijeljenje je učitano.</translation>
 <translation id="6093888419484831006">Otkazivanje ažuriranja...</translation>
@@ -7685,6 +7684,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8438566539970814960">Poboljšajte pretraživanje i pregledavanje</translation>
 <translation id="8439506636278576865">Ponudi prevođenje stranica na tom jeziku</translation>
 <translation id="8440630305826533614">Linux aplikacije</translation>
+<translation id="844063558976952706">Uvijek na ovoj web-lokaciji</translation>
 <translation id="8443795068008423036">Provjerite je li vaš uređaj ažuriran i pokušajte ponovo</translation>
 <translation id="8446884382197647889">Saznajte više</translation>
 <translation id="8447409163267621480">Mora sadržavati Ctrl ili Alt</translation>

@@ -1292,7 +1292,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2191754378957563929">Vklopljeno</translation>
 <translation id="2192505247865591433">Iz:</translation>
 <translation id="2193365732679659387">Nastavitve zaupanja</translation>
-<translation id="2194554416429452547">Med preizkusi Chrome raziskuje načine, kako omejiti neželeno vsebino, prevare in deljenja med spletnimi mesti. Chrome prav tako <ph name="ESTIMATE_INTERESTS_LINK" />, ki jih spletna mesta lahko uporabijo pri prikazovanju oglasov. Zanimanja lahko upravljate v nastavitvah.</translation>
 <translation id="2194856509914051091">Kaj morate upoštevati</translation>
 <translation id="2195331105963583686">Po tem datumu boste še vedno lahko uporabljali to napravo <ph name="DEVICE_TYPE" />, vendar ne bo več prejemala samodejnih posodobitev programske opreme in varnostnih posodobitev.</translation>
 <translation id="2195729137168608510">E-poštna zaščita</translation>
@@ -1971,7 +1970,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2806891468525657116">Bližnjica že obstaja</translation>
 <translation id="2807517655263062534">Tu so prikazane datoteke, ki jih prenesete</translation>
 <translation id="2809586584051668049">in še <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
-<translation id="2810235462964014915">Zahtevano branje in spreminjanje za <ph name="SITE_NAME" /></translation>
 <translation id="2811205483104563968">Računi</translation>
 <translation id="2811564570599779918">Zmanjšanje vsiljene vsebine in prevar</translation>
 <translation id="2812049959647166806">Thunderbolt ni podprt</translation>
@@ -5288,6 +5286,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6086846494333236931">Namestil skrbnik</translation>
 <translation id="6087746524533454243">Ali iščete stran z vizitko brskalnika? Obiščite</translation>
 <translation id="6087960857463881712">Navdušen obraz</translation>
+<translation id="6088535503330933227">Chrome raziskuje načine, kako omejiti prikazovanje vsiljenih oglasov, prevare in deljenja med spletnimi mesti. Chrome prav tako <ph name="ESTIMATE_INTERESTS_LINK" />, ki jih spletna mesta lahko uporabijo pri prikazovanju oglasov. Zanimanja lahko upravljate v nastavitvah.</translation>
 <translation id="608912389580139775">Če želite dodati to stran na bralni seznam, se dotaknite ikone za ustvarjanje zaznamkov.</translation>
 <translation id="6091761513005122595">Datotečno sredstvo v skupni rabi je bilo uspešno vpeto.</translation>
 <translation id="6093888419484831006">Preklic posodabljanja ...</translation>
@@ -7703,6 +7702,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8438566539970814960">Izboljšanje iskanja in brskanja</translation>
 <translation id="8439506636278576865">Ponudi prevajanje strani v tem jeziku</translation>
 <translation id="8440630305826533614">Aplikacije za Linux</translation>
+<translation id="844063558976952706">Vedno na tem mestu</translation>
 <translation id="8443795068008423036">Preverite, ali je naprava posodobljena, in poskusite znova.</translation>
 <translation id="8446884382197647889">Več o tem</translation>
 <translation id="8447409163267621480">Vključevati morajo ali Ctrl ali Alt</translation>

@@ -6197,15 +6197,6 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 <translation id="7687943045976362719">Als dit beleid is ingesteld, worden de opgegeven contenttypen verwerkt door <ph name="PRODUCT_FRAME_NAME" />.
 
           Als dit beleid niet is ingesteld, wordt het standaard weergaveprogramma gebruikt voor alle sites. (Het beleid <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> kan worden gebruikt om het standaard weergaveprogramma te configureren.)</translation>
-<translation id="7694807474048279351">Plan dat het apparaat automatisch opnieuw opstart nadat een update van <ph name="PRODUCT_OS_NAME" /> is uitgevoerd.
-
-      Als dit beleid is ingesteld op True, start het apparaat automatisch opnieuw op wanneer een update van <ph name="PRODUCT_OS_NAME" /> is uitgevoerd en opnieuw opstarten vereist is om het updateproces te voltooien. Het opnieuw opstarten is onmiddellijk gepland maar kan op het apparaat tot 24 uur worden uitgesteld als een gebruiker het apparaat op dat moment gebruikt.
-
-      Als dit beleid is ingesteld op False, start het apparaat niet automatisch opnieuw op nadat een update van <ph name="PRODUCT_OS_NAME" /> is uitgevoerd. Het updateproces wordt voltooid wanneer de gebruiker het apparaat opnieuw opstart.
-
-      Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of negeren.
-
-      Opmerking: momenteel is automatisch opnieuw opstarten alleen mogelijk als het inlogscherm wordt getoond of een kiosk-appsessie wordt verwerkt. Dit zal in de toekomst veranderen en het beleid zal altijd worden toegepast, ongeacht of er een sessie van een bepaald type in verwerking is.</translation>
 <translation id="7696412993033202071">Externe authenticator-app lanceert URL's</translation>
 <translation id="7701341006446125684">Formaat van cache voor apps en extensies instellen (in bytes)</translation>
 <translation id="770339941914297201">Nieuw gedrag: Chrome-kiosk-apps worden alleen geüpdatet via de update-URL uit het beleid</translation>

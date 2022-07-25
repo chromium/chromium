@@ -41,6 +41,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="2018879682492276940">Fehler bei der Installation. Bitte versuch es noch einmal.</translation>
 <translation id="2020032459870799438">Wenn du prüfen möchtest, ob deine anderen Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melde dich in Chromium an<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Wähle, ob der Chromium-Verlauf dafür verwendet werden soll, die Google-Dienste stärker für dich zu personalisieren</translation>
+<translation id="2088953378266246249">Informationen zur Verwaltung von Root-Zertifikaten in Chromium</translation>
 <translation id="2174178932569897599">Chromium anpassen</translation>
 <translation id="2174917724755363426">Die Installation wurde nicht abgeschlossen. Möchtest du den Vorgang wirklich abbrechen?</translation>
 <translation id="2185166961232948079">Chromium – Netzwerkanmeldung – <ph name="PAGE_TITLE" /></translation>
@@ -363,6 +364,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="9185526690718004400">Neu starten, um &amp;Chromium zu aktualisieren</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium funktioniert unter Umständen nicht ordnungsgemäß, da es unter Windows XP und Windows Vista nicht mehr unterstützt wird</translation>
+<translation id="942598560705308788">Von Chromium verwaltete Zertifikate</translation>
 <translation id="945990405696787151">Du benötigst macOS 10.13 oder höher, um zukünftige Chromium-Updates zu erhalten. Auf diesem Computer wird OS X 10.11 ausgeführt.</translation>
 <translation id="965162752251293939">Wer verwendet gerade Chromium?</translation>
 <translation id="967427899662692980">Höchste Sicherheit in Chromium erhalten</translation>

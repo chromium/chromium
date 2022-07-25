@@ -1292,7 +1292,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2191754378957563929">Įjungta</translation>
 <translation id="2192505247865591433">Iš:</translation>
 <translation id="2193365732679659387">Patikimumo nustatymai</translation>
-<translation id="2194554416429452547">Per bandomuosius laikotarpius „Chrome“ ieško būdų, kaip apriboti šlamštą, apgaules ir bendrinimą tarp svetainių. „Chrome“ taip pat <ph name="ESTIMATE_INTERESTS_LINK" />, kuriuos svetainės gali naudoti skelbimams rodyti. Galite tvarkyti savo pomėgius nustatymuose.</translation>
 <translation id="2194856509914051091">Į ką reikėtų atsižvelgti</translation>
 <translation id="2195331105963583686">Po to vis tiek galėsite naudoti „<ph name="DEVICE_TYPE" />“, bet nebebus teikiami automatiniai programinės įrangos ir saugos naujiniai</translation>
 <translation id="2195729137168608510">El. pašto apsauga</translation>
@@ -1971,7 +1970,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2806891468525657116">Spartusis klavišas jau yra</translation>
 <translation id="2807517655263062534">Atsisiųsti failai rodomi čia</translation>
 <translation id="2809586584051668049">ir dar <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
-<translation id="2810235462964014915">Pateikta užklausa skaityti ir keisti <ph name="SITE_NAME" /></translation>
 <translation id="2811205483104563968">Paskyros</translation>
 <translation id="2811564570599779918">Mažiau šlamšto ir apgaulių</translation>
 <translation id="2812049959647166806">„Thunderbolt“ nepalaikoma</translation>
@@ -5287,6 +5285,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6086846494333236931">Įdiegė jūsų administratorius</translation>
 <translation id="6087746524533454243">Ieškote naršyklės puslapio „Apie“? Apsilankykite adresu</translation>
 <translation id="6087960857463881712">Nuostabus veidas</translation>
+<translation id="6088535503330933227">„Chrome“ ieško būdų, kaip apriboti skelbimų šlamštą, apgaules ir bendrinimą tarp svetainių. „Chrome“ taip pat <ph name="ESTIMATE_INTERESTS_LINK" />, kuriuos svetainės gali naudoti skelbimams rodyti. Galite tvarkyti savo pomėgius nustatymuose.</translation>
 <translation id="608912389580139775">Kad pridėtumėte puslapį prie skaitymo sąrašo, spustelėkite žymės piktogramą</translation>
 <translation id="6091761513005122595">Bendrinamas objektas įdėtas sėkmingai.</translation>
 <translation id="6093888419484831006">Naujinys atšaukiamas...</translation>
@@ -7702,6 +7701,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8438566539970814960">Tobulinti paieškas ir naršymą</translation>
 <translation id="8439506636278576865">Siūlyti versti puslapius šia kalba</translation>
 <translation id="8440630305826533614">„Linux“ programos</translation>
+<translation id="844063558976952706">Visada šioje svetainėje</translation>
 <translation id="8443795068008423036">Įsitikinkite, kad įrenginys atnaujintas, ir bandykite dar kartą</translation>
 <translation id="8446884382197647889">Sužinokite daugiau</translation>
 <translation id="8447409163267621480">Naudokite „Ctrl“ arba „Alt“</translation>

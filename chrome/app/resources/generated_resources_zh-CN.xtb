@@ -1270,7 +1270,6 @@
 <translation id="2191754378957563929">已开启</translation>
 <translation id="2192505247865591433">来源：</translation>
 <translation id="2193365732679659387">信任设置</translation>
-<translation id="2194554416429452547">在试用版阶段，Chrome 会探索各种方式来限制网络垃圾、欺诈行为以及网站间共享。Chrome 还会<ph name="ESTIMATE_INTERESTS_LINK" />以供网站用于向您展示广告。您可在设置中管理自己的兴趣。</translation>
 <translation id="2194856509914051091">注意事项</translation>
 <translation id="2195331105963583686">在此之后，您仍能使用此 <ph name="DEVICE_TYPE" />，但它将无法继续自动完成软件更新和安全更新</translation>
 <translation id="2195729137168608510">电子邮件保护</translation>
@@ -1945,7 +1944,6 @@
 <translation id="2806891468525657116">快捷方式已存在</translation>
 <translation id="2807517655263062534">您下载的文件会显示在此处</translation>
 <translation id="2809586584051668049">及另外<ph name="NUMBER_ADDITIONAL_DISABLED" />个扩展程序</translation>
-<translation id="2810235462964014915">已请求读取和更改“<ph name="SITE_NAME" />”</translation>
 <translation id="2811205483104563968">帐号</translation>
 <translation id="2811564570599779918">垃圾内容和欺诈行为削减</translation>
 <translation id="2812049959647166806">Thunderbolt 不受支持</translation>
@@ -5253,6 +5251,7 @@
 <translation id="6086846494333236931">这是您的管理员安装的</translation>
 <translation id="6087746524533454243">想要查看浏览器简介页面？请访问</translation>
 <translation id="6087960857463881712">酷炫表情</translation>
+<translation id="6088535503330933227">Chrome 会探索各种方式来限制垃圾广告、欺诈行为以及网站间共享。Chrome 还会<ph name="ESTIMATE_INTERESTS_LINK" />以供网站用于向您展示广告。您可在设置中管理自己的兴趣。</translation>
 <translation id="608912389580139775">若要将此网页添加到您的阅读清单中，请点击“书签”图标</translation>
 <translation id="6091761513005122595">已成功装载共享资源。</translation>
 <translation id="6093888419484831006">正在取消更新...</translation>
@@ -5877,6 +5876,7 @@
 <translation id="6709133671862442373">资讯</translation>
 <translation id="6709357832553498500">使用“<ph name="EXTENSIONNAME" />”连接</translation>
 <translation id="6710213216561001401">上一项</translation>
+<translation id="6710394144992407503">在网页上输入文字时检查是否有拼写错误</translation>
 <translation id="6711146141291425900">关联“<ph name="WEB_DRIVE" />”帐号以保存下载内容</translation>
 <translation id="6712943853047024245">您已经保存过此用户名在 <ph name="WEBSITE" /> 的密码</translation>
 <translation id="6713233729292711163">添加工作资料</translation>
@@ -6495,6 +6495,7 @@
 <translation id="7340757554212515731">自动向 Google 发送崩溃报告以及诊断数据和使用情况数据</translation>
 <translation id="7341834142292923918">想要访问此网站</translation>
 <translation id="7343372807593926528">请先阐明问题，然后再发送反馈。</translation>
+<translation id="7344585835349671209">管理您设备上的 HTTPS/SSL 证书</translation>
 <translation id="7345706641791090287">确认您的密码</translation>
 <translation id="7346909386216857016">知道了</translation>
 <translation id="7347452120014970266">此操作会清除 <ph name="ORIGIN_NAME" /> 及其安装的应用存储的所有数据和 Cookie</translation>
@@ -6624,6 +6625,7 @@
 <translation id="7460045493116006516">您已安装的当前主题背景</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746216226901520237">下次，您只需使用手机就能解锁您的 <ph name="DEVICE_TYPE" /> 了。您可在“设置”中关闭 Smart Lock。</translation>
+<translation id="7464153996453281700">组件已是最新版本</translation>
 <translation id="7464637891177137294">将密码保存在您的 Google 帐号 (<ph name="ACCOUNT" />) 中</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{共有 # 个打开的标签页，按一下此按钮即可显示/隐藏标签栏}other{共有 # 个打开的标签页，按一下此按钮即可显示/隐藏标签栏}}</translation>
 <translation id="7465635034594602553">出了点问题。请在几分钟后重新运行 <ph name="APP_NAME" />。</translation>
@@ -7131,6 +7133,7 @@
 <translation id="793531125873261495">下载虚拟机时出错。请重试。</translation>
 <translation id="7935451262452051102">已完成 <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">高级选项</translation>
+<translation id="7939328347457537652">管理设备证书</translation>
 <translation id="7939412583708276221">仍然保留</translation>
 <translation id="7942349550061667556">红色</translation>
 <translation id="7943368935008348579">下载 PDF 文件</translation>
@@ -7657,6 +7660,7 @@
 <translation id="8438566539970814960">改善搜索和浏览体验</translation>
 <translation id="8439506636278576865">询问是否翻译此语言的网页</translation>
 <translation id="8440630305826533614">Linux 应用</translation>
+<translation id="844063558976952706">始终在该网站上</translation>
 <translation id="8443795068008423036">请确保您的设备已更新到最新版本，然后重试</translation>
 <translation id="8446884382197647889">了解详情</translation>
 <translation id="8447409163267621480">必须以 Ctrl 键或 Alt 键开头</translation>

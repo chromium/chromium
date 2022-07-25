@@ -6240,16 +6240,6 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
 
 
 Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous les sites. (La règle <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> peut être utilisée pour configurer le moteur de rendu par défaut.)</translation>
-<translation id="7694807474048279351">Planifie un démarrage automatique après une mise à jour de <ph name="PRODUCT_OS_NAME" />.
-
-      Si vous définissez cette règle sur "True", un démarrage automatique est planifié après la mise à jour de <ph name="PRODUCT_OS_NAME" /> et le redémarrage de l'appareil. Le redémarrage est planifié immédiatement, mais peut être reporté de 24 heures
-au maximum si un utilisateur se sert de l'appareil.
-
-      Si vous définissez cette règle sur "False", aucun redémarrage automatique n'est planifié après la mise à jour de <ph name="PRODUCT_OS_NAME" />. La mise à jour est terminée lorsque l'utilisateur redémarre l'appareil.
-
-      Si vous définissez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
-
-      Remarque : Pour le moment, les redémarrages automatiques ne sont activés que lorsque l'écran de connexion est affiché ou qu'une session d'application kiosque est en cours. Ce fonctionnement va changer prochainement : la règle s'appliquera toujours, qu'une session de n'importe quel type soit en cours ou non.</translation>
 <translation id="7696412993033202071">URL de lancement de l'appli d'authentification externe</translation>
 <translation id="7701341006446125684">Régler la taille du cache pour les applications et les extensions (en octets)</translation>
 <translation id="770339941914297201">Nouveau comportement : les applis Chrome Kiosk ne seront mises à jour qu'avec l'URL de mise à jour fournie par la règle</translation>

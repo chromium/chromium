@@ -6268,16 +6268,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7687943045976362719">Se questa norma viene impostata, i tipi di contenuto specificati vengono gestiti da <ph name="PRODUCT_FRAME_NAME" />.
 
           Se la norma non viene impostata, verrà utilizzato per tutti i siti il renderer predefinito. (È possibile utilizzare la norma <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> per configurare il renderer predefinito).</translation>
-<translation id="7694807474048279351">Consente di pianificare un riavvio automatico in seguito all'applicazione di un aggiornamento di <ph name="PRODUCT_OS_NAME" />.
-
-Se questa norma viene impostata su true, viene pianificato un riavvio automatico in seguito all'applicazione di un aggiornamento di <ph name="PRODUCT_OS_NAME" /> e quando è necessario un riavvio per completare la procedura di aggiornamento. Il riavvio viene programmato subito ma potrebbe essere ritardato sul dispositivo di massimo 24 ore se un utente sta utilizzando il dispositivo.
-
-
-Se la norma viene impostata su false, non vengono programmati riavvii automatici in seguito all'applicazione di un aggiornamento di <ph name="PRODUCT_OS_NAME" />. La procedura di aggiornamento viene completata al successivo riavvio del dispositivo.
-
-Se la norma viene impostata gli utenti non potranno modificarla o ignorarla.
-
-Nota. Attualmente i riavvii automatici vengono attivati soltanto durante la visualizzazione della schermata di accesso o durante una sessione di un'app kiosk. Questo comportamento cambierà in futuro e la norma sarà sempre valida, a prescindere dal fatto che sia in corso o meno una sessione di tipo specifico.</translation>
 <translation id="7696412993033202071">URL lancio app di autenticazione esterne</translation>
 <translation id="7701341006446125684">Imposta le dimensioni della cache di app ed estensioni (in byte)</translation>
 <translation id="770339941914297201">Nuovo comportamento: le app di Chrome Kiosk verranno aggiornate solo utilizzando l'URL di aggiornamento dal criterio</translation>

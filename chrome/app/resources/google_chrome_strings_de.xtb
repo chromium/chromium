@@ -65,6 +65,7 @@
 <translation id="2139300032719313227">Chrome OS neu starten</translation>
 <translation id="2151406531797534936">Starte Chrome jetzt neu</translation>
 <translation id="2174917724755363426">Die Installation wurde nicht abgeschlossen. Möchtest du den Vorgang wirklich abbrechen?</translation>
+<translation id="223889379102603431">Informationen zur Verwaltung von Root-Zertifikaten in Chrome</translation>
 <translation id="2258103955319320201">Wenn du auf allen deinen Geräten auf deine Chrome-Browserinhalte zugreifen möchtest, melde dich an und aktiviere die Synchronisierung</translation>
 <translation id="2290014774651636340">Google API-Schlüssel fehlen. Einige Funktionen von Google Chrome sind deaktiviert.</translation>
 <translation id="2290095356545025170">Möchtest du Google Chrome wirklich deinstallieren?</translation>
@@ -346,6 +347,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8129812357326543296">Über &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialisierung…</translation>
 <translation id="8255190535488645436">Google Chrome verwendet deine Kamera und dein Mikrofon.</translation>
+<translation id="8270775718612349140">Von Chrome verwaltete Zertifikate</translation>
 <translation id="8286862437124483331">Google Chrome möchte Passwörter anzeigen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="828798499196665338">Dein Elternteil hat "Berechtigungen für Websites, Apps und Erweiterungen" für Chrome deaktiviert. Das Aktivieren dieser <ph name="EXTENSION_TYPE_PARAMETER" /> ist nicht zulässig.</translation>
 <translation id="8290100596633877290">Google Chrome ist abgestürzt. Jetzt neu starten?</translation>

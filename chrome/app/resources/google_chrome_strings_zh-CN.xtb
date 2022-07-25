@@ -64,6 +64,7 @@
 <translation id="2139300032719313227">重启 Chrome 操作系统</translation>
 <translation id="2151406531797534936">请立即重启 Chrome</translation>
 <translation id="2174917724755363426">尚未完成安装，确定要取消吗？</translation>
+<translation id="223889379102603431">与 Chrome 如何管理其根证书有关的信息</translation>
 <translation id="2258103955319320201">如需在您的所有设备上访问自己的 Chrome 浏览器信息，请登录您的帐号，然后开启同步功能</translation>
 <translation id="2290014774651636340">缺少 Google API 密钥，因此 Google Chrome 的部分功能将无法使用。</translation>
 <translation id="2290095356545025170">确定要卸载 Google Chrome 浏览器吗？</translation>
@@ -345,6 +346,7 @@
 <translation id="8129812357326543296">关于 Google Chrome(&amp;G)</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8255190535488645436">Google Chrome 正在使用您的摄像头和麦克风。</translation>
+<translation id="8270775718612349140">由 Chrome 管理的证书</translation>
 <translation id="8286862437124483331">Google Chrome正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
 <translation id="828798499196665338">您的家长已为 Chrome 停用“网站、应用和扩展程序的权限”。因此，您无法启用该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="8290100596633877290">哎呀！Google Chrome 浏览器崩溃了。是否立即重新启动？</translation>

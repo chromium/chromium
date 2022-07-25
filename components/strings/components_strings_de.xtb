@@ -1463,6 +1463,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4969341057194253438">Aufnahme löschen</translation>
 <translation id="4973922308112707173">Doppelte Lochung oben</translation>
 <translation id="4976702386844183910">Zuletzt besucht am <ph name="DATE" /></translation>
+<translation id="498323057460789381">Schemavalidierungsfehler: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Mikrofon verwenden?</translation>
 <translation id="4984339528288761049">Prc5 (Umschlag)</translation>
 <translation id="4989163558385430922">Alle ansehen</translation>
@@ -1525,6 +1526,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5123063207673082822">Wochenende</translation>
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5125394840236832993">B-Plus</translation>
+<translation id="5125751979347152379">Ungültige URL</translation>
 <translation id="512592033764059484">Fußball</translation>
 <translation id="5126510351761255129">Karte bestätigen</translation>
 <translation id="512670116361803001">Die Größe von <ph name="APP_NAME" /> kann eventuell nicht richtig angepasst werden. Verwende voreingestellte Fenstergrößen, damit die App ordnungsgemäß funktioniert.</translation>

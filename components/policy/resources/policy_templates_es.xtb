@@ -6297,15 +6297,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7687943045976362719">Si se asigna un valor a esta política, <ph name="PRODUCT_FRAME_NAME" /> gestiona los tipos de contenido especificados.
 
           Si no se asigna ningún valor a esta política, se usará el procesador predeterminado para todos los sitios web. Se puede usar la política <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> para configurar el procesador predeterminado.</translation>
-<translation id="7694807474048279351">Programa un reinicio automático después de haberse aplicado una actualización de <ph name="PRODUCT_OS_NAME" />.
-
-      Si el valor de esta política se establece en True, se programará un reinicio automático cuando se haya aplicado una actualización de <ph name="PRODUCT_OS_NAME" /> y sea necesario reiniciar para que se complete el proceso de actualización. El reinicio se programa para que se realice en el dispositivo de forma inmediata, pero se puede retrasar hasta 24 horas si un usuario está utilizando el dispositivo en ese momento.
-
-      Si el valor de esta política se establece en False, no se programará un reinicio automático después de aplicar una actualización de <ph name="PRODUCT_OS_NAME" />. El proceso de actualización se completa cuando el usuario vuelve a reiniciar el dispositivo.
-
-      Si estableces esta política, los usuarios no podrán modificarla ni anularla.
-
-      Nota: En este momento, los reinicios automáticos solo se habilitan cuando se muestra la pantalla de inicio de sesión o está en curso una sesión de una aplicación de kiosco. Esta restricción se modificará en el futuro, y la política se aplicará en todo momento, independientemente de si un determinado tipo de sesión está o no en curso.</translation>
 <translation id="7696412993033202071">URLs externas de lanzamiento de aplicación de autenticación</translation>
 <translation id="7701341006446125684">Establecer el tamaño de caché de aplicaciones y extensiones (en bytes)</translation>
 <translation id="770339941914297201">Comportamiento nuevo: las aplicaciones de kiosco de Chrome solo se actualizarán con la URL de actualización de la política</translation>

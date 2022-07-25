@@ -6172,15 +6172,6 @@
 <translation id="7687943045976362719">如果設定這項政策，指定的內容類型會由 <ph name="PRODUCT_FRAME_NAME" />處理。
 
           如果不設定這項政策，所有網站都會使用預設轉譯器。(你可透過 <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> 政策設定預設轉譯器)。</translation>
-<translation id="7694807474048279351">在系統已套用 <ph name="PRODUCT_OS_NAME" />更新之後安排自動重新啟動。
-
-      如果你將這項政策設為 True，當系統已套用 <ph name="PRODUCT_OS_NAME" />更新且必須重新啟動以完成更新程序時，即會安排自動重新啟動。系統會立即排定重新啟動，但如果使用者正在使用裝置，最多可能會延遲 24 小時才會重新啟動。
-
-      如果你將這項政策設為 False，系統將不會在套用 <ph name="PRODUCT_OS_NAME" />更新之後安排自動重新啟動時間。更新程序會在使用者下次重新啟動裝置時完成。
-
-      只要你設定這項政策，使用者即無法予以變更或覆寫。
-
-      注意：目前只有在顯示登入畫面或 Kiosk 應用程式工作階段運作時，才能啟用自動重新啟動。這種情況會在日後變更，而且無論任何特定類型的工作階段是否正在運作，政策都會一律適用。</translation>
 <translation id="7696412993033202071">外部驗證應用程式啟動網址</translation>
 <translation id="7701341006446125684">設定應用程式和擴充功能快取大小 (以位元組為單位)</translation>
 <translation id="770339941914297201">新行為：Kiosk Chrome 應用程式只會透過政策中的更新網址進行更新</translation>

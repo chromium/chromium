@@ -1280,7 +1280,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2191754378957563929">Zapnuto</translation>
 <translation id="2192505247865591433">Zdroj:</translation>
 <translation id="2193365732679659387">Nastavení důvěryhodnosti</translation>
-<translation id="2194554416429452547">Během zkušebních období Chrome zkoumá způsoby, jak omezit spam, podvody a sdílení mezi weby. Chrome také <ph name="ESTIMATE_INTERESTS_LINK" />, které mohou weby používat k zobrazování reklam. Své zájmy můžete spravovat v nastavení.</translation>
 <translation id="2194856509914051091">Co je třeba zvážit</translation>
 <translation id="2195331105963583686">I poté své zařízení <ph name="DEVICE_TYPE" /> budete moci nadále používat, ale již nebude dostávat automatické aktualizace softwaru a zabezpečení</translation>
 <translation id="2195729137168608510">Ochrana e-mailu</translation>
@@ -1956,7 +1955,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2806891468525657116">Zkratka už existuje</translation>
 <translation id="2807517655263062534">Zde se zobrazují stažené soubory</translation>
 <translation id="2809586584051668049">a další (<ph name="NUMBER_ADDITIONAL_DISABLED" />)</translation>
-<translation id="2810235462964014915">Vyžádáno čtení a změny webu <ph name="SITE_NAME" /></translation>
 <translation id="2811205483104563968">Účty</translation>
 <translation id="2811564570599779918">Omezení spamu a podvodů</translation>
 <translation id="2812049959647166806">Rozhraní Thunderbolt není podporováno</translation>
@@ -5268,6 +5266,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6086846494333236931">Nainstaloval administrátor</translation>
 <translation id="6087746524533454243">Hledáte stránku s informacemi o prohlížeči? Přejděte na stránku</translation>
 <translation id="6087960857463881712">Paráda</translation>
+<translation id="6088535503330933227">Chrome zkoumá způsoby, jak omezit reklamní spam, podvody a sdílení mezi weby. Chrome také <ph name="ESTIMATE_INTERESTS_LINK" />, které mohou weby používat k zobrazování reklam. Své zájmy můžete spravovat v nastavení.</translation>
 <translation id="608912389580139775">Pokud tuto stránku chcete přidat do seznamu ke čtení, klikněte na ikonu záložky</translation>
 <translation id="6091761513005122595">Sdílená složka byla úspěšně připojena.</translation>
 <translation id="6093888419484831006">Rušení aktualizace...</translation>
@@ -7683,6 +7682,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8438566539970814960">Vylepšit vyhledávání a procházení</translation>
 <translation id="8439506636278576865">Nabízet překlad stránek v tomto jazyce</translation>
 <translation id="8440630305826533614">Aplikace pro Linux</translation>
+<translation id="844063558976952706">Vždy na tomto webu</translation>
 <translation id="8443795068008423036">Aktualizujte zařízení a zkuste to znovu</translation>
 <translation id="8446884382197647889">Další informace</translation>
 <translation id="8447409163267621480">Zahrňte klávesu Ctrl nebo Alt</translation>

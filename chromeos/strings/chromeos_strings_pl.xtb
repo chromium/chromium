@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1645954272419197032">Potwierdź informacje o urządzeniu</translation>
 <translation id="1662989795263954667">Zatrzymano – brak tuszu</translation>
+<translation id="1664796644829245314">Wyświetl podgląd: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Wbudowana sieć VPN</translation>
 <translation id="1672499492233627739">Przekaz z kamery internetowej</translation>
 <translation id="1676557873873341166">Nagrywam obraz</translation>
@@ -133,6 +134,7 @@
 <translation id="1977994649430373166">Zdjęcie profilowe Google</translation>
 <translation id="1979103255016296513">Zaległa zmiana hasła</translation>
 <translation id="1999615961760456652">Portal przechwytujący</translation>
+<translation id="200669432486043882">Zastąp plik</translation>
 <translation id="2006864819935886708">Łączność</translation>
 <translation id="2008685064673031089">Znajdowanie liczb pierwszych</translation>
 <translation id="2011174342667534258">Wersja SDK:</translation>
@@ -798,6 +800,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7978412674231730200">Klucz prywatny</translation>
 <translation id="7982789257301363584">Sieć</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
+<translation id="8018928621986160031">Zapisano w folderze „<ph name="FILE_LOCATION" />”</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Włącz automatyczny tryb kolorów</translation>

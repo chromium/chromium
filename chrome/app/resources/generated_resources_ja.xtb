@@ -1274,7 +1274,6 @@
 <translation id="2191754378957563929">オン</translation>
 <translation id="2192505247865591433">取得先:</translation>
 <translation id="2193365732679659387">信頼の設定</translation>
-<translation id="2194554416429452547">トライアル期間中、Chrome はスパムや不正行為、サイト間の共有を制限する方法を検証します。また、<ph name="ESTIMATE_INTERESTS_LINK" />して、サイトでの広告表示に使用できるようにします。興味 / 関心は設定で管理できます。</translation>
 <translation id="2194856509914051091">留意事項</translation>
 <translation id="2195331105963583686">この期限を過ぎても <ph name="DEVICE_TYPE" /> は使用できますが、ソフトウェアとセキュリティは自動更新されなくなります。</translation>
 <translation id="2195729137168608510">電子メールの保護</translation>
@@ -1947,7 +1946,6 @@
 <translation id="2806891468525657116">ショートカットがすでに存在します</translation>
 <translation id="2807517655263062534">ダウンロードしたファイルがここに表示されます</translation>
 <translation id="2809586584051668049">、他 <ph name="NUMBER_ADDITIONAL_DISABLED" /> 件</translation>
-<translation id="2810235462964014915"><ph name="SITE_NAME" /> の読み取りと変更をリクエストしました</translation>
 <translation id="2811205483104563968">アカウント</translation>
 <translation id="2811564570599779918">スパムや不正行為の低減</translation>
 <translation id="2812049959647166806">Thunderbolt はサポートされていません</translation>
@@ -5250,6 +5248,7 @@
 <translation id="6086846494333236931">管理者によりインストールされています</translation>
 <translation id="6087746524533454243">ブラウザ情報のページをお探しですか？次にアクセスしてください</translation>
 <translation id="6087960857463881712">エピック スマイリー</translation>
+<translation id="6088535503330933227">Chrome では広告スパムや不正行為、サイト間の共有を制限する方法を検証します。また、<ph name="ESTIMATE_INTERESTS_LINK" />して、サイトでの広告表示に使用できるようにします。興味 / 関心は設定で管理できます。</translation>
 <translation id="608912389580139775">リーディング リストにこのページを追加するには、ブックマーク アイコンをクリックしてください</translation>
 <translation id="6091761513005122595">共有フォルダが正常にマウントされました。</translation>
 <translation id="6093888419484831006">更新をキャンセルしています...</translation>
@@ -7654,6 +7653,7 @@
 <translation id="8438566539970814960">検索とブラウジングを改善する</translation>
 <translation id="8439506636278576865">この言語のページで翻訳ツールを表示する</translation>
 <translation id="8440630305826533614">Linux アプリ</translation>
+<translation id="844063558976952706">常にこのサイトのプラグインを実行する</translation>
 <translation id="8443795068008423036">デバイスが最新の状態になっていることを確認してから、もう一度お試しください</translation>
 <translation id="8446884382197647889">詳細</translation>
 <translation id="8447409163267621480">Ctrl キーまたは Alt キーが必要です</translation>

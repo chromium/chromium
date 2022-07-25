@@ -306,6 +306,7 @@
 <translation id="2805756323405976993">Праграмы</translation>
 <translation id="2814448776515246190">Здыманне часткі экрана</translation>
 <translation id="2819276065543622893">Вы выйдзеце з уліковага запісу зараз.</translation>
+<translation id="2822551631199737692">Выкарыстоўваецца камера</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" />. Прыменена раздзяляльнасць <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Паліца</translation>
 <translation id="2831035692318564937">Уключана да захаду сонца</translation>
@@ -807,6 +808,7 @@
 <translation id="5682642926269496722">Памочнік Google недаступны для бягучага ўліковага запісу карыстальніка.</translation>
 <translation id="5689633613396158040">У рэжыме Начной падсветкі зручней глядзець на экран пры цьмяным асвятленні. Каб змяніць час уключэння начнога рэжыму або выключыць рэжым цалкам, націсніце тут.</translation>
 <translation id="5691772641933328258">Адбітак пальца не распазнаны</translation>
+<translation id="5693255400847650006">Выкарыстоўваецца мікрафон</translation>
 <translation id="570390244361237317">Усе праграмы: для пераходу паміж імі выкарыстоўвайце клавішы са стрэлкамі</translation>
 <translation id="5707775774148071965">Ваша прылада падтрымлівае больш высокую хуткасць перадачы даных, чым кабель. Прадукцыйнасць прылады можа быць абмежавана.</translation>
 <translation id="5710450975648804523">Рэжым "Не турбаваць" уключаны</translation>
@@ -981,6 +983,7 @@
 <translation id="6723839937902243910">Кнопка сілкавання</translation>
 <translation id="6727969043791803658">Прылада падключана. Зарад акумулятара: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Выкарыстоўваюцца камера і мікрафон</translation>
 <translation id="6739144137573853180">ПЕРАЙСЦІ Ў НАЛАДЫ</translation>
 <translation id="6751052314767925245">Гэтай функцыяй кіруе адміністратар</translation>
 <translation id="6751826523481687655">Трасіроўка прадукцыйнасці ўключана</translation>
@@ -1241,6 +1244,7 @@
 <translation id="828708037801473432">Выключана</translation>
 <translation id="8297006494302853456">Слабы</translation>
 <translation id="8308637677604853869">Папярэдняе меню</translation>
+<translation id="830868413617744215">Бэта-версія</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">Выбрана акно "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="8351131234907093545">Стварыць нататку</translation>

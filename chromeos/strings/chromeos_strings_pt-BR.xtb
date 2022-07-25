@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1645954272419197032">Confirme as informações do dispositivo</translation>
 <translation id="1662989795263954667">Parado (sem tinta)</translation>
+<translation id="1664796644829245314">Visualizar <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN integrado</translation>
 <translation id="1672499492233627739">Feed de vídeo da webcam</translation>
 <translation id="1676557873873341166">Captura de vídeo ativada</translation>
@@ -133,6 +134,7 @@
 <translation id="1977994649430373166">Foto do perfil do Google</translation>
 <translation id="1979103255016296513">O prazo para a alteração de senha foi ultrapassado</translation>
 <translation id="1999615961760456652">Portal cativo</translation>
+<translation id="200669432486043882">Substituir arquivo</translation>
 <translation id="2006864819935886708">Conectividade</translation>
 <translation id="2008685064673031089">Pesquisa de números primos</translation>
 <translation id="2011174342667534258">Versão do SDK:</translation>
@@ -798,6 +800,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="7978412674231730200">Chave privada</translation>
 <translation id="7982789257301363584">Rede</translation>
 <translation id="7994702968232966508">Método EAP</translation>
+<translation id="8018928621986160031">Salvos em "<ph name="FILE_LOCATION" />"</translation>
 <translation id="802154636333426148">Falha no download</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Ativar o modo de cor automático</translation>

@@ -41,6 +41,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="2018879682492276940">Installimine ebaõnnestus. Proovige uuesti.</translation>
 <translation id="2020032459870799438">Kui soovite kontrollida, kas teie muud paroolid on andmetega seotud rikkumiste ja muude turvaprobleemide eest kaitstud, <ph name="BEGIN_LINK" />logige Chromiumi sisse<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Valige, kas Google'i teenustes rohkem isikupärastatud kasutuskogemuse saamiseks kaasata Chromiumi ajalugu</translation>
+<translation id="2088953378266246249">Teave selle kohta, kuidas Chromium oma juursertifikaate haldab</translation>
 <translation id="2174178932569897599">Chromiumi kohandamine</translation>
 <translation id="2174917724755363426">Installimine ei ole lõpetatud. Kas soovite kindlasti tühistada?</translation>
 <translation id="2185166961232948079">Chromium – võrku sisselogimine – <ph name="PAGE_TITLE" /></translation>
@@ -364,6 +365,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="9185526690718004400">Taaskäivitage &amp;Chromiumi värskendamiseks</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium ei pruugi õigesti töötada, kuna seda ei toetata enam Windows XP-s ega Windows Vistas</translation>
+<translation id="942598560705308788">Chromiumi hallatavad sertifikaadid</translation>
 <translation id="945990405696787151">Chromiumi tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi macOS 10.13 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi OS X 10.11.</translation>
 <translation id="965162752251293939">Kes kasutab Chromiumi?</translation>
 <translation id="967427899662692980">Hankige Chromiumi parimad turbefunktsioonid</translation>

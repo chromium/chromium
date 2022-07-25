@@ -1285,7 +1285,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2191754378957563929">Включено</translation>
 <translation id="2192505247865591433">От:</translation>
 <translation id="2193365732679659387">Настройки за доверие</translation>
-<translation id="2194554416429452547">По време на експериментите Chrome проучва начини да ограничи спама, измамите и споделянето между сайтовете. Също така браузърът <ph name="ESTIMATE_INTERESTS_LINK" />, които сайтовете могат да използват, за да ви показват реклами. Имате възможност да управлявате интересите си от настройките.</translation>
 <translation id="2194856509914051091">Обмислете следните неща</translation>
 <translation id="2195331105963583686">След това пак ще можете да използвате устройството <ph name="DEVICE_TYPE" />, но то няма да получава повече автоматични актуализации на софтуера и сигурността</translation>
 <translation id="2195729137168608510">Защита за имейли</translation>
@@ -1964,7 +1963,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2806891468525657116">Прекият път вече съществува</translation>
 <translation id="2807517655263062534">Тук се показват изтеглените от вас файлове</translation>
 <translation id="2809586584051668049">и още <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
-<translation id="2810235462964014915">Изпратена заявка за четене и промяна на <ph name="SITE_NAME" /></translation>
 <translation id="2811205483104563968">Профили</translation>
 <translation id="2811564570599779918">Намаляване на спама и измамите</translation>
 <translation id="2812049959647166806">Thunderbolt не се поддържа</translation>
@@ -5281,6 +5279,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6086846494333236931">Инсталирано от администратора ви</translation>
 <translation id="6087746524533454243">Търсите страницата с информация за браузъра? Посетете</translation>
 <translation id="6087960857463881712">Страхотно лице</translation>
+<translation id="6088535503330933227">Chrome проучва начини за ограничаване на рекламния спам, измамите и споделянето между сайтовете. Също така браузърът <ph name="ESTIMATE_INTERESTS_LINK" />, които сайтовете могат да използват, за да ви показват реклами. Имате възможност да управлявате интересите си от настройките.</translation>
 <translation id="608912389580139775">За да добавите тази страница към списъка си за четене, кликнете върху иконата на отметка</translation>
 <translation id="6091761513005122595">Дялът е свързан успешно.</translation>
 <translation id="6093888419484831006">Актуализирането се анулира...</translation>
@@ -7686,6 +7685,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8438566539970814960">Подобряване на търсенията и сърфирането</translation>
 <translation id="8439506636278576865">Предлагане страниците на този език да се превеждат</translation>
 <translation id="8440630305826533614">Приложения за Linux</translation>
+<translation id="844063558976952706">Винаги на този сайт</translation>
 <translation id="8443795068008423036">Проверете дали устройството ви е актуално и опитайте отново</translation>
 <translation id="8446884382197647889">Научете повече</translation>
 <translation id="8447409163267621480">Използвайте или Ctrl, или Alt</translation>

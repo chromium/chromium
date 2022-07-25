@@ -1289,7 +1289,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2191754378957563929">Be</translation>
 <translation id="2192505247865591433">Innen:</translation>
 <translation id="2193365732679659387">Bizalmi beállítások</translation>
-<translation id="2194554416429452547">A próbaidőszakok során a Chrome a spam, a csalás és a webhelyek közötti megosztás korlátozására szolgáló módszereket próbál ki. A Chrome emellett olyan <ph name="ESTIMATE_INTERESTS_LINK" />, amelyeket más webhelyek arra használhatnak fel, hogy hirdetéseket jelenítsenek meg Önnek. Érdeklődési köreit a beállításokban kezelheti.</translation>
 <translation id="2194856509914051091">Megfontolandó szempontok</translation>
 <translation id="2195331105963583686"><ph name="DEVICE_TYPE" /> eszközét ezt követően is tudja majd használni, de többé nem kap automatikus biztonsági és szoftverfrissítéseket</translation>
 <translation id="2195729137168608510">E-mail védelem</translation>
@@ -1968,7 +1967,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2806891468525657116">Ez a billentyűparancs már létezik</translation>
 <translation id="2807517655263062534">A letöltött fájlok itt jelennek meg</translation>
 <translation id="2809586584051668049">és <ph name="NUMBER_ADDITIONAL_DISABLED" /> további</translation>
-<translation id="2810235462964014915">A következő olvasása és módosítása kérelmezve: <ph name="SITE_NAME" /></translation>
 <translation id="2811205483104563968">Fiókok</translation>
 <translation id="2811564570599779918">A spamek és a csalás visszaszorítása</translation>
 <translation id="2812049959647166806">A Thunderbolt nem támogatott</translation>
@@ -5286,6 +5284,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6086846494333236931">A rendszergazda telepítette</translation>
 <translation id="6087746524533454243">A böngésző névjegyoldalát keresi? Nyissa meg ezt az oldalt:</translation>
 <translation id="6087960857463881712">Menő arc</translation>
+<translation id="6088535503330933227">A Chrome a hirdetési spam, a csalás és a webhelyek közötti megosztás korlátozására szolgáló módszereket próbál ki. A Chrome emellett olyan <ph name="ESTIMATE_INTERESTS_LINK" />, amelyeket más webhelyek arra használhatnak fel, hogy hirdetéseket jelenítsenek meg Önnek. Érdeklődési köreit a beállításokban kezelheti.</translation>
 <translation id="608912389580139775">Ha szeretne oldalakat felvenni az olvasási listájára, kattintson a Könyvjelző ikonra</translation>
 <translation id="6091761513005122595">A megosztott tároló csatlakoztatása sikeres volt.</translation>
 <translation id="6093888419484831006">Frissítés leállítása...</translation>
@@ -7697,6 +7696,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8438566539970814960">Keresések és böngészés javítása</translation>
 <translation id="8439506636278576865">Kínálja fel az ezen a nyelven írt oldalak fordítását</translation>
 <translation id="8440630305826533614">Linux-alkalmazások</translation>
+<translation id="844063558976952706">Ezen a webhelyen mindig</translation>
 <translation id="8443795068008423036">Győződjön meg arról, hogy eszköze naprakész, majd próbálkozzon újra</translation>
 <translation id="8446884382197647889">További információ</translation>
 <translation id="8447409163267621480">Használja a Ctrl vagy az Alt gombot</translation>

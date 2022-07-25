@@ -6310,15 +6310,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="7687943045976362719">Jika kebijakan ini ditetapkan, jenis konten yang ditentukan akan ditangani oleh <ph name="PRODUCT_FRAME_NAME" />.
 
           Jika kebijakan ini tidak ditetapkan, perender default akan digunakan untuk semua situs. (Kebijakan <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> dapat digunakan untuk mengonfigurasi perender default.)</translation>
-<translation id="7694807474048279351">Menjadwalkan mulai ulang otomatis setelah pembaruan <ph name="PRODUCT_OS_NAME" /> diterapkan.
-
-      Saat kebijakan ini disetel ke true, mulai ulang otomatis akan dijadwalkan saat pembaruan <ph name="PRODUCT_OS_NAME" /> diterapkan dan diperlukan mulai ulang untuk menyelesaikan proses pembaruan. Mulai ulang dijadwalkan langsung namun mungkin ditunda di perangkat hingga 24 jam jika pengguna sedang menggunakan perangkat.
-
-      Saat kebijakan ini disetel ke false, mulai ulang otomatis tidak akan dijadwalkan setelah menerapkan pembaruan <ph name="PRODUCT_OS_NAME" />. Proses pembaruan diselesaikan saat pengguna memulai ulang perangkat lagi.
-
-      Jika Anda menyetel kebijakan ini, pengguna tidak dapat mengubah atau menimpanya.
-
-      Catatan: Saat ini, mulai ulang otomatis hanya diaktifkan saat layar masuk ditampilkan atau sesi aplikasi kios sedang berjalan. Hal ini akan berubah di masa mendatang dan kebijakan akan terus diterapkan, terlepas dari apakah sesi dari jenis tertentu apa pun sedang dijalankan atau tidak.</translation>
 <translation id="7696412993033202071">URL peluncuran aplikasi autentikasi eksternal</translation>
 <translation id="7701341006446125684">Menyetel ukuran cache Ekstensi dan Aplikasi (dalam byte)</translation>
 <translation id="770339941914297201">Perilaku baru: Aplikasi Kiosk Chrome hanya akan diupdate menggunakan URL update dari kebijakan</translation>

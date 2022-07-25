@@ -1277,7 +1277,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2191754378957563929">Aktibatuta</translation>
 <translation id="2192505247865591433">Igorlea:</translation>
 <translation id="2193365732679659387">Fidagarritasun-ezarpenak</translation>
-<translation id="2194554416429452547">Probak abian diren bitartean, spama, iruzurrak eta webguneen artean partekatzeko aukera mugatzeko moduak arakatzen ari da Chrome. Halaber, webguneek iragarkiak erakusteko erabil ditzaketen <ph name="ESTIMATE_INTERESTS_LINK" /> Chrome-k. Zure interesak kudeatzeko, joan ezarpenetara.</translation>
 <translation id="2194856509914051091">Kontuan hartu beharrekoak</translation>
 <translation id="2195331105963583686">Handik aurrera, <ph name="DEVICE_TYPE" /> erabiltzen jarraitu ahal izango duzu, baina ez duzu jasoko software- eta segurtasun-eguneratze automatikorik</translation>
 <translation id="2195729137168608510">Posta elektronikoaren babesa</translation>
@@ -1953,7 +1952,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2806891468525657116">Jada badago lasterbide hori</translation>
 <translation id="2807517655263062534">Deskargatutako fitxategiak agertuko dira hemen</translation>
 <translation id="2809586584051668049">eta beste <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
-<translation id="2810235462964014915"><ph name="SITE_NAME" /> irakurtzeko eta aldatzeko baimena eskatu da</translation>
 <translation id="2811205483104563968">Kontuak</translation>
 <translation id="2811564570599779918">Spama eta iruzurrak murriztea</translation>
 <translation id="2812049959647166806">Thunderbolt konektorea ez da bateragarria</translation>
@@ -5264,6 +5262,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6086846494333236931">Administratzaileak instalatu du</translation>
 <translation id="6087746524533454243">Arakatzailearen "Honi buruz" orriaren bila zabiltza? Joan helbide honetara:</translation>
 <translation id="6087960857463881712">Aurpegi zoragarria</translation>
+<translation id="6088535503330933227">Iragarkien spama, iruzurrak eta webguneen artean partekatzeko aukera mugatzeko moduak arakatzen ari da Chrome. Halaber, webguneek iragarkiak erakusteko erabil ditzaketen <ph name="ESTIMATE_INTERESTS_LINK" /> Chrome-k. Zure interesak kudeatzeko, joan ezarpenetara.</translation>
 <translation id="608912389580139775">Orria irakurketa-zerrendan gehitzeko, sakatu laster-markaren ikonoa</translation>
 <translation id="6091761513005122595">Muntatu da fitxategiak partekatzeko biltegia.</translation>
 <translation id="6093888419484831006">Eguneratzea bertan behera uzten…</translation>
@@ -5888,6 +5887,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6709133671862442373">Albisteak</translation>
 <translation id="6709357832553498500">Konektatu <ph name="EXTENSIONNAME" /> erabilita</translation>
 <translation id="6710213216561001401">Aurrekoa</translation>
+<translation id="6710394144992407503">Egiaztatu ortografia web-orrietan testua idazten duzunean</translation>
 <translation id="6711146141291425900">Lotu <ph name="WEB_DRIVE" /> zerbitzuko kontua deskargetarako</translation>
 <translation id="6712943853047024245">Dagoeneko gorde duzu pasahitz bat erabiltzaile-izen honekin hemen: <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Gehitu laneko profila</translation>
@@ -6506,6 +6506,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7340757554212515731">Hutsegite-txostenak, eta diagnostiko- eta erabilera-datuak automatikoki bidaltzen dizkio Google-ri</translation>
 <translation id="7341834142292923918">Webgunerako sarbidea nahi du</translation>
 <translation id="7343372807593926528">Azaldu arazoa oharra bidali aurretik.</translation>
+<translation id="7344585835349671209">Kudeatu HTTPS/SSL ziurtagiriak gailuan</translation>
 <translation id="7345706641791090287">Berretsi pasahitza</translation>
 <translation id="7346909386216857016">Ados, ulertu dut</translation>
 <translation id="7347452120014970266"><ph name="ORIGIN_NAME" /> webguneak eta hark instalatutako aplikazioek gorde dituzten datu eta cookie guztiak garbituko dira</translation>
@@ -6635,6 +6636,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7460045493116006516">Instalatuta daukazun gaia</translation>
 <translation id="7461924472993315131">Ainguratu</translation>
 <translation id="746216226901520237">Hurrengoan, telefonoak desblokeatuko du <ph name="DEVICE_TYPE" /> gailua. Smart Lock desaktibatzeko, joan ezarpenetara.</translation>
+<translation id="7464153996453281700">Osagaia eguneratuta dago jada</translation>
 <translation id="7464637891177137294">Gorde ezazu <ph name="ACCOUNT" /> Google-ko kontuan</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# fitxa dago irekita. Sakatu hau fitxen zinta ikusgai jartzeko edo ezkutatzeko.}other{# fitxa daude irekita. Sakatu hau fitxen zinta ikusgai jartzeko edo ezkutatzeko.}}</translation>
 <translation id="7465635034594602553">Arazo bat izan da. Itxaron minutu batzuk eta exekutatu <ph name="APP_NAME" /> berriro.</translation>
@@ -7142,6 +7144,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="793531125873261495">Errore bat gertatu da makina birtuala deskargatzean. Saiatu berriro.</translation>
 <translation id="7935451262452051102">% <ph name="PERCENT" /> osatuta</translation>
 <translation id="7939062555109487992">Aukera aurreratuak</translation>
+<translation id="7939328347457537652">Kudeatu gailuen ziurtagiriak</translation>
 <translation id="7939412583708276221">Gorde hala ere</translation>
 <translation id="7942349550061667556">Gorria</translation>
 <translation id="7943368935008348579">Deskargatu PDFak</translation>

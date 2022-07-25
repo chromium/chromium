@@ -1278,7 +1278,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2191754378957563929">Aan</translation>
 <translation id="2192505247865591433">Van:</translation>
 <translation id="2193365732679659387">Vertrouwensinstellingen</translation>
-<translation id="2194554416429452547">Tijdens proefperioden verkent Chrome manieren om spam, fraude en het delen tussen sites te beperken. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> die sites kunnen gebruiken om advertenties te laten zien. Je kunt je interesses beheren in de instellingen.</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
 <translation id="2195331105963583686">Je kunt deze <ph name="DEVICE_TYPE" /> daarna nog steeds gebruiken, maar je apparaat ontvangt geen automatische software- en beveiligingsupdates meer.</translation>
 <translation id="2195729137168608510">E-mail beveiligen</translation>
@@ -1954,7 +1953,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2806891468525657116">Snelkoppeling bestaat al</translation>
 <translation id="2807517655263062534">Gedownloade bestanden zie je hier</translation>
 <translation id="2809586584051668049">en <ph name="NUMBER_ADDITIONAL_DISABLED" /> meer</translation>
-<translation id="2810235462964014915">Lezen en wijzigen van <ph name="SITE_NAME" /> aangevraagd</translation>
 <translation id="2811205483104563968">Accounts</translation>
 <translation id="2811564570599779918">Spam- en fraudebeperking</translation>
 <translation id="2812049959647166806">Thunderbolt wordt niet ondersteund</translation>
@@ -5265,6 +5263,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6086846494333236931">Geïnstalleerd door je beheerder</translation>
 <translation id="6087746524533454243">Zoek je de informatiepagina van de browser? Ga naar</translation>
 <translation id="6087960857463881712">Geweldig gezicht</translation>
+<translation id="6088535503330933227">Chrome verkent manieren om advertentiespam, fraude en het delen tussen sites te beperken. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> die sites kunnen gebruiken om advertenties te laten zien. Je kunt je interesses beheren in de instellingen.</translation>
 <translation id="608912389580139775">Klik op het icoon Bookmark om deze pagina aan je leeslijst toe te voegen</translation>
 <translation id="6091761513005122595">Fileshare geactiveerd.</translation>
 <translation id="6093888419484831006">Update annuleren...</translation>
@@ -7673,6 +7672,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8438566539970814960">Zoekopdrachten en browsefunctionaliteit verbeteren</translation>
 <translation id="8439506636278576865">Aanbieden pagina's te vertalen in deze taal</translation>
 <translation id="8440630305826533614">Linux-apps</translation>
+<translation id="844063558976952706">Altijd op deze site</translation>
 <translation id="8443795068008423036">Zorg dat je apparaat up-to-date is en probeer het opnieuw</translation>
 <translation id="8446884382197647889">Meer informatie</translation>
 <translation id="8447409163267621480">Neem Ctrl of Alt op</translation>

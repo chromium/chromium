@@ -6241,15 +6241,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7687943045976362719">Bu politika ayarlanırsa, belirtilen içerik türleri <ph name="PRODUCT_FRAME_NAME" /> tarafından işlenir.
 
           Bu politika ayarlanmazsa, tüm siteler için varsayılan oluşturucu kullanılır. (<ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> politikası, varsayılan oluşturucuyu yapılandırmak için kullanılabilir.)</translation>
-<translation id="7694807474048279351"><ph name="PRODUCT_OS_NAME" /> güncellemesi uygulandıktan sonra otomatik yeniden başlatma planla.
-
-      Bu politika true (doğru) olarak ayarlandığında, <ph name="PRODUCT_OS_NAME" /> güncellemesi uygulandıktan sonra güncelleme işleminin tamamlanması için otomatik yeniden başlatma gerekliyse bir otomatik yeniden başlatma planlanır. Yeniden başlatma derhal planlanır, ancak kullanıcı o an cihazı kullanıyorsa bu işlem cihaz üzerinden 24 saate kadar geciktirilebilir.
-
-      Bu politika false (yanlış) olarak ayarlandığında, <ph name="PRODUCT_OS_NAME" /> güncellemesi uygulandıktan sonra otomatik yeniden başlatma planlanmaz. Güncelleme işlemi, kullanıcı cihazı gelecek sefer yeniden başlattığında tamamlanır.
-
-      Bu politikayı ayarlarsanız, kullanıcılar politika üzerinde değişiklik yapamaz ve politikayı geçersiz kılamaz.
-
-      Not: Şu an için, otomatik yeniden başlatmalar yalnızca giriş ekranı gösteriliyorsa veya bir kiosk uygulama oturumu devam ediyorsa etkinleştirilir. Bu durum gelecekte değişecektir ve politika, herhangi bir özel türden oturumun devam edip etmediğinden bağımsız olarak her zaman uygulanacaktır.</translation>
 <translation id="7696412993033202071">Harici kimlik doğrulama uygulaması başlatma URL'leri</translation>
 <translation id="7701341006446125684">Uygulamalar ve Uzantılar için önbellek boyutunu ayarla (bayt olarak)</translation>
 <translation id="770339941914297201">Yeni davranış: Kiosk Chrome Uygulamaları yalnızca politikadaki güncelleme URL'si kullanılarak güncellenecektir</translation>

@@ -1274,7 +1274,6 @@
 <translation id="2191754378957563929">ચાલુ</translation>
 <translation id="2192505247865591433">તરફથી:</translation>
 <translation id="2193365732679659387">ટ્રસ્ટ સેટિંગ</translation>
-<translation id="2194554416429452547">અજમાયશની અવધિ દરમિયાન, Chrome સ્પામ, કપટ અને સાઇટ વચ્ચેના શેરિંગને મર્યાદિત કરવાની રીતોની શોધખોળ કરી રહ્યું છે. તમને જાહેરાતો બતાવવા માટે સાઇટ જેનો ઉપયોગ કરી શકે, એવી <ph name="ESTIMATE_INTERESTS_LINK" /> પણ Chrome લગાવી શકે છે. સેટિંગમાં જઈને તમે તમારી રુચિઓ મેનેજ કરી શકો છો.</translation>
 <translation id="2194856509914051091">ધ્યાનમાં લેવા જેવી બાબતો</translation>
 <translation id="2195331105963583686">તેમ તે સમય પછી પણ આ <ph name="DEVICE_TYPE" />નો ઉપયોગ કરી શકશો પણ હવેથી ઑટોમૅટિક સૉફ્ટવેર અને સુરક્ષા અપડેટ મળશે નહીં</translation>
 <translation id="2195729137168608510">ઇમેઇલ સુરક્ષા</translation>
@@ -1951,7 +1950,6 @@
 <translation id="2806891468525657116">શૉર્ટકટ પહેલેથી અસ્તિત્વમાં છે</translation>
 <translation id="2807517655263062534">તમે ડાઉનલોડ કરેલી ફાઇલો અહીં દેખાશે</translation>
 <translation id="2809586584051668049">અને <ph name="NUMBER_ADDITIONAL_DISABLED" /> વધુ</translation>
-<translation id="2810235462964014915"><ph name="SITE_NAME" />ને વાંચવાની અને તેને બદલવાની વિનંતી કરવામાં આવી</translation>
 <translation id="2811205483104563968">એકાઉન્ટ</translation>
 <translation id="2811564570599779918">સ્પામ અને કપટમાં ઘટાડો</translation>
 <translation id="2812049959647166806">Thunderboltની સુવિધા ઉપલબ્ધ નથી</translation>
@@ -5267,6 +5265,7 @@ USB ડિવાઇસ</translation>
 <translation id="6086846494333236931">તમારા વ્યવસ્થાપક દ્વારા ઇન્સ્ટોલ કરાયું</translation>
 <translation id="6087746524533454243">શું બ્રાઉઝરની માહિતી ધરાવતું પેજ શોધી રહ્યાં છો? મુલાકાત લો</translation>
 <translation id="6087960857463881712">અદ્ભુત ચહેરો</translation>
+<translation id="6088535503330933227">Chrome સ્પામ જાહેરાત, કપટ અને સાઇટ વચ્ચે શેરિંગને મર્યાદિત કરવાની રીતો શોધી રહ્યું છે. તમને જાહેરાતો બતાવવા માટે સાઇટ તમારી જે રુચિઓનો ઉપયોગ કરી શકે છે, Chrome તેનો પણ <ph name="ESTIMATE_INTERESTS_LINK" />. સેટિંગમાં જઈને તમે તમારી રુચિઓ મેનેજ કરી શકો છો.</translation>
 <translation id="608912389580139775">આ પેજને તમારી વાંચન સૂચિમાં ઉમેરવા માટે, બુકમાર્ક આઇકન પર ક્લિક કરો</translation>
 <translation id="6091761513005122595">શેર સફળતાપૂર્વક માઉન્ટ થયું.</translation>
 <translation id="6093888419484831006">અપડેટને રદ કરી રહ્યું છે...</translation>
@@ -5893,6 +5892,7 @@ USB ડિવાઇસ</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> નો ઉપયોગ કરીને કનેક્ટ કરો</translation>
 <translation id="6710213216561001401">પાછલી</translation>
+<translation id="6710394144992407503">જ્યારે તમે વેબ પેજ પર ટેક્સ્ટ ટાઇપ કરો છે ત્યારે જોડણીમાં ભૂલો ચેક કરો</translation>
 <translation id="6711146141291425900">ડાઉનલોડ માટે <ph name="WEB_DRIVE" /> એકાઉન્ટ લિંક કરો</translation>
 <translation id="6712943853047024245">તમે પહેલાંથી આ વપરાશકર્તાના નામ માટે <ph name="WEBSITE" />નો પાસવર્ડ સાચવ્યો છે</translation>
 <translation id="6713233729292711163">ઑફિસની પ્રોફાઇલ ઉમેરો</translation>
@@ -6511,6 +6511,7 @@ USB ડિવાઇસ</translation>
 <translation id="7340757554212515731">Googleને ક્રૅશ રિપોર્ટ તેમજ ડાયગ્નોસ્ટિક અને વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલે છે</translation>
 <translation id="7341834142292923918">આ સાઇટને ઍક્સેસ કરવા માગે છે</translation>
 <translation id="7343372807593926528">કૃપા કરીને પ્રતિસાદ મોકલતા પહેલાં સમસ્યાનું વર્ણન કરો.</translation>
+<translation id="7344585835349671209">તમારા ડિવાઇસ પર HTTPS/SSL પ્રમાણપત્રો મેનેજ કરો</translation>
 <translation id="7345706641791090287">તમારા પાસવર્ડની પુષ્ટિ કરો</translation>
 <translation id="7346909386216857016">બરાબર, સમજાઇ ગયું</translation>
 <translation id="7347452120014970266">આનાથી <ph name="ORIGIN_NAME" /> અને તેને ઇન્સ્ટૉલ કરેલી ઍપ દ્વારા સ્ટોર કરવામાં આવેલો બધો ડેટા અને કુકી સાફ કરવામાં આવશે</translation>
@@ -6640,6 +6641,7 @@ USB ડિવાઇસ</translation>
 <translation id="7460045493116006516">તમે ઇન્સ્ટૉલ કરેલી વર્તમાન થીમ</translation>
 <translation id="7461924472993315131">પિન કરો</translation>
 <translation id="746216226901520237">આગલી વખતે, તમારો ફોન તમારા <ph name="DEVICE_TYPE" />ને અનલૉક કરશે. તમે સેટિંગમાં Smart Lock બંધ કરી શકો છો.</translation>
+<translation id="7464153996453281700">ઘટક પહેલેથી અપ ટૂ ડેટ છે</translation>
 <translation id="7464637891177137294">તેને તમારા Google એકાઉન્ટ, <ph name="ACCOUNT" />માં સાચવો</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# ખુલ્લી ટૅબ, ટૅબ સ્ટ્રિપને ટૉગલ કરો કરવા માટે દબાવો}one{# ખુલ્લી ટૅબ, ટૅબ સ્ટ્રિપને ટૉગલ કરો કરવા માટે દબાવો}other{# ખુલ્લી ટૅબ, ટૅબ સ્ટ્રિપને ટૉગલ કરો કરવા માટે દબાવો}}</translation>
 <translation id="7465635034594602553">કંઈક ખોટું થયું. કૃપા કરીને થોડી વાર રાહ જુઓ અને <ph name="APP_NAME" /> ફરીથી ચલાવો.</translation>
@@ -7147,6 +7149,7 @@ USB ડિવાઇસ</translation>
 <translation id="793531125873261495">વર્ચ્યુઅલ મશીન ડાઉનલોડ કરવામાં ભૂલ આવી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% પૂર્ણ થયું</translation>
 <translation id="7939062555109487992">વિગતવાર વિકલ્પો</translation>
+<translation id="7939328347457537652">ડિવાઇસના પ્રમાણપત્રો મેનેજ કરો</translation>
 <translation id="7939412583708276221">તો પણ રાખો</translation>
 <translation id="7942349550061667556">લાલ</translation>
 <translation id="7943368935008348579">PDFs ડાઉનલોડ કરો</translation>
@@ -7668,6 +7671,7 @@ USB ડિવાઇસ</translation>
 <translation id="8438566539970814960">શોધ અને બ્રાઉઝિંગ વધુ સારું બનાવો</translation>
 <translation id="8439506636278576865">આ ભાષામાં પેજનું અનુવાદ કરવાનું ઑફર કરે છે</translation>
 <translation id="8440630305826533614">Linux ઍપ</translation>
+<translation id="844063558976952706">હંમેશા આ સાઇટ પર</translation>
 <translation id="8443795068008423036">ખાતરી કરો કે તમારું ડિવાઇસ અપ ટૂ ડેટ છે અને ફરી પ્રયાસ કરો</translation>
 <translation id="8446884382197647889">વધુ જાણો</translation>
 <translation id="8447409163267621480">કાં તો Ctrl અથવા Alt શામેલ કરો</translation>

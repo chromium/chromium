@@ -1288,7 +1288,6 @@
 <translation id="2191754378957563929">सुरू करा</translation>
 <translation id="2192505247865591433">द्वारा:</translation>
 <translation id="2193365732679659387">विश्वासू सेटिंग्ज</translation>
-<translation id="2194554416429452547">चाचण्यांदरम्यान, Chrome हे स्पॅम, फसवणूक आणि साइटदरम्यान शेअरिंग मर्यादित करण्याचे मार्ग शोधत आहे. Chrome हे साइट तुम्हाला जाहिराती दाखवण्यासाठी वापरू शकतात अशादेखील <ph name="ESTIMATE_INTERESTS_LINK" />. तुम्ही सेटिंग्जमध्ये तुमची स्वारस्ये व्यवस्थापित करू शकता.</translation>
 <translation id="2194856509914051091">विचार करण्याच्या गोष्टी</translation>
 <translation id="2195331105963583686">तुम्ही त्यानंतर तरीही हे <ph name="DEVICE_TYPE" /> वापरू शकाल पण ते यापुढे ऑटोमॅटिक सॉफ्टवेअर आणि सुरक्षा अपडेट मिळवू शकणार नाही</translation>
 <translation id="2195729137168608510">ईमेल संरक्षण</translation>
@@ -1967,7 +1966,6 @@
 <translation id="2806891468525657116">शॉर्टकट आधीच अस्तित्वात आहे</translation>
 <translation id="2807517655263062534">तुम्ही डाउनलोड केलेल्या फाइल येथे दिसतात</translation>
 <translation id="2809586584051668049">आणि <ph name="NUMBER_ADDITIONAL_DISABLED" /> अधिक</translation>
-<translation id="2810235462964014915"><ph name="SITE_NAME" /> रीड करण्याची आणि बदलण्याची विनंती केली</translation>
 <translation id="2811205483104563968">खाती</translation>
 <translation id="2811564570599779918">स्पॅम आणि घोटाळा कमी करणे</translation>
 <translation id="2812049959647166806">थंडरबोल्टला सपोर्ट करत नाही</translation>
@@ -5281,6 +5279,7 @@
 <translation id="6086846494333236931">तुमच्या ॲडमिनिस्ट्रेटरद्वारे इंस्टॉल केले</translation>
 <translation id="6087746524533454243">ब्राउझरच्या पेजविषयी माहिती शोधत आहात का? भेट द्या</translation>
 <translation id="6087960857463881712">छान चेहरा</translation>
+<translation id="6088535503330933227">Chrome हे स्पॅम असलेली जाहिरात, फसवणूक आणि साइटदरम्यान शेअरिंग मर्यादित करण्याचे मार्ग एक्सप्लोर करत आहे. तुम्हाला जाहिराती दाखवण्यासाठी साइट वापरू शकतील याकरिता Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> हेदेखील करते. तुम्ही सेटिंग्जमध्ये तुमची स्वारस्ये व्यवस्थापित करू शकता.</translation>
 <translation id="608912389580139775">हे पेज तुमच्या वाचन सूचीमध्ये जोडण्यासाठी, बुकमार्क आयकनवर क्लिक करा</translation>
 <translation id="6091761513005122595">शेअर यशस्वीरीत्‍‍‍‍या माउंट केले आहे.</translation>
 <translation id="6093888419484831006">अपडेट रद्द करत आहे...</translation>
@@ -5905,6 +5904,7 @@
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> वापरून कनेक्ट करा</translation>
 <translation id="6710213216561001401">मागील</translation>
+<translation id="6710394144992407503">तुम्ही वेब पेजवर मजकूर टाइप करता, तेव्हा शब्दलेखन एरर तपासा</translation>
 <translation id="6711146141291425900">डाउनलोड साठी <ph name="WEB_DRIVE" /> खाते लिंक करा</translation>
 <translation id="6712943853047024245">तुम्ही <ph name="WEBSITE" /> साठी या वापरकर्ता नावासह आधीच पासवर्ड सेव्ह केला आहे</translation>
 <translation id="6713233729292711163">कार्य प्रोफाइल जोडा</translation>
@@ -6523,6 +6523,7 @@
 <translation id="7340757554212515731">Google ला क्रॅश अहवाल तसेच निदान आणि वापर डेटा आपोआप पाठवते</translation>
 <translation id="7341834142292923918">या साइटचा ॲक्सेस हवा आहे</translation>
 <translation id="7343372807593926528">कृपया फीडबॅक पाठवण्यापूर्वी समस्येचे वर्णन करा.</translation>
+<translation id="7344585835349671209">तुमच्या डिव्हाइसवर HTTPS/SSL सर्टिफिकेट व्यवस्थापित करा</translation>
 <translation id="7345706641791090287">तुमचा पासवर्ड कन्फर्म करा</translation>
 <translation id="7346909386216857016">ठीक आहे, समजले</translation>
 <translation id="7347452120014970266">हे <ph name="ORIGIN_NAME" /> ने स्टोअर केलेला सर्व डेटा आणि कुकी व त्याची इंस्टॉल केलेली अ‍ॅप्स साफ करेल</translation>
@@ -6652,6 +6653,7 @@
 <translation id="7460045493116006516">तुम्ही इंस्टॉल केलेली सध्याची थीम</translation>
 <translation id="7461924472993315131">पिन</translation>
 <translation id="746216226901520237">पुढील वेळेस तुमचा फोन तुमचे <ph name="DEVICE_TYPE" /> अनलॉक करेल. तुम्ही सेटिंग्जमधून Smart Lock बंद करू शकता.</translation>
+<translation id="7464153996453281700">घटक आधीच अप टू डेट आहे</translation>
 <translation id="7464637891177137294">तो तुमच्या Google खाते मध्ये सेव्ह करा, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# टॅब उघडा, टॅब स्ट्रिप टॉगल करण्यासाठी दाबा}other{# टॅब उघडा, टॅब स्ट्रिप टॉगल करण्यासाठी दाबा}}</translation>
 <translation id="7465635034594602553">काहीतरी चूक झाली. कृपया काही मिनिटे थांबा आणि <ph name="APP_NAME" /> पुन्हा रन करा.</translation>
@@ -7158,6 +7160,7 @@
 <translation id="793531125873261495">व्हर्च्युअल मशीन डाउनलोड करताना एरर आली. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% पूर्ण झाले आहे</translation>
 <translation id="7939062555109487992">प्रगत पर्याय</translation>
+<translation id="7939328347457537652">डिव्हाइस सर्टिफिकेट व्यवस्थापित करा</translation>
 <translation id="7939412583708276221">तरीही राहू द्या</translation>
 <translation id="7942349550061667556">लाल</translation>
 <translation id="7943368935008348579">PDF डाउनलोड करा</translation>
@@ -7684,6 +7687,7 @@
 <translation id="8438566539970814960">शोध आणि ब्राउझ करणे चांगले करा</translation>
 <translation id="8439506636278576865">या भाषेमध्ये पेज भाषांतरीत करण्यासाठी ऑफर</translation>
 <translation id="8440630305826533614">Linux ॲप्स</translation>
+<translation id="844063558976952706">नेहमी या साइटवर</translation>
 <translation id="8443795068008423036">कृपया तुमचे डिव्हाइस अप टू डेट असल्याची खात्री करा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="8446884382197647889">अधिक जाणून घ्या</translation>
 <translation id="8447409163267621480">एकतर Ctrl किंवा Alt समाविष्‍ट करा</translation>

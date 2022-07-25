@@ -1168,6 +1168,7 @@
 <translation id="7842569679327885685">警告：實驗性功能</translation>
 <translation id="7846634333498149051">鍵盤</translation>
 <translation id="7848989271541991537">移咗去第 <ph name="PAGE_NUMBER" /> 頁，第 <ph name="ROW_NUMBER" /> 行，第<ph name="COLUMN_NUMBER" /> 欄。</translation>
+<translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">用三隻手指向上滑動即可進入「概覽」</translation>
 <translation id="7866482334467279021">開啟</translation>
 <translation id="7868900307798234037">用緊指紋解鎖</translation>
@@ -1248,6 +1249,7 @@
 <translation id="828708037801473432">已關閉</translation>
 <translation id="8297006494302853456">弱</translation>
 <translation id="8308637677604853869">前一個選單</translation>
+<translation id="830868413617744215">測試版</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">揀咗「<ph name="WINDOW_TITLE" />」視窗</translation>
 <translation id="8351131234907093545">建立筆記</translation>

@@ -306,6 +306,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2805756323405976993">Sovellukset</translation>
 <translation id="2814448776515246190">Osittainen kuvakaappaus</translation>
 <translation id="2819276065543622893">Sinut kirjataan ulos nyt.</translation>
+<translation id="2822551631199737692">Kamera käytössä</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ei tue resoluutiota <ph name="SPECIFIED_RESOLUTION" />. Resoluutioksi vaihdettiin <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Hylly</translation>
 <translation id="2831035692318564937">Päällä auringonnousuun asti</translation>
@@ -807,6 +808,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5682642926269496722">Google Assistantia ei voi käyttää nykyisellä käyttäjätilillä.</translation>
 <translation id="5689633613396158040">Yövalo helpottaa näytön katsomista ja lukemista hämärässä. Kosketa muuttaaksesi Yövalon syttymisaikaa tai poista se kokonaan käytöstä.</translation>
 <translation id="5691772641933328258">Sormenjälkeä ei tunnistettu</translation>
+<translation id="5693255400847650006">Mikrofoni käytössä</translation>
 <translation id="570390244361237317">Kaikki sovellukset, siirry sovellusten välillä nuolinäppämillä</translation>
 <translation id="5707775774148071965">Laitteesi tukee nopeampaa tiedonsiirtoa kuin johto</translation>
 <translation id="5710450975648804523">Älä häiritse -tila on päällä</translation>
@@ -981,6 +983,7 @@ Uusi asennus</translation>
 <translation id="6723839937902243910">Virta</translation>
 <translation id="6727969043791803658">Yhdistetty, akun taso <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Kamera ja mikrofoni käytössä</translation>
 <translation id="6739144137573853180">AVAA ASETUKSET</translation>
 <translation id="6751052314767925245">Järjestelmänvalvojan käyttämä</translation>
 <translation id="6751826523481687655">Tehokkuuden seuranta on käytössä</translation>
@@ -1162,6 +1165,7 @@ Uusi asennus</translation>
 <translation id="7842569679327885685">Varoitus: Kokeellinen ominaisuus</translation>
 <translation id="7846634333498149051">Näppäimistö</translation>
 <translation id="7848989271541991537">Siirretty, nyt sivulla <ph name="PAGE_NUMBER" />, rivillä <ph name="ROW_NUMBER" />, sarakkeessa <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Siirry Viimeisimmät-osioon pyyhkäisemällä kolmella sormella ylöspäin</translation>
 <translation id="7866482334467279021">päälle</translation>
 <translation id="7868900307798234037">Avataan sormenjäljellä</translation>
@@ -1241,6 +1245,7 @@ Uusi asennus</translation>
 <translation id="828708037801473432">Poissa päältä</translation>
 <translation id="8297006494302853456">Heikko</translation>
 <translation id="8308637677604853869">Edellinen valikko</translation>
+<translation id="830868413617744215">Beta</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ‑ikkuna valittu</translation>
 <translation id="8351131234907093545">Luo muistiinpano</translation>

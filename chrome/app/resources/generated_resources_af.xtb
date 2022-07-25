@@ -992,6 +992,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1916502483199172559">Verstek- rooi avatar</translation>
 <translation id="1918141783557917887">Kleiner</translation>
 <translation id="1920390473494685033">Kontakte</translation>
+<translation id="1921544956190977703">Jy het Chromse se sterkste sekuriteit teen gevaarlike webwerwe, aflaaie en uitbreidings</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1923468477587371721">Google-werwe soos Gmail, Drive en YouTube gebruik jou Google-rekeningtaal, tensy jy die individuele produk se taal verander het</translation>
 <translation id="1923539912171292317">Outomatiese klikke</translation>
@@ -1289,7 +1290,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2191754378957563929">Aan</translation>
 <translation id="2192505247865591433">Van:</translation>
 <translation id="2193365732679659387">Vertrou instellings</translation>
-<translation id="2194554416429452547">Chrome verken tydens proeflopies maniere om strooipos, bedrog, en deling tussen werwe te beperk. Chrome kan ook <ph name="ESTIMATE_INTERESTS_LINK" /> wat werwe kan gebruik om vir jou advertensies te wys. Jy kan jou belangstellings in Instellings bestuur.</translation>
 <translation id="2194856509914051091">Dinge om in ag te neem</translation>
 <translation id="2195331105963583686">Jy sal hierdie <ph name="DEVICE_TYPE" /> ná daardie tyd steeds kan gebruik, maar dit sal nie meer outomaties sagteware- en sekuriteitopdaterings kry nie</translation>
 <translation id="2195729137168608510">E-posbeskerming</translation>
@@ -1968,7 +1968,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2806891468525657116">Kortpad bestaan reeds</translation>
 <translation id="2807517655263062534">Lêers wat jy aflaai, verskyn hier</translation>
 <translation id="2809586584051668049">en nog <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
-<translation id="2810235462964014915">Het versoek om <ph name="SITE_NAME" /> te lees en te verander</translation>
 <translation id="2811205483104563968">Rekeninge</translation>
 <translation id="2811564570599779918">Vermindering van strooipos en bedrog</translation>
 <translation id="2812049959647166806">Thunderbolt word nie gesteun nie</translation>
@@ -2093,6 +2092,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <ph name="DOMAIN" /> vereis dat jy jou slimkaart ingesteek hou.</translation>
 <translation id="2923234477033317484">Verwyder hierdie rekening</translation>
 <translation id="2923644930701689793">Kry toegang tot jou foon se kameraspoel</translation>
+<translation id="292371311537977079">Chrome-instellings</translation>
 <translation id="2925658782192398150">Klaar; geen kwessies gekry nie</translation>
 <translation id="2926085873880284723">Laai verstekkortpaaie terug</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> word nie gesteun nie.</translation>
@@ -2676,6 +2676,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3511528412952710609">Kort</translation>
 <translation id="3514335087372914653">Speletjiebeheer</translation>
 <translation id="3514373592552233661">Voorkeurnetwerke sal verkies word bo ander bekende netwerke indien meer as een beskikbaar is</translation>
+<translation id="3514647716686280777">Jy kry standaardsekuriteitbeskerming. Skakel Verbeterde Veiligblaai in Chrome-instellings aan om meer beskerming teen gevaarlike webwerwe, aflaaie en uitbreidings te kry.</translation>
 <translation id="3515983984924808886">Raak weer jou sekuriteitsleutel om terugstelling te bevestig. Alle inligting wat op die sekuriteitsleutel geberg is, insluitend sy PIN, sal uitgevee word.</translation>
 <translation id="3518985090088779359">Aanvaar, gaan voort</translation>
 <translation id="3519564332031442870">Drukbedienerkantdiens</translation>
@@ -5284,6 +5285,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6086846494333236931">Deur jou administrateur geïnstalleer</translation>
 <translation id="6087746524533454243">Soek jy na die blaaier se Meer Oor Bladsy? Besoek</translation>
 <translation id="6087960857463881712">Ongelooflike gesig</translation>
+<translation id="6088535503330933227">Chrome verken tans maniere om strooipos, bedrog, en deling tussen werwe te beperk. Chrome kan ook <ph name="ESTIMATE_INTERESTS_LINK" /> wat werwe kan gebruik om vir jou advertensies te wys. Jy kan jou belangstellings in Instellings bestuur.</translation>
 <translation id="608912389580139775">Klik die Boekmerk-ikoon om hierdie bladsy by jou leeslys te voeg</translation>
 <translation id="6091761513005122595">Deling is suksesvol gemonteer.</translation>
 <translation id="6093888419484831006">Kanselleer tans opdatering …</translation>
@@ -5472,6 +5474,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Verander ligging</translation>
 <translation id="6279183038361895380">Druk |<ph name="ACCELERATOR" />| om jou merker te wys</translation>
+<translation id="6279595948631688299">Voer geselekteerde sertifikaat uit …</translation>
 <translation id="6280215091796946657">Meld aan met 'n ander rekening</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Oorskry limiet van 1 vel papier}other{Oorskry limiet van {COUNT} velle papier}}</translation>
@@ -5586,6 +5589,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6398715114293939307">Verwyder Google Play Winkel</translation>
 <translation id="6398765197997659313">Gaan by volskerm uit</translation>
 <translation id="6399774419735315745">Spioen</translation>
+<translation id="6401458660421980302">Om hierdie oortjie na ’n ander toestel toe te stuur, moet jy daar by Chrome aanmeld</translation>
 <translation id="6401597285454423070">Jou rekenaar bevat ’n Vertroude Platform-module- (TPM)-sekuriteitstoestel, wat gebruik word om talle kritieke sekuriteitskenmerke in Chrome-bedryfstelsel te implementeer. Besoek die Chromebook-hulpsentrum om meer te wete te kom: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chromebook-speletjies</translation>
 <translation id="6404511346730675251">Wysig boekmerk</translation>
@@ -5822,6 +5826,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6619801788773578757">Voeg kioskprogram by</translation>
 <translation id="6619990499523117484">Bevestig jou PIN</translation>
 <translation id="6620254580880484313">Houernaam</translation>
+<translation id="6621391692573306628">Om hierdie oortjie na ’n ander toestel toe te stuur, moet jy op albei toestelle by Chrome aanmeld</translation>
 <translation id="6622980291894852883">Hou aan om prente te blokkeer</translation>
 <translation id="6624036901798307345">Tik in tabletmodus op die oortjietellernutsbalkknoppie om die nuwe oortjiestrook oop te maak wat miniprente van elke oortjie wys.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> het sensitiewe of gevaarlike inhoud. Vra sy eienaar om dit reg te stel.</translation>

@@ -41,6 +41,7 @@
 <translation id="2018879682492276940">安装失败。请重试。</translation>
 <translation id="2020032459870799438">若要检查您的其他密码是否未曾遭遇数据泄露和其他安全问题，请<ph name="BEGIN_LINK" />登录 Chromium<ph name="END_LINK" />。</translation>
 <translation id="2049376729098081731">选择是否要包含 Chromium 历史记录以便在各款 Google 服务中获享更个性化的体验</translation>
+<translation id="2088953378266246249">与 Chromium 如何管理其根证书有关的信息</translation>
 <translation id="2174178932569897599">自定义 Chromium</translation>
 <translation id="2174917724755363426">尚未完成安装，确定要取消吗？</translation>
 <translation id="2185166961232948079">Chromium - 网络登录 - <ph name="PAGE_TITLE" /></translation>
@@ -363,6 +364,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="9185526690718004400">重新启动以更新 Chromium(&amp;C)</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium 可能无法正常运行，因为它不再支持 Windows XP 和 Windows Vista</translation>
+<translation id="942598560705308788">由 Chromium 管理的证书</translation>
 <translation id="945990405696787151">若要接收后续 Chromium 更新，您需使用 macOS 10.13 或更高版本。该计算机目前使用的是 OS X 10.11。</translation>
 <translation id="965162752251293939">谁在使用 Chromium？</translation>
 <translation id="967427899662692980">获享 Chromium 的最强安全保护</translation>

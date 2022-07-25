@@ -306,6 +306,7 @@
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
 <translation id="2814448776515246190">आंशिक कॅप्चर</translation>
 <translation id="2819276065543622893">आता तुम्हाला साइन आउट केले जाईल.</translation>
+<translation id="2822551631199737692">कॅमेरा वापरात आहे</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> ला सपोर्ट करत नाही. रेझोल्यूशन <ph name="FALLBACK_RESOLUTION" /> मध्ये बदलले.</translation>
 <translation id="2825619548187458965">शेल्फ</translation>
 <translation id="2831035692318564937">सूर्योदयापर्यंत सुरू</translation>
@@ -807,6 +808,7 @@
 <translation id="5682642926269496722">सध्याच्या वापरकर्ता खात्यावर Google असिस्टंट उपलब्ध नाही.</translation>
 <translation id="5689633613396158040">रात्रीच्या प्रकाशामुळे तुमच्या स्क्रीनकडे पाहणे किंवा मंद प्रकाशात वाचणे आणखी सोपे होते. रात्रीचा प्रकाश कधी सुरू होईल किंवा पूर्ण बंद होईल हे बदलण्यासाठी टॅप करा.</translation>
 <translation id="5691772641933328258">फिंगरप्रिंट ओळखले नाही</translation>
+<translation id="5693255400847650006">मायक्रोफोन वापरात आहे</translation>
 <translation id="570390244361237317">सर्व ॲप्स, सर्व ॲप्स ॲक्सेस करण्यासाठी ॲरो की वापरून नेव्हिगेट करा</translation>
 <translation id="5707775774148071965">तुमचे डिव्हाइस हे तुमच्या केबलच्या तुलनेत जास्त डेटा दराला सपोर्ट करते. डिव्हाइसचा परफॉर्मन्स मर्यादित असू शकतो.</translation>
 <translation id="5710450975648804523">व्यत्यय आणू नका सुरू आहे</translation>
@@ -981,6 +983,7 @@
 <translation id="6723839937902243910">सामर्थ्य</translation>
 <translation id="6727969043791803658">कनेक्ट केले, <ph name="BATTERY_PERCENTAGE" />% बॅटरी</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">कॅमेरा आणि मायक्रोफोन वापरात आहे</translation>
 <translation id="6739144137573853180">सेटिंग्जवर जा</translation>
 <translation id="6751052314767925245">तुमच्या अ‍ॅडमिनिस्ट्रेटरने अंमलबजावणी केलेले</translation>
 <translation id="6751826523481687655">परफॉर्मंस ट्रेसिंग सुरू आहे</translation>
@@ -1162,6 +1165,7 @@
 <translation id="7842569679327885685">चेतावणी: प्रयोगात्मक वैशिष्ट्य</translation>
 <translation id="7846634333498149051">कीबोर्ड</translation>
 <translation id="7848989271541991537">पेज <ph name="PAGE_NUMBER" />, पंक्ती <ph name="ROW_NUMBER" />, स्तंभ <ph name="COLUMN_NUMBER" /> वर हलवले.</translation>
+<translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">अवलोकन मध्ये एंटर करण्यासाठी तीन बोटांनी वर स्‍वाइप करा</translation>
 <translation id="7866482334467279021">सुरू</translation>
 <translation id="7868900307798234037">फिंगरप्रिंटने अनलॉक करत आहे</translation>
@@ -1241,6 +1245,7 @@
 <translation id="828708037801473432">बंद</translation>
 <translation id="8297006494302853456">कमकुवत</translation>
 <translation id="8308637677604853869">मागील मेनू</translation>
+<translation id="830868413617744215">बीटा</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> विंडो निवडली</translation>
 <translation id="8351131234907093545">टीप तयार करा</translation>

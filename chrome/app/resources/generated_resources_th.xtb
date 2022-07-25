@@ -1278,7 +1278,6 @@
 <translation id="2191754378957563929">เปิด</translation>
 <translation id="2192505247865591433">จาก:</translation>
 <translation id="2193365732679659387">การตั้งค่าความเชื่อถือ</translation>
-<translation id="2194554416429452547">ระหว่างช่วงทดลองใช้ Chrome จะสำรวจวิธีจำกัดสแปม การประพฤติมิชอบ และการแชร์ระหว่างเว็บไซต์ Chrome จะ<ph name="ESTIMATE_INTERESTS_LINK" />ด้วย ซึ่งเว็บไซต์สามารถใช้ข้อมูลเพื่อแสดงโฆษณาแก่คุณ คุณจัดการความสนใจได้ในการตั้งค่า</translation>
 <translation id="2194856509914051091">สิ่งที่ควรพิจารณา</translation>
 <translation id="2195331105963583686">คุณยังคงใช้ <ph name="DEVICE_TYPE" /> นี้ได้หลังจากเวลานั้น แต่จะไม่ได้รับการอัปเดตซอฟต์แวร์และการอัปเดตการรักษาความปลอดภัยอัตโนมัติอีกต่อไป</translation>
 <translation id="2195729137168608510">การป้องกันอีเมล </translation>
@@ -1954,7 +1953,6 @@
 <translation id="2806891468525657116">มีทางลัดนี้อยู่แล้ว</translation>
 <translation id="2807517655263062534">ไฟล์ที่คุณดาวน์โหลดจะปรากฏที่นี่</translation>
 <translation id="2809586584051668049">และอีก <ph name="NUMBER_ADDITIONAL_DISABLED" /> รายการ</translation>
-<translation id="2810235462964014915">ได้ขออ่านและเปลี่ยนแปลง <ph name="SITE_NAME" /></translation>
 <translation id="2811205483104563968">บัญชี</translation>
 <translation id="2811564570599779918">การลดจำนวนสแปมและการประพฤติมิชอบ</translation>
 <translation id="2812049959647166806">ไม่รองรับ Thunderbolt</translation>
@@ -5268,6 +5266,7 @@
 <translation id="6086846494333236931">ติดตั้งโดยผู้ดูแลระบบ</translation>
 <translation id="6087746524533454243">หากต้องการดูหน้าข้อมูลเกี่ยวกับเบราว์เซอร์ โปรดไปที่</translation>
 <translation id="6087960857463881712">ใบหน้าเจ๋ง</translation>
+<translation id="6088535503330933227">Chrome จะสำรวจวิธีจำกัดสแปมโฆษณา การประพฤติมิชอบ และการแชร์ระหว่างเว็บไซต์ Chrome จะ<ph name="ESTIMATE_INTERESTS_LINK" />ด้วย ซึ่งเว็บไซต์สามารถใช้ข้อมูลเพื่อแสดงโฆษณาแก่คุณ คุณจัดการความสนใจได้ในการตั้งค่า</translation>
 <translation id="608912389580139775">คลิกไอคอนบุ๊กมาร์กเพื่อเพิ่มหน้านี้ลงในเรื่องรออ่าน</translation>
 <translation id="6091761513005122595">ต่อเชื่อมพื้นที่แชร์สำเร็จแล้ว</translation>
 <translation id="6093888419484831006">กำลังยกเลิกการอัปเดต…</translation>
@@ -7679,6 +7678,7 @@
 <translation id="8438566539970814960">ปรับปรุงการค้นหาและการท่องเว็บให้ดียิ่งขึ้น</translation>
 <translation id="8439506636278576865">เสนอที่จะแปลหน้าต่างๆ ที่เป็นภาษานี้</translation>
 <translation id="8440630305826533614">แอป Linux</translation>
+<translation id="844063558976952706">ทำงานบนไซต์นี้เสมอ</translation>
 <translation id="8443795068008423036">โปรดตรวจสอบว่าอุปกรณ์เป็นเวอร์ชันล่าสุด แล้วลองอีกครั้ง</translation>
 <translation id="8446884382197647889">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="8447409163267621480">รวมปุ่ม Ctrl หรือ Alt</translation>

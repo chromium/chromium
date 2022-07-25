@@ -1466,6 +1466,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4969341057194253438">Poista tallenne</translation>
 <translation id="4973922308112707173">Kaksi reikää yläreunassa</translation>
 <translation id="4976702386844183910">Viimeksi avattu <ph name="DATE" /></translation>
+<translation id="498323057460789381">Mallin todennusvirhe: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Käytetäänkö mikrofonia?</translation>
 <translation id="4984339528288761049">Prc5 (kirjekuori)</translation>
 <translation id="4989163558385430922">Näytä kaikki</translation>
@@ -1528,6 +1529,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5123063207673082822">Viikonloppu</translation>
 <translation id="5123433949759960244">Koripallo</translation>
 <translation id="5125394840236832993">B-Plus</translation>
+<translation id="5125751979347152379">Virheellinen URL-osoite.</translation>
 <translation id="512592033764059484">Jalkapallo</translation>
 <translation id="5126510351761255129">Vahvista kortti</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> ei ehkä näy oikein, jos muutat kokoa. Käytä valmiita ikkunakokoja estääksesi sovelluksen ongelmat.</translation>

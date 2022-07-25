@@ -1170,6 +1170,7 @@
 <translation id="7842569679327885685">คำเตือน: ฟีเจอร์ทดลอง</translation>
 <translation id="7846634333498149051">แป้นพิมพ์</translation>
 <translation id="7848989271541991537">ย้ายไปที่หน้า <ph name="PAGE_NUMBER" /> แถว <ph name="ROW_NUMBER" /> คอลัมน์<ph name="COLUMN_NUMBER" /></translation>
+<translation id="7851768487828137624">สีเหลืองอ่อน</translation>
 <translation id="7860671499921112077">ใช้ 3 นิ้วเลื่อนขึ้นเพื่อเข้าสู่ "ภาพรวม"</translation>
 <translation id="7866482334467279021">เปิด</translation>
 <translation id="7868900307798234037">กำลังปลดล็อกด้วยลายนิ้วมือ</translation>
@@ -1250,6 +1251,7 @@
 <translation id="828708037801473432">ปิด</translation>
 <translation id="8297006494302853456">อ่อน</translation>
 <translation id="8308637677604853869">เมนูก่อนหน้า</translation>
+<translation id="830868413617744215">เบต้า</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="8345019317483336363">เลือกหน้าต่าง <ph name="WINDOW_TITLE" /> ไว้</translation>
 <translation id="8351131234907093545">สร้างโน้ต</translation>

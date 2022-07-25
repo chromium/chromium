@@ -1529,6 +1529,7 @@
 <translation id="5123063207673082822">စနေ၊ တနင်္ဂနွေ</translation>
 <translation id="5123433949759960244">ဘတ်စကက်ဘော</translation>
 <translation id="5125394840236832993">B-Plus</translation>
+<translation id="5125751979347152379">URL မမှန်</translation>
 <translation id="512592033764059484">ဘောလုံး</translation>
 <translation id="5126510351761255129">သင့်ကတ်ကို အတည်ပြုပါ</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> ကို ကောင်းစွာ အရွယ်အစားပြန်ပြင်နိုင်မည် မဟုတ်ပါ။ အက်ပ်တွင် ပြဿနာများ မဖြစ်စေရန် အသင့်သုံးဝင်းဒိုး အရွယ်အစားများကို သုံးပါ။</translation>
@@ -2258,6 +2259,7 @@
 <translation id="7238585580608191973">SHA-256 လက်ဗွေ</translation>
 <translation id="7240120331469437312">လက်မှတ် အကြောင်းအရာ အစားထိုးရေး အမည်</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />၊ <ph name="SIGNIN_DATA" /></translation>
+<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{ကိုက်ညီမှု # ခု}other{ကိုက်ညီမှု # ခု}}</translation>
 <translation id="724691107663265825">ရှေ့မှာ ရှိနေသည့် ဆိုက်သည် အန္တရာယ်ဝဲ ပါရှိသည်</translation>
 <translation id="724975217298816891">သင့်ကဒ်၏ အသေးစိတ်အချက်အလက်များကို အပ်ဒိတ်လုပ်ရန် <ph name="CREDIT_CARD" /> ကုန်ဆုံးရက်နှင့် CVC ကို ထည့်ပါ။ အတည်ပြုပြီးသည်နှင့် သင့်ကဒ်၏အသေးစိတ်အချက်အလက်များကို ဤဆိုက်အား မျှဝေသွားပါမည်။</translation>
 <translation id="7251437084390964440">ကွန်ရက်စီစဉ်သတ်မှတ်မှုသည် ONC စံနှုန်းနှင့် မညီညွတ်ပါ။ စီစဉ်သတ်မှတ်မှု၏ တစ်စိတ်တစ်ပိုင်းကို ထည့်သွင်းထားခြင်း မရှိပါ။
