@@ -111,32 +111,22 @@ void FormFieldTestBase::ClassifyAndVerify(ParseResult parse_result,
 }
 
 void FormFieldTestBase::TestClassificationExpectations() {
-  for (const auto [field_id, field_type] : expected_classifications_) {
-    if (field_type != UNKNOWN_TYPE) {
-      SCOPED_TRACE(testing::Message()
-                   << "Found type "
-                   << AutofillType::ServerFieldTypeToString(
-                          field_candidates_map_[field_id].BestHeuristicType())
-                   << ", expected type "
-                   << AutofillType::ServerFieldTypeToString(field_type));
-
-      ASSERT_TRUE(field_candidates_map_.find(field_id) !=
-                  field_candidates_map_.end());
-      EXPECT_EQ(field_type,
-                field_candidates_map_[field_id].BestHeuristicType());
-    } else {
-      SCOPED_TRACE(
-          testing::Message()
-          << "Expected type UNKNOWN_TYPE but got "
-          << AutofillType::ServerFieldTypeToString(
-                 field_candidates_map_.find(field_id) !=
-                         field_candidates_map_.end()
-                     ? field_candidates_map_[field_id].BestHeuristicType()
-                     : UNKNOWN_TYPE));
-      EXPECT_EQ(field_candidates_map_.find(field_id),
-                field_candidates_map_.end());
-    }
+  size_t num_classifications = 0;
+  for (const auto [field_id, expected_field_type] : expected_classifications_) {
+    ServerFieldType actual_field_type =
+        field_candidates_map_.contains(field_id)
+            ? field_candidates_map_[field_id].BestHeuristicType()
+            : UNKNOWN_TYPE;
+    SCOPED_TRACE(testing::Message()
+                 << "Found type "
+                 << AutofillType::ServerFieldTypeToString(actual_field_type)
+                 << ", expected type "
+                 << AutofillType::ServerFieldTypeToString(expected_field_type));
+    EXPECT_EQ(expected_field_type, actual_field_type);
+    num_classifications += expected_field_type != UNKNOWN_TYPE;
   }
+  // There shouldn't be any classifications for other fields.
+  EXPECT_EQ(num_classifications, field_candidates_map_.size());
 }
 
 FieldRendererId FormFieldTestBase::MakeFieldRendererId() {
