@@ -29,14 +29,23 @@ class GeometryMapperTest : public testing::Test,
   }
 
   void LocalToAncestorVisualRectInternal(
-      const PropertyTreeState& internal_local_state,
-      const PropertyTreeState& internal_ancestor_state,
+      const PropertyTreeStateOrAlias& local_state,
+      const PropertyTreeStateOrAlias& ancestor_state,
       FloatClipRect& mapping_rect,
       bool& success) {
-    GeometryMapper::LocalToAncestorVisualRectInternal(
-        internal_local_state, internal_ancestor_state, mapping_rect,
-        kIgnoreOverlayScrollbarSize, kNonInclusiveIntersect,
-        kDontExpandVisualRectForCompositingOverlap, success);
+    GeometryMapper::LocalToAncestorVisualRectInternalForTesting(
+        local_state.Unalias(), ancestor_state.Unalias(), mapping_rect, success);
+  }
+
+  void LocalToAncestorVisualRectForCompositingOverlap(
+      const PropertyTreeStateOrAlias& local_state,
+      const PropertyTreeStateOrAlias& ancestor_state,
+      FloatClipRect& mapping_rect,
+      bool& success) {
+    GeometryMapper::
+        LocalToAncestorVisualRectInternalForCompositingOverlapForTesting(
+            local_state.Unalias(), ancestor_state.Unalias(), mapping_rect,
+            success);
   }
 
   void CheckMappings();
@@ -75,15 +84,17 @@ INSTANTIATE_PAINT_TEST_SUITE_P(GeometryMapperTest);
 
 void GeometryMapperTest::CheckLocalToAncestorVisualRect() {
   FloatClipRect actual_visual_rect(input_rect);
-  GeometryMapper::LocalToAncestorVisualRect(local_state, ancestor_state,
-                                            actual_visual_rect);
+  bool success = false;
+  LocalToAncestorVisualRectInternal(local_state, ancestor_state,
+                                    actual_visual_rect, success);
+  DCHECK(success);
   EXPECT_CLIP_RECT_EQ(expected_visual_rect, actual_visual_rect);
 
   actual_visual_rect = FloatClipRect(input_rect);
-  GeometryMapper::LocalToAncestorVisualRect(
-      local_state, ancestor_state, actual_visual_rect,
-      kIgnoreOverlayScrollbarSize, kNonInclusiveIntersect,
-      kExpandVisualRectForCompositingOverlap);
+  success = false;
+  LocalToAncestorVisualRectForCompositingOverlap(local_state, ancestor_state,
+                                                 actual_visual_rect, success);
+  DCHECK(success);
   EXPECT_CLIP_RECT_EQ(expected_visual_rect_expanded_for_compositing
                           ? *expected_visual_rect_expanded_for_compositing
                           : expected_visual_rect,
@@ -1032,6 +1043,49 @@ TEST_P(GeometryMapperTest, Precision) {
       GeometryMapper::SourceToDestinationProjection(*t4, *t3).IsIdentity());
   EXPECT_TRUE(
       GeometryMapper::SourceToDestinationProjection(*t2, *t3).IsIdentity());
+}
+
+TEST(GeometryMapperTest, VisualRectsMightOverlap) {
+  auto t2 = Create2DTranslation(t0(), 99, 0);
+  auto t3 = Create2DTranslation(t0(), 100, 0);
+  auto t4 =
+      CreateAnimatingTransform(t0(), TransformationMatrix().Translate(100, 0));
+
+  gfx::RectF r(0, 0, 100, 100);
+  PropertyTreeState s1 = PropertyTreeState::Root();
+  PropertyTreeState s2(*t2, c0(), e0());
+  PropertyTreeState s3(*t3, c0(), e0());
+  PropertyTreeState s4(*t4, c0(), e0());
+
+  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s1, r, s1));
+  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s1, r, s2));
+  EXPECT_FALSE(GeometryMapper::MightOverlapForCompositing(r, s1, r, s3));
+  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s1, r, s4));
+
+  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s2, r, s1));
+  EXPECT_FALSE(GeometryMapper::MightOverlapForCompositing(r, s3, r, s1));
+  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s4, r, s1));
+}
+
+TEST(GeometryMapperTest, VisualRectsMightOverlapCommonClipAncestor) {
+  auto common_clip = CreateClip(c0(), t0(), FloatRoundedRect(0, 0, 1, 1));
+  auto c1 = CreateClip(*common_clip, t0(), FloatRoundedRect(0, 100, 100, 100));
+  auto c2 = CreateClip(*common_clip, t0(), FloatRoundedRect(50, 100, 100, 100));
+  auto c3 =
+      CreateClip(*common_clip, t0(), FloatRoundedRect(100, 100, 100, 100));
+
+  gfx::RectF r(0, 100, 200, 100);
+  PropertyTreeState s1(t0(), *c1, e0());
+  PropertyTreeState s2(t0(), *c2, e0());
+  PropertyTreeState s3(t0(), *c3, e0());
+
+  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s1, r, s2));
+  EXPECT_FALSE(GeometryMapper::MightOverlapForCompositing(r, s1, r, s3));
+  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s2, r, s3));
+
+  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s2, r, s1));
+  EXPECT_FALSE(GeometryMapper::MightOverlapForCompositing(r, s3, r, s1));
+  EXPECT_TRUE(GeometryMapper::MightOverlapForCompositing(r, s3, r, s2));
 }
 
 }  // namespace blink

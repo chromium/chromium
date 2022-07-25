@@ -26,57 +26,6 @@ static Vector<wtf_size_t> ChunkIndices(const PendingLayer& layer) {
   return indices;
 }
 
-TEST(PendingLayerTest, MightOverlap) {
-  TestPaintArtifact artifact;
-  artifact.Chunk().Bounds(gfx::Rect(0, 0, 100, 100));
-  artifact.Chunk().Bounds(gfx::Rect(0, 0, 100, 100));
-  auto t2 = CreateTransform(t0(), TransformationMatrix().Translate(99, 0),
-                            gfx::Point3F(100, 100, 0));
-  artifact.Chunk(*t2, c0(), e0()).Bounds(gfx::Rect(0, 0, 100, 100));
-  auto t3 = CreateTransform(t0(), TransformationMatrix().Translate(100, 0),
-                            gfx::Point3F(100, 100, 0));
-  artifact.Chunk(*t3, c0(), e0()).Bounds(gfx::Rect(0, 0, 100, 100));
-  auto t4 =
-      CreateAnimatingTransform(t0(), TransformationMatrix().Translate(100, 0),
-                               gfx::Point3F(100, 100, 0));
-  artifact.Chunk(*t4, c0(), e0()).Bounds(gfx::Rect(0, 0, 100, 100));
-  PaintChunkSubset chunks(artifact.Build());
-
-  PendingLayer pending_layer(chunks, chunks.begin());
-  EXPECT_TRUE(
-      pending_layer.MightOverlap(PendingLayer(chunks, chunks.begin() + 1)));
-  EXPECT_TRUE(
-      pending_layer.MightOverlap(PendingLayer(chunks, chunks.begin() + 2)));
-  EXPECT_FALSE(
-      pending_layer.MightOverlap(PendingLayer(chunks, chunks.begin() + 3)));
-  EXPECT_TRUE(
-      pending_layer.MightOverlap(PendingLayer(chunks, chunks.begin() + 4)));
-}
-
-TEST(PendingLayerTest, MightOverlapCommonClipAncestor) {
-  auto common_clip = CreateClip(c0(), t0(), FloatRoundedRect(0, 0, 100, 100));
-  auto c1 = CreateClip(*common_clip, t0(), FloatRoundedRect(0, 100, 100, 100));
-  auto c2 = CreateClip(*common_clip, t0(), FloatRoundedRect(50, 100, 100, 100));
-  auto c3 =
-      CreateClip(*common_clip, t0(), FloatRoundedRect(100, 100, 100, 100));
-
-  TestPaintArtifact artifact;
-  artifact.Chunk(t0(), *c1, e0())
-      .Bounds(gfx::Rect(0, 100, 200, 100))
-      .Chunk(t0(), *c2, e0())
-      .Bounds(gfx::Rect(0, 100, 200, 100))
-      .Chunk(t0(), *c3, e0())
-      .Bounds(gfx::Rect(0, 100, 200, 100));
-  PaintChunkSubset chunks(artifact.Build());
-
-  PendingLayer pending_layer1(chunks, chunks.begin());
-  PendingLayer pending_layer2(chunks, chunks.begin() + 1);
-  PendingLayer pending_layer3(chunks, chunks.begin() + 2);
-  EXPECT_FALSE(pending_layer1.MightOverlap(pending_layer3));
-  EXPECT_TRUE(pending_layer1.MightOverlap(pending_layer2));
-  EXPECT_TRUE(pending_layer2.MightOverlap(pending_layer3));
-}
-
 TEST(PendingLayerTest, Merge) {
   TestPaintArtifact artifact;
   artifact.Chunk()

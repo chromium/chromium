@@ -22,29 +22,6 @@ namespace blink {
 // Clips can use gfx::RectF::Intersect or gfx::RectF::InclusiveIntersect.
 enum InclusiveIntersectOrNot { kNonInclusiveIntersect, kInclusiveIntersect };
 
-// When performing overlap testing during compositing, we may need to expand the
-// visual rect in two cases when mapping from descendant state to ancestor
-// state: mapping through a fixed transform node to the viewport it is attached
-// to, and mapping through an animating transform or filter.
-//
-// This allows for a more conservative overlap test that assumes potentially
-// more overlap than we'd encounter otherwise, in order to reduce the need to
-// re-run overlap testing in response to things like scrolling.
-//
-// The expansion for fixed covers all coordinates where the fixed content may
-// end up when the scroller is at the end of the extents.
-//
-// For animation, the visual or clip rect is expanded to infinity when we meet
-// any animating transform or filter when walking from a descendant state to an
-// ancestor state, when mapping a visual rect or getting the accumulated clip
-// rect. After we expanded the rect, we will still apply ancestor clips when
-// continuing walking up the tree. TODO(crbug.com/1026653): Consider animation
-// bounds instead of using infinite rect.
-enum ExpandVisualRectForCompositingOverlapOrNot {
-  kDontExpandVisualRectForCompositingOverlap,
-  kExpandVisualRectForCompositingOverlap,
-};
-
 // GeometryMapper is a helper class for fast computations of transformed and
 // visual rects in different PropertyTreeStates. The design document has a
 // number of details on use cases, algorithmic definitions, and running times.
@@ -251,21 +228,22 @@ class PLATFORM_EXPORT GeometryMapper {
       const PropertyTreeStateOrAlias& ancestor_state,
       FloatClipRect& mapping_rect,
       OverlayScrollbarClipBehavior clip = kIgnoreOverlayScrollbarSize,
-      InclusiveIntersectOrNot intersect = kNonInclusiveIntersect,
-      ExpandVisualRectForCompositingOverlapOrNot expand =
-          kDontExpandVisualRectForCompositingOverlap) {
+      InclusiveIntersectOrNot intersect = kNonInclusiveIntersect) {
     return LocalToAncestorVisualRect(local_state.Unalias(),
                                      ancestor_state.Unalias(), mapping_rect,
-                                     clip, intersect, expand);
+                                     clip, intersect);
   }
   static bool LocalToAncestorVisualRect(
       const PropertyTreeState& local_state,
       const PropertyTreeState& ancestor_state,
       FloatClipRect& mapping_rect,
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
-      InclusiveIntersectOrNot = kNonInclusiveIntersect,
-      ExpandVisualRectForCompositingOverlapOrNot =
-          kDontExpandVisualRectForCompositingOverlap);
+      InclusiveIntersectOrNot = kNonInclusiveIntersect);
+
+  static bool MightOverlapForCompositing(const gfx::RectF& rect1,
+                                         const PropertyTreeState& state1,
+                                         const gfx::RectF& rect2,
+                                         const PropertyTreeState& state2);
 
   static void ClearCache();
 
@@ -287,36 +265,47 @@ class PLATFORM_EXPORT GeometryMapper {
       ExtraProjectionResult&,
       bool& success);
 
+  enum class ForCompositingOverlap { kNo, kYes };
+
+  template <ForCompositingOverlap>
   static FloatClipRect LocalToAncestorClipRectInternal(
       const ClipPaintPropertyNode& descendant,
       const ClipPaintPropertyNode& ancestor_clip,
       const TransformPaintPropertyNode& ancestor_transform,
       OverlayScrollbarClipBehavior,
       InclusiveIntersectOrNot,
-      ExpandVisualRectForCompositingOverlapOrNot,
       bool& success);
 
   // The return value has the same meaning as that for
   // LocalToAncestorVisualRect.
+  template <ForCompositingOverlap>
   static bool LocalToAncestorVisualRectInternal(
       const PropertyTreeState& local_state,
       const PropertyTreeState& ancestor_state,
       FloatClipRect& mapping_rect,
       OverlayScrollbarClipBehavior,
       InclusiveIntersectOrNot,
-      ExpandVisualRectForCompositingOverlapOrNot,
       bool& success);
 
   // The return value has the same meaning as that for
   // LocalToAncestorVisualRect.
+  template <ForCompositingOverlap>
   static bool SlowLocalToAncestorVisualRectWithEffects(
       const PropertyTreeState& local_state,
       const PropertyTreeState& ancestor_state,
       FloatClipRect& mapping_rect,
       OverlayScrollbarClipBehavior,
       InclusiveIntersectOrNot,
-      ExpandVisualRectForCompositingOverlapOrNot,
       bool& success);
+
+  static const ClipPaintPropertyNode* HighestOutputClipBetween(
+      const EffectPaintPropertyNode& ancestor,
+      const EffectPaintPropertyNode& descendant);
+
+  static gfx::RectF VisualRectForCompositingOverlap(
+      const gfx::RectF& local_rect,
+      const PropertyTreeState& local_state,
+      const PropertyTreeState& ancestor_state);
 
   static void MoveRect(gfx::RectF& rect, const gfx::Vector2dF& delta) {
     rect.Offset(delta.x(), delta.y());
@@ -333,7 +322,16 @@ class PLATFORM_EXPORT GeometryMapper {
   }
 
   friend class GeometryMapperTest;
-  friend class PaintLayerClipperTest;
+  static bool LocalToAncestorVisualRectInternalForTesting(
+      const PropertyTreeState& local_state,
+      const PropertyTreeState& ancestor_state,
+      FloatClipRect& mapping_rect,
+      bool& success);
+  static bool LocalToAncestorVisualRectInternalForCompositingOverlapForTesting(
+      const PropertyTreeState& local_state,
+      const PropertyTreeState& ancestor_state,
+      FloatClipRect& mapping_rect,
+      bool& success);
 };
 
 }  // namespace blink
