@@ -1444,6 +1444,8 @@ static_library("browser") {
     "profiles/profile_manager_observer.h",
     "profiles/profile_metrics.cc",
     "profiles/profile_metrics.h",
+    "profiles/profile_selections.cc",
+    "profiles/profile_selections.h",
     "profiles/profiles_state.cc",
     "profiles/profiles_state.h",
     "profiles/renderer_updater.cc",
