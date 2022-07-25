@@ -5072,8 +5072,8 @@
   },
   {
     "name": "password-domain-capabilities-fetching",
-    "owners": [ "vizcay", "treib", "brunobraga" ],
-    "expiry_milestone": 105
+    "owners": [ "vizcay@google.com", "treib", "brunobraga@google.com", "chrome-duplex@google.com" ],
+    "expiry_milestone": 112
   },
   {
     "name": "password-edit-dialog-with-details",
@@ -5094,8 +5094,8 @@
   },
   {
     "name": "password-scripts-fetching",
-    "owners": [ "kolos", "treib", "brunobraga@google.com", "chrome-duplex@google.com" ],
-    "expiry_milestone": 105
+    "owners": [ "vizcay@google.com", "brunobraga@google.com", "chrome-duplex@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "password-strength-indicator",
