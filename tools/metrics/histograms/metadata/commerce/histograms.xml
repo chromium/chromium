@@ -372,21 +372,6 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
-<histogram name="Commerce.ShoppingService.ProductInfo.ImageAvailability"
-    enum="ProductImageAvailability" expires_after="2023-06-01">
-  <owner>ayman@chromium.org</owner>
-  <owner>mdjones@chromium.org</owner>
-  <summary>
-    Records the availability of a product image for an offer. The image can be
-    provided by the server, provided locally, have both options available, or
-    neither. The goal is to see the overlap between server knowledge and what
-    can be provided locally. This histogram is available on any platform where
-    the shopping service's product info API is enabled and is recorded only
-    after the local, on-page fallback is run (since we need both server-provided
-    and local to record the right value).
-  </summary>
-</histogram>
-
 <histogram name="Commerce.SignIn.AccountWaaStatus"
     enum="AccountWaaStatusForCommerce" expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>

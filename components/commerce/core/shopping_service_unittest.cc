@@ -5,6 +5,7 @@
 #include "components/commerce/core/shopping_service.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service_test_base.h"
@@ -50,8 +51,8 @@ class ShoppingServiceTest : public ShoppingServiceTestBase {
 TEST_F(ShoppingServiceTest, TestProductInfoResponse) {
   // Ensure a feature that uses product info is enabled. This doesn't
   // necessarily need to be the shopping list.
-  test_features_.InitWithFeatures(
-      {commerce::kShoppingList, commerce::kCommerceAllowServerImages}, {});
+  base::test::ScopedFeatureList test_features;
+  test_features.InitAndEnableFeature(commerce::kShoppingList);
 
   OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
       kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode);
@@ -83,9 +84,8 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse) {
 
 // Test that no object is provided for a negative optimization guide response.
 TEST_F(ShoppingServiceTest, TestProductInfoResponse_OptGuideFalse) {
-  test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
-      {});
+  base::test::ScopedFeatureList test_features;
+  test_features.InitAndEnableFeature(commerce::kShoppingList);
 
   opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
                           OptimizationGuideDecision::kFalse,
@@ -107,9 +107,8 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse_OptGuideFalse) {
 
 // Test that the product info cache only keeps track of live tabs.
 TEST_F(ShoppingServiceTest, TestProductInfoCacheURLCount) {
-  test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
-      {});
+  base::test::ScopedFeatureList test_features;
+  test_features.InitAndEnableFeature(kShoppingList);
 
   std::string url = "http://example.com/foo";
   MockWebWrapper web1(GURL(url), false);
@@ -156,9 +155,9 @@ TEST_F(ShoppingServiceTest, TestProductInfoCacheURLCount) {
 // Test that product info is inserted into the cache without a client
 // necessarily querying for it.
 TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycle) {
-  test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
-      {});
+  base::test::ScopedFeatureList test_features;
+  test_features.InitWithFeatures({kShoppingList, kCommerceAllowServerImages},
+                                 {});
 
   MockWebWrapper web(GURL(kProductUrl), false);
 
@@ -212,9 +211,8 @@ TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycle) {
 // Test that product info is inserted into the cache without a client
 // necessarily querying for it.
 TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycleWithFallback) {
-  test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
-      {});
+  base::test::ScopedFeatureList test_features;
+  test_features.InitAndEnableFeature(commerce::kShoppingList);
 
   MockWebWrapper web(GURL(kProductUrl), false);
   std::string json("{\"image\": \"" + std::string(kImageUrl) + "\"}");
@@ -284,7 +282,8 @@ TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycleWithFallback) {
 // Test that merchant info is processed correctly.
 TEST_F(ShoppingServiceTest, TestMerchantInfoResponse) {
   // Ensure a feature that uses merchant info is enabled.
-  test_features_.InitAndEnableFeature(kCommerceMerchantViewer);
+  base::test::ScopedFeatureList test_features;
+  test_features.InitAndEnableFeature(commerce::kCommerceMerchantViewer);
 
   OptimizationMetadata meta = opt_guide_->BuildMerchantTrustResponse(
       kStarRating, kCountRating, kDetailsPageUrl, kHasReturnPolicy,
@@ -331,8 +330,6 @@ TEST_F(ShoppingServiceTest, TestDataMergeWithLeadImage) {
 }
 
 TEST_F(ShoppingServiceTest, TestDataMergeWithNoLeadImage) {
-  test_features_.InitWithFeatures(
-      {kCommerceAllowLocalImages, kCommerceAllowServerImages}, {});
   ProductInfo info;
 
   base::DictionaryValue data_map;
