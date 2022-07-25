@@ -29,8 +29,9 @@ enum class AutofillAssistantIntent {
   FOOD_ORDERING_DELIVERY = 20,
   UNLAUNCHED_VERTICAL_1 = 22,
   FIND_COUPONS = 25,
+  CHROME_FAST_CHECKOUT = 32,
 
-  kMaxValue = FIND_COUPONS
+  kMaxValue = CHROME_FAST_CHECKOUT
 };
 
 // Extracts the enum value corresponding to |intent|.

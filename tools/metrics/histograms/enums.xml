@@ -6003,6 +6003,7 @@ others/histograms.xml -->
   <int value="20" label="FOOD_ORDERING_DELIVERY"/>
   <int value="22" label="UNLAUNCHED_VERTICAL_1"/>
   <int value="25" label="FIND_COUPONS"/>
+  <int value="32" label="CHROME_FAST_CHECKOUT"/>
 </enum>
 
 <enum name="AutofillAssistantJsFlowStartedEvent">
