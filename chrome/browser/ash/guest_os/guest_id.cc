@@ -30,6 +30,7 @@ static const base::NoDestructor<std::vector<std::string>> kPropertiesAllowList{{
     prefs::kContainerOsVersionKey,
     prefs::kContainerOsPrettyNameKey,
     prefs::kContainerColorKey,
+    prefs::kTerminalSupportedKey,
 }};
 
 }  // namespace

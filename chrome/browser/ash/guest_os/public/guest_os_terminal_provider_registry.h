@@ -8,6 +8,8 @@
 #include "base/containers/flat_map.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 
+class Profile;
+
 namespace guest_os {
 
 class GuestOsTerminalProvider;
@@ -24,7 +26,7 @@ class GuestOsTerminalProviderRegistry {
   // Gets a list of `Id`s for all provider's in the registry.
   std::vector<Id> List();
 
-  GuestOsTerminalProviderRegistry();
+  explicit GuestOsTerminalProviderRegistry(Profile* profile);
   ~GuestOsTerminalProviderRegistry();
   GuestOsTerminalProviderRegistry(const GuestOsTerminalProviderRegistry&) =
       delete;
@@ -55,6 +57,7 @@ class GuestOsTerminalProviderRegistry {
   std::unique_ptr<GuestOsTerminalProvider> Unregister(Id provider);
 
  private:
+  Profile* profile_;
   Id next_id_ = 0;
   base::flat_map<Id, std::unique_ptr<GuestOsTerminalProvider>> providers_;
 };

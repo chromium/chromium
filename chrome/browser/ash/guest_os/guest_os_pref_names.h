@@ -44,6 +44,7 @@ extern const char kGuestOsContainers[];
 extern const char kContainerOsVersionKey[];
 extern const char kContainerOsPrettyNameKey[];
 extern const char kContainerColorKey[];
+extern const char kTerminalSupportedKey[];
 
 // Terminal
 // Dictionary of terminal UI settings such as font style, colors, etc.
