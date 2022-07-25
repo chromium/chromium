@@ -9,7 +9,6 @@
 #import "base/bind.h"
 #import "base/callback.h"
 #import "base/check.h"
-#import "base/feature_list.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
 #import "base/strings/string_util.h"
@@ -48,7 +47,7 @@
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/autofill/card_expiration_date_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/card_name_fix_flow_view_bridge.h"
-#import "ios/chrome/browser/ui/autofill/legacy_card_unmask_prompt_view_bridge.h"
+#import "ios/chrome/browser/ui/autofill/create_card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
@@ -69,13 +68,6 @@ std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
     std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate) {
   return std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeSaveCard,
                                       std::move(delegate));
-}
-
-CardUnmaskPromptView* CreateCardUnmaskPromptViewBridge(
-    CardUnmaskPromptControllerImpl* unmask_controller,
-    UIViewController* base_view_controller) {
-  return new LegacyCardUnmaskPromptViewBridge(unmask_controller,
-                                              base_view_controller);
 }
 
 }  // namespace
@@ -230,7 +222,7 @@ void ChromeAutofillClientIOS::ShowUnmaskPrompt(
     UnmaskCardReason reason,
     base::WeakPtr<CardUnmaskDelegate> delegate) {
   unmask_controller_.ShowPrompt(
-      base::BindOnce(&CreateCardUnmaskPromptViewBridge,
+      base::BindOnce(&autofill::CreateCardUnmaskPromptViewBridge,
                      base::Unretained(&unmask_controller_),
                      base::Unretained(base_view_controller_)),
       card, reason, delegate);

@@ -6,22 +6,11 @@
 
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/ui/autofill/legacy_card_unmask_prompt_view_bridge.h"
+#import "ios/chrome/browser/ui/autofill/create_card_unmask_prompt_view_bridge.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-autofill::CardUnmaskPromptView* CreateCardUnmaskPromptViewBridge(
-    autofill::CardUnmaskPromptControllerImpl* controller,
-    UIViewController* base_view_controller) {
-  return new autofill::LegacyCardUnmaskPromptViewBridge(controller,
-                                                        base_view_controller);
-}
-
-}
 
 FullCardRequester::FullCardRequester(UIViewController* base_view_controller,
                                      ChromeBrowserState* browser_state)
@@ -49,7 +38,7 @@ void FullCardRequester::ShowUnmaskPrompt(
     autofill::AutofillClient::UnmaskCardReason reason,
     base::WeakPtr<autofill::CardUnmaskDelegate> delegate) {
   unmask_controller_.ShowPrompt(
-      base::BindOnce(&CreateCardUnmaskPromptViewBridge,
+      base::BindOnce(&autofill::CreateCardUnmaskPromptViewBridge,
                      base::Unretained(&unmask_controller_),
                      base::Unretained(base_view_controller_)),
       card, reason, delegate);

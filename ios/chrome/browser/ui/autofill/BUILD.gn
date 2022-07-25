@@ -74,11 +74,14 @@ source_set("bridges") {
     "card_unmask_prompt_view_bridge.mm",
     "card_unmask_prompt_view_controller.h",
     "card_unmask_prompt_view_controller.mm",
+    "create_card_unmask_prompt_view_bridge.h",
+    "create_card_unmask_prompt_view_bridge.mm",
     "legacy_card_unmask_prompt_view_bridge.h",
     "legacy_card_unmask_prompt_view_bridge.mm",
   ]
   deps = [
     ":autofill_ui",
+    ":features",
     "//base",
     "//components/autofill/core/browser",
     "//components/strings",

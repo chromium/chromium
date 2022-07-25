@@ -174,6 +174,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/ui/autofill",
     "//ios/chrome/browser/ui/autofill:bridges",
+    "//ios/chrome/browser/ui/autofill:features",
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/browser/web_state_list:web_state_list",
     "//ios/chrome/test:test_support",
