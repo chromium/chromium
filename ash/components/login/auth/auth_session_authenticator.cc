@@ -567,6 +567,11 @@ void AuthSessionAuthenticator::RecoverEncryptedData(
   error_callback =
       base::BindOnce(&AuthSessionAuthenticator::HandleMigrationRequired,
                      weak_factory_.GetWeakPtr(), std::move(error_callback));
+  // As we are in password change flow, all auth failures should be handled
+  // as password changed errors to be redirected correctly.
+  error_callback =
+      base::BindOnce(&AuthSessionAuthenticator::HandlePasswordChangeDetected,
+                     weak_factory_.GetWeakPtr(), std::move(error_callback));
 
   AuthSuccessCallback success_callback = base::BindOnce(
       &AuthSessionAuthenticator::NotifyAuthSuccess, weak_factory_.GetWeakPtr());
