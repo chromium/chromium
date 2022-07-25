@@ -76,5 +76,7 @@
 <div id="container" style="--container-bg-color:
     [[containerBgColor_(imageSrc_, match.imageDominantColor)]];">
   <image id="image" src="[[imageSrc_]]"></image>
-  <div id="icon" style="[[iconStyle_]]"></div>
+  <!--Note: Do not remove the '$' in '$=' below, otherwise the 'style' attribute
+      is erroneously removed by the HTML minifier. -->
+  <div id="icon" style$="[[iconStyle_]]"></div>
 </div>
