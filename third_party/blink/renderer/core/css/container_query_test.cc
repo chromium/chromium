@@ -146,14 +146,20 @@ TEST_F(ContainerQueryTest, PreludeParsing) {
       "(width < 300px)",
       SerializeCondition(ParseAtContainer("@container (width < 300px) {}")));
 
+  EXPECT_EQ("not (width)", SerializeCondition(ParseAtContainer(
+                               "@container somename not (width) {}")));
+
+  EXPECT_EQ("(width) and (height)", SerializeCondition(ParseAtContainer(
+                                        "@container (width) and (height) {}")));
+
+  EXPECT_EQ("(width) or (height)", SerializeCondition(ParseAtContainer(
+                                       "@container (width) or (height) {}")));
+
   // Invalid:
   EXPECT_FALSE(ParseAtContainer("@container 100px {}"));
   EXPECT_FALSE(ParseAtContainer("@container calc(1) {}"));
   EXPECT_FALSE(ParseAtContainer("@container {}"));
   EXPECT_FALSE(ParseAtContainer("@container (min-width: 300px) nonsense {}"));
-  EXPECT_FALSE(ParseAtContainer("@container somename not (width) {}"));
-  EXPECT_FALSE(ParseAtContainer("@container (width) and (height) {}"));
-  EXPECT_FALSE(ParseAtContainer("@container (width) or (height) {}"));
   EXPECT_FALSE(ParseAtContainer("@container size(width) {}"));
 }
 

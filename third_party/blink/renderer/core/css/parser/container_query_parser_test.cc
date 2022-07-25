@@ -18,7 +18,7 @@ class ContainerQueryParserTest : public PageTestBase {
   String ParseQuery(String string) {
     const auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
     const MediaQueryExpNode* node =
-        ContainerQueryParser(*context).ParseQuery(string);
+        ContainerQueryParser(*context).ParseCondition(string);
     if (!node)
       return g_null_atom;
     if (node->HasUnknown())
@@ -72,6 +72,9 @@ TEST_F(ContainerQueryParserTest, ParseQuery) {
       "((width > 100px) and (width > 200px))",
       "((width) and (width) and (width))",
       "((width) or (width) or (width))",
+      "not (width)",
+      "(width) and (height)",
+      "(width) or (height)",
   };
 
   for (const char* test : tests)
@@ -79,8 +82,6 @@ TEST_F(ContainerQueryParserTest, ParseQuery) {
 
   // Invalid:
   EXPECT_EQ("<unknown>", ParseQuery("(min-width)"));
-  EXPECT_EQ(g_null_atom, ParseQuery("(width) and (height)"));
-  EXPECT_EQ(g_null_atom, ParseQuery("(width) or (height)"));
   EXPECT_EQ("<unknown>", ParseQuery("((width) or (width) and (width))"));
   EXPECT_EQ("<unknown>", ParseQuery("((width) and (width) or (width))"));
   EXPECT_EQ("<unknown>", ParseQuery("((width) or (height) and (width))"));
