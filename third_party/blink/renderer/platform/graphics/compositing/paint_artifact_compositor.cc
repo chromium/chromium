@@ -1123,4 +1123,12 @@ ContentLayerClientImpl* PaintArtifactCompositor::ContentLayerClientForTesting(
   return nullptr;
 }
 
+void PaintArtifactCompositor::SetNeedsUpdate(
+    PaintArtifactCompositorUpdateReason reason) {
+  UMA_HISTOGRAM_ENUMERATION("Blink.Paint.PaintArtifactCompositorUpdateReason",
+                            reason,
+                            PaintArtifactCompositorUpdateReason::kCount);
+  needs_update_ = true;
+}
+
 }  // namespace blink

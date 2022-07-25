@@ -217,12 +217,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // do not affect compositing can use a fast-path in |UpdateRepaintedLayers|
   // (see comment above that function for more information), and should not call
   // SetNeedsUpdate.
-  void SetNeedsUpdate(PaintArtifactCompositorUpdateReason reason) {
-    UMA_HISTOGRAM_ENUMERATION("Blink.Paint.PaintArtifactCompositorUpdateReason",
-                              reason,
-                              PaintArtifactCompositorUpdateReason::kCount);
-    needs_update_ = true;
-  }
+  void SetNeedsUpdate(PaintArtifactCompositorUpdateReason reason);
   bool NeedsUpdate() const { return needs_update_; }
   void ClearNeedsUpdateForTesting() { needs_update_ = false; }
 
