@@ -160,8 +160,17 @@ bool ConvertURLsToProvidedInfo(
 
   *file_system = nullptr;
   for (const auto& url : urls) {
-    const storage::FileSystemURL file_system_url(
+    storage::FileSystemURL file_system_url(
         file_system_context->CrackURLInFirstPartyContext(GURL(url)));
+
+    // Convert fusebox URL to its backing (FSP) file system provider URL.
+    if (file_system_url.type() == storage::kFileSystemTypeFuseBox) {
+      std::string fsp_url(url);
+      base::ReplaceFirstSubstringAfterOffset(&fsp_url, 0, "/external/fusebox",
+                                             "/external/");
+      file_system_url =
+          file_system_context->CrackURLInFirstPartyContext(GURL(fsp_url));
+    }
 
     ash::file_system_provider::util::FileSystemURLParser parser(
         file_system_url);
