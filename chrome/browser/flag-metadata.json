@@ -4126,7 +4126,7 @@
   {
     "name": "launcher-play-store-search",
     "owners": [ "amandadeacon", "tby", "wrong" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 108
   },
   {
     "name": "launcher-pulsing-blocks-refresh",
