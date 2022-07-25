@@ -816,9 +816,8 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object) {
   return result;
 }
 
-AXObject* AXObjectCacheImpl::GetWithoutInvalidation(
-    const Node* node,
-    bool allow_display_locking_invalidation) {
+AXObject* AXObjectCacheImpl::SafeGet(const Node* node,
+                                     bool allow_display_locking_invalidation) {
   if (!node)
     return nullptr;
 
@@ -874,7 +873,7 @@ AXObject* AXObjectCacheImpl::Get(const Node* node) {
     return nullptr;
 
   if (has_been_disposed_)
-    return GetWithoutInvalidation(node);
+    return SafeGet(node);
 
   LayoutObject* layout_object = node->GetLayoutObject();
 
@@ -2255,14 +2254,14 @@ AXObject* AXObjectCacheImpl::InvalidateChildren(AXObject* obj) {
 }
 
 void AXObjectCacheImpl::SlotAssignmentWillChange(Node* node) {
-  // Use GetWithoutInvalidation(), because right before slot assignment is a
-  // dangerous time to test whether the slot must be invalidated, because
-  // this currently requires looking at the <slot> children in
+  // Use SafeGet(), because right before slot assignment is a dangerous time to
+  // test whether the slot must be invalidated, because this currently requires
+  // looking at the <slot> children in
   // IsShadowContentRelevantForAccessibility(), resulting in an infinite loop
   // as looking at the children causes slot assignment to be recalculated.
   // TODO(accessibility) In the future this may be simplified.
   // See crbug.com/1219311.
-  ChildrenChanged(GetWithoutInvalidation(node));
+  ChildrenChanged(SafeGet(node));
 }
 
 void AXObjectCacheImpl::ChildrenChanged(Node* node) {
@@ -2338,7 +2337,7 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
 #if DCHECK_IS_ON()
   if (obj && optional_node) {
     DCHECK_EQ(obj->GetNode(), optional_node);
-    DCHECK_EQ(obj, GetWithoutInvalidation(optional_node));
+    DCHECK_EQ(obj, SafeGet(optional_node));
   }
   Document* document = obj ? obj->GetDocument() : &optional_node->GetDocument();
   DCHECK(document);
@@ -2631,7 +2630,7 @@ void AXObjectCacheImpl::ProcessCleanLayoutCallbacks(Document& document) {
         DCHECK(!obj->IsDetached());
         if (node) {
           DCHECK_EQ(node, obj->GetNode());
-          DCHECK_EQ(GetWithoutInvalidation(node), obj);
+          DCHECK_EQ(SafeGet(node), obj);
         }
         DCHECK_EQ(obj->GetDocument(), document);
       }

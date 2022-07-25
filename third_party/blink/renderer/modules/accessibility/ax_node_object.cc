@@ -4001,7 +4001,7 @@ bool AXNodeObject::CanAddLayoutChild(LayoutObject& child) {
   // https://crrev.com/c/chromium/src/+/3591572/9/third_party/blink/renderer/modules/accessibility/ax_node_object.cc#3973
   // TODO(accessibility) Remove this once legacy layout is completely removed,
   // as this problem will go away.
-  AXObject* ax_dom_parent = AXObjectCache().GetWithoutInvalidation(
+  AXObject* ax_dom_parent = AXObjectCache().SafeGet(
       LayoutTreeBuilderTraversal::Parent(*child.GetNode()));
   if (ax_dom_parent &&
       !ax_dom_parent->ShouldUseLayoutObjectTraversalForChildren()) {

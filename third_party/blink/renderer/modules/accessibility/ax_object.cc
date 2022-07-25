@@ -5229,8 +5229,7 @@ void AXObject::ClearChildren() const {
     // at this time. However, do allow invalidations if an object changes its
     // display locking (content-visibility: auto) status, as this may be the
     // only chance to do that, and it's safe to do now.
-    AXObject* ax_child_from_node =
-        AXObjectCache().GetWithoutInvalidation(child_node, true);
+    AXObject* ax_child_from_node = AXObjectCache().SafeGet(child_node, true);
     if (ax_child_from_node &&
         ax_child_from_node->CachedParentObject() == this) {
       // Check current parent first. It may be owned by another node.
