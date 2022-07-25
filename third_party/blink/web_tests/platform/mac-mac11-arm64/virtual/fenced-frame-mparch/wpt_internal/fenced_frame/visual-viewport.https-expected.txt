@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL visualViewport values inside fenced frame promise_test: Unhandled rejection with value: object "Error: assert_equals: [PRECONDITION] document scrolled x expected 30 but got 0"
-Harness: the test ran to completion.
-

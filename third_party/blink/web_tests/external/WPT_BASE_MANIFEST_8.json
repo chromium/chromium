@@ -376281,7 +376281,7 @@
        ]
       ],
       "at-container-parsing.html": [
-       "6278f88216f314bb4a63a4826cfd8dacc5fc349e",
+       "6f1166a1af18bd53e72643928b7ed5d7a9d70f70",
        [
         null,
         {}
@@ -408910,6 +408910,68 @@
        }
       ]
      ],
+     "delete-in-child-of-head.tentative.html": [
+      "978cf83d47add5ef754e588074844d0e624dfa27",
+      [
+       "editing/other/delete-in-child-of-head.tentative.html?designMode=off&method=backspace",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/delete-in-child-of-head.tentative.html?designMode=off&method=forwarddelete",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/delete-in-child-of-head.tentative.html?designMode=on&method=backspace",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/delete-in-child-of-head.tentative.html?designMode=on&method=forwarddelete",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
+     "delete-in-child-of-html.tentative.html": [
+      "4ae5446d1b07b7a1ddd0c5dd5c6d2ed85d82b822",
+      [
+       "editing/other/delete-in-child-of-html.tentative.html?designMode=off&method=backspace",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/delete-in-child-of-html.tentative.html?designMode=off&method=forwarddelete",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/delete-in-child-of-html.tentative.html?designMode=on&method=backspace",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/delete-in-child-of-html.tentative.html?designMode=on&method=forwarddelete",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
      "delete.html": [
       "b9bd1437e3721f1353a9df6bde155f2f2b8ae95a",
       [
@@ -409083,6 +409145,124 @@
       [
        "editing/other/insertlinebreak-with-white-space-style.tentative.html?pre-wrap",
        {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "insertparagraph-in-child-of-head.tentative.html": [
+      "2ee8a4b33b93ab3c2e2f94126516d98cabc6b5a9",
+      [
+       "editing/other/insertparagraph-in-child-of-head.tentative.html?designMode=off&white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-child-of-head.tentative.html?designMode=off&white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-child-of-head.tentative.html?designMode=off&white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-child-of-head.tentative.html?designMode=off&white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-child-of-head.tentative.html?designMode=on&white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-child-of-head.tentative.html?designMode=on&white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-child-of-head.tentative.html?designMode=on&white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-child-of-head.tentative.html?designMode=on&white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
+     "insertparagraph-in-child-of-html.tentative.html": [
+      "a82da32df1727bbe2956da67c910d2e5618fe461",
+      [
+       "editing/other/insertparagraph-in-child-of-html.tentative.html?designMode=off&white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-child-of-html.tentative.html?designMode=off&white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-child-of-html.tentative.html?designMode=off&white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-child-of-html.tentative.html?designMode=off&white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-child-of-html.tentative.html?designMode=on&white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-child-of-html.tentative.html?designMode=on&white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-child-of-html.tentative.html?designMode=on&white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/insertparagraph-in-child-of-html.tentative.html?designMode=on&white-space=pre-wrap",
+       {
+        "testdriver": true,
         "timeout": "long"
        }
       ]
