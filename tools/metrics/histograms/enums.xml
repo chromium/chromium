@@ -24374,6 +24374,9 @@ Called by update_debug_scenarios.py.-->
   <int value="5" label="Composited Too Many Quads"/>
   <int value="6" label="Composited Backdrop Filter"/>
   <int value="7" label="Composited Copy Request"/>
+  <int value="8" label="Composited Not Axis Aligned - 3d Transform"/>
+  <int value="9" label="Composited Not Axis Aligned - Shear Transform"/>
+  <int value="10" label="Composited Not Axis Aligned - Rotated Transform"/>
 </enum>
 
 <enum name="DeleteCorruptedPasswordsResult">

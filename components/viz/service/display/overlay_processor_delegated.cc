@@ -175,21 +175,32 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
       }
       candidates->push_back(candidate);
       candidate_quads.push_back(it);
+    } else if (candidate_status ==
+               OverlayCandidate::CandidateStatus::kFailVisible) {
+      // This quad can be intentionally skipped.
+      num_quads_skipped++;
     } else {
-      if (candidate_status == OverlayCandidate::CandidateStatus::kFailVisible) {
-        // This quad can be intentionally skipped.
-        num_quads_skipped++;
-      } else {
-        DBG_DRAW_RECT("delegated.overlay.failed", display_rect);
-        DBG_LOG("delegated.overlay.failed", "error code %d", candidate_status);
-      }
+      DBG_DRAW_RECT("delegated.overlay.failed", display_rect);
+      DBG_LOG("delegated.overlay.failed", "error code %d", candidate_status);
 
-      if (candidate_status ==
-          OverlayCandidate::CandidateStatus::kFailNotAxisAligned) {
-        delegated_status_ = DelegationStatus::kCompositedNotAxisAligned;
-      } else if (candidate_status ==
-                 OverlayCandidate::CandidateStatus::kFailNotOverlay) {
-        delegated_status_ = DelegationStatus::kCompositedNotOverlay;
+      switch (candidate_status) {
+        case OverlayCandidate::CandidateStatus::kFailNotAxisAligned:
+          delegated_status_ = DelegationStatus::kCompositedNotAxisAligned;
+          break;
+        case OverlayCandidate::CandidateStatus::kFailNotAxisAligned3dTransform:
+          delegated_status_ = DelegationStatus::kCompositedHas3dTransform;
+          break;
+        case OverlayCandidate::CandidateStatus::kFailNotAxisAligned2dShear:
+          delegated_status_ = DelegationStatus::kCompositedHas2dShear;
+          break;
+        case OverlayCandidate::CandidateStatus::kFailNotAxisAligned2dRotation:
+          delegated_status_ = DelegationStatus::kCompositedHas2dRotation;
+          break;
+        case OverlayCandidate::CandidateStatus::kFailNotOverlay:
+          delegated_status_ = DelegationStatus::kCompositedNotOverlay;
+          break;
+        default:
+          break;
       }
     }
   }

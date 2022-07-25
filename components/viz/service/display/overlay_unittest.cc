@@ -4605,6 +4605,25 @@ class TestDelegatedOverlayProcessor : public OverlayProcessorDelegated {
 
 using DelegatedTest = OverlayTest<TestDelegatedOverlayProcessor>;
 
+gfx::Transform MakePerspectiveTransform() {
+  gfx::Transform transform;
+  transform.ApplyPerspectiveDepth(100.f);
+  transform.RotateAbout(gfx::Vector3dF(1.f, 1.f, 1.f), 30);
+  return transform;
+}
+
+gfx::Transform MakeShearTransform() {
+  gfx::Transform transform;
+  transform.Skew(0, 30);
+  return transform;
+}
+
+gfx::Transform MakeRotationTransform() {
+  gfx::Transform transform;
+  transform.RotateAboutZAxis(30);
+  return transform;
+}
+
 TEST_F(DelegatedTest, ForwardMultipleBasic) {
   auto pass = CreateRenderPass();
   constexpr size_t kNumTestQuads = 5;
@@ -4902,6 +4921,37 @@ TEST_F(DelegatedTest, QuadTypes) {
 
   EXPECT_EQ(main_pass->quad_list.size(), candidate_list.size());
   EXPECT_TRUE(damage_rect_.IsEmpty());
+}
+
+TEST_F(DelegatedTest, NonAxisAlignedCandidateStatus) {
+  auto pass = CreateRenderPass();
+  const auto kSmallCandidateRect = gfx::Rect(5, 10, 57, 64);
+  auto* quad = CreateCandidateQuadAt(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
+      kSmallCandidateRect);
+  SurfaceDamageRectList surface_damage_rect_list;
+  OverlayCandidate candidate;
+  auto color_mat = GetIdentityColorMatrix();
+  auto candidate_factory = OverlayCandidateFactory(
+      pass.get(), resource_provider_.get(), &surface_damage_rect_list,
+      &color_mat, gfx::RectF(pass->output_rect),
+      true /* is_delegated_context */);
+
+  pass->shared_quad_state_list.back()->quad_to_target_transform =
+      MakePerspectiveTransform();
+  EXPECT_EQ(OverlayCandidate::CandidateStatus::kFailNotAxisAligned3dTransform,
+            candidate_factory.FromDrawQuad(quad, candidate));
+
+  pass->shared_quad_state_list.back()->quad_to_target_transform =
+      MakeShearTransform();
+  EXPECT_EQ(OverlayCandidate::CandidateStatus::kFailNotAxisAligned2dShear,
+            candidate_factory.FromDrawQuad(quad, candidate));
+
+  pass->shared_quad_state_list.back()->quad_to_target_transform =
+      MakeRotationTransform();
+  EXPECT_EQ(OverlayCandidate::CandidateStatus::kFailNotAxisAligned2dRotation,
+            candidate_factory.FromDrawQuad(quad, candidate));
 }
 
 // These tests check to make sure that candidate quads that should fail (aka
