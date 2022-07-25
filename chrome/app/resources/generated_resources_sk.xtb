@@ -1279,7 +1279,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2191754378957563929">zapnuté</translation>
 <translation id="2192505247865591433">Zdroj:</translation>
 <translation id="2193365732679659387">Nastavenie dôveryhodnosti</translation>
-<translation id="2194554416429452547">Počas skúšobných období hľadá Chrome spôsoby, ako obmedziť spam, podvody a zdieľanie obsahu medzi webmi. Chrome okrem toho <ph name="ESTIMATE_INTERESTS_LINK" />, na základe ktorých vám budú môcť weby zobrazovať reklamy. Svoje záujmy môžete spravovať v nastaveniach.</translation>
 <translation id="2194856509914051091">Čo je potrebné zohľadniť</translation>
 <translation id="2195331105963583686">Po tomto dátume budete môcť <ph name="DEVICE_TYPE" /> naďalej používať, ale už nebude dostávať automatické aktualizácie softvéru a zabezpečenia</translation>
 <translation id="2195729137168608510">Ochrana e-mailu</translation>
@@ -5229,6 +5228,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6086846494333236931">Nainštalované vaším správcom</translation>
 <translation id="6087746524533454243">Hľadáte stránku s informáciami o prehliadači? Prejdite na</translation>
 <translation id="6087960857463881712">Paráda</translation>
+<translation id="6088535503330933227">Chrome hľadá spôsoby, ako obmedziť reklamný spam, podvody a zdieľanie obsahu medzi webmi. Chrome okrem toho <ph name="ESTIMATE_INTERESTS_LINK" />, na základe ktorých vám budú môcť weby zobrazovať reklamy. Záujmy môžete spravovať v nastaveniach.</translation>
 <translation id="608912389580139775">Ak chcete túto stránku pridať do svojho čitateľského zoznamu, kliknite na ikonu uloženia ako záložky</translation>
 <translation id="6091761513005122595">Zdieľané úložisko sa úspešne pripojilo.</translation>
 <translation id="6093888419484831006">Zrušenie aktualizácie...</translation>

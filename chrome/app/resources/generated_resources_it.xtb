@@ -1277,7 +1277,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2191754378957563929">On</translation>
 <translation id="2192505247865591433">Da:</translation>
 <translation id="2193365732679659387">Impostazioni di attendibilità</translation>
-<translation id="2194554416429452547">Durante le prove, Chrome esamina dei metodi per limitare spam, attività fraudolente e la condivisione tra siti. Inoltre, Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, che possono essere usati dai siti per mostrarti annunci. Puoi gestire i tuoi interessi nelle impostazioni.</translation>
 <translation id="2194856509914051091">Aspetti da considerare</translation>
 <translation id="2195331105963583686">Dopo tale periodo, potrai continuare a usare questo dispositivo <ph name="DEVICE_TYPE" />, che però non riceverà più automaticamente aggiornamenti software e di sicurezza.</translation>
 <translation id="2195729137168608510">Protezione email</translation>
@@ -5224,6 +5223,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6086846494333236931">Installata dall'amministratore</translation>
 <translation id="6087746524533454243">Stai cercando la pagina delle informazioni sul browser? Visita la pagina</translation>
 <translation id="6087960857463881712">Faccina splendente</translation>
+<translation id="6088535503330933227">Chrome esamina dei metodi per limitare spam, attività fraudolente e la condivisione tra siti. Inoltre, Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, che possono essere usati dai siti per mostrarti annunci. Puoi gestire i tuoi interessi nelle impostazioni.</translation>
 <translation id="608912389580139775">Fai clic sull'icona dei preferiti per aggiungere questa pagina al tuo elenco di lettura</translation>
 <translation id="6091761513005122595">Condivisione montata correttamente.</translation>
 <translation id="6093888419484831006">Annullamento aggiornamento...</translation>

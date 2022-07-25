@@ -1280,7 +1280,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2191754378957563929">Sees</translation>
 <translation id="2192505247865591433">Allikas:</translation>
 <translation id="2193365732679659387">Usaldusväärsuse seaded</translation>
-<translation id="2194554416429452547">Prooviperioodil otsib Chrome võimalusi, kuidas rämpsposti, pettusi ja saitide vahelist jagamist piirata. Samuti prognoosib Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, mida saidid saavad kasutada teile reklaamide kuvamiseks. Saate oma huvisid seadetes hallata.</translation>
 <translation id="2194856509914051091">Olulised aspektid</translation>
 <translation id="2195331105963583686">Saate seadet <ph name="DEVICE_TYPE" /> pärast seda siiski kasutada, kuid see ei saa enam automaatseid tarkvara- ja turvavärskendusi</translation>
 <translation id="2195729137168608510">Meilikaitse</translation>
@@ -5233,6 +5232,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6086846494333236931">Selle installis administraator</translation>
 <translation id="6087746524533454243">Kas otsite brauseri teabe lehte? Külastage saiti</translation>
 <translation id="6087960857463881712">Lahe nägu</translation>
+<translation id="6088535503330933227">Chrome otsib võimalusi, kuidas rämpsreklaame, pettusi ja saitide vahelist jagamist piirata. Samuti prognoosib Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, mida saidid saavad kasutada teile reklaamide kuvamiseks. Saate oma huvisid seadetes hallata.</translation>
 <translation id="608912389580139775">Selle lehe lisamiseks lugemisloendisse klõpsake järjehoidjaikoonil</translation>
 <translation id="6091761513005122595">Jagatava üksuse ühendamine õnnestus.</translation>
 <translation id="6093888419484831006">Värskenduse tühistamine ...</translation>

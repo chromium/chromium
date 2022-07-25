@@ -1276,7 +1276,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2191754378957563929">Yoniq</translation>
 <translation id="2192505247865591433">Qayerdan:</translation>
 <translation id="2193365732679659387">Ishonch sozlamalari</translation>
-<translation id="2194554416429452547">Sinov davrida Chrome spam, firibgarlik va saytlararo fayl almashinuviga qarshi kurash usullarini oʻrganadi. Shuningdek, Chrome sizga reklama chiqaradigan saytlarda <ph name="ESTIMATE_INTERESTS_LINK" />. Qiziqishlarni sozlamalr orqali boshqarish mumkin.</translation>
 <translation id="2194856509914051091">Bularni hisobga olish kerak</translation>
 <translation id="2195331105963583686">Bundan keyin ham <ph name="DEVICE_TYPE" /> qurilmasidan foydalanish mumkin, faqatgina uning dasturlari va xavfsizlik sozlamalari avtomatik yangilanmaydi</translation>
 <translation id="2195729137168608510">Elektron pochta himoyasi</translation>
@@ -5230,6 +5229,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6086846494333236931">Administratoringiz tomonidan o‘rnatilgan</translation>
 <translation id="6087746524533454243">Brauzer haqida sahifasini qidiryapsizmi? Bu sahifaga kiring</translation>
 <translation id="6087960857463881712">Hayratdagi yuz</translation>
+<translation id="6088535503330933227">Chrome spam, firibgarlik va saytlararo fayl almashinuviga qarshi kurash usullarini oʻrganadi. Shuningdek, Chrome sizga reklama chiqaradigan saytlarda <ph name="ESTIMATE_INTERESTS_LINK" />. Qiziqishlarni sozlamalr orqali boshqarish mumkin.</translation>
 <translation id="608912389580139775">Bu sahifani Saqlangan sahifalarga kiritish uchun Bukmark belgisini bosing</translation>
 <translation id="6091761513005122595">Umumiy ruxsat berildi.</translation>
 <translation id="6093888419484831006">Yangilash bekor qilinmoqda...</translation>

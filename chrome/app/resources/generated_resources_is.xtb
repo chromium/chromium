@@ -1290,7 +1290,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2191754378957563929">Kveikt</translation>
 <translation id="2192505247865591433">Frá:</translation>
 <translation id="2193365732679659387">Trauststillingar</translation>
-<translation id="2194554416429452547">Chrome nýtir prufuáskriftir til að kanna leiðir til að takmarka ruslefni, svik og deilingu á milli vefsvæða. Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, sem vefsvæði geta notað til að birta þér auglýsingar. Þú getur stjórnað áhugasviðunum þínum í stillingunum.</translation>
 <translation id="2194856509914051091">Atriði til að hafa í huga</translation>
 <translation id="2195331105963583686">Þú getur notað þetta <ph name="DEVICE_TYPE" /> áfram eftir þann tíma en færð ekki lengur sjálfvirkar hugbúnaðar- og öryggisuppfærslur</translation>
 <translation id="2195729137168608510">Tölvupóstvörn</translation>
@@ -5243,6 +5242,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6086846494333236931">Kerfisstjórinn þinn setti upp</translation>
 <translation id="6087746524533454243">Ertu að leita að upplýsingasíðu vafrans? Opna</translation>
 <translation id="6087960857463881712">Geðveikt hresst andlit</translation>
+<translation id="6088535503330933227">Chrome kannar leiðir til að takmarka ruslefni, svik og deilingu á milli vefsvæða. Chrome <ph name="ESTIMATE_INTERESTS_LINK" />, sem vefsvæði geta notað til að birta þér auglýsingar. Þú getur stjórnað áhugasviðunum þínum í stillingunum.</translation>
 <translation id="608912389580139775">Smelltu á bókamerkistáknið til að bæta þessari síðu við leslistann</translation>
 <translation id="6091761513005122595">Deilt efni var tengt.</translation>
 <translation id="6093888419484831006">Hættir við uppfærslu...</translation>

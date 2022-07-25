@@ -1290,7 +1290,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2191754378957563929">Ativado</translation>
 <translation id="2192505247865591433">De:</translation>
 <translation id="2193365732679659387">Configurações de confiança</translation>
-<translation id="2194554416429452547">Durante os testes, o Chrome explora maneiras de limitar spam, fraude e compartilhamento entre sites. O Chrome também <ph name="ESTIMATE_INTERESTS_LINK" /> para que os sites possam os usar para mostrar anúncios. Você pode gerenciar seus interesses nas configurações.</translation>
 <translation id="2194856509914051091">Considerações</translation>
 <translation id="2195331105963583686">Você ainda poderá usar este <ph name="DEVICE_TYPE" /> após esse período, mas ele não receberá mais atualizações automáticas de software e segurança</translation>
 <translation id="2195729137168608510">Proteção de e-mail</translation>
@@ -5246,6 +5245,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6086846494333236931">Instalada pelo administrador</translation>
 <translation id="6087746524533454243">Procurando a página de detalhes do navegador? Acesse</translation>
 <translation id="6087960857463881712">Rosto maravilhado</translation>
+<translation id="6088535503330933227">O Chrome busca maneiras de limitar ocorrências de anúncios de spam, fraude e compartilhamento entre sites. O Chrome também <ph name="ESTIMATE_INTERESTS_LINK" /> para que os sites possam os usar para mostrar anúncios. Você pode gerenciar seus interesses nas configurações.</translation>
 <translation id="608912389580139775">Para adicionar essa página à sua Lista de leitura, clique no ícone "Adicionar aos favoritos"</translation>
 <translation id="6091761513005122595">Compartilhamento ativado.</translation>
 <translation id="6093888419484831006">Cancelando atualização...</translation>

@@ -1289,7 +1289,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2191754378957563929">Đang bật</translation>
 <translation id="2192505247865591433">Từ:</translation>
 <translation id="2193365732679659387">Cài đặt tin cậy</translation>
-<translation id="2194554416429452547">Trong khi thử nghiệm, Chrome vẫn tiếp tục cải tiến các phương pháp để hạn chế thư rác, hành vi gian lận và hoạt động chia sẻ giữa các trang. Chrome cũng <ph name="ESTIMATE_INTERESTS_LINK" /> mà các trang web có thể sử dụng để hiện quảng cáo cho bạn. Bạn có thể quản lý những gì bạn quan tâm trong phần cài đặt.</translation>
 <translation id="2194856509914051091">Những yếu tố cần xem xét</translation>
 <translation id="2195331105963583686">Bạn vẫn có thể sử dụng <ph name="DEVICE_TYPE" /> này sau thời gian đó, nhưng thiết bị sẽ không nhận được các bản cập nhật bảo mật và phần mềm tự động nữa</translation>
 <translation id="2195729137168608510">Bảo vệ Email</translation>
@@ -5243,6 +5242,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6086846494333236931">Do quản trị viên của bạn cài đặt</translation>
 <translation id="6087746524533454243">Bạn đang tìm trình duyệt giới thiệu trang? Hãy truy cập</translation>
 <translation id="6087960857463881712">Khuôn mặt vui nhộn</translation>
+<translation id="6088535503330933227">Chrome đang nghiên cứu các phương pháp hạn chế quảng cáo không liên quan, hành vi gian lận và hoạt động chia sẻ giữa các trang web. Chrome cũng <ph name="ESTIMATE_INTERESTS_LINK" /> mà các trang web có thể sử dụng để hiện quảng cáo cho bạn. Bạn có thể vào phần cài đặt để quản lý các mối quan tâm của mình.</translation>
 <translation id="608912389580139775">Để thêm trang này vào danh sách đọc, hãy nhấp vào biểu tượng Dấu trang</translation>
 <translation id="6091761513005122595">Đã kết nối thành công với thư mục chia sẻ.</translation>
 <translation id="6093888419484831006">Đang hủy cập nhật...</translation>

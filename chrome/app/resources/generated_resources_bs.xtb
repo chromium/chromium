@@ -1288,7 +1288,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2191754378957563929">Uključeno</translation>
 <translation id="2192505247865591433">Šalje:</translation>
 <translation id="2193365732679659387">Postavke pouzdanosti</translation>
-<translation id="2194554416429452547">Tokom probnih perioda, Chrome istražuje načine da ograniči neželjenu poštu, prevaru i dijeljenje između web lokacija. Chrome također <ph name="ESTIMATE_INTERESTS_LINK" /> koja web lokacije mogu koristiti da vam prikazuju oglase. Interesovanjima možete upravljati u postavkama.</translation>
 <translation id="2194856509914051091">Stvari za razmatranje</translation>
 <translation id="2195331105963583686">I dalje ćete moći koristiti uređaj <ph name="DEVICE_TYPE" /> nakon tog datuma, ali on više neće primati automatska sigurnosna ažuriranja i ažuriranja softvera</translation>
 <translation id="2195729137168608510">Zaštita e-pošte</translation>
@@ -5241,6 +5240,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6086846494333236931">Instalirao administrator</translation>
 <translation id="6087746524533454243">Tražite stranicu s informacijama o pregledniku? Posjetite</translation>
 <translation id="6087960857463881712">Oduševljeno lice</translation>
+<translation id="6088535503330933227">Chrome istražuje načine da ograniči neželjenu poštu oglasa, prevare i dijeljenje između web lokacija. Chrome također <ph name="ESTIMATE_INTERESTS_LINK" /> koja web lokacije mogu koristiti da vam prikazuju oglase. Interesovanjima možete upravljati u postavkama.</translation>
 <translation id="608912389580139775">Da dodate ovu stranicu na listu za čitanje, kliknite na ikonu Oznaka</translation>
 <translation id="6091761513005122595">Dijeljenje je uspješno aktivirano.</translation>
 <translation id="6093888419484831006">Otkazivanje ažuriranja...</translation>

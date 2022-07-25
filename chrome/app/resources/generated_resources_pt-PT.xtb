@@ -1277,7 +1277,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2191754378957563929">Ativado</translation>
 <translation id="2192505247865591433">De:</translation>
 <translation id="2193365732679659387">Definições fidedignas</translation>
-<translation id="2194554416429452547">Durante as avaliações, o Chrome explora formas de limitar o spam, as fraudes e a partilha entre sites. O Chrome também <ph name="ESTIMATE_INTERESTS_LINK" /> que os sites podem usar para lhe apresentar anúncios. Pode gerir os seus interesses nas definições.</translation>
 <translation id="2194856509914051091">Aspetos a considerar</translation>
 <translation id="2195331105963583686">Vai continuar a poder utilizar este <ph name="DEVICE_TYPE" /> após essa data, mas deixará de receber atualizações de software e de segurança automáticas.</translation>
 <translation id="2195729137168608510">Protecção de email</translation>
@@ -5229,6 +5228,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6086846494333236931">Instalada pelo gestor</translation>
 <translation id="6087746524533454243">Está à procura da página Acerca do navegador? Visite</translation>
 <translation id="6087960857463881712">Cara de fantástico</translation>
+<translation id="6088535503330933227">O Chrome está a explorar formas de limitar o spam, as fraudes e a partilha entre sites. O Chrome também <ph name="ESTIMATE_INTERESTS_LINK" /> que os sites podem usar para lhe apresentar anúncios. Pode gerir os seus interesses nas definições.</translation>
 <translation id="608912389580139775">Para adicionar esta página à sua Lista de leitura, clique no ícone de marcador</translation>
 <translation id="6091761513005122595">A partilha foi montada com êxito.</translation>
 <translation id="6093888419484831006">A cancelar a atualização...</translation>

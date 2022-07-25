@@ -1289,7 +1289,6 @@
 <translation id="2191754378957563929">開啟</translation>
 <translation id="2192505247865591433">來自：</translation>
 <translation id="2193365732679659387">信任設定</translation>
-<translation id="2194554416429452547">在試用期間，Chrome 會研究如何防範垃圾郵件和欺詐行為，以及限制網站之間分享資訊的方法。Chrome 亦會<ph name="ESTIMATE_INTERESTS_LINK" />，並讓網站使用這些興趣來向您展示廣告。您可在設定中管理興趣。</translation>
 <translation id="2194856509914051091">考慮因素</translation>
 <translation id="2195331105963583686">您仍可在該時間點後使用此 <ph name="DEVICE_TYPE" />，但屆時此裝置將無法自動取得軟件和安全性更新</translation>
 <translation id="2195729137168608510">電郵保護</translation>
@@ -5240,6 +5239,7 @@
 <translation id="6086846494333236931">已由管理員安裝</translation>
 <translation id="6087746524533454243">要查看瀏覽器的「關於」頁面嗎？請前往</translation>
 <translation id="6087960857463881712">開懷大笑</translation>
+<translation id="6088535503330933227">Chrome 正在研究如何防範垃圾廣告和欺詐行為，以及限制網站之間分享資訊的方法。Chrome 亦會<ph name="ESTIMATE_INTERESTS_LINK" />，並讓網站使用這些興趣來向您展示廣告。您可在設定中管理興趣。</translation>
 <translation id="608912389580139775">如要將網頁加入您的閱讀清單，請按一下「書籤」圖示</translation>
 <translation id="6091761513005122595">已成功連接共用裝置。</translation>
 <translation id="6093888419484831006">正在取消更新…</translation>

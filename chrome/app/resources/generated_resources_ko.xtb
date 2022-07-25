@@ -1289,7 +1289,6 @@
 <translation id="2191754378957563929">사용</translation>
 <translation id="2192505247865591433">웹 브라우저</translation>
 <translation id="2193365732679659387">신뢰 설정</translation>
-<translation id="2194554416429452547">무료 체험 기간 동안 Chrome에서는 스팸, 사기 및 사이트 간 공유를 제한하는 방법을 탐색합니다. 또한 Chrome의 <ph name="ESTIMATE_INTERESTS_LINK" />을 기반으로 사이트가 광고를 표시할 수 있습니다. 설정에서 관심분야를 관리할 수 있습니다.</translation>
 <translation id="2194856509914051091">고려사항</translation>
 <translation id="2195331105963583686">이후로도 이 <ph name="DEVICE_TYPE" /> 기기를 계속 사용할 수는 있지만, 소프트웨어 및 보안 업데이트를 자동으로 받을 수 없게 됩니다.</translation>
 <translation id="2195729137168608510">이메일 보호</translation>
@@ -5242,6 +5241,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6086846494333236931">관리자가 설치함</translation>
 <translation id="6087746524533454243">브라우저의 정보 페이지를 찾는다면 다음으로 이동하세요.</translation>
 <translation id="6087960857463881712">멋진 얼굴</translation>
+<translation id="6088535503330933227">Chrome에서는 광고 스팸, 사기 및 사이트 간 공유를 제한하는 방법을 연구합니다. 또한 Chrome은 사이트에서 광고를 표시하는 데 사용할 수 있는 <ph name="ESTIMATE_INTERESTS_LINK" />합니다. 설정에서 관심분야를 관리할 수 있습니다.</translation>
 <translation id="608912389580139775">읽기 목록에 이 페이지를 추가하려면 북마크 아이콘을 클릭하세요.</translation>
 <translation id="6091761513005122595">공유가 성공적으로 마운트되었습니다.</translation>
 <translation id="6093888419484831006">업데이트를 취소하는 중...</translation>
