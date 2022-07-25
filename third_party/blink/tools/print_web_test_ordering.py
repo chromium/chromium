@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 
 # Copyright (C) 2012 Google Inc. All rights reserved.
 #
@@ -63,10 +63,10 @@ def main(argv):
         })
 
     for worker in sorted(stats_by_worker.keys()):
-        print worker + ':'
+        print(worker + ':')
         for test in sorted(
                 stats_by_worker[worker], key=lambda test: test["number"]):
-            print test["name"]
+            print(test["name"])
         print
 
 
@@ -74,7 +74,7 @@ def convert_trie_to_flat_paths(trie, prefix=None):
     # Cloned from blinkpy.web_tests.layout_package.json_results_generator
     # so that this code can stand alone.
     result = {}
-    for name, data in trie.iteritems():
+    for name, data in trie.items():
         if prefix:
             name = prefix + "/" + name
         if "results" in data:
