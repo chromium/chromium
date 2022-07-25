@@ -82,6 +82,20 @@ GoogleServiceAuthError GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
 }
 
 // static
+GoogleServiceAuthError GoogleServiceAuthError::FromServiceUnavailable(
+    const std::string& error_message) {
+  return GoogleServiceAuthError(SERVICE_UNAVAILABLE, error_message);
+}
+
+// static
+GoogleServiceAuthError
+GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
+    const std::string& error_message) {
+  return GoogleServiceAuthError(SCOPE_LIMITED_UNRECOVERABLE_ERROR,
+                                error_message);
+}
+
+// static
 GoogleServiceAuthError GoogleServiceAuthError::FromServiceError(
     const std::string& error_message) {
   return GoogleServiceAuthError(SERVICE_ERROR, error_message);

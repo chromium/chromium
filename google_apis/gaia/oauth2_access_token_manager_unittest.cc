@@ -535,8 +535,7 @@ TEST_F(OAuth2AccessTokenManagerTest, OnAccessTokenFetchedCancelsRequests) {
   std::unique_ptr<OAuth2AccessTokenManager::Request> request(
       token_manager_.StartRequest(
           account_id_, OAuth2AccessTokenManager::ScopeSet(), &consumer_));
-  SimulateOAuthTokenResponse(GetValidTokenResponse("token", 3600),
-                             net::HTTP_BAD_REQUEST);
+  SimulateOAuthTokenResponse("", net::HTTP_BAD_REQUEST);
   run_loop.Run();
 }
 

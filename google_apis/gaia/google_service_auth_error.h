@@ -125,6 +125,12 @@ class GoogleServiceAuthError {
   static GoogleServiceAuthError FromInvalidGaiaCredentialsReason(
       InvalidGaiaCredentialsReason reason);
 
+  static GoogleServiceAuthError FromServiceUnavailable(
+      const std::string& error_message);
+
+  static GoogleServiceAuthError FromScopeLimitedUnrecoverableError(
+      const std::string& error_message);
+
   // Construct a SERVICE_ERROR error, e.g. invalid client ID, with an
   // |error_message| which provides more information about the service error.
   static GoogleServiceAuthError FromServiceError(

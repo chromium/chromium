@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
@@ -24,6 +25,9 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
+const base::Feature kParseOauth2ErrorCode{"ParseOAuth2ErrorCode",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
 constexpr char kGetAccessTokenBodyFormat[] =
     "client_id=%s&"
     "client_secret=%s&"
@@ -184,18 +188,20 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
 
   int response_code = url_loader_->ResponseInfo()->headers->response_code();
   RecordResponseCodeUma(response_code);
-
   std::string response_str = response_body ? *response_body : "";
+
   if (response_code == net::HTTP_OK) {
     OAuth2AccessTokenConsumer::TokenResponse token_response;
     if (ParseGetAccessTokenSuccessResponse(response_str, &token_response)) {
       RecordOAuth2Response(OAuth2Response::kOk);
       OnGetTokenSuccess(token_response);
     } else {
+      // Successful (net::HTTP_OK) unexpected format is considered as a
+      // transient error.
       DLOG(WARNING) << "Response doesn't match expected format";
       RecordOAuth2Response(OAuth2Response::kOkUnexpectedFormat);
       OnGetTokenFailure(
-          GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+          GoogleServiceAuthError::FromServiceUnavailable(response_str));
     }
     return;
   }
@@ -205,52 +211,81 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
   ParseGetAccessTokenFailureResponse(response_str, &oauth2_error);
   OAuth2Response response = OAuth2ResponseErrorToOAuth2Response(oauth2_error);
   RecordOAuth2Response(response);
+  absl::optional<GoogleServiceAuthError> error;
+  if (base::FeatureList::IsEnabled(kParseOauth2ErrorCode)) {
+    switch (response) {
+      case kOk:
+      case kOkUnexpectedFormat:
+        NOTREACHED();
+        break;
 
-  switch (response_code) {
-    case net::HTTP_OK:
-      NOTREACHED();
-      break;
-    case net::HTTP_PROXY_AUTHENTICATION_REQUIRED:
-      NOTREACHED() << "HTTP 407 should be treated as a network error.";
-      // If this ever happens in production, we treat it as a temporary error as
-      // it is similar to a network error.
-      OnGetTokenFailure(
-          GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
-      return;
-    case net::HTTP_FORBIDDEN:
-      // HTTP_FORBIDDEN (403) is treated as temporary error, because it may be
-      // '403 Rate Limit Exeeded.'
-      OnGetTokenFailure(
-          GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
-      return;
-    case net::HTTP_BAD_REQUEST: {
-      // HTTP_BAD_REQUEST (400) usually contains error as per
-      // http://tools.ietf.org/html/rfc6749#section-5.2.
-      OnGetTokenFailure(
-          response == kInvalidGrant
-              ? GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                    GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                        CREDENTIALS_REJECTED_BY_SERVER)
-              : GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_ERROR));
-      return;
-    }
-    default: {
-      if (response_code >= net::HTTP_INTERNAL_SERVER_ERROR) {
-        // 5xx is always treated as transient.
-        OnGetTokenFailure(GoogleServiceAuthError(
-            GoogleServiceAuthError::SERVICE_UNAVAILABLE));
-      } else {
-        // The other errors are treated as permanent error.
-        DLOG(ERROR) << "Unexpected persistent error: http_status="
-                    << response_code;
-        OnGetTokenFailure(
-            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                    CREDENTIALS_REJECTED_BY_SERVER));
-      }
-      return;
+      case kRateLimitExceeded:
+      case kInternalFailure:
+        // Transient error.
+        error = GoogleServiceAuthError::FromServiceUnavailable(response_str);
+        break;
+
+      case kInvalidGrant:
+        // Persistent error requiring the user to sign in again.
+        error = GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_SERVER);
+        break;
+
+      case kInvalidScope:
+      case kRestrictedClient:
+        // Scope persistent error that can't be fixed by user action.
+        error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableError(
+            response_str);
+        break;
+
+      case kInvalidRequest:
+      case kInvalidClient:
+      case kUnauthorizedClient:
+      case kUnsuportedGrantType:
+        DLOG(ERROR) << "Unexpected persistent error: error code = "
+                    << oauth2_error;
+        error = GoogleServiceAuthError::FromServiceError(response_str);
+        break;
+
+      case kUnknownError:
+      case kErrorUnexpectedFormat:
+        // Failed request with unknown error code or unexpected format is
+        // treated as a persistent error case.
+        DLOG(ERROR) << "Unexpected error/format: error code = " << oauth2_error;
+        break;
     }
   }
+
+  if (!error.has_value()) {
+    // Fallback to http status code.
+    if (response_code == net::HTTP_OK) {
+      NOTREACHED();
+    } else if (response_code == net::HTTP_FORBIDDEN ||
+               response_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED ||
+               response_code >= net::HTTP_INTERNAL_SERVER_ERROR) {
+      // HTTP_FORBIDDEN (403): is treated as transient error, because it may be
+      //                       '403 Rate Limit Exeeded.'
+      // HTTP_PROXY_AUTHENTICATION_REQUIRED (407): is treated as a network error
+      // HTTP_INTERNAL_SERVER_ERROR: 5xx is always treated as transient.
+      error = GoogleServiceAuthError::FromServiceUnavailable(response_str);
+    } else {
+      // HTTP_BAD_REQUEST (400) or other response codes are treated as
+      // persistent errors.
+      // HTTP_BAD_REQUEST errors usually contains errors as per
+      // http://tools.ietf.org/html/rfc6749#section-5.2.
+      if (response == kInvalidGrant) {
+        error = GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_SERVER);
+      } else {
+        error = GoogleServiceAuthError::FromServiceError(response_str);
+      }
+    }
+  }
+
+  if (error.has_value())
+    OnGetTokenFailure(error.value());
 }
 
 void OAuth2AccessTokenFetcherImpl::OnGetTokenSuccess(
