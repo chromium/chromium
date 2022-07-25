@@ -138,20 +138,43 @@ std::string DebugStringImpl(ValueView value) {
   return json;
 }
 
-// This set of overloads are used to unwrap arguments from the reference
-// wrapper, and are used by ValueView when visiting its members and cloning
-// them.
-template <typename T>
-const T& UnwrapReference(std::reference_wrapper<const T> value) {
-  return value.get();
-}
-
-template <typename T>
-const T& UnwrapReference(const T& value) {
-  return value;
-}
-
 }  // namespace
+
+// A helper used to provide templated functions for cloning to Value, and
+// ValueView. This private class is used so the cloning method may have access
+// to the special private constructors in Value, created specifically for
+// cloning.
+class Value::CloningHelper {
+ public:
+  // This set of overloads are used to unwrap the reference wrappers, which are
+  // presented when cloning a ValueView.
+  template <typename T>
+  static const T& UnwrapReference(std::reference_wrapper<const T> value) {
+    return value.get();
+  }
+
+  template <typename T>
+  static const T& UnwrapReference(const T& value) {
+    return value;
+  }
+
+  // Returns a new Value object using the contents of the |storage| variant.
+  template <typename Storage>
+  static Value Clone(const Storage& storage) {
+    return absl::visit(
+        [](const auto& member) {
+          const auto& value = UnwrapReference(member);
+          using T = std::decay_t<decltype(value)>;
+          if constexpr (std::is_same_v<T, Value::Dict> ||
+                        std::is_same_v<T, Value::List>) {
+            return Value(value.Clone());
+          } else {
+            return Value(value);
+          }
+        },
+        storage);
+  }
+};
 
 // static
 Value Value::FromUniquePtrValue(std::unique_ptr<Value> val) {
@@ -275,7 +298,7 @@ Value::DoubleStorage::DoubleStorage(double v) : v_(bit_cast<decltype(v_)>(v)) {
 }
 
 Value Value::Clone() const {
-  return ValueView(*this).ToValue();
+  return CloningHelper::Clone(data_);
 }
 
 Value::~Value() = default;
@@ -1786,19 +1809,8 @@ ValueView::ValueView(const Value& value)
     : data_view_(
           value.Visit([](const auto& member) { return ViewType(member); })) {}
 
-base::Value ValueView::ToValue() const {
-  return absl::visit(
-      [](const auto& member) {
-        const auto& value = UnwrapReference(member);
-        using T = std::decay_t<decltype(value)>;
-        if constexpr (std::is_same_v<T, Value::Dict> ||
-                      std::is_same_v<T, Value::List>) {
-          return Value(value.Clone());
-        } else {
-          return Value(value);
-        }
-      },
-      data_view_);
+Value ValueView::ToValue() const {
+  return Value::CloningHelper::Clone(data_view_);
 }
 
 ValueSerializer::~ValueSerializer() = default;

@@ -1236,6 +1236,9 @@ class BASE_EXPORT GSL_OWNER Value {
   explicit Value(absl::monostate);
   explicit Value(DoubleStorage storage);
 
+  // A helper for static functions used for cloning a Value or a ValueView.
+  class CloningHelper;
+
   absl::variant<absl::monostate,
                 bool,
                 int,
