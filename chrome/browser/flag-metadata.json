@@ -3593,7 +3593,7 @@
   {
     "name": "forced-colors",
     "owners": [ "almaher@microsoft.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 108
   },
   {
     "name": "fractional-scroll-offsets",
