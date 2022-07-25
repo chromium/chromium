@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
+#include "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom-blink.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
@@ -68,6 +69,8 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
   void DeleteSurroundingTextInCodePoints(int32_t before,
                                          int32_t after) override;
   void SetEditableSelectionOffsets(int32_t start, int32_t end) override;
+  void HandleStylusWritingGestureAction(
+      mojom::blink::StylusWritingGestureDataPtr gesture_data) override;
   void ExecuteEditCommand(const String& command, const String& value) override;
   void Undo() override;
   void Redo() override;

@@ -42,6 +42,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.EventType;
 import org.chromium.blink.mojom.FocusType;
+import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.blink_public.web.WebInputEventModifier;
 import org.chromium.blink_public.web.WebTextInputMode;
 import org.chromium.content.browser.GestureListenerManagerImpl;
@@ -66,6 +67,7 @@ import org.chromium.ui.mojom.VirtualKeyboardVisibilityRequest;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -1086,6 +1088,21 @@ public class ImeAdapterImpl
                             gestureListenerManager.resetGestureDetection();
                         }
                     }
+
+                    @Override
+                    public void handleStylusWritingGestureAction(
+                            StylusWritingGestureData gestureData) {
+                        if (mNativeImeAdapterAndroid == 0) return;
+                        int contentOffsetY =
+                                (int) mWebContents.getRenderCoordinates().getContentOffsetYPix();
+                        gestureData.startPoint.y -= contentOffsetY;
+                        if (gestureData.endPoint != null) {
+                            gestureData.endPoint.y -= contentOffsetY;
+                        }
+                        ImeAdapterImplJni.get().handleStylusWritingGestureAction(
+                                mNativeImeAdapterAndroid, ImeAdapterImpl.this,
+                                gestureData.serialize());
+                    }
                 });
     }
 
@@ -1313,5 +1330,8 @@ public class ImeAdapterImpl
         void requestCursorUpdate(long nativeImeAdapterAndroid, ImeAdapterImpl caller,
                 boolean immediateRequest, boolean monitorRequest);
         void advanceFocusForIME(long nativeImeAdapterAndroid, ImeAdapterImpl caller, int focusType);
+        // Stylus Writing
+        void handleStylusWritingGestureAction(
+                long nativeImeAdapterAndroid, ImeAdapterImpl caller, ByteBuffer gestureData);
     }
 }

@@ -6,6 +6,8 @@ package org.chromium.content_public.browser;
 
 import android.view.View;
 
+import org.chromium.blink.mojom.StylusWritingGestureData;
+
 /**
  * This interface implements the IME functionality like committing text, showing or hiding soft
  * keyboard, handling writing gestures, etc. for the Stylus handwriting feature. These APIs are
@@ -61,4 +63,13 @@ public interface StylusWritingImeCallback {
      * handling the touch events.
      */
     void resetGestureDetection();
+
+    /**
+     * Handle the action for gestures recognized by stylus writing service.
+     *
+     * @param gestureData the gesture data object that contains information regarding gesture type,
+     *                    gesture coordinates, text to insert, alternative text to insert when the
+     *                    gesture is invalid in current input, as applicable wrt gesture type.
+     */
+    void handleStylusWritingGestureAction(StylusWritingGestureData gestureData);
 }

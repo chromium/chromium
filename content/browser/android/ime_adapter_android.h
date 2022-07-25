@@ -97,6 +97,10 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
                            bool monitorRequest);
   bool RequestTextInputStateUpdate(JNIEnv*,
                                    const base::android::JavaParamRef<jobject>&);
+  void HandleStylusWritingGestureAction(
+      JNIEnv*,
+      const base::android::JavaParamRef<jobject>&,
+      const base::android::JavaParamRef<jobject>&);
 
   // RendetWidgetHostConnector implementation.
   void UpdateRenderProcessConnection(

@@ -145,6 +145,17 @@ void FrameWidgetInputHandlerImpl::SetEditableSelectionOffsets(int32_t start,
       widget_, main_thread_frame_widget_input_handler_, start, end));
 }
 
+void FrameWidgetInputHandlerImpl::HandleStylusWritingGestureAction(
+    mojom::blink::StylusWritingGestureDataPtr gesture_data) {
+  RunOnMainThread(base::BindOnce(
+      [](base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler,
+         mojom::blink::StylusWritingGestureDataPtr gesture_data) {
+        if (handler)
+          handler->HandleStylusWritingGestureAction(std::move(gesture_data));
+      },
+      main_thread_frame_widget_input_handler_, std::move(gesture_data)));
+}
+
 void FrameWidgetInputHandlerImpl::ExecuteEditCommand(const String& command,
                                                      const String& value) {
   RunOnMainThread(base::BindOnce(

@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
+#include "third_party/blink/renderer/core/editing/ime/stylus_writing_gesture.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
@@ -547,6 +548,14 @@ void WebFrameWidgetImpl::OnStartStylusWriting(
   }
 
   std::move(callback).Run(absl::nullopt, absl::nullopt);
+}
+
+void WebFrameWidgetImpl::HandleStylusWritingGestureAction(
+    mojom::blink::StylusWritingGestureDataPtr gesture_data) {
+  LocalFrame* focused_frame = FocusedLocalFrameInWidget();
+  if (!focused_frame)
+    return;
+  StylusWritingGesture::ApplyGesture(focused_frame, std::move(gesture_data));
 }
 
 void WebFrameWidgetImpl::SetBackgroundOpaque(bool opaque) {

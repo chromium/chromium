@@ -16,6 +16,7 @@ import "third_party/blink/public/mojom/input/pointer_lock_result.mojom";
 import "third_party/blink/public/mojom/input/touch_event.mojom";
 import "third_party/blink/public/mojom/selection_menu/selection_menu_behavior.mojom";
 import "ui/base/ime/mojom/ime_types.mojom";
+import "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom";
 import "ui/events/mojom/event.mojom";
 import "ui/events/mojom/event_constants.mojom";
 import "ui/events/mojom/scroll_granularity.mojom";
@@ -299,6 +300,9 @@ interface FrameWidgetInputHandler {
   // Selects between the given start and end offsets in the currently focused
   // editable field.
   SetEditableSelectionOffsets(int32 start, int32 end);
+
+  // Stylus Writing - perform Gesture action in input using gesture data.
+  HandleStylusWritingGestureAction(blink.mojom.StylusWritingGestureData gesture_data);
 
   // Message payload is the name/value of a WebCore edit command to execute.
   ExecuteEditCommand(string command, mojo_base.mojom.String16? value);
