@@ -149,8 +149,11 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kInsecureContext:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           InsecureContext;
-    case AttributionReportingIssueType::kInvalidHeader:
+    case AttributionReportingIssueType::kInvalidRegisterSourceHeader:
       return protocol::Audits::AttributionReportingIssueTypeEnum::InvalidHeader;
+    case AttributionReportingIssueType::kInvalidRegisterTriggerHeader:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidRegisterTriggerHeader;
   }
 }
 

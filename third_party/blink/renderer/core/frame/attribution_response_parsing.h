@@ -20,7 +20,6 @@ class uint128;
 namespace blink {
 
 class JSONValue;
-class ResourceResponse;
 
 namespace attribution_response_parsing {
 
@@ -107,11 +106,6 @@ CORE_EXPORT bool ParseAttributionAggregatableTriggerData(
 CORE_EXPORT bool ParseAttributionAggregatableValues(
     const JSONValue* json,
     WTF::HashMap<String, uint32_t>& values);
-
-// Returns the attribution trigger data parsed from the response. Returns
-// `nullptr` in case of error.
-mojom::blink::AttributionTriggerDataPtr ParseAttributionTriggerData(
-    const ResourceResponse& response);
 
 }  // namespace attribution_response_parsing
 

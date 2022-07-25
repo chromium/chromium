@@ -19,8 +19,6 @@
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
-#include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -510,25 +508,6 @@ bool ParseTriggerRegistrationHeader(
     trigger_data.debug_key = ParseDebugKey(s);
 
   return true;
-}
-
-mojom::blink::AttributionTriggerDataPtr ParseAttributionTriggerData(
-    const ResourceResponse& response) {
-  auto trigger_data = mojom::blink::AttributionTriggerData::New();
-
-  // Verify the current url is trustworthy and capable of registering triggers.
-  scoped_refptr<const SecurityOrigin> reporting_origin =
-      SecurityOrigin::Create(response.CurrentRequestUrl());
-  if (!reporting_origin->IsPotentiallyTrustworthy())
-    return nullptr;
-  trigger_data->reporting_origin = std::move(reporting_origin);
-
-  const AtomicString& trigger_json = response.HttpHeaderField(
-      http_names::kAttributionReportingRegisterTrigger);
-  if (!ParseTriggerRegistrationHeader(trigger_json, *trigger_data))
-    return nullptr;
-
-  return trigger_data;
 }
 
 }  // namespace blink::attribution_response_parsing

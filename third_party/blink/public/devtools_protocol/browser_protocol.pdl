@@ -705,7 +705,9 @@ experimental domain Audits
       AttributionUntrustworthyOrigin
       UntrustworthyReportingOrigin
       InsecureContext
+      # TODO(apaseltiner): Rename this to InvalidRegisterSourceHeader
       InvalidHeader
+      InvalidRegisterTriggerHeader
 
   # Details for issues around "Attribution Reporting API" usage.
   # Explainer: https://github.com/WICG/attribution-reporting-api

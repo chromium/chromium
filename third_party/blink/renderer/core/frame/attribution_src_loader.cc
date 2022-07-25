@@ -175,7 +175,8 @@ class AttributionSrcLoader::ResourceClient
  private:
   void HandleSourceRegistration(const ResourceResponse& response,
                                 uint64_t request_id);
-  void HandleTriggerRegistration(const ResourceResponse& response);
+  void HandleTriggerRegistration(const ResourceResponse& response,
+                                 uint64_t request_id);
 
   // RawResourceClient:
   String DebugName() const override;
@@ -509,7 +510,7 @@ void AttributionSrcLoader::ResourceClient::HandleResponseHeaders(
   if (can_process_trigger &&
       headers.Contains(http_names::kAttributionReportingRegisterTrigger)) {
     type_ = SrcType::kTrigger;
-    HandleTriggerRegistration(response);
+    HandleTriggerRegistration(response, request_id);
   }
 }
 
@@ -524,6 +525,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
   // Verify the current url is trustworthy and capable of registering sources.
   scoped_refptr<const SecurityOrigin> reporting_origin =
       SecurityOrigin::Create(response.CurrentRequestUrl());
+  // TODO(apaseltiner): Report DevTools issue if this fails.
   if (!reporting_origin->IsPotentiallyTrustworthy())
     return;
   source_data->reporting_origin = std::move(reporting_origin);
@@ -534,7 +536,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
   if (!attribution_response_parsing::ParseSourceRegistrationHeader(
           source_json, *source_data)) {
     LogAuditIssue(loader_->local_frame_->DomWindow(),
-                  AttributionReportingIssueType::kInvalidHeader,
+                  AttributionReportingIssueType::kInvalidRegisterSourceHeader,
                   /*element=*/nullptr, request_id,
                   /*invalid_parameter=*/source_json);
     return;
@@ -544,15 +546,30 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
 }
 
 void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
-    const ResourceResponse& response) {
+    const ResourceResponse& response,
+    uint64_t request_id) {
   DCHECK_EQ(type_, SrcType::kTrigger);
 
-  // TODO(apaseltiner): Report DevTools issue(s) if this fails.
-  mojom::blink::AttributionTriggerDataPtr trigger_data =
-      attribution_response_parsing::ParseAttributionTriggerData(response);
+  auto trigger_data = mojom::blink::AttributionTriggerData::New();
 
-  if (!trigger_data)
+  // Verify the current url is trustworthy and capable of registering triggers.
+  scoped_refptr<const SecurityOrigin> reporting_origin =
+      SecurityOrigin::Create(response.CurrentRequestUrl());
+  // TODO(apaseltiner): Report DevTools issue if this fails.
+  if (!reporting_origin->IsPotentiallyTrustworthy())
     return;
+  trigger_data->reporting_origin = std::move(reporting_origin);
+
+  const AtomicString& trigger_json = response.HttpHeaderField(
+      http_names::kAttributionReportingRegisterTrigger);
+  if (!attribution_response_parsing::ParseTriggerRegistrationHeader(
+          trigger_json, *trigger_data)) {
+    LogAuditIssue(loader_->local_frame_->DomWindow(),
+                  AttributionReportingIssueType::kInvalidRegisterTriggerHeader,
+                  /*element=*/nullptr, request_id,
+                  /*invalid_parameter=*/trigger_json);
+    return;
+  }
 
   data_host_->TriggerDataAvailable(std::move(trigger_data));
 }
