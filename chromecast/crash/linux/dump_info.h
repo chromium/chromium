@@ -68,7 +68,7 @@ class DumpInfo {
   //   "build_number": <build_number>
   //   "reason": <reason>
   // }
-  std::unique_ptr<base::Value> GetAsValue() const;
+  base::Value GetAsValue() const;
   const MinidumpParams& params() const { return params_; }
   bool valid() const { return valid_; }
 
