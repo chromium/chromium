@@ -21,7 +21,6 @@ preprocessed_folder = "preprocessed"
 web_components_manifest = "web_components_manifest.json"
 non_web_component_files_manifest = "non_web_component_files_manifest.json"
 browser_settings_tsc_manifest = "browser_settings_tsc_manifest.json"
-mojo_manifest = "mojo_manifest.json"
 mojo_webui_manifest = "mojo_webui_manifest.json"
 external_mojo_manifest = "external_mojo_manifest.json"
 
@@ -44,7 +43,6 @@ if (optimize_webui) {
 
     deps = [
       ":preprocess_browser_settings_tsc",
-      ":preprocess_mojo",
       ":preprocess_mojo_webui",
       ":preprocess_non_web_component_files",
       ":preprocess_web_components",
@@ -95,20 +93,6 @@ if (optimize_webui) {
       "os_apps_page/app_notification_handler.mojom-lite.js",
     ]
   }
-}
-
-# OS Settings specific mojo files, bundled in optimized builds.
-# TODO(crbug.com/1179821) remove this build rule once these lite bindings
-# have been converted to WebUI bindings
-preprocess_if_expr("preprocess_mojo") {
-  deps = [ "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js" ]
-  in_folder = get_path_info("../../../ui/webui/settings/chromeos/", "gen_dir")
-  out_folder = "$target_gen_dir/$preprocessed_folder"
-  out_manifest = "$target_gen_dir/$mojo_manifest"
-  in_files = [
-    "constants/routes.mojom-lite.js",
-    "constants/setting.mojom-lite.js",
-  ]
 }
 
 # Preprocess all WebUI mojom files, which are bundled in optimized builds.
@@ -293,7 +277,6 @@ generate_grd("build_grd") {
   } else {
     deps += [
       ":preprocess_browser_settings_tsc",
-      ":preprocess_mojo",
       ":preprocess_mojo_webui",
       ":preprocess_non_web_component_files",
       ":preprocess_web_components",
@@ -305,7 +288,6 @@ generate_grd("build_grd") {
       "$target_gen_dir/$web_components_manifest",
       "$target_gen_dir/$non_web_component_files_manifest",
       "$target_gen_dir/$browser_settings_tsc_manifest",
-      "$target_gen_dir/$mojo_manifest",
       "$target_gen_dir/$mojo_webui_manifest",
     ]
     resource_path_rewrites += [ "chromeos/os_settings.html|os_settings.html" ]

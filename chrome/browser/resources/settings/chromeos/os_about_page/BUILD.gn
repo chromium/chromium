@@ -97,10 +97,6 @@ js_library("os_about_page") {
     "..:route_observer_behavior",
     "../..:router",
     "../os_settings_page:main_page_behavior",
-
-    # TODO(crbug.com/1179821) Remove this dependency when os_about_page
-    # no longer uses the global namespace "chromeos.settings.mojom"
-    "//chrome/browser/ui/webui/settings/chromeos/constants:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",

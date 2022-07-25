@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OpenWindowProxyImpl, PersonalizationSearchMojom, Router, routes, SearchMojom, SearchResultIconMojom, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, setUserActionRecorderForTesting, UserActionRecorderMojom} from 'chrome://os-settings/chromeos/os_settings.js';
+import {OpenWindowProxyImpl, PersonalizationSearchMojom, Router, routes, RoutesConstantsMojom, SearchMojom, SearchResultIconMojom, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, SettingConstantsMojom, setUserActionRecorderForTesting, UserActionRecorderMojom} from 'chrome://os-settings/chromeos/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise} from 'chrome://test/test_util.js';
@@ -137,9 +137,9 @@ suite('OSSettingsSearchBox', () => {
           true :
           wasGeneratedFromTextMatch,
       id: {
-        section: chromeos.settings.mojom.Section.MIN_VALUE,
-        subpage: chromeos.settings.mojom.Subpage.MIN_VALUE,
-        setting: chromeos.settings.mojom.Setting.MIN_VALUE,
+        section: RoutesConstantsMojom.Section.MIN_VALUE,
+        subpage: RoutesConstantsMojom.Subpage.MIN_VALUE,
+        setting: SettingConstantsMojom.Setting.MIN_VALUE,
       },
       type: SearchMojom.SearchResultType.MIN_VALUE,
       relevanceScore: typeof relevanceScore === 'number' ?
@@ -497,7 +497,7 @@ suite('OSSettingsSearchBox', () => {
 
         const result =
             fakeSettingsResult('Wallpaper', 'personalization?settingId=500');
-        result.id.setting = chromeos.settings.mojom.Setting.kOpenWallpaper;
+        result.id.setting = SettingConstantsMojom.Setting.kOpenWallpaper;
 
         settingsSearchHandler.setFakeResults([result]);
         await simulateSearch('fake query 2');
