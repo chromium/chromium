@@ -35,7 +35,7 @@ public class PureJavaExceptionReporterTest {
         private File mMinidump;
 
         public TestPureJavaExceptionReporter() {
-            super(mTestRule.getCacheDir());
+            super(mTestRule.getCacheDir(), /*attachLogcat=*/true);
         }
 
         @Override

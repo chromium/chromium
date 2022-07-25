@@ -67,9 +67,11 @@ public abstract class PureJavaExceptionReporter
 
     // The top level directory where all crash related files are stored.
     protected final File mCrashFilesDirectory;
+    private boolean mAttachLogcat;
 
-    public PureJavaExceptionReporter(File crashFilesDirectory) {
+    public PureJavaExceptionReporter(File crashFilesDirectory, boolean attachLogcat) {
         mCrashFilesDirectory = crashFilesDirectory;
+        mAttachLogcat = attachLogcat;
     }
 
     @Override
@@ -185,8 +187,11 @@ public abstract class PureJavaExceptionReporter
 
     private void uploadReport() {
         if (mMinidumpFile == null || !mUpload) return;
-        LogcatCrashExtractor logcatExtractor = new LogcatCrashExtractor();
-        mMinidumpFile = logcatExtractor.attachLogcatToMinidump(mMinidumpFile);
+        if (mAttachLogcat) {
+            LogcatCrashExtractor logcatExtractor = new LogcatCrashExtractor();
+            mMinidumpFile = logcatExtractor.attachLogcatToMinidump(
+                    mMinidumpFile, new CrashFileManager(mCrashFilesDirectory));
+        }
         uploadMinidump(mMinidumpFile);
     }
 

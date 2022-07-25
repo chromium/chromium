@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.crash;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.components.crash.LogcatCrashExtractor;
+import org.chromium.components.minidump_uploader.CrashFileManager;
 
 import java.io.File;
 
@@ -41,7 +43,8 @@ public class LogcatExtractionRunnable implements Runnable {
 
     @Override
     public void run() {
-        File fileToUpload = mLogcatExtractor.attachLogcatToMinidump(mMinidumpFile);
+        File fileToUpload = mLogcatExtractor.attachLogcatToMinidump(mMinidumpFile,
+                new CrashFileManager(ContextUtils.getApplicationContext().getCacheDir()));
         uploadMinidump(fileToUpload, false);
     }
 
