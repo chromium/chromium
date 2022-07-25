@@ -56,10 +56,6 @@ constexpr char kLeadingWrapper[] = R"(
   }
 
   (async () => {
-
-  // Keep the next empty line. The JS flow script should be concatenated
-  // without leading spaces.
-
 )";
 
 // The code inserted after the JS flow. This closes and executes the arrow
@@ -77,8 +73,8 @@ constexpr int CountLines(base::StringPiece str) {
 }
 
 // The number of lines to subtract from all call stack entries sent to the
-// backend.
-constexpr int kJsLineOffset = CountLines(kLeadingWrapper);
+// backend. We add one line to the wrapper in CreateWrappedJsFlow.
+constexpr int kJsLineOffset = CountLines(kLeadingWrapper) + 1;
 
 constexpr char kArrayGetNthElement[] =
     "function(index) { return this[index]; }";
@@ -144,6 +140,31 @@ void JsFlowExecutorImpl::Start(
       &JsFlowExecutorImpl::InternalStart, weak_ptr_factory_.GetWeakPtr()));
 }
 
+// Wraps the main js_flow in an async function as well as making
+// runNativeAction, client constants (e.g. LINE_OFFSET) available to the flow.
+std::string CreateWrappedJsFlow(const std::string& js_flow) {
+  return base::StrCat(
+      {// The leading wrapper contains the runNativeAction
+       // function as well as the first part of the anonymous
+       // function call that will wrap the js flow.
+       kLeadingWrapper,
+       // The line offset constant. Since compile time string
+       // concatenation is not straightforward we add it here.
+       "const LINE_OFFSET = ", base::NumberToString(kJsLineOffset), ";",
+       // New line so the js flow starts from the first column.
+       // Added to kJsLineOffset.
+       "\n",
+       // The js flow to execute.
+       js_flow,
+       // The trailing wrapper closes and executes the anonymous
+       // function from the leading wrapper.
+       kTrailingWrapper,
+       // Devtools source url comment so we can identity this
+       // snippet.
+       js_flow_util::GetDevtoolsSourceUrlCommentToAppend(
+           UnexpectedErrorInfoProto::JS_FLOW)});
+}
+
 void JsFlowExecutorImpl::InternalStart(const ClientStatus& status,
                                        DevtoolsClient* devtools_client,
                                        const int isolated_world_context_id) {
@@ -161,13 +182,7 @@ void JsFlowExecutorImpl::InternalStart(const ClientStatus& status,
   // the flow may fulfill to request execution of a native action.
   RefreshNativeActionPromise();
 
-  // Wrap the main js_flow in an async function containing a method to
-  // request native actions. This is essentially providing |js_flow| with a
-  // JS API to call native functionality. Also appends the source url.
-  const auto wrapped_js_flow =
-      base::StrCat({kLeadingWrapper, *js_flow_, kTrailingWrapper,
-                    js_flow_util::GetDevtoolsSourceUrlCommentToAppend(
-                        UnexpectedErrorInfoProto::JS_FLOW)});
+  const auto wrapped_js_flow = CreateWrappedJsFlow(*js_flow_);
 
   Metrics::RecordJsFlowStartedEvent(
       Metrics::JsFlowStartedEvent::SCRIPT_STARTED);
