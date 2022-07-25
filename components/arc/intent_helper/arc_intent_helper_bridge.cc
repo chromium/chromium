@@ -276,7 +276,6 @@ void ArcIntentHelperBridge::LaunchCameraApp(uint32_t intent_id,
                                             int32_t task_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  base::DictionaryValue intent_info;
   std::string mode_str =
       mode == arc::mojom::CameraIntentMode::PHOTO ? "photo" : "video";
 
@@ -433,8 +432,8 @@ void ArcIntentHelperBridge::SendNewCaptureBroadcast(bool is_video,
   std::string action =
       is_video ? "org.chromium.arc.intent_helper.ACTION_SEND_NEW_VIDEO"
                : "org.chromium.arc.intent_helper.ACTION_SEND_NEW_PICTURE";
-  base::DictionaryValue value;
-  value.SetString("file_path", file_path);
+  base::Value::Dict value;
+  value.Set("file_path", file_path);
   std::string extras;
   base::JSONWriter::Write(value, &extras);
 
