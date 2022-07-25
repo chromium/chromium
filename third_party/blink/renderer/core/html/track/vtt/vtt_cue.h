@@ -179,7 +179,7 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
   double CalculateComputedTextPosition() const;
   AlignSetting CalculateComputedCueAlignment() const;
 
-  enum CueSetting {
+  enum class CueSetting {
     kNone,
     kVertical,
     kLine,

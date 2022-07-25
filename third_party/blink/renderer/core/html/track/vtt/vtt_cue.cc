@@ -788,24 +788,25 @@ void VTTCue::UpdateDisplay(HTMLDivElement& container) {
 }
 
 VTTCue::CueSetting VTTCue::SettingName(VTTScanner& input) const {
-  CueSetting parsed_setting = kNone;
-  if (input.Scan("vertical"))
-    parsed_setting = kVertical;
-  else if (input.Scan("line"))
-    parsed_setting = kLine;
-  else if (input.Scan("position"))
-    parsed_setting = kPosition;
-  else if (input.Scan("size"))
-    parsed_setting = kSize;
-  else if (input.Scan("align"))
-    parsed_setting = kAlign;
-  else if (RuntimeEnabledFeatures::WebVTTRegionsEnabled() &&
-           input.Scan("region"))
-    parsed_setting = kRegionId;
+  CueSetting parsed_setting = CueSetting::kNone;
+  if (input.Scan("vertical")) {
+    parsed_setting = CueSetting::kVertical;
+  } else if (input.Scan("line")) {
+    parsed_setting = CueSetting::kLine;
+  } else if (input.Scan("position")) {
+    parsed_setting = CueSetting::kPosition;
+  } else if (input.Scan("size")) {
+    parsed_setting = CueSetting::kSize;
+  } else if (input.Scan("align")) {
+    parsed_setting = CueSetting::kAlign;
+  } else if (RuntimeEnabledFeatures::WebVTTRegionsEnabled() &&
+             input.Scan("region")) {
+    parsed_setting = CueSetting::kRegionId;
+  }
   // Verify that a ':' follows.
-  if (parsed_setting != kNone && input.Scan(':'))
+  if (parsed_setting != CueSetting::kNone && input.Scan(':'))
     return parsed_setting;
-  return kNone;
+  return CueSetting::kNone;
 }
 
 static bool ScanPercentage(VTTScanner& input, double& number) {
@@ -865,7 +866,7 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
     // 4. Run the appropriate substeps that apply for the value of name, as
     //    follows:
     switch (name) {
-      case kVertical: {
+      case CueSetting::kVertical: {
         // If name is a case-sensitive match for "vertical"
         // 1. If value is a case-sensitive match for the string "rl", then
         //    let cue's WebVTT cue writing direction be vertical
@@ -880,7 +881,7 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
           writing_direction_ = WritingDirection::kVerticalGrowingRight;
         break;
       }
-      case kLine: {
+      case CueSetting::kLine: {
         // If name is a case-sensitive match for "line"
         // Steps 1 - 2 skipped.
         double number;
@@ -936,7 +937,7 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
         // Steps 7 - 9 skipped.
         break;
       }
-      case kPosition: {
+      case CueSetting::kPosition: {
         // If name is a case-sensitive match for "position".
         double number;
         // Steps 1 - 2 skipped.
@@ -953,7 +954,7 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
         // Steps 5 - 7 skipped.
         break;
       }
-      case kSize: {
+      case CueSetting::kSize: {
         // If name is a case-sensitive match for "size"
         double number;
         // 1. If parse a percentage string from value doesn't fail, let
@@ -967,7 +968,7 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
         cue_size_ = number;
         break;
       }
-      case kAlign: {
+      case CueSetting::kAlign: {
         // If name is a case-sensitive match for "align"
         // 1. If value is a case-sensitive match for the string "start",
         //    then let cue's WebVTT cue text alignment be start alignment.
@@ -995,13 +996,13 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
           cue_alignment_ = AlignSetting::kRight;
         break;
       }
-      case kRegionId:
+      case CueSetting::kRegionId:
         if (region_map) {
           auto it = region_map->find(input.ExtractString(value_run));
           region_ = it != region_map->end() ? it->value : nullptr;
         }
         break;
-      case kNone:
+      case CueSetting::kNone:
         break;
     }
 
