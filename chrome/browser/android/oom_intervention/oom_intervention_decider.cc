@@ -137,18 +137,18 @@ void OomInterventionDecider::OnPrefInitialized(bool success) {
     return;
 
   // Migrate `kBlacklist` to `kBlocklist`.
-  auto* old_pref_value = prefs_->GetList(kBlacklist);
-  if (!old_pref_value->GetListDeprecated().empty()) {
-    prefs_->Set(kBlocklist, *old_pref_value);
+  const base::Value::List& old_pref_value = prefs_->GetValueList(kBlacklist);
+  if (!old_pref_value.empty()) {
+    prefs_->SetList(kBlocklist, old_pref_value.Clone());
     ListPrefUpdate update(prefs_, kBlacklist);
-    update->ClearList();
+    update->GetList().clear();
   }
 
   if (delegate_->WasLastShutdownClean())
     return;
 
-  base::Value::ConstListView declined_list =
-      prefs_->GetList(kDeclinedHostList)->GetListDeprecated();
+  const base::Value::List& declined_list =
+      prefs_->GetValueList(kDeclinedHostList);
   if (!declined_list.empty()) {
     const std::string& last_declined = declined_list.back().GetString();
     if (!IsInList(kBlocklist, last_declined))
@@ -157,8 +157,7 @@ void OomInterventionDecider::OnPrefInitialized(bool success) {
 }
 
 bool OomInterventionDecider::IsOptedOut(const std::string& host) const {
-  if (prefs_->GetList(kBlocklist)->GetListDeprecated().size() >=
-      kMaxBlocklistSize)
+  if (prefs_->GetValueList(kBlocklist).size() >= kMaxBlocklistSize)
     return true;
 
   return IsInList(kBlocklist, host);
@@ -166,7 +165,7 @@ bool OomInterventionDecider::IsOptedOut(const std::string& host) const {
 
 bool OomInterventionDecider::IsInList(const char* list_name,
                                       const std::string& host) const {
-  for (const auto& value : prefs_->GetList(list_name)->GetListDeprecated()) {
+  for (const auto& value : prefs_->GetValueList(list_name)) {
     if (value.GetString() == host)
       return true;
   }
@@ -178,9 +177,10 @@ void OomInterventionDecider::AddToList(const char* list_name,
   if (IsInList(list_name, host))
     return;
   ListPrefUpdate update(prefs_, list_name);
-  update->Append(host);
-  if (update->GetListDeprecated().size() > kMaxListSize)
-    update->EraseListIter(update->GetListDeprecated().begin());
+  base::Value::List& update_list = update->GetList();
+  update_list.Append(host);
+  if (update_list.size() > kMaxListSize)
+    update_list.erase(update_list.begin());
 
   // Save the list immediately because we typically modify lists under high
   // memory pressure, in which the browser process can be killed by the OS
