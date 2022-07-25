@@ -388435,6 +388435,13 @@
         {}
        ]
       ],
+      "not-resnap-outside-proximity-threshold.html": [
+       "b2c5720efb851a60786bbd2cfeb4ae02b9c787b3",
+       [
+        null,
+        {}
+       ]
+      ],
       "remove-current-target.html": [
        "82bddf8074882e03d9c2dd669815303fbdd2b039",
        [
