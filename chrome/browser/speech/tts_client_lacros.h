@@ -15,6 +15,7 @@
 #include "content/public/browser/tts_controller.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/base/network_change_notifier.h"
 
 namespace content {
 class BrowserContext;
@@ -23,8 +24,10 @@ class BrowserContext;
 // Implements crosapi::mojom::TtsClient, which is called by ash to handle
 // TTS requests to Lacros such as retrieving voice data, etc. It also manages
 // To send TTS requests ash. TtsClientLacros is created per BrowserContext.
-class TtsClientLacros : public extensions::BrowserContextKeyedAPI,
-                        public crosapi::mojom::TtsClient {
+class TtsClientLacros
+    : public extensions::BrowserContextKeyedAPI,
+      public crosapi::mojom::TtsClient,
+      public net::NetworkChangeNotifier::NetworkChangeObserver {
  public:
   explicit TtsClientLacros(content::BrowserContext* context);
   TtsClientLacros(const TtsClientLacros&) = delete;
@@ -51,6 +54,10 @@ class TtsClientLacros : public extensions::BrowserContextKeyedAPI,
  private:
   friend class extensions::BrowserContextKeyedAPIFactory<TtsClientLacros>;
 
+  // net::NetworkChangeNotifier::NetworkChangeObserver:
+  void OnNetworkChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
+
   // Notifies Ash about Lacros voices change.
   void NotifyLacrosVoicesChanged();
 
@@ -62,6 +69,8 @@ class TtsClientLacros : public extensions::BrowserContextKeyedAPI,
 
   // Cached voices for |browser_context_|, including both ash and lacros voices.
   std::vector<content::VoiceData> all_voices_;
+
+  bool is_offline_;
 
   base::WeakPtrFactory<TtsClientLacros> weak_ptr_factory_{this};
 };
