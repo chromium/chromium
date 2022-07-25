@@ -8,7 +8,7 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/time/time.h"
@@ -65,7 +65,8 @@ UserNudgeController::UserNudgeController(CaptureModeSession* session,
   // Rings are created initially with 0 opacity. Calling SetVisible() will
   // animate them towards their correct state.
   const SkColor ring_color =
-      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity().first;
+      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled() ? SK_ColorWHITE
+                                                              : SK_ColorBLACK;
   base_ring_.SetColor(ring_color);
   base_ring_.SetFillsBoundsOpaquely(false);
   base_ring_.SetOpacity(0);
