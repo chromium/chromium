@@ -2834,8 +2834,6 @@ static_library("ui") {
       "webui/chromeos/system_web_dialog_delegate.h",
       "webui/chromeos/user_image_source.cc",
       "webui/chromeos/user_image_source.h",
-      "webui/chromeos/video_source.cc",
-      "webui/chromeos/video_source.h",
       "webui/chromeos/vm/vm_ui.cc",
       "webui/chromeos/vm/vm_ui.h",
       "webui/extensions/ash/kiosk_apps_handler.cc",
