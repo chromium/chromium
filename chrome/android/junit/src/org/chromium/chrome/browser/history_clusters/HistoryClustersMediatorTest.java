@@ -545,15 +545,39 @@ public class HistoryClustersMediatorTest {
         mMediator.setQueryState(QueryState.forQuery("query", ""));
         mMediator.startQuery("query");
         fulfillPromise(promise, mHistoryClustersResultWithQuery);
+        int initialSize = mModelList.size();
 
-        mMediator.deleteVisits(Arrays.asList(mVisit1, mVisit2, mVisit3));
-        assertThat(mVisitsForRemoval, Matchers.containsInAnyOrder(mVisit1, mVisit2, mVisit3));
+        mMediator.deleteVisits(Arrays.asList(mVisit1, mVisit3));
+        assertThat(mVisitsForRemoval, Matchers.containsInAnyOrder(mVisit1, mVisit3));
         verify(mMetricsLogger)
                 .recordVisitAction(HistoryClustersMetricsLogger.VisitAction.DELETED, mVisit1);
         verify(mMetricsLogger)
-                .recordVisitAction(HistoryClustersMetricsLogger.VisitAction.DELETED, mVisit2);
-        verify(mMetricsLogger)
                 .recordVisitAction(HistoryClustersMetricsLogger.VisitAction.DELETED, mVisit3);
+        // Deleting all of the visits in a cluster should also delete the ModelList entry for the
+        // cluster itself.
+        assertEquals(initialSize - 3, mModelList.size());
+
+        ListItem clusterItem = mModelList.get(0);
+        assertEquals(clusterItem.type, ItemType.CLUSTER);
+
+        ListItem visitItem = mModelList.get(1);
+        assertEquals(visitItem.type, ItemType.VISIT);
+        PropertyModel visitModel = visitItem.model;
+        assertEquals(mMediator.applyBolding(mVisit2.getTitle(), mVisit2.getTitleMatchPositions()),
+                visitModel.get(HistoryClustersItemProperties.TITLE));
+        assertEquals(
+                mMediator.applyBolding(mVisit2.getUrlForDisplay(), mVisit2.getUrlMatchPositions()),
+                visitModel.get(HistoryClustersItemProperties.URL));
+
+        ListItem relatedSearchesItem = mModelList.get(2);
+        assertEquals(relatedSearchesItem.type, ItemType.RELATED_SEARCHES);
+        PropertyModel relatedSearchesModel = relatedSearchesItem.model;
+        assertEquals(mCluster1.getRelatedSearches(),
+                relatedSearchesModel.get(HistoryClustersItemProperties.RELATED_SEARCHES));
+
+        mMediator.deleteVisits(Arrays.asList(mVisit2));
+        // Deleting the final visit should result in an entirely empty list.
+        assertEquals(0, mModelList.size());
     }
 
     @Test
