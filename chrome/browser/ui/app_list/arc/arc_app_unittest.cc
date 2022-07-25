@@ -114,6 +114,7 @@
 namespace {
 
 constexpr char kTestPackageName[] = "fake.package.name2";
+constexpr char kTestPackageName4[] = "fake.package.name4";
 constexpr char kFrameworkPackageName[] = "android";
 
 constexpr int kFrameworkNycVersion = 25;
@@ -788,6 +789,12 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     FlushMojoCallsForAppService();
   }
 
+  void UpdatePackage(const arc::mojom::ArcPackageInfoPtr& package) {
+    arc_test_.UpdatePackage(package->Clone());
+    app_instance()->SendPackageModified(package->Clone());
+    FlushMojoCallsForAppService();
+  }
+
   void RemovePackage(const std::string& package_name) {
     arc_test_.RemovePackage(package_name);
     app_instance()->SendPackageUninstalled(package_name);
@@ -1450,6 +1457,10 @@ TEST_P(ArcAppModelBuilderTest, ArcPackagePref) {
   package->last_backup_android_id = 2;
   package->last_backup_time = 2;
   AddPackage(package);
+  ValidateHavePackages(fake_packages());
+
+  // Update web_app_info of the last package to null.
+  UpdatePackage(CreatePackage(kTestPackageName4));
   ValidateHavePackages(fake_packages());
 }
 

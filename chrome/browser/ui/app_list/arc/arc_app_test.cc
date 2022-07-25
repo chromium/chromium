@@ -330,6 +330,17 @@ void ArcAppTest::AddPackage(arc::mojom::ArcPackageInfoPtr package) {
   fake_packages_.push_back(std::move(package));
 }
 
+void ArcAppTest::UpdatePackage(arc::mojom::ArcPackageInfoPtr updated_package) {
+  auto it = std::find_if(fake_packages_.begin(), fake_packages_.end(),
+                         [&updated_package](const auto& package) {
+                           return package->package_name ==
+                                  updated_package->package_name;
+                         });
+  if (it != fake_packages_.end()) {
+    *it = std::move(updated_package);
+  }
+}
+
 void ArcAppTest::RemovePackage(const std::string& package_name) {
   base::EraseIf(fake_packages_, [package_name](const auto& package) {
     return package->package_name == package_name;

@@ -72,6 +72,9 @@ class ArcAppTest {
   // Adds package info and takes ownership.
   void AddPackage(arc::mojom::ArcPackageInfoPtr package);
 
+  // Replaces package if a package with this package name exists.
+  void UpdatePackage(arc::mojom::ArcPackageInfoPtr package);
+
   void RemovePackage(const std::string& package_name);
 
   void WaitForDefaultApps();

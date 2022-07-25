@@ -1689,6 +1689,8 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
       web_app_info_dict.Set(kCertificateSha256Fingerprint, *fingerprint);
     }
     package_dict.Set(kWebAppInfo, std::move(web_app_info_dict));
+  } else {
+    package_dict.Remove(kWebAppInfo);
   }
 
   if (old_package_version == -1 ||
