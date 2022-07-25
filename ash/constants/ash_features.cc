@@ -1122,11 +1122,6 @@ const base::Feature kOobeConsolidatedConsent{"OobeConsolidatedConsent",
 const base::Feature kOobeHidDetectionRevamp{"OobeHidDetectionRevamp",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables chrome://oobe/login url. The url seems not being used. The flag is a
-// precaution in case it's actually used.
-const base::Feature kOobeLoginUrl{"OobeLoginUrl",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables or disables the Oobe quick start flow.
 const base::Feature kOobeQuickStart{"OobeQuickStart",
                                     base::FEATURE_DISABLED_BY_DEFAULT};

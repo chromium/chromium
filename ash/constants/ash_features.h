@@ -460,8 +460,6 @@ extern const base::Feature kOobeConsolidatedConsent;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kOobeHidDetectionRevamp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kOobeLoginUrl;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kOobeQuickStart;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kOobeNewRecommendApps;

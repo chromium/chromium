@@ -122,9 +122,6 @@ namespace {
 // Maximum delay for startup sound after 'loginPromptVisible' signal.
 const int kStartupSoundMaxDelayMs = 4000;
 
-// URL which corresponds to the login WebUI.
-const char kLoginURL[] = "chrome://oobe/login";
-
 // URL which corresponds to the OOBE WebUI.
 const char kOobeURL[] = "chrome://oobe/oobe";
 
@@ -600,16 +597,6 @@ void LoginDisplayHostWebUI::OnStartSignInScreen() {
   finalize_animation_type_ = ANIMATION_WORKSPACE;
 
   VLOG(1) << "Login WebUI >> sign in";
-
-  // TODO(crbug.com/784495): Make sure this is ported to views.
-  if (!login_window_) {
-    TRACE_EVENT_NESTABLE_ASYNC_INSTANT0(
-        "ui", "StartSignInScreen",
-        TRACE_ID_WITH_SCOPE(kShowLoginWebUIid, TRACE_ID_GLOBAL(1)));
-    BootTimesRecorder::Get()->RecordCurrentStats("login-start-signin-screen");
-    CHECK(base::FeatureList::IsEnabled(features::kOobeLoginUrl));
-    LoadURL(GURL(kLoginURL));
-  }
 
   DVLOG(1) << "Starting sign in screen";
   CreateExistingUserController();
