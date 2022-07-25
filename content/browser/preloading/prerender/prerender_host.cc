@@ -945,6 +945,8 @@ void PrerenderHost::SetFailureReason(FinalStatus status) {
     case FinalStatus::kTriggerBackgrounded:
     case FinalStatus::kEmbedderTriggeredAndSameOriginRedirected:
     case FinalStatus::kEmbedderTriggeredAndCrossOriginRedirected:
+    case FinalStatus::kMemoryLimitExceeded:
+    case FinalStatus::kFailToGetMemoryUsage:
       attempt_->SetFailureReason(ToPreloadingFailureReason(status));
       return;
   }

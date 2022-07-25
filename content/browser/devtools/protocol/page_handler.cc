@@ -1424,6 +1424,8 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
     case PrerenderHost::FinalStatus::kEmbedderTriggeredAndSameOriginRedirected:
       return Page::PrerenderFinalStatusEnum::
           EmbedderTriggeredAndSameOriginRedirected;
+    case PrerenderHost::FinalStatus::kFailToGetMemoryUsage:
+      return Page::PrerenderFinalStatusEnum::FailToGetMemoryUsage;
     case PrerenderHost::FinalStatus::kInProgressNavigation:
       return Page::PrerenderFinalStatusEnum::InProgressNavigation;
     case PrerenderHost::FinalStatus::kInvalidSchemeNavigation:
@@ -1438,6 +1440,8 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Page::PrerenderFinalStatusEnum::MainFrameNavigation;
     case PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded:
       return Page::PrerenderFinalStatusEnum::MaxNumOfRunningPrerendersExceeded;
+    case PrerenderHost::FinalStatus::kMemoryLimitExceeded:
+      return Page::PrerenderFinalStatusEnum::MemoryLimitExceeded;
     case PrerenderHost::FinalStatus::kMixedContent:
       return Page::PrerenderFinalStatusEnum::MixedContent;
     case PrerenderHost::FinalStatus::kMojoBinderPolicy:
