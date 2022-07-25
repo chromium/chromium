@@ -43,10 +43,14 @@ sync_pb::HistorySpecifics CreateSpecifics(
   specifics.set_visit_time_windows_epoch_micros(
       visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
   specifics.set_originator_cache_guid(originator_cache_guid);
+  specifics.mutable_page_transition()->set_core_transition(
+      sync_pb::SyncEnums_PageTransition_LINK);
   for (size_t i = 0; i < urls.size(); ++i) {
     auto* redirect_entry = specifics.add_redirect_entries();
     redirect_entry->set_originator_visit_id(originator_visit_ids[i]);
     redirect_entry->set_url(urls[i].spec());
+    redirect_entry->set_redirect_type(
+        sync_pb::SyncEnums_PageTransitionRedirectType_SERVER_REDIRECT);
   }
   return specifics;
 }
@@ -820,9 +824,6 @@ TEST_F(HistorySyncBridgeTest, RemapsOriginatorVisitIDs) {
   entity_chain.set_originator_referring_visit_id(
       entity_first.redirect_entries(0).originator_visit_id());
 
-  // TODO(crbug.com/1335055): Add another test case where the originator visit
-  // IDs in a chain are empty, to simulate a legacy (Sessions) client.
-
   const base::Time last_visit_time = base::Time::Now() - base::Minutes(8);
   const VisitID last_visit_originator_id = 104;
   sync_pb::HistorySpecifics entity_last =
@@ -855,6 +856,31 @@ TEST_F(HistorySyncBridgeTest, RemapsOriginatorVisitIDs) {
   ASSERT_EQ(last_row.originator_visit_id, last_visit_originator_id);
   // Make sure the opener (last visit of the chain) got remapped.
   EXPECT_EQ(last_row.opener_visit, chain_rows.back().visit_id);
+}
+
+TEST_F(HistorySyncBridgeTest, RemapsLegacyRedirectChain) {
+  const std::string remote_cache_guid("remote_cache_guid");
+
+  // Situation: There's a redirect chain of 3 visits, coming from a legacy
+  // client, meaning that their originator visit IDs are unset (zero).
+
+  const base::Time visit_time = base::Time::Now() - base::Minutes(9);
+  const std::vector<GURL> urls{GURL("https://start.chain.url"),
+                               GURL("https://middle.chain.url"),
+                               GURL("https://end.chain.url")};
+  const std::vector<VisitID> originator_visit_ids{0, 0, 0};
+  sync_pb::HistorySpecifics entity = CreateSpecifics(
+      visit_time, remote_cache_guid, urls, originator_visit_ids);
+
+  // Start syncing - this should trigger the creation of local referrer IDs.
+  MergeSyncData({entity});
+
+  VisitRow chain_end_row;
+  ASSERT_TRUE(backend()->GetLastVisitByTime(visit_time, &chain_end_row));
+  // Make sure the chain got preserved (even though there were no originator
+  // visit IDs, and thus no explicit links between the individual visits).
+  VisitVector chain_rows = backend()->GetRedirectChain(chain_end_row);
+  EXPECT_EQ(chain_rows.size(), 3u);
 }
 
 }  // namespace

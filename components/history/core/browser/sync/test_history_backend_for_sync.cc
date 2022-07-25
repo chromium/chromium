@@ -167,11 +167,16 @@ VisitID TestHistoryBackendForSync::UpdateSyncedVisit(const VisitRow& visit) {
   for (VisitRow& existing_visit : visits_) {
     if (existing_visit.originator_cache_guid == visit.originator_cache_guid &&
         existing_visit.originator_visit_id == visit.originator_visit_id) {
+      VisitRow new_visit = visit;
       // `visit_id` and `url_id` aren't set in visits coming from Sync, so
       // keep those from the existing row.
-      VisitRow new_visit = visit;
       new_visit.visit_id = existing_visit.visit_id;
       new_visit.url_id = existing_visit.url_id;
+      // Similarly, any `referring_visit` and `opener_visit` should be retained.
+      // Note that these are the *local* versions of these IDs, not the
+      // originator ones.
+      new_visit.referring_visit = existing_visit.referring_visit;
+      new_visit.opener_visit = existing_visit.opener_visit;
       existing_visit = new_visit;
       return existing_visit.visit_id;
     }

@@ -73,7 +73,7 @@ VisitRow MakeVisitRow(const sync_pb::HistorySpecifics& specifics,
   row.originator_cache_guid = specifics.originator_cache_guid();
 
   // The `originator_visit_id` should always exist for visits coming from modern
-  // clients, but it may be missing in visits from legacy clients (i.e. clients
+  // clients, but it may be missing in legacy visits (i.e. those from clients
   // committing history data via the SESSIONS data type).
   row.originator_visit_id =
       specifics.redirect_entries(redirect_index).originator_visit_id();
@@ -123,9 +123,10 @@ VisitRow MakeVisitRow(const sync_pb::HistorySpecifics& specifics,
   } else {
     // All later visits in the chain are implicitly referred to by the preceding
     // visit.
-    // TODO(crbug.com/1335055): For visits coming from legacy devices (i.e.
-    // using the Sessions integration), originator_visit_id will be unset, so
-    // we're losing the redirect chain links here.
+    // Note: For legacy visits (i.e. coming from older clients still using the
+    // Sessions integration), originator_visit_id will be unset, so redirect
+    // chain links are lost here. They'll be populated in AddEntityInBackend()
+    // instead.
     row.originator_referring_visit =
         specifics.redirect_entries(redirect_index - 1).originator_visit_id();
   }
@@ -641,8 +642,17 @@ bool HistorySyncBridge::AddEntityInBackend(
     VisitIDRemapper* id_remapper,
     const sync_pb::HistorySpecifics& specifics) {
   // Add all the visits in the redirect chain.
+  VisitID referring_visit_id = 0;
   for (int i = 0; i < specifics.redirect_entries_size(); i++) {
     VisitRow visit_row = MakeVisitRow(specifics, i);
+    // Trivial in-chain remapping: Populate the `referring_visit` IDs along the
+    // redirect chain. Do this here because old clients don't fill originator
+    // visits IDs, so the remapper can't help. For such clients we can at least
+    // do this to have the links inside this redirect chain. For new clients,
+    // might as well do this part here too since it's correct.
+    if (i > 0) {
+      visit_row.referring_visit = referring_visit_id;
+    }
     VisitID added_visit_id = history_backend_->AddSyncedVisit(
         GURL(specifics.redirect_entries(i).url()),
         base::UTF8ToUTF16(specifics.redirect_entries(i).title()),
@@ -651,10 +661,18 @@ bool HistorySyncBridge::AddEntityInBackend(
       // Visit failed to be added to the DB - unclear if/how this can happen.
       return false;
     }
-    id_remapper->RegisterVisit(added_visit_id, visit_row.originator_cache_guid,
-                               visit_row.originator_visit_id,
-                               visit_row.originator_referring_visit,
-                               visit_row.originator_opener_visit);
+    referring_visit_id = added_visit_id;
+
+    // Remapping chain extremities (i.e. first and last visit in the chain) via
+    // `id_remapper`: The first visit in the chain can refer to a visit outside
+    // of the chain. Similarly, the last visit can be referred to by a visit
+    // outside of the chain (its referring visit ID was already set though).
+    if (i == 0 || i == specifics.redirect_entries_size() - 1) {
+      id_remapper->RegisterVisit(
+          added_visit_id, visit_row.originator_cache_guid,
+          visit_row.originator_visit_id, visit_row.originator_referring_visit,
+          visit_row.originator_opener_visit);
+    }
   }
 
   return true;
@@ -669,17 +687,16 @@ bool HistorySyncBridge::UpdateEntityInBackend(
   // is indeed sufficient.
   VisitRow final_visit_row =
       MakeVisitRow(specifics, specifics.redirect_entries_size() - 1);
+  // Note: UpdateSyncedVisit() keeps any existing local referrer/opener IDs in
+  // place, and the originator IDs are never updated in practice, so there's no
+  // need to invoke the ID remapper here (in contrast to AddEntityInBackend()).
+  // TODO(crbug.com/1341636): Add an integration test to ensure that updates
+  // don't break referrer/opener links.
   VisitID updated_visit_id =
       history_backend_->UpdateSyncedVisit(final_visit_row);
   if (updated_visit_id == 0) {
     return false;
   }
-
-  id_remapper->RegisterVisit(updated_visit_id,
-                             final_visit_row.originator_cache_guid,
-                             final_visit_row.originator_visit_id,
-                             final_visit_row.originator_referring_visit,
-                             final_visit_row.originator_opener_visit);
 
   // TODO(crbug.com/1318028): Handle updates to the URL-related fields
   // (notably the title - other fields probably can't change).
