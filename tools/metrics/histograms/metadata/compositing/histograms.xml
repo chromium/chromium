@@ -863,8 +863,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CompositorLatency{ReportType}{InteractionType}.{StageType}"
-    units="microseconds" expires_after="2022-07-24">
-  <owner>sadrul@chromium.org</owner>
+    units="microseconds" expires_after="2023-07-24">
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the duration of various stages in the pipeline as a single frame goes
