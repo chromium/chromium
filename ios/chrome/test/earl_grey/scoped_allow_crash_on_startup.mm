@@ -77,9 +77,10 @@ const GREYHostApplicationCrashHandler kHostApplicationCrashHandler = ^{
           containsString:@"Couldn’t communicate with a helper application. Try "
                          @"your operation again. If that fails, quit and "
                          @"relaunch the application and try again."] ||
-      [description containsString:@" crashed in "]) {
-    [[NSException exceptionWithName:@"XCTIssue" reason:description
-                           userInfo:nil] raise];
+      [description containsString:@" crashed in "] ||
+      [description containsString:@"Failed to get matching snapshot"]) {
+    // Ignore these exceptions, since we expect to crash.
+    return;
   }
   INVOKE_ORIGINAL_IMP1(void, @selector(swizzledRecordIssue:), issue);
 }
