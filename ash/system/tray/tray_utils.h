@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "ash/system/tray/tray_popup_ink_drop_style.h"
 #include "components/session_manager/session_manager_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -49,6 +50,9 @@ int GetBubbleInsetHotseatCompensation();
 // Returns the separation above the shelf for positioning secondary tray
 // bubbles. (Palette Tray, IME Tray).
 gfx::Insets GetSecondaryBubbleInsets();
+
+// Gets the InkDrop insets based on `ink_drop_style`.
+gfx::Insets GetInkDropInsets(TrayPopupInkDropStyle ink_drop_style);
 
 }  // namespace ash
 

@@ -10,7 +10,8 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/tray/tray_popup_utils.h"
+#include "ash/style/style_util.h"
+#include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "components/vector_icons/vector_icons.h"
@@ -20,10 +21,6 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_utils.h"
-#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
-#include "ui/views/animation/ink_drop_highlight.h"
-#include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
@@ -71,7 +68,7 @@ class UnifiedVolumeViewButton : public T {
   template <typename... Args>
   explicit UnifiedVolumeViewButton(Args... args)
       : T(std::forward<Args>(args)...) {
-    TrayPopupUtils::ConfigureTrayPopupButton(this);
+    StyleUtil::SetUpInkDropForButton(this);
 
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   kTrayItemCornerRadius);

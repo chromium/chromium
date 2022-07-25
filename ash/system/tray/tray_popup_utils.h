@@ -18,9 +18,6 @@
 namespace views {
 class Button;
 class ImageView;
-class InkDrop;
-class InkDropRipple;
-class InkDropHighlight;
 class Label;
 class LabelButton;
 class Painter;
@@ -125,13 +122,6 @@ class ASH_EXPORT TrayPopupUtils {
   // Creates a default focus painter used for most things in tray popups.
   static std::unique_ptr<views::Painter> CreateFocusPainter();
 
-  // Common setup for various buttons in the system menu.
-  static void ConfigureTrayPopupButton(
-      views::Button* button,
-      TrayPopupInkDropStyle ink_drop_style = TrayPopupInkDropStyle::FILL_BOUNDS,
-      bool highlight_on_hover = false,
-      bool highlight_on_focus = false);
-
   // Sets up |view| to be a sticky header in a tray detail scroll view.
   static void ConfigureAsStickyHeader(views::View* view);
 
@@ -153,32 +143,6 @@ class ASH_EXPORT TrayPopupUtils {
   // material design system menu row. The caller assumes ownership of the
   // returned separator.
   static views::Separator* CreateVerticalSeparator();
-
-  // Creates in InkDrop instance for |host|.
-  // All styles are configured to show the highlight when the ripple is visible.
-  //
-  // All targetable views in the system menu should delegate
-  // InkDropHost::CreateInkDrop() calls here.
-  static std::unique_ptr<views::InkDrop> CreateInkDrop(
-      views::Button* host,
-      bool highlight_on_hover = false,
-      bool highlight_on_focus = false);
-
-  // Creates an InkDropRipple instance for |host| according to the
-  // |ink_drop_style|. The ripple will be centered on |center_point|.
-  //
-  // All targetable views in the system menu should delegate
-  // InkDropHost::CreateInkDropRipple() calls here.
-  static std::unique_ptr<views::InkDropRipple> CreateInkDropRipple(
-      TrayPopupInkDropStyle ink_drop_style,
-      const views::Button* host);
-
-  // Creates in InkDropHighlight instance for |host|.
-  //
-  // All targetable views in the system menu should delegate
-  // InkDropHost::CreateInkDropHighlight() calls here.
-  static std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
-      const views::View* host);
 
   // Installs a HighlightPathGenerator matching the TrayPopupInkDropStyle.
   static void InstallHighlightPathGenerator(

@@ -8,22 +8,24 @@
 #include "ui/color/color_id.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
 
 namespace ash {
 
-namespace {
-
-std::unique_ptr<views::InkDrop> CreateInkDrop(views::Button* host,
-                                              bool highlight_on_hover,
-                                              bool highlight_on_focus) {
+// static
+std::unique_ptr<views::InkDrop> StyleUtil::CreateInkDrop(
+    views::Button* host,
+    bool highlight_on_hover,
+    bool highlight_on_focus) {
   return views::InkDrop::CreateInkDropForFloodFillRipple(
       views::InkDrop::Get(host), highlight_on_hover, highlight_on_focus);
 }
 
-std::unique_ptr<views::InkDropRipple> CreateInkDropRipple(
+// static
+std::unique_ptr<views::InkDropRipple> StyleUtil::CreateInkDropRipple(
     const gfx::Insets& insets,
     const views::View* host,
     SkColor background_color) {
@@ -35,8 +37,9 @@ std::unique_ptr<views::InkDropRipple> CreateInkDropRipple(
       base_color_and_opacity.first, base_color_and_opacity.second);
 }
 
-std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
-    views::View* host,
+// static
+std::unique_ptr<views::InkDropHighlight> StyleUtil::CreateInkDropHighlight(
+    const views::View* host,
     SkColor background_color) {
   const std::pair<SkColor, float> base_color_and_opacity =
       AshColorProvider::Get()->GetInkDropBaseColorAndOpacity(background_color);
@@ -45,8 +48,6 @@ std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
   highlight->set_visible_opacity(base_color_and_opacity.second);
   return highlight;
 }
-
-}  // namespace
 
 // static
 void StyleUtil::SetRippleParams(views::View* host,

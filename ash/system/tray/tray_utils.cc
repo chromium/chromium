@@ -144,4 +144,12 @@ gfx::Insets GetSecondaryBubbleInsets() {
   return insets;
 }
 
+gfx::Insets GetInkDropInsets(TrayPopupInkDropStyle ink_drop_style) {
+  if (ink_drop_style == TrayPopupInkDropStyle::HOST_CENTERED ||
+      ink_drop_style == TrayPopupInkDropStyle::INSET_BOUNDS) {
+    return gfx::Insets(kTrayPopupInkDropInset);
+  }
+  return gfx::Insets();
+}
+
 }  // namespace ash

@@ -4,18 +4,18 @@
 
 #include "ash/system/tray/actionable_view.h"
 
+#include "ash/style/style_util.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/tray/tray_utils.h"
 #include "base/bind.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
-#include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/animation/ink_drop_mask.h"
+#include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/painter.h"
 
 namespace ash {
@@ -36,12 +36,14 @@ ActionableView::ActionableView(TrayPopupInkDropStyle ink_drop_style)
   SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
   TrayPopupUtils::InstallHighlightPathGenerator(this, ink_drop_style_);
   views::InkDrop::Get(this)->SetCreateInkDropCallback(base::BindRepeating(
-      [](Button* host) { return TrayPopupUtils::CreateInkDrop(host); }, this));
-  views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
-      &TrayPopupUtils::CreateInkDropHighlight, base::Unretained(this)));
+      [](Button* host) { return StyleUtil::CreateInkDrop(host); }, this));
+  views::InkDrop::Get(this)->SetCreateHighlightCallback(
+      base::BindRepeating(&StyleUtil::CreateInkDropHighlight,
+                          base::Unretained(this), gfx::kPlaceholderColor));
   views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
       [](ActionableView* host) {
-        return TrayPopupUtils::CreateInkDropRipple(host->ink_drop_style_, host);
+        return StyleUtil::CreateInkDropRipple(
+            GetInkDropInsets(host->ink_drop_style_), host);
       },
       this));
 }

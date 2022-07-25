@@ -5,7 +5,7 @@
 #include "ash/system/accessibility/floating_menu_button.h"
 
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/tray/tray_popup_utils.h"
+#include "ash/style/style_util.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -28,7 +28,7 @@ FloatingMenuButton::FloatingMenuButton() {
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   SetFlipCanvasOnPaintForRTLUI(false);
-  TrayPopupUtils::ConfigureTrayPopupButton(this);
+  StyleUtil::SetUpInkDropForButton(this);
   views::InstallCircleHighlightPathGenerator(this);
 }
 
@@ -60,7 +60,7 @@ FloatingMenuButton::FloatingMenuButton(views::Button::PressedCallback callback,
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   SetFlipCanvasOnPaintForRTLUI(flip_for_rtl);
   SetPreferredSize(gfx::Size(size_, size_));
-  TrayPopupUtils::ConfigureTrayPopupButton(this);
+  StyleUtil::SetUpInkDropForButton(this);
   views::InstallCircleHighlightPathGenerator(this);
   SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);

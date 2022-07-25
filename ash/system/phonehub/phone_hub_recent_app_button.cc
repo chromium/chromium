@@ -5,7 +5,7 @@
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
 
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/tray/tray_popup_utils.h"
+#include "ash/style/style_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -33,7 +33,7 @@ PhoneHubRecentAppButton::PhoneHubRecentAppButton(
                gfx::Size(kRecentAppButtonSize, kRecentAppButtonSize)));
   SetImageHorizontalAlignment(ALIGN_CENTER);
   SetImageVerticalAlignment(ALIGN_MIDDLE);
-  TrayPopupUtils::ConfigureTrayPopupButton(this);
+  StyleUtil::SetUpInkDropForButton(this);
   views::InstallCircleHighlightPathGenerator(this);
   SetAccessibleName(visible_app_name);
   SetTooltipText(visible_app_name);

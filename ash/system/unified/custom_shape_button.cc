@@ -5,7 +5,7 @@
 #include "ash/system/unified/custom_shape_button.h"
 
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/tray/tray_popup_utils.h"
+#include "ash/style/style_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/paint_recorder.h"
@@ -37,7 +37,7 @@ namespace ash {
 
 CustomShapeButton::CustomShapeButton(PressedCallback callback)
     : ImageButton(std::move(callback)) {
-  TrayPopupUtils::ConfigureTrayPopupButton(this);
+  StyleUtil::SetUpInkDropForButton(this);
   views::HighlightPathGenerator::Install(
       this, std::make_unique<CustomShapeButtonHighlightPathGenerator>());
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);

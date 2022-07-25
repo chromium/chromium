@@ -7,8 +7,8 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -88,7 +88,7 @@ FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
   AddChildView(detailed_view_arrow_);
   AddChildView(sub_label_);
 
-  TrayPopupUtils::ConfigureTrayPopupButton(this);
+  StyleUtil::SetUpInkDropForButton(this);
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);

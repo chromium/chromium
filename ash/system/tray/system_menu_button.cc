@@ -5,9 +5,11 @@
 #include "ash/system/tray/system_menu_button.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/tray/tray_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -37,8 +39,8 @@ SystemMenuButton::SystemMenuButton(PressedCallback callback,
 
   SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
 
-  TrayPopupUtils::ConfigureTrayPopupButton(
-      this, TrayPopupInkDropStyle::HOST_CENTERED);
+  StyleUtil::SetUpInkDropForButton(
+      this, GetInkDropInsets(TrayPopupInkDropStyle::HOST_CENTERED));
   TrayPopupUtils::InstallHighlightPathGenerator(
       this, TrayPopupInkDropStyle::HOST_CENTERED);
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
