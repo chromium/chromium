@@ -32,7 +32,8 @@ class LoginPinInputViewTest
 
   void SetUp() override {
     LoginTestBase::SetUp();
-    view_ = new LoginPinInputView(CreateDefaultLoginPalette());
+    view_ = new LoginPinInputView(
+        CreateDefaultLoginPalette(/*color_provider=*/nullptr));
     view_->Init(base::BindRepeating(&LoginPinInputViewTest::OnPinSubmit,
                                     base::Unretained(this)),
                 base::BindRepeating(&LoginPinInputViewTest::OnPinChanged,

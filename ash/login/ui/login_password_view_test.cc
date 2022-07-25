@@ -43,7 +43,8 @@ class LoginPasswordViewTest : public LoginTestBase {
   void SetUp() override {
     LoginTestBase::SetUp();
 
-    view_ = new LoginPasswordView(CreateDefaultLoginPalette());
+    view_ = new LoginPasswordView(
+        CreateDefaultLoginPalette(/*color_provider=*/nullptr));
     view_->Init(
         base::BindRepeating(&LoginPasswordViewTest::OnPasswordSubmit,
                             base::Unretained(this)),

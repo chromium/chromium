@@ -8,6 +8,10 @@
 #include "ash/ash_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+namespace ui {
+class ColorProvider;
+}  // namespace ui
+
 namespace ash {
 
 // LoginPalette provides color values to LoginPasswordView and LoginPinView,
@@ -29,7 +33,8 @@ struct LoginPalette {
 };
 
 // For login screen and lock screen.
-ASH_EXPORT LoginPalette CreateDefaultLoginPalette();
+ASH_EXPORT LoginPalette
+CreateDefaultLoginPalette(ui::ColorProvider* color_provider);
 
 // For in-session auth dialog.
 ASH_EXPORT LoginPalette CreateInSessionAuthPalette();

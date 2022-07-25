@@ -11,6 +11,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
@@ -301,7 +302,8 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
 
   add_spacer(kDescriptionToAccessCodeDistanceDp);
 
-  LoginPalette palette = CreateDefaultLoginPalette();
+  auto* color_provider = GetColorProvider();
+  LoginPalette palette = CreateDefaultLoginPalette(color_provider);
 
   // Access code input view.
   if (request.pin_length.has_value()) {
@@ -331,13 +333,14 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
 
   // Pin keyboard. Note that the keyboard's own submit button is disabled via
   // passing a null |on_submit| callback.
-  pin_keyboard_view_ = new LoginPinView(
-      LoginPinView::Style::kAlphanumeric, CreateDefaultLoginPalette(),
-      base::BindRepeating(&AccessCodeInput::InsertDigit,
-                          base::Unretained(access_code_view_)),
-      base::BindRepeating(&AccessCodeInput::Backspace,
-                          base::Unretained(access_code_view_)),
-      /*on_submit=*/LoginPinView::OnPinSubmit());
+  pin_keyboard_view_ =
+      new LoginPinView(LoginPinView::Style::kAlphanumeric,
+                       CreateDefaultLoginPalette(color_provider),
+                       base::BindRepeating(&AccessCodeInput::InsertDigit,
+                                           base::Unretained(access_code_view_)),
+                       base::BindRepeating(&AccessCodeInput::Backspace,
+                                           base::Unretained(access_code_view_)),
+                       /*on_submit=*/LoginPinView::OnPinSubmit());
   // Backspace key is always enabled and |access_code_| field handles it.
   pin_keyboard_view_->OnPasswordTextChanged(false);
   AddChildView(pin_keyboard_view_);
@@ -543,6 +546,14 @@ void PinRequestView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::View::GetAccessibleNodeData(node_data);
   node_data->role = ax::mojom::Role::kDialog;
   node_data->SetName(default_accessible_title_);
+}
+
+void PinRequestView::OnThemeChanged() {
+  views::DialogDelegateView::OnThemeChanged();
+  auto* color_provider = GetColorProvider();
+  access_code_view_->SetInputColor(
+      color_provider->GetColor(kColorAshTextColorPrimary));
+  pin_keyboard_view_->UpdatePalette(CreateDefaultLoginPalette(color_provider));
 }
 
 // If |pin_keyboard_always_enabled_| is not set, pin keyboard is only shown in

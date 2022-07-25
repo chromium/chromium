@@ -1080,7 +1080,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       callbacks.on_remove_warning_shown, callbacks.on_remove);
   user_view_ = user_view.get();
 
-  const LoginPalette palette = CreateDefaultLoginPalette();
+  const LoginPalette palette = CreateDefaultLoginPalette(GetColorProvider());
 
   auto password_view = std::make_unique<LoginPasswordView>(palette);
   password_view_ = password_view.get();
@@ -1713,7 +1713,7 @@ void LoginAuthUserView::OnGestureEvent(ui::GestureEvent* event) {
 
 void LoginAuthUserView::OnThemeChanged() {
   NonAccessibleView::OnThemeChanged();
-  const LoginPalette palette = CreateDefaultLoginPalette();
+  const LoginPalette palette = CreateDefaultLoginPalette(GetColorProvider());
   password_view_->UpdatePalette(palette);
   pin_input_view_->UpdatePalette(palette);
   pin_view_->UpdatePalette(palette);

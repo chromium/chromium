@@ -3,41 +3,42 @@
 // found in the LICENSE file.
 
 #include "ash/login/ui/login_palette.h"
-#include "ash/style/ash_color_provider.h"
+
+#include "ash/style/ash_color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 
 namespace ash {
 
-LoginPalette CreateDefaultLoginPalette() {
-  auto* color_provider = AshColorProvider::Get();
-  const std::pair<SkColor, float> base_color_and_opacity =
-      color_provider->GetInkDropBaseColorAndOpacity();
-  // Convert transparency level from [0 ; 1] to [0 ; 255].
-  U8CPU inkdrop_opacity = 255 * base_color_and_opacity.second;
+LoginPalette CreateDefaultLoginPalette(ui::ColorProvider* color_provider) {
+  // `color_provider` should be initialized as `view::GetColorProvider()`, which
+  // might be nullptr before the view isadded to the widget. Make sure to
+  // override the colors inside `OnThemeChanged` which will be called after the
+  // view is added to the widget hierarchy.
+  if (!color_provider)
+    return LoginPalette();
+
   return LoginPalette(
-      {.password_text_color = color_provider->GetContentLayerColor(
-           AshColorProvider::ContentLayerType::kTextColorPrimary),
-       .password_placeholder_text_color = color_provider->GetContentLayerColor(
-           AshColorProvider::ContentLayerType::kTextColorSecondary),
+      {.password_text_color =
+           color_provider->GetColor(kColorAshTextColorPrimary),
+       .password_placeholder_text_color =
+           color_provider->GetColor(kColorAshTextColorSecondary),
        .password_background_color = SK_ColorTRANSPARENT,
-       .password_row_background_color = color_provider->GetControlsLayerColor(
-           AshColorProvider::ControlsLayerType::
-               kControlBackgroundColorInactive),
-       .button_enabled_color = color_provider->GetContentLayerColor(
-           AshColorProvider::ContentLayerType::kIconColorPrimary),
-       .button_annotation_color = color_provider->GetContentLayerColor(
-           AshColorProvider::ContentLayerType::kTextColorSecondary),
+       .password_row_background_color =
+           color_provider->GetColor(kColorAshControlBackgroundColorInactive),
+       .button_enabled_color =
+           color_provider->GetColor(kColorAshIconColorPrimary),
+       .button_annotation_color =
+           color_provider->GetColor(kColorAshTextColorSecondary),
        .pin_ink_drop_highlight_color =
-           SkColorSetA(base_color_and_opacity.first, inkdrop_opacity),
-       .pin_ink_drop_ripple_color =
-           SkColorSetA(base_color_and_opacity.first, inkdrop_opacity),
-       .pin_input_text_color = color_provider->GetContentLayerColor(
-           AshColorProvider::ContentLayerType::kTextColorPrimary),
-       .submit_button_background_color = color_provider->GetControlsLayerColor(
-           AshColorProvider::ControlsLayerType::
-               kControlBackgroundColorInactive),
-       .submit_button_icon_color = color_provider->GetContentLayerColor(
-           AshColorProvider::ContentLayerType::kButtonIconColor)});
+           color_provider->GetColor(kColorAshInkDrop),
+       .pin_ink_drop_ripple_color = color_provider->GetColor(kColorAshInkDrop),
+       .pin_input_text_color =
+           color_provider->GetColor(kColorAshTextColorPrimary),
+       .submit_button_background_color =
+           color_provider->GetColor(kColorAshControlBackgroundColorInactive),
+       .submit_button_icon_color =
+           color_provider->GetColor(kColorAshButtonIconColor)});
 }
 
 // TODO(b/218610104): Support dark theme.
