@@ -206,7 +206,7 @@ var availableTests = [
       for (var i = 0; i < list.length; ++i) {
         var entry = list[i];
         chrome.test.assertTrue(!!entry);
-        chrome.test.assertTrue(!!entry.urls.origin);
+        chrome.test.assertTrue(!!entry.urls.signonRealm);
         chrome.test.assertTrue(!!entry.urls.shown);
         chrome.test.assertTrue(!!entry.urls.link);
         idSet.add(entry.id);
@@ -229,7 +229,7 @@ var availableTests = [
       var idSet = new Set();
       for (var i = 0; i < list.length; ++i) {
         var exception = list[i];
-        chrome.test.assertTrue(!!exception.urls.origin);
+        chrome.test.assertTrue(!!exception.urls.signonRealm);
         chrome.test.assertTrue(!!exception.urls.shown);
         chrome.test.assertTrue(!!exception.urls.link);
         idSet.add(exception.id);
@@ -325,10 +325,9 @@ var availableTests = [
           chrome.test.assertEq(1, compromisedCredentials.length);
 
           var compromisedCredential = compromisedCredentials[0];
+          chrome.test.assertEq('example.com', compromisedCredential.urls.shown);
           chrome.test.assertEq(
-              'example.com', compromisedCredential.formattedOrigin);
-          chrome.test.assertEq(
-              'https://example.com', compromisedCredential.detailedOrigin);
+              'https://example.com', compromisedCredential.urls.link);
           chrome.test.assertFalse(compromisedCredential.isAndroidCredential);
           chrome.test.assertEq(
               'https://example.com/change-password',
@@ -352,8 +351,8 @@ var availableTests = [
       chrome.test.assertEq(1, weakCredentials.length);
 
       var weakredential = weakCredentials[0];
-      chrome.test.assertEq('example.com', weakredential.formattedOrigin);
-      chrome.test.assertEq('https://example.com', weakredential.detailedOrigin);
+      chrome.test.assertEq('example.com', weakredential.urls.shown);
+      chrome.test.assertEq('https://example.com', weakredential.urls.link);
       chrome.test.assertFalse(weakredential.isAndroidCredential);
       chrome.test.assertEq(
           'https://example.com/change-password',
@@ -366,11 +365,13 @@ var availableTests = [
   function getPlaintextInsecurePassword() {
     var compromisedCredential = {
       id: 0,
-      formattedOrigin: 'example.com',
-      detailedOrigin: 'https://example.com',
+      urls: {
+        shown: 'example.com',
+        link: 'https://example.com',
+        signonRealm: 'https://example.com',
+      },
       isAndroidCredential: false,
       hasStartableScript: false,
-      signonRealm: 'https://example.com',
       username: 'alice',
       compromisedInfo: {
         compromiseTime: COMPROMISE_TIME,
@@ -391,11 +392,13 @@ var availableTests = [
   function getPlaintextInsecurePasswordFails() {
     var compromisedCredential = {
       id: 0,
-      formattedOrigin: 'example.com',
-      detailedOrigin: 'https://example.com',
+      urls: {
+        shown: 'example.com',
+        link: 'https://example.com',
+        signonRealm: 'https://example.com',
+      },
       isAndroidCredential: false,
       hasStartableScript: false,
-      signonRealm: 'https://example.com',
       username: 'alice',
       compromisedInfo: {
         compromiseTime: COMPROMISE_TIME,
@@ -419,11 +422,13 @@ var availableTests = [
     chrome.passwordsPrivate.changeInsecureCredential(
         {
           id: 0,
-          formattedOrigin: 'example.com',
-          detailedOrigin: 'https://example.com',
+          urls: {
+            shown: 'example.com',
+            link: 'https://example.com',
+            signonRealm: 'https://example.com',
+          },
           isAndroidCredential: false,
           hasStartableScript: false,
-          signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -444,11 +449,13 @@ var availableTests = [
     chrome.passwordsPrivate.changeInsecureCredential(
         {
           id: 0,
-          formattedOrigin: 'example.com',
-          detailedOrigin: 'https://example.com',
           isAndroidCredential: false,
           hasStartableScript: false,
-          signonRealm: 'https://example.com',
+          urls: {
+            shown: 'example.com',
+            link: 'https://example.com',
+            signonRealm: 'https://example.com',
+          },
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -469,11 +476,13 @@ var availableTests = [
     chrome.passwordsPrivate.changeInsecureCredential(
         {
           id: 0,
-          formattedOrigin: 'example.com',
-          detailedOrigin: 'https://example.com',
+          urls: {
+            shown: 'example.com',
+            link: 'https://example.com',
+            signonRealm: 'https://example.com',
+          },
           isAndroidCredential: false,
           hasStartableScript: false,
-          signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -492,11 +501,13 @@ var availableTests = [
     chrome.passwordsPrivate.removeInsecureCredential(
         {
           id: 0,
-          formattedOrigin: 'example.com',
-          detailedOrigin: 'https://example.com',
+          urls: {
+            shown: 'example.com',
+            link: 'https://example.com',
+            signonRealm: 'https://example.com',
+          },
           isAndroidCredential: false,
           hasStartableScript: false,
-          signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -518,11 +529,13 @@ var availableTests = [
     chrome.passwordsPrivate.removeInsecureCredential(
         {
           id: 0,
-          formattedOrigin: 'example.com',
-          detailedOrigin: 'https://example.com',
+          urls: {
+            shown: 'example.com',
+            link: 'https://example.com',
+            signonRealm: 'https://example.com',
+          },
           isAndroidCredential: false,
           hasStartableScript: false,
-          signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -542,11 +555,13 @@ var availableTests = [
     chrome.passwordsPrivate.muteInsecureCredential(
         {
           id: 0,
-          formattedOrigin: 'example.com',
-          detailedOrigin: 'https://example.com',
+          urls: {
+            shown: 'example.com',
+            link: 'https://example.com',
+            signonRealm: 'https://example.com',
+          },
           isAndroidCredential: false,
           hasStartableScript: false,
-          signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -566,11 +581,13 @@ var availableTests = [
     chrome.passwordsPrivate.muteInsecureCredential(
         {
           id: 0,
-          formattedOrigin: 'example.com',
-          detailedOrigin: 'https://example.com',
+          urls: {
+            shown: 'example.com',
+            link: 'https://example.com',
+            signonRealm: 'https://example.com',
+          },
           isAndroidCredential: false,
           hasStartableScript: false,
-          signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -592,11 +609,13 @@ var availableTests = [
     chrome.passwordsPrivate.unmuteInsecureCredential(
         {
           id: 0,
-          formattedOrigin: 'example.com',
-          detailedOrigin: 'https://example.com',
+          urls: {
+            shown: 'example.com',
+            link: 'https://example.com',
+            signonRealm: 'https://example.com',
+          },
           isAndroidCredential: false,
           hasStartableScript: false,
-          signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -616,11 +635,13 @@ var availableTests = [
     chrome.passwordsPrivate.unmuteInsecureCredential(
         {
           id: 0,
-          formattedOrigin: 'example.com',
-          detailedOrigin: 'https://example.com',
+          urls: {
+            shown: 'example.com',
+            link: 'https://example.com',
+            signonRealm: 'https://example.com',
+          },
           isAndroidCredential: false,
           hasStartableScript: false,
-          signonRealm: 'https://example.com',
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -642,11 +663,13 @@ var availableTests = [
     chrome.passwordsPrivate.recordChangePasswordFlowStarted(
         {
           id: 0,
-          formattedOrigin: 'example.com',
-          detailedOrigin: 'https://example.com',
+          urls: {
+            shown: 'example.com',
+            link: 'https://example.com',
+            signonRealm: 'https://example.com',
+          },
           isAndroidCredential: false,
           hasStartableScript: false,
-          signonRealm: 'https://example.com',
           username: 'alice',
           changePasswordUrl: 'https://example.com/.well-known/change-password',
           compromisedInfo: {
@@ -666,11 +689,13 @@ var availableTests = [
     chrome.passwordsPrivate.recordChangePasswordFlowStarted(
         {
           id: 0,
-          formattedOrigin: 'example.com',
-          detailedOrigin: 'https://example.com',
+          urls: {
+            shown: 'example.com',
+            link: 'https://example.com',
+            signonRealm: 'https://example.com',
+          },
           isAndroidCredential: false,
           hasStartableScript: false,
-          signonRealm: 'https://example.com',
           username: 'alice',
           changePasswordUrl: 'https://example.com/.well-known/change-password',
           compromisedInfo: {
@@ -690,11 +715,13 @@ var availableTests = [
     chrome.passwordsPrivate.recordChangePasswordFlowStarted(
         {
           id: 0,
-          formattedOrigin: 'App (com.example.app)',
-          detailedOrigin: 'com.example.app',
+          urls: {
+            shown: 'example.com',
+            link: 'https://example.com',
+            signonRealm: '',
+          },
           isAndroidCredential: true,
           hasStartableScript: false,
-          signonRealm: '',
           username: 'alice',
           compromisedInfo: {
             compromiseTime: COMPROMISE_TIME,
@@ -749,51 +776,55 @@ var availableTests = [
 
   function startAutomatedPasswordChange() {
     chrome.passwordsPrivate.startAutomatedPasswordChange(
-      {
-        id: 0,
-        formattedOrigin: 'example.com',
-        detailedOrigin: 'https://example.com',
-        isAndroidCredential: false,
-        hasStartableScript: true,
-        signonRealm: 'https://example.com',
-        username: 'alice',
-        changePasswordUrl: 'https://example.com/.well-known/change-password',
-        compromisedInfo: {
-          compromiseTime: COMPROMISE_TIME,
-          elapsedTimeSinceCompromise: '3 days ago',
-          compromiseType: 'LEAKED',
-          isMuted: false,
+        {
+          id: 0,
+          urls: {
+            shown: 'example.com',
+            link: 'https://example.com',
+            signonRealm: 'https://example.com',
+          },
+          isAndroidCredential: false,
+          hasStartableScript: true,
+          username: 'alice',
+          changePasswordUrl: 'https://example.com/.well-known/change-password',
+          compromisedInfo: {
+            compromiseTime: COMPROMISE_TIME,
+            elapsedTimeSinceCompromise: '3 days ago',
+            compromiseType: 'LEAKED',
+            isMuted: false,
+          },
         },
-      },
-      (status) => {
-        chrome.test.assertNoLastError();
-        chrome.test.assertEq(true, status);
-        chrome.test.succeed();
-      });
+        (status) => {
+          chrome.test.assertNoLastError();
+          chrome.test.assertEq(true, status);
+          chrome.test.succeed();
+        });
   },
 
   function startAutomatedPasswordChangeWithEmptyUrl() {
     chrome.passwordsPrivate.startAutomatedPasswordChange(
-      {
-        id: 0,
-        formattedOrigin: 'example.com',
-        detailedOrigin: 'https://example.com',
-        isAndroidCredential: false,
-        hasStartableScript: true,
-        signonRealm: 'https://example.com',
-        username: 'alice',
-        compromisedInfo: {
-          compromiseTime: COMPROMISE_TIME,
-          elapsedTimeSinceCompromise: '3 days ago',
-          compromiseType: 'LEAKED',
-          isMuted: false,
+        {
+          id: 0,
+          urls: {
+            shown: 'example.com',
+            link: 'https://example.com',
+            signonRealm: 'https://example.com',
+          },
+          isAndroidCredential: false,
+          hasStartableScript: true,
+          username: 'alice',
+          compromisedInfo: {
+            compromiseTime: COMPROMISE_TIME,
+            elapsedTimeSinceCompromise: '3 days ago',
+            compromiseType: 'LEAKED',
+            isMuted: false,
+          },
         },
-      },
-      (status) => {
-        chrome.test.assertNoLastError();
-        chrome.test.assertEq(false, status);
-        chrome.test.succeed();
-      });
+        (status) => {
+          chrome.test.assertNoLastError();
+          chrome.test.assertEq(false, status);
+          chrome.test.succeed();
+        });
   },
 
   function movePasswordsToAccount() {

@@ -842,7 +842,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthOnGetPlaintextCompPassword) {
       nullptr, credential_callback.Get());
 
   ASSERT_TRUE(opt_credential.has_value());
-  EXPECT_EQ(form.signon_realm, opt_credential->signon_realm);
+  EXPECT_EQ(form.signon_realm, opt_credential->urls.signon_realm);
   EXPECT_EQ(form.username_value, base::UTF8ToUTF16(opt_credential->username));
   EXPECT_EQ(form.password_value, base::UTF8ToUTF16(*opt_credential->password));
 }
@@ -854,7 +854,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
       delegate.GetUrlCollection("127.0.0.1");
   EXPECT_TRUE(urls.has_value());
   EXPECT_EQ("127.0.0.1", urls.value().shown);
-  EXPECT_EQ("http://127.0.0.1/", urls.value().origin);
+  EXPECT_EQ("http://127.0.0.1/", urls.value().signon_realm);
   EXPECT_EQ("http://127.0.0.1/", urls.value().link);
 }
 
@@ -865,7 +865,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
       delegate.GetUrlCollection("example.com/login");
   EXPECT_TRUE(urls.has_value());
   EXPECT_EQ("example.com", urls.value().shown);
-  EXPECT_EQ("https://example.com/", urls.value().origin);
+  EXPECT_EQ("https://example.com/", urls.value().signon_realm);
   EXPECT_EQ("https://example.com/login", urls.value().link);
 }
 
@@ -877,7 +877,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
           "http://username:password@example.com/login?param=value#ref");
   EXPECT_TRUE(urls.has_value());
   EXPECT_EQ("example.com", urls.value().shown);
-  EXPECT_EQ("http://example.com/", urls.value().origin);
+  EXPECT_EQ("http://example.com/", urls.value().signon_realm);
   EXPECT_EQ("http://example.com/login", urls.value().link);
 }
 

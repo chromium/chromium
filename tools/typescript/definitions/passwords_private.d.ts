@@ -78,7 +78,7 @@ declare global {
       }
 
       export interface UrlCollection {
-        origin: string;
+        signonRealm: string;
         shown: string;
         link: string;
       }
@@ -113,12 +113,10 @@ declare global {
 
       export interface InsecureCredential {
         id: number;
-        formattedOrigin: string;
-        detailedOrigin: string;
+        urls: UrlCollection;
         isAndroidCredential: boolean;
         changePasswordUrl?: string;
         hasStartableScript: boolean;
-        signonRealm: string;
         username: string;
         password?: string;
         compromisedInfo?: CompromisedInfo;

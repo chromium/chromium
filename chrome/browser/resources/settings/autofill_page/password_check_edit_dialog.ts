@@ -145,7 +145,7 @@ export class SettingsPasswordCheckEditDialogElement extends
    * @return The text to be displayed as the dialog's footnote.
    */
   private getFootnote_(): string {
-    return this.i18n('editPasswordFootnote', this.item!.formattedOrigin);
+    return this.i18n('editPasswordFootnote', this.item!.urls.shown);
   }
 
   /**

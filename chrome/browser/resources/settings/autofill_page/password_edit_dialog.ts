@@ -690,7 +690,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         AddCredentialFromSettingsUserInteractions.DUPLICATE_CREDENTIAL_VIEWED,
         AddCredentialFromSettingsUserInteractions.COUNT);
     const existingEntry = this.savedPasswords.find(entry => {
-      return entry.urls.origin === this.websiteUrls_!.origin &&
+      return entry.urls.signonRealm === this.websiteUrls_!.signonRealm &&
           entry.username === this.username_;
     })!;
     this.requestPlaintextPassword(
@@ -722,8 +722,9 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       return false;
     }
     // TODO(crbug.com/1264468): Consider moving duplication check to backend.
-    const isDuplicate = this.usernamesByOrigin_.has(this.websiteUrls_.origin) &&
-        this.usernamesByOrigin_.get(this.websiteUrls_.origin)!.has(
+    const isDuplicate =
+        this.usernamesByOrigin_.has(this.websiteUrls_.signonRealm) &&
+        this.usernamesByOrigin_.get(this.websiteUrls_.signonRealm)!.has(
             this.username_);
 
     if (isDuplicate && this.dialogMode === PasswordDialogMode.ADD) {
@@ -752,7 +753,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
     // Group existing usernames by origin.
     return relevantPasswords.reduce(function(usernamesByOrigin, entry) {
-      const origin = entry.urls.origin;
+      const origin = entry.urls.signonRealm;
       if (!usernamesByOrigin.has(origin)) {
         usernamesByOrigin.set(origin, new Set());
       }

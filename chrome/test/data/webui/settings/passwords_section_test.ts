@@ -105,7 +105,7 @@ function getFirstPasswordListItem(passwordsSection: HTMLElement) {
 function listContainsUrl(
     passwordList: (chrome.passwordsPrivate.PasswordUiEntry[]),
     url: string): boolean {
-  return passwordList.some(item => item.urls.origin === url);
+  return passwordList.some(item => item.urls.signonRealm === url);
 }
 
 /**

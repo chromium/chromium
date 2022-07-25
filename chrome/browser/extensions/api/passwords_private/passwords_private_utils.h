@@ -21,9 +21,9 @@ struct CredentialUIEntry;
 
 namespace extensions {
 
-// Obtains a collection of URLs from the passed in |form|. This includes an
-// origin URL used for internal logic, a human friendly string shown to the user
-// as well as a URL that is linked to.
+// Obtains a collection of URLs from the passed in |credential|. This includes
+// an origin URL used for internal logic, a human friendly string shown to the
+// user as well as a URL that is linked to.
 api::passwords_private::UrlCollection CreateUrlCollectionFromCredential(
     const password_manager::CredentialUIEntry& credential);
 

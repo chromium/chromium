@@ -626,7 +626,7 @@ const CredentialUIEntry* PasswordCheckDelegate::FindMatchingEntry(
   if (!entry)
     return nullptr;
 
-  if (credential.signon_realm != entry->signon_realm ||
+  if (credential.urls.signon_realm != entry->signon_realm ||
       credential.username != base::UTF16ToUTF8(entry->username) ||
       (credential.password &&
        *credential.password != base::UTF16ToUTF8(entry->password))) {
@@ -675,45 +675,20 @@ PasswordCheckDelegate::ConstructInsecureCredential(
   api::passwords_private::InsecureCredential api_credential;
   auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
       entry.signon_realm);
-  if (facet.IsValidAndroidFacetURI()) {
-    api_credential.is_android_credential = true;
-    // |formatted_orgin|, |detailed_origin| and |change_password_url| need
-    // special handling for Android. Here we use affiliation information
-    // instead of the origin.
+  api_credential.is_android_credential = facet.IsValidAndroidFacetURI();
+  api_credential.id = insecure_credential_id_generator_.GenerateId(entry);
+  api_credential.username = base::UTF16ToUTF8(entry.username);
+  api_credential.urls = CreateUrlCollectionFromCredential(entry);
+  if (api_credential.is_android_credential) {
+    // |change_password_url| need special handling for Android. Here we use
+    // affiliation information instead of the origin.
     if (!entry.app_display_name.empty()) {
-      api_credential.formatted_origin = entry.app_display_name;
-      api_credential.detailed_origin = entry.app_display_name;
       api_credential.change_password_url =
           GetChangePasswordUrl(GURL(entry.affiliated_web_realm));
-    } else {
-      // In case no affiliation information could be obtained show the
-      // formatted package name to the user. An empty change_password_url will
-      // be handled by the frontend, by not including a link in this case.
-      api_credential.formatted_origin = l10n_util::GetStringFUTF8(
-          IDS_SETTINGS_PASSWORDS_ANDROID_APP,
-          base::UTF8ToUTF16(facet.android_package_name()));
-      api_credential.detailed_origin = facet.android_package_name();
     }
   } else {
-    api_credential.is_android_credential = false;
-    api_credential.formatted_origin =
-        base::UTF16ToUTF8(url_formatter::FormatUrl(
-            entry.url.GetWithEmptyPath(),
-            url_formatter::kFormatUrlOmitDefaults |
-                url_formatter::kFormatUrlOmitHTTPS |
-                url_formatter::kFormatUrlOmitTrivialSubdomains |
-                url_formatter::kFormatUrlTrimAfterHost,
-            base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
-    api_credential.detailed_origin =
-        base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
-            entry.url.GetWithEmptyPath()));
     api_credential.change_password_url = GetChangePasswordUrl(entry.url);
   }
-
-  api_credential.id = insecure_credential_id_generator_.GenerateId(entry);
-  api_credential.signon_realm = entry.signon_realm;
-  api_credential.username = base::UTF16ToUTF8(entry.username);
-
   // For the time being, the automated password change is restricted to
   // compromised credentials. In the future, this requirement may be relaxed.
   if ((entry.IsPhished() || entry.IsLeaked()) &&
@@ -728,7 +703,6 @@ PasswordCheckDelegate::ConstructInsecureCredential(
   } else {
     api_credential.has_startable_script = false;
   }
-
   return api_credential;
 }
 

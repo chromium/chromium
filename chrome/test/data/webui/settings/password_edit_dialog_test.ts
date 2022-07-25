@@ -130,7 +130,7 @@ async function updateWebsiteInput(
     passwordManager.setGetUrlCollectionResponse(
         isValid ? {
           // Matches fake data pattern in createPasswordEntry.
-          origin: `http://${newValue}/login`,
+          signonRealm: `http://${newValue}/login`,
           shown: newValue,
           link: `http://${newValue}/login`,
         } :

@@ -258,9 +258,9 @@ export const PasswordCheckMixin = dedupingMixin(
                   lhs.compromisedInfo!.compromiseTime;
             }
 
-            // Otherwise sort by origin, or by username in case the origin is
-            // the same.
-            return lhs.formattedOrigin.localeCompare(rhs.formattedOrigin) ||
+            // Otherwise sort by shown origin, or by username in case the origin
+            // is the same.
+            return lhs.urls.shown.localeCompare(rhs.urls.shown) ||
                 lhs.username.localeCompare(rhs.username);
           });
           resultList.push(...addedResults);

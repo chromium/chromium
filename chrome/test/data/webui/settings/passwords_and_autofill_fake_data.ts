@@ -51,7 +51,7 @@ export function createPasswordEntry(params?: PasswordEntryParams):
 
   return {
     urls: {
-      origin: 'http://' + url + '/login',
+      signonRealm: 'http://' + url + '/login',
       shown: url,
       link: 'http://' + url + '/login',
     },
@@ -83,7 +83,7 @@ export function createExceptionEntry(params?: ExceptionEntryParams):
   const id = params.id !== undefined ? params.id : 42;
   return {
     urls: {
-      origin: 'http://' + url + '/login',
+      signonRealm: 'http://' + url + '/login',
       shown: url,
       link: 'http://' + url + '/login',
     },
@@ -174,13 +174,15 @@ export function makeInsecureCredential(
     id?: number): chrome.passwordsPrivate.InsecureCredential {
   return {
     id: id || 0,
-    formattedOrigin: url,
     changePasswordUrl: `http://${url}/`,
     hasStartableScript: false,
+    urls: {
+      signonRealm: `http://${url}/`,
+      shown: url,
+      link: `http://${url}/`,
+    },
     username: username,
-    detailedOrigin: '',
     isAndroidCredential: false,
-    signonRealm: '',
   };
 }
 

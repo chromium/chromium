@@ -196,7 +196,7 @@ function validateInsecurePasswordsList(
         insecureCredentials[index]!.username);
     assertEquals(
         node.$.insecureOrigin.textContent!.trim(),
-        insecureCredentials[index]!.formattedOrigin);
+        insecureCredentials[index]!.urls.shown);
 
     if (isCompromised && !isMuted) {
       assertEquals(

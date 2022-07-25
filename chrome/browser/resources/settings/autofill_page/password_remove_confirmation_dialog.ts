@@ -83,7 +83,7 @@ export class SettingsPasswordRemoveConfirmationDialogElement extends
 
     const url: string|undefined = this.item.changePasswordUrl;
     assert(url);
-    const origin = this.item.formattedOrigin;
+    const origin = this.item.urls.shown;
     return this.i18nAdvanced(
         'removeCompromisedPasswordConfirmationDescription', {
           substitutions:
@@ -96,7 +96,7 @@ export class SettingsPasswordRemoveConfirmationDialogElement extends
    * Used when the change password URL is not present or insecure.
    */
   private getRemovePasswordDescriptionText_(): string {
-    const origin = this.item.formattedOrigin;
+    const origin = this.item.urls.shown;
     return this.i18n(
         'removeCompromisedPasswordConfirmationDescription', origin, origin);
   }

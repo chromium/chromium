@@ -110,7 +110,7 @@ chrome.passwordsPrivate.ImportResults;
 
 /**
  * @typedef {{
- *   origin: string,
+ *   signonRealm: string,
  *   shown: string,
  *   link: string
  * }}
@@ -159,13 +159,11 @@ chrome.passwordsPrivate.CompromisedInfo;
 
 /**
  * @typedef {{
+ *   urls: !chrome.passwordsPrivate.UrlCollection,
  *   id: number,
- *   formattedOrigin: string,
- *   detailedOrigin: string,
  *   isAndroidCredential: boolean,
  *   changePasswordUrl: (string|undefined),
  *   hasStartableScript: boolean,
- *   signonRealm: string,
  *   username: string,
  *   password: (string|undefined),
  *   compromisedInfo: (!chrome.passwordsPrivate.CompromisedInfo|undefined)

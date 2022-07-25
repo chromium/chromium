@@ -315,7 +315,7 @@ export class PasswordsDeviceSectionElement extends
             (this.savedPasswords
                  .filter(
                      p2 => p1.username === p2.username &&
-                         p1.urls.origin === p2.urls.origin)
+                         p1.urls.signonRealm === p2.urls.signonRealm)
                  .length === 1));
   }
 

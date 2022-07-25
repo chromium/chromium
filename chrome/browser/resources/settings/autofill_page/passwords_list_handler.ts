@@ -404,7 +404,7 @@ export class PasswordsListHandlerElement extends
    */
   private shouldShowMoveToAccountOption_(): boolean {
     const isFirstSignedInAccountPassword = !!this.activePassword_ &&
-        this.activePassword_.entry.urls.origin.includes(
+        this.activePassword_.entry.urls.signonRealm.includes(
             'accounts.google.com') &&
         this.activePassword_.entry.username === this.firstSignedInAccountEmail_;
     // It's not useful to move a password for an account into that same account.

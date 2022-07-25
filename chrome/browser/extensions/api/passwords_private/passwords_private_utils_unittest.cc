@@ -25,7 +25,7 @@ TEST(CreateUrlCollectionFromFormTest, UrlsFromHtmlForm) {
 
   api::passwords_private::UrlCollection html_urls =
       CreateUrlCollectionFromCredential(CredentialUIEntry(html_form));
-  EXPECT_EQ(html_urls.origin, "http://example.com/");
+  EXPECT_EQ(html_urls.signon_realm, "http://example.com/");
   EXPECT_EQ(html_urls.shown, "example.com");
   EXPECT_EQ(html_urls.link, "http://example.com/LoginAuth");
 }
@@ -39,7 +39,7 @@ TEST(CreateUrlCollectionFromFormTest, UrlsFromFederatedForm) {
 
   api::passwords_private::UrlCollection federated_urls =
       CreateUrlCollectionFromCredential(CredentialUIEntry(federated_form));
-  EXPECT_EQ(federated_urls.origin, "federation://example.com/google.com");
+  EXPECT_EQ(federated_urls.signon_realm, "federation://example.com/google.com");
   EXPECT_EQ(federated_urls.shown, "example.com");
   EXPECT_EQ(federated_urls.link, "https://example.com/");
 }
@@ -51,7 +51,7 @@ TEST(CreateUrlCollectionFromFormTest, UrlsFromAndroidFormWithoutDisplayName) {
 
   api::passwords_private::UrlCollection android_urls =
       CreateUrlCollectionFromCredential(CredentialUIEntry(android_form));
-  EXPECT_EQ("android://example@com.example.android", android_urls.origin);
+  EXPECT_EQ("android://example@com.example.android", android_urls.signon_realm);
   EXPECT_EQ("android.example.com", android_urls.shown);
   EXPECT_EQ("https://play.google.com/store/apps/details?id=com.example.android",
             android_urls.link);
@@ -64,7 +64,7 @@ TEST(CreateUrlCollectionFromFormTest, UrlsFromAndroidFormWithAppName) {
 
   api::passwords_private::UrlCollection android_urls =
       CreateUrlCollectionFromCredential(CredentialUIEntry(android_form));
-  EXPECT_EQ(android_urls.origin, "android://hash@com.example.android");
+  EXPECT_EQ(android_urls.signon_realm, "android://hash@com.example.android");
   EXPECT_EQ("Example Android App", android_urls.shown);
   EXPECT_EQ("https://play.google.com/store/apps/details?id=com.example.android",
             android_urls.link);
@@ -75,7 +75,7 @@ TEST(CreateUrlCollectionFromGURLTest, UrlsFromGURL) {
   api::passwords_private::UrlCollection urls = CreateUrlCollectionFromGURL(url);
 
   EXPECT_EQ(urls.shown, "example.com");
-  EXPECT_EQ(urls.origin, "https://example.com/");
+  EXPECT_EQ(urls.signon_realm, "https://example.com/");
   EXPECT_EQ(urls.link, "https://example.com/login");
 }
 

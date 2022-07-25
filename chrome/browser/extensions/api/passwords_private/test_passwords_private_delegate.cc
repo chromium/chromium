@@ -26,8 +26,8 @@ constexpr size_t kNumMocks = 3;
 api::passwords_private::PasswordUiEntry CreateEntry(int id) {
   api::passwords_private::PasswordUiEntry entry;
   entry.urls.shown = "test" + base::NumberToString(id) + ".com";
-  entry.urls.origin = "http://" + entry.urls.shown + "/login";
-  entry.urls.link = entry.urls.origin;
+  entry.urls.signon_realm = "http://" + entry.urls.shown + "/login";
+  entry.urls.link = entry.urls.signon_realm;
   entry.username = "testName" + base::NumberToString(id);
   entry.id = id;
   entry.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
@@ -37,8 +37,8 @@ api::passwords_private::PasswordUiEntry CreateEntry(int id) {
 api::passwords_private::ExceptionEntry CreateException(int id) {
   api::passwords_private::ExceptionEntry exception;
   exception.urls.shown = "exception" + base::NumberToString(id) + ".com";
-  exception.urls.origin = "http://" + exception.urls.shown + "/login";
-  exception.urls.link = exception.urls.origin;
+  exception.urls.signon_realm = "http://" + exception.urls.shown + "/login";
+  exception.urls.link = exception.urls.signon_realm;
   exception.id = id;
   return exception;
 }
@@ -199,8 +199,9 @@ std::vector<api::passwords_private::InsecureCredential>
 TestPasswordsPrivateDelegate::GetCompromisedCredentials() {
   api::passwords_private::InsecureCredential credential;
   credential.username = "alice";
-  credential.formatted_origin = "example.com";
-  credential.detailed_origin = "https://example.com";
+  credential.urls.shown = "example.com";
+  credential.urls.link = "https://example.com";
+  credential.urls.signon_realm = "https://example.com";
   credential.is_android_credential = false;
   credential.change_password_url =
       std::make_unique<std::string>("https://example.com/change-password");
@@ -222,8 +223,8 @@ std::vector<api::passwords_private::InsecureCredential>
 TestPasswordsPrivateDelegate::GetWeakCredentials() {
   api::passwords_private::InsecureCredential credential;
   credential.username = "bob";
-  credential.formatted_origin = "example.com";
-  credential.detailed_origin = "https://example.com";
+  credential.urls.shown = "example.com";
+  credential.urls.link = "https://example.com";
   credential.is_android_credential = false;
   credential.change_password_url =
       std::make_unique<std::string>("https://example.com/change-password");
