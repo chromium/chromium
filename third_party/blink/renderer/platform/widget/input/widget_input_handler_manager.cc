@@ -254,9 +254,12 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
 #endif
 }
 
-void WidgetInputHandlerManager::DidFirstVisuallyNonEmptyPaint() {
+void WidgetInputHandlerManager::DidFirstVisuallyNonEmptyPaint(
+    const base::TimeTicks& first_paint_time) {
   suppressing_input_events_state_ &=
       ~static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted);
+
+  RecordMetricsForDroppedEventsBeforePaint(first_paint_time);
 }
 
 void WidgetInputHandlerManager::InitInputHandler() {
@@ -473,13 +476,31 @@ void WidgetInputHandlerManager::LogInputTimingUMA() {
       if (suppressing_input_events_state_ &
           (unsigned)SuppressingInputEventsBits::kDeferCommits) {
         lifecycle_state = InitialInputTiming::kBeforeCommit;
+      } else if (suppressing_input_events_state_ &
+                 (unsigned)SuppressingInputEventsBits::kHasNotPainted) {
+        lifecycle_state = InitialInputTiming::kBeforeFirstPaint;
       } else {
-        lifecycle_state = InitialInputTiming::kAfterCommit;
+        lifecycle_state = InitialInputTiming::kAfterFirstPaint;
       }
     }
-    UMA_HISTOGRAM_ENUMERATION("PaintHolding.InputTiming2", lifecycle_state);
+    UMA_HISTOGRAM_ENUMERATION("PaintHolding.InputTiming3", lifecycle_state);
     have_emitted_uma_ = true;
   }
+}
+
+void WidgetInputHandlerManager::RecordMetricsForDroppedEventsBeforePaint(
+    const base::TimeTicks& first_paint_time) {
+  // Initialize to 0 timestamp and log 0 if there was no suppressed event or the
+  // most recent suppressed event was before the first_paint_time
+  auto diff = base::TimeDelta();
+  if (most_recent_suppressed_event_time_ > first_paint_time) {
+    diff = most_recent_suppressed_event_time_ - first_paint_time;
+  }
+  UMA_HISTOGRAM_TIMES("PageLoad.Internal.SuppressedEventsTimingBeforePaint",
+                      diff);
+
+  UMA_HISTOGRAM_COUNTS("PageLoad.Internal.SuppressedEventsCountBeforePaint",
+                       suppressed_events_count_);
 }
 
 void WidgetInputHandlerManager::DispatchScrollGestureToCompositor(
@@ -518,8 +539,17 @@ void WidgetInputHandlerManager::DispatchEvent(
   bool event_is_move =
       event->Event().GetType() == WebInputEvent::Type::kMouseMove ||
       event->Event().GetType() == WebInputEvent::Type::kPointerMove;
-  if (!event_is_move)
+  if (!event_is_move) {
     LogInputTimingUMA();
+
+    // We only count it if the only reason we are suppressing is because we
+    // haven't painted yet.
+    if (suppressing_input_events_state_ ==
+        static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted)) {
+      most_recent_suppressed_event_time_ = base::TimeTicks::Now();
+      suppressed_events_count_ += 1;
+    }
+  }
 
   // Drop input if we are deferring a rendering pipeline phase, unless it's a
   // move event, or we are waiting for first visually non empty paint.
@@ -690,6 +720,8 @@ void WidgetInputHandlerManager::DidNavigate() {
   suppressing_input_events_state_ =
       static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted);
   have_emitted_uma_ = false;
+  most_recent_suppressed_event_time_ = base::TimeTicks();
+  suppressed_events_count_ = 0;
 }
 
 void WidgetInputHandlerManager::OnDeferMainFrameUpdatesChanged(bool status) {

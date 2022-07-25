@@ -255,9 +255,12 @@ void WidgetBase::InitializeNonCompositing() {
   initialized_ = true;
 }
 
-void WidgetBase::DidFirstVisuallyNonEmptyPaint() {
-  if (widget_input_handler_manager_)
-    widget_input_handler_manager_->DidFirstVisuallyNonEmptyPaint();
+void WidgetBase::DidFirstVisuallyNonEmptyPaint(
+    base::TimeTicks& first_paint_time) {
+  if (widget_input_handler_manager_) {
+    widget_input_handler_manager_->DidFirstVisuallyNonEmptyPaint(
+        first_paint_time);
+  }
 }
 
 void WidgetBase::Shutdown() {

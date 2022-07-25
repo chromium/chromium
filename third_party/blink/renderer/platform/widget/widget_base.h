@@ -109,7 +109,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Shutdown the compositor.
   void Shutdown();
 
-  void DidFirstVisuallyNonEmptyPaint();
+  void DidFirstVisuallyNonEmptyPaint(base::TimeTicks&);
 
   // Set the compositor as visible. If |visible| is true, then the compositor
   // will request a new layer frame sink, begin producing frames from the

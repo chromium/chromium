@@ -9442,12 +9442,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PaintHolding.InputTiming2" enum="PaintHoldingInputTiming"
+<histogram name="PaintHolding.InputTiming3" enum="PaintHoldingInputTiming"
     expires_after="2023-01-01">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
-    Records whether or not input arrived before the first commit.
+    Records whether or not input arrived before the first paint.
   </summary>
 </histogram>
 

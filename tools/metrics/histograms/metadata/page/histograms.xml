@@ -2317,6 +2317,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Internal.SuppressedEventsCountBeforePaint"
+    units="count" expires_after="2023-01-01">
+  <owner>mehdika@chromium.org</owner>
+  <owner>blink-interactions-team@google.com</owner>
+  <summary>
+    Measures the number of events observed before the first paint. This metric
+    is emitted for every committed page load, immediately after the first paint
+    is complete. When the DropInputEventsBeforeFirstPaint feature is enabled
+    these events will be dropped as the user may not have seen the content they
+    are interacting with yet. Since there is a delay from the first paint
+    presentation to when the notification about it is received the user may have
+    actually seen the first paint for some of these events. If many events are
+    being dropped we may need to revisit this experiment or improve the
+    measurement to only those after the first paint.
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.Internal.SuppressedEventsTimingBeforePaint"
+    units="ms" expires_after="2023-01-01">
+  <owner>mehdika@chromium.org</owner>
+  <owner>blink-interactions-team@google.com</owner>
+  <summary>
+    Measures time difference between first paint and last event dropped by
+    DropInputEventsBeforeFirstPaint feature. This metric is emitted for every
+    committed page load, immediately after the first paint is complete. When the
+    DropInputEventsBeforeFirstPaint feature is enabled events observed before
+    the first paint will be dropped as the user may not have seen the content
+    they are interacting with yet. Since there is a delay from the first paint
+    presentation to when the notification about it is received the user may have
+    actually seen the first paint for some of these events. If this time
+    difference is long enough to affect user experience we may need to revisit
+    this experiment. We are logging 0 timestamp if there is no suppressed event
+    or the most recent suppressed event is before the first paint time so that
+    we have a count of the number of times the behavior was good to compare the
+    size of the bad cases to.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.LayoutInstability.CumulativeShiftScore"
     units="scorex10" expires_after="2023-07-13">
   <owner>bmcquade@chromium.org</owner>

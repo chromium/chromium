@@ -55,9 +55,11 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
     kBeforeLifecycle = 0,
     // Input is before commit
     kBeforeCommit = 1,
-    // Input comes only after commit
-    kAfterCommit = 2,
-    kMaxValue = kAfterCommit
+    // Input comes before first paint
+    kBeforeFirstPaint = 2,
+    // Input comes only after first paint
+    kAfterFirstPaint = 3,
+    kMaxValue = kAfterFirstPaint
   };
 
   // For use in bitfields to keep track of why we should keep suppressing input
@@ -102,7 +104,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void InputEventsDispatched(bool raf_aligned) override;
   void SetNeedsMainFrame() override;
 
-  void DidFirstVisuallyNonEmptyPaint();
+  void DidFirstVisuallyNonEmptyPaint(const base::TimeTicks& first_paint_time);
 
   // InputHandlerProxyClient overrides.
   void WillShutdown() override;
@@ -283,6 +285,8 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
 
   void LogInputTimingUMA();
 
+  void RecordMetricsForDroppedEventsBeforePaint(const base::TimeTicks&);
+
   // Only valid to be called on the main thread.
   base::WeakPtr<WidgetBase> widget_;
   base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
@@ -334,6 +338,18 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   // whether to suppress input) and the renderer thread accesses it when the
   // status of deferrals changes, so it needs to be thread safe.
   std::atomic<uint16_t> suppressing_input_events_state_;
+
+  // Saves most recent input event time that would be dropped by the
+  // DropInputEventsBeforeFirstPaint feature (i.e. before receiving the first
+  // presentation of content). If this is after the first paint timestamp,
+  // we log the difference to track the worst dropped event experienced.
+  base::TimeTicks most_recent_suppressed_event_time_;
+
+  // Saves the number of events that would be dropped by the
+  // DropInputEventsBeforeFirstPaint feature (i.e. before receiving the first
+  // presentation of content). This is important because it shows how many times
+  // user tried to interact with page but the event was dropped.
+  int suppressed_events_count_ = 0;
 
   // Allow input suppression to be disabled for tests and non-browser uses
   // of chromium that do not wait for the first commit, or that may never

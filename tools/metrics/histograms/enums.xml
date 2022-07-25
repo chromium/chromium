@@ -74165,7 +74165,8 @@ Called by update_net_trust_anchors.py.-->
 <enum name="PaintHoldingInputTiming">
   <int value="0" label="Before Lifecycle"/>
   <int value="1" label="Before Commit"/>
-  <int value="2" label="After Commit"/>
+  <int value="2" label="Before First Paint"/>
+  <int value="3" label="After First Paint"/>
 </enum>
 
 <enum name="PaintOpDeserializationError">
