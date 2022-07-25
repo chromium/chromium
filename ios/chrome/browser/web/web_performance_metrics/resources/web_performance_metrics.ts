@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {sendWebKitMessage} from "//ios/web/public/js_messaging/resources/utils.js";
+
 const EVENT_TYPES = [
   'mousedown',
   'keydown',
@@ -19,17 +21,18 @@ let loadedFromCache = false;
 // will only be called for the main frame and
 // subframes that are same-origin relative to the
 // main frame.
-function processPaintEvents(paintEvents, observer) {
+function processPaintEvents(paintEvents: PerformanceObserverEntryList,
+                            observer: PerformanceObserver): void {
   for (const event of paintEvents.getEntriesByName(FIRST_CONTENTFUL_PAINT)){
     // The performance.timing.navigationStart property has been deprecated.
     // TODO(crbug.com/1273083)
-    let response = {
+    const response = {
       'metric' : 'FirstContentfulPaint',
       'frameNavigationStartTime' : performance.timing.navigationStart,
       'value'  : event.startTime,
     }
 
-    __gCrWeb.common.sendWebKitMessage(
+   sendWebKitMessage(
         WEB_PERFORMANCE_METRICS_HANDLER_NAME,
         response);
 
@@ -39,21 +42,21 @@ function processPaintEvents(paintEvents, observer) {
 
 // Sends the First Input Delay time for
 // each frame in a website to the browser.
-function processInputEvent(inputEvent) {
-  let currentTime = performance.now();
-  let delta = currentTime - inputEvent.timeStamp;
-  let response = {
+function processInputEvent(inputEvent: Event): void {
+  const currentTime = performance.now();
+  const delta = currentTime - inputEvent.timeStamp;
+  const response = {
     'metric' : 'FirstInputDelay',
     'value' : delta,
     'cached' : loadedFromCache
   }
 
-  __gCrWeb.common.sendWebKitMessage(
+  sendWebKitMessage(
     WEB_PERFORMANCE_METRICS_HANDLER_NAME,
     response);
 
   EVENT_TYPES.forEach((type) => {
-    removeEventListenerFromWindow(type, processInputEvent, { capture: true });
+    window.removeEventListener(type, processInputEvent, { capture: true });
   });
 }
 
@@ -63,7 +66,7 @@ function processInputEvent(inputEvent) {
 // event listeners to capture and forward
 // the Web Performance Metrics back to the
 // browser.
-function processPageShowEvent(pageshow) {
+function processPageShowEvent(pageshow: PageTransitionEvent): void {
   if (pageshow.persisted) {
     loadedFromCache = true;
     registerInputEventListeners();
@@ -74,9 +77,9 @@ function processPageShowEvent(pageshow) {
 // used for collecting the First Input Delay
 // upon the user navigating away from the
 // webpage
-function processPageHideEvent() {
+function processPageHideEvent(): void {
   EVENT_TYPES.forEach((type) => {
-    removeEventListenerFromWindow(type, processInputEvent, { capture: true });
+    window.removeEventListener(type, processInputEvent, { capture: true });
   });
   loadedFromCache = false;
 }
@@ -85,8 +88,8 @@ function processPageHideEvent() {
 // Once the PerformanceObserver receives the
 // 'first-contentful-paint' event, it captures the time of the
 // event and forwards the result to the browser.
-function registerPerformanceObserver(){
-  let observer = new PerformanceObserver(processPaintEvents);
+function registerPerformanceObserver(): void {
+  const observer = new PerformanceObserver(processPaintEvents);
   observer.observe({ entryTypes : ['paint'] });
 }
 
@@ -94,9 +97,9 @@ function registerPerformanceObserver(){
 // event type. Once the event listener receives an event,
 // it calculates the first input delay and forwards the
 // result ot the browser.
-function registerInputEventListeners() {
+function registerInputEventListeners(): void {
   EVENT_TYPES.forEach((type) => {
-    addEventListenerToWindow(type,
+    window.addEventListener(type,
                              processInputEvent,
                              {capture: true,
                               passive: true});
@@ -105,27 +108,15 @@ function registerInputEventListeners() {
 
 // Registers passive event listeners for the pageshow
 // and pagehide events
-function registerPageCacheListeners() {
-  addEventListenerToWindow('pageshow',
+function registerPageCacheListeners(): void {
+  window.addEventListener('pageshow',
                            processPageShowEvent,
                            {capture: true,
                            passive: true});
 
-  addEventListenerToWindow('pagehide',
+  window.addEventListener('pagehide',
                            processPageHideEvent,
                            { capture: true, passive: true});
-}
-
-// Wrapper function for adding an event listener to the
-// window.
-function addEventListenerToWindow(type, callback, options) {
-  window.addEventListener(type, callback, options);
-}
-
-// Wrapper function for removing an event listener from the
-// window.
-function removeEventListenerFromWindow(type, callback, options) {
-  window.removeEventListener(type, callback, options);
 }
 
 registerPerformanceObserver();

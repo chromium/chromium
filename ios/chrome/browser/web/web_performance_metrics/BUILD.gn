@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
-import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("web_performance_metrics") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -39,9 +39,9 @@ source_set("unit_tests") {
   sources = [ "web_performance_metrics_java_script_feature_unittest.mm" ]
 }
 
-optimize_js("web_performance_metrics_js") {
+optimize_ts("web_performance_metrics_js") {
   visibility = [ ":web_performance_metrics" ]
 
-  primary_script = "resources/web_performance_metrics.js"
-  sources = [ "resources/web_performance_metrics.js" ]
+  sources = [ "resources/web_performance_metrics.ts" ]
+  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
 }
