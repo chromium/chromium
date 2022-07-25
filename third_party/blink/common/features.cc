@@ -1565,6 +1565,9 @@ const base::Feature kTimedHTMLParserBudget{"TimedHTMLParserBudget",
 const base::Feature kCSSOverflowForReplacedElements{
     "CSSOverflowForReplacedElements", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kScrollUpdateOptimizations{
+    "ScrollUpdateOptimizations", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kClipboardUnsanitizedContent{
     "ClipboardUnsanitizedContent", base::FEATURE_DISABLED_BY_DEFAULT};
 

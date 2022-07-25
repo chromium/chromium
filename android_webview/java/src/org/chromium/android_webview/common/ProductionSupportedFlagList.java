@@ -335,6 +335,8 @@ public final class ProductionSupportedFlagList {
                     "Allows using a stylus for text input. This requires "
                             + "either a Samsung device with Direct Writing enabled, or an "
                             + "Android T device with stylus handwriting enabled."),
+            Flag.baseFeature(BlinkFeatures.SCROLL_UPDATE_OPTIMIZATIONS,
+                    "Enable scroll update optimizations. See https://crbug.com/1346789."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

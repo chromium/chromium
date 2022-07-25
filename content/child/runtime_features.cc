@@ -383,6 +383,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kQuickIntensiveWakeUpThrottlingAfterLoading},
           {"SanitizerAPI", blink::features::kSanitizerAPI},
           {"SanitizerAPIv0", blink::features::kSanitizerAPIv0},
+          {"ScrollUpdateOptimizations",
+           blink::features::kScrollUpdateOptimizations},
           {"SecureContextFixForWorkers",
            blink::features::kSecureContextFixForWorkers},
           {"StorageAccessAPI", net::features::kStorageAccessAPI},
