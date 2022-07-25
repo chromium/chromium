@@ -337,6 +337,7 @@ public final class ProductionSupportedFlagList {
                             + "Android T device with stylus handwriting enabled."),
             Flag.baseFeature(BlinkFeatures.SCROLL_UPDATE_OPTIMIZATIONS,
                     "Enable scroll update optimizations. See https://crbug.com/1346789."),
+            Flag.baseFeature(BaseFeatures.ALIGN_WAKE_UPS, "Align delayed wake ups at 125 Hz"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
