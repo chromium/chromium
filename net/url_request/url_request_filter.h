@@ -59,8 +59,7 @@ class NET_EXPORT URLRequestFilter : public URLRequestInterceptor {
 
   void RemoveUrlHandler(const GURL& url);
 
-  // Clear all the existing URL handlers and unregister with the
-  // ProtocolFactory.  Resets the hit count.
+  // Clear all the existing URL and hostname handlers.  Resets the hit count.
   void ClearHandlers();
 
   // Returns the number of times a handler was used to service a request.

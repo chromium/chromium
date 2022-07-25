@@ -85,13 +85,6 @@ class X509Certificate;
 //
 class NET_EXPORT URLRequest : public base::SupportsUserData {
  public:
-  // Callback function implemented by protocol handlers to create new jobs.
-  // The factory may return NULL to indicate an error, which will cause other
-  // factories to be queried.  If no factory handles the request, then the
-  // default job will be used.
-  typedef URLRequestJob*(ProtocolFactory)(URLRequest* request,
-                                          const std::string& scheme);
-
   // Max number of http redirects to follow. The Fetch spec says: "If
   // request's redirect count is twenty, return a network error."
   // https://fetch.spec.whatwg.org/#http-redirect-fetch
