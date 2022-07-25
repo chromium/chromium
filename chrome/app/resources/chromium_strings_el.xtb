@@ -41,6 +41,7 @@
 <translation id="2018879682492276940">Αποτυχία εγκατάστασης. Δοκιμάστε ξανά.</translation>
 <translation id="2020032459870799438">Για να ελέγξετε αν οι άλλοι κωδικοί πρόσβασής σας είναι ασφαλείς από παραβιάσεις δεδομένων και άλλα ζητήματα ασφαλείας, <ph name="BEGIN_LINK" />συνδεθείτε στο Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Επιλέξτε αν θέλετε να συμπεριλαμβάνεται το ιστορικό Chromium για πιο εξατομικευμένες εμπειρίες στις υπηρεσίες Google.</translation>
+<translation id="2088953378266246249">Πληροφορίες σχετικά με το πώς το Chromium διαχειρίζεται τα πιστοποιητικά ρίζας του</translation>
 <translation id="2174178932569897599">Προσαρμογή του Chromium</translation>
 <translation id="2174917724755363426">Η εγκατάσταση δεν έχει ολοκληρωθεί. Είστε βέβαιοι ότι θέλετε να την ακυρώσετε;</translation>
 <translation id="2185166961232948079">Chromium - Σύνδεση δικτύου - <ph name="PAGE_TITLE" /></translation>
@@ -365,6 +366,7 @@
 <translation id="9185526690718004400">Επανεκκίνηση για ενημέρωση του &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Το Chromium μπορεί να μην λειτουργεί σωστά, επειδή δεν υποστηρίζεται πια σε Windows XP και Windows Vista</translation>
+<translation id="942598560705308788">Πιστοποιητικά που διαχειρίζεται το Chromium</translation>
 <translation id="945990405696787151">Για τη λήψη μελλοντικών ενημερώσεων του Chromium, θα χρειαστείτε macOS 10.13 ή νεότερη έκδοση. Αυτός ο υπολογιστής χρησιμοποιεί OS X 10.11.</translation>
 <translation id="965162752251293939">Ποιος χρησιμοποιεί το Chromium;</translation>
 <translation id="967427899662692980">Λάβετε την ισχυρότερη προστασία του Chromium</translation>

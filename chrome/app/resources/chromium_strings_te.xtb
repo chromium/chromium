@@ -41,6 +41,7 @@
 <translation id="2018879682492276940">ఇన్‌స్టాల్ చేయడం విఫలమైంది. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2020032459870799438">డేటా ఉల్లంఘనల నుండి, ఇతర భద్రతా సమస్యల నుండి మీ ఇతర పాస్‌వర్డ్‌లు సురక్షితంగా ఉన్నాయో లేదో చెక్ చేయడానికి, <ph name="BEGIN_LINK" />Chromiumకు సైన్ ఇన్ చేయండి<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Google సర్వీస్‌లలో మరింత వ్యక్తిగతీకరించిన అనుభవం కోసం Chromium హిస్టరీని చేర్చాలో, లేదో ఎంచుకోండి</translation>
+<translation id="2088953378266246249">Chromium, దాని రూట్ సర్టిఫికేట్‌లను ఎలా మేనేజ్ చేస్తుంది అనే దాని గురించిన సమాచారం</translation>
 <translation id="2174178932569897599">Chromiumను అనుకూలంగా మార్చండి</translation>
 <translation id="2174917724755363426">ఇన్‌స్టాలేషన్ పూర్తి కాలేదు. మీరు ఖచ్చితంగా రద్దు చేయాలనుకుంటున్నారా?</translation>
 <translation id="2185166961232948079">Chromium - నెట్‌వర్క్ సైన్ ఇన్ - <ph name="PAGE_TITLE" /></translation>
@@ -361,6 +362,7 @@
 <translation id="9185526690718004400">&amp;Chromiumను అప్‌డేట్ చేయడానికి రీ-లాంచ్ చేయండి</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromiumకి ఇప్పుడు Windows XP లేదా Windows Vistaలో మద్దతు లేనందున ఇది సరిగ్గా పని చేయకపోవచ్చు</translation>
+<translation id="942598560705308788">Chromium ద్వారా మేనేజ్ చేయబడే సర్టిఫికెట్‌లు</translation>
 <translation id="945990405696787151">భవిష్యత్తులో Chromium అప్‌డేట్‌లను పొందడానికి, మీకు macOS 10.13 లేదా ఆ తర్వాతి వెర్షన్ అవసరం అవుతుంది. ఈ కంప్యూటర్ OS X 10.11ను ఉపయోగిస్తోంది.</translation>
 <translation id="965162752251293939">Chromiumను ఎవరు ఉపయోగిస్తున్నారు?</translation>
 <translation id="967427899662692980">Chromium అత్యంత సురక్షితమైన సెక్యూరిటీని పొందండి</translation>

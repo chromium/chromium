@@ -511,6 +511,7 @@ Chrome tarayıcı menüsünü açmak için Alt+F tuşlarına basın.</translatio
 <translation id="4300318234632215983">Bir bağlantının arkasındaki URL'yi söyle</translation>
 <translation id="4322625298640984693">Koyu Kahverengi</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{nokta}=3{üç nokta}other{# nokta}}</translation>
+<translation id="4352022650330571548"><ph name="PHRASE" /> yaz</translation>
 <translation id="4372435075475052704">en az:<ph name="X" /></translation>
 <translation id="4372705107434148843">Konuşmayı durdur</translation>
 <translation id="4376316291247992553">Grafiği Braille Olarak Göster</translation>

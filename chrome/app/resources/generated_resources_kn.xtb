@@ -3274,6 +3274,7 @@
 <translation id="4077919383365622693"><ph name="SITE" /> ವೆಬ್‌ಸೈಟ್‌ ಮೂಲಕ ಸಂಗ್ರಹಿಸಲಾದ ಎಲ್ಲಾ ಡೇಟಾ ಮತ್ತು ಕುಕೀಗಳನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="4078738236287221428">ಆಕ್ರಮಣಕಾರಿ</translation>
 <translation id="4079140982534148664">ವರ್ಧಿತ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯನ್ನು ಬಳಸಿ</translation>
+<translation id="4081203444152654304"><ph name="VISUAL_SEARCH_PROVIDER" /> ಮೂಲಕ ಚಿತ್ರದ ಒಳಗೆ ಹುಡುಕಿ</translation>
 <translation id="4081242589061676262">ಫೈಲ್‌ ಬಿತ್ತರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" />, ನಿಮ್ಮ ಫೋನ್‌ಗೆ ಅಧಿಸೂಚನೆಯನ್ನು ಕಳುಹಿಸಿದೆ. ಇದು ನೀವೇ ಎಂದು ಖಚಿತಪಡಿಸಲು, ಅಲ್ಲಿನ ಹಂತಗಳನ್ನು ಅನುಸರಿಸಿ.</translation>
 <translation id="4084682180776658562">ಬುಕ್‌ಮಾರ್ಕ್</translation>
@@ -3669,6 +3670,7 @@
 <translation id="4476590490540813026">ಕ್ರೀಡಾಪಟು</translation>
 <translation id="4476659815936224889">ಈ ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು, ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಅಥವಾ ಕೆಲವು ಕ್ಯಾಮರಾ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ QR ಸ್ಕ್ಯಾನರ್ ಆ್ಯಪ್ ಅನ್ನು ನೀವು ಬಳಸಬಹುದು.</translation>
 <translation id="4477015793815781985">Ctrl, Alt, ಅಥವಾ ⌘ ಸೇರಿಸಿ</translation>
+<translation id="4477379360383751882"><ph name="VISUAL_SEARCH_PROVIDER" /> ಮೂಲಕ ಚಿತ್ರದ ಒಳಗೆ ಹುಡುಕಿ</translation>
 <translation id="4478664379124702289">ಇದರಂತೆ ಲಿಂ&amp;ಕ್ ಅನ್ನು ಉಳಿಸಿ...</translation>
 <translation id="4479424953165245642">ಕಿಯೋಸ್ಕ್ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4479639480957787382">ಈಥರ್ನೆಟ್</translation>
@@ -4115,6 +4117,7 @@
 <translation id="4900392736118574277">ನಿಮ್ಮ ಆರಂಭಿಕ ಪುಟವನ್ನು <ph name="URL" /> ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - ಇಂಟರ್‌ಲೇಸ್ ಆಗಿದೆ</translation>
 <translation id="4900652253009739885">“ಆಯ್ಕೆಮಾಡಿ” ಎಂಬುದಕ್ಕೆ ನಿಯೋಜಿಸಿದ ಏಕೈಕ ಸ್ವಿಚ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲು ಸಾಧ್ಯವಿಲ್ಲ. <ph name="RESPONSE" /> ಗೆ ಯಾವುದಾದರೂ ಕೀಯನ್ನು ಒತ್ತಿ.</translation>
+<translation id="4901154724271753917">ವಿಸ್ತರಿಸುವುದನ್ನು ಇತ್ತೀಚೆಗೆ ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> ಪ್ರಯೋಗಕ್ಕಾಗಿ, ಪ್ರಯೋಗದ ಸ್ಥಿತಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="49027928311173603">ಸರ್ವರ್‌ನಿಂದ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾದ ನೀತಿಯು ಅಮಾನ್ಯವಾಗಿದೆ: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">ನೆಟ್‌ವರ್ಕ್‌ ಫೈಲ್‌ ಹಂಚಿಕೆಗಳನ್ನು ಸೆಟಪ್‌ ಮಾಡಿ ಅಥವಾ ನಿರ್ವಹಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
@@ -7007,6 +7010,7 @@
 <translation id="7768526219335215384"><ph name="FOLDERNAME" /> ನಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು <ph name="ORIGIN" /> ಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="7768770796815395237">ಬದಲಿಸಿ</translation>
 <translation id="7768784765476638775">ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ</translation>
+<translation id="7769748505895274502">ಸಂಕೋಚನೆಯನ್ನು ಇತ್ತೀಚೆಗೆ ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="7770406201819593386">ChromeOS Flex ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್ ಪರೀಕ್ಷೆಗಳನ್ನು ರನ್ ಮಾಡಿ.</translation>
 <translation id="7770450735129978837">ಬಲ ಮೌಸ್ ಕ್ಲಿಕ್</translation>
 <translation id="7770612696274572992">ಇತರ ಸಾಧನದಿಂದ ಚಿತ್ರವನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>

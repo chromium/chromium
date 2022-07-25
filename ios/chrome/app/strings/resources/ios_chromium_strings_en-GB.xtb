@@ -79,7 +79,6 @@
 1. Open settings
 2. Tap the default browser app
 3. Select Chromium.</translation>
-<translation id="6183442264225539303">Sign in to this site and Chromium. You can turn on sync later.</translation>
 <translation id="6268381023930128611">Sign out of Chromium?</translation>
 <translation id="632825460376924298">Allow Chromium Sign-in</translation>
 <translation id="6337530241089703714">Choose whether to clear your Chromium data from this device or keep it</translation>
@@ -121,6 +120,7 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="865600487977764604">Keeps you safe on Chromium and may be used to improve your security in other Google apps when you are signed in.</translation>
 <translation id="8663480472502753423">Keep Chromium up to date</translation>
+<translation id="8685813584220679697">Sign in to this site and Chromium.</translation>
 <translation id="8747378496147986285">When on:
 <ph name="BEGIN_INDENT" />  • Help make Chromium better for people who use it the way that you do.<ph name="END_INDENT" />
 

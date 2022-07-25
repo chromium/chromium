@@ -41,6 +41,7 @@
 <translation id="2018879682492276940">Ошибка установки. Повторите попытку.</translation>
 <translation id="2020032459870799438">Чтобы проверить, защищены ли другие ваши пароли от утечки данных и прочих проблем с безопасностью, <ph name="BEGIN_LINK" />войдите в Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Укажите, нужно ли использовать историю Chromium для персонализации сервисов Google.</translation>
+<translation id="2088953378266246249">Информация о том, как Chromium управляет корневыми сертификатами</translation>
 <translation id="2174178932569897599">Настроить Chromium</translation>
 <translation id="2174917724755363426">Установка не завершена. Отменить ее?</translation>
 <translation id="2185166961232948079">Chromium – вход в сеть – "<ph name="PAGE_TITLE" />"</translation>
@@ -360,6 +361,7 @@
 <translation id="9185526690718004400">Перезапустить для обновления &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">В работе Chromium могут возникать сбои, так как браузер больше не поддерживает Windows XP и Windows Vista.</translation>
+<translation id="942598560705308788">Сертификаты, которыми управляет Chromium</translation>
 <translation id="945990405696787151">На вашем компьютере используется OS X 10.11. Чтобы получать обновления Chromium, установите на устройство macOS 10.13 или более поздней версии.</translation>
 <translation id="965162752251293939">Кто использует Chromium?</translation>
 <translation id="967427899662692980">Обеспечьте максимальную защиту в Chromium</translation>

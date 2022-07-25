@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="1645954272419197032">Cihaz məlumatını təsdiqləyin</translation>
 <translation id="1662989795263954667">Dayanıb - Mürəkkəb yoxdur</translation>
+<translation id="1664796644829245314">Önizləyin: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Daxili VPN</translation>
 <translation id="1672499492233627739">Veb kamera video lenti</translation>
 <translation id="1676557873873341166">Video çəkilir</translation>
@@ -118,6 +119,7 @@
 <translation id="1851218745569890714">Video Konfrans</translation>
 <translation id="1852934301711881861">ChromeOS Flex'i quraşdırın</translation>
 <translation id="1856388568474281774">Aşağı ox</translation>
+<translation id="1858620243986915808">Skrinşot əlavə edin</translation>
 <translation id="1871569928317311284">Qaranlıq temanı deaktiv edin</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Qaranlıq rejimi deaktiv edin</translation>
@@ -796,6 +798,7 @@
 <translation id="7978412674231730200">Şəxsi açar</translation>
 <translation id="7982789257301363584">Şəbəkə</translation>
 <translation id="7994702968232966508">EAP üsulu</translation>
+<translation id="8018928621986160031">Burada saxlanılıb: "<ph name="FILE_LOCATION" />"</translation>
 <translation id="802154636333426148">Endirmə alınmadı</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Avtomatik rəng rejimini aktiv edin</translation>

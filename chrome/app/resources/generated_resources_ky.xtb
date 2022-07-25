@@ -3281,6 +3281,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4077919383365622693"><ph name="SITE" /> сайты сактаган бардык маалымат менен cookie файлдары өчүрүлөт.</translation>
 <translation id="4078738236287221428">Агрессивдүү</translation>
 <translation id="4079140982534148664">Жакшыртылган орфографиялык текшерүү функциясын колдонуу</translation>
+<translation id="4081203444152654304"><ph name="VISUAL_SEARCH_PROVIDER" /> аркылуу сүрөттүн ичинен издөө</translation>
 <translation id="4081242589061676262">Файлды тышкы экранга чыгаруу мүмкүн эмес.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> телефонуңузга билдирме жөнөттү. Сиз экениңизди ырастоо үчүн ал жердеги кадамдарды аткарыңыз.</translation>
 <translation id="4084682180776658562">Кыстарма</translation>
@@ -3676,6 +3677,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4476590490540813026">Спортчу айым</translation>
 <translation id="4476659815936224889">Бул кодду телефонуңуздагы QR сканери же камера колдонмолорунун бирөө менен скандаңыз.</translation>
 <translation id="4477015793815781985">Ctrl, Alt же ⌘ камтылсын</translation>
+<translation id="4477379360383751882"><ph name="VISUAL_SEARCH_PROVIDER" /> аркылуу сүрөттүн ичинен издөө</translation>
 <translation id="4478664379124702289">Шил&amp;темени төмөнкүдөй сактоо…</translation>
 <translation id="4479424953165245642">Киоск колдонмолорун башкаруу</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -5929,6 +5931,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6709133671862442373">Жаңылыктар</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> менен туташуу</translation>
 <translation id="6710213216561001401">Мурунку</translation>
+<translation id="6710394144992407503">Веб беттерде текст терип жатканда орфографиялык каталарды текшерүү</translation>
 <translation id="6711146141291425900">Жүктөлүп алынган файлдарды көрүү үчүн <ph name="WEB_DRIVE" /> аккаунтун байланыштырыңыз</translation>
 <translation id="6712943853047024245"><ph name="WEBSITE" /> үчүн ушул колдонуучунун аты менен сырсөздү сактап койгонсуз</translation>
 <translation id="6713233729292711163">Жумуш профилин кошуу</translation>
@@ -6550,6 +6553,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7340757554212515731">Google'га ката жөнүндө кабарларды жана колдонуу статистикасын автоматтык түрдө жөнөтүп турат</translation>
 <translation id="7341834142292923918">Бул сайтка киргени жатат</translation>
 <translation id="7343372807593926528">Пикир жөнөтүүдөн мурун, көйгөйдү сүрөттөп берсеңиз.</translation>
+<translation id="7344585835349671209">Түзмөгүңүздөгү HTTPS/SSL тастыктамаларын башкаруу</translation>
 <translation id="7345706641791090287">Сырсөзүңүздү ырастаңыз</translation>
 <translation id="7346909386216857016">Жарайт, түшүндүм</translation>
 <translation id="7347452120014970266">Ушуну менен <ph name="ORIGIN_NAME" /> сакталган бардык маалымат жана cookie-файлдары, ошондой эле ал орноткон колдонмолор тазаланат</translation>
@@ -6679,6 +6683,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7460045493116006516">Сиз орнотуп алган учурдагы тема</translation>
 <translation id="7461924472993315131">Кадап коюу</translation>
 <translation id="746216226901520237">Эми <ph name="DEVICE_TYPE" /> түзмөгүнүн кулпусун телефонуңуз менен ачасыз. Жөндөөлөргө өтүп, Smart Lock'ту өчүрүп койсоңуз болот.</translation>
+<translation id="7464153996453281700">Компонент жаңыртылган</translation>
 <translation id="7464637891177137294">Аны <ph name="ACCOUNT" /> Google аккаунтуңузга сактаңыз</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# өтмөк ачык, өтмөк тасмасын өчүрүү же күйгүзүү үчүн басыңыз}other{# өтмөк ачык, өтмөк тасмасын өчүрүү же күйгүзүү үчүн басыңыз}}</translation>
 <translation id="7465635034594602553">Бир жерден ката кетти. <ph name="APP_NAME" /> колдонмосун кайра ачуу үчүн бир нече мүнөт күтө туруңуз.</translation>
@@ -7188,6 +7193,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="793531125873261495">Виртуалдык машина жүктөлүп алынбай калды. Кайталап көрүңүз.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% аткарылды</translation>
 <translation id="7939062555109487992">Кошумча параметрлер</translation>
+<translation id="7939328347457537652">Түзмөктүн тастыктамаларын башкаруу</translation>
 <translation id="7939412583708276221">Баары бир кала берсин</translation>
 <translation id="7942349550061667556">Кызыл</translation>
 <translation id="7943368935008348579">PDF файлдарын жүктөп алуу</translation>

@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1645954272419197032">Potwierdź informacje o urządzeniu</translation>
 <translation id="1662989795263954667">Zatrzymano – brak tuszu</translation>
+<translation id="1664796644829245314">Wyświetl podgląd: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Wbudowana sieć VPN</translation>
 <translation id="1672499492233627739">Przekaz z kamery internetowej</translation>
 <translation id="1676557873873341166">Nagrywam obraz</translation>
@@ -118,6 +119,7 @@
 <translation id="1851218745569890714">Rozmowy wideo</translation>
 <translation id="1852934301711881861">Zainstaluj ChromeOS Flex</translation>
 <translation id="1856388568474281774">Strzałka w dół</translation>
+<translation id="1858620243986915808">Załącz zrzut ekranu</translation>
 <translation id="1871569928317311284">Wyłącz ciemny motyw</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Wyłącz tryb ciemny</translation>
@@ -797,6 +799,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7978412674231730200">Klucz prywatny</translation>
 <translation id="7982789257301363584">Sieć</translation>
 <translation id="7994702968232966508">Metoda EAP</translation>
+<translation id="8018928621986160031">Zapisano w folderze „<ph name="FILE_LOCATION" />”</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Włącz automatyczny tryb kolorów</translation>

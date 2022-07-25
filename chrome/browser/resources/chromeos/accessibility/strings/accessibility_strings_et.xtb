@@ -511,6 +511,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="4300318234632215983">Esita liURL</translation>
 <translation id="4322625298640984693">Sieena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punkt}=3{ellips}other{# punkti}}</translation>
+<translation id="4352022650330571548">sisesta <ph name="PHRASE" /></translation>
 <translation id="4372435075475052704">min: <ph name="X" /></translation>
 <translation id="4372705107434148843">Kõne lõpetam</translation>
 <translation id="4376316291247992553">Graafika kuvatakse punktkirjas</translation>

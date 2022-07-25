@@ -70,6 +70,7 @@
 <translation id="2139300032719313227">Рестартирајте го Chrome OS</translation>
 <translation id="2151406531797534936">Рестартирајте го Chrome сега</translation>
 <translation id="2174917724755363426">Инсталирањето не е завршено. Дали сигурно сакате да го откажете?</translation>
+<translation id="223889379102603431">Информации за тоа како Chrome управува со своите сертификати за администраторски права</translation>
 <translation id="2258103955319320201">За да пристапувате до вашите работи на прелистувачот Chrome на сите уреди, најавете се и вклучете ја синхронизацијата</translation>
 <translation id="2290014774651636340">Клучевите Google API недостасуваат. Некои функции на Google Chrome ќе бидат оневозможени.</translation>
 <translation id="2290095356545025170">Дали сте сигурни дека сакате да го деинсталирате Google Chrome?</translation>
@@ -356,6 +357,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8129812357326543296">За &amp;Google Chrome</translation>
 <translation id="813913629614996137">Се иницијализира…</translation>
 <translation id="8255190535488645436">Google Chrome ги користи камерата и микрофонот.</translation>
+<translation id="8270775718612349140">Сертификати управувани од Chrome</translation>
 <translation id="8286862437124483331">Google Chrome се обидува да покаже лозинки. Впишете ја лозинката за Windows за да се дозволи ова.</translation>
 <translation id="828798499196665338">Родителот ги исклучил „Дозволите за сајтови, апликации и екстензии“ за Chrome. Не е дозволено овозможувањето на оваа<ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Google Chrome падна. Веднаш да се стартува повторно?</translation>

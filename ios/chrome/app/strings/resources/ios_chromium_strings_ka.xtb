@@ -79,7 +79,6 @@
 1. გახსენით „პარამეტრები“
 2. შეეხეთ „ბრაუზერის ნაგულისხმევ აპს“
 3. აირჩიეთ Chromium.</translation>
-<translation id="6183442264225539303">შედით ამ საიტსა და Chromium-ში. სინქრონიზაციის ჩართვა მოგვიანებით შეგიძლიათ.</translation>
 <translation id="6268381023930128611">გსურთ Chromium-იდან გამოსვლა?</translation>
 <translation id="632825460376924298">Chromium-ში შესვლის დაშვება</translation>
 <translation id="6337530241089703714">აირჩიეთ, რა გსურთ — თქვენი Chromium მონაცემების გასუფთავება ამ მოწყობილობიდან თუ მათი შენარჩუნება</translation>
@@ -121,6 +120,7 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. ყველა უფლება დაცულია.</translation>
 <translation id="865600487977764604">უზრუნველყოფს თქვენს უსაფრთხოებას Chromium-სა და Google-ის სხვა აპებში, როცა სისტემაში შესული ხართ.</translation>
 <translation id="8663480472502753423">Chromium-ის მუდმივი განახლების უზრუნველყოფა</translation>
+<translation id="8685813584220679697">შედით ამ საიტსა და Chromium-ში.</translation>
 <translation id="8747378496147986285">როდესაც ჩართულია:
 <ph name="BEGIN_INDENT" />  • დაგვეხმარეთ, გავაუმჯობესოთ Chromium მათთვის, ვინც მას თქვენ მსგავსად იყენებს.<ph name="END_INDENT" />
 

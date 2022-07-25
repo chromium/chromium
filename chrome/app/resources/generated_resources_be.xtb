@@ -3268,6 +3268,7 @@
 <translation id="4077919383365622693">Усе даныя і файлы cookie, захаваныя сайтам <ph name="SITE" />, будуць выдалены.</translation>
 <translation id="4078738236287221428">Дзейная</translation>
 <translation id="4079140982534148664">Выкарыстоўваць палепшаную праверку правапісу</translation>
+<translation id="4081203444152654304">Шукаць на відарысе праз сэрвіс "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="4081242589061676262">Не ўдалося трансліраваць файл.</translation>
 <translation id="408223403876103285">Сайт <ph name="WEBSITE" /> адправіў апавяшчэнне на ваш тэлефон. Выканайце крокі, прыведзеныя ў ім, каб пацвердзіць сваю асобу.</translation>
 <translation id="4084682180776658562">Дадаць у закладкі</translation>
@@ -3663,6 +3664,7 @@
 <translation id="4476590490540813026">Спартсменка</translation>
 <translation id="4476659815936224889">Гэты код можна адсканіраваць з дапамогай праграмы сканіравання QR-кодаў на тэлефоне або некаторых праграм для камеры.</translation>
 <translation id="4477015793815781985">Дадайце Ctrl, Alt або клавішу ⌘</translation>
+<translation id="4477379360383751882">Шукаць на відарысе праз сэрвіс "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="4478664379124702289">Захаваць &amp;спасылку як...</translation>
 <translation id="4479424953165245642">Кіраванне праграмамі-кіёскамі</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -4108,6 +4110,7 @@
 <translation id="4900392736118574277">Пачатковая старонка зменена на наступную: <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц – празрадковая разгортка</translation>
 <translation id="4900652253009739885">Прызначэнне адзінага пераключальніка, звязанага з дзеяннем "Выбраць", скасаваць нельга. Каб <ph name="RESPONSE" />, націсніце любую клавішу.</translation>
+<translation id="4901154724271753917">Разгарнуць нядаўна закрытыя</translation>
 <translation id="4901309472892185668">Выберыце стан для эксперымента "<ph name="EXPERIMENT_NAME" />".</translation>
 <translation id="49027928311173603">Палітыка, спампаваная з сервера, памылковая: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">Наладка сеткавых файлаабменнікаў і кіраванне імі. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
@@ -5920,6 +5923,7 @@
 <translation id="6709133671862442373">Навіны</translation>
 <translation id="6709357832553498500">Падключыцца праз: <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Назад</translation>
+<translation id="6710394144992407503">Правяраць тэкст, які ўводзіцца на вэб-старонках, на арфаграфічныя памылкі</translation>
 <translation id="6711146141291425900">Звяжыце ўліковы запіс сэрвісу "<ph name="WEB_DRIVE" />", каб зрабіць магчымым спампоўванне на вэб-дыск</translation>
 <translation id="6712943853047024245">Вы ўжо захавалі пароль з гэтым імем карыстальніка для сайта <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Дадаць працоўны профіль</translation>
@@ -6541,6 +6545,7 @@
 <translation id="7340757554212515731">Аўтаматычна адпраўляе ў Google справаздачы аб збоях, а таксама даныя пра выкарыстанне і дыягностыку.</translation>
 <translation id="7341834142292923918">Запытвае доступ да гэтага сайта</translation>
 <translation id="7343372807593926528">Перш чым адправіць водгук, апішыце праблему.</translation>
+<translation id="7344585835349671209">Кіраванне сертыфікатамі HTTPS/SSL на прыладзе</translation>
 <translation id="7345706641791090287">Пацвердзіце пароль</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7347452120014970266">Будуць выдалены файлы cookie і даныя, захаваныя сайтам <ph name="ORIGIN_NAME" />, а таксама ўсталяваныя ім праграмы</translation>
@@ -6670,6 +6675,7 @@
 <translation id="7460045493116006516">Бягучая тэма, якую вы ўсталявалі</translation>
 <translation id="7461924472993315131">PIN-код</translation>
 <translation id="746216226901520237">Наступны раз прылада <ph name="DEVICE_TYPE" /> будзе разблакіравана з дапамогай вашага тэлефона. Вы можаце выключыць Smart Lock у Наладах.</translation>
+<translation id="7464153996453281700">Кампанент ужо абноўлены</translation>
 <translation id="7464637891177137294">Ён будзе захаваны ва Уліковым запісе Google <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# адкрытая ўкладка. Націсніце, каб уключыць або выключыць панэль укладак}one{# адкрытая ўкладка. Націсніце, каб уключыць або выключыць панэль укладак}few{# адкрытыя ўкладкі. Націсніце, каб уключыць або выключыць панэль укладак}many{# адкрытых укладак. Націсніце, каб уключыць або выключыць панэль укладак}other{# адкрытай укладкі. Націсніце, каб уключыць або выключыць панэль укладак}}</translation>
 <translation id="7465635034594602553">Нешта пайшло не так. Пачакайце некалькі хвілін і запусціце праграму <ph name="APP_NAME" /> зноў.</translation>
@@ -7002,6 +7008,7 @@
 <translation id="7768526219335215384">Сайт <ph name="ORIGIN" /> зможа праглядаць файлы ў папцы "<ph name="FOLDERNAME" />"</translation>
 <translation id="7768770796815395237">Змяніць</translation>
 <translation id="7768784765476638775">Чытаць уголас</translation>
+<translation id="7769748505895274502">Згарнуць нядаўна закрытыя</translation>
 <translation id="7770406201819593386">Запуск дыягнастычных праверак Chrome OS Flex.</translation>
 <translation id="7770450735129978837">Націсканне правай клавішай мышы</translation>
 <translation id="7770612696274572992">Відарыс скапіраваны з іншай прылады</translation>
@@ -7177,6 +7184,7 @@
 <translation id="793531125873261495">Памылка спампоўвання віртуальнай машыны. Паўтарыце спробу.</translation>
 <translation id="7935451262452051102">Завершана <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">Дадатковыя параметры</translation>
+<translation id="7939328347457537652">Кіраванне сертыфікатамі прылады</translation>
 <translation id="7939412583708276221">Захаваць усё роўна</translation>
 <translation id="7942349550061667556">Чырвоны</translation>
 <translation id="7943368935008348579">Спампоўваць PDF-файлы</translation>

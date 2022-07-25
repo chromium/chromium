@@ -511,6 +511,7 @@
 <translation id="4300318234632215983">Presenta l'URL darrere d'un enllaç.</translation>
 <translation id="4322625298640984693">Siena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punt}=3{punts suspensius}other{# punts}}</translation>
+<translation id="4352022650330571548">escriu "<ph name="PHRASE" />"</translation>
 <translation id="4372435075475052704">mín.: <ph name="X" /></translation>
 <translation id="4372705107434148843">Atura la veu</translation>
 <translation id="4376316291247992553">Mostra el gràfic com a braille</translation>

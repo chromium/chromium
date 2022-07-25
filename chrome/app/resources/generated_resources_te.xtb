@@ -998,6 +998,7 @@
 <translation id="1916502483199172559">డిఫాల్ట్ ఎరుపు రంగు అవతార్</translation>
 <translation id="1918141783557917887">&amp;చిన్నగా</translation>
 <translation id="1920390473494685033">కాంటాక్ట్‌లు</translation>
+<translation id="1921544956190977703">ప్రమాదకరమైన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్‌ల నుండి రక్షణ పొందడానికి మీ దగ్గర Chrome అత్యంత శక్తివంతమైన సెక్యూరిటీ ఉంది</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1923468477587371721">మీరు విడిగా ప్రోడక్ట్ భాషను మార్చితే తప్ప, Gmail, Drive, ఇంకా YouTube వంటి Google సైట్‌లు మీ Google ఖాతా భాషను ఉపయోగిస్తాయి</translation>
 <translation id="192494336144674234">దీనితో తెరువు</translation>
@@ -2103,6 +2104,7 @@
 మీ స్మార్ట్ కార్డ్‌ను ఇన్‌సర్ట్ చేసి ఉంచమని <ph name="DOMAIN" /> మిమ్మల్ని కోరుతుంది.</translation>
 <translation id="2923234477033317484">ఈ ఖాతాను తీసివేయండి</translation>
 <translation id="2923644930701689793">మీ ఫోన్ కెమెరా రోల్‌ను యాక్సెస్ చేయండి</translation>
+<translation id="292371311537977079">Chrome సెట్టింగ్‌లు</translation>
 <translation id="2925658782192398150">పూర్తయింది, సమస్యలు ఏవీ కనుగొనబడలేదు</translation>
 <translation id="2926085873880284723">డిఫాల్ట్ షార్ట్‌కట్‌లను పునరుద్ధరించండి</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> సపోర్ట్ చేయదు.</translation>
@@ -2687,6 +2689,7 @@
 <translation id="3511528412952710609">స్వల్పం</translation>
 <translation id="3514335087372914653">గేమ్ కంట్రోల్</translation>
 <translation id="3514373592552233661">ఒకటి కంటే ఎక్కువ నెట్‌వర్క్‌లు అందుబాటులో ఉంటే, తెలిసిన ఇతర నెట్‌వర్క్‌ల కంటే ప్రాధాన్య నెట్‌వర్క్‌లకు ప్రాధాన్యత ఇవ్వబడుతుంది</translation>
+<translation id="3514647716686280777">మీరు స్టాండర్డ్ సెక్యూరిటీ రక్షణను పొందుతున్నారు. ప్రమాదకరమైన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌లు, ఎక్స్‌టెన్షన్‌ల నుండి మరింత రక్షణను పొందడానికి, Chrome సెట్టింగ్‌లలో మెరుగైన సురక్షిత బ్రౌజింగ్ ఫీచర్‌ను ఆన్ చేయండి.</translation>
 <translation id="3515983984924808886">రీసెట్‌ను నిర్ధారించడానికి మీ 'సెక్యూరిటీ కీ'ని మళ్లీ తాకండి. 'సెక్యూరిటీ కీ'లో నిల్వ చేసిన మొత్తం సమాచారం, అలాగే దాని పిన్ కూడా తొలగించబడతాయి.</translation>
 <translation id="3518985090088779359">అంగీకరించు &amp; కొనసాగు</translation>
 <translation id="3519564332031442870">ప్రింట్ బ్యాక్ ఎండ్ సర్వీస్</translation>
@@ -3280,6 +3283,7 @@
 <translation id="4077919383365622693"><ph name="SITE" /> ద్వారా నిల్వ చేయబడిన డేటాతో పాటు కుక్కీలన్నీ తొలగించబడతాయి.</translation>
 <translation id="4078738236287221428">తీవ్రం</translation>
 <translation id="4079140982534148664">మెరుగైన స్పెల్ చెక్‌ను ఉపయోగించు</translation>
+<translation id="4081203444152654304">ఇమేజ్ లోపల <ph name="VISUAL_SEARCH_PROVIDER" />‌తో సెర్చ్ చేయండి</translation>
 <translation id="4081242589061676262">ఫైల్‌ని ప్రసారం చేయడం సాధ్యపడలేదు.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> మీ ఫోన్‌కు నోటిఫికేషన్‌ను పంపింది. అది మీరేనని నిర్ధారించడానికి, అక్కడ ఉన్న దశలను ఫాలో అవ్వండి.</translation>
 <translation id="4084682180776658562">బుక్‌మార్క్ చేయండి</translation>
@@ -3675,6 +3679,7 @@
 <translation id="4476590490540813026">అథ్లెట్</translation>
 <translation id="4476659815936224889">ఈ కోడ్‌ను స్కాన్ చేయడానికి, మీ ఫోన్ లేదా కొన్ని కెమెరా యాప్‌లలో QR స్కానర్ యాప్‌ను ఉపయోగించవచ్చు.</translation>
 <translation id="4477015793815781985">Ctrl, Alt లేదా ⌘ని చేర్చండి</translation>
+<translation id="4477379360383751882">ఇమేజ్ లోపల <ph name="VISUAL_SEARCH_PROVIDER" />‌తో సెర్చ్ చేయండి</translation>
 <translation id="4478664379124702289">లిం&amp;క్‌ను ఇలా సేవ్ చేయి...</translation>
 <translation id="4479424953165245642">కియోస్క్ యాప్‌లను నిర్వహించండి</translation>
 <translation id="4479639480957787382">ఈథర్నెట్</translation>
@@ -5491,6 +5496,7 @@
 <translation id="6278428485366576908">థీమ్</translation>
 <translation id="6278776436938569440">లొకేషన్‌ను మార్చు</translation>
 <translation id="6279183038361895380">మీ కర్సర్‌ను చూపడానికి |<ph name="ACCELERATOR" />| నొక్కండి</translation>
+<translation id="6279595948631688299">ఎంచుకున్న సర్టిఫికెట్‌ను ఎగుమతి చేయండి...</translation>
 <translation id="6280215091796946657">వేరొక ఖాతాతో సైన్ ఇన్ చేయండి</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 పేపర్ షీట్ పరిమితిని మించి ఉంది}other{{COUNT} పేపర్ షీట్‌ల పరిమితిని మించి ఉంది}}</translation>
@@ -5605,6 +5611,7 @@
 <translation id="6398715114293939307">Google Play Storeను తీసివేయండి</translation>
 <translation id="6398765197997659313">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించండి</translation>
 <translation id="6399774419735315745">గూఢచారి</translation>
+<translation id="6401458660421980302">ఈ ట్యాబ్‌ను మరొక పరికరానికి పంపడానికి, అక్కడ Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="6401597285454423070">మీ కంప్యూటర్ విశ్వసనీయ ప్లాట్‌ఫామ్ మాడ్యూల్ (TPM) సెక్యూరిటీ పరికరాన్ని కలిగి ఉంది, ఇది ChromeOSలో అనేక కీలకమైన సెక్యూరిటీ ఫీచర్‌లను అమలు చేయడానికి ఉపయోగించబడుతుంది. మరింత తెలుసుకోవడానికి Chromebook సహాయ కేంద్రాన్ని సందర్శించండి: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chromebook గేమింగ్</translation>
 <translation id="6404511346730675251">బుక్‌మార్క్‌ను ఎడిట్ చేయండి</translation>
@@ -5841,6 +5848,7 @@
 <translation id="6619801788773578757">కియోస్క్ అప్లికేషన్‌ని జోడించండి</translation>
 <translation id="6619990499523117484">మీ PINను నిర్ధారించండి</translation>
 <translation id="6620254580880484313">కంటైనర్ పేరు</translation>
+<translation id="6621391692573306628">ఈ ట్యాబ్‌ను మరొక పరికరానికి పంపడానికి, రెండు పరికరాల్లోనూ Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="6622980291894852883">చిత్రాలను నిరోధించడాన్ని కొనసాగించు</translation>
 <translation id="6624036901798307345">టాబ్లెట్ మోడ్‌లో, ప్రతి ట్యాబ్ యొక్క థంబ్‌నెయిల్స్‌ను చూపే కొత్త ట్యాబ్‌ల బార్‌ను తెరవడానికి ట్యాబ్ కౌంటర్ టూల్‌బార్ బటన్‌పై నొక్కండి.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" />, గోప్యమైన, లేదా హానికరమైన కంటెంట్‌ను కలిగి ఉంది. పరిష్కరించమని ఫైల్ యజమానిని అడగండి.</translation>
@@ -5928,6 +5936,7 @@
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" />ని ఉపయోగించి కనెక్ట్ చేయి</translation>
 <translation id="6710213216561001401">మునుపటి</translation>
+<translation id="6710394144992407503">మీరు వెబ్ పేజీలలో టెక్స్ట్‌ను టైప్ చేసేటప్పుడు స్పెల్లింగ్ ఎర్రర్‌లను చెక్ చేయండి</translation>
 <translation id="6711146141291425900">డౌన్‌లోడ్‌ల కోసం <ph name="WEB_DRIVE" /> ఖాతాను లింక్ చేయండి</translation>
 <translation id="6712943853047024245"><ph name="WEBSITE" /> కోసం మీరు ఇప్పటికే ఈ యూజర్‌నేమ్‌తో పాస్‌వర్డ్‌ను సేవ్ చేశారు</translation>
 <translation id="6713233729292711163">వర్క్ ప్రొఫైల్‌ను జోడించండి</translation>
@@ -6549,6 +6558,7 @@
 <translation id="7340757554212515731">క్రాష్ రిపోర్ట్‌లు, అలాగే సమస్య విశ్లేషణలు, వినియోగ డేటాను ఆటోమేటిక్‌గా Googleకు పంపుతుంది</translation>
 <translation id="7341834142292923918">ఈ సైట్‌కు యాక్సెస్ కోరుతోంది</translation>
 <translation id="7343372807593926528">ఫీడ్‌బ్యాక్‌ను పంపేముందు దయచేసి సమస్యను వివరించండి.</translation>
+<translation id="7344585835349671209">మీ పరికరంలో HTTPS/SSL సర్టిఫికెట్‌లను మేనేజ్ చేయండి</translation>
 <translation id="7345706641791090287">మీ పాస్‌వర్డ్‌ను నిర్ధారించండి</translation>
 <translation id="7346909386216857016">సరే, అర్థమైంది</translation>
 <translation id="7347452120014970266">దీనివలన <ph name="ORIGIN_NAME" />, అది ఇన్‌స్టాల్ చేసిన యాప్‌ల ద్వారా స్టోర్ అయిన మొత్తం డేటా, కుక్కీలు తొలగిపోతాయి</translation>
@@ -6678,6 +6688,7 @@
 <translation id="7460045493116006516">మీరు ప్రస్తుతం ఇన్‌స్టాల్ చేసుకున్న థీమ్</translation>
 <translation id="7461924472993315131">పిన్ చేయి</translation>
 <translation id="746216226901520237">తదుపరిసారి మీ ఫోన్ మీ <ph name="DEVICE_TYPE" />‌ను అన్‌లాక్ చేస్తుంది. మీరు సెట్టింగ్‌లలో Smart Lockను ఆఫ్ చేయవచ్చు.</translation>
+<translation id="7464153996453281700">కాంపోనెంట్ ఇప్పటికే అప్‌డేట్ అయ్యి ఉంది</translation>
 <translation id="7464637891177137294">దీనిని మీ Google ఖాతా, <ph name="ACCOUNT" />లో సేవ్ చేయండి</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# ట్యాబ్ తెరిచి, ట్యాబ్‌ స్ట్రిప్‌ను టోగుల్ చేయడానికి నొక్కండి}other{# ట్యాబ్‌లు తెరిచి, ట్యాబ్‌ స్ట్రిప్‌ను టోగుల్ చేయడానికి నొక్కండి}}</translation>
 <translation id="7465635034594602553">ఏదో తప్పు జరిగింది. దయచేసి కొద్ది నిమిషాలు వేచి ఉండి, <ph name="APP_NAME" />ను మళ్లీ రన్ చేయండి.</translation>
@@ -7186,6 +7197,7 @@
 <translation id="793531125873261495">వర్చువల్ మెషిన్‌ను డౌన్‌లోడ్ చేయడంలో ఎర్రర్ ఏర్పడింది. దయచేసి మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% పూర్తయింది</translation>
 <translation id="7939062555109487992">అధునాతన ఎంపికలు</translation>
+<translation id="7939328347457537652">పరికర సర్టిఫికెట్‌లను మేనేజ్ చేయండి</translation>
 <translation id="7939412583708276221">ఏదేమైనా ఉంచు</translation>
 <translation id="7942349550061667556">ఎరుపు</translation>
 <translation id="7943368935008348579">PDFలను డౌన్‌లోడ్ చేయండి</translation>

@@ -3267,6 +3267,7 @@
 <translation id="4077919383365622693">Все данные и файлы cookie, хранящиеся на сайте <ph name="SITE" />, будут удалены.</translation>
 <translation id="4078738236287221428">Всегда</translation>
 <translation id="4079140982534148664">Использовать расширенную проверку правописания</translation>
+<translation id="4081203444152654304">Найти по области изображения через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4081242589061676262">Ошибка трансляции файла.</translation>
 <translation id="408223403876103285">С сайта <ph name="WEBSITE" /> отправлено уведомление на ваш телефон. Чтобы подтвердить свою личность, выполните указанные в нем действия.</translation>
 <translation id="4084682180776658562">Закладка</translation>
@@ -3662,6 +3663,7 @@
 <translation id="4476590490540813026">Спортсмен</translation>
 <translation id="4476659815936224889">Этот код можно сканировать с помощью специального приложения или камеры на телефоне (если такая возможность поддерживается)</translation>
 <translation id="4477015793815781985">Комбинация должна начинаться с Ctrl, Alt или ⌘</translation>
+<translation id="4477379360383751882">Найти по области изображения через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4478664379124702289">Сохранить ссылку как...</translation>
 <translation id="4479424953165245642">Настроить киоск-приложения</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -5920,6 +5922,7 @@
 <translation id="6709133671862442373">Новости</translation>
 <translation id="6709357832553498500">Подключиться через <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Назад</translation>
+<translation id="6710394144992407503">Проверка правописания текста, вводимого на веб-страницах</translation>
 <translation id="6711146141291425900">Привязать аккаунт <ph name="WEB_DRIVE" /> для скачиваний</translation>
 <translation id="6712943853047024245">Для этого имени пользователя на сайте <ph name="WEBSITE" /> уже сохранен пароль.</translation>
 <translation id="6713233729292711163">Добавить рабочий профиль</translation>
@@ -6541,6 +6544,7 @@
 <translation id="7340757554212515731">Автоматически отправлять в Google отчеты о сбоях и данные об использовании и диагностике</translation>
 <translation id="7341834142292923918">Расширение запрашивает доступ к этому сайту</translation>
 <translation id="7343372807593926528">Прежде чем отправить отзыв, опишите проблему.</translation>
+<translation id="7344585835349671209">Управление сертификатами HTTPS/SSL на устройстве</translation>
 <translation id="7345706641791090287">Подтвердите пароль</translation>
 <translation id="7346909386216857016">ОК</translation>
 <translation id="7347452120014970266">Будут удалены все данные и файлы cookie, которые сохранены сайтом <ph name="ORIGIN_NAME" /> и установленными с него приложениями.</translation>
@@ -6670,6 +6674,7 @@
 <translation id="7460045493116006516">Тема, которая у вас установлена</translation>
 <translation id="7461924472993315131">Закрепить</translation>
 <translation id="746216226901520237">После этого вы сможете разблокировать устройство <ph name="DEVICE_TYPE" /> с помощью телефона. Выключить Smart Lock можно в настройках.</translation>
+<translation id="7464153996453281700">Установлена последняя версия компонента</translation>
 <translation id="7464637891177137294">Сохраните его в своем аккаунте Google (<ph name="ACCOUNT" />).</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# открытая вкладка. Нажмите, чтобы показать или скрыть панель вкладок.}one{# открытая вкладка. Нажмите, чтобы показать или скрыть панель вкладок.}few{# открытые вкладки. Нажмите, чтобы показать или скрыть панель вкладок.}many{# открытых вкладок. Нажмите, чтобы показать или скрыть панель вкладок.}other{# открытой вкладки. Нажмите, чтобы показать или скрыть панель вкладок.}}</translation>
 <translation id="7465635034594602553">Произошла ошибка. Запустите <ph name="APP_NAME" /> снова через несколько минут.</translation>
@@ -7178,6 +7183,7 @@
 <translation id="793531125873261495">Не удалось скачать виртуальную машину. Повторите попытку.</translation>
 <translation id="7935451262452051102">Выполнено: <ph name="PERCENT" /> %</translation>
 <translation id="7939062555109487992">Расширенные настройки</translation>
+<translation id="7939328347457537652">Управление сертификатами устройства</translation>
 <translation id="7939412583708276221">Все равно продолжить</translation>
 <translation id="7942349550061667556">Красный</translation>
 <translation id="7943368935008348579">Скачивать PDF-файлы</translation>

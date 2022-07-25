@@ -306,6 +306,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2805756323405976993">Apiau</translation>
 <translation id="2814448776515246190">Tynnu'n rhannol</translation>
 <translation id="2819276065543622893">Byddwch yn cael eich allgofnodi nawr.</translation>
+<translation id="2822551631199737692">Mae'r camera yn cael ei ddefnyddio</translation>
 <translation id="2825224105325558319">Nid yw <ph name="DISPLAY_NAME" /> yn cefnogi <ph name="SPECIFIED_RESOLUTION" />. Newidiwyd y cydraniad i <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Silff</translation>
 <translation id="2831035692318564937">Ymlaen tan godiad haul</translation>
@@ -807,6 +808,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5682642926269496722">Nid yw Google Assistant ar gael ar gyfer y cyfrif defnyddiwr presennol.</translation>
 <translation id="5689633613396158040">Mae Golau Nos yn ei gwneud yn haws edrych ar eich sgrîn neu ddarllen mewn golau gwan. Tapiwch i newid faint o'r gloch mae Golau Nos yn cael ei droi ymlaen neu ei ddiffodd yn llwyr.</translation>
 <translation id="5691772641933328258">Nid ydym yn adnabod yr ôl bys</translation>
+<translation id="5693255400847650006">Mae'r meicroffon yn cael ei ddefnyddio</translation>
 <translation id="570390244361237317">Pob Ap, llywiwch gyda bysellau saeth i gyrchu pob ap</translation>
 <translation id="5707775774148071965">Mae eich dyfais yn cefnogi cyfradd data uwch na'ch cebl. Mae'n bosib y bydd perfformiad y ddyfais yn gyfyngedig.</translation>
 <translation id="5710450975648804523">Mae Peidiwch ag Aflonyddu wedi'i droi ymlaen</translation>
@@ -981,6 +983,7 @@ Gosodiad newydd</translation>
 <translation id="6723839937902243910">Pŵer</translation>
 <translation id="6727969043791803658">Wedi'i gysylltu, <ph name="BATTERY_PERCENTAGE" />% batri</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Mae'r camera a'r meicroffon yn cael eu defnyddio</translation>
 <translation id="6739144137573853180">MYND I'R GOSODIADAU</translation>
 <translation id="6751052314767925245">Gorfodir gan eich gweinyddwr</translation>
 <translation id="6751826523481687655">Mae olrhain perfformiad wedi'i droi ymlaen</translation>

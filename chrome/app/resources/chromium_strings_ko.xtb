@@ -43,6 +43,7 @@
 <translation id="2018879682492276940">설치할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="2020032459870799438">다른 암호가 정보 유출 및 다른 보안 문제로부터 안전한지 확인하려면 <ph name="BEGIN_LINK" />Chromium에 로그인<ph name="END_LINK" />하세요.</translation>
 <translation id="2049376729098081731">보다 맞춤설정된 Google 서비스 환경을 사용하기 위해 Chromium 방문 기록을 포함할지 선택하세요.</translation>
+<translation id="2088953378266246249">Chromium의 루트 인증서 관리 방식에 관한 정보</translation>
 <translation id="2174178932569897599">Chromium 맞춤설정</translation>
 <translation id="2174917724755363426">설치가 완료되지 않았습니다. 취소하시겠습니까?</translation>
 <translation id="2185166961232948079">Chromium - 네트워크 로그인 - <ph name="PAGE_TITLE" /></translation>
@@ -367,6 +368,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="9185526690718004400">다시 실행하여 Chromium 업데이트</translation>
 <translation id="9190841055450128916">Chromium(mDNS-In)</translation>
 <translation id="93478295209880648">Windows XP 또는 Windows Vista에서 더 이상 Chromium을 지원하지 않으므로 Chromium이 올바르게 작동하지 않을 수 있습니다</translation>
+<translation id="942598560705308788">Chromium이 관리하는 인증서</translation>
 <translation id="945990405696787151">향후 Chromium 업데이트를 받으려면 macOS 10.13 이상이 필요합니다. 이 컴퓨터에서는 OS X 10.11을 사용하고 있습니다.</translation>
 <translation id="965162752251293939">Chromium 사용자 선택</translation>
 <translation id="967427899662692980">Chromium의 가장 강력한 보안 기능을 이용하세요</translation>

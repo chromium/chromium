@@ -3264,6 +3264,7 @@
 <translation id="4077919383365622693"><ph name="SITE" /> സംഭരിച്ചിരിക്കുന്ന എല്ലാ ഡാറ്റയും കുക്കികളും മായ്‌ക്കും.</translation>
 <translation id="4078738236287221428">അഗ്രസ്സീവ്</translation>
 <translation id="4079140982534148664">മെച്ചപ്പെട്ട സ്പെൽ ചെക്ക് ഉപയോഗിക്കുക</translation>
+<translation id="4081203444152654304"><ph name="VISUAL_SEARCH_PROVIDER" /> ഉപയോഗിച്ച് ചിത്രത്തിൽ തിരയുക</translation>
 <translation id="4081242589061676262">ഫയൽ കാസ്റ്റ് ചെയ്യാനാവുന്നില്ല.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" />, നിങ്ങളുടെ ഫോണിലേക്ക് ഒരു അറിയിപ്പ് അയച്ചു. ഇത് നിങ്ങൾ തന്നെയാണെന്ന് സ്ഥിരീകരിക്കാൻ, അവിടെ കാണുന്ന ഘട്ടങ്ങൾ പാലിക്കുക.</translation>
 <translation id="4084682180776658562">ബുക്മാര്‍ക്ക്</translation>
@@ -3659,6 +3660,7 @@
 <translation id="4476590490540813026">അത്‌ലറ്റ്</translation>
 <translation id="4476659815936224889">ഈ കോഡ് സ്കാൻ ചെയ്യാൻ നിങ്ങളുടെ ഫോണിൽ ഒരു QR സ്കാനർ ആപ്പ് ഉപയോഗിക്കാം അല്ലെങ്കിൽ ചില Camera ആപ്പുകൾ ഉപയോഗിക്കാം.</translation>
 <translation id="4477015793815781985">Ctrl, Alt, അല്ലെങ്കിൽ ⌘ ഉൾപ്പെടുത്തുക</translation>
+<translation id="4477379360383751882"><ph name="VISUAL_SEARCH_PROVIDER" /> ഉപയോഗിച്ച് ചിത്രത്തിൽ തിരയുക</translation>
 <translation id="4478664379124702289">ലി&amp;ങ്ക് ഇതായി സംരക്ഷിക്കുക...</translation>
 <translation id="4479424953165245642">കിയോസ്‌ക് അപ്ലിക്കേഷനുകൾ നിയന്ത്രിക്കുക</translation>
 <translation id="4479639480957787382">എതെര്‍‌നെറ്റ്</translation>
@@ -4104,6 +4106,7 @@
 <translation id="4900392736118574277">നിങ്ങളുടെ ആരംഭ പേജിനെ <ph name="URL" /> എന്നതിലേക്ക് മാറ്റിയിരിക്കുന്നു.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - മിശ്രമാക്കിയത്</translation>
 <translation id="4900652253009739885">“തിരഞ്ഞെടുക്കുക” പ്രവർത്തനത്തിന് അസൈൻ ചെയ്തിട്ടുള്ള ഏക സ്വിച്ച് നീക്കം ചെയ്യാനാകില്ല. <ph name="RESPONSE" /> എന്നത് ചെയ്യാൻ ഏതെങ്കിലും കീ അമർത്തുക.</translation>
+<translation id="4901154724271753917">അടുത്തിടെ അടച്ചവ വികസിപ്പിക്കുക</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> പരീക്ഷണത്തിന്റെ പരീക്ഷണ നില തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="49027928311173603">സെർവറിൽ നിന്നും ഡൗൺലോഡ് ചെയ്‌ത നയം അസാധുവാണ്: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4906490889887219338">നെറ്റ്‌വർക്ക് ഫയൽ പങ്കിടലുകൾ സജ്ജീകരിക്കുക അല്ലെങ്കിൽ മാനേജ് ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
@@ -5912,6 +5915,7 @@
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> ഉപയോഗിച്ച് കണക്റ്റുചെയ്യുക</translation>
 <translation id="6710213216561001401">മുമ്പത്തേത്</translation>
+<translation id="6710394144992407503">വെബ് പേജുകളിൽ ടൈപ്പ് ചെയ്യുമ്പോൾ അക്ഷരത്തെറ്റുകളുണ്ടോയെന്ന് പരിശോധിക്കുക</translation>
 <translation id="6711146141291425900">ഡൗൺലോഡുകൾക്കായി <ph name="WEB_DRIVE" /> അക്കൗണ്ട് ലിങ്ക് ചെയ്യുക</translation>
 <translation id="6712943853047024245">ഈ ഉപയോക്തൃനാമത്തിനുള്ള പാസ്‍വേഡ് നിങ്ങൾ <ph name="WEBSITE" /> എന്നതിനായി മുമ്പേ സംരക്ഷിച്ചിട്ടുണ്ട്</translation>
 <translation id="6713233729292711163">ഔദ്യോഗിക പ്രൊഫൈൽ ചേർക്കുക</translation>
@@ -6533,6 +6537,7 @@
 <translation id="7340757554212515731">ക്രാഷ് റിപ്പോർട്ടുകളും പ്രശ്നനിർണ്ണയ, ഉപയോഗ ഡാറ്റയും സ്വയമേവ Google-ന് അയയ്ക്കുന്നു</translation>
 <translation id="7341834142292923918">ഈ സൈറ്റിലേക്ക് ആക്‌സസ് ആവശ്യമുണ്ട്</translation>
 <translation id="7343372807593926528">ഫീഡ്ബാക്ക് അയയ്ക്കുന്നതിന് മുമ്പ് പ്രശ്‌നത്തെക്കുറിച്ച് വിവരിക്കുക.</translation>
+<translation id="7344585835349671209">നിങ്ങളുടെ ഉപകരണത്തിൽ HTTPS/SSL സർട്ടിഫിക്കറ്റുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="7345706641791090287">പാസ്‌വേഡ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="7346909386216857016">മനസ്സിലായി</translation>
 <translation id="7347452120014970266">ഇത് <ph name="ORIGIN_NAME" /> എന്നതും അതിന്റെ ഇൻസ്‌റ്റാൾ ചെയ്തിരിക്കുന്ന ആപ്പുകളും സംഭരിച്ചിട്ടുള്ള എല്ലാ ഡാറ്റയും കുക്കികളും മായ്ക്കും</translation>
@@ -6662,6 +6667,7 @@
 <translation id="7460045493116006516">നിങ്ങൾ നിലവിൽ ഇൻസ്‌റ്റാൾ ചെയ്‌തിരിക്കുന്ന തീം</translation>
 <translation id="7461924472993315131">പിൻ ചെയ്യുക</translation>
 <translation id="746216226901520237">അടുത്ത തവണ നിങ്ങളുടെ ഫോൺ <ph name="DEVICE_TYPE" /> അൺലോക്ക് ചെയ്യും. Smart Lock ക്രമീകരണത്തിൽ ഓഫാക്കാം.</translation>
+<translation id="7464153996453281700">കമ്പോണന്റ് നിലവിൽ അപ് ടു ഡേറ്റാണ്</translation>
 <translation id="7464637891177137294">നിങ്ങളുടെ <ph name="ACCOUNT" /> എന്ന Google അക്കൗണ്ടിൽ ഇത് സംരക്ഷിക്കുക</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# ടാബ് തുറന്നിരിക്കുന്നു, തുറന്ന് വച്ചിട്ടുള്ള ടാബ് അടയ്ക്കാൻ അമർത്തുക}other{# ടാബുകൾ തുറന്നിരിക്കുന്നു, തുറന്ന് വച്ചിട്ടുള്ള ടാബ് അടയ്ക്കാൻ അമർത്തുക}}</translation>
 <translation id="7465635034594602553">എന്തോ കുഴപ്പമുണ്ടായി. അൽപ്പസമയം കാത്തിരുന്ന ശേഷം, <ph name="APP_NAME" /> വീണ്ടും റൺ ചെയ്യുക.</translation>
@@ -6994,6 +7000,7 @@
 <translation id="7768526219335215384"><ph name="ORIGIN" /> എന്നതിന് <ph name="FOLDERNAME" /> എന്ന ഫോൾഡറിലെ ഫയലുകൾ കാണാനാകും</translation>
 <translation id="7768770796815395237">മാറ്റുക</translation>
 <translation id="7768784765476638775">വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="7769748505895274502">അടുത്തിടെ അടച്ചവ ചുരുക്കുക</translation>
 <translation id="7770406201819593386">ChromeOS Flex പ്രശ്നനിർണ്ണയ ടെസ്റ്റുകൾ റൺ ചെയ്യുക.</translation>
 <translation id="7770450735129978837">വലത് മൗസ് ക്ലിക്ക്</translation>
 <translation id="7770612696274572992">മറ്റൊരു ഉപകരണത്തിൽ നിന്ന് പകർത്തിയ ചിത്രം</translation>
@@ -7169,6 +7176,7 @@
 <translation id="793531125873261495">വെർച്വൽ മെഷീൻ ഡൗൺലോഡ് ചെയ്യുന്നതിൽ പിശക്. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% പൂർത്തിയായി</translation>
 <translation id="7939062555109487992">വിപുലമായ ഓപ്ഷനുകൾ</translation>
+<translation id="7939328347457537652">ഉപകരണ സർട്ടിഫിക്കറ്റുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="7939412583708276221">എങ്ങനെയാണെങ്കിലും സൂക്ഷിക്കുക</translation>
 <translation id="7942349550061667556">ചുവപ്പ്</translation>
 <translation id="7943368935008348579">PDF-കൾ ഡൗൺലോഡ് ചെയ്യുക</translation>

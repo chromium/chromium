@@ -3284,6 +3284,7 @@
 <translation id="4077919383365622693">Усі дані й файли cookie, збережені сайтом <ph name="SITE" />, буде видалено.</translation>
 <translation id="4078738236287221428">Примусово</translation>
 <translation id="4079140982534148664">Використовувати покращену перевірку орфографії</translation>
+<translation id="4081203444152654304">Пошук на зображенні через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4081242589061676262">Не вдається транслювати файл.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> надсилає сповіщення на ваш телефон. Щоб підтвердити свою особу, виконайте вказівки в ньому.</translation>
 <translation id="4084682180776658562">Закладка</translation>
@@ -3679,6 +3680,7 @@
 <translation id="4476590490540813026">Спортсменка</translation>
 <translation id="4476659815936224889">Ви можете зісканувати цей код за допомогою QR-сканера на телефоні або в деяких додатках для камери.</translation>
 <translation id="4477015793815781985">Натискайте Ctrl, Alt або ⌘</translation>
+<translation id="4477379360383751882">Пошук на зображенні через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="4478664379124702289">Зберегти посиланн&amp;я як...</translation>
 <translation id="4479424953165245642">Керувати додатками-терміналами</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -5935,6 +5937,7 @@
 <translation id="6709133671862442373">Новини</translation>
 <translation id="6709357832553498500">Під’єднатися за допомогою розширення <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Назад</translation>
+<translation id="6710394144992407503">Перевіряти текст, який вводиться на веб-сторінках, на орфографічні помилки</translation>
 <translation id="6711146141291425900">Зв’яжіть обліковий запис сервісу <ph name="WEB_DRIVE" /> для завантажень</translation>
 <translation id="6712943853047024245">Ви вже зберегли пароль, зв’язаний із цим іменем користувача, для <ph name="WEBSITE" /></translation>
 <translation id="6713233729292711163">Додати робочий профіль</translation>
@@ -6556,6 +6559,7 @@
 <translation id="7340757554212515731">Автоматично надсилає в Google звіти про збої, а також дані про діагностику та використання</translation>
 <translation id="7341834142292923918">Запитує дозвіл запускатися на цьому сайті</translation>
 <translation id="7343372807593926528">Перш ніж надсилати відгук, опишіть проблему.</translation>
+<translation id="7344585835349671209">Керуйте сертифікатами HTTPS/SSL на своєму пристрої</translation>
 <translation id="7345706641791090287">Підтвердьте пароль</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7347452120014970266">Буде видалено всі дані й файли cookie, збережені сайтом <ph name="ORIGIN_NAME" /> і встановленими ним додатками</translation>
@@ -6685,6 +6689,7 @@
 <translation id="7460045493116006516">Поточна встановлена тема</translation>
 <translation id="7461924472993315131">Закріпити</translation>
 <translation id="746216226901520237">Наступного разу ви зможете розблокувати пристрій <ph name="DEVICE_TYPE" /> за допомогою свого телефона. Smart Lock можна вимкнути в налаштуваннях.</translation>
+<translation id="7464153996453281700">Компонент уже оновлено</translation>
 <translation id="7464637891177137294">Збережіть його у своєму обліковому записі Google, <ph name="ACCOUNT" /></translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# відкрита вкладка. Натисніть, щоб перемкнути панель вкладок.}one{# відкрита вкладка. Натисніть, щоб перемкнути панель вкладок.}few{# відкриті вкладки. Натисніть, щоб перемкнути панель вкладок.}many{# відкритих вкладок. Натисніть, щоб перемкнути панель вкладок.}other{# відкритої вкладки. Натисніть, щоб перемкнути панель вкладок.}}</translation>
 <translation id="7465635034594602553">Сталася помилка. Зачекайте кілька хвилин і запустіть додаток <ph name="APP_NAME" /> ще раз.</translation>
@@ -7194,6 +7199,7 @@
 <translation id="793531125873261495">Не вдалося завантажити віртуальну машину. Повторіть спробу.</translation>
 <translation id="7935451262452051102">Виконано <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">Розширені параметри</translation>
+<translation id="7939328347457537652">Керувати сертифікатами на пристрої</translation>
 <translation id="7939412583708276221">Усе ж зберегти</translation>
 <translation id="7942349550061667556">Червоний</translation>
 <translation id="7943368935008348579">Завантажувати файли PDF</translation>

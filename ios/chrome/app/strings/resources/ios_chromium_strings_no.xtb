@@ -79,7 +79,6 @@
 1. Åpne Innstillinger.
 2. Trykk på Standard nettleserapp.
 3. Velg Chromium.</translation>
-<translation id="6183442264225539303">Logg på dette nettstedet og Chromium. Du kan slå på synkronisering senere.</translation>
 <translation id="6268381023930128611">Vil du logge av Chromium?</translation>
 <translation id="632825460376924298">Tillat Chromium-pålogging</translation>
 <translation id="6337530241089703714">Velg om du vil slette Chromium-dataene dine fra denne enheten eller beholde dem</translation>
@@ -121,6 +120,7 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
 <translation id="865600487977764604">Holder deg trygg i Chromium og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>
 <translation id="8663480472502753423">Hold Chromium oppdatert</translation>
+<translation id="8685813584220679697">Logg på dette nettstedet og Chromium.</translation>
 <translation id="8747378496147986285">Når du gir samtykke
 <ph name="BEGIN_INDENT" />  • bidrar du til å gjøre Chromium bedre for folk som bruker nettleseren på samme måte som deg<ph name="END_INDENT" />
 

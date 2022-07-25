@@ -511,6 +511,7 @@
 <translation id="4300318234632215983">ከአንድ አገናኝ ጀርባ ያለውን ዩአርኤል አስታውቅ</translation>
 <translation id="4322625298640984693">ሴና</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{ነጥብ}=3{አስጨምሬ}one{# ነጥቦች}other{# ነጥቦች}}</translation>
+<translation id="4352022650330571548"><ph name="PHRASE" /> ተይብ</translation>
 <translation id="4372435075475052704">min:<ph name="X" /></translation>
 <translation id="4372705107434148843">የማቆሚያ ንግግር</translation>
 <translation id="4376316291247992553">ግራፊክን እንደ ብሬይል ይመልከቱ</translation>

@@ -512,6 +512,7 @@
 <translation id="4300318234632215983">‏الإعلان عن عنوان URL وراء رابط</translation>
 <translation id="4322625298640984693">بني غامق</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{نقطة واحدة}=3{علامة حذف}zero{# dots}two{نقطتان (#)}few{# نقاط}many{# نقطة}other{# من النقاط}}</translation>
+<translation id="4352022650330571548">كتابة "<ph name="PHRASE" />"</translation>
 <translation id="4372435075475052704">الحد الأدنى:<ph name="X" /></translation>
 <translation id="4372705107434148843">إيقاف النطق</translation>
 <translation id="4376316291247992553">عرض الرسم بطريقة برايل</translation>

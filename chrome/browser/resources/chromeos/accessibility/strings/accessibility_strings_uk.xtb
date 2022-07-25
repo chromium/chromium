@@ -511,6 +511,7 @@
 <translation id="4300318234632215983">Повідомити URL-адресу посилання</translation>
 <translation id="4322625298640984693">Охра</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{крапка}=3{трикрапка}one{# крапка}few{# крапки}many{# крапок}other{# dots}}</translation>
+<translation id="4352022650330571548">ввести "<ph name="PHRASE" />"</translation>
 <translation id="4372435075475052704">мін.: <ph name="X" /></translation>
 <translation id="4372705107434148843">Припинити мовлення</translation>
 <translation id="4376316291247992553">Перегляд графіки за допомогою шрифту Брайля</translation>

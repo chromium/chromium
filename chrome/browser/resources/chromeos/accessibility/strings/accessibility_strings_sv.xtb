@@ -511,6 +511,7 @@
 <translation id="4300318234632215983">Läs upp webbadressen bakom en länk</translation>
 <translation id="4322625298640984693">Siennabrun</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punkt}=3{tre punkter}other{# punkter}}</translation>
+<translation id="4352022650330571548">skriv <ph name="PHRASE" /></translation>
 <translation id="4372435075475052704">min: <ph name="X" /></translation>
 <translation id="4372705107434148843">Stoppa tal</translation>
 <translation id="4376316291247992553">Visa bild som punktskrift</translation>

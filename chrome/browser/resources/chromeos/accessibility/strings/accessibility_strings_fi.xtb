@@ -511,6 +511,7 @@
 <translation id="4300318234632215983">Ilmoita linkin takana oleva URL-osoite</translation>
 <translation id="4322625298640984693">Siena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{piste}=3{ellipsi}other{# pistettä}}</translation>
+<translation id="4352022650330571548">kirjoita <ph name="PHRASE" /></translation>
 <translation id="4372435075475052704">vähintään <ph name="X" /></translation>
 <translation id="4372705107434148843">Lopeta puhe</translation>
 <translation id="4376316291247992553">Näytä kuva pistekirjoituksena.</translation>

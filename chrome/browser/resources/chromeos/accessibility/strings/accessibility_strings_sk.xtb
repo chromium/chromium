@@ -511,6 +511,7 @@
 <translation id="4300318234632215983">Oznámiť webovú adresu za odkazom</translation>
 <translation id="4322625298640984693">Svetlohnedá</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{bodka}=3{výpustka}few{# bodky}many{# dots}other{# bodiek}}</translation>
+<translation id="4352022650330571548">napíšte <ph name="PHRASE" /></translation>
 <translation id="4372435075475052704">min:<ph name="X" /></translation>
 <translation id="4372705107434148843">Zastaviť reč</translation>
 <translation id="4376316291247992553">Zobraziť obrázok na braillovej obrazovke</translation>

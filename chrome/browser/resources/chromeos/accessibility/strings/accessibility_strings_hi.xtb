@@ -511,6 +511,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4300318234632215983">किसी लिंक के पीछे का URL प्रदर्शित करें</translation>
 <translation id="4322625298640984693">गेरुआ</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{बिंदु}=3{पदलोप चिह्न}one{# बिंदु}other{# बिंदु}}</translation>
+<translation id="4352022650330571548"><ph name="PHRASE" /> टाइप करें</translation>
 <translation id="4372435075475052704">कम से कम:<ph name="X" /></translation>
 <translation id="4372705107434148843">बोली रोकें</translation>
 <translation id="4376316291247992553">ग्राफिक को ब्रेल के रूप में देखें</translation>

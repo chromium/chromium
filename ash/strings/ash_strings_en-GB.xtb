@@ -27,6 +27,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1111021433905331574">You can change the colour of your keyboard backlight in Settings &gt; <ph name="APP_TITLE" /></translation>
 <translation id="112308213915226829">Autohide shelf</translation>
 <translation id="1142002900084379065">Recent photos</translation>
+<translation id="114451698114044150">Auto-zoom is on.</translation>
 <translation id="1148499908455722006">Open info dialogue for <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1153356358378277386">Paired devices</translation>
@@ -306,6 +307,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Partial capture</translation>
 <translation id="2819276065543622893">You will be signed out now.</translation>
+<translation id="2822551631199737692">Camera in use</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> doesn't support <ph name="SPECIFIED_RESOLUTION" />. The resolution was changed to <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Shelf</translation>
 <translation id="2831035692318564937">On until sunrise</translation>
@@ -448,6 +450,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3593039967545720377">Access your clipboard history by pressing <ph name="SHORTCUT_KEY_NAME" /> + V to view your clipboard. Copy an item to get started.</translation>
 <translation id="3593646411856133110">Swipe up and hold to see open apps</translation>
 <translation id="3595596368722241419">Battery full</translation>
+<translation id="3600061223661453002">Off</translation>
 <translation id="3604801046548457007">Desk <ph name="DESK_TITILE" /> created</translation>
 <translation id="3606978283550408104">Braille display connected.</translation>
 <translation id="3615926715408477684">Enabling mobile data will enable Bluetooth</translation>
@@ -807,6 +810,7 @@ Connect your device to power.</translation>
 <translation id="5682642926269496722">The Google Assistant is not available for current user account.</translation>
 <translation id="5689633613396158040">Night Light makes it easier to look at your screen or read in dim light. Tap to change what time Night Light turns on, or turn it off completely.</translation>
 <translation id="5691772641933328258">Fingerprint not recognised</translation>
+<translation id="5693255400847650006">Microphone in use</translation>
 <translation id="570390244361237317">All apps; navigate with arrow keys to access all apps</translation>
 <translation id="5707775774148071965">Your device supports a higher data rate than your cable. Device performance may be limited.</translation>
 <translation id="5710450975648804523">Do Not Disturb is on</translation>
@@ -965,6 +969,7 @@ New install</translation>
 <translation id="6637729079642709226">Change time</translation>
 <translation id="6641720045729354415">Toggle Live Caption. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Undo sort order by name</translation>
+<translation id="6649641931981131786">Adjust camera to put you in the centre of the screen.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
 <translation id="6650933572246256093">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Please enter this passkey on that device: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Password</translation>
@@ -981,6 +986,7 @@ New install</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="6727969043791803658">Connected, <ph name="BATTERY_PERCENTAGE" />% battery</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Camera and microphone in use</translation>
 <translation id="6739144137573853180">GO TO SETTINGS</translation>
 <translation id="6751052314767925245">Enforced by your administrator</translation>
 <translation id="6751826523481687655">Performance tracing is turned on</translation>
@@ -1005,6 +1011,7 @@ New install</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{One digit remaining}other{# digits remaining}}</translation>
 <translation id="6867938213751067702">Download paused <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Shortcut turned off</translation>
+<translation id="6878709625737492815">Auto-zoom is off.</translation>
 <translation id="6884665277231944629">Go back to today</translation>
 <translation id="6886172995547742638">Your <ph name="DEVICE_TYPE" /> may experience lower performance. Use a certified <ph name="PREFERRED_MINIMUM_POWER" />W or higher USB-C power adaptor.</translation>
 <translation id="688631446150864480">Press the Down arrow key to switch windows</translation>
@@ -1084,6 +1091,7 @@ New install</translation>
 <translation id="7378203170292176219">Drag to select an area to record</translation>
 <translation id="7378594059915113390">Media controls</translation>
 <translation id="7378889811480108604">Battery saver mode is off</translation>
+<translation id="7382680553121047388">On</translation>
 <translation id="7384028040782072252">Right-click anywhere to reorder your apps</translation>
 <translation id="7392563512730092880">You can always perform setup later from Settings.</translation>
 <translation id="7405710164030118432">To unlock the device, enter your Family Link parent access code</translation>
@@ -1166,6 +1174,7 @@ New install</translation>
 <translation id="7868900307798234037">Unlocking with fingerprint</translation>
 <translation id="7872195908557044066">Your administrator is resetting your eSIM. Wait a few minutes.</translation>
 <translation id="7872786842639831132">Off</translation>
+<translation id="7875280185395705476">Auto-zoom</translation>
 <translation id="7875575368831396199">Looks like Bluetooth is turned off on your <ph name="DEVICE_TYPE" />. Please turn on Bluetooth to use Phone Hub.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Change device to previous version now}=1{Change device to previous version within 1 second}other{Change device to previous version within # seconds}}</translation>
 <translation id="7886169021410746335">Adjust privacy settings</translation>
@@ -1286,6 +1295,7 @@ New install</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> recommends that you update your <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">Notification Settings</translation>
 <translation id="857201607579416096">Menu moved to the bottom-right corner of the screen.</translation>
+<translation id="8576288697319745668">Toggle auto-zoom. <ph name="STATE_TEXT" /></translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Sort your apps by name or colour</translation>
 <translation id="8614517853887502247"><ph name="APP_1_TITLE" /> and <ph name="APP_2_TITLE" /> notifications are hidden because viewing protection is on</translation>

@@ -511,6 +511,7 @@
 <translation id="4300318234632215983">リンクの URL を読み上げる</translation>
 <translation id="4322625298640984693">シエンナ</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{ドット}=3{三点リーダー}other{# 個のドット}}</translation>
+<translation id="4352022650330571548"><ph name="PHRASE" /> を入力</translation>
 <translation id="4372435075475052704">最小: <ph name="X" /></translation>
 <translation id="4372705107434148843">読み上げの停止</translation>
 <translation id="4376316291247992553">画像を点字パターンで表示します</translation>
