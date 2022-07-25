@@ -6,7 +6,6 @@
 
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/screens/user_creation_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -15,17 +14,10 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId UserCreationView::kScreenId;
-
 UserCreationScreenHandler::UserCreationScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated("login.UserCreationScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
-UserCreationScreenHandler::~UserCreationScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+UserCreationScreenHandler::~UserCreationScreenHandler() = default;
 
 void UserCreationScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -63,24 +55,12 @@ void UserCreationScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_USER_CREATION_CHILD_SIGN_IN_LEARN_MORE_DIALOG_TEXT);
 }
 
-void UserCreationScreenHandler::InitializeDeprecated() {}
-
 void UserCreationScreenHandler::Show() {
   ShowInWebUI();
 }
 
-void UserCreationScreenHandler::Bind(UserCreationScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-}
-
-void UserCreationScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
-}
-
 void UserCreationScreenHandler::SetIsBackButtonVisible(bool value) {
-  CallJS("login.UserCreationScreen.setIsBackButtonVisible", value);
+  CallExternalAPI("setIsBackButtonVisible", value);
 }
 
 }  // namespace chromeos

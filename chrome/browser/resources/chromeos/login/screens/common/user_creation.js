@@ -131,7 +131,7 @@ class UserCreation extends UserCreationScreenElementBase {
         'userCreationAddPersonSubtitle' :
         'userCreationSubtitle';
     if (this.uiStep === UserCreationUIState.CHILD) {
-      chrome.send('updateOobeUIState', [OOBE_UI_STATE.GAIA_SIGNIN]);
+      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.GAIA_SIGNIN);
     }
   }
 
@@ -157,7 +157,7 @@ class UserCreation extends UserCreationScreenElementBase {
 
   onBackClicked_() {
     if (this.uiStep === UserCreationUIState.CHILD) {
-      chrome.send('updateOobeUIState', [OOBE_UI_STATE.USER_CREATION]);
+      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.USER_CREATION);
       this.setUIStep(UserCreationUIState.CREATE);
     } else {
       this.userActed('cancel');
@@ -169,7 +169,7 @@ class UserCreation extends UserCreationScreenElementBase {
       if (this.selectedUserType === UserCreationUserType.SELF) {
         this.userActed('signin');
       } else if (this.selectedUserType === UserCreationUserType.CHILD) {
-        chrome.send('updateOobeUIState', [OOBE_UI_STATE.GAIA_SIGNIN]);
+        Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.GAIA_SIGNIN);
         this.setUIStep(UserCreationUIState.CHILD);
       }
     } else if (this.uiStep === UserCreationUIState.CHILD) {

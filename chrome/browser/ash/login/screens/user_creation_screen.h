@@ -44,17 +44,13 @@ class UserCreationScreen
 
   static std::string GetResultString(Result result);
 
-  explicit UserCreationScreen(UserCreationView* view,
+  explicit UserCreationScreen(base::WeakPtr<UserCreationView> view,
                               ErrorScreen* error_screen,
                               const ScreenExitCallback& exit_callback);
   ~UserCreationScreen() override;
 
   UserCreationScreen(const UserCreationScreen&) = delete;
   UserCreationScreen& operator=(const UserCreationScreen&) = delete;
-
-  // Called when the screen is being destroyed. This should call Unbind() on the
-  // associated View if this class is destroyed before that.
-  void OnViewDestroyed(UserCreationView* view);
 
   // NetworkStateInformer::NetworkStateInformerObserver implementation:
   void UpdateState(NetworkError::ErrorReason reason) override;
@@ -67,13 +63,13 @@ class UserCreationScreen
   bool MaybeSkip(WizardContext* context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
 
   // Runs either exit_callback_ or |test_exit_delegate| observer.
   void RunExitCallback(Result result);
 
-  UserCreationView* view_ = nullptr;
+  base::WeakPtr<UserCreationView> view_;
 
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 

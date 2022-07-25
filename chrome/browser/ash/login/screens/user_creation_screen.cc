@@ -48,28 +48,18 @@ std::string UserCreationScreen::GetResultString(Result result) {
   }
 }
 
-UserCreationScreen::UserCreationScreen(UserCreationView* view,
+UserCreationScreen::UserCreationScreen(base::WeakPtr<UserCreationView> view,
                                        ErrorScreen* error_screen,
                                        const ScreenExitCallback& exit_callback)
     : BaseScreen(UserCreationView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       error_screen_(error_screen),
       exit_callback_(exit_callback) {
   network_state_informer_ = base::MakeRefCounted<NetworkStateInformer>();
   network_state_informer_->Init();
-  if (view_)
-    view_->Bind(this);
 }
 
-UserCreationScreen::~UserCreationScreen() {
-  if (view_)
-    view_->Unbind();
-}
-
-void UserCreationScreen::OnViewDestroyed(UserCreationView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
+UserCreationScreen::~UserCreationScreen() = default;
 
 // static
 void UserCreationScreen::SetUserCreationScreenExitTestDelegate(
@@ -117,7 +107,8 @@ void UserCreationScreen::HideImpl() {
   error_screen_->Hide();
 }
 
-void UserCreationScreen::OnUserActionDeprecated(const std::string& action_id) {
+void UserCreationScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionSignIn) {
     context()->sign_in_as_child = false;
     RunExitCallback(Result::SIGNIN);
@@ -133,7 +124,7 @@ void UserCreationScreen::OnUserActionDeprecated(const std::string& action_id) {
     context()->is_user_creation_enabled = false;
     RunExitCallback(Result::CANCEL);
   } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 
