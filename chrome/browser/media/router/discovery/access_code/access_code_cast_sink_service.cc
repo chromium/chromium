@@ -803,6 +803,9 @@ void AccessCodeCastSinkService::OnEnabledPrefChange() {
 }
 
 void AccessCodeCastSinkService::Shutdown() {
+  if (base::FeatureList::IsEnabled(features::kAccessCodeCastRememberDevices)) {
+    network_monitor_->RemoveObserver(this);
+  }
   // There's no guarantee that MediaRouter is still in the
   // MediaRoutesObserver. |media_routes_observer_| accesses MediaRouter in its
   // dtor. Since MediaRouter and |this| are both KeyedServices, we must not
