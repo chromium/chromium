@@ -1131,15 +1131,28 @@ class ClearObjectStore final
 };
 
 void InspectorIndexedDBAgent::clearObjectStore(
-    const String& security_origin,
+    protocol::Maybe<String> security_origin,
+    protocol::Maybe<String> storage_key,
     const String& database_name,
     const String& object_store_name,
     std::unique_ptr<ClearObjectStoreCallback> request_callback) {
+  if (security_origin.isJust() == storage_key.isJust()) {
+    request_callback->sendFailure(
+        Response::InvalidParams("At least and at most one of security_origin, "
+                                "storage_key must be specified."));
+    return;
+  }
   scoped_refptr<ClearObjectStore> clear_object_store =
       ClearObjectStore::Create(object_store_name, std::move(request_callback));
-  clear_object_store->Start(
-      inspected_frames_->FrameWithSecurityOrigin(security_origin),
-      database_name);
+  if (security_origin.isJust()) {
+    clear_object_store->Start(
+        inspected_frames_->FrameWithSecurityOrigin(security_origin.fromJust()),
+        database_name);
+  } else if (storage_key.isJust()) {
+    clear_object_store->Start(
+        inspected_frames_->FrameWithStorageKey(storage_key.fromJust()),
+        database_name);
+  }
 }
 
 void InspectorIndexedDBAgent::deleteDatabase(

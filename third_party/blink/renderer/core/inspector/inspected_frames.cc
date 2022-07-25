@@ -34,6 +34,16 @@ LocalFrame* InspectedFrames::FrameWithSecurityOrigin(
   return nullptr;
 }
 
+LocalFrame* InspectedFrames::FrameWithStorageKey(const String& key_raw_string) {
+  for (LocalFrame* frame : *this) {
+    if (static_cast<StorageKey>(frame->DomWindow()->GetStorageKey())
+            .Serialize() == key_raw_string.Utf8()) {
+      return frame;
+    }
+  }
+  return nullptr;
+}
+
 InspectedFrames::Iterator::Iterator(LocalFrame* root, LocalFrame* current)
     : root_(root), current_(current) {}
 
