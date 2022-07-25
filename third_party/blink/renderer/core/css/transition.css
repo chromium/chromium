@@ -12,6 +12,7 @@
 html::page-transition {
   position: fixed;
   inset: 0;
+  pointer-events: none;
 }
 
 html::page-transition-container(*) {
@@ -23,6 +24,8 @@ html::page-transition-container(*) {
   /* The transform applied to the container includes any translation necessary
      for the original element's transform-origin. */
   transform-origin: top left;
+
+  pointer-events: auto;
 }
 
 ::page-transition-image-wrapper(*) {

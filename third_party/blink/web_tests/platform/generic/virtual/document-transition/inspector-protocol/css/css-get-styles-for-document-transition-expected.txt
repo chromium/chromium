@@ -112,6 +112,10 @@ The test verifies functionality of querying style information for document-trans
                                         name : left
                                         value : 0px
                                     }
+                                    [5] : {
+                                        name : pointer-events
+                                        value : none
+                                    }
                                 ]
                                 shorthandEntries : [
                                     [0] : {
@@ -172,6 +176,10 @@ The test verifies functionality of querying style information for document-trans
                                     [4] : {
                                         name : transform-origin
                                         value : left top
+                                    }
+                                    [5] : {
+                                        name : pointer-events
+                                        value : auto
                                     }
                                 ]
                                 shorthandEntries : [
@@ -270,6 +278,10 @@ The test verifies functionality of querying style information for document-trans
                                     [4] : {
                                         name : transform-origin
                                         value : left top
+                                    }
+                                    [5] : {
+                                        name : pointer-events
+                                        value : auto
                                     }
                                 ]
                                 shorthandEntries : [
@@ -1599,6 +1611,10 @@ Dumping styles for : ::page-transition with id undefined{
                                 name : left
                                 value : 0px
                             }
+                            [5] : {
+                                name : pointer-events
+                                value : none
+                            }
                         ]
                         shorthandEntries : [
                             [0] : {
@@ -1662,6 +1678,10 @@ Dumping styles for : ::page-transition-container with id root{
                             [4] : {
                                 name : transform-origin
                                 value : left top
+                            }
+                            [5] : {
+                                name : pointer-events
+                                value : auto
                             }
                         ]
                         shorthandEntries : [
@@ -2308,6 +2328,10 @@ Dumping styles for : ::page-transition-container with id shared{
                             [4] : {
                                 name : transform-origin
                                 value : left top
+                            }
+                            [5] : {
+                                name : pointer-events
+                                value : auto
                             }
                         ]
                         shorthandEntries : [
