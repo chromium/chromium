@@ -127,6 +127,7 @@ class ReportingClient::Uploader : public UploaderInterface {
     const bool need_encryption_key_;
     std::vector<EncryptedRecord> encrypted_records_;
     ScopedReservation encrypted_records_reservation_;
+    SEQUENCE_CHECKER(sequence_checker_);
 
     UploadCallback upload_callback_;
   };
@@ -143,12 +144,16 @@ ReportingClient::Uploader::Helper::Helper(
     bool need_encryption_key,
     ReportingClient::Uploader::UploadCallback upload_callback)
     : need_encryption_key_(need_encryption_key),
-      upload_callback_(std::move(upload_callback)) {}
+      upload_callback_(std::move(upload_callback)) {
+  // Constructor is called on the task assigned by |SequenceBound|.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void ReportingClient::Uploader::Helper::ProcessRecord(
     EncryptedRecord data,
     ScopedReservation scoped_reservation,
     base::OnceCallback<void(bool)> processed_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (completed_) {
     std::move(processed_cb).Run(false);
     return;
@@ -162,6 +167,7 @@ void ReportingClient::Uploader::Helper::ProcessGap(
     SequenceInformation start,
     uint64_t count,
     base::OnceCallback<void(bool)> processed_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (completed_) {
     std::move(processed_cb).Run(false);
     return;
@@ -175,6 +181,7 @@ void ReportingClient::Uploader::Helper::ProcessGap(
 }
 
 void ReportingClient::Uploader::Helper::Completed(Status final_status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!final_status.ok()) {
     // No work to do - something went wrong with storage and it no longer
     // wants to upload the records. Let the records die with |this|.
