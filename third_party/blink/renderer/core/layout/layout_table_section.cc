@@ -216,6 +216,9 @@ void LayoutTableSection::AddChild(LayoutObject* child,
 
   EnsureRows(c_row_);
 
+  // TODO(crbug.com/1345894): See the TODO in |LayoutTable::AddChild|.
+  // |LayoutNGTableRow| is not a subclass of |LayoutTableRow|.
+  CHECK(IsA<LayoutTableRow>(child));
   LayoutTableRow* row = To<LayoutTableRow>(child);
   grid_[insertion_row].row = row;
   row->SetRowIndex(insertion_row);
