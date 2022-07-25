@@ -45,7 +45,6 @@ using autofill::NAME_MIDDLE;
 using autofill::PHONE_HOME_CITY_AND_NUMBER;
 using autofill::PHONE_HOME_CITY_CODE;
 using autofill::PHONE_HOME_COUNTRY_CODE;
-using autofill::PHONE_HOME_EXTENSION;
 using autofill::PHONE_HOME_NUMBER;
 using autofill::PHONE_HOME_WHOLE_NUMBER;
 
@@ -276,8 +275,6 @@ class AutofillProfileComparatorTest
               actual.GetInfo(AutofillType(PHONE_HOME_CITY_CODE), kLocale));
     EXPECT_EQ(expected.GetInfo(AutofillType(PHONE_HOME_NUMBER), kLocale),
               actual.GetInfo(AutofillType(PHONE_HOME_NUMBER), kLocale));
-    EXPECT_EQ(expected.GetInfo(AutofillType(PHONE_HOME_EXTENSION), kLocale),
-              actual.GetInfo(AutofillType(PHONE_HOME_EXTENSION), kLocale));
   }
 
   void MergeAddressesAndExpect(const AutofillProfile& a,
@@ -653,30 +650,14 @@ TEST_P(AutofillProfileComparatorTest, HaveMergeableCompanyNames) {
 TEST_P(AutofillProfileComparatorTest, HaveMergeablePhoneNumbers) {
   AutofillProfile empty = CreateProfileWithPhoneNumber("");
   AutofillProfile p1 = CreateProfileWithPhoneNumber("+1 (800) 670-8700");
-  AutofillProfile p2 = CreateProfileWithPhoneNumber("800.670.8700x321");
-  AutofillProfile p3 = CreateProfileWithPhoneNumber("670-8700 ext321");
-  AutofillProfile p4 = CreateProfileWithPhoneNumber("6708700");
+  AutofillProfile p2 = CreateProfileWithPhoneNumber("6708700");
   AutofillProfile different = CreateProfileWithPhoneNumber("1-800-321-4567");
 
   EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p1, p1));
   EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p1, p2));
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p1, p3));
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p1, p4));
 
   EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p2, p1));
   EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p2, p2));
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p2, p3));
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p2, p4));
-
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p3, p1));
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p3, p2));
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p3, p3));
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p3, p4));
-
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p4, p1));
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p4, p2));
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p4, p3));
-  EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p4, p4));
 
   EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(p1, empty));
   EXPECT_TRUE(comparator_.HaveMergeablePhoneNumbers(empty, p2));
@@ -780,7 +761,7 @@ TEST_P(AutofillProfileComparatorTest, AreMergeable) {
                         {ADDRESS_HOME_LINE1, u"123 zoo st. w., #5"},
                         {ADDRESS_HOME_LINE1, u""},
                         {ADDRESS_HOME_STATE, u"california"},
-                        {PHONE_HOME_WHOLE_NUMBER, u"5678910 ext. 77"}});
+                        {PHONE_HOME_WHOLE_NUMBER, u"5678910"}});
   AutofillProfile not_mergeable_by_name =
       CopyAndModify(p, {{NAME_FIRST, u"Steven"},
                         {NAME_FULL, u""},
@@ -1074,143 +1055,50 @@ TEST_P(AutofillProfileComparatorTest, MergeCompanyNames) {
 }
 
 TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
-  static const char kPhoneA[] = "5550199";
-  static const char16_t kPhoneA16[] = u"5550199";
-  static const char kPhoneB[] = "555.0199";
-  static const char16_t kPhoneB16[] = u"555.0199";
-  static const char kPhoneC[] = "555-0199 ext321";
-  static const char16_t kPhoneC16[] = u"555-0199 ext321";
-  static const char kPhoneD[] = "8005550199";
-  static const char16_t kPhoneD16[] = u"8005550199";
-  static const char kPhoneE[] = "800-555-0199 #321";
-  static const char16_t kPhoneE16[] = u"800-555-0199 #321";
-  static const char kPhoneF[] = "1-800-555-0199 #321";
-  static const char16_t kPhoneF16[] = u"1-800-555-0199 #321";
-  static const char kPhoneG[] = "+1 (800) 555.0199;ext=321";
-  static const char16_t kPhoneG16[] = u"+1 (800) 555.0199;ext=321";
-  static const char16_t kMergedShortNumber[] = u"555-0199";
-  static const char16_t kMergedShortNumberExt[] = u"555-0199 ext. 321";
-  static const char16_t kMergedNationalNumber[] = u"(800) 555-0199";
-  static const char16_t kMergedNationalNumberExt[] = u"(800) 555-0199 ext. 321";
-  static const char16_t kMergedFullNumberExt[] = u"+1 800-555-0199 ext. 321";
-
-  AutofillProfile profile_a = CreateProfileWithPhoneNumber(kPhoneA);
-  AutofillProfile profile_b = CreateProfileWithPhoneNumber(kPhoneB);
-  AutofillProfile profile_c = CreateProfileWithPhoneNumber(kPhoneC);
-  AutofillProfile profile_d = CreateProfileWithPhoneNumber(kPhoneD);
-  AutofillProfile profile_e = CreateProfileWithPhoneNumber(kPhoneE);
-  AutofillProfile profile_f = CreateProfileWithPhoneNumber(kPhoneF);
-  AutofillProfile profile_g = CreateProfileWithPhoneNumber(kPhoneG);
+  AutofillProfile profile_a = CreateProfileWithPhoneNumber("5550199");
+  AutofillProfile profile_b = CreateProfileWithPhoneNumber("555.0199");
+  AutofillProfile profile_c = CreateProfileWithPhoneNumber("8005550199");
 
   // Profile A
-  MergePhoneNumbersAndExpect(profile_a, profile_a, kPhoneA16);
-  MergePhoneNumbersAndExpect(profile_a, profile_b, kMergedShortNumber);
-  MergePhoneNumbersAndExpect(profile_a, profile_c, kMergedShortNumberExt);
-  MergePhoneNumbersAndExpect(profile_a, profile_d, kMergedNationalNumber);
-  MergePhoneNumbersAndExpect(profile_a, profile_e, kMergedNationalNumberExt);
-  MergePhoneNumbersAndExpect(profile_a, profile_f, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_a, profile_g, kMergedFullNumberExt);
+  MergePhoneNumbersAndExpect(profile_a, profile_a, u"5550199");
+  MergePhoneNumbersAndExpect(profile_a, profile_b, u"555-0199");
+  MergePhoneNumbersAndExpect(profile_a, profile_c, u"(800) 555-0199");
 
   // Profile B
-  MergePhoneNumbersAndExpect(profile_b, profile_a, kMergedShortNumber);
-  MergePhoneNumbersAndExpect(profile_b, profile_b, kPhoneB16);
-  MergePhoneNumbersAndExpect(profile_b, profile_c, kMergedShortNumberExt);
-  MergePhoneNumbersAndExpect(profile_b, profile_d, kMergedNationalNumber);
-  MergePhoneNumbersAndExpect(profile_b, profile_e, kMergedNationalNumberExt);
-  MergePhoneNumbersAndExpect(profile_b, profile_f, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_b, profile_g, kMergedFullNumberExt);
-
-  // Profile C
-  MergePhoneNumbersAndExpect(profile_c, profile_a, kMergedShortNumberExt);
-  MergePhoneNumbersAndExpect(profile_c, profile_b, kMergedShortNumberExt);
-  MergePhoneNumbersAndExpect(profile_c, profile_c, kPhoneC16);
-  MergePhoneNumbersAndExpect(profile_c, profile_d, kMergedNationalNumberExt);
-  MergePhoneNumbersAndExpect(profile_c, profile_e, kMergedNationalNumberExt);
-  MergePhoneNumbersAndExpect(profile_c, profile_f, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_c, profile_g, kMergedFullNumberExt);
+  MergePhoneNumbersAndExpect(profile_b, profile_a, u"555-0199");
+  MergePhoneNumbersAndExpect(profile_b, profile_b, u"555.0199");
+  MergePhoneNumbersAndExpect(profile_b, profile_c, u"(800) 555-0199");
 
   // Profile D
-  MergePhoneNumbersAndExpect(profile_d, profile_a, kMergedNationalNumber);
-  MergePhoneNumbersAndExpect(profile_d, profile_b, kMergedNationalNumber);
-  MergePhoneNumbersAndExpect(profile_d, profile_c, kMergedNationalNumberExt);
-  MergePhoneNumbersAndExpect(profile_d, profile_d, kPhoneD16);
-  MergePhoneNumbersAndExpect(profile_d, profile_e, kMergedNationalNumberExt);
-  MergePhoneNumbersAndExpect(profile_d, profile_f, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_d, profile_g, kMergedFullNumberExt);
-
-  // Profile E
-  MergePhoneNumbersAndExpect(profile_e, profile_a, kMergedNationalNumberExt);
-  MergePhoneNumbersAndExpect(profile_e, profile_b, kMergedNationalNumberExt);
-  MergePhoneNumbersAndExpect(profile_e, profile_c, kMergedNationalNumberExt);
-  MergePhoneNumbersAndExpect(profile_e, profile_d, kMergedNationalNumberExt);
-  MergePhoneNumbersAndExpect(profile_e, profile_e, kPhoneE16);
-  MergePhoneNumbersAndExpect(profile_e, profile_f, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_e, profile_g, kMergedFullNumberExt);
-
-  // Profile F
-  MergePhoneNumbersAndExpect(profile_f, profile_a, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_f, profile_b, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_f, profile_c, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_f, profile_d, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_f, profile_e, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_f, profile_f, kPhoneF16);
-  MergePhoneNumbersAndExpect(profile_f, profile_g, kMergedFullNumberExt);
-
-  // Profile G
-  MergePhoneNumbersAndExpect(profile_g, profile_a, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_g, profile_b, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_g, profile_c, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_g, profile_d, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_g, profile_e, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_g, profile_f, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_g, profile_g, kPhoneG16);
+  MergePhoneNumbersAndExpect(profile_c, profile_a, u"(800) 555-0199");
+  MergePhoneNumbersAndExpect(profile_c, profile_b, u"(800) 555-0199");
+  MergePhoneNumbersAndExpect(profile_c, profile_c, u"8005550199");
 }
 
 TEST_P(AutofillProfileComparatorTest, MergePhoneNumbers_Intl) {
-  const std::u16string kGermany = u"DE";
-  const AutofillType kCountry(ADDRESS_HOME_COUNTRY);
+  AutofillProfile profile_a = CreateProfileWithPhoneNumber("+49492180185611");
+  AutofillProfile profile_b =
+      CreateProfileWithPhoneNumber("+49 4921 801 856-11");
+  AutofillProfile profile_c = CreateProfileWithPhoneNumber("04921 80185611");
 
-  static const char kPhoneA[] = "+49492180185611";
-  static const char16_t kPhoneA16[] = u"+49492180185611";
-  static const char kPhoneB[] = "+49 4921 801 856-11";
-  static const char16_t kPhoneB16[] = u"+49 4921 801 856-11";
-  static const char kPhoneC[] = "+49 4921 8018 5611;ext=22";
-  static const char16_t kPhoneC16[] = u"+49 4921 8018 5611;ext=22";
-  static const char kPhoneD[] = "04921 80185611";  // National Format.
-  static const char16_t kPhoneD16[] = u"04921 80185611";  // National Format.
-  static const char16_t kMergedFullNumber[] = u"+49 4921 80185611";
-  static const char16_t kMergedFullNumberExt[] = u"+49 4921 80185611 ext. 22";
-
-  AutofillProfile profile_a = CreateProfileWithPhoneNumber(kPhoneA);
-  AutofillProfile profile_b = CreateProfileWithPhoneNumber(kPhoneB);
-  AutofillProfile profile_c = CreateProfileWithPhoneNumber(kPhoneC);
-  AutofillProfile profile_d = CreateProfileWithPhoneNumber(kPhoneD);
-
-  profile_a.SetInfo(kCountry, kGermany, kLocale);
-  profile_b.SetInfo(kCountry, kGermany, kLocale);
-  profile_c.SetInfo(kCountry, kGermany, kLocale);
-  profile_d.SetInfo(kCountry, kGermany, kLocale);
+  profile_a.SetInfo(ADDRESS_HOME_COUNTRY, u"DE", kLocale);
+  profile_b.SetInfo(ADDRESS_HOME_COUNTRY, u"DE", kLocale);
+  profile_c.SetInfo(ADDRESS_HOME_COUNTRY, u"DE", kLocale);
 
   // Profile A
-  MergePhoneNumbersAndExpect(profile_a, profile_a, kPhoneA16);
-  MergePhoneNumbersAndExpect(profile_a, profile_b, kMergedFullNumber);
-  MergePhoneNumbersAndExpect(profile_a, profile_c, kMergedFullNumberExt);
+  MergePhoneNumbersAndExpect(profile_a, profile_a, u"+49492180185611");
+  MergePhoneNumbersAndExpect(profile_a, profile_b, u"+49 4921 80185611");
+  MergePhoneNumbersAndExpect(profile_a, profile_c, u"+49 4921 80185611");
 
   // Profile B
-  MergePhoneNumbersAndExpect(profile_b, profile_a, kMergedFullNumber);
-  MergePhoneNumbersAndExpect(profile_b, profile_b, kPhoneB16);
-  MergePhoneNumbersAndExpect(profile_b, profile_c, kMergedFullNumberExt);
-
-  // Profile C
-  MergePhoneNumbersAndExpect(profile_c, profile_a, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_c, profile_b, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_c, profile_c, kPhoneC16);
+  MergePhoneNumbersAndExpect(profile_b, profile_a, u"+49 4921 80185611");
+  MergePhoneNumbersAndExpect(profile_b, profile_b, u"+49 4921 801 856-11");
+  MergePhoneNumbersAndExpect(profile_b, profile_c, u"+49 4921 80185611");
 
   // Profile D
-  MergePhoneNumbersAndExpect(profile_d, profile_a, kMergedFullNumber);
-  MergePhoneNumbersAndExpect(profile_d, profile_b, kMergedFullNumber);
-  MergePhoneNumbersAndExpect(profile_d, profile_c, kMergedFullNumberExt);
-  MergePhoneNumbersAndExpect(profile_d, profile_d, kPhoneD16);
+  MergePhoneNumbersAndExpect(profile_c, profile_a, u"+49 4921 80185611");
+  MergePhoneNumbersAndExpect(profile_c, profile_b, u"+49 4921 80185611");
+  MergePhoneNumbersAndExpect(profile_c, profile_c, u"04921 80185611");
 }
 
 TEST_P(AutofillProfileComparatorTest, MergeAddresses) {

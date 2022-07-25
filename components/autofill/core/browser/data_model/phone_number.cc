@@ -274,6 +274,8 @@ std::u16string PhoneNumber::GetInfoImpl(const AutofillType& type,
     }
 
     case PHONE_HOME_EXTENSION:
+      // Autofill doesn't support filling extensions, but some basic local
+      // heuristics classify them.
       return std::u16string();
 
     default:
@@ -306,6 +308,16 @@ bool PhoneNumber::SetInfoWithVerificationStatusImpl(
   // doesn't contain formatting marks.
   if (base::ContainsOnlyChars(number_, u"+0123456789")) {
     number_ = cached_parsed_phone_.GetFormattedNumber();
+  } else {
+    // Strip `number_` of extensions, e.g. "(123)-123 ext. 123" -> "(123)-123".
+    // In the if case, this is done by `GetFormattedNumber()` already. To
+    // preserve the formatting, everything after the last digit of the whole
+    // number is removed manually here. The whole number only consists of digits
+    // and has any extensions removed already.
+    size_t i = 0;
+    for (auto digit : cached_parsed_phone_.GetWholeNumber())
+      i = number_.find(digit, i) + 1;  // Skip `digit`.
+    number_ = number_.substr(0, i);
   }
   return true;
 }

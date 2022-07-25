@@ -43,8 +43,6 @@ std::ostream& operator<<(std::ostream& os,
                          const ::i18n::phonenumbers::PhoneNumber& n) {
   os << "country_code: " << n.country_code() << " "
      << "national_number: " << n.national_number();
-  if (n.has_extension())
-    os << " extension: \"" << n.extension() << "\"";
   if (n.has_italian_leading_zero())
     os << " italian_leading_zero: " << n.italian_leading_zero();
   if (n.has_number_of_leading_zeros())
@@ -718,11 +716,6 @@ bool AutofillProfileComparator::MergePhoneNumbers(
       HasInternationalCountryCode(n1) ? n1.country_code() : n2.country_code());
   merged_number.set_national_number(
       std::max(n1.national_number(), n2.national_number()));
-  if (n1.has_extension() && !n1.extension().empty()) {
-    merged_number.set_extension(n1.extension());
-  } else if (n2.has_extension() && !n2.extension().empty()) {
-    merged_number.set_extension(n2.extension());
-  }
   if (n1.has_italian_leading_zero() || n2.has_italian_leading_zero()) {
     merged_number.set_italian_leading_zero(n1.italian_leading_zero() ||
                                            n2.italian_leading_zero());

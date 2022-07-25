@@ -411,6 +411,18 @@ TEST(PhoneNumberTest, NumberPreAndSuffixes) {
   }
 }
 
+// Tests that extensions are not stored and even stripped from the raw info.
+TEST(PhoneNumberTest, Extension) {
+  AutofillProfile profile;
+  PhoneNumber phone(&profile);
+  const std::string locale = "en-US";
+  EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"(650) 234-2345 ext. 234",
+                            locale));
+  EXPECT_EQ(u"(650) 234-2345", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"6502342345", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, locale));
+  EXPECT_TRUE(phone.GetInfo(PHONE_HOME_EXTENSION, locale).empty());
+}
+
 // Tests whether the |PHONE_HOME_COUNTRY_CODE| is added to the set of matching
 // types.
 TEST(PhoneNumberTest, CountryCodeInMatchingTypes) {

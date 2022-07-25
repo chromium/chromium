@@ -137,6 +137,7 @@ enum ServerFieldType {
   CREDIT_CARD_NAME_FIRST = 91,
   CREDIT_CARD_NAME_LAST = 92,
 
+  // Extensions are detected, but not filled.
   PHONE_HOME_EXTENSION = 93,
 
   // PROBABLY_ACCOUNT_CREATION_PASSWORD value 94 is deprecated.

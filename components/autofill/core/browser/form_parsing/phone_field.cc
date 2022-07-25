@@ -60,79 +60,80 @@ std::u16string GetAreaRegex() {
 // <ac> - area code field.
 // <phone> - phone or prefix.
 // <suffix> - suffix.
-// <ext> - extension.
 // :N means field is limited to N characters, otherwise it is unlimited.
 // (pattern <field>)? means pattern is optional and matched separately.
 // static
 const std::vector<PhoneField::PhoneGrammar>& PhoneField::GetPhoneGrammars() {
   static const base::NoDestructor<std::vector<PhoneGrammar>> grammars({
-      // Country code: <cc> Area Code: <ac> Phone: <phone> (- <suffix>
-      // (Ext: <ext>)?)?
+      // Country code: <cc> Area Code: <ac> Phone: <phone>
       {{REGEX_COUNTRY, FIELD_COUNTRY_CODE},
        {REGEX_AREA, FIELD_AREA_CODE},
        {REGEX_PHONE, FIELD_PHONE}},
-      // \( <ac> \) <phone>:3 <suffix>:4 (Ext: <ext>)?
+      // \( <ac> \) <phone>:3 <suffix>:4
       {{REGEX_AREA_NOTEXT, FIELD_AREA_CODE, 3},
        {REGEX_PREFIX_SEPARATOR, FIELD_PHONE, 3},
        {REGEX_PHONE, FIELD_SUFFIX, 4}},
-      // Phone: <cc> <ac>:3 - <phone>:3 - <suffix>:4 (Ext: <ext>)?
+      // Phone: <cc> <ac>:3 - <phone>:3 - <suffix>:4
       {{REGEX_PHONE, FIELD_COUNTRY_CODE},
        {REGEX_PHONE, FIELD_AREA_CODE, 3},
        {REGEX_PREFIX_SEPARATOR, FIELD_PHONE, 3},
        {REGEX_SUFFIX_SEPARATOR, FIELD_SUFFIX, 4}},
-      // Phone: <cc>:3 <ac>:3 <phone>:3 <suffix>:4 (Ext: <ext>)?
+      // Phone: <cc>:3 <ac>:3 <phone>:3 <suffix>:4
       {{REGEX_PHONE, FIELD_COUNTRY_CODE, 3},
        {REGEX_PHONE, FIELD_AREA_CODE, 3},
        {REGEX_PHONE, FIELD_PHONE, 3},
        {REGEX_PHONE, FIELD_SUFFIX, 4}},
-      // Area Code: <ac> Phone: <phone> (- <suffix> (Ext: <ext>)?)?
+      // Area Code: <ac> Phone: <phone>
       {{REGEX_AREA, FIELD_AREA_CODE}, {REGEX_PHONE, FIELD_PHONE}},
-      // Phone: <ac> <phone>:3 <suffix>:4 (Ext: <ext>)?
+      // Phone: <ac> <phone>:3 <suffix>:4
       {{REGEX_PHONE, FIELD_AREA_CODE},
        {REGEX_PHONE, FIELD_PHONE, 3},
        {REGEX_PHONE, FIELD_SUFFIX, 4}},
-      // Phone: <cc> \( <ac> \) <phone> (- <suffix> (Ext: <ext>)?)?
+      // Phone: <cc> \( <ac> \) <phone>
       {{REGEX_PHONE, FIELD_COUNTRY_CODE},
        {REGEX_AREA_NOTEXT, FIELD_AREA_CODE},
        {REGEX_PREFIX_SEPARATOR, FIELD_PHONE}},
-      // Phone: \( <ac> \) <phone> (- <suffix> (Ext: <ext>)?)?
+      // Phone: \( <ac> \) <phone>
+      // TODO(crbug.com/1311937): This is a duplicate of the grammar above. It
+      // will be removed with `AutofillMetrics::LogPhoneNumberGrammarMatched()`,
+      // once collecting data on the grammar usages is complete.
       {{REGEX_PHONE, FIELD_COUNTRY_CODE},
        {REGEX_AREA_NOTEXT, FIELD_AREA_CODE},
        {REGEX_PREFIX_SEPARATOR, FIELD_PHONE}},
-      // Phone: <cc> - <ac> - <phone> - <suffix> (Ext: <ext>)?
+      // Phone: <cc> - <ac> - <phone> - <suffix>
       {{REGEX_PHONE, FIELD_COUNTRY_CODE},
        {REGEX_PREFIX_SEPARATOR, FIELD_AREA_CODE},
        {REGEX_PREFIX_SEPARATOR, FIELD_PHONE},
        {REGEX_SUFFIX_SEPARATOR, FIELD_SUFFIX}},
-      // Area code: <ac>:3 Prefix: <prefix>:3 Suffix: <suffix>:4 (Ext: <ext>)?
+      // Area code: <ac>:3 Prefix: <prefix>:3 Suffix: <suffix>:4
       {{REGEX_AREA, FIELD_AREA_CODE, 3},
        {REGEX_PREFIX, FIELD_PHONE, 3},
        {REGEX_SUFFIX, FIELD_SUFFIX, 4}},
-      // Phone: <ac> Prefix: <phone> Suffix: <suffix> (Ext: <ext>)?
+      // Phone: <ac> Prefix: <phone> Suffix: <suffix>
       {{REGEX_PHONE, FIELD_AREA_CODE},
        {REGEX_PREFIX, FIELD_PHONE},
        {REGEX_SUFFIX, FIELD_SUFFIX}},
-      // Phone: <ac> - <phone>:3 - <suffix>:4 (Ext: <ext>)?
+      // Phone: <ac> - <phone>:3 - <suffix>:4
       {{REGEX_PHONE, FIELD_AREA_CODE},
        {REGEX_PREFIX_SEPARATOR, FIELD_PHONE, 3},
        {REGEX_SUFFIX_SEPARATOR, FIELD_SUFFIX, 4}},
-      // Phone: <cc> - <ac> - <phone> (Ext: <ext>)?
+      // Phone: <cc> - <ac> - <phone>
       {{REGEX_PHONE, FIELD_COUNTRY_CODE},
        {REGEX_PREFIX_SEPARATOR, FIELD_AREA_CODE},
        {REGEX_SUFFIX_SEPARATOR, FIELD_PHONE}},
-      // Phone: <ac> - <phone> (Ext: <ext>)?
+      // Phone: <ac> - <phone>
       {{REGEX_AREA, FIELD_AREA_CODE}, {REGEX_PHONE, FIELD_PHONE}},
-      // Phone: <cc>:3 - <phone> (Ext: <ext>)?
+      // Phone: <cc>:3 - <phone>
       {{REGEX_PHONE, FIELD_COUNTRY_CODE, 3}, {REGEX_PHONE, FIELD_PHONE}},
-      // Phone: <cc> <ac> <phone> (Ext: <ext>)?
+      // Phone: <cc> <ac> <phone>
       // Indistinguishable from <area> <prefix> <suffix>
       {{REGEX_PHONE, FIELD_COUNTRY_CODE},
        {EMPTY_LABEL, FIELD_AREA_CODE},
        {EMPTY_LABEL, FIELD_PHONE}},
-      // Phone: <cc> <phone> (Ext: <ext>)?
+      // Phone: <cc> <phone>
       // Indistinguishable from <area> <phone>
       {{REGEX_PHONE, FIELD_COUNTRY_CODE}, {EMPTY_LABEL, FIELD_PHONE}},
-      // Phone: <phone> (Ext: <ext>)?
+      // Phone: <phone>
       {{REGEX_PHONE, FIELD_PHONE}},
   });
   return *grammars;

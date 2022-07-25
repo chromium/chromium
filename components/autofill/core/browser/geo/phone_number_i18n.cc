@@ -386,9 +386,12 @@ PhoneObject::PhoneObject(const std::u16string& number,
         i18n_number_->has_country_code()) {
       country_code_ = base::NumberToString16(i18n_number_->country_code());
     }
+    // Autofill doesn't support filling extensions, so we should not store them.
+    i18n_number_->clear_extension();
   } else {
     // Parsing failed. Store passed phone "as is" into |whole_number_|.
     whole_number_ = number;
+    // We have no way of removing any extensions.
   }
 }
 
