@@ -495,6 +495,9 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
 
   const auto& style = node.Style();
   const bool is_table = node.IsTable();
+  MinMaxSizes min_max_block_sizes = ComputeMinMaxBlockSizes(
+      space, style, border_padding, computed_available_size.block_size,
+      anchor_evaluator);
 
   auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
     DCHECK(!node.IsReplaced());
@@ -509,6 +512,9 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
           {dimensions->size.inline_size, space.AvailableSize().block_size});
       builder.SetIsFixedInlineSize(true);
       builder.SetPercentageResolutionSize(space.PercentageResolutionSize());
+      // Use the computed |MinMaxSizes| because |node.Layout()| can't resolve
+      // the `anchor-size()` function.
+      builder.SetOverrideMinMaxBlockSizes(min_max_block_sizes);
 
       if (space.IsInitialColumnBalancingPass()) {
         // The |fragmentainer_offset_delta| will not make a difference in the
@@ -552,9 +558,6 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     LayoutUnit main_block_size = ResolveMainBlockLength(
         space, style, border_padding, main_block_length, IntrinsicBlockSizeFunc,
         computed_available_size.block_size, anchor_evaluator);
-    MinMaxSizes min_max_block_sizes = ComputeMinMaxBlockSizes(
-        space, style, border_padding, computed_available_size.block_size,
-        anchor_evaluator);
 
     // Manually resolve any intrinsic/content min/max block-sizes.
     // TODO(crbug.com/1135207): |ComputeMinMaxBlockSizes()| should handle this.

@@ -25,6 +25,8 @@ struct CORE_EXPORT MinMaxSizes {
   LayoutUnit min_size;
   LayoutUnit max_size;
 
+  bool IsEmpty() const { return !min_size && max_size == LayoutUnit::Max(); }
+
   // Make sure that our min/max sizes are at least as large as |other|.
   void Encompass(const MinMaxSizes& other) {
     min_size = std::max(min_size, other.min_size);
@@ -59,6 +61,7 @@ struct CORE_EXPORT MinMaxSizes {
   bool operator==(const MinMaxSizes& other) const {
     return min_size == other.min_size && max_size == other.max_size;
   }
+  bool operator!=(const MinMaxSizes& other) const { return !operator==(other); }
 
   void operator=(LayoutUnit value) { min_size = max_size = value; }
   MinMaxSizes& operator+=(MinMaxSizes extra) {

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
+#include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_margin_strut.h"
@@ -276,6 +277,11 @@ class CORE_EXPORT NGConstraintSpace final {
     // TODO(mstensho): Figure out why we get here. It seems wrong, but we do get
     // here in some grid layout situations.
     return LayoutUnit();
+  }
+
+  absl::optional<MinMaxSizes> OverrideMinMaxBlockSizes() const {
+    return HasRareData() ? rare_data_->OverrideMinMaxBlockSizes()
+                         : absl::nullopt;
   }
 
   // Inline/block target stretch size constraints.
@@ -846,6 +852,7 @@ class CORE_EXPORT NGConstraintSpace final {
           should_ignore_forced_breaks(false),
           is_in_column_bfc(false),
           min_block_size_should_encompass_intrinsic_size(false),
+          has_override_min_max_block_sizes(false),
           min_break_appeal(kBreakAppealLastResort),
           propagate_child_break_values(false),
           is_at_fragmentainer_start(false),
@@ -856,6 +863,7 @@ class CORE_EXPORT NGConstraintSpace final {
               other.replaced_percentage_resolution_block_size),
           block_start_annotation_space(other.block_start_annotation_space),
           bfc_offset(other.bfc_offset),
+          override_min_max_block_sizes(other.override_min_max_block_sizes),
           fragmentainer_block_size(other.fragmentainer_block_size),
           fragmentainer_offset_at_bfc(other.fragmentainer_offset_at_bfc),
           data_union_type(other.data_union_type),
@@ -872,6 +880,8 @@ class CORE_EXPORT NGConstraintSpace final {
           is_in_column_bfc(other.is_in_column_bfc),
           min_block_size_should_encompass_intrinsic_size(
               other.min_block_size_should_encompass_intrinsic_size),
+          has_override_min_max_block_sizes(
+              other.has_override_min_max_block_sizes),
           min_break_appeal(other.min_break_appeal),
           propagate_child_break_values(other.propagate_child_break_values),
           is_at_fragmentainer_start(other.is_at_fragmentainer_start),
@@ -1055,6 +1065,22 @@ class CORE_EXPORT NGConstraintSpace final {
                  : LayoutUnit::Min();
     }
 
+    absl::optional<MinMaxSizes> OverrideMinMaxBlockSizes() const {
+      if (has_override_min_max_block_sizes)
+        return override_min_max_block_sizes;
+      return absl::nullopt;
+    }
+
+    void SetOverrideMinMaxBlockSizes(const MinMaxSizes& min_max_sizes) {
+      if (min_max_sizes.IsEmpty()) {
+        has_override_min_max_block_sizes = false;
+        return;
+      }
+      DCHECK_GE(min_max_sizes.max_size, min_max_sizes.min_size);
+      has_override_min_max_block_sizes = true;
+      override_min_max_block_sizes = min_max_sizes;
+    }
+
     void SetClearanceOffset(LayoutUnit clearance_offset) {
       EnsureBlockData()->clearance_offset = clearance_offset;
     }
@@ -1228,6 +1254,7 @@ class CORE_EXPORT NGConstraintSpace final {
     LayoutUnit replaced_percentage_resolution_block_size;
     LayoutUnit block_start_annotation_space;
     NGBfcOffset bfc_offset;
+    MinMaxSizes override_min_max_block_sizes;
 
     LayoutUnit fragmentainer_block_size = kIndefiniteSize;
     LayoutUnit fragmentainer_offset_at_bfc;
@@ -1245,6 +1272,7 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned should_ignore_forced_breaks : 1;
     unsigned is_in_column_bfc : 1;
     unsigned min_block_size_should_encompass_intrinsic_size : 1;
+    unsigned has_override_min_max_block_sizes : 1;
     unsigned min_break_appeal : kNGBreakAppealBitsNeeded;
     unsigned propagate_child_break_values : 1;
     unsigned is_at_fragmentainer_start : 1;

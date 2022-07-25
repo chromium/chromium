@@ -596,6 +596,11 @@ MinMaxSizes ComputeMinMaxBlockSizes(
     const NGBoxStrut& border_padding,
     LayoutUnit override_available_size,
     const Length::AnchorEvaluator* anchor_evaluator) {
+  if (const absl::optional<MinMaxSizes> override_sizes =
+          space.OverrideMinMaxBlockSizes()) {
+    DCHECK_GE(override_sizes->max_size, override_sizes->min_size);
+    return *override_sizes;
+  }
   MinMaxSizes sizes = {
       ResolveMinBlockLength(space, style, border_padding,
                             style.LogicalMinHeight(), override_available_size,
