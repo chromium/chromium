@@ -140,16 +140,7 @@ bool SiteIsolationPolicy::UseDedicatedProcessesForAllSites() {
 
 // static
 bool SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled() {
-  // We repeat the call to IsSiteIsolationDisabled() below even though
-  // UseDedicatedProcessesForAllSites() also calls it, since the latter uses
-  // SiteIsolationMode::kStrictSiteIsolation instead of
-  // SiteIsolationMode::kPartialSiteIsolation. We have different memory
-  // thresholds for strict and partial site isolation.
-  // TODO(wjmaclean, alexmos): Remove the call to
-  // UseDedicatedProcessesForAllSites() in future when we make isolated
-  // sandboxed iframes work on Android.
   return !IsSiteIsolationDisabled(SiteIsolationMode::kPartialSiteIsolation) &&
-         UseDedicatedProcessesForAllSites() &&
          base::FeatureList::IsEnabled(features::kIsolateSandboxedIframes);
 }
 

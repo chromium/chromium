@@ -4,6 +4,7 @@
 
 #include "content/browser/site_per_process_browsertest.h"
 
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -52,6 +53,66 @@ class SitePerProcessPerOriginIsolatedSandboxedIframeTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+};
+
+class SitePerProcessIsolatedSandboxWithoutStrictSiteIsolationBrowserTest
+    : public SitePerProcessIsolatedSandboxedIframeTest {
+ public:
+  SitePerProcessIsolatedSandboxWithoutStrictSiteIsolationBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kIsolateSandboxedIframes);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SitePerProcessIsolatedSandboxedIframeTest::SetUpCommandLine(command_line);
+    // Because this test derives from SitePerProcessBrowserTestBase which
+    // calls IsolateAllSitesForTesting, we need to manually remove the
+    // kSitePerProcess switch to simulate the environment where not all sites
+    // automatically get isolation.
+    command_line->RemoveSwitch(switches::kSitePerProcess);
+  }
+
+  void SetUpOnMainThread() override {
+    SitePerProcessIsolatedSandboxedIframeTest::SetUpOnMainThread();
+
+    // Override BrowserClient to disable strict site isolation.
+    original_client_ = SetBrowserClientForTesting(&browser_client_);
+    // The custom ContentBrowserClient below typically ensures that this test
+    // runs without strict site isolation, but it's still possible to
+    // inadvertently override this when running with --site-per-process on the
+    // command line. This might happen on try bots, so these tests take this
+    // into account to prevent failures, but this is not an intended
+    // configuration for these tests, since isolating sandboxed iframes in
+    // these tests depends on use of default SiteInstances.
+    if (AreAllSitesIsolatedForTesting()) {
+      LOG(WARNING) << "This test should be run without --site-per-process, "
+                   << "as it's designed to exercise code paths when strict "
+                   << "site isolation is turned off.";
+    }
+  }
+
+  void TearDownOnMainThread() override {
+    SitePerProcessIsolatedSandboxedIframeTest::TearDownOnMainThread();
+    SetBrowserClientForTesting(original_client_);
+  }
+
+  // A custom ContentBrowserClient to turn off strict site isolation, since
+  // isolated sandboxed iframes behave differently in environments like Android
+  // where it is not (generally) used. Note that kSitePerProcess is a
+  // higher-layer feature, so we can't just disable it here.
+  class PartialSiteIsolationContentBrowserClient : public ContentBrowserClient {
+   public:
+    bool ShouldEnableStrictSiteIsolation() override { return false; }
+    bool DoesSiteRequireDedicatedProcess(
+        BrowserContext* browser_context,
+        const GURL& effective_site_url) override {
+      return effective_site_url == GURL("http://isolated.com");
+    }
+  };
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  PartialSiteIsolationContentBrowserClient browser_client_;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
 };
 
 // The following test should not crash. In this test the
@@ -816,6 +877,261 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
             grand_child->current_frame_host()->GetSiteInstance());
 }
 
+// A test to verify that an iframe with a fully-restrictive sandbox is rendered
+// in the same process as its parent frame when the parent frame is in a
+// default SiteInstance.
+IN_PROC_BROWSER_TEST_P(
+    SitePerProcessIsolatedSandboxWithoutStrictSiteIsolationBrowserTest,
+    NotIsolatedSandbox) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  // The child needs to have the same origin as the parent.
+  GURL child_url(main_url);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed child frame, same-origin.
+  {
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.sandbox = ''; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        child_url.spec().c_str());
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+
+  // Check frame-tree.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  auto* parent_site_instance = root->current_frame_host()->GetSiteInstance();
+  auto* child_site_instance = child->current_frame_host()->GetSiteInstance();
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kAll,
+            child->effective_frame_policy().sandbox_flags);
+  EXPECT_FALSE(parent_site_instance->RequiresDedicatedProcess());
+  EXPECT_EQ(parent_site_instance, child_site_instance);
+  EXPECT_FALSE(child_site_instance->GetSiteInfo().is_sandboxed());
+}
+
+// Similar to the NotIsolatedSandbox test, but using a site that requires a
+// dedicated process, and thus resulting in a separate process for the sandboxed
+// iframe.
+IN_PROC_BROWSER_TEST_P(
+    SitePerProcessIsolatedSandboxWithoutStrictSiteIsolationBrowserTest,
+    IsolatedSandbox) {
+  // Specify an isolated.com site to get the main frame into a dedicated
+  // process.
+  GURL main_url(embedded_test_server()->GetURL("isolated.com", "/title1.html"));
+  // The child needs to have the same origin as the parent.
+  GURL child_url(main_url);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed child frame, same-origin.
+  {
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.sandbox = ''; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        child_url.spec().c_str());
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+
+  // Check frame-tree.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  auto* parent_site_instance = root->current_frame_host()->GetSiteInstance();
+  auto* child_site_instance = child->current_frame_host()->GetSiteInstance();
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kAll,
+            child->effective_frame_policy().sandbox_flags);
+  EXPECT_TRUE(parent_site_instance->RequiresDedicatedProcess());
+  EXPECT_NE(parent_site_instance, child_site_instance);
+  EXPECT_NE(parent_site_instance->GetProcess(),
+            child_site_instance->GetProcess());
+  EXPECT_TRUE(child_site_instance->GetSiteInfo().is_sandboxed());
+}
+
+// In this test, a main frame requests sandbox isolation for a site that would
+// not normally be given a dedicated process. This causes the sandbox isolation
+// request to fail.
+IN_PROC_BROWSER_TEST_P(
+    SitePerProcessIsolatedSandboxWithoutStrictSiteIsolationBrowserTest,
+    CSPSandboxedMainFrame) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/set-header?Content-Security-Policy: sandbox allow-scripts"));
+  GURL child_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed child frame, same-origin.
+  {
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.sandbox = ''; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        child_url.spec().c_str());
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+
+  // Check frame-tree.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  auto* parent_site_instance = root->current_frame_host()->GetSiteInstance();
+  auto* child_site_instance = child->current_frame_host()->GetSiteInstance();
+  EXPECT_FALSE(parent_site_instance->RequiresDedicatedProcess());
+  EXPECT_FALSE(parent_site_instance->GetSiteInfo().is_sandboxed());
+  // TODO(wjmaclean): It seems weird that the
+  // effective_frame_policy().sandbox_flags don't get set in this case. Maybe
+  // worth investigating this at some point. https://crbug.com/1346723
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kNone,
+            root->effective_frame_policy().sandbox_flags);
+  // Since the parent is sandboxed, the child is same process to it.
+  EXPECT_EQ(parent_site_instance, child_site_instance);
+}
+
+// Same as CSPSandboxedMainframe, but this time the site is isolatable on its
+// own, so it gets the sandbox attribute via the CSP header.
+IN_PROC_BROWSER_TEST_P(
+    SitePerProcessIsolatedSandboxWithoutStrictSiteIsolationBrowserTest,
+    CSPSandboxedMainframeIsolated) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "isolated.com",
+      "/set-header?Content-Security-Policy: sandbox allow-scripts"));
+  GURL child_url(
+      embedded_test_server()->GetURL("isolated.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed child frame, same-origin.
+  {
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.sandbox = ''; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        child_url.spec().c_str());
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+
+  // Check frame-tree.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  auto* parent_site_instance = root->current_frame_host()->GetSiteInstance();
+  auto* child_site_instance = child->current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(parent_site_instance->RequiresDedicatedProcess());
+  EXPECT_TRUE(parent_site_instance->GetSiteInfo().is_sandboxed());
+  // TODO(wjmaclean): It seems weird that the
+  // effective_frame_policy().sandbox_flags don't get set in this case. Maybe
+  // worth investigating this at some point. https://crbug.com/1346723
+  EXPECT_EQ(network::mojom::WebSandboxFlags::kNone,
+            root->effective_frame_policy().sandbox_flags);
+  // Since the parent is sandboxed, the child is same process to it.
+  // Note: this assumes that we are running per-site isolation mode for isolated
+  // sandboxed iframes.
+  EXPECT_EQ(parent_site_instance, child_site_instance);
+}
+
+// Test to verify which IsolationContext is used when a BrowsingInstance swap is
+// performed during a navigation.
+// Note: this test does not work as hoped, see comment before the final
+// expectation of the test.
+IN_PROC_BROWSER_TEST_P(
+    SitePerProcessIsolatedSandboxWithoutStrictSiteIsolationBrowserTest,
+    MainFrameBrowsingInstanceSwap) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  scoped_refptr<SiteInstanceImpl> site_instance_a =
+      web_contents()->GetSiteInstance();
+  EXPECT_FALSE(site_instance_a->GetSiteInfo().is_sandboxed());
+
+  // Force BrowsingInstance swap to a URL with a CSP sandbox header.
+  GURL isolated_url(embedded_test_server()->GetURL(
+      "b.com", "/set-header?Content-Security-Policy: sandbox"));
+  SiteInstance::StartIsolatingSite(
+      shell()->web_contents()->GetController().GetBrowserContext(),
+      isolated_url,
+      content::ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
+  EXPECT_TRUE(NavigateToURL(shell(), isolated_url));
+  scoped_refptr<SiteInstanceImpl> site_instance_b =
+      web_contents()->GetSiteInstance();
+  EXPECT_NE(site_instance_a, site_instance_b);
+  EXPECT_NE(site_instance_a->GetIsolationContext().browsing_instance_id(),
+            site_instance_b->GetIsolationContext().browsing_instance_id());
+  // The SiteInstance is not considered sandboxed even in the new
+  // BrowsingInstance. This is not the result we wanted, but without a massive
+  // amount of work it's the best we can do. This happens because
+  // NavigationRequest::GetUrlInfo() doesn't know (at the time
+  // NavigationRequest::OnResponseStarted() calls
+  // RenderFrameHostManager::GetFrameHostForNavigation()) that there will be
+  // a BrowsingInstance swap, and it doesn't have access to the new
+  // BrowsingInstance (IsolationContext) when deciding to add the `is_sandboxed`
+  // attribute to UrlInfoInit.
+  // This is an edge case we can live with since it only happens with the
+  // main frame getting a CSP sandbox, and the main frame does get its own
+  // process regardless in this case.
+  EXPECT_FALSE(site_instance_b->GetSiteInfo().is_sandboxed());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SitePerProcessIsolatedSandboxWithoutStrictSiteIsolationBrowserTest,
+    MainFrameWithSandboxedOpener) {
+  // Specify an isolated.com site to get the main frame into a dedicated
+  // process.
+  GURL main_url(embedded_test_server()->GetURL("isolated.com", "/title1.html"));
+  // The child needs to have the same origin as the parent.
+  GURL child_url(main_url);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed child frame, same-origin.
+  {
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.sandbox = 'allow-scripts allow-popups'; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        child_url.spec().c_str());
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+
+  // Check frame-tree.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  auto* parent_site_instance = root->current_frame_host()->GetSiteInstance();
+  auto* child_site_instance = child->current_frame_host()->GetSiteInstance();
+  network::mojom::WebSandboxFlags expected_flags =
+      network::mojom::WebSandboxFlags::kAll &
+      ~network::mojom::WebSandboxFlags::kScripts &
+      ~network::mojom::WebSandboxFlags::kPopups &
+      ~network::mojom::WebSandboxFlags::kAutomaticFeatures &
+      ~network::mojom::WebSandboxFlags::kTopNavigationToCustomProtocols;
+  EXPECT_EQ(expected_flags, child->effective_frame_policy().sandbox_flags);
+  EXPECT_TRUE(parent_site_instance->RequiresDedicatedProcess());
+  EXPECT_NE(parent_site_instance, child_site_instance);
+  EXPECT_TRUE(child_site_instance->GetSiteInfo().is_sandboxed());
+
+  // Sandboxed child calls window.open.
+  Shell* new_shell = OpenPopup(child, child_url, "");
+  EXPECT_TRUE(new_shell);
+  FrameTreeNode* new_root =
+      static_cast<WebContentsImpl*>(new_shell->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
+  auto* new_window_site_instance =
+      new_root->current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(new_window_site_instance->RequiresDedicatedProcess());
+  EXPECT_TRUE(new_window_site_instance->GetSiteInfo().is_sandboxed());
+  // Note: this assumes per-site mode for sandboxed iframe isolation. If we
+  // settle on per-document mode, this will change to EXPECT_NE.
+  EXPECT_EQ(child_site_instance, new_window_site_instance);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessIsolatedSandboxedIframeTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
@@ -825,5 +1141,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessPerOriginIsolatedSandboxedIframeTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SitePerProcessIsolatedSandboxWithoutStrictSiteIsolationBrowserTest,
+    testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 
 }  // namespace content
