@@ -364,8 +364,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * @param startSurfaceSupplier Supplier of the StartSurface.
      * @param omniboxFocusStateSupplier Supplier to access the focus state of the omnibox.
      * @param intentMetadataOneshotSupplier Supplier with info about the launching intent.
-     * @param promoShownOneshotSupplier Supplier for whether a promo was shown on startup. Will only
-     *                                  be fulfilled when feature TOOLBAR_IPH_ANDROID is enabled.
+     * @param promoShownOneshotSupplier Supplier for whether a promo was shown on startup.
      * @param windowAndroid The {@link WindowAndroid} associated with the ToolbarManager.
      * @param isInOverviewModeSupplier Supplies whether the app is currently in overview mode.
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
@@ -1368,22 +1367,20 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mControlContainer.setReadyForBitmapCapture(true);
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
-            UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, mHandler);
-            View homeButton = mControlContainer.findViewById(R.id.home_button);
-            mHomeButtonCoordinator = new HomeButtonCoordinator(mActivity, homeButton,
-                    userEducationHelper, mIncognitoStateProvider::isIncognitoSelected,
-                    mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier,
-                    HomepageManager::isHomepageNonNtp, FeedFeatures::isFeedEnabled,
-                    mActivityTabProvider);
-            ToggleTabStackButton toggleTabStackButton =
-                    mControlContainer.findViewById(R.id.tab_switcher_button);
-            mToggleTabStackButtonCoordinator = new ToggleTabStackButtonCoordinator(mActivity,
-                    toggleTabStackButton, userEducationHelper,
-                    mIncognitoStateProvider::isIncognitoSelected, mIntentMetadataOneshotSupplier,
-                    mPromoShownOneshotSupplier, mLayoutStateProviderSupplier,
-                    mToolbar::setNewTabButtonHighlight, mActivityTabProvider);
-        }
+        UserEducationHelper userEducationHelper = new UserEducationHelper(mActivity, mHandler);
+        View homeButton = mControlContainer.findViewById(R.id.home_button);
+        mHomeButtonCoordinator = new HomeButtonCoordinator(mActivity, homeButton,
+                userEducationHelper, mIncognitoStateProvider::isIncognitoSelected,
+                mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier,
+                HomepageManager::isHomepageNonNtp, FeedFeatures::isFeedEnabled,
+                mActivityTabProvider);
+        ToggleTabStackButton toggleTabStackButton =
+                mControlContainer.findViewById(R.id.tab_switcher_button);
+        mToggleTabStackButtonCoordinator = new ToggleTabStackButtonCoordinator(mActivity,
+                toggleTabStackButton, userEducationHelper,
+                mIncognitoStateProvider::isIncognitoSelected, mIntentMetadataOneshotSupplier,
+                mPromoShownOneshotSupplier, mLayoutStateProviderSupplier,
+                mToolbar::setNewTabButtonHighlight, mActivityTabProvider);
         TraceEvent.end("ToolbarManager.initializeWithNative");
     }
 

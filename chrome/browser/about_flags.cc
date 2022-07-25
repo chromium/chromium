@@ -2115,7 +2115,6 @@ const FeatureEntry::FeatureVariation kFeedPositionAndroidVariations[] = {
      kFeedPositionAndroid_pull_up_feed_target_non_feed_active,
      std::size(kFeedPositionAndroid_pull_up_feed_target_non_feed_active),
      nullptr},
-
 };
 
 const FeatureEntry::FeatureParam kSearchResumption_use_new_service[] = {
@@ -4596,9 +4595,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReengagementNotificationName,
      flag_descriptions::kReengagementNotificationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kReengagementNotification)},
-    {"toolbar-iph-android", flag_descriptions::kToolbarIphAndroidName,
-     flag_descriptions::kToolbarIphAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kToolbarIphAndroid)},
     {"back-gesture-refactor-android",
      flag_descriptions::kBackGestureRefactorAndroidName,
      flag_descriptions::kBackGestureRefactorAndroidDescription, kOsAndroid,

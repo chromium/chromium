@@ -2183,9 +2183,6 @@ extern const char kSyncAndroidPromosWithTitleDescription[];
 extern const char kTabGroupsForTabletsName[];
 extern const char kTabGroupsForTabletsDescription[];
 
-extern const char kToolbarIphAndroidName[];
-extern const char kToolbarIphAndroidDescription[];
-
 extern const char kTouchDragAndContextMenuName[];
 extern const char kTouchDragAndContextMenuDescription[];
 

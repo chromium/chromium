@@ -10,7 +10,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -54,7 +53,7 @@ import org.chromium.ui.test.util.UiRestriction;
 /** Integration tests for showing IPH bubbles on the toolbar. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures({ChromeFeatureList.TOOLBAR_IPH_ANDROID, ChromeFeatureList.ENABLE_IPH})
+@Features.EnableFeatures({ChromeFeatureList.ENABLE_IPH})
 public class ToolbarButtonIphTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -132,17 +131,6 @@ public class ToolbarButtonIphTest {
             mActivityTestRule.getActivity().findViewById(R.id.tab_switcher_button).performClick();
         });
         verify(mTracker, times(1)).notifyEvent(EventConstants.TAB_SWITCHER_BUTTON_CLICKED);
-    }
-
-    @Test
-    @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    @Features.DisableFeatures(ChromeFeatureList.TOOLBAR_IPH_ANDROID)
-    public void testTabSwitcherEventDisabled() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.getActivity().findViewById(R.id.tab_switcher_button).performClick();
-        });
-        verify(mTracker, never()).notifyEvent(EventConstants.TAB_SWITCHER_BUTTON_CLICKED);
     }
 
     @Test

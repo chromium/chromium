@@ -31,7 +31,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
@@ -167,7 +166,6 @@ public class ToolbarTabControllerImplTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TOOLBAR_IPH_ANDROID)
     public void openHomepage_handledByStartSurfaceNoProfile() {
         doReturn(true).when(mOverrideHomePageSupplier).get();
 
@@ -178,7 +176,6 @@ public class ToolbarTabControllerImplTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.TOOLBAR_IPH_ANDROID)
     public void openHomepage_handledByStartSurfaceWithProfile() {
         doReturn(true).when(mOverrideHomePageSupplier).get();
         doReturn(mTracker).when(mTrackerSupplier).get();
@@ -187,18 +184,6 @@ public class ToolbarTabControllerImplTest {
 
         verify(mTab, never()).loadUrl(any());
         verify(mTracker, times(1)).notifyEvent(EventConstants.HOMEPAGE_BUTTON_CLICKED);
-    }
-
-    @Test
-    @Features.DisableFeatures(ChromeFeatureList.TOOLBAR_IPH_ANDROID)
-    public void openHomepage_handledByStartSurface_disabledNtpButtonFeature() {
-        doReturn(true).when(mOverrideHomePageSupplier).get();
-        doReturn(mTracker).when(mTrackerSupplier).get();
-
-        mToolbarTabController.openHomepage();
-
-        verify(mTab, never()).loadUrl(any());
-        verify(mTracker, never()).notifyEvent(EventConstants.HOMEPAGE_BUTTON_CLICKED);
     }
 
     @Test

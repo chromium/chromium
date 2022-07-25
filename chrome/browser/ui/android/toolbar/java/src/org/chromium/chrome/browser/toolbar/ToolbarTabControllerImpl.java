@@ -13,7 +13,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -134,13 +133,11 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
         RecordUserAction.record("Home");
         recordHomeButtonUserPerProfileType();
         if (mOverrideHomePageSupplier.get()) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
-                // While some other element is handling the routing of this click event, something
-                // still needs to notify the event. This approach allows consolidation of events for
-                // the home button.
-                Tracker tracker = mTrackerSupplier.get();
-                if (tracker != null) tracker.notifyEvent(EventConstants.HOMEPAGE_BUTTON_CLICKED);
-            }
+            // While some other element is handling the routing of this click event, something
+            // still needs to notify the event. This approach allows consolidation of events for
+            // the home button.
+            Tracker tracker = mTrackerSupplier.get();
+            if (tracker != null) tracker.notifyEvent(EventConstants.HOMEPAGE_BUTTON_CLICKED);
             return;
         }
         Tab currentTab = mTabSupplier.get();

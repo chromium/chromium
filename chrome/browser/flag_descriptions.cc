@@ -3840,11 +3840,6 @@ const char kTabStripImprovementsAndroidName[] =
 const char kTabStripImprovementsAndroidDescription[] =
     "Enables scrollable tab strip with tab group indicators.";
 
-const char kToolbarIphAndroidName[] = "Enable Toolbar IPH on Android";
-const char kToolbarIphAndroidDescription[] =
-    "Enables in product help bubbles on the toolbar. In particular, the home "
-    "button and the tab switcher button.";
-
 const char kTouchDragAndContextMenuName[] =
     "Simultaneous touch drag and context menu";
 const char kTouchDragAndContextMenuDescription[] =

@@ -673,9 +673,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mAppMenuCoordinator.getAppMenuHandler(), R.id.manage_all_windows_menu_id);
             }
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
-            mPromoShownOneshotSupplier.set(didTriggerPromo);
-        }
+        mPromoShownOneshotSupplier.set(didTriggerPromo);
 
         if (mOfflineIndicatorController != null) {
             // Initialize the OfflineIndicatorInProductHelpController if the
