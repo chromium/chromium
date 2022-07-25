@@ -114,6 +114,8 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   void OnThemeChanged() override;
   void OnViewFocused(views::View* observed_view) override;
   void OnViewBlurred(views::View* observed_view) override;
+  void OnFocus() override;
+  void OnBlur() override;
   KeyClickAction GetKeyClickActionForEvent(const ui::KeyEvent& event) override;
 
   // views::TextfieldController:
