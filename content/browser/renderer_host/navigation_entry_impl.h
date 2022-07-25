@@ -285,7 +285,8 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
 
   // Walks the tree of FrameNavigationEntries to find entries with |origin| so
   // their isolation status can be registered.
-  void RegisterExistingOriginToPreventOptInIsolation(const url::Origin& origin);
+  void RegisterExistingOriginAsHavingDefaultIsolation(
+      const url::Origin& origin);
 
   // Removes any subframe FrameNavigationEntries that match the unique name of
   // |frame_tree_node|, and all of their children. There should be at most one,

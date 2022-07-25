@@ -2851,12 +2851,15 @@ base::SafeRef<NavigationHandle> NavigationRequest::GetSafeRef() {
 }
 
 void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
-  // Check whether an origin-keyed agent cluster is either explicitly requested
-  // or implied (i.e., on by default), before attempting to isolate it. If
-  // requested or implied, then we must check if the origin has been previously
+  // Check whether an origin-keyed agent cluster is explicitly requested, either
+  // opting in or out, before attempting to isolate it. If an explicit request
+  // was made, then we must check if the origin has been previously
   // encountered in order to remain consistent within the isolation context
-  // (BrowserContext).
-  if (!IsOptInIsolationRequested() && !IsIsolationImplied())
+  // (BrowserContext). Note: we only do the global walk for explicit opt-outs
+  // when OriginAgentCluster-by-default is enabled, but that check is made in
+  // IsOriginAgentClusterOptOutRequested().
+  if (!IsOriginAgentClusterOptInRequested() &&
+      !IsOriginAgentClusterOptOutRequested())
     return;
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -2865,67 +2868,66 @@ void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
       frame_tree_node_->navigator().controller().GetBrowserContext();
   if (policy->UpdateOriginIsolationOptInListIfNecessary(browser_context,
                                                         origin)) {
-    // This is a new request for isolating |origin|. Do a global walk of session
-    // history to find any existing instances of |origin|, so that those
-    // existing BrowsingInstances can avoid isolating it (which could break
-    // cross-frame scripting). Only new BrowsingInstances and ones that have not
-    // seen |origin| before will isolate it.
-    // We don't always have a value for render_frame_host_ at this point, so we
-    // map the global-walk call onto NavigatorDelegate to get it into
-    // WebContents. We definitely need to do the global walk prior to deciding
-    // on the render_frame_host_ to commit to.
+    // This is a new request for isolating |origin|, either by explicitly opting
+    // it in or out. Do a global walk of session history to find any existing
+    // instances of |origin|, so that those existing BrowsingInstances can give
+    // it default isolation. Only new BrowsingInstances and ones that have not
+    // seen |origin| before will honor the request. We don't always have a value
+    // for render_frame_host_ at this point, so we map the global-walk call onto
+    // NavigatorDelegate to get it into WebContents. We definitely need to do
+    // the global walk prior to deciding on the render_frame_host_ to commit to.
     // We must exclude ourselves from the global walk otherwise we may mark our
-    // origin as non-opt-in before it gets the change to register itself as
-    // opted-in.
+    // origin as having default isolation before it gets the change to register
+    // itself as opted-in/out.
     frame_tree_node_->navigator()
         .GetDelegate()
-        ->RegisterExistingOriginToPreventOptInIsolation(
+        ->RegisterExistingOriginAsHavingDefaultIsolation(
             origin, this /* navigation_request_to_exclude */);
   }
 }
 
-void NavigationRequest::AddSameProcessOriginAgentClusterOptInIfNecessary(
+void NavigationRequest::AddSameProcessOriginAgentClusterStateIfNecessary(
     const IsolationContext& isolation_context,
     const GURL& url) {
-  bool should_isolate_origin = false;
-  if (IsIsolationImplied()) {
-    // If OAC-by-default is enabled, then we can have origin-keyed agent
-    // clusters with site-keyed processes (when no header is present)
-    // alongside origin-keyed agent clusters with origin-keyed processes (when
-    // a header is present). For this case when the header is absent, try to
-    // register the origin in a site-keyed process below.
-    should_isolate_origin = true;
-  } else if (IsOptInIsolationRequested()) {
-    // If OAC-by-default is disabled and the origin requests isolation, we
-    // should only register it in a site-keyed process below if Site Isolation
-    // is disabled for OAC. Otherwise it will be handled when the origin's
-    // SiteInstance is created.
-    should_isolate_origin =
-        !SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled();
-  }
-  if (!should_isolate_origin)
+  // In this function we only handle opt-in requests for the cases where OAC
+  // process isolation is not enabled. Otherwise it will be handled when the
+  // origin's SiteInstance is created.
+  bool is_opt_in_requested =
+      IsOriginAgentClusterOptInRequested() &&
+      !SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled();
+
+  // Since opt-outs are asking not to have OAC or requires_origin_keyed_process,
+  // they don't get their own SiteInstance, and so we must register their
+  // opt-out here.
+  bool is_opt_out_requested = IsOriginAgentClusterOptOutRequested();
+
+  // We never register isolation state here unless it's explicitly requested.
+  if (!is_opt_in_requested && !is_opt_out_requested)
     return;
 
-  // Since site isolation is disabled, we can't rely on the newly created
-  // SiteInstance to add the origin as OAC, so we do it manually here.
+  bool should_isolate_origin = is_opt_in_requested;
+
+  // Note: we don't handle IsIsolationImplied() cases here, since those only
+  // occur when OAC-by-default is enabled, and in that case we only pro-actively
+  // record explicit opt-ins and opt-outs. Implicitly isolated origins only end
+  // up recorded if a future request from the same origin attempts to opt-in or
+  // opt-out, which would trigger a normal global walk and record that the
+  // origin has already been implicitly isolated in some BrowsingInstances.
+
+  // Since either site isolation is disabled, or we are requesting an opt-out,
+  // we can't rely on a newly created SiteInstance to add the origin as
+  // OAC/not-OAC, so we do it manually here.
   url::Origin origin = url::Origin::Create(url);
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  OriginAgentClusterIsolationState isolation_state =
-      policy->DetermineOriginAgentClusterIsolation(
-          isolation_context, origin,
-          OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
-              false /* requires_origin_keyed_process */));
-
-  if (isolation_state.is_origin_agent_cluster() &&
-      !isolation_state.requires_origin_keyed_process()) {
-    policy->AddIsolatedOriginForBrowsingInstance(
-        isolation_context, origin, true /* is_origin_agent_cluster */,
-        false /* requires_origin_keyed_process */,
-        ChildProcessSecurityPolicy::IsolatedOriginSource::WEB_TRIGGERED);
-  }
+  // If there is already a state registered for `origin` in `isolation_context`,
+  // then the following call does nothing.
+  policy->AddOriginIsolationStateForBrowsingInstance(
+      isolation_context, origin,
+      should_isolate_origin /* is_origin_agent_cluster */,
+      false /* requires_origin_keyed_process */);
 }
 
-bool NavigationRequest::IsOptInIsolationRequested() {
+bool NavigationRequest::IsOriginAgentClusterOptInRequested() {
   // We explicitly do not honor Origin-Agent-Cluster headers in redirects and
   // may only consider them in final responses, according to spec.
   // https://crbug.com/1329061
@@ -2941,6 +2943,25 @@ bool NavigationRequest::IsOptInIsolationRequested() {
 
   return response_head_->parsed_headers->origin_agent_cluster ==
          network::mojom::OriginAgentClusterValue::kTrue;
+}
+
+bool NavigationRequest::IsOriginAgentClusterOptOutRequested() {
+  // We explicitly do not honor Origin-Agent-Cluster headers in redirects and
+  // may only consider them in final responses, according to spec.
+  // https://crbug.com/1329061
+  if (state_ < WILL_PROCESS_RESPONSE)
+    return false;
+
+  if (!response())
+    return false;
+
+  // We only allow explicit opt-outs when OAC-by-default is enabled. The
+  // following check will be false if IsOriginAgentClusterEnabled() is false.
+  if (!AreOriginAgentClustersEnabledByDefault())
+    return false;
+
+  return response_head_->parsed_headers->origin_agent_cluster ==
+         network::mojom::OriginAgentClusterValue::kFalse;
 }
 
 bool NavigationRequest::AreOriginAgentClustersEnabledByDefault() const {
@@ -2979,7 +3000,7 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult() {
   const IsolationContext& isolation_context =
       render_frame_host_->GetSiteInstance()->GetIsolationContext();
 
-  bool is_requested = IsOptInIsolationRequested();
+  bool is_requested = IsOriginAgentClusterOptInRequested();
   bool expects_origin_agent_cluster = is_requested || IsIsolationImplied();
   bool requires_origin_keyed_process =
       is_requested &&
@@ -3212,9 +3233,9 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   // An origin-keyed agent cluster is used if requested by header
   // (or possibly by default, if no opt-out is requested), while an
   // origin-keyed process is currently only used if requested by header.
-  if (IsOptInIsolationRequested() || IsIsolationImplied())
+  if (IsOriginAgentClusterOptInRequested() || IsIsolationImplied())
     isolation_flags |= UrlInfo::OriginIsolationRequest::kOriginAgentCluster;
-  if (IsOptInIsolationRequested() &&
+  if (IsOriginAgentClusterOptInRequested() &&
       SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
     isolation_flags |=
         UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcess;
@@ -3695,7 +3716,7 @@ void NavigationRequest::OnResponseStarted(
     // will be handled by the existing pathway in
     // SiteInstanceImpl::SetSiteInfoInternal().
     const IsolationContext& isolation_context = instance->GetIsolationContext();
-    AddSameProcessOriginAgentClusterOptInIfNecessary(isolation_context,
+    AddSameProcessOriginAgentClusterStateIfNecessary(isolation_context,
                                                      GetURL());
 
     // TODO(wjmaclean): Once this is all working, consider combining the
@@ -3707,8 +3728,8 @@ void NavigationRequest::OnResponseStarted(
     // to use it here to get the correct |IsolationContext|.
     //
     // When loading a data URL with a base URL, use the base URL to calculate
-    // the origin; otherwise, `AddNonIsolatedOriginIfNeeded()` will simply do
-    // nothing as a data: URL has an opaque origin.
+    // the origin; otherwise, `AddDefaultIsolatedOriginIfNeeded()` will simply
+    // do nothing as a data: URL has an opaque origin.
     //
     // TODO(wjmaclean): this won't handle cases like about:blank (where it
     // inherits an origin we care about).  We plan to compute the origin
@@ -3718,8 +3739,10 @@ void NavigationRequest::OnResponseStarted(
         IsLoadDataWithBaseURL()
             ? url::Origin::Create(common_params_->base_url_for_data_url)
             : url::Origin::Create(common_params_->url);
-    ChildProcessSecurityPolicyImpl::GetInstance()->AddNonIsolatedOriginIfNeeded(
-        isolation_context, origin, false /* is_global_walk_or_frame_removal */);
+    ChildProcessSecurityPolicyImpl::GetInstance()
+        ->AddDefaultIsolatedOriginIfNeeded(
+            isolation_context, origin,
+            false /* is_global_walk_or_frame_removal */);
 
     // Replace the SiteInstance of the previously committed entry if it's for a
     // url that doesn't require a site assignment, if this new commit will be

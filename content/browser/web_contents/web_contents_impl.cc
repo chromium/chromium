@@ -7581,12 +7581,12 @@ std::unique_ptr<NavigationUIData> WebContentsImpl::GetNavigationUIData(
   return GetContentClient()->browser()->GetNavigationUIData(navigation_handle);
 }
 
-void WebContentsImpl::RegisterExistingOriginToPreventOptInIsolation(
+void WebContentsImpl::RegisterExistingOriginAsHavingDefaultIsolation(
     const url::Origin& origin,
     NavigationRequest* navigation_request_to_exclude) {
   OPTIONAL_TRACE_EVENT2(
       "content",
-      "WebContentsImpl::RegisterExistingOriginToPreventOptInIsolation",
+      "WebContentsImpl::RegisterExistingOriginAsHavingDefaultIsolation",
       "origin", origin, "navigation_request_to_exclude",
       navigation_request_to_exclude);
   // Note: This function can be made static if we ever need call it without
@@ -7598,7 +7598,7 @@ void WebContentsImpl::RegisterExistingOriginToPreventOptInIsolation(
       continue;
 
     // Walk the frame trees to notify each one's NavigationController about the
-    // opting-in origin, and also pick up any frames without
+    // opting-in or opting-out `origin`, and also pick up any frames without
     // FrameNavigationEntries.
     // * Some frames won't have FrameNavigationEntries (Issues 524208, 608402).
     // * Some pending navigations won't have NavigationEntries.
@@ -7606,7 +7606,7 @@ void WebContentsImpl::RegisterExistingOriginToPreventOptInIsolation(
         [](const url::Origin& origin,
            NavigationRequest* navigation_request_to_exclude,
            FrameTree* frame_tree) {
-          frame_tree->RegisterExistingOriginToPreventOptInIsolation(
+          frame_tree->RegisterExistingOriginAsHavingDefaultIsolation(
               origin, navigation_request_to_exclude);
         },
         origin, navigation_request_to_exclude));

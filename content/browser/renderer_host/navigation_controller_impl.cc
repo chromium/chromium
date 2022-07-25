@@ -846,17 +846,17 @@ NavigationControllerImpl::GetEntryWithUniqueIDIncludingPending(
              : nullptr;
 }
 
-void NavigationControllerImpl::RegisterExistingOriginToPreventOptInIsolation(
+void NavigationControllerImpl::RegisterExistingOriginAsHavingDefaultIsolation(
     const url::Origin& origin) {
   for (int i = 0; i < GetEntryCount(); i++) {
     auto* entry = GetEntryAtIndex(i);
-    entry->RegisterExistingOriginToPreventOptInIsolation(origin);
+    entry->RegisterExistingOriginAsHavingDefaultIsolation(origin);
   }
   if (entry_replaced_by_post_commit_error_) {
     // It's possible we could come back to this entry if the error
     // page/interstitial goes away.
     entry_replaced_by_post_commit_error_
-        ->RegisterExistingOriginToPreventOptInIsolation(origin);
+        ->RegisterExistingOriginAsHavingDefaultIsolation(origin);
   }
   // TODO(wjmaclean): Register pending commit NavigationRequests rather than
   // visiting pending_entry_, which lacks a committed origin. This will be done

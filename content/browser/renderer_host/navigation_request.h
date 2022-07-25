@@ -1055,17 +1055,24 @@ class CONTENT_EXPORT NavigationRequest
   // Origin-Agent-Cluster header, and if so opts in the origin to be isolated.
   void CheckForIsolationOptIn(const GURL& url);
 
-  // Use to manually opt an origin into Origin-keyed Agent Cluster (OAC) in the
-  // event that process-isolation isn't being used for OAC.
+  // Use to manually set Origin-keyed Agent Cluster (OAC) isolation state in
+  // the event that process-isolation isn't being used for OAC, or
+  // OAC-by-default means that we're tracking explicit opt-out requests (which
+  // by definition are same-process).
   // TODO(wjmaclean): When we switch to using separate SiteInstances even for
   // same-process OAC, then this function can be removed.
-  void AddSameProcessOriginAgentClusterOptInIfNecessary(
+  void AddSameProcessOriginAgentClusterStateIfNecessary(
       const IsolationContext& isolation_context,
       const GURL& url);
 
   // Returns whether this navigation request is requesting opt-in
   // origin-isolation.
-  bool IsOptInIsolationRequested();
+  bool IsOriginAgentClusterOptInRequested();
+
+  // Returns whether this navigation request is requesting opt-out from
+  // origin-isolation. Always returns false if
+  // AreOriginAgentClustersEnabledByDefault() is false.
+  bool IsOriginAgentClusterOptOutRequested();
 
   // Returns whether defaulting to origin-keyed agent cluster (without
   // necessarily an origin-keyed process) is enabled.

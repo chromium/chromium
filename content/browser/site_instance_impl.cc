@@ -495,15 +495,14 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
     url::Origin origin(url::Origin::Create(site_info_.process_lock_url()));
     // This is one of two places that origins can be marked as opted-in, the
     // other is
-    // NavigationRequest::AddSameProcessOriginAgentClusterOptInIfNecessary().
+    // NavigationRequest::AddSameProcessOriginAgentClusterStateIfNecessary().
     // This site handles the case where OAC isolation gets a separate process.
     // In future, when SiteInstance Groups are complete, this may revert to
     // being the only call site.
-    policy->AddIsolatedOriginForBrowsingInstance(
+    policy->AddOriginIsolationStateForBrowsingInstance(
         browsing_instance_->isolation_context(), origin,
         true /* is_origin_agent_cluster */,
-        true /* requires_origin_keyed_process */,
-        ChildProcessSecurityPolicy::IsolatedOriginSource::WEB_TRIGGERED);
+        true /* requires_origin_keyed_process */);
   }
 
   if (site_info_.does_site_request_dedicated_process_for_coop()) {
@@ -520,10 +519,8 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
     GURL site(SiteInfo::GetSiteForOrigin(origin));
     ChildProcessSecurityPolicyImpl* policy =
         ChildProcessSecurityPolicyImpl::GetInstance();
-    policy->AddIsolatedOriginForBrowsingInstance(
+    policy->AddCoopIsolatedOriginForBrowsingInstance(
         browsing_instance_->isolation_context(), url::Origin::Create(site),
-        false /* is_origin_agent_cluster */,
-        false /* requires_origin_keyed_process */,
         ChildProcessSecurityPolicy::IsolatedOriginSource::WEB_TRIGGERED);
   }
 
@@ -1151,10 +1148,10 @@ bool SiteInstanceImpl::DoesSiteInfoForURLMatch(const UrlInfo& url_info) {
   return site_info_.IsExactMatch(site_info);
 }
 
-void SiteInstanceImpl::PreventOptInOriginIsolation(
+void SiteInstanceImpl::RegisterAsDefaultOriginIsolation(
     const url::Origin& previously_visited_origin) {
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->AddNonIsolatedOriginIfNeeded(
+  policy->AddDefaultIsolatedOriginIfNeeded(
       GetIsolationContext(), previously_visited_origin,
       true /* is_global_walk_or_frame_removal */);
 }

@@ -387,10 +387,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // instance (i.e. GetSiteInfo()). Otherwise returns false.
   bool DoesSiteInfoForURLMatch(const UrlInfo& url_info);
 
-  // Adds |origin| as a non-isolated origin within this BrowsingInstance due to
-  // an existing instance at the time of opt-in, so that future instances of it
-  // here won't be origin isolated.
-  void PreventOptInOriginIsolation(
+  // Adds |origin| as having the default isolation state within this
+  // BrowsingInstance due to an existing instance at the time of opt-in, so that
+  // future instances of it here won't be origin isolated.
+  void RegisterAsDefaultOriginIsolation(
       const url::Origin& previously_visited_origin);
 
   // Returns the web-exposed isolation status of the BrowsingInstance this

@@ -130,7 +130,7 @@ class NavigatorDelegate {
   // BrowsingInstances. |navigation_request_to_exclude| allows the
   // NavigationRequest that initiates this process to avoid marking itself as
   // non-opted-in before it gets the chance to opt-in.
-  virtual void RegisterExistingOriginToPreventOptInIsolation(
+  virtual void RegisterExistingOriginAsHavingDefaultIsolation(
       const url::Origin& origin,
       NavigationRequest* navigation_request_to_exclude) = 0;
 };

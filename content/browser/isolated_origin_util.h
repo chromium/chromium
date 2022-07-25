@@ -101,6 +101,11 @@ class CONTENT_EXPORT IsolatedOriginUtil {
   // HTTP or HTTPS scheme, and origins that are not secure contexts.
   static bool IsValidOriginForOptInIsolation(const url::Origin& origin);
 
+  // Check if |origin| is a valid origin for opting out of origin isolation.
+  // Invalid origins for this purpose include opaque origins, and origins that
+  // don't have a HTTP or HTTPS scheme.
+  static bool IsValidOriginForOptOutIsolation(const url::Origin& origin);
+
  private:
   // Used to implement both IsValidIsolatedOrigin and
   // IsValidOriginForOptInIsolation.

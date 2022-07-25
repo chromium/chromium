@@ -291,10 +291,12 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // For use by WebContentsImpl ------------------------------------------------
 
   // Visit all FrameNavigationEntries as well as all frame trees and register
-  // any instances of |origin| as non-isolated with their respective
-  // BrowsingInstances. This is important when |origin| requests isolation, so
-  // that we only do so in BrowsingInstances that haven't seen it before.
-  void RegisterExistingOriginToPreventOptInIsolation(const url::Origin& origin);
+  // any instances of |origin| as having the default isolation state with their
+  // respective BrowsingInstances. This is important when |origin| is seen with
+  // an OriginAgentCluster header, so that we only accept such requests in
+  // BrowsingInstances that haven't seen it before.
+  void RegisterExistingOriginAsHavingDefaultIsolation(
+      const url::Origin& origin);
 
   // Allow renderer-initiated navigations to create a pending entry when the
   // provisional load starts.

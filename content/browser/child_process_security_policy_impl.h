@@ -109,7 +109,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // This can only return false for processes locked to a particular origin,
     // which can happen for any origin when the --site-per-process flag is used,
     // or for isolated origins that require a dedicated process (see
-    // AddFutureIsolatedOrigins and AddIsolatedOriginForBrowsingInstance).
+    // AddFutureIsolatedOrigins and AddOriginIsolationStateForBrowsingInstance).
     bool CanAccessDataForOrigin(const url::Origin& origin);
 
     // Returns the original `child_id` used to create the handle.
@@ -251,7 +251,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void RemoveOptInIsolatedOriginsForBrowsingInstance(
       const BrowsingInstanceId& browsing_instance_id);
 
-  // Registers |origin| as process-isolated in the BrowsingInstance associated
+  // Registers |origin| isolation state in the BrowsingInstance associated
   // with |isolation_context|.
   //
   // |is_origin_agent_cluster| is used to indicate |origin| will receive (at
@@ -276,11 +276,18 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // If |origin| has already been registered as isolated for the same
   // BrowsingInstance amd the same value of |requires_origin_keyed_process|,
   // then nothing will be changed by this call.
-  void AddIsolatedOriginForBrowsingInstance(
+  void AddOriginIsolationStateForBrowsingInstance(
       const IsolationContext& isolation_context,
       const url::Origin& origin,
       bool is_origin_agent_cluster,
-      bool requires_origin_keyed_process,
+      bool requires_origin_keyed_process);
+
+  // Adds `origin` to the IsolatedOrigins list for only the BrowsingInstance of
+  // `isolation_context`, without isolating all subdomains. For use when the
+  // isolation is triggered by COOP headers.
+  void AddCoopIsolatedOriginForBrowsingInstance(
+      const IsolationContext& isolation_context,
+      const url::Origin& origin,
       IsolatedOriginSource source);
 
   // This function will check whether |origin| has opted-in to logical or
@@ -510,22 +517,26 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // all policy checks.
   Handle CreateHandle(int child_id);
 
-  // Returns true if we have seen an isolation request for this |origin| in the
-  // given |browser_context| before in any BrowsingInstance.
-  bool HasOriginEverRequestedOptInIsolation(BrowserContext* browser_context,
-                                            const url::Origin& origin);
+  // Returns true if we have seen an explicit Origin-Agent-Cluster header
+  // (either opt-in or opt-out) for this |origin| in the given |browser_context|
+  // before in any BrowsingInstance.
+  bool HasOriginEverRequestedOriginAgentClusterValue(
+      BrowserContext* browser_context,
+      const url::Origin& origin);
 
-  // Adds |origin| to the non-isolated list for the BrowsingInstance specified
-  // by |isolation_context|, if we need to track it and it's not already in the
-  // list. |is_global_walk_or_frame_removal| should be set to true during the
-  // global walk that is triggered when |origin| first requests opt-in
-  // isolation, so that the function can skip safety checks that will be
-  // unnecessary during the global walk. It is also set to true if this function
-  // is called when removing a FrameNavigationEntry, since that entry won't be
-  // available to any subsequent global walks.
-  void AddNonIsolatedOriginIfNeeded(const IsolationContext& isolation_context,
-                                    const url::Origin& origin,
-                                    bool is_global_walk_or_frame_removal);
+  // Adds |origin| to the opt-in-out list as having the default isolation state
+  // for the BrowsingInstance specified by |isolation_context|, if we need to
+  // track it and it's not already in the list.
+  // |is_global_walk_or_frame_removal| should be set to true during the global
+  // walk that is triggered when |origin| first requests opt-in isolation, so
+  // that the function can skip safety checks that will be unnecessary during
+  // the global walk. It is also set to true if this function is called when
+  // removing a FrameNavigationEntry, since that entry won't be available to any
+  // subsequent global walks.
+  void AddDefaultIsolatedOriginIfNeeded(
+      const IsolationContext& isolation_context,
+      const url::Origin& origin,
+      bool is_global_walk_or_frame_removal);
 
   // Allows tests to modify the delay in cleaning up BrowsingInstanceIds. If the
   // delay is set to zero, cleanup happens immediately.
@@ -887,10 +898,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // prevent any record of sites visible in one profile from being visible to
   // another profile.
   base::Lock origins_isolation_opt_in_lock_;
-  // The set of all origins that have ever requested opt-in isolation, organized
-  // by BrowserContext. This is tracked so we know which origins need to be
-  // tracked when non-isolated in any given BrowsingInstance. Origins requesting
-  // isolation, if successful, are marked as isolated via
+  // The set of all origins that have ever requested opt-in isolation or
+  // requested to opt-out, organized by BrowserContext. This is tracked so we
+  // know which origins need to be tracked when using default isolation in any
+  // given BrowsingInstance. Origins requesting isolation opt-in or out, if
+  // successful, are marked as isolated or not via
   // DetermineOriginAgentClusterIsolation's checking
   // |requested_isolation_state|. Each BrowserContext's state is tracked
   // separately so that timing attacks do not reveal whether an origin has been
@@ -898,7 +910,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // of other BrowsingInstances is not observable outside such timing side
   // channels.
   base::flat_map<BrowserContext*, base::flat_set<url::Origin>>
-      origin_isolation_opt_ins_ GUARDED_BY(origins_isolation_opt_in_lock_);
+      origin_isolation_opt_ins_and_outs_
+          GUARDED_BY(origins_isolation_opt_in_lock_);
 
   // A map to track origins that have been isolated within a given
   // BrowsingInstance, or that have been loaded in a BrowsingInstance

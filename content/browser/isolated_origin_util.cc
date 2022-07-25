@@ -122,6 +122,15 @@ bool IsolatedOriginUtil::IsValidOriginForOptInIsolation(
 }
 
 // static
+bool IsolatedOriginUtil::IsValidOriginForOptOutIsolation(
+    const url::Origin& origin) {
+  // Per https://html.spec.whatwg.org/C/#initialise-the-document-object,
+  // non-secure contexts cannot be isolated via opt-in origin isolation,
+  // but we allow non-secure contexts to opt-out for legacy sites.
+  return IsValidIsolatedOriginImpl(origin, false);
+}
+
+// static
 bool IsolatedOriginUtil::IsValidIsolatedOriginImpl(
     const url::Origin& origin,
     bool check_has_registry_domain) {

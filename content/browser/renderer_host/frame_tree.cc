@@ -712,10 +712,10 @@ void FrameTree::SetPageFocus(SiteInstanceGroup* group, bool is_focused) {
   }
 }
 
-void FrameTree::RegisterExistingOriginToPreventOptInIsolation(
+void FrameTree::RegisterExistingOriginAsHavingDefaultIsolation(
     const url::Origin& previously_visited_origin,
     NavigationRequest* navigation_request_to_exclude) {
-  controller().RegisterExistingOriginToPreventOptInIsolation(
+  controller().RegisterExistingOriginAsHavingDefaultIsolation(
       previously_visited_origin);
 
   std::unordered_set<SiteInstance*> matching_site_instances;
@@ -753,7 +753,7 @@ void FrameTree::RegisterExistingOriginToPreventOptInIsolation(
   // Update any SiteInstances found to contain |origin|.
   for (auto* site_instance : matching_site_instances) {
     static_cast<SiteInstanceImpl*>(site_instance)
-        ->PreventOptInOriginIsolation(previously_visited_origin);
+        ->RegisterAsDefaultOriginIsolation(previously_visited_origin);
   }
 }
 

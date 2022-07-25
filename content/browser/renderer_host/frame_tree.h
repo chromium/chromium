@@ -449,11 +449,14 @@ class CONTENT_EXPORT FrameTree {
   // identified by |group|.
   void SetPageFocus(SiteInstanceGroup* group, bool is_focused);
 
-  // Walks the current frame tree and registers any origins matching |origin|,
-  // either the last committed origin of a RenderFrameHost or the origin
-  // associated with a NavigationRequest that has been assigned to a
-  // SiteInstance, as not-opted-in for origin isolation.
-  void RegisterExistingOriginToPreventOptInIsolation(
+  // Walks the current frame tree and registers any origins matching
+  // `previously_visited_origin`, either the last committed origin of a
+  // RenderFrameHost or the origin associated with a NavigationRequest that has
+  // been assigned to a SiteInstance, as having the default origin isolation
+  // state. This is only necessary when `previously_visited_origin` is seen with
+  // an OriginAgentCluster header explicitly requesting something other than the
+  // default.
+  void RegisterExistingOriginAsHavingDefaultIsolation(
       const url::Origin& previously_visited_origin,
       NavigationRequest* navigation_request_to_exclude);
 

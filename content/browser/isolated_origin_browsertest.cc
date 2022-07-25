@@ -117,11 +117,15 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         .requires_origin_keyed_process();
   }
 
+  // Assuming no additional explicit opt-in or opt-out was requested, check what
+  // isolation state would currently be used for a navigation to |url| in
+  // |site_instance| in the test, based on the current state in the
+  // BrowsingInstance.
   OriginAgentClusterIsolationState DetermineOriginAgentClusterIsolation(
       SiteInstanceImpl* site_instance,
       const GURL& url) {
     OriginAgentClusterIsolationState isolation_request =
-        OriginAgentClusterIsolationState::CreateNonIsolated();
+        OriginAgentClusterIsolationState::CreateForDefaultIsolation();
 
     return ChildProcessSecurityPolicyImpl::GetInstance()
         ->DetermineOriginAgentClusterIsolation(
@@ -580,9 +584,9 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderCommandLineTest,
   // Make sure the master opt-in list has the base origin isolated and the sub
   // origin not isolated.
   BrowserContext* browser_context = web_contents()->GetBrowserContext();
-  EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
+  EXPECT_TRUE(policy->HasOriginEverRequestedOriginAgentClusterValue(
       browser_context, url::Origin::Create(isolated_base_origin_url)));
-  EXPECT_FALSE(policy->HasOriginEverRequestedOptInIsolation(
+  EXPECT_FALSE(policy->HasOriginEverRequestedOriginAgentClusterValue(
       browser_context, url::Origin::Create(non_isolated_sub_origin)));
 }
 
@@ -736,6 +740,19 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationDefaultOACTest, Basic) {
             static_cast<int>(NavigationRequest::OriginAgentClusterEndResult::
                                  kNotExplicitlyRequestedAndOriginKeyed),
             1)));
+    // Ensure that the implicit case did not do a global walk (which would be
+    // inefficient), by noticing that a hypothetical request for non-isolation
+    // of that origin in the same SiteInstance would succeed. That can only
+    // happen if the implicit case was not recorded in the BrowsingInstance.
+    OriginAgentClusterIsolationState hypothetical_isolation_request =
+        OriginAgentClusterIsolationState::CreateNonIsolated();
+    OriginAgentClusterIsolationState hypothetical_isolation_state =
+        ChildProcessSecurityPolicyImpl::GetInstance()
+            ->DetermineOriginAgentClusterIsolation(
+                site_instance->GetIsolationContext(),
+                url::Origin::Create(default_isolated_url),
+                hypothetical_isolation_request);
+    EXPECT_FALSE(hypothetical_isolation_state.is_origin_agent_cluster());
   }
   {
     // The "isolate_origin" path in the url will force the test framework to
@@ -1180,7 +1197,7 @@ IN_PROC_BROWSER_TEST_F(SameProcessOriginIsolationOptInHeaderTest,
                        url::Origin::Create(isolated_suborigin_url),
                        MakeOACIsolationState(false))
                    .requires_origin_keyed_process());
-  EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
+  EXPECT_TRUE(policy->HasOriginEverRequestedOriginAgentClusterValue(
       web_contents()->GetBrowserContext(),
       url::Origin::Create(isolated_suborigin_url)));
 
@@ -1254,7 +1271,7 @@ IN_PROC_BROWSER_TEST_F(
                        url::Origin::Create(isolated_suborigin_url),
                        MakeOACIsolationState(false))
                    .requires_origin_keyed_process());
-  EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
+  EXPECT_TRUE(policy->HasOriginEverRequestedOriginAgentClusterValue(
       web_contents()->GetBrowserContext(),
       url::Origin::Create(isolated_suborigin_url)));
 
@@ -1377,7 +1394,7 @@ IN_PROC_BROWSER_TEST_F(SameProcessOriginIsolationOptInHeaderTest, Localhost) {
       origin, MakeOACIsolationState(false));
   EXPECT_TRUE(isolation_result.is_origin_agent_cluster());
   EXPECT_FALSE(isolation_result.requires_origin_keyed_process());
-  EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
+  EXPECT_TRUE(policy->HasOriginEverRequestedOriginAgentClusterValue(
       web_contents()->GetBrowserContext(), origin));
 }
 
@@ -1617,7 +1634,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
 
   // Make sure the master opt-in list still has the origin tracked.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
+  EXPECT_TRUE(policy->HasOriginEverRequestedOriginAgentClusterValue(
       web_contents()->GetBrowserContext(),
       url::Origin::Create(isolated_suborigin_url)));
 
@@ -1687,7 +1704,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
 
   // Make sure the master opt-in list has the origin listed.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
+  EXPECT_TRUE(policy->HasOriginEverRequestedOriginAgentClusterValue(
       web_contents()->GetBrowserContext(),
       url::Origin::Create(isolated_suborigin_url)));
 
@@ -1750,7 +1767,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
 
   // Make sure the master opt-in list has the origin listed.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
+  EXPECT_TRUE(policy->HasOriginEverRequestedOriginAgentClusterValue(
       web_contents()->GetBrowserContext(),
       url::Origin::Create(isolated_suborigin_url)));
 
@@ -2077,11 +2094,11 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, IsolatedBaseOrigin) {
   // Make sure the master opt-in list has the base origin as isolated, but not
   // the sub-origins.
   BrowserContext* browser_context = web_contents()->GetBrowserContext();
-  EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
+  EXPECT_TRUE(policy->HasOriginEverRequestedOriginAgentClusterValue(
       browser_context, url::Origin::Create(test_url)));
-  EXPECT_FALSE(policy->HasOriginEverRequestedOptInIsolation(
+  EXPECT_FALSE(policy->HasOriginEverRequestedOriginAgentClusterValue(
       browser_context, url::Origin::Create(non_isolated_sub_origin1)));
-  EXPECT_FALSE(policy->HasOriginEverRequestedOptInIsolation(
+  EXPECT_FALSE(policy->HasOriginEverRequestedOriginAgentClusterValue(
       browser_context, url::Origin::Create(non_isolated_sub_origin2)));
 
   EXPECT_THAT(
@@ -2214,11 +2231,11 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   // Make sure the master opt-in list has the base origin isolated and the sub
   // origins both not isolated.
   BrowserContext* browser_context = web_contents()->GetBrowserContext();
-  EXPECT_TRUE(policy->HasOriginEverRequestedOptInIsolation(
+  EXPECT_TRUE(policy->HasOriginEverRequestedOriginAgentClusterValue(
       browser_context, url::Origin::Create(isolated_base_origin_url)));
-  EXPECT_FALSE(policy->HasOriginEverRequestedOptInIsolation(
+  EXPECT_FALSE(policy->HasOriginEverRequestedOriginAgentClusterValue(
       browser_context, url::Origin::Create(non_isolated_sub_origin_url_a)));
-  EXPECT_FALSE(policy->HasOriginEverRequestedOptInIsolation(
+  EXPECT_FALSE(policy->HasOriginEverRequestedOriginAgentClusterValue(
       browser_context, url::Origin::Create(non_isolated_sub_origin_url_b)));
 }
 
