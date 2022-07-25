@@ -39,8 +39,7 @@ void SetAXNodeDataChildIds(v8::Isolate* isolate,
                            ui::AXNodeData* ax_node_data) {
   v8::Local<v8::Value> v8_child_ids;
   v8_dict->Get("childIds", &v8_child_ids);
-  gin::Converter<std::vector<int32_t>>::FromV8(isolate, v8_child_ids,
-                                               &ax_node_data->child_ids);
+  gin::ConvertFromV8(isolate, v8_child_ids, &ax_node_data->child_ids);
 }
 
 void SetAXNodeDataHierarchicalLevel(v8::Isolate* isolate,
@@ -49,8 +48,7 @@ void SetAXNodeDataHierarchicalLevel(v8::Isolate* isolate,
   v8::Local<v8::Value> v8_hierarchical_level;
   v8_dict->Get("hierarchicalLevel", &v8_hierarchical_level);
   int32_t hierarchical_level;
-  gin::Converter<int32_t>::FromV8(isolate, v8_hierarchical_level,
-                                  &hierarchical_level);
+  gin::ConvertFromV8(isolate, v8_hierarchical_level, &hierarchical_level);
   ax_node_data->AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel,
                                 hierarchical_level);
 }
@@ -60,7 +58,7 @@ void SetAXNodeDataId(v8::Isolate* isolate,
                      ui::AXNodeData* ax_node_data) {
   v8::Local<v8::Value> v8_id;
   v8_dict->Get("id", &v8_id);
-  gin::Converter<int32_t>::FromV8(isolate, v8_id, &ax_node_data->id);
+  gin::ConvertFromV8(isolate, v8_id, &ax_node_data->id);
 }
 
 void SetAXNodeDataName(v8::Isolate* isolate,
@@ -69,7 +67,7 @@ void SetAXNodeDataName(v8::Isolate* isolate,
   v8::Local<v8::Value> v8_name;
   v8_dict->Get("name", &v8_name);
   std::string name;
-  gin::Converter<std::string>::FromV8(isolate, v8_name, &name);
+  gin::ConvertFromV8(isolate, v8_name, &name);
   ax_node_data->SetName(name);
   ax_node_data->SetNameFrom(ax::mojom::NameFrom::kContents);
 }
@@ -80,7 +78,7 @@ void SetAXNodeDataRole(v8::Isolate* isolate,
   v8::Local<v8::Value> v8_role;
   v8_dict->Get("role", &v8_role);
   std::string role_name;
-  gin::Converter<std::string>::FromV8(isolate, v8_role, &role_name);
+  gin::ConvertFromV8(isolate, v8_role, &role_name);
   if (role_name == "rootWebArea")
     ax_node_data->role = ax::mojom::Role::kRootWebArea;
   else if (role_name == "heading")
@@ -99,7 +97,7 @@ void SetAXNodeDataUrl(v8::Isolate* isolate,
   v8::Local<v8::Value> v8_url;
   v8_dict->Get("url", &v8_url);
   std::string url;
-  gin::Converter<std::string>::FromV8(isolate, v8_url, &url);
+  gin::ConvertFromV8(isolate, v8_url, &url);
   ax_node_data->AddStringAttribute(ax::mojom::StringAttribute::kUrl, url);
 }
 
@@ -108,26 +106,28 @@ void SetAXTreeUpdateRootId(v8::Isolate* isolate,
                            ui::AXTreeUpdate* snapshot) {
   v8::Local<v8::Value> v8_root_id;
   v8_dict->Get("rootId", &v8_root_id);
-  gin::Converter<int32_t>::FromV8(isolate, v8_root_id, &snapshot->root_id);
+  gin::ConvertFromV8(isolate, v8_root_id, &snapshot->root_id);
 }
 
 ui::AXTreeUpdate GetSnapshotFromV8SnapshotLite(
     v8::Isolate* isolate,
     v8::Local<v8::Value> v8_snapshot_lite) {
   ui::AXTreeUpdate snapshot;
-  gin::Dictionary v8_snapshot_dict(
-      isolate, v8::Local<v8::Object>::Cast(v8_snapshot_lite));
+  gin::Dictionary v8_snapshot_dict(isolate);
+  if (!gin::ConvertFromV8(isolate, v8_snapshot_lite, &v8_snapshot_dict))
+    return snapshot;
   SetAXTreeUpdateRootId(isolate, &v8_snapshot_dict, &snapshot);
 
   v8::Local<v8::Value> v8_nodes;
   v8_snapshot_dict.Get("nodes", &v8_nodes);
   std::vector<v8::Local<v8::Value>> v8_nodes_vector;
-  gin::Converter<std::vector<v8::Local<v8::Value>>>::FromV8(isolate, v8_nodes,
-                                                            &v8_nodes_vector);
-
+  if (!gin::ConvertFromV8(isolate, v8_nodes, &v8_nodes_vector))
+    return snapshot;
   for (v8::Local<v8::Value> v8_node : v8_nodes_vector) {
+    gin::Dictionary v8_node_dict(isolate);
+    if (!gin::ConvertFromV8(isolate, v8_node, &v8_node_dict))
+      continue;
     ui::AXNodeData ax_node_data;
-    gin::Dictionary v8_node_dict(isolate, v8::Local<v8::Object>::Cast(v8_node));
     SetAXNodeDataId(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataName(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataChildIds(isolate, &v8_node_dict, &ax_node_data);
