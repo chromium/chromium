@@ -240,7 +240,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
       scoped_refptr<ServiceWorkerVersion> version);
 
   // Removes the ServiceWorkerObjectHost corresponding to |version_id|.
-  void RemoveServiceWorkerObjectHost(int64_t version_id);
+  void RemoveServiceWorkerObjectHostOnConnectionError(int64_t version_id);
 
   // Returns true if this container host is for a service worker.
   bool IsContainerForServiceWorker() const;

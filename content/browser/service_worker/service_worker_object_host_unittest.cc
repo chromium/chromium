@@ -212,7 +212,7 @@ class ServiceWorkerObjectHostTest : public testing::Test {
     // Make sure that OnConnectionError induces destruction of the version and
     // the object host.
     object_host->receivers_.Clear();
-    object_host->OnConnectionError();
+    container_host->RemoveServiceWorkerObjectHostOnConnectionError(version_id);
   }
 
   void CallOnConnectionErrorForRegistrationObjectHost(
@@ -226,7 +226,7 @@ class ServiceWorkerObjectHostTest : public testing::Test {
     EXPECT_FALSE(object_host->version_->HasOneRef());
 
     object_host->receivers_.Clear();
-    object_host->OnConnectionError();
+    container_host->RemoveServiceWorkerObjectHostOnConnectionError(version_id);
 
     EXPECT_TRUE(registration_object_host->registration_->HasOneRef());
     registration_object_host->receivers_.Clear();

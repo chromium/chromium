@@ -84,6 +84,8 @@ class CONTENT_EXPORT ServiceWorkerObjectHost
 
   base::WeakPtr<ServiceWorkerObjectHost> AsWeakPtr();
 
+  bool has_receivers() { return !receivers_.empty(); }
+
  private:
   friend class service_worker_object_host_unittest::ServiceWorkerObjectHostTest;
 
@@ -99,12 +101,10 @@ class CONTENT_EXPORT ServiceWorkerObjectHost
       ::blink::TransferableMessage message,
       base::OnceCallback<void(blink::ServiceWorkerStatusCode)> callback);
 
-  void OnConnectionError();
-
   base::WeakPtr<ServiceWorkerContextCore> context_;
   // |container_host_| is valid throughout lifetime of |this| because it owns
   // |this|.
-  const raw_ptr<ServiceWorkerContainerHost, DanglingUntriaged> container_host_;
+  const raw_ptr<ServiceWorkerContainerHost> container_host_;
   // The origin of the |container_host_|. Note that this is const because once a
   // JavaScript ServiceWorker object is created for an execution context, we
   // don't expect that context to change origins and still hold on to the
