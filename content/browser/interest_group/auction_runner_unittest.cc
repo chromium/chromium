@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/browser/interest_group/auction_runner.h"
-#include "build/build_config.h"
 
 #include <stdint.h>
 
@@ -27,10 +26,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
+#include "content/browser/interest_group/interest_group_auction.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/public/browser/site_instance.h"
@@ -61,7 +62,7 @@ namespace content {
 namespace {
 
 using InterestGroupKey = blink::InterestGroupKey;
-using PostAuctionSignals = AuctionRunner::PostAuctionSignals;
+using PostAuctionSignals = InterestGroupAuction::PostAuctionSignals;
 using blink::mojom::ReportingDestination;
 
 const std::string kBidder1Name{"Ad Platform"};
@@ -1794,7 +1795,7 @@ class AuctionRunnerTest : public testing::Test,
   // Check histogram values. If `expected_interest_groups` or `expected_owners`
   // is null, expect the auction to be aborted before the corresponding
   // histograms are recorded.
-  void CheckHistograms(AuctionRunner::AuctionResult expected_result,
+  void CheckHistograms(InterestGroupAuction::AuctionResult expected_result,
                        absl::optional<int> expected_interest_groups,
                        absl::optional<int> expected_owners,
                        absl::optional<int> expected_sellers) {
@@ -1830,14 +1831,15 @@ class AuctionRunnerTest : public testing::Test,
 
     histogram_tester_->ExpectTotalCount(
         "Ads.InterestGroup.Auction.AbortTime",
-        expected_result == AuctionRunner::AuctionResult::kAborted);
+        expected_result == InterestGroupAuction::AuctionResult::kAborted);
     histogram_tester_->ExpectTotalCount(
         "Ads.InterestGroup.Auction.CompletedWithoutWinnerTime",
-        expected_result == AuctionRunner::AuctionResult::kNoBids ||
-            expected_result == AuctionRunner::AuctionResult::kAllBidsRejected);
+        expected_result == InterestGroupAuction::AuctionResult::kNoBids ||
+            expected_result ==
+                InterestGroupAuction::AuctionResult::kAllBidsRejected);
     histogram_tester_->ExpectTotalCount(
         "Ads.InterestGroup.Auction.AuctionWithWinnerTime",
-        expected_result == AuctionRunner::AuctionResult::kSuccess);
+        expected_result == InterestGroupAuction::AuctionResult::kSuccess);
   }
 
   AuctionRunner::IsInterestGroupApiAllowedCallback
@@ -2047,7 +2049,7 @@ TEST_F(AuctionRunnerTest, NullBuyers) {
   EXPECT_EQ(0u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(-1, result_.bidder2_bid_count);
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/absl::nullopt,
                   /*expected_owners=*/absl::nullopt,
                   /*expected_sellers=*/absl::nullopt);
@@ -2069,7 +2071,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNullBuyers) {
   EXPECT_EQ(0u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(-1, result_.bidder2_bid_count);
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/absl::nullopt,
                   /*expected_owners=*/absl::nullopt,
                   /*expected_sellers=*/absl::nullopt);
@@ -2089,7 +2091,7 @@ TEST_F(AuctionRunnerTest, EmptyBuyers) {
   EXPECT_EQ(0u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(-1, result_.bidder2_bid_count);
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/absl::nullopt,
                   /*expected_owners=*/absl::nullopt,
                   /*expected_sellers=*/absl::nullopt);
@@ -2111,7 +2113,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionEmptyBuyers) {
   EXPECT_EQ(0u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(-1, result_.bidder2_bid_count);
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/absl::nullopt,
                   /*expected_owners=*/absl::nullopt,
                   /*expected_sellers=*/absl::nullopt);
@@ -2131,7 +2133,7 @@ TEST_F(AuctionRunnerTest, NoInterestGroups) {
   EXPECT_EQ(0u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(-1, result_.bidder2_bid_count);
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/0, /*expected_owners=*/0,
                   /*expected_sellers=*/0);
 }
@@ -2155,7 +2157,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoInterestGroups) {
   EXPECT_EQ(0u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(-1, result_.bidder2_bid_count);
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/0, /*expected_owners=*/0,
                   /*expected_sellers=*/0);
 }
@@ -2179,7 +2181,7 @@ TEST_F(AuctionRunnerTest, OneInterestGroupNoAds) {
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(-1, result_.bidder2_bid_count);
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/0, /*expected_owners=*/0,
                   /*expected_sellers=*/0);
 }
@@ -2203,7 +2205,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneInterestGroupNoAds) {
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(-1, result_.bidder2_bid_count);
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/0, /*expected_owners=*/0,
                   /*expected_sellers=*/0);
 }
@@ -2227,7 +2229,7 @@ TEST_F(AuctionRunnerTest, OneInterestGroupNoBidScript) {
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(-1, result_.bidder2_bid_count);
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/0, /*expected_owners=*/0,
                   /*expected_sellers=*/0);
 }
@@ -2273,7 +2275,7 @@ TEST_F(AuctionRunnerTest, OneInterestGroup) {
             result_.bidder1_prev_wins[3]->ad_json);
   EXPECT_EQ(-1, result_.bidder2_bid_count);
   EXPECT_EQ(0u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/1, /*expected_owners=*/1,
                   /*expected_sellers=*/1);
   EXPECT_THAT(observer_log_,
@@ -2427,7 +2429,7 @@ TEST_F(AuctionRunnerTest, Basic) {
   EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
             res.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(res.errors, testing::ElementsAre());
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
   EXPECT_THAT(observer_log_,
@@ -2765,7 +2767,7 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
   ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
             result_.bidder2_prev_wins[3]->ad_json);
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/3);
 }
@@ -2805,7 +2807,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersHaveNoBuyers) {
   ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
             result_.bidder2_prev_wins[3]->ad_json);
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -2845,7 +2847,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionTopLevelSellerBidWins) {
   ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
             result_.bidder2_prev_wins[3]->ad_json);
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/2);
 }
@@ -2890,7 +2892,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBidWins) {
   ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
             result_.bidder2_prev_wins[3]->ad_json);
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/2);
 }
@@ -3006,7 +3008,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
             result_.bidder1_prev_wins[3]->ad_json);
   // Currently an interest groups participating twice in an auction is counted
   // twice.
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/2);
 
@@ -3062,7 +3064,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
             result_.bidder1_prev_wins[3]->ad_json);
   // Currently a bidder participating twice in an auction is counted as two
   // participating interest groups.
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/3, /*expected_owners=*/3,
                   /*expected_sellers=*/3);
 }
@@ -3122,7 +3124,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionAcceptsBidRejectsBid) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
 
   EXPECT_EQ("https://ad1.com/", result_.ad_url);
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/2);
 }
@@ -3169,7 +3171,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneComponentTwoBidders) {
             result_.bidder1_prev_wins[3]->ad_json);
   EXPECT_EQ(6, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/2);
 }
@@ -3269,7 +3271,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
               ReportingDestination::kBuyer,
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/4"))))));
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/1, /*expected_owners=*/1,
                   /*expected_sellers=*/2);
 }
@@ -3368,7 +3370,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
               ReportingDestination::kBuyer,
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/4"))))));
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/1, /*expected_owners=*/1,
                   /*expected_sellers=*/2);
 }
@@ -3392,7 +3394,7 @@ TEST_F(AuctionRunnerTest, DisallowedSeller) {
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kSellerRejected,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSellerRejected,
                   /*expected_interest_groups=*/absl::nullopt,
                   /*expected_owners=*/absl::nullopt,
                   /*expected_sellers=*/absl::nullopt);
@@ -3425,7 +3427,7 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionSeller) {
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/absl::nullopt,
                   /*expected_owners=*/absl::nullopt,
                   /*expected_sellers=*/absl::nullopt);
@@ -3481,7 +3483,7 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionOneSeller) {
             result_.bidder1_prev_wins[3]->ad_json);
   EXPECT_EQ(5, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/1, /*expected_owners=*/1,
                   /*expected_sellers=*/2);
 }
@@ -3506,7 +3508,7 @@ TEST_F(AuctionRunnerTest, DisallowedBuyers) {
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/absl::nullopt,
                   /*expected_owners=*/absl::nullopt,
                   /*expected_sellers=*/absl::nullopt);
@@ -3561,7 +3563,7 @@ TEST_F(AuctionRunnerTest, DisallowedSingleBuyer) {
             result_.bidder1_prev_wins[3]->ad_json);
   EXPECT_EQ(5, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/1, /*expected_owners=*/1,
                   /*expected_sellers=*/1);
 
@@ -3595,7 +3597,7 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionBuyers) {
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoInterestGroups,
                   /*expected_interest_groups=*/absl::nullopt,
                   /*expected_owners=*/absl::nullopt,
                   /*expected_sellers=*/absl::nullopt);
@@ -3646,7 +3648,7 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionSingleBuyer) {
             result_.bidder1_prev_wins[3]->ad_json);
   EXPECT_EQ(5, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/1, /*expected_owners=*/1,
                   /*expected_sellers=*/2);
 }
@@ -3685,7 +3687,7 @@ TEST_F(AuctionRunnerTest, DisallowedAsOtherParticipant) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -3740,7 +3742,7 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
       res.errors,
       testing::ElementsAre("Failed to load https://anotheradthing.com/bids.js "
                            "HTTP status = 404 Not Found."));
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 
@@ -3796,7 +3798,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneSeller404) {
   // The bid send to the failing component seller worklet isn't counted,
   // regardless of whether the bid completed before the worklet failed to load.
   EXPECT_EQ(5, result_.bidder2_bid_count);
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/3);
 }
@@ -3854,7 +3856,7 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
   EXPECT_THAT(res.errors,
               testing::ElementsAre("https://anotheradthing.com/bids.js "
                                    "`generateBid` is not a function."));
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -3892,7 +3894,7 @@ TEST_F(AuctionRunnerTest, NoBids) {
                   "HTTP status = 404 Not Found.",
                   "Failed to load https://anotheradthing.com/bids.js "
                   "HTTP status = 404 Not Found."));
-  CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoBids,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -3933,7 +3935,7 @@ TEST_F(AuctionRunnerTest, NoBidMadeByScript) {
           "https://adplatform.com/offers.js `generateBid` is not a function.",
           "https://anotheradthing.com/bids.js `generateBid` is not a "
           "function."));
-  CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoBids,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -3981,7 +3983,7 @@ TEST_F(AuctionRunnerTest, SellerRejectsAll) {
                               "`scoreAd` is not a function.",
                               "https://adstuff.publisher1.com/auction.js "
                               "`scoreAd` is not a function."));
-  CheckHistograms(AuctionRunner::AuctionResult::kAllBidsRejected,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kAllBidsRejected,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -4037,7 +4039,7 @@ TEST_F(AuctionRunnerTest, SellerRejectsOne) {
   EXPECT_EQ(6, res.bidder2_bid_count);
   EXPECT_EQ(3u, res.bidder2_prev_wins.size());
   EXPECT_THAT(res.errors, testing::ElementsAre());
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -4063,7 +4065,7 @@ TEST_F(AuctionRunnerTest, NoSellerScript) {
               testing::ElementsAre(
                   "Failed to load https://adstuff.publisher1.com/auction.js "
                   "HTTP status = 404 Not Found."));
-  CheckHistograms(AuctionRunner::AuctionResult::kSellerWorkletLoadFailed,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSellerWorkletLoadFailed,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -4117,7 +4119,7 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
   EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
             res.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(res.errors, testing::ElementsAre());
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -4177,7 +4179,7 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
                               "https://anotheradthing.com/"
                               "signals2?hostname=publisher1.com&keys=l1,l2 "
                               "HTTP status = 404 Not Found."));
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -4227,7 +4229,7 @@ TEST_F(AuctionRunnerTest, NoReportResultUrl) {
   EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
             res.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(res.errors, testing::ElementsAre());
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -4278,7 +4280,7 @@ TEST_F(AuctionRunnerTest, NoReportWinUrl) {
   EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
             res.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(res.errors, testing::ElementsAre());
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -4324,7 +4326,7 @@ TEST_F(AuctionRunnerTest, NeitherReportUrl) {
   EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
             res.bidder2_prev_wins[3]->ad_json);
   EXPECT_THAT(res.errors, testing::ElementsAre());
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -4380,7 +4382,7 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
   EXPECT_THAT(res.errors, testing::ElementsAre(base::StringPrintf(
                               "%s `reportResult` is not a function.",
                               kSellerUrl.spec().c_str())));
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -4505,7 +4507,7 @@ function reportResult(auctionConfig, browserSignals) {
             result_.bidder1_prev_wins[3]->ad_json);
   EXPECT_EQ(6, result_.bidder2_bid_count);
   ASSERT_EQ(3u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -4663,7 +4665,7 @@ TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
       ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
       EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
                 result_.bidder2_prev_wins[3]->ad_json);
-      CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+      CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                       /*expected_interest_groups=*/2,
                       /*expected_owners=*/2, /*expected_sellers=*/1);
     }
@@ -4833,7 +4835,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionProcessManagerBlocksWorkletCreation) {
                   testing::ElementsAre(testing::Pair(
                       "click",
                       GURL("https://buyer-reporting.example.com/4"))))));
-      CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+      CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                       /*expected_interest_groups=*/2, /*expected_owners=*/2,
                       /*expected_sellers=*/3);
     }
@@ -4882,7 +4884,7 @@ TEST_F(AuctionRunnerTest, SellerLoadErrorWhileWaitingForBidders) {
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
   ASSERT_EQ(3u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kSellerWorkletLoadFailed,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSellerWorkletLoadFailed,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -4986,7 +4988,7 @@ TEST_F(AuctionRunnerTest,
               ReportingDestination::kBuyer,
               testing::ElementsAre(testing::Pair(
                   "click", GURL("https://buyer-reporting.example.com/4"))))));
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/3);
 }
@@ -5134,7 +5136,7 @@ TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {
   EXPECT_EQ(5, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
 
-  CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoBids,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -5236,7 +5238,7 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
     ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
     EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
               result_.bidder2_prev_wins[3]->ad_json);
-    CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+    CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                     /*expected_interest_groups=*/2, /*expected_owners=*/2,
                     /*expected_sellers=*/1);
   }
@@ -5312,9 +5314,10 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(6, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kWinningBidderWorkletCrashed,
-                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
-                  /*expected_sellers=*/1);
+  CheckHistograms(
+      InterestGroupAuction::AuctionResult::kWinningBidderWorkletCrashed,
+      /*expected_interest_groups=*/2, /*expected_owners=*/2,
+      /*expected_sellers=*/1);
 }
 
 // Should not have any debugging win/loss report URLs after auction when feature
@@ -5450,7 +5453,7 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
       EXPECT_EQ(6, result_.bidder2_bid_count);
       EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
     }
-    CheckHistograms(AuctionRunner::AuctionResult::kSellerWorkletCrashed,
+    CheckHistograms(InterestGroupAuction::AuctionResult::kSellerWorkletCrashed,
                     /*expected_interest_groups=*/2, /*expected_owners=*/2,
                     /*expected_sellers=*/1);
   }
@@ -5485,7 +5488,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionAllBiddersCrashBeforeBidding) {
                              kBidder2Url.spec().c_str())));
   EXPECT_FALSE(result_.ad_url);
 
-  CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoBids,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/3);
 }
@@ -5583,7 +5586,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
                                             GURL("https://report3.test/")));
   EXPECT_EQ(5, result_.bidder1_bid_count);
   EXPECT_EQ(6, result_.bidder2_bid_count);
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/2);
 }
@@ -5684,10 +5687,10 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
                       kComponentSeller1Url.spec().c_str())));
       EXPECT_FALSE(result_.ad_url);
       EXPECT_EQ(6, result_.bidder1_bid_count);
-      CheckHistograms(
-          AuctionRunner::AuctionResult::kWinningComponentSellerWorkletCrashed,
-          /*expected_interest_groups=*/2, /*expected_owners=*/2,
-          /*expected_sellers=*/2);
+      CheckHistograms(InterestGroupAuction::AuctionResult::
+                          kWinningComponentSellerWorkletCrashed,
+                      /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                      /*expected_sellers=*/2);
     } else if (test_case == TestCase::kLoadError) {
       // A load error in the winning component seller worklet will cause the
       // auction to continue to completion.
@@ -5711,7 +5714,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
                   testing::UnorderedElementsAre(GURL("https://report1.test/"),
                                                 GURL("https://report3.test/")));
       EXPECT_EQ(6, result_.bidder1_bid_count);
-      CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+      CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                       /*expected_interest_groups=*/2, /*expected_owners=*/2,
                       /*expected_sellers=*/2);
     } else if (test_case == TestCase::kScriptError) {
@@ -5738,7 +5741,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
                   testing::UnorderedElementsAre(GURL("https://report1.test/"),
                                                 GURL("https://report3.test/")));
       EXPECT_EQ(6, result_.bidder1_bid_count);
-      CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+      CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                       /*expected_interest_groups=*/2, /*expected_owners=*/2,
                       /*expected_sellers=*/2);
     }
@@ -5780,7 +5783,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersAllCrash) {
   EXPECT_FALSE(result_.ad_url);
   EXPECT_EQ(5, result_.bidder1_bid_count);
   EXPECT_EQ(5, result_.bidder2_bid_count);
-  CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoBids,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/3);
 }
@@ -5874,7 +5877,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBadBidParams) {
 
     // The component auction failed with a Mojo error, but the top-level auction
     // sees that as no bids.
-    CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
+    CheckHistograms(InterestGroupAuction::AuctionResult::kNoBids,
                     /*expected_interest_groups=*/2, /*expected_owners=*/2,
                     /*expected_sellers=*/2);
   }
@@ -5932,7 +5935,7 @@ TEST_F(AuctionRunnerTest, TopLevelSellerBadBidParams) {
   EXPECT_EQ(5, result_.bidder1_bid_count);
   EXPECT_EQ(5, result_.bidder2_bid_count);
 
-  CheckHistograms(AuctionRunner::AuctionResult::kBadMojoMessage,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kBadMojoMessage,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -6004,7 +6007,7 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
       ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
       EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
                 result_.bidder1_prev_wins[3]->ad_json);
-      CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+      CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                       /*expected_interest_groups=*/1,
                       /*expected_owners=*/1, /*expected_sellers=*/1);
     } else {
@@ -6023,7 +6026,7 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
       EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
       EXPECT_EQ(5, result_.bidder1_bid_count);
       EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
-      CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
+      CheckHistograms(InterestGroupAuction::AuctionResult::kNoBids,
                       /*expected_interest_groups=*/1, /*expected_owners=*/1,
                       /*expected_sellers=*/1);
     }
@@ -6095,7 +6098,7 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
       ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
       EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
                 result_.bidder1_prev_wins[3]->ad_json);
-      CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+      CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                       /*expected_interest_groups=*/1,
                       /*expected_owners=*/1, /*expected_sellers=*/1);
     } else {
@@ -6114,7 +6117,7 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
       EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
       EXPECT_EQ(5, result_.bidder1_bid_count);
       EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
-      CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
+      CheckHistograms(InterestGroupAuction::AuctionResult::kNoBids,
                       /*expected_interest_groups=*/1, /*expected_owners=*/1,
                       /*expected_sellers=*/1);
     }
@@ -6267,7 +6270,7 @@ TEST_F(AuctionRunnerTest, BadBid) {
     EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
     EXPECT_EQ(5, result_.bidder2_bid_count);
     EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
-    CheckHistograms(AuctionRunner::AuctionResult::kNoBids,
+    CheckHistograms(InterestGroupAuction::AuctionResult::kNoBids,
                     /*expected_interest_groups=*/2, /*expected_owners=*/2,
                     /*expected_sellers=*/1);
   }
@@ -6322,7 +6325,7 @@ TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kBadMojoMessage,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kBadMojoMessage,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -6378,7 +6381,7 @@ TEST_F(AuctionRunnerTest, BadSellerBeaconUrl) {
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kBadMojoMessage,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kBadMojoMessage,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -6464,7 +6467,7 @@ TEST_F(AuctionRunnerTest, BadComponentSellerReportUrl) {
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kBadMojoMessage,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kBadMojoMessage,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/2);
 }
@@ -6522,7 +6525,7 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kBadMojoMessage,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kBadMojoMessage,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -6582,7 +6585,7 @@ TEST_F(AuctionRunnerTest, BadBidderBeaconUrl) {
   EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(5, result_.bidder2_bid_count);
   EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
-  CheckHistograms(AuctionRunner::AuctionResult::kBadMojoMessage,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kBadMojoMessage,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -6643,7 +6646,7 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
   ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
   EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
             result_.bidder2_prev_wins[3]->ad_json);
-  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                   /*expected_interest_groups=*/2, /*expected_owners=*/2,
                   /*expected_sellers=*/1);
 }
@@ -6746,7 +6749,7 @@ TEST_F(AuctionRunnerTest, Tie) {
     EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
     EXPECT_EQ(6, result_.bidder1_bid_count);
     EXPECT_EQ(6, result_.bidder2_bid_count);
-    CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+    CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                     /*expected_interest_groups=*/2, /*expected_owners=*/2,
                     /*expected_sellers=*/1);
   }
