@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "chrome/common/privacy_budget/types.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
