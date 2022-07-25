@@ -176,29 +176,24 @@ template <typename T>
 struct HashTraits<blink::UntracedMember<T>>
     : BaseMemberHashTraits<T, blink::UntracedMember<T>> {};
 
-template <typename T, typename Traits, typename Allocator>
+template <typename T>
 class MemberConstructTraits {
   STATIC_ONLY(MemberConstructTraits);
 
  public:
   template <typename... Args>
-  static T* Construct(void* location, Args&&... args) {
-    return new (NotNullTag::kNotNull, location) T(std::forward<Args>(args)...);
-  }
-
-  static void NotifyNewElement(T* element) {
-    blink::WriteBarrier::DispatchForObject(element);
-  }
-
-  template <typename... Args>
   static T* ConstructAndNotifyElement(void* location, Args&&... args) {
     // ConstructAndNotifyElement updates an existing Member which might
     // also be comncurrently traced while we update it. The regular ctors
     // for Member don't use an atomic write which can lead to data races.
-    T* object = Construct(location, std::forward<Args>(args)...,
-                          typename T::AtomicInitializerTag());
+    T* object = new (NotNullTag::kNotNull, location)
+        T(std::forward<Args>(args)..., typename T::AtomicInitializerTag());
     NotifyNewElement(object);
     return object;
+  }
+
+  static void NotifyNewElement(T* element) {
+    blink::WriteBarrier::DispatchForObject(element);
   }
 
   static void NotifyNewElements(T* array, size_t len) {
@@ -210,12 +205,12 @@ class MemberConstructTraits {
 };
 
 template <typename T, typename Traits, typename Allocator>
-class ConstructTraits<blink::Member<T>, Traits, Allocator>
-    : public MemberConstructTraits<blink::Member<T>, Traits, Allocator> {};
+class ConstructTraits<blink::Member<T>, Traits, Allocator> final
+    : public MemberConstructTraits<blink::Member<T>> {};
 
 template <typename T, typename Traits, typename Allocator>
-class ConstructTraits<blink::WeakMember<T>, Traits, Allocator>
-    : public MemberConstructTraits<blink::WeakMember<T>, Traits, Allocator> {};
+class ConstructTraits<blink::WeakMember<T>, Traits, Allocator> final
+    : public MemberConstructTraits<blink::WeakMember<T>> {};
 
 }  // namespace WTF
 
