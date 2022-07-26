@@ -212,15 +212,16 @@ class HeadlessPDFBrowserTestBase : public HeadlessAsyncDevTooledBrowserTest,
   }
 
   void OnPDFCreated(std::unique_ptr<page::PrintToPDFResult> result) {
-    ASSERT_TRUE(result);
-    protocol::Binary pdf_data = result->GetData();
-    ASSERT_GT(pdf_data.size(), 0U);
-    auto pdf_span = base::make_span(pdf_data.data(), pdf_data.size());
-    int num_pages;
-    ASSERT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages, nullptr));
-    ASSERT_GE(num_pages, 1);
-
-    CheckPDF(pdf_span, num_pages);
+    if (result) {
+      protocol::Binary pdf_data = result->GetData();
+      ASSERT_GT(pdf_data.size(), 0U);
+      auto pdf_span = base::make_span(pdf_data.data(), pdf_data.size());
+      int num_pages;
+      ASSERT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages, nullptr));
+      OnPDFReady(pdf_span, num_pages);
+    } else {
+      OnPDFFailure();
+    }
 
     FinishAsynchronousTest();
   }
@@ -237,7 +238,9 @@ class HeadlessPDFBrowserTestBase : public HeadlessAsyncDevTooledBrowserTest,
         .SetMarginRight(0)
         .Build();
   }
-  virtual void CheckPDF(base::span<const uint8_t> pdf_span, int num_pages) = 0;
+  virtual void OnPDFReady(base::span<const uint8_t> pdf_span,
+                          int num_pages) = 0;
+  virtual void OnPDFFailure() { EXPECT_TRUE(false); }
 };
 
 class HeadlessPDFPageSizeRoundingBrowserTest
@@ -245,12 +248,54 @@ class HeadlessPDFPageSizeRoundingBrowserTest
  public:
   const char* GetUrl() override { return "/red_square.html"; }
 
-  void CheckPDF(base::span<const uint8_t> pdf_span, int num_pages) override {
+  void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
     EXPECT_THAT(num_pages, testing::Eq(1));
   }
 };
 
 HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessPDFPageSizeRoundingBrowserTest);
+
+class HeadlessPDFPageRangesBrowserTest
+    : public HeadlessPDFBrowserTestBase,
+      public testing::WithParamInterface<std::tuple<const char*, int>> {
+ public:
+  const char* GetUrl() override { return "/lorem_ipsum.html"; }
+
+  std::unique_ptr<page::PrintToPDFParams> GetPrintToPDFParams() override {
+    return page::PrintToPDFParams::Builder()
+        .SetPaperHeight(8.5)
+        .SetPaperWidth(11)
+        .SetMarginTop(0.5)
+        .SetMarginBottom(0.5)
+        .SetMarginLeft(0.5)
+        .SetMarginRight(0.5)
+        .SetPageRanges(page_ranges())
+        .Build();
+  }
+
+  void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
+    EXPECT_THAT(num_pages, testing::Eq(expected_page_count()));
+  }
+
+  void OnPDFFailure() override {
+    EXPECT_THAT(-1, testing::Eq(expected_page_count()));
+  }
+
+  std::string page_ranges() { return std::get<0>(GetParam()); }
+  int expected_page_count() { return std::get<1>(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HeadlessPDFPageRangesBrowserTest,
+                         testing::Values(std::make_tuple("1-9", 4),
+                                         std::make_tuple("1-3", 3),
+                                         std::make_tuple("2-4", 3),
+                                         std::make_tuple("4-9", 1),
+                                         std::make_tuple("5-9", -1),
+                                         std::make_tuple("9-5", -1),
+                                         std::make_tuple("abc", -1)));
+
+HEADLESS_ASYNC_DEVTOOLED_TEST_P(HeadlessPDFPageRangesBrowserTest);
 
 #if BUILDFLAG(ENABLE_TAGGED_PDF)
 
@@ -425,7 +470,7 @@ class HeadlessTaggedPDFBrowserTest
  public:
   const char* GetUrl() override { return GetParam().url; }
 
-  void CheckPDF(base::span<const uint8_t> pdf_span, int num_pages) override {
+  void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
     EXPECT_THAT(num_pages, testing::Eq(1));
 
     absl::optional<bool> tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
@@ -461,7 +506,7 @@ class HeadlessTaggedPDFDisabledBrowserTest
 
   const char* GetUrl() override { return GetParam().url; }
 
-  void CheckPDF(base::span<const uint8_t> pdf_span, int num_pages) override {
+  void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
     EXPECT_THAT(num_pages, testing::Eq(1));
 
     absl::optional<bool> tagged = chrome_pdf::IsPDFDocTagged(pdf_span);
