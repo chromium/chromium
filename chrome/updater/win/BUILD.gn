@@ -87,6 +87,7 @@ zip("updater_zip") {
     "//chrome/updater/win/installer",
     "//chrome/updater/win/installer:installer_test",
   ]
+  build_stamp = true
 }
 
 process_version("uninstall.cmd") {
