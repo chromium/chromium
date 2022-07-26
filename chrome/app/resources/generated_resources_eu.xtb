@@ -3895,6 +3895,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4689421377817139245">Sinkronizatu laster-marka iPhone-arekin</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi firmwareak lau fitxategi sortu ditu: csr.lst, fh_regs.lst, radio_reg.lst eta monitor.lst.sysmon. Lehenengo hiruak erregistro-iraulketak biltzen dituzten fitxategi bitarrak dira, eta informazio pertsonalik edo gailua identifikatzeko informaziorik ez dutela ziurtatzen du Intel-ek. Bestalde, azken fitxategia Intel firmwarearen exekuzio-arrastoa da; informazio pertsonala eta gailua identifikatzeko informazioa ezabatu zaizkio, baina handiegia da hemen bistaratu ahal izateko. Gailuak Wi-Fi konexioarekin izandako arazoei erantzuteko sortu dira fitxategiak, eta Intel-ekin partekatuko dira arazoak konpontzeko.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> webguneak <ph name="FILENAME" /> fitxategia ikusteko baimena izango du webguneko fitxa guztiak ixten dituzun arte</translation>
+<translation id="4692342362587775867">Baliteke webgune honek bidaltzen dituen jakinarazpenak gogaikarriak izatea</translation>
 <translation id="4692623383562244444">Bilatzaileak</translation>
 <translation id="4692736633446859167">Ez duzu eman <ph name="SITE" /> webgunean luzapenak erabiltzeko baimena. Webgune hau hemen gehitzen baduzu, beste luzapen batzuek <ph name="SITE" /> webguneko zure datuak irakurri eta aldatzea eskatu ahalko dute.</translation>
 <translation id="4693155481716051732">Sushia</translation>

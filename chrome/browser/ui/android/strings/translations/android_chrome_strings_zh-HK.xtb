@@ -78,6 +78,7 @@
 <translation id="1344653310988386453">包含突顯文字的連結</translation>
 <translation id="1347468774581902829">管理活動</translation>
 <translation id="1360432990279830238">要登出並停用同步功能嗎？</translation>
+<translation id="1366525380420346469">開啟之後</translation>
 <translation id="1373696734384179344">記憶體不足，無法下載所選內容。</translation>
 <translation id="1376578503827013741">正在運算…</translation>
 <translation id="1382912999714108023">目前的資料不正確？請通知銀行更新。</translation>
@@ -514,6 +515,7 @@
 <translation id="3810973564298564668">管理</translation>
 <translation id="3819178904835489326">已刪除 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載項目</translation>
 <translation id="3819183753496523827">您已離線。請檢查您的互聯網連線，然後再試一次。</translation>
+<translation id="3830886834687455630">必須更新 Google Play 服務才能檢查密碼</translation>
 <translation id="3845098929839618392">在無痕式分頁中開啟</translation>
 <translation id="3856096718352044181">請驗證供應商的有效性，或稍後再試</translation>
 <translation id="3858860766373142691">名稱</translation>
@@ -734,6 +736,7 @@
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5032430150487044192">無法建立 QR 碼</translation>
 <translation id="5039804452771397117">允許</translation>
+<translation id="504456571576643789">注意事項</translation>
 <translation id="5054455334322721892">在您登入後，<ph name="BEGIN_LINK1" />其他形式的活動<ph name="END_LINK1" />可能會儲存至您的 Google 帳戶。您可以隨時刪除這些資料。</translation>
 <translation id="5061533557687621530">如要查看天氣，請輕按麥克風圖示，然後說「今日天氣點呀？」</translation>
 <translation id="506254248375231072">沒有分頁</translation>
@@ -976,7 +979,7 @@
 <translation id="6394791151443660613">搜尋：<ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">連結</translation>
 <translation id="6397616442223433927">已重新連線</translation>
-<translation id="6401458660421980302">如要將這個分頁傳送到其他裝置，請在該裝置上登入 Chrome</translation>
+<translation id="6401458660421980302">如要將此分頁傳送至其他裝置，請在該裝置上登入 Chrome</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> (<ph name="VIOLATED_URL" />)</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
 <translation id="6406506848690869874">同步處理</translation>
@@ -1028,7 +1031,7 @@
 <translation id="6600954340915313787">已複製至 Chrome</translation>
 <translation id="661266467055912436">為您和網絡上的所有使用者提高安全性。</translation>
 <translation id="6618554661997243500">㩒「主按鈕」就可以睇下熱門網站同報導</translation>
-<translation id="6621391692573306628">如要將這個分頁傳送到其他裝置，請在這兩部裝置上登入 Chrome</translation>
+<translation id="6621391692573306628">如要將此分頁傳送至其他裝置，請在這兩部裝置上登入 Chrome</translation>
 <translation id="6627583120233659107">編輯資料夾</translation>
 <translation id="6633067410344541938">解鎖無痕模式</translation>
 <translation id="6636623428211296678">探索下方更多設定或立即結束審核</translation>
@@ -1217,6 +1220,7 @@
 <translation id="7641339528570811325">清除瀏覽資料…</translation>
 <translation id="7646772052135772216">密碼同步功能無法正常運作</translation>
 <translation id="7655900163790317559">正在開啟藍牙…</translation>
+<translation id="7656862631699126784">開啟無痕模式鎖定</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7663313374500954251">此瀏覽器由 <ph name="PARENT_NAME" /> 管理。</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
@@ -1519,6 +1523,7 @@
 <translation id="9159716826369098114">還原有 <ph name="TAB_COUNT" /> 個分頁嘅分頁群組做新嘅背景分頁群組。</translation>
 <translation id="9169507124922466868">導覽記錄喺畫面下半部分顯示</translation>
 <translation id="9187955620966010988">調整咗反應</translation>
+<translation id="9190276265094487094">所有已同步的裝置上都會有你的歷史記錄，方便你繼續執行先前的工作</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{曾在 1 分鐘前檢查}other{曾在 # 分鐘前檢查}}</translation>
 <translation id="9204836675896933765">尚餘 1 個檔案</translation>
 <translation id="9205933215779845960">找不到該頁面。請檢查拼字，或嘗試在 <ph name="SEARCH_ENGINE" /> 上搜尋。</translation>

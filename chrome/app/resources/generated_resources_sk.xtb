@@ -3901,6 +3901,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4689421377817139245">Synchronizujte túto záložku so zariadením iPhone</translation>
 <translation id="4690091457710545971">&lt;Firmvér Intel Wi-Fi vygeneroval štyri súbory: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. Prvé tri sú binárne súbory obsahujúce výpisy z registra, pri ktorých firmvér Intel určil, že neobsahujú žiadne osobné informácie ani informácie umožňujúce identifikáciu zariadení. Posledný súbor je trasovanie spustenia z firmvéru Intel. Boli v ňom odstránené všetky osobné informácie alebo informácie umožňujúce identifkáciu zariadení, ale je príliš veľký, aby sa tu dal zobraziť. Tieto súbory boli vygenerované v reakcii na nedávne problémy s Wi-Fi vo vašom zariadení a budú zdieľané so spoločnosťou Intel, ktorá problémy pomôže vyriešiť.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> si bude môcť zobrazovať súbor <ph name="FILENAME" />, dokým nezavriete všetky karty tohto webu</translation>
+<translation id="4692342362587775867">Upozornenia z tohto webu môžu byť rušivé</translation>
 <translation id="4692623383562244444">Vyhľadávače</translation>
 <translation id="4692736633446859167">V minulosti ste na <ph name="SITE" /> nepovolili žiadne rozšírenia. Ak tu pridáte tento web, aj ostatné rozšírenia budú môcť žiadať o povolenie čítať a meniť dáta webov na <ph name="SITE" />.</translation>
 <translation id="4693155481716051732">Sushi</translation>

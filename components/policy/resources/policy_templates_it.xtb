@@ -2971,6 +2971,11 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="408076456549153854">Attiva accesso al browser</translation>
 <translation id="4081127242481747676">Impostazioni dei sensori</translation>
 <translation id="4082498585300984671">Attiva la funzionalità Click-to-call</translation>
+<translation id="4082809879536562387">Ti consente di impostare il periodo di tempo, in millisecondi, tra la prima notifica relativa alla necessità di riavviare un dispositivo <ph name="PRODUCT_OS_NAME" /> per applicare un aggiornamento in attesa e la fine del periodo di tempo specificato dal criterio <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />.
+
+      Se non viene impostato, per i dispositivi <ph name="PRODUCT_OS_NAME" /> viene utilizzato il periodo predefinito di 259200000 millisecondi (tre giorni).
+
+      Per il rollback e altri aggiornamenti di <ph name="PRODUCT_OS_NAME" /> che eseguono il Powerwash del dispositivo, l'utente viene sempre avvisato immediatamente quando l'aggiornamento è disponibile, indipendentemente dal valore di questo criterio.</translation>
 <translation id="4086150283035515220">Se il criterio è impostato su Attivato, gli utenti dovranno specificare dove salvare ogni file prima del download. Se il criterio è impostato su Disattivato, il download si avvierà immediatamente e agli utenti non verrà chiesto dove salvare i file.
 
       Se il criterio non viene configurato, gli utenti potranno modificare questa impostazione.</translation>
@@ -6621,6 +6626,21 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se l'impostazione viene attivata o non viene configurata, i siti web possono controllare se l'utente ha salvato dei metodi di pagamento.</translation>
 <translation id="8118665053362250806">Imposta le dimensioni della cache su disco di supporto</translation>
 <translation id="8124468781472887384">Norma di accesso alla configurazione delle stampanti per i dispositivi.</translation>
+<translation id="8128020091920875372">Questo criterio consente di specificare un elenco di app ed estensioni installate automaticamente, senza interazione dell'utente, e che non possono essere disinstallate o disattivate dagli utenti. Le autorizzazioni vengono concesse implicitamente, anche quelle relative alle API delle estensioni enterprise.deviceAttributes ed enterprise.platformKeys. Queste due API non sono disponibili per le app/estensioni senza installazione forzata.
+
+      Se il criterio non viene configurato, nessuna app o estensione viene installata automaticamente e gli utenti possono disinstallare qualsiasi app o estensione in <ph name="PRODUCT_NAME" />.
+
+      Questo criterio prevale sul criterio <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />. Se un'app o un'estensione di cui è stata precedentemente forzata l'installazione viene rimossa da questo elenco, questa app o estensione viene disinstallata automaticamente da <ph name="PRODUCT_NAME" />.
+
+      Sulle istanze di <ph name="MS_WIN_NAME" />, è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza fa parte di un dominio <ph name="MS_AD_NAME" />, è in esecuzione su Windows 10 Pro o è registrata in Chrome Browser Cloud Management.
+
+      Sulle istanze di <ph name="MAC_OS_NAME" />, è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza viene gestita tramite MDM o aggiunta a un dominio tramite MCX.
+
+      Il codice sorgente di qualsiasi estensione può essere modificato dagli utenti tramite gli strumenti per sviluppatori, causando potenzialmente il malfunzionamento dell'estensione. Per evitare un problema di questo tipo, imposta il criterio <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.
+
+      Ogni elemento nell'elenco del criterio è una stringa contenente un ID estensione e, facoltativamente, un URL "di aggiornamento" separati da punto e virgola (;). L'ID estensione è la stringa di 32 lettere che si trova, ad esempio, all'indirizzo chrome://extensions quando è attiva la modalità sviluppatore. Se specificato, l'URL "di aggiornamento" deve indirizzare a un documento XML manifest di aggiornamento (https://developer.chrome.com/extensions/autoupdate). Per impostazione predefinita, viene utilizzato l'URL di aggiornamento del Chrome Web Store. L'URL "di aggiornamento" impostato in questo criterio viene utilizzato esclusivamente per l'installazione iniziale; per i successivi aggiornamenti dell'estensione viene utilizzato l'URL di aggiornamento nel file manifest dell'estensione.
+
+       Nota: questo criterio non viene applicato alla modalità di navigazione in incognito. Scopri di più sull'hosting delle estensioni (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="8128192446158421884">URL su cui è applicabile AutoOpenFileTypes</translation>
 <translation id="8131046602440880289">Consenti le voci di sintesi vocale di rete migliorate durante l'utilizzo di Seleziona per ascoltare</translation>
 <translation id="8133152694354699657">Se il criterio viene impostato su True o non viene impostato, la funzionalità Tocca per cercare sarà a disposizione degli utenti, che potranno scegliere se attivarla o disattivarla.

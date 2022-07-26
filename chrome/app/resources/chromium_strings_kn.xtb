@@ -41,6 +41,7 @@
 <translation id="2018879682492276940">ಇನ್‌ಸ್ಟಾಲೇಶನ್ ವಿಫಲವಾಗಿದೆ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2020032459870799438">ನಿಮ್ಮ ಇತರ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಡೇಟಾ ಉಲ್ಲಂಘನೆ ಮತ್ತು ಇತರ ಭದ್ರತಾ ಸಮಸ್ಯೆಗಳಿಂದ ಸುರಕ್ಷಿತವಾಗಿವೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಲು, <ph name="BEGIN_LINK" />Chromium ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Google ಸೇವೆಗಳಲ್ಲಿ ಹೆಚ್ಚು ವೈಯಕ್ತೀಕರಿಸಿದ ಅನುಭವಗಳಿಗಾಗಿ Chromium ಇತಿಹಾಸವನ್ನು ಸೇರಿಸಬೇಕೆ ಬೇಡವೇ ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="2088953378266246249">Chromium ತನ್ನ ರೂಟ್ ಮಾಣೀಕರಣಗಳನ್ನು ಹೇಗೆ ನಿರ್ವಹಿಸುತ್ತದೆ ಎಂಬುದರ ಕುರಿತ ಮಾಹಿತಿ</translation>
 <translation id="2174178932569897599">Chromium ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="2174917724755363426">ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಪೂರ್ಣಗೊಂಡಿಲ್ಲ. ನೀವು ಖಂಡಿತವಾಗಿಯೂ ರದ್ದುಮಾಡಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="2185166961232948079">Chromium - ನೆಟ್‌ವರ್ಕ್ ಸೈನ್ ಇನ್ - <ph name="PAGE_TITLE" /></translation>
@@ -357,6 +358,7 @@
 <translation id="9185526690718004400">&amp;Chromium ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Windows XP ಅಥವಾ Windows Vista ದಲ್ಲಿ Chromium ಗೆ ಈಗ ಬೆಂಬಲವಿಲ್ಲದೇ ಇರುವುದರಿಂದ ಅದು ಸರಿಯಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು</translation>
+<translation id="942598560705308788">Chromium ನಿರ್ವಹಿತ ಮಾಣೀಕರಣಗಳು</translation>
 <translation id="945990405696787151">ಭವಿಷ್ಯದ Chromium ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯಲು, ನಿಮಗೆ macOS 10.13 ಅಥವಾ ಅದರ ನಂತರದ ಆವೃತ್ತಿಗಳ ಅಗತ್ಯವಿದೆ. ಈ ಕಂಪ್ಯೂಟರ್ OS X 10.11. ಅನ್ನು ಬಳಸುತ್ತಿದೆ.</translation>
 <translation id="965162752251293939">Chromium ಅನ್ನು ಯಾರು ಬಳಸುತ್ತಿದ್ದಾರೆ?</translation>
 <translation id="967427899662692980">Chromium ನ ಪ್ರಬಲ ಭದ್ರತೆಯನ್ನು ಪಡೆಯಿರಿ</translation>

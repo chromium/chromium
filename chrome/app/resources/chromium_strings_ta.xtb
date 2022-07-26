@@ -41,6 +41,7 @@
 <translation id="2018879682492276940">நிறுவ முடியவில்லை. மீண்டும் முயலவும்.</translation>
 <translation id="2020032459870799438">தரவு மீறல்கள் மற்றும் பிற பாதுகாப்புச் சிக்கல்களிலிருந்து உங்கள் மற்ற கடவுச்சொற்கள் பாதுகாப்பாக இருக்கின்றனவா என்பதைச் சரிபார்க்க <ph name="BEGIN_LINK" />Chromiumமில் உள்நுழையுங்கள்<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Google சேவைகளில் மேலும் பிரத்தியேகமான அனுபவங்களைப் பெறுவதற்கு Chromium செயல்பாடுகளைச் சேர்க்க வேண்டுமா என்பதைத் தேர்வுசெய்யலாம்</translation>
+<translation id="2088953378266246249">Chromium அதன் முதன்மைச் சான்றிதழ்களை எப்படி நிர்வகிக்கிறது என்பது குறித்த தகவல்கள்</translation>
 <translation id="2174178932569897599">Chromiumமைப் பிரத்தியேகப்படுத்து</translation>
 <translation id="2174917724755363426">நிறுவல் நிறைவடையவில்லை. நிச்சயமாக ரத்துசெய்ய வேண்டுமா?</translation>
 <translation id="2185166961232948079">Chromium - நெட்வொர்க் உள்நுழைவு - <ph name="PAGE_TITLE" /></translation>
@@ -365,6 +366,7 @@
 <translation id="9185526690718004400">&amp;Chromiumமைப் புதுப்பிக்க மீண்டும் தொடங்கு</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Windows XP அல்லது Windows Vista ஆகியவற்றில் Chromium இனி ஆதரிக்கப்படாது என்பதால், அது சரியாகச் செயல்படாது</translation>
+<translation id="942598560705308788">Chromium நிர்வகிக்கும் சான்றிதழ்கள்</translation>
 <translation id="945990405696787151">இனிவரும் Chromium புதுப்பிப்புகளைப் பெற macOS 10.13 அல்லது அதற்குப் பிந்தைய பதிப்பு தேவை. இந்தக் கம்ப்யூட்டர் OS X 10.11 பதிப்பைப் பயன்படுத்துகிறது.</translation>
 <translation id="965162752251293939">Chromiumமைப் பயன்படுத்துவது யார்?</translation>
 <translation id="967427899662692980">Chromiumமின் உச்சபட்சப் பாதுகாப்பைப் பெறுங்கள்</translation>

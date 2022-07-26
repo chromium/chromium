@@ -306,6 +306,7 @@
 <translation id="2805756323405976993">אפליקציות</translation>
 <translation id="2814448776515246190">צילום חלקי</translation>
 <translation id="2819276065543622893">המערכת תוציא אותך עכשיו מהחשבון.</translation>
+<translation id="2822551631199737692">המצלמה נמצאת בשימוש</translation>
 <translation id="2825224105325558319">התצוגה של <ph name="DISPLAY_NAME" /> לא תומכת ברזולוציה <ph name="SPECIFIED_RESOLUTION" />. הרזולוציה שונתה ל-<ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">מדף</translation>
 <translation id="2831035692318564937">התכונה פעילה עד הזריחה</translation>
@@ -807,6 +808,7 @@
 <translation id="5682642926269496722">‏Google Assistant לא זמינה לחשבון המשתמש הנוכחי.</translation>
 <translation id="5689633613396158040">עם תאורת לילה, קל יותר להסתכל על המסך או לקרוא כשהתאורה מסביב עמומה. יש להקיש כדי לשנות את השעה שבה מופעלת 'תאורת לילה' או כדי לכבות אותה לגמרי.</translation>
 <translation id="5691772641933328258">טביעת האצבע לא זוהתה</translation>
+<translation id="5693255400847650006">המיקרופון נמצא בשימוש</translation>
 <translation id="570390244361237317">כל האפליקציות, מנווטים בעזרת מקשי החיצים כדי לגשת לכל האפליקציות</translation>
 <translation id="5707775774148071965">קצב התקשורת של הכבל נמוך מזה של המכשיר. יכול להיות שביצועי המכשיר יוגבלו.</translation>
 <translation id="5710450975648804523">מצב 'נא לא להפריע' מופעל</translation>
@@ -981,6 +983,7 @@
 <translation id="6723839937902243910">חשמל</translation>
 <translation id="6727969043791803658">‏מחובר, ‎<ph name="BATTERY_PERCENTAGE" />%‎ סוללה</translation>
 <translation id="6732800389263199929">‎+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">המצלמה והמיקרופון נמצאים בשימוש</translation>
 <translation id="6739144137573853180">מעבר להגדרות</translation>
 <translation id="6751052314767925245">התכונה הזו נאכפת על ידי מנהל המערכת</translation>
 <translation id="6751826523481687655">מעקב הביצועים פועל</translation>

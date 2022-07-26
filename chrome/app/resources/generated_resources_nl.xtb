@@ -3896,6 +3896,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4689421377817139245">Deze bookmark synchroniseren met je iPhone</translation>
 <translation id="4690091457710545971">&lt;Vier bestanden gegenereerd door wifi-firmware van Intel: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. De eerste drie zijn binaire bestanden met registerdumps. Hiervan wordt door Intel verzekerd dat deze geen persoonlijke of apparaatidentificerende gegevens bevatten. Het laatste bestand is een bestand waarin uitvoering wordt bijgehouden. Alle persoonlijke of apparaatidentificerende gegevens zijn uit dit bestand verwijderd, maar het is te groot om hier weer te geven. Deze bestanden zijn gegenereerd als reactie op recente wifi-problemen met je apparaat en worden gedeeld met Intel om deze problemen op te lossen.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bekijken totdat je alle tabbladen voor deze site sluit</translation>
+<translation id="4692342362587775867">Meldingen van deze site kunnen storend zijn</translation>
 <translation id="4692623383562244444">Zoekmachines</translation>
 <translation id="4692736633446859167">Je hebt er eerder voor gekozen om geen extensies op <ph name="SITE" /> toe te staan. Als je deze site hier toevoegt, kunnen andere extensies ook vragen om je sitegegevens op <ph name="SITE" /> te lezen en te wijzigen.</translation>
 <translation id="4693155481716051732">Sushi</translation>

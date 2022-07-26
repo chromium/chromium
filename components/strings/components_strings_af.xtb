@@ -2261,6 +2261,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7238585580608191973">SHA-256-vingerafdruk</translation>
 <translation id="7240120331469437312">Sertifikaatonderwerp se alternatiewe naam</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
+<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# passing}other{# passings}}</translation>
 <translation id="724691107663265825">Die werf hier voor bevat wanware</translation>
 <translation id="724975217298816891">Voer die vervaldatum en CVC vir <ph name="CREDIT_CARD" /> in om jou kaartbesonderhede op te dateer. Nadat jy bevestig het, sal jou besonderhede met hierdie werf gedeel word.</translation>
 <translation id="7251437084390964440">Die netwerkopstelling voldoen nie aan die ONC-standaard nie. Dele van die opstelling sal dalk nie ingevoer word nie.

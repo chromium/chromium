@@ -2930,6 +2930,11 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
 <translation id="408076456549153854">Inloggen bij browser aanzetten</translation>
 <translation id="4081127242481747676">Instellingen voor sensoren</translation>
 <translation id="4082498585300984671">Functie 'Click-to-call' aanzetten</translation>
+<translation id="4082809879536562387">Hiermee kun je de periode in milliseconden instellen tussen de eerste melding dat een <ph name="PRODUCT_OS_NAME" />-apparaat opnieuw moet worden opgestart om een update in behandeling uit te voeren en het einde van de periode zoals vermeld in het <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />-beleid.
+
+      Als dit beleid niet is ingesteld, wordt de standaardperiode van 259.200.000 milliseconden (3 dagen) gebruikt voor <ph name="PRODUCT_OS_NAME" />-apparaten.
+
+      Voor rollbacks en andere <ph name="PRODUCT_OS_NAME" />-updates waarmee een powerwash wordt uitgevoerd op het apparaat, krijgt de gebruiker altijd meteen een melding als de update beschikbaar is, onafhankelijk van de waarde van dit beleid.</translation>
 <translation id="4086150283035515220">Als je het beleid toepast, wordt gebruikers gevraagd waar ze elk bestand willen opslaan voordat het bestand wordt gedownload. Als je het beleid niet toepast, worden downloads onmiddellijk gestart en wordt gebruikers niet gevraagd waar ze het bestand willen opslaan.
 
       Als je het beleid niet instelt, kunnen gebruikers deze instelling zelf wijzigen.</translation>

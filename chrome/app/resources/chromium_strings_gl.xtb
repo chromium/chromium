@@ -43,6 +43,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="2018879682492276940">Produciuse un erro durante a instalación. Téntao de novo.</translation>
 <translation id="2020032459870799438">Para comprobar se os teus outros contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Escolle se queres incluír o historial de Chromium para gozar de experiencias máis personalizadas cos servizos de Google</translation>
+<translation id="2088953378266246249">Información acerca de como xestiona Chromium os seus certificados raíz</translation>
 <translation id="2174178932569897599">Personalizar Chromium</translation>
 <translation id="2174917724755363426">A instalación non finalizou. Seguro que queres cancelala?</translation>
 <translation id="2185166961232948079">Chromium (inicio de sesión de rede, <ph name="PAGE_TITLE" />)</translation>
@@ -365,6 +366,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="9185526690718004400">Reiniciar para actualizar &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">É posible que Chromium non funcione correctamente porque xa non admite Windows XP nin Windows Vista</translation>
+<translation id="942598560705308788">Certificados que xestiona Chromium</translation>
 <translation id="945990405696787151">Se queres recibir actualizacións de Chromium no futuro, debes instalar o sistema operativo macOS 10.13 ou unha versión posterior. Este ordenador ten OS X 10.11.</translation>
 <translation id="965162752251293939">Quen está utilizando Chromium?</translation>
 <translation id="967427899662692980">Goza da máxima seguranza de Chromium</translation>

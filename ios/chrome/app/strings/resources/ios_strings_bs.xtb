@@ -474,6 +474,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="4979397965658815378">Prijavite se na svoj Google račun da dobijete oznake, lozinke, historiju i ostale postavke na svim svojim uređajima.</translation>
 <translation id="4986678885919050584">Ukloni s ovog uređaja</translation>
 <translation id="4989542687859782284">Nije dostupno</translation>
+<translation id="498985224078955265">Da biste poslali ovu karticu na drugi uređaj, prijavite se na Chrome na oba uređaja.</translation>
 <translation id="5005498671520578047">Kopiranje lozinke</translation>
 <translation id="5017828934289857214">Podsjeti me kasnije</translation>
 <translation id="5037676449506322593">Odaberi sve</translation>
@@ -525,6 +526,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5489208564673669003">Da upravljate kolačićima za sve web lokacije, pogledajte <ph name="BEGIN_LINK" />Postavke kolačića<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokiraj sve kolačiće (ne preporučuje se)</translation>
 <translation id="5513681519188741830">Prije <ph name="TIME" /> h</translation>
+<translation id="5525095647255982834">Da biste poslali ovu karticu na drugi uređaj, prijavite se na Chrome na tom uređaju.</translation>
 <translation id="5525269841082836315">Kreirajte pristupni izraz</translation>
 <translation id="5542540507657872337">Pronašli smo: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff vam omogućava da počnete pregledati web lokaciju na ovom uređaju i jednostavno nastavite na Macu. Trenutno otvorena web lokacija će se pojaviti na priključnoj stranici na Macu.

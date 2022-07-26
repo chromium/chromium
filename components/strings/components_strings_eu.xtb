@@ -2256,6 +2256,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7238585580608191973">SHA-256 aztarna digitala</translation>
 <translation id="7240120331469437312">Ziurtagiriaren gaiaren ordezko izena</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
+<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# bat-etortze}other{# bat-etortze}}</translation>
 <translation id="724691107663265825">Ondorengo webguneak malwarea du</translation>
 <translation id="724975217298816891"><ph name="CREDIT_CARD" /> txartelaren xehetasunak eguneratzeko, idatzi haren iraungitze-data eta CVC kodea. Berretsi ondoren, webgune honekin partekatuko dira txartelaren xehetasunak.</translation>
 <translation id="7251437084390964440">Sarearen konfigurazioa ez dator bat ONC estandarrarekin. Agian konfigurazioaren zati batzuk ez dira inportatuko.

@@ -998,6 +998,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1916502483199172559">Punainen oletusavatar</translation>
 <translation id="1918141783557917887">&amp;Pienempi</translation>
 <translation id="1920390473494685033">Yhteystiedot</translation>
+<translation id="1921544956190977703">Sinulla on Chromen vahvin suojaus vaarallisia sivustoja, latauksia ja laajennuksia vastaan</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1923468477587371721">Googlen sivustot, esim. Gmail, Drive ja YouTube, käyttävät Google-tilisi kieltä, ellet ole vaihtanut kieltä yksittäisessä tuotteessa</translation>
 <translation id="192494336144674234">Avaa sovelluksessa</translation>
@@ -2103,6 +2104,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <ph name="DOMAIN" /> ei salli älykortin poistamista.</translation>
 <translation id="2923234477033317484">Poista tämä tili</translation>
 <translation id="2923644930701689793">Pääsy puhelimesi kameran rullaan</translation>
+<translation id="292371311537977079">Chromen asetukset</translation>
 <translation id="2925658782192398150">Valmis, ongelmia ei löytynyt</translation>
 <translation id="2926085873880284723">Palauta oletuspikanäppäimet</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> ei ole tuettu ohjelmisto.</translation>
@@ -2687,6 +2689,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3511528412952710609">Lyhyt</translation>
 <translation id="3514335087372914653">Peliasetukset</translation>
 <translation id="3514373592552233661">Jos tarjolla on useampia verkkoja, ensisijaisiin verkkoihin muodostetaan yhteys ennen muita tunnettuja verkkoja.</translation>
+<translation id="3514647716686280777">Sinulla on perustason suojaus. Voit parantaa suojausta vaarallisia verkkosivustoja, latauksia ja laajennuksia vastaan laittamalla Parannettu selaussuoja päälle Chromen asetuksista.</translation>
 <translation id="3515983984924808886">Vahvista nollaus koskettamalla suojausavainta uudelleen. Tällöin kaikki suojausavaimeen tallennetut tiedot, kuten sen PIN-koodi, poistetaan.</translation>
 <translation id="3518985090088779359">Hyväksy ja jatka</translation>
 <translation id="3519564332031442870">Tulostuksen backend-palvelu</translation>
@@ -5490,6 +5493,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6278776436938569440">Vaihda sijaintia</translation>
 <translation id="6279183038361895380">Näytä kursori painamalla |<ph name="ACCELERATOR" />|.</translation>
+<translation id="6279595948631688299">Vie valittu varmenne...</translation>
 <translation id="6280215091796946657">Kirjaudu sisään toisella tilillä</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Ylittää yhden paperiarkin rajan}other{Ylittää {COUNT} paperiarkin rajan}}</translation>
@@ -5604,6 +5608,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6398715114293939307">Poista Google Play Kauppa</translation>
 <translation id="6398765197997659313">Poistu koko näytön tilasta</translation>
 <translation id="6399774419735315745">Vakooja</translation>
+<translation id="6401458660421980302">Jos haluat lähettää tämän välilehden toiselle laitteelle, kirjaudu Chromeen sieltä</translation>
 <translation id="6401597285454423070">Tietokoneesi sisältää Trusted Platform Module (TPM) ‑turvalaitteen, jonka avulla otetaan käyttöön monia tärkeitä turvallisuusominaisuuksia Chrome-käyttöjärjestelmässä. Lisätietoja löydät Chromebook-ohjekeskuksesta: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Pelaaminen Chromebookilla</translation>
 <translation id="6404511346730675251">Muokkaa kirjanmerkkiä</translation>
@@ -5840,6 +5845,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6619801788773578757">Lisää kioskisovellus</translation>
 <translation id="6619990499523117484">Vahvista PIN-koodi</translation>
 <translation id="6620254580880484313">Säilön nimi</translation>
+<translation id="6621391692573306628">Jos haluat lähettää välilehden toiselle laitteelle, kirjaudu Chromeen molemmilla laitteilla</translation>
 <translation id="6622980291894852883">Estä kuvat edelleen</translation>
 <translation id="6624036901798307345">Kun laite on tablettitilassa, napauta välilehtilaskurin työkalupalkkikuvaketta. Tämä avaa uuden välilehtirivin, jossa näkyy kunkin välilehden pikkukuva.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> sisältää arkaluontoista tai vaarallista sisältöä. Pyydä sen omistajaa korjaamaan asia.</translation>

@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">Ιστορικό</translation>
 <translation id="1645954272419197032">Επιβεβαιώστε τις πληροφορίες συσκευής</translation>
 <translation id="1662989795263954667">Διακοπή - Τελείωσε το μελάνι</translation>
+<translation id="1664796644829245314">Προεπισκόπηση <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Ενσωματωμένο VPN</translation>
 <translation id="1672499492233627739">Ροή βίντεο webcam</translation>
 <translation id="1676557873873341166">Λήψη βίντεο</translation>
@@ -118,6 +119,7 @@
 <translation id="1851218745569890714">Συνεδρίαση με βίντεο</translation>
 <translation id="1852934301711881861">Εγκατάσταση ChromeOS</translation>
 <translation id="1856388568474281774">Κάτω βέλος</translation>
+<translation id="1858620243986915808">Επισύναψη στιγμιότυπου οθόνης</translation>
 <translation id="1871569928317311284">Απενεργοποίηση σκούρου θέματος</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Απενεργοποίηση λειτουργίας χαμηλού φωτισμού</translation>
@@ -797,6 +799,7 @@
 <translation id="7978412674231730200">Ιδιωτικό κλειδί</translation>
 <translation id="7982789257301363584">Δίκτυο</translation>
 <translation id="7994702968232966508">Μέθοδος EAP</translation>
+<translation id="8018928621986160031">Αποθηκεύτηκε στη συλλογή "<ph name="FILE_LOCATION" />"</translation>
 <translation id="802154636333426148">Η λήψη απέτυχε</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Ενεργοποίηση λειτουργίας αυτόματης ρύθμισης χρώματος</translation>

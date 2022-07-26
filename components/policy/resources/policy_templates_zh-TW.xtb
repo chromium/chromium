@@ -2924,6 +2924,11 @@
 <translation id="408076456549153854">允許登入瀏覽器</translation>
 <translation id="4081127242481747676">感應器設定</translation>
 <translation id="4082498585300984671">啟用「點選通話」功能</translation>
+<translation id="4082809879536562387">這項政策可讓你設定以下作業的時間範圍 (以毫秒為單位)：從系統第一次通知使用者重新啟動 <ph name="PRODUCT_OS_NAME" />裝置以套用待處理的更新開始，到 <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> 政策指定的結束時間為止。
+
+      如未設定這項政策，<ph name="PRODUCT_OS_NAME" />裝置的預設時間範圍是 259200000 毫秒 (三天)。
+
+      如果是系統復原和其他會執行裝置 Powerwash 的 <ph name="PRODUCT_OS_NAME" /> 更新，使用者一律會在可更新時立即收到通知，不受這項政策的值限制。</translation>
 <translation id="4086150283035515220">如果將這項政策設為啟用，系統下載每個檔案前，都會詢問使用者要儲存檔案的位置。如果將這項政策設為停用，下載作業會立即開始，系統不會詢問使用者要儲存檔案的位置。
 
       如果未設定這項政策，使用者可以自行變更這項設定。</translation>

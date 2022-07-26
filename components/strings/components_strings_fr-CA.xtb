@@ -1467,6 +1467,7 @@
 <translation id="4969341057194253438">Supprimer l'enregistrement</translation>
 <translation id="4973922308112707173">Double perforation en haut</translation>
 <translation id="4976702386844183910">Dernière visite : <ph name="DATE" /></translation>
+<translation id="498323057460789381">Erreur de validation du schéma : <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Utiliser le microphone?</translation>
 <translation id="4984339528288761049">Enveloppe Prc5</translation>
 <translation id="4989163558385430922">Tout afficher</translation>
@@ -2260,6 +2261,7 @@
 <translation id="7238585580608191973">Empreintes digitales SHA-256</translation>
 <translation id="7240120331469437312">Autre nom de l'objet du certificat</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
+<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# correspondance}one{# correspondance}other{# correspondances}}</translation>
 <translation id="724691107663265825">Le site Web vers lequel vous naviguez contient un logiciel malveillant</translation>
 <translation id="724975217298816891">Afin de mettre à jour les détails de votre carte, entrez la date d'expiration et le code de vérification de carte (CVC) pour <ph name="CREDIT_CARD" />. Après confirmation, les détails de votre carte seront partagés avec ce site.</translation>
 <translation id="7251437084390964440">La configuration du réseau ne respecte pas la norme de l'ONC. Il est possible que des parties de la configuration ne soient pas importées.
@@ -2731,6 +2733,7 @@ Détails supplémentaires :
 <translation id="8508648098325802031">Icône de recherche</translation>
 <translation id="8511402995811232419">Gérer les témoins</translation>
 <translation id="851353418319061866">Contrôle de la fiabilité</translation>
+<translation id="8513580896341796021">Le téléchargement a commencé. Pour le voir, appuyez sur |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Appareil HID autorisé par votre administrateur</translation>
 <translation id="8522552481199248698">Chrome peut vous aider à protéger votre compte Google et à changer votre mot de passe.</translation>
 <translation id="8530813470445476232">Effacez votre historique de navigation, vos témoins, votre cache et plus encore dans les paramètres de Chrome</translation>

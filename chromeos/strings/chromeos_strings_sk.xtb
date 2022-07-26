@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">História</translation>
 <translation id="1645954272419197032">Potvrďte informácie zo zariadení</translation>
 <translation id="1662989795263954667">Zastavené – minul sa atrament</translation>
+<translation id="1664796644829245314">Zobraziť ukážku položky <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Vstavaná sieť VPN</translation>
 <translation id="1672499492233627739">Videoprenos z webovej kamery</translation>
 <translation id="1676557873873341166">Nahráva sa video</translation>
@@ -798,6 +799,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7978412674231730200">Súkromný kľúč</translation>
 <translation id="7982789257301363584">Sieť</translation>
 <translation id="7994702968232966508">Metóda EAP</translation>
+<translation id="8018928621986160031">Uložené do priečinka <ph name="FILE_LOCATION" /></translation>
 <translation id="802154636333426148">Stiahnutie zlyhalo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Povoliť automatický farebný režim</translation>

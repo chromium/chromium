@@ -999,6 +999,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1916502483199172559">Avatar merah default</translation>
 <translation id="1918141783557917887">&amp;Lebih kecil</translation>
 <translation id="1920390473494685033">Kontak</translation>
+<translation id="1921544956190977703">Anda memiliki keamanan terkuat Chrome terhadap situs, download, dan ekstensi berbahaya</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1923468477587371721">Situs Google seperti Gmail, Drive, dan YouTube menggunakan bahasa Akun Google Anda kecuali jika Anda telah mengubah bahasa produk satu per satu</translation>
 <translation id="192494336144674234">Buka dengan</translation>
@@ -2104,6 +2105,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <ph name="DOMAIN" /> mengharuskan Anda tetap memasang kartu smart.</translation>
 <translation id="2923234477033317484">Hapus akun ini</translation>
 <translation id="2923644930701689793">Mengakses rol kamera ponsel Anda</translation>
+<translation id="292371311537977079">Setelan Chrome</translation>
 <translation id="2925658782192398150">Selesai, tidak ditemukan masalah</translation>
 <translation id="2926085873880284723">Pulihkan pintasan default</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> tidak didukung.</translation>
@@ -2688,6 +2690,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3511528412952710609">Sebentar</translation>
 <translation id="3514335087372914653">Kontrol Game</translation>
 <translation id="3514373592552233661">Jika ada beberapa jaringan yang tersedia, jaringan pilihan akan lebih diprioritaskan dari jaringan yang dikenal lainnya.</translation>
+<translation id="3514647716686280777">Anda mendapatkan perlindungan keamanan standar. Untuk mendapatkan perlindungan lebih terhadap situs, download, dan ekstensi berbahaya, aktifkan Safe Browsing yang Disempurnakan di setelan Chrome.</translation>
 <translation id="3515983984924808886">Sentuh kunci keamanan Anda sekali lagi untuk mengonfirmasi peresetan. Semua informasi yang tersimpan di kunci keamanan, termasuk PIN-nya, akan dihapus.</translation>
 <translation id="3518985090088779359">Terima &amp; lanjutkan</translation>
 <translation id="3519564332031442870">Layanan Backend Pencetakan</translation>
@@ -5494,6 +5497,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Ubah lokasi</translation>
 <translation id="6279183038361895380">Tekan |<ph name="ACCELERATOR" />| untuk menampilkan kursor</translation>
+<translation id="6279595948631688299">E&amp;kspor sertifikat yang dipilih ...</translation>
 <translation id="6280215091796946657">Login dengan akun lain</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Melebihi batas 1 lembar kertas}other{Melebihi batas {COUNT} lembar kertas}}</translation>
@@ -5608,6 +5612,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6398715114293939307">Hapus Google Play Store</translation>
 <translation id="6398765197997659313">Keluar dari tampilan layar penuh</translation>
 <translation id="6399774419735315745">Mata-mata</translation>
+<translation id="6401458660421980302">Untuk mengirim tab ini ke perangkat lain, login ke Chrome di sana</translation>
 <translation id="6401597285454423070">Komputer Anda berisi perangkat keamanan Trusted Platform Module (TPM), yang digunakan untuk menerapkan banyak fitur keamanan penting di ChromeOS. Buka Pusat Bantuan Chromebook untuk mempelajari lebih lanjut: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Game di Chromebook</translation>
 <translation id="6404511346730675251">Edit bookmark</translation>
@@ -5844,6 +5849,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6619801788773578757">Tambahkan aplikasi kios</translation>
 <translation id="6619990499523117484">Konfirmasikan PIN</translation>
 <translation id="6620254580880484313">Nama penampung</translation>
+<translation id="6621391692573306628">Untuk mengirim tab ini ke perangkat lain, login ke Chrome di kedua perangkat</translation>
 <translation id="6622980291894852883">Lanjutkan mencekal gambar</translation>
 <translation id="6624036901798307345">Dalam mode tablet, ketuk tombol toolbar penghitung tab untuk membuka tab setrip baru yang menampilkan thumbnail setiap tab.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> berisi konten sensitif atau berbahaya. Minta pemiliknya untuk memperbaiki.</translation>

@@ -984,6 +984,7 @@
 <translation id="1916502483199172559">デフォルトの赤のアバター</translation>
 <translation id="1918141783557917887">縮小(&amp;S)</translation>
 <translation id="1920390473494685033">連絡先</translation>
+<translation id="1921544956190977703">Chrome の強化されたセキュリティ機能で、危険なウェブサイト、ダウンロード、拡張機能から保護します。</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1923468477587371721">Gmail、ドライブ、YouTube などの Google サイトでは、個々のサービスの言語を変更しない限り、Google アカウントの言語が使用されます。</translation>
 <translation id="192494336144674234">アプリケーションで開く</translation>
@@ -2083,6 +2084,7 @@
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。</translation>
 <translation id="2923234477033317484">このアカウントを削除</translation>
 <translation id="2923644930701689793">スマートフォンのカメラロールにアクセス</translation>
+<translation id="292371311537977079">Chrome の設定</translation>
 <translation id="2925658782192398150">完了しました。問題は見つかりませんでした</translation>
 <translation id="2926085873880284723">デフォルトのショートカットに戻す</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> はサポートされていません。</translation>
@@ -2666,6 +2668,7 @@
 <translation id="3511528412952710609">短い</translation>
 <translation id="3514335087372914653">ゲームの管理</translation>
 <translation id="3514373592552233661">複数のネットワークを利用できる場合に、優先ネットワークを他の既知のネットワークより優先します</translation>
+<translation id="3514647716686280777">標準のセキュリティ機能で保護します。危険なウェブサイト、ダウンロード、拡張機能からの保護を強化するには、Chrome の設定でセーフ ブラウジング保護強化機能をオンにしてください。</translation>
 <translation id="3515983984924808886">リセットを確定するには、セキュリティ キーをもう一度タップしてください。セキュリティ キーに保存されているすべての情報（PIN を含む）が削除されます。</translation>
 <translation id="3518985090088779359">同意して続行</translation>
 <translation id="3519564332031442870">バックエンドの印刷サービス</translation>
@@ -5461,6 +5464,7 @@
 <translation id="6278428485366576908">テーマ</translation>
 <translation id="6278776436938569440">場所を変更</translation>
 <translation id="6279183038361895380">カーソルを表示するには |<ph name="ACCELERATOR" />| を押します</translation>
+<translation id="6279595948631688299">選択した証明書をエクスポート(&amp;X)...</translation>
 <translation id="6280215091796946657">別のアカウントでログイン</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{上限（1 枚）を超えています}other{上限（{COUNT} 枚）を超えています}}</translation>
@@ -5575,6 +5579,7 @@
 <translation id="6398715114293939307">Google Play ストアを削除</translation>
 <translation id="6398765197997659313">全画面表示を終了</translation>
 <translation id="6399774419735315745">スパイ</translation>
+<translation id="6401458660421980302">このタブを別のデバイスに送信するには、送信先のデバイスで Chrome にログインしてください</translation>
 <translation id="6401597285454423070">ご使用のパソコンには Trusted Platform Module（TPM）セキュリティ デバイスが組み込まれています。これは Chrome OS の多くの重要なセキュリティ機能を実装するために使用されます。詳しくは、Chromebook ヘルプセンター（https://support.google.com/chromebook/?p=tpm）をご覧ください。</translation>
 <translation id="6404187344102273690">Chromebook のゲームプレイ</translation>
 <translation id="6404511346730675251">ブックマークを編集</translation>
@@ -5810,6 +5815,7 @@
 <translation id="6619801788773578757">キオスク アプリケーションを追加</translation>
 <translation id="6619990499523117484">PIN を確認してください</translation>
 <translation id="6620254580880484313">コンテナ名</translation>
+<translation id="6621391692573306628">このタブを別のデバイスに送信するには、両方のデバイスで Chrome にログインしてください</translation>
 <translation id="6622980291894852883">画像を引き続きブロックする</translation>
 <translation id="6624036901798307345">タブレット モードのときに、ツールバーのタブカウンタ ボタンをタップして、各タブのサムネイルが表示された新しいタブバーを開きます。</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> はデリケートなコンテンツまたは危険なコンテンツです。所有者に修正するよう依頼してください。</translation>

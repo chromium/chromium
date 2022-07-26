@@ -306,6 +306,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2805756323405976993">Applications</translation>
 <translation id="2814448776515246190">Capture partielle</translation>
 <translation id="2819276065543622893">Vous allez être déconnecté maintenant.</translation>
+<translation id="2822551631199737692">Caméra utilisée</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution <ph name="SPECIFIED_RESOLUTION" />. La résolution <ph name="FALLBACK_RESOLUTION" /> sera utilisée à la place.</translation>
 <translation id="2825619548187458965">Étagère</translation>
 <translation id="2831035692318564937">Activé jusqu'au lever du soleil</translation>
@@ -807,6 +808,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5682642926269496722">L'Assistant Google n'est pas disponible pour le compte utilisateur actuel.</translation>
 <translation id="5689633613396158040">Cette fonctionnalité facilite la lecture à l'écran lorsque l'éclairage est faible. Appuyez ici pour modifier l'heure à laquelle elle doit s'activer ou désactivez-la complètement.</translation>
 <translation id="5691772641933328258">Empreinte digitale non reconnue</translation>
+<translation id="5693255400847650006">Micro utilisé</translation>
 <translation id="570390244361237317">Toutes les applis : utiliser les touches fléchées pour accéder à toutes les applis</translation>
 <translation id="5707775774148071965">Votre appareil accepte un débit de données supérieur à celui de votre câble. Cela peut limiter les performances de l'appareil.</translation>
 <translation id="5710450975648804523">Mode "Ne pas déranger" activé</translation>
@@ -981,6 +983,7 @@ Nouvelle installation</translation>
 <translation id="6723839937902243910">Alimentation</translation>
 <translation id="6727969043791803658">Connecté, batterie à <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="6732800389263199929">et <ph name="COUNT" /> autre(s)</translation>
+<translation id="6737983188036277605">Caméra et micro utilisés</translation>
 <translation id="6739144137573853180">ACCÉDER AUX PARAMÈTRES</translation>
 <translation id="6751052314767925245">Cette fonctionnalité est appliquée par votre administrateur</translation>
 <translation id="6751826523481687655">Le suivi des performances est activé</translation>

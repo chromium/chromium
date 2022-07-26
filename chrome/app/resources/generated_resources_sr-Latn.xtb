@@ -3898,6 +3898,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4689421377817139245">Sinhronizujte ovaj obeleživač sa iPhone-om</translation>
 <translation id="4690091457710545971">&lt;Četiri datoteke koje je generisao Intel firmver za WiFi: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon.  Prve tri datoteke su binarne datoteke koje sadrže ispise registara i Intel potvrđuje da ne sadrže lične podatke niti podatke koji mogu da identifikuju uređaj.  Poslednja datoteka je trag izvršenja Intel firmvera; iz nje su uklonjeni bilo kakvi lični podaci ili podaci koji mogu da identifikuju uređaj, ali je prevelika da bismo je ovde prikazali.  Ove datoteke su generisane kao odgovor na nedavne probleme sa WiFi-em na uređaju i delićemo ih sa Intel-om da bismo rešili te probleme.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> će moći da pregleda datoteku <ph name="FILENAME" /> dok ne zatvorite sve kartice ovog sajta</translation>
+<translation id="4692342362587775867">Obaveštenja sa ovog sajta mogu da vas ometaju</translation>
 <translation id="4692623383562244444">Pretraživači</translation>
 <translation id="4692736633446859167">Prethodno ste odabrali da ne dozvoljavate nikakve dodatke na <ph name="SITE" />. Ako dodate ovaj sajt ovde, drugi dodaci takođe mogu da zatraže da čitaju i menjaju podatke o sajtovima na <ph name="SITE" />.</translation>
 <translation id="4693155481716051732">Suši</translation>

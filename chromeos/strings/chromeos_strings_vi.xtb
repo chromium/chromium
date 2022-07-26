@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">Nhật ký</translation>
 <translation id="1645954272419197032">Vui lòng xác nhận thông tin thiết bị</translation>
 <translation id="1662989795263954667">Đã dừng – Hết mực</translation>
+<translation id="1664796644829245314">Xem trước <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN tích hợp sẵn</translation>
 <translation id="1672499492233627739">Nguồn cấp dữ liệu video webcam</translation>
 <translation id="1676557873873341166">Đang quay video</translation>
@@ -118,6 +119,7 @@
 <translation id="1851218745569890714">Hội nghị truyền hình</translation>
 <translation id="1852934301711881861">Cài đặt ChromeOS Flex</translation>
 <translation id="1856388568474281774">Mũi tên xuống</translation>
+<translation id="1858620243986915808">Đính kèm ảnh chụp màn hình</translation>
 <translation id="1871569928317311284">Tắt giao diện tối</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Tắt chế độ tối</translation>
@@ -797,6 +799,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7978412674231730200">Khoá cá nhân</translation>
 <translation id="7982789257301363584">Mạng</translation>
 <translation id="7994702968232966508">Phương pháp EAP</translation>
+<translation id="8018928621986160031">Đã lưu vào "<ph name="FILE_LOCATION" />"</translation>
 <translation id="802154636333426148">Tải xuống không thành công</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Bật chế độ màu tự động</translation>

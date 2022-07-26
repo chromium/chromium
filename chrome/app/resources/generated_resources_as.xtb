@@ -997,6 +997,7 @@
 <translation id="1916502483199172559">ডিফ’ল্ট ৰঙা অৱতাৰ</translation>
 <translation id="1918141783557917887">&amp;সৰু</translation>
 <translation id="1920390473494685033">সম্পৰ্কসূচী</translation>
+<translation id="1921544956190977703">বিপজ্জনক ৱেবছাইট, ডাউনল’ড আৰু এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষিত হৈ থাকিবলৈ আপোনাৰ ওচৰত Chromeৰ আটাইতকৈ শক্তিশালী সুৰক্ষা ব্যৱস্থাটো আছে</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1923468477587371721">আপুনি কোনো এটা নির্দিষ্ট প্ৰ'ডাক্টৰ ভাষাটো সলনি নকৰা পর্যন্ত Gmail, Drive আৰু YouTubeৰ দৰে Google ছাইটসমূহে আপোনাৰ Google একাউণ্টৰ ভাষা ব্যৱহাৰ কৰে</translation>
 <translation id="192494336144674234">ইয়াৰ জৰিয়তে খোলক</translation>
@@ -2101,6 +2102,7 @@
 <ph name="DOMAIN" />ৰ বাবে আপুনি নিজৰ স্মাৰ্ট কাৰ্ডখন ভৰাই ৰখাৰ আৱশ্যক।</translation>
 <translation id="2923234477033317484">এই একাউণ্টটো আঁতৰাওক</translation>
 <translation id="2923644930701689793">আপোনাৰ ফ’নৰ কেমেৰা ৰ’ল এক্সেছ কৰক</translation>
+<translation id="292371311537977079">Chromeৰ ছেটিং</translation>
 <translation id="2925658782192398150">কৰা হ’ল, কোনো সমস্যা পোৱা নগ’ল</translation>
 <translation id="2926085873880284723">ডিফ’ল্ট শ্বৰ্টকাটসমূহ পুনঃস্থাপন কৰক</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> সমৰ্থিত নহয়।</translation>
@@ -2685,6 +2687,7 @@
 <translation id="3511528412952710609">চুটি</translation>
 <translation id="3514335087372914653">গে’মৰ নিয়ন্ত্ৰণ</translation>
 <translation id="3514373592552233661">এটাতকৈ বেছি নেটৱৰ্ক উপলব্ধ হ'লে অগ্ৰাধিকাৰপ্রাপ্ত নেটৱৰ্কক অন্য জ্ঞাত নেটৱৰ্কৰ জৰিয়তে অগ্ৰাধিকাৰ প্ৰদান কৰা হয়</translation>
+<translation id="3514647716686280777">আপুনি উন্নত সুৰক্ষা ব্যৱস্থাটোৰ দ্বাৰা সুৰক্ষা পাই আছে। বিপজ্জনক ৱেবছাইট, ডাউনল’ড আৰু এক্সটেনশ্বনসমূহৰ পৰা অধিক সুৰক্ষিত হৈ থাকিবলৈ Chromeৰ ছেটিঙত বৰ্ধিত সুৰক্ষিত ব্ৰাউজিং অন কৰক।</translation>
 <translation id="3515983984924808886">ৰিছেট কৰাটো নিশ্চিত কৰিবলৈ আপোনাৰ সুৰক্ষা চাবিটো পুনৰ স্পৰ্শ কৰক। সুৰক্ষা চাবিটোত ষ্ট’ৰ হৈ থকা ইয়াৰ পিনকে ধৰি সকলো তথ্য মচা হ’ব।</translation>
 <translation id="3518985090088779359">গ্ৰহণ কৰি আগুৱাওক</translation>
 <translation id="3519564332031442870">প্ৰিণ্ট বেকএণ্ড ছাৰ্ভিচ</translation>
@@ -5490,6 +5493,7 @@
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6278776436938569440">অৱস্থান সলনি কৰক</translation>
 <translation id="6279183038361895380">আপোনাৰ কাৰ্ছৰটো দেখুৱাবলৈ |<ph name="ACCELERATOR" />| টিপক</translation>
+<translation id="6279595948631688299">বাছনি কৰা প্ৰমাণপত্ৰ ৰপ্তানি কৰক...</translation>
 <translation id="6280215091796946657">বেলেগ এটা একাউণ্টৰ দ্বাৰা ছাইন ইন কৰক</translation>
 <translation id="6280912520669706465">এআৰচি</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{১ খন কাগজৰ সীমা অতিক্ৰম কৰিছে}one{{COUNT} খন কাগজৰ সীমা অতিক্ৰম কৰিছে}other{{COUNT} খন কাগজৰ সীমা অতিক্ৰম কৰিছে}}</translation>
@@ -5604,6 +5608,7 @@
 <translation id="6398715114293939307">Google Play Store আঁতৰাওক</translation>
 <translation id="6398765197997659313">সম্পূর্ণ স্ক্ৰীণ ম’ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="6399774419735315745">গুপ্তচৰ</translation>
+<translation id="6401458660421980302">অন্য এটা ডিভাইচলৈ এই টেবটো পঠিয়াবলৈ, তাত Chromeত ছাইন ইন কৰক</translation>
 <translation id="6401597285454423070">আপোনাৰ কম্পিউটাৰটোত এটা বিশ্বাসী প্লেটফৰ্ম মডিউল (TPM)ৰ সুৰক্ষা ডিভাইচ আছে যিটোক ChromeOSত বহুতো গুৰুত্বপূৰ্ণ সুৰক্ষা সম্পৰ্কীয় সুবিধা কাৰ্যকৰী কৰিবলৈ ব্যৱহাৰ কৰা হয়। অধিক জানিবলৈ Chromebookৰ সহায় কেন্দ্ৰলৈ যাওক:https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404187344102273690">Chromebookত গে’মিং</translation>
 <translation id="6404511346730675251">বুকমার্ক সম্পাদনা কৰক</translation>
@@ -5842,6 +5847,7 @@
 <translation id="6619801788773578757">কিঅ’স্ক এপ্লিকেশ্বন যোগ কৰক</translation>
 <translation id="6619990499523117484">আপোনাৰ পিন নিশ্চিত কৰক</translation>
 <translation id="6620254580880484313">কণ্টেনাৰৰ নাম</translation>
+<translation id="6621391692573306628">অন্য এটা ডিভাইচলৈ এই টেবটো পঠিয়াবলৈ, দুয়োটা ডিভাইচতে Chromeত ছাইন ইন কৰক</translation>
 <translation id="6622980291894852883">প্ৰতিচ্ছবি অৱৰোধ কৰাটো অব্যাহত ৰাখক</translation>
 <translation id="6624036901798307345">টেবলেট ম’ডত, প্ৰতিটো টেবৰ বাবে থাম্বনেইল দেখুওৱা নতুন টেবৰ ষ্ট্ৰিপটো খুলিবলৈ টেব কাউণ্টাৰৰ টুলবাৰৰ বুটামটোত টিপক।</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" />ত সংবেদনশীল অথবা বিপজ্জনক সমল আছে। এইটোৰ গৰাকীক সমাধান কৰিবলৈ কওক।</translation>

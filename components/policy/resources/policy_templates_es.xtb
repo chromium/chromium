@@ -13,6 +13,7 @@
       Si el valor de esta política no es un dominio válido, no se aplicará la política.</translation>
 <translation id="1004590217607585595">Configuración de gestión de aplicaciones web</translation>
 <translation id="1006218396155867129">Impedir que los usuarios con acceso remoto puedan transferir archivos al host remoto y desde él</translation>
+<translation id="1007149936182752368">Inhabilitar la edición de marcadores</translation>
 <translation id="1010151305531217567">Cambiar el botón principal del ratón al derecho</translation>
 <translation id="1011266755572744012">Especifica el número máximo de hojas que el usuario puede imprimir en un mismo trabajo de impresión.
 
@@ -75,6 +76,7 @@
       Para consultar una lista con las variables que se pueden utilizar, visita https://support.google.com/chrome/a?p=Supported_directory_variables.
 
       Si no se establece esta política, se utilizará el directorio de perfil predeterminado.</translation>
+<translation id="1059069692400941670">Inhabilitar la importación del buscador predeterminado en la primera ejecución</translation>
 <translation id="1062011392452772310">Habilitar confirmación remota para el dispositivo</translation>
 <translation id="1062407476771304334">Reemplazar</translation>
 <translation id="1069489575852947981">Si se asigna el valor "Enabled" a esta política o no se le asigna ninguno, se definirá una cuenta local del dispositivo para el inicio de sesión automático sin retardo. <ph name="PRODUCT_OS_NAME" /> permitirá usar la combinación de teclas Ctrl + Alt + S para omitir el inicio de sesión automático y mostrar la pantalla de inicio de sesión.
@@ -93,6 +95,7 @@
 <translation id="1082802595100075771">Permitir a los usuarios elegir usar un servicio de Google anónimo para proporcionar descripciones automáticas para las imágenes no etiquetadas</translation>
 <translation id="1087437665304381368">Esta política permite controlar únicamente el modo desarrollador de <ph name="PRODUCT_OS_NAME" />. Si quieres impedir el acceso a las opciones para desarrolladores de Android, debes asignar un valor a la política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">La lista de políticas de Chrome Enterprise se traslada a otra URL. Modifica tus marcadores para que incluyan la URL actualizada: <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
+<translation id="1089150222292592899">Autocompletar el nombre de usuario en la página del proveedor de identidades SAML</translation>
 <translation id="1091765729282771296">Permite que los sitios pidan permiso al usuario para acceder a un dispositivo HID</translation>
 <translation id="1095209545735032039">Bloquear la API Serial en estos sitios web</translation>
 <translation id="1096105751829466145">Proveedor de búsquedas predeterminadas</translation>
@@ -1903,6 +1906,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Si se inhabilita, se desactivarán las actualizaciones de los componentes. Sin embargo, algunos componentes quedan exentos de esta política: las actualizaciones de los componentes que no contengan código ejecutable o que sean esenciales para proteger la seguridad del navegador no se inhabilitarán.
       Entre los ejemplos de estos componentes se incluyen las listas de revocación de certificados y los filtros de subrecursos.</translation>
+<translation id="2939335382784544151">Habilitar la importación del historial de navegación en la primera ejecución</translation>
 <translation id="2940127076681735544">Si se define esta política como una URL válida, <ph name="PRODUCT_NAME" /> descargará la lista de sitios web de esa URL y aplicará las reglas como si se hubieran configurado con la política <ph name="SITELIST_POLICY_NAME" />.
 
       Si no se asigna ningún valor a esta política o se le asigna una URL no válida, <ph name="PRODUCT_NAME" /> no usará la política como fuente de reglas para cambiar de navegador.
@@ -2340,6 +2344,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Si no se le asigna ningún valor, los usuarios podrán elegir la imagen que quieran usar como fondo de pantalla de su escritorio y página de inicio de sesión.</translation>
 <translation id="3315324240256767419">Habilitar la función de ventana fantasma</translation>
+<translation id="3323819750604111729">Habilitar la importación de los marcadores en la primera ejecución</translation>
 <translation id="332771718998993005">Determina el nombre que se utiliza como destino de <ph name="PRODUCT_NAME" />.
 
           Si se asigna una cadena que no esté vacía a esta política, esa cadena se utilizará como nombre del destino de <ph name="PRODUCT_NAME" />. De lo contrario, el nombre del destino será el nombre del dispositivo. Si esta política no se establece, el nombre del destino será el nombre del dispositivo y su propietario (o un usuario del dominio que gestiona el dispositivo) podrá cambiarlo. El nombre tiene un límite de 24 caracteres.</translation>
@@ -2820,6 +2825,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si asignas el valor "2" a esta política, se bloquearán los anuncios de sitios web con anuncios invasivos.</translation>
 <translation id="3877517141460819966">Modo de autenticación de dos factores integrado</translation>
 <translation id="3879208481373875102">Configurar lista de aplicaciones web de instalación forzada</translation>
+<translation id="3879700444818346084">Inhabilitar la importación de las contraseñas guardadas en la primera ejecución</translation>
 <translation id="388237772682176890">Esta política está obsoleta en M53 y se ha quitado de M54, ya que se ha retirado la compatibilidad con SPDY/3.1.
 
       Inhabilita el uso del protocolo SPDY en <ph name="PRODUCT_NAME" />.
@@ -3100,6 +3106,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       En las sesiones de Kiosco, no hay periodo de gracia ni notificaciones sobre el reinicio.
 </translation>
 <translation id="4187576366596772431">Bloquea la API WebHID en estos sitios</translation>
+<translation id="4190316993598857632">Habilitar la edición de marcadores</translation>
 <translation id="4192388905594723944">URL para validar el token de autenticación de clientes de acceso remoto</translation>
 <translation id="4203055629055264833">Si se habilita esta política o no se establece, los usuarios podrán mostrar su página más reciente de resultados del buscador predeterminado en un panel lateral mediante la activación de un icono en la barra de herramientas.
 
@@ -3795,6 +3802,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="5105313908130842249">Retraso de bloqueo de pantalla cuando el dispositivo funciona con la batería</translation>
 <translation id="5108031557082757679">Impresoras de dispositivos de empresa inhabilitadas</translation>
 <translation id="5109383437323376357">Determinar la disponibilidad de variaciones</translation>
+<translation id="5120168808610189805">Habilitar la importación de la página principal en la primera ejecución</translation>
 <translation id="5124368997194894978">Habilitar el inicio con CA (corriente alterna)</translation>
 <translation id="5130213897914754028">Impedir que los sitios usen SharedArrayBuffers</translation>
 <translation id="5130935469849337738">Ofrecer traducción siempre</translation>
@@ -4480,6 +4488,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Este comportamiento no se activará si Navegación segura está inhabilitada, ya sea por obra de una política o del propio usuario. Para activar Navegación segura de forma forzosa, se debe usar la política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o la política <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="5835312413892670446">Ajustes de captura de pantalla</translation>
 <translation id="5836064773277134605">Restringe el intervalo de puertos UDP utilizado por el host de acceso remoto</translation>
+<translation id="583627479140113555">Habilitar la importación de las contraseñas guardadas en la primera ejecución</translation>
 <translation id="5837898601525273156">Si se asigna un valor a <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />, al habilitar <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> se mantendrá activada la política de gestión de energía del modo Avanzado de carga de la batería (si el dispositivo lo admite). Si se usa un algoritmo de carga estándar y otras técnicas fuera del horario laboral, este modo permite a los usuarios maximizar el estado de la batería. Durante el horario laboral, el sistema usará una carga exprés que permitirá que la batería se cargue en menos tiempo. Debes indicar el periodo de tiempo en el que el sistema se usa de manera más frecuente especificando la hora de inicio y la duración.
 
       Si se inhabilita esta política o no se le asigna ningún valor, el modo Avanzado de carga de la batería quedará desactivado.
@@ -4803,6 +4812,13 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Debes especificar las aplicaciones de Chrome mediante su ID (por ejemplo, pjkljhegncpnkpknbcohdijeoejaedia), las aplicaciones Android mediante su nombre de paquete (por ejemplo, com.google.android.gm) y las aplicaciones web mediante la URL usada en <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (por ejemplo, https://google.com/maps).
 
       Si no se configura esta política, el usuario podrá cambiar la lista de aplicaciones fijadas en el menú de aplicaciones.</translation>
+<translation id="6183409603139321084"><ph name="PRODUCT_OS_NAME" /> puede intentar autocompletar el campo del nombre de usuario en la página del proveedor de identidades SAML durante la autenticación online en las pantallas de inicio de sesión y de bloqueo.
+
+      Usará el correo electrónico del usuario asociado a su perfil de <ph name="PRODUCT_OS_NAME" />, por lo que esta opción debe estar inhabilitada si se espera que los usuarios usen otros correos en la página del proveedor de identidades SAML.
+
+      La cadena que se reciba a través de esta política se usará como nombre de parámetro de URL en la página del proveedor de identidades. Se utilizará el correo del usuario como valor.
+
+      Se espera que el servidor sea responsable de la asignación entre los proveedores de identidades y los parámetros de URL que admitan.</translation>
 <translation id="6190367314942602985">Proporcionar información de identificación de usuarios</translation>
 <translation id="6191963383731098056">Esta política permite a los administradores configurar el color del tema de <ph name="PRODUCT_NAME" />. La cadena de entrada debe ser un color hexadecimal válido que coincida con el formato "#RRGGBB".
 
@@ -5348,6 +5364,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Para especificar un hash <ph name="SUBJECT_PUBLIC_KEY_INFO" />, se vinculan el nombre del algoritmo de hash, una barra y la codificación Base64 de ese algoritmo de hash aplicado al <ph name="SUBJECT_PUBLIC_KEY_INFO" /> en codificación DER del certificado especificado. La codificación Base64 tiene el mismo formato que el de una huella digital SPKI. El único algoritmo de hash reconocido es sha256; los demás se ignorarán.
 
       Si no se asigna ningún valor a esta política, los certificados que se deban comunicar a través de la transparencia en los certificados no serán de confianza para <ph name="PRODUCT_NAME" /> si no se comunican.</translation>
+<translation id="6703381779632216549">Habilitar la importación del buscador predeterminado en la primera ejecución</translation>
 <translation id="6704445641918520643">Habilita la carga en diferido de la WebUI de inicio de sesión.</translation>
 <translation id="6704515759227307131">Esta política está obsoleta y se ha sustituido por la política AdvancedProtectionAllowed.
 
@@ -6346,6 +6363,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="77379430721695807">Si se define esta política, se especificará la lista de URLs cuyos patrones se compararán con el origen de seguridad de la URL solicitante. Si se encuentra una coincidencia, se concederá acceso a dispositivos de captura de vídeo sin solicitarlo.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+<translation id="7740644123648617252">Habilitar la importación de los datos para autocompletar formularios en la primera ejecución</translation>
 <translation id="7744253761377202223">Porcentaje de brillo de la pantalla cuando el dispositivo esté conectado a la red eléctrica</translation>
 <translation id="7747447585227954402">Permite a los dispositivos usar <ph name="PLUGIN_VM_NAME" /> en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7749024457938190837">Extensiones que pueden saltarse el cuadro de diálogo de confirmación al enviar trabajos de impresión a través de la API chrome.printing</translation>
@@ -6503,6 +6521,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7925224837072026018">Si se define esta política, se permite que las extensiones o aplicaciones Android accedan a las claves corporativas. Las claves están designadas solo para un uso corporativo si se generan con la API chrome.enterprise.platformKeys API en una cuenta gestionada. Los usuarios no pueden conceder acceso a extensiones o aplicaciones Android mediante claves corporativas ni quitarlo.
 
 De forma predeterminada, una extensión o aplicación Android no puede utilizar una clave designada para uso corporativo, lo que equivale a asignar el valor "False" a allowCorporateKeyUsage en esa extensión. Solo si se le asigna el valor "True" a allowCorporateKeyUsage en una extensión o aplicación Android, esta podrá utilizar cualquier clave de plataforma marcada para uso corporativo para firmar datos arbitrarios. Este permiso solo se debe conceder si se tiene la certeza de que la extensión o la aplicación Android garantiza un acceso seguro a la clave y la protege de posibles ataques.</translation>
+<translation id="793188693675675950">Inhabilitar la importación de la página principal en la primera ejecución</translation>
 <translation id="7933141401888114454">Habilitar la creación de usuarios supervisados</translation>
 <translation id="793473937901685727">Establecer la disponibilidad del certificado para las aplicaciones ARC</translation>
 <translation id="7936302526928951356">La cadena user-agent no bloqueará la versión principal.</translation>
@@ -7165,6 +7184,7 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
       A partir la versión 92 de <ph name="PRODUCT_NAME" />, esta política también está admitida en el modo sin interfaz gráfica.
 
       Nota: Bloquear las URLs internas chrome://* podría provocar errores inesperados.</translation>
+<translation id="8619748440665904084">Inhabilitar la importación de los datos para autocompletar formularios en la primera ejecución</translation>
 <translation id="8623672932476443039">Si se habilita la política, los usuarios podrán acceder al modo desarrollador para aplicaciones aisladas.
       Si se inhabilita, los usuarios no podrán acceder a esta función.
       Si no se establece, la opción predeterminada no estará disponible para usuarios gestionados por empresas en ChromeOS, pero sí estará disponible para el resto de los usuarios y sistemas operativos.</translation>
@@ -7211,6 +7231,7 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
       Si se inhabilita esta política o no se le asigna ningún valor, el host de acceso remoto podrá asociarse a cualquier usuario local.</translation>
 <translation id="867708016260789630">Forzar que el modo Restringido de YouTube se aplique en la opción moderada como mínimo</translation>
 <translation id="8677853537025397834">Permite la API WebHID en estos sitios</translation>
+<translation id="8685018726115727387">Inhabilitar la importación del historial de navegación en la primera ejecución</translation>
 <translation id="8685024486845674965">La advertencia de protección de contraseña se activa al reutilizar la contraseña</translation>
 <translation id="8685680544554917389">Si se asigna el valor "True" a esta política, <ph name="PRODUCT_NAME" /> reproducirá automáticamente el contenido multimedia. Si se le asigna el valor "False", <ph name="PRODUCT_NAME" /> no podrá reproducir automáticamente el contenido multimedia.
 
@@ -7582,6 +7603,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 
       Si se inhabilita la política, dichos dispositivos no registrarán los periodos de actividad ni informarán sobre ellos.</translation>
 <translation id="9077227880520270584">Temporizador de inicio automático de la cuenta local del dispositivo</translation>
+<translation id="9079531125758468956">Inhabilitar la importación de los marcadores en la primera ejecución</translation>
 <translation id="9084985621503260744">Especificar si la actividad de vídeo afecta a la administración de energía</translation>
 <translation id="9087434639296483430">Envía información sobre eventos de inicio o cierre de sesión en dispositivos registrados, incluidos los intentos fallidos de inicio de sesión.
 

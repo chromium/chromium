@@ -2952,6 +2952,11 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="408076456549153854">Browseranmeldung aktivieren</translation>
 <translation id="4081127242481747676">Sensoreinstellungen</translation>
 <translation id="4082498585300984671">Funktion "Zum Anrufen klicken" aktivieren</translation>
+<translation id="4082809879536562387">Diese Richtlinie ermöglicht, den Zeitraum zwischen der ersten Benachrichtigung zum Neustart eines <ph name="PRODUCT_OS_NAME" />-Geräts, um ein ausstehendes Update anzuwenden, und dem Ende des durch die Richtlinie „<ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />“ vorgegebenen Zeitraums in Millisekunden festzulegen.
+
+      Wenn die Richtlinie nicht konfiguriert ist, gilt für <ph name="PRODUCT_OS_NAME" />-Geräte der standardmäßige Zeitraum von 259.200.000 Millisekunden (drei Tage).
+
+      Bei einem Rollback oder anderen <ph name="PRODUCT_OS_NAME" />-Updates, die einen Powerwash auf dem Gerät ausführen, wird der Nutzer unabhängig vom Wert dieser Richtlinie immer sofort benachrichtigt, wenn das Update verfügbar ist.</translation>
 <translation id="4086150283035515220">Wenn die Richtlinie aktiviert ist, werden Nutzer vor jedem Download nach dem gewünschten Speicherort gefragt. Ist die Richtlinie deaktiviert, beginnt der Download sofort und Nutzer werden nicht nach dem gewünschten Speicherort gefragt.
 
       Ist diese Richtlinie nicht konfiguriert, können Nutzer diese Einstellung ändern.</translation>

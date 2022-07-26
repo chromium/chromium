@@ -41,6 +41,7 @@
 <translation id="2018879682492276940">Инсталирането не успя. Моля, опитайте отново.</translation>
 <translation id="2020032459870799438">За да проверите дали другите ви пароли не са компрометирани при нарушения на сигурността на данните и други проблеми със сигурността, <ph name="BEGIN_LINK" />влезте в Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Изберете дали да включите историята в Chromium за по-персонализирана практическа работа с услугите на Google</translation>
+<translation id="2088953378266246249">Информация за начина, по който Chromium управлява основните си сертификати</translation>
 <translation id="2174178932569897599">Персонализиране на Chromium</translation>
 <translation id="2174917724755363426">Инсталирането не е завършило. Наистина ли искате да го анулирате?</translation>
 <translation id="2185166961232948079">Chromium – Вход в мрежата – <ph name="PAGE_TITLE" /></translation>
@@ -359,6 +360,7 @@
 <translation id="9185526690718004400">Повторно стартиране за актуализиране на &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (входящ трафик за mDNS)</translation>
 <translation id="93478295209880648">Chromium може да не функционира правилно, тъй като вече не се поддържа под Windows XP и Windows Vista</translation>
+<translation id="942598560705308788">Сертификати, управлявани от Chromium</translation>
 <translation id="945990405696787151">За да получавате бъдещи актуализации на Chromium, трябва да използвате macOS 10.13 или по-нова версия. Компютърът ви работи с OS X 10.11.</translation>
 <translation id="965162752251293939">Кой използва Chromium?</translation>
 <translation id="967427899662692980">Получете най-високото ниво на сигурност на Chromium</translation>

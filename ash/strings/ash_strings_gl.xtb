@@ -306,6 +306,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
 <translation id="2819276065543622893">Pecharase a túa sesión agora.</translation>
+<translation id="2822551631199737692">Estase utilizando a cámara</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> non admite <ph name="SPECIFIED_RESOLUTION" />. A resolución cambiouse a <ph name="FALLBACK_RESOLUTION" /></translation>
 <translation id="2825619548187458965">Estante</translation>
 <translation id="2831035692318564937">Activado ata o amencer</translation>
@@ -808,6 +809,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5682642926269496722">O Asistente de Google non está dispoñible para a conta de usuario actual.</translation>
 <translation id="5689633613396158040">Luz nocturna fai que sexa máis fácil mirar a pantalla ou ler con pouca luz. Toca para cambiar a hora á que se activa a función mencionada ou para desactivala completamente.</translation>
 <translation id="5691772641933328258">Non se recoñeceu a impresión dixital</translation>
+<translation id="5693255400847650006">Estase utilizando o micrófono</translation>
 <translation id="570390244361237317">Todas as aplicacións. Desprázate coas teclas de frecha para acceder a todas as aplicacións</translation>
 <translation id="5707775774148071965">O teu dispositivo admite unha velocidade de datos maior que o cable. O rendemento do dispositivo podería verse limitado.</translation>
 <translation id="5710450975648804523">O modo Non molestar está activado</translation>
@@ -982,6 +984,7 @@ Nova instalación</translation>
 <translation id="6723839937902243910">A</translation>
 <translation id="6727969043791803658">Conectado, <ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
 <translation id="6732800389263199929"><ph name="COUNT" /> máis</translation>
+<translation id="6737983188036277605">Estanse utilizando a cámara e o micrófono</translation>
 <translation id="6739144137573853180">IR A CONFIGURACIÓN</translation>
 <translation id="6751052314767925245">Función aplicada polo teu administrador</translation>
 <translation id="6751826523481687655">O rastrexo do rendemento está activado</translation>
