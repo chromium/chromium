@@ -1068,7 +1068,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   BOOL isEditingText =
       [firstResponder isKindOfClass:[UITextField class]] ||
       [firstResponder isKindOfClass:[UITextView class]] ||
-      [[KeyboardObserverHelper sharedKeyboardObserver] isKeyboardOnScreen];
+      [[KeyboardObserverHelper sharedKeyboardObserver] isKeyboardVisible];
 
   return [_keyCommandsProvider keyCommandsWithEditingText:isEditingText];
 }

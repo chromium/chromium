@@ -382,10 +382,11 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 // Adjust the inset on the table view to prevent keyboard from overlapping the
 // text.
 - (void)updateContentInsetForKeyboard {
+  UIScreen* currentScreen = self.tableView.window.screen;
   CGRect absoluteRect =
       [self.tableView convertRect:self.tableView.bounds
-                toCoordinateSpace:UIScreen.mainScreen.coordinateSpace];
-  CGFloat screenHeight = CurrentScreenHeight();
+                toCoordinateSpace:currentScreen.coordinateSpace];
+  CGFloat screenHeight = currentScreen.bounds.size.height;
   CGFloat bottomInset = screenHeight - self.tableView.contentSize.height -
                         _keyboardHeight - absoluteRect.origin.y -
                         kTopAndBottomPadding * 2;
@@ -498,7 +499,10 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
   NSDictionary* keyboardInfo = [notification userInfo];
   NSValue* keyboardFrameValue =
       [keyboardInfo valueForKey:UIKeyboardFrameEndUserInfoKey];
-  self.keyboardHeight = CurrentKeyboardHeight(keyboardFrameValue);
+  self.keyboardHeight =
+      KeyboardObserverHelper.keyboardScreen == self.view.window.screen
+          ? CurrentKeyboardHeight(keyboardFrameValue)
+          : 0;
   if (self.tableView.contentSize.height > 0)
     [self updateContentInsetForKeyboard];
 }
@@ -534,13 +538,14 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 - (void)updateVisibleSuggestionCount {
   CGFloat keyboardHeight =
       [[KeyboardObserverHelper sharedKeyboardObserver] visibleKeyboardHeight];
-  CGRect tableViewFrameInMainScreenCoordinateSpace =
+  UIScreen* currentScreen = self.tableView.window.screen;
+  CGRect tableViewFrameInCurrentScreenCoordinateSpace =
       [self.tableView convertRect:self.tableView.bounds
-                toCoordinateSpace:UIScreen.mainScreen.coordinateSpace];
+                toCoordinateSpace:currentScreen.coordinateSpace];
   // Computes the visible area between the omnibox and the keyboard.
   CGFloat visibleTableViewHeight =
       CurrentScreenHeight() -
-      tableViewFrameInMainScreenCoordinateSpace.origin.y - keyboardHeight -
+      tableViewFrameInCurrentScreenCoordinateSpace.origin.y - keyboardHeight -
       self.tableView.contentInset.top;
 
   // Use font size to estimate the size of a omnibox search suggestion.
