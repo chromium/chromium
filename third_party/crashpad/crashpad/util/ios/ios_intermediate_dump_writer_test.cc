@@ -74,6 +74,8 @@ TEST_F(IOSIntermediateDumpWriterTest, ScopedArray) {
                                                        Key::kThreads);
     IOSIntermediateDumpWriter::ScopedArrayMap threadMap(writer_.get());
   }
+  EXPECT_TRUE(writer_->Close());
+
   std::string contents;
   ASSERT_TRUE(LoggingReadEntireFile(path(), &contents));
   std::string result("\6\x3p\x17\1\2\4\a", 8);
@@ -87,6 +89,7 @@ TEST_F(IOSIntermediateDumpWriterTest, ScopedMap) {
     IOSIntermediateDumpWriter::ScopedMap map(writer_.get(),
                                              Key::kMachException);
   }
+  EXPECT_TRUE(writer_->Close());
 
   std::string contents;
   ASSERT_TRUE(LoggingReadEntireFile(path(), &contents));
@@ -97,6 +100,7 @@ TEST_F(IOSIntermediateDumpWriterTest, ScopedMap) {
 TEST_F(IOSIntermediateDumpWriterTest, Property) {
   EXPECT_TRUE(writer_->Open(path()));
   EXPECT_TRUE(writer_->AddProperty(Key::kVersion, "version", 7));
+  EXPECT_TRUE(writer_->Close());
 
   std::string contents;
   ASSERT_TRUE(LoggingReadEntireFile(path(), &contents));
@@ -107,6 +111,7 @@ TEST_F(IOSIntermediateDumpWriterTest, Property) {
 TEST_F(IOSIntermediateDumpWriterTest, PropertyString) {
   EXPECT_TRUE(writer_->Open(path()));
   EXPECT_TRUE(writer_->AddPropertyCString(Key::kVersion, 64, "version"));
+  EXPECT_TRUE(writer_->Close());
 
   std::string contents;
   ASSERT_TRUE(LoggingReadEntireFile(path(), &contents));
@@ -152,6 +157,7 @@ TEST_F(IOSIntermediateDumpWriterTest, MissingPropertyString) {
   EXPECT_TRUE(writer_->Open(path()));
   EXPECT_TRUE(
       writer_->AddPropertyCString(Key::kVersion, 64, region + page_size - 5));
+  EXPECT_TRUE(writer_->Close());
   std::string contents;
   ASSERT_TRUE(LoggingReadEntireFile(path(), &contents));
   std::string result("\x5\x1\0\xF\0\0\0\0\0\0\0AAAAABBBBBBBBBB", 26);
@@ -171,6 +177,7 @@ TEST_F(IOSIntermediateDumpWriterTest, MissingPropertyString) {
   EXPECT_TRUE(writer_->Open(path()));
   EXPECT_TRUE(
       writer_->AddPropertyCString(Key::kVersion, 64, region + page_size - 20));
+  EXPECT_TRUE(writer_->Close());
   ASSERT_TRUE(LoggingReadEntireFile(path(), &contents));
   result.assign("\x5\x1\0\n\0\0\0\0\0\0\0AAAAAAAAAA", 21);
   ASSERT_EQ(contents, result);
@@ -179,14 +186,7 @@ TEST_F(IOSIntermediateDumpWriterTest, MissingPropertyString) {
 TEST_F(IOSIntermediateDumpWriterTest, BadProperty) {
   EXPECT_TRUE(writer_->Open(path()));
   ASSERT_FALSE(writer_->AddProperty(Key::kVersion, "version", -1));
-
-  std::string contents;
-  ASSERT_TRUE(LoggingReadEntireFile(path(), &contents));
-
-  // path() is now invalid, as type, key and value were written, but the
-  // value itself is not.
-  std::string results("\5\1\0\xff\xff\xff\xff\xff\xff\xff\xff", 11);
-  ASSERT_EQ(contents, results);
+  EXPECT_TRUE(writer_->Close());
 }
 
 }  // namespace
