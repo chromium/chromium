@@ -750,6 +750,26 @@ Response InspectorIndexedDBAgent::disable() {
   return Response::Success();
 }
 
+namespace {
+
+absl::variant<LocalFrame*, Response> ResolveFrame(
+    protocol::Maybe<String> security_origin,
+    protocol::Maybe<String> storage_key,
+    InspectedFrames* inspected_frames) {
+  if (security_origin.isJust() == storage_key.isJust()) {
+    return Response::InvalidParams(
+        "At least and at most one of security_origin, "
+        "storage_key must be specified.");
+  }
+  if (security_origin.isJust()) {
+    return inspected_frames->FrameWithSecurityOrigin(
+        security_origin.fromJust());
+  }
+  return inspected_frames->FrameWithStorageKey(storage_key.fromJust());
+}
+
+}  // namespace
+
 void InspectorIndexedDBAgent::requestDatabaseNames(
     const String& security_origin,
     std::unique_ptr<RequestDatabaseNamesCallback> request_callback) {
@@ -943,15 +963,20 @@ void GetMetadataListener::NotifySubtaskDone(scoped_refptr<GetMetadata> owner,
 }
 
 void InspectorIndexedDBAgent::getMetadata(
-    const String& security_origin,
+    protocol::Maybe<String> security_origin,
+    protocol::Maybe<String> storage_key,
     const String& database_name,
     const String& object_store_name,
     std::unique_ptr<GetMetadataCallback> request_callback) {
+  absl::variant<LocalFrame*, Response> frame_or_response = ResolveFrame(
+      std::move(security_origin), std::move(storage_key), inspected_frames_);
+  if (absl::holds_alternative<Response>(frame_or_response)) {
+    request_callback->sendFailure(absl::get<Response>(frame_or_response));
+    return;
+  }
   scoped_refptr<GetMetadata> get_metadata =
       GetMetadata::Create(object_store_name, std::move(request_callback));
-  get_metadata->Start(
-      inspected_frames_->FrameWithSecurityOrigin(security_origin),
-      database_name);
+  get_metadata->Start(absl::get<LocalFrame*>(frame_or_response), database_name);
 }
 
 class DeleteObjectStoreEntriesListener final : public NativeEventListener {
@@ -1043,26 +1068,17 @@ void InspectorIndexedDBAgent::deleteObjectStoreEntries(
         Response::ServerError("Can not parse key range"));
     return;
   }
-  if (security_origin.isJust() == storage_key.isJust()) {
-    request_callback->sendFailure(
-        Response::InvalidParams("At least and at most one of security_origin, "
-                                "storage_key must be specified."));
+  absl::variant<LocalFrame*, Response> frame_or_response = ResolveFrame(
+      std::move(security_origin), std::move(storage_key), inspected_frames_);
+  if (absl::holds_alternative<Response>(frame_or_response)) {
+    request_callback->sendFailure(absl::get<Response>(frame_or_response));
     return;
   }
   scoped_refptr<DeleteObjectStoreEntries> delete_object_store_entries =
       DeleteObjectStoreEntries::Create(object_store_name, idb_key_range,
                                        std::move(request_callback));
-  if (security_origin.isJust()) {
-    delete_object_store_entries->Start(
-        inspected_frames_->FrameWithSecurityOrigin(security_origin.fromJust()),
-        database_name);
-  } else if (storage_key.isJust()) {
-    delete_object_store_entries->Start(
-        inspected_frames_->FrameWithStorageKey(storage_key.fromJust()),
-        database_name);
-  } else {
-    NOTREACHED();
-  }
+  delete_object_store_entries->Start(absl::get<LocalFrame*>(frame_or_response),
+                                     database_name);
 }
 
 class ClearObjectStoreListener final : public NativeEventListener {
@@ -1151,23 +1167,16 @@ void InspectorIndexedDBAgent::clearObjectStore(
     const String& database_name,
     const String& object_store_name,
     std::unique_ptr<ClearObjectStoreCallback> request_callback) {
-  if (security_origin.isJust() == storage_key.isJust()) {
-    request_callback->sendFailure(
-        Response::InvalidParams("At least and at most one of security_origin, "
-                                "storage_key must be specified."));
+  absl::variant<LocalFrame*, Response> frame_or_response = ResolveFrame(
+      std::move(security_origin), std::move(storage_key), inspected_frames_);
+  if (absl::holds_alternative<Response>(frame_or_response)) {
+    request_callback->sendFailure(absl::get<Response>(frame_or_response));
     return;
   }
   scoped_refptr<ClearObjectStore> clear_object_store =
       ClearObjectStore::Create(object_store_name, std::move(request_callback));
-  if (security_origin.isJust()) {
-    clear_object_store->Start(
-        inspected_frames_->FrameWithSecurityOrigin(security_origin.fromJust()),
-        database_name);
-  } else if (storage_key.isJust()) {
-    clear_object_store->Start(
-        inspected_frames_->FrameWithStorageKey(storage_key.fromJust()),
-        database_name);
-  }
+  clear_object_store->Start(absl::get<LocalFrame*>(frame_or_response),
+                            database_name);
 }
 
 void InspectorIndexedDBAgent::deleteDatabase(
@@ -1175,21 +1184,13 @@ void InspectorIndexedDBAgent::deleteDatabase(
     protocol::Maybe<String> storage_key,
     const String& database_name,
     std::unique_ptr<DeleteDatabaseCallback> request_callback) {
-  LocalFrame* frame = nullptr;
-  if (security_origin.isJust() == storage_key.isJust()) {
-    request_callback->sendFailure(
-        Response::InvalidParams("At least and at most one of security_origin, "
-                                "storage_key must be specified."));
+  absl::variant<LocalFrame*, Response> frame_or_response = ResolveFrame(
+      std::move(security_origin), std::move(storage_key), inspected_frames_);
+  if (absl::holds_alternative<Response>(frame_or_response)) {
+    request_callback->sendFailure(absl::get<Response>(frame_or_response));
     return;
   }
-  if (security_origin.isJust()) {
-    frame =
-        inspected_frames_->FrameWithSecurityOrigin(security_origin.fromJust());
-  } else if (storage_key.isJust()) {
-    frame = inspected_frames_->FrameWithStorageKey(storage_key.fromJust());
-  } else {
-    NOTREACHED();
-  }
+  LocalFrame* frame = absl::get<LocalFrame*>(frame_or_response);
   if (!frame) {
     request_callback->sendFailure(Response::ServerError(kNoDocumentError));
     return;

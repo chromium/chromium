@@ -71,7 +71,8 @@ class MODULES_EXPORT InspectorIndexedDBAgent final
                    int page_size,
                    protocol::Maybe<protocol::IndexedDB::KeyRange>,
                    std::unique_ptr<RequestDataCallback>) override;
-  void getMetadata(const String& security_origin,
+  void getMetadata(protocol::Maybe<String> security_origin,
+                   protocol::Maybe<String> storage_key,
                    const String& database_name,
                    const String& object_store_name,
                    std::unique_ptr<GetMetadataCallback>) override;
