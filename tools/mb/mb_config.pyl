@@ -288,6 +288,10 @@
       'ASan Release Media (32-bit x86 with V8-ARM)': 'asan_fuzzer_v8_heap_chromeos_codecs_release_bot_hybrid_reclient',
       'Afl Upload Linux ASan': 'afl_asan_shared_release_bot_reclient',
       'ChromiumOS ASAN Release': 'chromeos_asan_lsan_fuzzer_v8_heap_release_bot_reclient',
+      'Libfuzzer Local Chrome OS ASan': 'libfuzzer_chromeos_asan_local',
+      'Libfuzzer Local Linux ASan': 'libfuzzer_asan_local',
+      'Libfuzzer Local Mac ASan': 'libfuzzer_mac_asan_local',
+      'Libfuzzer Local Windows ASan': 'libfuzzer_windows_asan_local',
       'Libfuzzer Upload Chrome OS ASan': 'libfuzzer_chromeos_asan_release_bot_reclient',
       'Libfuzzer Upload Linux ASan': 'libfuzzer_asan_release_bot_reclient',
       'Libfuzzer Upload Linux ASan Debug': 'libfuzzer_asan_debug_bot_reclient',
@@ -3013,6 +3017,11 @@
       'libfuzzer', 'asan', 'debug_bot_reclient', 'shared', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'x86_host', 'v8_simulate_arm',  'disable_seed_corpus',
     ],
 
+    # Meant for local development of fuzzers where no reclient/goma is needed.
+	'libfuzzer_asan_local': [
+      'libfuzzer', 'asan', 'release', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'no_reclient',
+    ],
+
     'libfuzzer_asan_release_bot': [
       'libfuzzer', 'asan', 'shared_release_bot', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer',
     ],
@@ -3037,6 +3046,11 @@
       'libfuzzer', 'asan', 'shared_release_trybot', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'skip_generate_fuzzer_owners',
     ],
 
+    # Meant for local development of fuzzers where no reclient/goma is needed.
+	'libfuzzer_chromeos_asan_local': [
+      'libfuzzer', 'asan', 'no_reclient', 'release', 'chromeos_with_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
+    ],
+
     'libfuzzer_chromeos_asan_release_bot': [
       'libfuzzer', 'asan', 'shared_release_bot', 'chromeos_with_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
     ],
@@ -3045,7 +3059,12 @@
       'libfuzzer', 'asan', 'shared_release_bot_reclient', 'chromeos_with_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
     ],
 
-    'libfuzzer_mac_asan_shared_release_bot': [
+    # Meant for local development of fuzzers where no reclient/goma is needed.
+    'libfuzzer_mac_asan_local': [
+      'libfuzzer', 'asan', 'no_reclient', 'release', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing',
+    ],
+
+	'libfuzzer_mac_asan_shared_release_bot': [
       'libfuzzer', 'asan', 'shared_release_bot', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing',
     ],
 
@@ -3067,6 +3086,11 @@
 
     'libfuzzer_windows_asan_clang_tot_release_bot': [
       'libfuzzer', 'asan', 'clang_tot', 'release', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'minimal_symbols',
+    ],
+
+	# Meant for local development of fuzzers where no reclient/goma is needed.
+	'libfuzzer_windows_asan_local': [
+      'libfuzzer', 'asan', 'no_reclient', 'release', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'minimal_symbols', 'mojo_fuzzer',
     ],
 
     # Note that because of optimize_for_fuzzing, Windows cannot share a config
@@ -4296,6 +4320,10 @@
 
     'no_lld': {
       'gn_args': 'use_lld=false',
+    },
+
+    'no_reclient': {
+      'gn_args': 'use_remoteexec=false',
     },
 
     'no_remoting': {

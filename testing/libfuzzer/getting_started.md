@@ -25,6 +25,20 @@ tools/mb/mb.py gen -m chromium.fuzz -b 'Libfuzzer Upload Mac ASan' out/libfuzzer
 python tools\mb\mb.py gen -m chromium.fuzz -b "Libfuzzer Upload Windows ASan" out\libfuzzer
 ```
 
+If testing things locally these are the recommended configurations
+
+```bash
+# AddressSanitizer is the default config we recommend testing with.
+# Linux:
+tools/mb/mb.py gen -m chromium.fuzz -b 'Libfuzzer Local Linux ASan' out/libfuzzer
+# Chrome OS:
+tools/mb/mb.py gen -m chromium.fuzz -b 'Libfuzzer Local Chrome OS ASan' out/libfuzzer
+# Mac:
+tools/mb/mb.py gen -m chromium.fuzz -b 'Libfuzzer Local Mac ASan' out/libfuzzer
+# Windows:
+python tools\mb\mb.py gen -m chromium.fuzz -b "Libfuzzer Local Windows ASan" out\libfuzzer
+```
+
 *** note
 **Note:** You can also invoke [AFL] by using the `use_afl` GN argument, but we
 recommend libFuzzer for local development. Running libFuzzer locally doesn't

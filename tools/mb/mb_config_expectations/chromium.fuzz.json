@@ -106,6 +106,66 @@
       "v8_enable_verify_heap": true
     }
   },
+  "Libfuzzer Local Chrome OS ASan": {
+    "gn_args": {
+      "archive_seed_corpus": false,
+      "dcheck_always_on": false,
+      "enable_nacl": false,
+      "ffmpeg_branding": "ChromeOS",
+      "is_asan": true,
+      "is_debug": false,
+      "optimize_for_fuzzing": true,
+      "pdf_enable_xfa": true,
+      "proprietary_codecs": true,
+      "target_os": "chromeos",
+      "use_libfuzzer": true,
+      "use_remoteexec": false
+    }
+  },
+  "Libfuzzer Local Linux ASan": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_mojom_fuzzer": true,
+      "enable_nacl": false,
+      "ffmpeg_branding": "ChromeOS",
+      "is_asan": true,
+      "is_debug": false,
+      "optimize_for_fuzzing": true,
+      "pdf_enable_xfa": true,
+      "proprietary_codecs": true,
+      "use_libfuzzer": true,
+      "use_remoteexec": false
+    }
+  },
+  "Libfuzzer Local Mac ASan": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_nacl": false,
+      "ffmpeg_branding": "Chrome",
+      "is_asan": true,
+      "is_debug": false,
+      "optimize_for_fuzzing": true,
+      "pdf_enable_xfa": true,
+      "proprietary_codecs": true,
+      "use_libfuzzer": true,
+      "use_remoteexec": false
+    }
+  },
+  "Libfuzzer Local Windows ASan": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_mojom_fuzzer": true,
+      "enable_nacl": false,
+      "ffmpeg_branding": "Chrome",
+      "is_asan": true,
+      "is_debug": false,
+      "pdf_enable_xfa": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_libfuzzer": true,
+      "use_remoteexec": false
+    }
+  },
   "Libfuzzer Upload Chrome OS ASan": {
     "gn_args": {
       "archive_seed_corpus": false,
