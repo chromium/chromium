@@ -7,9 +7,10 @@
 
 #import <string>
 
+#import <UIKit/UIKit.h>
+
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
-#import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
 
 extern NSString* const kCardUnmaskPromptCollectionViewAccessibilityID;
 
@@ -75,33 +76,5 @@ class LegacyCardUnmaskPromptViewBridge : public CardUnmaskPromptView {
 };
 
 }  // namespace autofill
-
-@interface LegacyCardUnmaskPromptViewController : CollectionViewController
-
-// Designated initializer. `bridge` must not be null.
-- (instancetype)initWithBridge:
-    (autofill::LegacyCardUnmaskPromptViewBridge*)bridge
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithLayout:(UICollectionViewLayout*)layout
-                         style:(CollectionViewControllerStyle)style
-    NS_UNAVAILABLE;
-
-// Shows the form that allows the user to input their CVC.
-- (void)showCVCInputForm;
-
-// Shows the form that allows the user to input their CVC along with the
-// supplied error message.
-- (void)showCVCInputFormWithError:(NSString*)errorMessage;
-
-// Shows a progress spinner with a "verifying" message.
-- (void)showSpinner;
-
-// Shows a checkmark image and a "success" message.
-- (void)showSuccess;
-
-// Shows an error image and the provided message.
-- (void)showError:(NSString*)errorMessage;
-
-@end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_LEGACY_CARD_UNMASK_PROMPT_VIEW_BRIDGE_H_

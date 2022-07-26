@@ -178,7 +178,8 @@ TEST_F(PaymentRequestFullCardRequesterTest, PresentAndDismissLegacyPrompt) {
           base_view_controller.presentedViewController);
 
   EXPECT_TRUE([navigation_controller.topViewController
-      isMemberOfClass:[LegacyCardUnmaskPromptViewController class]]);
+      isMemberOfClass:NSClassFromString(
+                          @"LegacyCardUnmaskPromptViewController")]);
 
   full_card_requester.OnUnmaskVerificationResult(
       autofill::AutofillClient::PaymentsRpcResult::kSuccess);

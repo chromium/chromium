@@ -44,6 +44,44 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
+@interface LegacyCardUnmaskPromptViewController
+    : CollectionViewController <UIAdaptivePresentationControllerDelegate,
+                                UITextFieldDelegate> {
+  UIBarButtonItem* _cancelButton;
+  UIBarButtonItem* _verifyButton;
+  CVCItem* _CVCItem;
+  StatusItem* _statusItem;
+
+  // Owns `self`.
+  autofill::LegacyCardUnmaskPromptViewBridge* _bridge;  // weak
+}
+
+// Designated initializer. `bridge` must not be null.
+- (instancetype)initWithBridge:
+    (autofill::LegacyCardUnmaskPromptViewBridge*)bridge
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithLayout:(UICollectionViewLayout*)layout
+                         style:(CollectionViewControllerStyle)style
+    NS_UNAVAILABLE;
+
+// Shows the form that allows the user to input their CVC.
+- (void)showCVCInputForm;
+
+// Shows the form that allows the user to input their CVC along with the
+// supplied error message.
+- (void)showCVCInputFormWithError:(NSString*)errorMessage;
+
+// Shows a progress spinner with a "verifying" message.
+- (void)showSpinner;
+
+// Shows a checkmark image and a "success" message.
+- (void)showSuccess;
+
+// Shows an error image and the provided message.
+- (void)showError:(NSString*)errorMessage;
+
+@end
+
 namespace autofill {
 
 #pragma mark LegacyCardUnmaskPromptViewBridge
@@ -137,20 +175,6 @@ void LegacyCardUnmaskPromptViewBridge::DeleteSelf() {
 }
 
 }  // namespace autofill
-
-@interface LegacyCardUnmaskPromptViewController () <
-    UIAdaptivePresentationControllerDelegate,
-    UITextFieldDelegate> {
-  UIBarButtonItem* _cancelButton;
-  UIBarButtonItem* _verifyButton;
-  CVCItem* _CVCItem;
-  StatusItem* _statusItem;
-
-  // Owns `self`.
-  autofill::LegacyCardUnmaskPromptViewBridge* _bridge;  // weak
-}
-
-@end
 
 @implementation LegacyCardUnmaskPromptViewController
 
