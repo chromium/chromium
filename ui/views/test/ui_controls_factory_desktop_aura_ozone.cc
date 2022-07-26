@@ -104,6 +104,8 @@ class UIControlsDesktopOzone : public UIControlsAura {
     DCHECK_EQ(screen, display::Screen::GetScreen());
     screen->set_cursor_screen_point(gfx::Point(screen_x, screen_y));
 
+    bool moved_cursor = false;
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
     if (root_location != root_current_location &&
         ozone_ui_controls_test_helper_->ButtonDownMask() == 0 &&
         !ozone_ui_controls_test_helper_->MustUseUiControlsForMoveCursorTo()) {
@@ -112,7 +114,11 @@ class UIControlsDesktopOzone : public UIControlsAura {
       root_window->MoveCursorTo(root_location);
       ozone_ui_controls_test_helper_->RunClosureAfterAllPendingUIEvents(
           std::move(closure));
-    } else {
+      moved_cursor = true;
+    }
+#endif
+
+    if (!moved_cursor) {
       gfx::Point screen_point(root_location);
       host->ConvertDIPToScreenInPixels(&screen_point);
       ozone_ui_controls_test_helper_->SendMouseMotionNotifyEvent(

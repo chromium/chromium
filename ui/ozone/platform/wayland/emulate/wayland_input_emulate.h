@@ -13,6 +13,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/types/event_type.h"
@@ -60,6 +61,9 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
   void EmulatePointerMotion(gfx::AcceleratedWidget widget,
                             const gfx::Point& mouse_surface_loc,
                             const gfx::Point& mouse_screen_loc_in_px);
+
+  // |widget| is only needed to queue up the event if the widget is not yet
+  // configured. If the event is being dequeued then |widget| will be 0.
   void EmulatePointerButton(gfx::AcceleratedWidget widget,
                             ui::EventType event_type,
                             uint32_t changed_button);
@@ -132,6 +136,12 @@ class WaylandInputEmulate : public wl::WaylandProxy::Delegate {
 
     // The attached buffer.
     raw_ptr<wl_buffer> buffer = nullptr;
+
+    // If the window has been configured at least once then we should not queue
+    // events.
+    bool configured_at_least_once = false;
+
+    base::WeakPtrFactory<TestWindow> weak_factory{this};
   };
 
   // WaylandProxy::Delegate.

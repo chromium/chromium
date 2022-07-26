@@ -95,6 +95,9 @@ class WaylandConnection {
   // Schedules a flush of the Wayland connection.
   void ScheduleFlush();
 
+  // Immediately flushes. Public for testing.
+  void Flush();
+
   // Calls wl_display_roundtrip_queue. Might be required during initialization
   // of some objects that should block until they are initialized.
   void RoundTripQueue();
@@ -332,7 +335,6 @@ class WaylandConnection {
   void RegisterGlobalObjectFactory(const char* interface_name,
                                    wl::GlobalObjectFactory factory);
 
-  void Flush();
   void UpdateInputDevices();
 
   // Initialize data-related objects if required protocol objects are already

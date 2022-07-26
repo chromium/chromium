@@ -7,6 +7,7 @@
 
 #include <linux/input.h>
 
+#include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -33,36 +34,10 @@ class WaylandGlobalEventWaiter : public WaylandInputEmulate::Observer {
     kUnknown,
   };
 
-  static WaylandGlobalEventWaiter* Create(WaylandEventType event_type,
-                                          int button,
-                                          bool pressed,
-                                          base::OnceClosure closure,
-                                          WaylandInputEmulate* emulate) {
-    DCHECK_NE(event_type, WaylandEventType::kUnknown);
-    return closure.is_null()
-               ? nullptr
-               : new WaylandGlobalEventWaiter(event_type, button, pressed,
-                                              std::move(closure), emulate);
-  }
-
-  static WaylandGlobalEventWaiter* Create(WaylandEventType event_type,
-                                          const gfx::Point& screen_point,
-                                          base::OnceClosure closure,
-                                          WaylandInputEmulate* emulate) {
-    DCHECK_NE(event_type, WaylandEventType::kUnknown);
-    return closure.is_null()
-               ? nullptr
-               : new WaylandGlobalEventWaiter(event_type, screen_point,
-                                              std::move(closure), emulate);
-  }
-
- private:
   WaylandGlobalEventWaiter(WaylandEventType event_type,
                            const gfx::Point& screen_point,
-                           base::OnceClosure closure,
                            WaylandInputEmulate* emulate)
       : event_type_(event_type),
-        closure_(std::move(closure)),
         emulate_(emulate),
         screen_point_(screen_point) {
     Initialize();
@@ -71,61 +46,92 @@ class WaylandGlobalEventWaiter : public WaylandInputEmulate::Observer {
   WaylandGlobalEventWaiter(WaylandEventType event_type,
                            int button,
                            bool pressed,
-                           base::OnceClosure closure,
                            WaylandInputEmulate* emulate)
       : event_type_(event_type),
-        closure_(std::move(closure)),
         emulate_(emulate),
         button_or_key_(button),
         pressed_(pressed) {
     Initialize();
   }
+  ~WaylandGlobalEventWaiter() override = default;
 
-  ~WaylandGlobalEventWaiter() override { emulate_->RemoveObserver(this); }
+  // This method assumes that a request has already been queued, with metadata
+  // for the expected response stored on the WaylandGlobalEventWaiter. This:
+  //   * Flushes queued requests.
+  //   * Spins a nested run loop waiting for the expected response (event).
+  //   * When the event is received, synchronously flushes all pending
+  //     requests and events via wl_display_roundtrip_queue. See
+  //     https://crbug.com/1336706#c11 for why this is necessary.
+  //   * Dispatches the QuitClosure to avoid re-entrancy.
+  void Wait() {
+    // There's no guarantee that a flush has been scheduled. Given that we're
+    // waiting for a response, we must manually flush.
+    wl::WaylandProxy::GetInstance()->FlushForTesting();
 
+    // We disallow nestable tasks as that can result in re-entrancy if the test
+    // is listening for side-effects from a wayland-event and then calls
+    // PostTask. By using a non-nestable run loop we are relying on the
+    // assumption that the ozone-wayland implementation does not rely on
+    // PostTask.
+    base::RunLoop run_loop;
+
+    // This will be invoked causing the run-loop to quit once the expected event
+    // is received.
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+ private:
   void Initialize() {
     DCHECK_NE(event_type_, WaylandEventType::kUnknown);
-    DCHECK(!closure_.is_null());
     emulate_->AddObserver(this);
   }
 
   void OnPointerMotionGlobal(const gfx::Point& screen_position) override {
     if (event_type_ == WaylandEventType::kMotion) {
-      ExecuteClosure();
+      QuitRunLoop();
     }
   }
 
   void OnPointerButtonGlobal(int32_t button, bool pressed) override {
     if (event_type_ == WaylandEventType::kButton && button_or_key_ == button &&
         pressed == pressed_) {
-      ExecuteClosure();
+      QuitRunLoop();
     }
   }
 
   void OnKeyboardKey(int32_t key, bool pressed) override {
     if (event_type_ == WaylandEventType::kKey && button_or_key_ == key &&
         pressed == pressed_) {
-      ExecuteClosure();
+      QuitRunLoop();
     }
   }
 
   void OnTouchReceived(const gfx::Point& screen_position) override {
     if (event_type_ == WaylandEventType::kTouch) {
-      ExecuteClosure();
+      QuitRunLoop();
     }
   }
 
-  void ExecuteClosure() {
-    DCHECK(!closure_.is_null());
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(closure_));
-    delete this;
+  void QuitRunLoop() {
+    // Immediately remove the observer so that no further callbacks are posted.
+    emulate_->RemoveObserver(this);
+
+    // The weston-test protocol does not map cleanly onto ui controls semantics.
+    // We need to wait for a wayland round-trip to ensure that all side-effects
+    // have been processed. See https://crbug.com/1336706#c11 for details.
+    wl::WaylandProxy::GetInstance()->RoundTripQueue();
+
+    // We're in a nested run-loop that doesn't support re-entrancy. Directly
+    // invoke the quit closure.
+    std::move(quit_closure_).Run();
   }
 
   // Expected event type.
   WaylandEventType event_type_ = WaylandEventType::kUnknown;
 
-  base::OnceClosure closure_;
+  // Internal closure used to quit the nested run loop.
+  base::RepeatingClosure quit_closure_;
 
   const raw_ptr<WaylandInputEmulate> emulate_;
 
@@ -169,11 +175,18 @@ void WaylandOzoneUIControlsTestHelper::SendMouseMotionNotifyEvent(
     const gfx::Point& mouse_loc,
     const gfx::Point& mouse_screen_loc_in_px,
     base::OnceClosure closure) {
-  WaylandGlobalEventWaiter::Create(
+  WaylandGlobalEventWaiter waiter(
       WaylandGlobalEventWaiter::WaylandEventType::kMotion, mouse_loc,
-      std::move(closure), input_emulate_.get());
+      input_emulate_.get());
   input_emulate_->EmulatePointerMotion(widget, mouse_loc,
                                        mouse_screen_loc_in_px);
+  waiter.Wait();
+
+  if (!closure.is_null()) {
+    // PostTask to avoid re-entrancy.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(closure));
+  }
 }
 
 void WaylandOzoneUIControlsTestHelper::SendMouseEvent(
@@ -199,6 +212,8 @@ void WaylandOzoneUIControlsTestHelper::SendMouseEvent(
       NOTREACHED();
   }
 
+  SendMouseMotionNotifyEvent(widget, mouse_loc, mouse_screen_loc_in_px, {});
+
   // Press accelerator keys.
   if (accelerator_state) {
     SendKeyPressInternal(widget, ui::KeyboardCode::VKEY_UNKNOWN,
@@ -208,21 +223,23 @@ void WaylandOzoneUIControlsTestHelper::SendMouseEvent(
                          accelerator_state & ui_controls::kCommand, {}, true);
   }
 
-  SendMouseMotionNotifyEvent(widget, mouse_loc, mouse_screen_loc_in_px, {});
-
-  WaylandGlobalEventWaiter::Create(
-      WaylandGlobalEventWaiter::WaylandEventType::kButton, changed_button,
-      button_state & DOWN, std::move(closure), input_emulate_.get());
-
   if (button_state & DOWN) {
+    WaylandGlobalEventWaiter waiter(
+        WaylandGlobalEventWaiter::WaylandEventType::kButton, changed_button,
+        /*pressed=*/true, input_emulate_.get());
     input_emulate_->EmulatePointerButton(
         widget, ui::EventType::ET_MOUSE_PRESSED, changed_button);
     button_down_mask_ |= changed_button;
+    waiter.Wait();
   }
   if (button_state & UP) {
+    WaylandGlobalEventWaiter waiter(
+        WaylandGlobalEventWaiter::WaylandEventType::kButton, changed_button,
+        /*pressed=*/false, input_emulate_.get());
     input_emulate_->EmulatePointerButton(
         widget, ui::EventType::ET_MOUSE_RELEASED, changed_button);
     button_down_mask_ = (button_down_mask_ | changed_button) ^ changed_button;
+    waiter.Wait();
   }
 
   // Depress accelerator keys.
@@ -233,6 +250,11 @@ void WaylandOzoneUIControlsTestHelper::SendMouseEvent(
                          accelerator_state & ui_controls::kAlt,
                          accelerator_state & ui_controls::kCommand, {}, false);
   }
+  if (!closure.is_null()) {
+    // PostTask to avoid re-entrancy.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(closure));
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -242,10 +264,6 @@ void WaylandOzoneUIControlsTestHelper::SendTouchEvent(
     int id,
     const gfx::Point& touch_loc,
     base::OnceClosure closure) {
-  WaylandGlobalEventWaiter::Create(
-      WaylandGlobalEventWaiter::WaylandEventType::kTouch, touch_loc,
-      std::move(closure), input_emulate_.get());
-
   // TODO(rivr): ui_controls::TouchType is a bitmask, do we need to handle the
   // case where multiple actions are requested together?
   ui::EventType event_type;
@@ -260,7 +278,16 @@ void WaylandOzoneUIControlsTestHelper::SendTouchEvent(
       event_type = ui::EventType::ET_TOUCH_MOVED;
   }
 
+  WaylandGlobalEventWaiter waiter(
+      WaylandGlobalEventWaiter::WaylandEventType::kTouch, touch_loc,
+      input_emulate_.get());
   input_emulate_->EmulateTouch(widget, event_type, id, touch_loc);
+  waiter.Wait();
+  if (!closure.is_null()) {
+    // PostTask to avoid re-entrancy.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(closure));
+  }
 }
 #endif
 
@@ -284,39 +311,45 @@ void WaylandOzoneUIControlsTestHelper::SendKeyPressInternal(
     bool press_key) {
   auto dom_code = UsLayoutKeyboardCodeToDomCode(key);
 
-  WaylandGlobalEventWaiter::Create(
-      WaylandGlobalEventWaiter::WaylandEventType::kKey,
-      ui::KeycodeConverter::DomCodeToEvdevCode(dom_code), press_key,
-      std::move(closure), input_emulate_.get());
-
   if (press_key) {
-    if (control)
+    if (control) {
       DispatchKeyPress(widget, ui::EventType::ET_KEY_PRESSED,
                        ui::DomCode::CONTROL_LEFT);
+    }
 
-    if (shift)
+    if (shift) {
       DispatchKeyPress(widget, ui::EventType::ET_KEY_PRESSED,
                        ui::DomCode::SHIFT_LEFT);
+    }
 
-    if (alt)
+    if (alt) {
       DispatchKeyPress(widget, ui::EventType::ET_KEY_PRESSED,
                        ui::DomCode::ALT_LEFT);
+    }
 
     DispatchKeyPress(widget, ui::EventType::ET_KEY_PRESSED, dom_code);
   } else {
     DispatchKeyPress(widget, ui::EventType::ET_KEY_RELEASED, dom_code);
 
-    if (alt)
-      DispatchKeyPress(widget, ui::EventType::ET_KEY_RELEASED,
+    if (alt) {
+      DispatchKeyPress(/*widget=*/0, ui::EventType::ET_KEY_RELEASED,
                        ui::DomCode::ALT_LEFT);
+    }
 
-    if (shift)
-      DispatchKeyPress(widget, ui::EventType::ET_KEY_RELEASED,
+    if (shift) {
+      DispatchKeyPress(/*widget=*/0, ui::EventType::ET_KEY_RELEASED,
                        ui::DomCode::SHIFT_LEFT);
+    }
 
-    if (control)
-      DispatchKeyPress(widget, ui::EventType::ET_KEY_RELEASED,
+    if (control) {
+      DispatchKeyPress(/*widget=*/0, ui::EventType::ET_KEY_RELEASED,
                        ui::DomCode::CONTROL_LEFT);
+    }
+  }
+  if (!closure.is_null()) {
+    // PostTask to avoid re-entrancy.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(closure));
   }
 }
 
@@ -324,7 +357,13 @@ void WaylandOzoneUIControlsTestHelper::DispatchKeyPress(
     gfx::AcceleratedWidget widget,
     ui::EventType event_type,
     ui::DomCode dom_code) {
+  WaylandGlobalEventWaiter waiter(
+      WaylandGlobalEventWaiter::WaylandEventType::kKey,
+      ui::KeycodeConverter::DomCodeToEvdevCode(dom_code),
+      /*press_key=*/event_type == ui::EventType::ET_KEY_PRESSED,
+      input_emulate_.get());
   input_emulate_->EmulateKeyboardKey(widget, event_type, dom_code);
+  waiter.Wait();
 }
 
 }  // namespace wl

@@ -36,6 +36,7 @@ class WaylandProxyImpl : public WaylandProxy, public ui::WaylandWindowObserver {
   wl_buffer* CreateShmBasedWlBuffer(const gfx::Size& buffer_size) override;
   void DestroyShmForWlBuffer(wl_buffer* buffer) override;
   void ScheduleDisplayFlush() override;
+  void FlushForTesting() override;
   ui::PlatformWindowType GetWindowType(gfx::AcceleratedWidget widget) override;
   bool WindowHasPointerFocus(gfx::AcceleratedWidget widget) override;
   bool WindowHasKeyboardFocus(gfx::AcceleratedWidget widget) override;

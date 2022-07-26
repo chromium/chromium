@@ -78,8 +78,11 @@ class COMPONENT_EXPORT(WAYLAND_PROXY) WaylandProxy {
   // When this is called, |buffer| becomes invalid and mustn't be used any more.
   virtual void DestroyShmForWlBuffer(wl_buffer* buffer) = 0;
 
-  // Schedules display flush that dispatches pending events.
+  // Schedules display flush that dispatches pending requests.
   virtual void ScheduleDisplayFlush() = 0;
+
+  // Immediately flushes pending requests for testing.
+  virtual void FlushForTesting() = 0;
 
   // Returns platform window type of a window backed by the |widget|.
   virtual ui::PlatformWindowType GetWindowType(

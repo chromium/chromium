@@ -2008,7 +2008,14 @@ class BookmarkBarViewTest22 : public BookmarkBarViewDragTestBase {
   }
 };
 
-VIEW_TEST(BookmarkBarViewTest22, CloseSourceBrowserDuringDrag)
+// Temporarily disabled while test-harness bugs are ironed out.
+// https://crbug.com/1344238
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CloseSourceBrowserDuringDrag DISABLED_CloseSourceBrowserDuringDrag
+#else
+#define MAYBE_CloseSourceBrowserDuringDrag CloseSourceBrowserDuringDrag
+#endif
+VIEW_TEST(BookmarkBarViewTest22, MAYBE_CloseSourceBrowserDuringDrag)
 
 // Tests opening a context menu for a bookmark node from the keyboard.
 class BookmarkBarViewTest23 : public BookmarkBarViewEventTestBase {
