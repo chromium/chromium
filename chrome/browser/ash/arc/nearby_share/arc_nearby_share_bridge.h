@@ -52,10 +52,6 @@ class ArcNearbyShareBridge : public KeyedService,
       StartNearbyShareCallback callback) override;
 
  private:
-  // Deletes the temporary cache path managed by NearbyShareSessionImpl which
-  // is used for share files preparation.
-  void DeleteShareCacheFilePaths();
-
   // Called by NearbyShareSessionImpl when the session is finished and can be
   // cleaned up.
   void OnNearbyShareSessionFinished(uint32_t task_id);

@@ -74,21 +74,14 @@ ArcNearbyShareBridge::ArcNearbyShareBridge(
   arc_bridge_service_->nearby_share()->SetHost(this);
 
   // On startup, delete the ARC Nearby Share cache path.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&ArcNearbyShareBridge::DeleteShareCacheFilePaths,
-                     weak_ptr_factory_.GetWeakPtr()));
+  DCHECK(profile_);
+  NearbyShareSessionImpl::DeleteShareCacheFilePaths(profile_);
 }
 
 ArcNearbyShareBridge::~ArcNearbyShareBridge() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   arc_bridge_service_->nearby_share()->SetHost(nullptr);
   session_map_.clear();
-}
-
-void ArcNearbyShareBridge::DeleteShareCacheFilePaths() {
-  DCHECK(profile_);
-  NearbyShareSessionImpl::DeleteShareCacheFilePaths(profile_);
 }
 
 void ArcNearbyShareBridge::OnNearbyShareSessionFinished(uint32_t task_id) {
