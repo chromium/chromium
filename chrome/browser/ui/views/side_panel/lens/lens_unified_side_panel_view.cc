@@ -75,34 +75,8 @@ std::unique_ptr<views::WebView> CreateWebView(
 namespace lens {
 constexpr int kDefaultSidePanelHeaderHeight = 40;
 constexpr gfx::Insets kLensLabelButtonMargins = gfx::Insets::VH(12, 16);
-// Explore hosting the html in the gstatic url instead.
-// That will avoid needing to make a change in Chromium.
-constexpr char kStaticGhostCardDataURL[] =
-    "data:text/html;charset=utf-8,"
-    "<!DOCTYPE html>"
-    "<style>"
-    "html, body {"
-    "width: 100%;"
-    "height: 100%;"
-    "display: flex;"
-    "background: linear-gradient(transparent 0%, %23fff 100%);"  // %23fff is
-                                                                 // #fff
-    "flex-direction: column;"
-    "align-items: center;"
-    "justify-content: center;"
-    "overflow: hidden;"
-    "}"
-    "img {"
-    "height: 95%;"
-    "width: 95%;"
-    "}"
-    "</style>"
-    "<body>"
-    "<img "
-    "src='https://www.gstatic.com/lens/web/ui/loading/"
-    "320x1957_resizable_side_panel_view-fcf5ded159483fa61496e2cc7afca2a5.svg' "
-    "alt='Loading Screen'/>"
-    "</body>";
+constexpr char kStaticLoadingScreenURL[] =
+    "https://www.gstatic.com/lens/chrome/lens_side_panel_loading.html";
 
 LensUnifiedSidePanelView::LensUnifiedSidePanelView(BrowserView* browser_view) {
   browser_view_ = browser_view;
@@ -117,7 +91,7 @@ LensUnifiedSidePanelView::LensUnifiedSidePanelView(BrowserView* browser_view) {
   loading_indicator_web_view_ =
       AddChildView(CreateWebView(this, browser_context));
   loading_indicator_web_view_->GetWebContents()->GetController().LoadURL(
-      GURL(kStaticGhostCardDataURL), content::Referrer(),
+      GURL(kStaticLoadingScreenURL), content::Referrer(),
       ui::PAGE_TRANSITION_FROM_API, std::string());
   web_view_ = AddChildView(CreateWebView(this, browser_context));
   separator_ = AddChildView(std::make_unique<views::Separator>());
