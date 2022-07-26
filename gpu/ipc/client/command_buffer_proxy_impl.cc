@@ -93,8 +93,8 @@ ContextResult CommandBufferProxyImpl::Initialize(
   std::tie(shared_state_shm_, shared_state_mapping_) =
       AllocateAndMapSharedMemory(sizeof(*shared_state()));
   if (!shared_state_shm_.IsValid()) {
-    LOG(ERROR) << "ContextResult::kFatalFailure: "
-                  "AllocateAndMapSharedMemory failed";
+    DLOG(ERROR) << "ContextResult::kFatalFailure: "
+                   "AllocateAndMapSharedMemory failed";
     return ContextResult::kFatalFailure;
   }
 

@@ -43,7 +43,7 @@ Channel::MessagePtr WaitForBrokerMessage(
     LOG(ERROR) << "Invalid node channel message";
     error = true;
   } else if (incoming_fds.size() != expected_num_handles) {
-    LOG(ERROR) << "Received unexpected number of handles";
+    DLOG(ERROR) << "Received unexpected number of handles";
     error = true;
   }
 
