@@ -22,6 +22,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/shelf/login_shelf_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_shutdown_confirmation_bubble.h"
@@ -164,21 +165,30 @@ class LoginShelfViewTest : public LoginTestBase,
     // TODO(https://crbug.com/1343114): refactor the code below after the login
     // shelf widget is ready.
 
-    ShelfWidget* shelf_widget = GetLoginShelfWidget();
-    shelf_widget->set_default_last_focusable_child(
-        /*default_last_focusable_child=*/false);
-    Shell::Get()->focus_cycler()->FocusWidget(shelf_widget);
-    ExpectFocused(shelf_widget->GetContentsView());
+    views::Widget* login_shelf_widget = GetLoginShelfWidget();
+    if (features::IsUseLoginShelfWidgetEnabled()) {
+      static_cast<LoginShelfWidget*>(login_shelf_widget)
+          ->SetDefaultLastFocusableChild(/*reverse=*/false);
+    } else {
+      static_cast<ShelfWidget*>(login_shelf_widget)
+          ->set_default_last_focusable_child(
+              /*default_last_focusable_child=*/false);
+    }
+
+    Shell::Get()->focus_cycler()->FocusWidget(login_shelf_widget);
+    ExpectFocused(login_shelf_widget->GetContentsView());
   }
 
   // Returns the widget where the login shelf view lives.
-  ShelfWidget* GetLoginShelfWidget() {
+  views::Widget* GetLoginShelfWidget() {
     // TODO(https://crbug.com/1343114): refactor the code below after the login
     // shelf widget is ready.
 
-    gfx::NativeWindow window =
-        login_shelf_view_->GetWidget()->GetNativeWindow();
-    return Shelf::ForWindow(window)->shelf_widget();
+    Shelf* shelf =
+        Shelf::ForWindow(login_shelf_view_->GetWidget()->GetNativeWindow());
+    return features::IsUseLoginShelfWidgetEnabled()
+               ? static_cast<views::Widget*>(shelf->login_shelf_widget())
+               : shelf->shelf_widget();
   }
 
   TestTrayActionClient tray_action_client_;

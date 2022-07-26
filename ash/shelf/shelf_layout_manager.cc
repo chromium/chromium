@@ -29,6 +29,7 @@
 #include "ash/shelf/home_to_overview_nudge_controller.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/in_app_to_home_nudge_controller.h"
+#include "ash/shelf/login_shelf_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager_observer.h"
 #include "ash/shelf/shelf_metrics.h"
@@ -1231,9 +1232,10 @@ void ShelfLayoutManager::OnDisplayMetricsChanged(
 }
 
 void ShelfLayoutManager::OnLocaleChanged() {
-  if (!features::IsUseLoginShelfWidgetEnabled())
+  if (features::IsUseLoginShelfWidgetEnabled())
+    shelf_->login_shelf_widget()->HandleLocaleChange();
+  else
     shelf_->shelf_widget()->HandleLocaleChange();
-
   shelf_->status_area_widget()->HandleLocaleChange();
   shelf_->navigation_widget()->HandleLocaleChange();
 
@@ -1620,8 +1622,11 @@ bool ShelfLayoutManager::SetDimmed(bool dimmed) {
   AnimateOpacity(GetLayer(shelf_->status_area_widget()), target_opacity_,
                  dim_animation_duration, dim_animation_tween);
 
-  if (!features::IsUseLoginShelfWidgetEnabled())
+  if (features::IsUseLoginShelfWidgetEnabled())
+    shelf_->login_shelf_widget()->SetLoginShelfButtonOpacity(target_opacity_);
+  else
     shelf_widget_->SetLoginShelfButtonOpacity(target_opacity_);
+
   return true;
 }
 
@@ -1656,6 +1661,8 @@ void ShelfLayoutManager::UpdateBoundsAndOpacity(bool animate) {
     hotseat_widget->UpdateLayout(animate);
     status_widget->UpdateLayout(animate);
     nav_widget->UpdateLayout(animate);
+    if (features::IsUseLoginShelfWidgetEnabled())
+      shelf_->login_shelf_widget()->UpdateLayout(animate);
 
     // Do not update the work area during overview animation.
     if (!suspend_work_area_update_) {
@@ -1738,6 +1745,8 @@ gfx::Insets ShelfLayoutManager::UpdateTargetBoundsAndCalculateShelfInsets(
   shelf_->status_area_widget()->CalculateTargetBounds();
   shelf_->navigation_widget()->CalculateTargetBounds();
   shelf_->hotseat_widget()->CalculateTargetBounds();
+  if (features::IsUseLoginShelfWidgetEnabled())
+    shelf_->login_shelf_widget()->CalculateTargetBounds();
 
   target_opacity_ = ComputeTargetOpacity(state);
 
@@ -2204,12 +2213,23 @@ bool ShelfLayoutManager::IsShelfWindow(aura::Window* window) {
       shelf_widget_->status_area_widget()->GetNativeWindow();
   const aura::Window* drag_handle_nudge_window =
       GetDragHandleNudgeWindow(shelf_widget_);
+
+  // Calculate whether `window` is contained by the login shelf widget.
+  bool window_in_login_shelf_widget = false;
+  if (features::IsUseLoginShelfWidgetEnabled()) {
+    const aura::Window* login_shelf_window =
+        shelf_->login_shelf_widget()->GetNativeWindow();
+    window_in_login_shelf_widget =
+        (login_shelf_window && login_shelf_window->Contains(window));
+  }
+
   return (shelf_window && shelf_window->Contains(window)) ||
          (navigation_window && navigation_window->Contains(window)) ||
          (hotseat_window && hotseat_window->Contains(window)) ||
          (status_area_window && status_area_window->Contains(window)) ||
          (drag_handle_nudge_window &&
-          drag_handle_nudge_window->Contains(window));
+          drag_handle_nudge_window->Contains(window)) ||
+         window_in_login_shelf_widget;
 }
 
 bool ShelfLayoutManager::IsStatusAreaWindow(aura::Window* window) {

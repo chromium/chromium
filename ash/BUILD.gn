@@ -861,6 +861,8 @@ component("ash") {
     "shelf/launcher_nudge_controller.h",
     "shelf/login_shelf_view.cc",
     "shelf/login_shelf_view.h",
+    "shelf/login_shelf_widget.cc",
+    "shelf/login_shelf_widget.h",
     "shelf/scroll_arrow_view.cc",
     "shelf/scroll_arrow_view.h",
     "shelf/scrollable_shelf_constants.cc",

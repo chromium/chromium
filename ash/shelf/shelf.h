@@ -36,6 +36,7 @@ class HotseatWidget;
 class HotseatWidgetAnimationMetricsReporter;
 class NavigationWidgetAnimationMetricsReporter;
 class ShelfFocusCycler;
+class LoginShelfWidget;
 class ShelfLayoutManager;
 class ShelfLayoutManagerTest;
 class ShelfLockingManager;
@@ -241,6 +242,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   StatusAreaWidget* status_area_widget() const {
     return status_area_widget_.get();
   }
+  LoginShelfWidget* login_shelf_widget() { return login_shelf_widget_.get(); }
 
   ShelfAlignment alignment() const { return alignment_; }
   ShelfAutoHideBehavior auto_hide_behavior() const {
@@ -308,6 +310,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   // Null during display teardown, see WindowTreeHostManager::DeleteHost() and
   // RootWindowController::CloseAllChildWindows().
   std::unique_ptr<ShelfWidget> shelf_widget_;
+  std::unique_ptr<LoginShelfWidget> login_shelf_widget_;
 
   // These initial values hide the shelf until user preferences are available.
   ShelfAlignment alignment_ = ShelfAlignment::kBottomLocked;

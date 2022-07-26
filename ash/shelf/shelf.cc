@@ -17,6 +17,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/login_shelf_widget.h"
 #include "ash/shelf/shelf_controller.h"
 #include "ash/shelf/shelf_focus_cycler.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -430,6 +431,10 @@ void Shelf::CreateShelfWidget(aura::Window* root) {
   // Create the various shelf components.
   CreateHotseatWidget(shelf_container);
   CreateNavigationWidget(shelf_container);
+  if (features::IsUseLoginShelfWidgetEnabled()) {
+    login_shelf_widget_ =
+        std::make_unique<LoginShelfWidget>(/*shelf=*/this, shelf_container);
+  }
 
   // Must occur after |shelf_widget_| is constructed because the system tray
   // constructors call back into Shelf::shelf_widget().
@@ -453,6 +458,7 @@ void Shelf::ShutdownShelfWidget() {
   hotseat_widget_.reset();
   status_area_widget_.reset();
   navigation_widget_.reset();
+  login_shelf_widget_.reset();
 }
 
 void Shelf::DestroyShelfWidget() {

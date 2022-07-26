@@ -14,6 +14,7 @@
 #include "ash/login/ui/login_test_utils.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/shelf/login_shelf_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -39,8 +40,11 @@ namespace {
 views::View* GetLoginShelfContentsView(gfx::NativeWindow native_window) {
   // TODO(https://crbug.com/1343114): refactor the code below after the login
   // shelf widget is ready.
+  Shelf* shelf = Shelf::ForWindow(native_window);
+  if (features::IsUseLoginShelfWidgetEnabled())
+    return shelf->login_shelf_widget()->GetContentsView();
 
-  return Shelf::ForWindow(native_window)->shelf_widget()->GetContentsView();
+  return shelf->shelf_widget()->GetContentsView();
 }
 
 class LockScreenAppFocuser {
@@ -196,7 +200,7 @@ TEST_F(LockScreenSanityTest, TabGoesFromLockToShelfAndBackToLock) {
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(lock);
   views::View* login_shelf_contents_view =
-      GetLoginShelfContentsView(lock->GetWidget()->GetNativeView());
+      GetLoginShelfContentsView(lock->GetWidget()->GetNativeWindow());
 
   // Lock has focus.
   EXPECT_TRUE(VerifyFocused(lock));
@@ -260,7 +264,7 @@ TEST_F(LockScreenSanityTest, TabWithLockScreenAppActive) {
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(lock);
 
   views::View* login_shelf_contents_view =
-      GetLoginShelfContentsView((lock->GetWidget()->GetNativeView()));
+      GetLoginShelfContentsView((lock->GetWidget()->GetNativeWindow()));
 
   views::View* status_area =
       RootWindowController::ForWindow(lock->GetWidget()->GetNativeWindow())

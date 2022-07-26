@@ -890,6 +890,8 @@ void LoginShelfView::UpdateUi() {
 
     return;
   }
+
+  const gfx::Size old_preferred_size = GetPreferredSize();
   bool show_reboot = Shell::Get()->shutdown_controller()->reboot_on_shutdown();
   mojom::TrayActionState tray_action_state =
       Shell::Get()->tray_action()->GetLockScreenNoteState();
@@ -962,7 +964,16 @@ void LoginShelfView::UpdateUi() {
   SetFocusBehavior(is_anything_focusable ? views::View::FocusBehavior::ALWAYS
                                          : views::View::FocusBehavior::NEVER);
   UpdateButtonsColors();
-  Layout();
+
+  // When the login shelf view is moved to its own widget, the login shelf
+  // widget needs to change the size according to the login shelf view's
+  // preferred size.
+  if (old_preferred_size != GetPreferredSize() &&
+      features::IsUseLoginShelfWidgetEnabled()) {
+    PreferredSizeChanged();
+  } else {
+    Layout();
+  }
 }
 
 void LoginShelfView::UpdateButtonsColors() {

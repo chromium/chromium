@@ -24,6 +24,7 @@
 #include "ash/shelf/hotseat_transition_animator.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/login_shelf_view.h"
+#include "ash/shelf/login_shelf_widget.h"
 #include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf_background_animator_observer.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -180,10 +181,12 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
     canvas->DrawRoundRect(gfx::Rect(layer()->size()), corner_radius_, flags);
 
     // Don't draw highlight border in login screen.
-    if (login_shelf_from_shelf_widget_ &&
-        login_shelf_from_shelf_widget_->GetVisible()) {
+    LoginShelfView* login_shelf_view =
+        features::IsUseLoginShelfWidgetEnabled()
+            ? shelf_->login_shelf_widget()->login_shelf_view()
+            : login_shelf_from_shelf_widget_;
+    if (login_shelf_view && login_shelf_view->GetVisible())
       return;
-    }
 
     if (corner_radius_ > 0) {
       views::HighlightBorder::PaintBorderToCanvas(
@@ -485,6 +488,9 @@ void ShelfWidget::DelegateView::OnThemeChanged() {
 }
 
 bool ShelfWidget::DelegateView::CanActivate() const {
+  if (features::IsUseLoginShelfWidgetEnabled())
+    return false;
+
   // This widget only contains anything interesting to activate in login/lock
   // screen mode. Only allow activation from the focus cycler, not from mouse
   // events, etc.
@@ -900,12 +906,17 @@ void ShelfWidget::set_default_last_focusable_child(
 }
 
 LoginShelfView* ShelfWidget::GetLoginShelfView() {
+  if (features::IsUseLoginShelfWidgetEnabled())
+    return shelf_->login_shelf_widget()->login_shelf_view();
+
   return login_shelf_view_;
 }
 
 bool ShelfWidget::OnNativeWidgetActivationChanged(bool active) {
   // TODO(https://crbug.com/1343114): remove this function after the login shelf
   // widget is ready.
+  if (features::IsUseLoginShelfWidgetEnabled())
+    return false;
 
   if (!Widget::OnNativeWidgetActivationChanged(active))
     return false;
