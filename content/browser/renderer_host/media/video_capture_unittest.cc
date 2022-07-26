@@ -109,8 +109,7 @@ class VideoCaptureTest : public testing::Test,
     SetBrowserClientForTesting(&browser_client_);
 
     media_stream_manager_ = std::make_unique<MediaStreamManager>(
-        audio_system_.get(), audio_manager_->GetTaskRunner(),
-        std::make_unique<FakeVideoCaptureProvider>());
+        audio_system_.get(), std::make_unique<FakeVideoCaptureProvider>());
     media_stream_manager_->UseFakeUIFactoryForTests(base::BindRepeating(
         &VideoCaptureTest::CreateFakeUI, base::Unretained(this)));
 

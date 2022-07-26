@@ -980,16 +980,13 @@ void MediaStreamManager::SendMessageToNativeLog(const std::string& message) {
   msm->AddLogMessageOnIOThread(message);
 }
 
-MediaStreamManager::MediaStreamManager(
-    media::AudioSystem* audio_system,
-    scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner)
-    : MediaStreamManager(audio_system, std::move(audio_task_runner), nullptr) {
+MediaStreamManager::MediaStreamManager(media::AudioSystem* audio_system)
+    : MediaStreamManager(audio_system, nullptr) {
   SendLogMessage(base::StringPrintf("MediaStreamManager([this=%p]))", this));
 }
 
 MediaStreamManager::MediaStreamManager(
     media::AudioSystem* audio_system,
-    scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     std::unique_ptr<VideoCaptureProvider> video_capture_provider)
     :
 #if !BUILDFLAG(IS_ANDROID)
@@ -1011,25 +1008,27 @@ MediaStreamManager::MediaStreamManager(
   DCHECK(audio_system_);
 
   if (!video_capture_provider) {
-    scoped_refptr<base::SingleThreadTaskRunner> device_task_runner =
-#if BUILDFLAG(IS_WIN)
-        // Windows unconditionally requires its own thread (see below).
-        nullptr;
-#else
-        // Share the provided |audio_task_runner| if it's non-null.
-        std::move(audio_task_runner);
-#endif
+    scoped_refptr<base::SingleThreadTaskRunner> device_task_runner;
 
-    if (!device_task_runner) {
-      video_capture_thread_.emplace("VideoCaptureThread");
+#if BUILDFLAG(IS_MAC)
+    // On MacOS the main thread must be used to run VideoCaptureDevice.
+    device_task_runner = base::ThreadTaskRunnerHandle::Get();
+#else  // !BUILDFLAG(IS_MAC)
+    // For all platforms other than MacOS start a new thread.
+    video_capture_thread_.emplace("VideoCaptureThread");
+    base::Thread::Options thread_options;
 #if BUILDFLAG(IS_WIN)
-      // Use an STA Video Capture Thread to try to avoid crashes on enumeration
-      // of buggy third party Direct Show modules, http://crbug.com/428958.
-      video_capture_thread_->init_com_with_mta(false);
+    // Use an STA Video Capture Thread to try to avoid crashes on enumeration
+    // of buggy third party Direct Show modules, http://crbug.com/428958.
+    video_capture_thread_->init_com_with_mta(false);
+    thread_options.message_pump_type = base::MessagePumpType::UI;
+#elif BUILDFLAG(IS_FUCHSIA)
+    // On Fuchsia IO thread is required for FIDL connections.
+    thread_options.message_pump_type = base::MessagePumpType::IO;
 #endif
-      CHECK(video_capture_thread_->Start());
-      device_task_runner = video_capture_thread_->task_runner();
-    }
+    CHECK(video_capture_thread_->StartWithOptions(std::move(thread_options)));
+    device_task_runner = video_capture_thread_->task_runner();
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (media::ShouldUseCrosCameraService()) {

@@ -357,7 +357,7 @@ void VideoCaptureHostTestcase::SetUpOnUIThread() {
       std::move(fake_v4l2_impl), std::move(fake_device_provider));
 
   media_stream_manager_ = std::make_unique<content::MediaStreamManager>(
-      audio_system_.get(), audio_manager_->GetTaskRunner(),
+      audio_system_.get(),
       content::InProcessVideoCaptureProvider::CreateInstance(
           std::make_unique<media::VideoCaptureSystemImpl>(
               std::move(video_capture_device_factory)),

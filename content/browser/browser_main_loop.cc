@@ -1326,21 +1326,8 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
     TRACE_EVENT0("startup",
                  "BrowserMainLoop::PostCreateThreads:InitMediaStreamManager");
 
-    scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner =
-        audio_manager_ ? audio_manager_->GetTaskRunner() : nullptr;
-
-#if BUILDFLAG(IS_MAC)
-    // On Mac, the audio task runner must belong to the main thread.
-    // See audio_thread_impl.cc and https://crbug.com/158170.
-    if (audio_task_runner) {
-      DCHECK(audio_task_runner->BelongsToCurrentThread());
-    } else {
-      audio_task_runner = base::ThreadTaskRunnerHandle::Get();
-    }
-#endif
-
-    media_stream_manager_ = std::make_unique<MediaStreamManager>(
-        audio_system_.get(), std::move(audio_task_runner));
+    media_stream_manager_ =
+        std::make_unique<MediaStreamManager>(audio_system_.get());
   }
 
   {
@@ -1490,6 +1477,11 @@ void BrowserMainLoop::InitializeAudio() {
   if (audio_manager_) {
     TRACE_EVENT_INSTANT0("startup", "Starting Audio service task runner",
                          TRACE_EVENT_SCOPE_THREAD);
+#if BUILDFLAG(IS_MAC)
+    // On Mac, the audio task runner must belong to the main thread.
+    // See audio_thread_impl.cc and https://crbug.com/158170.
+    DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
+#endif
     audio::Service::GetInProcessTaskRunner()->StartWithTaskRunner(
         audio_manager_->GetTaskRunner());
   }

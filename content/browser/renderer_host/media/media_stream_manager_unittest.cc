@@ -265,8 +265,7 @@ class MediaStreamManagerTest : public ::testing::Test {
     auto video_capture_provider = std::make_unique<MockVideoCaptureProvider>();
     video_capture_provider_ = video_capture_provider.get();
     media_stream_manager_ = std::make_unique<MediaStreamManager>(
-        audio_system_.get(), audio_manager_->GetTaskRunner(),
-        std::move(video_capture_provider));
+        audio_system_.get(), std::move(video_capture_provider));
     media_observer_ = std::make_unique<MockMediaObserver>();
     browser_content_client_ = std::make_unique<TestBrowserClient>(
         media_observer_.get(), &screen_count_);

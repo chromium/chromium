@@ -136,18 +136,12 @@ class CONTENT_EXPORT MediaStreamManager
   // logging from webrtcLoggingPrivate API. Safe to call from any thread.
   static void SendMessageToNativeLog(const std::string& message);
 
-  // |audio_task_runner| passed to constructors is the task runner used by audio
-  // system when it runs in-process; it's null if audio runs out of process.
-
-  MediaStreamManager(
-      media::AudioSystem* audio_system,
-      scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner);
+  explicit MediaStreamManager(media::AudioSystem* audio_system);
 
   // |audio_system| is required but defaults will be used if either
   // |video_capture_system| or |device_task_runner| are null.
   MediaStreamManager(
       media::AudioSystem* audio_system,
-      scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
       std::unique_ptr<VideoCaptureProvider> video_capture_provider);
 
   MediaStreamManager(const MediaStreamManager&) = delete;
@@ -740,10 +734,6 @@ class CONTENT_EXPORT MediaStreamManager
   scoped_refptr<AudioInputDeviceManager> audio_input_device_manager_;
   scoped_refptr<VideoCaptureManager> video_capture_manager_;
 
-  // Not initialized on Mac (if not in tests), since the main thread is used.
-  // Always initialized on Windows.
-  // On other platforms, initialized when no audio task runner is provided in
-  // the constructor.
   absl::optional<base::Thread> video_capture_thread_;
 
   std::unique_ptr<MediaDevicesManager> media_devices_manager_;

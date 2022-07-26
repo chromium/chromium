@@ -127,8 +127,7 @@ class MediaDevicesDispatcherHostTest
             base::ThreadTaskRunnerHandle::Get(), kIgnoreLogMessageCB);
 
     media_stream_manager_ = std::make_unique<MediaStreamManager>(
-        audio_system_.get(), audio_manager_->GetTaskRunner(),
-        std::move(video_capture_provider));
+        audio_system_.get(), std::move(video_capture_provider));
     host_ = std::make_unique<MediaDevicesDispatcherHost>(
         kProcessId, kRenderId, media_stream_manager_.get());
     media_stream_manager_->media_devices_manager()
