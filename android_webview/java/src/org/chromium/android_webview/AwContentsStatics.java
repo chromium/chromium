@@ -16,6 +16,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -183,7 +184,10 @@ public class AwContentsStatics {
      * Returns the variations header used with the X-Client-Data header.
      */
     public static String getVariationsHeader() {
-        return AwContentsStaticsJni.get().getVariationsHeader();
+        String header = AwContentsStaticsJni.get().getVariationsHeader();
+        RecordHistogram.recordCount100Histogram(
+                "Android.WebView.VariationsHeaderLength", header.length());
+        return header;
     }
 
     @NativeMethods

@@ -4649,6 +4649,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.VariationsHeaderLength" units="bytes"
+    expires_after="2023-07-22">
+  <owner>cduvall@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the length of the WebView variations header. Recorded every time
+    WebViewCompat.getVariationsHeader() is called.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Visibility.Global" enum="WebViewVisibility"
     expires_after="2023-04-19">
   <owner>idries@google.com</owner>

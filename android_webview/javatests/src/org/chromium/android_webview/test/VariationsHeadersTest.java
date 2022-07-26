@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContentsStatics;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 
 /**
@@ -27,6 +28,10 @@ public class VariationsHeadersTest {
     @Test
     public void testGetVariationsHeader() throws Throwable {
         // Check the value is equal to the base64 encoded proto with the forced variations IDs.
-        Assert.assertEquals("CAQICggi", AwContentsStatics.getVariationsHeader());
+        String expectedHeader = "CAQICggi";
+        Assert.assertEquals(expectedHeader, AwContentsStatics.getVariationsHeader());
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.WebView.VariationsHeaderLength", expectedHeader.length()));
     }
 }
