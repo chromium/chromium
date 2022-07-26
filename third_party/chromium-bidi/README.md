@@ -17,6 +17,14 @@ This is a Node.js project, so install dependencies as usual:
 npm install
 ```
 
+# Filtering
+
+`jq` is needed as a dependency to prune the devtools protocol domains to only the fields we care about, reducing the overall compiled mapper size.
+
+```sh
+npm run prebuild-mapper
+```
+
 # Starting the Server
 
 This will run the server on port 8080:
@@ -112,7 +120,7 @@ the BiDi protocol can be used. Examples are based on
 [Puppeteer's examples](https://github.com/puppeteer/puppeteer/tree/main/examples)
 .
 
-### Instalation
+### Installation
 
 The examples are written using Python, to align with e2e test. Python 3.6+ and
 some dependencies are required:
@@ -246,8 +254,7 @@ npm run build
 # How does it work?
 
 The architecture is described in the
-[WebDriver BiDi in Chrome Context implementation plan](https://docs.google.com/document/d/1VfQ9tv0wPSnb5TI-MOobjoQ5CXLnJJx9F_PxOMQc8kY)
-.
+[WebDriver BiDi in Chrome Context implementation plan](https://docs.google.com/document/d/1VfQ9tv0wPSnb5TI-MOobjoQ5CXLnJJx9F_PxOMQc8kY).
 
 There are 2 main modules:
 

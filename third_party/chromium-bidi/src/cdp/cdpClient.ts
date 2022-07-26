@@ -18,8 +18,8 @@
 import { EventEmitter } from 'events';
 import { CdpConnection } from './cdpConnection';
 
-import * as browserProtocol from 'devtools-protocol/json/browser_protocol.json';
-import * as jsProtocol from 'devtools-protocol/json/js_protocol.json';
+import {domains as browserProtocolDomains} from 'devtools-protocol/json/browser_protocol_commands_only.json';
+import {domains as jsProtocolDomains} from 'devtools-protocol/json/js_protocol_commands_only.json';
 import ProtocolProxyApi from 'devtools-protocol/types/protocol-proxy-api';
 import ProtocolMapping from 'devtools-protocol/types/protocol-mapping';
 
@@ -34,7 +34,10 @@ type ProtocolApiExt = {
     ProtocolProxyApi.ProtocolApi[Domain];
 };
 
-const mergedProtocol = [...browserProtocol.domains, ...jsProtocol.domains];
+const browserAndJsProtocolDomains = [
+  ...browserProtocolDomains,
+  ...jsProtocolDomains,
+];
 
 // Generate classes for each Domain and store constructors here.
 const domainConstructorMap = new Map<
@@ -49,7 +52,7 @@ class DomainImpl extends EventEmitter {
   }
 }
 
-for (let domainInfo of mergedProtocol) {
+for (let domains of browserAndJsProtocolDomains) {
   // Dynamically create a subclass for this domain. Note: This class definition is scoped
   // to this for-loop, so there will be a unique ThisDomain definition for each domain.
   class ThisDomain extends DomainImpl {
@@ -59,18 +62,18 @@ for (let domainInfo of mergedProtocol) {
   }
 
   // Add methods to our Domain for each available command.
-  for (let command of domainInfo.commands) {
+  for (let command of domains.commands) {
     Object.defineProperty(ThisDomain.prototype, command.name, {
       value: async function (params: object) {
         return await this._client.sendCommand(
-          `${domainInfo.domain}.${command.name}`,
+          `${domains.domain}.${command.name}`,
           params
         );
       },
     });
   }
 
-  domainConstructorMap.set(domainInfo.domain, ThisDomain);
+  domainConstructorMap.set(domains.domain, ThisDomain);
 }
 
 interface CdpClientImpl {
