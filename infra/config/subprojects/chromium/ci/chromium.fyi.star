@@ -1006,13 +1006,19 @@ ci.builder(
         category = "android|cq",
         short_name = "cmp",
     ),
-    goma_jobs = 250,
+    description_html = """\
+This builder measures Android build performance with goma vs reclient in cq configuration.<br/>\
+The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-rel-compilator">android-pie-arm64-rel-compilator</a>.\
+""",
+    goma_jobs = goma.jobs.J300,
     executable = "recipe:reclient_goma_comparison",
     execution_timeout = 15 * time.hour,
     reclient_cache_silo = "Comparison Android CQ - cache siloed",
     reclient_instance = rbe_instance.TEST_CQ,
-    reclient_jobs = 250,
+    reclient_jobs = 300,
     os = os.LINUX_DEFAULT,
+    cores = 32,
+    ssd = True,
 )
 
 ci.builder(
@@ -1021,13 +1027,19 @@ ci.builder(
         category = "linux|cq",
         short_name = "cmp",
     ),
-    goma_jobs = 250,
+    description_html = """\
+This builder measures Linux build performance with goma vs reclient in cq configuration.<br/>\
+The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-rel-compilator">linux-rel-compilator</a>.\
+""",
+    goma_jobs = 150,
     executable = "recipe:reclient_goma_comparison",
     execution_timeout = 6 * time.hour,
     reclient_cache_silo = "Comparison Linux CQ - cache siloed",
     reclient_instance = rbe_instance.TEST_CQ,
-    reclient_jobs = 250,
+    reclient_jobs = 150,
     os = os.LINUX_DEFAULT,
+    cores = 16,
+    ssd = True,
 )
 
 ci.builder(
@@ -1037,31 +1049,19 @@ ci.builder(
         category = "mac|cq",
         short_name = "cmp",
     ),
-    goma_jobs = 250,
+    description_html = """\
+This builder measures Mac build performance with goma vs reclient in cq configuration.<br/>\
+The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/mac-rel-compilator">mac-rel-compilator</a>.\
+""",
+    goma_jobs = 150,
     executable = "recipe:reclient_goma_comparison",
     execution_timeout = 10 * time.hour,
     reclient_cache_silo = "Comparison Mac CQ - cache siloed",
     reclient_instance = rbe_instance.TEST_CQ,
-    reclient_jobs = 250,
+    reclient_jobs = 150,
     os = os.MAC_DEFAULT,
+    ssd = True,
     cores = None,
-)
-
-ci.builder(
-    name = "Comparison Windows (8 cores) (reclient)(CQ)",
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "win|cq",
-        short_name = "re",
-    ),
-    cores = 8,
-    goma_jobs = 80,
-    executable = "recipe:reclient_goma_comparison",
-    reclient_cache_silo = "Comparison Windows 8 cores CQ - cache siloed",
-    reclient_instance = rbe_instance.TEST_CQ,
-    reclient_jobs = 80,
-    os = os.WINDOWS_DEFAULT,
-    free_space = builders.free_space.high,
 )
 
 ci.builder(
@@ -1071,14 +1071,19 @@ ci.builder(
         category = "win|cq",
         short_name = "re",
     ),
-    cores = 32,
-    goma_jobs = 250,
+    description_html = """\
+This builder measures Windows build performance with goma vs reclient in cq configuration.<br/>\
+The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/win10_chromium_x64_rel_ng-compilator">win10_chromium_x64_rel_ng-compilator</a>.\
+""",
+    goma_jobs = 300,
     executable = "recipe:reclient_goma_comparison",
     execution_timeout = 6 * time.hour,
     reclient_cache_silo = "Comparison Windows CQ - cache siloed",
     reclient_instance = rbe_instance.TEST_CQ,
-    reclient_jobs = 250,
+    reclient_jobs = 300,
     os = os.WINDOWS_DEFAULT,
+    ssd = True,
+    cores = 32,
 )
 
 ci.builder(
@@ -1088,13 +1093,19 @@ ci.builder(
         category = "cros x64|cq",
         short_name = "cmp",
     ),
-    goma_jobs = 250,
+    description_html = """\
+This builder measures Simple Chrome build performance with goma vs reclient in cq configuration.<br/>\
+The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-rel-compilator">linux-chromeos-rel-compilator</a>.\
+""",
+    goma_jobs = 300,
     executable = "recipe:reclient_goma_comparison",
     execution_timeout = 10 * time.hour,
     reclient_cache_silo = "Comparison Simple Chrome CQ - cache siloed",
     reclient_instance = rbe_instance.TEST_CQ,
-    reclient_jobs = 250,
+    reclient_jobs = 300,
     os = os.LINUX_DEFAULT,
+    cores = 32,
+    ssd = True,
 )
 
 ci.builder(
@@ -1104,14 +1115,19 @@ ci.builder(
         category = "ios|cq",
         short_name = "cmp",
     ),
-    goma_jobs = 250,
+    description_html = """\
+This builder measures iOS build performance with goma vs reclient in cq configuration.<br/>\
+The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/ios-simulator">ios-simulator</a>.\
+""",
+    goma_jobs = 150,
     executable = "recipe:reclient_goma_comparison",
     execution_timeout = 10 * time.hour,
     reclient_cache_silo = "Comparison ios CQ - cache siloed",
     reclient_instance = rbe_instance.TEST_CQ,
-    reclient_jobs = 250,
+    reclient_jobs = 150,
     os = os.MAC_DEFAULT,
     cores = None,
+    ssd = True,
     xcode = xcode.x13main,
 )
 
