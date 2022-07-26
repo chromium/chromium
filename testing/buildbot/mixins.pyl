@@ -693,23 +693,13 @@
       },
     },
   },
-  'linux_intel_hd_630_experimental': {
-    # Similar to stable, but with a newer Mesa version.
+  'linux_intel_uhd_630_experimental': {
     'swarming': {
       'dimensions': {
-        'gpu': '8086:5912-20.0.8',
-        'os': 'Ubuntu-18.04.5',
+        'gpu': '8086:9bc5-20.0.8',
+        'os': 'Ubuntu-18.04.6',
         'pool': 'chromium.tests.gpu',
       },
-    },
-  },
-  'linux_intel_hd_630_stable': {
-    'swarming': {
-      'dimensions': {
-        'gpu': '8086:5912-19.0.2',
-        'os': 'Ubuntu-19.04',
-        'pool': 'chromium.tests.gpu',
-      }
     }
   },
   'linux_intel_uhd_630_stable': {
