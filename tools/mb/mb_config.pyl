@@ -30,6 +30,7 @@
       'lacros-arm-generic-chrome': 'chromeos_arm-generic_lacros_official',
       'lacros-arm-generic-chrome-skylab': 'chromeos_arm-generic_lacros_official_skylab',
       'lacros-arm64-generic-chrome': 'chromeos_arm64-generic_lacros_official',
+      'lacros-arm64-generic-chrome-skylab': 'chromeos_arm64-generic_lacros_official_skylab',
       # Don't include unwind tables for linux-/mac-/win-/win64-chrome builders.
       # They monitor binary size growth, which may be affected by the tables.
       'linux-chrome': 'official_goma',
@@ -897,6 +898,7 @@
       'lacros-arm-generic-chrome': 'chromeos_arm-generic_lacros_official',
       'lacros-arm-generic-chrome-skylab': 'chromeos_arm-generic_lacros_official_skylab',
       'lacros-arm64-generic-chrome': 'chromeos_arm64-generic_lacros_official',
+      'lacros-arm64-generic-chrome-skylab': 'chromeos_arm64-generic_lacros_official_skylab',
       'linux-chrome': 'official_goma',
       'linux-chrome-beta': 'official_goma',
       'linux-chrome-stable': 'official_goma',
@@ -2129,6 +2131,10 @@
 
     'chromeos_arm64-generic_lacros_official': [
       'chromeos_arm64-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
+    ],
+
+    'chromeos_arm64-generic_lacros_official_skylab': [
+      'chromeos_arm64-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
     ],
 
     'chromeos_arm64-generic_lacros_rel_dchecks': [

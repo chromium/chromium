@@ -2245,6 +2245,80 @@
       }
     ]
   },
+  "lacros-arm64-generic-chrome-skylab": {
+    "additional_compile_targets": [
+      "chrome",
+      "linux_symbols",
+      "symupload",
+      "strip_chrome_binary"
+    ],
+    "skylab_tests": [
+      {
+        "args": [],
+        "cros_board": "trogor",
+        "cros_img": "trogor-release/R105-14996.0.0",
+        "name": "lacros_all_tast_tests TROGDOR_RELEASE_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "timeout_sec": 10800,
+        "variant_id": "TROGDOR_RELEASE_LKGM"
+      },
+      {
+        "args": [],
+        "cros_board": "trogor",
+        "cros_img": "trogor-release/R105-14985.0.0",
+        "name": "lacros_all_tast_tests TROGDOR_RELEASE_DEV",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "timeout_sec": 10800,
+        "variant_id": "TROGDOR_RELEASE_DEV"
+      },
+      {
+        "args": [],
+        "cros_board": "trogor",
+        "cros_img": "trogor-release/R104-14909.79.0",
+        "name": "lacros_all_tast_tests TROGDOR_RELEASE_BETA",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "timeout_sec": 10800,
+        "variant_id": "TROGDOR_RELEASE_BETA"
+      },
+      {
+        "args": [],
+        "cros_board": "trogor",
+        "cros_img": "trogor-release/R103-14816.131.0",
+        "name": "lacros_all_tast_tests TROGDOR_RELEASE_STABLE",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "timeout_sec": 10800,
+        "variant_id": "TROGDOR_RELEASE_STABLE"
+      }
+    ]
+  },
   "linux-chrome": {
     "additional_compile_targets": [
       "chrome",

@@ -260,6 +260,21 @@
         },
         'os_type': 'chromeos',
       },
+      'lacros-arm64-generic-chrome-skylab': {
+        'additional_compile_targets': [
+          'chrome',
+          'linux_symbols',
+          'symupload',
+          'strip_chrome_binary'
+        ],
+        'mixins': [
+          'chrome-swarming-pool',
+        ],
+        'test_suites': {
+          'skylab_tests': 'lacros_skylab_arm64',
+        },
+        'os_type': 'chromeos',
+      },
       'linux-chrome': {
         'additional_compile_targets': [
           'chrome',

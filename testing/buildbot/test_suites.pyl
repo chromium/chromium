@@ -4186,6 +4186,16 @@
       },
     },
 
+    'lacros_skylab_arm64_tests': {
+      'lacros_all_tast_tests': {
+        'tast_expr': '("group:mainline" && "dep:lacros" && !informational)',
+        'timeout_sec': 10800,
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
+    },
+
     # TODO(crbug.com/1283076): ozone_unittests and viz_unittests have failures
     # remove the filter when the tests are shown to be stable in
     # lacros-arm-generic-chrome-fyi
@@ -7548,6 +7558,17 @@
           'CROS_JACUZZI_RELEASE_DEV',
           'CROS_JACUZZI_RELEASE_BETA',
           'CROS_JACUZZI_RELEASE_STABLE',
+        ]
+      },
+    },
+
+    'lacros_skylab_arm64': {
+      'lacros_skylab_arm64_tests': {
+        'variants': [
+          'CROS_TROGDOR_RELEASE_LKGM',
+          'CROS_TROGDOR_RELEASE_DEV',
+          'CROS_TROGDOR_RELEASE_BETA',
+          'CROS_TROGDOR_RELEASE_STABLE',
         ]
       },
     },
