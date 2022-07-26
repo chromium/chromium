@@ -14,7 +14,8 @@ SystemInfo::Builder::Builder() = default;
 SystemInfo::Builder::~Builder() = default;
 
 std::unique_ptr<SystemInfo> SystemInfo::Builder::Build() {
-  return base::WrapUnique(new SystemInfo(device_name_, board_name_, gaia_id_));
+  return base::WrapUnique(
+      new SystemInfo(device_name_, board_name_, gaia_id_, device_type_));
 }
 
 SystemInfo::Builder& SystemInfo::Builder::SetDeviceName(
@@ -35,14 +36,24 @@ SystemInfo::Builder& SystemInfo::Builder::SetGaiaId(
   return *this;
 }
 
+SystemInfo::Builder& SystemInfo::Builder::SetDeviceType(
+    const std::string& device_type) {
+  device_type_ = device_type;
+  return *this;
+}
+
 SystemInfo::SystemInfo(const SystemInfo& other) = default;
 
 SystemInfo::~SystemInfo() = default;
 
 SystemInfo::SystemInfo(const std::string& device_name,
                        const std::string& board_name,
-                       const std::string& gaia_id)
-    : device_name_(device_name), board_name_(board_name), gaia_id_(gaia_id) {}
+                       const std::string& gaia_id,
+                       const std::string& device_type)
+    : device_name_(device_name),
+      board_name_(board_name),
+      gaia_id_(gaia_id),
+      device_type_(device_type) {}
 
 }  // namespace eche_app
 }  // namespace ash

@@ -27,6 +27,7 @@ const ConnectionStateType kFakeWifiConnectionState =
     ConnectionStateType::kConnected;
 const bool kFakeDebugMode = false;
 const char kFakeGaiaId[] = "123";
+const char kFakeDeviceType[] = "Chromebook";
 
 void ParseJson(const std::string& json,
                std::string& device_name,
@@ -34,7 +35,8 @@ void ParseJson(const std::string& json,
                bool& tablet_mode,
                std::string& wifi_connection_state,
                bool& debug_mode,
-               std::string& gaia_id) {
+               std::string& gaia_id,
+               std::string& device_type) {
   absl::optional<base::Value> message_value = base::JSONReader::Read(json);
   base::Value::Dict* message_dictionary = message_value->GetIfDict();
   const std::string* device_name_ptr =
@@ -61,6 +63,10 @@ void ParseJson(const std::string& json,
       message_dictionary->FindString(kJsonGaiaIdKey);
   if (gaia_id_ptr)
     gaia_id = *gaia_id_ptr;
+  const std::string* device_type_ptr =
+      message_dictionary->FindString(kJsonDeviceTypeKey);
+  if (device_type_ptr)
+    device_type = *device_type_ptr;
 }
 
 class TaskRunner {
@@ -191,6 +197,7 @@ class SystemInfoProviderTest : public testing::Test {
                                                  .SetDeviceName(kFakeDeviceName)
                                                  .SetBoardName(kFakeBoardName)
                                                  .SetGaiaId(kFakeGaiaId)
+                                                 .SetDeviceType(kFakeDeviceType)
                                                  .Build(),
                                              remote_cros_network_config_.get());
     fake_observer_ = std::make_unique<FakeObserver>();
@@ -255,11 +262,12 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   std::string wifi_connection_state = "";
   bool debug_mode = true;
   std::string gaia_id = "";
+  std::string device_type = "";
 
   GetSystemInfo();
   std::string json = Callback::GetSystemInfo();
   ParseJson(json, device_name, board_name, tablet_mode, wifi_connection_state,
-            debug_mode, gaia_id);
+            debug_mode, gaia_id, device_type);
 
   EXPECT_EQ(device_name, kFakeDeviceName);
   EXPECT_EQ(board_name, kFakeBoardName);
@@ -267,6 +275,7 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   EXPECT_EQ(wifi_connection_state, "connected");
   EXPECT_EQ(debug_mode, kFakeDebugMode);
   EXPECT_EQ(gaia_id, kFakeGaiaId);
+  EXPECT_EQ(device_type, kFakeDeviceType);
 }
 
 TEST_F(SystemInfoProviderTest, ObserverCalledWhenBacklightChanged) {

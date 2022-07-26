@@ -297,6 +297,7 @@ std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(
       .SetDeviceName(device_name)
       .SetBoardName(board_name)
       .SetGaiaId(gaia_id)
+      .SetDeviceType(base::UTF16ToUTF8(device_type))
       .Build();
 }
 

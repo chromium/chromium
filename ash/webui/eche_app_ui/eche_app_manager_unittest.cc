@@ -68,6 +68,7 @@ const char kFakeDeviceName[] = "Someone's Chromebook";
 const char kFakeBoardName[] = "atlas";
 const char kFakeGaiaId[] = "123";
 const size_t kNumTestDevices = 3;
+const char kFakeDeviceType[] = "Chromebook";
 
 class EcheAppManagerTest : public testing::Test {
  public:
@@ -113,6 +114,7 @@ class EcheAppManagerTest : public testing::Test {
             .SetDeviceName(kFakeDeviceName)
             .SetBoardName(kFakeBoardName)
             .SetGaiaId(kFakeGaiaId)
+            .SetDeviceType(kFakeDeviceType)
             .Build(),
         fake_phone_hub_manager_.get(), fake_device_sync_client_.get(),
         fake_multidevice_setup_client_.get(), fake_secure_channel_client_.get(),

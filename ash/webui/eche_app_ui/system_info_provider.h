@@ -22,6 +22,7 @@ extern const char kJsonTabletModeKey[];
 extern const char kJsonWifiConnectionStateKey[];
 extern const char kJsonDebugModeKey[];
 extern const char kJsonGaiaIdKey[];
+extern const char kJsonDeviceTypeKey[];
 
 class SystemInfo;
 
