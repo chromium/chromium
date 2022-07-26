@@ -5,6 +5,8 @@
 package org.chromium.components.browser_ui.accessibility;
 
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -60,12 +62,15 @@ public class PageZoomCoordinator {
      * @param webContents   WebContents that this zoom UI will control.
      */
     public void show(WebContents webContents) {
-        // If the view has not been created, lazily inflate from the view stub.
+        // If inflating for the first time or showing from hidden, start animation
         if (mView == null) {
+            // If the view has not been created, lazily inflate from the view stub.
             mView = mDelegate.getZoomControlView();
             PropertyModelChangeProcessor.create(mModel, mView, PageZoomViewBinder::bind);
-        } else {
+            mView.startAnimation(getInAnimation());
+        } else if (mView.getVisibility() != View.VISIBLE) {
             mView.setVisibility(View.VISIBLE);
+            mView.startAnimation(getInAnimation());
         }
 
         mMediator.setWebContents(webContents);
@@ -110,7 +115,11 @@ public class PageZoomCoordinator {
      */
     public void hide() {
         // TODO(mschillaci): Add a FrameLayout wrapper so the view can be removed.
-        mView.setVisibility(View.GONE);
+        if (mView.getVisibility() == View.VISIBLE) {
+            Animation animation = getOutAnimation();
+            mView.startAnimation(animation);
+            mView.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -133,5 +142,17 @@ public class PageZoomCoordinator {
     @VisibleForTesting
     public static void setShouldShowMenuItemForTesting(@Nullable Boolean isEnabled) {
         sShouldShowMenuItemForTesting = isEnabled;
+    }
+
+    private Animation getInAnimation() {
+        Animation a = AnimationUtils.makeInChildBottomAnimation(mView.getContext());
+        return a;
+    }
+
+    private Animation getOutAnimation() {
+        Animation a =
+                AnimationUtils.loadAnimation(mView.getContext(), R.anim.slide_out_child_bottom);
+        a.setStartTime(AnimationUtils.currentAnimationTimeMillis());
+        return a;
     }
 }
