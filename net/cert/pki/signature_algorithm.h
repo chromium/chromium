@@ -7,9 +7,8 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -30,13 +29,29 @@ enum class DigestAlgorithm {
   Sha512,
 };
 
-// The signature scheme used within a signature. Parameters are specified
-// separately.
-enum class SignatureAlgorithmId {
-  RsaPkcs1,  // RSA PKCS#1 v1.5
-  RsaPss,    // RSASSA-PSS
-  Ecdsa,     // ECDSA
-  Dsa,       // DSA
+// The signature algorithm used within a certificate.
+enum class SignatureAlgorithm {
+  kRsaPkcs1Sha1,
+  kRsaPkcs1Sha256,
+  kRsaPkcs1Sha384,
+  kRsaPkcs1Sha512,
+  kEcdsaSha1,
+  kEcdsaSha256,
+  kEcdsaSha384,
+  kEcdsaSha512,
+  // These RSA-PSS constants match RFC 8446 and refer to RSASSA-PSS with MGF-1,
+  // using the specified hash as both the signature and MGF-1 hash, and the hash
+  // length as the salt length.
+  kRsaPssSha256,
+  kRsaPssSha384,
+  kRsaPssSha512,
+  // These algorithms can be parsed but are not supported.
+  // TODO(https://crbug.com/1321688): Remove these.
+  kRsaPkcs1Md2,
+  kRsaPkcs1Md4,
+  kRsaPkcs1Md5,
+  kDsaSha1,
+  kDsaSha256,
 };
 
 // Parses AlgorithmIdentifier as defined by RFC 5280 section 4.1.1.2:
@@ -63,93 +78,17 @@ enum class SignatureAlgorithmId {
 [[nodiscard]] bool ParseHashAlgorithm(const der::Input& input,
                                       DigestAlgorithm* out);
 
-// Base class for describing algorithm parameters.
-class NET_EXPORT SignatureAlgorithmParameters {
- public:
-  SignatureAlgorithmParameters() = default;
+// Parses an AlgorithmIdentifier into a signature algorithm and returns it, or
+// returns `absl::nullopt` if `algorithm_identifer` either cannot be parsed or
+// is not a recognized signature algorithm.
+NET_EXPORT absl::optional<SignatureAlgorithm> ParseSignatureAlgorithm(
+    const der::Input& algorithm_identifier,
+    CertErrors* errors);
 
-  SignatureAlgorithmParameters(const SignatureAlgorithmParameters&) = delete;
-  SignatureAlgorithmParameters& operator=(const SignatureAlgorithmParameters&) =
-      delete;
-
-  virtual ~SignatureAlgorithmParameters() = default;
-};
-
-// Parameters for an RSASSA-PSS signature algorithm.
-//
-// The trailer is assumed to be 1 and the mask generation algorithm to be MGF1,
-// as that is all that is implemented, and any other values while parsing the
-// AlgorithmIdentifier will thus be rejected.
-class NET_EXPORT RsaPssParameters : public SignatureAlgorithmParameters {
- public:
-  RsaPssParameters(DigestAlgorithm mgf1_hash, uint32_t salt_length);
-
-  DigestAlgorithm mgf1_hash() const { return mgf1_hash_; }
-  uint32_t salt_length() const { return salt_length_; }
-
- private:
-  const DigestAlgorithm mgf1_hash_;
-  const uint32_t salt_length_;
-};
-
-// SignatureAlgorithm describes a signature algorithm and its parameters. This
-// corresponds to "AlgorithmIdentifier" from RFC 5280.
-//
-// TODO(crbug.com/1321691): Replace this with a simple enum.
-class NET_EXPORT SignatureAlgorithm {
- public:
-  SignatureAlgorithm(const SignatureAlgorithm&) = delete;
-  SignatureAlgorithm& operator=(const SignatureAlgorithm&) = delete;
-
-  ~SignatureAlgorithm();
-
-  SignatureAlgorithmId algorithm() const { return algorithm_; }
-  DigestAlgorithm digest() const { return digest_; }
-
-  // Creates a SignatureAlgorithm by parsing a DER-encoded "AlgorithmIdentifier"
-  // (RFC 5280). Returns nullptr on failure. If |errors| was non-null then
-  // error/warning information is output to it.
-  static std::unique_ptr<SignatureAlgorithm> Create(
-      const der::Input& algorithm_identifier,
-      CertErrors* errors);
-
-  // Creates a new SignatureAlgorithm with the given type and parameters.
-  // Guaranteed to return non-null result.
-  static std::unique_ptr<SignatureAlgorithm> CreateRsaPkcs1(
-      DigestAlgorithm digest);
-  static std::unique_ptr<SignatureAlgorithm> CreateDsa(DigestAlgorithm digest);
-  static std::unique_ptr<SignatureAlgorithm> CreateEcdsa(
-      DigestAlgorithm digest);
-  static std::unique_ptr<SignatureAlgorithm> CreateRsaPss(
-      DigestAlgorithm digest,
-      DigestAlgorithm mgf1_hash,
-      uint32_t salt_length);
-
-  // The following methods retrieve the parameters for the signature algorithm.
-  //
-  // The correct parameters should be chosen based on the algorithm ID. For
-  // instance a SignatureAlgorithm with |algorithm() == RsaPss| should retrieve
-  // parameters via ParametersForRsaPss().
-  //
-  // The returned pointer is non-owned, and has the same lifetime as |this|.
-  const RsaPssParameters* ParamsForRsaPss() const;
-
-  bool has_params() const { return !!params_; }
-
-  // Returns true if |alg1_tlv| and |alg2_tlv| represent an equivalent
-  // AlgorithmIdentifier once parsed.
-  static bool IsEquivalent(const der::Input& alg1_tlv,
-                           const der::Input& alg2_tlv);
-
- private:
-  SignatureAlgorithm(SignatureAlgorithmId algorithm,
-                     DigestAlgorithm digest,
-                     std::unique_ptr<SignatureAlgorithmParameters> params);
-
-  const SignatureAlgorithmId algorithm_;
-  const DigestAlgorithm digest_;
-  const std::unique_ptr<SignatureAlgorithmParameters> params_;
-};
+// Returns the hash to be used with the tls-server-end-point channel binding
+// (RFC 5929) or `absl::nullopt`, if not supported for this signature algorithm.
+absl::optional<DigestAlgorithm> GetTlsServerEndpointDigestAlgorithm(
+    SignatureAlgorithm alg);
 
 }  // namespace net
 

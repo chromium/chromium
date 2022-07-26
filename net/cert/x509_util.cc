@@ -194,25 +194,32 @@ bool GetTLSServerEndPointChannelBinding(const X509Certificate& certificate,
   der::BitString signature_value;
   if (!ParseCertificate(der::Input(der_encoded_certificate),
                         &tbs_certificate_tlv, &signature_algorithm_tlv,
-                        &signature_value, nullptr))
+                        &signature_value, nullptr)) {
     return false;
-
-  std::unique_ptr<SignatureAlgorithm> signature_algorithm =
-      SignatureAlgorithm::Create(signature_algorithm_tlv, nullptr);
-  if (!signature_algorithm)
+  }
+  absl::optional<SignatureAlgorithm> signature_algorithm =
+      ParseSignatureAlgorithm(signature_algorithm_tlv, nullptr);
+  if (!signature_algorithm) {
     return false;
+  }
 
+  absl::optional<net::DigestAlgorithm> binding_digest =
+      GetTlsServerEndpointDigestAlgorithm(*signature_algorithm);
+  if (!binding_digest) {
+    return false;
+  }
   const EVP_MD* digest_evp_md = nullptr;
-  switch (signature_algorithm->digest()) {
+  switch (binding_digest.value()) {
     case net::DigestAlgorithm::Md2:
     case net::DigestAlgorithm::Md4:
-      // Shouldn't be reachable.
-      digest_evp_md = nullptr;
-      break;
-
-    // Per RFC 5929 section 4.1, MD5 and SHA1 map to SHA256.
     case net::DigestAlgorithm::Md5:
     case net::DigestAlgorithm::Sha1:
+      // Legacy digests are not supported, and
+      // `GetTlsServerEndpointDigestAlgorithm` internally maps MD5 and SHA-1 to
+      // SHA-256.
+      NOTREACHED();
+      break;
+
     case net::DigestAlgorithm::Sha256:
       digest_evp_md = EVP_sha256();
       break;
@@ -520,13 +527,12 @@ bool HasRsaPkcs1Sha1Signature(const CRYPTO_BUFFER* cert_buffer) {
     return false;
   }
 
-  std::unique_ptr<SignatureAlgorithm> signature_algorithm =
-      SignatureAlgorithm::Create(signature_algorithm_tlv, /*errors=*/nullptr);
-  if (!signature_algorithm)
-    return false;
+  absl::optional<SignatureAlgorithm> signature_algorithm =
+      ParseSignatureAlgorithm(signature_algorithm_tlv,
+                              /*errors=*/nullptr);
 
-  return signature_algorithm->algorithm() == SignatureAlgorithmId::RsaPkcs1 &&
-         signature_algorithm->digest() == net::DigestAlgorithm::Sha1;
+  return signature_algorithm &&
+         *signature_algorithm == SignatureAlgorithm::kRsaPkcs1Sha1;
 }
 
 }  // namespace net::x509_util

@@ -14,7 +14,6 @@
 namespace net {
 
 class CertErrors;
-class SignatureAlgorithm;
 
 // SimplePathBuilderDelegate is an implementation of CertPathBuilderDelegate
 // that uses some default policies:
@@ -46,9 +45,8 @@ class NET_EXPORT SimplePathBuilderDelegate : public CertPathBuilderDelegate {
 
   // Accepts RSA PKCS#1, RSASSA-PSS or ECDA using any of the SHA* digests
   // (including SHA1).
-  bool IsSignatureAlgorithmAcceptable(
-      const SignatureAlgorithm& signature_algorithm,
-      CertErrors* errors) override;
+  bool IsSignatureAlgorithmAcceptable(SignatureAlgorithm signature_algorithm,
+                                      CertErrors* errors) override;
 
   // Requires RSA keys be >= |min_rsa_modulus_length_bits_|.
   bool IsPublicKeyAcceptable(EVP_PKEY* public_key, CertErrors* errors) override;
@@ -58,8 +56,6 @@ class NET_EXPORT SimplePathBuilderDelegate : public CertPathBuilderDelegate {
                                   CertPathBuilderResultPath* path) override;
 
  private:
-  [[nodiscard]] bool IsAcceptableDigest(DigestAlgorithm digest) const;
-
   const size_t min_rsa_modulus_length_bits_;
   const DigestPolicy digest_policy_;
 };

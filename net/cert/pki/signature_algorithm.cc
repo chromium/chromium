@@ -4,10 +4,7 @@
 
 #include "net/cert/pki/signature_algorithm.h"
 
-#include <memory>
-#include <utility>
-
-#include "base/memory/ptr_util.h"
+#include "base/check.h"
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/der/input.h"
@@ -181,122 +178,8 @@ const uint8_t kOidMgf1[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
   return !parser.HasMore();
 }
 
-// Parses an RSA PKCS#1 v1.5 signature algorithm given the DER-encoded
-// "parameters" from the parsed AlgorithmIdentifier, and the hash algorithm
-// that was implied by the AlgorithmIdentifier's OID.
-//
-// Returns a nullptr on failure.
-//
-// RFC 5912 requires that the parameters for RSA PKCS#1 v1.5 algorithms be NULL
-// ("PARAMS TYPE NULL ARE required"), however an empty parameter is also
-// allowed for compatibility with non-compliant OCSP responders:
-//
-//     sa-rsaWithSHA1 SIGNATURE-ALGORITHM ::= {
-//      IDENTIFIER sha1WithRSAEncryption
-//      PARAMS TYPE NULL ARE required
-//      HASHES { mda-sha1 }
-//      PUBLIC-KEYS { pk-rsa }
-//      SMIME-CAPS {IDENTIFIED BY sha1WithRSAEncryption }
-//     }
-//
-//     sa-sha256WithRSAEncryption SIGNATURE-ALGORITHM ::= {
-//         IDENTIFIER sha256WithRSAEncryption
-//         PARAMS TYPE NULL ARE required
-//         HASHES { mda-sha256 }
-//         PUBLIC-KEYS { pk-rsa }
-//         SMIME-CAPS { IDENTIFIED BY sha256WithRSAEncryption }
-//     }
-//
-//     sa-sha384WithRSAEncryption SIGNATURE-ALGORITHM ::= {
-//         IDENTIFIER sha384WithRSAEncryption
-//         PARAMS TYPE NULL ARE required
-//         HASHES { mda-sha384 }
-//         PUBLIC-KEYS { pk-rsa }
-//         SMIME-CAPS { IDENTIFIED BY sha384WithRSAEncryption }
-//     }
-//
-//     sa-sha512WithRSAEncryption SIGNATURE-ALGORITHM ::= {
-//         IDENTIFIER sha512WithRSAEncryption
-//         PARAMS TYPE NULL ARE required
-//         HASHES { mda-sha512 }
-//         PUBLIC-KEYS { pk-rsa }
-//         SMIME-CAPS { IDENTIFIED BY sha512WithRSAEncryption }
-//     }
-std::unique_ptr<SignatureAlgorithm> ParseRsaPkcs1(DigestAlgorithm digest,
-                                                  const der::Input& params) {
-  // TODO(svaldez): Add warning about non-strict parsing.
-  if (!IsNull(params) && !IsEmpty(params))
-    return nullptr;
-
-  return SignatureAlgorithm::CreateRsaPkcs1(digest);
-}
-
-// Parses a DSA signature algorithm given the DER-encoded
-// "parameters" from the parsed AlgorithmIdentifier, and the hash algorithm
-// that was implied by the AlgorithmIdentifier's OID.
-//
-// Returns a nullptr on failure.
-//
-// RFC 5912 requires that the parameters for DSA algorithms be absent.
-std::unique_ptr<SignatureAlgorithm> ParseDsa(DigestAlgorithm digest,
-                                             const der::Input& params) {
-  // TODO(svaldez): Add warning about non-strict parsing.
-  if (!IsNull(params) && !IsEmpty(params))
-    return nullptr;
-
-  return SignatureAlgorithm::CreateDsa(digest);
-}
-
-// Parses an ECDSA signature algorithm given the DER-encoded "parameters" from
-// the parsed AlgorithmIdentifier, and the hash algorithm that was implied by
-// the AlgorithmIdentifier's OID.
-//
-// On failure returns a nullptr.
-//
-// RFC 5912 requires that the parameters for ECDSA algorithms be absent
-// ("PARAMS TYPE NULL ARE absent"):
-//
-//     sa-ecdsaWithSHA1 SIGNATURE-ALGORITHM ::= {
-//      IDENTIFIER ecdsa-with-SHA1
-//      VALUE ECDSA-Sig-Value
-//      PARAMS TYPE NULL ARE absent
-//      HASHES { mda-sha1 }
-//      PUBLIC-KEYS { pk-ec }
-//      SMIME-CAPS {IDENTIFIED BY ecdsa-with-SHA1 }
-//     }
-//
-//     sa-ecdsaWithSHA256 SIGNATURE-ALGORITHM ::= {
-//      IDENTIFIER ecdsa-with-SHA256
-//      VALUE ECDSA-Sig-Value
-//      PARAMS TYPE NULL ARE absent
-//      HASHES { mda-sha256 }
-//      PUBLIC-KEYS { pk-ec }
-//      SMIME-CAPS { IDENTIFIED BY ecdsa-with-SHA256 }
-//     }
-//
-//     sa-ecdsaWithSHA384 SIGNATURE-ALGORITHM ::= {
-//      IDENTIFIER ecdsa-with-SHA384
-//      VALUE ECDSA-Sig-Value
-//      PARAMS TYPE NULL ARE absent
-//      HASHES { mda-sha384 }
-//      PUBLIC-KEYS { pk-ec }
-//      SMIME-CAPS { IDENTIFIED BY ecdsa-with-SHA384 }
-//     }
-//
-//     sa-ecdsaWithSHA512 SIGNATURE-ALGORITHM ::= {
-//      IDENTIFIER ecdsa-with-SHA512
-//      VALUE ECDSA-Sig-Value
-//      PARAMS TYPE NULL ARE absent
-//      HASHES { mda-sha512 }
-//      PUBLIC-KEYS { pk-ec }
-//      SMIME-CAPS { IDENTIFIED BY ecdsa-with-SHA512 }
-//     }
-std::unique_ptr<SignatureAlgorithm> ParseEcdsa(DigestAlgorithm digest,
-                                               const der::Input& params) {
-  if (!IsEmpty(params))
-    return nullptr;
-
-  return SignatureAlgorithm::CreateEcdsa(digest);
+[[nodiscard]] bool IsNullOrEmpty(const der::Input& input) {
+  return IsNull(input) || IsEmpty(input);
 }
 
 // Parses a MaskGenAlgorithm as defined by RFC 5912:
@@ -364,16 +247,16 @@ std::unique_ptr<SignatureAlgorithm> ParseEcdsa(DigestAlgorithm digest,
 // Note also that DER encoding (ITU-T X.690 section 11.5) prohibits
 // specifying default values explicitly. The parameter should instead be
 // omitted to indicate a default value.
-std::unique_ptr<SignatureAlgorithm> ParseRsaPss(const der::Input& params) {
+absl::optional<SignatureAlgorithm> ParseRsaPss(const der::Input& params) {
   der::Parser parser(params);
   der::Parser params_parser;
   if (!parser.ReadSequence(&params_parser))
-    return nullptr;
+    return absl::nullopt;
 
   // There shouldn't be anything after the sequence (by definition the
   // parameters is a single sequence).
   if (parser.HasMore())
-    return nullptr;
+    return absl::nullopt;
 
   // The default values for hashAlgorithm, maskGenAlgorithm, and saltLength
   // correspond to SHA-1, which we do not support with RSA-PSS, so treat them as
@@ -397,25 +280,28 @@ std::unique_ptr<SignatureAlgorithm> ParseRsaPss(const der::Input& params) {
                                      &salt_length_parser) ||
       !salt_length_parser.ReadUint64(&salt_length) ||
       salt_length_parser.HasMore() || params_parser.HasMore()) {
-    return nullptr;
+    return absl::nullopt;
   }
 
   // Only combinations of RSASSA-PSS-params specified by TLS 1.3 (RFC 8446) are
   // supported.
-  if ((hash == DigestAlgorithm::Sha256 &&
-       mgf1_hash == DigestAlgorithm::Sha256 && salt_length == 32) ||
-      (hash == DigestAlgorithm::Sha384 &&
-       mgf1_hash == DigestAlgorithm::Sha384 && salt_length == 48) ||
-      (hash == DigestAlgorithm::Sha512 &&
-       mgf1_hash == DigestAlgorithm::Sha512 && salt_length == 64)) {
-    return SignatureAlgorithm::CreateRsaPss(hash, mgf1_hash, salt_length);
+  if (hash != mgf1_hash) {
+    return absl::nullopt;  // TLS 1.3 always matches MGF-1 and message hash.
+  }
+  if (hash == DigestAlgorithm::Sha256 && salt_length == 32) {
+    return SignatureAlgorithm::kRsaPssSha256;
+  }
+  if (hash == DigestAlgorithm::Sha384 && salt_length == 48) {
+    return SignatureAlgorithm::kRsaPssSha384;
+  }
+  if (hash == DigestAlgorithm::Sha512 && salt_length == 64) {
+    return SignatureAlgorithm::kRsaPssSha512;
   }
 
-  return nullptr;
+  return absl::nullopt;
 }
 
-DEFINE_CERT_ERROR_ID(kUnknownAlgorithmIdentifierOid,
-                     "Unknown AlgorithmIdentifier OID");
+DEFINE_CERT_ERROR_ID(kUnknownSignatureAlgorithm, "Unknown signature algorithm");
 
 }  // namespace
 
@@ -474,147 +360,128 @@ DEFINE_CERT_ERROR_ID(kUnknownAlgorithmIdentifierOid,
   return true;
 }
 
-RsaPssParameters::RsaPssParameters(DigestAlgorithm mgf1_hash,
-                                   uint32_t salt_length)
-    : mgf1_hash_(mgf1_hash), salt_length_(salt_length) {}
-
-SignatureAlgorithm::~SignatureAlgorithm() = default;
-
-std::unique_ptr<SignatureAlgorithm> SignatureAlgorithm::Create(
+absl::optional<SignatureAlgorithm> ParseSignatureAlgorithm(
     const der::Input& algorithm_identifier,
     CertErrors* errors) {
   der::Input oid;
   der::Input params;
   if (!ParseAlgorithmIdentifier(algorithm_identifier, &oid, &params))
-    return nullptr;
+    return absl::nullopt;
 
   // TODO(eroman): Each OID is tested for equality in order, which is not
   // particularly efficient.
 
-  if (oid == der::Input(kOidSha1WithRsaEncryption))
-    return ParseRsaPkcs1(DigestAlgorithm::Sha1, params);
+  // RFC 5912 requires that the parameters for RSA PKCS#1 v1.5 algorithms be
+  // NULL ("PARAMS TYPE NULL ARE required"), however an empty parameter is also
+  // allowed for compatibility with non-compliant OCSP responders.
+  //
+  // TODO(svaldez): Add warning about non-strict parsing.
+  if (oid == der::Input(kOidSha1WithRsaEncryption) && IsNullOrEmpty(params)) {
+    return SignatureAlgorithm::kRsaPkcs1Sha1;
+  }
+  if (oid == der::Input(kOidSha256WithRsaEncryption) && IsNullOrEmpty(params)) {
+    return SignatureAlgorithm::kRsaPkcs1Sha256;
+  }
+  if (oid == der::Input(kOidSha384WithRsaEncryption) && IsNullOrEmpty(params)) {
+    return SignatureAlgorithm::kRsaPkcs1Sha384;
+  }
+  if (oid == der::Input(kOidSha512WithRsaEncryption) && IsNullOrEmpty(params)) {
+    return SignatureAlgorithm::kRsaPkcs1Sha512;
+  }
+  if (oid == der::Input(kOidSha1WithRsaSignature) && IsNullOrEmpty(params)) {
+    return SignatureAlgorithm::kRsaPkcs1Sha1;
+  }
+  if (oid == der::Input(kOidMd2WithRsaEncryption) && IsNullOrEmpty(params)) {
+    return SignatureAlgorithm::kRsaPkcs1Md2;
+  }
+  if (oid == der::Input(kOidMd4WithRsaEncryption) && IsNullOrEmpty(params)) {
+    return SignatureAlgorithm::kRsaPkcs1Md4;
+  }
+  if (oid == der::Input(kOidMd5WithRsaEncryption) && IsNullOrEmpty(params)) {
+    return SignatureAlgorithm::kRsaPkcs1Md5;
+  }
 
-  if (oid == der::Input(kOidSha256WithRsaEncryption))
-    return ParseRsaPkcs1(DigestAlgorithm::Sha256, params);
+  // RFC 5912 requires that the parameters for ECDSA algorithms be absent
+  // ("PARAMS TYPE NULL ARE absent"):
+  if (oid == der::Input(kOidEcdsaWithSha1) && IsEmpty(params)) {
+    return SignatureAlgorithm::kEcdsaSha1;
+  }
+  if (oid == der::Input(kOidEcdsaWithSha256) && IsEmpty(params)) {
+    return SignatureAlgorithm::kEcdsaSha256;
+  }
+  if (oid == der::Input(kOidEcdsaWithSha384) && IsEmpty(params)) {
+    return SignatureAlgorithm::kEcdsaSha384;
+  }
+  if (oid == der::Input(kOidEcdsaWithSha512) && IsEmpty(params)) {
+    return SignatureAlgorithm::kEcdsaSha512;
+  }
 
-  if (oid == der::Input(kOidSha384WithRsaEncryption))
-    return ParseRsaPkcs1(DigestAlgorithm::Sha384, params);
-
-  if (oid == der::Input(kOidSha512WithRsaEncryption))
-    return ParseRsaPkcs1(DigestAlgorithm::Sha512, params);
-
-  if (oid == der::Input(kOidEcdsaWithSha1))
-    return ParseEcdsa(DigestAlgorithm::Sha1, params);
-
-  if (oid == der::Input(kOidEcdsaWithSha256))
-    return ParseEcdsa(DigestAlgorithm::Sha256, params);
-
-  if (oid == der::Input(kOidEcdsaWithSha384))
-    return ParseEcdsa(DigestAlgorithm::Sha384, params);
-
-  if (oid == der::Input(kOidEcdsaWithSha512))
-    return ParseEcdsa(DigestAlgorithm::Sha512, params);
-
-  if (oid == der::Input(kOidRsaSsaPss))
+  if (oid == der::Input(kOidRsaSsaPss)) {
     return ParseRsaPss(params);
+  }
 
-  if (oid == der::Input(kOidSha1WithRsaSignature))
-    return ParseRsaPkcs1(DigestAlgorithm::Sha1, params);
+  // RFC 5912 requires that the parameters for DSA algorithms be absent.
+  //
+  // TODO(svaldez): Add warning about non-strict parsing.
+  if (oid == der::Input(kOidDsaWithSha1) && IsNullOrEmpty(params)) {
+    return SignatureAlgorithm::kDsaSha1;
+  }
+  if (oid == der::Input(kOidDsaWithSha256) && IsNullOrEmpty(params)) {
+    return SignatureAlgorithm::kDsaSha256;
+  }
 
-  if (oid == der::Input(kOidMd2WithRsaEncryption))
-    return ParseRsaPkcs1(DigestAlgorithm::Md2, params);
-
-  if (oid == der::Input(kOidMd4WithRsaEncryption))
-    return ParseRsaPkcs1(DigestAlgorithm::Md4, params);
-
-  if (oid == der::Input(kOidMd5WithRsaEncryption))
-    return ParseRsaPkcs1(DigestAlgorithm::Md5, params);
-
-  if (oid == der::Input(kOidDsaWithSha1))
-    return ParseDsa(DigestAlgorithm::Sha1, params);
-
-  if (oid == der::Input(kOidDsaWithSha256))
-    return ParseDsa(DigestAlgorithm::Sha256, params);
-
-  // Unknown OID.
+  // Unknown signature algorithm.
   if (errors) {
-    errors->AddError(kUnknownAlgorithmIdentifierOid,
+    errors->AddError(kUnknownSignatureAlgorithm,
                      CreateCertErrorParams2Der("oid", oid, "params", params));
   }
-  return nullptr;
+  return absl::nullopt;
 }
 
-std::unique_ptr<SignatureAlgorithm> SignatureAlgorithm::CreateRsaPkcs1(
-    DigestAlgorithm digest) {
-  return base::WrapUnique(
-      new SignatureAlgorithm(SignatureAlgorithmId::RsaPkcs1, digest, nullptr));
-}
+absl::optional<DigestAlgorithm> GetTlsServerEndpointDigestAlgorithm(
+    SignatureAlgorithm alg) {
+  // See RFC 5929, section 4.1. RFC 5929 breaks the signature algorithm
+  // abstraction by trying to extract individual digest algorithms. (While
+  // common, this is not a universal property of signature algorithms.) We
+  // implement this within the library, so callers do not need to condition over
+  // all algorithms.
+  switch (alg) {
+    // If the single digest algorithm is MD5 or SHA-1, use SHA-256.
+    case SignatureAlgorithm::kRsaPkcs1Md5:
+    case SignatureAlgorithm::kRsaPkcs1Sha1:
+    case SignatureAlgorithm::kEcdsaSha1:
+      return DigestAlgorithm::Sha256;
 
-std::unique_ptr<SignatureAlgorithm> SignatureAlgorithm::CreateDsa(
-    DigestAlgorithm digest) {
-  return base::WrapUnique(
-      new SignatureAlgorithm(SignatureAlgorithmId::Dsa, digest, nullptr));
-}
+    case SignatureAlgorithm::kRsaPkcs1Sha256:
+    case SignatureAlgorithm::kEcdsaSha256:
+      return DigestAlgorithm::Sha256;
 
-std::unique_ptr<SignatureAlgorithm> SignatureAlgorithm::CreateEcdsa(
-    DigestAlgorithm digest) {
-  return base::WrapUnique(
-      new SignatureAlgorithm(SignatureAlgorithmId::Ecdsa, digest, nullptr));
-}
+    case SignatureAlgorithm::kRsaPkcs1Sha384:
+    case SignatureAlgorithm::kEcdsaSha384:
+      return DigestAlgorithm::Sha384;
 
-std::unique_ptr<SignatureAlgorithm> SignatureAlgorithm::CreateRsaPss(
-    DigestAlgorithm digest,
-    DigestAlgorithm mgf1_hash,
-    uint32_t salt_length) {
-  return base::WrapUnique(new SignatureAlgorithm(
-      SignatureAlgorithmId::RsaPss, digest,
-      std::make_unique<RsaPssParameters>(mgf1_hash, salt_length)));
-}
+    case SignatureAlgorithm::kRsaPkcs1Sha512:
+    case SignatureAlgorithm::kEcdsaSha512:
+      return DigestAlgorithm::Sha512;
 
-const RsaPssParameters* SignatureAlgorithm::ParamsForRsaPss() const {
-  if (algorithm_ == SignatureAlgorithmId::RsaPss)
-    return static_cast<RsaPssParameters*>(params_.get());
-  return nullptr;
-}
+    // It is ambiguous whether hash-matching RSASSA-PSS instantiations count as
+    // using one or multiple digests, but the corresponding digest is the only
+    // reasonable interpretation.
+    case SignatureAlgorithm::kRsaPssSha256:
+      return DigestAlgorithm::Sha256;
+    case SignatureAlgorithm::kRsaPssSha384:
+      return DigestAlgorithm::Sha384;
+    case SignatureAlgorithm::kRsaPssSha512:
+      return DigestAlgorithm::Sha512;
 
-bool SignatureAlgorithm::IsEquivalent(const der::Input& alg1_tlv,
-                                      const der::Input& alg2_tlv) {
-  if (alg1_tlv == alg2_tlv)
-    return true;
-
-  std::unique_ptr<SignatureAlgorithm> alg1 = Create(alg1_tlv, nullptr);
-  std::unique_ptr<SignatureAlgorithm> alg2 = Create(alg2_tlv, nullptr);
-
-  // Do checks that apply to all algorithms.
-  if (!alg1 || !alg2 || (alg1->algorithm() != alg2->algorithm()) ||
-      (alg1->digest() != alg2->digest())) {
-    return false;
+    // Do not return anything for these legacy algorithms.
+    case SignatureAlgorithm::kDsaSha1:
+    case SignatureAlgorithm::kDsaSha256:
+    case SignatureAlgorithm::kRsaPkcs1Md2:
+    case SignatureAlgorithm::kRsaPkcs1Md4:
+      return absl::nullopt;
   }
-
-  // Check algorithm-specific parameters for equality.
-  switch (alg1->algorithm()) {
-    case SignatureAlgorithmId::RsaPkcs1:
-    case SignatureAlgorithmId::Ecdsa:
-    case SignatureAlgorithmId::Dsa:
-      DCHECK(!alg1->has_params());
-      DCHECK(!alg2->has_params());
-      return true;
-    case SignatureAlgorithmId::RsaPss: {
-      const RsaPssParameters* params1 = alg1->ParamsForRsaPss();
-      const RsaPssParameters* params2 = alg2->ParamsForRsaPss();
-      return params1 && params2 &&
-             (params1->salt_length() == params2->salt_length()) &&
-             (params1->mgf1_hash() == params2->mgf1_hash());
-    }
-  }
-
-  return false;
+  return absl::nullopt;
 }
-
-SignatureAlgorithm::SignatureAlgorithm(
-    SignatureAlgorithmId algorithm,
-    DigestAlgorithm digest,
-    std::unique_ptr<SignatureAlgorithmParameters> params)
-    : algorithm_(algorithm), digest_(digest), params_(std::move(params)) {}
 
 }  // namespace net

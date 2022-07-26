@@ -401,18 +401,24 @@ CRLRevocationStatus CheckCRL(base::StringPiece raw_crl,
     return CRLRevocationStatus::UNKNOWN;
 
   // 5.1.1.2  signatureAlgorithm
-  //    This field MUST contain the same algorithm identifier as the
-  //    signature field in the sequence tbsCertList (Section 5.1.2.2).
-  if (!SignatureAlgorithm::IsEquivalent(
-          signature_algorithm_tlv, tbs_cert_list.signature_algorithm_tlv)) {
-    return CRLRevocationStatus::UNKNOWN;
-  }
+  //
   // TODO(https://crbug.com/749276): Check the signature algorithm against
   // policy.
-  std::unique_ptr<SignatureAlgorithm> signature_algorithm =
-      SignatureAlgorithm::Create(signature_algorithm_tlv, /*errors=*/nullptr);
-  if (!signature_algorithm)
+  absl::optional<SignatureAlgorithm> signature_algorithm =
+      ParseSignatureAlgorithm(signature_algorithm_tlv,
+                              /*errors=*/nullptr);
+  if (!signature_algorithm) {
     return CRLRevocationStatus::UNKNOWN;
+  }
+
+  //    This field MUST contain the same algorithm identifier as the
+  //    signature field in the sequence tbsCertList (Section 5.1.2.2).
+  absl::optional<SignatureAlgorithm> tbs_alg =
+      ParseSignatureAlgorithm(tbs_cert_list.signature_algorithm_tlv,
+                              /*errors=*/nullptr);
+  if (!tbs_alg || *signature_algorithm != *tbs_alg) {
+    return CRLRevocationStatus::UNKNOWN;
+  }
 
   // Check CRL dates. Roughly corresponds to 6.3.3 (a) (1) but does not attempt
   // to update the CRL if it is out of date.

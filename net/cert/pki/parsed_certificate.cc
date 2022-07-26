@@ -106,12 +106,13 @@ scoped_refptr<ParsedCertificate> ParsedCertificate::Create(
   }
 
   // Attempt to parse the signature algorithm contained in the Certificate.
-  result->signature_algorithm_ =
-      SignatureAlgorithm::Create(result->signature_algorithm_tlv_, errors);
-  if (!result->signature_algorithm_) {
+  absl::optional<SignatureAlgorithm> sigalg =
+      ParseSignatureAlgorithm(result->signature_algorithm_tlv_, errors);
+  if (!sigalg) {
     errors->AddError(kFailedParsingSignatureAlgorithm);
     return nullptr;
   }
+  result->signature_algorithm_ = *sigalg;
 
   der::Input subject_value;
   if (!GetSequenceValue(result->tbs_.subject_tlv, &subject_value)) {

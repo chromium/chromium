@@ -218,7 +218,7 @@ struct NET_EXPORT OCSPResponse {
 
   ResponseStatus status;
   der::Input data;
-  std::unique_ptr<SignatureAlgorithm> signature_algorithm;
+  SignatureAlgorithm signature_algorithm;
   der::BitString signature;
   bool has_certs;
   std::vector<der::Input> certs;

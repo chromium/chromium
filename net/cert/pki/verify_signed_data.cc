@@ -18,56 +18,6 @@
 
 namespace net {
 
-namespace {
-
-// Converts a DigestAlgorithm to an equivalent EVP_MD*.
-[[nodiscard]] bool GetDigest(DigestAlgorithm digest, const EVP_MD** out) {
-  *out = nullptr;
-
-  switch (digest) {
-    case DigestAlgorithm::Md2:
-    case DigestAlgorithm::Md4:
-    case DigestAlgorithm::Md5:
-      // Unsupported.
-      break;
-    case DigestAlgorithm::Sha1:
-      *out = EVP_sha1();
-      break;
-    case DigestAlgorithm::Sha256:
-      *out = EVP_sha256();
-      break;
-    case DigestAlgorithm::Sha384:
-      *out = EVP_sha384();
-      break;
-    case DigestAlgorithm::Sha512:
-      *out = EVP_sha512();
-      break;
-  }
-
-  return *out != nullptr;
-}
-
-// Sets the RSASSA-PSS parameters on |pctx|. Returns true on success.
-[[nodiscard]] bool ApplyRsaPssOptions(const RsaPssParameters* params,
-                                      EVP_PKEY_CTX* pctx) {
-  // BoringSSL takes a signed int for the salt length, and interprets
-  // negative values in a special manner. Make sure not to silently underflow.
-  base::CheckedNumeric<int> salt_length_bytes_int(params->salt_length());
-  if (!salt_length_bytes_int.IsValid())
-    return false;
-
-  const EVP_MD* mgf1_hash;
-  if (!GetDigest(params->mgf1_hash(), &mgf1_hash))
-    return false;
-
-  return EVP_PKEY_CTX_set_rsa_padding(pctx, RSA_PKCS1_PSS_PADDING) &&
-         EVP_PKEY_CTX_set_rsa_mgf1_md(pctx, mgf1_hash) &&
-         EVP_PKEY_CTX_set_rsa_pss_saltlen(pctx,
-                                          salt_length_bytes_int.ValueOrDie());
-}
-
-}  // namespace
-
 // Parses an RSA public key or EC public key from SPKI to an EVP_PKEY. Returns
 // true on success.
 //
@@ -148,23 +98,72 @@ bool ParsePublicKey(const der::Input& public_key_spki,
   return true;
 }
 
-bool VerifySignedData(const SignatureAlgorithm& algorithm,
+bool VerifySignedData(SignatureAlgorithm algorithm,
                       const der::Input& signed_data,
                       const der::BitString& signature_value,
                       EVP_PKEY* public_key) {
-  // Check that the key type matches the signature algorithm.
-  int expected_pkey_id = -1;
-  switch (algorithm.algorithm()) {
-    case SignatureAlgorithmId::Dsa:
-      // DSA is not supported.
-      return false;
-    case SignatureAlgorithmId::RsaPkcs1:
-    case SignatureAlgorithmId::RsaPss:
+  int expected_pkey_id = 1;
+  const EVP_MD* digest = nullptr;
+  bool is_rsa_pss = false;
+  switch (algorithm) {
+    case SignatureAlgorithm::kRsaPkcs1Sha1:
       expected_pkey_id = EVP_PKEY_RSA;
+      digest = EVP_sha1();
       break;
-    case SignatureAlgorithmId::Ecdsa:
+    case SignatureAlgorithm::kRsaPkcs1Sha256:
+      expected_pkey_id = EVP_PKEY_RSA;
+      digest = EVP_sha256();
+      break;
+    case SignatureAlgorithm::kRsaPkcs1Sha384:
+      expected_pkey_id = EVP_PKEY_RSA;
+      digest = EVP_sha384();
+      break;
+    case SignatureAlgorithm::kRsaPkcs1Sha512:
+      expected_pkey_id = EVP_PKEY_RSA;
+      digest = EVP_sha512();
+      break;
+
+    case SignatureAlgorithm::kEcdsaSha1:
       expected_pkey_id = EVP_PKEY_EC;
+      digest = EVP_sha1();
       break;
+    case SignatureAlgorithm::kEcdsaSha256:
+      expected_pkey_id = EVP_PKEY_EC;
+      digest = EVP_sha256();
+      break;
+    case SignatureAlgorithm::kEcdsaSha384:
+      expected_pkey_id = EVP_PKEY_EC;
+      digest = EVP_sha384();
+      break;
+    case SignatureAlgorithm::kEcdsaSha512:
+      expected_pkey_id = EVP_PKEY_EC;
+      digest = EVP_sha512();
+      break;
+
+    case SignatureAlgorithm::kRsaPssSha256:
+      expected_pkey_id = EVP_PKEY_RSA;
+      digest = EVP_sha256();
+      is_rsa_pss = true;
+      break;
+    case SignatureAlgorithm::kRsaPssSha384:
+      expected_pkey_id = EVP_PKEY_RSA;
+      digest = EVP_sha384();
+      is_rsa_pss = true;
+      break;
+    case SignatureAlgorithm::kRsaPssSha512:
+      expected_pkey_id = EVP_PKEY_RSA;
+      digest = EVP_sha512();
+      is_rsa_pss = true;
+      break;
+
+    case SignatureAlgorithm::kDsaSha1:
+    case SignatureAlgorithm::kDsaSha256:
+    case SignatureAlgorithm::kRsaPkcs1Md2:
+    case SignatureAlgorithm::kRsaPkcs1Md4:
+    case SignatureAlgorithm::kRsaPkcs1Md5:
+      // DSA, MD2, MD4, and MD5 are not supported. See
+      // https://crbug.com/1321688.
+      return false;
   }
 
   if (expected_pkey_id != EVP_PKEY_id(public_key))
@@ -181,17 +180,17 @@ bool VerifySignedData(const SignatureAlgorithm& algorithm,
   bssl::ScopedEVP_MD_CTX ctx;
   EVP_PKEY_CTX* pctx = nullptr;  // Owned by |ctx|.
 
-  const EVP_MD* digest;
-  if (!GetDigest(algorithm.digest(), &digest))
-    return false;
-
   if (!EVP_DigestVerifyInit(ctx.get(), &pctx, digest, nullptr, public_key))
     return false;
 
-  // Set the RSASSA-PSS specific options.
-  if (algorithm.algorithm() == SignatureAlgorithmId::RsaPss &&
-      !ApplyRsaPssOptions(algorithm.ParamsForRsaPss(), pctx)) {
-    return false;
+  if (is_rsa_pss) {
+    // All supported RSASSA-PSS algorithms match signing and MGF-1 digest. They
+    // also use the digest length as the salt length, which is specified with -1
+    // in OpenSSL's API.
+    if (!EVP_PKEY_CTX_set_rsa_padding(pctx, RSA_PKCS1_PSS_PADDING) ||
+        !EVP_PKEY_CTX_set_rsa_pss_saltlen(pctx, -1)) {
+      return false;
+    }
   }
 
   if (!EVP_DigestVerifyUpdate(ctx.get(), signed_data.UnsafeData(),
@@ -204,7 +203,7 @@ bool VerifySignedData(const SignatureAlgorithm& algorithm,
                                     signature_value_bytes.Length());
 }
 
-bool VerifySignedData(const SignatureAlgorithm& algorithm,
+bool VerifySignedData(SignatureAlgorithm algorithm,
                       const der::Input& signed_data,
                       const der::BitString& signature_value,
                       const der::Input& public_key_spki) {

@@ -54,7 +54,7 @@ class NET_EXPORT VerifyCertificateChainDelegate {
   // can optionally add high-severity errors to |errors| with details on why it
   // was rejected.
   virtual bool IsSignatureAlgorithmAcceptable(
-      const SignatureAlgorithm& signature_algorithm,
+      SignatureAlgorithm signature_algorithm,
       CertErrors* errors) = 0;
 
   // Implementations should return true if |public_key| is acceptable. This is

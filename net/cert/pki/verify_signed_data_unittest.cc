@@ -52,8 +52,8 @@ void RunTestCase(VerifyResult expected_result, const char* file_name) {
   ASSERT_TRUE(ReadTestDataFromPemFile(path, mappings));
 
   CertErrors algorithm_errors;
-  std::unique_ptr<SignatureAlgorithm> signature_algorithm =
-      SignatureAlgorithm::Create(der::Input(&algorithm), &algorithm_errors);
+  absl::optional<SignatureAlgorithm> signature_algorithm =
+      ParseSignatureAlgorithm(der::Input(&algorithm), &algorithm_errors);
   ASSERT_TRUE(signature_algorithm) << algorithm_errors.ToDebugString();
 
   der::Parser signature_value_parser((der::Input(&signature_value)));

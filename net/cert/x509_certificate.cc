@@ -743,8 +743,9 @@ bool X509Certificate::IsSelfSigned(const CRYPTO_BUFFER* cert_buffer) {
   if (normalized_subject != normalized_issuer)
     return false;
 
-  std::unique_ptr<SignatureAlgorithm> signature_algorithm =
-      SignatureAlgorithm::Create(signature_algorithm_tlv, nullptr /* errors */);
+  absl::optional<SignatureAlgorithm> signature_algorithm =
+      ParseSignatureAlgorithm(signature_algorithm_tlv,
+                              /*errors=*/nullptr);
   if (!signature_algorithm)
     return false;
 

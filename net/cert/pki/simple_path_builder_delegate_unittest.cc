@@ -22,7 +22,7 @@ namespace {
 
 // Reads the public key and algorithm from the test data at |file_name|.
 void ReadTestCase(const char* file_name,
-                  std::unique_ptr<SignatureAlgorithm>* signature_algorithm,
+                  SignatureAlgorithm* signature_algorithm,
                   bssl::UniquePtr<EVP_PKEY>* public_key) {
   std::string path =
       std::string("net/data/verify_signed_data_unittest/") + file_name;
@@ -38,9 +38,10 @@ void ReadTestCase(const char* file_name,
   ASSERT_TRUE(ReadTestDataFromPemFile(path, mappings));
 
   CertErrors algorithm_errors;
-  *signature_algorithm =
-      SignatureAlgorithm::Create(der::Input(&algorithm_str), &algorithm_errors);
-  ASSERT_TRUE(*signature_algorithm) << algorithm_errors.ToDebugString();
+  absl::optional<SignatureAlgorithm> sigalg_opt =
+      ParseSignatureAlgorithm(der::Input(&algorithm_str), &algorithm_errors);
+  ASSERT_TRUE(sigalg_opt) << algorithm_errors.ToDebugString();
+  *signature_algorithm = *sigalg_opt;
 
   ASSERT_TRUE(ParsePublicKey(der::Input(&public_key_str), public_key));
 }
@@ -60,10 +61,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(kSuccess1024Filenames));
 
 TEST_P(SimplePathBuilderDelegate1024SuccessTest, IsAcceptableSignatureAndKey) {
-  std::unique_ptr<SignatureAlgorithm> signature_algorithm;
+  SignatureAlgorithm signature_algorithm;
   bssl::UniquePtr<EVP_PKEY> public_key;
-  ReadTestCase(GetParam(), &signature_algorithm, &public_key);
-  ASSERT_TRUE(signature_algorithm);
+  ASSERT_NO_FATAL_FAILURE(
+      ReadTestCase(GetParam(), &signature_algorithm, &public_key));
   ASSERT_TRUE(public_key);
 
   CertErrors errors;
@@ -71,7 +72,7 @@ TEST_P(SimplePathBuilderDelegate1024SuccessTest, IsAcceptableSignatureAndKey) {
       1024, SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
 
   EXPECT_TRUE(
-      delegate.IsSignatureAlgorithmAcceptable(*signature_algorithm, &errors));
+      delegate.IsSignatureAlgorithmAcceptable(signature_algorithm, &errors));
 
   EXPECT_TRUE(delegate.IsPublicKeyAcceptable(public_key.get(), &errors));
 }
@@ -87,10 +88,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(kFail2048Filenames));
 
 TEST_P(SimplePathBuilderDelegate2048FailTest, RsaKeySmallerThan2048) {
-  std::unique_ptr<SignatureAlgorithm> signature_algorithm;
+  SignatureAlgorithm signature_algorithm;
   bssl::UniquePtr<EVP_PKEY> public_key;
-  ReadTestCase(GetParam(), &signature_algorithm, &public_key);
-  ASSERT_TRUE(signature_algorithm);
+  ASSERT_NO_FATAL_FAILURE(
+      ReadTestCase(GetParam(), &signature_algorithm, &public_key));
   ASSERT_TRUE(public_key);
 
   CertErrors errors;
@@ -98,7 +99,7 @@ TEST_P(SimplePathBuilderDelegate2048FailTest, RsaKeySmallerThan2048) {
       2048, SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
 
   EXPECT_TRUE(
-      delegate.IsSignatureAlgorithmAcceptable(*signature_algorithm, &errors));
+      delegate.IsSignatureAlgorithmAcceptable(signature_algorithm, &errors));
 
   EXPECT_FALSE(delegate.IsPublicKeyAcceptable(public_key.get(), &errors));
 }

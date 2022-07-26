@@ -358,29 +358,6 @@ bool AreSHA1IntermediatesAllowed() {
 #endif
 }
 
-// Validate if a digest hash algorithm is acceptable in a certificate.
-//
-// Sets as a side effect the "has_*" boolean members in
-// |verify_result| that correspond with the the presence of |hash|
-// somewhere in the certificate chain (excluding the trust anchor).
-bool ValidateHashAlgorithm(DigestAlgorithm hash,
-                           CertVerifyResult* verify_result) {
-  switch (hash) {
-    case DigestAlgorithm::Sha1:
-      verify_result->has_sha1 = true;
-      return true;  // For now.
-    case DigestAlgorithm::Sha256:
-    case DigestAlgorithm::Sha384:
-    case DigestAlgorithm::Sha512:
-      return true;
-    case DigestAlgorithm::Md2:
-    case DigestAlgorithm::Md4:
-    case DigestAlgorithm::Md5:
-      return false;
-  }
-  NOTREACHED();
-}
-
 // Inspects the signature algorithms in a single certificate |cert|.
 //
 //   * Sets |verify_result->has_sha1| to true if the certificate uses SHA1.
@@ -399,37 +376,43 @@ bool ValidateHashAlgorithm(DigestAlgorithm hash,
     return false;
   }
 
-  if (!SignatureAlgorithm::IsEquivalent(der::Input(cert_algorithm_sequence),
-                                        der::Input(tbs_algorithm_sequence))) {
+  absl::optional<SignatureAlgorithm> cert_algorithm =
+      ParseSignatureAlgorithm(der::Input(cert_algorithm_sequence), nullptr);
+  absl::optional<SignatureAlgorithm> tbs_algorithm =
+      ParseSignatureAlgorithm(der::Input(tbs_algorithm_sequence), nullptr);
+  if (!cert_algorithm || !tbs_algorithm || *cert_algorithm != *tbs_algorithm) {
     return false;
   }
 
-  std::unique_ptr<SignatureAlgorithm> algorithm =
-      SignatureAlgorithm::Create(der::Input(cert_algorithm_sequence), nullptr);
-  if (!algorithm) {
-    return false;
+  switch (*cert_algorithm) {
+    case SignatureAlgorithm::kRsaPkcs1Sha1:
+    case SignatureAlgorithm::kEcdsaSha1:
+    case SignatureAlgorithm::kDsaSha1:
+      verify_result->has_sha1 = true;
+      return true;  // For now.
+
+    case SignatureAlgorithm::kRsaPkcs1Md2:
+    case SignatureAlgorithm::kRsaPkcs1Md4:
+    case SignatureAlgorithm::kRsaPkcs1Md5:
+      // TODO(https://crbug.com/1321688): Remove these from the parser
+      // altogether.
+      return false;
+
+    case SignatureAlgorithm::kRsaPkcs1Sha256:
+    case SignatureAlgorithm::kRsaPkcs1Sha384:
+    case SignatureAlgorithm::kRsaPkcs1Sha512:
+    case SignatureAlgorithm::kEcdsaSha256:
+    case SignatureAlgorithm::kEcdsaSha384:
+    case SignatureAlgorithm::kEcdsaSha512:
+    case SignatureAlgorithm::kRsaPssSha256:
+    case SignatureAlgorithm::kRsaPssSha384:
+    case SignatureAlgorithm::kRsaPssSha512:
+    case SignatureAlgorithm::kDsaSha256:
+      return true;
   }
 
-  if (!ValidateHashAlgorithm(algorithm->digest(), verify_result)) {
-    return false;
-  }
-
-  // Check algorithm-specific parameters.
-  switch (algorithm->algorithm()) {
-    case SignatureAlgorithmId::Dsa:
-    case SignatureAlgorithmId::RsaPkcs1:
-    case SignatureAlgorithmId::Ecdsa:
-      DCHECK(!algorithm->has_params());
-      break;
-    case SignatureAlgorithmId::RsaPss:
-      if (!ValidateHashAlgorithm(algorithm->ParamsForRsaPss()->mgf1_hash(),
-                                 verify_result)) {
-        return false;
-      }
-      break;
-  }
-
-  return true;
+  NOTREACHED();
+  return false;
 }
 
 // InspectSignatureAlgorithmsInChain() sets |verify_result->has_*| based on

@@ -340,10 +340,11 @@ bool ParseBasicOCSPResponse(const der::Input& raw_tlv, OCSPResponse* out) {
   if (!parser.ReadRawTLV(&sigalg_tlv))
     return false;
   // TODO(crbug.com/634443): Propagate the errors.
-  CertErrors errors;
-  out->signature_algorithm = SignatureAlgorithm::Create(sigalg_tlv, &errors);
-  if (!out->signature_algorithm)
+  absl::optional<SignatureAlgorithm> sigalg =
+      ParseSignatureAlgorithm(sigalg_tlv, /*errors=*/nullptr);
+  if (!sigalg)
     return false;
+  out->signature_algorithm = sigalg.value();
   absl::optional<der::BitString> signature = parser.ReadBitString();
   if (!signature)
     return false;
@@ -602,7 +603,7 @@ scoped_refptr<ParsedCertificate> OCSPParseCertificate(base::StringPiece der) {
     const OCSPResponse& response,
     const ParsedCertificate* cert) {
   // TODO(eroman): Must check the signature algorithm against policy.
-  return VerifySignedData(*(response.signature_algorithm), response.data,
+  return VerifySignedData(response.signature_algorithm, response.data,
                           response.signature, cert->tbs().spki_tlv);
 }
 

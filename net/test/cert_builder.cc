@@ -840,24 +840,22 @@ void CertBuilder::GenerateCertificate() {
 
   // Determine the correct digest algorithm to use (assumes RSA PKCS#1
   // signatures).
-  auto signature_algorithm = SignatureAlgorithm::Create(
-      der::Input(&signature_algorithm_tlv_), nullptr);
+  auto signature_algorithm =
+      ParseSignatureAlgorithm(der::Input(&signature_algorithm_tlv_), nullptr);
   ASSERT_TRUE(signature_algorithm);
-  ASSERT_EQ(SignatureAlgorithmId::RsaPkcs1, signature_algorithm->algorithm());
   const EVP_MD* md = nullptr;
-
-  switch (signature_algorithm->digest()) {
-    case DigestAlgorithm::Sha256:
+  switch (*signature_algorithm) {
+    case SignatureAlgorithm::kRsaPkcs1Sha256:
       md = EVP_sha256();
       break;
 
-    case DigestAlgorithm::Sha1:
+    case SignatureAlgorithm::kRsaPkcs1Sha1:
       md = EVP_sha1();
       break;
 
     default:
       ASSERT_TRUE(false) << "Only rsaEncryptionWithSha256 or "
-                            "rsaEnryptionWithSha1 are supported";
+                            "rsaEncryptionWithSha1 are supported";
       break;
   }
 

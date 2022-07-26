@@ -15,6 +15,7 @@
 #include "net/base/net_export.h"
 #include "net/cert/pki/certificate_policies.h"
 #include "net/cert/pki/parse_certificate.h"
+#include "net/cert/pki/signature_algorithm.h"
 #include "net/der/input.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -24,7 +25,6 @@ namespace net {
 struct GeneralNames;
 class NameConstraints;
 class ParsedCertificate;
-class SignatureAlgorithm;
 class CertErrors;
 
 using ParsedCertificateList = std::vector<scoped_refptr<ParsedCertificate>>;
@@ -86,9 +86,8 @@ class NET_EXPORT ParsedCertificate
   const ParsedTbsCertificate& tbs() const { return tbs_; }
 
   // Returns the signatureAlgorithm of the Certificate (not the tbsCertificate).
-  const SignatureAlgorithm& signature_algorithm() const {
-    DCHECK(signature_algorithm_);
-    return *signature_algorithm_;
+  SignatureAlgorithm signature_algorithm() const {
+    return signature_algorithm_;
   }
 
   // Returns the DER-encoded raw subject value (including the outer sequence
@@ -262,7 +261,14 @@ class NET_EXPORT ParsedCertificate
   ParsedTbsCertificate tbs_;
 
   // The signatureAlgorithm from the Certificate.
-  std::unique_ptr<SignatureAlgorithm> signature_algorithm_;
+  //
+  // TODO(crbug.com/1321688): This class requires that we recognize the
+  // signature algorithm, but there are some self-signed root certificates with
+  // weak signature algorithms like MD2. We never verify those signatures, but
+  // this means we must include MD2, etc., in the `SignatureAlgorithm` enum.
+  // Instead, make this an `absl::optional<SignatureAlgorithm>` and make the
+  // call sites handle recognized and unrecognized algorithms.
+  SignatureAlgorithm signature_algorithm_;
 
   // Normalized DER-encoded Subject (not including outer Sequence tag).
   std::string normalized_subject_;

@@ -145,7 +145,16 @@ bool VerifySignatureAlgorithmsMatch(const ParsedCertificate& cert,
   // But make a compatibility concession if alternate encodings are used
   // TODO(eroman): Turn this warning into an error.
   // TODO(eroman): Add a unit-test that exercises this case.
-  if (SignatureAlgorithm::IsEquivalent(alg1_tlv, alg2_tlv)) {
+  absl::optional<SignatureAlgorithm> alg1 =
+      ParseSignatureAlgorithm(alg1_tlv, errors);
+  if (!alg1)
+    return false;
+  absl::optional<SignatureAlgorithm> alg2 =
+      ParseSignatureAlgorithm(alg2_tlv, errors);
+  if (!alg2)
+    return false;
+
+  if (*alg1 == *alg2) {
     errors->AddWarning(
         cert_errors::kSignatureAlgorithmsDifferentEncoding,
         CreateCertErrorParams2Der("Certificate.algorithm", alg1_tlv,
@@ -207,9 +216,7 @@ void VerifyExtendedKeyUsage(const ParsedCertificate& cert,
         // equivalence between builtin verifier and platform verifier is less
         // important.
         if ((cert.has_basic_constraints() && cert.basic_constraints().is_ca) &&
-            (cert.signature_algorithm().algorithm() ==
-             SignatureAlgorithmId::RsaPkcs1) &&
-            (cert.signature_algorithm().digest() == DigestAlgorithm::Sha1)) {
+            cert.signature_algorithm() == SignatureAlgorithm::kRsaPkcs1Sha1) {
           return;
         }
       }

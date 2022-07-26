@@ -7,6 +7,7 @@
 
 #include "crypto/openssl_util.h"
 #include "net/base/net_export.h"
+#include "net/cert/pki/signature_algorithm.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace net {
@@ -15,8 +16,6 @@ namespace der {
 class BitString;
 class Input;
 }  // namespace der
-
-class SignatureAlgorithm;
 
 // Verifies that |signature_value| is a valid signature of |signed_data| using
 // the algorithm |algorithm| and the public key |public_key|.
@@ -28,7 +27,7 @@ class SignatureAlgorithm;
 //
 // Returns true if verification was successful.
 [[nodiscard]] NET_EXPORT bool VerifySignedData(
-    const SignatureAlgorithm& algorithm,
+    SignatureAlgorithm algorithm,
     const der::Input& signed_data,
     const der::BitString& signature_value,
     EVP_PKEY* public_key);
@@ -36,7 +35,7 @@ class SignatureAlgorithm;
 // Same as above overload, only the public key is inputted as an SPKI and will
 // be parsed internally.
 [[nodiscard]] NET_EXPORT bool VerifySignedData(
-    const SignatureAlgorithm& algorithm,
+    SignatureAlgorithm algorithm,
     const der::Input& signed_data,
     const der::BitString& signature_value,
     const der::Input& public_key_spki);

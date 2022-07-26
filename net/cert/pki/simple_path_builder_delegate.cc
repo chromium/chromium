@@ -53,25 +53,34 @@ void SimplePathBuilderDelegate::CheckPathAfterVerification(
 }
 
 bool SimplePathBuilderDelegate::IsSignatureAlgorithmAcceptable(
-    const SignatureAlgorithm& algorithm,
+    SignatureAlgorithm algorithm,
     CertErrors* errors) {
-  // Restrict default permitted signature algorithms to:
-  //
-  //    RSA PKCS#1 v1.5
-  //    RSASSA-PSS
-  //    ECDSA
-  switch (algorithm.algorithm()) {
-    case SignatureAlgorithmId::Dsa:
-      return false;
-    case SignatureAlgorithmId::Ecdsa:
-    case SignatureAlgorithmId::RsaPkcs1:
-      return IsAcceptableDigest(algorithm.digest());
-    case SignatureAlgorithmId::RsaPss:
-      return IsAcceptableDigest(algorithm.digest()) &&
-             IsAcceptableDigest(algorithm.ParamsForRsaPss()->mgf1_hash());
-  }
+  switch (algorithm) {
+    case SignatureAlgorithm::kRsaPkcs1Sha1:
+    case SignatureAlgorithm::kEcdsaSha1:
+      return digest_policy_ == DigestPolicy::kWeakAllowSha1;
 
-  return false;
+    case SignatureAlgorithm::kRsaPkcs1Sha256:
+    case SignatureAlgorithm::kRsaPkcs1Sha384:
+    case SignatureAlgorithm::kRsaPkcs1Sha512:
+    case SignatureAlgorithm::kEcdsaSha256:
+    case SignatureAlgorithm::kEcdsaSha384:
+    case SignatureAlgorithm::kEcdsaSha512:
+    case SignatureAlgorithm::kRsaPssSha256:
+    case SignatureAlgorithm::kRsaPssSha384:
+    case SignatureAlgorithm::kRsaPssSha512:
+      return true;
+
+    case SignatureAlgorithm::kRsaPkcs1Md2:
+    case SignatureAlgorithm::kRsaPkcs1Md4:
+    case SignatureAlgorithm::kRsaPkcs1Md5:
+    case SignatureAlgorithm::kDsaSha1:
+    case SignatureAlgorithm::kDsaSha256:
+      // TODO(https://crbug.com/1321688): We do not implement DSA, MD2, MD4, or
+      // MD5 anyway. Remove them from the parser altogether, so code does not
+      // need to handle them.
+      return false;
+  }
 }
 
 bool SimplePathBuilderDelegate::IsPublicKeyAcceptable(EVP_PKEY* public_key,
@@ -111,32 +120,6 @@ bool SimplePathBuilderDelegate::IsPublicKeyAcceptable(EVP_PKEY* public_key,
   }
 
   // Unexpected key type.
-  return false;
-}
-
-// Restricted signature digest algorithms to:
-//
-//    SHA1 (if digest_policy_ == kWeakAllowSha1)
-//    SHA256
-//    SHA384
-//    SHA512
-bool SimplePathBuilderDelegate::IsAcceptableDigest(
-    DigestAlgorithm digest) const {
-  switch (digest) {
-    case DigestAlgorithm::Md2:
-    case DigestAlgorithm::Md4:
-    case DigestAlgorithm::Md5:
-      return false;
-
-    case DigestAlgorithm::Sha1:
-      return digest_policy_ ==
-             SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1;
-    case DigestAlgorithm::Sha256:
-    case DigestAlgorithm::Sha384:
-    case DigestAlgorithm::Sha512:
-      return true;
-  }
-
   return false;
 }
 
