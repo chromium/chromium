@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
 
-#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/input/layer_selection_bound.h"
@@ -799,55 +798,6 @@ scoped_refptr<cc::DisplayItemList> PaintChunksToCcLayer::Convert(
   return cc_list;
 }
 
-// The heuristic for picking a checkerboarding color works as follows:
-//   - During paint, PaintChunker will look for background color display items,
-//     and record the blending of background colors if the background is larger
-//     than a ratio of the chunk bounds.
-//   - After layer allocation, the paint chunks assigned to a layer are
-//     examined for a background color annotation.
-//   - The blending of background colors of chunks having background larger than
-//     a ratio of the layer is set as the layer's background color.
-//   - If the above color exists, it's also used as the safe opaque background
-//     color. Otherwise the color of the largest background is used, without the
-//     size requirement, as safe opaque background color should always get a
-//     value if possible.
-static void UpdateBackgroundColor(cc::Layer& layer,
-                                  const EffectPaintPropertyNode& layer_effect,
-                                  const PaintChunkSubset& paint_chunks) {
-  Vector<Color, 4> background_colors;
-  float min_background_area = kMinBackgroundColorCoverageRatio *
-                              layer.bounds().width() * layer.bounds().height();
-  for (auto it = paint_chunks.end(); it != paint_chunks.begin();) {
-    const auto& chunk = *(--it);
-    if (chunk.background_color == Color::kTransparent)
-      continue;
-    if (chunk.background_color_area >= min_background_area) {
-      Color chunk_background_color = chunk.background_color;
-      const auto& chunk_effect = chunk.properties.Effect().Unalias();
-      if (&chunk_effect != &layer_effect) {
-        if (chunk_effect.UnaliasedParent() != &layer_effect ||
-            !chunk_effect.IsOpacityOnly()) {
-          continue;
-        }
-        chunk_background_color =
-            chunk_background_color.CombineWithAlpha(chunk_effect.Opacity());
-      }
-      background_colors.push_back(chunk_background_color);
-      if (!chunk_background_color.HasAlpha()) {
-        // If this color is opaque, blending it with subsequent colors will have
-        // no effect.
-        break;
-      }
-    }
-  }
-
-  Color background_color;
-  for (Color color : base::Reversed(background_colors))
-    background_color = background_color.Blend(color);
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
-  layer.SetBackgroundColor(SkColor4f::FromColor(background_color.Rgb()));
-}
-
 static void UpdateTouchActionRegion(
     const HitTestData& hit_test_data,
     const PropertyTreeState& layer_state,
@@ -1055,7 +1005,6 @@ void PaintChunksToCcLayer::UpdateLayerProperties(
     cc::Layer& layer,
     const PropertyTreeState& layer_state,
     const PaintChunkSubset& chunks) {
-  UpdateBackgroundColor(layer, layer_state.Effect(), chunks);
   UpdateTouchActionWheelEventHandlerAndNonFastScrollableRegions(
       layer, layer_state, chunks);
   UpdateRegionCaptureData(layer, layer_state, chunks);

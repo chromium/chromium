@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositing/pending_layer.h"
 
+#include "base/containers/adapters.h"
 #include "cc/layers/scrollbar_layer_base.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_chunks_to_cc_layer.h"
@@ -635,6 +636,48 @@ bool PendingLayer::IsSolidColor() const {
     return false;
   auto* drawing = DynamicTo<DrawingDisplayItem>(*items.begin());
   return drawing && drawing->IsSolidColor();
+}
+
+// The heuristic for picking a checkerboarding color works as follows:
+// - During paint, PaintChunker will look for background color display items,
+//   and record the blending of background colors if the background is larger
+//   than a ratio of the chunk bounds.
+// - After layer allocation, the paint chunks assigned to a layer are examined
+//   for a background color annotation.
+// - The blending of background colors of chunks having background larger than
+//   a ratio of the layer is set as the layer's background color.
+SkColor4f PendingLayer::ComputeBackgroundColor() const {
+  Vector<Color, 4> background_colors;
+  float min_background_area =
+      kMinBackgroundColorCoverageRatio * bounds_.width() * bounds_.height();
+  for (auto it = chunks_.end(); it != chunks_.begin();) {
+    const auto& chunk = *(--it);
+    if (chunk.background_color == Color::kTransparent)
+      continue;
+    if (chunk.background_color_area >= min_background_area) {
+      Color chunk_background_color = chunk.background_color;
+      const auto& chunk_effect = chunk.properties.Effect().Unalias();
+      if (&chunk_effect != &property_tree_state_.Effect()) {
+        if (chunk_effect.UnaliasedParent() != &property_tree_state_.Effect() ||
+            !chunk_effect.IsOpacityOnly()) {
+          continue;
+        }
+        chunk_background_color =
+            chunk_background_color.CombineWithAlpha(chunk_effect.Opacity());
+      }
+      background_colors.push_back(chunk_background_color);
+      if (!chunk_background_color.HasAlpha()) {
+        // If this color is opaque, blending it with subsequent colors will have
+        // no effect.
+        break;
+      }
+    }
+  }
+
+  Color background_color;
+  for (Color color : base::Reversed(background_colors))
+    background_color = background_color.Blend(color);
+  return SkColor4f::FromColor(background_color.Rgb());
 }
 
 }  // namespace blink

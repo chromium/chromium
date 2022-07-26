@@ -229,6 +229,13 @@ bool NeedsFullUpdateAfterPaintingChunk(
       repainted.text_known_to_be_on_opaque_background) {
     return true;
   }
+  // Whether background color is transparent affects cc::Layers's contents
+  // opaque property.
+  if ((previous.background_color == Color()) !=
+      (repainted.background_color == Color())) {
+    return true;
+  }
+
   // |has_text| affects compositing decisions (see:
   // |PendingLayer::MergeInternal|).
   if (previous.has_text != repainted.has_text)

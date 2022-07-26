@@ -152,6 +152,8 @@ class PLATFORM_EXPORT PendingLayer {
       scoped_refptr<const PaintArtifact> repainted_artifact,
       cc::LayerSelection&);
 
+  SkColor4f ComputeBackgroundColor() const;
+
  private:
   PendingLayer(const PaintChunkSubset&,
                const PaintChunk& first_chunk,

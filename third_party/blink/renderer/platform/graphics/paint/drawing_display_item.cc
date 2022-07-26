@@ -90,7 +90,9 @@ SkColor DrawingDisplayItem::BackgroundColor(float& area) const {
 
   if (GetType() != DisplayItem::kBoxDecorationBackground &&
       GetType() != DisplayItem::kDocumentBackground &&
-      GetType() != DisplayItem::kDocumentRootBackdrop)
+      GetType() != DisplayItem::kDocumentRootBackdrop &&
+      GetType() != DisplayItem::kCaret &&
+      GetType() != DisplayItem::kScrollCorner)
     return SK_ColorTRANSPARENT;
 
   if (!record_)
@@ -118,7 +120,7 @@ SkColor DrawingDisplayItem::BackgroundColor(float& area) const {
         item_rect = static_cast<const cc::DrawRRectOp*>(op)->rrect.rect();
         break;
       default:
-        continue;
+        return SK_ColorTRANSPARENT;
     }
     area = item_rect.width() * item_rect.height();
     return flags.getColor();

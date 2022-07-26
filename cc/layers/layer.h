@@ -169,8 +169,9 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     return layer_tree_inputs() && !layer_tree_inputs()->copy_requests.empty();
   }
 
-  // Set and get the background color for the layer. This color is not used by
-  // basic Layers, but subclasses may make use of it.
+  // Set and get the background color for the layer. This color is used to
+  // calculate the safe opaque background color. Subclasses may also use the
+  // color for other purposes.
   virtual void SetBackgroundColor(SkColor4f background_color);
   SkColor4f background_color() const {
     return inputs_.Read(*this).background_color;
@@ -185,17 +186,14 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // contents_opaque().
   // If the layer says contents_opaque() is true, in layer tree mode, this
   // returns the value set by SetSafeOpaqueBackgroundColor() which should be an
-  // opaque color, and in layer list mode, returns an opaque color calculated
-  // from background_color() and the argument host_background_color.
+  // opaque color, and in layer list mode, returns background_color() which
+  // should be opaque (otherwise SetBackgroundColor() should have set
+  // contents_opaque to false).
   // Otherwise, it returns something non-opaque. It prefers to return the
   // background_color(), but if the background_color() is opaque (and this layer
   // claims to not be), then SkColors::kTransparent is returned to avoid
   // intrusive checkerboard where the layer is not covered by the
   // background_color().
-  SkColor4f SafeOpaqueBackgroundColor(SkColor4f host_background_color) const;
-
-  // Same as the one-argument version, except that host_background_color is
-  // layer_tree_host()->pending_commit_state()->background_color.
   SkColor4f SafeOpaqueBackgroundColor() const;
 
   // For layer tree mode only.

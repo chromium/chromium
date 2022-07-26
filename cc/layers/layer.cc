@@ -546,10 +546,9 @@ void Layer::SetSafeOpaqueBackgroundColor(SkColor4f background_color) {
   SetNeedsPushProperties();
 }
 
-SkColor4f Layer::SafeOpaqueBackgroundColor(
-    SkColor4f host_background_color) const {
+SkColor4f Layer::SafeOpaqueBackgroundColor() const {
   if (contents_opaque()) {
-    if (!IsAttached() || !IsUsingLayerLists()) {
+    if (!IsUsingLayerLists()) {
       // In layer tree mode, PropertyTreeBuilder should have calculated the safe
       // opaque background color and called SetSafeOpaqueBackgroundColor().
       DCHECK(layer_tree_inputs());
@@ -558,12 +557,8 @@ SkColor4f Layer::SafeOpaqueBackgroundColor(
     }
     // In layer list mode, the PropertyTreeBuilder algorithm doesn't apply
     // because it depends on the layer tree hierarchy. Instead we use
-    // background_color() if it's not transparent, or layer_tree_host_'s
-    // background_color(), with the alpha channel forced to be opaque.
-    SkColor4f color = background_color() == SkColors::kTransparent
-                          ? host_background_color
-                          : background_color();
-    return color.makeOpaque();
+    // background_color() made opaque.
+    return background_color().makeOpaque();
   }
   if (background_color().isOpaque()) {
     // The layer is not opaque while the background color is, meaning that the
@@ -573,13 +568,6 @@ SkColor4f Layer::SafeOpaqueBackgroundColor(
     return SkColors::kTransparent;
   }
   return background_color();
-}
-
-SkColor4f Layer::SafeOpaqueBackgroundColor() const {
-  SkColor4f host_background_color =
-      IsAttached() ? layer_tree_host()->pending_commit_state()->background_color
-                   : layer_tree_inputs()->safe_opaque_background_color;
-  return SafeOpaqueBackgroundColor(host_background_color);
 }
 
 void Layer::SetMasksToBounds(bool masks_to_bounds) {
@@ -1466,8 +1454,7 @@ void Layer::PushPropertiesTo(LayerImpl* layer,
   layer->SetElementId(inputs.element_id);
   layer->SetHasTransformNode(has_transform_node());
   layer->SetBackgroundColor(inputs.background_color);
-  layer->SetSafeOpaqueBackgroundColor(
-      SafeOpaqueBackgroundColor(commit_state.background_color));
+  layer->SetSafeOpaqueBackgroundColor(SafeOpaqueBackgroundColor());
   layer->SetBounds(inputs.bounds);
   layer->SetTransformTreeIndex(transform_tree_index(property_trees));
   layer->SetEffectTreeIndex(effect_tree_index(property_trees));

@@ -1379,10 +1379,9 @@ TEST_P(CompositingSimTest, SafeOpaqueBackgroundColor) {
   EXPECT_EQ(opaque_color->SafeOpaqueBackgroundColor(), SkColors::kBlue);
 
   auto* opaque_image = CcLayerByDOMElementId("opaque-image");
-  EXPECT_TRUE(opaque_image->contents_opaque());
+  EXPECT_FALSE(opaque_image->contents_opaque());
   EXPECT_EQ(opaque_image->background_color(), SkColors::kTransparent);
-  // Fallback to use the viewport background.
-  EXPECT_EQ(opaque_image->SafeOpaqueBackgroundColor(), SkColors::kYellow);
+  EXPECT_EQ(opaque_image->SafeOpaqueBackgroundColor(), SkColors::kTransparent);
 
   const SkColor4f kTranslucentCyan{0.0f, 1.0f, 1.0f, 128.0f / 255.0f};
   auto* opaque_image_translucent_color =

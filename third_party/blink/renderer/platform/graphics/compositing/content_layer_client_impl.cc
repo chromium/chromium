@@ -126,9 +126,16 @@ void ContentLayerClientImpl::UpdateCcPictureLayer(
   cc_picture_layer_->SetHitTestable(true);
   cc_picture_layer_->SetIsDrawable(pending_layer.DrawsContent());
 
-  bool contents_opaque = pending_layer.RectKnownToBeOpaque().Contains(
-      gfx::RectF(gfx::PointAtOffsetFromOrigin(pending_layer.LayerOffset()),
-                 gfx::SizeF(pending_layer.LayerBounds())));
+  cc_picture_layer_->SetBackgroundColor(pending_layer.ComputeBackgroundColor());
+  bool contents_opaque =
+      // If the background color is transparent, don't treat the layer as opaque
+      // because we won't have a good SafeOpaqueBackgroundColor() to fill the
+      // subpixels along the edges in case the layer is not aligned to whole
+      // pixels during rasterization.
+      cc_picture_layer_->background_color() != SkColors::kTransparent &&
+      pending_layer.RectKnownToBeOpaque().Contains(
+          gfx::RectF(gfx::PointAtOffsetFromOrigin(pending_layer.LayerOffset()),
+                     gfx::SizeF(pending_layer.LayerBounds())));
   cc_picture_layer_->SetContentsOpaque(contents_opaque);
   if (!contents_opaque) {
     cc_picture_layer_->SetContentsOpaqueForText(

@@ -104,6 +104,9 @@ TestPaintArtifact& TestPaintArtifact::RectDrawing(DisplayItemClient& client,
           client.GetPaintInvalidationReason());
   paint_artifact_->RecordDebugInfo(client.Id(), client.DebugName(),
                                    client.OwnerNodeId());
+  auto& chunk = paint_artifact_->PaintChunks().back();
+  chunk.background_color = color;
+  chunk.background_color_area = bounds.size().GetArea();
   DidAddDisplayItem();
   return *this;
 }

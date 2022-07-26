@@ -19,7 +19,7 @@ Even though the fixed-position element's container is nonscrollable, it should s
       "name": "LayoutBlockFlow DIV class='scrollable bigBox'",
       "position": [1, 1],
       "bounds": [285, 800],
-      "contentsOpaque": true,
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {

@@ -34,7 +34,8 @@ std::unique_ptr<JSONObject> CCLayerAsJSON(const cc::Layer& layer,
     json->SetInteger("ccLayerId", layer.id());
   }
 
-  json->SetString("name", String(layer.DebugName().c_str()));
+  String debug_name(layer.DebugName());
+  json->SetString("name", debug_name);
 
   if (layer.offset_to_transform_parent() != gfx::Vector2dF()) {
     json->SetArray("position",
@@ -57,7 +58,12 @@ std::unique_ptr<JSONObject> CCLayerAsJSON(const cc::Layer& layer,
     json->SetString("backfaceVisibility", "hidden");
 
   // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-  if (Color(layer.background_color().toSkColor()).Alpha()) {
+  if (Color(layer.background_color().toSkColor()).Alpha() &&
+      ((flags & kLayerTreeIncludesDebugInfo) ||
+       // Omit backgroundColor for these layers because it's not interesting
+       // and we want to avoid platform differences and changes with CLs
+       // affecting backgroundColor in web tests that dump layer trees.
+       (debug_name != "Caret" && !debug_name.Contains("Scroll corner of")))) {
     json->SetString(
         "backgroundColor",
         Color(layer.background_color().toSkColor()).NameForLayoutTreeAsText());
