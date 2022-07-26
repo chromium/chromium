@@ -662,6 +662,8 @@ void CrostiniManager::CrostiniRestarter::LoadComponentFinished(
   }
   // Set the pref here, after we first successfully install something
   profile_->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled, true);
+  // Register penguin so it will show in Terminal even on failure (b/221771751).
+  AddNewLxdContainerToPrefs(profile_, DefaultContainerId());
 
   // Allow concierge to choose an appropriate disk image size.
   int64_t disk_size_bytes = requests_[0].options.disk_size_bytes.value_or(0);
