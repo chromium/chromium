@@ -39,8 +39,9 @@ namespace {
 
 const char* kElementSetModificationError =
     "The element set cannot be modified at this transition state.";
-const char* kPaintContainmentNotSatisfied =
-    "Dropping element from transition. Shared element must contain paint";
+const char* kContainmentNotSatisfied =
+    "Dropping element from transition. Shared element must contain paint or "
+    "layout";
 const char* kDuplicateTagBaseError =
     "Unexpected duplicate page transition tag: ";
 
@@ -667,7 +668,8 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
     // TODO(khushalsagar) : Switch paint containment and disallow fragmentation
     // to implicit constraints. See crbug.com/1277121.
     auto* layout_object = element_data->target_element->GetLayoutObject();
-    if (!layout_object || !layout_object->ShouldApplyPaintContainment()) {
+    if (!layout_object || (!layout_object->ShouldApplyPaintContainment() &&
+                           !layout_object->ShouldApplyLayoutContainment())) {
       element_data->target_element = nullptr;
 
       // If we had a valid |target_element| there must be an associated snapshot
@@ -832,10 +834,12 @@ void DocumentTransitionStyleTracker::VerifySharedElements() {
 
     // TODO(vmpstr): Should this work for replaced elements as well?
     if (object) {
-      if (object->ShouldApplyPaintContainment())
+      if (object->ShouldApplyPaintContainment() ||
+          object->ShouldApplyLayoutContainment()) {
         continue;
+      }
 
-      AddConsoleError(kPaintContainmentNotSatisfied,
+      AddConsoleError(kContainmentNotSatisfied,
                       {DOMNodeIds::IdForNode(active_element)});
     }
 
@@ -844,6 +848,7 @@ void DocumentTransitionStyleTracker::VerifySharedElements() {
     // support nulls as a valid active element.
 
     // Invalidate the element since we should no longer be compositing it.
+    // TODO(vmpstr): Should we abort the transition instead?0
     auto* box = active_element->GetLayoutBox();
     if (box && box->HasSelfPaintingLayer())
       box->SetNeedsPaintPropertyUpdate();
