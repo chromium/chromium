@@ -389,7 +389,7 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     apps::IntentFilters target;
     apps::AppServiceProxyFactory::GetForProfile(profile())
         ->AppRegistryCache()
-        .ForApp(app_id, [&target](const apps::AppUpdate& update) {
+        .ForOneApp(app_id, [&target](const apps::AppUpdate& update) {
           target = update.IntentFilters();
         });
 

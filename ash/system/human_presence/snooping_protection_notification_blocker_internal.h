@@ -79,7 +79,7 @@ std::u16string GetNotifierTitle(const message_center::NotifierId& id,
     }
 
     const bool found =
-        app_cache->ForApp(id.id, [&](const apps::AppUpdate& update) {
+        app_cache->ForOneApp(id.id, [&](const apps::AppUpdate& update) {
           const std::string& short_name = update.ShortName();
           title = std::u16string(short_name.begin(), short_name.end());
         });

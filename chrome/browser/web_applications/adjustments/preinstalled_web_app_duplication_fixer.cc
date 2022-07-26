@@ -101,7 +101,7 @@ void PreinstalledWebAppDuplicationFixer::ScanForDuplication() {
   std::vector<std::string> installed_chrome_apps;
   apps::AppServiceProxyFactory::GetForProfile(&profile_)
       ->AppRegistryCache()
-      .ForAllApps([&installed_web_apps,
+      .ForEachApp([&installed_web_apps,
                    &installed_chrome_apps](const apps::AppUpdate& update) {
         if (update.Readiness() != apps::Readiness::kReady)
           return;

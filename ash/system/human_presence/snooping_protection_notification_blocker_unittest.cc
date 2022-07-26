@@ -155,7 +155,7 @@ class FakeAppRegistryCache {
   FakeAppRegistryCache* GetAppRegistryCache(const AccountId&) { return this; }
 
   template <typename FunctionType>
-  bool ForApp(const std::string& app_id, FunctionType f) {
+  bool ForOneApp(const std::string& app_id, FunctionType f) {
     for (const std::unique_ptr<apps::AppUpdate>& app : apps_) {
       if (app_id == app->AppId()) {
         f(*app);

@@ -137,7 +137,7 @@ class RecursiveObserver : public AppRegistryCache::Observer {
   void OnAppUpdate(const AppUpdate& outer) override {
     EXPECT_EQ(account_id_, outer.AccountId());
     int num_apps = 0;
-    cache_->ForAllApps([this, &outer, &num_apps](const AppUpdate& inner) {
+    cache_->ForEachApp([this, &outer, &num_apps](const AppUpdate& inner) {
       if (check_names_snapshot_) {
         if (num_apps_seen_on_app_update_ == 0) {
           // If this is the first time that OnAppUpdate is called, after a
@@ -164,13 +164,13 @@ class RecursiveObserver : public AppRegistryCache::Observer {
     });
     EXPECT_EQ(expected_num_apps_, num_apps);
 
-    EXPECT_FALSE(cache_->ForApp(
+    EXPECT_FALSE(cache_->ForOneApp(
         "no_such_app_id",
         [&outer](const AppUpdate& inner) { ExpectEq(outer, inner); }));
 
-    EXPECT_TRUE(cache_->ForApp(outer.AppId(), [&outer](const AppUpdate& inner) {
-      ExpectEq(outer, inner);
-    }));
+    EXPECT_TRUE(cache_->ForOneApp(
+        outer.AppId(),
+        [&outer](const AppUpdate& inner) { ExpectEq(outer, inner); }));
 
     if (outer.NameChanged()) {
       std::string old_name;
@@ -312,8 +312,8 @@ class AppRegistryCacheTest : public testing::Test,
                              public testing::WithParamInterface<bool>,
                              public AppRegistryCache::Observer {
  public:
-  void CallForAllApps(AppRegistryCache& cache) {
-    cache.ForAllApps([this](const AppUpdate& update) { OnAppUpdate(update); });
+  void CallForEachApp(AppRegistryCache& cache) {
+    cache.ForEachApp([this](const AppUpdate& update) { OnAppUpdate(update); });
   }
 
   // apps::AppRegistryCache::Observer overrides.
@@ -354,8 +354,8 @@ class AppRegistryCacheTest : public testing::Test,
 
   std::string GetName(AppRegistryCache& cache, const std::string& app_id) {
     std::string name;
-    cache.ForApp(app_id,
-                 [&name](const AppUpdate& update) { name = update.Name(); });
+    cache.ForOneApp(app_id,
+                    [&name](const AppUpdate& update) { name = update.Name(); });
     return name;
   }
 
@@ -426,7 +426,7 @@ TEST_F(AppRegistryCacheTest, OnApps) {
   VerifyApp(cache, "c", "cherry", Readiness::kDisabledByPolicy,
             /*timeline=*/10);
 
-  CallForAllApps(cache);
+  CallForEachApp(cache);
   EXPECT_EQ(2u, updated_ids_.size());
   EXPECT_EQ(2u, updated_names_.size());
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("b"));
@@ -462,7 +462,7 @@ TEST_F(AppRegistryCacheTest, OnApps) {
             /*timeline=*/10);
   VerifyApp(cache, "d", "durian");
 
-  CallForAllApps(cache);
+  CallForEachApp(cache);
   EXPECT_EQ(3u, updated_ids_.size());
   EXPECT_EQ(3u, updated_names_.size());
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("a"));
@@ -479,14 +479,14 @@ TEST_F(AppRegistryCacheTest, OnApps) {
   // Test that ForOneApp succeeds for "c" and fails for "e".
 
   bool found_c = false;
-  EXPECT_TRUE(cache.ForApp("c", [&found_c](const apps::AppUpdate& update) {
+  EXPECT_TRUE(cache.ForOneApp("c", [&found_c](const apps::AppUpdate& update) {
     found_c = true;
     EXPECT_EQ("c", update.AppId());
   }));
   EXPECT_TRUE(found_c);
 
   bool found_e = false;
-  EXPECT_FALSE(cache.ForApp("e", [&found_e](const apps::AppUpdate& update) {
+  EXPECT_FALSE(cache.ForOneApp("e", [&found_e](const apps::AppUpdate& update) {
     found_e = true;
     EXPECT_EQ("e", update.AppId());
   }));
@@ -500,7 +500,7 @@ TEST_F(AppRegistryCacheTest, Removed) {
   cache.AddObserver(&observer);
 
   // Starting with an empty cache.
-  cache.ForAllApps([&observer](const apps::AppUpdate& update) {
+  cache.ForEachApp([&observer](const apps::AppUpdate& update) {
     observer.OnAppUpdate(update);
   });
 
@@ -518,7 +518,7 @@ TEST_F(AppRegistryCacheTest, Removed) {
   cache.OnApps(std::move(mojom_apps), apps::mojom::AppType::kUnknown,
                false /* should_notify_initialized */);
 
-  CallForAllApps(cache);
+  CallForEachApp(cache);
   EXPECT_EQ(1u, updated_ids_.size());
   EXPECT_EQ(1u, updated_names_.size());
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("app"));
@@ -549,7 +549,7 @@ TEST_F(AppRegistryCacheTest, Removed) {
         // Even though we have queued the removal, checking the cache now
         // shows the app is still present.
         EXPECT_CALL(observer, OnAppUpdate(HasAppId("app")));
-        cache.ForAllApps([&observer](const AppUpdate& update) {
+        cache.ForEachApp([&observer](const AppUpdate& update) {
           observer.OnAppUpdate(update);
         });
       }));
@@ -562,7 +562,7 @@ TEST_F(AppRegistryCacheTest, Removed) {
 
   // The cache is now empty.
   EXPECT_EQ(0, AppCount(cache));
-  CallForAllApps(cache);
+  CallForEachApp(cache);
   EXPECT_TRUE(updated_ids_.empty());
   EXPECT_TRUE(updated_names_.empty());
   Clear();
@@ -589,7 +589,7 @@ TEST_F(AppRegistryCacheTest, RemovedAndAdded) {
                false /* should_notify_initialized */);
 
   // Verify "app" is notified via OnAppUpdate.
-  CallForAllApps(cache);
+  CallForEachApp(cache);
   EXPECT_EQ(1u, updated_ids_.size());
   EXPECT_EQ(1u, updated_names_.size());
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("app"));
@@ -627,7 +627,7 @@ TEST_F(AppRegistryCacheTest, RemovedAndAdded) {
 
   // The cache is not empty, "app" is still saved in the cache.
   EXPECT_EQ(1, AppCount(cache));
-  CallForAllApps(cache);
+  CallForEachApp(cache);
   EXPECT_EQ(1u, updated_ids_.size());
   EXPECT_EQ(1u, updated_names_.size());
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("app"));
@@ -663,7 +663,7 @@ TEST_F(AppRegistryCacheTest, RemovedAndAddMultipleApps) {
                false /* should_notify_initialized */);
 
   // Verify "app1" is added to the cache and is notified via OnAppUpdate.
-  CallForAllApps(cache);
+  CallForEachApp(cache);
   EXPECT_EQ(1u, updated_ids_.size());
   EXPECT_EQ(1u, updated_names_.size());
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("app1"));
@@ -707,7 +707,7 @@ TEST_F(AppRegistryCacheTest, RemovedAndAddMultipleApps) {
 
   // The cache is not empty. Verify both "app1" and "app2" exist in the cache.
   EXPECT_EQ(2, AppCount(cache));
-  CallForAllApps(cache);
+  CallForEachApp(cache);
   EXPECT_EQ(2u, updated_ids_.size());
   EXPECT_EQ(2u, updated_names_.size());
   EXPECT_NE(updated_ids_.end(), updated_ids_.find("app1"));
