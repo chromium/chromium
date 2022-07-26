@@ -355,7 +355,7 @@ bool AccessibilityHeadingSameLevelPredicate(BrowserAccessibility* start,
 
 bool AccessibilityFramePredicate(BrowserAccessibility* start,
                                  BrowserAccessibility* node) {
-  if (node->IsWebAreaForPresentationalIframe())
+  if (node->IsRootWebAreaForPresentationalIframe())
     return false;
   if (!node->PlatformGetParent())
     return false;

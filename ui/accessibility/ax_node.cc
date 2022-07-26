@@ -1926,6 +1926,15 @@ bool AXNode::IsCollapsedMenuListPopUpButton() const {
   return IsMenuListPopUpButton();
 }
 
+bool AXNode::IsRootWebAreaForPresentationalIframe() const {
+  if (!ui::IsPlatformDocument(GetRole()))
+    return false;
+  const AXNode* parent = GetUnignoredParentCrossingTreeBoundary();
+  if (!parent)
+    return false;
+  return parent->GetRole() == ax::mojom::Role::kIframePresentational;
+}
+
 AXNode* AXNode::GetCollapsedMenuListPopUpButtonAncestor() const {
   AXNode* node = GetOrderedSet();
 

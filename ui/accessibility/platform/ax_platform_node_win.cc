@@ -774,7 +774,7 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
   // If this is a web area for a presentational iframe, give it a role of
   // something other than document so that the fact that it's a separate doc
   // is not exposed to AT.
-  if (GetDelegate()->IsWebAreaForPresentationalIframe())
+  if (GetDelegate()->IsRootWebAreaForPresentationalIframe())
     return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
 
   // See UIARoleProperties for descriptions of the properties.
@@ -6125,7 +6125,7 @@ int AXPlatformNodeWin::MSAARole() {
   // If this is a web area for a presentational iframe, give it a role of
   // something other than DOCUMENT so that the fact that it's a separate doc
   // is not exposed to AT.
-  if (GetDelegate()->IsWebAreaForPresentationalIframe())
+  if (GetDelegate()->IsRootWebAreaForPresentationalIframe())
     return ROLE_SYSTEM_GROUPING;
 
   switch (GetRole()) {
@@ -6722,7 +6722,7 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
   // If this is a web area for a presentational iframe, give it a role of
   // something other than DOCUMENT so that the fact that it's a separate doc
   // is not exposed to AT.
-  if (GetDelegate()->IsWebAreaForPresentationalIframe()) {
+  if (GetDelegate()->IsRootWebAreaForPresentationalIframe()) {
     return ROLE_SYSTEM_GROUPING;
   }
 

@@ -688,6 +688,10 @@ class AX_EXPORT AXNode final {
   // menu list popup.
   bool IsCollapsedMenuListPopUpButton() const;
 
+  // Returns true if this node is at the root of an accessibility tree that is
+  // hosted by a presentational iframe.
+  bool IsRootWebAreaForPresentationalIframe() const;
+
   // Returns the popup button ancestor of this current node if any. The popup
   // button needs to be the parent of a menu list popup and needs to be
   // collapsed.

@@ -1221,7 +1221,7 @@ bool content::IsNSRange(id value) {
   } else if (role == ax::mojom::Role::kImage &&
              _owner->HasExplicitlyEmptyName()) {
     cocoa_role = NSAccessibilityUnknownRole;
-  } else if (_owner->IsWebAreaForPresentationalIframe()) {
+  } else if (_owner->IsRootWebAreaForPresentationalIframe()) {
     cocoa_role = NSAccessibilityGroupRole;
   } else {
     cocoa_role = [AXPlatformNodeCocoa nativeRoleFromAXRole:role];

@@ -346,7 +346,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   ui::AXNodeID GetId() const;
   gfx::RectF GetLocation() const;
 
-  bool IsWebAreaForPresentationalIframe() const override;
+  // See `AXNode::IsRootWebAreaForPresentationalIframe()`.
+  bool IsRootWebAreaForPresentationalIframe() const override;
 
   // See AXNodeData::IsClickable().
   virtual bool IsClickable() const;

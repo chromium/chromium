@@ -779,14 +779,12 @@ bool AXPlatformNodeDelegateBase::IsCellOrHeaderOfAriaGrid() const {
   return false;
 }
 
-bool AXPlatformNodeDelegateBase::IsWebAreaForPresentationalIframe() const {
+bool AXPlatformNodeDelegateBase::IsRootWebAreaForPresentationalIframe() const {
   if (!ui::IsPlatformDocument(GetRole()))
     return false;
-
   AXPlatformNodeDelegate* parent = GetParentDelegate();
   if (!parent)
     return false;
-
   return parent->GetRole() == ax::mojom::Role::kIframePresentational;
 }
 

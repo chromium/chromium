@@ -752,16 +752,8 @@ BrowserAccessibility* BrowserAccessibility::ApproximateHitTest(
   return this;
 }
 
-bool BrowserAccessibility::IsWebAreaForPresentationalIframe() const {
-  // TODO(nektar): Move this method to `AXNode` in the immediate future.
-  if (!ui::IsPlatformDocument(GetRole()))
-    return false;
-
-  BrowserAccessibility* parent = PlatformGetParent();
-  if (!parent)
-    return false;
-
-  return parent->GetRole() == ax::mojom::Role::kIframePresentational;
+bool BrowserAccessibility::IsRootWebAreaForPresentationalIframe() const {
+  return node()->IsRootWebAreaForPresentationalIframe();
 }
 
 bool BrowserAccessibility::IsClickable() const {
