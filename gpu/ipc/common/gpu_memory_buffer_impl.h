@@ -30,7 +30,6 @@ class GPU_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
   gfx::Size GetSize() const override;
   gfx::BufferFormat GetFormat() const override;
   gfx::GpuMemoryBufferId GetId() const override;
-  ClientBuffer AsClientBuffer() override;
   void OnMemoryDump(
       base::trace_event::ProcessMemoryDump* pmd,
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,

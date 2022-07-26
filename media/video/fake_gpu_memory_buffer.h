@@ -38,7 +38,6 @@ class FakeGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   gfx::GpuMemoryBufferId GetId() const override;
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
-  ClientBuffer AsClientBuffer() override;
   void OnMemoryDump(
       base::trace_event::ProcessMemoryDump* pmd,
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,

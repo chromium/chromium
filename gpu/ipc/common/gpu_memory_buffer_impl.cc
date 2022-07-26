@@ -38,10 +38,6 @@ gfx::GpuMemoryBufferId GpuMemoryBufferImpl::GetId() const {
   return id_;
 }
 
-ClientBuffer GpuMemoryBufferImpl::AsClientBuffer() {
-  return reinterpret_cast<ClientBuffer>(this);
-}
-
 void GpuMemoryBufferImpl::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd,
     const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,

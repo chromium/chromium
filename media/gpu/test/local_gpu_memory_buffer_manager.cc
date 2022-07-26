@@ -203,10 +203,6 @@ class GpuMemoryBufferImplGbm : public gfx::GpuMemoryBuffer {
     return handle;
   }
 
-  ClientBuffer AsClientBuffer() override {
-    return reinterpret_cast<ClientBuffer>(this);
-  }
-
   void OnMemoryDump(
       base::trace_event::ProcessMemoryDump* pmd,
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,

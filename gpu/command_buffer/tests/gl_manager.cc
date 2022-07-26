@@ -72,10 +72,6 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
                       gfx::BufferFormat format)
       : mapped_(false), bytes_(bytes), size_(size), format_(format) {}
 
-  static GpuMemoryBufferImpl* FromClientBuffer(ClientBuffer buffer) {
-    return reinterpret_cast<GpuMemoryBufferImpl*>(buffer);
-  }
-
   // Overridden from gfx::GpuMemoryBuffer:
   bool Map() override {
     DCHECK(!mapped_);
@@ -109,9 +105,6 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
     NOTREACHED();
     return gfx::GpuMemoryBufferHandle();
   }
-  ClientBuffer AsClientBuffer() override {
-    return reinterpret_cast<ClientBuffer>(this);
-  }
   void OnMemoryDump(
       base::trace_event::ProcessMemoryDump* pmd,
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
@@ -137,10 +130,6 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
 
   ~IOSurfaceGpuMemoryBuffer() override {
     CFRelease(iosurface_);
-  }
-
-  static IOSurfaceGpuMemoryBuffer* FromClientBuffer(ClientBuffer buffer) {
-    return reinterpret_cast<IOSurfaceGpuMemoryBuffer*>(buffer);
   }
 
   // Overridden from gfx::GpuMemoryBuffer:
@@ -174,9 +163,6 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
   gfx::GpuMemoryBufferHandle CloneHandle() const override {
     NOTREACHED();
     return gfx::GpuMemoryBufferHandle();
-  }
-  ClientBuffer AsClientBuffer() override {
-    return reinterpret_cast<ClientBuffer>(this);
   }
   void OnMemoryDump(
       base::trace_event::ProcessMemoryDump* pmd,
