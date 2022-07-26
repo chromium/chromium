@@ -547,6 +547,18 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
                             prefs::kSyncableWallpaperInfo);
   }
 
+  base::TimeDelta GetTimeToNextDailyRefreshUpdate(
+      const AccountId& account_id) const override {
+    WallpaperInfo info;
+    if (!GetUserWallpaperInfo(account_id, &info)) {
+      // Default to 1 day to avoid a continuous refresh situation.
+      return base::Days(1);
+    }
+    base::TimeDelta delta = (info.date + base::Days(1)) - base::Time::Now();
+    // Guarantee the delta is always 0 or positive.
+    return delta.is_positive() ? delta : base::TimeDelta();
+  }
+
  private:
   PrefService* local_state_ = nullptr;
   std::unique_ptr<WallpaperProfileHelper> profile_helper_;

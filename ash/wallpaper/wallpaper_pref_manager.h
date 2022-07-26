@@ -145,6 +145,10 @@ class ASH_EXPORT WallpaperPrefManager
   virtual bool SetSyncedWallpaperInfo(const AccountId& account_id,
                                       const WallpaperInfo& info) = 0;
 
+  // Returns the delta for the next daily refresh update for `account_id`.
+  virtual base::TimeDelta GetTimeToNextDailyRefreshUpdate(
+      const AccountId& account_id) const = 0;
+
  protected:
   WallpaperPrefManager() = default;
 };

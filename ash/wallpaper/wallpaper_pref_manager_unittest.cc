@@ -26,6 +26,10 @@
 namespace ash {
 namespace {
 
+using testing::AllOf;
+using testing::Gt;
+using testing::Lt;
+
 constexpr char kUser1[] = "user1@test.com";
 const AccountId account_id_1 = AccountId::FromUserEmailGaiaId(kUser1, kUser1);
 
@@ -285,6 +289,50 @@ TEST_F(WallpaperPrefManagerTest, SetWallpaperInfoCustom) {
   AssertWallpaperInfoInPrefs(
       profile_helper_->GetUserPrefServiceSyncable(account_id_1),
       prefs::kSyncableWallpaperInfo, account_id_1, synced_info);
+}
+
+TEST_F(WallpaperPrefManagerTest, GetNextDailyRefreshUpdate_Future) {
+  profile_helper_->RegisterPrefsForAccount(account_id_1);
+  base::Time time = base::Time::Now();
+
+  WallpaperInfo info = InfoWithType(WallpaperType::kDaily);
+  info.date = time + base::Days(2);
+
+  ASSERT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, info));
+
+  // Next update should be date + 1 day.
+  EXPECT_THAT(pref_manager_->GetTimeToNextDailyRefreshUpdate(account_id_1),
+              AllOf(Gt(base::Days(3) - base::Minutes(1)),
+                    Lt(base::Days(3) + base::Minutes(1))));
+}
+
+TEST_F(WallpaperPrefManagerTest, GetNextDailyRefreshUpdate_Past) {
+  profile_helper_->RegisterPrefsForAccount(account_id_1);
+  base::Time time = base::Time::Now();
+
+  WallpaperInfo info = InfoWithType(WallpaperType::kDaily);
+  info.date = time - base::Days(2);
+
+  ASSERT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, info));
+
+  // Next update should be immediate if it would be negative.
+  EXPECT_EQ(pref_manager_->GetTimeToNextDailyRefreshUpdate(account_id_1),
+            base::TimeDelta());
+}
+
+TEST_F(WallpaperPrefManagerTest, GetNextDailyRefreshUpdate_Recent) {
+  profile_helper_->RegisterPrefsForAccount(account_id_1);
+  base::Time time = base::Time::Now();
+
+  WallpaperInfo info = InfoWithType(WallpaperType::kDaily);
+  info.date = time - base::Hours(2);
+
+  ASSERT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, info));
+
+  // Next update should be 24 hours +- 1 minute after the date on WallpaperInfo.
+  EXPECT_THAT(pref_manager_->GetTimeToNextDailyRefreshUpdate(account_id_1),
+              AllOf(Gt(base::Hours(22) - base::Minutes(1)),
+                    Lt(base::Hours(22) + base::Minutes(1))));
 }
 
 }  // namespace

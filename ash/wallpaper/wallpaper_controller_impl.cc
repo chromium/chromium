@@ -3096,12 +3096,8 @@ void WallpaperControllerImpl::StartUpdateWallpaperTimer(base::TimeDelta delay) {
 
 base::TimeDelta WallpaperControllerImpl::GetTimeToNextDailyRefreshUpdate()
     const {
-  WallpaperInfo info;
-  if (!GetUserWallpaperInfo(GetActiveAccountId(), &info))
-    return base::TimeDelta();
-  base::TimeDelta delta = (info.date + base::Days(1)) - base::Time::Now();
-  // Guarantee the delta is always 0 or positive.
-  return delta.is_positive() ? delta : base::TimeDelta();
+  const AccountId& account_id = GetActiveAccountId();
+  return pref_manager_->GetTimeToNextDailyRefreshUpdate(account_id);
 }
 
 void WallpaperControllerImpl::OnUpdateWallpaperTimerExpired() {
