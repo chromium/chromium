@@ -944,7 +944,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
   // new size is a significant percentage smaller. We could do the same if we
   // determine it is a win.
   if (AllocationCapacityFromRequestedSize(new_size) !=
-      AllocationCapacityFromPtr(object))
+      AllocationCapacityFromSlotStart(slot_start))
     return false;
 
   // Trying to allocate |new_size| would use the same amount of underlying

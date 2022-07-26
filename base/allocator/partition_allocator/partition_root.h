@@ -507,7 +507,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   PA_ALWAYS_INLINE static size_t GetUsableSize(void* ptr);
 
-  PA_ALWAYS_INLINE size_t AllocationCapacityFromPtr(void* ptr) const;
+  PA_ALWAYS_INLINE size_t
+  AllocationCapacityFromSlotStart(uintptr_t slot_start) const;
   PA_ALWAYS_INLINE size_t
   AllocationCapacityFromRequestedSize(size_t size) const;
 
@@ -1589,6 +1590,7 @@ PA_ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
 }
 
 // static
+//
 // Returns the size available to the app. It can be equal or higher than the
 // requested size. If higher, the overage won't exceed what's actually usable
 // by the app without a risk of running out of an allocated region or into
@@ -1614,8 +1616,8 @@ PA_ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetUsableSize(void* ptr) {
 // the same amount of underlying memory.
 template <bool thread_safe>
 PA_ALWAYS_INLINE size_t
-PartitionRoot<thread_safe>::AllocationCapacityFromPtr(void* object) const {
-  uintptr_t slot_start = ObjectToSlotStart(object);
+PartitionRoot<thread_safe>::AllocationCapacityFromSlotStart(
+    uintptr_t slot_start) const {
   auto* slot_span = SlotSpan::FromSlotStart(slot_start);
   return AdjustSizeForExtrasSubtract(slot_span->bucket->slot_size);
 }

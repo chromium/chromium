@@ -693,14 +693,14 @@ TEST_F(PartitionAllocPCScanTest, DontScanUnusedRawSize) {
   const size_t big_size = kMaxBucketed - SystemPageSize() + 1;
   void* ptr = root().Alloc(big_size, nullptr);
 
-  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromObject(ptr);
+  uintptr_t slot_start = root().ObjectToSlotStart(ptr);
+  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotStart(slot_start);
   ASSERT_TRUE(big_size + sizeof(void*) <=
-              root().AllocationCapacityFromPtr(ptr));
+              root().AllocationCapacityFromSlotStart(slot_start));
   ASSERT_TRUE(slot_span->CanStoreRawSize());
 
   auto* value = ValueList::Create(root());
 
-  uintptr_t slot_start = root().ObjectToSlotStart(ptr);
   // This not only points past the object, but past all extras around it.
   // However, there should be enough space between this and the end of slot, to
   // store some data.
