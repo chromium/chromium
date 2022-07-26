@@ -74,8 +74,16 @@ int ULPMetricsLogger::ULPLanguagesInAcceptLanguagesRatio(
 
   int num_ulp_languages_also_in_accept_languages = 0;
   for (const std::string& ulp_language : ulp_languages) {
-    if (std::find(accept_languages.begin(), accept_languages.end(),
-                  ulp_language) != accept_languages.end()) {
+    // Search for base matches of ulp_language in accept_languages (e.g. pt-BR
+    // == pt-MZ).
+    const std::string base_ulp_language = l10n_util::GetLanguage(ulp_language);
+    std::vector<std::string>::const_iterator base_match =
+        std::find_if(accept_languages.begin(), accept_languages.end(),
+                     [&base_ulp_language](const std::string& accept_language) {
+                       return base_ulp_language.compare(
+                                  l10n_util::GetLanguage(accept_language)) == 0;
+                     });
+    if (base_match != accept_languages.end()) {
       ++num_ulp_languages_also_in_accept_languages;
     }
   }

@@ -95,10 +95,13 @@ TEST(ULPMetricsLoggerTest, TestULPLanguagesInAcceptLanguagesRatio) {
   std::vector<std::string> ulp_languages = {"en-US", "es", "pt-BR", "de",
                                             "fr-CA"};
 
-  EXPECT_EQ(0, logger.ULPLanguagesInAcceptLanguagesRatio({"en-GB", "af", "zu"},
+  EXPECT_EQ(0, logger.ULPLanguagesInAcceptLanguagesRatio({"fi-FI", "af", "zu"},
                                                          ulp_languages));
 
-  EXPECT_EQ(20, logger.ULPLanguagesInAcceptLanguagesRatio({"en-US", "af", "zu"},
+  EXPECT_EQ(20, logger.ULPLanguagesInAcceptLanguagesRatio({"en-GB", "af", "zu"},
+                                                          ulp_languages));
+
+  EXPECT_EQ(20, logger.ULPLanguagesInAcceptLanguagesRatio({"en", "af", "zu"},
                                                           ulp_languages));
 
   EXPECT_EQ(40, logger.ULPLanguagesInAcceptLanguagesRatio(
@@ -106,6 +109,12 @@ TEST(ULPMetricsLoggerTest, TestULPLanguagesInAcceptLanguagesRatio) {
 
   EXPECT_EQ(60, logger.ULPLanguagesInAcceptLanguagesRatio(
                     {"en-US", "af", "pt-BR", "es"}, ulp_languages));
+
+  EXPECT_EQ(60, logger.ULPLanguagesInAcceptLanguagesRatio(
+                    {"en", "af", "pt", "es"}, ulp_languages));
+
+  EXPECT_EQ(60, logger.ULPLanguagesInAcceptLanguagesRatio(
+                    {"en", "af", "pt-PT", "es"}, ulp_languages));
 
   EXPECT_EQ(80, logger.ULPLanguagesInAcceptLanguagesRatio(
                     {"en-US", "af", "pt-BR", "es", "de"}, ulp_languages));
