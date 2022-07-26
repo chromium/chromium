@@ -3631,6 +3631,8 @@ enum WebFeature {
   kSendBeaconWithUSVString = 4310,
   kReplacedElementPaintedWithOverflow = 4311,
   kImageAd = 4312,
+  kLinkRelPrefetchAsDocumentSameOrigin = 4313,
+  kLinkRelPrefetchAsDocumentCrossOrigin = 4314,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

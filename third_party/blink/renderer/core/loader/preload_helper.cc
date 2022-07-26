@@ -585,6 +585,14 @@ void PreloadHelper::PrefetchIfNeeded(const LinkLoadParameters& params,
   if (EqualIgnoringASCIICase(params.as, "document") &&
       !document.GetExecutionContext()->GetSecurityOrigin()->IsOpaque()) {
     resource_request.SetPrefetchMaybeForTopLevelNavigation(true);
+
+    bool is_same_origin =
+        document.GetExecutionContext()->GetSecurityOrigin()->IsSameOriginWith(
+            SecurityOrigin::Create(params.href).get());
+    UseCounter::Count(document,
+                      is_same_origin
+                          ? WebFeature::kLinkRelPrefetchAsDocumentSameOrigin
+                          : WebFeature::kLinkRelPrefetchAsDocumentCrossOrigin);
   }
 
   // This request could have originally been a preload header on a prefetch

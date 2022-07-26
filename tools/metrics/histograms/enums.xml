@@ -40881,6 +40881,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4310" label="SendBeaconWithUSVString"/>
   <int value="4311" label="ReplacedElementPaintedWithOverflow"/>
   <int value="4312" label="ImageAd"/>
+  <int value="4313" label="LinkRelPrefetchAsDocumentSameOrigin"/>
+  <int value="4314" label="LinkRelPrefetchAsDocumentCrossOrigin"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
