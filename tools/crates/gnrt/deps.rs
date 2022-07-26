@@ -234,24 +234,20 @@ pub fn collect_dependencies(metadata: &cargo_metadata::Metadata) -> Vec<ThirdPar
         }
 
         dep.version = package.version.clone();
-        dep.epoch = epoch_from_version(&package.version);
+        dep.epoch = Epoch::from_version(&package.version);
 
         // Collect this package's list of resolved dependencies which will be
         // needed for build file generation later.
         for node_dep in iter_node_deps(node) {
             let dep_pkg = dep_graph.packages.get(node_dep.pkg).unwrap();
-
-            // Get the platform filter and remove terms with unsupported
-            // configurations.
             let mut platform = node_dep.target;
             if let Some(p) = platform {
                 assert!(platforms::matches_supported_target(&p));
                 platform = platforms::filter_unsupported_platform_terms(p);
             }
-
             let dep_of_dep = DepOfDep {
                 normalized_name: NormalizedName::from_crate_name(&dep_pkg.name),
-                epoch: epoch_from_version(&dep_pkg.version),
+                epoch: Epoch::from_version(&dep_pkg.version),
                 platform,
             };
 
@@ -447,12 +443,5 @@ impl std::fmt::Display for TargetType {
             Self::Bin => f.write_str("bin"),
             Self::BuildScript => f.write_str("custom-build"),
         }
-    }
-}
-
-fn epoch_from_version(version: &cargo_metadata::Version) -> Epoch {
-    match version.major {
-        0 => Epoch::Minor(version.minor.try_into().unwrap()),
-        x => Epoch::Major(x.try_into().unwrap()),
     }
 }

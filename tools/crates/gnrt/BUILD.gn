@@ -58,6 +58,7 @@ test("gnrt_unittests") {
     # to a linking issue we must depend on the lib target which shouldn't exist
     # in the first place, but does due to a crates.py bug.
     "//third_party/rust/cargo_platform/v0_1:lib",
+    "//third_party/rust/semver/v1:lib",
     "//third_party/rust/serde/v1:lib",
     "//third_party/rust/serde_json/v1:lib",
     "//third_party/rust/toml/v0_5:test_support",
@@ -83,6 +84,7 @@ if (rustc_can_link) {
       ":gnrt_lib",
       "//third_party/rust/cargo_metadata/v0_14:test_support",
       "//third_party/rust/clap/v3:test_support",
+      "//third_party/rust/semver/v1:lib",
       "//third_party/rust/serde/v1:lib",
       "//third_party/rust/serde_json/v1:lib",
       "//third_party/rust/toml/v0_5:test_support",

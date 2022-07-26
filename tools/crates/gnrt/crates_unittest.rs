@@ -8,9 +8,10 @@ use gnrt_lib::crates::*;
 
 use std::str::FromStr;
 
+use Epoch::*;
+
 #[gtest(EpochTest, FromStr)]
 fn test() {
-    use Epoch::{Major, Minor};
     use EpochParseError::*;
     expect_eq!(Epoch::from_str("v1"), Ok(Major(1)));
     expect_eq!(Epoch::from_str("v2"), Ok(Major(2)));
@@ -26,8 +27,22 @@ fn test() {
 
 #[gtest(EpochTest, ToString)]
 fn test() {
-    use Epoch::{Major, Minor};
     expect_eq!(Major(1).to_string(), "v1");
     expect_eq!(Major(2).to_string(), "v2");
     expect_eq!(Minor(3).to_string(), "v0_3");
+}
+
+#[gtest(EpochTest, FromVersion)]
+fn test() {
+    use semver::Version;
+
+    expect_eq!(Epoch::from_version(&Version::new(0, 1, 0)), Minor(1));
+    expect_eq!(Epoch::from_version(&Version::new(1, 2, 0)), Major(1));
+}
+
+#[gtest(EpochTest, FromVersionReqStr)]
+fn test() {
+    expect_eq!(Epoch::from_version_req_str("0.1.0"), Minor(1));
+    expect_eq!(Epoch::from_version_req_str("1.0.0"), Major(1));
+    expect_eq!(Epoch::from_version_req_str("2.3.0"), Major(2));
 }

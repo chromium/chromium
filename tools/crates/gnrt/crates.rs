@@ -21,10 +21,63 @@ use std::str::FromStr;
 pub enum Epoch {
     /// Epoch with major version == 0. The field is the minor version. It is an
     /// error to use 0: methods may panic in this case.
-    Minor(u32),
+    Minor(u64),
     /// Epoch with major version >= 1. It is an error to use 0: methods may
     /// panic in this case.
-    Major(u32),
+    Major(u64),
+}
+
+impl Epoch {
+    /// Get the semver version string for this Epoch. This will only have a
+    /// non-zero major component, or a zero major component and a non-zero minor
+    /// component. Note this differs from Epoch's `fmt::Display` impl.
+    pub fn to_version_string(&self) -> String {
+        match *self {
+            // These should never return Err since formatting an integer is
+            // infallible.
+            Epoch::Minor(minor) => {
+                assert_ne!(minor, 0);
+                format!("0.{minor}")
+            }
+            Epoch::Major(major) => {
+                assert_ne!(major, 0);
+                format!("{major}")
+            }
+        }
+    }
+
+    /// Compute the Epoch from a `semver::Version`. This is useful since we can
+    /// parse versions from `cargo_metadata` and in Cargo.toml files using the
+    /// `semver` library.
+    pub fn from_version(version: &semver::Version) -> Self {
+        match version.major {
+            0 => Self::Minor(version.minor.try_into().unwrap()),
+            x => Self::Major(x.try_into().unwrap()),
+        }
+    }
+
+    /// Get the requested epoch from a supported dependency version string.
+    /// `req` should be a version request as used in Cargo.toml's [dependencies]
+    /// section.
+    ///
+    /// `req` must use the default strategy as defined in
+    /// https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#specifying-dependencies-from-cratesio
+    pub fn from_version_req_str(req: &str) -> Self {
+        // For convenience, leverage semver::VersionReq for parsing even
+        // though we don't need the full expressiveness.
+        let req = semver::VersionReq::from_str(req).unwrap();
+        // We require the spec to have exactly one comparator, which must use
+        // the default strategy.
+        assert_eq!(req.comparators.len(), 1);
+        let comp: &semver::Comparator = &req.comparators[0];
+        // Caret is semver's name for the default strategy.
+        assert_eq!(comp.op, semver::Op::Caret);
+        match (comp.major, comp.minor) {
+            (0, Some(0) | None) => panic!("invalid version req {req}"),
+            (0, Some(x)) => Epoch::Minor(x),
+            (x, _) => Epoch::Major(x),
+        }
+    }
 }
 
 // This gives us a ToString implementation for free.
@@ -70,9 +123,9 @@ impl FromStr for Epoch {
 
         // Split the major and minor version numbers.
         let mut parts = s.split('_');
-        let major: Option<u32> =
+        let major: Option<u64> =
             parts.next().map(|s| s.parse().map_err(EpochParseError::InvalidInt)).transpose()?;
-        let minor: Option<u32> =
+        let minor: Option<u64> =
             parts.next().map(|s| s.parse().map_err(EpochParseError::InvalidInt)).transpose()?;
 
         // Get the final epoch, checking that the (major, minor) pair is valid.
