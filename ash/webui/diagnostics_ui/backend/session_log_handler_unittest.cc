@@ -47,6 +47,7 @@ namespace diagnostics {
 namespace {
 
 constexpr char kHandlerFunctionName[] = "handlerFunctionName";
+constexpr char kRoutineLogFileName[] = "diagnostic_routine_log";
 
 mojom::SystemInfoPtr CreateSystemInfoPtr(const std::string& board_name,
                                          const std::string& marketing_name,
@@ -168,49 +169,38 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
   base::FilePath selected_path_;
 };
 
-// Test class using NoSessionAshTestBase to ensure shell is available for
-// tests requiring DiagnosticsLogController singleton.
-class SessionLogHandlerTest : public NoSessionAshTestBase {
+class SessionLogHandlerTest : public testing::Test {
  public:
   SessionLogHandlerTest()
-      : NoSessionAshTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+      : task_environment_(),
         task_runner_(new base::TestSimpleTaskRunner()),
         web_ui_(),
-        session_log_handler_() {}
-  ~SessionLogHandlerTest() override = default;
-
-  void SetUp() override {
+        session_log_handler_() {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    // Setup to ensure ash::Shell can configure for tests.
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
-    NoSessionAshTestBase::SetUp();
-    DiagnosticsLogController::Initialize(
-        std::make_unique<FakeDiagnosticsBrowserDelegate>());
-    auto* controller = DiagnosticsLogController::Get();
-    telemetry_log_ = controller->GetTelemetryLog();
-    routine_log_ = controller->GetRoutineLog();
-    networking_log_ = controller->GetNetworkingLog();
+    base::FilePath routine_log_path =
+        temp_dir_.GetPath().AppendASCII(kRoutineLogFileName);
+    auto telemetry_log = std::make_unique<TelemetryLog>();
+    auto routine_log = std::make_unique<RoutineLog>(routine_log_path);
+    auto networking_log = std::make_unique<NetworkingLog>(temp_dir_.GetPath());
+    telemetry_log_ = telemetry_log.get();
+    routine_log_ = routine_log.get();
+    networking_log_ = networking_log.get();
     session_log_handler_ = std::make_unique<diagnostics::SessionLogHandler>(
         base::BindRepeating(&CreateTestSelectFilePolicy),
-        /*telemetry_log*/ nullptr, /*routine_log*/ nullptr,
-        /*networking_log*/ nullptr, &holding_space_client_);
+        std::move(telemetry_log), std::move(routine_log),
+        std::move(networking_log), &holding_space_client_);
     session_log_handler_->SetWebUIForTest(&web_ui_);
     session_log_handler_->RegisterMessages();
     session_log_handler_->SetTaskRunnerForTesting(task_runner_);
 
-    // Call handler to enable Javascript.
     base::ListValue args;
     web_ui_.HandleReceivedMessage("initialize", &args);
   }
 
-  void TearDown() override {
+  ~SessionLogHandlerTest() override {
     task_runner_.reset();
-    task_environment()->RunUntilIdle();
+    task_environment_.RunUntilIdle();
     ui::SelectFileDialog::SetFactory(nullptr);
-
-    NoSessionAshTestBase::TearDown();
   }
 
   void RunTasks() { task_runner_->RunPendingTasks(); }
@@ -224,22 +214,25 @@ class SessionLogHandlerTest : public NoSessionAshTestBase {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   // Task runner for tasks posted by save session log handler.
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
+
   content::TestWebUI web_ui_;
-  std::unique_ptr<SessionLogHandler> session_log_handler_;
-  base::ScopedTempDir temp_dir_;
+  std::unique_ptr<diagnostics::SessionLogHandler> session_log_handler_;
   TelemetryLog* telemetry_log_;
   RoutineLog* routine_log_;
   NetworkingLog* networking_log_;
   testing::NiceMock<ash::MockHoldingSpaceClient> holding_space_client_;
+  base::ScopedTempDir temp_dir_;
 };
 
 TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   base::RunLoop run_loop;
   // Populate routine log
   routine_log_->LogRoutineStarted(mojom::RoutineType::kCpuStress);
-  task_environment()->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // Populate telemetry log
   const std::string expected_board_name = "board_name";
@@ -310,8 +303,52 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   EXPECT_EQ("--- Network Events ---", log_lines[17]);
 }
 
+// Test class using NoSessionAshTestBase to ensure shell is available for
+// tests requiring DiagnosticsLogController singleton.
+class SessionLogHandlerAshTest : public NoSessionAshTestBase {
+ public:
+  SessionLogHandlerAshTest() : task_runner_(new base::TestSimpleTaskRunner()) {}
+  ~SessionLogHandlerAshTest() override = default;
+
+  void SetUp() override {
+    // Setup to ensure ash::Shell can configure for tests.
+    ui::ResourceBundle::CleanupSharedInstance();
+    AshTestSuite::LoadTestResources();
+    // Setup feature list before setting up ash::Shell.
+    feature_list_.InitAndEnableFeature(
+        ash::features::kEnableLogControllerForDiagnosticsApp);
+    NoSessionAshTestBase::SetUp();
+    DiagnosticsLogController::Initialize(
+        std::make_unique<FakeDiagnosticsBrowserDelegate>());
+    session_log_handler_ = std::make_unique<SessionLogHandler>(
+        base::BindRepeating(&CreateTestSelectFilePolicy),
+        /*telemetry_log*/ nullptr,
+        /*routine_log*/ nullptr,
+        /*networking_log*/ nullptr,
+        /*holding_space_client*/ &holding_space_client_);
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    session_log_handler_->SetWebUIForTest(&web_ui_);
+    session_log_handler_->RegisterMessages();
+    session_log_handler_->SetTaskRunnerForTesting(task_runner_);
+    // Call handler to enable Javascript.
+    base::ListValue args;
+    web_ui_.HandleReceivedMessage("initialize", &args);
+  }
+
+  void RunTasks() { task_runner_->RunPendingTasks(); }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<SessionLogHandler> session_log_handler_;
+  content::TestWebUI web_ui_;
+  base::ScopedTempDir temp_dir_;
+  testing::NiceMock<ash::MockHoldingSpaceClient> holding_space_client_;
+  // Task runner for tasks posted by save session log handler.
+  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
+};
+
 // Validates behavior when log controller is used to generate session log.
-TEST_F(SessionLogHandlerTest, SaveHeaderOnlySessionLog) {
+TEST_F(SessionLogHandlerAshTest, SaveSessionLogFlagEnabled) {
   base::RunLoop run_loop;
 
   // Simulate select file
