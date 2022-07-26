@@ -91,7 +91,6 @@ TEST_F(LensSidePanelControllerTest, OpenWithURLHidesChromeSidePanel) {
 
 TEST_F(LensSidePanelControllerTest, CloseAfterOpenHidesLensSidePanel) {
   base::UserActionTester user_action_tester;
-
   controller_->OpenWithURL(
       content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -100,6 +99,9 @@ TEST_F(LensSidePanelControllerTest, CloseAfterOpenHidesLensSidePanel) {
 
   EXPECT_FALSE(browser_view()->lens_side_panel_controller());
   EXPECT_FALSE(browser_view()->lens_side_panel()->GetVisible());
+  // default side panel has a single empty view as child
+  EXPECT_EQ((unsigned long)1,
+            browser_view()->lens_side_panel()->children().size());
   EXPECT_EQ(1, user_action_tester.GetActionCount(kHideAction));
   EXPECT_EQ(0, user_action_tester.GetActionCount(kCloseButtonClickAction));
 }

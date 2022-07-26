@@ -63,7 +63,20 @@ LensSidePanelController::LensSidePanelController(
   side_panel_view_->GetWebContents()->SetDelegate(this);
 }
 
-LensSidePanelController::~LensSidePanelController() = default;
+LensSidePanelController::~LensSidePanelController() {
+  // check side_panel -> children() size for unit tests where all the children
+  // are removed when side panel is destroyed.
+  if (side_panel_view_ != nullptr && side_panel_->children().size() != 0) {
+    // Destroy the side panel view added in the constructor. side_panel_ has the
+    // browser_view life span but controller gets created and destroyed each
+    // time the side panel is opened and closed.
+    std::unique_ptr<lens::LensSidePanelView> side_panel_view_unique_ptr =
+        side_panel_->RemoveChildViewT(side_panel_view_);
+    if (side_panel_view_unique_ptr != nullptr) {
+      side_panel_view_unique_ptr.reset();
+    }
+  }
+}
 
 void LensSidePanelController::OpenWithURL(
     const content::OpenURLParams& params) {
