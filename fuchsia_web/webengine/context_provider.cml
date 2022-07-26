@@ -1,0 +1,42 @@
+{
+    include: [
+        "syslog/client.shard.cml",
+    ],
+    program: {
+        runner: "elf",
+        binary: "web_engine_exe",
+        args: [
+            "--context-provider",
+            "--enable-cfv2",
+        ],
+
+        // Required to allow JIT in child processes such as renderers.
+        // Known as 'deprecated-ambient-replace-as-executable' in CFv1.
+        job_policy_ambient_mark_vmo_exec: "true",
+    },
+    capabilities: [
+        {
+            protocol: [
+                "fuchsia.web.ContextProvider",
+            ],
+        },
+    ],
+    use: [
+        {
+            protocol: [
+                "fuchsia.feedback.ComponentDataRegister",
+                "fuchsia.feedback.CrashReportingProductRegister",
+                "fuchsia.sys.Environment",
+                "fuchsia.sys.Loader",
+            ],
+        },
+    ],
+    expose: [
+        {
+            protocol: [
+                "fuchsia.web.ContextProvider",
+            ],
+            from: "self",
+        },
+    ],
+}

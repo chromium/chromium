@@ -392,8 +392,13 @@ fuchsia_component("web_instance_component") {
 # Component definition for the legacy fuchsia.web.ContextProvider service.
 # TODO(crbug.com/1010222): Remove once all callers have migrated to launching
 # instances directly as Components.
-fuchsia_component("context_provider_component") {
+fuchsia_component("context_provider_component_v1") {
   manifest = "context_provider.cmx"
+  data_deps = [ ":web_engine_exe" ]
+}
+
+fuchsia_component("context_provider_component") {
+  manifest = "context_provider.cml"
   data_deps = [ ":web_engine_exe" ]
 }
 
@@ -401,6 +406,7 @@ fuchsia_package("web_engine") {
   # TODO(fxbug.dev/100944): Add appropriate visibility when fixed.
   deps = [
     ":context_provider_component",
+    ":context_provider_component_v1",
     ":web_instance_component",
   ]
   excluded_files = _web_engine_excluded_files
