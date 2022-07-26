@@ -184,7 +184,7 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
   // by position.
   //     Vertical: Move all the boxes in boxes right ...
   LayoutUnit& adjusted_position = cue_.StartAdjustment(
-      cue_.AdjustedPosition(full_dimension, PassKey()) + position);
+      cue_.AdjustedPosition(full_dimension, PassKey()) + position, PassKey());
 
   // 11. Remember the position of all the boxes in boxes as their specified
   // position.

@@ -52,7 +52,8 @@ class VTTCueBox final : public HTMLDivElement {
   float SnapToLinesPosition() const { return snap_to_lines_position_; }
   bool IsAdjusted() const { return adjusted_position_ != LayoutUnit::Min(); }
   // IsAdjusted() becomes true after calling this.
-  LayoutUnit& StartAdjustment(LayoutUnit new_value);
+  LayoutUnit& StartAdjustment(LayoutUnit new_value,
+                              base::PassKey<VttCueLayoutAlgorithm>);
   // IsAdjusted() becomes false after calling this.
   void RevertAdjustment();
   // Returns adjusted_position_ if IsAdjusted(), or the initial position

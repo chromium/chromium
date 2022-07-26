@@ -184,7 +184,8 @@ bool VTTCueBox::IsInRegion() const {
   return parentNode() && !IsA<TextTrackContainer>(parentNode());
 }
 
-LayoutUnit& VTTCueBox::StartAdjustment(LayoutUnit new_value) {
+LayoutUnit& VTTCueBox::StartAdjustment(LayoutUnit new_value,
+                                       base::PassKey<VttCueLayoutAlgorithm>) {
   adjusted_position_ = new_value;
   DCHECK(IsAdjusted()) << new_value;
   return adjusted_position_;
