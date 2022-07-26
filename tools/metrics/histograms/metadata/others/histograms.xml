@@ -6484,8 +6484,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Hardware.Concurrency" units="CPU cores"
     expires_after="2021-12-12">
-  <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Records the system hardware concurrency collected in the info collection GPU
     process, once per UMA ping. For most systems, it is equivalent to the number
@@ -6527,8 +6527,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Hardware.TotalDiskSpace" units="GB" expires_after="2022-12-25">
-  <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Records a rough estimation of the system total disk space collected in the
     info collection GPU process, once per UMA ping.

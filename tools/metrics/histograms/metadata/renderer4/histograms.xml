@@ -135,8 +135,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Renderer4.GpuRasterizationEnabled" enum="BooleanEnabled"
     expires_after="2022-12-25">
-  <owner>ericrk@chromium.org</owner>
-  <owner>enne@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Whether gpu rasterization is enabled (checked once after the page is painted
     for the first time).

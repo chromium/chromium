@@ -1394,7 +1394,6 @@ chromium-metrics-reviews@google.com.
 
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
   <summary>
     The maximum amount of memory of the GPU process allocated by a particular
     source during a user interaction (e.g. tab-switch, page-load, scroll etc.).
@@ -1407,7 +1406,6 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes name="GPU_PeakMemoryUsage" -->
 
   <owner>jonross@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     The maximum amount of memory of the GPU process during a particular
@@ -2758,8 +2756,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Memory.Total.SystemCommitLimit" units="GB"
     expires_after="2023-01-01">
-  <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Records the system commit limit (number of total pages) x page size,
     collected in the info collection GPU process, once per UMA ping. This is

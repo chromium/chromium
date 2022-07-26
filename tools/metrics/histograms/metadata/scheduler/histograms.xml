@@ -183,37 +183,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Scheduling.CommitToReadyToActivateDuration2"
-    units="microseconds" expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
-  <summary>
-    How long it takes for the compositor to rasterize pending tree content after
-    a commit before it is ready for activation.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="Scheduling.DrawDuration2" units="microseconds"
-    expires_after="M85">
-  <owner>vmiura@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
-  <summary>
-    How long it takes the compositor to draw a frame.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="Scheduling.MessagePumpTimeKeeper.{NamedThread}"
     enum="MessagePumpPhases" expires_after="2023-05-31">
   <owner>gab@chromium.org</owner>
@@ -245,7 +214,6 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
   <owner>vmiura@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
@@ -286,7 +254,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Scheduling.Renderer.FrameProduction.TimeOverused"
     units="microseconds" expires_after="2022-12-18">
-  <owner>behdadb@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metrics@chromium.org</owner>
   <summary>
     Measures the difference in time allotted to the Renderer, by the Scheduler,
@@ -301,7 +269,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Scheduling.Renderer.FrameProduction.TimeUnused"
     units="microseconds" expires_after="2022-12-18">
-  <owner>behdadb@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metrics@chromium.org</owner>
   <summary>
     Measures the difference in time allotted to the Renderer, by the Scheduler,

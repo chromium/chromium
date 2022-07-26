@@ -801,7 +801,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="CompositorLatency.CompositorOnlyFrame{InteractionType}.{StageType}"
     units="microseconds" expires_after="2023-03-01">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the duration of various stages in the pipeline as a single frame goes
@@ -854,7 +854,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CompositorLatency.Type" enum="FrameReportType"
     expires_after="2022-12-18">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Whether frame is dropped or presented meeting or missing the deadline or is
@@ -943,8 +943,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Graphics.Smoothness.95pctPercentDroppedFrames_1sWindow"
     units="%" expires_after="2022-12-25">
-  <owner>behdadb@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     The percent dropped frame is calculated for each sliding window of 1 second
     length and added to a histogram, and then the 95 percentile of that
@@ -965,7 +965,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Graphics.Smoothness.Checkerboarding" units="%"
     expires_after="2022-11-27">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the percent of frames that were shown with checkerboards during a
@@ -981,8 +981,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Graphics.Smoothness.Diagnostic.DiscardedDependentCount"
     units="dependent reporters" expires_after="2022-10-23">
-  <owner>sadrul@chromium.org</owner>
-  <owner>behdadb@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Diagnostic metric to measure how many dependent reporters have been
     discarded.
@@ -999,8 +999,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart2.Frames"
     units="vsyncs" expires_after="2022-11-29">
-  <owner>sadrul@chromium.org</owner>
-  <owner>behdadb@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Diagnostic metric to measure how long after scroll-start a frame is dropped.
 
@@ -1012,8 +1012,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Graphics.Smoothness.Diagnostic.DroppedFrameAfterScrollStart2.Time"
     units="ms" expires_after="2022-11-29">
-  <owner>sadrul@chromium.org</owner>
-  <owner>behdadb@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Diagnostic metric to measure how long after scroll-start a frame is dropped.
 
@@ -1023,7 +1023,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Graphics.Smoothness.Jank" units="%" expires_after="2023-06-01">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1044,7 +1044,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Graphics.Smoothness.Jank.All{Type}" units="%"
     expires_after="2023-06-01">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1077,8 +1077,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Graphics.Smoothness.MaxPercentDroppedFrames_1sWindow"
     units="%" expires_after="2022-12-18">
-  <owner>behdadb@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the percent of dropped frames for in a 1 second sliding window.
 
@@ -1091,7 +1091,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Graphics.Smoothness.MaxStale" units="ms"
     expires_after="2022-12-18">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1114,7 +1114,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames" units="%"
     expires_after="2022-09-30">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the percent of dropped frames for a particular sequence of frames
@@ -1135,8 +1135,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames.AllAnimations"
     units="%" expires_after="2022-12-18">
-  <owner>sadrul@chromium.org</owner>
-  <owner>ericrk@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the percent of dropped frames for a particular sequence of frames for
     all animations. This metric is reported for all animations (e.g.
@@ -1156,8 +1156,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames.AllInteractions"
     units="%" expires_after="2022-12-18">
-  <owner>sadrul@chromium.org</owner>
-  <owner>ericrk@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the percent of dropped frames for a particular sequence of frames
     where a user-input (e.g. scroll, pinch) is active. This metric is reported
@@ -1177,8 +1177,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames.AllSequences"
     units="%" expires_after="2022-12-18">
-  <owner>sadrul@chromium.org</owner>
-  <owner>ericrk@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the percent of dropped frames for a particular sequence of frames.
     This metric is reported for all animations and all interactions.
@@ -1196,8 +1196,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames2.{Thread}{Sequence}"
     units="%" expires_after="2023-03-07">
-  <owner>sadrul@chromium.org</owner>
-  <owner>behdadb@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the percent of dropped frames for a particular sequence of frames.
     This metric aggregates data {Sequence}
@@ -1256,8 +1256,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Graphics.Smoothness.PercentDroppedFrames3.{Thread}{Sequence}"
     units="%" expires_after="2023-05-11">
-  <owner>sadrul@chromium.org</owner>
-  <owner>behdadb@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the percent of dropped frames for a particular sequence of frames.
@@ -1317,7 +1316,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true" name="Graphics.Smoothness.PercentMissedDeadlineFrames"
     units="%" expires_after="2022-09-30">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the percent of frames that missed the deadline for a particular
@@ -1336,7 +1335,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Graphics.Smoothness.PercentMissedDeadlineFrames.AllAnimations"
     units="%" expires_after="2022-09-30">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the percent of frames that missed the deadline for a particular
@@ -1356,7 +1355,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Graphics.Smoothness.PercentMissedDeadlineFrames.AllInteractions"
     units="%" expires_after="2022-09-30">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the percent of frames that missed the deadline for a particular
@@ -1375,7 +1374,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Graphics.Smoothness.PercentMissedDeadlineFrames.AllSequences"
     units="%" expires_after="2022-12-04">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the percent of frames that missed the deadline for a particular
@@ -1394,7 +1393,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Graphics.Smoothness.PerSession.95pctPercentDroppedFrames_1sWindow"
     units="%" expires_after="2023-04-17">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the 95th percentile of dropped frames percent of a sliding window of
@@ -1412,7 +1411,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Graphics.Smoothness.PerSession.MaxPercentDroppedFrames_1sWindow"
     units="%" expires_after="2022-12-04">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the Max of dropped frames percent of a sliding window of 1 second.
@@ -1428,7 +1427,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Graphics.Smoothness.PerSession.TimeMaxPercentDroppedFrames_1sWindow"
     units="ms" expires_after="2021-11-18">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
     Tracks the time since First Contentful Paint when the sliding window with
@@ -1444,7 +1443,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Graphics.Smoothness.Stale" units="ms"
     expires_after="2022-12-18">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>

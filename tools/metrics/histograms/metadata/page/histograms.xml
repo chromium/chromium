@@ -2306,7 +2306,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"
     units="ms" expires_after="2022-11-13">
   <owner>jonross@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     'Swap time' is the timestamp of the renderer submitting a CompositorFrame,
     and 'Presentation time' is the timestamp of the frame becoming visible on
@@ -2326,7 +2326,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageLoad.Internal.Renderer.PresentationTime.Valid"
     enum="Boolean" expires_after="2022-11-13">
   <owner>jonross@chromium.org</owner>
-  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     This boolean keeps track of whether a valid presentation-timestamp was
     received or not. This is reported only for compositor-frames that report a

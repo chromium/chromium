@@ -519,8 +519,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.D3D11FeatureLevel" enum="D3D11FeatureLevel"
     expires_after="2022-12-11">
-  <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Records the highest D3D_FEATURE_LEVEL available, collected in the info
     collection GPU process, once per UMA ping. This is Windows platform only.
@@ -1025,8 +1025,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.HasDiscreteGpu" enum="HasDiscreteGpu"
     expires_after="2023-04-24">
-  <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Records whether the system has a discrete GPU, collected in the info
     collection GPU process, once per UMA ping. This is Windows platform only.
@@ -1048,8 +1048,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.IntelGpuGeneration" enum="IntelGpuGeneration"
     expires_after="2022-12-18">
-  <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Records the highest Intel GPU generation of the system using the GPU info
     collected at GPU process startup time, once per UMA ping.
@@ -1202,7 +1202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.MultipleSwapsDelta" units="%" expires_after="2023-01-15">
-  <owner>behdadb@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metrics@google.com</owner>
   <summary>
     Time delta between swaps, when there are multiple successful swaps in the
@@ -1467,16 +1467,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.ShaderLoadPrefixOK" enum="BooleanMatched"
-    expires_after="M77">
-  <owner>ericrk@chromium.org</owner>
-  <summary>
-    Whether or not the shader prefix loaded from disk matched the expected
-    prefix for the data and system configuration. False indicates either disk
-    corruption or a system configuration change, and should be rare.
-  </summary>
-</histogram>
-
 <histogram name="GPU.SharedImage.ContentConsumed" enum="BooleanMatched"
     expires_after="2023-02-01">
   <owner>penghuang@chromium.org</owner>
@@ -1503,8 +1493,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.SoftwareRendering" enum="BooleanSoftwareRendering"
     expires_after="2023-01-01">
-  <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
   <summary>
     Collects whether Chrome uses software renderer or hardware GPU 20 seconds
     after Chrome starts, and records this value once per UMA ping. This value is
@@ -1984,7 +1974,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Viz.FrameSinkVideoCapturer.RGBA.CaptureDuration" units="ms"
     expires_after="2023-01-15">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>viz-team-wat@google.com</owner>
   <summary>
     The time it took from when FrameSinkVideoCapturerImpl sent a request for an

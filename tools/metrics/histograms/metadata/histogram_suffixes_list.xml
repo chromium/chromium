@@ -1345,8 +1345,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Renderer" label=""/>
   <affected-histogram name="Scheduling.BeginImplFrameLatency2"/>
   <affected-histogram name="Scheduling.BeginMainFrameStartToCommitDuration2"/>
-  <affected-histogram name="Scheduling.CommitToReadyToActivateDuration2"/>
-  <affected-histogram name="Scheduling.DrawDuration2"/>
   <affected-histogram
       name="Scheduling.DrawIntervalWithMainThreadCompositableAnimations2"/>
   <affected-histogram name="Scheduling.SwapAckWasFast"/>

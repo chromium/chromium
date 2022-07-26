@@ -488,7 +488,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.Tabs.SelectionToVisibilityRequestTime"
     units="microseconds" expires_after="2023-01-01">
-  <owner>sadrul@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
     The time it takes for the browser to request a tab to be visible. Note that
