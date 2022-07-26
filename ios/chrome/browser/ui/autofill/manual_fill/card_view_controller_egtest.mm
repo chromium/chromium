@@ -443,29 +443,30 @@ BOOL WaitForKeyboardToAppear() {
 
   // Tap a keyboard key directly. Typing with EG helpers do not trigger physical
   // keyboard presses.
-  if (@available(iOS 16, *)) {
-    // TODO(crbug.com/1331347): Move this logic into EG.
-    XCUIApplication* app = [[XCUIApplication alloc] init];
-    [[[app keyboards] keys][@"G"] tap];
-  } else {
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"G")]
-        performAction:grey_tap()];
-  }
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"G")]
+      performAction:grey_tap()];
 
-  // Verify the credit card controller table view and the credit card icon is
-  // NOT visible.
+  // As of Xcode 14 beta 2, tapping the keyboard does not dismiss the
+  // accessory view popup.
+  bool systemDismissesView = true;
+#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
   if (@available(iOS 16, *)) {
-    // As of Xcode 14 beta 2, tapping the keyboard does not dismiss the
-    // accessory view popup.
-    [[EarlGrey
-        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  } else {
+    systemDismissesView = false;
+  }
+#endif  // defined(__IPHONE_16_0)
+
+  if (systemDismissesView) {
+    // Verify the credit card controller table view and the credit card icon is
+    // not visible.
     [[EarlGrey
         selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
         assertWithMatcher:grey_notVisible()];
     [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
         assertWithMatcher:grey_notVisible()];
+  } else {
+    [[EarlGrey
+        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()];
   }
 }
 
