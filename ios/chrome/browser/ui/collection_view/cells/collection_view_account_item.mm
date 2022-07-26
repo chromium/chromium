@@ -4,9 +4,6 @@
 
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_account_item.h"
 
-#import <MaterialComponents/MaterialPalettes.h>
-#import <MaterialComponents/MaterialTypography.h>
-
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #include "ios/chrome/browser/ui/collection_view/cells/collection_view_cell_constants.h"

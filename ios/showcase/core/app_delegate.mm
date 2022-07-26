@@ -4,8 +4,6 @@
 
 #import "ios/showcase/core/app_delegate.h"
 
-#import <MaterialComponents/MaterialTypography.h>
-
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
 #include "base/memory/ptr_util.h"

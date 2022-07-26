@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view.h"
 
-#import <MaterialComponents/MaterialTypography.h>
-
 #include <ostream>
 
 #include "base/check_op.h"

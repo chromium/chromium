@@ -6,8 +6,6 @@
 
 #import <MobileCoreServices/MobileCoreServices.h>
 
-#import <MaterialComponents/MaterialTypography.h>
-
 #include <memory>
 #include <set>
 #include <string>

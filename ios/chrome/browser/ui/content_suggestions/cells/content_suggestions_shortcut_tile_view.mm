@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 
-#import <MaterialComponents/MaterialTypography.h>
-
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

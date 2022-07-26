@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/autofill/cells/cvc_item.h"
 
-#import <MaterialComponents/MaterialTypography.h>
-
 #import "base/feature_list.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_features.h"

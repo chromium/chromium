@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/autofill/legacy_card_unmask_prompt_view_bridge.h"
 
-#import <MaterialComponents/MaterialTypography.h>
-
 #import "base/bind.h"
 #import "base/location.h"
 #import "base/mac/foundation_util.h"

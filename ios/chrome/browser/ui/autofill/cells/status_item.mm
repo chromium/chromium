@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/autofill/cells/status_item.h"
 
 #import <MaterialComponents/MaterialActivityIndicator.h>
-#import <MaterialComponents/MaterialTypography.h>
 
 #include "base/check.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"

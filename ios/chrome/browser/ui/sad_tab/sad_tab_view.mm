@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_view.h"
 
 #import <MaterialComponents/MaterialButtons.h>
-#import <MaterialComponents/MaterialTypography.h>
 
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"

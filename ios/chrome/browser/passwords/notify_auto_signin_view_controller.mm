@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/passwords/notify_auto_signin_view_controller.h"
 
-#import <MaterialComponents/MaterialTypography.h>
-
 #include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"

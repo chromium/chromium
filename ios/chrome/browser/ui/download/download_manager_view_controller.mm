@@ -4,9 +4,6 @@
 
 #import "ios/chrome/browser/ui/download/download_manager_view_controller.h"
 
-#import <MaterialComponents/MaterialPalettes.h>
-#import <MaterialComponents/MaterialTypography.h>
-
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"

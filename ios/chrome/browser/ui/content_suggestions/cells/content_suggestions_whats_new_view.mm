@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_whats_new_view.h"
 
-#import <MaterialComponents/MaterialTypography.h>
-
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_whats_new_item.h"
 #include "ios/chrome/common/string_util.h"
