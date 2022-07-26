@@ -8,6 +8,7 @@
 import {EventGenerator} from '../../../common/event_generator.js';
 import {BrailleCommandData} from '../../common/braille/braille_command_data.js';
 import {EventSourceType} from '../../common/event_source_type.js';
+import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 import {CommandHandlerInterface} from '../command_handler_interface.js';
 import {DesktopAutomationInterface} from '../desktop_automation_interface.js';

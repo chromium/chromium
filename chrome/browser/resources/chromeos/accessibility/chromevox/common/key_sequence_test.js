@@ -154,7 +154,6 @@ ChromeVoxKeySequenceUnitTest.prototype.extraLibraries = [
   '../../common/testing/assert_additions.js',
   '../../common/closure_shim.js',
   '../../common/key_code.js',
-  '../background/chromevox.js',
   '../testing/fake_dom.js',
 ];
 

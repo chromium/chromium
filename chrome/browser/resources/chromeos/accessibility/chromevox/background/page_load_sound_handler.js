@@ -8,6 +8,7 @@
 import {ChromeVoxEvent} from '../common/custom_automation_event.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
+import {ChromeVox} from './chromevox.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from './chromevox_state.js';
 
 const ActionType = chrome.automation.ActionType;

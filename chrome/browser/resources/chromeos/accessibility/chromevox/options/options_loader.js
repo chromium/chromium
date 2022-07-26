@@ -6,10 +6,11 @@
  * @fileoverview Loads the options script.
  */
 
+goog.require('AbstractEarcons');
 goog.require('BackgroundBridge');
 goog.require('BluetoothBrailleDisplayListener');
 goog.require('BluetoothBrailleDisplayManager');
-goog.require('ChromeVox');
+goog.require('BrailleInterface');
 goog.require('Spannable');
 goog.require('SpeechLog');
 goog.require('TtsInterface');

@@ -14,6 +14,7 @@ import {Msgs} from '../../common/msgs.js';
 import {BrailleBackground} from '../braille/braille_background.js';
 import {LibLouis} from '../braille/liblouis.js';
 import {BrailleTextStyleSpan, ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
+import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from '../chromevox_state.js';
 import {Color} from '../color.js';
 import {Output} from '../output/output.js';

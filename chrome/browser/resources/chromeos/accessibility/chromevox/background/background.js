@@ -11,6 +11,7 @@ import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {JaPhoneticMap} from '../third_party/tamachiyomi/ja_phonetic_map.js';
 
 import {BrailleCommandHandler} from './braille/braille_command_handler.js';
+import {ChromeVox} from './chromevox.js';
 import {ChromeVoxState} from './chromevox_state.js';
 import {ChromeVoxBackground} from './classic_background.js';
 import {CommandHandler} from './command_handler.js';
@@ -45,7 +46,6 @@ import {TtsBackground} from './tts_background.js';
 const Dir = constants.Dir;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
-
 /** ChromeVox background page. */
 export class Background extends ChromeVoxState {
   constructor() {

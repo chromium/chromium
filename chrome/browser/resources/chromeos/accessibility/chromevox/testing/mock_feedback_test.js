@@ -27,6 +27,11 @@ MockFeedbackUnitTest = class extends AccessibilityTestBase {
     this.expectedCalls = [];
   }
 
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('ChromeVox', '/chromevox/background/chromevox.js');
+  }
+
   /** @override */
   setUp() {
     super.setUp();
@@ -38,7 +43,6 @@ MockFeedbackUnitTest.prototype.extraLibraries = [
   '../../common/testing/assert_additions.js',
   '../testing/fake_dom.js',  // Must come before other files
   '../common/braille/nav_braille.js',
-  '../background/chromevox.js',
   '../common/abstract_earcons.js',
   '../common/braille/braille_interface.js',
   '../common/spannable.js',

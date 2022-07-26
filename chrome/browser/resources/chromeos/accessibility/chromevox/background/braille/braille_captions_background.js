@@ -9,6 +9,7 @@
  */
 import {Msgs} from '../../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../../common/panel_command.js';
+import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxPrefs} from '../prefs.js';
 
 export class BrailleCaptionsBackground {

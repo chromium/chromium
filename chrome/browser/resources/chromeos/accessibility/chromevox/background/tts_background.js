@@ -12,6 +12,7 @@ import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
 import {ChromeTtsBase} from '../common/tts_base.js';
 
+import {ChromeVox} from './chromevox.js';
 import {PhoneticData} from './phonetic_data.js';
 
 const Utterance = class {

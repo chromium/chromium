@@ -58,6 +58,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
@@ -160,6 +161,19 @@ void LoggedInSpokenFeedbackTest::DisableEarcons() {
       "ChromeVox.earcons.playEarcon = function() {};");
 }
 
+void LoggedInSpokenFeedbackTest::ImportJSModuleForChromeVox(std::string name,
+                                                            std::string path) {
+  extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+      browser()->profile(), extension_misc::kChromeVoxExtensionId,
+      "import('" + path +
+          "').then(mod => {"
+          "window." +
+          name + " = mod." + name +
+          ";"
+          "window.domAutomationController.send('done')"
+          "})");
+}
+
 void LoggedInSpokenFeedbackTest::EnableChromeVox() {
   // Test setup.
   // Enable ChromeVox, disable earcons and wait for key mappings to be fetched.
@@ -170,6 +184,10 @@ void LoggedInSpokenFeedbackTest::EnableChromeVox() {
   // Load ChromeVox and block until it's fully loaded.
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
   sm_.ExpectSpeechPattern("*");
+  sm_.Call([this]() {
+    ImportJSModuleForChromeVox("ChromeVox",
+                               "/chromevox/background/chromevox.js");
+  });
   sm_.Call([this]() { DisableEarcons(); });
 }
 

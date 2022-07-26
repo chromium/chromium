@@ -6,6 +6,7 @@
  * @fileoverview Script for ChromeOS keyboard explorer.
  *
  */
+
 import {BrailleCommandData} from '../common/braille/braille_command_data.js';
 import {CommandStore} from '../common/command_store.js';
 import {GestureCommandData} from '../common/gesture_command_data.js';
@@ -275,6 +276,7 @@ export class LearnMode {
    *     finishes.
    */
   static output(text, opt_speakCallback) {
+    const ChromeVox = window.ChromeVox;
     ChromeVox.tts.speak(
         text,
         LearnMode.shouldFlushSpeech_ ?

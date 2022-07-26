@@ -17,7 +17,6 @@ goog.require('BrailleInterface');
 goog.require('BrailleKeyCommand');
 goog.require('BrailleKeyEvent');
 goog.require('BridgeHelper');
-goog.require('ChromeVox');
 goog.require('EventLog');
 goog.require('JaPhoneticData');
 goog.require('KeyCode');

@@ -9,6 +9,7 @@
  */
 import {CursorRange} from '../../common/cursors/range.js';
 
+import {ChromeVox} from './chromevox.js';
 import {ChromeVoxState, ChromeVoxStateObserver} from './chromevox_state.js';
 import {ChromeVoxBackground} from './classic_background.js';
 

@@ -6,6 +6,8 @@
  * @fileoverview Definitions of all types related to output.
  */
 
+import {ChromeVox} from '../chromevox.js';
+
 /**
  * The ordering of contextual output.
  * @enum {string}

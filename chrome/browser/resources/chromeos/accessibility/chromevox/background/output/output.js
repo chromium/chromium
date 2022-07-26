@@ -11,6 +11,7 @@ import {EventSourceType} from '../../common/event_source_type.js';
 import {LocaleOutputHelper} from '../../common/locale_output_helper.js';
 import {Msgs} from '../../common/msgs.js';
 import {ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
+import {ChromeVox} from '../chromevox.js';
 import {EventSourceState} from '../event_source.js';
 import {FocusBounds} from '../focus_bounds.js';
 import {LogStore} from '../logging/log_store.js';

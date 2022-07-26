@@ -6,10 +6,14 @@
  * @fileoverview Description of this file.
  */
 
+goog.require('AbstractEarcons');
 goog.require('BackgroundBridge');
+goog.require('BrailleInterface');
 goog.require('BrailleKeyCommand');
 goog.require('BrailleKeyEvent');
-goog.require('ChromeVox');
 goog.require('KeyCode');
 goog.require('NavBraille');
 goog.require('Spannable');
+goog.require('TtsInterface');
+
+goog.require('constants');

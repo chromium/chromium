@@ -41,6 +41,12 @@ ChromeVoxE2ETest = class extends E2ETestBase {
     super.testGenPreambleCommon(
         'kChromeVoxExtensionId', ChromeVoxE2ETest.prototype.failOnConsoleError);
   }
+
+  /**@override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule('ChromeVox', '/chromevox/background/chromevox.js');
+  }
 };
 
 // TODO: wasm logs errors if it takes too long to load (e.g. liblouis wasm).

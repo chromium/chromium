@@ -58,6 +58,7 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
 
   void PressRepeatedlyUntilUtterance(ui::KeyboardCode key,
                                      const std::string& expected_utterance);
+  void ImportJSModuleForChromeVox(std::string name, std::string path);
 
   test::SpeechMonitor sm_;
 

@@ -6,14 +6,7 @@
  * @fileoverview Defines a global object.
  */
 
-goog.provide('ChromeVox');
-
-goog.require('AbstractEarcons');
-goog.require('BrailleInterface');
-goog.require('TtsInterface');
-goog.require('constants');
-
-ChromeVox = class {
+export class ChromeVox {
   /**
    * Returns whether sticky mode is on, taking both the global sticky mode
    * pref and the temporary sticky mode override into account.
@@ -27,7 +20,7 @@ ChromeVox = class {
       return ChromeVox.isStickyPrefOn;
     }
   }
-};
+}
 
 // Constants
 /**

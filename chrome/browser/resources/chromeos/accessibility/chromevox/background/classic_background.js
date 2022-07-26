@@ -12,6 +12,7 @@ import {Msgs} from '../common/msgs.js';
 
 import {BrailleBackground} from './braille/braille_background.js';
 import {BrailleCaptionsBackground} from './braille/braille_captions_background.js';
+import {ChromeVox} from './chromevox.js';
 import {ChromeVoxState} from './chromevox_state.js';
 import {ConsoleTts} from './console_tts.js';
 import {ChromeVoxEditableTextBase, TypingEcho} from './editing/editable_text_base.js';
