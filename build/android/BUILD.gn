@@ -92,7 +92,11 @@ if (enable_java_templates) {
 
 python_library("test_result_presentations_py") {
   pydeps_file = "pylib/results/presentation/test_results_presentation.pydeps"
-  data = [ "//build/android/pylib/results/presentation/template" ]
+  data = [
+    "//build/android/pylib/results/presentation/template",
+    "//third_party/jinja2/debug.py",
+    "//third_party/six",
+  ]
 }
 
 python_library("devil_chromium_py") {
