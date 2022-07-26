@@ -697,6 +697,9 @@
       <message name="IDS_ACCESSIBILITY_PAUSE" desc="The pause button that pauses playing the media.">
         Pause
       </message>
+      <message name="IDS_ACCESSIBILITY_REPLAY" desc="The replay button that replays the media.">
+        Play from the beginning
+      </message>
       <message name="IDS_ACCESSIBILITY_PREVIOUS_TRACK" desc="The previous track button that switches media to the previous track.">
         Previous track
       </message>

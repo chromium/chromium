@@ -44,6 +44,7 @@ import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.components.thinwebview.CompositorViewFactory;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.overlay_window.PlaybackState;
 import org.chromium.media_session.mojom.MediaSessionAction;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
@@ -51,7 +52,6 @@ import org.chromium.ui.base.WindowAndroid;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -98,11 +98,6 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     private CompositorView mCompositorView;
 
-    private boolean mIsPlaying;
-
-    // MediaSessionaction, RemoteAction pairs.
-    private HashMap<Integer, RemoteAction> mRemoteActions = new HashMap<>();
-
     // If present, this is the video's aspect ratio.
     private Rational mAspectRatio;
 
@@ -110,6 +105,108 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     private int mMaxWidth;
 
     private MediaSessionBroadcastReceiver mMediaSessionReceiver;
+
+    private MediaActionButtonsManager mMediaActionsButtonsManager;
+
+    /**
+     * A helper class for managing media action buttons in PictureInPicture window.
+     */
+    private class MediaActionButtonsManager {
+        private final RemoteAction mPreviousTrack;
+        private final RemoteAction mPlay;
+        private final RemoteAction mPause;
+        private final RemoteAction mReplay;
+        private final RemoteAction mNextTrack;
+
+        private @PlaybackState int mPlaybackState;
+
+        /** A set of {@link MediaSessionAction}. */
+        private HashSet<Integer> mVisibleActions;
+
+        private MediaActionButtonsManager() {
+            mPreviousTrack = createRemoteAction(MediaSessionAction.PREVIOUS_TRACK,
+                    R.drawable.ic_skip_previous_white_36dp, R.string.accessibility_previous_track);
+            mPlay = createRemoteAction(MediaSessionAction.PLAY, R.drawable.ic_play_arrow_white_36dp,
+                    R.string.accessibility_play);
+            mPause = createRemoteAction(MediaSessionAction.PAUSE, R.drawable.ic_pause_white_36dp,
+                    R.string.accessibility_pause);
+            mReplay = createRemoteAction(MediaSessionAction.PLAY, R.drawable.ic_replay_white_24dp,
+                    R.string.accessibility_replay);
+            mNextTrack = createRemoteAction(MediaSessionAction.NEXT_TRACK,
+                    R.drawable.ic_skip_next_white_36dp, R.string.accessibility_next_track);
+
+            mPlaybackState = PlaybackState.END_OF_VIDEO;
+            mVisibleActions = new HashSet<>();
+        }
+
+        @SuppressLint("NewApi")
+        private ArrayList<RemoteAction> getActionsForPictureInPictureParams() {
+            ArrayList<RemoteAction> actions = new ArrayList<>();
+
+            mPreviousTrack.setEnabled(mVisibleActions.contains(MediaSessionAction.PREVIOUS_TRACK));
+            actions.add(mPreviousTrack);
+
+            RemoteAction playPauseAction = null;
+            switch (mPlaybackState) {
+                case PlaybackState.PLAYING:
+                    playPauseAction = mPause;
+                    break;
+                case PlaybackState.PAUSED:
+                    playPauseAction = mPlay;
+                    break;
+                case PlaybackState.END_OF_VIDEO:
+                    playPauseAction = mReplay;
+                    break;
+            }
+            playPauseAction.setEnabled(mVisibleActions.contains(MediaSessionAction.PLAY));
+            actions.add(playPauseAction);
+
+            mNextTrack.setEnabled(mVisibleActions.contains(MediaSessionAction.NEXT_TRACK));
+            actions.add(mNextTrack);
+
+            return actions;
+        }
+
+        /**
+         * Update visible actions.
+         *
+         * @param visibleActions A set of available {@link MediaSessionAction}.
+         */
+        private void updateVisibleActions(HashSet<Integer> visibleActions) {
+            mVisibleActions = visibleActions;
+        }
+
+        private void updatePlaybackState(@PlaybackState int playbackState) {
+            mPlaybackState = playbackState;
+        }
+
+        /**
+         * Create a disabled remote action for picture-in-picture window.
+         *
+         * @param action {@link MediaSessionAction} that the action button is corresponding to.
+         * @param iconResourceId used for getting icon associated with the id.
+         * @param titleResourceId used for getting accessibility title associated with the id.
+         */
+        @SuppressLint("NewApi")
+        private RemoteAction createRemoteAction(
+                int action, int iconResourceId, int titleResourceId) {
+            Intent intent = new Intent(MEDIA_ACTION);
+            intent.putExtra(EXTRA_RECEIVER_TOKEN, mMediaSessionReceiver.hashCode());
+            intent.putExtra(CONTROL_TYPE, action);
+            intent.putExtra(NATIVE_POINTER_KEY, mNativeOverlayWindowAndroid);
+            PendingIntent pendingIntent =
+                    PendingIntent.getBroadcast(getApplicationContext(), action, intent,
+                            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+            RemoteAction remoteAction = new RemoteAction(
+                    Icon.createWithResource(getApplicationContext(), iconResourceId),
+                    getApplicationContext().getResources().getText(titleResourceId), "",
+                    pendingIntent);
+
+            remoteAction.setEnabled(false);
+            return remoteAction;
+        }
+    }
 
     private class MediaSessionBroadcastReceiver extends BroadcastReceiver {
         @Override
@@ -273,7 +370,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         ContextUtils.registerNonExportedBroadcastReceiver(
                 this, mMediaSessionReceiver, new IntentFilter(MEDIA_ACTION));
 
-        initializeRemoteActions();
+        mMediaActionsButtonsManager = new MediaActionButtonsManager();
 
         PictureInPictureActivityJni.get().onActivityStart(
                 mNativeOverlayWindowAndroid, this, getWindowAndroid());
@@ -353,79 +450,11 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     @SuppressLint("NewApi")
     private PictureInPictureParams getPictureInPictureParams() {
-        ArrayList<RemoteAction> actions = new ArrayList<>();
-
-        actions.add(mRemoteActions.get(MediaSessionAction.PREVIOUS_TRACK));
-        actions.add(mRemoteActions.get(
-                mIsPlaying ? MediaSessionAction.PAUSE : MediaSessionAction.PLAY));
-        actions.add(mRemoteActions.get(MediaSessionAction.NEXT_TRACK));
-
         PictureInPictureParams.Builder builder = new PictureInPictureParams.Builder();
-        builder.setActions(actions);
+        builder.setActions(mMediaActionsButtonsManager.getActionsForPictureInPictureParams());
         builder.setAspectRatio(mAspectRatio);
 
         return builder.build();
-    }
-
-    @SuppressLint("NewApi")
-    private void initializeRemoteActions() {
-        mRemoteActions.put(MediaSessionAction.PLAY, createRemoteAction(MediaSessionAction.PLAY));
-        mRemoteActions.put(MediaSessionAction.PAUSE, createRemoteAction(MediaSessionAction.PAUSE));
-        mRemoteActions.put(MediaSessionAction.PREVIOUS_TRACK,
-                createRemoteAction(MediaSessionAction.PREVIOUS_TRACK));
-        mRemoteActions.put(
-                MediaSessionAction.NEXT_TRACK, createRemoteAction(MediaSessionAction.NEXT_TRACK));
-    }
-
-    /**
-     * Create remote actions for picutre-in-picture window.
-     *
-     * @param action {@link MediaSessionAction} that the action button is corresponding to.
-     */
-    @SuppressLint("NewApi")
-    private RemoteAction createRemoteAction(int action) {
-        Intent intent = new Intent(MEDIA_ACTION);
-        intent.putExtra(EXTRA_RECEIVER_TOKEN, mMediaSessionReceiver.hashCode());
-        intent.putExtra(CONTROL_TYPE, action);
-        intent.putExtra(NATIVE_POINTER_KEY, mNativeOverlayWindowAndroid);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), action,
-                intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-
-        RemoteAction remoteAction;
-        switch (action) {
-            case MediaSessionAction.PLAY:
-                remoteAction = new RemoteAction(Icon.createWithResource(getApplicationContext(),
-                                                        R.drawable.ic_play_arrow_white_36dp),
-                        getApplicationContext().getResources().getText(R.string.accessibility_play),
-                        "", pendingIntent);
-                break;
-            case MediaSessionAction.PAUSE:
-                remoteAction = new RemoteAction(Icon.createWithResource(getApplicationContext(),
-                                                        R.drawable.ic_pause_white_36dp),
-                        getApplicationContext().getResources().getText(
-                                R.string.accessibility_pause),
-                        "", pendingIntent);
-                break;
-            case MediaSessionAction.NEXT_TRACK:
-                remoteAction = new RemoteAction(Icon.createWithResource(getApplicationContext(),
-                                                        R.drawable.ic_skip_next_white_36dp),
-                        getApplicationContext().getResources().getText(
-                                R.string.accessibility_next_track),
-                        "", pendingIntent);
-                break;
-            case MediaSessionAction.PREVIOUS_TRACK:
-                remoteAction = new RemoteAction(Icon.createWithResource(getApplicationContext(),
-                                                        R.drawable.ic_skip_previous_white_36dp),
-                        getApplicationContext().getResources().getText(
-                                R.string.accessibility_previous_track),
-                        "", pendingIntent);
-                break;
-            default:
-                remoteAction = null;
-        }
-
-        remoteAction.setEnabled(false);
-        return remoteAction;
     }
 
     @SuppressLint("NewApi")
@@ -456,23 +485,16 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     }
 
     @CalledByNative
-    @SuppressLint("NewAPI")
-    private void setPlaybackState(boolean isPlaying) {
-        mIsPlaying = isPlaying;
+    private void setPlaybackState(@PlaybackState int playbackState) {
+        mMediaActionsButtonsManager.updatePlaybackState(playbackState);
         updatePictureInPictureParams();
     }
 
     @CalledByNative
-    @SuppressLint("NewAPI")
     private void updateVisibleActions(int[] actions) {
         HashSet<Integer> visibleActions = new HashSet<>();
         for (int action : actions) visibleActions.add(action);
-
-        for (Integer actionKey : mRemoteActions.keySet()) {
-            RemoteAction remoteAction = mRemoteActions.get(actionKey);
-            if (remoteAction.isEnabled() == visibleActions.contains(actionKey)) continue;
-            remoteAction.setEnabled(!remoteAction.isEnabled());
-        }
+        mMediaActionsButtonsManager.updateVisibleActions(visibleActions);
         updatePictureInPictureParams();
     }
 

@@ -53,6 +53,8 @@ class OverlayWindow {
 
 class VideoOverlayWindow : public OverlayWindow {
  public:
+  // GENERATED_JAVA_ENUM_PACKAGE:(
+  //   org.chromium.content_public.browser.overlay_window)
   enum PlaybackState {
     kPlaying = 0,
     kPaused,

@@ -92,7 +92,7 @@ void OverlayWindowAndroid::OnActivityStart(
   window_android_->AddObserver(this);
 
   Java_PictureInPictureActivity_setPlaybackState(env, java_ref_.get(env),
-                                                 is_playing_);
+                                                 playback_state_);
   MaybeNotifyVisibleActionsChanged();
 
   if (video_size_.IsEmpty())
@@ -216,15 +216,17 @@ void OverlayWindowAndroid::UpdateNaturalSize(const gfx::Size& natural_size) {
       env, java_ref_.get(env), natural_size.width(), natural_size.height());
 }
 
-// TODO(crbug.com/1345953): Handle replay action when video reaches the end.
 void OverlayWindowAndroid::SetPlaybackState(PlaybackState playback_state) {
-  is_playing_ = playback_state == PlaybackState::kPlaying;
+  if (playback_state_ == playback_state)
+    return;
+
+  playback_state_ = playback_state;
   if (java_ref_.is_uninitialized())
     return;
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_setPlaybackState(env, java_ref_.get(env),
-                                                 is_playing_);
+                                                 playback_state);
 }
 
 void OverlayWindowAndroid::SetPlayPauseButtonVisibility(bool is_visible) {

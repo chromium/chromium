@@ -97,7 +97,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   gfx::Rect bounds_;
   gfx::Size video_size_;
 
-  bool is_playing_ = false;
+  PlaybackState playback_state_ = PlaybackState::kEndOfVideo;
   std::unordered_set<int> visible_actions_;
 
   raw_ptr<content::VideoPictureInPictureWindowController> controller_;
