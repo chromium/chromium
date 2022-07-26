@@ -95,7 +95,7 @@ export class LibLouis {
     message['command'] = command;
     const json = JSON.stringify(message);
     if (LibLouis.DEBUG) {
-      window.console.debug('RPC -> ' + json);
+      globalThis.console.debug('RPC -> ' + json);
     }
     this.worker_.postMessage(json);
     this.pendingRpcCallbacks_[messageId] = callback;
@@ -113,7 +113,7 @@ export class LibLouis {
    * @private
    */
   onInstanceError_(e) {
-    window.console.error('Error in liblouis ' + e.message);
+    globalThis.console.error('Error in liblouis ' + e.message);
     this.loadOrReload_();
   }
 
@@ -124,17 +124,17 @@ export class LibLouis {
    */
   onInstanceMessage_(e) {
     if (LibLouis.DEBUG) {
-      window.console.debug('RPC <- ' + e.data);
+      globalThis.console.debug('RPC <- ' + e.data);
     }
     const message = /** @type {!Object} */ (JSON.parse(e.data));
     const messageId = message['in_reply_to'];
     if (!goog.isDef(messageId)) {
-      window.console.warn(
+      globalThis.console.warn(
           'liblouis Web Assembly module sent message with no ID', message);
       return;
     }
     if (goog.isDef(message['error'])) {
-      window.console.error('liblouis Web Assembly error', message['error']);
+      globalThis.console.error('liblouis Web Assembly error', message['error']);
     }
     const callback = this.pendingRpcCallbacks_[messageId];
     if (goog.isDef(callback)) {

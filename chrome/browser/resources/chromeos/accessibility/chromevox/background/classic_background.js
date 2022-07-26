@@ -166,7 +166,7 @@ export class ChromeVoxBackground {
         chrome.runtime.getManifest()['content_scripts'][0]['js'];
     const stageTwo = function(code) {
       for (let i = 0, tab; tab = tabs[i]; i++) {
-        window.console.log('Injecting into ' + tab.id, tab);
+        globalThis.console.log('Injecting into ' + tab.id, tab);
         let sawError = false;
 
         /**
