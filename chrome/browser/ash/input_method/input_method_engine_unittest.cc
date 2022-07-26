@@ -320,6 +320,35 @@ TEST_F(InputMethodEngineTest, TestHistograms) {
   histograms.ExpectBucketCount("InputMethod.CommitLength", 3, 1);
 }
 
+TEST_F(InputMethodEngineTest, TestInvalidCompositionReturnsFalse) {
+  CreateEngine(true);
+  std::string error;
+  FocusIn(ui::TEXT_INPUT_TYPE_TEXT);
+  engine_->Enable(kTestImeComponentId);
+  std::vector<InputMethodEngine::SegmentInfo> segments;
+  int context = engine_->GetContextIdForTesting();
+  EXPECT_EQ(engine_->SetComposition(context, "test", 0, 0, 0, segments, &error),
+            true);
+  EXPECT_EQ(
+      engine_->SetComposition(context, "test", -1, 0, 0, segments, &error),
+      false);
+  EXPECT_EQ(
+      engine_->SetComposition(context, "test", 0, -1, 0, segments, &error),
+      false);
+  EXPECT_EQ(
+      engine_->SetComposition(context, "test", 0, 0, -1, segments, &error),
+      false);
+  // Still return false if multiple values set as negative
+  EXPECT_EQ(
+      engine_->SetComposition(context, "test", -12, 0, -1, segments, &error),
+      false);
+  EXPECT_EQ(
+      engine_->SetComposition(context, "test", -1, -1, -1, segments, &error),
+      false);
+  EXPECT_EQ(engine_->SetComposition(context, "test", 0, 6, 0, segments, &error),
+            false);
+}
+
 TEST_F(InputMethodEngineTest, TestCompositionBoundsChanged) {
   CreateEngine(true);
   // Enable/disable with focus.
@@ -329,8 +358,8 @@ TEST_F(InputMethodEngineTest, TestCompositionBoundsChanged) {
 
 TEST_F(InputMethodEngineTest, TestSetSelectionRange) {
   CreateEngine(true);
-  const int context = engine_->GetContextIdForTesting();
   std::string error;
+  int context = engine_->GetContextIdForTesting();
   engine_->InputMethodEngine::SetSelectionRange(context, /* start */ 0,
                                                 /* end */ 0, &error);
   EXPECT_EQ(kErrorNotActive, error);
@@ -338,7 +367,9 @@ TEST_F(InputMethodEngineTest, TestSetSelectionRange) {
             mock_ime_input_context_handler_->set_selection_range_call_count());
   error = "";
 
+  FocusIn(ui::TEXT_INPUT_TYPE_TEXT);
   engine_->Enable(kTestImeComponentId);
+  context = engine_->GetContextIdForTesting();
   engine_->InputMethodEngine::SetSelectionRange(context, /* start */ 0,
                                                 /* end */ 0, &error);
   EXPECT_EQ("", error);
