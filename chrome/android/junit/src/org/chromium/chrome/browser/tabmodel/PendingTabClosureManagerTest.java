@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.spy;
 
@@ -109,7 +108,6 @@ public class PendingTabClosureManagerTest {
 
     FakeTabModel mTabModel;
     @Mock
-    TabModelDelegate mTabModelDelegate;
     PendingClosureDelegate mDelegate;
 
     @Before
@@ -117,9 +115,7 @@ public class PendingTabClosureManagerTest {
         MockitoAnnotations.initMocks(this);
         mTabModel = new FakeTabModel();
         mDelegate = spy(new PendingClosureDelegate());
-        doReturn(false).when(mTabModelDelegate).isReparentingInProgress();
-        mPendingTabClosureManager =
-                new PendingTabClosureManager(mTabModel, mTabModelDelegate, mDelegate);
+        mPendingTabClosureManager = new PendingTabClosureManager(mTabModel, mDelegate);
     }
 
     @After

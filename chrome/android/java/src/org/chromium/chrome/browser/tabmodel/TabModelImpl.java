@@ -90,7 +90,7 @@ public class TabModelImpl extends TabModelJniBridge {
         mModelDelegate = modelDelegate;
         if (supportUndo && !isIncognito()) {
             mPendingTabClosureManager = new PendingTabClosureManager(
-                    this, modelDelegate, new PendingTabClosureManager.PendingTabClosureDelegate() {
+                    this, new PendingTabClosureManager.PendingTabClosureDelegate() {
                         @Override
                         public void insertUndoneTabClosureAt(Tab tab, int insertIndex) {
                             if (mIndex >= insertIndex) mIndex++;
@@ -151,7 +151,7 @@ public class TabModelImpl extends TabModelJniBridge {
     public void destroy() {
         commitAllTabClosures();
         for (Tab tab : mTabs) {
-            // When reparenting tabs, we skip destoying tabs that we're intentionally keeping in
+            // When reparenting tabs, we skip destroying tabs that we're intentionally keeping in
             // memory.
             if (mModelDelegate.isReparentingInProgress()
                     && mAsyncTabParamsManager.hasParamsForTabId(tab.getId())) {
@@ -162,7 +162,11 @@ public class TabModelImpl extends TabModelJniBridge {
         }
 
         if (mPendingTabClosureManager != null) {
-            mPendingTabClosureManager.destroy();
+            if (mModelDelegate.isReparentingInProgress()) {
+                mPendingTabClosureManager.destroyWhileReparentingInProgress();
+            } else {
+                mPendingTabClosureManager.destroy();
+            }
         }
         mTabs.clear();
         mObservers.clear();
