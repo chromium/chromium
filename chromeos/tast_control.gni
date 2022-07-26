@@ -181,12 +181,6 @@ tast_disabled_tests_from_chrome_all = [
   "assistant.StartupInSignedOutMode",
   "login.ChangePassword",
 
-  # https://crbug.com/1322572
-  "policy.NotificationsAllowedForUrls",
-  "policy.NotificationsBlockedForUrls",
-  "policy.PolicyRefreshRate",
-  "policy.PopupsForURLCheck.allowlist",
-
   # https://crbug.com/1326279
   "policy.AccessibilityPolicies.focus_highlight",
 
@@ -196,17 +190,11 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1326403
   "policy.AccessibilityPolicies.large_cursor",
 
-  # https://crbug.com/1327171
-  "policy.PopupsForURLCheck.default",
-
   # https://crbug.com/1327345
   "policy.ChromePolicyPageStatusTimestamps.ash",
 
   # https://crbug.com/1327361
   "policy.FullscreenAllowed",
-
-  # https://crbug.com/1328128
-  "policy.PopupsForURLCheck.blocklist",
 
   # https://crbug.com/1329734
   "health.DiagnosticsList",
