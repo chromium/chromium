@@ -2671,7 +2671,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_google_android_material_material',
-              'version': 'version:2@1.6.0-alpha01.cr1',
+              'version': 'version:2@1.7.0-alpha02.cr1',
           },
       ],
       'condition': 'checkout_android',
