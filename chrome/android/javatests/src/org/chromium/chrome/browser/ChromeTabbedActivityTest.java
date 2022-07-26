@@ -26,6 +26,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -73,6 +74,7 @@ public class ChromeTabbedActivityTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1347506")
     public void testTabVisibility() {
         // Create two tabs - tab[0] in the foreground and tab[1] in the background.
         final TabImpl[] tabs = new TabImpl[2];
@@ -120,6 +122,7 @@ public class ChromeTabbedActivityTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1347506")
     public void testMultiUrlIntent() {
         Intent viewIntent = new Intent(
                 Intent.ACTION_VIEW, Uri.parse(sActivityTestRule.getTestServer().getURL("/first")));
