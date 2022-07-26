@@ -2098,7 +2098,7 @@ void NGInlineNode::AdjustFontForTextCombineUprightAll() const {
   const float desired_width = text_combine.DesiredWidth();
   text_combine.ResetLayout();
   if (UNLIKELY(desired_width == 0.0f)) {
-    NOTREACHED() << "We get the test case!";
+    // See http://crbug.com/1342520
     return;
   }
   if (content_width <= desired_width)

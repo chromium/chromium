@@ -665,6 +665,30 @@ LayoutNGBlockFlow OL id="root" style="list-style-image: url(\"data:image/gif;bas
             ToSimpleLayoutTree(root_layout_object));
 }
 
+// http://crbug.com/1342520
+TEST_F(LayoutNGTextCombineTest, ListMarkerWidthOfSymbol) {
+  InsertStyleElement(
+      "#root {"
+      " text-combine-upright: all;"
+      " writing-mode: vertical-lr;"
+      " font-size: 1e-7px;"
+      "}");
+  SetBodyInnerHTML("<li id=root>ab</li>");
+  auto& root = *GetElementById("root");
+  const auto& root_layout_object =
+      *To<LayoutNGBlockFlow>(root.GetLayoutObject());
+
+  EXPECT_EQ(R"DUMP(
+LayoutNGListItem LI id="root"
+  +--LayoutNGInsideListMarker ::marker
+  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutTextFragment (anonymous) ("\u2022 ")
+  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutText #text "ab"
+)DUMP",
+            ToSimpleLayoutTree(root_layout_object));
+}
+
 TEST_F(LayoutNGTextCombineTest, MultipleTextNode) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
