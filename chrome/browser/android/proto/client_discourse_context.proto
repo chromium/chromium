@@ -30,7 +30,7 @@ message Selection {
   optional int32 start = 2;
   optional int32 end = 3;
   // Whether the content is URI-encoded.  Needed to support older clients.
-  optional bool is_uri_encoded = 4 [default = true];
+  optional bool is_uri_encoded = 4 [default=true];
 }
 
 message Media {

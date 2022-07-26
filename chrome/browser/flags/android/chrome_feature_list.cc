@@ -35,7 +35,6 @@
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/reactions/core/reactions_features.h"
 #include "components/content_settings/core/common/features.h"
-#include "components/contextual_search/core/browser/contextual_search_field_trial.h"
 #include "components/download/public/common/download_features.h"
 #include "components/embedder_support/android/util/cdn_utils.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -612,6 +611,9 @@ const base::Feature kLensCameraAssistedSearch{"LensCameraAssistedSearch",
 const base::Feature kLensOnQuickActionSearchWidget{
     "LensOnQuickActionSearchWidget", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kContextualSearchDebug{"ContextualSearchDebug",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kContextualSearchDelayedIntelligence{
     "ContextualSearchDelayedIntelligence", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -625,6 +627,9 @@ const base::Feature kContextualSearchForceCaption{
 const base::Feature kContextualSearchThinWebViewImplementation{
     "ContextualSearchThinWebViewImplementation",
     base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kContextualSearchTranslations{
+    "ContextualSearchTranslations", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kContextualTriggersSelectionHandles{
     "ContextualTriggersSelectionHandles", base::FEATURE_DISABLED_BY_DEFAULT};

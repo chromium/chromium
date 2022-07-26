@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/contextual_search/core/browser/contextual_search_field_trial.h"
+#include "chrome/browser/android/contextualsearch/contextual_search_field_trial.h"
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/contextual_search/core/browser/public.h"
 #include "components/variations/variations_associated_data.h"
 
@@ -32,12 +32,6 @@ const int kContextualSearchDefaultContentSize = 1536;
 const int
     ContextualSearchFieldTrial::kContextualSearchDefaultSampleSurroundingSize =
         400;
-
-const base::Feature kContextualSearchDebug{"ContextualSearchDebug",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kContextualSearchTranslations{
-    "ContextualSearchTranslations", base::FEATURE_ENABLED_BY_DEFAULT};
 
 ContextualSearchFieldTrial::ContextualSearchFieldTrial()
     : is_resolver_url_prefix_cached_(false),
