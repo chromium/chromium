@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -315,6 +316,17 @@ void FakeUserDataAuthClient::TestApi::AddExistingUser(
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   CHECK(base::CreateDirectory(*profile_dir));
+}
+
+void FakeUserDataAuthClient::TestApi::AddKey(
+    const cryptohome::AccountIdentifier& account_id,
+    const cryptohome::Key& key) {
+  const auto user_it = client_->users_.find(account_id);
+  CHECK(user_it != std::end(client_->users_)) << "User doesn't exist";
+  UserCryptohomeState& user_state = user_it->second;
+  const auto [factor_it, was_inserted] = user_state.auth_factors.insert(
+      KeyToAuthFactor(key, TestApi::Get()->enable_auth_check_));
+  CHECK(was_inserted) << "Factor already exists";
 }
 
 FakeUserDataAuthClient::FakeUserDataAuthClient() {
