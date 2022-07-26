@@ -236,6 +236,7 @@ generate_definitions_js_files = [
   "js/cr/ui/focus_outline_manager.m.js",
   "js/cr/ui/focus_row.m.js",
   "js/cr/ui/keyboard_shortcut_list.js",
+  "js/cr/ui/store.js",
   "js/event_tracker.m.js",
   "js/load_time_data.m.js",
   "js/plural_string_proxy.js",
@@ -260,7 +261,6 @@ if (is_chromeos_ash) {
     "js/cr/ui/list_selection_model.m.js",
     "js/cr/ui/list_single_selection_model.m.js",
     "js/cr/ui/store_client.js",
-    "js/cr/ui/store.js",
   ]
 }
 
@@ -327,7 +327,6 @@ ts_library("library") {
                "js/custom_element.ts",
                "js/cr/ui/focus_grid.ts",
                "js/cr/ui/drag_wrapper.ts",
-               "js/cr/ui/store_ts.ts",
              ]
 
   if (include_polymer) {

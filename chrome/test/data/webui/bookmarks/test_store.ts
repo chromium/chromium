@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarksPageState, createEmptyState, reduceAction, Store} from 'chrome://bookmarks/bookmarks.js';
-import {TestStore as CrUiTestStore} from 'chrome://webui-test/test_store_ts.js';
+import {createEmptyState, reduceAction, Store} from 'chrome://bookmarks/bookmarks.js';
+import {TestStore as CrUiTestStore} from 'chrome://webui-test/test_store.js';
 
-export class TestStore extends CrUiTestStore<BookmarksPageState> {
+export class TestStore extends CrUiTestStore {
   constructor(data: any) {
-    super(data as BookmarksPageState, createEmptyState(), reduceAction);
+    super(data, Store, createEmptyState(), reduceAction);
   }
 
-  replaceSingleton() {
+  override replaceSingleton() {
     Store.setInstance(this);
   }
 }

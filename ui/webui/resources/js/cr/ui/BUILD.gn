@@ -40,7 +40,6 @@ preprocess_if_expr("preprocess_src_ts") {
   in_files = [
     "drag_wrapper.ts",
     "focus_grid.ts",
-    "store_ts.ts",
   ]
 }
 
@@ -48,8 +47,10 @@ preprocess_if_expr("preprocess_src") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-
-  in_files = [ "keyboard_shortcut_list.js" ]
+  in_files = [
+    "keyboard_shortcut_list.js",
+    "store.js",
+  ]
 
   if (!is_android) {
     # The files below are deprecated, and are included on non-CrOS builds only
@@ -79,7 +80,6 @@ preprocess_if_expr("preprocess_src") {
       "list_selection_model.js",
       "list_single_selection_model.js",
       "store_client.js",
-      "store.js",
     ]
   }
 }
@@ -247,6 +247,7 @@ js_type_check("ui_resources_modules") {
     ":focus_row.m",
     ":focus_row_behavior.m",
     ":focus_without_ink.m",
+    ":store",
   ]
   if (is_chromeos_ash) {
     deps += [
@@ -264,7 +265,6 @@ js_type_check("ui_resources_modules") {
       ":menu_button",
       ":menu_item",
       ":position_util",
-      ":store",
       ":store_client",
     ]
   }
@@ -441,10 +441,12 @@ if (is_chromeos_ash) {
 
   js_library("position_util") {
   }
+}
 
-  js_library("store") {
-  }
+js_library("store") {
+}
 
+if (is_chromeos_ash) {
   js_library("store_client") {
     deps = [
       ":store",

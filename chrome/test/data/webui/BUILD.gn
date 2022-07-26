@@ -409,12 +409,9 @@ ts_definitions("generate_definitions") {
     "mock_timer.js",
     "mojo_webui_test_support.js",
     "test_plural_string_proxy.js",
+    "test_store.js",
     "test_util.js",
   ]
-  if (is_chromeos_ash) {
-    js_files += [ "test_store.js" ]
-  }
-
   extra_deps = [
     ":copy_checked_in_dts_files",
     "//ui/webui/resources:generate_definitions",
@@ -437,7 +434,6 @@ ts_library("build_ts") {
     "resources/list_property_update_behavior_tests.ts",
     "resources/list_property_update_mixin_tests.ts",
     "text_defaults_test.ts",
-    "test_store_ts.ts",
   ]
   deps = [ "//ui/webui/resources:library" ]
   extra_deps = [ ":generate_definitions" ]
@@ -462,6 +458,7 @@ generate_grd("build_grd") {
     "mojo_webui_test_support.js",
     "test_browser_proxy.js",
     "test_plural_string_proxy.js",
+    "test_store.js",
     "test_util.js",
   ]
 
@@ -563,7 +560,6 @@ generate_grd("build_grd") {
   }
 
   if (is_chromeos_ash) {
-    input_files += [ "test_store.js" ]
     deps += [
       "chromeos/manage_mirrorsync:build_grdp",
       "chromeos/personalization_app:build_grdp",
