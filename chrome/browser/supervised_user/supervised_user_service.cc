@@ -19,7 +19,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -139,8 +138,8 @@ void SupervisedUserService::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kDefaultSupervisedUserFilteringBehavior,
                                 SupervisedUserURLFilter::ALLOW);
   registry->RegisterBooleanPref(prefs::kSupervisedUserSafeSites, true);
-  for (base::StringPiece pref : supervised_users::CustodianInfoPrefs()) {
-    registry->RegisterStringPref(std::string(pref), std::string());
+  for (const char* pref : supervised_users::kCustodianInfoPrefs) {
+    registry->RegisterStringPref(pref, std::string());
   }
 }
 
@@ -412,9 +411,9 @@ void SupervisedUserService::SetActive(bool active) {
         prefs::kSupervisedUserManualURLs,
         base::BindRepeating(&SupervisedUserService::UpdateManualURLs,
                             base::Unretained(this)));
-    for (base::StringPiece pref : supervised_users::CustodianInfoPrefs()) {
+    for (const char* pref : supervised_users::kCustodianInfoPrefs) {
       pref_change_registrar_.Add(
-          std::string(pref),
+          pref,
           base::BindRepeating(&SupervisedUserService::OnCustodianInfoChanged,
                               base::Unretained(this)));
     }
@@ -447,8 +446,8 @@ void SupervisedUserService::SetActive(bool active) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
     pref_change_registrar_.Remove(prefs::kSupervisedUserManualHosts);
     pref_change_registrar_.Remove(prefs::kSupervisedUserManualURLs);
-    for (base::StringPiece pref : supervised_users::CustodianInfoPrefs()) {
-      pref_change_registrar_.Remove(std::string(pref));
+    for (const char* pref : supervised_users::kCustodianInfoPrefs) {
+      pref_change_registrar_.Remove(pref);
     }
 
     url_filter_.Clear();

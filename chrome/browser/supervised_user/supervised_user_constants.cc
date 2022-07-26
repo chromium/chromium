@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
-#include "base/containers/fixed_flat_set.h"
-#include "base/strings/string_piece.h"
 #include "chrome/common/pref_names.h"
 
 namespace supervised_users {
@@ -29,20 +27,17 @@ const char kChromeOSAvatarIndex[] = "chromeos-avatar-index";
 
 const char kChromeOSPasswordData[] = "chromeos-password-data";
 
-base::fixed_flat_set<base::StringPiece, 10>& CustodianInfoPrefs() {
-  static auto nonce = base::MakeFixedFlatSet<base::StringPiece>({
-      prefs::kSupervisedUserCustodianName,
-      prefs::kSupervisedUserCustodianEmail,
-      prefs::kSupervisedUserCustodianObfuscatedGaiaId,
-      prefs::kSupervisedUserCustodianProfileURL,
-      prefs::kSupervisedUserCustodianProfileImageURL,
-      prefs::kSupervisedUserSecondCustodianName,
-      prefs::kSupervisedUserSecondCustodianEmail,
-      prefs::kSupervisedUserSecondCustodianObfuscatedGaiaId,
-      prefs::kSupervisedUserSecondCustodianProfileURL,
-      prefs::kSupervisedUserSecondCustodianProfileImageURL,
-  });
-  return nonce;
-}
+const char* const kCustodianInfoPrefs[] = {
+    prefs::kSupervisedUserCustodianName,
+    prefs::kSupervisedUserCustodianEmail,
+    prefs::kSupervisedUserCustodianObfuscatedGaiaId,
+    prefs::kSupervisedUserCustodianProfileURL,
+    prefs::kSupervisedUserCustodianProfileImageURL,
+    prefs::kSupervisedUserSecondCustodianName,
+    prefs::kSupervisedUserSecondCustodianEmail,
+    prefs::kSupervisedUserSecondCustodianObfuscatedGaiaId,
+    prefs::kSupervisedUserSecondCustodianProfileURL,
+    prefs::kSupervisedUserSecondCustodianProfileImageURL,
+};
 
 }  // namespace supervised_users

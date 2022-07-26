@@ -8,11 +8,11 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/family_info_fetcher.h"
+#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
@@ -24,8 +24,6 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 
 namespace {
 
@@ -169,15 +167,13 @@ TEST_F(ChildAccountServiceTest, FieldsAreClearedForNonChildAccounts) {
                        "http://profile.url/marge/image");
 
   OnGetFamilyMembersSuccess(members);
-  for (base::StringPiece property : supervised_users::CustodianInfoPrefs()) {
-    EXPECT_THAT(profile_->GetPrefs()->GetString(std::string(property)),
-                Not(IsEmpty()));
+  for (const char* property : supervised_users::kCustodianInfoPrefs) {
+    EXPECT_THAT(profile_->GetPrefs()->GetString(property), Not(IsEmpty()));
   }
 
   members.clear();
   OnGetFamilyMembersSuccess(members);
-  for (base::StringPiece property : supervised_users::CustodianInfoPrefs()) {
-    EXPECT_THAT(profile_->GetPrefs()->GetString(std::string(property)),
-                IsEmpty());
+  for (const char* property : supervised_users::kCustodianInfoPrefs) {
+    EXPECT_THAT(profile_->GetPrefs()->GetString(property), IsEmpty());
   }
 }
