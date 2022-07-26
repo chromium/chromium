@@ -36,10 +36,12 @@ namespace {
 
 // Returns true if the specified video format can be decoded on hardware.
 bool IsSupportedHardwareVideoCodec(const media::VideoType& type) {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
   // TODO(crbug.com/1013412): Replace these hardcoded checks with a query to the
   // fuchsia.mediacodec FIDL service.
   if (type.codec == media::VideoCodec::kH264 && type.level <= 41)
     return true;
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
   if (type.codec == media::VideoCodec::kVP9 && type.level <= 40)
     return true;
@@ -188,11 +190,13 @@ void WebEngineContentRendererClient::GetSupportedKeySystems(
     supported_video_codecs |= media::EME_CODEC_VP9_PROFILE2;
   }
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (IsSupportedHardwareVideoCodec(media::VideoType{
           media::VideoCodec::kH264, media::H264PROFILE_MAIN, kUnknownCodecLevel,
           media::VideoColorSpace::REC709()})) {
     supported_video_codecs |= media::EME_CODEC_AVC1;
   }
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
   media::SupportedCodecs supported_audio_codecs = media::EME_CODEC_AUDIO_ALL;
 

@@ -28,9 +28,11 @@ absl::optional<std::unique_ptr<fuchsia::media::Compression>>
 GetFuchsiaCompressionFromDecoderConfig(media::AudioDecoderConfig config) {
   auto compression = std::make_unique<fuchsia::media::Compression>();
   switch (config.codec()) {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
     case media::AudioCodec::kAAC:
       compression->type = fuchsia::media::AUDIO_ENCODING_AAC;
       break;
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
     case media::AudioCodec::kMP3:
       compression->type = fuchsia::media::AUDIO_ENCODING_MP3;
       break;
@@ -158,6 +160,7 @@ void WebEngineAudioRenderer::Initialize(media::DemuxerStream* stream,
 }
 
 void WebEngineAudioRenderer::InitializeStream() {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
   // AAC streams require bitstream conversion. Without it the demuxer may
   // produce decoded stream without ADTS headers which are required for AAC
   // streams in AudioConsumer.
@@ -166,6 +169,7 @@ void WebEngineAudioRenderer::InitializeStream() {
       media::AudioCodec::kAAC) {
     demuxer_stream_->EnableBitstreamConverter();
   }
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
   if (demuxer_stream_->audio_decoder_config().is_encrypted()) {
     if (!cdm_context_) {
