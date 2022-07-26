@@ -72,7 +72,8 @@ if (typeof XMLHttpRequest.prototype.realOpen === 'undefined') {
     this.savedAsync = async;
     this.savedUser = user;
     this.savedPassword = password;
-    this.realOpen(method, url, async, user, password);
+    const realAsync = arguments.length > 2 ? async : true;
+    this.realOpen(method, url, realAsync, user, password);
   };
 }
 
