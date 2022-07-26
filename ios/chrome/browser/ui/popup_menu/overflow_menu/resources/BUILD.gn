@@ -124,6 +124,14 @@ imageset("overflow_menu_action_settings") {
   ]
 }
 
+imageset("overflow_menu_action_share_chrome") {
+  sources = [
+    "overflow_menu_action_share_chrome.imageset/Contents.json",
+    "overflow_menu_action_share_chrome.imageset/overflow_menu_action_share_chrome@2x.png",
+    "overflow_menu_action_share_chrome.imageset/overflow_menu_action_share_chrome@3x.png",
+  ]
+}
+
 imageset("overflow_menu_action_stop") {
   sources = [
     "overflow_menu_action_stop.imageset/Contents.json",

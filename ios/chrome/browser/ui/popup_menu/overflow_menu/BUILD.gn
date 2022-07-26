@@ -37,6 +37,7 @@ source_set("overflow_menu") {
     "resources:overflow_menu_action_request_desktop",
     "resources:overflow_menu_action_request_mobile",
     "resources:overflow_menu_action_settings",
+    "resources:overflow_menu_action_share_chrome",
     "resources:overflow_menu_action_stop",
     "resources:overflow_menu_action_text_zoom",
     "resources:overflow_menu_action_translate",
