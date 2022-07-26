@@ -34,6 +34,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/quota/deprecated_storage_quota.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -101,6 +102,9 @@ DeprecatedStorageQuota* DeprecatedStorageInfo::GetStorageQuota(
       }
       return temporary_storage_.Get();
     case kPersistent:
+      // Show deprecation message and record usage for persistent storage type.
+      Deprecation::CountDeprecation(execution_context,
+                                    WebFeature::kPersistentQuotaType);
       if (base::FeatureList::IsEnabled(
               blink::features::kPersistentQuotaIsTemporaryQuota)) {
         return GetStorageQuota(kTemporary, execution_context);

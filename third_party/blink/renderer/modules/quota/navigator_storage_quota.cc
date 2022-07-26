@@ -32,6 +32,7 @@
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -75,6 +76,11 @@ DeprecatedStorageQuota* NavigatorStorageQuota::webkitTemporaryStorage(
 
 DeprecatedStorageQuota* NavigatorStorageQuota::webkitPersistentStorage(
     Navigator& navigator) {
+  // Show deprecation message and record usage for persistent storage type.
+  if (navigator.DomWindow()) {
+    Deprecation::CountDeprecation(navigator.DomWindow(),
+                                  WebFeature::kPersistentQuotaType);
+  }
   if (base::FeatureList::IsEnabled(
           blink::features::kPersistentQuotaIsTemporaryQuota)) {
     return webkitTemporaryStorage(navigator);

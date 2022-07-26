@@ -159,6 +159,9 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kOpenWebDatabaseInsecureContext:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kOpenWebDatabaseInsecureContext);
+    case WebFeature::kPersistentQuotaType:
+      return DeprecationInfo::WithTranslation(
+          feature, DeprecationIssueType::kPersistentQuotaType);
     case WebFeature::kPictureSourceSrc:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kPictureSourceSrc);
