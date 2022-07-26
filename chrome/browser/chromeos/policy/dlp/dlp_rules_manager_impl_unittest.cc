@@ -90,6 +90,87 @@ TEST_F(DlpRulesManagerImplTest, EmptyPref) {
       GetDlpHistogramPrefix() + dlp::kDlpPolicyPresentUMA, false, 1);
 }
 
+TEST_F(DlpRulesManagerImplTest, UnknownRestriction) {
+  base::Value rules(base::Value::Type::LIST);
+
+  base::Value src_urls(base::Value::Type::LIST);
+  src_urls.Append(kExampleUrl);
+
+  base::Value dst_urls(base::Value::Type::LIST);
+  dst_urls.Append(kWildCardMatching);
+
+  base::Value restrictions(base::Value::Type::LIST);
+  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
+      "Wrong restriction", dlp::kBlockLevel));
+
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #1", "Unknown", std::move(src_urls), std::move(dst_urls),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions)));
+
+  UpdatePolicyPref(std::move(rules));
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.Dlp.RestrictionConfigured",
+      DlpRulesManager::Restriction::kUnknownRestriction, 0);
+}
+
+TEST_F(DlpRulesManagerImplTest, UnknownComponent) {
+  base::Value rules(base::Value::Type::LIST);
+
+  base::Value src_urls(base::Value::Type::LIST);
+  src_urls.Append(kExampleUrl);
+
+  base::Value dst_components(base::Value::Type::LIST);
+  dst_components.Append("Wrong component");
+
+  base::Value restrictions(base::Value::Type::LIST);
+  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kClipboardRestriction, dlp::kBlockLevel));
+
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #1", "Unknown", std::move(src_urls),
+      /*dst_urls=*/base::Value(base::Value::Type::LIST),
+      std::move(dst_components), std::move(restrictions)));
+
+  UpdatePolicyPref(std::move(rules));
+  histogram_tester_.ExpectBucketCount("Enterprise.Dlp.RestrictionConfigured",
+                                      DlpRulesManager::Restriction::kClipboard,
+                                      1);
+
+  std::string src_pattern;
+  std::string dst_pattern;
+  EXPECT_EQ(
+      DlpRulesManager::Level::kBlock,
+      dlp_rules_manager_.IsRestrictedComponent(
+          GURL(kExampleUrl), DlpRulesManager::Component::kUnknownComponent,
+          DlpRulesManager::Restriction::kClipboard, &src_pattern));
+  EXPECT_EQ(src_pattern, kExampleUrl);
+}
+
+TEST_F(DlpRulesManagerImplTest, UnknownLevel) {
+  base::Value rules(base::Value::Type::LIST);
+
+  base::Value src_urls(base::Value::Type::LIST);
+  src_urls.Append(kExampleUrl);
+
+  base::Value dst_urls(base::Value::Type::LIST);
+  dst_urls.Append(kWildCardMatching);
+
+  base::Value restrictions(base::Value::Type::LIST);
+  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kClipboardRestriction, "Wrong level"));
+
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #1", "Unknown", std::move(src_urls), std::move(dst_urls),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions)));
+
+  UpdatePolicyPref(std::move(rules));
+  histogram_tester_.ExpectBucketCount("Enterprise.Dlp.RestrictionConfigured",
+                                      DlpRulesManager::Restriction::kClipboard,
+                                      0);
+}
+
 TEST_F(DlpRulesManagerImplTest, BlockPriority) {
   base::Value rules(base::Value::Type::LIST);
 
