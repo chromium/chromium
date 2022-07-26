@@ -473,7 +473,7 @@ void SideSearchBrowserController::OpenSidePanel() {
   UpdateSidePanel();
 
   // After showing the side panel if the web_view_ is visible request focus.
-  if (web_view_->GetVisible())
+  if (web_view_->GetVisible() && web_view_->web_contents())
     web_view_->web_contents()->Focus();
 }
 
@@ -650,7 +650,7 @@ void SideSearchBrowserController::OnWebViewVisibilityChanged() {
   // layout and we should not do this until the web_view_ is visible. Layout is
   // invalidated when we call UpdateSidePanel() but is scheduled asynchronously
   // by the hosting Widget.
-  if (web_view_->GetVisible())
+  if (web_view_->GetVisible() && web_view_->web_contents())
     web_view_->web_contents()->Focus();
 }
 
