@@ -55,8 +55,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       supports_low_entropy_credentials_ = supports;
     }
 
-    // If enable_auth_check is true, then CheckKey will actually check the
-    // authorization.
+    // If enable_auth_check is true, then authentication requests actually check
+    // the key.
     void set_enable_auth_check(bool enable_auth_check) {
       enable_auth_check_ = enable_auth_check;
     }
@@ -111,7 +111,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     // that GetSupportedKeyPolicies() returns.
     bool supports_low_entropy_credentials_ = false;
 
-    // Controls if CheckKeyEx actually checks the key.
+    // If true, authentication requests actually check the key.
     bool enable_auth_check_ = false;
 
     // If true, fails if |create| field is not provided
@@ -319,6 +319,13 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
  private:
   struct UserCryptohomeState;
 
+  enum class AuthResult {
+    kAuthSuccess,
+    kUserNotFound,
+    kFactorNotFound,
+    kAuthFailed,
+  };
+
   // Helper that returns the protobuf reply.
   template <typename ReplyType>
   void ReturnProtobufMethodCallback(const ReplyType& reply,
@@ -341,6 +348,17 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       ::user_data_auth::CryptohomeErrorCode* error) const;
 
   void RunPendingWaitForServiceToBeAvailableCallbacks();
+
+  // Checks the given credentials against the fake factors configured for the
+  // given user. If `wildcard_allowed` is true and `factor_label` is empty,
+  // every configured factor is attempted; `matched_factor_label` can be passed
+  // in order to know the found factor's label.
+  AuthResult AuthenticateViaAuthFactors(
+      const cryptohome::AccountIdentifier& account_id,
+      const std::string& factor_label,
+      const std::string& secret,
+      bool wildcard_allowed,
+      std::string* matched_factor_label = nullptr) const;
 
   ::user_data_auth::CryptohomeErrorCode cryptohome_error_ =
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
