@@ -1659,7 +1659,7 @@ deps = {
   },
 
   'src/third_party/ruy/src':
-    Var('chromium_git') + '/external/github.com/google/ruy.git' + '@' + '72155b3185246e9143f4c6a3a7f283d2ebba8524',
+    Var('chromium_git') + '/external/github.com/google/ruy.git' + '@' + '841ea4172ba904fe3536789497f9565f2ef64129',
 
   'src/third_party/skia':
     Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
@@ -1702,7 +1702,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'ac31ffa987c14665062c00f98ec025a3fdc185ab',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '66b1a1f6d88f5e205c7001a4b5794a5182abffca',
 
   'src/third_party/turbine': {
       'packages': [
