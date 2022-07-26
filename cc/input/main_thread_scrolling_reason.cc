@@ -60,4 +60,16 @@ void MainThreadScrollingReason::AddToTracedValue(
   traced_value.EndArray();
 }
 
+int MainThreadScrollingReason::BucketIndexForTesting(uint32_t reason) {
+  // These two values are already bucket indices.
+  DCHECK_NE(reason, kNotScrollingOnMain);
+  DCHECK_NE(reason, kScrollingOnMainForAnyReason);
+
+  int index = 0;
+  while (reason >>= 1)
+    ++index;
+  DCHECK_NE(index, 0);
+  return index;
+}
+
 }  // namespace cc

@@ -189,33 +189,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer4.MainThreadGestureScrollReason"
-    enum="MainThreadScrollingReason" expires_after="2022-12-18">
+<histogram name="Renderer4.MainThreadGestureScrollReason2"
+    enum="MainThreadScrollingReason2" expires_after="2022-12-11">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Ideally we'd always scroll on the impl thread, but there are a variety of
     situations where we need to scroll on main. We should try to drive these
-    down. For every gesture, we record whether or not the scroll occurred on the
-    main thread or it should scroll on the impl thread but is blocked on main
-    thread, and if it did, what the reasons were. One report is made for each
-    reason preventing scrolling on the impl thread.
+    down. For every gesture, we record whether the scroll occurred on the impl
+    thread (&quot;Not scrolling on main (no reason)&quot;), or the main thread
+    (&quot;Scrolling on main (any reason)&quot;) along with the reasons. There
+    can be multiple main-thread reasons for each scroll, so the percentage of a
+    reason shown in the UMA page is not the percentage of gesture scrolls with
+    the reason in all gesture scrolls. The actual percentage of gesture scrolls
+    with a reason would be count(the reason) / (count(&quot;Not scrolling on
+    main (no reason)&quot; + count(&quot;Scrolling on main (any reason)&quot;)).
   </summary>
 </histogram>
 
-<histogram name="Renderer4.MainThreadWheelScrollReason"
-    enum="MainThreadScrollingReason" expires_after="2022-12-11">
+<histogram name="Renderer4.MainThreadWheelScrollReason2"
+    enum="MainThreadScrollingReason2" expires_after="2022-12-11">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Ideally we'd always scroll on the impl thread, but there are a variety of
     situations where we need to scroll on main. We should try to drive these
-    down. For every wheel tick, we record whether or not the the scroll occurred
-    on the main thread or it should scroll on the impl thread but is blocked on
-    main thread, and if it did, what the reasons were. One report is made for
-    each reason preventing scrolling on the impl thread.
+    down. For every wheel tick, we record whether the scroll occurred on the
+    impl thread (&quot;Not scrolling on main (no reason)&quot;), or the main
+    thread (&quot;Scrolling on main (any reason)&quot;) along with the reasons.
+    There can be multiple main-thread reasons for each wheel tick, so the
+    percentage of a reason shown in the UMA page is not the percentage of wheel
+    scrolls with the reason in all wheel scrolls. The actual percentage of wheel
+    scrolls with a reason would be count(the reason) / (count(&quot;Not
+    scrolling on main (no reason)&quot; + count(&quot;Scrolling on main (any
+    reason)&quot;)).
   </summary>
 </histogram>
 

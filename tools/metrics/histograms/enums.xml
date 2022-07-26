@@ -62931,34 +62931,22 @@ from previous Chrome versions.
   <int value="1" label="cache-control: no-store"/>
 </enum>
 
-<enum name="MainThreadScrollingReason">
-  <int value="0" label="Not scrolling on main"/>
-  <int value="1" label="Background attachment fixed"/>
-  <int value="2" label="Non layer viewport constrained (obsolete)"/>
+<enum name="MainThreadScrollingReason2">
+  <int value="0" label="Not scrolling on main (no reason)"/>
+  <int value="1" label="Scrolling on main (any reason)"/>
+  <int value="2" label="Background attachment fixed"/>
   <int value="3" label="Threaded scrolling disabled"/>
-  <int value="4" label="Scrollbar scrolling"/>
-  <int value="5" label="Frame overlay (obsolete)"/>
-  <int value="6" label="Non-fast scrollable region"/>
-  <int value="7" label="Event handlers (obsolete)"/>
-  <int value="8" label="Failed hit test"/>
-  <int value="9" label="No scrolling layer"/>
-  <int value="10" label="Not scrollable"/>
-  <int value="11" label="Continuing main thread scroll (obsolete)"/>
+  <int value="4" label="Popup scrolling (no threaded input handler)"/>
+  <int value="5" label="Not opaque for text"/>
+  <int value="6" label="Can't paint scrolling background"/>
+  <int value="7" label="Scrollbar scrolling"/>
+  <int value="8" label="Non-fast scrollable region"/>
+  <int value="9" label="Failed hit test"/>
+  <int value="10" label="No scrolling layer"/>
+  <int value="11" label="Not scrollable"/>
   <int value="12" label="Non-invertible transform"/>
-  <int value="13" label="Page based scrolling (obsolete)"/>
-  <int value="14" label="Animating scroll on main thread (obsolete)"/>
-  <int value="15" label="Has sticky position objects (obsolete)"/>
-  <int value="16" label="Requires hit testing on custom scrollbars (obsolete)"/>
-  <int value="17" label="Has opacity (obsolete)"/>
-  <int value="18" label="Has transform (obsolete)"/>
-  <int value="19" label="Not opaque for text"/>
-  <int value="20" label="Can't paint scrolling background"/>
-  <int value="21" label="Has clip related property (obsolete)"/>
-  <int value="22" label="Has box shadow from non-root layer (obsolete)"/>
-  <int value="23" label="Is not stacking context (obsolete)"/>
-  <int value="24" label="Blocking wheel event handler region"/>
-  <int value="25" label="Blocking touch event handler region"/>
-  <int value="26" label="Popup scrolling (no threaded input handler)"/>
+  <int value="13" label="Blocking wheel event handler region"/>
+  <int value="14" label="Blocking touch event handler region"/>
 </enum>
 
 <enum name="MakeChromeDefaultResult">

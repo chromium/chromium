@@ -18,10 +18,10 @@ constexpr uint32_t kMax =
 static void RecordOneScrollReasonMetric(WebGestureDevice device,
                                         uint32_t reason_index) {
   if (device == WebGestureDevice::kTouchscreen) {
-    UMA_HISTOGRAM_EXACT_LINEAR("Renderer4.MainThreadGestureScrollReason",
+    UMA_HISTOGRAM_EXACT_LINEAR("Renderer4.MainThreadGestureScrollReason2",
                                reason_index, kMax + 1);
   } else {
-    UMA_HISTOGRAM_EXACT_LINEAR("Renderer4.MainThreadWheelScrollReason",
+    UMA_HISTOGRAM_EXACT_LINEAR("Renderer4.MainThreadWheelScrollReason2",
                                reason_index, kMax + 1);
   }
 }
@@ -29,17 +29,30 @@ static void RecordOneScrollReasonMetric(WebGestureDevice device,
 }  // anonymous namespace
 
 void RecordScrollReasonsMetric(WebGestureDevice device, uint32_t reasons) {
-  if (!reasons) {
-    RecordOneScrollReasonMetric(device, 0);
+  if (reasons == cc::MainThreadScrollingReason::kNotScrollingOnMain) {
+    // Record the histogram for non-main-thread scrolls.
+    RecordOneScrollReasonMetric(
+        device, cc::MainThreadScrollingReason::kNotScrollingOnMain);
     return;
   }
 
-  // The enum in cc::MainThreadScrollingReason simultaneously defines actual
-  // bitmask values and indices into the bitmask, but kNotScrollingMain is
-  // recorded in the histograms as value 0, so the 0th bit should never be used.
-  DCHECK(!(reasons & (1 << 0)));
+  // Record the histogram for main-thread scrolls for any reason.
+  RecordOneScrollReasonMetric(
+      device, cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason);
 
-  for (uint32_t i = 1; i <= kMax; ++i) {
+  // The enum in cc::MainThreadScrollingReason simultaneously defines actual
+  // bitmask values and indices into the bitmask, but kNotScrollingMain and
+  // kScrollingOnMainForAnyReason are recorded in the histograms, so these
+  // bits should never be used.
+  DCHECK(
+      !(reasons & (1 << cc::MainThreadScrollingReason::kNotScrollingOnMain)));
+  DCHECK(!(reasons &
+           (1 << cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason)));
+
+  // Record histograms for individual main-thread scrolling reasons.
+  for (uint32_t i =
+           cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason + 1;
+       i <= kMax; ++i) {
     if (reasons & (1 << i))
       RecordOneScrollReasonMetric(device, i);
   }

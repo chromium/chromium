@@ -28,25 +28,29 @@ struct CC_EXPORT MainThreadScrollingReason {
   enum : uint32_t {
     kNotScrollingOnMain = 0,
 
+    // This is used only to report the histogram of main thread scrolling for
+    // any reason below. It's a histogram bucket index instead of a bit.
+    kScrollingOnMainForAnyReason = 1,
+
     // This enum simultaneously defines actual bitmask values and indices into
-    // the bitmask, but kNotScrollingMain is recorded in the histograms as
-    // value 0, so the 0th bit should never be used.
+    // the bitmask (which are the numbers after "1 << " below, used as the
+    // histogram bucket indices), but value 0 and 1 are used as the histogram
+    // bucket indices for kNotScrollingMain and kScrollingOnMainForAnyReason,
+    // respectively, so the 0th bit and the 1st bit should never be used.
     // See also blink::RecordScrollReasonsMetric().
 
     // Non-transient scrolling reasons. These are set on the ScrollNode.
-    kHasBackgroundAttachmentFixedObjects = 1 << 1,
+    kHasBackgroundAttachmentFixedObjects = 1 << 2,
     kThreadedScrollingDisabled = 1 << 3,
-    kPopupNoThreadedInput = 1 << 26,
+    kPopupNoThreadedInput = 1 << 4,
 
     // Style-related scrolling on main reasons. Subpixel (LCD) text rendering
     // requires blending glyphs with the background at a specific screen
     // position; transparency and transforms break this.
     // These are only reported by the main-thread scroll gesture event codepath.
     // After scroll unification, we report kNoScrollingLayer instead.
-    kNonCompositedReasonsFirst = 18,
-    kNotOpaqueForTextAndLCDText = 1 << 19,
-    kCantPaintScrollingBackgroundAndLCDText = 1 << 20,
-    kNonCompositedReasonsLast = 23,
+    kNotOpaqueForTextAndLCDText = 1 << 5,
+    kCantPaintScrollingBackgroundAndLCDText = 1 << 6,
 
     // Transient scrolling reasons. These are computed for each scroll gesture.
     // When computed inside ScrollBegin, these prevent the InputHandler from
@@ -54,16 +58,17 @@ struct CC_EXPORT MainThreadScrollingReason {
     // InputHandler is scrolling "on impl", but we report a transient main
     // thread scrolling reason to UMA when we determine that some other aspect
     // of handling the scroll has been (or will be) blocked on the main thread.
-    kScrollbarScrolling = 1 << 4,
-    kNonFastScrollableRegion = 1 << 6,
-    kFailedHitTest = 1 << 8,
-    kNoScrollingLayer = 1 << 9,
-    kNotScrollable = 1 << 10,
+    kScrollbarScrolling = 1 << 7,
+    kNonFastScrollableRegion = 1 << 8,
+    kFailedHitTest = 1 << 9,
+    kNoScrollingLayer = 1 << 10,
+    kNotScrollable = 1 << 11,
     kNonInvertibleTransform = 1 << 12,
-    kWheelEventHandlerRegion = 1 << 24,
-    kTouchEventHandlerRegion = 1 << 25,
+    kWheelEventHandlerRegion = 1 << 13,
+    kTouchEventHandlerRegion = 1 << 14,
 
-    kMainThreadScrollingReasonLast = 26,
+    // For blink::RecordScrollReasonsMetric() to know the number of used bits.
+    kMainThreadScrollingReasonLast = 14,
   };
 
   static const uint32_t kNonCompositedReasons =
@@ -93,6 +98,8 @@ struct CC_EXPORT MainThreadScrollingReason {
   static bool HasNonCompositedScrollReasons(uint32_t reasons) {
     return (reasons & kNonCompositedReasons) != 0;
   }
+
+  static int BucketIndexForTesting(uint32_t reason);
 
   static std::string AsText(uint32_t reasons);
   static void AddToTracedValue(uint32_t reasons,

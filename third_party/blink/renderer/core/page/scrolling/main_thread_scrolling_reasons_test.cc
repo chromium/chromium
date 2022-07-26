@@ -103,13 +103,6 @@ class MainThreadScrollingReasonsTest : public PaintTestConfigurations,
         ->GetScrollableArea();
   }
 
-  base::Bucket BucketForReason(uint32_t reason) {
-    uint32_t bucket = 0;
-    while (reason >>= 1)
-      bucket++;
-    return base::Bucket(base::HistogramBase::Sample(bucket), 1);
-  }
-
  protected:
   String base_url_;
   frame_test_helpers::WebViewHelper helper_;
@@ -286,8 +279,17 @@ TEST_P(MainThreadScrollingReasonsTest, ReportBackgroundAttachmentFixed) {
   uint32_t expected_reason =
       cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
   EXPECT_THAT(
-      histogram_tester.GetAllSamples("Renderer4.MainThreadGestureScrollReason"),
-      testing::ElementsAre(BucketForReason(expected_reason)));
+      histogram_tester.GetAllSamples(
+          "Renderer4.MainThreadGestureScrollReason2"),
+      testing::ElementsAre(
+          base::Bucket(
+              base::HistogramBase::Sample(
+                  cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason),
+              1),
+          base::Bucket(base::HistogramBase::Sample(
+                           cc::MainThreadScrollingReason::BucketIndexForTesting(
+                               expected_reason)),
+                       1)));
 }
 
 // Upon resizing the content size, the main thread scrolling reason
