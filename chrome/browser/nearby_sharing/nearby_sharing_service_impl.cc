@@ -241,11 +241,6 @@ int64_t GeneratePayloadId() {
   return payload_id;
 }
 
-bool IsVisibilityReminderEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kNearbySharingVisibilityReminder);
-}
-
 // Wraps a call to OnTransferUpdate() to filter any updates after receiving a
 // final status.
 class TransferUpdateDecorator : public TransferUpdateCallback {
@@ -4364,7 +4359,7 @@ void NearbySharingServiceImpl::AbortAndCloseConnectionIfNecessary(
 
 void NearbySharingServiceImpl::UpdateVisibilityReminderTimer(
     bool reset_timestamp) {
-  if (!IsVisibilityReminderEnabled() || !settings_.GetEnabled() ||
+  if (!settings_.GetEnabled() ||
       !IsVisibleInBackground(settings_.GetVisibility())) {
     visibility_reminder_timer_.Stop();
     return;

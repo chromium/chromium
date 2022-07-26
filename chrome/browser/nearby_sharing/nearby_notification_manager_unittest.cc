@@ -152,22 +152,16 @@ std::unique_ptr<TestingProfileManager> CreateTestingProfileManager() {
 class NearbyNotificationManagerTestBase : public testing::Test {
  public:
   explicit NearbyNotificationManagerTestBase(
-      std::tuple<bool, bool, bool, bool> feature_list) {
+      std::tuple<bool, bool, bool> feature_list) {
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
     is_self_share_enabled_ = std::get<0>(feature_list);
-    is_visibility_reminder_enabled_ = std::get<1>(feature_list);
-    is_receive_wifi_credentials_enabled_ = std::get<2>(feature_list);
-    is_self_share_auto_accept_enabled_ = std::get<3>(feature_list);
+    is_receive_wifi_credentials_enabled_ = std::get<1>(feature_list);
+    is_self_share_auto_accept_enabled_ = std::get<2>(feature_list);
     if (is_self_share_enabled_) {
       enabled_features.push_back(features::kNearbySharingSelfShareUI);
     } else {
       disabled_features.push_back(features::kNearbySharingSelfShareUI);
-    }
-    if (is_visibility_reminder_enabled_) {
-      enabled_features.push_back(features::kNearbySharingVisibilityReminder);
-    } else {
-      disabled_features.push_back(features::kNearbySharingVisibilityReminder);
     }
     if (is_receive_wifi_credentials_enabled_) {
       enabled_features.push_back(
@@ -285,11 +279,6 @@ class NearbyNotificationManagerTestBase : public testing::Test {
     return share_target;
   }
 
-  void ExpectShowVisibilityReminderDcheckDeath() {
-    ::testing::FLAGS_gtest_death_test_style = "fast";
-    EXPECT_DCHECK_DEATH(manager()->ShowVisibilityReminder());
-  }
-
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
@@ -305,7 +294,6 @@ class NearbyNotificationManagerTestBase : public testing::Test {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   MockSettingsOpener* settings_opener_;
   bool is_self_share_enabled_ = false;
-  bool is_visibility_reminder_enabled_ = false;
   bool is_receive_wifi_credentials_enabled_ = false;
   bool is_self_share_auto_accept_enabled_ = false;
 };
@@ -314,7 +302,7 @@ class NearbyNotificationManagerTestBase : public testing::Test {
 // Visibility Reminder enabled and disabled.
 class NearbyNotificationManagerTest
     : public NearbyNotificationManagerTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   NearbyNotificationManagerTest()
       : NearbyNotificationManagerTestBase(/*feature_list=*/GetParam()) {}
@@ -418,12 +406,11 @@ AttachmentsTestParamInternal kAttachmentsTestParams[] = {
      IDS_NEARBY_NOT_CAPITALIZED_UNKNOWN_ATTACHMENTS},
 };
 
-// Boolean parameter is |is_incoming| and the tuple parameter is featuree list
-// contains |enable_self_share|, |enable_visibility_reminder|, and
-// |enable_receive_wifi_credentials|.
-using AttachmentsTestParam = std::tuple<AttachmentsTestParamInternal,
-                                        bool,
-                                        std::tuple<bool, bool, bool, bool>>;
+// Boolean parameter is |is_incoming| and the tuple parameter is a feature list
+// containing |is_self_share_enabled|, |is_receive_wifi_credentials_enabled|,
+// and |is_self_share_auto_accept_enabled|.
+using AttachmentsTestParam = std::
+    tuple<AttachmentsTestParamInternal, bool, std::tuple<bool, bool, bool>>;
 
 class NearbyNotificationManagerAttachmentsTest
     : public NearbyNotificationManagerTestBase,
@@ -435,10 +422,10 @@ class NearbyNotificationManagerAttachmentsTest
 };
 
 // Boolean parameter is |with_token| and the tuple parameter is featuree list
-// contains |enable_self_share|, |enable_visibility_reminder|,
-// |enable_receive_wifi_credentials|.
+// contains |is_self_share_enabled|, |is_receive_wifi_credentials_enabled|,
+// and |is_self_share_auto_accept_enabled|.
 using ConnectionRequestTestParam =
-    std::tuple<bool, std::tuple<bool, bool, bool, bool>>;
+    std::tuple<bool, std::tuple<bool, bool, bool>>;
 
 class NearbyNotificationManagerConnectionRequestTest
     : public NearbyNotificationManagerTestBase,
@@ -780,12 +767,10 @@ TEST_P(NearbyNotificationManagerAttachmentsTest, ShowFailure) {
 INSTANTIATE_TEST_SUITE_P(
     NearbyNotificationManagerAttachmentsTest,
     NearbyNotificationManagerAttachmentsTest,
-    testing::Combine(testing::ValuesIn(kAttachmentsTestParams),
-                     testing::Bool(),
-                     testing::Combine(testing::Bool(),
-                                      testing::Bool(),
-                                      testing::Bool(),
-                                      testing::Bool())));
+    testing::Combine(
+        testing::ValuesIn(kAttachmentsTestParams),
+        testing::Bool(),
+        testing::Combine(testing::Bool(), testing::Bool(), testing::Bool())));
 
 TEST_P(NearbyNotificationManagerConnectionRequestTest,
        ShowConnectionRequest_ShowsNotification) {
@@ -862,7 +847,6 @@ INSTANTIATE_TEST_SUITE_P(NearbyNotificationManagerConnectionRequestTest,
                          NearbyNotificationManagerConnectionRequestTest,
                          testing::Combine(testing::Bool(),
                                           testing::Combine(testing::Bool(),
-                                                           testing::Bool(),
                                                            testing::Bool(),
                                                            testing::Bool())));
 
@@ -1831,9 +1815,7 @@ TEST_P(NearbyNotificationManagerTest, ShowMultipleNotifications) {
 TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Contacts_Mode) {
   pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
                            static_cast<int>(Visibility::kAllContacts));
-  if (!is_visibility_reminder_enabled_) {
-    ExpectShowVisibilityReminderDcheckDeath();
-  } else {
+
     manager()->ShowVisibilityReminder();
     std::vector<message_center::Notification> notifications =
         GetDisplayedNotifications();
@@ -1867,21 +1849,22 @@ TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Contacts_Mode) {
 
     for (size_t i = 0; i < expected_button_titles.size(); ++i)
       EXPECT_EQ(expected_button_titles[i], buttons[i].title);
-  }
 }
 
-// TODO: b/237714345 fix the test.
-// TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Hidden_Mode) {
-//   ExpectShowVisibilityReminderDcheckDeath();
-// }
+TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Hidden_Mode) {
+  pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
+                           static_cast<int>(Visibility::kNoOne));
+  manager()->ShowVisibilityReminder();
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(0u, notifications.size());
+}
 
 TEST_P(NearbyNotificationManagerTest,
        ShowVisibilityReminder_Notification_Clicked) {
   pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
                            static_cast<int>(Visibility::kSelectedContacts));
-  if (!is_visibility_reminder_enabled_) {
-    ExpectShowVisibilityReminderDcheckDeath();
-  } else {
+
     manager()->ShowVisibilityReminder();
     std::vector<message_center::Notification> notifications =
         GetDisplayedNotifications();
@@ -1894,15 +1877,12 @@ TEST_P(NearbyNotificationManagerTest,
 
     // Notification should be closed.
     EXPECT_EQ(0u, GetDisplayedNotifications().size());
-  }
 }
 
 TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Settings_Clicked) {
   pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
                            static_cast<int>(Visibility::kAllContacts));
-  if (!is_visibility_reminder_enabled_) {
-    ExpectShowVisibilityReminderDcheckDeath();
-  } else {
+
     manager()->ShowVisibilityReminder();
     std::vector<message_center::Notification> notifications =
         GetDisplayedNotifications();
@@ -1915,15 +1895,12 @@ TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Settings_Clicked) {
 
     // Notification should be closed.
     EXPECT_EQ(0u, GetDisplayedNotifications().size());
-  }
 }
 
 TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Dismiss_Clicked) {
   pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
                            static_cast<int>(Visibility::kAllContacts));
-  if (!is_visibility_reminder_enabled_) {
-    ExpectShowVisibilityReminderDcheckDeath();
-  } else {
+
     manager()->ShowVisibilityReminder();
     std::vector<message_center::Notification> notifications =
         GetDisplayedNotifications();
@@ -1935,16 +1912,13 @@ TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Dismiss_Clicked) {
 
     // Notification should be closed.
     EXPECT_EQ(0u, GetDisplayedNotifications().size());
-  }
 }
 
 TEST_P(NearbyNotificationManagerTest,
        ShowVisibilityReminder_Notification_Closed) {
   pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
                            static_cast<int>(Visibility::kAllContacts));
-  if (!is_visibility_reminder_enabled_) {
-    ExpectShowVisibilityReminderDcheckDeath();
-  } else {
+
     manager()->ShowVisibilityReminder();
     std::vector<message_center::Notification> notifications =
         GetDisplayedNotifications();
@@ -1954,7 +1928,6 @@ TEST_P(NearbyNotificationManagerTest,
 
     // Notification should be closed.
     EXPECT_EQ(0u, GetDisplayedNotifications().size());
-  }
 }
 
 TEST_P(NearbyNotificationManagerTest, ConnectionRequest_SelfShare) {
@@ -1980,6 +1953,5 @@ TEST_P(NearbyNotificationManagerTest, ConnectionRequest_SelfShare) {
 INSTANTIATE_TEST_SUITE_P(NearbyNotificationManagerTest,
                          NearbyNotificationManagerTest,
                          testing::Combine(testing::Bool(),
-                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));

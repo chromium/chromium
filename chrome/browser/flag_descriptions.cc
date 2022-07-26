@@ -5506,12 +5506,6 @@ const char kNearbySharingSelfShareUIDescription[] =
     "Enables UI features for Self Share to allow seamless sharing between a "
     "user's own devices.";
 
-const char kNearbySharingVisibilityReminderName[] =
-    "Nearby Sharing visibility reminder notification";
-const char kNearbySharingVisibilityReminderDescription[] =
-    "Enables notification to remind users of their Nearby Share visibility "
-    "selections";
-
 const char kNearbySharingWifiLanName[] = "Nearby Sharing WifiLan";
 const char kNearbySharingWifiLanDescription[] =
     "Enables WifiLan as a Nearby Share transfer medium.";

@@ -350,7 +350,6 @@ const std::vector<base::Feature> kTestFeatures = {
     features::kNearbySharingBackgroundScanning,
     features::kNearbySharingSelfShareAutoAccept,
     features::kNearbySharingSelfShareUI,
-    features::kNearbySharingVisibilityReminder,
     features::kNearbySharingReceiveWifiCredentials};
 
 bool FileExists(const base::FilePath& file_path) {
@@ -5310,13 +5309,8 @@ TEST_P(NearbySharingServiceImplTest, VisibilityReminderTimerIsTriggered) {
       notification_tester_->GetDisplayedNotificationsForType(
           NotificationHandler::Type::NEARBY_SHARE);
 
-  if (!base::FeatureList::IsEnabled(
-          features::kNearbySharingVisibilityReminder)) {
-    EXPECT_EQ(0u, notifications.size());
-  } else {
-    // Visibility reminder notification should display after 180 days.
-    EXPECT_EQ(1u, notifications.size());
-  }
+  // Visibility reminder notification should display after 3 Minutes.
+  EXPECT_EQ(1u, notifications.size());
 }
 
 TEST_P(NearbySharingServiceImplTest, CreateShareTarget) {
@@ -5450,9 +5444,7 @@ TEST_P(NearbySharingServiceVisibilityReminderTest,
     switch (visibility) {
       case nearby_share::mojom::Visibility::kAllContacts:
       case nearby_share::mojom::Visibility::kSelectedContacts:
-        EXPECT_EQ(base::FeatureList::IsEnabled(
-                      features::kNearbySharingVisibilityReminder),
-                  IsVisibilityReminderTimerRunning());
+        EXPECT_TRUE(IsVisibilityReminderTimerRunning());
         break;
       case nearby_share::mojom::Visibility::kNoOne:
         EXPECT_FALSE(IsVisibilityReminderTimerRunning());
@@ -5476,9 +5468,7 @@ TEST_P(NearbySharingServiceVisibilityReminderTest,
     switch (visibility) {
       case nearby_share::mojom::Visibility::kAllContacts:
       case nearby_share::mojom::Visibility::kSelectedContacts:
-        EXPECT_EQ(base::FeatureList::IsEnabled(
-                      features::kNearbySharingVisibilityReminder),
-                  IsVisibilityReminderTimerRunning());
+        EXPECT_TRUE(IsVisibilityReminderTimerRunning());
         break;
       case nearby_share::mojom::Visibility::kNoOne:
         EXPECT_FALSE(IsVisibilityReminderTimerRunning());

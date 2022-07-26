@@ -665,20 +665,12 @@ class NearbyDeviceTryingToShareNotificationDelegate
   NearbyNotificationManager* manager_;
 };
 
-bool IsVisibilityReminderEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kNearbySharingVisibilityReminder);
-}
-
 class NearbyVisibilityReminderNotificationDelegate
     : public NearbyNotificationDelegate {
  public:
   explicit NearbyVisibilityReminderNotificationDelegate(
       NearbyNotificationManager* manager)
-      : manager_(manager) {
-    // Make sure the delegate is only created when the feature flag is enabled.
-    DCHECK(IsVisibilityReminderEnabled());
-  }
+      : manager_(manager) {}
 
   ~NearbyVisibilityReminderNotificationDelegate() override = default;
 
@@ -1173,8 +1165,9 @@ void NearbyNotificationManager::ShowCancelled(const ShareTarget& share_target) {
 void NearbyNotificationManager::ShowVisibilityReminder() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  DCHECK(IsVisibilityReminderEnabled());
-  DCHECK(ShouldShowNearbyVisibilityReminderNotification(pref_service_));
+  if (!ShouldShowNearbyVisibilityReminderNotification(pref_service_)) {
+    return;
+  }
 
   message_center::Notification notification =
       CreateNearbyNotification(kNearbyVisibilityReminderNotificationId);

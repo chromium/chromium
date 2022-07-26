@@ -4451,11 +4451,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "nearby-sharing-visibility-reminder",
-    "owners": ["pushi@google.com", "chromeos-cross-device-eng@google.com"],
-    "expiry_milestone": 103
-  },
-  {
     "name": "nearby-sharing-wifilan",
     "owners": [ "nohle@google.com", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 105
