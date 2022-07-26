@@ -6,9 +6,6 @@
 
 namespace apps {
 
-const base::Feature kAppServiceOnAppUpdateWithoutMojom{
-    "AppServiceOnAppUpdateWithoutMojom", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kAppServicePreferredAppsWithoutMojom{
     "AppServicePreferredAppsWithoutMojom", base::FEATURE_ENABLED_BY_DEFAULT};
 

@@ -61,8 +61,6 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
-#include "components/services/app_service/public/cpp/features.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -140,15 +138,8 @@ void InstallWebApp(Profile* profile, const GURL& start_url) {
       MakeApp(web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url),
               apps::AppType::kWeb, start_url.spec(), apps::Readiness::kReady,
               apps::InstallReason::kSync));
-  if (base::FeatureList::IsEnabled(apps::kAppServiceOnAppUpdateWithoutMojom)) {
-    cache.OnApps(std::move(deltas), apps::AppType::kWeb,
-                 /*should_notify_initialized=*/true);
-  } else {
-    std::vector<apps::mojom::AppPtr> mojom_deltas;
-    mojom_deltas.push_back(apps::ConvertAppToMojomApp(deltas[0]));
-    cache.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kWeb,
-                 /*should_notify_initialized=*/true);
-  }
+  cache.OnApps(std::move(deltas), apps::AppType::kWeb,
+               /*should_notify_initialized=*/true);
 }
 
 }  // namespace

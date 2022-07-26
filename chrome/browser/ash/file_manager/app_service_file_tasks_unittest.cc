@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -121,18 +120,8 @@ class AppServiceFileTasksTest : public testing::Test {
     app->readiness = apps::Readiness::kReady;
     app->intent_filters = std::move(intent_filters);
     apps.push_back(std::move(app));
-    if (base::FeatureList::IsEnabled(
-            apps::kAppServiceOnAppUpdateWithoutMojom)) {
-      app_service_proxy_->AppRegistryCache().OnApps(
-          std::move(apps), app_type, false /* should_notify_initialized */);
-    } else {
-      std::vector<apps::mojom::AppPtr> mojom_apps;
-      mojom_apps.push_back(apps::ConvertAppToMojomApp(apps[0]));
-      app_service_proxy_->AppRegistryCache().OnApps(
-          std::move(mojom_apps), apps::ConvertAppTypeToMojomAppType(app_type),
-          /*should_notify_initialized=*/false);
-      app_service_test_.WaitForAppService();
-    }
+    app_service_proxy_->AppRegistryCache().OnApps(
+        std::move(apps), app_type, false /* should_notify_initialized */);
   }
 
   void AddFakeWebApp(const std::string& app_id,

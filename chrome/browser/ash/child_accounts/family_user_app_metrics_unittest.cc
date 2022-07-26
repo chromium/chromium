@@ -19,7 +19,6 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -190,18 +189,8 @@ class FamilyUserAppMetricsTest
     deltas.push_back(MakeApp(/*app_id=*/"s", /*app_name=*/"systemweb",
                              /*last_launch_time=*/base::Time::Now(),
                              apps::AppType::kSystemWeb));
-    if (base::FeatureList::IsEnabled(
-            apps::kAppServiceOnAppUpdateWithoutMojom)) {
-      cache.OnApps(std::move(deltas), apps::AppType::kUnknown,
-                   false /* should_notify_initialized */);
-    } else {
-      std::vector<apps::mojom::AppPtr> mojom_deltas;
-      for (const auto& delta : deltas) {
-        mojom_deltas.push_back(apps::ConvertAppToMojomApp(delta));
-      }
-      cache.OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
-                   false /* should_notify_initialized */);
-    }
+    cache.OnApps(std::move(deltas), apps::AppType::kUnknown,
+                 false /* should_notify_initialized */);
 
     apps::InstanceRegistry& instance_registry =
         apps::AppServiceProxyFactory::GetForProfile(profile())

@@ -208,20 +208,11 @@ class MediaAppIntegrationPhotosIntegrationTest
 
   void InstallPhotosApp(Profile* profile) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-    if (base::FeatureList::IsEnabled(
-            apps::kAppServiceOnAppUpdateWithoutMojom)) {
-      std::vector<apps::AppPtr> registry_deltas;
-      registry_deltas.push_back(MakePhotosApp());
-      proxy->AppRegistryCache().OnApps(std::move(registry_deltas),
-                                       apps::AppType::kUnknown,
-                                       /*should_notify_initialized=*/false);
-    } else {
-      std::vector<apps::mojom::AppPtr> mojom_deltas;
-      mojom_deltas.push_back(apps::ConvertAppToMojomApp(MakePhotosApp()));
-      proxy->AppRegistryCache().OnApps(std::move(mojom_deltas),
-                                       apps::mojom::AppType::kUnknown,
-                                       /*should_notify_initialized=*/false);
-    }
+    std::vector<apps::AppPtr> registry_deltas;
+    registry_deltas.push_back(MakePhotosApp());
+    proxy->AppRegistryCache().OnApps(std::move(registry_deltas),
+                                     apps::AppType::kUnknown,
+                                     /*should_notify_initialized=*/false);
   }
 
   bool GetFlagInApp(content::WebContents* web_ui, const char* flag) {

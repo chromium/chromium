@@ -46,17 +46,8 @@ void PopulateAppRegistryCache(AccountId account_id,
   deltas.push_back(MakeApp(kTestLacrosChromeAppId, "Test Chrome App",
                            apps::AppType::kStandaloneBrowserChromeApp));
 
-  if (base::FeatureList::IsEnabled(apps::kAppServiceOnAppUpdateWithoutMojom)) {
-    cache->OnApps(std::move(deltas), apps::AppType::kUnknown,
-                  /*should_notify_initialized=*/false);
-  } else {
-    std::vector<apps::mojom::AppPtr> mojom_deltas;
-    for (const auto& delta : deltas) {
-      mojom_deltas.push_back(apps::ConvertAppToMojomApp(delta));
-    }
-    cache->OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
-                  /*should_notify_initialized=*/false);
-  }
+  cache->OnApps(std::move(deltas), apps::AppType::kUnknown,
+                /*should_notify_initialized=*/false);
 
   cache->SetAccountId(account_id);
 
@@ -73,17 +64,8 @@ void AddAppIdToAppRegistryCache(AccountId account_id,
   // all app_id to it.
   deltas.push_back(MakeApp(app_id, "Arc app", apps::AppType::kArc));
 
-  if (base::FeatureList::IsEnabled(apps::kAppServiceOnAppUpdateWithoutMojom)) {
-    cache->OnApps(std::move(deltas), apps::AppType::kUnknown,
-                  /*should_notify_initialized=*/false);
-  } else {
-    std::vector<apps::mojom::AppPtr> mojom_deltas;
-    for (const auto& delta : deltas) {
-      mojom_deltas.push_back(apps::ConvertAppToMojomApp(delta));
-    }
-    cache->OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
-                  /*should_notify_initialized=*/false);
-  }
+  cache->OnApps(std::move(deltas), apps::AppType::kUnknown,
+                /*should_notify_initialized=*/false);
 
   cache->SetAccountId(account_id);
 

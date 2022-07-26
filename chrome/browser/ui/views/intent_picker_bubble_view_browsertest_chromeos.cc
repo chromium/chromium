@@ -39,12 +39,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -187,21 +185,11 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
     auto app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
     app->name = app_name;
     app->intent_filters.push_back(apps_util::MakeIntentFilterForUrlScope(url));
-    if (base::FeatureList::IsEnabled(
-            apps::kAppServiceOnAppUpdateWithoutMojom)) {
-      std::vector<apps::AppPtr> apps;
-      apps.push_back(std::move(app));
-      app_service_proxy_->AppRegistryCache().OnApps(
-          std::move(apps), apps::AppType::kArc,
-          false /* should_notify_initialized */);
-    } else {
-      std::vector<apps::mojom::AppPtr> mojom_apps;
-      mojom_apps.push_back(apps::ConvertAppToMojomApp(app));
-      app_service_proxy_->AppRegistryCache().OnApps(
-          std::move(mojom_apps), apps::mojom::AppType::kArc,
-          false /* should_notify_initialized */);
-      WaitForAppService();
-    }
+    std::vector<apps::AppPtr> apps;
+    apps.push_back(std::move(app));
+    app_service_proxy_->AppRegistryCache().OnApps(
+        std::move(apps), apps::AppType::kArc,
+        false /* should_notify_initialized */);
     return app_id;
   }
 

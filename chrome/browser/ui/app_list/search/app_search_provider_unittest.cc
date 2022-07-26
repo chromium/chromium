@@ -48,7 +48,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/crx_file/id_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -136,17 +135,8 @@ void UpdateIconKey(apps::AppServiceProxy& proxy, const std::string& app_id) {
   apps::AppPtr app = std::make_unique<apps::App>(app_type, app_id);
   app->icon_key = std::move(*icon_key);
   apps.push_back(std::move(app));
-  if (base::FeatureList::IsEnabled(apps::kAppServiceOnAppUpdateWithoutMojom)) {
-    proxy.AppRegistryCache().OnApps(std::move(apps), apps::AppType::kUnknown,
-                                    false /* should_notify_initialized */);
-  } else {
-    std::vector<apps::mojom::AppPtr> mojom_apps;
-    mojom_apps.push_back(apps::ConvertAppToMojomApp(apps[0]));
-    proxy.AppRegistryCache().OnApps(std::move(mojom_apps),
-                                    apps::mojom::AppType::kUnknown,
-                                    false /* should_notify_initialized */);
-    proxy.FlushMojoCallsForTesting();
-  }
+  proxy.AppRegistryCache().OnApps(std::move(apps), apps::AppType::kUnknown,
+                                  false /* should_notify_initialized */);
 }
 
 class AppSearchProviderTest : public AppListTestBase {

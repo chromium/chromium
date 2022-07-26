@@ -28,7 +28,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -143,19 +142,10 @@ class AppInfoGeneratorTest : public ::testing::Test {
  protected:
   void PushApp(apps::AppPtr app) {
     apps::AppType app_type = app->app_type;
-    if (base::FeatureList::IsEnabled(
-            apps::kAppServiceOnAppUpdateWithoutMojom)) {
-      std::vector<apps::AppPtr> deltas;
-      deltas.push_back(std::move(app));
-      GetCache().OnApps(std::move(deltas), app_type,
-                        /*should_notify_initialized=*/false);
-    } else {
-      std::vector<apps::mojom::AppPtr> mojom_deltas;
-      mojom_deltas.push_back(apps::ConvertAppToMojomApp(app));
-      GetCache().OnApps(std::move(mojom_deltas),
-                        apps::ConvertAppTypeToMojomAppType(app_type),
-                        /*should_notify_initialized=*/true);
-    }
+    std::vector<apps::AppPtr> deltas;
+    deltas.push_back(std::move(app));
+    GetCache().OnApps(std::move(deltas), app_type,
+                      /*should_notify_initialized=*/false);
   }
 
   void PushApp(const std::string& app_id,

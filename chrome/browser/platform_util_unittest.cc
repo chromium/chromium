@@ -30,7 +30,6 @@
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_client.h"
@@ -139,18 +138,9 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
     app->intent_filters =
         apps_util::CreateIntentFiltersForChromeApp(extension.get());
     apps.push_back(std::move(app));
-    if (base::FeatureList::IsEnabled(
-            apps::kAppServiceOnAppUpdateWithoutMojom)) {
-      app_service_proxy_->AppRegistryCache().OnApps(
-          std::move(apps), apps::AppType::kChromeApp,
-          /*should_notify_initialized=*/false);
-    } else {
-      std::vector<apps::mojom::AppPtr> mojom_apps;
-      mojom_apps.push_back(apps::ConvertAppToMojomApp(apps[0]));
-      app_service_proxy_->AppRegistryCache().OnApps(
-          std::move(mojom_apps), apps::mojom::AppType::kChromeApp,
-          /*should_notify_initialized=*/false);
-    }
+    app_service_proxy_->AppRegistryCache().OnApps(
+        std::move(apps), apps::AppType::kChromeApp,
+        /*should_notify_initialized=*/false);
     app_service_test_.WaitForAppService();
   }
 

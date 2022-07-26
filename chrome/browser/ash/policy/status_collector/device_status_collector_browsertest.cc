@@ -98,7 +98,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/upload_list/upload_list.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -3732,21 +3731,11 @@ TEST_F(DeviceStatusCollectorTest, GenerateAppInfo) {
       apps::AppServiceProxyFactory::GetForProfile(testing_profile_.get());
   auto app1 = std::make_unique<apps::App>(apps::AppType::kChromeApp, "id");
   auto app2 = std::make_unique<apps::App>(apps::AppType::kChromeApp, "id2");
-  if (base::FeatureList::IsEnabled(apps::kAppServiceOnAppUpdateWithoutMojom)) {
-    std::vector<apps::AppPtr> apps;
-    apps.push_back(std::move(app1));
-    apps.push_back(std::move(app2));
-    app_proxy->AppRegistryCache().OnApps(std::move(apps),
-                                         apps::AppType::kUnknown,
-                                         /*should_notify_initialized=*/false);
-  } else {
-    std::vector<apps::mojom::AppPtr> mojom_deltas;
-    mojom_deltas.push_back(apps::ConvertAppToMojomApp(app1));
-    mojom_deltas.push_back(apps::ConvertAppToMojomApp(app2));
-    app_proxy->AppRegistryCache().OnApps(std::move(mojom_deltas),
-                                         apps::mojom::AppType::kUnknown,
-                                         /*should_notify_initialized=*/false);
-  }
+  std::vector<apps::AppPtr> apps;
+  apps.push_back(std::move(app1));
+  apps.push_back(std::move(app2));
+  app_proxy->AppRegistryCache().OnApps(std::move(apps), apps::AppType::kUnknown,
+                                       /*should_notify_initialized=*/false);
 
   // Start app instance
   base::Time start_time;

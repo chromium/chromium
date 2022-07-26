@@ -16,7 +16,6 @@
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access_update.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -151,16 +150,8 @@ class AppAccessNotifierTest : public testing::Test,
 
     std::vector<apps::AppPtr> registry_deltas;
     registry_deltas.push_back(MakeApp(id, name));
-    if (base::FeatureList::IsEnabled(
-            apps::kAppServiceOnAppUpdateWithoutMojom)) {
-      reg_cache->OnApps(std::move(registry_deltas), apps::AppType::kUnknown,
-                        /*should_notify_initialized=*/false);
-    } else {
-      std::vector<apps::mojom::AppPtr> mojom_deltas;
-      mojom_deltas.push_back(apps::ConvertAppToMojomApp(registry_deltas[0]));
-      reg_cache->OnApps(std::move(mojom_deltas), apps::mojom::AppType::kUnknown,
-                        /*should_notify_initialized=*/false);
-    }
+    reg_cache->OnApps(std::move(registry_deltas), apps::AppType::kUnknown,
+                      /*should_notify_initialized=*/false);
 
     std::vector<apps::mojom::CapabilityAccessPtr> capability_access_deltas;
     capability_access_deltas.push_back(MakeCapabilityAccess(

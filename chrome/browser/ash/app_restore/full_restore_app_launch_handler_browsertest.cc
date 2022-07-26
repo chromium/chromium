@@ -68,7 +68,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
@@ -2307,19 +2306,10 @@ class ArcAppLaunchHandlerArcAppBrowserTest
     app->readiness = readiness;
 
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-    if (base::FeatureList::IsEnabled(
-            apps::kAppServiceOnAppUpdateWithoutMojom)) {
-      std::vector<apps::AppPtr> deltas;
-      deltas.push_back(std::move(app));
-      proxy->AppRegistryCache().OnApps(std::move(deltas), apps::AppType::kArc,
-                                       false /* should_notify_initialized */);
-    } else {
-      std::vector<apps::mojom::AppPtr> mojom_deltas;
-      mojom_deltas.push_back(apps::ConvertAppToMojomApp(app));
-      proxy->AppRegistryCache().OnApps(std::move(mojom_deltas),
-                                       apps::mojom::AppType::kArc,
-                                       false /* should_notify_initialized */);
-    }
+    std::vector<apps::AppPtr> deltas;
+    deltas.push_back(std::move(app));
+    proxy->AppRegistryCache().OnApps(std::move(deltas), apps::AppType::kArc,
+                                     false /* should_notify_initialized */);
   }
 
   void RemoveApp(const std::string& app_id) {
@@ -2327,19 +2317,10 @@ class ArcAppLaunchHandlerArcAppBrowserTest
     app->readiness = apps::Readiness::kUninstalledByUser;
 
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-    if (base::FeatureList::IsEnabled(
-            apps::kAppServiceOnAppUpdateWithoutMojom)) {
-      std::vector<apps::AppPtr> deltas;
-      deltas.push_back(std::move(app));
-      proxy->AppRegistryCache().OnApps(std::move(deltas), apps::AppType::kArc,
-                                       false /* should_notify_initialized */);
-    } else {
-      std::vector<apps::mojom::AppPtr> mojom_deltas;
-      mojom_deltas.push_back(apps::ConvertAppToMojomApp(app));
-      proxy->AppRegistryCache().OnApps(std::move(mojom_deltas),
-                                       apps::mojom::AppType::kArc,
-                                       false /* should_notify_initialized */);
-    }
+    std::vector<apps::AppPtr> deltas;
+    deltas.push_back(std::move(app));
+    proxy->AppRegistryCache().OnApps(std::move(deltas), apps::AppType::kArc,
+                                     false /* should_notify_initialized */);
   }
 
   bool HasRestoreData() {
@@ -2813,19 +2794,10 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
         app_type,
         *GetManager().GetAppIdForSystemApp(ash::SystemWebAppType::HELP));
     app->readiness = readiness;
-    if (base::FeatureList::IsEnabled(
-            apps::kAppServiceOnAppUpdateWithoutMojom)) {
-      std::vector<apps::AppPtr> deltas;
-      deltas.push_back(std::move(app));
-      cache.OnApps(std::move(deltas), app_type,
-                   false /* should_notify_initialized */);
-    } else {
-      std::vector<apps::mojom::AppPtr> mojom_deltas;
-      mojom_deltas.push_back(apps::ConvertAppToMojomApp(app));
-      cache.OnApps(std::move(mojom_deltas),
-                   apps::ConvertAppTypeToMojomAppType(app_type),
-                   false /* should_notify_initialized */);
-    }
+    std::vector<apps::AppPtr> deltas;
+    deltas.push_back(std::move(app));
+    cache.OnApps(std::move(deltas), app_type,
+                 false /* should_notify_initialized */);
   }
 
   void SetShouldRestore(FullRestoreAppLaunchHandler* app_launch_handler) {
