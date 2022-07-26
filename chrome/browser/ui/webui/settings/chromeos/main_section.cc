@@ -258,7 +258,7 @@ void MainSection::AddChromeOSUserStrings(
       l10n_util::GetStringFUTF16(IDS_SETTINGS_SECONDARY_USER_BANNER,
                                  base::ASCIIToUTF16(primary_user_email)));
   html_source->AddString(
-      "sublableWithEmail",
+      "sublabelWithEmail",
       l10n_util::GetStringFUTF16(IDS_BLUETOOTH_SAVED_DEVICES_SUBTITLE,
                                  base::ASCIIToUTF16(primary_user_email)));
 }

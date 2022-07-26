@@ -2275,6 +2275,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_BLUETOOTH_SAVED_DEVICES_SUBTITLE" desc="Subtitle for the link row that directs to Saved Devices settings sub-page.">
     Fast Pair devices saved to <ph name="PRIMARY_EMAIL">$1<ex>john@google.com</ex></ph>
   </message>
+  <message name="IDS_BLUETOOTH_SAVED_DEVICES_REMOVE" desc="Label for remove button that removes a Saved Device.">
+    Remove
+  </message>
 
 
   <!-- Parental Controls -->

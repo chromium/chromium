@@ -1,0 +1,41 @@
+<style include="settings-shared">
+  .secondary {
+    padding-top: 3px;
+  }
+
+  #deviceImage {
+    height: 24px;
+    width: 24px;
+  }
+</style>
+<div focus-row-container>
+  <!-- TODO: b/238808398 Add a11y label. -->
+  <div class="list-item"
+      focus-row-control
+      focus-type="rowWrapper"
+      role="button"
+      selectable>
+    <div class="image-wrapper">
+      <img id="deviceImage" src="[[getImageSrc_(device)]]"
+          alt="bud device image">
+    </div>
+    <div class="middle" aria-hidden="true">
+      <div id="deviceName">[[getDeviceName_(device)]]</div>
+    </div>
+    <div>
+      <cr-icon-button class="icon-more-vert"
+          focus-row-control
+          focus-type="subpageButton"
+          tabindex$="[[tabindex]]"
+          on-click="onMenuButtonTap_">
+      </cr-icon-button>
+    </div>
+  </div>
+</div>
+<cr-action-menu id="dotsMenu" role-description="$i18n{menu}">
+  <button id="removeButton"
+      class="dropdown-item"
+      on-click="onRemoveTap_">
+    $i18n{savedDevicesRemove}
+  </button>
+</cr-action-menu>

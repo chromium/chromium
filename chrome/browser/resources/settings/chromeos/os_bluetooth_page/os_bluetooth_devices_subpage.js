@@ -115,7 +115,7 @@ class SettingsBluetoothDevicesSubpageElement extends
       savedDevicesSublabel_: {
         type: String,
         value() {
-          return loadTimeData.getString('sublableWithEmail');
+          return loadTimeData.getString('sublabelWithEmail');
         },
       },
 

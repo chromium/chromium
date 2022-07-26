@@ -150,6 +150,7 @@ var OSSettingsOsBluetoothDevicesSubpageV3Test =
     return {
       enabled: super.featureList.enabled.concat([
         'ash::features::kFastPair',
+        'ash::features::kFastPairSavedDevices',
         'ash::features::kFastPairSoftwareScanning',
       ]),
     };
@@ -157,6 +158,31 @@ var OSSettingsOsBluetoothDevicesSubpageV3Test =
 };
 
 TEST_F('OSSettingsOsBluetoothDevicesSubpageV3Test', 'AllJsTests', () => {
+  mocha.run();
+});
+
+// TODO(crbug.com/1234871) Move this test back into the list of tests below once
+// Fast pair is launched.
+var OSSettingsOsBluetoothSavedDevicesListV3Test =
+    class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_saved_devices_list_tests.js&host=test';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled.concat([
+        'ash::features::kFastPair',
+        'ash::features::kFastPairSavedDevices',
+        'ash::features::kFastPairSoftwareScanning',
+      ]),
+    };
+  }
+};
+
+TEST_F('OSSettingsOsBluetoothSavedDevicesListV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 

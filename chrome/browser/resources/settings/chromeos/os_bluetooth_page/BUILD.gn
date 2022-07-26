@@ -21,6 +21,8 @@ js_type_check("closure_compile_module") {
     ":os_bluetooth_true_wireless_images",
     ":os_paired_bluetooth_list",
     ":os_paired_bluetooth_list_item",
+    ":os_saved_devices_list",
+    ":os_saved_devices_list_item",
     ":settings_fast_pair_toggle",
   ]
 }
@@ -128,6 +130,8 @@ js_library("os_bluetooth_saved_devices_subpage") {
   deps = [
     ":os_bluetooth_change_device_name_dialog",
     ":os_bluetooth_true_wireless_images",
+    ":os_saved_devices_list",
+    ":settings_fast_pair_constants",
     "..:os_route",
     "..:route_observer_behavior",
     "..:route_origin_behavior",
@@ -169,10 +173,34 @@ js_library("settings_fast_pair_toggle") {
   ]
 }
 
+js_library("os_saved_devices_list") {
+  deps = [
+    ":os_saved_devices_list_item",
+    ":settings_fast_pair_constants",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
+  ]
+}
+
+js_library("os_saved_devices_list_item") {
+  deps = [
+    ":settings_fast_pair_constants",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_utils",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_action_menu/cr_action_menu_externs.js",
+  ]
+}
+
 html_to_js("web_components") {
   js_files = [
     "os_paired_bluetooth_list_item.js",
     "os_paired_bluetooth_list.js",
+    "os_saved_devices_list_item.js",
+    "os_saved_devices_list.js",
     "os_bluetooth_devices_subpage.js",
     "os_bluetooth_saved_devices_subpage.js",
     "os_bluetooth_page.js",

@@ -1,2 +1,22 @@
-<style include="settings-shared"></style>
-<div id="container"></div>
+<style include="settings-shared">
+  #container {
+    padding-inline-end: calc(var(--cr-section-padding) -
+        var(--cr-icon-ripple-padding));
+    padding-inline-start: var(--cr-section-padding);
+  }
+
+  #device-list {
+    margin-inline-start: 32px;
+  }
+</style>
+<div id="container">
+  <div class="settings-box-text">
+    [[savedDevicesSublabel_]]
+  </div>
+  <div id="device-list">
+    <os-settings-saved-devices-list
+        id="savedDevicesList"
+        devices_="[[savedDevices_]]">
+    </os-settings-saved-devices-list>
+  </div>
+</div>

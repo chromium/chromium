@@ -320,6 +320,7 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"savedDevicesLabel", IDS_BLUETOOTH_SAVED_DEVICES_LABEL},
       {"savedDevicesSubtitle", IDS_BLUETOOTH_SAVED_DEVICES_SUBTITLE},
       {"savedDevicesPageName", IDS_SETTINGS_BLUETOOTH_SAVED_DEVICES},
+      {"savedDevicesRemove", IDS_BLUETOOTH_SAVED_DEVICES_REMOVE},
       {"bluetoothPrimaryUserControlled",
        IDS_SETTINGS_BLUETOOTH_PRIMARY_USER_CONTROLLED},
       {"bluetoothDeviceWithConnectionStatus",
