@@ -43,8 +43,6 @@ extern const char kPolicyChangeCountMetric[];
 extern const char kEngagementMetric[];
 
 class AppServiceWrapper;
-class WebTimeLimitEnforcer;
-class WebTimeActivityProvider;
 
 // Coordinates per-app time limit for child user.
 class AppTimeController : public SystemClockClient::Observer,
@@ -111,31 +109,14 @@ class AppTimeController : public SystemClockClient::Observer,
   void OnAppLimitRemoved(const AppId& app_id) override;
   void OnAppInstalled(const AppId& app_id) override;
 
-  const WebTimeLimitEnforcer* web_time_enforcer() const {
-    return web_time_enforcer_.get();
-  }
-
-  WebTimeLimitEnforcer* web_time_enforcer() { return web_time_enforcer_.get(); }
-
   const AppActivityRegistry* app_registry() const {
     return app_registry_.get();
   }
 
   AppActivityRegistry* app_registry() { return app_registry_.get(); }
 
-  const WebTimeActivityProvider* web_time_activity_provider() const {
-    return web_time_activity_provider_.get();
-  }
-
-  WebTimeActivityProvider* web_time_activity_provider() {
-    return web_time_activity_provider_.get();
-  }
-
   // Returns true if there is any app time limit set for current user.
   bool HasAppTimeLimitRestriction() const;
-
-  // Returns true if there is any web time limit set for current user.
-  bool HasWebTimeLimitRestriction() const;
 
  private:
   void RegisterProfilePrefObservers(PrefService* pref_service);
@@ -175,8 +156,6 @@ class AppTimeController : public SystemClockClient::Observer,
 
   std::unique_ptr<AppServiceWrapper> app_service_wrapper_;
   std::unique_ptr<AppActivityRegistry> app_registry_;
-  std::unique_ptr<WebTimeActivityProvider> web_time_activity_provider_;
-  std::unique_ptr<WebTimeLimitEnforcer> web_time_enforcer_;
 
   // Used to observe when policy preferences change.
   std::unique_ptr<PrefChangeRegistrar> pref_registrar_;

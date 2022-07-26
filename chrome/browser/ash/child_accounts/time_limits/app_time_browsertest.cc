@@ -12,7 +12,6 @@
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
@@ -73,21 +72,7 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
   AppTimeTest& operator=(const AppTimeTest&) = delete;
   ~AppTimeTest() override = default;
 
-  virtual bool ShouldEnableWebTimeLimit() { return true; }
-
   // MixinBasedInProcessBrowserTest:
-  void SetUp() override {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
-    if (ShouldEnableWebTimeLimit())
-      enabled_features.push_back(features::kWebTimeLimits);
-    else
-      disabled_features.push_back(features::kWebTimeLimits);
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-    MixinBasedInProcessBrowserTest::SetUp();
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
     arc::SetArcAvailableCommandLineForTesting(command_line);
@@ -192,7 +177,6 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
 
   ArcAppListPrefs* arc_app_list_prefs_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> arc_app_instance_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppTimeTest, AppInstallation) {
@@ -314,30 +298,6 @@ IN_PROC_BROWSER_TEST_F(AppTimeTest, PerAppTimeLimitsPolicyMultipleEntries) {
   ASSERT_TRUE(app_registry_test.GetAppLimit(app4));
   EXPECT_EQ(AppRestriction::kTimeLimit,
             app_registry_test.GetAppLimit(app4)->restriction());
-}
-
-class WebTimeLimitDisabledTest : public AppTimeTest {
- protected:
-  WebTimeLimitDisabledTest() = default;
-  WebTimeLimitDisabledTest(const WebTimeLimitDisabledTest&) = delete;
-  WebTimeLimitDisabledTest& operator=(const WebTimeLimitDisabledTest&) = delete;
-  ~WebTimeLimitDisabledTest() override = default;
-
-  bool ShouldEnableWebTimeLimit() override { return false; }
-};
-
-IN_PROC_BROWSER_TEST_F(WebTimeLimitDisabledTest, WebTimeLimitDisabled) {
-  AppTimeLimitsPolicyBuilder policy;
-  policy.SetResetTime(6, 0);
-  policy.AddAppLimit(GetChromeAppId(),
-                     AppLimit(AppRestriction::kTimeLimit, base::Minutes(0),
-                              base::Time::Now()));
-
-  UpdatePerAppTimeLimitsPolicy(policy.value());
-
-  AppActivityRegistry* app_registry = GetAppRegistry();
-  AppActivityRegistry::TestApi app_registry_test(app_registry);
-  EXPECT_FALSE(app_registry_test.GetAppLimit(GetChromeAppId()));
 }
 
 }  // namespace app_time

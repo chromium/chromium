@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -76,10 +75,6 @@ namespace utils = time_limit_test_utils;
 class FamilyUserParentalControlMetricsTest : public testing::Test {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kWebTimeLimits},
-        /*disabled_features=*/{});
-
     base::Time start_time;
     EXPECT_TRUE(base::Time::FromString(kStartTime, &start_time));
     base::TimeDelta forward_by = start_time - base::Time::Now();
@@ -124,7 +119,6 @@ class FamilyUserParentalControlMetricsTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<FamilyUserParentalControlMetrics> parental_control_metrics_;
 };
 
@@ -238,7 +232,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, OverrideTimeLimitMetrics) {
       /*expected_count=*/3);
 }
 
-TEST_F(FamilyUserParentalControlMetricsTest, AppAndWebTimeLimitMetrics) {
+TEST_F(FamilyUserParentalControlMetricsTest, AppTimeLimitMetrics) {
   apps::AppServiceTest app_service_test_;
   ArcAppTest arc_test_;
 
@@ -278,11 +272,6 @@ TEST_F(FamilyUserParentalControlMetricsTest, AppAndWebTimeLimitMetrics) {
   histogram_tester_.ExpectBucketCount(
       ChildUserService::GetTimeLimitPolicyTypesHistogramNameForTest(),
       /*sample=*/
-      ChildUserService::TimeLimitPolicyType::kWebTimeLimit,
-      /*expected_count=*/1);
-  histogram_tester_.ExpectBucketCount(
-      ChildUserService::GetTimeLimitPolicyTypesHistogramNameForTest(),
-      /*sample=*/
       ChildUserService::TimeLimitPolicyType::kAppTimeLimit,
       /*expected_count=*/1);
 
@@ -292,17 +281,12 @@ TEST_F(FamilyUserParentalControlMetricsTest, AppAndWebTimeLimitMetrics) {
   histogram_tester_.ExpectBucketCount(
       ChildUserService::GetTimeLimitPolicyTypesHistogramNameForTest(),
       /*sample=*/
-      ChildUserService::TimeLimitPolicyType::kWebTimeLimit,
-      /*expected_count=*/2);
-  histogram_tester_.ExpectBucketCount(
-      ChildUserService::GetTimeLimitPolicyTypesHistogramNameForTest(),
-      /*sample=*/
       ChildUserService::TimeLimitPolicyType::kAppTimeLimit,
       /*expected_count=*/2);
 
   histogram_tester_.ExpectTotalCount(
       ChildUserService::GetTimeLimitPolicyTypesHistogramNameForTest(),
-      /*expected_count=*/4);
+      /*expected_count=*/2);
 }
 
 }  // namespace ash

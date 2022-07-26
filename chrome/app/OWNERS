@@ -20,8 +20,6 @@ per-file access_code_cast_strings.grdp=file://chrome/browser/ui/webui/access_cod
 
 per-file app_management_strings.grdp=file://chrome/browser/ui/webui/app_management/OWNERS
 
-per-file web_time_limit_error_page_strings.grdp=file://chrome/browser/ash/child_accounts/OWNERS
-
 per-file gmc_strings.grdp=file://chrome/browser/ui/global_media_controls/OWNERS
 
 per-file media_router_strings.grdp=file://chrome/browser/media/router/OWNERS

@@ -28,14 +28,12 @@ namespace enterprise_management {
 class ChildStatusReportRequest;
 }  // namespace enterprise_management
 
-class GURL;
 class Profile;
 
 namespace ash {
 namespace app_time {
 class AppId;
 class AppTimeController;
-class WebTimeLimitEnforcer;
 }  // namespace app_time
 
 // Facade that exposes child user related functionality on Chrome OS.
@@ -51,7 +49,6 @@ class ChildUserService : public KeyedService,
     explicit TestApi(ChildUserService* service);
     ~TestApi();
 
-    app_time::WebTimeLimitEnforcer* web_time_enforcer();
     app_time::AppTimeController* app_time_controller();
 
    private:
@@ -69,6 +66,7 @@ class ChildUserService : public KeyedService,
     kOverrideTimeLimit = 1,
     kBedTimeLimit = 2,
     kScreenTimeLimit = 3,
+    // TODO(crbug.com/1218630) deprecate this enum
     kWebTimeLimit = 4,
     kAppTimeLimit = 5,  // Does not cover blocked apps.
 
@@ -102,23 +100,9 @@ class ChildUserService : public KeyedService,
   void AppActivityReportSubmitted(
       base::Time report_generation_timestamp) override;
 
-  // Returns whether web time limit was reached for child user.
-  // Always returns false if per-app times limits feature is disabled.
-  bool WebTimeLimitReached() const;
-
-  // Returns whether given |url| can be used without any time restrictions.
-  // Viewing of allowlisted |url| does not count towards usage web time.
-  // Always returns false if per-app times limits feature is disabled.
-  bool WebTimeLimitAllowlistedURL(const GURL& url) const;
-
   // Returns whether the application with id |app_id| can be used without any
   // time restrictions.
   bool AppTimeLimitAllowlistedApp(const app_time::AppId& app_id) const;
-
-  // Returns time limit set for using the web on a given day.
-  // Should only be called if |features::kPerAppTimeLimits| and
-  // |features::kWebTimeLimits| features are enabled.
-  base::TimeDelta GetWebTimeLimit() const;
 
   // Report enabled TimeLimitPolicyType.
   void ReportTimeLimitPolicy() const;

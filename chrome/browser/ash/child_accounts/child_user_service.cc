@@ -7,12 +7,12 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_registry.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
-#include "chrome/browser/ash/child_accounts/time_limits/web_time_limit_enforcer.h"
 #include "chrome/browser/ash/child_accounts/usage_time_limit_processor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -73,12 +73,6 @@ app_time::AppTimeController* ChildUserService::TestApi::app_time_controller() {
   return service_->app_time_controller_.get();
 }
 
-app_time::WebTimeLimitEnforcer* ChildUserService::TestApi::web_time_enforcer() {
-  return app_time_controller()
-             ? service_->app_time_controller_->web_time_enforcer()
-             : nullptr;
-}
-
 // static
 const char* ChildUserService::GetTimeLimitPolicyTypesHistogramNameForTest() {
   return kTimeLimitPolicyTypesHistogramName;
@@ -104,37 +98,11 @@ ChildUserService::ChildUserService(content::BrowserContext* context)
 ChildUserService::~ChildUserService() = default;
 
 void ChildUserService::PauseWebActivity(const std::string& app_service_id) {
-  DCHECK(app_time_controller_);
-
-  // Pause web activity only if the app is chrome.
-  if (app_service_id != app_constants::kChromeAppId)
-    return;
-
-  app_time::WebTimeLimitEnforcer* web_time_enforcer =
-      app_time_controller_->web_time_enforcer();
-  DCHECK(web_time_enforcer);
-
-  const absl::optional<app_time::AppLimit>& time_limit =
-      app_time_controller_->app_registry()->GetWebTimeLimit();
-  DCHECK(time_limit.has_value());
-  DCHECK_EQ(time_limit->restriction(), app_time::AppRestriction::kTimeLimit);
-  DCHECK(time_limit->daily_limit().has_value());
-
-  web_time_enforcer->OnWebTimeLimitReached(time_limit->daily_limit().value());
+  NOTIMPLEMENTED();
 }
 
 void ChildUserService::ResumeWebActivity(const std::string& app_service_id) {
-  DCHECK(app_time_controller_);
-
-  // Only unpause web activity if the app is chrome.
-  if (app_service_id != app_constants::kChromeAppId)
-    return;
-
-  app_time::WebTimeLimitEnforcer* web_time_enforcer =
-      app_time_controller_->web_time_enforcer();
-  DCHECK(web_time_enforcer);
-
-  web_time_enforcer->OnWebTimeLimitEnded();
+  NOTIMPLEMENTED();
 }
 
 absl::optional<base::TimeDelta> ChildUserService::GetTimeLimitForApp(
@@ -162,30 +130,11 @@ void ChildUserService::AppActivityReportSubmitted(
       report_generation_timestamp);
 }
 
-bool ChildUserService::WebTimeLimitReached() const {
-  if (!app_time_controller_ || !app_time_controller_->web_time_enforcer())
-    return false;
-  return app_time_controller_->web_time_enforcer()->blocked();
-}
-
-bool ChildUserService::WebTimeLimitAllowlistedURL(const GURL& url) const {
-  if (!app_time_controller_)
-    return false;
-  DCHECK(app_time_controller_->web_time_enforcer());
-  return app_time_controller_->web_time_enforcer()->IsURLAllowlisted(url);
-}
-
 bool ChildUserService::AppTimeLimitAllowlistedApp(
     const app_time::AppId& app_id) const {
   if (!app_time_controller_)
     return false;
   return app_time_controller_->app_registry()->IsAllowlistedApp(app_id);
-}
-
-base::TimeDelta ChildUserService::GetWebTimeLimit() const {
-  DCHECK(app_time_controller_);
-  DCHECK(app_time_controller_->web_time_enforcer());
-  return app_time_controller_->web_time_enforcer()->time_limit();
 }
 
 void ChildUserService ::ReportTimeLimitPolicy() const {
@@ -216,13 +165,6 @@ void ChildUserService ::ReportTimeLimitPolicy() const {
     base::UmaHistogramEnumeration(
         /*name=*/kTimeLimitPolicyTypesHistogramName,
         /*sample=*/TimeLimitPolicyType::kAppTimeLimit);
-    has_policy_enabled = true;
-  }
-
-  if (app_time_controller_->HasWebTimeLimitRestriction()) {
-    base::UmaHistogramEnumeration(
-        /*name=*/kTimeLimitPolicyTypesHistogramName,
-        /*sample=*/TimeLimitPolicyType::kWebTimeLimit);
     has_policy_enabled = true;
   }
 

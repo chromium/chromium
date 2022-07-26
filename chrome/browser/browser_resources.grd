@@ -66,10 +66,6 @@
         <part file="resources/supervised_user_error_page_resources.grdp" />
       </if>
 
-      <if expr="chromeos_ash">
-        <part file="resources/web_time_limit_error_page_resources.grdp" />
-      </if>
-
       <if expr="enable_hangout_services_extension">
         <!-- Hangout Services extension, included in Google Chrome builds only. -->
         <include name="IDR_HANGOUT_SERVICES_MANIFEST" file="resources\hangout_services\manifest.json" type="BINDATA" />

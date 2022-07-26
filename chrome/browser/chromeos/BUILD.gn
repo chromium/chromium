@@ -206,7 +206,6 @@ source_set("chromeos") {
     "//chrome/browser/apps/platform_apps",
     "//chrome/browser/apps/platform_apps/api",
     "//chrome/browser/ash/arc/input_overlay/db/proto:proto",
-    "//chrome/browser/ash/child_accounts/time_limits/web_time_limit_error_page",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
     "//chrome/browser/ash/nearby:bluetooth_adapter_manager",

@@ -12,7 +12,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -114,8 +113,6 @@ class AppTimeControllerTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  void DisableWebTimeLimit();
-
   void CreateActivityForApp(const AppId& app_id,
                             base::TimeDelta active_time,
                             base::TimeDelta time_limit);
@@ -159,7 +156,6 @@ class AppTimeControllerTest : public testing::Test {
 
   std::unique_ptr<AppTimeController> controller_;
   std::unique_ptr<AppTimeController::TestApi> test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 void AppTimeControllerTest::SetUp() {
@@ -193,16 +189,6 @@ void AppTimeControllerTest::TearDown() {
   arc_test_.TearDown();
   SystemClockClient::Shutdown();
   testing::Test::TearDown();
-}
-
-void AppTimeControllerTest::DisableWebTimeLimit() {
-  scoped_feature_list_.InitWithFeatures(
-      /* enabled_features */ {},
-      /* disabled_features */ {{features::kWebTimeLimits}});
-
-  // Recreate app time controller.
-  DeleteController();
-  InstantiateController();
 }
 
 void AppTimeControllerTest::CreateActivityForApp(const AppId& app_id,

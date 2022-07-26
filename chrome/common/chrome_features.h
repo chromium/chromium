@@ -762,11 +762,6 @@ extern const base::Feature kWebRtcRemoteEventLogGzipped;
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kWebShare;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kWebTimeLimits;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kWebUIDarkMode;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
