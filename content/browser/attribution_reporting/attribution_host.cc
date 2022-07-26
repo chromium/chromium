@@ -135,9 +135,22 @@ void AttributionHost::DidRedirectNavigation(
 
   const url::Origin& impression_origin = it->second;
 
+  const std::vector<GURL>& redirect_chain =
+      navigation_handle->GetRedirectChain();
+
+  if (redirect_chain.size() < 2)
+    return;
+
+  // The reporting origin should be the origin of the request responsible for
+  // initiating this redirect. At this point, the navigation handle reflects the
+  // URL being navigated to, so instead use the second to last URL in the
+  // redirect chain.
+  url::Origin reporting_origin =
+      url::Origin::Create(redirect_chain[redirect_chain.size() - 2]);
+
   data_host_manager->NotifyNavigationRedirectRegistation(
       navigation_handle->GetImpression()->attribution_src_token, source_header,
-      url::Origin::Create(navigation_handle->GetURL()), impression_origin);
+      std::move(reporting_origin), impression_origin);
 }
 
 void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
