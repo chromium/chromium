@@ -36,6 +36,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/base_control_test_widget.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/focus_manager_test.h"
@@ -474,8 +475,8 @@ TEST_F(LabelTest, ObscuredSurrogatePair) {
 // this behavior, therefore this behavior will have to be kept until the code
 // with this assumption is fixed. See http://crbug.com/468494 and
 // http://crbug.com/467526.
-// TODO(mukai): fix the code assuming this behavior and then fix Label
-// implementation, and remove this test case.
+// TODO(crbug.com/1346889): convert all callsites of GetPreferredSize() to
+// call GetPreferredSize(SizeBounds) instead.
 TEST_F(LabelTest, MultilinePreferredSizeTest) {
   label()->SetText(u"This is an example.");
 
@@ -490,6 +491,37 @@ TEST_F(LabelTest, MultilinePreferredSizeTest) {
   gfx::Size new_size = label()->GetPreferredSize();
   EXPECT_GT(multi_line_size.width(), new_size.width());
   EXPECT_LT(multi_line_size.height(), new_size.height());
+}
+
+TEST_F(LabelTest, MultilinePreferredSizeWithConstraintTest) {
+  label()->SetText(u"This is an example.");
+
+  const gfx::Size single_line_size =
+      label()->GetPreferredSize({/* Unbounded */});
+
+  // Test the preferred size when the label is not yet laid out.
+  label()->SetMultiLine(true);
+  const gfx::Size multi_line_size_unbounded =
+      label()->GetPreferredSize({/* Unbounded */});
+  EXPECT_EQ(single_line_size, multi_line_size_unbounded);
+
+  const gfx::Size multi_line_size_bounded = label()->GetPreferredSize(
+      {single_line_size.width() / 2, {/* Unbounded */}});
+  EXPECT_GT(multi_line_size_unbounded.width(), multi_line_size_bounded.width());
+  EXPECT_LT(multi_line_size_unbounded.height(),
+            multi_line_size_bounded.height());
+
+  // Test the preferred size after the label is laid out.
+  // GetPreferredSize(SizeBounds) should ignore the existing bounds.
+  const int layout_width = multi_line_size_unbounded.width() / 3;
+  label()->SetBounds(0, 0, layout_width,
+                     label()->GetHeightForWidth(layout_width));
+  const gfx::Size multi_line_size_unbounded2 =
+      label()->GetPreferredSize({/* Unbounded */});
+  const gfx::Size multi_line_size_bounded2 = label()->GetPreferredSize(
+      {single_line_size.width() / 2, {/* Unbounded */}});
+  EXPECT_EQ(multi_line_size_unbounded, multi_line_size_unbounded2);
+  EXPECT_EQ(multi_line_size_bounded, multi_line_size_bounded2);
 }
 
 TEST_F(LabelTest, SingleLineGetHeightForWidth) {

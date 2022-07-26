@@ -702,7 +702,7 @@ void TableLayout::CalculateSize(
       if (size.height() > view_state->height)
         size.set_height(view_state->height);
     } else {
-      size = view_state->view->GetPreferredSize();
+      size = view_state->view->GetPreferredSize({/* Unbounded */});
       view_state->pref_size = size;
     }
     view_state->remaining_width = view_state->width = size.width();

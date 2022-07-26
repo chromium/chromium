@@ -309,6 +309,8 @@ class VIEWS_EXPORT Label : public View,
   // View:
   int GetBaseline() const override;
   gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   int GetHeightForWidth(int w) const override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
@@ -406,6 +408,10 @@ class VIEWS_EXPORT Label : public View,
 
   // Get the text size for the current layout.
   gfx::Size GetTextSize() const;
+
+  // Get the text size that ignores the current layout and respects
+  // `available_size`.
+  gfx::Size GetBoundedTextSize(const SizeBounds& available_size) const;
 
   // Returns the appropriate foreground color to use given the proposed
   // |foreground| and |background| colors.

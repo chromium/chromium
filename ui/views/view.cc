@@ -524,6 +524,12 @@ gfx::Size View::GetPreferredSize() const {
   return CalculatePreferredSize();
 }
 
+gfx::Size View::GetPreferredSize(const SizeBounds& available_size) const {
+  if (preferred_size_)
+    return *preferred_size_;
+  return CalculatePreferredSize(available_size);
+}
+
 int View::GetBaseline() const {
   return -1;
 }
@@ -1943,6 +1949,10 @@ gfx::Size View::CalculatePreferredSize() const {
   if (HasLayoutManager())
     return GetLayoutManager()->GetPreferredSize(this);
   return gfx::Size();
+}
+
+gfx::Size View::CalculatePreferredSize(const SizeBounds& available_size) const {
+  return CalculatePreferredSize();
 }
 
 void View::PreferredSizeChanged() {

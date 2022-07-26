@@ -87,6 +87,7 @@ class FocusManager;
 class FocusTraversable;
 class LayoutProvider;
 class ScrollView;
+class SizeBounds;
 class ViewAccessibility;
 class ViewMaskLayer;
 class ViewObserver;
@@ -547,9 +548,16 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // return value is relative to the preferred height.
   virtual int GetBaseline() const;
 
-  // Get the size the View would like to be, if enough space were available.
-  // First checks |preferred_size_|, then CalculatePreferredSize().
+  // Get the size the View would like to be under the current bounds.
+  // If the View is never laid out before, assume it to be laid out in an
+  // unbounded space.
+  // TODO(crbug.com/1346889): Don't use this. Use the size-constrained
+  //                          GetPreferredSize(const SizeBounds&) instead.
   gfx::Size GetPreferredSize() const;
+
+  // Get the size the View would like to be given `available_size`, ignoring the
+  // current bounds.
+  gfx::Size GetPreferredSize(const SizeBounds& available_size) const;
 
   // Sets or unsets the size that this View will request during layout. The
   // actual size may differ. It should rarely be necessary to set this; usually
@@ -1457,7 +1465,15 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Calculates the natural size for the View, to be taken into consideration
   // when the parent is performing layout.
+  // `preferred_size_` will take precedence over CalculatePreferredSize() if
+  // it exists.
   virtual gfx::Size CalculatePreferredSize() const;
+
+  // Calculates the preferred size for the View given `available_size`.
+  // `preferred_size_` will take precedence over CalculatePreferredSize() if
+  // it exists.
+  virtual gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const;
 
   // Override to be notified when the bounds of the view have changed.
   virtual void OnBoundsChanged(const gfx::Rect& previous_bounds) {}
