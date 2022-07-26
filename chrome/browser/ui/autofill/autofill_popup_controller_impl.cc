@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -132,8 +133,20 @@ void AutofillPopupControllerImpl::Show(
     view_->Show();
     // TODO(crbug.com/1055981): `this` can be destroyed synchronously at this
     // point.
-    if (!weak_this || !view_)
+    if (!weak_this || !view_) {
+      SCOPED_CRASH_KEY_BOOL("autofill", "hide_view_and_die_called",
+                            hide_view_and_die_called_);
+      SCOPED_CRASH_KEY_BOOL("autofill", "view_destroyed_called",
+                            view_destroyed_called_);
+      SCOPED_CRASH_KEY_BOOL("autofill", "hide_view_and_die_nulled_view",
+                            hide_view_and_die_destroyed_view_);
+      SCOPED_CRASH_KEY_BOOL("autofill", "async_destructor_called",
+                            async_destructor_called_);
+      SCOPED_CRASH_KEY_BOOL("autofill", "weak_this", !!weak_this);
+      SCOPED_CRASH_KEY_BOOL("autofill", "view_", !!view_);
+      base::debug::DumpWithoutCrashing();
       return;
+    }
 
     // We only fire the event when a new popup shows. We do not fire the
     // event when suggestions changed.
@@ -254,6 +267,7 @@ void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
 }
 
 void AutofillPopupControllerImpl::ViewDestroyed() {
+  view_destroyed_called_ = true;
   // The view has already been destroyed so clear the reference to it.
   view_ = nullptr;
 
@@ -585,6 +599,7 @@ void AutofillPopupControllerImpl::ClearState() {
 }
 
 void AutofillPopupControllerImpl::HideViewAndDie() {
+  hide_view_and_die_called_ = true;
   // Invalidates in particular ChromeAutofillClient's WeakPtr to |this|, which
   // prevents recursive calls triggered by `view_->Hide()` (crbug.com/1267047).
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -605,6 +620,7 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
     FireControlsChangedEvent(false);
     view_->Hide();  // Deletes |view_|.
     view_ = nullptr;
+    hide_view_and_die_destroyed_view_ = true;
   }
 
   if (self_deletion_weak_ptr_factory_.HasWeakPtrs())
@@ -613,8 +629,10 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](WeakPtr<AutofillPopupControllerImpl> weak_this) {
-                       if (weak_this)
+                       if (weak_this) {
+                         weak_this->async_destructor_called_ = true;
                          delete weak_this.get();
+                       }
                      },
                      self_deletion_weak_ptr_factory_.GetWeakPtr()));
 }

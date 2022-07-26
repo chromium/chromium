@@ -222,6 +222,14 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // line is currently selected.
   absl::optional<int> selected_line_;
 
+  // For crashdumps.
+  // TODO(crbug.com/1341374, crbug.com/1277218): Remove when the crashes are
+  // understood.
+  bool hide_view_and_die_called_ = false;
+  bool hide_view_and_die_destroyed_view_ = false;
+  bool view_destroyed_called_ = false;
+  bool async_destructor_called_ = false;
+
   // AutofillPopupControllerImpl deletes itself. To simplify memory management,
   // we delete the object asynchronously.
   base::WeakPtrFactory<AutofillPopupControllerImpl>
