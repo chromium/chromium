@@ -355,6 +355,9 @@ class HistoryClustersServiceTest : public HistoryClustersServiceTestBase {
  public:
   HistoryClustersServiceTest() {
     scoped_feature_list_.InitAndEnableFeature(internal::kJourneys);
+    Config config;
+    config.persist_clusters_in_history_db = true;
+    SetConfigForTesting(config);
   }
 };
 
@@ -410,7 +413,7 @@ TEST_F(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
   EXPECT_EQ(test_clustering_backend_->LastClusteredVisits().size(), 20U);
 }
 
-TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
+TEST_F(HistoryClustersServiceTest, QueryClusters_IncompleteAndPersistedVisits) {
   // Create 5 persisted visits with visit times 2, 1, 1, 60, and 1 days ago.
   AddHardcodedTestDataToHistoryService();
 
@@ -463,7 +466,8 @@ TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
   }
 }
 
-TEST_F(HistoryClustersServiceTest, QueryClustersPersistedClusters_NoMixedDays) {
+TEST_F(HistoryClustersServiceTest,
+       QueryClusters_PersistedClusters_NoMixedDays) {
   // Test the case where there are persisted clusters but none on a day also
   // containing unclustered visits.
 
@@ -545,7 +549,53 @@ TEST_F(HistoryClustersServiceTest, QueryClustersPersistedClusters_NoMixedDays) {
   }
 }
 
-TEST_F(HistoryClustersServiceTest, QueryClustersPersistedClusters_MixedDay) {
+TEST_F(HistoryClustersServiceTest,
+       QueryClusters_PersistedClusters_PersistenceDisabled) {
+  // Test the case where there are persisted clusters but persistence is
+  // disabled to check users who were in an enabled then disabled group
+  // don't encounter weirdness.
+
+  Config config;
+  config.persist_clusters_in_history_db = false;
+  SetConfigForTesting(config);
+
+  // Unclustered visit.
+  AddCompleteVisit(1, DaysAgo(1));
+
+  // Clustered visit; i.e. persisted cluster.
+  AddCompleteVisit(2, DaysAgo(2));
+  AddCluster({2});
+
+  QueryClustersContinuationParams continuation_params = {};
+  continuation_params.continuation_time = base::Time::Now();
+
+  // 2 queries should return the 2 visits and treat both as unclustered.
+  {
+    const auto [clusters, visits] = NextQueryClusters(continuation_params);
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(1));
+    EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
+  }
+  {
+    const auto [clusters, visits] = NextQueryClusters(continuation_params);
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(2));
+    EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
+  }
+  // 3rd query should consider history exhausted.
+  {
+    const auto [clusters, visits] =
+        NextQueryClusters(continuation_params, false);
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_TRUE(continuation_params.exhausted_all_visits);
+  }
+}
+
+TEST_F(HistoryClustersServiceTest, QueryClusters_PersistedClusters_MixedDay) {
   // Test the case where there are persisted clusters on a day also containing
   // unclustered visits.
 
@@ -617,7 +667,7 @@ TEST_F(HistoryClustersServiceTest, QueryClustersPersistedClusters_MixedDay) {
   }
 }
 
-TEST_F(HistoryClustersServiceTest, QueryVisitsOldestFirst) {
+TEST_F(HistoryClustersServiceTest, QueryVisits_OldestFirst) {
   // Create 5 persisted visits with visit times 2, 1, 1, 60, and 1 days ago.
   AddHardcodedTestDataToHistoryService();
 

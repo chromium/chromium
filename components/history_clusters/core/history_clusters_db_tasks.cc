@@ -162,7 +162,10 @@ bool GetAnnotatedVisitsToCluster::AddUnclusteredVisits(
     // Filter out visits from sync.
     // TODO(manukh): Consider allowing the clustering backend to handle sync
     //  visits.
-    const bool is_clustered = db->IsVisitClustered(visit.visit_row.visit_id);
+    const bool is_clustered =
+        GetConfig().persist_clusters_in_history_db
+            ? db->IsVisitClustered(visit.visit_row.visit_id)
+            : false;
     if (is_clustered && recent_first_)
       continuation_params_.exhausted_unclustered_visits = true;
     if (!is_clustered && visit.source != history::SOURCE_SYNCED)

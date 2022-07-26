@@ -174,16 +174,15 @@ void HistoryClustersServiceTaskGetMostRecentClusters::OnGotModelClusters(
 
 void HistoryClustersServiceTaskGetMostRecentClusters::
     ReturnMostRecentPersistedClusters(base::Time exclusive_max_time) {
-  if (GetConfig().persist_clusters_in_history_db)
-    OnGotMostRecentPersistedClusters({});
-
-  else {
+  if (GetConfig().persist_clusters_in_history_db) {
     history_service_->GetMostRecentClusters(
         begin_time_, exclusive_max_time, 1,
         base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClusters::
                            OnGotMostRecentPersistedClusters,
                        weak_ptr_factory_.GetWeakPtr()),
         &task_tracker_);
+  } else {
+    OnGotMostRecentPersistedClusters({});
   }
 }
 
