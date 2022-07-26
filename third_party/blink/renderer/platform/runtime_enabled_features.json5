@@ -1357,6 +1357,11 @@
       // Enabled by features::kLegacyWindowsDWriteFontFallback;
     },
     {
+      name: "MachineLearningCommon",
+      implied_by: ["MachineLearningModelLoader", "MachineLearningNeuralNetwork"],
+      status: "experimental",
+    },
+    {
       name: "MachineLearningModelLoader",
       status: "experimental",
     },

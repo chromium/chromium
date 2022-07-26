@@ -13,7 +13,7 @@
 // a dictionary may be insufficient.
 
 [
-  RuntimeEnabled=MachineLearningModelLoader,
+  RuntimeEnabled=MachineLearningCommon,
   SecureContext,
   Exposed=Window
 ] interface MLContext {
