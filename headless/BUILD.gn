@@ -787,6 +787,10 @@ test("headless_browsertests") {
     "test/test_network_interceptor.h",
   ]
 
+  if (enable_basic_printing && enable_pdf) {
+    sources += [ "test/headless_printtopdf_browsertest.cc" ]
+  }
+
   if (headless_use_policy) {
     sources += [
       "test/headless_policy_browsertest.cc",
