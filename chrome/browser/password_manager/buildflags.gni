@@ -7,8 +7,7 @@ import("//build/config/chrome_build.gni")
 
 # The legacy password store backend is supported on android but usually disabled
 # in favor of a downstream implementation.
-use_legacy_password_store_backend =
-    !is_android || !enable_chrome_android_internal
+use_legacy_password_store_backend = !is_android
 
 # Drawables from the downstream clank/ repository are
 # used for branded builds.
