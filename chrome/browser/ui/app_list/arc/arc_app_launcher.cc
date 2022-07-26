@@ -16,7 +16,7 @@
 
 ArcAppLauncher::ArcAppLauncher(content::BrowserContext* context,
                                const std::string& app_id,
-                               apps::mojom::IntentPtr launch_intent,
+                               apps::IntentPtr launch_intent,
                                bool deferred_launch_allowed,
                                int64_t display_id,
                                apps::LaunchSource launch_source)
@@ -124,7 +124,7 @@ bool ArcAppLauncher::MaybeLaunchApp(const std::string& app_id,
 
   if (launch_intent_) {
     proxy->LaunchAppWithIntent(
-        app_id_, ui::EF_NONE, std::move(launch_intent_),
+        app_id_, ui::EF_NONE, apps::ConvertIntentToMojomIntent(launch_intent_),
         apps::ConvertLaunchSourceToMojomLaunchSource(launch_source_),
         apps::MakeWindowInfo(display_id_));
   } else {

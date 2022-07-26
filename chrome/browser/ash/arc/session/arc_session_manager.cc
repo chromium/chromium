@@ -647,7 +647,7 @@ void ArcSessionManager::OnProvisioningFinished(
             prefs->GetBoolean(prefs::kArcProvisioningInitiatedFromOobe))) {
       playstore_launcher_ = std::make_unique<ArcAppLauncher>(
           profile_, kPlayStoreAppId,
-          apps_util::CreateIntentForActivity(
+          apps_util::MakeIntentForActivity(
               kPlayStoreActivity, kInitialStartParam, kCategoryLauncher),
           false /* deferred_launch_allowed */, display::kInvalidDisplayId,
           apps::LaunchSource::kFromChromeInternal);

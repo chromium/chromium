@@ -84,6 +84,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -3154,7 +3155,7 @@ TEST_P(ArcAppModelBuilderTest, AppLauncher) {
       app2.package_name, app2.activity,
       std::vector<std::string>{"S.org.chromium.arc.start_type=initialStart"});
   {
-    auto launch_intent2 = apps_util::CreateIntentForActivity(
+    auto launch_intent2 = apps_util::MakeIntentForActivity(
         app2.activity, arc::kInitialStartParam, arc::kCategoryLauncher);
     ArcAppLauncher launcher2(profile(), id2, std::move(launch_intent2), false,
                              display::kInvalidDisplayId,
