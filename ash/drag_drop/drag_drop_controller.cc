@@ -496,6 +496,10 @@ void DragDropController::OnWindowDestroying(aura::Window* window) {
     if (drag_source_window_->HasObserver(this))
       drag_source_window_->RemoveObserver(this);
     drag_source_window_ = nullptr;
+
+    // TabDragDropDelegate dereferences |drag_source_window_| in its logic,
+    // and is meaningless without a valid instance of it.
+    tab_drag_drop_delegate_.reset();
   }
 }
 
