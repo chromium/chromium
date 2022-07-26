@@ -25,7 +25,7 @@ namespace {
 using device::UMABluetoothDiscoverySessionOutcome;
 
 UMABluetoothDiscoverySessionOutcome TranslateDiscoveryErrorToUMA(
-    const std::string& error_name) {
+    const Error& error) {
   // TODO(b/192289534) - Deal with UMA later
   return UMABluetoothDiscoverySessionOutcome::NOT_IMPLEMENTED;
 }
@@ -296,12 +296,10 @@ bool BluetoothAdapterFloss::IsDiscovering() const {
   return NumScanningDiscoverySessions() > 0;
 }
 
-void BluetoothAdapterFloss::OnMethodResponse(
-    base::OnceClosure callback,
-    ErrorCallback error_callback,
-    const absl::optional<Void>& ret,
-    const absl::optional<Error>& error) {
-  if (error.has_value()) {
+void BluetoothAdapterFloss::OnMethodResponse(base::OnceClosure callback,
+                                             ErrorCallback error_callback,
+                                             DBusResult<Void> ret) {
+  if (!ret.has_value()) {
     std::move(error_callback).Run();
     return;
   }
@@ -334,9 +332,8 @@ void BluetoothAdapterFloss::OnRepeatedDiscoverySessionResult(
 
 void BluetoothAdapterFloss::OnStartDiscovery(
     DiscoverySessionResultCallback callback,
-    const absl::optional<Void>& ret,
-    const absl::optional<Error>& error) {
-  if (error.has_value()) {
+    DBusResult<Void> ret) {
+  if (!ret.has_value()) {
     // Adapter path only exists if active adapter hasn't disappeared
     auto adapter_path = FlossDBusManager::Get()->HasActiveAdapter()
                             ? FlossDBusManager::Get()
@@ -345,9 +342,8 @@ void BluetoothAdapterFloss::OnStartDiscovery(
                                   ->value()
                             : std::string();
     BLUETOOTH_LOG(ERROR) << adapter_path
-                         << ": Failed to start discovery: " << error->name
-                         << ": " << error->message;
-    std::move(callback).Run(true, TranslateDiscoveryErrorToUMA(error->name));
+                         << ": Failed to start discovery: " << ret.error();
+    std::move(callback).Run(true, TranslateDiscoveryErrorToUMA(ret.error()));
 
     return;
   }
@@ -365,9 +361,8 @@ void BluetoothAdapterFloss::OnStartDiscovery(
 
 void BluetoothAdapterFloss::OnStopDiscovery(
     DiscoverySessionResultCallback callback,
-    const absl::optional<Void>& ret,
-    const absl::optional<Error>& error) {
-  if (error.has_value()) {
+    DBusResult<Void> ret) {
+  if (!ret.has_value()) {
     // Adapter path only exists if active adapter hasn't disappeared
     auto adapter_path = FlossDBusManager::Get()->HasActiveAdapter()
                             ? FlossDBusManager::Get()
@@ -376,9 +371,8 @@ void BluetoothAdapterFloss::OnStopDiscovery(
                                   ->value()
                             : std::string();
     BLUETOOTH_LOG(ERROR) << adapter_path
-                         << ": Failed to stop discovery: " << error->name
-                         << ": " << error->message;
-    std::move(callback).Run(true, TranslateDiscoveryErrorToUMA(error->name));
+                         << ": Failed to stop discovery: " << ret.error();
+    std::move(callback).Run(true, TranslateDiscoveryErrorToUMA(ret.error()));
 
     return;
   }
@@ -389,10 +383,8 @@ void BluetoothAdapterFloss::OnStopDiscovery(
   std::move(callback).Run(false, UMABluetoothDiscoverySessionOutcome::SUCCESS);
 }
 
-void BluetoothAdapterFloss::OnGetConnectionState(
-    const FlossDeviceId& device_id,
-    const absl::optional<uint32_t>& ret,
-    const absl::optional<Error>& error) {
+void BluetoothAdapterFloss::OnGetConnectionState(const FlossDeviceId& device_id,
+                                                 DBusResult<uint32_t> ret) {
   BluetoothDeviceFloss* device =
       static_cast<BluetoothDeviceFloss*>(GetDevice(device_id.address));
 
@@ -409,8 +401,7 @@ void BluetoothAdapterFloss::OnGetConnectionState(
 }
 
 void BluetoothAdapterFloss::OnGetBondState(const FlossDeviceId& device_id,
-                                           const absl::optional<uint32_t>& ret,
-                                           const absl::optional<Error>& error) {
+                                           DBusResult<uint32_t> ret) {
   BluetoothDeviceFloss* device =
       static_cast<BluetoothDeviceFloss*>(GetDevice(device_id.address));
 

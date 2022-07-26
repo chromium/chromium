@@ -20,28 +20,23 @@ namespace floss {
 
 namespace {
 
-void OnCreateBond(const absl::optional<bool>& ret,
-                  const absl::optional<Error>& error) {
+void OnCreateBond(DBusResult<bool> ret) {
   if (ret.has_value() && !*ret) {
     BLUETOOTH_LOG(ERROR) << "CreateBond returned failure";
   }
 
-  if (error.has_value()) {
-    BLUETOOTH_LOG(ERROR) << "Failed to create bond: " << error->name << ": "
-                         << error->message;
+  if (!ret.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "Failed to create bond: " << ret.error();
   }
 }
 
-void OnRemoveBond(base::OnceClosure callback,
-                  const absl::optional<bool>& ret,
-                  const absl::optional<Error>& error) {
+void OnRemoveBond(base::OnceClosure callback, DBusResult<bool> ret) {
   if (ret.has_value() && !*ret) {
     BLUETOOTH_LOG(ERROR) << "RemoveBond returned failure";
   }
 
-  if (error.has_value()) {
-    BLUETOOTH_LOG(ERROR) << "Failed to remove bond: " << error->name << ": "
-                         << error->message;
+  if (!ret.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "Failed to remove bond: " << ret.error();
   }
 
   std::move(callback).Run();
@@ -413,10 +408,9 @@ void BluetoothDeviceFloss::OnForgetError(ErrorCallback error_callback,
 }
 
 void BluetoothDeviceFloss::OnGetRemoteType(
-    const absl::optional<FlossAdapterClient::BluetoothDeviceType>& ret,
-    const absl::optional<Error>& error) {
-  if (error.has_value()) {
-    BLUETOOTH_LOG(ERROR) << "GetRemoteType() failed: " << error->message;
+    DBusResult<FlossAdapterClient::BluetoothDeviceType> ret) {
+  if (!ret.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "GetRemoteType() failed: " << ret.error();
     return;
   }
 
@@ -435,34 +429,28 @@ void BluetoothDeviceFloss::OnGetRemoteType(
   }
 }
 
-void BluetoothDeviceFloss::OnGetRemoteClass(
-    const absl::optional<uint32_t>& ret,
-    const absl::optional<Error>& error) {
-  if (error.has_value()) {
-    BLUETOOTH_LOG(ERROR) << "GetRemoteClass() failed: " << error->message;
+void BluetoothDeviceFloss::OnGetRemoteClass(DBusResult<uint32_t> ret) {
+  if (!ret.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "GetRemoteClass() failed: " << ret.error();
     return;
   }
 
   cod_ = *ret;
 }
 
-void BluetoothDeviceFloss::OnGetRemoteUuids(
-    const absl::optional<UUIDList>& ret,
-    const absl::optional<Error>& error) {
-  if (error.has_value()) {
-    BLUETOOTH_LOG(ERROR) << "GetRemoteUuids() failed: " << error->message;
+void BluetoothDeviceFloss::OnGetRemoteUuids(DBusResult<UUIDList> ret) {
+  if (!ret.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "GetRemoteUuids() failed: " << ret.error();
     return;
   }
 
   device_uuids_.ReplaceServiceUUIDs(*ret);
 }
 
-void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(
-    const absl::optional<Void>& ret,
-    const absl::optional<Error>& error) {
-  if (error.has_value()) {
+void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(DBusResult<Void> ret) {
+  if (!ret.has_value()) {
     BLUETOOTH_LOG(ERROR) << "Failed to connect all enabled profiles: "
-                         << error->name << ": " << error->message;
+                         << ret.error();
     // TODO(b/202874707): Design a proper new errors for Floss.
     if (pending_callback_on_connect_profiles_)
       TriggerConnectCallback(BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN);
@@ -482,11 +470,10 @@ void BluetoothDeviceFloss::TriggerConnectCallback(
 void BluetoothDeviceFloss::OnDisconnectAllEnabledProfiles(
     base::OnceClosure callback,
     ErrorCallback error_callback,
-    const absl::optional<Void>& ret,
-    const absl::optional<Error>& error) {
-  if (error.has_value()) {
+    DBusResult<Void> ret) {
+  if (!ret.has_value()) {
     BLUETOOTH_LOG(ERROR) << "Failed to discconnect all enabled profiles: "
-                         << error->name << ": " << error->message;
+                         << ret.error();
     std::move(error_callback).Run();
     return;
   }

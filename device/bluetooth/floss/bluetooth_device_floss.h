@@ -139,19 +139,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
 
   void OnCancelPairingError(const Error& error);
   void OnForgetError(ErrorCallback error_callback, const Error& error);
-  void OnGetRemoteType(
-      const absl::optional<FlossAdapterClient::BluetoothDeviceType>& ret,
-      const absl::optional<Error>& error);
-  void OnGetRemoteClass(const absl::optional<uint32_t>& ret,
-                        const absl::optional<Error>& error);
-  void OnGetRemoteUuids(const absl::optional<UUIDList>& ret,
-                        const absl::optional<Error>& error);
-  void OnConnectAllEnabledProfiles(const absl::optional<Void>& ret,
-                                   const absl::optional<Error>& error);
+  void OnGetRemoteType(DBusResult<FlossAdapterClient::BluetoothDeviceType> ret);
+  void OnGetRemoteClass(DBusResult<uint32_t> ret);
+  void OnGetRemoteUuids(DBusResult<UUIDList> ret);
+  void OnConnectAllEnabledProfiles(DBusResult<Void> ret);
   void OnDisconnectAllEnabledProfiles(base::OnceClosure callback,
                                       ErrorCallback error_callback,
-                                      const absl::optional<Void>& ret,
-                                      const absl::optional<Error>& error);
+                                      DBusResult<Void> ret);
 
   absl::optional<ConnectCallback> pending_callback_on_connect_profiles_ =
       absl::nullopt;

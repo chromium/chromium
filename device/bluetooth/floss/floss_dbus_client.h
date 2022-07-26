@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/types/expected.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -102,8 +103,16 @@ struct DEVICE_BLUETOOTH_EXPORT FlossDeviceId {
 };
 
 // Represents an error sent through DBus.
+//
+// In a D-Bus message, error contains 2 parts: error name and error message.
+// This is a structure to hold these error info and provides a utility for human
+// readable representation.
 struct DEVICE_BLUETOOTH_EXPORT Error {
   Error(const std::string& name, const std::string& message);
+
+  // Presents the error as "<error name>: <error message>".
+  friend std::ostream& operator<<(std::ostream& os, const Error& error);
+  std::string ToString();
 
   std::string name;
   std::string message;
@@ -114,10 +123,16 @@ struct DEVICE_BLUETOOTH_EXPORT Error {
 // Needs to be exported because there are template instantiations using this.
 struct DEVICE_BLUETOOTH_EXPORT Void {};
 
+// Represents the result of D-Bus method call. A Floss method call returns
+// either a data or a D-Bus error.
 template <typename T>
-using ResponseCallback =
-    base::OnceCallback<void(const absl::optional<T>& ret,
-                            const absl::optional<Error>& err)>;
+using DBusResult = base::expected<T, Error>;
+
+// A callback of Floss API method call. This encapsulates RPC-level status
+// (in Floss case D-Bus status and return data parsing) so that each return can
+// be either "ok" (contains T) or "error" (contains error name and message).
+template <typename T>
+using ResponseCallback = base::OnceCallback<void(DBusResult<T>)>;
 
 // A Weakly Owned ResponseCallback<T>. The main usecase for this is to have
 // a weak pointer available for |PostDelayedTask|, where deleting the main
@@ -134,9 +149,9 @@ class WeaklyOwnedCallback {
 
   // If the callback hasn't been executed, run it and return true. Otherwise
   // false.
-  bool Run(const absl::optional<T>& ret, const absl::optional<Error>& err) {
+  bool Run(DBusResult<T> ret) {
     if (cb_) {
-      std::move(cb_).Run(ret, err);
+      std::move(cb_).Run(std::move(ret));
       return true;
     }
 
@@ -226,8 +241,8 @@ class FlossDBusClient {
     if (bus == nullptr) {
       LOG(ERROR) << "D-Bus is not initialized, cannot call method "
                  << method_name << " on " << object_path.value();
-      std::move(callback).Run(absl::nullopt,
-                              Error(kErrorDBus, "DBus not initialized"));
+      std::move(callback).Run(base::unexpected(
+          Error(std::string(kErrorDBus), "DBus not initialized")));
       return;
     }
 
@@ -236,8 +251,8 @@ class FlossDBusClient {
     if (!object_proxy) {
       LOG(ERROR) << "Object proxy does not exist when trying to call "
                  << method_name;
-      std::move(callback).Run(absl::nullopt,
-                              Error(kErrorDBus, "Invalid object proxy"));
+      std::move(callback).Run(base::unexpected(
+          Error(std::string(kErrorDBus), "Invalid object proxy")));
       return;
     }
 

@@ -88,6 +88,26 @@ constexpr char kDeviceIdAddressKey[] = "address";
 Error::Error(const std::string& name, const std::string& message)
     : name(name), message(message) {}
 
+std::ostream& operator<<(std::ostream& os, const Error& error) {
+  os << error.name;
+
+  if (error.name.size() == 0) {
+    os << "<no error name>";
+  }
+
+  if (error.message.size()) {
+    os << ": " << error.message;
+  }
+
+  return os;
+}
+
+std::string Error::ToString() {
+  std::stringstream ss;
+  ss << *this;
+  return ss.str();
+}
+
 FlossDBusClient::FlossDBusClient() = default;
 FlossDBusClient::~FlossDBusClient() = default;
 
@@ -137,14 +157,12 @@ void FlossDBusClient::DefaultResponseWithCallback<Void>(
     dbus::Response* response,
     dbus::ErrorResponse* error_response) {
   if (response) {
-    std::move(callback).Run(/*ret=*/absl::nullopt, /*err=*/absl::nullopt);
+    std::move(callback).Run(Void{});
     return;
   }
 
-  std::move(callback).Run(
-      /*ret=*/absl::nullopt,
-      ErrorResponseToError(kErrorNoResponse, /*default_message=*/std::string(),
-                           error_response));
+  std::move(callback).Run(base::unexpected(ErrorResponseToError(
+      kErrorNoResponse, /*default_message=*/std::string(), error_response)));
 }
 
 template <typename T>
@@ -158,20 +176,16 @@ void FlossDBusClient::DefaultResponseWithCallback(
 
     if (!FlossDBusClient::ReadAllDBusParams<T>(&reader, &ret)) {
       LOG(ERROR) << "Failed reading return from response";
-      std::move(callback).Run(
-          /*ret=*/absl::nullopt,
-          Error(kErrorInvalidReturn, /*message=*/std::string()));
+      std::move(callback).Run(base::unexpected(Error(kErrorInvalidReturn, "")));
       return;
     }
 
-    std::move(callback).Run(ret, /*err=*/absl::nullopt);
+    std::move(callback).Run(ret);
     return;
   }
 
-  std::move(callback).Run(
-      /*ret=*/absl::nullopt,
-      ErrorResponseToError(kErrorNoResponse, /*default_message=*/std::string(),
-                           error_response));
+  std::move(callback).Run(base::unexpected(ErrorResponseToError(
+      kErrorNoResponse, /*default_message=*/std::string(), error_response)));
 }
 
 // static

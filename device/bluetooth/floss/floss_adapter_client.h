@@ -320,8 +320,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
       dbus::ExportedObject::ResponseSender response_sender);
 
   // Handle GetBondedDevices
-  void OnGetBondedDevices(const absl::optional<std::vector<FlossDeviceId>>& ret,
-                          const absl::optional<Error>& error);
+  void OnGetBondedDevices(DBusResult<std::vector<FlossDeviceId>> ret);
 
   // List of observers interested in event notifications from this client.
   base::ObserverList<Observer> observers_;

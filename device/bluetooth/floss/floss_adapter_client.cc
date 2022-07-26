@@ -504,15 +504,9 @@ void FlossAdapterClient::OnSspRequest(
 }
 
 void FlossAdapterClient::OnGetBondedDevices(
-    const absl::optional<std::vector<FlossDeviceId>>& ret,
-    const absl::optional<Error>& error) {
-  if (error.has_value()) {
-    LOG(ERROR) << "Error on GetBondedDevices: " << error->name;
-    return;
-  }
-
+    DBusResult<std::vector<FlossDeviceId>> ret) {
   if (!ret.has_value()) {
-    LOG(ERROR) << "Error on GetBondedDevices: No return value";
+    LOG(ERROR) << "Error on GetBondedDevices: " << ret.error();
     return;
   }
 

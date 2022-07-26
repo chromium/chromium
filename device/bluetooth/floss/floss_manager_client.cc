@@ -163,8 +163,8 @@ void FlossManagerClient::GetFlossEnabledWithTarget(bool target,
       bus_->GetObjectProxy(service_name_, dbus::ObjectPath(kManagerObject));
   if (!object_proxy) {
     if (set_floss_enabled_callback_) {
-      set_floss_enabled_callback_->Run(absl::nullopt,
-                                       Error(kUnknownManagerError, ""));
+      set_floss_enabled_callback_->Run(
+          base::unexpected(Error(kUnknownManagerError, "")));
       set_floss_enabled_callback_.reset();
     }
     return;
@@ -191,8 +191,7 @@ void FlossManagerClient::SetFlossEnabled(
       bus_->GetObjectProxy(service_name_, dbus::ObjectPath(kManagerObject));
   if (!object_proxy) {
     if (cb) {
-      std::move(*cb).Run(/*ret=*/absl::nullopt,
-                         /*err=*/Error(kUnknownManagerError, ""));
+      std::move(*cb).Run(base::unexpected(Error(kUnknownManagerError, "")));
     }
     return;
   }
@@ -225,8 +224,7 @@ void FlossManagerClient::SetAdapterEnabled(int adapter,
   dbus::ObjectProxy* object_proxy =
       bus_->GetObjectProxy(service_name_, dbus::ObjectPath(kManagerObject));
   if (!object_proxy) {
-    std::move(callback).Run(absl::nullopt,
-                            Error(kUnknownManagerError, std::string()));
+    std::move(callback).Run(base::unexpected(Error(kUnknownManagerError, "")));
     return;
   }
 
@@ -492,9 +490,8 @@ void FlossManagerClient::HandleSetFlossEnabled(
                          retry_wait_ms, absl::nullopt),
           base::Milliseconds(retry_wait_ms));
     } else if (set_floss_enabled_callback_) {
-      set_floss_enabled_callback_->Run(
-          /*ret=*/absl::nullopt,
-          ErrorResponseToError(kUnknownManagerError, "", error_response));
+      set_floss_enabled_callback_->Run(base::unexpected(
+          ErrorResponseToError(kUnknownManagerError, "", error_response)));
       set_floss_enabled_callback_.reset();
     }
 
@@ -521,9 +518,8 @@ void FlossManagerClient::HandleGetFlossEnabled(
                          retry_wait_ms),
           base::Milliseconds(retry_wait_ms));
     } else if (set_floss_enabled_callback_) {
-      set_floss_enabled_callback_->Run(
-          /*ret=*/absl::nullopt,
-          ErrorResponseToError(kUnknownManagerError, "", error_response));
+      set_floss_enabled_callback_->Run(base::unexpected(
+          ErrorResponseToError(kUnknownManagerError, "", error_response)));
       set_floss_enabled_callback_.reset();
     }
 
@@ -550,19 +546,15 @@ void FlossManagerClient::HandleGetFlossEnabled(
              << (floss_enabled ? "enabled" : "disabled") << " and target was "
              << (target ? "enabled" : "disabled");
     if (set_floss_enabled_callback_) {
-      set_floss_enabled_callback_->Run(floss_enabled,
-                                       /*err=*/absl::nullopt);
+      set_floss_enabled_callback_->Run(floss_enabled);
       set_floss_enabled_callback_.reset();
     }
   }
 }
 
-void FlossManagerClient::CompleteSetFlossEnabled(
-    const absl::optional<bool>& ret,
-    const absl::optional<Error>& err) {
-  if (err) {
-    LOG(ERROR) << "Floss couldn't be enabled. Error=" << err->name << ", "
-               << err->message;
+void FlossManagerClient::CompleteSetFlossEnabled(DBusResult<bool> ret) {
+  if (!ret.has_value()) {
+    LOG(ERROR) << "Floss couldn't be enabled. Error=" << ret.error();
   } else {
     DVLOG(1) << "Completed SetFlossEnabled with value " << *ret;
   }

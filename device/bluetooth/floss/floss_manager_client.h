@@ -60,13 +60,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
     CreateWithTimeout(ResponseCallback<Void> cb, int timeout_ms);
     void RunError() {
       if (cb_) {
-        std::move(cb_).Run(
-            /*ret=*/absl::nullopt, Error(kErrorNoResponse, std::string()));
+        std::move(cb_).Run(base::unexpected(Error(kErrorNoResponse, "")));
       }
     };
     void RunNoError() {
       if (cb_) {
-        std::move(cb_).Run(/*ret=*/absl::nullopt, /*err=*/absl::nullopt);
+        std::move(cb_).Run(Void{});
       }
     };
 
@@ -168,8 +167,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
                                      dbus::ErrorResponse* error_response);
 
   // Completion of |SetFlossEnabled|.
-  virtual void CompleteSetFlossEnabled(const absl::optional<bool>& ret,
-                                       const absl::optional<Error>& err);
+  virtual void CompleteSetFlossEnabled(DBusResult<bool> ret);
 
   // Get active adapters and register for callbacks with manager object.
   void RegisterWithManager();

@@ -39,9 +39,8 @@ void FakeFlossAdapterClient::StartDiscovery(ResponseCallback<Void> callback) {
   if (fail_discovery_) {
     fail_discovery_ = absl::nullopt;
 
-    Error error("org.chromium.bluetooth.Bluetooth.FooError", "Foo error");
-    absl::optional<Error> opterror = absl::make_optional(error);
-    std::move(callback).Run(absl::nullopt, opterror);
+    std::move(callback).Run(base::unexpected(
+        Error("org.chromium.bluetooth.Bluetooth.FooError", "Foo error")));
     return;
   }
 
@@ -54,14 +53,12 @@ void FakeFlossAdapterClient::StartDiscovery(ResponseCallback<Void> callback) {
     observer.AdapterFoundDevice(FlossDeviceId({kOldDeviceAddress, ""}));
   }
 
-  PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
-                                 /*err=*/absl::nullopt));
+  PostDelayedTask(base::BindOnce(std::move(callback), Void{}));
 }
 
 void FakeFlossAdapterClient::CancelDiscovery(ResponseCallback<Void> callback) {
   // Will need to stop simulated discovery once the simulation grows.
-  PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
-                                 /*err=*/absl::nullopt));
+  PostDelayedTask(base::BindOnce(std::move(callback), Void{}));
 }
 
 void FakeFlossAdapterClient::CreateBond(ResponseCallback<bool> callback,
@@ -75,8 +72,7 @@ void FakeFlossAdapterClient::CreateBond(ResponseCallback<bool> callback,
                                       FlossAdapterClient::BondState::kBonded);
     }
 
-    PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
-                                   /*err=*/absl::nullopt));
+    PostDelayedTask(base::BindOnce(std::move(callback), true));
   } else if (device.address == kKeyboardAddress) {
     for (auto& observer : observers_) {
       observer.AdapterSspRequest(device, /*cod=*/0,
@@ -84,8 +80,7 @@ void FakeFlossAdapterClient::CreateBond(ResponseCallback<bool> callback,
                                  kPasskey);
     }
 
-    PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
-                                   /*err=*/absl::nullopt));
+    PostDelayedTask(base::BindOnce(std::move(callback), true));
   } else if (device.address == kPhoneAddress) {
     for (auto& observer : observers_) {
       observer.AdapterSspRequest(device, /*cod=*/0,
@@ -93,20 +88,18 @@ void FakeFlossAdapterClient::CreateBond(ResponseCallback<bool> callback,
                                  kPasskey);
     }
 
-    PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
-                                   /*err=*/absl::nullopt));
+    PostDelayedTask(base::BindOnce(std::move(callback), true));
   } else if (device.address == kOldDeviceAddress) {
     for (auto& observer : observers_) {
       observer.AdapterSspRequest(device, /*cod=*/0,
                                  BluetoothSspVariant::kPasskeyEntry, 0);
     }
 
-    PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
-                                   /*err=*/absl::nullopt));
+    PostDelayedTask(base::BindOnce(std::move(callback), true));
   } else {
     PostDelayedTask(base::BindOnce(
-        std::move(callback), /*ret=*/absl::nullopt,
-        floss::Error("org.chromium.bluetooth.UnknownDevice", /*message=*/"")));
+        std::move(callback),
+        base::unexpected(Error("org.chromium.bluetooth.UnknownDevice", ""))));
   }
 }
 
@@ -117,23 +110,21 @@ void FakeFlossAdapterClient::RemoveBond(ResponseCallback<bool> callback,
                                     FlossAdapterClient::BondState::kNotBonded);
   }
 
-  PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
-                                 /*err=*/absl::nullopt));
+  PostDelayedTask(base::BindOnce(std::move(callback), true));
 }
 
 void FakeFlossAdapterClient::GetRemoteType(
     ResponseCallback<BluetoothDeviceType> callback,
     FlossDeviceId device) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), BluetoothDeviceType::kBle,
-                                /*err=*/absl::nullopt));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), BluetoothDeviceType::kBle));
 }
 
 void FakeFlossAdapterClient::GetRemoteClass(ResponseCallback<uint32_t> callback,
                                             FlossDeviceId device) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), kHeadsetClassOfDevice,
-                                /*err=*/absl::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), kHeadsetClassOfDevice));
 }
 
 void FakeFlossAdapterClient::GetConnectionState(
@@ -142,16 +133,14 @@ void FakeFlossAdapterClient::GetConnectionState(
   // One of the bonded devices is already connected at the beginning.
   uint32_t conn_state = (device.address == kBondedAddress1) ? 1 : 0;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), conn_state, /*err=*/absl::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), conn_state));
 }
 
 void FakeFlossAdapterClient::GetRemoteUuids(
     ResponseCallback<device::BluetoothDevice::UUIDList> callback,
     FlossDeviceId device) {
   device::BluetoothDevice::UUIDList uuid_list;
-  PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/uuid_list,
-                                 /*err=*/absl::nullopt));
+  PostDelayedTask(base::BindOnce(std::move(callback), std::move(uuid_list)));
 }
 
 void FakeFlossAdapterClient::GetBondState(ResponseCallback<uint32_t> callback,
@@ -162,22 +151,19 @@ void FakeFlossAdapterClient::GetBondState(ResponseCallback<uint32_t> callback,
           : floss::FlossAdapterClient::BondState::kNotBonded;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), static_cast<uint32_t>(bond_state),
-                     /*err=*/absl::nullopt));
+      base::BindOnce(std::move(callback), static_cast<uint32_t>(bond_state)));
 }
 
 void FakeFlossAdapterClient::ConnectAllEnabledProfiles(
     ResponseCallback<Void> callback,
     const FlossDeviceId& device) {
-  PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
-                                 /*err=*/absl::nullopt));
+  PostDelayedTask(base::BindOnce(std::move(callback), Void{}));
 }
 
 void FakeFlossAdapterClient::DisconnectAllEnabledProfiles(
     ResponseCallback<Void> callback,
     const FlossDeviceId& device) {
-  PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
-                                 /*err=*/absl::nullopt));
+  PostDelayedTask(base::BindOnce(std::move(callback), Void{}));
 }
 
 void FakeFlossAdapterClient::PostDelayedTask(base::OnceClosure callback) {
@@ -205,8 +191,7 @@ void FakeFlossAdapterClient::SetPairingConfirmation(
                                     FlossAdapterClient::BondState::kBonded);
   }
 
-  PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
-                                 /*err=*/absl::nullopt));
+  PostDelayedTask(base::BindOnce(std::move(callback), Void{}));
 }
 
 void FakeFlossAdapterClient::SetPin(ResponseCallback<Void> callback,
@@ -218,8 +203,7 @@ void FakeFlossAdapterClient::SetPin(ResponseCallback<Void> callback,
                                     FlossAdapterClient::BondState::kBonded);
   }
 
-  PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
-                                 /*err=*/absl::nullopt));
+  PostDelayedTask(base::BindOnce(std::move(callback), Void{}));
 }
 
 void FakeFlossAdapterClient::GetBondedDevices() {

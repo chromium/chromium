@@ -277,9 +277,7 @@ class FlossManagerClientTest : public testing::Test {
                              GetQuitLoopCallback(quitloop));
   }
 
-  void EndRunLoopCallback(base::RepeatingClosure quit,
-                          const absl::optional<bool>& ret,
-                          const absl::optional<Error>& err) {
+  void EndRunLoopCallback(base::RepeatingClosure quit, DBusResult<bool> ret) {
     std::move(quit).Run();
   }
 
