@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
 #import "ios/chrome/browser/ui/omnibox/location_bar_delegate.h"
 
+@protocol BrowserCoordinatorCommands;
 @protocol EditViewAnimatee;
 @protocol LocationBarAnimatee;
 @protocol OmniboxPopupPresenterDelegate;

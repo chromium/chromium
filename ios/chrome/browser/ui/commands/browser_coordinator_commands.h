@@ -83,6 +83,10 @@ class GURL;
 - (void)viewSource;
 #endif
 
+// Animates the NTP fakebox to the focused position and focuses the real
+// omnibox.
+- (void)focusFakebox;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_COMMANDS_BROWSER_COORDINATOR_COMMANDS_H_

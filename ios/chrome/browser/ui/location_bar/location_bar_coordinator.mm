@@ -32,7 +32,7 @@
 #import "ios/chrome/browser/ui/badges/badge_delegate.h"
 #import "ios/chrome/browser/ui/badges/badge_mediator.h"
 #import "ios/chrome/browser/ui/badges/badge_view_controller.h"
-#include "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
@@ -161,8 +161,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   self.viewController.dispatcher =
-      static_cast<id<ActivityServiceCommands, BrowserCommands,
-                     ApplicationCommands, LoadQueryCommands, OmniboxCommands>>(
+      static_cast<id<ActivityServiceCommands, ApplicationCommands,
+                     LoadQueryCommands, OmniboxCommands>>(
           self.browser->GetCommandDispatcher());
   self.viewController.voiceSearchEnabled =
       ios::provider::IsVoiceSearchEnabled();
@@ -359,7 +359,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   // before focusing the omnibox.
   if (IsVisibleURLNewTabPage([self webState]) &&
       !self.browserState->IsOffTheRecord()) {
-    [self.viewController.dispatcher focusFakebox];
+    id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                           BrowserCoordinatorCommands);
+    [browserCoordinatorCommandsHandler focusFakebox];
   } else {
     [self.omniboxCoordinator focusOmnibox];
   }

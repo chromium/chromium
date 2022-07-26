@@ -1239,6 +1239,12 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 }
 #endif  // !defined(NDEBUG)
 
+- (void)focusFakebox {
+  if ([self isNTPActiveForCurrentWebState]) {
+    [_ntpCoordinator focusFakebox];
+  }
+}
+
 #pragma mark - DefaultPromoCommands
 
 - (void)showTailoredPromoStaySafe {

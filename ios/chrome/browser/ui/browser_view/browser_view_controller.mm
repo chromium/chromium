@@ -3291,12 +3291,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 }
 
-- (void)focusFakebox {
-  if (self.isNTPActiveForCurrentWebState) {
-    [self.ntpCoordinator focusFakebox];
-  }
-}
-
 #pragma mark - WebStateListObserving methods
 
 // TODO(crbug.com/1329088): Move BVC's tab lifeceyle event updates to a

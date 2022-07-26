@@ -16,7 +16,6 @@
 @class OmniboxTextFieldIOS;
 @protocol ActivityServiceCommands;
 @protocol ApplicationCommands;
-@protocol BrowserCommands;
 @protocol LocationBarOffsetProvider;
 @protocol LoadQueryCommands;
 
@@ -66,7 +65,6 @@
 // The dispatcher for the share button, voice search, and long press actions.
 @property(nonatomic, weak) id<ActivityServiceCommands,
                               ApplicationCommands,
-                              BrowserCommands,
                               LoadQueryCommands,
                               OmniboxCommands>
     dispatcher;
