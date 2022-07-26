@@ -510,7 +510,8 @@ crbug.com/636648 [ mac amd ] deqp/functional/gles3/shaderindexing/mat_01.html [ 
 
 crbug.com/642822 [ mac amd ] conformance2/rendering/clipping-wide-points.html [ Failure ]
 
-crbug.com/1343793 [ mac amd-0x6821 angle-opengl ] deqp/functional/gles3/texturefiltering/3d_combinations_24.html [ RetryOnFailure ]
+# Trying skipping this one test to see if it resolves the subsequent failures
+crbug.com/1343793 [ mac amd-0x6821 angle-opengl ] deqp/functional/gles3/texturefiltering/3d_combinations_24.html [ Skip ]
 
 crbug.com/1345782 [ mac amd-0x6821 angle-opengl passthrough ] deqp/functional/gles3/shaderoperator/binary_operator_14.html [ RetryOnFailure ]
 crbug.com/1345782 [ mac amd-0x6821 angle-opengl passthrough ] deqp/functional/gles3/texturefiltering/3d_sizes_00.html [ RetryOnFailure ]
