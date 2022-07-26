@@ -93,13 +93,6 @@ void DemoResources::EnsureLoaded(base::OnceClosure load_callback) {
   // CrOSComponentManager.
   DCHECK(cros_component_manager);
 
-  if (ash::features::IsDemoModeSWAEnabled()) {
-    // Skip the load of Chrome Apps when SWA enabled and mark them as loaded.
-    InstalledComponentLoaded(
-        component_updater::CrOSComponentManager::Error::NONE, base::FilePath());
-    return;
-  }
-
   cros_component_manager->Load(
       kDemoModeResourcesComponentName,
       component_updater::CrOSComponentManager::MountPolicy::kMount,
