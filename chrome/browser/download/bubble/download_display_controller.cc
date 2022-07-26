@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
+#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/download_item_model.h"
@@ -90,6 +91,10 @@ DownloadDisplayController::DownloadDisplayController(
 DownloadDisplayController::~DownloadDisplayController() = default;
 
 void DownloadDisplayController::OnNewItem(bool show_details) {
+  if (!download::ShouldShowDownloadBubble(browser_->profile())) {
+    return;
+  }
+
   std::vector<std::unique_ptr<DownloadUIModel>> all_models =
       bubble_controller_->GetAllItemsToDisplay();
   UpdateToolbarButtonState(all_models);
@@ -109,6 +114,9 @@ void DownloadDisplayController::OnNewItem(bool show_details) {
 
 void DownloadDisplayController::OnUpdatedItem(bool is_done,
                                               bool show_details_if_done) {
+  if (!download::ShouldShowDownloadBubble(browser_->profile())) {
+    return;
+  }
   if (is_done) {
     ScheduleToolbarDisappearance(kToolbarIconVisibilityTimeInterval);
     if (show_details_if_done) {
@@ -125,6 +133,9 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
 }
 
 void DownloadDisplayController::OnRemovedItem(const ContentId& id) {
+  if (!download::ShouldShowDownloadBubble(browser_->profile())) {
+    return;
+  }
   std::vector<std::unique_ptr<DownloadUIModel>> all_models =
       bubble_controller_->GetAllItemsToDisplay();
   // Hide the button if there is only one download item left and that item is
@@ -259,6 +270,9 @@ base::Time DownloadDisplayController::GetLastCompleteTime(
 }
 
 void DownloadDisplayController::MaybeShowButtonWhenCreated() {
+  if (!download::ShouldShowDownloadBubble(browser_->profile())) {
+    return;
+  }
   base::Time last_complete_time =
       GetLastCompleteTime(bubble_controller_->GetOfflineItems());
   if (!HasRecentCompleteDownload(kToolbarIconVisibilityTimeInterval,

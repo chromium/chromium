@@ -6,13 +6,12 @@
 
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
-#include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace download {
 
@@ -42,6 +41,14 @@ bool IsDownloadBubbleEnabled(Profile* profile) {
 bool IsDownloadBubbleV2Enabled(Profile* profile) {
   return IsDownloadBubbleEnabled(profile) &&
          base::FeatureList::IsEnabled(safe_browsing::kDownloadBubbleV2);
+}
+
+bool ShouldShowDownloadBubble(Profile* profile) {
+  // If the download UI is disabled by at least one extension, do not show the
+  // bubble and the toolbar icon.
+  return DownloadCoreServiceFactory::GetForBrowserContext(
+             profile->GetOriginalProfile())
+      ->IsDownloadUiEnabled();
 }
 
 bool IsDownloadConnectorEnabled(Profile* profile) {

@@ -149,11 +149,11 @@ void DownloadCoreServiceImpl::SetDownloadHistoryForTesting(
   download_history_ = std::move(download_history);
 }
 
-bool DownloadCoreServiceImpl::IsShelfEnabled() {
+bool DownloadCoreServiceImpl::IsDownloadUiEnabled() {
 #if BUILDFLAG(IS_ANDROID)
   return true;
 #else
-  return !extension_event_router_ || extension_event_router_->IsShelfEnabled();
+  return !extension_event_router_ || extension_event_router_->IsUiEnabled();
 #endif
 }
 
