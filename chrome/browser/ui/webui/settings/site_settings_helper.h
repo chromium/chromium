@@ -83,28 +83,6 @@ enum class SiteSettingSource {
   kNumSources,
 };
 
-// Possible policy indicators that can be shown in settings.
-// Must be kept in sync with the CrPolicyIndicatorType enum located in
-// src/ui/webui/resources/cr_elements/policy/cr_policy_indicator_behavior.js
-enum class PolicyIndicatorType {
-  kDevicePolicy,
-  kExtension,
-  kNone,
-  kOwner,
-  kPrimaryUser,
-  kRecommended,
-  kUserPolicy,
-  kParent,
-  kChildRestriction,
-  kNumIndicators,
-};
-
-// Represents the managed state for a single settings control.
-struct ManagedState {
-  bool disabled = false;
-  PolicyIndicatorType indicator = PolicyIndicatorType::kNone;
-};
-
 // Returns whether a group name has been registered for the given type.
 bool HasRegisteredGroupName(ContentSettingsType type);
 
@@ -213,13 +191,6 @@ base::Value::Dict CreateChooserExceptionObject(
 base::Value::List GetChooserExceptionListFromProfile(
     Profile* profile,
     const ChooserTypeNameEntry& chooser_type);
-
-// Concerts a PolicyIndicatorType to its string identifier.
-std::string PolicyIndicatorTypeToString(const PolicyIndicatorType type);
-
-// Returns the appropriate indicator for the source of a preference.
-PolicyIndicatorType GetPolicyIndicatorFromPref(
-    const PrefService::Preference* pref);
 
 }  // namespace site_settings
 

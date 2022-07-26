@@ -190,28 +190,6 @@ static_assert(std::size(kSiteSettingSourceStringMapping) ==
               "kSiteSettingSourceStringMapping should have "
               "SiteSettingSource::kNumSources elements");
 
-struct PolicyIndicatorTypeStringMapping {
-  PolicyIndicatorType source;
-  const char* indicator_str;
-};
-
-// Converts a policy indicator type to its JS usable string representation.
-const PolicyIndicatorTypeStringMapping kPolicyIndicatorTypeStringMapping[] = {
-    {PolicyIndicatorType::kDevicePolicy, "devicePolicy"},
-    {PolicyIndicatorType::kExtension, "extension"},
-    {PolicyIndicatorType::kNone, "none"},
-    {PolicyIndicatorType::kOwner, "owner"},
-    {PolicyIndicatorType::kPrimaryUser, "primary_user"},
-    {PolicyIndicatorType::kRecommended, "recommended"},
-    {PolicyIndicatorType::kUserPolicy, "userPolicy"},
-    {PolicyIndicatorType::kParent, "parent"},
-    {PolicyIndicatorType::kChildRestriction, "childRestriction"},
-};
-static_assert(std::size(kPolicyIndicatorTypeStringMapping) ==
-                  static_cast<int>(PolicyIndicatorType::kNumIndicators),
-              "kPolicyIndicatorStringMapping should have "
-              "PolicyIndicatorType::kNumIndicators elements");
-
 // Retrieves the corresponding string, according to the following precedence
 // order from highest to lowest priority:
 //    1. Allowlisted WebUI content setting.
@@ -974,31 +952,6 @@ base::Value::List GetChooserExceptionListFromProfile(
   }
 
   return exceptions;
-}
-
-std::string PolicyIndicatorTypeToString(const PolicyIndicatorType type) {
-  return kPolicyIndicatorTypeStringMapping[static_cast<int>(type)]
-      .indicator_str;
-}
-
-PolicyIndicatorType GetPolicyIndicatorFromPref(
-    const PrefService::Preference* pref) {
-  if (!pref) {
-    return PolicyIndicatorType::kNone;
-  }
-  if (pref->IsExtensionControlled()) {
-    return PolicyIndicatorType::kExtension;
-  }
-  if (pref->IsManagedByCustodian()) {
-    return PolicyIndicatorType::kParent;
-  }
-  if (pref->IsManaged()) {
-    return PolicyIndicatorType::kDevicePolicy;
-  }
-  if (pref->GetRecommendedValue()) {
-    return PolicyIndicatorType::kRecommended;
-  }
-  return PolicyIndicatorType::kNone;
 }
 
 }  // namespace site_settings

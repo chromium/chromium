@@ -31,8 +31,6 @@ var CrPolicyStrings;
 
 /**
  * Possible policy indicators that can be shown in settings.
- * Must be kept in sync with the PolicyIndicatorType enum located in
- * chrome/browser/ui/webui/site_settings_helper.h
  * @enum {string}
  */
 /* #export */ const CrPolicyIndicatorType = {
