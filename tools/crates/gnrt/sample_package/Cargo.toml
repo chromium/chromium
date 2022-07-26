@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+num-traits = "0.2"
 once_cell = "1.12"
 serde = { version = "1.0", features = ["derive"] }
 termcolor = "1.1"

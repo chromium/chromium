@@ -186,8 +186,18 @@ pub fn collect_dependencies(metadata: &cargo_metadata::Metadata) -> Vec<ThirdPar
         // TODO(crbug.com/1291994): Resolve features independently per kind
         // and platform. This may require using the unstable unit-graph feature:
         // https://doc.rust-lang.org/cargo/reference/unstable.html#unit-graph
-        for (_, kind_info) in dep.dependency_kinds.iter_mut() {
+        for (_, mut kind_info) in dep.dependency_kinds.iter_mut() {
             kind_info.features = node.features.clone();
+            // Remove "default" feature to match behavior of crates.py. Note
+            // that this is technically not correct since a crate's code may
+            // choose to check "default" directly, but virtually none actually
+            // do this.
+            //
+            // TODO(crbug.com/1291994): Revisit this behavior and maybe keep
+            // "default" features.
+            if let Some(pos) = kind_info.features.iter().position(|x| x == "default") {
+                kind_info.features.remove(pos);
+            }
         }
 
         for target in package.targets.iter() {
