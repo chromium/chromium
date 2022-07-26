@@ -1176,18 +1176,24 @@ class PixelTestPages():
     ]
 
   @staticmethod
-  def ForceFullDamagePages(base_name: str) -> List[PixelTestPage]:
+  def RootSwapChainPages(base_name: str) -> List[PixelTestPage]:
     return [
         PixelTestPage(
             'wait_for_compositing.html',
             base_name + '_ForceFullDamage',
             test_rect=[0, 0, 0, 0],
-            other_args={'full_damage': True},
+            other_args={
+                'has_alpha': False,
+                'full_damage': True
+            },
             browser_args=[cba.ENABLE_DIRECT_COMPOSITION_FORCE_FULL_DAMAGE]),
         PixelTestPage(
             'wait_for_compositing.html',
             base_name + '_ForcePartialDamage',
             test_rect=[0, 0, 0, 0],
-            other_args={'full_damage': False},
+            other_args={
+                'has_alpha': False,
+                'full_damage': False
+            },
             browser_args=[cba.DISABLE_DIRECT_COMPOSITION_FORCE_FULL_DAMAGE]),
     ]

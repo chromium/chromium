@@ -186,7 +186,7 @@ bool DirectCompositionChildSurfaceWin::ReleaseDrawTexture(bool will_discard) {
       }
       TRACE_EVENT2(
           "gpu", "DirectCompositionChildSurfaceWin::PresentSwapChain",
-          "interval", interval, "dirty_rect",
+          "has_alpha", has_alpha_, "dirty_rect",
           actually_force_full_damage ? "full_damage" : swap_rect_.ToString());
       if (actually_force_full_damage) {
         hr = swap_chain_->Present(interval, flags);

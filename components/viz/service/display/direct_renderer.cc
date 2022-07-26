@@ -341,6 +341,8 @@ void DirectRenderer::DrawFrame(
   reshape_params.color_space = frame_color_space;
   reshape_params.sdr_white_level = CurrentFrameSDRWhiteLevel();
   reshape_params.format = frame_buffer_format;
+  reshape_params.alpha_type =
+      frame_has_alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
   if (next_frame_needs_full_frame_redraw_ ||
       reshape_params != reshape_params_ ||
       display_transform != reshape_display_transform_) {

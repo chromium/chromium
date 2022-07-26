@@ -180,6 +180,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   SkSurfaceCharacterization CreateSkSurfaceCharacterization(
       const gfx::Size& surface_size,
       SkColorType color_type,
+      SkAlphaType alpha_type,
       bool mipmap,
       sk_sp<SkColorSpace> color_space,
       bool is_root_render_pass,
