@@ -14,9 +14,13 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "printing/buildflags/buildflags.h"
+
+#if !defined(USE_CUPS)
+#error PrintingMetricsAsh must be used with the USE_CUPS flag.
+#endif
 
 namespace crosapi {
-
 // Ash implementation of crosapi::mojom::PrintingMetricsForProfile.
 // This class communicates with ash::PrintJobHistory service for the given
 // profile -- queries print jobs and listens to finished events.

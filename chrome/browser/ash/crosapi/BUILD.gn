@@ -223,6 +223,8 @@ source_set("crosapi") {
       "printing_metrics_ash.cc",
       "printing_metrics_ash.h",
     ]
+  } else {
+    sources += [ "fake_printing_metrics_ash.h" ]
   }
 
   deps = [

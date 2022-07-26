@@ -133,6 +133,8 @@
 
 #if defined(USE_CUPS)
 #include "chrome/browser/ash/crosapi/printing_metrics_ash.h"
+#else
+#include "chrome/browser/ash/crosapi/fake_printing_metrics_ash.h"
 #endif  // defined(USE_CUPS)
 
 namespace crosapi {
