@@ -996,11 +996,6 @@ void BrowserManager::Start(
 
   SetState(State::CREATING_LOG_FILE);
 
-  // TODO(ythjkt): After M92 cherry-pick, clean up the following code by moving
-  // the data wipe check logic from `BrowserDataMigrator` to browser_util.
-  const std::string user_id_hash = ash::ProfileHelper::GetUserIdHashFromProfile(
-      ProfileManager::GetPrimaryUserProfile());
-
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&DoLacrosBackgroundWorkPreLaunch, lacros_path_,
