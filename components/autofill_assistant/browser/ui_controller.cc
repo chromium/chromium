@@ -444,6 +444,25 @@ void UiController::SetVisibilityAndUpdateUserActions() {
   }
 }
 
+void UiController::ShowQrCodeScanUi(
+    std::unique_ptr<PromptQrCodeScanProto> qr_code_scan,
+    base::OnceCallback<void(const ClientStatus&,
+                            const absl::optional<ValueProto>&)> callback) {
+  qr_code_scan_ = std::move(qr_code_scan);
+  qr_code_scan_callback_ = std::move(callback);
+  for (UiControllerObserver& observer : observers_) {
+    observer.OnQrCodeScanUiChanged(qr_code_scan_.get());
+  }
+}
+
+void UiController::ClearQrCodeScanUi() {
+  qr_code_scan_.reset();
+  qr_code_scan_callback_ = base::DoNothing();
+  for (UiControllerObserver& observer : observers_) {
+    observer.OnQrCodeScanUiChanged(nullptr);
+  }
+}
+
 void UiController::SetGenericUi(
     std::unique_ptr<GenericUserInterfaceProto> generic_ui,
     base::OnceCallback<void(const ClientStatus&)> end_action_callback,
@@ -678,6 +697,10 @@ BasicInteractions* UiController::GetBasicInteractions() {
   return &basic_interactions_;
 }
 
+const PromptQrCodeScanProto* UiController::GetPromptQrCodeScanProto() const {
+  return qr_code_scan_.get();
+}
+
 const GenericUserInterfaceProto* UiController::GetGenericUiProto() const {
   return generic_user_interface_.get();
 }
@@ -841,6 +864,14 @@ void UiController::SetAdditionalValue(const std::string& client_memory_key,
 
   execution_delegate_->NotifyUserDataChange(
       UserDataFieldChange::ADDITIONAL_VALUES);
+}
+
+void UiController::OnQrCodeScanFinished(
+    const ClientStatus& status,
+    const absl::optional<ValueProto>& value) {
+  if (qr_code_scan_callback_) {
+    std::move(qr_code_scan_callback_).Run(status, value);
+  }
 }
 
 void UiController::HandleShippingAddressChange(

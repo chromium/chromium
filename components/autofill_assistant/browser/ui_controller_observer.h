@@ -84,6 +84,10 @@ class UiControllerObserver : public base::CheckedObserver {
   virtual void OnFormChanged(const FormProto* form,
                              const FormProto::Result* result) = 0;
 
+  // Called when QR Code Scanning is prompted or cleared.
+  virtual void OnQrCodeScanUiChanged(
+      const PromptQrCodeScanProto* qr_code_scan) = 0;
+
   // Called when the generic user interface to show has been changed or cleared.
   virtual void OnGenericUserInterfaceChanged(
       const GenericUserInterfaceProto* generic_ui) = 0;

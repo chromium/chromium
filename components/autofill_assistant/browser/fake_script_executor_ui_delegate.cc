@@ -142,6 +142,17 @@ bool FakeScriptExecutorUiDelegate::SetForm(
   return true;
 }
 
+void FakeScriptExecutorUiDelegate::ShowQrCodeScanUi(
+    std::unique_ptr<PromptQrCodeScanProto> qr_code_scan,
+    base::OnceCallback<void(const ClientStatus&,
+                            const absl::optional<ValueProto>&)> callback) {
+  show_qr_code_scan_ui_ = true;
+}
+
+void FakeScriptExecutorUiDelegate::ClearQrCodeScanUi() {
+  show_qr_code_scan_ui_ = false;
+}
+
 void FakeScriptExecutorUiDelegate::SetGenericUi(
     std::unique_ptr<GenericUserInterfaceProto> generic_ui,
     base::OnceCallback<void(const ClientStatus&)> end_action_callback,

@@ -122,6 +122,16 @@ bool HeadlessUiController::SetForm(
   VLOG(2) << "Unexpected UI method called: " << __func__;
   return false;
 }
+void HeadlessUiController::ShowQrCodeScanUi(
+    std::unique_ptr<PromptQrCodeScanProto> qr_code_scan,
+    base::OnceCallback<void(const ClientStatus&,
+                            const absl::optional<ValueProto>&)> callback) {
+  VLOG(2) << "Unexpected UI method called: " << __func__;
+}
+
+void HeadlessUiController::ClearQrCodeScanUi() {
+  VLOG(2) << "Unexpected UI method called: " << __func__;
+}
 void HeadlessUiController::SetGenericUi(
     std::unique_ptr<GenericUserInterfaceProto> generic_ui,
     base::OnceCallback<void(const ClientStatus&)> end_action_callback,

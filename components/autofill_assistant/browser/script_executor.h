@@ -244,6 +244,12 @@ class ScriptExecutor : public ActionDelegate,
       std::unique_ptr<FormProto> form,
       base::RepeatingCallback<void(const FormProto::Result*)> changed_callback,
       base::OnceCallback<void(const ClientStatus&)> cancel_callback) override;
+  void ShowQrCodeScanUi(
+      std::unique_ptr<PromptQrCodeScanProto> qr_code_scan,
+      base::OnceCallback<void(const ClientStatus&,
+                              const absl::optional<ValueProto>&)> callback)
+      override;
+  void ClearQrCodeScanUi() override;
   void RequireUI() override;
   void SetGenericUi(
       std::unique_ptr<GenericUserInterfaceProto> generic_ui,
