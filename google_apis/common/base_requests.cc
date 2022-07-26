@@ -60,20 +60,19 @@ absl::optional<std::string> MapJsonErrorToReason(
   const char kErrorCodeKey[] = "code";
 
   std::unique_ptr<const base::Value> value(google_apis::ParseJson(error_body));
-  const base::DictionaryValue* dictionary = nullptr;
-  const base::DictionaryValue* error = nullptr;
-  if (value && value->GetAsDictionary(&dictionary) &&
-      dictionary->GetDictionaryWithoutPathExpansion(kErrorKey, &error)) {
+  const base::Value::Dict* dictionary = value ? value->GetIfDict() : nullptr;
+  const base::Value::Dict* error =
+      dictionary ? dictionary->FindDict(kErrorKey) : nullptr;
+  if (error) {
     // Get error message and code.
-    const std::string* message = error->FindStringKey(kErrorMessageKey);
-    absl::optional<int> code = error->FindIntKey(kErrorCodeKey);
+    const std::string* message = error->FindString(kErrorMessageKey);
+    absl::optional<int> code = error->FindInt(kErrorCodeKey);
     DLOG(ERROR) << "code: " << (code ? code.value() : OTHER_ERROR)
                 << ", message: " << (message ? *message : "");
 
     // Returns the reason of the first error.
-    const base::ListValue* errors = nullptr;
-    if (error->GetListWithoutPathExpansion(kErrorErrorsKey, &errors)) {
-      const base::Value& first_error = errors->GetListDeprecated()[0];
+    if (const base::Value::List* errors = error->FindList(kErrorErrorsKey)) {
+      const base::Value& first_error = (*errors)[0];
       if (first_error.is_dict()) {
         const std::string* reason = first_error.FindStringKey(kErrorReasonKey);
         if (reason)
