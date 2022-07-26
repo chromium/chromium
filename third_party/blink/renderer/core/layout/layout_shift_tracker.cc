@@ -480,6 +480,16 @@ double LayoutShiftTracker::SubframeWeightingFactor() const {
   if (frame.IsOutermostMainFrame())
     return 1;
 
+  // TODO(crbug.com/1346602): Enabling frames from a fenced frame tree to map
+  // to the outermost main frame enables fenced content to learn about its
+  // position in the embedder which can be used to communicate from embedder to
+  // embeddee. For now, assume any frame in a fenced frame is fully visible to
+  // avoid introducing a side channel but this will require design work to fix
+  // in the long term.
+  if (frame.IsInFencedFrameTree()) {
+    return 1;
+  }
+
   // Map the subframe view rect into the coordinate space of the local root.
   FloatClipRect subframe_cliprect(gfx::RectF(gfx::SizeF(frame_view_->Size())));
   const LocalFrame& local_root = frame.LocalFrameRoot();

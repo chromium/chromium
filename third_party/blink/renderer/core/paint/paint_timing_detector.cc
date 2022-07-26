@@ -369,9 +369,20 @@ gfx::RectF PaintTimingDetector::CalculateVisualRect(
                                                 ->FirstFragment()
                                                 .LocalBorderBoxProperties(),
                                             float_clip_visual_rect);
-  if (local_root.IsMainFrame()) {
+  if (local_root.IsOutermostMainFrame()) {
     return BlinkSpaceToDIPs(float_clip_visual_rect.Rect());
   }
+
+  // TODO(crbug.com/1346602): Enabling frames from a fenced frame tree to map
+  // to the outermost main frame enables fenced content to learn about its
+  // position in the embedder which can be used to communicate from embedder to
+  // embeddee. For now, return the rect in the local root (not great for remote
+  // frames) to avoid introducing a side channel but this will require design
+  // work to fix in the long term.
+  if (local_root.IsInFencedFrameTree()) {
+    return BlinkSpaceToDIPs(float_clip_visual_rect.Rect());
+  }
+
   // OOPIF. The final rect lives in the iframe's root frame space. We need to
   // project it to the top frame space.
   auto layout_visual_rect =

@@ -2466,7 +2466,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // space of the ancestor.
   // Otherwise:
   //   If TraverseDocumentBoundaries is specified, the result will be in the
-  //   space of the local root frame.
+  //   space of the outermost root frame.
   //   Otherwise, the result will be in the space of the containing frame.
   // This method supports kUseGeometryMapperMode.
   PhysicalRect LocalToAncestorRect(const PhysicalRect& rect,
