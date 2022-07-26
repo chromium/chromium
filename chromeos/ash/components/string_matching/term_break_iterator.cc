@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/string_matching/term_break_iterator.h"
+#include "chromeos/ash/components/string_matching/term_break_iterator.h"
 
 #include <ostream>
 
@@ -12,8 +12,7 @@
 #include "base/strings/string_util.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 
-namespace chromeos {
-namespace string_matching {
+namespace ash::string_matching {
 
 TermBreakIterator::TermBreakIterator(const std::u16string& word)
     : word_(word),
@@ -76,5 +75,4 @@ TermBreakIterator::State TermBreakIterator::GetNewState(char16_t ch) {
   return STATE_CHAR;
 }
 
-}  // namespace string_matching
-}  // namespace chromeos
+}  // namespace ash::string_matching

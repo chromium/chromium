@@ -11,7 +11,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -19,6 +18,9 @@ class SkBitmap;
 
 namespace ash {
 class ThumbnailLoader;
+namespace string_matching {
+class TokenizedString;
+}
 }
 
 namespace app_list {
@@ -50,7 +52,7 @@ class FileResult : public ChromeSearchResult, public ash::ColorModeObserver {
   // Calculates file's match relevance score. Will return a default score if the
   // query is missing or the filename is empty.
   static double CalculateRelevance(
-      const absl::optional<chromeos::string_matching::TokenizedString>& query,
+      const absl::optional<ash::string_matching::TokenizedString>& query,
       const base::FilePath& filepath,
       const absl::optional<base::Time>& last_accessed);
 

@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -60,8 +60,7 @@ class FileSearchProvider : public SearchProvider {
 
   base::TimeTicks query_start_time_;
   std::u16string last_query_;
-  absl::optional<chromeos::string_matching::TokenizedString>
-      last_tokenized_query_;
+  absl::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
 
   Profile* const profile_;
   ash::ThumbnailLoader thumbnail_loader_;

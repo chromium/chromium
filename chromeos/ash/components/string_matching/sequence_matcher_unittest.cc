@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/string_matching/sequence_matcher.h"
+#include "chromeos/ash/components/string_matching/sequence_matcher.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace string_matching {
+namespace ash::string_matching {
 
 namespace {
+
 constexpr bool kDefaultUseEditDistance = false;
 
 using Match = SequenceMatcher::Match;
@@ -19,6 +19,7 @@ bool MatchEqual(const Match& match1, const Match& match2) {
          match1.pos_second_string == match2.pos_second_string &&
          match1.length == match2.length;
 }
+
 }  // namespace
 
 class SequenceMatcherTest : public testing::Test {};
@@ -175,5 +176,4 @@ TEST_F(SequenceMatcherTest, TestEmptyStrings) {
             0.0);
 }
 
-}  // namespace string_matching
-}  // namespace chromeos
+}  // namespace ash::string_matching

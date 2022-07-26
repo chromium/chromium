@@ -16,7 +16,8 @@
 #include "chrome/browser/ui/app_list/search/common/string_util.h"
 #include "chrome/browser/ui/app_list/search/omnibox_util.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
-#include "chromeos/components/string_matching/tokenized_string_match.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/tokenized_string_match.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/favicon_cache.h"
@@ -28,10 +29,11 @@
 #include "url/gurl.h"
 
 namespace app_list {
+
 namespace {
 
-using chromeos::string_matching::TokenizedString;
-using chromeos::string_matching::TokenizedStringMatch;
+using ::ash::string_matching::TokenizedString;
+using ::ash::string_matching::TokenizedStringMatch;
 
 constexpr char kOpenTabScheme[] = "opentab://";
 

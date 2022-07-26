@@ -17,12 +17,15 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/local_search_service/shared_structs.h"
-#include "chromeos/components/string_matching/sequence_matcher.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/sequence_matcher.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "third_party/icu/source/i18n/unicode/translit.h"
 
 namespace chromeos {
 namespace local_search_service {
+
+// TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
+namespace string_matching = ::ash::string_matching;
 
 float ExactPrefixMatchScore(const std::u16string& query,
                             const std::u16string& text) {
@@ -41,9 +44,9 @@ float ExactPrefixMatchScore(const std::u16string& query,
 }
 
 float BlockMatchScore(const std::u16string& query, const std::u16string& text) {
-  return chromeos::string_matching::SequenceMatcher(
-             query, text, false /* use_edit_distance */,
-             0.1 /*num_matching_blocks_penalty*/)
+  return string_matching::SequenceMatcher(query, text,
+                                          false /* use_edit_distance */,
+                                          0.1 /*num_matching_blocks_penalty*/)
       .Ratio();
 }
 

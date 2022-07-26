@@ -19,7 +19,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/local_search_service/content_extraction_utils.h"
 #include "chromeos/ash/components/local_search_service/inverted_index.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
@@ -27,7 +27,7 @@ namespace local_search_service {
 
 namespace {
 
-using chromeos::string_matching::TokenizedString;
+using ::ash::string_matching::TokenizedString;
 using ExtractedContent =
     std::vector<std::pair<std::string, std::vector<Token>>>;
 

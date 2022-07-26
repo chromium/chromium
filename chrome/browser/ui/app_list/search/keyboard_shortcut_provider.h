@@ -9,7 +9,6 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/ui/app_list/search/keyboard_shortcut_data.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
 
 class Profile;
 

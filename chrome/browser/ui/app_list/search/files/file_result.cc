@@ -25,7 +25,8 @@
 #include "chrome/browser/ui/app_list/search/files/justifications.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
-#include "chromeos/components/string_matching/tokenized_string_match.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/tokenized_string_match.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
@@ -35,8 +36,8 @@ namespace app_list {
 
 namespace {
 
-using chromeos::string_matching::TokenizedString;
-using chromeos::string_matching::TokenizedStringMatch;
+using ::ash::string_matching::TokenizedString;
+using ::ash::string_matching::TokenizedStringMatch;
 
 // The default relevance returned by CalculateRelevance.
 constexpr double kDefaultRelevance = 0.5;

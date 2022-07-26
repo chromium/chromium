@@ -16,14 +16,15 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "third_party/icu/source/i18n/unicode/translit.h"
 
 namespace chromeos {
 namespace local_search_service {
 
 namespace {
-using chromeos::string_matching::TokenizedString;
+
+using ::ash::string_matching::TokenizedString;
 
 std::unique_ptr<icu::Transliterator> CreateDiacriticRemover() {
   UErrorCode status = U_ZERO_ERROR;

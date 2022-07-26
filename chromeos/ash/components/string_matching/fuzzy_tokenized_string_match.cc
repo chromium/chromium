@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/string_matching/fuzzy_tokenized_string_match.h"
+#include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 
 #include <algorithm>
 #include <cmath>
@@ -16,13 +16,13 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/components/string_matching/prefix_matcher.h"
-#include "chromeos/components/string_matching/sequence_matcher.h"
+#include "chromeos/ash/components/string_matching/prefix_matcher.h"
+#include "chromeos/ash/components/string_matching/sequence_matcher.h"
 
-namespace chromeos {
-namespace string_matching {
+namespace ash::string_matching {
 
 namespace {
+
 constexpr double kMinScore = 0.0;
 constexpr double kMaxScore = 1.0;
 
@@ -35,6 +35,7 @@ std::vector<std::u16string> ProcessAndSort(const TokenizedString& text) {
   std::sort(result.begin(), result.end());
   return result;
 }
+
 }  // namespace
 
 FuzzyTokenizedStringMatch::~FuzzyTokenizedStringMatch() {}
@@ -245,7 +246,7 @@ double FuzzyTokenizedStringMatch::WeightedRatio(
 
 double FuzzyTokenizedStringMatch::PrefixMatcher(const TokenizedString& query,
                                                 const TokenizedString& text) {
-  chromeos::string_matching::PrefixMatcher match(query, text);
+  string_matching::PrefixMatcher match(query, text);
   match.Match();
   return 1.0 - std::pow(0.5, match.relevance());
 }
@@ -310,5 +311,4 @@ double FuzzyTokenizedStringMatch::Relevance(
   return relevance_;
 }
 
-}  // namespace string_matching
-}  // namespace chromeos
+}  // namespace ash::string_matching

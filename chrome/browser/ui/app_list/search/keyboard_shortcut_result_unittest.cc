@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,14 +18,11 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace app_list {
-namespace {
 
-using chromeos::string_matching::TokenizedString;
-using ui::KeyboardCode;
+using ::ash::string_matching::TokenizedString;
+using ::ui::KeyboardCode;
 using TextVector = ChromeSearchResult::TextVector;
-using TextType = ash::SearchResultTextItemType;
-
-}  // namespace
+using TextType = ::ash::SearchResultTextItemType;
 
 class KeyboardShortcutResultTest : public testing::Test {
  public:

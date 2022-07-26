@@ -2,24 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_CHAR_ITERATOR_H_
-#define CHROMEOS_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_CHAR_ITERATOR_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_CHAR_ITERATOR_H_
+#define CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_CHAR_ITERATOR_H_
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 
-#include "chromeos/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 class UTF16CharIterator;
 }
-}  // namespace base
 
-namespace chromeos {
-namespace string_matching {
+namespace ash::string_matching {
 
 // An UTF16 char iterator for a TokenizedString.
 class TokenizedStringCharIterator {
@@ -78,7 +75,6 @@ class TokenizedStringCharIterator {
   std::unique_ptr<base::i18n::UTF16CharIterator> current_token_iter_;
 };
 
-}  // namespace string_matching
-}  // namespace chromeos
+}  // namespace ash::string_matching
 
-#endif  // CHROMEOS_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_CHAR_ITERATOR_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_CHAR_ITERATOR_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/string_matching/tokenized_string_match.h"
+#include "chromeos/ash/components/string_matching/tokenized_string_match.h"
 
 #include <stddef.h>
 
@@ -10,17 +10,18 @@
 
 #include "base/i18n/string_search.h"
 #include "base/strings/string_util.h"
-#include "chromeos/components/string_matching/prefix_matcher.h"
+#include "chromeos/ash/components/string_matching/prefix_matcher.h"
 
-namespace chromeos {
-namespace string_matching {
+namespace ash::string_matching {
 
 namespace {
+
 // Used for each character if there is no prefix match.
 const double kIsSubstringMultiplier = 0.4;
 
 // A relevance score that represents no match.
 const double kNoMatchScore = 0.0;
+
 }  // namespace
 
 TokenizedStringMatch::TokenizedStringMatch() : relevance_(kNoMatchScore) {}
@@ -83,5 +84,4 @@ double TokenizedStringMatch::Calculate(const std::u16string& query,
   return Calculate(tokenized_query, tokenized_text);
 }
 
-}  // namespace string_matching
-}  // namespace chromeos
+}  // namespace ash::string_matching

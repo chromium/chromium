@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/search/common/search_result_util.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -16,11 +17,8 @@
 #include "url/gurl.h"
 
 namespace app_list {
-namespace {
 
-using chromeos::string_matching::TokenizedString;
-
-}  //  namespace
+using ::ash::string_matching::TokenizedString;
 
 class OpenTabResultTest : public testing::Test {
  public:

@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_H_
-#define CHROMEOS_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_H_
+#define CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_H_
 
 #include <string>
 #include <vector>
 
 #include "ui/gfx/range/range.h"
 
-namespace chromeos {
-namespace string_matching {
+namespace ash::string_matching {
 
 // TokenizedString takes a string and breaks it down into token words.
 class TokenizedString {
@@ -51,7 +50,6 @@ class TokenizedString {
   Mappings mappings_;
 };
 
-}  // namespace string_matching
-}  // namespace chromeos
+}  // namespace ash::string_matching
 
-#endif  // CHROMEOS_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/string_matching/tokenized_string_match.h"
+#include "chromeos/ash/components/string_matching/tokenized_string_match.h"
 
 #include <stddef.h>
 
@@ -12,8 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace string_matching {
+namespace ash::string_matching {
 
 namespace {
 
@@ -148,5 +147,4 @@ TEST(TokenizedStringMatchTest, AbsoluteRelevance) {
   }
 }
 
-}  // namespace string_matching
-}  // namespace chromeos
+}  // namespace ash::string_matching

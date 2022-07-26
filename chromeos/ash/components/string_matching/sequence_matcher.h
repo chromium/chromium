@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_STRING_MATCHING_SEQUENCE_MATCHER_H_
-#define CHROMEOS_COMPONENTS_STRING_MATCHING_SEQUENCE_MATCHER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_SEQUENCE_MATCHER_H_
+#define CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_SEQUENCE_MATCHER_H_
 
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-namespace chromeos {
-namespace string_matching {
+namespace ash::string_matching {
 
 // Performs the calculation of similarity level between 2 strings. This class's
 // functionality is inspired by python's difflib.SequenceMatcher library.
@@ -97,7 +96,6 @@ class SequenceMatcher {
   std::vector<int> dp_common_string_;
 };
 
-}  // namespace string_matching
-}  // namespace chromeos
+}  // namespace ash::string_matching
 
-#endif  // CHROMEOS_COMPONENTS_STRING_MATCHING_SEQUENCE_MATCHER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_SEQUENCE_MATCHER_H_

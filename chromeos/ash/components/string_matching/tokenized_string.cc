@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 
 #include <stddef.h>
 
@@ -12,12 +12,11 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "chromeos/components/string_matching/term_break_iterator.h"
+#include "chromeos/ash/components/string_matching/term_break_iterator.h"
 
-namespace chromeos {
-namespace string_matching {
+namespace ash::string_matching {
 
-using base::i18n::BreakIterator;
+using ::base::i18n::BreakIterator;
 
 TokenizedString::TokenizedString(const std::u16string& text, Mode mode)
     : text_(text) {
@@ -104,5 +103,4 @@ void TokenizedString::TokenizeWords() {
   }
 }
 
-}  //  namespace string_matching
-}  //  namespace chromeos
+}  //  namespace ash::string_matching

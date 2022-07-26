@@ -11,8 +11,8 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/local_search_service/search_utils.h"
-#include "chromeos/components/string_matching/fuzzy_tokenized_string_match.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
@@ -20,9 +20,8 @@ namespace local_search_service {
 
 namespace {
 
-using chromeos::string_matching::FuzzyTokenizedStringMatch;
-using chromeos::string_matching::TokenizedString;
-
+using ::ash::string_matching::FuzzyTokenizedStringMatch;
+using ::ash::string_matching::TokenizedString;
 using Positions = std::vector<local_search_service::Position>;
 using TokenizedStringWithId =
     std::pair<std::string, std::unique_ptr<TokenizedString>>;

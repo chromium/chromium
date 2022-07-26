@@ -8,13 +8,16 @@
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
 class FaviconCache;
 class Profile;
+
+namespace ash::string_matching {
+class TokenizedString;
+}
 
 namespace app_list {
 
@@ -24,7 +27,7 @@ class OpenTabResult : public ChromeSearchResult, public ash::ColorModeObserver {
   OpenTabResult(Profile* profile,
                 AppListControllerDelegate* list_controller,
                 FaviconCache* favicon_cache,
-                const chromeos::string_matching::TokenizedString& query,
+                const ash::string_matching::TokenizedString& query,
                 const AutocompleteMatch& match);
   ~OpenTabResult() override;
 

@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_STRING_MATCHING_PREFIX_MATCHER_H_
-#define CHROMEOS_COMPONENTS_STRING_MATCHING_PREFIX_MATCHER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_PREFIX_MATCHER_H_
+#define CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_PREFIX_MATCHER_H_
 
-#include "chromeos/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/tokenized_string_char_iterator.h"
 
-#include "chromeos/components/string_matching/tokenized_string_char_iterator.h"
-
-namespace chromeos {
-namespace string_matching {
+namespace ash::string_matching {
 
 // PrefixMatcher matches the chars of a given query as prefix of tokens in
 // a given text or as prefix of the acronyms of those text tokens.
@@ -83,7 +81,6 @@ class PrefixMatcher {
   Hits current_hits_;
 };
 
-}  // namespace string_matching
-}  // namespace chromeos
+}  // namespace ash::string_matching
 
-#endif  // CHROMEOS_COMPONENTS_STRING_MATCHING_PREFIX_MATCHER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_PREFIX_MATCHER_H_

@@ -9,7 +9,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -54,8 +54,7 @@ class OmniboxProvider : public SearchProvider,
   AppListControllerDelegate* list_controller_;
 
   std::u16string last_query_;
-  absl::optional<chromeos::string_matching::TokenizedString>
-      last_tokenized_query_;
+  absl::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
   base::TimeTicks query_start_time_;
   AutocompleteInput input_;
 

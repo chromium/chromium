@@ -22,16 +22,17 @@
 #include "chrome/browser/ui/app_list/search/games/game_result.h"
 #include "chrome/browser/ui/app_list/search/search_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/string_matching/fuzzy_tokenized_string_match.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace app_list {
+
 namespace {
 
-using chromeos::string_matching::FuzzyTokenizedStringMatch;
-using chromeos::string_matching::TokenizedString;
+using ::ash::string_matching::FuzzyTokenizedStringMatch;
+using ::ash::string_matching::TokenizedString;
 
 // Parameters for FuzzyTokenizedStringMatch.
 constexpr bool kUseWeightedRatio = false;

@@ -37,9 +37,10 @@
 #include "url/gurl.h"
 
 namespace app_list {
+
 namespace {
 
-using chromeos::string_matching::TokenizedString;
+using ::ash::string_matching::TokenizedString;
 
 // Some omnibox answers overtrigger on short queries. This controls the minimum
 // query length before they are displayed.

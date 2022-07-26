@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/string_matching/prefix_matcher.h"
+#include "chromeos/ash/components/string_matching/prefix_matcher.h"
 
 #include "base/check.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
-#include "chromeos/components/string_matching/tokenized_string_char_iterator.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/tokenized_string_char_iterator.h"
 
-namespace chromeos {
-namespace string_matching {
+namespace ash::string_matching {
 
 namespace {
+
 // TODO(crbug.com/1336160): Add unit tests.
 //
 // TODO(crbug.com/1336160): Paradigm shift 1: Reconsider the value of
@@ -64,6 +64,7 @@ const double kIsWeakHitMultiplier = 0.6;
 
 // A relevance score that represents no match.
 const double kNoMatchScore = 0.0;
+
 }  // namespace
 
 PrefixMatcher::PrefixMatcher(const TokenizedString& query,
@@ -175,5 +176,4 @@ void PrefixMatcher::PopState() {
   states_.pop_back();
 }
 
-}  // namespace string_matching
-}  // namespace chromeos
+}  // namespace ash::string_matching

@@ -22,9 +22,10 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace app_list {
+
 namespace {
 
-using chromeos::string_matching::TokenizedString;
+using ::ash::string_matching::TokenizedString;
 
 constexpr char kFileSearchSchema[] = "file_search://";
 constexpr int kMaxResults = 25;

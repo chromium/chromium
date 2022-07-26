@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_STRING_MATCHING_FUZZY_TOKENIZED_STRING_MATCH_H_
-#define CHROMEOS_COMPONENTS_STRING_MATCHING_FUZZY_TOKENIZED_STRING_MATCH_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_FUZZY_TOKENIZED_STRING_MATCH_H_
+#define CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_FUZZY_TOKENIZED_STRING_MATCH_H_
 
 #include "base/gtest_prod_util.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "ui/gfx/range/range.h"
 
-namespace chromeos {
-namespace string_matching {
+namespace ash::string_matching {
 
 // FuzzyTokenizedStringMatch takes two tokenized strings: one as the text and
 // the other one as the query. It matches the query against the text,
@@ -109,7 +108,6 @@ class FuzzyTokenizedStringMatch {
   Hits hits_;
 };
 
-}  // namespace string_matching
-}  // namespace chromeos
+}  // namespace ash::string_matching
 
-#endif  // CHROMEOS_COMPONENTS_STRING_MATCHING_FUZZY_TOKENIZED_STRING_MATCH_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_FUZZY_TOKENIZED_STRING_MATCH_H_

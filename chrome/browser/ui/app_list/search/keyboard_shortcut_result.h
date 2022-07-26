@@ -8,7 +8,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/keyboard_shortcut_data.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
+
+namespace ash::string_matching {
+class TokenizedString;
+}
 
 namespace app_list {
 
@@ -28,7 +31,7 @@ class KeyboardShortcutResult : public ChromeSearchResult {
   // Calculates the shortcut's relevance score. Will return a default score if
   // the query is missing or the target is empty.
   static double CalculateRelevance(
-      const chromeos::string_matching::TokenizedString& query_tokenized,
+      const ash::string_matching::TokenizedString& query_tokenized,
       const std::u16string& target);
 
  private:

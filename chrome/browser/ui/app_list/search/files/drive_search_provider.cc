@@ -24,9 +24,10 @@
 #include "url/gurl.h"
 
 namespace app_list {
+
 namespace {
 
-using chromeos::string_matching::TokenizedString;
+using ::ash::string_matching::TokenizedString;
 
 constexpr char kDriveSearchSchema[] = "drive_search://";
 constexpr int kMaxResults = 50;

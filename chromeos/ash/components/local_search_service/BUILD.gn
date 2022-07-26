@@ -34,7 +34,7 @@ source_set("local_search_service") {
     "//base:i18n",
     "//cc",
     "//chromeos/ash/components/local_search_service/public/mojom",
-    "//chromeos/components/string_matching",
+    "//chromeos/ash/components/string_matching",
   ]
 
   public_deps = [

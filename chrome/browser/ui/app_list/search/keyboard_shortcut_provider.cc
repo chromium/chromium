@@ -15,12 +15,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/keyboard_shortcut_result.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 
 namespace app_list {
 
 namespace {
 
-using chromeos::string_matching::TokenizedString;
+using ::ash::string_matching::TokenizedString;
 
 constexpr size_t kMinQueryLength = 3u;
 constexpr size_t kMaxResults = 3u;
@@ -29,8 +30,7 @@ constexpr double kResultRelevanceThreshold = 0.9;
 std::vector<std::pair<KeyboardShortcutData, double>> Search(
     const std::vector<KeyboardShortcutData>& shortcut_data,
     std::u16string query) {
-  chromeos::string_matching::TokenizedString tokenized_query(
-      query, TokenizedString::Mode::kWords);
+  TokenizedString tokenized_query(query, TokenizedString::Mode::kWords);
 
   // Find all shortcuts which meet the relevance threshold.
   std::vector<std::pair<KeyboardShortcutData, double>> candidates;

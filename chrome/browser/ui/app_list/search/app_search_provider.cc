@@ -43,9 +43,9 @@
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/string_matching/fuzzy_tokenized_string_match.h"
-#include "chromeos/components/string_matching/tokenized_string.h"
-#include "chromeos/components/string_matching/tokenized_string_match.h"
+#include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "chromeos/ash/components/string_matching/tokenized_string_match.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/sync/base/model_type.h"
@@ -54,7 +54,13 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/chromeos/devicetype_utils.h"
 
+namespace app_list {
+
 namespace {
+
+using ::ash::string_matching::FuzzyTokenizedStringMatch;
+using ::ash::string_matching::TokenizedString;
+using ::ash::string_matching::TokenizedStringMatch;
 
 constexpr double kEps = 1e-5;
 
@@ -72,10 +78,6 @@ constexpr double kPartialMatchPenaltyRate = 0.9;
 constexpr const char* const ranked_default_app_ids[] = {
     web_app::kOsSettingsAppId, web_app::kHelpAppId, arc::kPlayStoreAppId,
     web_app::kCanvasAppId, web_app::kCameraAppId};
-
-using chromeos::string_matching::FuzzyTokenizedStringMatch;
-using chromeos::string_matching::TokenizedString;
-using chromeos::string_matching::TokenizedStringMatch;
 
 // A selection of apps are designated as default recommended apps, and these are
 // ranked in a priority order. Determine the rank of the app corresponding to
@@ -95,8 +97,8 @@ int GetDefaultAppRank(const std::string app_id) {
 // Adds |app_result| to |results| only in case no duplicate apps were already
 // added. Duplicate means the same app but for different domain, Chrome and
 // Android.
-void MaybeAddResult(app_list::SearchProvider::Results* results,
-                    std::unique_ptr<app_list::AppResult> app_result,
+void MaybeAddResult(SearchProvider::Results* results,
+                    std::unique_ptr<AppResult> app_result,
                     std::set<std::string>* seen_or_filtered_apps) {
   if (seen_or_filtered_apps->count(app_result->app_id()))
     return;
@@ -148,8 +150,6 @@ bool IsNonLatinLocale(base::StringPiece locale) {
 }
 
 }  // namespace
-
-namespace app_list {
 
 class AppSearchProvider::App {
  public:
