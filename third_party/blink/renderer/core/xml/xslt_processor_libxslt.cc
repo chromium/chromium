@@ -53,6 +53,12 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 
+namespace {
+
+constexpr int kDoubleXsltMaxVars = 30000;
+
+}
+
 namespace blink {
 
 void XSLTProcessor::GenericErrorFunc(void*, const char*, ...) {
@@ -362,6 +368,15 @@ bool XSLTProcessor::TransformToString(Node* source_node,
     // and it's not needed even for documents, as the result of this
     // function is always immediately parsed.
     sheet->omitXmlDeclaration = true;
+
+    // Double the number of vars xslt uses internally before it is used in
+    // xsltNewTransformContext. See http://crbug.com/796505
+    DCHECK(xsltMaxVars == kDoubleXsltMaxVars ||
+           xsltMaxVars == kDoubleXsltMaxVars / 2)
+        << "We should be doubling xsltMaxVars' default value from libxslt with "
+           "our new value. actual value: "
+        << xsltMaxVars;
+    xsltMaxVars = kDoubleXsltMaxVars;
 
     xsltTransformContextPtr transform_context =
         xsltNewTransformContext(sheet, source_doc);
