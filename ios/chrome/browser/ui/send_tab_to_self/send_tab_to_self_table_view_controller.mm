@@ -128,7 +128,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         [[TableViewTextItem alloc] initWithType:ItemTypeNoTargetDevice];
     noTargetDeviceItem.text =
         l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL);
-    noTargetDeviceItem.textAlignment = NSTextAlignmentCenter;
+    noTargetDeviceItem.textAlignment = NSTextAlignmentLeft;
     noTargetDeviceItem.textFont =
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     [model addItem:noTargetDeviceItem
