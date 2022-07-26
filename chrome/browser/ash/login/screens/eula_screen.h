@@ -28,8 +28,11 @@ class EulaScreen : public BaseScreen {
     ALREADY_ACCEPTED,
     // Eula already accepted, skip screen (demo mode)
     ALREADY_ACCEPTED_DEMO_MODE,
-    // The usage did not accept EULA - they clicked back button instead.
+    // The user did not accept EULA - they clicked back button instead.
     BACK,
+    // The user did not accept EULA - they clicked back button instead (demo
+    // mode).
+    BACK_DEMO_MODE,
     // Eula screen is skipped.
     NOT_APPLICABLE,
   };
