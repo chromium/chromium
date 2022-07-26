@@ -82,8 +82,9 @@ ProfileSelections ProfileSelections::BuildServicesRedirectedToOriginal() {
 }
 
 Profile* ProfileSelections::ApplyProfileSelection(Profile* profile) const {
-  ProfileSelection selection = GetProfileSelection(profile);
+  DCHECK(profile);
 
+  ProfileSelection selection = GetProfileSelection(profile);
   switch (selection) {
     case ProfileSelection::kNone:
       return nullptr;
