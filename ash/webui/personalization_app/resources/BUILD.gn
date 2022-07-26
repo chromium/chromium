@@ -92,6 +92,7 @@ web_component_files = [
   "trusted/user/avatar_list_element.ts",
   "trusted/user/user_preview_element.ts",
   "trusted/user/user_subpage_element.ts",
+  "trusted/wallpaper/collections_grid_element.ts",
   "trusted/wallpaper/google_photos_albums_element.ts",
   "trusted/wallpaper/google_photos_collection_element.ts",
   "trusted/wallpaper/google_photos_photos_by_album_id_element.ts",
@@ -106,8 +107,6 @@ web_component_files = [
   "trusted/wallpaper/wallpaper_preview_element.ts",
   "trusted/wallpaper/wallpaper_selected_element.ts",
   "trusted/wallpaper/wallpaper_subpage_element.ts",
-
-  "untrusted/collections_grid.ts",
 ]
 
 # Files that are passed as input to html_to_wrapper().

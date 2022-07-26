@@ -47,7 +47,6 @@ import {PersonalizationStore} from './personalization_store.js';
  */
 export {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol, kMaximumLocalImagePreviews} from '../common/constants.js';
 export {getCountText, getNumberOfGridItemsPerRow} from '../common/utils.js';
-export {CollectionsGrid} from '../untrusted/collections_grid.js';
 export {AlbumList} from './ambient/album_list_element.js';
 export {AlbumsSubpage} from './ambient/albums_subpage_element.js';
 export {AmbientActionName, AmbientActions, SetAlbumsAction, setAlbumsAction, SetAlbumSelectedAction, setAlbumSelectedAction, SetAmbientModeEnabledAction, setAmbientModeEnabledAction, SetAnimationThemeAction, setAnimationThemeAction, SetGooglePhotosAlbumsPreviewsAction, setGooglePhotosAlbumsPreviewsAction, SetTemperatureUnitAction, setTemperatureUnitAction, SetTopicSourceAction, setTopicSourceAction} from './ambient/ambient_actions.js';
@@ -89,6 +88,7 @@ export {UserPreview} from './user/user_preview_element.js';
 export {UserSubpage} from './user/user_subpage_element.js';
 export {GetUserMediaProxy, getWebcamUtils, setWebcamUtilsForTesting} from './user/webcam_utils_proxy.js';
 export {isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage} from './utils.js';
+export {CollectionsGrid} from './wallpaper/collections_grid_element.js';
 export {GooglePhotosAlbums} from './wallpaper/google_photos_albums_element.js';
 export {GooglePhotosCollection} from './wallpaper/google_photos_collection_element.js';
 export {GooglePhotosPhotosByAlbumId} from './wallpaper/google_photos_photos_by_album_id_element.js';

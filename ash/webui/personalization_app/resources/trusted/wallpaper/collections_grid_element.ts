@@ -4,23 +4,23 @@
 
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../common/icons.html.js';
-import '../css/common.css.js';
-import '../css/wallpaper.css.js';
+import '../../common/icons.html.js';
+import '../../css/common.css.js';
+import '../../css/wallpaper.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {DefaultImageSymbol, kDefaultImageSymbol, kMaximumLocalImagePreviews} from '../common/constants.js';
-import {getCountText, getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, isNonEmptyArray, isSelectionEvent} from '../common/utils.js';
-import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from '../trusted/personalization_app.mojom-webui.js';
-import {Paths, PersonalizationRouter} from '../trusted/personalization_router_element.js';
-import {WithPersonalizationStore} from '../trusted/personalization_store.js';
-import {getPathOrSymbol} from '../trusted/utils.js';
+import {DefaultImageSymbol, kDefaultImageSymbol, kMaximumLocalImagePreviews} from '../../common/constants.js';
+import {getCountText, getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, isNonEmptyArray, isSelectionEvent} from '../../common/utils.js';
+import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
+import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
+import {WithPersonalizationStore} from '../personalization_store.js';
+import {getPathOrSymbol} from '../utils.js';
 
-import {getTemplate} from './collections_grid.html.js';
+import {getTemplate} from './collections_grid_element.html.js';
 
 /**
  * @fileoverview Responds to |SendCollectionsEvent| from trusted. Handles user

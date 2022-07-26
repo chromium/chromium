@@ -15,10 +15,10 @@ import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_b
 
 import {DefaultImageSymbol} from '../../common/constants.js';
 import {isNonEmptyArray} from '../../common/utils.js';
-import {CollectionsGrid} from '../../untrusted/collections_grid.js';
 import {WallpaperCollection} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
+import {CollectionsGrid} from './collections_grid_element.js';
 import {getTemplate} from './wallpaper_collections_element.html.js';
 import {initializeBackdropData} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
