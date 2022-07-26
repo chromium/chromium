@@ -2533,7 +2533,6 @@ test("content_unittests") {
       "../browser/web_contents/web_drag_dest_mac_unittest.mm",
       "../browser/web_contents/web_drag_source_mac_unittest.mm",
       "../common/mac/attributed_string_type_converters_unittest.mm",
-      "../common/mac/task_port_policy_unittest.cc",
       "../renderer/sandbox_mac_v2_unittest.mm",
     ]
   }
