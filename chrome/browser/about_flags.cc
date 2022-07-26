@@ -8209,6 +8209,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNoncedPartitionedCookiesDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kNoncedPartitionedCookies)},
 
+    {"third-party-storage-partitioning",
+     flag_descriptions::kThirdPartyStoragePartitioningName,
+     flag_descriptions::kThirdPartyStoragePartitioningDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kThirdPartyStoragePartitioning)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kBorealisBigGlInternalName, flag_descriptions::kBorealisBigGlName,
      flag_descriptions::kBorealisBigGlDescription, kOsCrOS,

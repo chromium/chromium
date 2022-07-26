@@ -1358,6 +1358,9 @@ extern const char kPartitionedCookiesBypassOriginTrialDescription[];
 extern const char kNoncedPartitionedCookiesName[];
 extern const char kNoncedPartitionedCookiesDescription[];
 
+extern const char kThirdPartyStoragePartitioningName[];
+extern const char kThirdPartyStoragePartitioningDescription[];
+
 extern const char kScrollableTabStripFlagId[];
 extern const char kScrollableTabStripName[];
 extern const char kScrollableTabStripDescription[];

@@ -56090,6 +56090,7 @@ from previous Chrome versions.
   <int value="-1725507605" label="enable-web-midi"/>
   <int value="-1722208902" label="CCTModuleCustomRequestHeader:disabled"/>
   <int value="-1720653947" label="WebRtcHybridAgc:disabled"/>
+  <int value="-1720576957" label="ThirdPartyStoragePartitioning:disabled"/>
   <int value="-1719833926" label="disable-answers-in-suggest"/>
   <int value="-1719699712" label="AudioPlayerJsModules:enabled"/>
   <int value="-1718644168" label="SharingHubLinkToggle:disabled"/>
@@ -58586,6 +58587,7 @@ from previous Chrome versions.
   <int value="-146552997" label="enable-affiliation-based-matching"/>
   <int value="-146315671" label="PrivacyAdvisor:enabled"/>
   <int value="-145418947" label="webview-disable-package-allowlist-throttling"/>
+  <int value="-145345223" label="ThirdPartyStoragePartitioning:enabled"/>
   <int value="-144134779" label="AndroidPayIntegrationV2:disabled"/>
   <int value="-143382681" label="InstantTethering:enabled"/>
   <int value="-143121333" label="WebXRIncubations:enabled"/>
