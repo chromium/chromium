@@ -764,16 +764,18 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsAnchorScrollTranslation(object_)) {
       const auto& box = To<LayoutBox>(object_);
-      const PaintLayer* anchor_scroll_container_layer =
+      const PaintLayer* inner_most_scroll_container_layer =
           box.AnchorScrollContainer()->Layer();
+      gfx::Vector2dF accumulated_scroll_offset(0, 0);
+      for (const PaintLayer* layer = inner_most_scroll_container_layer; layer;
+           layer = layer->ContainingScrollContainerLayer()) {
+        if (layer == box.Layer()->ContainingScrollContainerLayer())
+          break;
+        accumulated_scroll_offset +=
+            layer->GetScrollableArea()->ScrollPosition().OffsetFromOrigin();
+      }
 
-      // TODO(crbug.com/1309178): We need to accumulate the translation offsets
-      // of all the scroll containers up to the containing block.
-      gfx::Vector2dF scroll_offset =
-          anchor_scroll_container_layer->GetScrollableArea()
-              ->ScrollPosition()
-              .OffsetFromOrigin();
-      gfx::Vector2dF translation_offset = -scroll_offset;
+      gfx::Vector2dF translation_offset = -accumulated_scroll_offset;
       TransformPaintPropertyNode::State state{translation_offset};
 
       // TODO(crbug.com/1309178): Not using GetCompositorElementId() here
@@ -787,11 +789,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
       state.rendering_context_id = context_.rendering_context_id;
       state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
-      state.anchor_scroll_container =
-          anchor_scroll_container_layer->GetLayoutObject()
-              .FirstFragment()
-              .PaintProperties()
-              ->ScrollTranslation();
 
       OnUpdateTransform(properties_->UpdateAnchorScrollTranslation(
           *context_.current.transform, std::move(state)));

@@ -2101,10 +2101,9 @@ void PaintLayerScrollableArea::InvalidatePaintForStickyDescendants() {
   }
 }
 
-void PaintLayerScrollableArea::AddAnchorPositionedLayer(PaintLayer* layer) {
+bool PaintLayerScrollableArea::AddAnchorPositionedLayer(PaintLayer* layer) {
   auto add_result = EnsureRareData().anchor_positioned_layers_.insert(layer);
-  if (add_result.is_new_entry)
-    layer->GetLayoutObject().SetNeedsPaintPropertyUpdate();
+  return add_result.is_new_entry;
 }
 
 void PaintLayerScrollableArea::InvalidateAllAnchorPositionedLayers() {

@@ -524,7 +524,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void InvalidateAllStickyConstraints();
   void InvalidatePaintForStickyDescendants();
 
-  void AddAnchorPositionedLayer(PaintLayer*);
+  // Returns true if the layer is not already added.
+  bool AddAnchorPositionedLayer(PaintLayer*);
   void InvalidateAllAnchorPositionedLayers();
   void InvalidatePaintForAnchorPositionedLayers();
 

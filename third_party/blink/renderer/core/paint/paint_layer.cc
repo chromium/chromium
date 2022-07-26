@@ -308,8 +308,23 @@ void PaintLayer::UpdateLayerPositionRecursive() {
 
   if (LayoutBox* box = DynamicTo<LayoutBox>(GetLayoutObject());
       box && box->AnchorScrollContainer()) {
-    PaintLayer* scroll_container_layer = box->AnchorScrollContainer()->Layer();
-    scroll_container_layer->GetScrollableArea()->AddAnchorPositionedLayer(this);
+    const PaintLayer* boundary = ContainingScrollContainerLayer();
+    DCHECK(boundary);
+
+    bool needs_paint_property_update = false;
+    for (const PaintLayer* scroller_layer =
+             box->AnchorScrollContainer()->Layer();
+         scroller_layer != ContainingScrollContainerLayer();
+         scroller_layer = scroller_layer->ContainingScrollContainerLayer()) {
+      DCHECK(scroller_layer);
+      bool is_new_entry =
+          scroller_layer->GetScrollableArea()->AddAnchorPositionedLayer(this);
+      if (!is_new_entry)
+        break;
+      needs_paint_property_update = true;
+    }
+    if (needs_paint_property_update)
+      box->SetNeedsPaintPropertyUpdate();
   }
 
   // Display-locked elements always have a PaintLayer, meaning that the
