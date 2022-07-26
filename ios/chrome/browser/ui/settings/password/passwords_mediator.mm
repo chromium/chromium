@@ -162,10 +162,10 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 
 #pragma mark - PasswordManagerViewControllerDelegate
 
-- (void)deletePasswordForms:
-    (const std::vector<password_manager::PasswordForm>&)forms {
-  for (const auto& form : forms) {
-    _savedPasswordsPresenter->RemovePassword(form);
+- (void)deleteCredentials:
+    (const std::vector<password_manager::CredentialUIEntry>&)credentials {
+  for (const auto& credential : credentials) {
+    _savedPasswordsPresenter->RemoveCredential(credential);
   }
 }
 
@@ -301,20 +301,18 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 
 // Provides passwords and blocked forms to the '_consumer'.
 - (void)providePasswordsToConsumer {
-  std::vector<password_manager::PasswordForm> forms =
-      _savedPasswordsPresenter->GetUniquePasswordForms();
-
-  std::vector<password_manager::PasswordForm> savedForms, blockedForms;
-  for (const auto& form : forms) {
-    if (form.blocked_by_user) {
-      blockedForms.push_back(std::move(form));
+  std::vector<password_manager::CredentialUIEntry> passwords, blockedSites;
+  for (const auto& credential :
+       _savedPasswordsPresenter->GetSavedCredentials()) {
+    if (credential.blocked_by_user) {
+      blockedSites.push_back(std::move(credential));
     } else {
-      savedForms.push_back(std::move(form));
+      passwords.push_back(std::move(credential));
     }
   }
 
-  [_consumer setPasswordsForms:std::move(savedForms)
-                  blockedForms:std::move(blockedForms)];
+  [_consumer setPasswords:std::move(passwords)
+             blockedSites:std::move(blockedSites)];
 }
 
 // Returns PasswordCheckUIState based on PasswordCheckState.

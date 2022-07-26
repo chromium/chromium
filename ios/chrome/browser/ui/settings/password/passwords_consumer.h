@@ -11,7 +11,7 @@
 #include <vector>
 
 namespace password_manager {
-struct PasswordForm;
+struct CredentialUIEntry;
 }  // namespace password_manager
 
 // Enum with all possible UI states of password check.
@@ -39,9 +39,9 @@ typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
     unmutedCompromisedPasswordsCount:(NSInteger)count;
 
 // Displays password and blocked forms.
-- (void)
-    setPasswordsForms:(std::vector<password_manager::PasswordForm>)savedForms
-         blockedForms:(std::vector<password_manager::PasswordForm>)blockedForms;
+- (void)setPasswords:(std::vector<password_manager::CredentialUIEntry>)passwords
+        blockedSites:
+            (std::vector<password_manager::CredentialUIEntry>)blockedSites;
 
 // Updates "On/Off" state for Passwords In Other Apps item.
 - (void)updatePasswordsInOtherAppsDetailedText;

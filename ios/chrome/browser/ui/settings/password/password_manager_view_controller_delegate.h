@@ -29,15 +29,15 @@ typedef NS_ENUM(NSInteger, OnDeviceEncryptionState) {
 };
 
 namespace password_manager {
-struct PasswordForm;
+struct CredentialUIEntry;
 }
 
 // Delegate for `PasswordManagerViewController`.
 @protocol PasswordManagerViewControllerDelegate
 
-// Deletes form with its duplicates.
-- (void)deletePasswordForms:
-    (const std::vector<password_manager::PasswordForm>&)forms;
+// Deletes credentials from the store.
+- (void)deleteCredentials:
+    (const std::vector<password_manager::CredentialUIEntry>&)credentials;
 
 // Starts password check.
 - (void)startPasswordCheck;

@@ -130,7 +130,7 @@ class PasswordManagerViewControllerTest : public ChromeTableViewControllerTest {
         static_cast<PasswordManagerViewController*>(controller());
     passwords_controller.delegate = mediator_;
     mediator_.consumer = passwords_controller;
-    [passwords_controller setPasswordsForms:{} blockedForms:{}];
+    [passwords_controller setPasswords:{} blockedSites:{}];
   }
 
   int GetSectionIndex(PasswordSectionIdentifier section) {

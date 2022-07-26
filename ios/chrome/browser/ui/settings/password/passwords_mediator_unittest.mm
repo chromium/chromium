@@ -71,8 +71,8 @@ PasswordForm CreatePasswordForm() {
 }  // namespace
 
 @interface FakePasswordsConsumer : NSObject <PasswordsConsumer> {
-  std::vector<password_manager::PasswordForm> _savedForms;
-  std::vector<password_manager::PasswordForm> _blockedForms;
+  std::vector<password_manager::CredentialUIEntry> _passwords;
+  std::vector<password_manager::CredentialUIEntry> _blockedSites;
 }
 
 // Number of time the method updateOnDeviceEncryptionSessionAndUpdateTableView
@@ -90,20 +90,19 @@ PasswordForm CreatePasswordForm() {
     unmutedCompromisedPasswordsCount:(NSInteger)count {
 }
 
-- (void)setPasswordsForms:
-            (std::vector<password_manager::PasswordForm>)savedForms
-             blockedForms:
-                 (std::vector<password_manager::PasswordForm>)blockedForms {
-  _savedForms = savedForms;
-  _blockedForms = blockedForms;
+- (void)setPasswords:(std::vector<password_manager::CredentialUIEntry>)passwords
+        blockedSites:
+            (std::vector<password_manager::CredentialUIEntry>)blockedSites {
+  _passwords = passwords;
+  _blockedSites = blockedSites;
 }
 
 - (void)updatePasswordsInOtherAppsDetailedText {
   _detailedText = @"On";
 }
 
-- (std::vector<password_manager::PasswordForm>)savedForms {
-  return _savedForms;
+- (std::vector<password_manager::CredentialUIEntry>)passwords {
+  return _passwords;
 }
 
 - (void)updateOnDeviceEncryptionSessionAndUpdateTableView {
@@ -193,12 +192,13 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerOnPasswordChange) {
   PasswordForm form = CreatePasswordForm();
   store()->AddLogin(form);
   RunUntilIdle();
-  EXPECT_THAT([consumer() savedForms], testing::ElementsAre(form));
+  EXPECT_THAT([consumer() passwords],
+              testing::ElementsAre(password_manager::CredentialUIEntry(form)));
 
   // Remove form from the store.
   store()->RemoveLogin(form);
   RunUntilIdle();
-  EXPECT_THAT([consumer() savedForms], testing::IsEmpty());
+  EXPECT_THAT([consumer() passwords], testing::IsEmpty());
 }
 
 // Duplicates of a form should be removed as well.
@@ -210,11 +210,12 @@ TEST_F(PasswordsMediatorTest, DeleteFormWithDuplicates) {
   store()->AddLogin(form);
   store()->AddLogin(duplicate);
   RunUntilIdle();
-  ASSERT_THAT([consumer() savedForms], testing::ElementsAre(form));
+  ASSERT_THAT([consumer() passwords],
+              testing::ElementsAre(password_manager::CredentialUIEntry(form)));
 
   [mediator() deleteCredential:password_manager::CredentialUIEntry(form)];
   RunUntilIdle();
-  EXPECT_THAT([consumer() savedForms], testing::IsEmpty());
+  EXPECT_THAT([consumer() passwords], testing::IsEmpty());
 }
 
 // Mediator should update consumer password autofill state.

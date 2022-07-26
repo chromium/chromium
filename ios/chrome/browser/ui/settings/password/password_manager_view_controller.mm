@@ -110,44 +110,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeOnDeviceEncryptionOptedInLearnMore,
 };
 
-std::vector<password_manager::CredentialUIEntry> CopyOf(
-    const std::vector<password_manager::PasswordForm>& password_list) {
-  std::vector<password_manager::CredentialUIEntry> credentials;
-  for (const auto& form : password_list) {
-    credentials.push_back(password_manager::CredentialUIEntry(form));
-  }
-  return credentials;
-}
-
-bool ArePasswordsListsEqual(
-    const std::vector<password_manager::PasswordForm>& lhs,
-    const std::vector<password_manager::PasswordForm>& rhs) {
-  if (lhs.size() != rhs.size())
-    return false;
-
-  for (size_t i = 0; i < lhs.size(); i++) {
-    if (CreateSortKey(lhs[i], password_manager::IgnoreStore(false)) !=
-        CreateSortKey(rhs[i], password_manager::IgnoreStore(false)))
-      return false;
-  }
-  return true;
-}
-
-void RemoveFormsToBeDeleted(
-    std::vector<password_manager::PasswordForm>& forms,
-    const std::vector<password_manager::PasswordForm>& to_delete) {
-  std::unordered_set<std::string> sort_keys_to_delete;
-  base::ranges::for_each(to_delete, [&sort_keys_to_delete](const auto& form) {
-    sort_keys_to_delete.insert(
-        CreateSortKey(form, password_manager::IgnoreStore(false)));
-  });
-  base::EraseIf(forms, [&sort_keys_to_delete](const auto& form) {
-    return sort_keys_to_delete.find(
-               CreateSortKey(form, password_manager::IgnoreStore(false))) !=
-           sort_keys_to_delete.end();
-  });
-}
-
 // Return if the feature flag for the favicon is enabled.
 // TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
 // removed.
@@ -168,13 +130,13 @@ bool ShouldShowSettingsUI() {
 // TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
 // removed.
 @interface LegacyPasswordFormContentItem : TableViewDetailTextItem
-@property(nonatomic) password_manager::PasswordForm form;
+@property(nonatomic) password_manager::CredentialUIEntry credential;
 @end
 @implementation LegacyPasswordFormContentItem
 @end
 
 @interface PasswordFormContentItem : TableViewURLItem
-@property(nonatomic) password_manager::PasswordForm form;
+@property(nonatomic) password_manager::CredentialUIEntry credential;
 @end
 @implementation PasswordFormContentItem
 @end
@@ -255,9 +217,9 @@ bool ShouldShowSettingsUI() {
   // The link to set up on device encryption.
   TableViewTextItem* _setUpOnDeviceEncryptionItem;
   // The list of the user's saved passwords.
-  std::vector<password_manager::PasswordForm> _savedForms;
+  std::vector<password_manager::CredentialUIEntry> _passwords;
   // The list of the user's blocked sites.
-  std::vector<password_manager::PasswordForm> _blockedForms;
+  std::vector<password_manager::CredentialUIEntry> _blockedSites;
   // The browser where the screen is being displayed.
   Browser* _browser;
   // The current Chrome browser state.
@@ -270,7 +232,7 @@ bool ShouldShowSettingsUI() {
   BOOL _exportReady;
   // Boolean indicating if password forms have been received for the first time.
   // Used to show a loading indicator while waiting for the store response.
-  BOOL _didReceiveSavedForms;
+  BOOL _didReceivePasswords;
   // Alert informing the user that passwords are being prepared for
   // export.
   UIAlertController* _preparingPasswordsAlert;
@@ -448,7 +410,7 @@ bool ShouldShowSettingsUI() {
 
   [self loadModel];
 
-  if (!_didReceiveSavedForms) {
+  if (!_didReceivePasswords) {
     [self showLoadingSpinnerBackground];
   }
 
@@ -519,7 +481,7 @@ bool ShouldShowSettingsUI() {
 - (void)loadModel {
   [super loadModel];
 
-  if (!_didReceiveSavedForms) {
+  if (!_didReceivePasswords) {
     return;
   }
 
@@ -586,7 +548,7 @@ bool ShouldShowSettingsUI() {
                                               UITableViewRowAnimationNone];
 
   // Saved passwords.
-  if (!_savedForms.empty()) {
+  if (!_passwords.empty()) {
     [model addSectionWithIdentifier:SectionIdentifierSavedPasswords];
     TableViewTextHeaderFooterItem* headerItem =
         [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
@@ -597,7 +559,7 @@ bool ShouldShowSettingsUI() {
   }
 
   // Blocked passwords.
-  if (!_blockedForms.empty()) {
+  if (!_blockedSites.empty()) {
     [model addSectionWithIdentifier:SectionIdentifierBlocked];
     TableViewTextHeaderFooterItem* headerItem =
         [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
@@ -718,7 +680,7 @@ bool ShouldShowSettingsUI() {
 }
 
 - (BOOL)editButtonEnabled {
-  return !_savedForms.empty() || !_blockedForms.empty();
+  return !_passwords.empty() || !_blockedSites.empty();
 }
 
 - (BOOL)shouldHideToolbar {
@@ -935,18 +897,20 @@ bool ShouldShowSettingsUI() {
 - (PasswordFormContentItem*)
     savedFormItemWithText:(NSString*)text
             andDetailText:(NSString*)detailText
-                  forForm:(const password_manager::PasswordForm&)form {
+            forCredential:
+                (const password_manager::CredentialUIEntry&)credential {
   PasswordFormContentItem* passwordItem =
       [[PasswordFormContentItem alloc] initWithType:ItemTypeSavedPassword];
   passwordItem.title = text;
-  passwordItem.form = form;
+  passwordItem.credential = credential;
   passwordItem.detailText = detailText;
-  passwordItem.URL = [[CrURL alloc] initWithGURL:GURL(form.url)];
+  passwordItem.URL = [[CrURL alloc] initWithGURL:GURL(credential.url)];
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   if (self.mostRecentlyUpdatedPassword) {
-    if (self.mostRecentlyUpdatedPassword->username == form.username_value &&
-        self.mostRecentlyUpdatedPassword->signon_realm == form.signon_realm) {
+    if (self.mostRecentlyUpdatedPassword->username == credential.username &&
+        self.mostRecentlyUpdatedPassword->signon_realm ==
+            credential.signon_realm) {
       self.mostRecentlyUpdatedItem = passwordItem;
       self.mostRecentlyUpdatedPassword = absl::nullopt;
     }
@@ -954,12 +918,12 @@ bool ShouldShowSettingsUI() {
   return passwordItem;
 }
 
-- (PasswordFormContentItem*)blockedFormItemForForm:
-    (const password_manager::PasswordForm&)form {
+- (PasswordFormContentItem*)blockedSiteItem:
+    (const password_manager::CredentialUIEntry&)credential {
   PasswordFormContentItem* passwordItem =
       [[PasswordFormContentItem alloc] initWithType:ItemTypeBlocked];
-  passwordItem.form = form;
-  passwordItem.URL = [[CrURL alloc] initWithGURL:GURL(form.url)];
+  passwordItem.credential = credential;
+  passwordItem.URL = [[CrURL alloc] initWithGURL:GURL(credential.url)];
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return passwordItem;
@@ -968,19 +932,21 @@ bool ShouldShowSettingsUI() {
 - (LegacyPasswordFormContentItem*)
     legacySavedFormItemWithText:(NSString*)text
                   andDetailText:(NSString*)detailText
-                        forForm:(const password_manager::PasswordForm&)form {
+                  forCredential:
+                      (const password_manager::CredentialUIEntry&)credential {
   DCHECK(!IsFaviconEnabled());
   LegacyPasswordFormContentItem* passwordItem =
       [[LegacyPasswordFormContentItem alloc]
           initWithType:ItemTypeSavedPassword];
   passwordItem.text = text;
-  passwordItem.form = form;
+  passwordItem.credential = credential;
   passwordItem.detailText = detailText;
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   if (self.mostRecentlyUpdatedPassword) {
-    if (self.mostRecentlyUpdatedPassword->username == form.username_value &&
-        self.mostRecentlyUpdatedPassword->signon_realm == form.signon_realm) {
+    if (self.mostRecentlyUpdatedPassword->username == credential.username &&
+        self.mostRecentlyUpdatedPassword->signon_realm ==
+            credential.signon_realm) {
       self.legacyMostRecentlyUpdatedItem = passwordItem;
       self.mostRecentlyUpdatedPassword = absl::nullopt;
     }
@@ -990,12 +956,13 @@ bool ShouldShowSettingsUI() {
 
 - (LegacyPasswordFormContentItem*)
     legacyBlockedFormItemWithText:(NSString*)text
-                          forForm:(const password_manager::PasswordForm&)form {
+                    forCredential:
+                        (const password_manager::CredentialUIEntry&)credential {
   DCHECK(!IsFaviconEnabled());
   LegacyPasswordFormContentItem* passwordItem =
       [[LegacyPasswordFormContentItem alloc] initWithType:ItemTypeBlocked];
   passwordItem.text = text;
-  passwordItem.form = form;
+  passwordItem.credential = credential;
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return passwordItem;
@@ -1112,25 +1079,23 @@ bool ShouldShowSettingsUI() {
   _passwordCheckState = state;
 }
 
-- (void)setPasswordsForms:
-            (std::vector<password_manager::PasswordForm>)savedForms
-             blockedForms:
-                 (std::vector<password_manager::PasswordForm>)blockedForms {
-  if (!_didReceiveSavedForms) {
-    _blockedForms = std::move(blockedForms);
-    _savedForms = std::move(savedForms);
-    _didReceiveSavedForms = YES;
+- (void)setPasswords:(std::vector<password_manager::CredentialUIEntry>)passwords
+        blockedSites:
+            (std::vector<password_manager::CredentialUIEntry>)blockedSites {
+  if (!_didReceivePasswords) {
+    _blockedSites = std::move(blockedSites);
+    _passwords = std::move(passwords);
+    _didReceivePasswords = YES;
     [self hideLoadingSpinnerBackground];
     [self updateUIForEditState];
     [self reloadData];
   } else {
-    if (ArePasswordsListsEqual(_savedForms, savedForms) &&
-        ArePasswordsListsEqual(_blockedForms, blockedForms)) {
+    if (_passwords == passwords && _blockedSites == blockedSites) {
       return;
     }
 
-    _blockedForms = std::move(blockedForms);
-    _savedForms = std::move(savedForms);
+    _blockedSites = std::move(blockedSites);
+    _passwords = std::move(passwords);
     TableViewModel* model = self.tableViewModel;
     NSMutableIndexSet* sectionsToUpdate = [NSMutableIndexSet indexSet];
 
@@ -1142,8 +1107,8 @@ bool ShouldShowSettingsUI() {
       PasswordSectionIdentifier section = sections[i];
       bool hasSection = [model hasSectionForSectionIdentifier:section];
       bool needsSection = section == SectionIdentifierBlocked
-                              ? !_blockedForms.empty()
-                              : !_savedForms.empty();
+                              ? !_blockedSites.empty()
+                              : !_passwords.empty();
 
       // If section exists but it shouldn't - gracefully remove it with
       // animation.
@@ -1172,7 +1137,7 @@ bool ShouldShowSettingsUI() {
       [self.tableView reloadSections:sectionsToUpdate
                     withRowAnimation:UITableViewRowAnimationAutomatic];
       [self scrollToLastUpdatedItem];
-    } else if (_savedForms.empty() && _blockedForms.empty()) {
+    } else if (_passwords.empty() && _blockedSites.empty()) {
       [self setEditing:NO animated:YES];
     }
   }
@@ -1429,13 +1394,13 @@ bool ShouldShowSettingsUI() {
 - (void)filterItems:(NSString*)searchTerm {
   TableViewModel* model = self.tableViewModel;
 
-  if (!_savedForms.empty()) {
+  if (!_passwords.empty()) {
     [model deleteAllItemsFromSectionWithIdentifier:
                SectionIdentifierSavedPasswords];
-    for (const auto& form : _savedForms) {
-      NSString* text = base::SysUTF8ToNSString(
-          password_manager::GetShownOriginAndLinkUrl(form).first);
-      NSString* detailText = base::SysUTF16ToNSString(form.username_value);
+    for (const auto& credential : _passwords) {
+      NSString* text =
+          base::SysUTF8ToNSString(password_manager::GetShownOrigin(credential));
+      NSString* detailText = base::SysUTF16ToNSString(credential.username);
       bool hidden =
           searchTerm.length > 0 &&
           ![text localizedCaseInsensitiveContainsString:searchTerm] &&
@@ -1445,27 +1410,27 @@ bool ShouldShowSettingsUI() {
       [model addItem:(IsFaviconEnabled()
                           ? [self savedFormItemWithText:text
                                           andDetailText:detailText
-                                                forForm:form]
+                                          forCredential:credential]
                           : [self legacySavedFormItemWithText:text
                                                 andDetailText:detailText
-                                                      forForm:form])
+                                                forCredential:credential])
           toSectionWithIdentifier:SectionIdentifierSavedPasswords];
     }
   }
 
-  if (!_blockedForms.empty()) {
+  if (!_blockedSites.empty()) {
     [model deleteAllItemsFromSectionWithIdentifier:SectionIdentifierBlocked];
-    for (const auto& form : _blockedForms) {
-      NSString* text = base::SysUTF8ToNSString(
-          password_manager::GetShownOriginAndLinkUrl(form).first);
+    for (const auto& credential : _blockedSites) {
+      NSString* text =
+          base::SysUTF8ToNSString(password_manager::GetShownOrigin(credential));
       bool hidden = searchTerm.length > 0 &&
                     ![text localizedCaseInsensitiveContainsString:searchTerm];
       if (hidden)
         continue;
       [model addItem:(IsFaviconEnabled()
-                          ? [self blockedFormItemForForm:form]
+                          ? [self blockedSiteItem:credential]
                           : [self legacyBlockedFormItemWithText:text
-                                                        forForm:form])
+                                                  forCredential:credential])
           toSectionWithIdentifier:SectionIdentifierBlocked];
     }
   }
@@ -1476,7 +1441,7 @@ bool ShouldShowSettingsUI() {
 - (void)updateLastCheckTimestampWithState:(PasswordCheckUIState)state
                                 fromState:(PasswordCheckUIState)oldState
                                    update:(BOOL)update {
-  if (!_didReceiveSavedForms) {
+  if (!_didReceivePasswords) {
     return;
   }
 
@@ -1644,7 +1609,7 @@ bool ShouldShowSettingsUI() {
 - (void)updateExportPasswordsButton {
   if (!_exportPasswordsItem)
     return;
-  if (!_savedForms.empty() &&
+  if (!_passwords.empty() &&
       self.passwordExporter.exportState == ExportState::IDLE) {
     _exportReady = YES;
     if (!self.editing) {
@@ -1695,7 +1660,7 @@ bool ShouldShowSettingsUI() {
                   return;
                 }
                 [strongSelf.passwordExporter
-                    startExportFlow:CopyOf(strongSelf->_savedForms)];
+                    startExportFlow:strongSelf->_passwords];
               }];
 
   [exportConfirmation addAction:exportAction];
@@ -1723,26 +1688,37 @@ bool ShouldShowSettingsUI() {
 }
 
 - (void)deleteItemAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
-  std::vector<password_manager::PasswordForm> passwordsToDelete;
-  std::vector<password_manager::PasswordForm> blockedToDelete;
+  std::vector<password_manager::CredentialUIEntry> credentialsToDelete;
 
   for (NSIndexPath* indexPath in indexPaths) {
-    password_manager::PasswordForm form =
+    password_manager::CredentialUIEntry credential =
         IsFaviconEnabled()
             ? base::mac::ObjCCastStrict<PasswordFormContentItem>(
                   [self.tableViewModel itemAtIndexPath:indexPath])
-                  .form
+                  .credential
             : base::mac::ObjCCastStrict<LegacyPasswordFormContentItem>(
                   [self.tableViewModel itemAtIndexPath:indexPath])
-                  .form;
+                  .credential;
     // Only form items are editable.
     NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-    BOOL blocked = (itemType == ItemTypeBlocked);
-    blocked ? blockedToDelete.push_back(form)
-            : passwordsToDelete.push_back(form);
+
+    auto removeCredential =
+        [](std::vector<password_manager::CredentialUIEntry>& credentials,
+           const password_manager::CredentialUIEntry& credential) {
+          auto iterator =
+              std::find(credentials.begin(), credentials.end(), credential);
+          if (iterator != credentials.end())
+            credentials.erase(iterator);
+        };
+    
+    if (itemType == ItemTypeBlocked) {
+      removeCredential(_blockedSites, credential);
+    } else {
+      removeCredential(_passwords, credential);
+    }
+    
+    credentialsToDelete.push_back(std::move(credential));
   }
-  RemoveFormsToBeDeleted(_savedForms, passwordsToDelete);
-  RemoveFormsToBeDeleted(_blockedForms, blockedToDelete);
 
   // Remove empty sections.
   __weak PasswordManagerViewController* weakSelf = self;
@@ -1760,11 +1736,11 @@ bool ShouldShowSettingsUI() {
         // Delete in reverse order of section indexes (bottom up of section
         // displayed), so that indexes in model matches those in the view.  if
         // we don't we'll cause a crash.
-        if (strongSelf->_blockedForms.empty()) {
+        if (strongSelf->_blockedSites.empty()) {
           [self clearSectionWithIdentifier:SectionIdentifierBlocked
                           withRowAnimation:UITableViewRowAnimationAutomatic];
         }
-        if (strongSelf->_savedForms.empty()) {
+        if (strongSelf->_passwords.empty()) {
           [strongSelf
               clearSectionWithIdentifier:SectionIdentifierSavedPasswords
                         withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -1775,18 +1751,13 @@ bool ShouldShowSettingsUI() {
         if (!strongSelf)
           return;
         // If both lists are empty, exit editing mode.
-        if (strongSelf->_savedForms.empty() &&
-            strongSelf->_blockedForms.empty())
+        if (strongSelf->_passwords.empty() && strongSelf->_blockedSites.empty())
           [strongSelf setEditing:NO animated:YES];
         [strongSelf updateUIForEditState];
         [strongSelf updateExportPasswordsButton];
       }];
 
-  passwordsToDelete.insert(passwordsToDelete.end(),
-                           std::make_move_iterator(blockedToDelete.begin()),
-                           std::make_move_iterator(blockedToDelete.end()));
-
-  [self.delegate deletePasswordForms:passwordsToDelete];
+  [self.delegate deleteCredentials:credentialsToDelete];
 }
 
 - (void)showPasswordIssuesPage {
@@ -1883,33 +1854,30 @@ bool ShouldShowSettingsUI() {
     case ItemTypeSavedPassword: {
       DCHECK_EQ(SectionIdentifierSavedPasswords,
                 [model sectionIdentifierForSectionIndex:indexPath.section]);
-      password_manager::PasswordForm form =
+      password_manager::CredentialUIEntry credential =
           IsFaviconEnabled()
               ? base::mac::ObjCCastStrict<PasswordFormContentItem>(
                     [model itemAtIndexPath:indexPath])
-                    .form
+                    .credential
               : base::mac::ObjCCastStrict<LegacyPasswordFormContentItem>(
                     [model itemAtIndexPath:indexPath])
-                    .form;
-      [self.handler
-          showDetailedViewForCredential:password_manager::CredentialUIEntry(
-                                            form)];
+                    .credential;
+      [self.handler showDetailedViewForCredential:credential];
       break;
     }
     case ItemTypeBlocked: {
       DCHECK_EQ(SectionIdentifierBlocked,
                 [model sectionIdentifierForSectionIndex:indexPath.section]);
-      password_manager::PasswordForm form =
+      password_manager::CredentialUIEntry credential =
           IsFaviconEnabled()
               ? base::mac::ObjCCastStrict<PasswordFormContentItem>(
                     [model itemAtIndexPath:indexPath])
-                    .form
+                    .credential
               : base::mac::ObjCCastStrict<LegacyPasswordFormContentItem>(
                     [model itemAtIndexPath:indexPath])
-                    .form;
-      [self.handler
-          showDetailedViewForCredential:password_manager::CredentialUIEntry(
-                                            form)];
+
+                    .credential;
+      [self.handler showDetailedViewForCredential:credential];
       break;
     }
     case ItemTypeExportPasswordsButton:
