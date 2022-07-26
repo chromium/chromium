@@ -672,7 +672,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabGroupsForTablets =
             new CachedFlag(TAB_GROUPS_FOR_TABLETS, false);
     public static final CachedFlag sTabStripImprovements =
-            new CachedFlag(TAB_STRIP_IMPROVEMENTS, false);
+            new CachedFlag(TAB_STRIP_IMPROVEMENTS, true);
     public static final CachedFlag sTabToGTSAnimation = new CachedFlag(TAB_TO_GTS_ANIMATION, true);
     public static final CachedFlag sTestDefaultDisabled =
             new CachedFlag(TEST_DEFAULT_DISABLED, false);

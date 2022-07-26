@@ -118,7 +118,7 @@ public class StripLayoutHelperTest {
         when(mTabGroupModelFilter.hasOtherRelatedTabs(any())).thenReturn(false);
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        TabUiFeatureUtilities.setTabMinWidthForTesting(null);
+        TabUiFeatureUtilities.setTabMinWidthForTesting(190.f);
     }
 
     @After
