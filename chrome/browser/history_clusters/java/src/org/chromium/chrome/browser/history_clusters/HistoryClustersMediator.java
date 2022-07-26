@@ -47,10 +47,12 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 class HistoryClustersMediator extends RecyclerView.OnScrollListener implements SearchDelegate {
     @VisibleForTesting
@@ -60,6 +62,21 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
     interface Clock {
         long currentTimeMillis();
+    }
+
+    private static class VisitMetadata {
+        public final ListItem visitListItem;
+        public final ListItem clusterListItem;
+        public final ListItem relatedSearchesListItem;
+        public AtomicInteger visitCount;
+
+        private VisitMetadata(ListItem visitListItem, ListItem clusterListItem,
+                ListItem relatedSearchesListItem, AtomicInteger visitCount) {
+            this.visitListItem = visitListItem;
+            this.clusterListItem = clusterListItem;
+            this.relatedSearchesListItem = relatedSearchesListItem;
+            this.visitCount = visitCount;
+        }
     }
 
     private final HistoryClustersBridge mHistoryClustersBridge;
@@ -82,6 +99,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private QueryState mQueryState = QueryState.forQueryless();
     private final HistoryClustersMetricsLogger mMetricsLogger;
     private Map<String, PropertyModel> mLabelToModelMap = new LinkedHashMap<>();
+    private Map<ClusterVisit, VisitMetadata> mVisitMetadataMap = new HashMap<>();
 
     /**
      * Create a new HistoryClustersMediator.
@@ -267,11 +285,22 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             mDelegate.markVisitForRemoval(visit);
             mMetricsLogger.recordVisitAction(
                     HistoryClustersMetricsLogger.VisitAction.DELETED, visit);
+            removeVisit(visit);
         }
-        mDelegate.removeMarkedItems();
 
-        resetModel();
-        startQuery(mQueryState.getQuery());
+        mDelegate.removeMarkedItems();
+    }
+
+    private void removeVisit(ClusterVisit visit) {
+        VisitMetadata visitMetadata = mVisitMetadataMap.get(visit);
+        if (visitMetadata == null) return;
+        mModelList.remove(visitMetadata.visitListItem);
+        if (visitMetadata.visitCount.decrementAndGet() == 0) {
+            mModelList.remove(visitMetadata.clusterListItem);
+            if (visitMetadata.relatedSearchesListItem != null) {
+                mModelList.remove(visitMetadata.relatedSearchesListItem);
+            }
+        }
     }
 
     private Tab createNewTab(GURL gurl, boolean incognito, Tab parentTab) {
@@ -333,7 +362,24 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
             List<ListItem> visitsAndRelatedSearches =
                     new ArrayList<>(cluster.getVisits().size() + 1);
-            for (ClusterVisit visit : cluster.getVisits()) {
+            ListItem relatedSearchesItem = null;
+            List<String> relatedSearches = cluster.getRelatedSearches();
+            if (!relatedSearches.isEmpty()) {
+                PropertyModel relatedSearchesModel =
+                        new PropertyModel.Builder(HistoryClustersItemProperties.ALL_KEYS)
+                                .with(HistoryClustersItemProperties.RELATED_SEARCHES,
+                                        relatedSearches)
+                                .with(HistoryClustersItemProperties.CHIP_CLICK_HANDLER,
+                                        (query)
+                                                -> onRelatedSearchesChipClicked(
+                                                        query, relatedSearches.indexOf(query)))
+                                .build();
+                relatedSearchesItem = new ListItem(ItemType.RELATED_SEARCHES, relatedSearchesModel);
+            }
+
+            AtomicInteger visitCount = new AtomicInteger(cluster.getVisits().size());
+            for (int i = 0; i < visitCount.get(); i++) {
+                ClusterVisit visit = cluster.getVisits().get(i);
                 PropertyModel visitModel =
                         new PropertyModel.Builder(HistoryClustersItemProperties.ALL_KEYS)
                                 .with(HistoryClustersItemProperties.TITLE,
@@ -361,27 +407,17 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                             });
                 }
 
-                visitsAndRelatedSearches.add(new ListItem(ItemType.VISIT, visitModel));
+                ListItem listItem = new ListItem(ItemType.VISIT, visitModel);
+                mVisitMetadataMap.put(visit,
+                        new VisitMetadata(listItem, clusterItem, relatedSearchesItem, visitCount));
+                visitsAndRelatedSearches.add(listItem);
             }
 
-            List<String> relatedSearches = cluster.getRelatedSearches();
-            if (!relatedSearches.isEmpty()) {
-                PropertyModel relatedSearchesModel =
-                        new PropertyModel.Builder(HistoryClustersItemProperties.ALL_KEYS)
-                                .with(HistoryClustersItemProperties.RELATED_SEARCHES,
-                                        relatedSearches)
-                                .with(HistoryClustersItemProperties.CHIP_CLICK_HANDLER,
-                                        (query)
-                                                -> onRelatedSearchesChipClicked(
-                                                        query, relatedSearches.indexOf(query)))
-                                .build();
-                ListItem relatedSearchesItem =
-                        new ListItem(ItemType.RELATED_SEARCHES, relatedSearchesModel);
+            if (relatedSearchesItem != null) {
                 visitsAndRelatedSearches.add(relatedSearchesItem);
             }
 
             mModelList.addAll(visitsAndRelatedSearches);
-
             clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
                     v -> hideCluster(clusterModel, visitsAndRelatedSearches));
             Drawable chevron = UiUtils.getTintedDrawable(mContext,
@@ -395,6 +431,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private void resetModel() {
         mModelList.clear();
         mLabelToModelMap.clear();
+        mVisitMetadataMap.clear();
     }
 
     private String getQuotedLabelFromRawLabel(String rawLabel, List<HistoryCluster> clusters) {
