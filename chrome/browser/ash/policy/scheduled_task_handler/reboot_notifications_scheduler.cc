@@ -41,6 +41,7 @@ RebootNotificationsScheduler::RebootNotificationsScheduler(
 
 RebootNotificationsScheduler::~RebootNotificationsScheduler() {
   DCHECK_EQ(instance, this);
+  observation_.Reset();
   RebootNotificationsScheduler::SetInstance(nullptr);
 }
 
