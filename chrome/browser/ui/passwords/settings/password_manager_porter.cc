@@ -4,10 +4,7 @@
 
 #include "chrome/browser/ui/passwords/settings/password_manager_porter.h"
 
-#include <iterator>
-#include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -17,19 +14,15 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
-#include "net/base/filename_util.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
 #endif
@@ -69,7 +62,9 @@ base::FilePath GetDefaultFilepathForPasswordFile(
 // A helper class for reading the passwords that have been imported.
 class PasswordImportConsumer {
  public:
-  explicit PasswordImportConsumer(Profile* profile);
+  explicit PasswordImportConsumer(
+      Profile* profile,
+      raw_ptr<password_manager::SavedPasswordsPresenter> presenter);
 
   PasswordImportConsumer(const PasswordImportConsumer&) = delete;
   PasswordImportConsumer& operator=(const PasswordImportConsumer&) = delete;
@@ -78,11 +73,14 @@ class PasswordImportConsumer {
 
  private:
   raw_ptr<Profile> profile_;
+  const raw_ptr<password_manager::SavedPasswordsPresenter> presenter_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-PasswordImportConsumer::PasswordImportConsumer(Profile* profile)
-    : profile_(profile) {}
+PasswordImportConsumer::PasswordImportConsumer(
+    Profile* profile,
+    raw_ptr<password_manager::SavedPasswordsPresenter> presenter)
+    : profile_(profile), presenter_(presenter) {}
 
 void PasswordImportConsumer::ConsumePasswords(
     password_manager::mojom::CSVPasswordSequencePtr seq) {
@@ -90,14 +88,10 @@ void PasswordImportConsumer::ConsumePasswords(
   if (!seq)
     return;
 
-  scoped_refptr<password_manager::PasswordStoreInterface> store(
-      PasswordStoreFactory::GetForProfile(profile_,
-                                          ServiceAccessType::EXPLICIT_ACCESS));
-  if (!store)
-    return;
-
-  for (const auto& pwd : seq->csv_passwords)
-    store->AddLogin(pwd.ToPasswordForm());
+  for (const auto& pwd : seq->csv_passwords) {
+    presenter_->AddCredential(password_manager::CredentialUIEntry(pwd),
+                              password_manager::PasswordForm::Type::kImported);
+  }
 
   UMA_HISTOGRAM_COUNTS_1M("PasswordManager.ImportedPasswordsPerUserInCSV",
                           seq->csv_passwords.size());
@@ -240,7 +234,8 @@ void PasswordManagerPorter::FileSelectionCanceled(void* params) {
 void PasswordManagerPorter::ImportPasswordsFromPath(
     const base::FilePath& path) {
   // Set up a |PasswordImportConsumer| to process each password entry.
-  auto form_consumer = std::make_unique<PasswordImportConsumer>(profile_);
+  auto form_consumer =
+      std::make_unique<PasswordImportConsumer>(profile_, presenter_);
   importer_->Import(path,
                     base::BindOnce(&PasswordImportConsumer::ConsumePasswords,
                                    std::move(form_consumer)));

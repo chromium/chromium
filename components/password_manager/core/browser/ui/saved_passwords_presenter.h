@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece_forward.h"
+#include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -93,7 +94,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // was added, false if |credential|'s data is not valid (invalid url/empty
   // password), or an entry with such signon_realm and username already exists
   // in any (profile or account) store.
-  bool AddCredential(const CredentialUIEntry& credential);
+  bool AddCredential(const CredentialUIEntry& credential,
+                     password_manager::PasswordForm::Type type =
+                         password_manager::PasswordForm::Type::kManuallyAdded);
 
   // Tries to edit |password|. After checking whether |form| is present in
   // |passwords_|, this will ask the password store to change the underlying

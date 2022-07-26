@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
-#include "components/password_manager/core/browser/password_form.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,9 +25,8 @@ namespace password_manager {
 
 namespace {
 const char kTestOriginURL[] = "http://accounts.google.com/a/LoginAuth";
-const char kTestSignonRealm[] = "http://accounts.google.com/";
-const char16_t kTestUsername[] = u"test@gmail.com";
-const char16_t kTestPassword[] = u"test1";
+const char kTestUsername[] = "test@gmail.com";
+const char kTestPassword[] = "test1";
 const char kTestFileName[] = "test_only.csv";
 }  // namespace
 
@@ -78,11 +76,11 @@ class PasswordImporterTest : public testing::Test {
     if (!seq)
       return;
     for (const auto& pwd : seq->csv_passwords) {
-      imported_passwords_.push_back(pwd.ToPasswordForm());
+      imported_passwords_.push_back(pwd);
     }
   }
 
-  const std::vector<PasswordForm>& imported_passwords() {
+  const std::vector<CSVPassword>& imported_passwords() {
     return imported_passwords_;
   }
 
@@ -96,7 +94,7 @@ class PasswordImporterTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   bool callback_called_ = false;
-  std::vector<PasswordForm> imported_passwords_;
+  std::vector<CSVPassword> imported_passwords_;
   FakePasswordParserService service_;
   mojo::Receiver<mojom::CSVPasswordParser> receiver_;
   password_manager::PasswordImporter importer_;
@@ -114,10 +112,9 @@ TEST_F(PasswordImporterTest, CSVImport) {
   ASSERT_NO_FATAL_FAILURE(StartImportAndWaitForCompletion(input_path));
 
   ASSERT_EQ(1u, imported_passwords().size());
-  EXPECT_EQ(GURL(kTestOriginURL), imported_passwords()[0].url);
-  EXPECT_EQ(kTestSignonRealm, imported_passwords()[0].signon_realm);
-  EXPECT_EQ(kTestUsername, imported_passwords()[0].username_value);
-  EXPECT_EQ(kTestPassword, imported_passwords()[0].password_value);
+  EXPECT_EQ(GURL(kTestOriginURL), imported_passwords()[0].GetURL());
+  EXPECT_EQ(kTestUsername, imported_passwords()[0].GetUsername());
+  EXPECT_EQ(kTestPassword, imported_passwords()[0].GetPassword());
 }
 
 TEST_F(PasswordImporterTest, CSVImportLargeFile) {

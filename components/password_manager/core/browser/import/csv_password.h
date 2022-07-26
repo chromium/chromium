@@ -9,7 +9,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/strings/string_piece.h"
-#include "components/password_manager/core/browser/password_form.h"
+
+#include "url/gurl.h"
 
 namespace password_manager {
 
@@ -47,10 +48,6 @@ class CSVPassword {
   // Returns the URL.
   const GURL& GetURL() const;
 
-  // Returns PasswordForm populated with parsed data, if initial parsing
-  // completed successfully.
-  PasswordForm ToPasswordForm() const;
-
  private:
   GURL url_;
   std::string username_;
@@ -58,6 +55,9 @@ class CSVPassword {
 
   Status status_;
 };
+
+// An exact equality comparison of all the fields is only used for tests.
+bool operator==(const CSVPassword& lhs, const CSVPassword& rhs);
 
 }  // namespace password_manager
 

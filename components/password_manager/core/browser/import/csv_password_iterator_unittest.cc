@@ -36,8 +36,7 @@ TEST(CSVPasswordIteratorTest, Operations) {
   {
     base::test::SingleThreadTaskEnvironment env(
         base::test::TaskEnvironment::TimeSource::MOCK_TIME);
-    EXPECT_EQ(iter->ToPasswordForm(),
-              CSVPassword(kColMap, kCSV).ToPasswordForm());
+    EXPECT_EQ(*iter, CSVPassword(kColMap, kCSV));
   }
 
   // Copy.
@@ -95,12 +94,12 @@ TEST(CSVPasswordIteratorTest, MostRowsCorrect) {
   EXPECT_NE(CSVPassword::Status::kOK, check->GetParseStatus());
 
   for (const base::StringPiece& expected_username : kExpectedUsernames) {
-    PasswordForm result = (iter++)->ToPasswordForm();
+    CSVPassword result = *(iter++);
     // Detailed checks of the parsed result are made in the test for
     // CSVPassword. Here only the last field (username) is checked to (1) ensure
     // that lines are processed in the expected sequence, and (2) line breaks
     // are handled as expected (in particular, '\r' alone is not a line break).
-    EXPECT_EQ(base::ASCIIToUTF16(expected_username), result.username_value);
+    EXPECT_EQ(expected_username, result.GetUsername());
   }
 }
 
@@ -121,8 +120,7 @@ TEST(CSVPasswordIteratorTest, LastRowCorrect) {
 
   // The iterator should skip all the faulty rows and land on the last one.
   EXPECT_EQ(CSVPassword::Status::kOK, iter->GetParseStatus());
-  PasswordForm pf = iter->ToPasswordForm();
-  EXPECT_EQ("http://no-failure.example.com/", pf.signon_realm);
+  EXPECT_EQ("http://no-failure.example.com/", iter->GetURL());
 
   iter++;
   // After iterating over all lines, there is no more data to parse.

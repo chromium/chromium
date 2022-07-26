@@ -29,11 +29,6 @@ std::string ConvertUTF8(base::StringPiece str) {
   return str_copy;
 }
 
-// Convert() converts the result to a 16-bit string.
-std::u16string Convert(const std::string& str) {
-  return base::UTF8ToUTF16(str);
-}
-
 }  // namespace
 
 CSVPassword::CSVPassword() : status_(Status::kSemanticError) {}
@@ -93,27 +88,14 @@ CSVPassword::CSVPassword(CSVPassword&&) = default;
 CSVPassword& CSVPassword::operator=(const CSVPassword&) = default;
 CSVPassword& CSVPassword::operator=(CSVPassword&&) = default;
 
-CSVPassword::Status CSVPassword::GetParseStatus() const {
-  return status_;
+bool operator==(const CSVPassword& lhs, const CSVPassword& rhs) {
+  return lhs.GetParseStatus() == rhs.GetParseStatus() &&
+         lhs.GetPassword() == rhs.GetPassword() &&
+         lhs.GetUsername() == rhs.GetUsername() && lhs.GetURL() == rhs.GetURL();
 }
 
-PasswordForm CSVPassword::ToPasswordForm() const {
-  // Only valid PasswordForms are allowed to be created.
-  DCHECK_EQ(this->GetParseStatus(), Status::kOK);
-  // There is currently no way to import non-HTML credentials.
-  PasswordForm form;
-  form.scheme = PasswordForm::Scheme::kHtml;
-  // Android credentials have a non-standard scheme ("android://"). Hence the
-  // following explicit check is necessary to set |signon_realm| correctly for
-  // both regular and Android credentials.
-  form.signon_realm =
-      IsValidAndroidFacetURI(url_.spec()) ? url_.spec() : GetSignonRealm(url_);
-  form.url = url_;
-  form.username_value = Convert(username_);
-  form.password_value = Convert(password_);
-  form.date_created = base::Time::Now();
-  form.date_password_modified = form.date_created;
-  return form;
+CSVPassword::Status CSVPassword::GetParseStatus() const {
+  return status_;
 }
 
 const std::string& CSVPassword::GetPassword() const {

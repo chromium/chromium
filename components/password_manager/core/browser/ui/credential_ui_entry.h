@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
@@ -25,6 +26,7 @@ struct CredentialUIEntry {
 
   CredentialUIEntry();
   explicit CredentialUIEntry(const PasswordForm& form);
+  explicit CredentialUIEntry(const CSVPassword& csv_password);
   CredentialUIEntry(const CredentialUIEntry& other);
   CredentialUIEntry(CredentialUIEntry&& other);
   ~CredentialUIEntry();

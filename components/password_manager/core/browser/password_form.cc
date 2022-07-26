@@ -59,10 +59,13 @@ std::string ToString(PasswordForm::Type type) {
       return "API";
     case PasswordForm::Type::kManuallyAdded:
       return "Manually Added";
+    case PasswordForm::Type::kImported:
+      return "Imported";
   }
 
-  NOTREACHED();
-  return std::string();
+  // In old clients type might contain non-enum values and their mapping is
+  // unknown.
+  return "Unknown";
 }
 
 std::string ToString(PasswordForm::GenerationUploadStatus status) {

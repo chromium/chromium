@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
 #include "components/password_manager/core/browser/ui/export_progress_status.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace content {
@@ -18,7 +19,6 @@ class WebContents;
 }
 
 namespace password_manager {
-class SavedPasswordsPresenter;
 class PasswordManagerExporter;
 }  // namespace password_manager
 
@@ -92,7 +92,7 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
   // We store |presenter_| and
   // |on_export_progress_callback_| to use them to create a new
   // PasswordManagerExporter instance for each export.
-  raw_ptr<password_manager::SavedPasswordsPresenter> presenter_;
+  const raw_ptr<password_manager::SavedPasswordsPresenter> presenter_;
   ProgressCallback on_export_progress_callback_;
 };
 

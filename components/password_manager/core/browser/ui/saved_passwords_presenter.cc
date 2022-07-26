@@ -14,6 +14,8 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
+#include "components/password_manager/core/browser/form_parsing/form_parser.h"
+#include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -159,7 +161,8 @@ void SavedPasswordsPresenter::UndoLastRemoval() {
 }
 
 bool SavedPasswordsPresenter::AddCredential(
-    const CredentialUIEntry& credential) {
+    const CredentialUIEntry& credential,
+    password_manager::PasswordForm::Type type) {
   if (!password_manager_util::IsValidPasswordURL(credential.url))
     return false;
   if (credential.password.empty())
@@ -182,7 +185,7 @@ bool SavedPasswordsPresenter::AddCredential(
     account_store_->Unblocklist(form_digest);
 
   PasswordForm form = GenerateFormFromCredential(credential);
-  form.type = password_manager::PasswordForm::Type::kManuallyAdded;
+  form.type = type;
   form.date_created = base::Time::Now();
   form.date_password_modified = base::Time::Now();
 

@@ -51,7 +51,7 @@ TEST(PasswordCSVWriterTest, SerializePasswords_SinglePassword) {
 
   std::vector<CredentialUIEntry> pwds;
   for (const auto& pwd : seq) {
-    pwds.emplace_back(pwd.ToPasswordForm());
+    pwds.emplace_back(pwd);
   }
   EXPECT_THAT(pwds, ElementsAre(FormHasOriginUsernamePassword(
                         "http://example.com/", "Someone", "Secret")));
@@ -74,7 +74,7 @@ TEST(PasswordCSVWriterTest, SerializePasswords_TwoPasswords) {
 
   std::vector<CredentialUIEntry> pwds;
   for (const auto& pwd : seq) {
-    pwds.emplace_back(pwd.ToPasswordForm());
+    pwds.emplace_back(pwd);
   }
   EXPECT_THAT(pwds, ElementsAre(FormHasOriginUsernamePassword(
                                     "http://example.com/", "Someone", "Secret"),
