@@ -60,11 +60,13 @@ void PropertyTreeManager::Finalize() {
 static void UpdateCcTransformLocalMatrix(
     cc::TransformNode& compositor_node,
     const TransformPaintPropertyNode& transform_node) {
-  if (transform_node.GetStickyConstraint()) {
+  if (transform_node.GetStickyConstraint() ||
+      transform_node.GetAnchorScrollContainersData()) {
     // The sticky offset on the blink transform node is pre-computed and stored
     // to the local matrix. Cc applies sticky offset dynamically on top of the
     // local matrix. We should not set the local matrix on cc node if it is a
     // sticky node because the sticky offset would be applied twice otherwise.
+    // Same for anchor positioning.
     DCHECK(compositor_node.local.IsIdentity());
     DCHECK_EQ(gfx::Point3F(), compositor_node.origin);
   } else if (transform_node.IsIdentityOr2DTranslation()) {
@@ -464,6 +466,16 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
               shifting_containing_block_element_id))
         sticky_data.nearest_node_shifting_containing_block = node->id;
     }
+  }
+
+  if (const auto* anchor_scroll_data =
+          transform_node.GetAnchorScrollContainersData()) {
+    cc::AnchorScrollContainersData& compositor_data =
+        transform_tree_.EnsureAnchorScrollContainersData(id);
+    compositor_data.inner_most_scroll_container_id = EnsureCompositorScrollNode(
+        *anchor_scroll_data->inner_most_scroll_container);
+    compositor_data.outer_most_scroll_container_id = EnsureCompositorScrollNode(
+        *anchor_scroll_data->outer_most_scroll_container);
   }
 
   auto compositor_element_id = transform_node.GetCompositorElementId();

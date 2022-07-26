@@ -39,6 +39,7 @@ using CompositingReasons = uint64_t;
   V(FixedPosition)                                                            \
   V(FixedToViewport)                                                          \
   V(StickyPosition)                                                           \
+  V(AnchorScroll)                                                             \
   V(OverflowScrolling)                                                        \
   V(WillChangeTransform)                                                      \
   V(WillChangeScale)                                                          \

@@ -181,6 +181,7 @@ void TransformTree::UpdateTransforms(
   DCHECK(parent_node);
   // TODO(flackr): Only dirty when scroll offset changes.
   if (node->sticky_position_constraint_id >= 0 ||
+      node->anchor_scroll_containers_data_id >= 0 ||
       node->needs_local_transform_update || ShouldUndoOverscroll(node)) {
     UpdateLocalTransform(node, viewport_property_ids);
   } else {
@@ -455,6 +456,47 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(TransformNode* node) {
   return gfx::ToRoundedVector2d(sticky_offset);
 }
 
+AnchorScrollContainersData& TransformTree::EnsureAnchorScrollContainersData(
+    int node_id) {
+  TransformNode* node = Node(node_id);
+  if (node->anchor_scroll_containers_data_id == -1) {
+    node->anchor_scroll_containers_data_id =
+        anchor_scroll_containers_data_.size();
+    anchor_scroll_containers_data_.push_back(AnchorScrollContainersData());
+  }
+  return anchor_scroll_containers_data_[node->anchor_scroll_containers_data_id];
+}
+
+const AnchorScrollContainersData* TransformTree::GetAnchorScrollContainersData(
+    int node_id) const {
+  const TransformNode* node = Node(node_id);
+  if (node->anchor_scroll_containers_data_id == -1)
+    return nullptr;
+  return &anchor_scroll_containers_data_
+      [node->anchor_scroll_containers_data_id];
+}
+
+gfx::Vector2dF TransformTree::AnchorScrollOffset(TransformNode* node) {
+  const AnchorScrollContainersData* data =
+      GetAnchorScrollContainersData(node->id);
+  if (!data)
+    return gfx::Vector2dF();
+  gfx::Vector2dF accumulated_scroll_offset(0, 0);
+  for (int scroller_id = data->inner_most_scroll_container_id;
+       scroller_id != kInvalidPropertyNodeId;) {
+    const ScrollNode* scroll_node =
+        property_trees()->scroll_tree().Node(scroller_id);
+    const TransformNode* transform_node = Node(scroll_node->transform_id);
+    accumulated_scroll_offset +=
+        transform_node->scroll_offset.OffsetFromOrigin();
+
+    if (scroller_id == data->outer_most_scroll_container_id)
+      break;
+    scroller_id = scroll_node->parent_id;
+  }
+  return -accumulated_scroll_offset;
+}
+
 bool TransformTree::ShouldUndoOverscroll(const TransformNode* node) const {
   return fixed_elements_dont_overscroll_ && node && node->is_fixed_to_viewport;
 }
@@ -517,6 +559,7 @@ void TransformTree::UpdateLocalTransform(
   transform.Translate(fixed_position_adjustment -
                       node->scroll_offset.OffsetFromOrigin());
   transform.Translate(StickyPositionOffset(node));
+  transform.Translate(AnchorScrollOffset(node));
   transform.PreconcatTransform(node->local);
   transform.Translate3d(gfx::Point3F() - node->origin);
 

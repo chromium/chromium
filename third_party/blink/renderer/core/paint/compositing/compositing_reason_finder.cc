@@ -416,6 +416,9 @@ CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
       if (frame_view->LayoutViewport()->HasOverflow())
         reasons |= CompositingReason::kFixedPosition;
     }
+
+    if (box->AnchorScrollContainer())
+      reasons |= CompositingReason::kAnchorScroll;
   }
 
   // Don't promote sticky position elements that cannot move with scrolls.

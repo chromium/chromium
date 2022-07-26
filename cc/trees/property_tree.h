@@ -157,6 +157,7 @@ class CC_EXPORT PropertyTree {
   base::flat_map<ElementId, int> element_id_to_node_index_;
 };
 
+struct AnchorScrollContainersData;
 struct StickyPositionNodeData;
 
 class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
@@ -258,6 +259,10 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   }
   StickyPositionNodeData& EnsureStickyPositionData(int node_id);
 
+  const AnchorScrollContainersData* GetAnchorScrollContainersData(
+      int node_id) const;
+  AnchorScrollContainersData& EnsureAnchorScrollContainersData(int node_id);
+
   // Computes the combined transform between |source_id| and |dest_id|. These
   // two nodes must be on the same ancestor chain.
   void CombineTransformsBetween(int source_id,
@@ -278,6 +283,7 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
 
   StickyPositionNodeData* MutableStickyPositionData(int node_id);
   gfx::Vector2dF StickyPositionOffset(TransformNode* node);
+  gfx::Vector2dF AnchorScrollOffset(TransformNode* node);
   void UpdateLocalTransform(TransformNode* node,
                             const ViewportPropertyIds* viewport_property_ids);
   void UpdateScreenSpaceTransform(TransformNode* node,
@@ -300,6 +306,12 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   std::vector<int> nodes_affected_by_outer_viewport_bounds_delta_;
   std::vector<TransformCachedNodeData> cached_data_;
   std::vector<StickyPositionNodeData> sticky_position_data_;
+  std::vector<AnchorScrollContainersData> anchor_scroll_containers_data_;
+};
+
+struct AnchorScrollContainersData {
+  int inner_most_scroll_container_id = kInvalidPropertyNodeId;
+  int outer_most_scroll_container_id = kInvalidPropertyNodeId;
 };
 
 struct StickyPositionNodeData {

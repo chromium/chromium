@@ -159,6 +159,26 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     bool is_running_animation_on_compositor = false;
   };
 
+  // For the purpose of computing the translation offset caused by CSS
+  // `anchor-scroll`, this structure stores the range of the scroll containers
+  // (both ends inclusive) whose scroll offsets are accumulated.
+  struct AnchorScrollContainersData {
+    scoped_refptr<const TransformPaintPropertyNode> inner_most_scroll_container;
+    scoped_refptr<const TransformPaintPropertyNode> outer_most_scroll_container;
+
+    AnchorScrollContainersData(scoped_refptr<const TransformPaintPropertyNode>
+                                   inner_most_scroll_container,
+                               scoped_refptr<const TransformPaintPropertyNode>
+                                   outer_most_scroll_container)
+        : inner_most_scroll_container(std::move(inner_most_scroll_container)),
+          outer_most_scroll_container(std::move(outer_most_scroll_container)) {}
+
+    bool operator==(const AnchorScrollContainersData& other) const {
+      return inner_most_scroll_container == other.inner_most_scroll_container &&
+             outer_most_scroll_container == other.outer_most_scroll_container;
+    }
+  };
+
   // To make it less verbose and more readable to construct and update a node,
   // a struct with default values is used to represent the state.
   struct PLATFORM_EXPORT State {
@@ -181,6 +201,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     CompositingReasons direct_compositing_reasons = CompositingReason::kNone;
     CompositorElementId compositor_element_id;
     std::unique_ptr<CompositorStickyConstraint> sticky_constraint;
+    std::unique_ptr<AnchorScrollContainersData> anchor_scroll_containers_data;
     // If a visible frame is rooted at this node, this represents the element
     // ID of the containing document.
     CompositorElementId visible_frame_element_id;
@@ -266,6 +287,10 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
 
   const CompositorStickyConstraint* GetStickyConstraint() const {
     return state_.sticky_constraint.get();
+  }
+
+  const AnchorScrollContainersData* GetAnchorScrollContainersData() const {
+    return state_.anchor_scroll_containers_data.get();
   }
 
   // If this is a scroll offset translation (i.e., has an associated scroll

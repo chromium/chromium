@@ -766,6 +766,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
       const auto& box = To<LayoutBox>(object_);
       const PaintLayer* inner_most_scroll_container_layer =
           box.AnchorScrollContainer()->Layer();
+      const PaintLayer* outer_most_scroll_container_layer =
+          inner_most_scroll_container_layer;
       gfx::Vector2dF accumulated_scroll_offset(0, 0);
       for (const PaintLayer* layer = inner_most_scroll_container_layer; layer;
            layer = layer->ContainingScrollContainerLayer()) {
@@ -773,10 +775,15 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
           break;
         accumulated_scroll_offset +=
             layer->GetScrollableArea()->ScrollPosition().OffsetFromOrigin();
+        outer_most_scroll_container_layer = layer;
       }
 
       gfx::Vector2dF translation_offset = -accumulated_scroll_offset;
       TransformPaintPropertyNode::State state{translation_offset};
+
+      DCHECK(full_context_.direct_compositing_reasons &
+             CompositingReason::kAnchorScroll);
+      state.direct_compositing_reasons = CompositingReason::kAnchorScroll;
 
       // TODO(crbug.com/1309178): Not using GetCompositorElementId() here
       // because anchor-positioned elements don't work properly under multicol
@@ -789,6 +796,23 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorScrollTranslation() {
       state.rendering_context_id = context_.rendering_context_id;
       state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
+
+      scoped_refptr<const TransformPaintPropertyNode>
+          inner_most_scroll_container =
+              inner_most_scroll_container_layer->GetLayoutObject()
+                  .FirstFragment()
+                  .PaintProperties()
+                  ->ScrollTranslation();
+      scoped_refptr<const TransformPaintPropertyNode>
+          outer_most_scroll_container =
+              outer_most_scroll_container_layer->GetLayoutObject()
+                  .FirstFragment()
+                  .PaintProperties()
+                  ->ScrollTranslation();
+      state.anchor_scroll_containers_data = std::make_unique<
+          TransformPaintPropertyNode::AnchorScrollContainersData>(
+          std::move(inner_most_scroll_container),
+          std::move(outer_most_scroll_container));
 
       OnUpdateTransform(properties_->UpdateAnchorScrollTranslation(
           *context_.current.transform, std::move(state)));
@@ -2982,6 +3006,8 @@ static bool IsLayoutShiftRoot(const LayoutObject& object,
       return true;
   }
   if (auto* sticky_translation = properties->StickyTranslation())
+    return true;
+  if (auto* anchor_scroll_translation = properties->AnchorScrollTranslation())
     return true;
   if (properties->OverflowClip())
     return true;
