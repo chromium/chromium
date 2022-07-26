@@ -3634,8 +3634,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordProtection.PasswordReuseSyncAccountType"
-    enum="PasswordProtectionSyncAccountType" expires_after="2022-08-27">
-  <owner>drubery@chromium.org</owner>
+    enum="PasswordProtectionSyncAccountType" expires_after="2022-11-27">
+  <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     When password protection service detects a reuse of Chrome sync password,

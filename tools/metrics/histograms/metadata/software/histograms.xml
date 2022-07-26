@@ -46,7 +46,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.Cleaner.CleaningTime" units="ms"
-    expires_after="2022-08-25">
+    expires_after="2023-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -58,7 +58,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.Cleaner.DownloadStatusErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-08-25">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -69,7 +69,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.Cleaner.RunningTime" units="ms"
-    expires_after="2022-08-25">
+    expires_after="2023-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -80,7 +80,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.Cleaner.ScanningTime" units="ms"
-    expires_after="2022-08-25">
+    expires_after="2023-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -103,7 +103,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.CleanerLogsAcceptance" enum="BooleanAccepted"
-    expires_after="2022-08-25">
+    expires_after="2023-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -165,7 +165,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.IPCDisconnected"
-    enum="SoftwareReporterIPCDisconnected" expires_after="2022-08-25">
+    enum="SoftwareReporterIPCDisconnected" expires_after="2023-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -188,7 +188,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.LogsUploadEnabled{Engine}"
-    enum="SoftwareReporterLogsUploadEnabled" expires_after="2022-08-25">
+    enum="SoftwareReporterLogsUploadEnabled" expires_after="2023-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -255,7 +255,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.MinorVersion{Engine}" units="units"
-    expires_after="2022-08-25">
+    expires_after="2023-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -280,7 +280,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.OnDemandUpdateSucceeded"
-    enum="BooleanSuccess" expires_after="2022-08-25">
+    enum="BooleanSuccess" expires_after="2023-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -291,7 +291,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.PostCleanupSettingsReset" units="counts"
-    expires_after="2022-08-25">
+    expires_after="2023-08-25">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -324,7 +324,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.RunningTimeAccordingToChrome2{Engine}"
-    units="ms" expires_after="2022-08-21">
+    units="ms" expires_after="2023-08-21">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -339,7 +339,7 @@ separator. The leading _ keeps the generated histogram names the same.
 </histogram>
 
 <histogram name="SoftwareReporter.RunningTimeWithoutSleep2{Engine}" units="ms"
-    expires_after="2022-08-21">
+    expires_after="2023-08-21">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
