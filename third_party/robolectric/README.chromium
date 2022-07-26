@@ -10,8 +10,8 @@ Local Modifications:
 - Added custom_asynctask folder to have workable copies of shadows required
   for our own implementation of AsyncTask.
 How To Update:
-- Add new version and URL to 3pp/fetch.py for the android_all jar. Keep the old
-  versions for backwards compatibility.
-- Add new version as a prebuilt target to third_party/robolectric BUILD.gn
-- Add that new target to the robolectric_all_java group in the
-  third_party/android_deps/BUILD.gn file.
+- Add new version and URL to 3pp/fetch.py for the android_all jar.
+- Update the old versions to the latest instrumented versioned files
+  for backwards compatibility.
+- Add new version as data to third_party/robolectric BUILD.gn
+- Update DEPS to point to new cipd instance after 3pp packager has ran.
