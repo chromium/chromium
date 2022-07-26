@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
+#include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/clamped_math.h"
@@ -30,6 +31,7 @@
 #include "media/base/video_util.h"
 #include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
+#include "media/video/h264_level_limits.h"
 #include "media/video/video_encode_accelerator_adapter.h"
 #include "media/video/video_encoder_fallback.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
@@ -161,7 +163,7 @@ bool IsAcceleratedConfigurationSupported(
 VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     const VideoEncoderConfig* config,
     ExceptionState& exception_state) {
-  constexpr int kMaxSupportedFrameSize = 8000;
+  constexpr int kMaxSupportedFrameSize = 8192;
   auto* result = MakeGarbageCollected<VideoEncoderTraits::ParsedConfig>();
 
   result->options.frame_size.set_height(config->height());
@@ -322,7 +324,7 @@ bool VerifyCodecSupportStatic(VideoEncoderTraits::ParsedConfig* config,
       }
       break;
 
-    case media::VideoCodec::kH264:
+    case media::VideoCodec::kH264: {
       if (config->options.frame_size.width() % 2 != 0 ||
           config->options.frame_size.height() % 2 != 0) {
         if (exception_state) {
@@ -332,7 +334,34 @@ bool VerifyCodecSupportStatic(VideoEncoderTraits::ParsedConfig* config,
         }
         return false;
       }
+
+      // Note: This calculation is incorrect for interlaced or MBAFF encoding;
+      // but we don't support those and likely never will.
+      gfx::Size coded_size(
+          base::bits::AlignUp(config->options.frame_size.width(), 16),
+          base::bits::AlignUp(config->options.frame_size.height(), 16));
+      uint64_t coded_area = coded_size.Area64();
+      uint64_t max_coded_area =
+          media::H264LevelToMaxFS(config->level) * 16ull * 16ull;
+      if (coded_area > max_coded_area) {
+        if (exception_state) {
+          exception_state->ThrowDOMException(
+              DOMExceptionCode::kNotSupportedError,
+              String::Format("The provided resolution (%s) has a coded area "
+                             "(%d*%d=%" PRIu64
+                             ") which exceeds the maximum coded area (%" PRIu64
+                             ") supported by the AVC level (%1.1f) indicated "
+                             "by the codec string (0x%02X). You must either "
+                             "specify a lower resolution or higher AVC level.",
+                             config->options.frame_size.ToString().c_str(),
+                             coded_size.width(), coded_size.height(),
+                             coded_area, max_coded_area, config->level / 10.0f,
+                             config->level));
+        }
+        return false;
+      }
       break;
+    }
 
     default:
       if (exception_state) {

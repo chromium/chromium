@@ -69,9 +69,10 @@ Take frames coming from various sources and check that:
       TEST.log('First pass completed');
 
       // Reconfigure on-the-fly. Use 16x16 aligned resolution since some
-      // platforms require that. See https://crbug.com/1084702.
-      encoder_config.width += 128;
-      encoder_config.height += 128;
+      // platforms require that. See https://crbug.com/1084702. 720x576 is
+      // the maximum supported by AVC level 3.0.
+      encoder_config.width = 720;
+      encoder_config.height = 576;
       encoder_config.bitrate += encoder_config.bitrate / 2;
       encoder.configure(encoder_config);
 
