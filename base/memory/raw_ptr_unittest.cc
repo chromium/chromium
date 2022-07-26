@@ -86,9 +86,14 @@ namespace {
 
 using RawPtrCountingImpl =
     base::internal::RawPtrCountingImplWrapperForTest<base::DefaultRawPtrImpl>;
+using RawPtrCountingMayDangleImpl =
+    base::internal::RawPtrCountingImplWrapperForTest<base::RawPtrMayDangle>;
 
 template <typename T>
 using CountingRawPtr = raw_ptr<T, RawPtrCountingImpl>;
+
+template <typename T>
+using CountingRawPtrMayDangle = raw_ptr<T, RawPtrCountingMayDangleImpl>;
 
 struct MyStruct {
   int x;
@@ -111,7 +116,10 @@ struct Derived : Base1, Base2 {
 
 class RawPtrTest : public Test {
  protected:
-  void SetUp() override { RawPtrCountingImpl::ClearCounters(); }
+  void SetUp() override {
+    RawPtrCountingImpl::ClearCounters();
+    RawPtrCountingMayDangleImpl::ClearCounters();
+  }
 };
 
 // Struct intended to be used with designated initializers and passed
@@ -127,33 +135,50 @@ struct CountingRawPtrExpectations {
   absl::optional<int> pointer_to_member_operator_cnt;
 };
 
-// Implicit `arg` has type `CountingRawPtrExpectations`.
-MATCHER(CountingRawPtrHasCounts, "`CountingRawPtr` has specified counters") {
-#define REPORT_UNEQUAL_RAW_PTR_COUNTERS(member_name)                  \
+#define REPORT_UNEQUAL_RAW_PTR_COUNTER(member_name, CounterClassImpl) \
   {                                                                   \
     if (arg.member_name.has_value() &&                                \
-        arg.member_name.value() != RawPtrCountingImpl::member_name) { \
+        arg.member_name.value() != CounterClassImpl::member_name) {   \
       *result_listener << "Expected `" #member_name "` to be "        \
                        << arg.member_name.value() << " but got "      \
-                       << RawPtrCountingImpl::member_name << "; ";    \
+                       << CounterClassImpl::member_name << "; ";      \
       result = false;                                                 \
     }                                                                 \
   }
-  bool result = true;
-  REPORT_UNEQUAL_RAW_PTR_COUNTERS(wrap_raw_ptr_cnt)
-  REPORT_UNEQUAL_RAW_PTR_COUNTERS(release_wrapped_ptr_cnt)
-  REPORT_UNEQUAL_RAW_PTR_COUNTERS(get_for_dereference_cnt)
-  REPORT_UNEQUAL_RAW_PTR_COUNTERS(get_for_extraction_cnt)
-  REPORT_UNEQUAL_RAW_PTR_COUNTERS(get_for_comparison_cnt)
-  REPORT_UNEQUAL_RAW_PTR_COUNTERS(wrapped_ptr_swap_cnt)
-  REPORT_UNEQUAL_RAW_PTR_COUNTERS(wrapped_ptr_less_cnt)
-  REPORT_UNEQUAL_RAW_PTR_COUNTERS(pointer_to_member_operator_cnt)
-  return result;
-#undef RAW_PTR_COUNTERS_ARE_EQUAL
-}
+#define REPORT_UNEQUAL_RAW_PTR_COUNTERS(result, CounterClassImpl)             \
+  {                                                                           \
+    result = true;                                                            \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrap_raw_ptr_cnt, CounterClassImpl)        \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(release_wrapped_ptr_cnt, CounterClassImpl) \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_dereference_cnt, CounterClassImpl) \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_extraction_cnt, CounterClassImpl)  \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(get_for_comparison_cnt, CounterClassImpl)  \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrapped_ptr_swap_cnt, CounterClassImpl)    \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(wrapped_ptr_less_cnt, CounterClassImpl)    \
+    REPORT_UNEQUAL_RAW_PTR_COUNTER(pointer_to_member_operator_cnt,            \
+                                   CounterClassImpl)                          \
+  }
 
 // Matcher used with `CountingRawPtr`. Provides slightly shorter
 // boilerplate for verifying counts.
+
+// Implicit `arg` has type `CountingRawPtrExpectations`.
+MATCHER(CountingRawPtrHasCounts, "`CountingRawPtr` has specified counters") {
+  bool result = true;
+  REPORT_UNEQUAL_RAW_PTR_COUNTERS(result, RawPtrCountingImpl);
+  return result;
+}
+
+// Implicit `arg` has type `CountingRawPtrExpectations`.
+MATCHER(MayDangleCountingRawPtrHasCounts,
+        "`MayDangleCountingRawPtr` has specified counters") {
+  bool result = true;
+  REPORT_UNEQUAL_RAW_PTR_COUNTERS(result, RawPtrCountingMayDangleImpl);
+  return result;
+}
+
+#undef REPORT_UNEQUAL_RAW_PTR_COUNTERS
+#undef REPORT_UNEQUAL_RAW_PTR_COUNTER
 
 // Use this instead of std::ignore, to prevent the instruction from getting
 // optimized out by the compiler.
@@ -343,6 +368,99 @@ TEST_F(RawPtrTest, ClearAndDeleteArray) {
               CountingRawPtrHasCounts());
   // clang-format on
   EXPECT_EQ(ptr.get(), nullptr);
+}
+
+TEST_F(RawPtrTest, ExtractAsDangling) {
+  CountingRawPtr<int> ptr(new int);
+
+  if constexpr (std::is_same_v<RawPtrCountingImpl,
+                               RawPtrCountingMayDangleImpl>) {
+    auto expectations = CountingRawPtrExpectations{
+        .wrap_raw_ptr_cnt = 1,
+        .release_wrapped_ptr_cnt = 0,
+        .get_for_dereference_cnt = 0,
+        .wrapped_ptr_swap_cnt = 0,
+    };
+    EXPECT_THAT((expectations), CountingRawPtrHasCounts());
+    EXPECT_THAT((expectations), MayDangleCountingRawPtrHasCounts());
+  } else {
+    EXPECT_THAT((CountingRawPtrExpectations{
+                    .wrap_raw_ptr_cnt = 1,
+                    .release_wrapped_ptr_cnt = 0,
+                    .get_for_dereference_cnt = 0,
+                    .wrapped_ptr_swap_cnt = 0,
+                }),
+                CountingRawPtrHasCounts());
+    EXPECT_THAT((CountingRawPtrExpectations{
+                    .wrap_raw_ptr_cnt = 0,
+                    .release_wrapped_ptr_cnt = 0,
+                    .get_for_dereference_cnt = 0,
+                    .wrapped_ptr_swap_cnt = 0,
+                }),
+                MayDangleCountingRawPtrHasCounts());
+  }
+
+  EXPECT_TRUE(ptr.get());
+
+  CountingRawPtrMayDangle<int> dangling = ptr.ExtractAsDangling();
+
+  if constexpr (std::is_same_v<RawPtrCountingImpl,
+                               RawPtrCountingMayDangleImpl>) {
+    auto expectations = CountingRawPtrExpectations{
+        .wrap_raw_ptr_cnt = 1,
+        .release_wrapped_ptr_cnt = 1,
+        .get_for_dereference_cnt = 0,
+        .wrapped_ptr_swap_cnt = 0,
+    };
+    EXPECT_THAT((expectations), CountingRawPtrHasCounts());
+    EXPECT_THAT((expectations), MayDangleCountingRawPtrHasCounts());
+  } else {
+    EXPECT_THAT((CountingRawPtrExpectations{
+                    .wrap_raw_ptr_cnt = 1,
+                    .release_wrapped_ptr_cnt = 1,
+                    .get_for_dereference_cnt = 0,
+                    .wrapped_ptr_swap_cnt = 0,
+                }),
+                CountingRawPtrHasCounts());
+    EXPECT_THAT((CountingRawPtrExpectations{
+                    .wrap_raw_ptr_cnt = 1,
+                    .release_wrapped_ptr_cnt = 0,
+                    .get_for_dereference_cnt = 0,
+                    .wrapped_ptr_swap_cnt = 0,
+                }),
+                MayDangleCountingRawPtrHasCounts());
+  }
+
+  EXPECT_FALSE(ptr.get());
+  EXPECT_TRUE(dangling.get());
+
+  dangling.ClearAndDelete();
+}
+
+TEST_F(RawPtrTest, ExtractAsDanglingFromDangling) {
+  CountingRawPtrMayDangle<int> ptr(new int);
+
+  EXPECT_THAT((CountingRawPtrExpectations{
+                  .wrap_raw_ptr_cnt = 1,
+                  .release_wrapped_ptr_cnt = 0,
+                  .get_for_dereference_cnt = 0,
+                  .wrapped_ptr_swap_cnt = 0,
+              }),
+              MayDangleCountingRawPtrHasCounts());
+
+  CountingRawPtrMayDangle<int> dangling = ptr.ExtractAsDangling();
+
+  // wrap_raw_ptr_cnt remains `1` because, as `ptr` is already a dangling
+  // pointer, we are only moving `ptr` to `dangling` here to avoid extra cost.
+  EXPECT_THAT((CountingRawPtrExpectations{
+                  .wrap_raw_ptr_cnt = 1,
+                  .release_wrapped_ptr_cnt = 1,
+                  .get_for_dereference_cnt = 0,
+                  .wrapped_ptr_swap_cnt = 0,
+              }),
+              MayDangleCountingRawPtrHasCounts());
+
+  dangling.ClearAndDelete();
 }
 
 TEST_F(RawPtrTest, ConstVolatileVoidPtr) {
@@ -1502,6 +1620,43 @@ TEST(BackupRefPtrImpl, DanglingPtrCopyContructor) {
   not_dangling_ptr_2 = nullptr;
 
   allocator.root()->Free(ptr);
+}
+
+TEST(BackupRefPtrImpl, RawPtrExtractAsDangling) {
+  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
+  // new/delete once PartitionAlloc Everywhere is fully enabled.
+  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
+  partition_alloc::PartitionAllocator allocator;
+  allocator.init(kOpts);
+  ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
+
+  raw_ptr<int> ptr =
+      static_cast<int*>(allocator.root()->Alloc(sizeof(int), ""));
+  allocator.root()->Free(
+      ptr.ExtractAsDangling());  // No dangling raw_ptr reported.
+  EXPECT_EQ(ptr, nullptr);
+}
+
+TEST(BackupRefPtrImpl, RawPtrDeleteWithoutExtractAsDangling) {
+  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
+  // new/delete once PartitionAlloc Everywhere is fully enabled.
+  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
+  partition_alloc::PartitionAllocator allocator;
+  allocator.init(kOpts);
+  ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
+
+  raw_ptr<int> ptr =
+      static_cast<int*>(allocator.root()->Alloc(sizeof(int), ""));
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+  EXPECT_DEATH_IF_SUPPORTED(
+      {
+        allocator.root()->Free(ptr.get());  // Dangling raw_ptr detected.
+        ptr = nullptr;                      // Dangling raw_ptr released.
+      },
+      AllOf(HasSubstr("Detected dangling raw_ptr"),
+            HasSubstr("The memory was freed at:"),
+            HasSubstr("The dangling raw_ptr was released at:")));
+#endif
 }
 
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR) &&

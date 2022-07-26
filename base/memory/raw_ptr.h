@@ -685,6 +685,16 @@ struct IsSupportedType<content::responsiveness::Calculator> {
   static constexpr bool value = false;
 };
 
+// IsRawPtrCountingImpl<T>::value answers whether T is a specialization of
+// RawPtrCountingImplWrapperForTest, to know whether Impl is for testing
+// purposes.
+template <typename T>
+struct IsRawPtrCountingImpl : std::false_type {};
+
+template <typename T>
+struct IsRawPtrCountingImpl<internal::RawPtrCountingImplWrapperForTest<T>>
+    : std::true_type {};
+
 #if __OBJC__
 // raw_ptr<T> is not compatible with pointers to Objective-C classes for a
 // multitude of reasons. They may fail to compile in many cases, and wouldn't
@@ -772,6 +782,11 @@ using DefaultRawPtrImpl = RawPtrBanDanglingIfSupported;
 
 template <typename T, typename Impl = DefaultRawPtrImpl>
 class TRIVIAL_ABI GSL_POINTER raw_ptr {
+  using DanglingRawPtr = std::conditional_t<
+      raw_ptr_traits::IsRawPtrCountingImpl<Impl>::value,
+      raw_ptr<T, internal::RawPtrCountingImplWrapperForTest<RawPtrMayDangle>>,
+      raw_ptr<T, RawPtrMayDangle>>;
+
  public:
   static_assert(raw_ptr_traits::IsSupportedType<T>::value,
                 "raw_ptr<T> doesn't work with this kind of pointee type T");
@@ -997,6 +1012,35 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
     operator=(nullptr);
     delete[] ptr;
+  }
+
+  // Stop referencing the underlying pointer and return another raw_ptr instance
+  // that is allowed to dangle.
+  // This can be useful in cases such as:
+  // ```
+  //  ptr.ExtractAsDangling()->SelfDestroy();
+  // ```
+  // ```
+  //  c_style_api_do_something_and_destroy(ptr.ExtractAsDangling());
+  // ```
+  // NOTE, avoid using this method as it indicates an error-prone memory
+  // ownership pattern. If possible, use smart pointers like std::unique_ptr<>
+  // instead of raw_ptr<>.
+  ALWAYS_INLINE DanglingRawPtr ExtractAsDangling() noexcept {
+    if constexpr (std::is_same_v<
+                      typename std::remove_reference<decltype(*this)>::type,
+                      DanglingRawPtr>) {
+      DanglingRawPtr res(std::move(*this));
+      // Not all implementation clear the source pointer on move, so do it
+      // here just in case. Should be cheap.
+      operator=(nullptr);
+      return res;
+    } else {
+      T* ptr = GetForExtraction();
+      DanglingRawPtr res(ptr);
+      operator=(nullptr);
+      return res;
+    }
   }
 
   // Comparison operators between raw_ptr and raw_ptr<U>/U*/std::nullptr_t.
