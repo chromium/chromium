@@ -282,8 +282,9 @@ void GetAnnotatedVisitsToCluster::IncrementContinuationParams(
     // added all visits; e.g. `begin_time_limit_` can be more recent than 90
     // days ago or the initial `continuation_end_time_` could have been older
     // than now.
-    if (continuation_params_.continuation_time <= begin_time_limit_ ||
-        continuation_params_.continuation_time >= now) {
+    if ((continuation_params_.continuation_time <= begin_time_limit_ &&
+         recent_first_) ||
+        (continuation_params_.continuation_time >= now && !recent_first_)) {
       continuation_params_.exhausted_unclustered_visits = true;
       continuation_params_.exhausted_all_visits = true;
     }

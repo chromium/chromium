@@ -595,6 +595,52 @@ TEST_F(HistoryClustersServiceTest,
   }
 }
 
+TEST_F(HistoryClustersServiceTest, QueryClusters_PersistedClusters_Today) {
+  // Test the case where there is a persisted cluster today. The task rewinds
+  // the query bounds when it reaches a clustered visit, and this should be done
+  // correctly even if it's at the edge.
+
+  // Can't use `Now()`, as the task only searches [now-90, now).
+  const auto today = base::Time::Now() - base::Hours(1);
+
+  // A clustered and unclustered visit, both today.
+  AddCompleteVisit(1, today);
+  AddCompleteVisit(2, today);
+  AddCluster({2});
+
+  QueryClustersContinuationParams continuation_params = {};
+  continuation_params.continuation_time = base::Time::Now();
+
+  // 1st query should return the 1st unclustered visits only  and set
+  // `exhausted_unclustered_visits`.
+  {
+    const auto [clusters, visits] = NextQueryClusters(continuation_params);
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(1));
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
+  }
+  // 2nd query should return the cluster.
+  {
+    const auto [clusters, visits] =
+        NextQueryClusters(continuation_params, false);
+    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(1));
+    EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(2));
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_FALSE(continuation_params.exhausted_all_visits);
+  }
+  // The last query should set `exhausted_all_visits`.
+  {
+    const auto [clusters, visits] =
+        NextQueryClusters(continuation_params, false);
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
+    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
+    EXPECT_TRUE(continuation_params.exhausted_all_visits);
+  }
+}
+
 TEST_F(HistoryClustersServiceTest, QueryClusters_PersistedClusters_MixedDay) {
   // Test the case where there are persisted clusters on a day also containing
   // unclustered visits.
