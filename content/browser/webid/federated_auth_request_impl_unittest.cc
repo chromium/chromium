@@ -807,6 +807,28 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     SUCCEED();
   }
 
+  void CheckAllFedCmSessionIDs() {
+    absl::optional<int> session_id;
+    auto CheckUKMSessionID = [&](const auto& ukm_entries) {
+      ASSERT_FALSE(ukm_entries.empty());
+      for (const auto* const entry : ukm_entries) {
+        const auto* const metric =
+            ukm_recorder()->GetEntryMetric(entry, "FedCmSessionID");
+        EXPECT_TRUE(metric)
+            << "All UKM events should have the SessionID metric";
+        if (!session_id.has_value()) {
+          session_id = *metric;
+        } else {
+          ASSERT_EQ(*metric, *session_id)
+              << "All UKM events should have the same SessionID";
+        }
+      }
+    };
+    CheckUKMSessionID(ukm_recorder()->GetEntriesByName(FedCmEntry::kEntryName));
+    CheckUKMSessionID(
+        ukm_recorder()->GetEntriesByName(FedCmIdpEntry::kEntryName));
+  }
+
  protected:
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
   raw_ptr<FederatedAuthRequestImpl> federated_auth_request_impl_;
@@ -1301,6 +1323,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   ExpectNoTimingUKM("Timing.CancelOnDialog");
 
   ExpectRequestTokenStatusUKM(TokenStatus::kSuccess);
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that request fails if UI is dismissed without an account being selected.
@@ -1359,6 +1382,7 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   ExpectNoTimingUKM("Timing.TurnaroundTime");
 
   ExpectRequestTokenStatusUKM(TokenStatus::kNotSelectAccount);
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that request is not completed if user ignores the UI.
@@ -1467,6 +1491,7 @@ TEST_F(BasicFederatedAuthRequestImplTest,
                                        TokenStatus::kThirdPartyCookiesBlocked,
                                        1);
   ExpectRequestTokenStatusUKM(TokenStatus::kThirdPartyCookiesBlocked);
+  CheckAllFedCmSessionIDs();
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
@@ -1482,6 +1507,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
                                        TokenStatus::kDisabledInFlags, 1);
   ExpectRequestTokenStatusUKM(TokenStatus::kDisabledInFlags);
+  CheckAllFedCmSessionIDs();
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest,
@@ -1505,6 +1531,7 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
                                        TokenStatus::kDisabledInFlags, 1);
   ExpectRequestTokenStatusUKM(TokenStatus::kDisabledInFlags);
+  CheckAllFedCmSessionIDs();
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest,
@@ -1528,6 +1555,7 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
                                        TokenStatus::kDisabledInFlags, 1);
   ExpectRequestTokenStatusUKM(TokenStatus::kDisabledInFlags);
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that sign-in states match if IDP claims that user is signed in and
@@ -1558,6 +1586,7 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.SignInStateMatch",
                                        SignInStateMatchStatus::kMatch, 1);
   ExpectSignInStateMatchStatusUKM(SignInStateMatchStatus::kMatch);
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that sign-in states match if IDP claims that user is not signed in and
@@ -1584,6 +1613,7 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.SignInStateMatch",
                                        SignInStateMatchStatus::kMatch, 1);
   ExpectSignInStateMatchStatusUKM(SignInStateMatchStatus::kMatch);
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that sign-in states mismatch if IDP claims that user is signed in but
@@ -1614,6 +1644,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForOnlyIdpClaimedSignIn) {
       "Blink.FedCm.Status.SignInStateMatch",
       SignInStateMatchStatus::kIdpClaimedSignIn, 1);
   ExpectSignInStateMatchStatusUKM(SignInStateMatchStatus::kIdpClaimedSignIn);
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that sign-in states mismatch if IDP claims that user is not signed in
@@ -1641,6 +1672,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForOnlyBrowserObservedSignIn) {
       SignInStateMatchStatus::kBrowserObservedSignIn, 1);
   ExpectSignInStateMatchStatusUKM(
       SignInStateMatchStatus::kBrowserObservedSignIn);
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that embargo is requested if the
@@ -1800,6 +1832,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
   ExpectNoTimingUKM("Timing.TurnaroundTime");
 
   ExpectRequestTokenStatusUKM(TokenStatus::kDisabledInSettings);
+  CheckAllFedCmSessionIDs();
 }
 
 // Test that disclosure text is shown for first time user.
