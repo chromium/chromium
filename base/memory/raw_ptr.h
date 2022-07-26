@@ -788,7 +788,7 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
     p.wrapped_ptr_ = nullptr;
   }
 
-  ALWAYS_INLINE raw_ptr& operator=(const raw_ptr& p) {
+  ALWAYS_INLINE raw_ptr& operator=(const raw_ptr& p) noexcept {
     // Duplicate before releasing, in case the pointer is assigned to itself.
     T* new_ptr = Impl::Duplicate(p.wrapped_ptr_);
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
@@ -830,7 +830,7 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
   ALWAYS_INLINE raw_ptr& operator=(const raw_ptr&) noexcept = default;
   ALWAYS_INLINE raw_ptr& operator=(raw_ptr&&) noexcept = default;
 
-  ALWAYS_INLINE ~raw_ptr() = default;
+  ALWAYS_INLINE ~raw_ptr() noexcept = default;
 
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
