@@ -828,7 +828,7 @@ chromium-metrics-reviews@google.com.
     used to trigger a Perfetto trace to provide more debugging information. See
     crbug.com/1201820 for more details.
 
-    Warning: this histogram was expired from 2021-09-01 to 2022-12-31, data may
+    Warning: this histogram was expired from 2021-09-01 through M105, data may
     be missing.
   </summary>
 </histogram>
