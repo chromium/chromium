@@ -17,6 +17,10 @@
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service_factory.h"
+#endif
+
 namespace safe_browsing {
 namespace {
 
@@ -238,9 +242,18 @@ void BinaryUploadService::Request::set_access_token(
 BinaryUploadService* BinaryUploadService::GetForProfile(
     Profile* profile,
     const enterprise_connectors::AnalysisSettings& settings) {
-  // TODO(rogerta): If settings.is_local_analysis() is true, use
-  // LocalBinaryUploadServiceFactory instead.
+  // Local content analysis is supported only on desktop platforms.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (settings.cloud_or_local_settings.is_cloud_analysis()) {
+    return CloudBinaryUploadServiceFactory::GetForProfile(profile);
+  } else {
+    return enterprise_connectors::LocalBinaryUploadServiceFactory::
+        GetForProfile(profile);
+  }
+#else
+  DCHECK(settings.cloud_or_local_settings.is_cloud_analysis());
   return CloudBinaryUploadServiceFactory::GetForProfile(profile);
+#endif
 }
 
 }  // namespace safe_browsing

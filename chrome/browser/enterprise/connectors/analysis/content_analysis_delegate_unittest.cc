@@ -1656,6 +1656,13 @@ class ContentAnalysisDelegateResultHandlingTest
 };
 
 TEST_P(ContentAnalysisDelegateResultHandlingTest, Test) {
+  // This is not a desktop platform don't try the non-cloud case since it
+  // is not supported.
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)
+  if (!is_cloud())
+    return;
+#endif
+
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
   FakeContentAnalysisDelegate::SetResponseResult(result());

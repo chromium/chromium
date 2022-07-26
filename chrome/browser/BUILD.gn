@@ -6228,6 +6228,8 @@ static_library("browser") {
       "enterprise/connectors/analysis/content_analysis_sdk_manager.h",
       "enterprise/connectors/analysis/local_binary_upload_service.cc",
       "enterprise/connectors/analysis/local_binary_upload_service.h",
+      "enterprise/connectors/analysis/local_binary_upload_service_factory.cc",
+      "enterprise/connectors/analysis/local_binary_upload_service_factory.h",
       "enterprise/connectors/device_trust/attestation/desktop/crypto_utility.cc",
       "enterprise/connectors/device_trust/attestation/desktop/crypto_utility.h",
       "enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service.cc",
