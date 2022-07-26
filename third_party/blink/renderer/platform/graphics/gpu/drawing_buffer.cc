@@ -1861,7 +1861,9 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
           (!allocate_alpha_channel_ && have_alpha_channel_) ||
           low_latency_enabled();
       if (allocate_gmb_explicitly) {
-        gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBX_8888;
+        gfx::BufferFormat buffer_format = allocate_alpha_channel_
+                                              ? gfx::BufferFormat::RGBA_8888
+                                              : gfx::BufferFormat::RGBX_8888;
         if (gpu::IsImageFromGpuMemoryBufferFormatSupported(
                 gfx::BufferFormat::BGRX_8888,
                 ContextProvider()->GetCapabilities())) {
