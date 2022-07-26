@@ -9836,6 +9836,12 @@
                     "enable_features": [
                         "WebGPUService"
                     ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "WebGPUService"
+                    ]
                 }
             ]
         }

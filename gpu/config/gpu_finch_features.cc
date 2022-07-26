@@ -238,10 +238,16 @@ const base::Feature kEnableDrDcVulkan{"EnableDrDcVulkan",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Enable WebGPU on gpu service side only. This is used with origin trial
-// before gpu service is enabled by default.
-const base::Feature kWebGPUService{"WebGPUService",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+// Enable WebGPU on gpu service side only. This is used with origin trial and
+// enabled by default on supported platforms.
+const base::Feature kWebGPUService {
+  "WebGPUService",
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 #if BUILDFLAG(IS_ANDROID)
 
