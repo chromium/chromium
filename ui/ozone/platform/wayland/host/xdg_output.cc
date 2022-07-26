@@ -51,7 +51,11 @@ void XDGOutput::OutputHandleDone(void* data,
 // static
 void XDGOutput::OutputHandleName(void* data,
                                  struct zxdg_output_v1* zxdg_output_v1,
-                                 const char* name) {}
+                                 const char* name) {
+  if (XDGOutput* xdg_output = static_cast<XDGOutput*>(data)) {
+    xdg_output->name_ = name ? std::string(name) : std::string();
+  }
+}
 
 // static
 void XDGOutput::OutputHandleDescription(void* data,

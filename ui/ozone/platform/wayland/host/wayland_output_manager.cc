@@ -140,6 +140,11 @@ WaylandOutput* WaylandOutputManager::GetPrimaryOutput() const {
   return nullptr;
 }
 
+const WaylandOutputManager::OutputList& WaylandOutputManager::GetAllOutputs()
+    const {
+  return output_list_;
+}
+
 void WaylandOutputManager::OnOutputHandleMetrics(uint32_t output_id,
                                                  const gfx::Point& origin,
                                                  const gfx::Size& logical_size,

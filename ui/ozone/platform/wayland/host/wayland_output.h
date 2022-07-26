@@ -74,6 +74,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   gfx::Size physical_size() const { return physical_size_; }
   gfx::Insets insets() const;
   const std::string& label() const;
+  const std::string& name() const;
   WaylandZcrColorManagementOutput* color_management_output() const {
     return color_management_output_.get();
   }
