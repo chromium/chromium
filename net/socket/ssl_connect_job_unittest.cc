@@ -659,7 +659,7 @@ TEST_F(SSLConnectJobTest, LegacyCryptoFallbackHistograms) {
     test_delegate.StartJobExpectingResult(ssl_connect_job.get(), OK,
                                           /*expect_sync_result=*/false);
 
-    tester.ExpectUniqueSample("Net.SSLLegacyCryptoFallback", test.expected, 1);
+    tester.ExpectUniqueSample("Net.SSLLegacyCryptoFallback2", test.expected, 1);
   }
 }
 

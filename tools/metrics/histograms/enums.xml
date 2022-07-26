@@ -91277,11 +91277,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0" label="No fallback used"/>
   <int value="1" label="Used fallback and negotiated 3DES"/>
   <int value="2" label="Used fallback and negotiated SHA-1"/>
-  <int value="3" label="Used fallback and sent a SHA-1 certificate"/>
+  <int value="3"
+      label="Used fallback and sent a certificate signed with
+             RSASSA-PKCS1-v1_5-SHA-1"/>
   <int value="4"
-      label="Used fallback, negotiated 3DES, and sent a SHA-1 certificate"/>
+      label="Used fallback, negotiated 3DES, and sent a certificate signed
+             with RSASSA-PKCS1-v1_5-SHA-1"/>
   <int value="5"
-      label="Used fallback, negotiated SHA-1, and sent a SHA-1 certificate"/>
+      label="Used fallback, negotiated SHA-1, and sent a certificate signed
+             with RSASSA-PKCS1-v1_5-SHA-1"/>
   <int value="6" label="Used fallback for unknown reason"/>
 </enum>
 

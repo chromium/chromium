@@ -509,7 +509,7 @@ bool SignatureVerifierInitWithCertificate(
       base::make_span(tbs.spki_tlv.UnsafeData(), tbs.spki_tlv.Length()));
 }
 
-bool HasSHA1Signature(const CRYPTO_BUFFER* cert_buffer) {
+bool HasRsaPkcs1Sha1Signature(const CRYPTO_BUFFER* cert_buffer) {
   der::Input tbs_certificate_tlv;
   der::Input signature_algorithm_tlv;
   der::BitString signature_value;
@@ -525,7 +525,8 @@ bool HasSHA1Signature(const CRYPTO_BUFFER* cert_buffer) {
   if (!signature_algorithm)
     return false;
 
-  return signature_algorithm->digest() == net::DigestAlgorithm::Sha1;
+  return signature_algorithm->algorithm() == SignatureAlgorithmId::RsaPkcs1 &&
+         signature_algorithm->digest() == net::DigestAlgorithm::Sha1;
 }
 
 }  // namespace net::x509_util

@@ -23,12 +23,13 @@ enum class SSLLegacyCryptoFallback {
   //   kUsed3DES = 1,
   // The connection used the fallback and negotiated SHA-1.
   kUsedSHA1 = 2,
-  // The connection used the fallback and sent a SHA-1 certificate.
+  // The connection used the fallback and sent a certificate signed with
+  // RSASSA-PKCS1-v1_5-SHA-1.
   kSentSHA1Cert = 3,
   // No longer used.
   //   kSentSHA1CertAndUsed3DES = 4,
-  // The connection used the fallback, negotiated SHA-1, and sent a SHA-1
-  // certificate.
+  // The connection used the fallback, negotiated SHA-1, and sent a certificate
+  // signed with RSASSA-PKCS1-v1_5-SHA-1.
   kSentSHA1CertAndUsedSHA1 = 5,
   // The connection used the fallback for an unknown reason, likely a
   // transient network error.

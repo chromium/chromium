@@ -4662,8 +4662,28 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.SSLLegacyCryptoFallback" enum="SSLLegacyCryptoFallback"
     expires_after="2022-12-25">
+  <obsolete>
+    Replaced by Net.SSLLegacyCryptoFallback2. This one incorrectly counted all
+    SHA-1-based algorithms in certificates, rather than just RSASSA-PKCS1-v1_5.
+  </obsolete>
   <owner>davidben@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    For each TLS connection, whether it needed the legacy crypto fallback and a
+    classification as to why. See https://crbug.com/658905 and
+    https://crbug.com/691888. Note some connections are reported as sending
+    SHA-1 certificates because, although SHA-1 is no longer accepted in
+    certificates, servers may send unused certificates in the handshake. Some
+    such servers additionally match their certificate chains against the
+    ClientHello. These servers require the client advertise legacy algorithms
+    despite not actually using them.
+  </summary>
+</histogram>
+
+<histogram name="Net.SSLLegacyCryptoFallback2" enum="SSLLegacyCryptoFallback"
+    expires_after="2023-07-21">
+  <owner>davidben@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
   <summary>
     For each TLS connection, whether it needed the legacy crypto fallback and a
     classification as to why. See https://crbug.com/658905 and

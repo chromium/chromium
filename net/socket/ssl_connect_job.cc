@@ -553,14 +553,16 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
       //
       // SHA-1 certificate chains are no longer accepted, however servers may
       // send extra unused certificates, most commonly a copy of the trust
-      // anchor.
-      bool sent_sha1_cert =
-          ssl_info.unverified_cert &&
-          x509_util::HasSHA1Signature(ssl_info.unverified_cert->cert_buffer());
+      // anchor. We only need to check for RSASSA-PKCS1-v1_5 signatures, because
+      // other SHA-1 signature types have already been removed from the
+      // ClientHello.
+      bool sent_sha1_cert = ssl_info.unverified_cert &&
+                            x509_util::HasRsaPkcs1Sha1Signature(
+                                ssl_info.unverified_cert->cert_buffer());
       if (!sent_sha1_cert && ssl_info.unverified_cert) {
         for (const auto& cert :
              ssl_info.unverified_cert->intermediate_buffers()) {
-          if (x509_util::HasSHA1Signature(cert.get())) {
+          if (x509_util::HasRsaPkcs1Sha1Signature(cert.get())) {
             sent_sha1_cert = true;
             break;
           }
@@ -575,7 +577,7 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
                                   : SSLLegacyCryptoFallback::kUnknownReason;
       }
     }
-    UMA_HISTOGRAM_ENUMERATION("Net.SSLLegacyCryptoFallback", fallback);
+    UMA_HISTOGRAM_ENUMERATION("Net.SSLLegacyCryptoFallback2", fallback);
   }
 
   base::UmaHistogramSparse("Net.SSL_Connection_Error", std::abs(result));
