@@ -1129,6 +1129,12 @@ bool HttpStreamParser::CanReuseConnection() const {
   return stream_socket_->IsConnected();
 }
 
+void HttpStreamParser::OnConnectionClose() {
+  // This is to ensure `stream_socket_` doesn't get dangling on connection
+  // close.
+  stream_socket_ = nullptr;
+}
+
 void HttpStreamParser::GetSSLInfo(SSLInfo* ssl_info) {
   if (!request_->url.SchemeIsCryptographic() ||
       !stream_socket_->GetSSLInfo(ssl_info)) {

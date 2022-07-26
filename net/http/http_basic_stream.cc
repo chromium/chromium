@@ -89,6 +89,7 @@ void HttpBasicStream::Close(bool not_reusable) {
   StreamSocket* socket = state_.connection()->socket();
   if (not_reusable && socket)
     socket->Disconnect();
+  parser()->OnConnectionClose();
   state_.connection()->Reset();
 }
 
