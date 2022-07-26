@@ -69,6 +69,7 @@ struct VisibleSuggestionCountModifier: ViewModifier {
           uiConfiguration: uiConfiguration,
           shouldDisplayCustomSeparator: false
         )
+        .listRowInsets(EdgeInsets())
         .hidden()
         .onPreferenceChange(
           PopupMatchRowSizePreferenceKey.self,
