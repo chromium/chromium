@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chrome/browser/ui/webui/chromeos/login/family_link_notice_screen_handler.h"
@@ -23,17 +24,13 @@ class FamilyLinkNoticeScreen : public BaseScreen {
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  explicit FamilyLinkNoticeScreen(FamilyLinkNoticeView* view,
+  explicit FamilyLinkNoticeScreen(base::WeakPtr<FamilyLinkNoticeView> view,
                                   const ScreenExitCallback& exit_callback);
 
   ~FamilyLinkNoticeScreen() override;
 
   FamilyLinkNoticeScreen(const FamilyLinkNoticeScreen&) = delete;
   FamilyLinkNoticeScreen& operator=(const FamilyLinkNoticeScreen&) = delete;
-
-  // Called when the screen is being destroyed. This should call Unbind() on the
-  // associated View if this class is destroyed before that.
-  void OnViewDestroyed(FamilyLinkNoticeView* view);
 
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
     exit_callback_ = exit_callback;
@@ -48,9 +45,9 @@ class FamilyLinkNoticeScreen : public BaseScreen {
   bool MaybeSkip(WizardContext* context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
-  FamilyLinkNoticeView* view_ = nullptr;
+  base::WeakPtr<FamilyLinkNoticeView> view_;
 
   ScreenExitCallback exit_callback_;
 };

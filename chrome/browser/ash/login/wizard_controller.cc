@@ -741,7 +741,7 @@ WizardController::CreateScreens() {
           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<FamilyLinkNoticeScreen>(
-      oobe_ui->GetView<FamilyLinkNoticeScreenHandler>(),
+      oobe_ui->GetView<FamilyLinkNoticeScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnFamilyLinkNoticeScreenExit,
                           weak_factory_.GetWeakPtr())));
 

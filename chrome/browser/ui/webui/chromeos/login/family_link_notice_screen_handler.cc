@@ -12,18 +12,10 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId FamilyLinkNoticeView::kScreenId;
-
 FamilyLinkNoticeScreenHandler::FamilyLinkNoticeScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated(
-      "login.FamilyLinkNoticeScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
-FamilyLinkNoticeScreenHandler::~FamilyLinkNoticeScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+FamilyLinkNoticeScreenHandler::~FamilyLinkNoticeScreenHandler() = default;
 
 void FamilyLinkNoticeScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -41,32 +33,20 @@ void FamilyLinkNoticeScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_FAMILY_LINK_NOTICE_SCREEN_CONTINUE_BUTTON);
 }
 
-void FamilyLinkNoticeScreenHandler::InitializeDeprecated() {}
-
 void FamilyLinkNoticeScreenHandler::Show() {
   ShowInWebUI();
 }
 
-void FamilyLinkNoticeScreenHandler::Bind(FamilyLinkNoticeScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-}
-
-void FamilyLinkNoticeScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
-}
-
 void FamilyLinkNoticeScreenHandler::SetIsNewGaiaAccount(bool value) {
-  CallJS("login.FamilyLinkNoticeScreen.setIsNewGaiaAccount", value);
+  CallExternalAPI("setIsNewGaiaAccount", value);
 }
 
 void FamilyLinkNoticeScreenHandler::SetDisplayEmail(const std::string& value) {
-  CallJS("login.FamilyLinkNoticeScreen.setDisplayEmail", value);
+  CallExternalAPI("setDisplayEmail", value);
 }
 
 void FamilyLinkNoticeScreenHandler::SetDomain(const std::string& value) {
-  CallJS("login.FamilyLinkNoticeScreen.setDomain", value);
+  CallExternalAPI("setDomain", value);
 }
 
 }  // namespace chromeos
