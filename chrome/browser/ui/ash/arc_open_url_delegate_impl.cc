@@ -332,8 +332,13 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
         }
       });
 
-  proxy->LaunchAppWithUrl(*app_id, event_flags, url,
-                          apps::mojom::LaunchSource::kFromArc);
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    proxy->LaunchAppWithUrl(*app_id, event_flags, url,
+                            apps::LaunchSource::kFromArc);
+  } else {
+    proxy->LaunchAppWithUrl(*app_id, event_flags, url,
+                            apps::mojom::LaunchSource::kFromArc);
+  }
 
   ash::ApkWebAppService* apk_web_app_service =
       ash::ApkWebAppService::Get(profile);

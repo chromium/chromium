@@ -171,10 +171,16 @@ void LaunchSystemWebAppAsync(Profile* profile,
 
   if (params.url) {
     DCHECK(params.url->is_valid());
-    app_service->LaunchAppWithUrl(
-        *app_id, event_flags, *params.url,
-        apps::ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
-        apps::ConvertWindowInfoToMojomWindowInfo(window_info));
+    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+      app_service->LaunchAppWithUrl(*app_id, event_flags, *params.url,
+                                    params.launch_source,
+                                    std::move(window_info));
+    } else {
+      app_service->LaunchAppWithUrl(
+          *app_id, event_flags, *params.url,
+          apps::ConvertLaunchSourceToMojomLaunchSource(params.launch_source),
+          apps::ConvertWindowInfoToMojomWindowInfo(window_info));
+    }
     return;
   }
 

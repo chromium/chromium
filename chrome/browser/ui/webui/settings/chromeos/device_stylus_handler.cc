@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "components/services/app_service/public/cpp/features.h"
 
 namespace chromeos {
 namespace settings {
@@ -167,9 +168,15 @@ void StylusHandler::HandleShowPlayStoreApps(const base::Value::List& args) {
 
   DCHECK(
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
-  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithUrl(
-      arc::kPlayStoreAppId, ui::EF_NONE, GURL(apps_url),
-      apps::mojom::LaunchSource::kFromChromeInternal);
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithUrl(
+        arc::kPlayStoreAppId, ui::EF_NONE, GURL(apps_url),
+        apps::LaunchSource::kFromChromeInternal);
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithUrl(
+        arc::kPlayStoreAppId, ui::EF_NONE, GURL(apps_url),
+        apps::mojom::LaunchSource::kFromChromeInternal);
+  }
 }
 
 }  // namespace settings

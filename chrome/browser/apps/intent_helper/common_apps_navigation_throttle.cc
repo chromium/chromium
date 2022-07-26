@@ -32,7 +32,9 @@
 #include "chrome/grit/browser_resources.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
@@ -245,16 +247,25 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   if (handle->IsInPrerenderedMainFrame())
     return true;
 
-  auto launch_source = navigate_from_link()
-                           ? apps::mojom::LaunchSource::kFromLink
-                           : apps::mojom::LaunchSource::kFromOmnibox;
+  auto launch_source = navigate_from_link() ? LaunchSource::kFromLink
+                                            : LaunchSource::kFromOmnibox;
   GURL redirected_url =
       RedirectUrlIfSwa(profile, preferred_app_id.value(), url, clock_);
-  proxy->LaunchAppWithUrl(preferred_app_id.value(),
-                          GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                                        /*prefer_container=*/true),
-                          redirected_url, launch_source,
-                          apps::MakeWindowInfo(display::kDefaultDisplayId));
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    proxy->LaunchAppWithUrl(
+        preferred_app_id.value(),
+        GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                      /*prefer_container=*/true),
+        redirected_url, launch_source,
+        std::make_unique<WindowInfo>(display::kDefaultDisplayId));
+  } else {
+    proxy->LaunchAppWithUrl(
+        preferred_app_id.value(),
+        GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                      /*prefer_container=*/true),
+        redirected_url, ConvertLaunchSourceToMojomLaunchSource(launch_source),
+        apps::MakeWindowInfo(display::kDefaultDisplayId));
+  }
 
   const GURL& last_committed_url = web_contents->GetLastCommittedURL();
   if (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank() ||

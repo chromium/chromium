@@ -39,9 +39,9 @@ TEST(AppServiceProxyLacrosTest, Launch) {
   MockCrosapiAppServiceProxy mock_proxy;
   proxy.SetCrosapiAppServiceProxyForTesting(&mock_proxy);
 
-  proxy.LaunchAppWithUrl(kAppId, event_flag, GURL(kUrl),
-                         ConvertLaunchSourceToMojomLaunchSource(launch_source),
-                         apps::MakeWindowInfo(display::kDefaultDisplayId));
+  proxy.LaunchAppWithUrl(
+      kAppId, event_flag, GURL(kUrl), launch_source,
+      std::make_unique<WindowInfo>(display::kDefaultDisplayId));
   mock_proxy.Wait();
   ASSERT_EQ(mock_proxy.launched_apps().size(), 1U);
   auto& launched_app = mock_proxy.launched_apps()[0];

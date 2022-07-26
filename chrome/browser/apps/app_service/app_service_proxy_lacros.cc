@@ -230,6 +230,17 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
   remote_crosapi_app_service_proxy_->Launch(std::move(params));
 }
 
+void AppServiceProxyLacros::LaunchAppWithUrl(const std::string& app_id,
+                                             int32_t event_flags,
+                                             GURL url,
+                                             LaunchSource launch_source,
+                                             WindowInfoPtr window_info) {
+  LaunchAppWithIntent(
+      app_id, event_flags,
+      std::make_unique<apps::Intent>(apps_util::kIntentActionView, url),
+      launch_source, std::move(window_info));
+}
+
 void AppServiceProxyLacros::LaunchAppWithUrl(
     const std::string& app_id,
     int32_t event_flags,

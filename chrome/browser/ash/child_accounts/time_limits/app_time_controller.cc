@@ -37,6 +37,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -539,10 +540,17 @@ void AppTimeController::OpenFamilyLinkApp() {
   // Link Help app install page.
   DCHECK(
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->LaunchAppWithUrl(
-      arc::kPlayStoreAppId, ui::EF_NONE,
-      GURL(ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
-      apps::mojom::LaunchSource::kFromChromeInternal);
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    apps::AppServiceProxyFactory::GetForProfile(profile_)->LaunchAppWithUrl(
+        arc::kPlayStoreAppId, ui::EF_NONE,
+        GURL(ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
+        apps::LaunchSource::kFromChromeInternal);
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile_)->LaunchAppWithUrl(
+        arc::kPlayStoreAppId, ui::EF_NONE,
+        GURL(ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
+        apps::mojom::LaunchSource::kFromChromeInternal);
+  }
 }
 
 void AppTimeController::ShowNotificationForApp(

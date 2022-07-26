@@ -25,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -542,12 +543,22 @@ void AppManagementPageHandler::OpenStorePage(const std::string& app_id) {
     if (update.InstallSource() == apps::InstallSource::kPlayStore) {
       GURL url("https://play.google.com/store/apps/details?id=" +
                update.PublisherId());
-      proxy->LaunchAppWithUrl(arc::kPlayStoreAppId, ui::EF_NONE, url,
-                              apps::mojom::LaunchSource::kFromChromeInternal);
+      if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+        proxy->LaunchAppWithUrl(arc::kPlayStoreAppId, ui::EF_NONE, url,
+                                apps::LaunchSource::kFromChromeInternal);
+      } else {
+        proxy->LaunchAppWithUrl(arc::kPlayStoreAppId, ui::EF_NONE, url,
+                                apps::mojom::LaunchSource::kFromChromeInternal);
+      }
     } else if (update.InstallSource() == apps::InstallSource::kChromeWebStore) {
       GURL url("https://chrome.google.com/webstore/detail/" + update.AppId());
-      proxy->LaunchAppWithUrl(extensions::kWebStoreAppId, ui::EF_NONE, url,
-                              apps::mojom::LaunchSource::kFromChromeInternal);
+      if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+        proxy->LaunchAppWithUrl(extensions::kWebStoreAppId, ui::EF_NONE, url,
+                                apps::LaunchSource::kFromChromeInternal);
+      } else {
+        proxy->LaunchAppWithUrl(extensions::kWebStoreAppId, ui::EF_NONE, url,
+                                apps::mojom::LaunchSource::kFromChromeInternal);
+      }
     }
   });
 #endif

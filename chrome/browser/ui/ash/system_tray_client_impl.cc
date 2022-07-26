@@ -755,10 +755,19 @@ void SystemTrayClientImpl::ShowCalendarEvent(
   }
 
   // Launch web app.
-  proxy->LaunchAppWithUrl(web_app::kGoogleCalendarAppId,
-                          apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
-                                              /*prefer_container=*/true),
-                          official_url, apps::mojom::LaunchSource::kFromShelf);
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    proxy->LaunchAppWithUrl(
+        web_app::kGoogleCalendarAppId,
+        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                            /*prefer_container=*/true),
+        official_url, apps::LaunchSource::kFromShelf);
+  } else {
+    proxy->LaunchAppWithUrl(
+        web_app::kGoogleCalendarAppId,
+        apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
+                            /*prefer_container=*/true),
+        official_url, apps::mojom::LaunchSource::kFromShelf);
+  }
   opened_pwa = true;
 }
 
