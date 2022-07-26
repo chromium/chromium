@@ -161,7 +161,7 @@ class SyncFileSystemServiceTest : public testing::Test {
     EXPECT_CALL(*mock_remote_service(), SetSyncEnabled(false)).Times(1);
     sync_service_->SetSyncEnabledForTesting(false);
 
-    file_system_->SetUp(CannedSyncableFileSystem::QUOTA_ENABLED);
+    file_system_->SetUp();
   }
 
   void TearDown() override {

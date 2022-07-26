@@ -51,7 +51,7 @@ class LocalFileChangeTrackerTest : public testing::Test {
       delete;
 
   void SetUp() override {
-    file_system_.SetUp(CannedSyncableFileSystem::QUOTA_ENABLED);
+    file_system_.SetUp();
 
     ASSERT_TRUE(base_dir_.CreateUniqueTempDir());
     sync_context_ =

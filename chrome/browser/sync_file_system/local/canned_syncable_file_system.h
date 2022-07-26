@@ -58,11 +58,6 @@ class CannedSyncableFileSystem
   typedef base::RepeatingCallback<void(int64_t)> WriteCallback;
   typedef storage::FileSystemOperation::FileEntryList FileEntryList;
 
-  enum QuotaMode {
-    QUOTA_ENABLED,
-    QUOTA_DISABLED,
-  };
-
   CannedSyncableFileSystem(
       const GURL& origin,
       bool in_memory_file_system,
@@ -75,7 +70,7 @@ class CannedSyncableFileSystem
   ~CannedSyncableFileSystem() override;
 
   // SetUp must be called before using this instance.
-  void SetUp(QuotaMode quota_mode);
+  void SetUp();
 
   // TearDown must be called before destructing this instance.
   void TearDown();

@@ -241,20 +241,18 @@ CannedSyncableFileSystem::CannedSyncableFileSystem(
 
 CannedSyncableFileSystem::~CannedSyncableFileSystem() = default;
 
-void CannedSyncableFileSystem::SetUp(QuotaMode quota_mode) {
+void CannedSyncableFileSystem::SetUp() {
   ASSERT_FALSE(is_filesystem_set_up_);
   ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
 
   auto storage_policy =
       base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
 
-  if (quota_mode == QUOTA_ENABLED) {
-    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        /*is_incognito=*/false, data_dir_.GetPath(), io_task_runner_.get(),
-        storage_policy.get());
-    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(), io_task_runner_.get());
-  }
+  quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+      /*is_incognito=*/false, data_dir_.GetPath(), io_task_runner_.get(),
+      storage_policy.get());
+  quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+      quota_manager_.get(), io_task_runner_.get());
 
   std::vector<std::string> additional_allowed_schemes;
   additional_allowed_schemes.push_back(origin_.scheme());

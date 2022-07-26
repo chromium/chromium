@@ -76,7 +76,7 @@ class SyncableFileOperationRunnerTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
 
-    file_system_.SetUp(CannedSyncableFileSystem::QUOTA_ENABLED);
+    file_system_.SetUp();
     sync_context_ =
         new LocalFileSyncContext(dir_.GetPath(), in_memory_env_.get(),
                                  base::ThreadTaskRunnerHandle::Get().get(),

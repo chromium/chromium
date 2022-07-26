@@ -224,10 +224,7 @@ class DriveBackendSyncTest : public testing::Test,
       CannedSyncableFileSystem* file_system = new CannedSyncableFileSystem(
           origin, in_memory_env_.get(), io_task_runner_.get(),
           file_task_runner_.get());
-      // TODO(https://crbug.com/1344144): Refactor
-      // CannedSyncableFileSystem::SetUp() to remove Quota Enabling/Disabling
-      // flag.
-      file_system->SetUp(CannedSyncableFileSystem::QUOTA_ENABLED);
+      file_system->SetUp();
 
       SyncStatusCode status = SYNC_STATUS_UNKNOWN;
       base::RunLoop run_loop;

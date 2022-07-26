@@ -45,7 +45,7 @@ class SyncableFileSystemTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
-    file_system_.SetUp(CannedSyncableFileSystem::QUOTA_ENABLED);
+    file_system_.SetUp();
 
     sync_context_ =
         new LocalFileSyncContext(data_dir_.GetPath(), in_memory_env_.get(),
