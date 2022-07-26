@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+PASS .test 1
+PASS .test 2
+PASS .test 3
+PASS .test 4
+PASS .test 5
+PASS .test 6
+PASS .test 7
+PASS .test 8
+PASS .test 9
+PASS .test 10
+PASS .test 11
+PASS .test 12
+PASS .test 13
+PASS .test 14
+PASS .test 15
+PASS .test 16
+PASS .test 17
+PASS .test 18
+PASS .test 19
+PASS .test 20
+PASS .test 21
+PASS .test 22
+PASS .test 23
+PASS .test 24
+Harness: the test ran to completion.
+
