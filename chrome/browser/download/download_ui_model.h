@@ -289,6 +289,14 @@ class DownloadUIModel {
   // Change what's returned by WasUINotified().
   virtual void SetWasUINotified(bool should_notify);
 
+  // Returns |true| if the Download Bubble UI has shown this download warning.
+  // By default, this value is |false| and should be changed explicitly using
+  // SetWasUIWarningShown().
+  virtual bool WasUIWarningShown() const;
+
+  // Change what's returned by WasUIWarningShown().
+  virtual void SetWasUIWarningShown(bool was_ui_warning_shown);
+
   // Returns |true| if opening in the browser is preferred for this download. If
   // |false|, the download should be opened with the system default application.
   virtual bool ShouldPreferOpeningInBrowser() const;

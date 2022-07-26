@@ -62,6 +62,8 @@ class DownloadItemModel : public DownloadUIModel,
   bool ShouldNotifyUI() const override;
   bool WasUINotified() const override;
   void SetWasUINotified(bool should_notify) override;
+  bool WasUIWarningShown() const override;
+  void SetWasUIWarningShown(bool should_notify) override;
   bool ShouldPreferOpeningInBrowser() const override;
   void SetShouldPreferOpeningInBrowser(bool preference) override;
   safe_browsing::DownloadFileType::DangerLevel GetDangerLevel() const override;

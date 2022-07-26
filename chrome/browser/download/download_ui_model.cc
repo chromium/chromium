@@ -415,6 +415,12 @@ bool DownloadUIModel::WasUINotified() const {
 
 void DownloadUIModel::SetWasUINotified(bool should_notify) {}
 
+bool DownloadUIModel::WasUIWarningShown() const {
+  return false;
+}
+
+void DownloadUIModel::SetWasUIWarningShown(bool was_ui_warning_shown) {}
+
 bool DownloadUIModel::ShouldPreferOpeningInBrowser() const {
   return true;
 }

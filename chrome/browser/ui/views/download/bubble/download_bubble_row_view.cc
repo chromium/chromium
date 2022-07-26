@@ -83,17 +83,6 @@ void DownloadBubbleRowView::UpdateBubbleUIInfo() {
 
   // If either of mode or state changes, we might need to change UI.
   ui_info_ = model_->GetBubbleUIInfo();
-
-  // This should only be logged once per download, so only for change in modes
-  // to warning.
-  if (!mode_unchanged && is_download_warning(mode)) {
-    const auto danger_type = model_->GetDangerType();
-    const auto file_path = model_->GetTargetFilePath();
-    bool is_https = model_->GetURL().SchemeIs(url::kHttpsScheme);
-    bool has_user_gesture = model_->HasUserGesture();
-    RecordDangerousDownloadWarningShown(danger_type, file_path, is_https,
-                                        has_user_gesture);
-  }
 }
 
 void DownloadBubbleRowView::AddedToWidget() {
@@ -393,6 +382,14 @@ void DownloadBubbleRowView::UpdateLabels() {
 }
 
 void DownloadBubbleRowView::OnDownloadUpdated() {
+  // This should only be logged once per download.
+  if (is_download_warning(download::GetDesiredDownloadItemMode(model_.get())) &&
+      !model_->WasUIWarningShown()) {
+    model_->SetWasUIWarningShown(true);
+    RecordDangerousDownloadWarningShown(
+        model_->GetDangerType(), model_->GetTargetFilePath(),
+        model_->GetURL().SchemeIs(url::kHttpsScheme), model_->HasUserGesture());
+  }
   UpdateBubbleUIInfo();
   UpdateLabels();
   LoadIcon();

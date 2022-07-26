@@ -97,6 +97,10 @@ class DownloadItemModelData : public base::SupportsUserData::Data {
   // Whether the download is currently being revived.
   bool is_being_revived_;
 
+  // Whether the safe browsing download warning was shown (and recorded) earlier
+  // on the UI.
+  bool was_ui_warning_shown_ = false;
+
  private:
   DownloadItemModelData();
 
@@ -417,6 +421,16 @@ bool DownloadItemModel::WasUINotified() const {
 void DownloadItemModel::SetWasUINotified(bool was_ui_notified) {
   DownloadItemModelData* data = DownloadItemModelData::GetOrCreate(download_);
   data->was_ui_notified_ = was_ui_notified;
+}
+
+bool DownloadItemModel::WasUIWarningShown() const {
+  const DownloadItemModelData* data = DownloadItemModelData::Get(download_);
+  return data && data->was_ui_warning_shown_;
+}
+
+void DownloadItemModel::SetWasUIWarningShown(bool was_ui_warning_shown) {
+  DownloadItemModelData* data = DownloadItemModelData::GetOrCreate(download_);
+  data->was_ui_warning_shown_ = was_ui_warning_shown;
 }
 
 bool DownloadItemModel::ShouldPreferOpeningInBrowser() const {
