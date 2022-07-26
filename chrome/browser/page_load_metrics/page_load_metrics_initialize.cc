@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
-#include "chrome/browser/page_load_metrics/observers/aborts_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/core/amp_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/core/ukm_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/document_write_page_load_metrics_observer.h"
@@ -123,7 +122,6 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
   }
 
   if (!IsNoStatePrefetch(web_contents())) {
-    tracker->AddObserver(std::make_unique<AbortsPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<AMPPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<JavascriptFrameworksUkmObserver>());
     tracker->AddObserver(std::make_unique<SchemePageLoadMetricsObserver>());

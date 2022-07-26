@@ -331,8 +331,6 @@ Aborts can occur before or after commit. Observers can track aborts that happen 
 
 To determine whether an abort occurred, observers should check whether the abort_type field of the PageLoadExtraInfo structure has a value other than ABORT_NONE. The time until the page load was aborted is available in the time_to_abort field of the PageLoadExtraInfo structure.
 
-[`AbortsPageLoadMetricsObserver`](aborts_page_load_metrics_observer.cc) is an observer that tracks page load abort metrics.
-
 ### Aggregating statistics across multiple page loads
 
 Some observer implementers may wish to track statistics aggregated across multiple page loads. Since a `PageLoadMetricsObserver`’s lifetime is bound to a single page load, a separate object with a longer lifetime must be used to track these statistics.
