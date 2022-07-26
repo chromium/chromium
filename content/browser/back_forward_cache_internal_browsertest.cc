@@ -14,6 +14,7 @@
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_accessibility_state.h"
@@ -3535,12 +3536,32 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
   }
 }
 
-// Verify that the page will not be evicted upon accessibility events.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
-                       DoNotEvictOnAccessibilityEvents) {
-  if (!IsBackForwardCacheEnabledForScreenReader()) {
-    return;
+class BackForwardCacheBrowserTestWithFlagForAXEvents
+    : public BackForwardCacheBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(features::kEnableBackForwardCacheForScreenReader,
+                              "", "true");
+    if (ShouldEvictOnAXEvents()) {
+      EnableFeatureAndSetParams(features::kEvictOnAXEvents, "", "true");
+    } else {
+      DisableFeature(features::kEvictOnAXEvents);
+    }
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
+
+  bool ShouldEvictOnAXEvents() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BackForwardCacheBrowserTestWithFlagForAXEvents,
+                         ::testing::Bool());
+
+// Verify that the page will be evicted upon accessibility events if the
+// flag to evict on ax events is off, and evicted otherwise.
+IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
+                       EvictOnAccessibilityEventsOrNot) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -3584,23 +3605,32 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
   manager->SetGeneratedEventCallbackForTesting(
       GeneratedEventCallbackForTesting());
 
-  // 4) Navigate back and ensure that |rfh_a| is successfully restored from
-  // bfcache.
+  // 4) Navigate back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  EXPECT_EQ(current_frame_host(), rfh_a.get());
-  ExpectRestored(FROM_HERE);
-
-  // 5) Accessibility events are dispatched again.
-  AccessibilityNotificationWaiter waiter(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ui::AXEventGenerator::Event::CHILDREN_CHANGED);
-  // Modify the DOM tree to dispatch new events to verify that the new events
-  // won't be dropped.
-  EXPECT_TRUE(ExecJs(rfh_a.get(),
-                     "document.getElementsByTagName('body')[0].remove();"));
-  // Ensure the AX events are dispatched for |rfh_a|.
-  waiter.WaitForNotification();
-  EXPECT_EQ(waiter.event_render_frame_host(), rfh_a.get());
+  if (ShouldEvictOnAXEvents()) {
+    const uint64_t reason = DisallowActivationReasonId::kAXEvent;
+    ExpectNotRestored({NotRestoredReason::kIgnoreEventAndEvict}, {}, {}, {},
+                      {reason}, FROM_HERE);
+  } else {
+    AccessibilityNotificationWaiter waiter_start(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::LOAD_START);
+    // Ensure that |rfh_a| is successfully restored from bfcache and that we see
+    // LOAD_START event.
+    EXPECT_EQ(current_frame_host(), rfh_a.get());
+    ExpectRestored(FROM_HERE);
+    // 5) Accessibility events are dispatched again.
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::CHILDREN_CHANGED);
+    // Modify the DOM tree to dispatch new events to verify that the new events
+    // won't be dropped.
+    EXPECT_TRUE(ExecJs(rfh_a.get(),
+                       "document.getElementsByTagName('body')[0].remove();"));
+    // Ensure the AX events are dispatched for |rfh_a|.
+    waiter.WaitForNotification();
+    EXPECT_EQ(waiter.event_render_frame_host(), rfh_a.get());
+  }
 }
 
 class BackgroundForegroundProcessLimitBackForwardCacheBrowserTest

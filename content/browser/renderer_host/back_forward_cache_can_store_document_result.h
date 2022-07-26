@@ -18,6 +18,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "ui/accessibility/ax_event.h"
 
 namespace content {
 
@@ -60,6 +61,8 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   void NoDueToDisableForRenderFrameHostCalled(
       const std::set<BackForwardCache::DisabledReason>& reasons);
   void NoDueToDisallowActivation(uint64_t reason);
+  // TODO(crbug.com/1341507): Remove this function.
+  void NoDueToAXEvents(const std::vector<ui::AXEvent>& events);
 
   // The conditions for storing and restoring the pages are different in that
   // pages with cache-control:no-store can enter back/forward cache depending on
@@ -87,6 +90,8 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
     return disallow_activation_reasons_;
   }
 
+  const std::set<ax::mojom::Event>& ax_events() const { return ax_events_; }
+
   std::string ToString() const;
 
   void WriteIntoTrace(
@@ -104,6 +109,8 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   std::set<BackForwardCache::DisabledReason> disabled_reasons_;
   absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result_;
   std::set<uint64_t> disallow_activation_reasons_;
+  // The list of the accessibility events that made the page bfcache ineligible.
+  std::set<ax::mojom::Event> ax_events_;
 };
 
 }  // namespace content

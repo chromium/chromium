@@ -33,7 +33,7 @@ enum DisallowActivationReasonId : uint64_t {
   kAXHitTestCallback = 9,
   kAXPerformAction = 10,
   kAXSetFocus = 11,
-  // kAXGetNativeView = 12 is no longer blocking.
+  kAXGetNativeView = 12,
   kAXGetNativeViewForWindow = 13,
   // kAXWebContents = 14 is no longer blocking.
   kCertificateErrors = 15,

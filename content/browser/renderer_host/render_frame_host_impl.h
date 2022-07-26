@@ -202,6 +202,9 @@ namespace features {
 // non-legacy implementation of BrowsingContextState.
 CONTENT_EXPORT extern const base::Feature
     kDisableFrameNameUpdateOnNonCurrentRenderFrameHost;
+
+// Feature to evict when accessibility events occur while in back/forward cache.
+CONTENT_EXPORT extern const base::Feature kEvictOnAXEvents;
 }  // namespace features
 
 namespace content {
@@ -475,6 +478,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const ui::ClipboardFormatType& data_type,
       const std::string& data,
       IsClipboardPasteContentAllowedCallback callback);
+
+  // This is called when accessibility events arrive from renderer to browser.
+  // This could cause eviction if the page is in back/forward cache. Returns
+  // true if the eviction happens, and otherwise calls
+  // |RenderFrameHost::IsInactiveAndDisallowActivation()| and returns the value
+  // from there. This is only called when the flag to evict on accessibility
+  // events is on. When the flag is off, we do not evict the entry and keep
+  // processing the events, thus do not call this function.
+  bool IsInactiveAndDisallowActivationForAXEvents(
+      const std::vector<ui::AXEvent>& events);
 
   void SendAccessibilityEventsToManager(
       const AXEventNotificationDetails& details);
