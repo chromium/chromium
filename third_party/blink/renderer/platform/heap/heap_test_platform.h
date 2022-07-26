@@ -43,9 +43,6 @@ class HeapTestingPlatformAdapter final : public v8::Platform {
   void OnCriticalMemoryPressure() final {
     platform_->OnCriticalMemoryPressure();
   }
-  bool OnCriticalMemoryPressure(size_t length) final {
-    return platform_->OnCriticalMemoryPressure(length);
-  }
   int NumberOfWorkerThreads() final {
     return platform_->NumberOfWorkerThreads();
   }
