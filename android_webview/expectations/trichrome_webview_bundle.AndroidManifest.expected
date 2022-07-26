@@ -2,8 +2,8 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.webview"
-    platformBuildVersionCode="31"
-    platformBuildVersionName="12"
+    platformBuildVersionCode="33"
+    platformBuildVersionName="13"
     android:isolatedSplits="true">
   <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
   <uses-feature android:name="android.software.leanback" android:required="false"/>
@@ -11,7 +11,7 @@
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="31"/>
+  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="33"/>
   <application
       android:name="org.chromium.android_webview.nonembedded.WebViewApkApplication"
       android:extractNativeLibs="False"

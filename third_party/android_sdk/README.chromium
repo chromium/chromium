@@ -1,13 +1,13 @@
 Name: Android SDK
 URL: http://developer.android.com/sdk/index.html
 Version: 31
-  Android SDK Build-Tools 31.0.0
-  Android SDK Command-line Tools 5.0
-  Android SDK Emulator 30.7.5
+  Android SDK Build-Tools 33.0.0
+  Android SDK Command-line Tools 7.0
+  Android SDK Emulator 31.2.10
   Android SDK Patch Applier v4
-  Android SDK Platform-Tools 31.0.3
-  Android SDK Platform API 31
-  Android SDK Sources 30
+  Android SDK Platform-Tools 33.0.2
+  Android SDK Platform API 33
+  Android SDK Sources 31
   Google Cloud Messaging for Android Library, rev 3
 Security Critical: no
 License: Apache Version 2.0

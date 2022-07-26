@@ -252,12 +252,12 @@ public class BuildInfo {
         // just hardcode the appropriate SDK integer. This will include Android
         // builds with the finalized SDK, and also pre-API-finalization builds
         // (because CUR_DEVELOPMENT == 10000).
-        return target >= 33;
+        // return target >= 33;
 
         // Once the public SDK is upstreamed we can use the defined constant,
         // deprecate this, then eventually inline this at all callsites and
         // remove it.
-        // return target >= Build.VERSION_CODES.TIRAMISU;
+        return target >= Build.VERSION_CODES.TIRAMISU;
     }
 
     public static void setFirebaseAppId(String id) {

@@ -439,17 +439,20 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
         // Intentional no-op.
     }
 
-    @Override
+    // removed from the public SDK in 33, so cannot @Override, but must remain
+    // to not break apps compiled against previous SDKs.
     public synchronized void setAppCacheEnabled(boolean flag) {
         // Intentional no-op.
     }
 
-    @Override
+    // removed from the public SDK in 33, so cannot @Override, but must remain
+    // to not break apps compiled against previous SDKs.
     public synchronized void setAppCachePath(String appCachePath) {
         // Intentional no-op.
     }
 
-    @Override
+    // removed from the public SDK in 33, so cannot @Override, but must remain
+    // to not break apps compiled against previous SDKs.
     public synchronized void setAppCacheMaxSize(long appCacheMaxSize) {
         // Intentional no-op.
     }
@@ -650,5 +653,32 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
                 return WebSettings.FORCE_DARK_ON;
         }
         return WebSettings.FORCE_DARK_AUTO;
+    }
+
+    // Lint thinks we are targeting 32 so complains that this only overrides in 33, suppress until
+    // b/239952654 is resolved
+    @SuppressWarnings("Override")
+    @Override
+    public void setAlgorithmicDarkeningAllowed(boolean allow) {
+        if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
+            Log.w(TAG,
+                    "setAlgorithmicDarkeningAllowed() is a no-op in an app with "
+                            + "targetSdkVersion<T");
+            return;
+        }
+        getAwSettings().setAlgorithmicDarkeningAllowed(allow);
+    }
+
+    // Lint thinks we are targeting 32 so complains that this only overrides in 33, suppress until
+    // b/239952654 is resolved
+    @SuppressWarnings("Override")
+    @Override
+    public boolean isAlgorithmicDarkeningAllowed() {
+        if (!AwDarkMode.isSimplifiedDarkModeEnabled()) {
+            Log.w(TAG,
+                    "isAlgorithmicDarkeningAllowed() is a no-op in an app with targetSdkVersion<T");
+            return false;
+        }
+        return getAwSettings().isAlgorithmicDarkeningAllowed();
     }
 }

@@ -2,8 +2,8 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.chromium.chrome.stable"
-    platformBuildVersionCode="31"
-    platformBuildVersionName="12"
+    platformBuildVersionCode="33"
+    platformBuildVersionName="13"
     android:isolatedSplits="true">
   <permission android:name="$PACKAGE.TOS_ACKED" android:protectionLevel="signatureOrSystem"/>
   <permission android:name="$PACKAGE.permission.C2D_MESSAGE" android:protectionLevel="signature"/>
@@ -66,7 +66,7 @@
   <uses-permission-sdk-23 android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
   <uses-permission-sdk-23 android:name="android.permission.USE_BIOMETRIC"/>
   <uses-permission-sdk-23 android:name="android.permission.USE_FINGERPRINT"/>
-  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="31"/>
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="33"/>
   <application
       android:name="org.chromium.chrome.browser.base.SplitMonochromeApplication"
       android:allowAudioPlaybackCapture="false"

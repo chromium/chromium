@@ -5,6 +5,7 @@
 package com.android.webview.chromium;
 
 import android.Manifest;
+import android.app.compat.CompatChanges;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -15,6 +16,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
+import android.webkit.WebSettings;
 import android.webkit.WebStorage;
 import android.webkit.WebViewDatabase;
 
@@ -234,8 +236,9 @@ public class WebViewChromiumAwInit {
 
             mFactory.getRunQueue().drainQueue();
 
-            if (BuildInfo.isAtLeastT() ? mFactory.shouldEnableSimplifiedDarkMode()
-                                       : BuildInfo.targetsAtLeastT()) {
+            if (BuildInfo.isAtLeastT()
+                            ? CompatChanges.isChangeEnabled(WebSettings.ENABLE_SIMPLIFIED_DARK_MODE)
+                            : BuildInfo.targetsAtLeastT()) {
                 AwDarkMode.enableSimplifiedDarkMode();
             }
 

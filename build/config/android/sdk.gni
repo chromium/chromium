@@ -4,7 +4,7 @@
 
 # The default SDK release used by public builds. Value may differ in
 # internal builds.
-default_android_sdk_release = "s"
+default_android_sdk_release = "t"
 
 # SDK releases against which public builds are supported.
-public_sdk_releases = [ "s" ]
+public_sdk_releases = [ "t" ]

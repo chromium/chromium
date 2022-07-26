@@ -4,12 +4,12 @@
     xmlns:dist="http://schemas.android.com/apk/distribution"
     featureSplit="weblayer"
     package="org.chromium.chrome.stable"
-    platformBuildVersionCode="31"
-    platformBuildVersionName="12">
+    platformBuildVersionCode="33"
+    platformBuildVersionName="13">
   <dist:module dist:onDemand="false">  # DIFF-ANCHOR: 2805007f
     <dist:fusing dist:include="true"/>
   </dist:module>  # DIFF-ANCHOR: 2805007f
-  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="31"/>
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="33"/>
   <uses-split android:name="chrome"/>
   <application/>
 </manifest>

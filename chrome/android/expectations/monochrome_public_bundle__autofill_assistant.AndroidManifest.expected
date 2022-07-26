@@ -4,8 +4,8 @@
     xmlns:dist="http://schemas.android.com/apk/distribution"
     featureSplit="autofill_assistant"
     package="org.chromium.chrome.stable"
-    platformBuildVersionCode="31"
-    platformBuildVersionName="12">
+    platformBuildVersionCode="33"
+    platformBuildVersionName="13">
   <dist:module dist:title="@string/autofill_assistant_module_title">  # DIFF-ANCHOR: 328f25a9
     <dist:delivery>  # DIFF-ANCHOR: 62b39bbe
       <dist:install-time>  # DIFF-ANCHOR: a4752ed3
@@ -17,7 +17,7 @@
     </dist:delivery>  # DIFF-ANCHOR: 62b39bbe
     <dist:fusing dist:include="true"/>
   </dist:module>  # DIFF-ANCHOR: 328f25a9
-  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="31"/>
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="33"/>
   <uses-split android:name="chrome"/>
   <application/>
 </manifest>

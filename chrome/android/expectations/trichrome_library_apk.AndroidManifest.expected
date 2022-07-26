@@ -2,12 +2,12 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.chromium.trichromelibrary"
-    platformBuildVersionCode="31"
-    platformBuildVersionName="12">
+    platformBuildVersionCode="33"
+    platformBuildVersionName="13">
   <uses-feature android:glEsVersion="0x00020000"/>
   <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
   <uses-feature android:name="android.software.leanback" android:required="false"/>
-  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="31"/>
+  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="33"/>
   <application
       android:extractNativeLibs="false"
       android:hasCode="false"

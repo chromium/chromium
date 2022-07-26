@@ -4,8 +4,8 @@
     xmlns:dist="http://schemas.android.com/apk/distribution"
     featureSplit="vr"
     package="org.chromium.chrome.stable"
-    platformBuildVersionCode="31"
-    platformBuildVersionName="12">
+    platformBuildVersionCode="33"
+    platformBuildVersionName="13">
   <dist:module dist:instant="false" dist:title="@string/vr_module_title">  # DIFF-ANCHOR: aac219ae
     <dist:delivery>  # DIFF-ANCHOR: ea157ece
       <dist:install-time>  # DIFF-ANCHOR: eab09dbe
@@ -22,7 +22,7 @@
     <package android:name="com.google.vr.vrcore"/>
   </queries>  # DIFF-ANCHOR: 4f65d672
     {% endif %}
-  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="31"/>
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="33"/>
   <uses-split android:name="chrome"/>
   <application/>
 </manifest>
