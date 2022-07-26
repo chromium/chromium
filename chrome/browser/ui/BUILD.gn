@@ -4420,6 +4420,8 @@ static_library("ui") {
       "views/frame/native_browser_frame.h",
       "views/frame/native_browser_frame_factory.cc",
       "views/frame/native_browser_frame_factory.h",
+      "views/frame/picture_in_picture_browser_frame_view.cc",
+      "views/frame/picture_in_picture_browser_frame_view.h",
       "views/frame/system_menu_model_builder.cc",
       "views/frame/system_menu_model_builder.h",
       "views/frame/system_menu_model_delegate.cc",

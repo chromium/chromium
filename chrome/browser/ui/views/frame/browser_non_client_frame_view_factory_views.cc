@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
+#include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
@@ -72,6 +73,14 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameView(
 std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameView(
     BrowserFrame* frame,
     BrowserView* browser_view) {
+// TODO(https://crbug.com/1346734): Enable it on all platforms.
+#if BUILDFLAG(IS_LINUX)
+  if (browser_view->browser()->is_type_picture_in_picture()) {
+    return std::make_unique<PictureInPictureBrowserFrameView>(frame,
+                                                              browser_view);
+  }
+#endif
+
 #if BUILDFLAG(IS_WIN)
   if (frame->ShouldUseNativeFrame())
     return std::make_unique<GlassBrowserFrameView>(frame, browser_view);

@@ -149,6 +149,12 @@ bool BrowserDesktopWindowTreeHostLinux::SupportsClientFrameShadow() const {
 }
 
 void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
+  if (native_frame_->browser_view()->browser()->is_type_picture_in_picture()) {
+    // TODO(https://crbug.com/1346734): Figure out whether or not we need to and
+    // how to set shades for pip window. Skip casting the view for linux below.
+    return;
+  }
+
   auto* view = static_cast<BrowserFrameViewLinux*>(
       native_frame_->browser_frame()->GetFrameView());
   auto* layout = view->layout();
