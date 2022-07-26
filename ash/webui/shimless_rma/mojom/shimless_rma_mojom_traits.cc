@@ -821,6 +821,18 @@ EnumTraits<MojomProvisioningError, ProtoProvisioningError>::ToMojom(
       return MojomProvisioningError::kCannotWrite;
     case rmad::ProvisionStatus::RMAD_PROVISION_ERROR_GENERATE_SECRET:
       return MojomProvisioningError::kGenerateSecret;
+    case rmad::ProvisionStatus::RMAD_PROVISION_ERROR_MISSING_BASE_ACCELEROMETER:
+      return MojomProvisioningError::kMissingBaseAccelerometer;
+    case rmad::ProvisionStatus::RMAD_PROVISION_ERROR_MISSING_LID_ACCELEROMETER:
+      return MojomProvisioningError::kMissingLidAccelerometer;
+    case rmad::ProvisionStatus::RMAD_PROVISION_ERROR_MISSING_BASE_GYROSCOPE:
+      return MojomProvisioningError::kMissingBaseGyroscope;
+    case rmad::ProvisionStatus::RMAD_PROVISION_ERROR_MISSING_LID_GYROSCOPE:
+      return MojomProvisioningError::kMissingLidGyroscope;
+    case rmad::ProvisionStatus::RMAD_PROVISION_ERROR_CR50:
+      return MojomProvisioningError::kCr50;
+    case rmad::ProvisionStatus::RMAD_PROVISION_ERROR_GBB:
+      return MojomProvisioningError::kGbb;
 
     default:
       NOTREACHED();
@@ -852,6 +864,26 @@ bool EnumTraits<MojomProvisioningError, ProtoProvisioningError>::FromMojom(
       return true;
     case MojomProvisioningError::kGenerateSecret:
       *out = rmad::ProvisionStatus::RMAD_PROVISION_ERROR_GENERATE_SECRET;
+      return true;
+    case MojomProvisioningError::kMissingBaseAccelerometer:
+      *out = rmad::ProvisionStatus::
+          RMAD_PROVISION_ERROR_MISSING_BASE_ACCELEROMETER;
+      return true;
+    case MojomProvisioningError::kMissingLidAccelerometer:
+      *out =
+          rmad::ProvisionStatus::RMAD_PROVISION_ERROR_MISSING_LID_ACCELEROMETER;
+      return true;
+    case MojomProvisioningError::kMissingBaseGyroscope:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_ERROR_MISSING_BASE_GYROSCOPE;
+      return true;
+    case MojomProvisioningError::kMissingLidGyroscope:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_ERROR_MISSING_LID_GYROSCOPE;
+      return true;
+    case MojomProvisioningError::kCr50:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_ERROR_CR50;
+      return true;
+    case MojomProvisioningError::kGbb:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_ERROR_GBB;
       return true;
   }
   NOTREACHED();

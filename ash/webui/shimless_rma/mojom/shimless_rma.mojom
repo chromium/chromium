@@ -373,6 +373,12 @@ enum ProvisioningError {
   kCannotRead = 3,
   kCannotWrite = 4,
   kGenerateSecret = 5,
+  kMissingBaseAccelerometer = 6,
+  kMissingLidAccelerometer = 7,
+  kMissingBaseGyroscope = 8,
+  kMissingLidGyroscope = 9,
+  kCr50 = 10,
+  kGbb = 11,
 };
 
 // This must remain in sync with FinalizeStatus::Status in
