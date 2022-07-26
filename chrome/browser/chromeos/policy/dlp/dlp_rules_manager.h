@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_RULES_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_RULES_MANAGER_H_
 
+#include <map>
+#include <set>
 #include <string>
 
 #include "components/keyed_service/core/keyed_service.h"
@@ -44,6 +46,7 @@ class DlpRulesManager : public KeyedService {
 
   // A representation of destinations to which sharing confidential data is
   // restricted by DataLeakPreventionRulesList policy.
+  // When adding new values, make sure to update the `components` below as well.
   enum class Component {
     kUnknownComponent,
     kArc,       // ARC++ as a Guest OS.
@@ -53,6 +56,12 @@ class DlpRulesManager : public KeyedService {
     kDrive,     // Google drive for file storage.
     kMaxValue = kDrive
   };
+
+  // List of all possible component values, used to simplify iterating over all
+  // the options.
+  constexpr static const std::array<Component, 5> components = {
+      Component::kArc, Component::kCrostini, Component::kPluginVm,
+      Component::kUsb, Component::kDrive};
 
   // The enforcement level of the restriction set by DataLeakPreventionRulesList
   // policy. Should be listed in the order of increased priority.
@@ -78,6 +87,13 @@ class DlpRulesManager : public KeyedService {
     uint64_t inode;  // File inode number.
     GURL source;     // File source URL.
   };
+
+  // Mapping from a level to the set of destination URLs for which that level is
+  // enforced.
+  using AggregatedDestinations = std::map<Level, std::set<std::string>>;
+  // Mapping from a level to the set of components for which that level is
+  // enforced.
+  using AggregatedComponents = std::map<Level, std::set<Component>>;
 
   ~DlpRulesManager() override = default;
 
@@ -111,7 +127,7 @@ class DlpRulesManager : public KeyedService {
   // Returns the enforcement level for `restriction` given that data comes
   // from `source` and requested to be shared to `destination`. ALLOW is
   // returned if there is no matching rule. Requires `restriction` to be
-  // clipboard.
+  // clipboard or files.
   // If there's a rule matching, `out_source_pattern` will be changed to the
   // original rule URL patterns.
   virtual Level IsRestrictedComponent(
@@ -119,6 +135,22 @@ class DlpRulesManager : public KeyedService {
       const Component& destination,
       Restriction restriction,
       std::string* out_source_pattern) const = 0;
+
+  // Returns a mapping from the level to a set of destination URLs for which
+  // that level is enforced for `source`. Each destination URL it is mapped to
+  // the highest level, if there are multiple applicable rules. Requires
+  // `restriction` to be clipboard or files.
+  virtual AggregatedDestinations GetAggregatedDestinations(
+      const GURL& source,
+      Restriction restriction) const = 0;
+
+  // Returns a mapping from the level to the set of components for which that
+  // level is enforced for `source`. Components that do not have a matching rule
+  // set are mapped to the ALLOW level. Requires `restriction` to be clipboard
+  // or files.
+  virtual AggregatedComponents GetAggregatedComponents(
+      const GURL& source,
+      Restriction restriction) const = 0;
 
   // Returns true if the general dlp reporting policy is enabled otherwise
   // false.

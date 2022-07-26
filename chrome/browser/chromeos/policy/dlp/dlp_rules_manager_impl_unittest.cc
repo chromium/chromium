@@ -44,7 +44,7 @@ constexpr char kSalesforcePattern[] = "salesforce.com";
 constexpr char kDocsPattern[] = "docs.google.com";
 constexpr char kDrivePattern[] = "drive.google.com";
 constexpr char kCompanyPattern[] = ".company.com";
-constexpr char kGooglePatten[] = "google.com";
+constexpr char kGooglePattern[] = "google.com";
 constexpr char kMailPattern[] = "mail.google.com";
 
 class MockDlpRulesManager : public DlpRulesManagerImpl {
@@ -629,7 +629,7 @@ TEST_F(DlpRulesManagerImplTest, WarnPriority) {
 
   // First Rule
   base::Value src_urls_1(base::Value::Type::LIST);
-  src_urls_1.Append(kGooglePatten);
+  src_urls_1.Append(kGooglePattern);
 
   base::Value dst_urls_1(base::Value::Type::LIST);
   dst_urls_1.Append(kWildCardMatching);
@@ -688,7 +688,7 @@ TEST_F(DlpRulesManagerImplTest, WarnPriority) {
                 GURL(base::StrCat({kHttpsPrefix, kChatPattern})),
                 GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard,
                 &src_pattern, &dst_pattern));
-  EXPECT_EQ(src_pattern, kGooglePatten);
+  EXPECT_EQ(src_pattern, kGooglePattern);
   EXPECT_EQ(dst_pattern, kWildCardMatching);
 
   // Copy/paste from docs to salesforce should be blocked.
@@ -929,6 +929,218 @@ TEST_F(DlpRulesManagerImplTest, ReportPriority) {
             dlp_rules_manager_.IsRestricted(
                 GURL(base::StrCat({kHttpsPrefix, kSalesforcePattern})),
                 DlpRulesManager::Restriction::kScreenShare));
+}
+
+TEST_F(DlpRulesManagerImplTest, GetAggregatedDestinations_NoMatch) {
+  auto result = dlp_rules_manager_.GetAggregatedDestinations(
+      GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard);
+
+  EXPECT_TRUE(result.empty());
+}
+
+TEST_F(DlpRulesManagerImplTest, FilesRestriction_GetAggregatedDestinations) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kDataLeakPreventionFilesRestriction);
+  chromeos::DlpClient::InitializeFake();
+
+  base::Value rules(base::Value::Type::LIST);
+
+  base::Value src_urls1(base::Value::Type::LIST);
+  src_urls1.Append(kExampleUrl);
+  base::Value dst_urls1(base::Value::Type::LIST);
+  // Duplicates should be ignored.
+  dst_urls1.Append(kGoogleUrl);
+  dst_urls1.Append(kGoogleUrl);
+  dst_urls1.Append(kCompanyUrl);
+  dst_urls1.Append(kGmailUrl);
+  base::Value restrictions1(base::Value::Type::LIST);
+  restrictions1.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kFilesRestriction, dlp::kBlockLevel));
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #1", "Block Files", std::move(src_urls1), std::move(dst_urls1),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions1)));
+
+  base::Value src_urls2(base::Value::Type::LIST);
+  src_urls2.Append(kExampleUrl);
+  base::Value dst_urls2(base::Value::Type::LIST);
+  dst_urls2.Append(kGmailUrl);
+  base::Value restrictions2(base::Value::Type::LIST);
+  restrictions2.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kFilesRestriction, dlp::kAllowLevel));
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #2", "Explicit Allow Files", std::move(src_urls2),
+      std::move(dst_urls2),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions2)));
+
+  UpdatePolicyPref(std::move(rules));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(dlp_rules_manager_.IsFilesPolicyEnabled());
+
+  auto result = dlp_rules_manager_.GetAggregatedDestinations(
+      GURL(kExampleUrl), DlpRulesManager::Restriction::kFiles);
+  std::map<DlpRulesManager::Level, std::set<std::string>> expected;
+  expected[DlpRulesManager::Level::kBlock].insert(kGoogleUrl);
+  expected[DlpRulesManager::Level::kBlock].insert(kCompanyUrl);
+  expected[DlpRulesManager::Level::kAllow].insert(kGmailUrl);
+
+  EXPECT_EQ(result, expected);
+
+  chromeos::DlpClient::Shutdown();
+}
+
+TEST_F(DlpRulesManagerImplTest,
+       FilesRestriction_GetAggregatedDestinations_Wildcard) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kDataLeakPreventionFilesRestriction);
+  chromeos::DlpClient::InitializeFake();
+
+  base::Value rules(base::Value::Type::LIST);
+
+  base::Value src_urls1(base::Value::Type::LIST);
+  src_urls1.Append(kExampleUrl);
+  base::Value dst_urls1(base::Value::Type::LIST);
+  dst_urls1.Append(kWildCardMatching);
+  base::Value restrictions1(base::Value::Type::LIST);
+  restrictions1.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kFilesRestriction, dlp::kBlockLevel));
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #1", "Block Files for all destinations", std::move(src_urls1),
+      std::move(dst_urls1),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions1)));
+
+  UpdatePolicyPref(std::move(rules));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(dlp_rules_manager_.IsFilesPolicyEnabled());
+
+  auto result = dlp_rules_manager_.GetAggregatedDestinations(
+      GURL(kExampleUrl), DlpRulesManager::Restriction::kFiles);
+  std::map<DlpRulesManager::Level, std::set<std::string>> expected;
+  expected[DlpRulesManager::Level::kBlock].insert(kWildCardMatching);
+
+  EXPECT_EQ(result, expected);
+
+  chromeos::DlpClient::Shutdown();
+}
+
+TEST_F(DlpRulesManagerImplTest, GetAggregatedDestinations_MixedLevels) {
+  base::Value rules(base::Value::Type::LIST);
+
+  base::Value src_urls1(base::Value::Type::LIST);
+  src_urls1.Append(kExampleUrl);
+  base::Value dst_urls1(base::Value::Type::LIST);
+  dst_urls1.Append(kCompanyUrl);
+  // Specific destinations and the wildcard should all be returned.
+  dst_urls1.Append(kWildCardMatching);
+  base::Value restrictions1(base::Value::Type::LIST);
+  restrictions1.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kClipboardRestriction, dlp::kBlockLevel));
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #1", "Block Clipboard", std::move(src_urls1), std::move(dst_urls1),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions1)));
+
+  base::Value src_urls2(base::Value::Type::LIST);
+  src_urls2.Append(kExampleUrl);
+  base::Value dst_urls2(base::Value::Type::LIST);
+  // Ignored because of a block restriction for the same destination.
+  dst_urls2.Append(kCompanyUrl);
+  dst_urls2.Append(kGmailUrl);
+  base::Value restrictions2(base::Value::Type::LIST);
+  restrictions2.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kClipboardRestriction, dlp::kWarnLevel));
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #2", "Warn Clipboard", std::move(src_urls2), std::move(dst_urls2),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions2)));
+
+  base::Value src_urls3(base::Value::Type::LIST);
+  src_urls3.Append(kExampleUrl);
+  base::Value dst_urls3(base::Value::Type::LIST);
+  dst_urls3.Append(kGoogleUrl);
+  base::Value restrictions3(base::Value::Type::LIST);
+  restrictions3.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kClipboardRestriction, dlp::kReportLevel));
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #2", "Report Clipboard", std::move(src_urls3), std::move(dst_urls3),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions3)));
+
+  UpdatePolicyPref(std::move(rules));
+
+  auto result = dlp_rules_manager_.GetAggregatedDestinations(
+      GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard);
+  std::map<DlpRulesManager::Level, std::set<std::string>> expected;
+  expected[DlpRulesManager::Level::kBlock].insert(kCompanyUrl);
+  expected[DlpRulesManager::Level::kBlock].insert(kWildCardMatching);
+  expected[DlpRulesManager::Level::kWarn].insert(kGmailUrl);
+  expected[DlpRulesManager::Level::kReport].insert(kGoogleUrl);
+
+  EXPECT_EQ(result, expected);
+}
+
+TEST_F(DlpRulesManagerImplTest, GetAggregatedComponents_NoMatch) {
+  auto result = dlp_rules_manager_.GetAggregatedComponents(
+      GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard);
+  std::map<DlpRulesManager::Level, std::set<DlpRulesManager::Component>>
+      expected;
+  for (auto component : DlpRulesManager::components) {
+    expected[DlpRulesManager::Level::kAllow].insert(component);
+  }
+
+  EXPECT_EQ(result, expected);
+}
+
+TEST_F(DlpRulesManagerImplTest, FilesRestriction_GetAggregatedComponents) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kDataLeakPreventionFilesRestriction);
+  chromeos::DlpClient::InitializeFake();
+
+  base::Value rules(base::Value::Type::LIST);
+
+  base::Value src_urls(base::Value::Type::LIST);
+  src_urls.Append(kExampleUrl);
+  base::Value dst_components(base::Value::Type::LIST);
+  dst_components.Append("ARC");
+  dst_components.Append("CROSTINI");
+  base::Value restrictions(base::Value::Type::LIST);
+  restrictions.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kFilesRestriction, dlp::kBlockLevel));
+  rules.Append(dlp_test_util::CreateRule(
+      "rule #1", "Block Files", std::move(src_urls),
+      /*dst_urls=*/base::Value(base::Value::Type::LIST),
+      std::move(dst_components), std::move(restrictions)));
+
+  UpdatePolicyPref(std::move(rules));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(dlp_rules_manager_.IsFilesPolicyEnabled());
+
+  auto result = dlp_rules_manager_.GetAggregatedComponents(
+      GURL(kExampleUrl), DlpRulesManager::Restriction::kFiles);
+  std::map<DlpRulesManager::Level, std::set<DlpRulesManager::Component>>
+      expected;
+  expected[DlpRulesManager::Level::kBlock].insert(
+      DlpRulesManager::Component::kArc);
+  expected[DlpRulesManager::Level::kBlock].insert(
+      DlpRulesManager::Component::kCrostini);
+  expected[DlpRulesManager::Level::kAllow].insert(
+      DlpRulesManager::Component::kPluginVm);
+  expected[DlpRulesManager::Level::kAllow].insert(
+      DlpRulesManager::Component::kUsb);
+  expected[DlpRulesManager::Level::kAllow].insert(
+      DlpRulesManager::Component::kDrive);
+
+  EXPECT_EQ(result, expected);
+
+  chromeos::DlpClient::Shutdown();
 }
 
 }  // namespace policy

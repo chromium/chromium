@@ -37,6 +37,16 @@ class MockDlpRulesManager : public DlpRulesManager {
                            Restriction restriction,
                            std::string* out_source_pattern));
 
+  MOCK_METHOD(AggregatedDestinations,
+              GetAggregatedDestinations,
+              (const GURL& source, Restriction restriction),
+              (override, const));
+
+  MOCK_METHOD(AggregatedComponents,
+              GetAggregatedComponents,
+              (const GURL& source, Restriction restriction),
+              (override, const));
+
   MOCK_CONST_METHOD0(IsReportingEnabled, bool());
 
   MOCK_CONST_METHOD0(GetReportingManager, DlpReportingManager*());
