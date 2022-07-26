@@ -410,11 +410,7 @@ NGPhysicalFragment::OutOfFlowData* NGPhysicalFragment::OutOfFlowDataFromBuilder(
     if (!oof_data)
       oof_data = MakeGarbageCollected<OutOfFlowData>();
 
-    for (const auto& it : builder->anchor_query_.anchor_references) {
-      oof_data->anchor_query.anchor_references.Set(
-          it.key, MakeGarbageCollected<NGPhysicalAnchorReference>(
-                      converter.ToPhysical(it.value.rect), it.value.fragment));
-    }
+    oof_data->anchor_query.SetFromLogical(builder->anchor_query_, converter);
   }
 
   return oof_data;

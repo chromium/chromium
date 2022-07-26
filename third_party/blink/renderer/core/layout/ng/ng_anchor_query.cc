@@ -9,12 +9,69 @@
 
 namespace blink {
 
-void NGPhysicalAnchorReference::Trace(Visitor* visitor) const {
-  visitor->Trace(fragment);
+const NGPhysicalAnchorReference* NGPhysicalAnchorQuery::AnchorReference(
+    const AtomicString& name) const {
+  const auto& it = anchor_references_.find(name);
+  if (it != anchor_references_.end())
+    return it->value.Get();
+  return nullptr;
 }
 
-void NGPhysicalAnchorQuery::Trace(Visitor* visitor) const {
-  visitor->Trace(anchor_references);
+const PhysicalRect* NGPhysicalAnchorQuery::Rect(
+    const AtomicString& name) const {
+  if (const NGPhysicalAnchorReference* reference = AnchorReference(name))
+    return &reference->rect;
+  return nullptr;
+}
+
+const NGPhysicalFragment* NGPhysicalAnchorQuery::Fragment(
+    const AtomicString& name) const {
+  if (const NGPhysicalAnchorReference* reference = AnchorReference(name))
+    return reference->fragment.Get();
+  return nullptr;
+}
+
+const NGLogicalAnchorReference* NGLogicalAnchorQuery::AnchorReference(
+    const AtomicString& name) const {
+  const auto& it = anchor_references_.find(name);
+  if (it != anchor_references_.end())
+    return &it->value;
+  return nullptr;
+}
+
+const LogicalRect* NGLogicalAnchorQuery::Rect(const AtomicString& name) const {
+  if (const NGLogicalAnchorReference* reference = AnchorReference(name))
+    return &reference->rect;
+  return nullptr;
+}
+
+const NGPhysicalFragment* NGLogicalAnchorQuery::Fragment(
+    const AtomicString& name) const {
+  if (const NGLogicalAnchorReference* reference = AnchorReference(name))
+    return reference->fragment;
+  return nullptr;
+}
+
+void NGPhysicalAnchorQuery::SetFromLogical(
+    const NGLogicalAnchorQuery& logical_query,
+    const WritingModeConverter& converter) {
+  for (const auto& it : logical_query.anchor_references_) {
+    anchor_references_.Set(
+        it.key, MakeGarbageCollected<NGPhysicalAnchorReference>(
+                    converter.ToPhysical(it.value.rect), it.value.fragment));
+  }
+}
+
+void NGLogicalAnchorQuery::SetFromPhysical(
+    const NGPhysicalAnchorQuery& physical_query,
+    const WritingModeConverter& converter,
+    const LogicalOffset& additional_offset) {
+  for (const auto& it : physical_query.anchor_references_) {
+    LogicalRect rect = converter.ToLogical(it.value->rect);
+    rect.offset += additional_offset;
+    anchor_references_.Set(
+        it.key, NGLogicalAnchorReference{rect, it.value->fragment.Get()});
+  }
 }
 
 absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
@@ -24,11 +81,11 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateAnchor(
     const WritingModeConverter& container_converter,
     bool is_y_axis,
     bool is_right_or_bottom) const {
-  const auto it = anchor_references.find(anchor_name);
-  if (it == anchor_references.end())
+  const NGLogicalAnchorReference* reference = AnchorReference(anchor_name);
+  if (!reference)
     return absl::nullopt;  // No targets.
 
-  const PhysicalRect anchor = container_converter.ToPhysical(it->value.rect);
+  const PhysicalRect anchor = container_converter.ToPhysical(reference->rect);
   LayoutUnit value;
   switch (anchor_value) {
     case AnchorValue::kLeft:
@@ -68,11 +125,11 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateSize(
     AnchorSizeValue anchor_size_value,
     WritingMode container_writing_mode,
     WritingMode self_writing_mode) const {
-  const auto it = anchor_references.find(anchor_name);
-  if (it == anchor_references.end())
+  const NGLogicalAnchorReference* reference = AnchorReference(anchor_name);
+  if (!reference)
     return absl::nullopt;  // No targets.
 
-  const LogicalSize& anchor = it->value.rect.size;
+  const LogicalSize& anchor = reference->rect.size;
   switch (anchor_size_value) {
     case AnchorSizeValue::kInline:
       return anchor.inline_size;
@@ -99,6 +156,14 @@ absl::optional<LayoutUnit> NGLogicalAnchorQuery::EvaluateSize(
   }
   NOTREACHED();
   return absl::nullopt;
+}
+
+void NGPhysicalAnchorReference::Trace(Visitor* visitor) const {
+  visitor->Trace(fragment);
+}
+
+void NGPhysicalAnchorQuery::Trace(Visitor* visitor) const {
+  visitor->Trace(anchor_references_);
 }
 
 }  // namespace blink

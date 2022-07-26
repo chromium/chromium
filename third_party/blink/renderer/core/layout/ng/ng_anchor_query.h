@@ -17,6 +17,7 @@
 
 namespace blink {
 
+class NGLogicalAnchorQuery;
 class NGPhysicalFragment;
 class WritingModeConverter;
 
@@ -26,31 +27,69 @@ struct NGPhysicalAnchorReference
                             const NGPhysicalFragment* fragment)
       : rect(rect), fragment(fragment) {}
 
+  void Trace(Visitor* visitor) const;
+
   PhysicalRect rect;
   Member<const NGPhysicalFragment> fragment;
-
-  void Trace(Visitor* visitor) const;
 };
 
-struct NGPhysicalAnchorQuery {
-  bool IsEmpty() const { return anchor_references.IsEmpty(); }
+class NGPhysicalAnchorQuery {
+  DISALLOW_NEW();
 
-  HeapHashMap<AtomicString, Member<NGPhysicalAnchorReference>>
-      anchor_references;
+ public:
+  bool IsEmpty() const { return anchor_references_.IsEmpty(); }
+
+  const NGPhysicalAnchorReference* AnchorReference(
+      const AtomicString& name) const;
+  const PhysicalRect* Rect(const AtomicString& name) const;
+  const NGPhysicalFragment* Fragment(const AtomicString& name) const;
+
+  using NGPhysicalAnchorReferenceMap =
+      HeapHashMap<AtomicString, Member<NGPhysicalAnchorReference>>;
+  NGPhysicalAnchorReferenceMap::const_iterator begin() const {
+    return anchor_references_.begin();
+  }
+  NGPhysicalAnchorReferenceMap::const_iterator end() const {
+    return anchor_references_.end();
+  }
+
+  void SetFromLogical(const NGLogicalAnchorQuery& logical_query,
+                      const WritingModeConverter& converter);
 
   void Trace(Visitor* visitor) const;
-  DISALLOW_NEW();
+
+ private:
+  friend class NGLogicalAnchorQuery;
+
+  NGPhysicalAnchorReferenceMap anchor_references_;
 };
 
 struct NGLogicalAnchorReference {
+  STACK_ALLOCATED();
+
+ public:
   LogicalRect rect;
   const NGPhysicalFragment* fragment;
-
-  STACK_ALLOCATED();
 };
 
-struct NGLogicalAnchorQuery {
-  bool IsEmpty() const { return anchor_references.IsEmpty(); }
+class NGLogicalAnchorQuery {
+  STACK_ALLOCATED();
+
+ public:
+  bool IsEmpty() const { return anchor_references_.IsEmpty(); }
+
+  const NGLogicalAnchorReference* AnchorReference(
+      const AtomicString& name) const;
+  const LogicalRect* Rect(const AtomicString& name) const;
+  const NGPhysicalFragment* Fragment(const AtomicString& name) const;
+
+  void Set(const AtomicString& name,
+           const NGLogicalAnchorReference& reference) {
+    anchor_references_.Set(name, reference);
+  }
+  void SetFromPhysical(const NGPhysicalAnchorQuery& physical_query,
+                       const WritingModeConverter& converter,
+                       const LogicalOffset& additional_offset);
 
   // Evaluate the |anchor_name| for the |anchor_value|. Returns |nullopt| if
   // the query is invalid (e.g., no targets or wrong axis.)
@@ -61,15 +100,15 @@ struct NGLogicalAnchorQuery {
       const WritingModeConverter& container_converter,
       bool is_y_axis,
       bool is_right_or_bottom) const;
-
   absl::optional<LayoutUnit> EvaluateSize(const AtomicString& anchor_name,
                                           AnchorSizeValue anchor_size_value,
                                           WritingMode container_writing_mode,
                                           WritingMode self_writing_mode) const;
 
-  HashMap<AtomicString, NGLogicalAnchorReference> anchor_references;
+ private:
+  friend class NGPhysicalAnchorQuery;
 
-  STACK_ALLOCATED();
+  HashMap<AtomicString, NGLogicalAnchorReference> anchor_references_;
 };
 
 }  // namespace blink

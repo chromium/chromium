@@ -8109,10 +8109,9 @@ const LayoutObject* LayoutBox::AnchorScrollObject() const {
   if (!anchor_query)
     return nullptr;
 
-  if (const auto& reference =
-          anchor_query->anchor_references.find(StyleRef().AnchorScroll());
-      reference != anchor_query->anchor_references.end()) {
-    return reference->value->fragment->GetLayoutObject();
+  if (const NGPhysicalFragment* fragment =
+          anchor_query->Fragment(StyleRef().AnchorScroll())) {
+    return fragment->GetLayoutObject();
   }
   return nullptr;
 }

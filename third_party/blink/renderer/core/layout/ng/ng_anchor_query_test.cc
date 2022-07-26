@@ -41,7 +41,7 @@ struct AnchorTestData {
   static Vector<AnchorTestData> ToList(
       const NGPhysicalAnchorQuery& anchor_query) {
     Vector<AnchorTestData> items;
-    for (const auto& it : anchor_query.anchor_references)
+    for (const auto& it : anchor_query)
       items.push_back(AnchorTestData{it.key, it.value->rect});
     std::sort(items.begin(), items.end(),
               [](const AnchorTestData& a, const AnchorTestData& b) {
