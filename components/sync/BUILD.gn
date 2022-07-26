@@ -34,6 +34,9 @@ group("test_support") {
   if (!is_android) {
     public_deps += [ "//components/sync/trusted_vault:test_support" ]
   }
+  if (is_chromeos_lacros) {
+    public_deps += [ "//components/sync/chromeos/lacros:test_support" ]
+  }
 }
 
 static_library("test_support_engine") {
