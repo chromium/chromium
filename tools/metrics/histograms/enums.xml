@@ -26905,6 +26905,18 @@ Called by update_document_policy_enum.py.-->
   <int value="8" label="MP3"/>
 </enum>
 
+<enum name="DownloadBubbleSubpageAction">
+  <int value="0" label="Subpage shown"/>
+  <int value="1" label="Checkbox shown"/>
+  <int value="2" label="First Button shown"/>
+  <int value="3" label="Second Button shown"/>
+  <int value="4" label="Back button pressed"/>
+  <int value="5" label="Subpage closed"/>
+  <int value="6" label="Checkbox clicked"/>
+  <int value="7" label="First button pressed"/>
+  <int value="8" label="Second button pressed"/>
+</enum>
+
 <enum name="DownloadCalendarFileUI">
   <int value="0" label="Warning alert is presented"/>
   <int value="1"

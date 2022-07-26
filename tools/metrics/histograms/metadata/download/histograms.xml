@@ -121,6 +121,18 @@ chromium-metrics-reviews@google.com.
   <token key="DownloadDangerTypeString" variants="DownloadDangerTypeString"/>
 </histogram>
 
+<histogram name="Download.Bubble.SubpageAction"
+    enum="DownloadBubbleSubpageAction" expires_after="2022-12-14">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <summary>
+    Record the user actions taken on the Download bubble warning subpage. The
+    warning subpage is shown when the user sees a download warning on the full
+    or the partial view, and navigates to the subpage for more actions. Recorded
+    only for Desktop platforms, where Download Bubble is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Download.Bubble.{DownloadBubbleViewType}View.VisibleTime"
     units="ms" expires_after="2022-10-18">
   <owner>bhatiarohit@google.com</owner>

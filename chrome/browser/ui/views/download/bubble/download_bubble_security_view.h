@@ -48,6 +48,7 @@ class DownloadBubbleSecurityView : public views::View {
   raw_ptr<views::MdTextButton> deep_scan_button_ = nullptr;
 
  private:
+  void BackButtonPressed();
   void UpdateHeader();
   void AddHeader();
   void CloseBubble();
