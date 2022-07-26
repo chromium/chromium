@@ -540,23 +540,33 @@ class WebMediaPlayerImplTest
   }
 
   WebMediaPlayerImpl::PlayState ComputePlayState() {
-    return wmpi_->UpdatePlayState_ComputePlayState(false, true, false, false);
+    return wmpi_->UpdatePlayState_ComputePlayState(false, true, false, false,
+                                                   false);
   }
 
   WebMediaPlayerImpl::PlayState ComputePlayState_FrameHidden() {
-    return wmpi_->UpdatePlayState_ComputePlayState(false, true, false, true);
+    return wmpi_->UpdatePlayState_ComputePlayState(false, true, false, true,
+                                                   false);
   }
 
   WebMediaPlayerImpl::PlayState ComputePlayState_Suspended() {
-    return wmpi_->UpdatePlayState_ComputePlayState(false, true, true, false);
+    return wmpi_->UpdatePlayState_ComputePlayState(false, true, true, false,
+                                                   false);
   }
 
   WebMediaPlayerImpl::PlayState ComputePlayState_Flinging() {
-    return wmpi_->UpdatePlayState_ComputePlayState(true, true, false, false);
+    return wmpi_->UpdatePlayState_ComputePlayState(true, true, false, false,
+                                                   false);
   }
 
   WebMediaPlayerImpl::PlayState ComputePlayState_BackgroundedStreaming() {
-    return wmpi_->UpdatePlayState_ComputePlayState(false, false, false, true);
+    return wmpi_->UpdatePlayState_ComputePlayState(false, false, false, true,
+                                                   false);
+  }
+
+  WebMediaPlayerImpl::PlayState ComputePlayState_FrameHiddenPictureInPicture() {
+    return wmpi_->UpdatePlayState_ComputePlayState(false, true, false, true,
+                                                   true);
   }
 
   bool IsSuspended() { return wmpi_->pipeline_controller_->IsSuspended(); }
@@ -1326,6 +1336,32 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_FrameHiddenAudioOnly) {
   EXPECT_FALSE(state.is_idle);
   EXPECT_FALSE(state.is_suspended);
   EXPECT_TRUE(state.is_memory_reporting_enabled);
+}
+
+TEST_F(WebMediaPlayerImplTest, ComputePlayState_FrameHiddenVideoOnly) {
+  InitializeWebMediaPlayerImpl();
+  SetMetadata(false, true);
+  SetReadyState(WebMediaPlayer::kReadyStateHaveFutureData);
+  SetPaused(false);
+
+  WebMediaPlayerImpl::PlayState state = ComputePlayState_FrameHidden();
+  EXPECT_EQ(WebMediaPlayerImpl::DelegateState::PLAYING, state.delegate_state);
+  EXPECT_FALSE(state.is_idle);
+  EXPECT_FALSE(state.is_suspended);
+  EXPECT_TRUE(state.is_memory_reporting_enabled);
+
+  SetPaused(true);
+  state = ComputePlayState_FrameHidden();
+  EXPECT_EQ(WebMediaPlayerImpl::DelegateState::GONE, state.delegate_state);
+  EXPECT_TRUE(state.is_idle);
+  EXPECT_TRUE(state.is_suspended);
+  EXPECT_FALSE(state.is_memory_reporting_enabled);
+
+  state = ComputePlayState_FrameHiddenPictureInPicture();
+  EXPECT_EQ(WebMediaPlayerImpl::DelegateState::PAUSED, state.delegate_state);
+  EXPECT_TRUE(state.is_idle);
+  EXPECT_FALSE(state.is_suspended);
+  EXPECT_FALSE(state.is_memory_reporting_enabled);
 }
 
 TEST_F(WebMediaPlayerImplTest, ComputePlayState_FrameHiddenSuspendNoResume) {
