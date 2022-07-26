@@ -214,55 +214,6 @@ BrowserAccessibility* BrowserAccessibility::PlatformGetSelectionContainer()
   return manager()->GetFromAXNode(selection_container_ancestor);
 }
 
-bool BrowserAccessibility::IsPreviousSiblingOnSameLine() const {
-  // TODO(nektar): Replace this method with `!AXPosition::AtStartOfLine()`.
-  const BrowserAccessibility* previous_sibling = PlatformGetPreviousSibling();
-  if (!previous_sibling)
-    return false;
-
-  // Line linkage information might not be provided on non-leaf objects.
-  const BrowserAccessibility* leaf_object = PlatformDeepestFirstChild();
-  if (!leaf_object)
-    leaf_object = this;
-
-  int32_t previous_on_line_id;
-  if (leaf_object->GetIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
-                                   &previous_on_line_id)) {
-    const BrowserAccessibility* previous_on_line =
-        manager()->GetFromID(previous_on_line_id);
-    // In the case of a static text sibling, the object designated to be the
-    // previous object on this line might be one of its children, i.e. the last
-    // inline text box.
-    return previous_on_line &&
-           previous_on_line->IsDescendantOf(previous_sibling);
-  }
-  return false;
-}
-
-bool BrowserAccessibility::IsNextSiblingOnSameLine() const {
-  // TODO(nektar): Replace this method with `!AXPosition::AtEndOfLine()`.
-  const BrowserAccessibility* next_sibling = PlatformGetNextSibling();
-  if (!next_sibling)
-    return false;
-
-  // Line linkage information might not be provided on non-leaf objects.
-  const BrowserAccessibility* leaf_object = PlatformDeepestLastChild();
-  if (!leaf_object)
-    leaf_object = this;
-
-  int32_t next_on_line_id;
-  if (leaf_object->GetIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
-                                   &next_on_line_id)) {
-    const BrowserAccessibility* next_on_line =
-        manager()->GetFromID(next_on_line_id);
-    // In the case of a static text sibling, the object designated to be the
-    // next object on this line might be one of its children, i.e. the first
-    // inline text box.
-    return next_on_line && next_on_line->IsDescendantOf(next_sibling);
-  }
-  return false;
-}
-
 BrowserAccessibility* BrowserAccessibility::PlatformDeepestFirstChild() const {
   // We need to explicitly check for leafiness here instead of relying on
   // `AXNode::IsLeaf()` because Android has a different notion of this concept.
@@ -835,26 +786,6 @@ bool BrowserAccessibility::IsNonAtomicTextField() const {
 
 bool BrowserAccessibility::HasExplicitlyEmptyName() const {
   return GetNameFrom() == ax::mojom::NameFrom::kAttributeExplicitlyEmpty;
-}
-
-std::string BrowserAccessibility::GetLiveRegionText() const {
-  // TODO(nektar): Move this method to `AXNode` in the immediate future.
-  if (IsIgnored())
-    return "";
-
-  std::string text = GetStringAttribute(ax::mojom::StringAttribute::kName);
-  if (!text.empty())
-    return text;
-
-  for (InternalChildIterator it = InternalChildrenBegin();
-       it != InternalChildrenEnd(); ++it) {
-    const BrowserAccessibility* child = it.get();
-    if (!child)
-      continue;
-
-    text += child->GetLiveRegionText();
-  }
-  return text;
 }
 
 BrowserAccessibility::AXPosition BrowserAccessibility::CreatePositionAt(

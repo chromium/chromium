@@ -232,7 +232,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         // Unfortunately this produces an annoying boing sound with each live
         // announcement, but the alternative is almost no live region support.
         PostAnnouncementNotification(
-            base::SysUTF8ToNSString(node->GetLiveRegionText()));
+            base::SysUTF16ToNSString(node->GetTextContentUTF16()));
         return;
       }
 

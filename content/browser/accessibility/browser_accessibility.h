@@ -191,9 +191,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // or multiple selection, returns the node that represents the container.
   BrowserAccessibility* PlatformGetSelectionContainer() const;
 
-  bool IsPreviousSiblingOnSameLine() const;
-  bool IsNextSiblingOnSameLine() const;
-
   // Returns nullptr if there are no children.
   BrowserAccessibility* PlatformDeepestFirstChild() const;
   // Returns nullptr if there are no children.
@@ -368,12 +365,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
 
   // Returns true if the accessible name was explicitly set to "" by the author
   bool HasExplicitlyEmptyName() const;
-
-  // Get text to announce for a live region change, for ATs that do not
-  // implement this functionality.
-  //
-  // TODO(nektar): Replace with `AXNode::GetTextContentUTF16()`.
-  std::string GetLiveRegionText() const;
 
   // |offset| could only be a character offset. Depending on the platform, the
   // character offset could be either in the object's text content (Android and
