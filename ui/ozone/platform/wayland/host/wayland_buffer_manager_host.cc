@@ -406,10 +406,6 @@ bool WaylandBufferManagerHost::ValidateBufferExistence(uint32_t buffer_id) {
 
 bool WaylandBufferManagerHost::ValidateOverlayData(
     const wl::WaylandOverlayConfig& overlay_data) {
-  if (!ValidateBufferExistence(overlay_data.buffer_id))
-    return false;
-
-  std::string reason;
   if (std::isnan(overlay_data.bounds_rect.x()) ||
       std::isnan(overlay_data.bounds_rect.y()) ||
       std::isnan(overlay_data.bounds_rect.width()) ||

@@ -469,9 +469,19 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
 TEST_P(WaylandBufferManagerTest, CommitBufferNonExistingBufferId) {
   EXPECT_CALL(*server_.zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(1);
   CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, 1u);
+  Sync();
+  ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
+                                               false /* fail */);
+
+  auto* mock_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
 
   // Can't commit for non-existing buffer id.
-  SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
+  constexpr uint32_t kNumberOfCommits = 0;
+  EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
+  EXPECT_CALL(*mock_surface, Frame(_)).Times(kNumberOfCommits);
+  EXPECT_CALL(*mock_surface, Commit()).Times(kNumberOfCommits);
+
   buffer_manager_gpu_->CommitBuffer(window_->GetWidget(), 1u, 5u,
                                     window_->GetBoundsInPixels(), kDefaultScale,
                                     window_->GetBoundsInPixels());
@@ -482,9 +492,18 @@ TEST_P(WaylandBufferManagerTest, CommitBufferNonExistingBufferId) {
 TEST_P(WaylandBufferManagerTest, CommitOverlaysNonExistingBufferId) {
   EXPECT_CALL(*server_.zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(1);
   CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/, 1u);
+  Sync();
+  ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
+                                               false /* fail */);
+
+  auto* mock_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
 
   // Can't commit for non-existing buffer id.
-  SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
+  constexpr uint32_t kNumberOfCommits = 0;
+  EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(kNumberOfCommits);
+  EXPECT_CALL(*mock_surface, Frame(_)).Times(kNumberOfCommits);
+  EXPECT_CALL(*mock_surface, Commit()).Times(kNumberOfCommits);
 
   std::vector<wl::WaylandOverlayConfig> overlay_configs;
   overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
@@ -521,14 +540,6 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysWithSameBufferId) {
   Sync();
   ProcessCreatedBufferResourcesWithExpectation(
       expected_number_of_buffers /* expected size */, false /* fail */);
-
-  // Destroying the buffer causes all wl_buffer objects to be destroyed.
-  DestroyBufferAndSetTerminateExpectation(1u, false /*fail*/);
-  SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
-  buffer_manager_gpu_->CommitBuffer(window_->GetWidget(), 1u, 1u,
-                                    window_->GetBoundsInPixels(), kDefaultScale,
-                                    window_->GetBoundsInPixels());
-  Sync();
 }
 
 TEST_P(WaylandBufferManagerTest, CommitBufferNullWidget) {
