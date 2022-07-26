@@ -218,7 +218,11 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
   }
 
   crypto_params->num_segments += subsamples.size();
-  if (decrypt_config_->HasPattern()) {
+  // If the pattern has no skip blocks, which means the entire thing is
+  // encrypted, then don't specify a pattern at all as Intel's implementation
+  // does not expect that.
+  if (decrypt_config_->HasPattern() &&
+      decrypt_config_->encryption_pattern()->skip_byte_block()) {
     crypto_params->blocks_stripe_encrypted =
         decrypt_config_->encryption_pattern()->crypt_byte_block();
     crypto_params->blocks_stripe_clear =
