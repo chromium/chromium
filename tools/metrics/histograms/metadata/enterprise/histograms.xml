@@ -1478,6 +1478,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.EnterCriticalPolicySectionDelay.Total" units="ms"
     expires_after="2023-01-15">
+  <obsolete>
+    Remove after M105. Data is static hence there is no need to keep monitoring.
+  </obsolete>
   <owner>zmin@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
@@ -1490,6 +1493,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.EnterCriticalPolicySectionDelay.{Scope}.{Result}"
     units="ms" expires_after="2022-06-12">
+  <obsolete>
+    Remove after 2022-06. Data is static hence there is no need to keep
+    monitoring.
+  </obsolete>
   <owner>zmin@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
@@ -1509,6 +1516,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.EnterCriticalPolicySectionError"
     enum="WinGetLastError" expires_after="2022-08-14">
+  <obsolete>
+    Remove after M105. Data is static hence there is no need to keep monitoring.
+  </obsolete>
   <owner>zmin@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>

@@ -5913,7 +5913,6 @@ test("unit_tests") {
       "../browser/chrome_browser_main_win_unittest.cc",
       "../browser/chrome_process_singleton_win_unittest.cc",
       "../browser/component_updater/sw_reporter_installer_win_unittest.cc",
-      "../browser/enterprise/util/critical_policy_section_metrics_win_unittest.cc",
       "../browser/install_verification/win/module_info_unittest.cc",
       "../browser/install_verification/win/module_list_unittest.cc",
       "../browser/install_verification/win/module_verification_test.cc",

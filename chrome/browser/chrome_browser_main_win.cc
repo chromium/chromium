@@ -50,7 +50,6 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/enterprise/util/critical_policy_section_metrics_win.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_metrics_win.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -698,8 +697,6 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
   }
 
   base::ImportantFileWriterCleaner::GetInstance().Start();
-
-  chrome::enterprise_util::MeasureAndReportCriticalPolicySectionAcquisition();
 }
 
 // static
