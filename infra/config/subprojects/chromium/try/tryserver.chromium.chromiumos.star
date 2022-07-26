@@ -106,6 +106,9 @@ try_.builder(
 try_.builder(
     name = "chromeos-amd64-generic-lacros-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/chromeos-amd64-generic-lacros-dbg",
+    ],
 )
 
 try_.builder(
