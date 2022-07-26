@@ -3866,7 +3866,7 @@
   {
     "name": "incognito-reauthentication-for-android",
     "owners": [ "roagarwal", "chrome-incognito@google.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "incognito-screenshot",
