@@ -767,7 +767,7 @@ function updatePageData() {
     const debugModeContent =
         document.querySelector<HTMLElement>('#debug-mode-content');
     assert(debugModeContent);
-    const html = getTrustedHTML`The #conversion-measurement-debug-mode flag is
+    const html = getTrustedHTML`The #attribution-reporting-debug-mode flag is
  <strong>enabled</strong>, reports are sent immediately and never pending.`;
     debugModeContent.innerHTML = html as unknown as string;
 
