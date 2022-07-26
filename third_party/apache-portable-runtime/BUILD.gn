@@ -7,8 +7,13 @@ import("//build/config/android/config.gni")
 # In a separate config so that the -Wno flag shows up after -Wall.
 config("apr_warnings") {
   if (is_clang) {
-    # TODO(https://crbug.com/1347085): Investigate, fix.
-    cflags = [ "-Wno-int-conversion" ]
+    cflags = [
+      # TODO(https://crbug.com/1347085): Investigate, fix.
+      "-Wno-int-conversion",
+
+      # TODO(https://crbug.com/1347226): Investigate, fix.
+      "-Wno-deprecated-declarations",
+    ]
   }
 }
 
@@ -115,9 +120,11 @@ static_library("apr") {
     "src/include",
     "src/include/arch/unix",
   ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
 
-  # TODO(thakis): Move this target to no_chromium_code instead.
-  cflags = [ "-w" ]
-
-  configs += [ ":apr_warnings" ]
+    # Must be after no_chromium_code so -Wno flags show up after -Wall.
+    ":apr_warnings",
+  ]
 }
