@@ -27,7 +27,11 @@ class SavedTabGroup {
       const tab_groups::TabGroupColorId& color,
       const std::vector<SavedTabGroupTab>& urls,
       absl::optional<base::GUID> saved_guid = absl::nullopt,
-      absl::optional<tab_groups::TabGroupId> tab_group_id = absl::nullopt);
+      absl::optional<tab_groups::TabGroupId> tab_group_id = absl::nullopt,
+      absl::optional<base::Time> creation_time_windows_epoch_micros =
+          absl::nullopt,
+      absl::optional<base::Time> update_time_windows_epoch_micros =
+          absl::nullopt);
   SavedTabGroup(const SavedTabGroup& other);
   ~SavedTabGroup();
 
@@ -74,6 +78,12 @@ class SavedTabGroup {
 
   // The URLS and later webcontents (such as favicons) of the saved tab group.
   std::vector<SavedTabGroupTab> saved_tabs_;
+
+  // Timestamp for when the tab was created.
+  base::Time creation_time_windows_epoch_micros_;
+
+  // Timestamp for when the tab was last updated.
+  base::Time update_time_windows_epoch_micros_;
 };
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_H_

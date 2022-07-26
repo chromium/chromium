@@ -13,19 +13,21 @@ SavedTabGroupTab::SavedTabGroupTab(
     const base::GUID& group_guid,
     SavedTabGroup* group,
     absl::optional<base::GUID> guid,
-    absl::optional<base::Time> creation_time_unix_epoch_us,
-    absl::optional<base::Time> update_time_unix_epoch_us)
+    absl::optional<base::Time> creation_time_windows_epoch_micros,
+    absl::optional<base::Time> update_time_windows_epoch_micros)
     : guid_(guid.has_value() ? guid.value() : base::GUID::GenerateRandomV4()),
       group_guid_(group_guid),
       saved_tab_group_(group),
       url_(url),
       title_(title),
       favicon_(favicon),
-      creation_time_unix_epoch_us_(creation_time_unix_epoch_us.has_value()
-                                       ? creation_time_unix_epoch_us.value()
-                                       : base::Time::Now()),
-      update_time_unix_epoch_us_(update_time_unix_epoch_us.has_value()
-                                     ? update_time_unix_epoch_us.value()
-                                     : base::Time::Now()) {}
+      creation_time_windows_epoch_micros_(
+          creation_time_windows_epoch_micros.has_value()
+              ? creation_time_windows_epoch_micros.value()
+              : base::Time::Now()),
+      update_time_windows_epoch_micros_(
+          update_time_windows_epoch_micros.has_value()
+              ? update_time_windows_epoch_micros.value()
+              : base::Time::Now()) {}
 SavedTabGroupTab::SavedTabGroupTab(const SavedTabGroupTab& other) = default;
 SavedTabGroupTab::~SavedTabGroupTab() = default;

@@ -22,15 +22,16 @@ class SavedTabGroup;
 // A SavedTabGroupTab stores the url, title, and favicon of a tab.
 class SavedTabGroupTab {
  public:
-  SavedTabGroupTab(
-      const GURL& url,
-      const std::u16string& title,
-      const gfx::Image& favicon,
-      const base::GUID& group_guid,
-      SavedTabGroup* group = nullptr,
-      absl::optional<base::GUID> guid = absl::nullopt,
-      absl::optional<base::Time> creation_time_unix_epoch_us = absl::nullopt,
-      absl::optional<base::Time> update_time_unix_epoch_us = absl::nullopt);
+  SavedTabGroupTab(const GURL& url,
+                   const std::u16string& title,
+                   const gfx::Image& favicon,
+                   const base::GUID& group_guid,
+                   SavedTabGroup* group = nullptr,
+                   absl::optional<base::GUID> guid = absl::nullopt,
+                   absl::optional<base::Time>
+                       creation_time_windows_epoch_micros = absl::nullopt,
+                   absl::optional<base::Time> update_time_windows_epoch_micros =
+                       absl::nullopt);
   SavedTabGroupTab(const SavedTabGroupTab& other);
   ~SavedTabGroupTab();
 
@@ -41,11 +42,11 @@ class SavedTabGroupTab {
   const GURL& url() const { return url_; }
   const std::u16string& title() const { return title_; }
   const gfx::Image& favicon() const { return favicon_; }
-  const base::Time& creation_time_unix_epoch_us() const {
-    return creation_time_unix_epoch_us_;
+  const base::Time& creation_time_windows_epoch_micros() const {
+    return creation_time_windows_epoch_micros_;
   }
-  const base::Time& update_time_unix_epoch_us() const {
-    return update_time_unix_epoch_us_;
+  const base::Time& update_time_windows_epoch_micros() const {
+    return update_time_windows_epoch_micros_;
   }
 
   // Mutators.
@@ -87,10 +88,10 @@ class SavedTabGroupTab {
   gfx::Image favicon_;
 
   // Timestamp for when the tab was created.
-  base::Time creation_time_unix_epoch_us_;
+  base::Time creation_time_windows_epoch_micros_;
 
   // Timestamp for when the tab was last updated.
-  base::Time update_time_unix_epoch_us_;
+  base::Time update_time_windows_epoch_micros_;
 };
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_TAB_H_
