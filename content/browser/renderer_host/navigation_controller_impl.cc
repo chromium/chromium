@@ -355,6 +355,7 @@ blink::mojom::NavigationType GetNavigationType(
     bool has_pending_cross_document_commit,
     bool is_currently_error_page,
     bool is_same_document_history_load,
+    bool is_embedder_initiated_fenced_frame_navigation,
     bool is_unfenced_top_navigation) {
   // Reload navigations
   switch (reload_type) {
@@ -383,6 +384,12 @@ blink::mojom::NavigationType GetNavigationType(
       // a different-document navigation so that we'll attempt to load the
       // document we're navigating to (and not stay in the current error page).
       !is_currently_error_page &&
+      // If the navigation is an embedder-initiated navigation of a fenced
+      // frame root (i.e. enters a fenced frame tree from outside),
+      // same-document navigations should be disabled because we don't want to
+      // allow information to be joined across multiple embedder-initiated
+      // fenced frame navigations (which may contain separate cross-site data).
+      !is_embedder_initiated_fenced_frame_navigation &&
       // If the navigation is to _unfencedTop (i.e. escapes a fenced frame),
       // same-document navigations should be disabled because we want to force
       // the creation of a new browsing context group.
@@ -3743,7 +3750,9 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
       /*old_url=*/node->current_url(),
       /*new_url=*/url_to_load, reload_type, entry, *frame_entry,
       has_pending_cross_document_commit, is_currently_error_page,
-      /*is_same_document_history_load=*/false, is_unfenced_top_navigation);
+      /*is_same_document_history_load=*/false,
+      is_embedder_initiated_fenced_frame_navigation,
+      is_unfenced_top_navigation);
 
   // Create the NavigationParams based on |params|.
 
@@ -3921,6 +3930,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
       /*new_url=*/dest_url, reload_type, entry, *frame_entry,
       has_pending_cross_document_commit, is_currently_error_page,
       is_same_document_history_load,
+      /*is_embedder_initiated_fenced_frame_navigation=*/false,
       /*is_unfenced_top_navigation=*/false);
 
   // A form submission may happen here if the navigation is a
