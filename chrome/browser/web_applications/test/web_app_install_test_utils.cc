@@ -50,36 +50,18 @@ AppId InstallDummyWebApp(Profile* profile,
                          const std::string& app_name,
                          const GURL& start_url,
                          const webapps::WebappInstallSource install_source) {
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
-  WebAppInstallInfo web_app_info;
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
 
-  web_app_info.start_url = start_url;
-  web_app_info.scope = start_url;
-  web_app_info.title = base::UTF8ToUTF16(app_name);
-  web_app_info.description = base::UTF8ToUTF16(app_name);
-  web_app_info.user_display_mode = UserDisplayMode::kStandalone;
-  web_app_info.install_url = start_url;
+  web_app_info->start_url = start_url;
+  web_app_info->scope = start_url;
+  web_app_info->title = base::UTF8ToUTF16(app_name);
+  web_app_info->description = base::UTF8ToUTF16(app_name);
+  web_app_info->user_display_mode = UserDisplayMode::kStandalone;
+  web_app_info->install_url = start_url;
 
-  WebAppInstallFinalizer::FinalizeOptions options(install_source);
-  options.bypass_os_hooks = true;
-
-  // In unit tests, we do not have Browser or WebContents instances.
-  // Hence we use FinalizeInstall instead of InstallWebAppFromManifest
-  // to install the web app.
-  base::RunLoop run_loop;
-  WebAppProvider::GetForTest(profile)->install_finalizer().FinalizeInstall(
-      web_app_info, options,
-      base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                     webapps::InstallResultCode code,
-                                     OsHooksErrors os_hooks_errors) {
-        EXPECT_EQ(installed_app_id, app_id);
-        EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-  // Allow updates to be published to App Service listeners.
-  base::RunLoop().RunUntilIdle();
-  return app_id;
+  return InstallWebApp(profile, std::move(web_app_info),
+                       /*overwrite_existing_manifest_fields=*/true,
+                       install_source);
 }
 
 AppId InstallWebApp(Profile* profile,
@@ -95,6 +77,9 @@ AppId InstallWebApp(Profile* profile,
   auto* provider = WebAppProvider::GetForTest(profile);
   DCHECK(provider);
   WaitUntilReady(provider);
+  // In unit tests, we do not have Browser or WebContents instances. Hence we
+  // use `InstallFromInfoCommand` instead of `FetchManifestAndInstallCommand` or
+  // `WebAppInstallCommand` to install the web app.
   provider->command_manager().ScheduleCommand(
       std::make_unique<InstallFromInfoCommand>(
           std::move(web_app_info), &provider->install_finalizer(),
