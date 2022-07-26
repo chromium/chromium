@@ -7,6 +7,10 @@
  * This is the main code for the OOBE WebUI implementation.
  */
 
+// <include src="position_util.js">
+// <include src="menu_item.js">
+// <include src="menu.js">
+// <include src="menu_button.js">
 // <include src="components/display_manager_types.js">
 // <include src="components/oobe_types.js">
 // <include src="display_manager.js">

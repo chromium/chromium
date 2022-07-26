@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('cr.ui', function() {
   /** This is used to identify keyboard shortcuts. */
   class KeyboardShortcut {
     /**
@@ -66,7 +65,7 @@ cr.define('cr.ui', function() {
   }
 
   /** A list of keyboard shortcuts which all perform one command. */
-  /* #export */ class KeyboardShortcutList {
+  export class KeyboardShortcutList {
     /**
      * @param {string} shortcuts Text-based representation of one or more
      *     keyboard shortcuts, separated by spaces.
@@ -90,9 +89,3 @@ cr.define('cr.ui', function() {
     }
   }
 
-  // #cr_define_end
-  console.warn('crbug/1173575, non-JS module files deprecated.');
-  return {
-    KeyboardShortcutList: KeyboardShortcutList,
-  };
-});

@@ -47,29 +47,38 @@ preprocess_if_expr("preprocess_src") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-  in_files = [ "store.js" ]
+  in_files = [
+    "keyboard_shortcut_list.js",
+    "store.js",
+  ]
+
+  if (!is_android) {
+    # The files below are deprecated, and are included on non-CrOS builds only
+    # for the old NTP (chrome://apps) page.
+    in_files += [
+      "command.js",
+      "context_menu_handler.js",
+      "menu_button.js",
+      "menu_item.js",
+      "menu.js",
+      "position_util.js",
+    ]
+  }
 
   if (is_chromeos_ash) {
     in_files += [
       "array_data_model.js",
-      "command.js",
-      "context_menu_handler.js",
       "focus_manager.js",
       "focus_outline_manager.js",
       "focus_row.js",
       "focus_row_behavior.js",
       "focus_without_ink.js",
       "grid.js",
-      "keyboard_shortcut_list.js",
       "list_item.js",
       "list.js",
       "list_selection_controller.js",
       "list_selection_model.js",
       "list_single_selection_model.js",
-      "menu_button.js",
-      "menu_item.js",
-      "menu.js",
-      "position_util.js",
       "store_client.js",
     ]
   }
@@ -83,19 +92,12 @@ preprocess_if_expr("preprocess_generated") {
   in_files = [
     "focus_outline_manager.m.js",
     "focus_row.m.js",
-    "keyboard_shortcut_list.m.js",
   ]
 
   if (!is_android) {
     in_files += [
-      "command.m.js",
-      "context_menu_handler.m.js",
       "focus_row_behavior.m.js",
       "focus_without_ink.m.js",
-      "menu_button.m.js",
-      "menu_item.m.js",
-      "menu.m.js",
-      "position_util.m.js",
     ]
   }
 
@@ -124,49 +126,23 @@ if (is_chromeos_ash) {
     uses_legacy_modules = true
     deps = [
       ":array_data_model",
-      ":command",
-      ":context_menu_handler",
       ":focus_manager",
       ":focus_outline_manager",
       ":focus_row",
       ":focus_row_behavior",
       ":focus_without_ink",
       ":grid",
-      ":keyboard_shortcut_list",
       ":list",
       ":list_item",
       ":list_selection_controller",
       ":list_selection_model",
       ":list_single_selection_model",
-      ":menu",
-      ":menu_button",
-      ":menu_item",
-      ":position_util",
     ]
   }
 
   js_library("array_data_model") {
     deps = [
       "..:event_target",
-      "../..:cr",
-    ]
-  }
-
-  js_library("command") {
-    deps = [
-      ":keyboard_shortcut_list",
-      "..:ui",
-      "../..:cr",
-    ]
-  }
-
-  js_library("context_menu_handler") {
-    deps = [
-      ":menu",
-      ":menu_button",
-      ":position_util",
-      "..:event_target",
-      "..:ui",
       "../..:cr",
     ]
   }
@@ -210,10 +186,6 @@ if (is_chromeos_ash) {
     }
   }
 
-  js_library("keyboard_shortcut_list") {
-    deps = [ "../..:cr" ]
-  }
-
   if (is_chromeos_ash) {
     js_library("list") {
       deps = [
@@ -249,62 +221,21 @@ if (is_chromeos_ash) {
       ]
     }
   }
-
-  js_library("menu_button") {
-    deps = [
-      ":menu",
-      ":menu_item",
-      ":position_util",
-      "..:ui",
-      "../..:assert",
-      "../..:cr",
-      "../..:event_tracker",
-    ]
-  }
-
-  js_library("menu_item") {
-    deps = [
-      ":command",
-      "..:ui",
-      "../..:cr",
-      "../..:load_time_data",
-    ]
-  }
-
-  js_library("menu") {
-    deps = [
-      ":menu_item",
-      "..:ui",
-      "../..:assert",
-      "../..:cr",
-    ]
-  }
-
-  js_library("position_util") {
-    deps = [ "../..:cr" ]
-  }
 }
 
 js_modulizer("modulize") {
   input_files = [
     "array_data_model.js",
-    "command.js",
-    "context_menu_handler.js",
     "focus_outline_manager.js",
     "focus_row.js",
     "focus_row_behavior.js",
     "focus_without_ink.js",
     "grid.js",
-    "keyboard_shortcut_list.js",
     "list.js",
     "list_item.js",
     "list_selection_controller.js",
     "list_selection_model.js",
     "list_single_selection_model.js",
-    "menu.js",
-    "menu_button.js",
-    "menu_item.js",
-    "position_util.js",
   ]
   namespace_rewrites = cr_namespace_rewrites
 }
@@ -321,19 +252,19 @@ js_type_check("ui_resources_modules") {
   if (is_chromeos_ash) {
     deps += [
       ":array_data_model.m",
-      ":command.m",
-      ":context_menu_handler.m",
+      ":command",
+      ":context_menu_handler",
       ":grid.m",
-      ":keyboard_shortcut_list.m",
+      ":keyboard_shortcut_list",
       ":list.m",
       ":list_item.m",
       ":list_selection_controller.m",
       ":list_selection_model.m",
       ":list_single_selection_model.m",
-      ":menu.m",
-      ":menu_button.m",
-      ":menu_item.m",
-      ":position_util.m",
+      ":menu",
+      ":menu_button",
+      ":menu_item",
+      ":position_util",
       ":store_client",
     ]
   }
@@ -351,35 +282,27 @@ if (is_chromeos_ash) {
     extra_deps = [ ":modulize" ]
   }
 
-  js_library("command.m") {
-    sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/command.m.js" ]
+  js_library("command") {
     deps = [
-      ":keyboard_shortcut_list.m",
+      ":keyboard_shortcut_list",
       "../:ui.m",
       "../..:assert.m",
       "../..:cr.m",
     ]
-
-    extra_deps = [ ":modulize" ]
   }
 
-  js_library("context_menu_handler.m") {
-    sources = [
-      "$root_gen_dir/ui/webui/resources/js/cr/ui/context_menu_handler.m.js",
-    ]
+  js_library("context_menu_handler") {
     deps = [
-      ":menu.m",
-      ":menu_button.m",
-      ":menu_item.m",
-      ":position_util.m",
+      ":menu",
+      ":menu_button",
+      ":menu_item",
+      ":position_util",
       "..:event_target.m",
       "../:ui.m",
       "../..:assert.m",
       "../..:cr.m",
       "../..:event_tracker.m",
     ]
-
-    extra_deps = [ ":modulize" ]
   }
 }
 
@@ -434,11 +357,7 @@ if (is_chromeos_ash) {
     extra_deps = [ ":modulize" ]
   }
 
-  js_library("keyboard_shortcut_list.m") {
-    sources = [
-      "$root_gen_dir/ui/webui/resources/js/cr/ui/keyboard_shortcut_list.m.js",
-    ]
-    extra_deps = [ ":modulize" ]
+  js_library("keyboard_shortcut_list") {
   }
 
   js_library("list.m") {
@@ -489,46 +408,38 @@ if (is_chromeos_ash) {
     extra_deps = [ ":modulize" ]
   }
 
-  js_library("menu.m") {
-    sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/menu.m.js" ]
+  js_library("menu") {
     deps = [
-      ":menu_item.m",
+      ":menu_item",
       "../:ui.m",
       "../..:assert.m",
       "../..:cr.m",
     ]
-    extra_deps = [ ":modulize" ]
   }
 
-  js_library("menu_button.m") {
-    sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/menu_button.m.js" ]
+  js_library("menu_button") {
     deps = [
-      ":menu.m",
-      ":menu_item.m",
-      ":position_util.m",
+      ":menu",
+      ":menu_item",
+      ":position_util",
       "../:ui.m",
       "../..:assert.m",
       "../..:cr.m",
       "../..:event_tracker.m",
     ]
-    extra_deps = [ ":modulize" ]
   }
 
-  js_library("menu_item.m") {
-    sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/menu_item.m.js" ]
+  js_library("menu_item") {
     deps = [
-      ":command.m",
+      ":command",
       "../:ui.m",
       "../..:assert.m",
       "../..:cr.m",
       "../..:load_time_data.m",
     ]
-    extra_deps = [ ":modulize" ]
   }
 
-  js_library("position_util.m") {
-    sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/position_util.m.js" ]
-    extra_deps = [ ":modulize" ]
+  js_library("position_util") {
   }
 }
 

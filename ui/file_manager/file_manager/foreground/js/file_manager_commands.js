@@ -5,8 +5,8 @@
 import './webui_command_extender.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
+import {Command} from 'chrome://resources/js/cr/ui/command.js';
+import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.js';
 import {List} from 'chrome://resources/js/cr/ui/list.m.js';
 
 import {getHoldingSpaceState, startIOTask} from '../../common/js/api.js';

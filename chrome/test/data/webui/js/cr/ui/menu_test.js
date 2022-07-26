@@ -4,9 +4,9 @@
 
 // clang-format off
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+import {Command} from 'chrome://resources/js/cr/ui/command.js';
+import {Menu} from 'chrome://resources/js/cr/ui/menu.js';
+import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
 // clang-format on

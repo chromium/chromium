@@ -4,9 +4,9 @@
 
 import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {decorate, define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
-import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
-import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.js';
+import {Menu} from 'chrome://resources/js/cr/ui/menu.js';
+import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {DialogType} from '../../../common/js/dialog_type.js';

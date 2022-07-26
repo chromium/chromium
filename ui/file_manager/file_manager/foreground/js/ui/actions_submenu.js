@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+import {Command} from 'chrome://resources/js/cr/ui/command.js';
+import {Menu} from 'chrome://resources/js/cr/ui/menu.js';
+import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {util} from '../../../common/js/util.js';

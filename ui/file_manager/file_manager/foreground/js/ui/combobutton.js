@@ -4,7 +4,7 @@
 
 import {getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.js';
 
 import {util} from '../../../common/js/util.js';
 

@@ -5,9 +5,9 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {decorate, toCssPx} from 'chrome://resources/js/cr/ui.m.js';
-import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
-import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.m.js';
+import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.js';
+import {Menu} from 'chrome://resources/js/cr/ui/menu.js';
+import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$, appendParam, findAncestorByClass} from 'chrome://resources/js/util.m.js';
 

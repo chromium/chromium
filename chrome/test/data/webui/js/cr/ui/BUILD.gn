@@ -24,7 +24,7 @@ js_library("command_test") {
   deps = [
     "../../..:chai_assert",
     "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:command.m",
+    "//ui/webui/resources/js/cr/ui:command",
   ]
 }
 
@@ -32,8 +32,8 @@ js_library("context_menu_handler_test") {
   deps = [
     "../../..:chai_assert",
     "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:context_menu_handler.m",
-    "//ui/webui/resources/js/cr/ui:menu.m",
+    "//ui/webui/resources/js/cr/ui:context_menu_handler",
+    "//ui/webui/resources/js/cr/ui:menu",
   ]
 }
 
@@ -82,8 +82,8 @@ js_library("menu_button_test") {
   deps = [
     "../../..:chai_assert",
     "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:menu.m",
-    "//ui/webui/resources/js/cr/ui:menu_button.m",
+    "//ui/webui/resources/js/cr/ui:menu",
+    "//ui/webui/resources/js/cr/ui:menu_button",
   ]
 }
 
@@ -91,16 +91,16 @@ js_library("menu_test") {
   deps = [
     "../../..:chai_assert",
     "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:command.m",
-    "//ui/webui/resources/js/cr/ui:menu.m",
-    "//ui/webui/resources/js/cr/ui:menu_item.m",
+    "//ui/webui/resources/js/cr/ui:command",
+    "//ui/webui/resources/js/cr/ui:menu",
+    "//ui/webui/resources/js/cr/ui:menu_item",
   ]
 }
 
 js_library("position_util_test") {
   deps = [
     "../../..:chai_assert",
-    "//ui/webui/resources/js/cr/ui:position_util.m",
+    "//ui/webui/resources/js/cr/ui:position_util",
   ]
 }
 

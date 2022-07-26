@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Menu} from './menu.m.js';
-import {HideType} from './menu_button.m.js';
+import {Menu} from './menu.js';
+import {HideType} from './menu_button.js';
 
 export const contextMenuHandler: ContextMenuHandler;
 

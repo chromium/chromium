@@ -7,14 +7,8 @@
 // should only be used by legacy UIs that have not yet been updated to new
 // patterns. Use Web Components in any new code.
 
-// clang-format off
-import {loadTimeData} from '../../load_time_data.m.js';
-import {assert} from '../../assert.m.js';
-import {Command} from './command.js';
-import {define as crUiDefine, decorate, swallowDoubleClick} from '../ui.m.js';
-import {getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
-// clang-format on
-
+cr.define('cr.ui', function() {
+  /* #ignore */ const Command = cr.ui.Command;
 
   /**
    * Creates a new menu item element.
@@ -23,14 +17,14 @@ import {getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
    * @extends {HTMLElement}
    * @implements {EventListener}
    */
-  export const MenuItem = crUiDefine('cr-menu-item');
+  /* #export */ const MenuItem = cr.ui.define('cr-menu-item');
 
   /**
    * Creates a new menu separator element.
-   * @return {!MenuItem} The new separator element.
+   * @return {!cr.ui.MenuItem} The new separator element.
    */
   MenuItem.createSeparator = function() {
-    const el = /** @type {!MenuItem} */ (document.createElement('hr'));
+    const el = /** @type {!cr.ui.MenuItem} */ (document.createElement('hr'));
     if (MenuItem.decorate) {
       MenuItem.decorate(el);
     }
@@ -55,8 +49,8 @@ import {getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
       // the appearance of this element.
       this.classList.add('custom-appearance');
 
-      // Enable Text to Speech on the menu. Additionaly, ID has to be set, since
-      // it is used in element's aria-activedescendant attribute.
+      // Enable Text to Speech on the menu. Additionally, ID has to be set,
+      // since it is used in element's aria-activedescendant attribute.
       if (!this.isSeparator()) {
         this.setAttribute('role', 'menuitem');
         this.setAttribute('tabindex', this.getAttribute('tabindex') || -1);
@@ -72,7 +66,7 @@ import {getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
      * The command associated with this menu item. If this is set to a string
      * of the form "#element-id" then the element is looked up in the document
      * of the command.
-     * @type {Command}
+     * @type {cr.ui.Command}
      */
     command_: null,
     get command() {
@@ -88,7 +82,7 @@ import {getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
 
       if (typeof command === 'string' && command[0] === '#') {
         command = assert(this.ownerDocument.body.querySelector(command));
-        decorate(command, Command);
+        cr.ui.decorate(command, Command);
       }
 
       this.command_ = command;
@@ -227,7 +221,7 @@ import {getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
           const command = this.command;
           if (command) {
             command.execute(contextElement);
-            swallowDoubleClick(e);
+            cr.ui.swallowDoubleClick(e);
           }
         }
       }
@@ -271,14 +265,14 @@ import {getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
   MenuItem.prototype.disabled;
   Object.defineProperty(
       MenuItem.prototype, 'disabled',
-      getPropertyDescriptor('disabled', PropertyKind.BOOL_ATTR));
+      cr.getPropertyDescriptor('disabled', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Whether the menu item is hidden or not.
    */
   Object.defineProperty(
       MenuItem.prototype, 'hidden',
-      getPropertyDescriptor('hidden', PropertyKind.BOOL_ATTR));
+      cr.getPropertyDescriptor('hidden', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Whether the menu item is selected or not.
@@ -287,7 +281,7 @@ import {getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
   MenuItem.prototype.selected;
   Object.defineProperty(
       MenuItem.prototype, 'selected',
-      getPropertyDescriptor('selected', PropertyKind.BOOL_ATTR));
+      cr.getPropertyDescriptor('selected', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Whether the menu item is checked or not.
@@ -296,7 +290,7 @@ import {getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
   MenuItem.prototype.checked;
   Object.defineProperty(
       MenuItem.prototype, 'checked',
-      getPropertyDescriptor('checked', PropertyKind.BOOL_ATTR));
+      cr.getPropertyDescriptor('checked', cr.PropertyKind.BOOL_ATTR));
 
   /**
    * Whether the menu item is checkable or not.
@@ -305,4 +299,9 @@ import {getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
   MenuItem.prototype.checkable;
   Object.defineProperty(
       MenuItem.prototype, 'checkable',
-      getPropertyDescriptor('checkable', PropertyKind.BOOL_ATTR));
+      cr.getPropertyDescriptor('checkable', cr.PropertyKind.BOOL_ATTR));
+
+  // Export
+  // #cr_define_end
+  return {MenuItem: MenuItem};
+});

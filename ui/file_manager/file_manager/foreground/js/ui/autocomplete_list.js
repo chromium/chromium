@@ -7,7 +7,7 @@ import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js'
 import {List} from 'chrome://resources/js/cr/ui/list.m.js';
 import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
 import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
-import {AnchorType, positionPopupAroundElement} from 'chrome://resources/js/cr/ui/position_util.m.js';
+import {AnchorType, positionPopupAroundElement} from 'chrome://resources/js/cr/ui/position_util.js';
 
 
 /**

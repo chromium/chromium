@@ -194,9 +194,9 @@ checked_in_dts_files = [
 
 if (is_chromeos_ash || is_fuchsia || is_linux || is_mac || is_win) {
   checked_in_dts_files += [
-    "js/cr/ui/context_menu_handler.m.d.ts",
-    "js/cr/ui/menu_button.m.d.ts",
-    "js/cr/ui/menu_item.m.d.ts",
+    "js/cr/ui/context_menu_handler.d.ts",
+    "js/cr/ui/menu_button.d.ts",
+    "js/cr/ui/menu_item.d.ts",
   ]
 }
 
@@ -235,7 +235,7 @@ generate_definitions_js_files = [
   "js/cr/ui.m.js",
   "js/cr/ui/focus_outline_manager.m.js",
   "js/cr/ui/focus_row.m.js",
-  "js/cr/ui/keyboard_shortcut_list.m.js",
+  "js/cr/ui/keyboard_shortcut_list.js",
   "js/cr/ui/store.js",
   "js/event_tracker.m.js",
   "js/load_time_data.m.js",
@@ -247,9 +247,9 @@ generate_definitions_js_files = [
 
 if (is_chromeos_ash || is_fuchsia || is_linux || is_mac || is_win) {
   generate_definitions_js_files += [
-    "js/cr/ui/menu.m.js",
-    "js/cr/ui/command.m.js",
-    "js/cr/ui/position_util.m.js",
+    "js/cr/ui/menu.js",
+    "js/cr/ui/command.js",
+    "js/cr/ui/position_util.js",
   ]
 }
 

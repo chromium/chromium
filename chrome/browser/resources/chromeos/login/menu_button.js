@@ -7,26 +7,22 @@
 // should only be used by legacy UIs that have not yet been updated to new
 // patterns. Use Web Components in any new code.
 
-import {assert} from '../../assert.m.js';
-import {isWindows} from '../../cr.m.js';
-import {EventTracker} from '../../event_tracker.m.js';
-import {define as crUiDefine, decorate} from '../ui.m.js';
-import {positionPopupAroundElement, AnchorType} from './position_util.js';
-import {Menu} from './menu.js';
-import {MenuItem} from './menu_item.js';
-
+cr.define('cr.ui', function() {
+  /* #ignore */ const Menu = cr.ui.Menu;
 
   /**
    * Enum for type of hide. Delayed is used when called by clicking on a
    * checkable menu item.
    * @enum {number}
    */
-  export const HideType = {
+  /* #export */ const HideType = {
     INSTANT: 0,
     DELAYED: 1,
   };
 
   /** @const */
+  /* #ignore */ const positionPopupAroundElement =
+      /* #ignore */ cr.ui.positionPopupAroundElement;
 
   /**
    * Creates a new menu button element.
@@ -35,7 +31,7 @@ import {MenuItem} from './menu_item.js';
    * @extends {HTMLButtonElement}
    * @implements {EventListener}
    */
-  export const MenuButton = crUiDefine('button');
+  /* #export */ const MenuButton = cr.ui.define('button');
 
   MenuButton.prototype = {
     __proto__: HTMLButtonElement.prototype,
@@ -64,15 +60,15 @@ import {MenuItem} from './menu_item.js';
 
       // An event tracker for events we only connect to while the menu is
       // displayed.
-      this.showingEvents_ = new EventTracker();
+      this.showingEvents_ = new cr.EventTracker();
 
-      this.anchorType = AnchorType.BELOW;
+      this.anchorType = cr.ui.AnchorType.BELOW;
       this.invertLeftRight = false;
     },
 
     /**
      * The menu associated with the menu button.
-     * @type {Menu}
+     * @type {cr.ui.Menu}
      */
     get menu() {
       return this.menu_;
@@ -80,7 +76,7 @@ import {MenuItem} from './menu_item.js';
     set menu(menu) {
       if (typeof menu === 'string' && menu[0] === '#') {
         menu = assert(this.ownerDocument.getElementById(menu.slice(1)));
-        decorate(menu, Menu);
+        cr.ui.decorate(menu, Menu);
       }
 
       this.menu_ = menu;
@@ -177,7 +173,7 @@ import {MenuItem} from './menu_item.js';
           break;
         case 'activate':
           const hideDelayed =
-              e.target instanceof MenuItem && e.target.checkable;
+              e.target instanceof cr.ui.MenuItem && e.target.checkable;
           const hideType = hideDelayed ? HideType.DELAYED : HideType.INSTANT;
           if (e.originalEvent instanceof MouseEvent ||
               e.originalEvent instanceof TouchEvent) {
@@ -256,8 +252,8 @@ import {MenuItem} from './menu_item.js';
     /**
      * Hides the menu. If your menu can go out of scope, make sure to call this
      * first.
-     * @param {HideType=} opt_hideType Type of hide.
-     *     default: HideType.INSTANT.
+     * @param {cr.ui.HideType=} opt_hideType Type of hide.
+     *     default: cr.ui.HideType.INSTANT.
      */
     hideMenu(opt_hideType) {
       this.hideMenuInternal_(true, opt_hideType);
@@ -266,8 +262,8 @@ import {MenuItem} from './menu_item.js';
     /**
      * Hides the menu. If your menu can go out of scope, make sure to call this
      * first.
-     * @param {HideType=} opt_hideType Type of hide.
-     *     default: HideType.INSTANT.
+     * @param {cr.ui.HideType=} opt_hideType Type of hide.
+     *     default: cr.ui.HideType.INSTANT.
      */
     hideMenuWithoutTakingFocus_(opt_hideType) {
       this.hideMenuInternal_(false, opt_hideType);
@@ -277,8 +273,8 @@ import {MenuItem} from './menu_item.js';
      * Hides the menu. If your menu can go out of scope, make sure to call this
      * first.
      * @param {boolean} shouldTakeFocus Moves the focus to the button if true.
-     * @param {HideType=} opt_hideType Type of hide.
-     *     default: HideType.INSTANT.
+     * @param {cr.ui.HideType=} opt_hideType Type of hide.
+     *     default: cr.ui.HideType.INSTANT.
      */
     hideMenuInternal_(shouldTakeFocus, opt_hideType) {
       if (!this.isMenuShown()) {
@@ -305,7 +301,7 @@ import {MenuItem} from './menu_item.js';
       // On windows we might hide the menu in a right mouse button up and if
       // that is the case we wait some short period before we allow the menu
       // to be shown again.
-      this.hideTimestamp_ = isWindows ? Date.now() : 0;
+      this.hideTimestamp_ = cr.isWindows ? Date.now() : 0;
     },
 
     /**
@@ -349,3 +345,12 @@ import {MenuItem} from './menu_item.js';
       }
     },
   };
+
+  // Export
+  // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
+  return {
+    HideType: HideType,
+    MenuButton: MenuButton,
+  };
+});

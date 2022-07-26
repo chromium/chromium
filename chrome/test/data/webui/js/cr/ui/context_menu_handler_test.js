@@ -4,8 +4,8 @@
 
 // clang-format off
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
-import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
+import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.js';
+import {Menu} from 'chrome://resources/js/cr/ui/menu.js';
 
 import {assertEquals} from '../../../chai_assert.js';
 

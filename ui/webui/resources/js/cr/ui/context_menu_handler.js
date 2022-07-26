@@ -7,36 +7,32 @@
 // should only be used by legacy UIs that have not yet been updated to new
 // patterns. Use Web Components in any new code.
 
-// require: event_target.js
-
 // clang-format off
-// #import {assertInstanceof} from '../../assert.m.js';
-// #import {NativeEventTarget as EventTarget} from '../event_target.m.js'
-// #import {EventTracker} from '../../event_tracker.m.js'
-// #import {isWindows, isLinux, isMac, isLacros, dispatchPropertyChange} from '../../cr.m.js';
-// #import {decorate} from '../ui.m.js';
-// #import {Menu} from './menu.m.js';
-// #import {MenuItem} from './menu_item.m.js';
-// #import {HideType} from './menu_button.m.js';
-// #import {positionPopupAtPoint} from './position_util.m.js';
+import {assertInstanceof} from '../../assert.m.js';
+import {NativeEventTarget as EventTarget} from '../event_target.m.js';
+import {EventTracker} from '../../event_tracker.m.js';
+import {isWindows, isLinux, isMac, isLacros, dispatchPropertyChange} from '../../cr.m.js';
+import {decorate} from '../ui.m.js';
+import {Menu} from './menu.js';
+import {MenuItem} from './menu_item.js';
+import {HideType} from './menu_button.js';
+import {positionPopupAtPoint} from './position_util.js';
 // clang-format on
 
-cr.define('cr.ui', function() {
-  /* #ignore */ /** @const */ const Menu = cr.ui.Menu;
 
   /**
    * Handles context menus.
    * @implements {EventListener}
    */
-  class ContextMenuHandler extends cr.EventTarget {
+  class ContextMenuHandler extends EventTarget {
     constructor() {
       super();
-      /** @private {!cr.EventTracker} */
-      this.showingEvents_ = new cr.EventTracker();
+      /** @private {!EventTracker} */
+      this.showingEvents_ = new EventTracker();
 
       /**
        * The menu that we are currently showing.
-       * @private {?cr.ui.Menu}
+       * @private {?Menu}
        */
       this.menu_ = null;
 
@@ -55,7 +51,7 @@ cr.define('cr.ui', function() {
      * Shows a menu as a context menu.
      * @param {!Event} e The event triggering the show (usually a contextmenu
      *     event).
-     * @param {!cr.ui.Menu} menu The menu to show.
+     * @param {!Menu} menu The menu to show.
      */
     showMenu(e, menu) {
       menu.updateCommands(assertInstanceof(e.currentTarget, Node));
@@ -90,8 +86,8 @@ cr.define('cr.ui', function() {
 
     /**
      * Hide the currently shown menu.
-     * @param {cr.ui.HideType=} opt_hideType Type of hide.
-     *     default: cr.ui.HideType.INSTANT.
+     * @param {HideType=} opt_hideType Type of hide.
+     *     default: HideType.INSTANT.
      */
     hideMenu(opt_hideType) {
       const menu = this.menu;
@@ -99,7 +95,7 @@ cr.define('cr.ui', function() {
         return;
       }
 
-      if (opt_hideType === cr.ui.HideType.DELAYED) {
+      if (opt_hideType === HideType.DELAYED) {
         menu.classList.add('hide-delayed');
       } else {
         menu.classList.remove('hide-delayed');
@@ -114,7 +110,7 @@ cr.define('cr.ui', function() {
       // On windows we might hide the menu in a right mouse button up and if
       // that is the case we wait some short period before we allow the menu
       // to be shown again.
-      this.hideTimestamp_ = cr.isWindows ? Date.now() : 0;
+      this.hideTimestamp_ = isWindows ? Date.now() : 0;
 
       const ev = new Event('hide');
       ev.element = originalContextElement;
@@ -125,7 +121,7 @@ cr.define('cr.ui', function() {
     /**
      * Positions the menu
      * @param {!Event} e The event object triggering the showing.
-     * @param {!cr.ui.Menu} menu The menu to position.
+     * @param {!Menu} menu The menu to position.
      * @private
      */
     positionMenu_(e, menu) {
@@ -148,7 +144,7 @@ cr.define('cr.ui', function() {
         y = e.clientY;
       }
 
-      cr.ui.positionPopupAtPoint(x, y, menu);
+      positionPopupAtPoint(x, y, menu);
     }
 
     /**
@@ -181,7 +177,7 @@ cr.define('cr.ui', function() {
           if (!this.menu.contains(e.target)) {
             this.hideMenu();
             if (e.button === 0 /* Left button */ &&
-                (cr.isLinux || cr.isMac || cr.isLacros)) {
+                (isLinux || isMac || isLacros)) {
               // Emulate Mac and Linux, which swallow native 'mousedown' events
               // that close menus.
               e.preventDefault();
@@ -214,9 +210,9 @@ cr.define('cr.ui', function() {
 
         case 'activate':
           const hideDelayed =
-              e.target instanceof cr.ui.MenuItem && e.target.checkable;
+              e.target instanceof MenuItem && e.target.checkable;
           this.hideMenu(
-              hideDelayed ? cr.ui.HideType.DELAYED : cr.ui.HideType.INSTANT);
+              hideDelayed ? HideType.DELAYED : HideType.INSTANT);
           break;
 
         case 'focus':
@@ -266,7 +262,7 @@ cr.define('cr.ui', function() {
 
         if (typeof menu === 'string' && menu[0] === '#') {
           menu = this.ownerDocument.getElementById(menu.slice(1));
-          cr.ui.decorate(menu, Menu);
+          decorate(menu, Menu);
         }
 
         if (menu === oldContextMenu) {
@@ -290,7 +286,7 @@ cr.define('cr.ui', function() {
           this.setAttribute('contextmenu', '#' + menu.id);
         }
 
-        cr.dispatchPropertyChange(this, 'contextMenu', menu, oldContextMenu);
+        dispatchPropertyChange(this, 'contextMenu', menu, oldContextMenu);
       });
 
       if (!target.getRectForContextMenu) {
@@ -308,7 +304,7 @@ cr.define('cr.ui', function() {
      * Sets the given contextMenu to the given element. A contextMenu property
      * would be added if necessary.
      * @param {!Element} element The element or class to set the contextMenu to.
-     * @param {!cr.ui.Menu} contextMenu The contextMenu property to be set.
+     * @param {!Menu} contextMenu The contextMenu property to be set.
      */
     setContextMenu(element, contextMenu) {
       if (!element.contextMenu) {
@@ -322,12 +318,4 @@ cr.define('cr.ui', function() {
    * The singleton context menu handler.
    * @type {!ContextMenuHandler}
    */
-  /* #export */ const contextMenuHandler = new ContextMenuHandler();
-
-  // Export
-  // #cr_define_end
-  console.warn('crbug/1173575, non-JS module files deprecated.');
-  return {
-    contextMenuHandler: contextMenuHandler,
-  };
-});
+  export const contextMenuHandler = new ContextMenuHandler();

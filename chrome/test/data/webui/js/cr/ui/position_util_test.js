@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {AnchorType, positionPopupAroundElement, positionPopupAtPoint} from 'chrome://resources/js/cr/ui/position_util.m.js';
+import {AnchorType, positionPopupAroundElement, positionPopupAtPoint} from 'chrome://resources/js/cr/ui/position_util.js';
 
 import {assertEquals} from '../../../chai_assert.js';
 // clang-format on

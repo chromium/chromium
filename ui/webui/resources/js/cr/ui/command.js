@@ -21,20 +21,19 @@
  */
 
 // clang-format off
-// #import {assert} from '../../assert.m.js';
-// #import {define as crUiDefine} from '../ui.m.js';
-// #import {KeyboardShortcutList} from './keyboard_shortcut_list.m.js';
-// #import {dispatchPropertyChange, getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
-// #import {MenuItem} from './menu_item.m.js';
+import {assert} from '../../assert.m.js';
+import {define as crUiDefine} from '../ui.m.js';
+import {KeyboardShortcutList} from './keyboard_shortcut_list.js';
+import {dispatchPropertyChange, getPropertyDescriptor, PropertyKind} from '../../cr.m.js';
+import {MenuItem} from './menu_item.js';
 // clang-format on
 
-cr.define('cr.ui', function() {
   /**
    * Creates a new command element.
    * @constructor
    * @extends {HTMLElement}
    */
-  /* #export */ const Command = cr.ui.define('command');
+  export const Command = crUiDefine('command');
 
   Command.prototype = {
     __proto__: HTMLElement.prototype,
@@ -102,11 +101,11 @@ cr.define('cr.ui', function() {
     set shortcut(shortcut) {
       const oldShortcut = this.shortcut_;
       if (shortcut !== oldShortcut) {
-        this.keyboardShortcuts_ = new cr.ui.KeyboardShortcutList(shortcut);
+        this.keyboardShortcuts_ = new KeyboardShortcutList(shortcut);
 
         // Set this after the keyboardShortcuts_ since that might throw.
         this.shortcut_ = shortcut;
-        cr.dispatchPropertyChange(
+        dispatchPropertyChange(
             this, 'shortcut', this.shortcut_, oldShortcut);
       }
     },
@@ -131,7 +130,7 @@ cr.define('cr.ui', function() {
   Command.prototype.label;
   Object.defineProperty(
       Command.prototype, 'label',
-      cr.getPropertyDescriptor('label', cr.PropertyKind.ATTR));
+      getPropertyDescriptor('label', PropertyKind.ATTR));
 
   /**
    * Whether the command is disabled or not.
@@ -140,14 +139,14 @@ cr.define('cr.ui', function() {
   Command.prototype.disabled;
   Object.defineProperty(
       Command.prototype, 'disabled',
-      cr.getPropertyDescriptor('disabled', cr.PropertyKind.BOOL_ATTR));
+      getPropertyDescriptor('disabled', PropertyKind.BOOL_ATTR));
 
   /**
    * Whether the command is hidden or not.
    */
   Object.defineProperty(
       Command.prototype, 'hidden',
-      cr.getPropertyDescriptor('hidden', cr.PropertyKind.BOOL_ATTR));
+      getPropertyDescriptor('hidden', PropertyKind.BOOL_ATTR));
 
   /**
    * Whether the command is checked or not.
@@ -156,7 +155,7 @@ cr.define('cr.ui', function() {
   Command.prototype.checked;
   Object.defineProperty(
       Command.prototype, 'checked',
-      cr.getPropertyDescriptor('checked', cr.PropertyKind.BOOL_ATTR));
+      getPropertyDescriptor('checked', PropertyKind.BOOL_ATTR));
 
   /**
    * The flag that prevents the shortcut text from being displayed on menu.
@@ -169,11 +168,11 @@ cr.define('cr.ui', function() {
   Command.prototype.hideShortcutText;
   Object.defineProperty(
       Command.prototype, 'hideShortcutText',
-      cr.getPropertyDescriptor('hideShortcutText', cr.PropertyKind.BOOL_ATTR));
+      getPropertyDescriptor('hideShortcutText', PropertyKind.BOOL_ATTR));
 
   /**
    * Dispatches a canExecute event on the target.
-   * @param {!cr.ui.Command} command The command that we are testing for.
+   * @param {!Command} command The command that we are testing for.
    * @param {EventTarget} target The target element to dispatch the event on.
    */
   function dispatchCanExecuteEvent(command, target) {
@@ -224,7 +223,7 @@ cr.define('cr.ui', function() {
       const target = e.target;
 
       // Ignore focus on a menu button or command item.
-      if (target.menu || target.command || (target instanceof cr.ui.MenuItem)) {
+      if (target.menu || target.command || (target instanceof MenuItem)) {
         return;
       }
 
@@ -266,12 +265,12 @@ cr.define('cr.ui', function() {
 
   /**
    * The event type used for canExecute events.
-   * @param {!cr.ui.Command} command The command that we are evaluating.
+   * @param {!Command} command The command that we are evaluating.
    * @extends {Event}
    * @constructor
    * @class
    */
-  /* #export */ function CanExecuteEvent(command) {
+  export function CanExecuteEvent(command) {
     const e = new Event('canExecute', {bubbles: true, cancelable: true});
     e.__proto__ = CanExecuteEvent.prototype;
     e.command = command;
@@ -283,7 +282,7 @@ cr.define('cr.ui', function() {
 
     /**
      * The current command
-     * @type {cr.ui.Command}
+     * @type {Command}
      */
     command: null,
 
@@ -303,12 +302,3 @@ cr.define('cr.ui', function() {
       this.preventDefault();
     },
   };
-
-  // Export
-  // #cr_define_end
-  console.warn('crbug/1173575, non-JS module files deprecated.');
-  return {
-    Command: Command,
-    CanExecuteEvent: CanExecuteEvent,
-  };
-});
