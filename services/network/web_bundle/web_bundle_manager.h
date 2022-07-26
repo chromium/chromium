@@ -57,11 +57,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
   // Key is a tuple of (Process id, WebBundle token)
   using Key = std::pair<int32_t, base::UnguessableToken>;
 
+  static Key GetKey(const ResourceRequest::WebBundleTokenParams& token_params,
+                    int32_t process_id);
   base::WeakPtr<WebBundleURLLoaderFactory> GetWebBundleURLLoaderFactory(
-      const ResourceRequest::WebBundleTokenParams& params,
-      int32_t process_id);
+      const Key& key);
 
-  void DisconnectHandler(base::UnguessableToken token, int32_t process_id);
+  void DisconnectHandler(Key key);
 
   bool AllocateMemoryForProcess(int32_t process_id, uint64_t num_bytes);
   void ReleaseMemoryForProcess(int32_t process_id, uint64_t num_bytes);

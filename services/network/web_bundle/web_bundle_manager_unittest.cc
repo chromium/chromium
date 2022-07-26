@@ -150,7 +150,8 @@ class WebBundleManagerTest : public testing::Test {
       WebBundleManager& manager,
       const ResourceRequest::WebBundleTokenParams& params,
       int32_t process_id) {
-    return manager.GetWebBundleURLLoaderFactory(params, process_id);
+    return manager.GetWebBundleURLLoaderFactory(
+        manager.GetKey(params, process_id));
   }
 
  private:
@@ -268,22 +269,36 @@ TEST_F(WebBundleManagerTest,
 
   WebBundleManager manager;
 
-  // Simulate that a subresource request arrives at first,
-  // calling WebBundleManager::StartSubresourceRequest.
+  // Simulate that two subresource requests arrives at first, one directly from
+  // a renderer and one through the browser, calling
+  // WebBundleManager::StartSubresourceRequest.
   base::UnguessableToken token = base::UnguessableToken::Create();
-  network::ResourceRequest request;
-  request.url = GURL(kResourceUrl);
-  request.method = "GET";
-  request.request_initiator = url::Origin::Create(GURL(kInitiatorUrl));
-  request.web_bundle_token_params = ResourceRequest::WebBundleTokenParams(
-      GURL(kBundleUrl), token, mojom::kInvalidProcessId);
 
-  mojo::Remote<network::mojom::URLLoader> loader;
-  auto client = std::make_unique<network::TestURLLoaderClient>();
+  struct TestRequest {
+    int32_t request_process_id;
+    int32_t token_params_process_id;
+    mojo::Remote<network::mojom::URLLoader> loader;
+    std::unique_ptr<network::TestURLLoaderClient> client;
+  } test_requests[] = {
+      {process_id1, mojom::kInvalidProcessId},
+      {mojom::kBrowserProcessId, process_id1},
+  };
 
-  manager.StartSubresourceRequest(loader.BindNewPipeAndPassReceiver(), request,
-                                  client->CreateRemote(), process_id1,
-                                  mojo::Remote<mojom::TrustedHeaderClient>());
+  for (TestRequest& req : test_requests) {
+    network::ResourceRequest request;
+    request.url = GURL(kResourceUrl);
+    request.method = "GET";
+    request.request_initiator = url::Origin::Create(GURL(kInitiatorUrl));
+    request.web_bundle_token_params = ResourceRequest::WebBundleTokenParams(
+        GURL(kBundleUrl), token, req.token_params_process_id);
+
+    req.client = std::make_unique<network::TestURLLoaderClient>();
+
+    manager.StartSubresourceRequest(req.loader.BindNewPipeAndPassReceiver(),
+                                    request, req.client->CreateRemote(),
+                                    req.request_process_id,
+                                    mojo::Remote<mojom::TrustedHeaderClient>());
+  }
 
   // Simulate that a webbundle request arrives, calling
   // WebBundleManager::CreateWebBundleURLLoaderFactory.
@@ -311,15 +326,17 @@ TEST_F(WebBundleManagerTest,
 
   producer.reset();
 
-  client->RunUntilComplete();
+  // Confirm that subresources are correctly loaded.
+  for (const TestRequest& req : test_requests) {
+    req.client->RunUntilComplete();
 
-  // Confirm that a subresource is correctly loaded.
-  EXPECT_EQ(net::OK, client->completion_status().error_code);
-  EXPECT_EQ(client->response_head()->web_bundle_url, GURL(kBundleUrl));
-  std::string body;
-  EXPECT_TRUE(
-      mojo::BlockingCopyToString(client->response_body_release(), &body));
-  EXPECT_EQ("body", body);
+    EXPECT_EQ(net::OK, req.client->completion_status().error_code);
+    EXPECT_EQ(req.client->response_head()->web_bundle_url, GURL(kBundleUrl));
+    std::string body;
+    EXPECT_TRUE(
+        mojo::BlockingCopyToString(req.client->response_body_release(), &body));
+    EXPECT_EQ("body", body);
+  }
 }
 
 TEST_F(WebBundleManagerTest, MemoryQuota_StartRequestAfterError) {
