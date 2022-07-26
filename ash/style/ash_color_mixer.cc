@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
 #include "ash/style/temp_palette.h"
 #include "ash/system/tray/tray_constants.h"
@@ -17,6 +16,7 @@
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 
 namespace ash {
