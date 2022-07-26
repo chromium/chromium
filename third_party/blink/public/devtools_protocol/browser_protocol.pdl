@@ -4105,7 +4105,11 @@ experimental domain IndexedDB
   # Delete a range of entries from an object store
   command deleteObjectStoreEntries
     parameters
-      string securityOrigin
+      # At least and at most one of securityOrigin, storageKey must be specified.
+      # Security origin.
+      optional string securityOrigin
+      # Storage key.
+      optional string storageKey
       string databaseName
       string objectStoreName
       # Range of entry keys to delete

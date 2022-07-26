@@ -1031,7 +1031,8 @@ class DeleteObjectStoreEntries final
 };
 
 void InspectorIndexedDBAgent::deleteObjectStoreEntries(
-    const String& security_origin,
+    protocol::Maybe<String> security_origin,
+    protocol::Maybe<String> storage_key,
     const String& database_name,
     const String& object_store_name,
     std::unique_ptr<protocol::IndexedDB::KeyRange> key_range,
@@ -1042,12 +1043,26 @@ void InspectorIndexedDBAgent::deleteObjectStoreEntries(
         Response::ServerError("Can not parse key range"));
     return;
   }
+  if (security_origin.isJust() == storage_key.isJust()) {
+    request_callback->sendFailure(
+        Response::InvalidParams("At least and at most one of security_origin, "
+                                "storage_key must be specified."));
+    return;
+  }
   scoped_refptr<DeleteObjectStoreEntries> delete_object_store_entries =
       DeleteObjectStoreEntries::Create(object_store_name, idb_key_range,
                                        std::move(request_callback));
-  delete_object_store_entries->Start(
-      inspected_frames_->FrameWithSecurityOrigin(security_origin),
-      database_name);
+  if (security_origin.isJust()) {
+    delete_object_store_entries->Start(
+        inspected_frames_->FrameWithSecurityOrigin(security_origin.fromJust()),
+        database_name);
+  } else if (storage_key.isJust()) {
+    delete_object_store_entries->Start(
+        inspected_frames_->FrameWithStorageKey(storage_key.fromJust()),
+        database_name);
+  } else {
+    NOTREACHED();
+  }
 }
 
 class ClearObjectStoreListener final : public NativeEventListener {

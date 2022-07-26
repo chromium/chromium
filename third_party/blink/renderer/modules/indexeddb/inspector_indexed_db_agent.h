@@ -76,7 +76,8 @@ class MODULES_EXPORT InspectorIndexedDBAgent final
                    const String& object_store_name,
                    std::unique_ptr<GetMetadataCallback>) override;
   void deleteObjectStoreEntries(
-      const String& security_origin,
+      protocol::Maybe<String> security_origin,
+      protocol::Maybe<String> storage_key,
       const String& database_name,
       const String& object_store_name,
       std::unique_ptr<protocol::IndexedDB::KeyRange>,
