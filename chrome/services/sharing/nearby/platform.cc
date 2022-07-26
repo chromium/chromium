@@ -169,8 +169,9 @@ std::unique_ptr<LogMessage> ImplementationPlatform::CreateLogMessage(
 std::unique_ptr<BluetoothClassicMedium>
 ImplementationPlatform::CreateBluetoothClassicMedium(
     api::BluetoothAdapter& adapter) {
-  // Ignore the provided |adapter| argument. It provides no interface useful
-  // to implement chrome::BluetoothClassicMedium.
+  // Ignore the provided |adapter| argument; it is a reference to the object
+  // created by ImplementationPlatform::CreateBluetoothAdapter(). Instead,
+  // directly use the cached bluetooth::mojom::Adapter.
 
   auto& connections = connections::NearbyConnections::GetInstance();
   const mojo::SharedRemote<bluetooth::mojom::Adapter>& bluetooth_adapter =
@@ -184,8 +185,9 @@ ImplementationPlatform::CreateBluetoothClassicMedium(
 
 std::unique_ptr<BleMedium> ImplementationPlatform::CreateBleMedium(
     api::BluetoothAdapter& adapter) {
-  // Ignore the provided |adapter| argument. It provides no interface useful
-  // to implement chrome::BleMedium.
+  // Ignore the provided |adapter| argument; it is a reference to the object
+  // created by ImplementationPlatform::CreateBluetoothAdapter(). Instead,
+  // directly use the cached bluetooth::mojom::Adapter.
 
   auto& connections = connections::NearbyConnections::GetInstance();
   const mojo::SharedRemote<bluetooth::mojom::Adapter>& bluetooth_adapter =
