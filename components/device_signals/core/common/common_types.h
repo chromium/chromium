@@ -24,13 +24,8 @@ struct ExecutableMetadata {
 
   ~ExecutableMetadata();
 
-  // Is true if the file for which this payload was generated is indeed an
-  // executable. If this is false, all of the other properties will be
-  // absl::nullopt.
-  bool is_executable = false;
-
   // Is true if a currently running process was spawned from this file.
-  absl::optional<bool> is_running = absl::nullopt;
+  bool is_running = false;
 
   // Byte string containing the SHA256 hash of the public key of the certificate
   // used to sign the executable.
@@ -84,7 +79,7 @@ struct GetFileSystemInfoOptions {
 
   bool compute_sha256 = false;
 
-  bool compute_is_executable = false;
+  bool compute_executable_metadata = false;
 
   bool operator==(const GetFileSystemInfoOptions& other) const;
 };

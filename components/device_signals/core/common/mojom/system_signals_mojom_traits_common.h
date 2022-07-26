@@ -26,12 +26,8 @@ struct EnumTraits<device_signals::mojom::PresenceValue,
 template <>
 struct StructTraits<device_signals::mojom::ExecutableMetadataDataView,
                     device_signals::ExecutableMetadata> {
-  static bool is_executable(const device_signals::ExecutableMetadata& input) {
-    return input.is_executable;
-  }
-
   static bool is_running(const device_signals::ExecutableMetadata& input) {
-    return input.is_running.has_value() && input.is_running.value();
+    return input.is_running;
   }
 
   static absl::optional<std::string> public_key_sha256(
@@ -95,7 +91,7 @@ struct StructTraits<device_signals::mojom::FileSystemItemRequestDataView,
 
   static bool compute_executable_metadata(
       const device_signals::GetFileSystemInfoOptions& input) {
-    return input.compute_is_executable;
+    return input.compute_executable_metadata;
   }
 
   static bool Read(device_signals::mojom::FileSystemItemRequestDataView input,

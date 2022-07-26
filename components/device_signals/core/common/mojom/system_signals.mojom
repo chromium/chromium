@@ -26,7 +26,6 @@ enum PresenceValue {
 };
 
 struct ExecutableMetadata {
-  bool is_executable;
   bool is_running;
   mojo_base.mojom.ByteString? public_key_sha256;
   string? product_name;

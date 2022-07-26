@@ -187,7 +187,7 @@ namespace enterprise.reportingPrivate {
   dictionary GetFileSystemInfoOptions {
     DOMString path;
     boolean computeSha256;
-    boolean computeIsExecutable;
+    boolean computeExecutableMetadata;
   };
 
   [platforms = ("win", "mac", "linux")]
@@ -214,11 +214,8 @@ namespace enterprise.reportingPrivate {
     DOMString? sha256Hash;
 
     // Set of properties only relevant for executable files. Will only be
-    // collected if computeIsExecutable is set to true in the given signals
-    // collection parameters and if path points to an executable file.
-
-    // Represents whether path points to an executable file or not.
-    boolean? isExecutable;
+    // collected if computeExecutableMetadata is set to true in the given
+    // signals collection parameters and if path points to an executable file.
 
     // Is true if a currently running process was spawned from this file.
     boolean? isRunning;

@@ -46,7 +46,7 @@ bool GetFileSystemInfoOptions::operator==(
     const GetFileSystemInfoOptions& other) const {
   return file_path == other.file_path &&
          compute_sha256 == other.compute_sha256 &&
-         compute_is_executable == other.compute_is_executable;
+         compute_executable_metadata == other.compute_executable_metadata;
 }
 
 }  // namespace device_signals

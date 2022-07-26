@@ -60,7 +60,6 @@ bool StructTraits<device_signals::mojom::ExecutableMetadataDataView,
                   device_signals::ExecutableMetadata>::
     Read(device_signals::mojom::ExecutableMetadataDataView data,
          device_signals::ExecutableMetadata* output) {
-  output->is_executable = data.is_executable();
   output->is_running = data.is_running();
 
   if (!data.ReadPublicKeySha256(&output->public_key_sha256) ||
@@ -93,7 +92,7 @@ bool StructTraits<device_signals::mojom::FileSystemItemRequestDataView,
     Read(device_signals::mojom::FileSystemItemRequestDataView data,
          device_signals::GetFileSystemInfoOptions* output) {
   output->compute_sha256 = data.compute_sha256();
-  output->compute_is_executable = data.compute_executable_metadata();
+  output->compute_executable_metadata = data.compute_executable_metadata();
 
   if (!data.ReadFilePath(&output->file_path)) {
     return false;

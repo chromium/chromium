@@ -28,11 +28,11 @@ namespace {
 
 GetFileSystemInfoOptions CreateOptions(const base::FilePath& path,
                                        bool compute_sha256,
-                                       bool compute_is_executable) {
+                                       bool compute_executable_metadata) {
   GetFileSystemInfoOptions options;
   options.file_path = path;
   options.compute_sha256 = compute_sha256;
-  options.compute_is_executable = compute_is_executable;
+  options.compute_executable_metadata = compute_executable_metadata;
   return options;
 }
 

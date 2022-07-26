@@ -83,8 +83,8 @@ ConvertFileSystemInfoOptions(
     converted_param.file_path =
         base::FilePath::FromUTF8Unsafe(api_options_param.path);
     converted_param.compute_sha256 = api_options_param.compute_sha256;
-    converted_param.compute_is_executable =
-        api_options_param.compute_is_executable;
+    converted_param.compute_executable_metadata =
+        api_options_param.compute_executable_metadata;
     converted_options.push_back(std::move(converted_param));
   }
   return converted_options;
@@ -115,32 +115,27 @@ absl::optional<ParsedSignalsError> ConvertFileSystemInfoResponse(
     }
 
     if (file_system_item.executable_metadata) {
-      response.is_executable = std::make_unique<bool>(
-          file_system_item.executable_metadata->is_executable);
+      const auto& executable_metadata =
+          file_system_item.executable_metadata.value();
 
-      if (response.is_executable) {
-        const auto& executable_metadata =
-            file_system_item.executable_metadata.value();
+      if (executable_metadata.is_running) {
+        response.is_running =
+            std::make_unique<bool>(executable_metadata.is_running);
+      }
 
-        if (executable_metadata.is_running) {
-          response.is_running =
-              std::make_unique<bool>(executable_metadata.is_running.value());
-        }
+      if (executable_metadata.public_key_sha256) {
+        response.public_key_sha256 = std::make_unique<std::string>(
+            EncodeHash(executable_metadata.public_key_sha256.value()));
+      }
 
-        if (executable_metadata.public_key_sha256) {
-          response.public_key_sha256 = std::make_unique<std::string>(
-              EncodeHash(executable_metadata.public_key_sha256.value()));
-        }
+      if (executable_metadata.product_name) {
+        response.product_name = std::make_unique<std::string>(
+            executable_metadata.product_name.value());
+      }
 
-        if (executable_metadata.product_name) {
-          response.product_name = std::make_unique<std::string>(
-              executable_metadata.product_name.value());
-        }
-
-        if (executable_metadata.version) {
-          response.version = std::make_unique<std::string>(
-              executable_metadata.version.value());
-        }
+      if (executable_metadata.version) {
+        response.version =
+            std::make_unique<std::string>(executable_metadata.version.value());
       }
     }
 
