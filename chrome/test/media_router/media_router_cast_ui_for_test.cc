@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
+#include "chrome/browser/ui/views/media_router/cast_dialog_coordinator.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 #include "ui/events/base_event_utils.h"
@@ -62,7 +63,7 @@ void MediaRouterCastUiForTest::HideDialog() {
 
 void MediaRouterCastUiForTest::ChooseSourceType(
     CastDialogView::SourceType source_type) {
-  CastDialogView* dialog_view = CastDialogView::GetInstance();
+  CastDialogView* dialog_view = GetDialogView();
   CHECK(dialog_view);
 
   views::test::ButtonTestApi(dialog_view->sources_button_for_test())
@@ -81,7 +82,7 @@ void MediaRouterCastUiForTest::ChooseSourceType(
 
 CastDialogView::SourceType MediaRouterCastUiForTest::GetChosenSourceType()
     const {
-  CastDialogView* dialog_view = CastDialogView::GetInstance();
+  const CastDialogView* dialog_view = GetDialogView();
   CHECK(dialog_view);
   return dialog_view->selected_source_;
 }
@@ -121,7 +122,7 @@ void MediaRouterCastUiForTest::WaitForDialogHidden() {
 
 void MediaRouterCastUiForTest::OnDialogCreated() {
   MediaRouterUiForTestBase::OnDialogCreated();
-  CastDialogView::GetInstance()->KeepShownForTesting();
+  GetDialogView()->KeepShownForTesting();
 }
 
 MediaRouterCastUiForTest::MediaRouterCastUiForTest(
@@ -182,7 +183,7 @@ void MediaRouterCastUiForTest::OnDialogWillClose(CastDialogView* dialog_view) {
 
 CastDialogSinkButton* MediaRouterCastUiForTest::GetSinkButton(
     const std::string& sink_name) const {
-  CastDialogView* dialog_view = CastDialogView::GetInstance();
+  const CastDialogView* dialog_view = GetDialogView();
   CHECK(dialog_view);
   const std::vector<CastDialogSinkButton*>& sink_buttons =
       dialog_view->sink_buttons_for_test();
@@ -200,7 +201,7 @@ void MediaRouterCastUiForTest::ObserveDialog(
   watch_callback_ = run_loop.QuitClosure();
   watch_type_ = watch_type;
 
-  CastDialogView* dialog_view = CastDialogView::GetInstance();
+  CastDialogView* dialog_view = GetDialogView();
   CHECK(dialog_view);
   dialog_view->AddObserver(this);
   // Check if the current dialog state already meets the condition that we are
@@ -208,6 +209,16 @@ void MediaRouterCastUiForTest::ObserveDialog(
   OnDialogModelUpdated(dialog_view);
 
   run_loop.Run();
+}
+
+const CastDialogView* MediaRouterCastUiForTest::GetDialogView() const {
+  return dialog_controller_->GetCastDialogCoordinatorForTesting()
+      .GetCastDialogView();
+}
+
+CastDialogView* MediaRouterCastUiForTest::GetDialogView() {
+  return dialog_controller_->GetCastDialogCoordinatorForTesting()
+      .GetCastDialogView();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaRouterCastUiForTest);

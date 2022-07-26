@@ -18,8 +18,10 @@
 #include "chrome/browser/ui/toolbar/media_router_action_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/media_router/app_menu_test_api.h"
+#include "chrome/browser/ui/views/media_router/cast_dialog_coordinator.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
+#include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -51,7 +53,12 @@ class MediaRouterUIInteractiveUITest : public InProcessBrowserTest {
   }
 
   views::Widget* GetDialogWidget() {
-    return CastDialogView::GetCurrentDialogWidget();
+    // interactive_ui_tests are not run on android, so
+    // MediaRouterDialogControllerViews is the only implementation of
+    // MediaRouterDialogController.
+    return static_cast<MediaRouterDialogControllerViews*>(GetDialogController())
+        ->GetCastDialogCoordinatorForTesting()
+        .GetCastDialogWidget();
   }
 
   ui::SimpleMenuModel* GetIconContextMenu() {

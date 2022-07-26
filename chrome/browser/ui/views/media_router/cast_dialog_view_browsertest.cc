@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/media_router/cast_dialog_coordinator.h"
 #include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/test/browser_test.h"
@@ -85,7 +86,7 @@ class CastDialogViewBrowserTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void PreShow() override {
-    media_router::CastDialogView::ShowDialogCenteredForBrowserWindow(
+    cast_dialog_coordinator_.ShowDialogCenteredForBrowserWindow(
         controller_.get(), browser(), base::Time::Now(),
         media_router::MediaRouterDialogActivationLocation::TOOLBAR);
   }
@@ -110,11 +111,12 @@ class CastDialogViewBrowserTest : public DialogBrowserTest {
       NOTREACHED() << "Unexpected test name " << name;
     }
     media_router::CastDialogView* dialog =
-        media_router::CastDialogView::GetInstance();
+        cast_dialog_coordinator_.GetCastDialogView();
     dialog->OnModelUpdated(model);
   }
 
  private:
+  media_router::CastDialogCoordinator cast_dialog_coordinator_;
   std::unique_ptr<MockCastDialogController> controller_;
 };
 

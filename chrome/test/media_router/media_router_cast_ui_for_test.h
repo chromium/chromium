@@ -64,6 +64,9 @@ class MediaRouterCastUiForTest
       WatchType watch_type,
       absl::optional<std::string> sink_name = absl::nullopt) override;
 
+  const CastDialogView* GetDialogView() const;
+  CastDialogView* GetDialogView();
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

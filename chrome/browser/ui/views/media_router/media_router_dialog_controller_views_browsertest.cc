@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
+#include "chrome/browser/ui/views/media_router/cast_dialog_coordinator.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -90,12 +91,16 @@ void MediaRouterDialogControllerViewsTest::CloseWebContents() {
 IN_PROC_BROWSER_TEST_F(MediaRouterDialogControllerViewsTest,
                        OpenCloseMediaRouterDialog) {
   OpenMediaRouterDialog();
-  views::Widget* widget = CastDialogView::GetCurrentDialogWidget();
+  views::Widget* widget =
+      dialog_controller_->GetCastDialogCoordinatorForTesting()
+          .GetCastDialogWidget();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->HasObserver(dialog_controller_));
   dialog_controller_->CloseMediaRouterDialog();
   EXPECT_FALSE(dialog_controller_->IsShowingMediaRouterDialog());
-  EXPECT_EQ(CastDialogView::GetCurrentDialogWidget(), nullptr);
+  EXPECT_EQ(dialog_controller_->GetCastDialogCoordinatorForTesting()
+                .GetCastDialogWidget(),
+            nullptr);
 }
 
 // Regression test for crbug.com/1308341.
@@ -103,13 +108,15 @@ IN_PROC_BROWSER_TEST_F(MediaRouterDialogControllerViewsTest,
                        MediaBubbleClosedByPlatform) {
   OpenMediaRouterDialog();
   base::RunLoop().RunUntilIdle();
-  views::Widget* widget = CastDialogView::GetCurrentDialogWidget();
+  CastDialogCoordinator& cast_dialog_coordinator =
+      dialog_controller_->GetCastDialogCoordinatorForTesting();
+  views::Widget* widget = cast_dialog_coordinator.GetCastDialogWidget();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->HasObserver(dialog_controller_));
   // The media bubble usually will close itself on deactivation, but
   // crbug.com/1308341 shows a state where the browser is not responsive
   // to activation change. Simulate that.
-  CastDialogView::GetInstance()->set_close_on_deactivate(false);
+  cast_dialog_coordinator.GetCastDialogView()->set_close_on_deactivate(false);
   views::test::WidgetDestroyedWaiter waiter(widget);
   widget->native_widget_private()->Close();
   waiter.Wait();

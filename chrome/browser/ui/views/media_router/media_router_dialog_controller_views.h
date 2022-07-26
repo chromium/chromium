@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
+#include "chrome/browser/ui/views/media_router/cast_dialog_coordinator.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/widget/widget.h"
@@ -53,6 +54,10 @@ class MediaRouterDialogControllerViews
 
   void SetHideMediaButtonForTesting(bool hide);
 
+  CastDialogCoordinator& GetCastDialogCoordinatorForTesting() {
+    return cast_dialog_coordinator_;
+  }
+
  private:
   friend class content::WebContentsUserData<MediaRouterDialogControllerViews>;
   friend class MediaRouterCastUiForTest;
@@ -90,6 +95,8 @@ class MediaRouterDialogControllerViews
   // closed. Not used for presentation requests when
   // GlobalMediaControlsCastStartStopEnabled() returns true.
   std::unique_ptr<MediaRouterUI> ui_;
+
+  CastDialogCoordinator cast_dialog_coordinator_;
 
   base::RepeatingClosure dialog_creation_callback_;
 

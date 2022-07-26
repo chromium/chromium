@@ -22,7 +22,6 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
-class Browser;
 class Profile;
 
 namespace gfx {
@@ -52,43 +51,15 @@ class CastDialogView : public views::BubbleDialogDelegateView,
 
   enum SourceType { kTab, kDesktop };
 
+  CastDialogView(views::View* anchor_view,
+                 views::BubbleBorder::Arrow anchor_position,
+                 CastDialogController* controller,
+                 Profile* profile,
+                 const base::Time& start_time,
+                 MediaRouterDialogActivationLocation activation_location);
+  ~CastDialogView() override;
   CastDialogView(const CastDialogView&) = delete;
   CastDialogView& operator=(const CastDialogView&) = delete;
-
-  // Shows the singleton dialog anchored to the Cast toolbar icon. Requires that
-  // BrowserActionsContainer exists for |browser|.
-  static void ShowDialogWithToolbarAction(
-      CastDialogController* controller,
-      Browser* browser,
-      const base::Time& start_time,
-      MediaRouterDialogActivationLocation activation_location);
-
-  // Shows the singleton dialog anchored to the top-center of the browser
-  // window.
-  static void ShowDialogCenteredForBrowserWindow(
-      CastDialogController* controller,
-      Browser* browser,
-      const base::Time& start_time,
-      MediaRouterDialogActivationLocation activation_location);
-
-  // Shows the singleton dialog anchored to the bottom of |bounds|, horizontally
-  // centered.
-  static void ShowDialogCentered(
-      const gfx::Rect& bounds,
-      CastDialogController* controller,
-      Profile* profile,
-      const base::Time& start_time,
-      MediaRouterDialogActivationLocation activation_location);
-
-  // No-op if the dialog is currently not shown.
-  static void HideDialog();
-
-  static bool IsShowing();
-
-  static CastDialogView* GetInstance();
-
-  // Returns nullptr if the dialog is currently not shown.
-  static views::Widget* GetCurrentDialogWidget();
 
   // views::WidgetDelegate:
   std::u16string GetWindowTitle() const override;
@@ -131,29 +102,12 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   }
 
  private:
+  // TODO(crbug.com/1346127): Remove friend classes.
   friend class CastDialogViewTest;
   friend class MediaRouterCastUiForTest;
   FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, DisableUnsupportedSinks);
   FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, ShowAndHideDialog);
   FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, ShowSourcesMenu);
-
-  // Instantiates and shows the singleton dialog. The dialog must not be
-  // currently shown.
-  static void ShowDialog(
-      views::View* anchor_view,
-      views::BubbleBorder::Arrow anchor_position,
-      CastDialogController* controller,
-      Profile* profile,
-      const base::Time& start_time,
-      MediaRouterDialogActivationLocation activation_location);
-
-  CastDialogView(views::View* anchor_view,
-                 views::BubbleBorder::Arrow anchor_position,
-                 CastDialogController* controller,
-                 Profile* profile,
-                 const base::Time& start_time,
-                 MediaRouterDialogActivationLocation activation_location);
-  ~CastDialogView() override;
 
   // views::BubbleDialogDelegateView:
   void Init() override;
@@ -203,10 +157,6 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // Returns true iff feature is turned on and the access code casting policy
   // has been enabled for this user.
   bool IsAccessCodeCastingEnabled() const;
-
-  // The singleton dialog instance. This is a nullptr when a dialog is not
-  // shown.
-  static CastDialogView* instance_;
 
   // Title shown at the top of the dialog.
   std::u16string dialog_title_;
