@@ -474,16 +474,14 @@ void FrameHeader::UpdateSnapIcons() {
   const bool is_horizontal_display = chromeos::IsDisplayLayoutHorizontal(
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           target_widget_->GetNativeWindow()));
-  const bool is_horizontal_snap =
-      is_horizontal_display || !chromeos::wm::features::IsVerticalSnapEnabled();
   caption_button_container()->SetButtonImage(
       views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
-      is_horizontal_snap ? chromeos::kWindowControlLeftSnappedIcon
-                         : chromeos::kWindowControlTopSnappedIcon);
+      is_horizontal_display ? chromeos::kWindowControlLeftSnappedIcon
+                            : chromeos::kWindowControlTopSnappedIcon);
   caption_button_container()->SetButtonImage(
       views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
-      is_horizontal_snap ? chromeos::kWindowControlRightSnappedIcon
-                         : chromeos::kWindowControlBottomSnappedIcon);
+      is_horizontal_display ? chromeos::kWindowControlRightSnappedIcon
+                            : chromeos::kWindowControlBottomSnappedIcon);
 }
 
 }  // namespace chromeos

@@ -192,11 +192,9 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
       snap_bounds.set_x(work_area.right() - axis_length);
       break;
     case SnapPosition::kTop:
-      DCHECK(chromeos::wm::features::IsVerticalSnapEnabled());
       snap_bounds.set_height(axis_length);
       break;
     case SnapPosition::kBottom:
-      DCHECK(chromeos::wm::features::IsVerticalSnapEnabled());
       snap_bounds.set_height(axis_length);
       // Snap to the bottom.
       snap_bounds.set_y(work_area.bottom() - axis_length);
@@ -210,9 +208,6 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
 
 chromeos::OrientationType GetSnapDisplayOrientation(
     const display::Display& display) {
-  if (!chromeos::wm::features::IsVerticalSnapEnabled())
-    return chromeos::OrientationType::kLandscapePrimary;
-
   // This function is used by `GetSnappedWindowBounds()` for clamshell mode
   // only. Tablet mode uses a different function
   // `SplitViewController::GetSnappedWindowBoundsInScreen()`.

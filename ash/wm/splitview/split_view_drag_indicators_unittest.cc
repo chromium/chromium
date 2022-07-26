@@ -462,40 +462,26 @@ TEST_F(SplitViewDragIndicatorsTest, SplitViewDragIndicatorsVisibility) {
 }
 
 // Defines a test fixture to test behavior of SplitViewDragIndicators on
-// multi-display in clamshell mode, parameterized to run with the feature
-// |chromeos::wm::features::kVerticalSnap| enabled and disabled.
+// multi-display in clamshell mode.
 class ClamshellMultiDisplaySplitViewDragIndicatorsTest
-    : public SplitViewDragIndicatorsTest,
-      public ::testing::WithParamInterface<bool> {
+    : public SplitViewDragIndicatorsTest {
  public:
   ClamshellMultiDisplaySplitViewDragIndicatorsTest() = default;
   ~ClamshellMultiDisplaySplitViewDragIndicatorsTest() override = default;
 
   // SplitViewDragIndicatorsTest:
   void SetUp() override {
-    if (GetParam())
-      scoped_feature_list_.InitAndEnableFeature(
-          chromeos::wm::features::kVerticalSnap);
-    else
-      scoped_feature_list_.InitAndDisableFeature(
-          chromeos::wm::features::kVerticalSnap);
     SplitViewDragIndicatorsTest::SetUp();
     // Disable tablet mode that is enabled in
     // `SplitViewDragIndicatorsTest::SetUp()` to test clamshell mode.
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
     base::RunLoop().RunUntilIdle();
   }
-
-  bool IsVerticalSnapEnabled() const { return GetParam(); }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that dragging a window to external portrait display will layout
-// split view drag indicators vertically instead of horizontally if
-// |chromeos::wm::features::kVerticalSnap| is enabled.
-TEST_P(ClamshellMultiDisplaySplitViewDragIndicatorsTest,
+// split view drag indicators vertically instead of horizontally.
+TEST_F(ClamshellMultiDisplaySplitViewDragIndicatorsTest,
        IndicatorsLayoutWhileDraggingWindowToPortraitDisplay) {
   UpdateDisplay("800x600,600x800");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -558,20 +544,9 @@ TEST_P(ClamshellMultiDisplaySplitViewDragIndicatorsTest,
   // Otherwise, the left indicator should be on the left and its height span
   // the work area height.
   left_indicator_bounds = indicators->GetLeftHighlightViewBounds();
-  if (IsVerticalSnapEnabled()) {
-    EXPECT_EQ(left_indicator_bounds.width(),
-              portrait_display.work_area().width() -
-                  2 * kHighlightScreenEdgePaddingDp);
-  } else {
-    EXPECT_EQ(left_indicator_bounds.height(),
-              portrait_display.work_area().height() -
-                  2 * kHighlightScreenEdgePaddingDp);
-  }
+  EXPECT_EQ(
+      left_indicator_bounds.width(),
+      portrait_display.work_area().width() - 2 * kHighlightScreenEdgePaddingDp);
 }
 
-// Instantiate the Boolean which is used to toggle the feature
-// |chromeos::wm::features::kVerticalSnap| in the parameterized tests.
-INSTANTIATE_TEST_SUITE_P(All,
-                         ClamshellMultiDisplaySplitViewDragIndicatorsTest,
-                         ::testing::Bool());
 }  // namespace ash

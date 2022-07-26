@@ -2406,17 +2406,12 @@ class PortraitWorkspaceWindowResizerTest : public WorkspaceWindowResizerTest {
 
   // WorkspaceWindowResizerTest:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::wm::features::kVerticalSnap);
     WorkspaceWindowResizerTest::SetUp();
     UpdateDisplay("600x800");
 
     // Make the window snappable.
     AllowSnap(window_.get());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that dragging to an external portrait display updates phantom snap to
@@ -2642,44 +2637,18 @@ TEST_F(PortraitWorkspaceWindowResizerTest, ResizeSnapped) {
   }
 }
 
+using MultiOrientationDisplayWorkspaceWindowResizerTest =
+    WorkspaceWindowResizerTest;
+
 // Test WorkspaceWindowResizer functionalities for two displays with different
-// orientation: landscape and portrait. This test is parameterized to enable
-// vertical or horizontal snap layout in the portrait display.
-class MultiOrientationDisplayWorkspaceWindowResizerTest
-    : public WorkspaceWindowResizerTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  MultiOrientationDisplayWorkspaceWindowResizerTest() = default;
-  MultiOrientationDisplayWorkspaceWindowResizerTest(
-      const MultiOrientationDisplayWorkspaceWindowResizerTest&) = delete;
-  MultiOrientationDisplayWorkspaceWindowResizerTest& operator=(
-      const MultiOrientationDisplayWorkspaceWindowResizerTest&) = delete;
-  ~MultiOrientationDisplayWorkspaceWindowResizerTest() override = default;
+// orientation: landscape and portrait. Assertions around dragging near the four
+// edges of the display.
+TEST_F(MultiOrientationDisplayWorkspaceWindowResizerTest, Edge) {
+  UpdateDisplay("800x600,500x600");
 
-  bool IsVerticalSnapEnabled() const { return GetParam(); }
+  // Make the window snappable.
+  AllowSnap(window_.get());
 
-  // WorkspaceWindowResizerTest:
-  void SetUp() override {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          chromeos::wm::features::kVerticalSnap);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          chromeos::wm::features::kVerticalSnap);
-    }
-    WorkspaceWindowResizerTest::SetUp();
-    UpdateDisplay("800x600,500x600");
-
-    // Make the window snappable.
-    AllowSnap(window_.get());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Assertions around dragging near the four edges of the display.
-TEST_P(MultiOrientationDisplayWorkspaceWindowResizerTest, Edge) {
   window_->SetBounds(gfx::Rect(20, 30, 400, 60));
   WindowState* window_state = WindowState::Get(window_.get());
   // Test dragging to another display and snapping there.
@@ -2709,12 +2678,8 @@ TEST_P(MultiOrientationDisplayWorkspaceWindowResizerTest, Edge) {
     EXPECT_EQ(root_windows[1], window_->GetRootWindow());
 
     const gfx::Rect secondary_snap_bounds =
-        IsVerticalSnapEnabled() ? gfx::Rect(0, display2_work_area.height() / 2,
-                                            display2_work_area.width(),
-                                            display2_work_area.height() / 2)
-                                : gfx::Rect(display2_work_area.width() / 2, 0,
-                                            display2_work_area.width() / 2,
-                                            display2_work_area.height());
+        gfx::Rect(0, display2_work_area.height() / 2,
+                  display2_work_area.width(), display2_work_area.height() / 2);
     EXPECT_EQ(secondary_snap_bounds, window_->bounds());
     EXPECT_EQ(gfx::Rect(820, 30, 400, 60),
               window_state->GetRestoreBoundsInScreen());
@@ -2740,18 +2705,11 @@ TEST_P(MultiOrientationDisplayWorkspaceWindowResizerTest, Edge) {
     resizer->Drag(CalculateDragPoint(*resizer, 0, -100), 0);
     resizer->CompleteDrag();
     const gfx::Rect primary_snap_bounds =
-        IsVerticalSnapEnabled() ? gfx::Rect(display2_work_area.width(),
-                                            display2_work_area.height() / 2)
-                                : gfx::Rect(display2_work_area.width() / 2,
-                                            display2_work_area.height());
+        gfx::Rect(display2_work_area.width(), display2_work_area.height() / 2);
     EXPECT_EQ(primary_snap_bounds, window_->bounds());
     EXPECT_EQ(gfx::Rect(820, 30, 400, 60),
               window_state->GetRestoreBoundsInScreen());
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         MultiOrientationDisplayWorkspaceWindowResizerTest,
-                         ::testing::Bool());
 
 }  // namespace ash

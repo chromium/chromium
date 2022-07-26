@@ -1416,42 +1416,10 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
                                WindowSnapActionSource::kOthers, 1);
 }
 
-// Test WindowStateTest functionalities with portrait display. This test is
-// parameterized to enable vertical layout or horizontal layout snap in
-// portrait display.
-class PortraitDisplayWindowStateTest
-    : public AshTestBase,
-      public ::testing::WithParamInterface<bool> {
- public:
-  PortraitDisplayWindowStateTest() = default;
-  PortraitDisplayWindowStateTest(const PortraitDisplayWindowStateTest&) =
-      delete;
-  PortraitDisplayWindowStateTest& operator=(
-      const PortraitDisplayWindowStateTest&) = delete;
-  ~PortraitDisplayWindowStateTest() override = default;
-
-  bool IsVerticalSnapEnabled() const { return GetParam(); }
-
-  // WindowStateTest:
-  void SetUp() override {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          chromeos::wm::features::kVerticalSnap);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          chromeos::wm::features::kVerticalSnap);
-    }
-    AshTestBase::SetUp();
-    UpdateDisplay("600x900");
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Test how the minimum height specified by the aura::WindowDelegate affects
 // snapping in portrait display layout.
-TEST_P(PortraitDisplayWindowStateTest, SnapWindowMinimumSizePortrait) {
+TEST_F(WindowStateTest, SnapWindowMinimumSizePortrait) {
+  UpdateDisplay("600x900");
   const gfx::Rect kWorkAreaBounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
 
@@ -1463,8 +1431,7 @@ TEST_P(PortraitDisplayWindowStateTest, SnapWindowMinimumSizePortrait) {
   // a half screen width in horizontal snap layout and snap a window with a
   // minimum height that is longer than a half screen height in vertical snap
   // layout.
-  const gfx::Size kMinimumSize =
-      IsVerticalSnapEnabled() ? gfx::Size(0, 500) : gfx::Size(400, 0);
+  const gfx::Size kMinimumSize = gfx::Size(0, 500);
   delegate.set_minimum_size(kMinimumSize);
   WindowState* window_state = WindowState::Get(window.get());
   EXPECT_TRUE(window_state->CanSnap());
@@ -1472,20 +1439,11 @@ TEST_P(PortraitDisplayWindowStateTest, SnapWindowMinimumSizePortrait) {
   window_state->OnWMEvent(&snap_secondary);
   // Expect right snap for horizontal snap layout with the minimum width and
   // bottom snap for vertical snap layout with the minimum height.
-  const gfx::Rect expected_snap =
-      IsVerticalSnapEnabled()
-          ? gfx::Rect(kWorkAreaBounds.x(),
-                      kWorkAreaBounds.height() - kMinimumSize.height(),
-                      kWorkAreaBounds.width(), kMinimumSize.height())
-          : gfx::Rect(kWorkAreaBounds.width() - kMinimumSize.width(),
-                      kWorkAreaBounds.y(), kMinimumSize.width(),
-                      kWorkAreaBounds.height());
+  const gfx::Rect expected_snap = gfx::Rect(
+      kWorkAreaBounds.x(), kWorkAreaBounds.height() - kMinimumSize.height(),
+      kWorkAreaBounds.width(), kMinimumSize.height());
   EXPECT_EQ(expected_snap, window->GetBoundsInScreen());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PortraitDisplayWindowStateTest,
-                         ::testing::Bool());
 
 // TODO(skuhne): Add more unit test to verify the correctness for the restore
 // operation.

@@ -6324,8 +6324,7 @@ TEST_F(SplitViewOverviewSessionTest, NoCrashWhenDraggingDividerInPortrait) {
 // Test the split view and overview functionalities in clamshell mode. Split
 // view is only active when overview is active in clamshell mode.
 class SplitViewOverviewSessionInClamshellTest
-    : public SplitViewOverviewSessionTest,
-      public ::testing::WithParamInterface<bool> {
+    : public SplitViewOverviewSessionTest {
  public:
   SplitViewOverviewSessionInClamshellTest() = default;
 
@@ -6338,19 +6337,10 @@ class SplitViewOverviewSessionInClamshellTest
 
   // AshTestBase:
   void SetUp() override {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          chromeos::wm::features::kVerticalSnap);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          chromeos::wm::features::kVerticalSnap);
-    }
     SplitViewOverviewSessionTest::SetUp();
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
     DCHECK(ShouldAllowSplitView());
   }
-
-  bool IsVerticalSnapEnabled() const { return GetParam(); }
 
   aura::Window* CreateWindowWithHitTestComponent(int hit_test_component,
                                                  const gfx::Rect& bounds) {
@@ -6375,12 +6365,10 @@ class SplitViewOverviewSessionInClamshellTest
     // aura::Test::TestWindowDelegate:
     void OnWindowDestroyed(aura::Window* window) override { delete this; }
   };
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test some basic functionalities in clamshell splitview mode.
-TEST_P(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
+TEST_F(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
   UpdateDisplay("600x400");
   EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->InTabletMode());
 
@@ -6528,7 +6516,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTest, BasicFunctionalitiesTest) {
 
 // Test overview exit animation histograms when you drag to snap two windows on
 // opposite sides.
-TEST_P(SplitViewOverviewSessionInClamshellTest,
+TEST_F(SplitViewOverviewSessionInClamshellTest,
        BothSnappedOverviewExitAnimationHistogramTest) {
   ui::ScopedAnimationDurationScaleMode anmatin_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -6553,7 +6541,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTest,
 // Test that when overview and splitview are both active, only resize that
 // happens on eligible window components will change snapped window bounds and
 // overview bounds at the same time.
-TEST_P(SplitViewOverviewSessionInClamshellTest, ResizeWindowTest) {
+TEST_F(SplitViewOverviewSessionInClamshellTest, ResizeWindowTest) {
   UpdateDisplay("600x400");
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> window1(
@@ -6691,7 +6679,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTest, ResizeWindowTest) {
 }
 
 // Test closing the split view window while resizing it.
-TEST_P(SplitViewOverviewSessionInClamshellTest,
+TEST_F(SplitViewOverviewSessionInClamshellTest,
        CloseWindowWhileResizingItTest) {
   UpdateDisplay("600x400");
   const gfx::Rect bounds(400, 400);
@@ -6746,7 +6734,7 @@ class TestWindowStateDelegate : public WindowStateDelegate {
 
 // Tests that when a split view window carries over to clamshell split view
 // while the divider is being dragged, the window resize is properly completed.
-TEST_P(SplitViewOverviewSessionInClamshellTest,
+TEST_F(SplitViewOverviewSessionInClamshellTest,
        CarryOverToClamshellSplitViewWhileResizing) {
   std::unique_ptr<aura::Window> snapped_window = CreateTestWindow();
   std::unique_ptr<aura::Window> overview_window = CreateTestWindow();
@@ -6788,7 +6776,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTest,
 
 // Test that overview and clamshell split view end if you double click the edge
 // of the split view window where it meets the overview grid.
-TEST_P(SplitViewOverviewSessionInClamshellTest, HorizontalMaximizeTest) {
+TEST_F(SplitViewOverviewSessionInClamshellTest, HorizontalMaximizeTest) {
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> snapped_window(
       CreateWindowWithHitTestComponent(HTRIGHT, bounds));
@@ -6806,7 +6794,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTest, HorizontalMaximizeTest) {
 
 // Test that when laptop splitview mode is active, moving the snapped window
 // will end splitview and overview at the same time.
-TEST_P(SplitViewOverviewSessionInClamshellTest, MoveWindowTest) {
+TEST_F(SplitViewOverviewSessionInClamshellTest, MoveWindowTest) {
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> window1(
       CreateWindowWithHitTestComponent(HTCAPTION, bounds));
@@ -6828,7 +6816,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTest, MoveWindowTest) {
 
 // Test that in clamshell splitview mode, if the snapped window is minimized,
 // splitview mode and overview mode are both ended.
-TEST_P(SplitViewOverviewSessionInClamshellTest, MinimizedWindowTest) {
+TEST_F(SplitViewOverviewSessionInClamshellTest, MinimizedWindowTest) {
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
@@ -6847,7 +6835,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTest, MinimizedWindowTest) {
 }
 
 // Test snapped window bounds with adjustment for the minimum size of a window.
-TEST_P(SplitViewOverviewSessionInClamshellTest,
+TEST_F(SplitViewOverviewSessionInClamshellTest,
        SnappedWindowBoundsWithMinimumSizeTest) {
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> window1(
@@ -6915,7 +6903,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTest,
 
 // Tests that on a display in portrait orientation, clamshell split view still
 // uses snap positions on the left and right.
-TEST_P(SplitViewOverviewSessionInClamshellTest,
+TEST_F(SplitViewOverviewSessionInClamshellTest,
        PortraitClamshellSplitViewSnapPositionsTest) {
   UpdateDisplay("800x600/l");
   const int height = 800 - ShelfConfig::Get()->shelf_size();
@@ -6928,11 +6916,11 @@ TEST_P(SplitViewOverviewSessionInClamshellTest,
   const gfx::Rect left_snapped_bounds(300, height);
   const gfx::Rect right_snapped_bounds(300, 0, 300, height);
   EXPECT_EQ(
-      IsVerticalSnapEnabled() ? top_snapped_bounds : left_snapped_bounds,
+      top_snapped_bounds,
       split_view_controller()->GetSnappedWindowBoundsInScreen(
           SplitViewController::LEFT, /*window_for_minimum_size=*/nullptr));
   EXPECT_EQ(
-      IsVerticalSnapEnabled() ? bottom_snapped_bounds : right_snapped_bounds,
+      bottom_snapped_bounds,
       split_view_controller()->GetSnappedWindowBoundsInScreen(
           SplitViewController::RIGHT, /*window_for_minimum_size=*/nullptr));
 
@@ -6948,18 +6936,18 @@ TEST_P(SplitViewOverviewSessionInClamshellTest,
   EXPECT_FALSE(tablet_mode_controller_test_api.IsTabletModeStarted());
   // Check the snapped window bounds again. They should be the same as before.
   EXPECT_EQ(
-      IsVerticalSnapEnabled() ? top_snapped_bounds : left_snapped_bounds,
+      top_snapped_bounds,
       split_view_controller()->GetSnappedWindowBoundsInScreen(
           SplitViewController::LEFT, /*window_for_minimum_size=*/nullptr));
   EXPECT_EQ(
-      IsVerticalSnapEnabled() ? bottom_snapped_bounds : right_snapped_bounds,
+      bottom_snapped_bounds,
       split_view_controller()->GetSnappedWindowBoundsInScreen(
           SplitViewController::RIGHT, /*window_for_minimum_size=*/nullptr));
 }
 
 // Tests that the ratio between the divider position and the work area width is
 // the same before and after changing the display orientation in clamshell mode.
-TEST_P(SplitViewOverviewSessionInClamshellTest, DisplayOrientationChangeTest) {
+TEST_F(SplitViewOverviewSessionInClamshellTest, DisplayOrientationChangeTest) {
   UpdateDisplay("600x400");
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> split_view_window(
@@ -7009,7 +6997,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTest, DisplayOrientationChangeTest) {
 }
 
 // Verify that an item's unsnappable indicator is updated for display rotation.
-TEST_P(SplitViewOverviewSessionInClamshellTest,
+TEST_F(SplitViewOverviewSessionInClamshellTest,
        OverviewUnsnappableIndicatorVisibilityAfterDisplayRotation) {
   UpdateDisplay("900x600");
   std::unique_ptr<aura::Window> snapped_window = CreateTestWindow();
@@ -7046,7 +7034,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTest,
 
 // Tests that dragging a window from overview creates a drop target on the same
 // display, even if the window bounds are mostly on another display.
-TEST_P(SplitViewOverviewSessionInClamshellTest,
+TEST_F(SplitViewOverviewSessionInClamshellTest,
        DragFromOverviewWithBoundsMostlyOnAnotherDisplay) {
   UpdateDisplay("700x600,700x600");
   const aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
@@ -7086,7 +7074,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTest,
 }
 
 // Tests that Alt+[ and Alt+] do not start overview.
-TEST_P(SplitViewOverviewSessionInClamshellTest,
+TEST_F(SplitViewOverviewSessionInClamshellTest,
        AltSquareBracketNotStartOverview) {
   std::unique_ptr<aura::Window> window1 = CreateTestWindow();
   std::unique_ptr<aura::Window> window2 = CreateTestWindow();
@@ -7110,7 +7098,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTest,
 }
 
 // Tests using Alt+[ on a left split view window.
-TEST_P(SplitViewOverviewSessionInClamshellTest,
+TEST_F(SplitViewOverviewSessionInClamshellTest,
        AltLeftSquareBracketOnLeftSplitViewWindow) {
   std::unique_ptr<aura::Window> snapped_window = CreateTestWindow();
   std::unique_ptr<aura::Window> overview_window = CreateTestWindow();
@@ -7130,7 +7118,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTest,
 }
 
 // Tests using Alt+] on a right split view window.
-TEST_P(SplitViewOverviewSessionInClamshellTest,
+TEST_F(SplitViewOverviewSessionInClamshellTest,
        AltRightSquareBracketOnRightSplitViewWindow) {
   std::unique_ptr<aura::Window> snapped_window = CreateTestWindow();
   std::unique_ptr<aura::Window> overview_window = CreateTestWindow();
@@ -7152,7 +7140,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTest,
 
 // Tests using Alt+[ on a right split view window, and Alt+] on a left split
 // view window.
-TEST_P(SplitViewOverviewSessionInClamshellTest,
+TEST_F(SplitViewOverviewSessionInClamshellTest,
        AltSquareBracketOnSplitViewWindow) {
   std::unique_ptr<aura::Window> snapped_window = CreateTestWindow();
   std::unique_ptr<aura::Window> overview_window = CreateTestWindow();
@@ -7195,7 +7183,7 @@ using SplitViewOverviewSessionInClamshellTestMultiDisplayOnly =
     SplitViewOverviewSessionInClamshellTest;
 
 // Test |SplitViewController::Get|.
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        GetSplitViewController) {
   UpdateDisplay("800x600,800x600");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -7211,7 +7199,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 }
 
 // Test |SplitViewController::GetSnappedWindowBoundsInScreen|.
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        GetSnappedBounds) {
   UpdateDisplay("800x600,800x600");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -7249,7 +7237,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 // Test that if clamshell split view is started by snapping a window that is the
 // only overview window, then split view ends as soon as it starts, and overview
 // ends along with it.
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        SplitViewEndsImmediatelyIfOverviewIsEmpty) {
   UpdateDisplay("800x600,800x600");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -7268,7 +7256,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 // stays active (instead of ending as soon as it starts), and overview also
 // stays active. Then close the overview window and verify that split view and
 // overview are ended.
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        SplitViewViableWithOverviewWindowOnOtherDisplay) {
   UpdateDisplay("800x600,800x600");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -7288,7 +7276,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 }
 
 // Test dragging to snap an overview item on an external display.
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        DraggingOnExternalDisplay) {
   UpdateDisplay("800x600,800x600");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -7350,7 +7338,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 }
 
 // Test dragging from one display to another.
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        MultiDisplayDragging) {
   wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
   UpdateDisplay("800x600,800x600");
@@ -7481,7 +7469,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 }
 
 // Verify the drop target positions for multi-display dragging.
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        DropTargetPositionTest) {
   wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
   UpdateDisplay("800x600,800x600");
@@ -7528,7 +7516,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 
 // Verify that the drop target in each overview grid has the correct bounds when
 // a maximized window is being dragged.
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        DropTargetBoundsForMaximizedWindowDraggedToOtherDisplay) {
   UpdateDisplay("1000x400,1000x400/l");
   std::unique_ptr<aura::Window> window = CreateTestWindow();
@@ -7564,7 +7552,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 // Verify that the drop target in each overview grid has bounds representing
 // anticipation that if the dragged window is dropped into that grid, it will
 // shrink to fit into the corresponding work area.
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        DropTargetBoundsOnDisplayWhereDraggedWindowDoesNotFitIntoWorkArea) {
   UpdateDisplay("600x500,1200x1000");
   // Drags |item| from the right display to the left display and back, and
@@ -7623,7 +7611,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 }
 
 // Test dragging from one overview grid and dropping into another overview grid.
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        DragAndDropIntoAnotherOverviewGrid) {
   UpdateDisplay("800x600,800x600");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -7658,7 +7646,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 // Test that overview widgets are stacked in the correct order after an overview
 // window is dragged from one overview grid and dropped into another. Also test
 // that the destination overview grid is arranged in the correct order.
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        OverviewWidgetStackingOrderAndGridOrderWithMultiDisplayDragging) {
   UpdateDisplay("800x600,800x600");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -7725,7 +7713,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 }
 
 // Test dragging from one display to another and then snapping.
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        DragFromOneDisplayToAnotherAndSnap) {
   UpdateDisplay("800x600,800x600");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -7757,7 +7745,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 
 // Verify that window resizing performance is recorded to the correct histogram
 // depending on whether the overview grid is empty.
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        WindowResizingPerformanceHistogramsTest) {
   UpdateDisplay("800x600,800x600");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -7801,7 +7789,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 // recorded to the histogram, but this test does provide evidence of timing
 // accuracy as the time in multi-display split view is measured from the time
 // when the user action "SplitView_MultiDisplaySplitView" is recorded.
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        MultiDisplaySplitViewMetrics) {
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
@@ -7882,7 +7870,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 // of the window fits into the left or top, with the default divider position.
 // (If the work area length is odd, then the right or bottom will be one pixel
 // larger.)
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        SnapWindowWithMinimumSizeTest) {
   // The divider is 8 thick. For the default divider position, the remaining 792
   // of the work area on the first root window is divided into 396 on each side,
@@ -7932,7 +7920,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 
 // Verify that when in overview mode, the selector items unsnappable indicator
 // shows up when expected.
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        OverviewUnsnappableIndicatorVisibility) {
   UpdateDisplay("800x600,800x600");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -8004,7 +7992,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 
 // Test that enabling the docked magnifier ends clamshell split view on all
 // displays.
-TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
+TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        DockedMagnifierEndsClamshellSplitView) {
   UpdateDisplay("800x600,800x600");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -8027,13 +8015,5 @@ TEST_P(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   EXPECT_FALSE(SplitViewController::Get(root_windows[0])->InSplitViewMode());
   EXPECT_FALSE(SplitViewController::Get(root_windows[1])->InSplitViewMode());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SplitViewOverviewSessionInClamshellTest,
-                         ::testing::Bool());
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
-    ::testing::Bool());
 
 }  // namespace ash

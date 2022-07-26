@@ -812,8 +812,7 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
               kSnapDragDwellTimeResetThreshold;
       // If vertical snap state is enabled, update phantom window for top/bottom
       // snap before setting a timer for maximize phantom to show up.
-      if (chromeos::wm::features::IsVerticalSnapEnabled() &&
-          !snap_phantom_window_controller_ &&
+      if (!snap_phantom_window_controller_ &&
           snap_type != SnapType::kMaximize) {
         UpdateSnapPhantomWindow(snap_type);
       }
@@ -825,10 +824,7 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
         // before it turns into maximize phantom window.
         dwell_countdown_timer_.Start(
             FROM_HERE,
-            (chromeos::wm::features::IsVerticalSnapEnabled() &&
-             snap_type != SnapType::kMaximize)
-                ? kDwellLongTime
-                : kDwellTime,
+            snap_type != SnapType::kMaximize ? kDwellLongTime : kDwellTime,
             base::BindOnce(&WorkspaceWindowResizer::UpdateSnapPhantomWindow,
                            weak_ptr_factory_.GetWeakPtr(),
                            SnapType::kMaximize));

@@ -6458,11 +6458,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "vertical-snap",
-    "owners": [ "cattalyya", "afakhry", "nupurjain", "fanafan"],
-    "expiry_milestone": 100
-  },
-  {
     "name": "video-tutorials",
     "owners": [ "shaktisahu"],
     "expiry_milestone": 102

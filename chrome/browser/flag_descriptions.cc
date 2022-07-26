@@ -2887,12 +2887,6 @@ const char kVariableCOLRV1Description[] =
     "Enable rendering of COLRv1 glyphs with font variations applied. When this "
     "flag is off, variations to COLRv1 tables are ignored.";
 
-const char kVerticalSnapName[] = "Vertical Snap features";
-const char kVerticalSnapDescription[] =
-    "This enables Vertical Snap feature in portrait display."
-    "This feature allows users to snap windows to top and bottom in portrait "
-    "display orientation and maintains left/right snap for landscape display.";
-
 const char kGlobalVaapiLockName[] = "Global lock on the VA-API wrapper.";
 const char kGlobalVaapiLockDescription[] =
     "Enable or disable the global VA-API lock for platforms and paths that "

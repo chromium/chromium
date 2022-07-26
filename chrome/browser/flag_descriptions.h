@@ -1615,9 +1615,6 @@ extern const char kV8VmFutureDescription[];
 extern const char kVariableCOLRV1Name[];
 extern const char kVariableCOLRV1Description[];
 
-extern const char kVerticalSnapName[];
-extern const char kVerticalSnapDescription[];
-
 extern const char kGlobalVaapiLockName[];
 extern const char kGlobalVaapiLockDescription[];
 

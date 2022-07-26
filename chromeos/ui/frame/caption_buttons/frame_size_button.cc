@@ -63,16 +63,13 @@ SnapDirection GetSnapDirection(const views::FrameCaptionButton* to_hover) {
     const bool is_primary_display_layout = chromeos::IsDisplayLayoutPrimary(
         display::Screen::GetScreen()->GetDisplayNearestWindow(
             to_hover->GetWidget()->GetNativeWindow()));
-    const bool is_primary_snap =
-        is_primary_display_layout ||
-        !chromeos::wm::features::IsVerticalSnapEnabled();
     switch (to_hover->GetIcon()) {
       case views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED:
-        return is_primary_snap ? SnapDirection::kPrimary
-                               : SnapDirection::kSecondary;
+        return is_primary_display_layout ? SnapDirection::kPrimary
+                                         : SnapDirection::kSecondary;
       case views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED:
-        return is_primary_snap ? SnapDirection::kSecondary
-                               : SnapDirection::kPrimary;
+        return is_primary_display_layout ? SnapDirection::kSecondary
+                                         : SnapDirection::kPrimary;
       case views::CAPTION_BUTTON_ICON_FLOAT:
       case views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE:
       case views::CAPTION_BUTTON_ICON_MINIMIZE:

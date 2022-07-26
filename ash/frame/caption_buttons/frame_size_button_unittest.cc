@@ -587,45 +587,14 @@ TEST_F(FrameSizeButtonNonResizableTest, NoSnap) {
   EXPECT_EQ(views::CAPTION_BUTTON_ICON_CLOSE, close_button()->GetIcon());
 }
 
-// FrameSizeButtonPortraitDisplayTest is parameterized to run with and without
-// the feature |features::kVerticalSnap|, which allows users to snap top and
-// bottom in portrait layout, affecting snap icons.
-class FrameSizeButtonPortraitDisplayTest
-    : public FrameSizeButtonTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  FrameSizeButtonPortraitDisplayTest() = default;
-
-  FrameSizeButtonPortraitDisplayTest(
-      const FrameSizeButtonPortraitDisplayTest&) = delete;
-  FrameSizeButtonPortraitDisplayTest& operator=(
-      const FrameSizeButtonPortraitDisplayTest&) = delete;
-
-  ~FrameSizeButtonPortraitDisplayTest() override = default;
-
-  // FrameSizeButtonTest:
-  void SetUp() override {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          chromeos::wm::features::kVerticalSnap);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          chromeos::wm::features::kVerticalSnap);
-    }
-    FrameSizeButtonTest::SetUp();
-    UpdateDisplay("600x800");
-  }
-
- protected:
-  bool IsVerticalSnapEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+// FrameSizeButtonPortraitDisplayTest is used to test functionalities to snap
+// top and bottom in portrait layout, affecting snap icons.
+using FrameSizeButtonPortraitDisplayTest = FrameSizeButtonTest;
 
 // Test that upon pressed the size button should show left and right arrows for
 // horizontal snap and upward and downward arrow for vertical snap.
-TEST_P(FrameSizeButtonPortraitDisplayTest, SnapButtons) {
+TEST_F(FrameSizeButtonPortraitDisplayTest, SnapButtons) {
+  UpdateDisplay("600x800");
   FrameCaptionButtonContainerView* container =
       widget_delegate()->caption_button_container();
   views::Widget* widget = widget_delegate()->GetWidget();
@@ -650,12 +619,9 @@ TEST_P(FrameSizeButtonPortraitDisplayTest, SnapButtons) {
   EXPECT_EQ(views::CAPTION_BUTTON_ICON_RIGHT_BOTTOM_SNAPPED,
             close_button()->GetIcon());
 
-  const gfx::VectorIcon* left_icon =
-      IsVerticalSnapEnabled() ? &chromeos::kWindowControlTopSnappedIcon
-                              : &chromeos::kWindowControlLeftSnappedIcon;
+  const gfx::VectorIcon* left_icon = &chromeos::kWindowControlTopSnappedIcon;
   const gfx::VectorIcon* right_icon =
-      IsVerticalSnapEnabled() ? &chromeos::kWindowControlBottomSnappedIcon
-                              : &chromeos::kWindowControlRightSnappedIcon;
+      &chromeos::kWindowControlBottomSnappedIcon;
 
   EXPECT_TRUE(left_icon->name ==
               minimize_button()->icon_definition_for_test()->name);
@@ -779,9 +745,5 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuFullFunctionality) {
   generator->ClickLeftButton();
   EXPECT_TRUE(window_state()->IsFullscreen());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         FrameSizeButtonPortraitDisplayTest,
-                         ::testing::Bool());
 
 }  // namespace ash

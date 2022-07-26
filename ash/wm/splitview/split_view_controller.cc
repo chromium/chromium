@@ -1914,8 +1914,6 @@ void SplitViewController::OnTabletModeEnding() {
 }
 
 void SplitViewController::OnTabletModeEnded() {
-  DCHECK(IsLayoutPrimary(Shell::GetPrimaryRootWindow()) ||
-         chromeos::wm::features::IsVerticalSnapEnabled());
   is_previous_layout_right_side_up_ = true;
 }
 
