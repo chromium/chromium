@@ -275,13 +275,11 @@ TEST_F(RenderWidgetHostViewChildFrameTest, CompositorViewportPixelSize) {
   test_frame_connector_->SetLocalFrameSize(local_frame_size);
   EXPECT_EQ(local_frame_size, view_->GetCompositorViewportPixelSize());
 
-  gfx::Rect screen_space_rect(local_frame_size);
-  screen_space_rect.set_origin(gfx::Point(230, 263));
-  test_frame_connector_->SetScreenSpaceRect(screen_space_rect);
+  gfx::Rect rect_in_parent_view(local_frame_size);
+  rect_in_parent_view.set_origin(gfx::Point(230, 263));
+  test_frame_connector_->SetRectInParentView(rect_in_parent_view);
   EXPECT_EQ(local_frame_size, view_->GetCompositorViewportPixelSize());
   EXPECT_EQ(gfx::Point(115, 131), view_->GetViewBounds().origin());
-  EXPECT_EQ(gfx::Point(230, 263),
-            test_frame_connector_->screen_space_rect_in_pixels().origin());
 }
 
 // Tests that SynchronizeVisualProperties is called only once and all the
@@ -295,14 +293,14 @@ TEST_F(RenderWidgetHostViewChildFrameTest,
   widget_host_->RendererWidgetCreated(/*for_frame_widget=*/true);
 
   constexpr gfx::Rect compositor_viewport_pixel_rect(100, 100);
-  constexpr gfx::Rect screen_space_rect(compositor_viewport_pixel_rect);
+  constexpr gfx::Rect rect_in_local_root(compositor_viewport_pixel_rect);
   viz::ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
   viz::LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
 
   blink::FrameVisualProperties visual_properties;
   visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
-  visual_properties.screen_space_rect = screen_space_rect;
+  visual_properties.rect_in_local_root = rect_in_local_root;
   visual_properties.compositor_viewport = compositor_viewport_pixel_rect;
   visual_properties.local_frame_size = compositor_viewport_pixel_rect.size();
   visual_properties.capture_sequence_number = 123u;
@@ -322,7 +320,7 @@ TEST_F(RenderWidgetHostViewChildFrameTest,
 
     EXPECT_EQ(compositor_viewport_pixel_rect,
               sent_visual_properties.compositor_viewport_pixel_rect);
-    EXPECT_EQ(screen_space_rect.size(), sent_visual_properties.new_size);
+    EXPECT_EQ(rect_in_local_root.size(), sent_visual_properties.new_size);
     EXPECT_EQ(local_surface_id, sent_visual_properties.local_surface_id);
     EXPECT_EQ(123u, sent_visual_properties.capture_sequence_number);
     EXPECT_EQ(1u, sent_visual_properties.root_widget_window_segments.size());

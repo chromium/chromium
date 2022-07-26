@@ -206,7 +206,7 @@ interface PopupWidgetHost {
   // Request that this popup be dismissed.
   RequestClosePopup();
 
-  // Request the popup be shown.
+  // Request the popup be shown. Rects are relative to screen origin in DIPs.
   ShowPopup(gfx.mojom.Rect initial_rect, gfx.mojom.Rect anchor_rect) => ();
 
   // Request that the browser change the bounds of the widget.

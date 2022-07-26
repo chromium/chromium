@@ -75,9 +75,9 @@ struct BLINK_COMMON_EXPORT
     return r.compositor_viewport;
   }
 
-  static const gfx::Rect& screen_space_rect(
+  static const gfx::Rect& rect_in_local_root(
       const blink::FrameVisualProperties& r) {
-    return r.screen_space_rect;
+    return r.rect_in_local_root;
   }
 
   static const gfx::Size& local_frame_size(

@@ -514,8 +514,8 @@ void RemoteFrame::SetInsecureNavigationsSet(const WebVector<unsigned>& set) {
 }
 
 void RemoteFrame::FrameRectsChanged(const gfx::Size& local_frame_size,
-                                    const gfx::Rect& screen_space_rect) {
-  pending_visual_properties_.screen_space_rect = screen_space_rect;
+                                    const gfx::Rect& rect_in_local_root) {
+  pending_visual_properties_.rect_in_local_root = rect_in_local_root;
   pending_visual_properties_.local_frame_size = local_frame_size;
   SynchronizeVisualProperties();
 }
@@ -937,8 +937,8 @@ bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
           pending_visual_properties_.max_size_for_auto_resize ||
       sent_visual_properties_->local_frame_size !=
           pending_visual_properties_.local_frame_size ||
-      sent_visual_properties_->screen_space_rect.size() !=
-          pending_visual_properties_.screen_space_rect.size() ||
+      sent_visual_properties_->rect_in_local_root.size() !=
+          pending_visual_properties_.rect_in_local_root.size() ||
       sent_visual_properties_->screen_infos !=
           pending_visual_properties_.screen_infos ||
       sent_visual_properties_->zoom_level !=
@@ -972,8 +972,8 @@ bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {
                                     capture_sequence_number_changed);
 
   bool rect_changed = !sent_visual_properties_ ||
-                      sent_visual_properties_->screen_space_rect !=
-                          pending_visual_properties_.screen_space_rect;
+                      sent_visual_properties_->rect_in_local_root !=
+                          pending_visual_properties_.rect_in_local_root;
   bool visual_properties_changed = synchronized_props_changed || rect_changed;
 
   if (visual_properties_changed && propagate) {

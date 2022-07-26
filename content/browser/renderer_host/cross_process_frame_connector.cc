@@ -86,7 +86,7 @@ void CrossProcessFrameConnector::SetView(RenderWidgetHostViewChildFrame* view) {
     view_->SetFrameConnector(nullptr);
   }
 
-  ResetScreenSpaceRect();
+  ResetRectInParentView();
   view_ = view;
 
   // Attach ourselves to the new view and size it appropriately. Also update
@@ -192,7 +192,7 @@ void CrossProcessFrameConnector::SynchronizeVisualProperties(
 
   capture_sequence_number_ = visual_properties.capture_sequence_number;
 
-  SetScreenSpaceRect(visual_properties.screen_space_rect);
+  SetRectInParentView(visual_properties.rect_in_local_root);
   SetLocalFrameSize(visual_properties.local_frame_size);
 
   if (!view_)
@@ -345,7 +345,7 @@ void CrossProcessFrameConnector::OnSynchronizeVisualProperties(
       TRACE_EVENT_FLAG_FLOW_IN, "message",
       "FrameHostMsg_SynchronizeVisualProperties", "new_local_surface_id",
       visual_properties.local_surface_id.ToString());
-  // If the |screen_space_rect| or current ScreenInfo of the frame has
+  // If the |rect_in_local_root| or current ScreenInfo of the frame has
   // changed, then the viz::LocalSurfaceId must also change.
   if ((last_received_local_frame_size_ != visual_properties.local_frame_size ||
        screen_infos_.current() != visual_properties.screen_infos.current() ||
@@ -529,25 +529,24 @@ void CrossProcessFrameConnector::SetLocalFrameSize(
       gfx::ScaleToRoundedSize(local_frame_size, 1.f / dsf);
 }
 
-void CrossProcessFrameConnector::SetScreenSpaceRect(
-    const gfx::Rect& screen_space_rect) {
-  gfx::Rect old_rect = screen_space_rect_in_pixels_;
+void CrossProcessFrameConnector::SetRectInParentView(
+    const gfx::Rect& rect_in_parent_view) {
+  gfx::Rect old_rect = rect_in_parent_view_in_dip_;
   const float dsf = screen_infos_.current().device_scale_factor;
-  screen_space_rect_in_pixels_ = screen_space_rect;
-  screen_space_rect_in_dip_ =
-      gfx::Rect(gfx::ScaleToFlooredPoint(screen_space_rect.origin(), 1.f / dsf),
-                gfx::ScaleToCeiledSize(screen_space_rect.size(), 1.f / dsf));
+  rect_in_parent_view_in_dip_ = gfx::Rect(
+      gfx::ScaleToFlooredPoint(rect_in_parent_view.origin(), 1.f / dsf),
+      gfx::ScaleToCeiledSize(rect_in_parent_view.size(), 1.f / dsf));
 
   if (view_ && frame_proxy_in_parent_renderer_) {
-    view_->SetBounds(screen_space_rect_in_dip_);
+    view_->SetBounds(rect_in_parent_view_in_dip_);
 
     // Other local root frames nested underneath this one implicitly have their
     // view rects changed when their ancestor is repositioned, and therefore
     // need to have their screen rects updated.
     FrameTreeNode* proxy_node =
         frame_proxy_in_parent_renderer_->frame_tree_node();
-    if (old_rect.x() != screen_space_rect_in_pixels_.x() ||
-        old_rect.y() != screen_space_rect_in_pixels_.y()) {
+    if (old_rect.x() != rect_in_parent_view_in_dip_.x() ||
+        old_rect.y() != rect_in_parent_view_in_dip_.y()) {
       for (FrameTreeNode* node :
            proxy_node->frame_tree()->SubtreeNodes(proxy_node)) {
         if (node != proxy_node && node->current_frame_host()->is_local_root())
@@ -557,12 +556,11 @@ void CrossProcessFrameConnector::SetScreenSpaceRect(
   }
 }
 
-void CrossProcessFrameConnector::ResetScreenSpaceRect() {
+void CrossProcessFrameConnector::ResetRectInParentView() {
   local_surface_id_ = viz::LocalSurfaceId();
-  // TODO(lfg): Why do we need to reset the screen_space_rect_ that comes from
-  // the parent when setting the child? https://crbug.com/809275
-  screen_space_rect_in_pixels_ = gfx::Rect();
-  screen_space_rect_in_dip_ = gfx::Rect();
+  // TODO(lfg): Why do we need to reset the rect_in_parent_view_in_dip_ that
+  // comes from the parent when setting the child? https://crbug.com/809275
+  rect_in_parent_view_in_dip_ = gfx::Rect();
   last_received_local_frame_size_ = gfx::Size();
 }
 

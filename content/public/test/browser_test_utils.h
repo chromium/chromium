@@ -2072,8 +2072,8 @@ class SynchronizeVisualPropertiesInterceptor
 
   raw_ptr<RenderFrameProxyHost> render_frame_proxy_host_;
 
-  std::unique_ptr<base::RunLoop> screen_space_rect_run_loop_;
-  bool screen_space_rect_received_ = false;
+  std::unique_ptr<base::RunLoop> local_root_rect_run_loop_;
+  bool local_root_rect_received_ = false;
   gfx::Rect last_rect_;
 
   viz::LocalSurfaceId last_surface_id_;

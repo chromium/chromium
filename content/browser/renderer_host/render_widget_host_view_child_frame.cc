@@ -248,9 +248,9 @@ void RenderWidgetHostViewChildFrame::WasUnOccluded() {
 }
 
 gfx::Rect RenderWidgetHostViewChildFrame::GetViewBounds() {
-  gfx::Rect rect;
+  gfx::Rect screen_space_rect;
   if (frame_connector_) {
-    rect = frame_connector_->screen_space_rect_in_dip();
+    screen_space_rect = frame_connector_->rect_in_parent_view_in_dip();
 
     RenderWidgetHostView* parent_view =
         frame_connector_->GetParentRenderWidgetHostView();
@@ -259,16 +259,16 @@ gfx::Rect RenderWidgetHostViewChildFrame::GetViewBounds() {
     if (parent_view) {
       // Translate screen_space_rect by the parent's RenderWidgetHostView
       // offset.
-      rect.Offset(parent_view->GetViewBounds().OffsetFromOrigin());
+      screen_space_rect.Offset(parent_view->GetViewBounds().OffsetFromOrigin());
     }
     // TODO(wjmaclean): GetViewBounds is a bit of a mess. It's used to determine
     // the size of the renderer content and where to place context menus and so
     // on. We want the location of the frame in screen coordinates to place
     // popups but we want the size in local coordinates to produce the right-
     // sized CompositorFrames. https://crbug.com/928825.
-    rect.set_size(frame_connector_->local_frame_size_in_dip());
+    screen_space_rect.set_size(frame_connector_->local_frame_size_in_dip());
   }
-  return rect;
+  return screen_space_rect;
 }
 
 gfx::Size RenderWidgetHostViewChildFrame::GetVisibleViewportSize() {
