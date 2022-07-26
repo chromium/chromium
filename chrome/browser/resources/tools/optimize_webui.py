@@ -187,8 +187,6 @@ def _bundle_v3(tmp_out_dir, in_path, out_path, manifest_out_path, args,
           'Unexpected <if expr> found in bundled output. Check that all ' + \
           'input files using such expressions are preprocessed.'
 
-  return bundled_paths
-
 
 def _optimize(in_folder, args):
   in_path = os.path.normpath(os.path.join(_CWD, in_folder)).replace('\\', '/')
@@ -211,15 +209,8 @@ def _optimize(in_folder, args):
   external_paths = args.external_paths or []
 
   try:
-    pcb_out_paths = [os.path.join(tmp_out_dir, f) for f in args.js_out_files]
-    bundled_paths = _bundle_v3(tmp_out_dir, in_path, out_path,
-                               manifest_out_path, args, excludes,
-                               external_paths)
-
-    # Run polymer-css-build.
-    node.RunNode([node_modules.PathToPolymerCssBuild()] +
-                 ['--polymer-version', '2'] + ['--no-inline-includes', '-f'] +
-                 bundled_paths + ['-o'] + pcb_out_paths)
+    _bundle_v3(tmp_out_dir, in_path, out_path, manifest_out_path, args,
+               excludes, external_paths)
 
     # Pass the JS files through Terser and write the output to its final
     # destination.
