@@ -36,6 +36,7 @@
 #include "ash/system/media/unified_media_controls_detailed_view_controller.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/model/update_model.h"
 #include "ash/system/nearby_share/nearby_share_feature_pod_controller.h"
 #include "ash/system/network/network_detailed_view_controller.h"
 #include "ash/system/network/network_feature_pod_controller.h"
@@ -50,6 +51,7 @@
 #include "ash/system/time/unified_calendar_view_controller.h"
 #include "ash/system/tray/system_tray_item_uma_type.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/unified/deferred_update_dialog.h"
 #include "ash/system/unified/detailed_view_controller.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
@@ -182,7 +184,15 @@ void UnifiedSystemTrayController::HandleSignOutAction() {
   base::RecordAction(base::UserMetricsAction("StatusArea_SignOut"));
   if (Shell::Get()->session_controller()->IsDemoSession())
     base::RecordAction(base::UserMetricsAction("DemoMode.ExitFromSystemTray"));
-  Shell::Get()->session_controller()->RequestSignOut();
+
+  if (HasDeferredUpdate()) {
+    DeferredUpdateDialog::CreateDialog(
+        DeferredUpdateDialog::Action::kSignOut,
+        base::BindOnce(&SessionControllerImpl::RequestSignOut,
+                       base::Unretained(Shell::Get()->session_controller())));
+  } else {
+    Shell::Get()->session_controller()->RequestSignOut();
+  }
 }
 
 void UnifiedSystemTrayController::HandleLockAction() {
@@ -200,9 +210,18 @@ void UnifiedSystemTrayController::HandleSettingsAction() {
 
 void UnifiedSystemTrayController::HandlePowerAction() {
   base::RecordAction(base::UserMetricsAction("Tray_ShutDown"));
-  Shell::Get()->lock_state_controller()->RequestShutdown(
-      ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
-  CloseBubble();
+
+  if (HasDeferredUpdate()) {
+    DeferredUpdateDialog::CreateDialog(
+        DeferredUpdateDialog::Action::kShutDown,
+        base::BindOnce(&LockStateController::RequestShutdown,
+                       base::Unretained(Shell::Get()->lock_state_controller()),
+                       ShutdownReason::TRAY_SHUT_DOWN_BUTTON));
+  } else {
+    Shell::Get()->lock_state_controller()->RequestShutdown(
+        ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
+    CloseBubble();
+  }
 }
 
 void UnifiedSystemTrayController::HandlePageSwitchAction(int page) {
@@ -663,6 +682,10 @@ bool UnifiedSystemTrayController::IsMessageCenterCollapseRequired() const {
 base::TimeDelta UnifiedSystemTrayController::GetAnimationDurationForReporting()
     const {
   return base::Milliseconds(kSystemMenuCollapseExpandAnimationDurationMs);
+}
+
+bool UnifiedSystemTrayController::HasDeferredUpdate() const {
+  return Shell::Get()->system_tray_model()->update_model()->update_deferred();
 }
 
 }  // namespace ash

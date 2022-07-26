@@ -5106,6 +5106,28 @@ New install
         Can't stream apps in tablet mode. Try again in laptop mode.
       </message>
 
+      <!-- Deferred update dialog -->
+      <message name="IDS_DEFERRED_UPDATE_DIALOG_TITLE" desc="Title of the dialog for notifying deferred update available to be applied.">
+        Update available
+      </message>
+      <message name="IDS_DEFERRED_UPDATE_DIALOG_TEXT" desc="Content of the dialog for notifying deferred update available.">
+        Get the latest features and security improvements. If you decline this update, your device may no longer work properly and you may experience security and performance issues.
+      </message>
+      <message name="IDS_DEFERRED_UPDATE_DIALOG_CHECKBOX" desc="Checkbox to enable automatic updates.">
+        Get automatic updates
+      </message>
+      <message name="IDS_DEFERRED_UPDATE_DIALOG_SIGN_OUT" desc="Sign out button.">
+        Sign out
+      </message>
+      <message name="IDS_DEFERRED_UPDATE_DIALOG_UPDATE_SIGN_OUT" desc="Update and sign out button.">
+        Update and sign out
+      </message>
+      <message name="IDS_DEFERRED_UPDATE_DIALOG_SHUT_DOWN" desc="Shut down button.">
+        Shut down
+      </message>
+      <message name="IDS_DEFERRED_UPDATE_DIALOG_UPDATE_SHUT_DOWN" desc="Update and shut down button.">
+        Update and shut down
+      </message>
     </messages>
   </release>
 </grit>

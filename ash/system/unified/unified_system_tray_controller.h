@@ -245,6 +245,8 @@ class ASH_EXPORT UnifiedSystemTrayController
   // views::AnimationDelegateViews:
   base::TimeDelta GetAnimationDurationForReporting() const override;
 
+  bool HasDeferredUpdate() const;
+
   // Model that stores UI specific variables. Unowned.
   scoped_refptr<UnifiedSystemTrayModel> model_;
 

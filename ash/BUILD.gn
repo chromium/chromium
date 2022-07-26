@@ -1699,6 +1699,8 @@ component("ash") {
     "system/unified/custom_shape_button.h",
     "system/unified/date_tray.cc",
     "system/unified/date_tray.h",
+    "system/unified/deferred_update_dialog.cc",
+    "system/unified/deferred_update_dialog.h",
     "system/unified/detailed_view_controller.h",
     "system/unified/feature_pod_button.cc",
     "system/unified/feature_pod_button.h",
