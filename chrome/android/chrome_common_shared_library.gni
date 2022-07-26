@@ -18,10 +18,6 @@ declare_args() {
   use_relr_relocations = false
 }
 
-# TODO(cjgrant): Remove these variables once downstream stops using them.
-bundle_library_suffix = ""
-apk_pak_asset_type = "_apk"
-
 # This template contains all common configuration for native shared libraries,
 # including libchrome, monochrome, standalone webview (also called monochrome),
 # and libchromefortest (used by chrome_public_test_apk).
