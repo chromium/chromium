@@ -231,7 +231,7 @@ bool IsHandleOfficeTask(const FullTaskDescriptor& task);
 
 // Update the default file handler for the given sets of suffixes and MIME
 // types.
-void UpdateDefaultTask(PrefService* pref_service,
+void UpdateDefaultTask(Profile* profile,
                        const TaskDescriptor& task_descriptor,
                        const std::set<std::string>& suffixes,
                        const std::set<std::string>& mime_types);
@@ -315,7 +315,7 @@ void FindAllTypesOfTasks(Profile* profile,
 // Chooses the default task in |tasks| and sets it as default, if the default
 // task is found (i.e. the default task may not exist in |tasks|). No tasks
 // should be set as default before calling this function.
-void ChooseAndSetDefaultTask(const PrefService& pref_service,
+void ChooseAndSetDefaultTask(Profile* profile,
                              const std::vector<extensions::EntryInfo>& entries,
                              std::vector<FullTaskDescriptor>* tasks);
 

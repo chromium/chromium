@@ -28,6 +28,13 @@ namespace file_tasks {
 // import-crostini-image can be disabled at runtime by enterprise policy.
 bool FileHandlerIsEnabled(Profile* profile, const std::string& file_handler_id);
 
+// Returns a profile that has App Service available. App Service doesn't exist
+// in Incognito mode, so when the user opens a file from the downloads page
+// within an Incognito browser, we will use the base profile instead. If neither
+// the given profile nor the base profile have access to an available App
+// Service, we return a nullptr.
+Profile* GetProfileWithAppService(Profile* profile);
+
 // Finds the app services tasks that can handle |entries|, appends them to
 // |result_list|, and calls back to |callback|.
 // Only support sharing at the moment.

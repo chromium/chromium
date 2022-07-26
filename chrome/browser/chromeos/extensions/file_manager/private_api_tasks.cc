@@ -269,8 +269,8 @@ FileManagerPrivateInternalSetDefaultTaskFunction::Run() {
   file_manager::file_tasks::TaskDescriptor descriptor(
       params->descriptor.app_id, task_type, params->descriptor.action_id);
 
-  file_manager::file_tasks::UpdateDefaultTask(profile->GetPrefs(), descriptor,
-                                              suffixes, mime_types);
+  file_manager::file_tasks::UpdateDefaultTask(profile, descriptor, suffixes,
+                                              mime_types);
   return RespondNow(NoArguments());
 }
 

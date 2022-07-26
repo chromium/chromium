@@ -339,7 +339,7 @@ void EndPostProcessFoundTasks(
   if (!disabled_actions.empty())
     RemoveFileManagerInternalActions(disabled_actions, result_list.get());
 
-  ChooseAndSetDefaultTask(*profile->GetPrefs(), entries, result_list.get());
+  ChooseAndSetDefaultTask(profile, entries, result_list.get());
   std::move(callback).Run(std::move(result_list));
 }
 
@@ -494,14 +494,38 @@ bool IsHandleOfficeTask(const FullTaskDescriptor& task) {
          action_id == kActionIdHandleOffice;
 }
 
-void UpdateDefaultTask(PrefService* pref_service,
+void UpdateDefaultTask(Profile* profile,
                        const TaskDescriptor& task_descriptor,
                        const std::set<std::string>& suffixes,
                        const std::set<std::string>& mime_types) {
+  PrefService* pref_service = profile->GetPrefs();
   if (!pref_service)
     return;
 
   std::string task_id = TaskDescriptorToId(task_descriptor);
+  if (ash::features::ShouldArcAndGuestOsFileTasksUseAppService() &&
+      task_descriptor.task_type == TASK_TYPE_ARC_APP) {
+    // Task IDs for Android apps are stored in a legacy format (app id:
+    // "<package>/<activity>", task id: "view"). For ARC app task descriptors
+    // (which use app id: "<app service id>", action id: "<activity>"), we
+    // generate Task IDs in the legacy format.
+    std::string package;
+    DCHECK(
+        apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile);
+    if (proxy) {
+      proxy->AppRegistryCache().ForOneApp(
+          task_descriptor.app_id, [&package](const apps::AppUpdate& update) {
+            package = update.PublisherId();
+          });
+    }
+    if (!package.empty()) {
+      std::string new_app_id = package + "/" + task_descriptor.action_id;
+      task_id = MakeTaskID(new_app_id, TASK_TYPE_ARC_APP, kActionIdView);
+    }
+  }
+
   if (!mime_types.empty()) {
     DictionaryPrefUpdate mime_type_pref(pref_service,
                                         prefs::kDefaultTasksByMimeType);
@@ -804,7 +828,7 @@ void FindAllTypesOfTasks(Profile* profile,
   }
 }
 
-void ChooseAndSetDefaultTask(const PrefService& pref_service,
+void ChooseAndSetDefaultTask(Profile* profile,
                              const std::vector<extensions::EntryInfo>& entries,
                              std::vector<FullTaskDescriptor>* tasks) {
   // Collect the default tasks from the preferences into a set.
@@ -813,9 +837,42 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
     const base::FilePath& file_path = entry.path;
     const std::string& mime_type = entry.mime_type;
     TaskDescriptor default_task;
-    if (file_tasks::GetDefaultTaskFromPrefs(
-            pref_service, mime_type, file_path.Extension(), &default_task)) {
+    if (file_tasks::GetDefaultTaskFromPrefs(*profile->GetPrefs(), mime_type,
+                                            file_path.Extension(),
+                                            &default_task)) {
       default_tasks.insert(default_task);
+      if (ash::features::ShouldArcAndGuestOsFileTasksUseAppService() &&
+          default_task.task_type == TASK_TYPE_ARC_APP) {
+        // Default preference Task Descriptors for Android apps are stored in a
+        // legacy format (app id: "<package>/<activity>", action id: "view"). To
+        // match against ARC app task descriptors (which use app id: "<app
+        // service id>", action id: "<activity>"), we translate the default Task
+        // Descriptors into the new format.
+        std::vector<std::string> app_id_info =
+            base::SplitString(default_task.app_id, "/", base::KEEP_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY);
+        if (app_id_info.size() != 2) {
+          continue;
+        }
+        const std::string& package = app_id_info[0];
+        const std::string& activity = app_id_info[1];
+
+        Profile* profile_with_app_service = GetProfileWithAppService(profile);
+        if (profile_with_app_service) {
+          // Add possible alternative forms of this task descriptor to our list
+          // of default tasks.
+          apps::AppServiceProxyFactory::GetForProfile(profile_with_app_service)
+              ->AppRegistryCache()
+              .ForEachApp([&default_tasks, package,
+                           activity](const apps::AppUpdate& update) {
+                if (update.PublisherId() == package) {
+                  TaskDescriptor alternate_default_task(
+                      update.AppId(), TASK_TYPE_ARC_APP, activity);
+                  default_tasks.insert(alternate_default_task);
+                }
+              });
+        }
+      }
     }
   }
 

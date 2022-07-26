@@ -98,6 +98,19 @@ bool FileHandlerIsEnabled(Profile* profile,
   return true;
 }
 
+Profile* GetProfileWithAppService(Profile* profile) {
+  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return profile;
+  } else {
+    if (profile->IsOffTheRecord()) {
+      return profile->GetOriginalProfile();
+    } else {
+      LOG(WARNING) << "Unexpected profile type";
+      return nullptr;
+    }
+  }
+}
+
 void FindAppServiceTasks(Profile* profile,
                          const std::vector<extensions::EntryInfo>& entries,
                          const std::vector<GURL>& file_urls,
@@ -129,18 +142,12 @@ void FindAppServiceTasks(Profile* profile,
   // App Service doesn't exist in Incognito mode but we still want to find
   // handlers to open a download from its notification from Incognito mode. Use
   // the base profile in these cases (see crbug.com/1111695).
-  Profile* maybe_original_profile = profile;
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    if (profile->IsOffTheRecord()) {
-      maybe_original_profile = profile->GetOriginalProfile();
-    } else {
-      LOG(WARNING) << "Unexpected profile type";
-      return;
-    }
+  Profile* profile_with_app_service = GetProfileWithAppService(profile);
+  if (!profile_with_app_service) {
+    return;
   }
-
   apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(maybe_original_profile);
+      apps::AppServiceProxyFactory::GetForProfile(profile_with_app_service);
 
   std::vector<apps::IntentFilePtr> intent_files;
   intent_files.reserve(entries.size());
@@ -188,7 +195,7 @@ void FindAppServiceTasks(Profile* profile,
       // TODO(1240018): Remove when this feature is fully launched. This check
       // will not work for lacros web apps.
       web_app::WebAppProvider* provider =
-          web_app::WebAppProvider::GetDeprecated(maybe_original_profile);
+          web_app::WebAppProvider::GetDeprecated(profile_with_app_service);
       web_app::OsIntegrationManager& os_integration_manager =
           provider->os_integration_manager();
       if (!os_integration_manager.IsFileHandlingAPIAvailable(
@@ -201,7 +208,7 @@ void FindAppServiceTasks(Profile* profile,
       if (profile->IsOffTheRecord() &&
           !extensions::util::IsIncognitoEnabled(launch_entry.app_id, profile))
         continue;
-      if (!FileHandlerIsEnabled(maybe_original_profile,
+      if (!FileHandlerIsEnabled(profile_with_app_service,
                                 launch_entry.activity_name))
         continue;
     }
@@ -234,16 +241,12 @@ void ExecuteAppServiceTask(
   // launched (ie. default handler to open a download from its
   // notification) from Incognito mode. Use the base profile in these
   // cases (see crbug.com/1111695).
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    if (profile->IsOffTheRecord()) {
-      profile = profile->GetOriginalProfile();
-    } else {
-      LOG(WARNING) << "Unexpected profile type";
-      std::move(done).Run(
-          extensions::api::file_manager_private::TASK_RESULT_FAILED,
-          "Unexpected profile type");
-      return;
-    }
+  Profile* profile_with_app_service = GetProfileWithAppService(profile);
+  if (!profile_with_app_service) {
+    std::move(done).Run(
+        extensions::api::file_manager_private::TASK_RESULT_FAILED,
+        "Unexpected profile type");
+    return;
   }
 
   std::vector<GURL> file_urls;
@@ -272,55 +275,57 @@ void ExecuteAppServiceTask(
   intent->activity_name = task.action_id;
 
   if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
-    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-        task.app_id, ui::EF_NONE, std::move(intent),
-        apps::LaunchSource::kFromFileManager,
-        std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId),
-        base::BindOnce(
-            [](FileTaskFinishedCallback done, TaskType task_type,
-               bool success) {
-              if (!success) {
-                std::move(done).Run(
-                    extensions::api::file_manager_private::TASK_RESULT_FAILED,
-                    "");
-              } else if (task_type == TASK_TYPE_WEB_APP) {
-                // TODO(benwells): return the correct code here, depending on
-                // how the app will be opened in multiprofile.
-                std::move(done).Run(
-                    extensions::api::file_manager_private::TASK_RESULT_OPENED,
-                    "");
-              } else {
-                std::move(done).Run(extensions::api::file_manager_private::
-                                        TASK_RESULT_MESSAGE_SENT,
-                                    "");
-              }
-            },
-            std::move(done), task.task_type));
+    apps::AppServiceProxyFactory::GetForProfile(profile_with_app_service)
+        ->LaunchAppWithIntent(
+            task.app_id, ui::EF_NONE, std::move(intent),
+            apps::LaunchSource::kFromFileManager,
+            std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId),
+            base::BindOnce(
+                [](FileTaskFinishedCallback done, TaskType task_type,
+                   bool success) {
+                  if (!success) {
+                    std::move(done).Run(extensions::api::file_manager_private::
+                                            TASK_RESULT_FAILED,
+                                        "");
+                  } else if (task_type == TASK_TYPE_WEB_APP) {
+                    // TODO(benwells): return the correct code here, depending
+                    // on how the app will be opened in multiprofile.
+                    std::move(done).Run(extensions::api::file_manager_private::
+                                            TASK_RESULT_OPENED,
+                                        "");
+                  } else {
+                    std::move(done).Run(extensions::api::file_manager_private::
+                                            TASK_RESULT_MESSAGE_SENT,
+                                        "");
+                  }
+                },
+                std::move(done), task.task_type));
   } else {
-    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-        task.app_id, ui::EF_NONE, apps::ConvertIntentToMojomIntent(intent),
-        apps::mojom::LaunchSource::kFromFileManager,
-        apps::MakeWindowInfo(display::kDefaultDisplayId),
-        base::BindOnce(
-            [](FileTaskFinishedCallback done, TaskType task_type,
-               bool success) {
-              if (!success) {
-                std::move(done).Run(
-                    extensions::api::file_manager_private::TASK_RESULT_FAILED,
-                    "");
-              } else if (task_type == TASK_TYPE_WEB_APP) {
-                // TODO(benwells): return the correct code here, depending on
-                // how the app will be opened in multiprofile.
-                std::move(done).Run(
-                    extensions::api::file_manager_private::TASK_RESULT_OPENED,
-                    "");
-              } else {
-                std::move(done).Run(extensions::api::file_manager_private::
-                                        TASK_RESULT_MESSAGE_SENT,
-                                    "");
-              }
-            },
-            std::move(done), task.task_type));
+    apps::AppServiceProxyFactory::GetForProfile(profile_with_app_service)
+        ->LaunchAppWithIntent(
+            task.app_id, ui::EF_NONE, apps::ConvertIntentToMojomIntent(intent),
+            apps::mojom::LaunchSource::kFromFileManager,
+            apps::MakeWindowInfo(display::kDefaultDisplayId),
+            base::BindOnce(
+                [](FileTaskFinishedCallback done, TaskType task_type,
+                   bool success) {
+                  if (!success) {
+                    std::move(done).Run(extensions::api::file_manager_private::
+                                            TASK_RESULT_FAILED,
+                                        "");
+                  } else if (task_type == TASK_TYPE_WEB_APP) {
+                    // TODO(benwells): return the correct code here, depending
+                    // on how the app will be opened in multiprofile.
+                    std::move(done).Run(extensions::api::file_manager_private::
+                                            TASK_RESULT_OPENED,
+                                        "");
+                  } else {
+                    std::move(done).Run(extensions::api::file_manager_private::
+                                            TASK_RESULT_MESSAGE_SENT,
+                                        "");
+                  }
+                },
+                std::move(done), task.task_type));
   }
 }
 

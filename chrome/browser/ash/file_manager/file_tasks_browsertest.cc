@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MediaAppPreferredOverChromeApps) {
   TestExpectationsAgainstDefaultTasks({{"tiff", kMediaAppId}});
 
   UpdateDefaultTask(
-      profile->GetPrefs(),
+      profile,
       TaskDescriptor(extension->id(), StringToTaskType("app"), "tiffAction"),
       {"tiff"}, {"image/tiff"});
   if (profile_type() == TestProfileType::kIncognito) {
