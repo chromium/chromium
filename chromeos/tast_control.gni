@@ -226,30 +226,8 @@ tast_disabled_tests_from_chrome_all = [
   "health.DiagnosticsRun.dns_resolution",
   "health.DiagnosticsRun.dns_resolver_present",
 
-  # http://b234699971
-  "crostini.AppGeditUnshareFolder",
-
   # b/235279574
   "wmp.DragAndDropWindow",
-
-  # http://b/236312054
-  "crostini.AppGeditFilesharing",
-  "crostini.AppGeditFilesharing.stable",
-  "crostini.AppGeditFilesharing.clamshell_stable",
-
-  # http://b/236710501
-  "crostini.AppAndroidStudio.stable",
-  "crostini.AppGeditUnshareFolder.stable",
-  "crostini.AppGeditUnshareFolder.clamshell_stable",
-
-  # http://crbug.com/1339132
-  "crostini.AppEclipse",
-  "crostini.AppEmacs",
-  "crostini.AppVscode",
-  "crostini.BasicLxdNext.stable",
-  "crostini.RestartApp",
-  "crostini.RestartApp.stable",
-  "crostini.RestartApp.clamshell_stable",
 
   # http://b/238600197
   "crostini.FilesAppWatch.buster_stable",
