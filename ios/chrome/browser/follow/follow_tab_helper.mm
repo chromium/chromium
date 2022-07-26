@@ -158,6 +158,13 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
   }
 
   // Show follow in-product help (IPH) if eligible.
+
+  // Don't show follow in-product help (IPH) if there's no presenter. Ex.
+  // follow_iph_presenter_ is nil when link preview page is loaded.
+  if (!follow_iph_presenter_) {
+    return;
+  }
+
   feature_engagement::Tracker* feature_engagement_tracker =
       feature_engagement::TrackerFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
