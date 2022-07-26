@@ -5569,6 +5569,10 @@ const char kReleaseNotesNotificationAllChannelsName[] =
 const char kReleaseNotesNotificationAllChannelsDescription[] =
     "Enables the release notes notification for all ChromeOS channels";
 
+const char kReleaseTrackUiName[] = "Release track system tray UI";
+const char kReleaseTrackUiDescription[] =
+    "Enables the release track UI in the system tray";
+
 const char kArcWindowPredictorName[] = "Enable ARC window predictor";
 const char kArcWindowPredictorDescription[] =
     "Enables the window state and bounds predictor for ARC task windows";

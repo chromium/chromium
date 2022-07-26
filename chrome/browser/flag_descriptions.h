@@ -3188,6 +3188,9 @@ extern const char kProjectorExcludeTranscriptDescription[];
 extern const char kReleaseNotesNotificationAllChannelsName[];
 extern const char kReleaseNotesNotificationAllChannelsDescription[];
 
+extern const char kReleaseTrackUiName[];
+extern const char kReleaseTrackUiDescription[];
+
 extern const char kArcWindowPredictorName[];
 extern const char kArcWindowPredictorDescription[];
 

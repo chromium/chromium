@@ -60451,6 +60451,7 @@ from previous Chrome versions.
   <int value="1053743655" label="NewOverviewAnimations:enabled"/>
   <int value="1054910800" label="enable-timezone-tracking-option"/>
   <int value="1055116004" label="AllowTouchpadHapticClickSettings:enabled"/>
+  <int value="1055907260" label="ReleaseTrackUi:disabled"/>
   <int value="1057014709" label="EnforceTLS13Downgrade:enabled"/>
   <int value="1057709415" label="DeprecateAltBasedSixPack:disabled"/>
   <int value="1057887829" label="AutofillScanThemeDialog:disabled"/>
@@ -61979,6 +61980,7 @@ from previous Chrome versions.
   <int value="2043321329" label="OfflinePagesPrefetchingUI:disabled"/>
   <int value="2043794900" label="CommercePriceTracking:enabled"/>
   <int value="2044623453" label="DeferredShaping:disabled"/>
+  <int value="2046329062" label="ReleaseTrackUi:enabled"/>
   <int value="2047503404" label="FilesSWA:enabled"/>
   <int value="2047695652" label="DelegateOverscrollSwipes:enabled"/>
   <int value="2049432745" label="VaapiWebPImageDecodeAcceleration:enabled"/>

@@ -5491,6 +5491,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "release-track-ui",
+    "owners": [ "rtinkoff", "cros-status-area-eng@google.com" ],
+    "expiry_milestone": 114
+  },
+  {
     "name": "remove-extra-ntps",
     "owners": [ "thegreenfrog@chromium.org", "bling-team@google.org" ],
     "expiry_milestone": 105

@@ -6988,6 +6988,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kReleaseNotesNotificationAllChannels)},
+    {"release-track-ui", flag_descriptions::kReleaseTrackUiName,
+     flag_descriptions::kReleaseTrackUiDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kReleaseTrackUi)},
     {"use-stork-smds-server-address",
      flag_descriptions::kUseStorkSmdsServerAddressName,
      flag_descriptions::kUseStorkSmdsServerAddressDescription, kOsCrOS,
