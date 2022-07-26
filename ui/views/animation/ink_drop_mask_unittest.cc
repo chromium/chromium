@@ -37,10 +37,10 @@ TEST(InkDropMaskTest, PathInkDropMaskPaintsTriangle) {
   sk_sp<cc::PaintRecord> record = list->ReleaseAsRecord();
   const auto* draw_op = record->GetOpAtForTesting<cc::DrawPathOp>(0);
   ASSERT_NE(nullptr, draw_op);
-  ASSERT_EQ(3, draw_op->path.countPoints());
+  ASSERT_EQ(3, draw_op->path->countPoints());
 
   SkPoint points[3];
-  ASSERT_EQ(3, draw_op->path.getPoints(points, 3));
+  ASSERT_EQ(3, draw_op->path->getPoints(points, 3));
   std::sort(points, points + 3,
             [](const SkPoint& a, const SkPoint& b) { return a.x() < b.x(); });
   EXPECT_EQ(p1, points[0]);

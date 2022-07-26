@@ -35,7 +35,7 @@ class PaintOpHelper {
       }
       case PaintOpType::ClipPath: {
         const auto* op = static_cast<const ClipPathOp*>(base_op);
-        str << "ClipPathOp(path=" << PaintOpHelper::SkiaTypeToString(op->path)
+        str << "ClipPathOp(path=" << PaintOpHelper::SkiaTypeToString(*op->path)
             << ", op=" << PaintOpHelper::SkiaTypeToString(op->op)
             << ", antialias=" << op->antialias
             << ", use_cache=" << (op->use_cache == UsePaintCache::kEnabled)
@@ -125,7 +125,7 @@ class PaintOpHelper {
       }
       case PaintOpType::DrawPath: {
         const auto* op = static_cast<const DrawPathOp*>(base_op);
-        str << "DrawPathOp(path=" << PaintOpHelper::SkiaTypeToString(op->path)
+        str << "DrawPathOp(path=" << PaintOpHelper::SkiaTypeToString(*op->path)
             << ", flags=" << PaintOpHelper::FlagsToString(op->flags)
             << ", use_cache=" << (op->use_cache == UsePaintCache::kEnabled)
             << ")";
@@ -357,10 +357,6 @@ class PaintOpHelper {
 
   static std::string SkiaTypeToString(const sk_sp<SkData> data) {
     return data ? "<SkData>" : "(nil)";
-  }
-
-  static std::string SkiaTypeToString(const ThreadsafePath& path) {
-    return SkiaTypeToString(static_cast<const SkPath&>(path));
   }
 
   static std::string SkiaTypeToString(const SkPath& path) {

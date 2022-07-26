@@ -57,14 +57,6 @@ class SkottieSerializationHistory;
 class TransferCacheDeserializeHelper;
 class TransferCacheSerializeHelper;
 
-class CC_PAINT_EXPORT ThreadsafePath : public SkPath {
- public:
-  explicit ThreadsafePath(const SkPath& path) : SkPath(path) {
-    updateBoundsCache();
-  }
-  ThreadsafePath() { updateBoundsCache(); }
-};
-
 class CC_PAINT_EXPORT SharedImageProvider {
  public:
   enum class Error {
@@ -416,28 +408,25 @@ class CC_PAINT_EXPORT ClipPathOp final : public PaintOp {
   ClipPathOp(SkPath path,
              SkClipOp op,
              bool antialias,
-             UsePaintCache use_paint_cache = UsePaintCache::kEnabled)
-      : PaintOp(kType),
-        path(path),
-        op(op),
-        antialias(antialias),
-        use_cache(use_paint_cache) {}
+             UsePaintCache use_paint_cache = UsePaintCache::kEnabled);
+  ClipPathOp(ClipPathOp&&);
+  ~ClipPathOp();
   static void Raster(const ClipPathOp* op,
                      SkCanvas* canvas,
                      const PlaybackParams& params);
-  bool IsValid() const { return IsValidSkClipOp(op) && IsValidPath(path); }
+  bool IsValid() const { return IsValidSkClipOp(op) && IsValidPath(*path); }
   static bool AreEqual(const PaintOp* left, const PaintOp* right);
   int CountSlowPaths() const;
   bool HasNonAAPaint() const { return !antialias; }
   HAS_SERIALIZATION_FUNCTIONS();
 
-  ThreadsafePath path;
+  std::unique_ptr<SkPath> path;
   SkClipOp op;
   bool antialias;
   UsePaintCache use_cache;
 
  private:
-  ClipPathOp() : PaintOp(kType) {}
+  ClipPathOp();
 };
 
 class CC_PAINT_EXPORT ClipRectOp final : public PaintOp {
@@ -719,21 +708,19 @@ class CC_PAINT_EXPORT DrawPathOp final : public PaintOpWithFlags {
   static constexpr bool kIsDrawOp = true;
   DrawPathOp(const SkPath& path,
              const PaintFlags& flags,
-             UsePaintCache use_paint_cache = UsePaintCache::kEnabled)
-      : PaintOpWithFlags(kType, flags),
-        path(path),
-        sk_path_fill_type(static_cast<uint8_t>(path.getFillType())),
-        use_cache(use_paint_cache) {}
+             UsePaintCache use_paint_cache = UsePaintCache::kEnabled);
+  DrawPathOp(DrawPathOp&&);
+  ~DrawPathOp();
   static void RasterWithFlags(const DrawPathOp* op,
                               const PaintFlags* flags,
                               SkCanvas* canvas,
                               const PlaybackParams& params);
-  bool IsValid() const { return flags.IsValid() && IsValidPath(path); }
+  bool IsValid() const { return flags.IsValid() && IsValidPath(*path); }
   static bool AreEqual(const PaintOp* left, const PaintOp* right);
   int CountSlowPaths() const;
   HAS_SERIALIZATION_FUNCTIONS();
 
-  ThreadsafePath path;
+  std::unique_ptr<SkPath> path;
 
   // Changing the fill type on an SkPath does not change the
   // generation id. This can lead to caching issues so we explicitly
@@ -743,7 +730,7 @@ class CC_PAINT_EXPORT DrawPathOp final : public PaintOpWithFlags {
   UsePaintCache use_cache;
 
  private:
-  DrawPathOp() : PaintOpWithFlags(kType) {}
+  DrawPathOp();
 };
 
 class CC_PAINT_EXPORT DrawRecordOp final : public PaintOp {

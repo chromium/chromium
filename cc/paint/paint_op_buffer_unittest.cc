@@ -2825,7 +2825,7 @@ TEST(PaintOpBufferTest, BoundingRect_DrawPathOp) {
     auto* op = static_cast<DrawPathOp*>(base_op);
 
     ASSERT_TRUE(PaintOp::GetBounds(op, &rect));
-    EXPECT_EQ(rect, op->path.getBounds().makeSorted());
+    EXPECT_EQ(rect, op->path->getBounds().makeSorted());
   }
 }
 
