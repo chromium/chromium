@@ -12,6 +12,7 @@
 
 #include <string>
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,8 +29,8 @@ class PositiveSampleTest : public testing::TestWithParam<InputPatternTestCase> {
 
 TEST_P(PositiveSampleTest, SampleRegexes) {
   auto test_case = GetParam();
-  SCOPED_TRACE(test_case.input);
-  SCOPED_TRACE(test_case.pattern);
+  SCOPED_TRACE(base::UTF16ToUTF8(test_case.input));
+  SCOPED_TRACE(base::UTF16ToUTF8(test_case.pattern));
   EXPECT_TRUE(MatchesPatternInMainThread(test_case.input, test_case.pattern));
 }
 
@@ -56,8 +57,8 @@ class NegativeSampleTest : public testing::TestWithParam<InputPatternTestCase> {
 
 TEST_P(NegativeSampleTest, SampleRegexes) {
   auto test_case = GetParam();
-  SCOPED_TRACE(test_case.input);
-  SCOPED_TRACE(test_case.pattern);
+  SCOPED_TRACE(base::UTF16ToUTF8(test_case.input));
+  SCOPED_TRACE(base::UTF16ToUTF8(test_case.pattern));
   EXPECT_FALSE(MatchesPatternInMainThread(test_case.input, test_case.pattern));
 }
 
@@ -124,7 +125,7 @@ class ExpirationDate2DigitYearPositive
 
 TEST_P(ExpirationDate2DigitYearPositive, ExpirationDate2DigitYearRegexes) {
   auto test_case = GetParam();
-  SCOPED_TRACE(test_case.input);
+  SCOPED_TRACE(base::UTF16ToUTF8(test_case.input));
   const std::u16string pattern = kExpirationDate2DigitYearRe;
   EXPECT_TRUE(MatchesPatternInMainThread(test_case.input, pattern));
 }
@@ -158,7 +159,7 @@ class ExpirationDate2DigitYearNegative
 
 TEST_P(ExpirationDate2DigitYearNegative, ExpirationDate2DigitYearRegexes) {
   auto test_case = GetParam();
-  SCOPED_TRACE(test_case.input);
+  SCOPED_TRACE(base::UTF16ToUTF8(test_case.input));
   const std::u16string pattern = kExpirationDate2DigitYearRe;
   EXPECT_FALSE(MatchesPatternInMainThread(test_case.input, pattern));
 }
@@ -199,7 +200,7 @@ class ExpirationDate4DigitYearPositive
 TEST_P(ExpirationDate4DigitYearPositive, ExpirationDate4DigitYearRegexes) {
   auto test_case = GetParam();
   const std::u16string pattern = kExpirationDate4DigitYearRe;
-  SCOPED_TRACE(test_case.input);
+  SCOPED_TRACE(base::UTF16ToUTF8(test_case.input));
   EXPECT_TRUE(MatchesPatternInMainThread(test_case.input, pattern));
 }
 
@@ -234,7 +235,7 @@ class ExpirationDate4DigitYearNegative
 TEST_P(ExpirationDate4DigitYearNegative, ExpirationDate4DigitYearRegexes) {
   auto test_case = GetParam();
   const std::u16string pattern = kExpirationDate4DigitYearRe;
-  SCOPED_TRACE(test_case.input);
+  SCOPED_TRACE(base::UTF16ToUTF8(test_case.input));
   EXPECT_FALSE(MatchesPatternInMainThread(test_case.input, pattern));
 }
 
@@ -272,7 +273,7 @@ class ZipCodePositive : public testing::TestWithParam<InputTestCase> {};
 
 TEST_P(ZipCodePositive, ZipCodeRegexes) {
   auto test_case = GetParam();
-  SCOPED_TRACE(test_case.input);
+  SCOPED_TRACE(base::UTF16ToUTF8(test_case.input));
   const std::u16string pattern = kZipCodeRe;
   EXPECT_TRUE(MatchesPatternInMainThread(test_case.input, pattern));
 }
@@ -287,7 +288,7 @@ class ZipCodeNegative : public testing::TestWithParam<InputTestCase> {};
 
 TEST_P(ZipCodeNegative, ZipCodeRegexes) {
   auto test_case = GetParam();
-  SCOPED_TRACE(test_case.input);
+  SCOPED_TRACE(base::UTF16ToUTF8(test_case.input));
   const std::u16string pattern = kZipCodeRe;
   EXPECT_FALSE(MatchesPatternInMainThread(test_case.input, pattern));
 }
@@ -303,7 +304,7 @@ class Zip4Positive : public testing::TestWithParam<InputTestCase> {};
 
 TEST_P(Zip4Positive, Zip4Regexes) {
   auto test_case = GetParam();
-  SCOPED_TRACE(test_case.input);
+  SCOPED_TRACE(base::UTF16ToUTF8(test_case.input));
   const std::u16string pattern = kZip4Re;
   EXPECT_TRUE(MatchesPatternInMainThread(test_case.input, pattern));
 }
@@ -316,7 +317,7 @@ class Zip4Negative : public testing::TestWithParam<InputTestCase> {};
 
 TEST_P(Zip4Negative, Zip4Regexes) {
   auto test_case = GetParam();
-  SCOPED_TRACE(test_case.input);
+  SCOPED_TRACE(base::UTF16ToUTF8(test_case.input));
   const std::u16string pattern = kZip4Re;
   EXPECT_FALSE(MatchesPatternInMainThread(test_case.input, pattern));
 }

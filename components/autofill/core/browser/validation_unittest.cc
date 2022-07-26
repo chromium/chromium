@@ -98,11 +98,11 @@ const char16_t* const kPlausibleCreditCardCVCNumbers[] = {u"1234", u"2099",
 
 TEST(AutofillValidation, IsValidCreditCardNumber) {
   for (const char16_t* valid_number : kValidNumbers) {
-    SCOPED_TRACE(valid_number);
+    SCOPED_TRACE(base::UTF16ToUTF8(valid_number));
     EXPECT_TRUE(IsValidCreditCardNumber(valid_number));
   }
   for (const char16_t* invalid_number : kInvalidNumbers) {
-    SCOPED_TRACE(invalid_number);
+    SCOPED_TRACE(base::UTF16ToUTF8(invalid_number));
     EXPECT_FALSE(IsValidCreditCardNumber(invalid_number));
   }
 }
@@ -111,25 +111,26 @@ TEST(AutofillValidation, IsValidCreditCardNumber) {
 TEST(AutofillValidation, IsPlausibleCreditCardExparationYear) {
   for (const char16_t* plausible_year : kPlausibleCreditCardExpirationYears) {
     EXPECT_TRUE(IsPlausible4DigitExpirationYear(plausible_year))
-        << plausible_year;
+        << base::UTF16ToUTF8(plausible_year);
   }
 
   for (const char16_t* unplausible_year :
        kUnplausibleCreditCardExpirationYears) {
     EXPECT_FALSE(IsPlausible4DigitExpirationYear(unplausible_year))
-        << unplausible_year;
+        << base::UTF16ToUTF8(unplausible_year);
   }
 }
 
 // Test the plausibility of supplied CVC numbers.
 TEST(AutofillValidation, IsPlausibleCreditCardCVCNumber) {
   for (const char16_t* plausible_cvc : kPlausibleCreditCardCVCNumbers) {
-    EXPECT_TRUE(IsPlausibleCreditCardCVCNumber(plausible_cvc)) << plausible_cvc;
+    EXPECT_TRUE(IsPlausibleCreditCardCVCNumber(plausible_cvc))
+        << base::UTF16ToUTF8(plausible_cvc);
   }
 
   for (const char16_t* unplausible_cvc : kUnplausibleCreditCardCVCNumbers) {
     EXPECT_FALSE(IsPlausibleCreditCardCVCNumber(unplausible_cvc))
-        << unplausible_cvc;
+        << base::UTF16ToUTF8(unplausible_cvc);
   }
 }
 
@@ -151,13 +152,13 @@ TEST(AutofillValidation, IsValidCreditCardIntExpirationDate) {
 
 TEST(AutofillValidation, IsValidCreditCardSecurityCode) {
   for (const auto data : kValidSecurityCodeCardTypePairs) {
-    SCOPED_TRACE(data.security_code);
+    SCOPED_TRACE(base::UTF16ToUTF8(data.security_code));
     SCOPED_TRACE(data.card_network);
     EXPECT_TRUE(
         IsValidCreditCardSecurityCode(data.security_code, data.card_network));
   }
   for (const auto data : kInvalidSecurityCodeCardTypePairs) {
-    SCOPED_TRACE(data.security_code);
+    SCOPED_TRACE(base::UTF16ToUTF8(data.security_code));
     SCOPED_TRACE(data.card_network);
     EXPECT_FALSE(
         IsValidCreditCardSecurityCode(data.security_code, data.card_network));
@@ -166,11 +167,11 @@ TEST(AutofillValidation, IsValidCreditCardSecurityCode) {
 
 TEST(AutofillValidation, IsValidEmailAddress) {
   for (const char16_t* valid_email : kValidEmailAddress) {
-    SCOPED_TRACE(valid_email);
+    SCOPED_TRACE(base::UTF16ToUTF8(valid_email));
     EXPECT_TRUE(IsValidEmailAddress(valid_email));
   }
   for (const char16_t* invalid_email : kInvalidEmailAddress) {
-    SCOPED_TRACE(invalid_email);
+    SCOPED_TRACE(base::UTF16ToUTF8(invalid_email));
     EXPECT_FALSE(IsValidEmailAddress(invalid_email));
   }
 }
@@ -200,8 +201,8 @@ TEST_P(AutofillTypeValidationTest, IsValidForType) {
   EXPECT_EQ(
       GetParam().expected_valid,
       IsValidForType(GetParam().value, GetParam().field_type, &error_message))
-      << "Failed to validate " << GetParam().value << " (type "
-      << GetParam().field_type << ")";
+      << "Failed to validate " << base::UTF16ToUTF8(GetParam().value)
+      << " (type " << GetParam().field_type << ")";
   if (!GetParam().expected_valid) {
     EXPECT_EQ(l10n_util::GetStringUTF16(GetParam().expected_error_id),
               error_message);
@@ -360,7 +361,7 @@ TEST_P(AutofillCCNumberValidationTest, IsValidCreditCardNumber) {
             IsValidCreditCardNumberForBasicCardNetworks(
                 GetParam().value, GetParam().supported_basic_card_networks,
                 &error_message))
-      << "Failed to validate CC number " << GetParam().value;
+      << "Failed to validate CC number " << base::UTF16ToUTF8(GetParam().value);
   if (!GetParam().expected_valid) {
     EXPECT_EQ(l10n_util::GetStringUTF16(GetParam().expected_error_id),
               error_message);

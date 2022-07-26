@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -23,8 +24,10 @@ void CheckCharToKeyCode16(char16_t character,
   std::string error_msg;
   EXPECT_TRUE(ConvertCharToKeyCode(
       character, &actual_key_code, &actual_modifiers, &error_msg));
-  EXPECT_EQ(key_code, actual_key_code) << "Char: " << character;
-  EXPECT_EQ(modifiers, actual_modifiers) << "Char: " << character;
+  EXPECT_EQ(key_code, actual_key_code)
+      << "Char: " << std::u16string(1, character);
+  EXPECT_EQ(modifiers, actual_modifiers)
+      << "Char: " << std::u16string(1, character);
 }
 
 void CheckCharToKeyCode(char character, ui::KeyboardCode key_code,

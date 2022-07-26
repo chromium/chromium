@@ -558,7 +558,8 @@ std::basic_string<CharT> DoReplaceStringPlaceholders(
           --i;
         } else {
           if (*i < '1' || *i > '9') {
-            DLOG(ERROR) << "Invalid placeholder: $" << *i;
+            DLOG(ERROR) << "Invalid placeholder: $"
+                        << std::basic_string<CharT>(1, *i);
             continue;
           }
           size_t index = static_cast<size_t>(*i - '1');

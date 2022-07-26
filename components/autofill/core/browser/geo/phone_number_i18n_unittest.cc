@@ -66,7 +66,7 @@ class ParseNumberTest : public testing::TestWithParam<ParseNumberTestCase> {};
 
 TEST_P(ParseNumberTest, ParsePhoneNumber) {
   auto test_case = GetParam();
-  SCOPED_TRACE(test_case.input.c_str());
+  SCOPED_TRACE(base::UTF16ToUTF8(test_case.input));
 
   std::u16string country_code, city_code, number;
   std::string deduced_region;

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -1713,8 +1714,9 @@ TEST_F(AccessibilitySelectionTest,
             .Build();
 
     testing::Message message;
-    message << "While selecting forward character " << computed_name[i]
-            << " at position " << i << " in contenteditable.";
+    message << "While selecting forward character "
+            << std::u16string(1, computed_name[i]) << " at position " << i
+            << " in contenteditable.";
     SCOPED_TRACE(message);
     EXPECT_TRUE(ax_selection.Select());
 
@@ -1741,8 +1743,9 @@ TEST_F(AccessibilitySelectionTest,
             .Build();
 
     testing::Message message;
-    message << "While selecting backward character " << computed_name[i]
-            << " at position " << i << " in contenteditable.";
+    message << "While selecting backward character "
+            << std::u16string(1, computed_name[i]) << " at position " << i
+            << " in contenteditable.";
     SCOPED_TRACE(message);
     EXPECT_TRUE(ax_selection.Select());
 
