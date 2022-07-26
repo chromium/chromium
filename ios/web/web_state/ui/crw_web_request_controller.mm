@@ -526,18 +526,17 @@ enum class BackForwardNavigationType {
     // building iOS-related code.
 #if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
     if (@available(iOS 15, *)) {
+      [request.URL startAccessingSecurityScopedResource];
       navigation = [self.webView loadFileRequest:request
                          allowingReadAccessToURL:request.URL];
-    } else {
+      [request.URL stopAccessingSecurityScopedResource];
+    } else
+#endif
+    {
       NSURL* navigationNSURL = net::NSURLWithGURL(navigationURL);
       navigation = [self.webView loadFileURL:navigationNSURL
                      allowingReadAccessToURL:navigationNSURL];
     }
-#else
-    NSURL* navigationNSURL = net::NSURLWithGURL(navigationURL);
-    navigation = [self.webView loadFileURL:navigationNSURL
-                   allowingReadAccessToURL:navigationNSURL];
-#endif
   } else {
     navigation = [self.webView loadRequest:request];
   }
