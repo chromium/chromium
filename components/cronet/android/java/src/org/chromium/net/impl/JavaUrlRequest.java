@@ -964,7 +964,13 @@ final class JavaUrlRequest extends UrlRequestBase {
         // after Callback's onSucceeded, onFailed and onCanceled.
         private void maybeReportMetrics() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                mLogger.logCronetTrafficInfo(mCronetEngineId, buildCronetTrafficInfo());
+                try {
+                    mLogger.logCronetTrafficInfo(mCronetEngineId, buildCronetTrafficInfo());
+                } catch (RuntimeException e) {
+                    // Handle any issue gracefully, we should never crash due failures while
+                    // logging.
+                    Log.e(TAG, "Error while trying to log CronetTrafficInfo: ", e);
+                }
             }
         }
 

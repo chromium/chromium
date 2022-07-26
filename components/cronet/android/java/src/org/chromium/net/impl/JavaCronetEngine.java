@@ -7,6 +7,8 @@ package org.chromium.net.impl;
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 import static android.os.Process.THREAD_PRIORITY_MORE_FAVORABLE;
 
+import android.util.Log;
+
 import org.chromium.net.BidirectionalStream;
 import org.chromium.net.ExperimentalBidirectionalStream;
 import org.chromium.net.NetworkQualityRttListener;
@@ -39,6 +41,8 @@ import java.util.concurrent.TimeUnit;
  * <p>Does not support netlogs, transferred data measurement, bidistream, cache, or priority.
  */
 public final class JavaCronetEngine extends CronetEngineBase {
+    private static final String TAG = JavaCronetEngine.class.getSimpleName();
+
     private final String mUserAgent;
     private final ExecutorService mExecutorService;
     private final int mCronetEngineId;
@@ -71,13 +75,13 @@ public final class JavaCronetEngine extends CronetEngineBase {
                 });
         mLogger = CronetLoggerFactory.createLogger(
                 builder.getContext(), CronetSource.CRONET_SOURCE_FALLBACK);
-        // getVersionString()'s output looks like "Cronet/w.x.y.z@hash". CronetVersion only cares
-        // about the "w.x.y.z" bit.
-        String version = getVersionString();
-        version = version.split("/")[1];
-        version = version.split("@")[0];
-        mLogger.logCronetEngineCreation(mCronetEngineId, new CronetEngineBuilderInfo(builder),
-                new CronetVersion(version), CronetSource.CRONET_SOURCE_FALLBACK);
+        try {
+            mLogger.logCronetEngineCreation(mCronetEngineId, new CronetEngineBuilderInfo(builder),
+                    buildCronetVersion(), CronetSource.CRONET_SOURCE_FALLBACK);
+        } catch (RuntimeException e) {
+            // Handle any issue gracefully, we should never crash due failures while logging.
+            Log.e(TAG, "Error while trying to log JavaCronetEngine creation: ", e);
+        }
     }
 
     int getCronetEngineId() {
@@ -127,6 +131,15 @@ public final class JavaCronetEngine extends CronetEngineBase {
     @Override
     public String getVersionString() {
         return "CronetHttpURLConnection/" + ImplVersion.getCronetVersionWithLastChange();
+    }
+
+    private CronetVersion buildCronetVersion() {
+        String version = getVersionString();
+        // getVersionString()'s output looks like "Cronet/w.x.y.z@hash". CronetVersion only cares
+        // about the "w.x.y.z" bit.
+        version = version.split("/")[1];
+        version = version.split("@")[0];
+        return new CronetVersion(version);
     }
 
     @Override

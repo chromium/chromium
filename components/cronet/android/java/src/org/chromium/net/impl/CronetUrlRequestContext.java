@@ -204,14 +204,13 @@ public class CronetUrlRequestContext extends CronetEngineBase {
 
         mLogger = CronetLoggerFactory.createLogger(builder.getContext(), getCronetSource());
 
-        // getVersionString()'s output looks like "Cronet/w.x.y.z@hash". CronetVersion only cares
-        // about the "w.x.y.z" bit.
-        String version = getVersionString();
-        version = version.split("/")[1];
-        version = version.split("@")[0];
-
-        mLogger.logCronetEngineCreation(getCronetEngineId(), new CronetEngineBuilderInfo(builder),
-                new CronetVersion(version), getCronetSource());
+        try {
+            mLogger.logCronetEngineCreation(getCronetEngineId(),
+                    new CronetEngineBuilderInfo(builder), buildCronetVersion(), getCronetSource());
+        } catch (RuntimeException e) {
+            // Handle any issue gracefully, we should never crash due failures while logging.
+            Log.e(LOG_TAG, "Error while trying to log CronetEngine creation: ", e);
+        }
 
         // Init native Chromium URLRequestContext on init thread.
         CronetLibraryLoader.postToInitThread(new Runnable() {
@@ -308,6 +307,15 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     @Override
     public String getVersionString() {
         return "Cronet/" + ImplVersion.getCronetVersionWithLastChange();
+    }
+
+    private CronetVersion buildCronetVersion() {
+        String version = getVersionString();
+        // getVersionString()'s output looks like "Cronet/w.x.y.z@hash". CronetVersion only cares
+        // about the "w.x.y.z" bit.
+        version = version.split("/")[1];
+        version = version.split("@")[0];
+        return new CronetVersion(version);
     }
 
     @Override

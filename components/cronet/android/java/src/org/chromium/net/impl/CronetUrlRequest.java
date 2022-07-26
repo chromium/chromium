@@ -965,7 +965,14 @@ public final class CronetUrlRequest extends UrlRequestBase {
     private void maybeReportMetrics() {
         if (mMetrics != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                mLogger.logCronetTrafficInfo(mCronetEngineId, buildCronetTrafficInfo());
+                try {
+                    mLogger.logCronetTrafficInfo(mCronetEngineId, buildCronetTrafficInfo());
+                } catch (RuntimeException e) {
+                    // Handle any issue gracefully, we should never crash due failures while
+                    // logging.
+                    Log.e(CronetUrlRequestContext.LOG_TAG,
+                            "Error while trying to log CronetTrafficInfo: ", e);
+                }
             }
 
             final RequestFinishedInfo requestInfo = new RequestFinishedInfoImpl(mInitialUrl,
