@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/chromeos/os_settings.js';
 
-import {AndroidAppsBrowserProxyImpl, createBoolPermission, Router, routes, RoutesConstantsMojom, setAppNotificationProviderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AndroidAppsBrowserProxyImpl, createBoolPermission, Router, routes, routesMojomWebui, setAppNotificationProviderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
@@ -436,7 +436,7 @@ suite('AppsPageTests', function() {
       // this route doesn't exist for tests. Add it in for testing.
       if (!routes.ANDROID_APPS_DETAILS) {
         routes.ANDROID_APPS_DETAILS = routes.APPS.createChild(
-            '/' + RoutesConstantsMojom.GOOGLE_PLAY_STORE_SUBPAGE_PATH);
+            '/' + routesMojomWebui.GOOGLE_PLAY_STORE_SUBPAGE_PATH);
       }
 
       subpage.prefs = {arc: {enabled: {value: true}}};
