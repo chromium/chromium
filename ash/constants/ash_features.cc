@@ -288,10 +288,6 @@ const base::Feature kCalendarModelDebugMode{"CalendarModelDebugMode",
 const base::Feature kCameraPrivacySwitchNotifications{
     "CameraPrivacySwitchNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether the selfie camera feature is enabled for Capture Mode.
-const base::Feature kCaptureModeSelfieCamera{"CaptureModeSelfieCamera",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, allow eSIM installation bypass the non-cellular internet
 // connectivity check.
 const base::Feature kCellularBypassESimInstallationConnectivityCheck{
@@ -1782,10 +1778,6 @@ bool IsCalendarViewEnabled() {
 
 bool IsCalendarModelDebugModeEnabled() {
   return base::FeatureList::IsEnabled(kCalendarModelDebugMode);
-}
-
-bool IsCaptureModeSelfieCameraEnabled() {
-  return base::FeatureList::IsEnabled(kCaptureModeSelfieCamera);
 }
 
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {

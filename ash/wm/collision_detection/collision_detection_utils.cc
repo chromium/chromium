@@ -184,12 +184,8 @@ std::vector<gfx::Rect> CollectCollisionRects(
   }
 
   // Check the camera preview if it exists.
-  auto* capture_mode_camera_controller =
-      capture_mode_controller->camera_controller();
   auto* camera_preview_widget =
-      capture_mode_camera_controller
-          ? capture_mode_camera_controller->camera_preview_widget()
-          : nullptr;
+      capture_mode_controller->camera_controller()->camera_preview_widget();
   if (camera_preview_widget && camera_preview_widget->IsVisible()) {
     aura::Window* camera_preview_window =
         camera_preview_widget->GetNativeWindow();

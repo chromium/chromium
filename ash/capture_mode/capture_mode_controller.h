@@ -460,8 +460,7 @@ class ASH_EXPORT CaptureModeController
 
   std::unique_ptr<CaptureModeDelegate> delegate_;
 
-  // Controls the selfie camera feature of capture mode. This is only available
-  // when the feature `kCaptureModeSelfieCamera` is enabled.
+  // Controls the selfie camera feature of capture mode.
   std::unique_ptr<CaptureModeCameraController> camera_controller_;
 
   CaptureModeType type_ = CaptureModeType::kImage;

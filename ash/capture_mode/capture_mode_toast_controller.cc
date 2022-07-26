@@ -8,14 +8,12 @@
 
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 
@@ -44,9 +42,7 @@ std::u16string GetCaptureToastLabelOnToastType(
   const int message_id =
       capture_toast_type == CaptureToastType::kCameraPreview
           ? IDS_ASH_SCREEN_CAPTURE_SURFACE_TOO_SMALL_USER_NUDGE
-          : (features::IsCaptureModeSelfieCameraEnabled()
-                 ? IDS_ASH_SCREEN_CAPTURE_SHOW_CAMERA_USER_NUDGE
-                 : IDS_ASH_SCREEN_CAPTURE_FOLDER_SELECTION_USER_NUDGE);
+          : IDS_ASH_SCREEN_CAPTURE_SHOW_CAMERA_USER_NUDGE;
   return l10n_util::GetStringUTF16(message_id);
 }
 

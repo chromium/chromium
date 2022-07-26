@@ -14,7 +14,6 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/display/window_tree_host_manager.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/capture_mode/recording_overlay_view.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
@@ -26,7 +25,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/message_view_factory.h"
-#include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
@@ -38,14 +36,11 @@
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/current_thread.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -104,13 +99,6 @@ constexpr char kCustomCapturePathPrefName[] =
 // is currently selected even if a custom capture path is set.
 constexpr char kUsesDefaultCapturePathPrefName[] =
     "ash.capture_mode.uses_default_capture_path";
-
-// The name of a boolean pref that determines whether we can show the folder
-// selection user nudge. When this pref is false, it means that we showed the
-// nudge at some point and the user interacted with the capture mode session UI
-// in such a way that the nudge no longer needs to be displayed again.
-constexpr char kCanShowFolderSelectionNudge[] =
-    "ash.capture_mode.can_show_folder_selection_nudge";
 
 // The name of a boolean pref that determines whether we can show the selfie
 // camera user nudge. When this pref is false, it means that we showed the
@@ -373,19 +361,13 @@ base::FilePath GetTempDir() {
   return temp_dir;
 }
 
-std::unique_ptr<CaptureModeCameraController> MaybeCreateCameraController(
-    CaptureModeDelegate* delegate) {
-  if (!features::IsCaptureModeSelfieCameraEnabled())
-    return nullptr;
-  return std::make_unique<CaptureModeCameraController>(delegate);
-}
-
 }  // namespace
 
 CaptureModeController::CaptureModeController(
     std::unique_ptr<CaptureModeDelegate> delegate)
     : delegate_(std::move(delegate)),
-      camera_controller_(MaybeCreateCameraController(delegate_.get())),
+      camera_controller_(
+          std::make_unique<CaptureModeCameraController>(delegate_.get())),
       blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           // A task priority of BEST_EFFORT is good enough for this runner,
           // since it's used for blocking file IO such as saving the screenshots
@@ -465,10 +447,7 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                  /*default_value=*/base::FilePath());
   registry->RegisterBooleanPref(kUsesDefaultCapturePathPrefName,
                                 /*default_value=*/false);
-  const auto* pref_name = features::IsCaptureModeSelfieCameraEnabled()
-                              ? kCanShowCameraNudge
-                              : kCanShowFolderSelectionNudge;
-  registry->RegisterBooleanPref(pref_name, /*default_value=*/true);
+  registry->RegisterBooleanPref(kCanShowCameraNudge, /*default_value=*/true);
 }
 
 bool CaptureModeController::IsActive() const {
@@ -536,10 +515,8 @@ void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,
   if (!user_capture_region_.IsEmpty() && by_user)
     last_capture_region_update_time_ = base::TimeTicks::Now();
 
-  if (camera_controller_ && !is_recording_in_progress() &&
-      source_ == CaptureModeSource::kRegion) {
+  if (!is_recording_in_progress() && source_ == CaptureModeSource::kRegion)
     camera_controller_->MaybeReparentPreviewWidget();
-  }
 }
 
 bool CaptureModeController::CanShowUserNudge() const {
@@ -568,17 +545,11 @@ bool CaptureModeController::CanShowUserNudge() const {
 
   auto* pref_service = session_controller->GetActivePrefService();
   DCHECK(pref_service);
-  const auto* pref_name = features::IsCaptureModeSelfieCameraEnabled()
-                              ? kCanShowCameraNudge
-                              : kCanShowFolderSelectionNudge;
-  return pref_service->GetBoolean(pref_name);
+  return pref_service->GetBoolean(kCanShowCameraNudge);
 }
 
 void CaptureModeController::DisableUserNudgeForever() {
-  const auto* pref_name = features::IsCaptureModeSelfieCameraEnabled()
-                              ? kCanShowCameraNudge
-                              : kCanShowFolderSelectionNudge;
-  GetActiveUserPrefService()->SetBoolean(pref_name, false);
+  GetActiveUserPrefService()->SetBoolean(kCanShowCameraNudge, false);
 }
 
 void CaptureModeController::SetUsesDefaultCaptureFolder(bool value) {
@@ -789,8 +760,7 @@ void CaptureModeController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   EndSessionOrRecording(EndRecordingReason::kActiveUserChange);
 
-  if (camera_controller_)
-    camera_controller_->OnActiveUserSessionChanged();
+  camera_controller_->OnActiveUserSessionChanged();
 
   // Remove the previous notification when switching to another user.
   auto* message_center = message_center::MessageCenter::Get();
@@ -808,8 +778,7 @@ void CaptureModeController::OnChromeTerminating() {
   // Order here matters. We may shutdown while a session with a camera is active
   // before recording starts, we need to inform the camera controller first to
   // destroy the camera preview first.
-  if (camera_controller_)
-    camera_controller_->OnShuttingDown();
+  camera_controller_->OnShuttingDown();
   EndSessionOrRecording(EndRecordingReason::kShuttingDown);
 }
 
@@ -1656,8 +1625,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
       std::make_unique<CaptureModeSession>(this, for_projector);
   capture_mode_session_->Initialize();
 
-  if (camera_controller_)
-    camera_controller_->OnCaptureSessionStarted();
+  camera_controller_->OnCaptureSessionStarted();
 }
 
 void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(

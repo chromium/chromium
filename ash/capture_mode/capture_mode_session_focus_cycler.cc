@@ -64,14 +64,15 @@ std::vector<aura::Window*> GetWindowListIgnoreModalForActiveDesk() {
 }
 
 views::Widget* GetCameraPreviewWidget() {
-  auto* camera_controller = CaptureModeController::Get()->camera_controller();
-  return camera_controller ? camera_controller->camera_preview_widget()
-                           : nullptr;
+  return CaptureModeController::Get()
+      ->camera_controller()
+      ->camera_preview_widget();
 }
 
 CameraPreviewView* GetCameraPreviewView() {
-  auto* camera_controller = CaptureModeController::Get()->camera_controller();
-  return camera_controller ? camera_controller->camera_preview_view() : nullptr;
+  return CaptureModeController::Get()
+      ->camera_controller()
+      ->camera_preview_view();
 }
 
 // Returns true if the `value` is within the inclusive range of `low` and

@@ -414,10 +414,8 @@ aura::Window* GetTopMostCapturableWindowAtPoint(
   auto* controller = CaptureModeController::Get();
   std::set<aura::Window*> ignore_windows;
   auto* camera_controller = controller->camera_controller();
-  if (camera_controller && camera_controller->camera_preview_widget()) {
-    ignore_windows.insert(
-        camera_controller->camera_preview_widget()->GetNativeWindow());
-  }
+  if (auto* camera_preview_widget = camera_controller->camera_preview_widget())
+    ignore_windows.insert(camera_preview_widget->GetNativeWindow());
 
   if (controller->IsActive()) {
     auto* capture_session = controller->capture_mode_session();

@@ -126,8 +126,6 @@ extern const base::Feature kCalendarModelDebugMode;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCameraPrivacySwitchNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kCaptureModeSelfieCamera;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularBypassESimInstallationConnectivityCheck;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularCustomAPNProfiles;
@@ -683,7 +681,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBentoBarEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBluetoothRevampEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCalendarViewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCalendarModelDebugModeEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeSelfieCameraEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherItemColorSyncEnabled();

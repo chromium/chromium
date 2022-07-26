@@ -13,7 +13,6 @@
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -78,8 +77,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
         kAudioMicrophone);
   }
 
-  if (features::IsCaptureModeSelfieCameraEnabled() &&
-      !controller->is_recording_in_progress()) {
+  if (!controller->is_recording_in_progress()) {
     separator_1_ = AddChildView(std::make_unique<views::Separator>());
     separator_1_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
     auto* camera_controller = controller->camera_controller();
@@ -129,8 +127,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
 }
 
 CaptureModeSettingsView::~CaptureModeSettingsView() {
-  if (features::IsCaptureModeSelfieCameraEnabled())
-    CaptureModeController::Get()->camera_controller()->RemoveObserver(this);
+  CaptureModeController::Get()->camera_controller()->RemoveObserver(this);
 }
 
 gfx::Rect CaptureModeSettingsView::GetBounds(
@@ -189,10 +186,8 @@ CaptureModeSettingsView::GetHighlightableItems() {
       highlightable_items;
   DCHECK(audio_input_menu_group_);
   audio_input_menu_group_->AppendHighlightableItems(highlightable_items);
-  if (features::IsCaptureModeSelfieCameraEnabled()) {
-    DCHECK(camera_menu_group_);
-    camera_menu_group_->AppendHighlightableItems(highlightable_items);
-  }
+  DCHECK(camera_menu_group_);
+  camera_menu_group_->AppendHighlightableItems(highlightable_items);
   if (save_to_menu_group_)
     save_to_menu_group_->AppendHighlightableItems(highlightable_items);
   return highlightable_items;

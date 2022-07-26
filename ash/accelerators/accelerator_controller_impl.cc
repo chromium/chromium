@@ -432,8 +432,8 @@ bool CanHandleFocusCameraPreview() {
     return false;
 
   auto* camera_controller = controller->camera_controller();
-  auto* preview_widget =
-      camera_controller ? camera_controller->camera_preview_widget() : nullptr;
+  DCHECK(camera_controller);
+  auto* preview_widget = camera_controller->camera_preview_widget();
   return preview_widget && preview_widget->IsVisible();
 }
 

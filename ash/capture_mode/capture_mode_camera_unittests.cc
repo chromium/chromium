@@ -25,7 +25,6 @@
 #include "ash/capture_mode/fake_folder_selection_dialog_factory.h"
 #include "ash/capture_mode/fake_video_source_provider.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
-#include "ash/constants/ash_features.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/window_properties.h"
@@ -37,16 +36,11 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
-#include "ash/wm/wm_event.h"
-#include "base/bind.h"
-#include "base/files/file_path.h"
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/system_monitor.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "media/base/video_facing.h"
@@ -180,10 +174,7 @@ gfx::Rect GetTooSmallToFitCameraRegion() {
 
 class CaptureModeCameraTest : public AshTestBase {
  public:
-  CaptureModeCameraTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kCaptureModeSelfieCamera);
-  }
+  CaptureModeCameraTest() = default;
   CaptureModeCameraTest(const CaptureModeCameraTest&) = delete;
   CaptureModeCameraTest& operator=(const CaptureModeCameraTest&) = delete;
   ~CaptureModeCameraTest() override = default;
@@ -388,7 +379,6 @@ class CaptureModeCameraTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<aura::Window> window_;
 };
 

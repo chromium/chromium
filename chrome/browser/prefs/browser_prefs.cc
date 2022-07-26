@@ -529,6 +529,15 @@ const char kUserLanguageProfile[] = "language_profile";
 // Deprecated 08/2021.
 const char kAccountManagerNumTimesMigrationRanSuccessfully[] =
     "account_manager.num_times_migration_ran_successfully";
+
+// Deprecated 07/2022.
+// The name of a boolean pref that determines whether we can show the folder
+// selection user nudge for the screen capture tool. When this pref is false, it
+// means that we showed the nudge at some point and the user interacted with the
+// capture mode session UI in such a way that the nudge no longer needs to be
+// displayed again.
+constexpr char kCanShowFolderSelectionNudge[] =
+    "ash.capture_mode.can_show_folder_selection_nudge";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -855,6 +864,8 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterIntegerPref(kAccountManagerNumTimesMigrationRanSuccessfully,
                                 0);
+  registry->RegisterBooleanPref(kCanShowFolderSelectionNudge,
+                                /*default_value=*/true);
   ash::HelpAppNotificationController::RegisterObsoletePrefsForMigration(
       registry);
   registry->RegisterBooleanPref(kHasCameraAppMigratedToSWA, false);
@@ -1831,6 +1842,8 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Added 08/2021.
   profile_prefs->ClearPref(kAccountManagerNumTimesMigrationRanSuccessfully);
+  // Added 07/2022.
+  profile_prefs->ClearPref(kCanShowFolderSelectionNudge);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

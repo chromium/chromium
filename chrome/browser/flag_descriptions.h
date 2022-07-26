@@ -2611,9 +2611,6 @@ extern const char kCalendarViewDescription[];
 extern const char kCalendarModelDebugModeName[];
 extern const char kCalendarModelDebugModeDescription[];
 
-extern const char kCaptureSelfieCamName[];
-extern const char kCaptureSelfieCamDescription[];
-
 extern const char kDefaultLinkCapturingInBrowserName[];
 extern const char kDefaultLinkCapturingInBrowserDescription[];
 

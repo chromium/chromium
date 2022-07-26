@@ -156,8 +156,7 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
     return true;
   }
 
-  auto* camera_controller = controller->camera_controller();
-  if (camera_controller && camera_controller->is_drag_in_progress()) {
+  if (controller->camera_controller()->is_drag_in_progress()) {
     // To ensure the cursor is aligned with the dragged camera preview.
     return true;
   }

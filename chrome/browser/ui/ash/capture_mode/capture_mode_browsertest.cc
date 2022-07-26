@@ -768,12 +768,6 @@ class CaptureModeCameraBrowserTests : public InProcessBrowserTest {
     command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
   }
 
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kCaptureModeSelfieCamera);
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     ash::CaptureModeTestApi test_api;
     ASSERT_EQ(1u, test_api.GetNumberOfAvailableCameras());
@@ -793,9 +787,6 @@ class CaptureModeCameraBrowserTests : public InProcessBrowserTest {
       loop.Run();
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CaptureModeCameraBrowserTests, VerifyFrames) {

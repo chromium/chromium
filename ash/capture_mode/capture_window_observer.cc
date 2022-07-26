@@ -65,9 +65,8 @@ void CaptureWindowObserver::SetSelectedWindow(aura::Window* window) {
   RepaintCaptureRegion();
 
   auto* controller = CaptureModeController::Get();
-  auto* camera_controller = controller->camera_controller();
-  if (camera_controller && !controller->is_recording_in_progress())
-    camera_controller->MaybeReparentPreviewWidget();
+  if (!controller->is_recording_in_progress())
+    controller->camera_controller()->MaybeReparentPreviewWidget();
   capture_mode_session_->MaybeUpdateCaptureUisOpacity(
       display::Screen::GetScreen()->GetCursorScreenPoint());
 }
@@ -83,9 +82,8 @@ void CaptureWindowObserver::OnWindowBoundsChanged(
   // The bounds of camera preview should be updated accordingly if the bounds of
   // the selected window has been updated.
   auto* controller = CaptureModeController::Get();
-  auto* camera_controller = controller->camera_controller();
-  if (camera_controller && !controller->is_recording_in_progress())
-    camera_controller->MaybeUpdatePreviewWidget();
+  if (!controller->is_recording_in_progress())
+    controller->camera_controller()->MaybeUpdatePreviewWidget();
 }
 
 void CaptureWindowObserver::OnWindowVisibilityChanging(aura::Window* window,

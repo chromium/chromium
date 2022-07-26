@@ -4563,11 +4563,6 @@ const char kCalendarModelDebugModeDescription[] =
     "the system logs, where they are potentially visible to all users of the "
     "device.";
 
-const char kCaptureSelfieCamName[] = "Enable selfie camera in screen capture";
-const char kCaptureSelfieCamDescription[] =
-    "Enables the ability to record the selected camera feed along with screen "
-    "recordings for personalized demos and more.";
-
 const char kDefaultLinkCapturingInBrowserName[] =
     "Default link capturing in the browser";
 const char kDefaultLinkCapturingInBrowserDescription[] =

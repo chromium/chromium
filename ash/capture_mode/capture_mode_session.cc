@@ -330,9 +330,9 @@ void UpdateFloatingPanelBoundsIfNeeded() {
 }
 
 views::Widget* GetCameraPreviewWidget() {
-  auto* camera_controller = CaptureModeController::Get()->camera_controller();
-  return camera_controller ? camera_controller->camera_preview_widget()
-                           : nullptr;
+  return CaptureModeController::Get()
+      ->camera_controller()
+      ->camera_preview_widget();
 }
 
 bool ShouldPassEventToCameraPreview(ui::LocatedEvent* event) {
@@ -348,8 +348,7 @@ bool ShouldPassEventToCameraPreview(ui::LocatedEvent* event) {
   if (!camera_preview_widget || !camera_preview_widget->IsVisible())
     return false;
 
-  auto* camera_controller = controller->camera_controller();
-  if (camera_controller && camera_controller->is_drag_in_progress())
+  if (controller->camera_controller()->is_drag_in_progress())
     return true;
 
   // If the event is targeted on the camera preview, even it's not located
@@ -684,9 +683,8 @@ void CaptureModeSession::Initialize() {
       controller_->type());
   MaybeCreateUserNudge();
 
-  auto* camera_controller = controller_->camera_controller();
-  if (is_in_projector_mode_ && camera_controller)
-    camera_controller->MaybeSelectFirstCamera();
+  if (is_in_projector_mode_)
+    controller_->camera_controller()->MaybeSelectFirstCamera();
 
   Shell::Get()->AddShellObserver(this);
 }
@@ -727,10 +725,8 @@ void CaptureModeSession::Shutdown() {
 
     // Kill the camera preview when the capture mode session ends without
     // starting any recording.
-    if (controller_->camera_controller() &&
-        !controller_->is_recording_in_progress()) {
+    if (!controller_->is_recording_in_progress())
       controller_->camera_controller()->SetShouldShowPreview(false);
-    }
   }
 
   Shell::Get()->RemoveShellObserver(this);
@@ -1062,8 +1058,7 @@ void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
   // UIs (capture bar, capture label), but we should still paint the layer to
   // indicate the capture surface where user can drag camera preview on.
   if (!is_all_uis_visible_ &&
-      !(controller_->camera_controller() &&
-        controller_->camera_controller()->is_drag_in_progress())) {
+      !controller_->camera_controller()->is_drag_in_progress()) {
     return;
   }
 
@@ -1088,9 +1083,8 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
   if (event->type() != ui::ET_KEY_PRESSED)
     return;
 
-  auto* camera_controller = controller_->camera_controller();
   auto* camera_preview_view =
-      camera_controller ? camera_controller->camera_preview_view() : nullptr;
+      controller_->camera_controller()->camera_preview_view();
   if (camera_preview_view && camera_preview_view->MaybeHandleKeyEvent(event)) {
     event->StopPropagation();
     return;
@@ -1264,8 +1258,7 @@ void CaptureModeSession::OnDisplayMetricsChanged(
   // it if the source is `kRegion`.
   // `CaptureWindowObserver::OnWindowBoundsChanged` will take care of it if the
   // source is `kWindow`.
-  if (controller_->camera_controller() &&
-      controller_->source() == CaptureModeSource::kFullscreen &&
+  if (controller_->source() == CaptureModeSource::kFullscreen &&
       !controller_->is_recording_in_progress()) {
     controller_->camera_controller()->MaybeUpdatePreviewWidget();
   }
@@ -2795,15 +2788,15 @@ void CaptureModeSession::UpdateRegionVertically(bool up, int event_flags) {
 }
 
 void CaptureModeSession::MaybeReparentCameraPreviewWidget() {
-  auto* camera_controller = controller_->camera_controller();
-  if (camera_controller && !controller_->is_recording_in_progress())
-    camera_controller->MaybeReparentPreviewWidget();
+  if (!controller_->is_recording_in_progress())
+    controller_->camera_controller()->MaybeReparentPreviewWidget();
 }
 
 void CaptureModeSession::MaybeUpdateCameraPreviewBounds() {
-  auto* camera_controller = controller_->camera_controller();
-  if (camera_controller && !controller_->is_recording_in_progress())
-    camera_controller->MaybeUpdatePreviewWidget(/*animate=*/false);
+  if (!controller_->is_recording_in_progress()) {
+    controller_->camera_controller()->MaybeUpdatePreviewWidget(
+        /*animate=*/false);
+  }
 }
 
 bool CaptureModeSession::IsEventTargetedOnCaptureBar(
