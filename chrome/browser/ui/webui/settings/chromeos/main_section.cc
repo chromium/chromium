@@ -261,6 +261,10 @@ void MainSection::AddChromeOSUserStrings(
       "sublabelWithEmail",
       l10n_util::GetStringFUTF16(IDS_BLUETOOTH_SAVED_DEVICES_SUBTITLE,
                                  base::ASCIIToUTF16(primary_user_email)));
+  html_source->AddString(
+      "noDevicesWithEmail",
+      l10n_util::GetStringFUTF16(IDS_BLUETOOTH_NO_SAVED_DEVICES_LABEL,
+                                 base::ASCIIToUTF16(primary_user_email)));
 }
 
 std::unique_ptr<PluralStringHandler> MainSection::CreatePluralStringHandler() {

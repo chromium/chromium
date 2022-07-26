@@ -67,12 +67,19 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
         type: Array,
         value: [],
       },
+
+      /** @protected */
+      noSavedDeviceslabel_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('noDevicesWithEmail');
+        },
+      },
     };
   }
 
   constructor() {
     super();
-    this.parentNode.pageTitle = loadTimeData.getString('savedDevicesPageName');
     /** @private {?OsBluetoothDevicesSubpageBrowserProxy} */
     this.browserProxy_ =
         OsBluetoothDevicesSubpageBrowserProxyImpl.getInstance();
@@ -93,6 +100,8 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
   currentRouteChanged(route, oldRoute) {
     // If we're navigating to the Saved Devices page, fetch the devices.
     if (route === routes.BLUETOOTH_SAVED_DEVICES) {
+      this.parentNode.pageTitle =
+          loadTimeData.getString('savedDevicesPageName');
       this.browserProxy_.requestFastPairSavedDevices();
       return;
     }
@@ -104,6 +113,15 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
    */
   getSavedDevices_(devices) {
     this.savedDevices_ = devices.slice(0);
+  }
+
+  /**
+   * @param {!Array<!FastPairSavedDevice>} devices
+   * @return {boolean}
+   * @private
+   */
+  shouldShowDeviceList_(devices) {
+    return devices.length > 0;
   }
 }
 

@@ -10,13 +10,24 @@
   }
 </style>
 <div id="container">
-  <div class="settings-box-text">
-    [[savedDevicesSublabel_]]
-  </div>
-  <div id="device-list">
-    <os-settings-saved-devices-list
-        id="savedDevicesList"
-        devices_="[[savedDevices_]]">
-    </os-settings-saved-devices-list>
-  </div>
+  <template is="dom-if"
+      if="[[!shouldShowDeviceList_(savedDevices_, savedDevices_.length)]]"
+      restamp>
+    <div id="noDevices" class="settings-box-text">
+      [[noSavedDeviceslabel_]]
+    </div>
+  </template>
+  <template is="dom-if"
+      if="[[shouldShowDeviceList_(savedDevices_,
+          savedDevices_.length)]]" restamp>
+    <div class="settings-box-text">
+      [[savedDevicesSublabel_]]
+    </div>
+    <div class="device-list">
+      <os-settings-saved-devices-list
+          id="savedDevicesList"
+          devices_="[[savedDevices_]]">
+      </os-settings-saved-devices-list>
+    </div>
+  </template>
 </div>
