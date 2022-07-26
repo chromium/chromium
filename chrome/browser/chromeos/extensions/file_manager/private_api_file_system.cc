@@ -1512,18 +1512,17 @@ void FileManagerPrivateSearchFilesByHashesFunction::OnSearchByHashes(
     return;
   }
 
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
+  base::Value::Dict result;
   for (const auto& hash : hashes) {
-    result->SetKey(hash, base::ListValue());
+    result.Set(hash, base::Value(base::Value::List()));
   }
 
   for (const auto& hashAndPath : search_results) {
-    DCHECK(result->FindKey(hashAndPath.hash));
-    base::ListValue* list;
-    result->GetListWithoutPathExpansion(hashAndPath.hash, &list);
+    base::Value::List* list = result.FindList(hashAndPath.hash);
+    DCHECK(list);
     list->Append(hashAndPath.path.value());
   }
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  Respond(OneArgument(base::Value(std::move(result))));
 }
 
 FileManagerPrivateSearchFilesFunction::FileManagerPrivateSearchFilesFunction() =
