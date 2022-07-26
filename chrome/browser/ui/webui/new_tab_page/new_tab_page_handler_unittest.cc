@@ -299,7 +299,7 @@ TEST_F(NewTabPageHandlerTest, SetTheme) {
       .WillByDefault(testing::Return(true));
   mock_color_provider_source_.SetColor(
       kColorNewTabPageMostVisitedTileBackground, SkColorSetRGB(0, 0, 4));
-  mock_color_provider_source_.SetColor(kColorOmniboxBackground,
+  mock_color_provider_source_.SetColor(kColorNewTabPageSearchBoxBackground,
                                        SkColorSetRGB(0, 0, 5));
   mock_color_provider_source_.SetColor(kColorOmniboxResultsIcon,
                                        SkColorSetRGB(0, 0, 6));

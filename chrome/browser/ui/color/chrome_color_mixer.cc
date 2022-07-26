@@ -257,6 +257,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorExtensionMenuPinButtonIcon] = {ui::kColorAccent};
   mixer[kColorExtensionMenuPinButtonIconDisabled] = ui::SetAlpha(
       kColorExtensionMenuPinButtonIcon, gfx::kDisabledControlAlpha);
+  mixer[kColorExtensionsToolbarControlsBackground] = {
+      kColorToolbarBackgroundSubtleEmphasis};
   mixer[kColorEyedropperBoundary] = {SK_ColorDKGRAY};
   mixer[kColorEyedropperCentralPixelInnerRing] = {SK_ColorBLACK};
   mixer[kColorEyedropperCentralPixelOuterRing] = {SK_ColorWHITE};
@@ -297,6 +299,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorIntentPickerItemBackgroundSelected] = ui::BlendForMinContrast(
       ui::kColorDialogBackground, ui::kColorDialogBackground, ui::kColorAccent,
       1.2);
+  mixer[kColorLocationBarBackground] = {kColorToolbarBackgroundSubtleEmphasis};
+  mixer[kColorLocationBarBackgroundHovered] = {
+      kColorToolbarBackgroundSubtleEmphasisHovered};
   mixer[kColorLocationBarBorder] = {SkColorSetA(SK_ColorBLACK, 0x4D)};
   mixer[kColorLocationBarBorderOpaque] =
       ui::GetResultingPaintColor(kColorLocationBarBorder, kColorToolbar);
@@ -344,6 +349,10 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       gfx::kGoogleGrey100};
   mixer[kColorNewTabPageSectionBorder] =
       ui::SetAlpha(kColorNewTabPageHeader, 0x50);
+  mixer[kColorNewTabPageSearchBoxBackground] = {
+      kColorToolbarBackgroundSubtleEmphasis};
+  mixer[kColorNewTabPageSearchBoxBackgroundHovered] = {
+      kColorToolbarBackgroundSubtleEmphasisHovered};
   mixer[kColorNewTabPageText] = {dark_mode ? gfx::kGoogleGrey200
                                            : SK_ColorBLACK};
   mixer[kColorNewTabPageTextUnthemed] = {gfx::kGoogleGrey050};

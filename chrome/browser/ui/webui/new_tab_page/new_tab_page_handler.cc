@@ -259,9 +259,9 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   theme->most_visited = std::move(most_visited);
 
   auto search_box = realbox::mojom::SearchBoxTheme::New();
-  search_box->bg = color_provider.GetColor(kColorOmniboxBackground);
+  search_box->bg = color_provider.GetColor(kColorNewTabPageSearchBoxBackground);
   search_box->bg_hovered =
-      color_provider.GetColor(kColorOmniboxBackgroundHovered);
+      color_provider.GetColor(kColorNewTabPageSearchBoxBackgroundHovered);
   search_box->border_color =
       webui::GetNativeTheme(web_contents)->UserHasContrastPreference()
           ? color_provider.GetColor(kColorLocationBarBorder)

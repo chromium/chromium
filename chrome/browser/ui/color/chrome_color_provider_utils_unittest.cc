@@ -12,6 +12,6 @@
 using ChromeColorProviderUtilsTest = ::testing::Test;
 
 TEST_F(ChromeColorProviderUtilsTest, ChromeColorIdNameTest) {
-  EXPECT_EQ("kColorOmniboxBackground",
-            ChromeColorIdName(kColorOmniboxBackground));
+  EXPECT_EQ("kColorToolbarBackgroundSubtleEmphasis",
+            ChromeColorIdName(kColorToolbarBackgroundSubtleEmphasis));
 }

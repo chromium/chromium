@@ -29,11 +29,10 @@ ExtensionsToolbarControls::ExtensionsToolbarControls(
   // TODO(emiliapaz): Consider changing AddMainItem() to receive a unique_ptr.
   AddMainItem(extensions_button.release());
 
-  // TODO(emiliapaz): Rename omnibox background name to better reflect its use.
   const int radius = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kMaximum, extensions_button_->GetPreferredSize());
   SetBackground(views::CreateThemedRoundedRectBackground(
-      kColorOmniboxBackground, radius));
+      kColorExtensionsToolbarControlsBackground, radius));
 }
 
 ExtensionsToolbarControls::~ExtensionsToolbarControls() = default;

@@ -272,11 +272,13 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorInfoBarContentAreaSeparator] = {
       kColorToolbarContentAreaSeparator};
   mixer[kColorLocationBarBorder] = {ui::kColorNativeWindowText};
-  mixer[kColorOmniboxBackground] = {ui::kColorNativeBtnFace};
-  mixer[kColorOmniboxBackgroundHovered] = {kColorOmniboxBackground};
+  mixer[kColorToolbarBackgroundSubtleEmphasis] = {ui::kColorNativeBtnFace};
+  mixer[kColorToolbarBackgroundSubtleEmphasisHovered] = {
+      kColorToolbarBackgroundSubtleEmphasis};
   mixer[kColorOmniboxBubbleOutline] = {kColorOmniboxText};
   mixer[kColorOmniboxKeywordSelected] = {kColorOmniboxText};
-  mixer[kColorOmniboxResultsBackground] = {kColorOmniboxBackground};
+  mixer[kColorOmniboxResultsBackground] = {
+      kColorToolbarBackgroundSubtleEmphasis};
   mixer[kColorOmniboxResultsBackgroundHovered] = {
       kColorOmniboxResultsBackgroundSelected};
   mixer[kColorOmniboxResultsBackgroundSelected] = {ui::kColorNativeHighlight};

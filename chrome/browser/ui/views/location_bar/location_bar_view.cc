@@ -246,7 +246,7 @@ void LocationBarView::Init() {
         label->SetElideBehavior(gfx::NO_ELIDE);
         label->SetAutoColorReadabilityEnabled(false);
         label->SetBackground(views::CreateSolidBackground(
-            color_provider->GetColor(kColorOmniboxBackground)));
+            color_provider->GetColor(kColorLocationBarBackground)));
         label->SetEnabledColor(color_provider->GetColor(kColorOmniboxText));
         label->SetVisible(false);
         return label;
@@ -873,7 +873,7 @@ SkColor LocationBarView::GetIconLabelBubbleSurroundingForegroundColor() const {
 }
 
 SkColor LocationBarView::GetIconLabelBubbleBackgroundColor() const {
-  return GetColorProvider()->GetColor(kColorOmniboxBackground);
+  return GetColorProvider()->GetColor(kColorLocationBarBackground);
 }
 
 bool LocationBarView::ShouldHideContentSettingImage() {
@@ -981,9 +981,10 @@ void LocationBarView::RefreshBackground() {
     background_color = border_color =
         color_provider->GetColor(kColorOmniboxResultsBackground);
   } else {
-    const SkColor normal = color_provider->GetColor(kColorOmniboxBackground);
+    const SkColor normal =
+        color_provider->GetColor(kColorLocationBarBackground);
     const SkColor hovered =
-        color_provider->GetColor(kColorOmniboxBackgroundHovered);
+        color_provider->GetColor(kColorLocationBarBackgroundHovered);
     const double opacity = hover_animation_.GetCurrentValue();
     background_color = gfx::Tween::ColorValueBetween(opacity, normal, hovered);
     border_color = color_provider->GetColor(kColorLocationBarBorder);

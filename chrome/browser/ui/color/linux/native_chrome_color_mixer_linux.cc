@@ -143,7 +143,8 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabPageLink] = {ui::kColorTextfieldSelectionBackground};
   mixer[kColorNewTabPageText] = {ui::kColorTextfieldForeground};
   mixer[kColorOmniboxText] = {ui::kColorTextfieldForeground};
-  mixer[kColorOmniboxBackground] = {ui::kColorTextfieldBackground};
+  mixer[kColorToolbarBackgroundSubtleEmphasis] = {
+      ui::kColorTextfieldBackground};
   mixer[kColorTabForegroundInactiveFrameActive] = {
       ui::kColorNativeTabForegroundInactiveFrameActive};
   mixer[kColorTabForegroundInactiveFrameInactive] = {

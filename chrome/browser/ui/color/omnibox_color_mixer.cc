@@ -32,8 +32,8 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   // Selected colors will use inverted base colors in high contrast mode.
   const auto selected_background_color =
       high_contrast_custom_handling
-          ? ui::ContrastInvert(kColorOmniboxBackground)
-          : kColorOmniboxBackground;
+          ? ui::ContrastInvert(kColorToolbarBackgroundSubtleEmphasis)
+          : kColorToolbarBackgroundSubtleEmphasis;
   const auto selected_text_color = high_contrast_custom_handling
                                        ? ui::ContrastInvert(kColorOmniboxText)
                                        : kColorOmniboxText;
@@ -45,22 +45,23 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
       kColorLocationBarClearAllButtonIcon, gfx::kDisabledControlAlpha);
 
   // Omnibox background colors.
-  mixer[kColorOmniboxBackground] = ui::SelectBasedOnDarkInput(
+  mixer[kColorToolbarBackgroundSubtleEmphasis] = ui::SelectBasedOnDarkInput(
       kColorToolbar, gfx::kGoogleGrey900, gfx::kGoogleGrey100);
-  mixer[kColorOmniboxBackgroundHovered] =
-      ui::BlendTowardMaxContrast(kColorOmniboxBackground, 0x0A);
+  mixer[kColorToolbarBackgroundSubtleEmphasisHovered] =
+      ui::BlendTowardMaxContrast(kColorToolbarBackgroundSubtleEmphasis, 0x0A);
 
   // Omnibox text colors.
   mixer[kColorOmniboxText] =
-      ui::GetColorWithMaxContrast(kColorOmniboxBackground);
+      ui::GetColorWithMaxContrast(kColorToolbarBackgroundSubtleEmphasis);
   mixer[kColorOmniboxResultsTextSelected] = {selected_text_color};
-  mixer[kColorOmniboxKeywordSelected] = ui::SelectBasedOnDarkInput(
-      kColorOmniboxBackground, gfx::kGoogleGrey100, kColorOmniboxResultsUrl);
+  mixer[kColorOmniboxKeywordSelected] =
+      ui::SelectBasedOnDarkInput(kColorToolbarBackgroundSubtleEmphasis,
+                                 gfx::kGoogleGrey100, kColorOmniboxResultsUrl);
 
   // Bubble outline colors.
-  mixer[kColorOmniboxBubbleOutline] =
-      ui::SelectBasedOnDarkInput(kColorOmniboxBackground, gfx::kGoogleGrey100,
-                                 SkColorSetA(gfx::kGoogleGrey900, 0x24));
+  mixer[kColorOmniboxBubbleOutline] = ui::SelectBasedOnDarkInput(
+      kColorToolbarBackgroundSubtleEmphasis, gfx::kGoogleGrey100,
+      SkColorSetA(gfx::kGoogleGrey900, 0x24));
   mixer[kColorOmniboxBubbleOutlineExperimentalKeywordMode] = {
       kColorOmniboxKeywordSelected};
 
@@ -73,7 +74,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
       ui::GetColorWithMaxContrast(kColorOmniboxResultsTextSelected),
       gfx::kGoogleGreyAlpha200);
   mixer[kColorOmniboxResultsButtonBorder] = ui::BlendTowardMaxContrast(
-      kColorOmniboxBackground, gfx::kGoogleGreyAlpha400);
+      kColorToolbarBackgroundSubtleEmphasis, gfx::kGoogleGreyAlpha400);
   mixer[kColorOmniboxResultsButtonInkDrop] =
       ui::GetColorWithMaxContrast(kColorOmniboxResultsBackgroundHovered);
   mixer[kColorOmniboxResultsButtonInkDropSelected] =
@@ -113,7 +114,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
         blend_with_clamped_contrast(kColorOmniboxResultsTextSelected,
                                     kColorOmniboxResultsBackgroundSelected);
     mixer[kColorOmniboxTextDimmed] = blend_with_clamped_contrast(
-        kColorOmniboxText, kColorOmniboxBackgroundHovered);
+        kColorOmniboxText, kColorToolbarBackgroundSubtleEmphasisHovered);
   }
 
   // Other results text colors.
@@ -159,20 +160,24 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
           contrast_ratio);
     };
 
-    mixer[kColorOmniboxResultsTextNegative] = negative_color(
-        kColorOmniboxResultsBackgroundHovered, kColorOmniboxBackground);
+    mixer[kColorOmniboxResultsTextNegative] =
+        negative_color(kColorOmniboxResultsBackgroundHovered,
+                       kColorToolbarBackgroundSubtleEmphasis);
     mixer[kColorOmniboxResultsTextNegativeSelected] = negative_color(
         kColorOmniboxResultsBackgroundSelected, selected_background_color);
-    mixer[kColorOmniboxResultsTextPositive] = positive_color(
-        kColorOmniboxResultsBackgroundHovered, kColorOmniboxBackground);
+    mixer[kColorOmniboxResultsTextPositive] =
+        positive_color(kColorOmniboxResultsBackgroundHovered,
+                       kColorToolbarBackgroundSubtleEmphasis);
     mixer[kColorOmniboxResultsTextPositiveSelected] = positive_color(
         kColorOmniboxResultsBackgroundSelected, selected_background_color);
-    mixer[kColorOmniboxResultsTextSecondary] = secondary_color(
-        kColorOmniboxResultsBackgroundHovered, kColorOmniboxBackground);
+    mixer[kColorOmniboxResultsTextSecondary] =
+        secondary_color(kColorOmniboxResultsBackgroundHovered,
+                        kColorToolbarBackgroundSubtleEmphasis);
     mixer[kColorOmniboxResultsTextSecondarySelected] = secondary_color(
         kColorOmniboxResultsBackgroundSelected, selected_background_color);
-    mixer[kColorOmniboxResultsUrl] = url_color(
-        kColorOmniboxResultsBackgroundHovered, kColorOmniboxBackground);
+    mixer[kColorOmniboxResultsUrl] =
+        url_color(kColorOmniboxResultsBackgroundHovered,
+                  kColorToolbarBackgroundSubtleEmphasis);
     mixer[kColorOmniboxResultsUrlSelected] = url_color(
         kColorOmniboxResultsBackgroundSelected, selected_background_color);
   }
@@ -182,9 +187,10 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
     const auto security_chip_color = [contrast_ratio](SkColor dark_input,
                                                       SkColor light_input) {
       return ui::BlendForMinContrast(
-          ui::SelectBasedOnDarkInput(kColorOmniboxBackground, dark_input,
-                                     light_input),
-          kColorOmniboxBackgroundHovered, absl::nullopt, contrast_ratio);
+          ui::SelectBasedOnDarkInput(kColorToolbarBackgroundSubtleEmphasis,
+                                     dark_input, light_input),
+          kColorToolbarBackgroundSubtleEmphasisHovered, absl::nullopt,
+          contrast_ratio);
     };
 
     mixer[kColorOmniboxSecurityChipDangerous] =

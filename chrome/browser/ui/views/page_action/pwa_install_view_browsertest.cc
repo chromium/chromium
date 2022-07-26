@@ -618,8 +618,8 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, TextContrast) {
   pwa_install_view_->GetWidget()->OnNativeWidgetActivationChanged(true);
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  SkColor omnibox_background =
-      browser_view->GetColorProvider()->GetColor(kColorOmniboxBackground);
+  SkColor omnibox_background = browser_view->GetColorProvider()->GetColor(
+      kColorToolbarBackgroundSubtleEmphasis);
   SkColor label_color = pwa_install_view_->GetLabelColorForTesting();
   EXPECT_EQ(SkColorGetA(label_color), SK_AlphaOPAQUE);
   EXPECT_GT(color_utils::GetContrastRatio(omnibox_background, label_color),
