@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarksItemElement, selectItem} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarkNode, BookmarksItemElement, selectItem} from 'chrome://bookmarks/bookmarks.js';
 import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {TestStore} from './test_store.js';
@@ -30,7 +30,9 @@ suite('<bookmarks-item>', function() {
 
   test('changing the url changes the favicon', function() {
     const favicon = item.$.icon.style.backgroundImage;
-    store.data.nodes['2'] = createItem('0', {url: 'https://mail.google.com'});
+    store.data.nodes['2'] =
+        (createItem('0', {url: 'https://mail.google.com'}) as unknown as
+         BookmarkNode);
     store.notifyObservers();
     assertNotEquals(favicon, item.$.icon.style.backgroundImage);
   });

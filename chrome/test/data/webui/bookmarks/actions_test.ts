@@ -61,7 +61,7 @@ suite('selectItem', function() {
   });
 
   test('can shift-select in search results', function() {
-    store.data.selectedFolder = null;
+    store.data.selectedFolder = '';
     store.data.search = {
       term: 'test',
       results: ['1', '4', '8'],

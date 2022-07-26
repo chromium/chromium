@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarksFolderNodeElement, selectFolder} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarksFolderNodeElement, selectFolder, SelectFolderAction} from 'chrome://bookmarks/bookmarks.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -56,13 +56,16 @@ suite('<bookmarks-folder-node>', function() {
 
     // Select nested folder.
     secondGen[0]!.$['container'].click();
+    assertTrue(!!store.lastAction);
     assertEquals('select-folder', store.lastAction.name);
-    assertEquals(secondGen[0]!.itemId, store.lastAction.id);
+    assertEquals(
+        secondGen[0]!.itemId, (store.lastAction as SelectFolderAction).id);
 
     // Select folder in a separate subtree.
     rootFolders[1]!.$['container'].click();
     assertEquals('select-folder', store.lastAction.name);
-    assertEquals(rootFolders[1]!.itemId, store.lastAction.id);
+    assertEquals(
+        rootFolders[1]!.itemId, (store.lastAction as SelectFolderAction).id);
 
     // Doesn't re-select if the folder is already selected.
     store.data.selectedFolder = '7';
