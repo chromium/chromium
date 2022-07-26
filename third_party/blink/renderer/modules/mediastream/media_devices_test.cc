@@ -771,18 +771,21 @@ TEST_F(MediaDevicesTest, ProduceCropIdWithValidElement) {
       <wbr id='test-wbr'>it mc<sub id='test-sub'>2</sub>?
       <u id='test-u'>probz</u>.
     </p>
-    <select id='test-select'>
-      <optgroup label="Bar" id='test-optgroup'>
-        <option value="foo" id='test-option'>Foo</option>
-      </optgroup>
-    </select>
+    <select id='test-select'></select>
+
+    <svg id='test-svg' width="400" height="110">
+      <rect id='test-rect' width="300" height="100"/>
+    </svg>
+
+    <math id='test-math' xmlns='http://www.w3.org/1998/Math/MathML'>
+    </math>
   )HTML");
 
   Document& document = GetDocument();
   static const std::vector<const char*> kElementIds{
-      "test-div",    "test-iframe",   "test-p",     "test-var",
-      "test-sup",    "test-wbr",      "test-sub",   "test-u",
-      "test-select", "test-optgroup", "test-option"};
+      "test-div",    "test-iframe", "test-p",    "test-var",
+      "test-sup",    "test-wbr",    "test-sub",  "test-u",
+      "test-select", "test-svg",    "test-rect", "test-math"};
 
   for (const char* id : kElementIds) {
     Element* const element = document.getElementById(id);

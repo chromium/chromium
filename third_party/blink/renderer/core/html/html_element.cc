@@ -1182,11 +1182,6 @@ void HTMLElement::setHidden(
   }
 }
 
-bool HTMLElement::IsSupportedByRegionCapture() const {
-  return base::FeatureList::IsEnabled(
-      features::kRegionCaptureExperimentalSubtypes);
-}
-
 const AtomicString& HTMLElement::autocapitalize() const {
   DEFINE_STATIC_LOCAL(const AtomicString, kOff, ("off"));
   DEFINE_STATIC_LOCAL(const AtomicString, kNone, ("none"));

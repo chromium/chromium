@@ -478,14 +478,28 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
   EXPECT_TRUE(tab.CropTo(crop_target, Frame::kTopLevelDocument));
 }
 
-IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest,
-                       CropToWorksForAllHtmlElements) {
+IN_PROC_BROWSER_TEST_F(RegionCaptureBrowserTest, CropToWorksForAllElements) {
   // NOTE: this list is intentionally non-exhaustive, but represents a wide
   // variety of element types.
-  static const std::vector<const char*> kElementTags{
-      "a",      "blockquote", "body",  "button", "canvas", "col",
-      "div",    "fieldset",   "form",  "h1",     "header", "hr",
-      "iframe", "img",        "input", "output", "span",   "video"};
+  static const std::vector<const char*> kElementTags{"a",
+                                                     "blockquote",
+                                                     "body",
+                                                     "button",
+                                                     "canvas",
+                                                     "col",
+                                                     "div",
+                                                     "fieldset",
+                                                     "form",
+                                                     "h1",
+                                                     "header",
+                                                     "hr"
+                                                     "iframe",
+                                                     "img",
+                                                     "input",
+                                                     "output",
+                                                     "span",
+                                                     "svg",
+                                                     "video"};
 
   SetUpTest(Frame::kTopLevelDocument, /*self_capture=*/true);
   TabInfo& tab = tabs_[kMainTab];

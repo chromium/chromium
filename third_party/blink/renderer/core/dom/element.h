@@ -688,6 +688,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Returns a pointer to the crop-ID if one was set; nullptr otherwise.
   const RegionCaptureCropId* GetRegionCaptureCropId() const;
 
+  // Support for all elements with region capture is currently experimental.
+  // TODO(crbug.com/1332641): Remove this after support is stable.
+  virtual bool IsSupportedByRegionCapture() const;
+
   ShadowRoot* attachShadow(const ShadowRootInit*, ExceptionState&);
 
   void AttachDeclarativeShadowRoot(HTMLTemplateElement*,
@@ -1188,11 +1192,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool checkVisibility(CheckVisibilityOptions* options) const;
 
   bool IsDocumentElement() const;
-
-  // Not all Elements are presently supported by the Region Capture feature.
-  // Those that are override and this method and return true.
-  // TODO(crbug.com/1332641): Remove this after adding support for all subtypes.
-  virtual bool IsSupportedByRegionCapture() const { return false; }
 
   bool IsReplacedElementRespectingCSSOverflow() const;
 

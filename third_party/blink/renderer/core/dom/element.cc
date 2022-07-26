@@ -4881,6 +4881,11 @@ const RegionCaptureCropId* Element::GetRegionCaptureCropId() const {
                        : nullptr;
 }
 
+bool Element::IsSupportedByRegionCapture() const {
+  return base::FeatureList::IsEnabled(
+      features::kRegionCaptureExperimentalSubtypes);
+}
+
 void Element::ResetForceLegacyLayoutForPrinting() {
   SetShouldForceLegacyLayoutForChild(
       NeedsLegacyLayoutForEntireDocument(GetDocument()));
