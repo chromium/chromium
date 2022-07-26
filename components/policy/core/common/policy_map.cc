@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/cloud/affiliation.h"
 #include "components/policy/core/common/policy_merger.h"
 #include "components/policy/policy_constants.h"
@@ -492,6 +493,7 @@ void PolicyMap::MergeFrom(const PolicyMap& other) {
   SetDeviceAffiliationIds(
       CombineIds(GetDeviceAffiliationIds(), other.GetDeviceAffiliationIds()));
 
+#if !BUILDFLAG(IS_CHROMEOS)
   // Precedence metapolicies are merged before all other policies, including
   // merging metapolicies, because their value affects policy overriding.
   for (auto* policy : metapolicy::kPrecedence) {
@@ -501,8 +503,10 @@ void PolicyMap::MergeFrom(const PolicyMap& other) {
   }
 
   UpdateStoredComputedMetapolicies();
+#endif
 
   for (const auto& policy_and_entry : other) {
+#if !BUILDFLAG(IS_CHROMEOS)
     // Skip precedence metapolicies since they have already been merged into the
     // current PolicyMap.
     if (std::find(std::begin(metapolicy::kPrecedence),
@@ -510,6 +514,7 @@ void PolicyMap::MergeFrom(const PolicyMap& other) {
         std::end(metapolicy::kPrecedence)) {
       continue;
     }
+#endif
 
     // External factors, such as the values of metapolicies, are considered.
     MergePolicy(policy_and_entry.first, other, false);
@@ -638,6 +643,7 @@ const base::flat_set<std::string>& PolicyMap::GetDeviceAffiliationIds() const {
   return device_affiliation_ids_;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 void PolicyMap::UpdateStoredComputedMetapolicies() {
   cloud_policy_overrides_platform_policy_ =
       GetValue(key::kCloudPolicyOverridesPlatformPolicy,
@@ -653,6 +659,7 @@ void PolicyMap::UpdateStoredComputedMetapolicies() {
                base::Value::Type::BOOLEAN)
           ->GetBool();
 }
+#endif
 
 void PolicyMap::UpdateStoredUserAffiliation() {
   is_user_affiliated_ =

@@ -81,10 +81,12 @@ class PromotionalTabsEnabledPolicyTest
     // Set policies before the browser starts up.
     PolicyMap policies;
 
+#if !BUILDFLAG(IS_CHROMEOS)
     // Suppress the first-run dialog by disabling metrics reporting.
     policies.Set(key::kMetricsReportingEnabled, POLICY_LEVEL_MANDATORY,
                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, base::Value(false),
                  nullptr);
+#endif
 
     // Apply the policy setting under test.
     if (GetParam() != BooleanPolicy::kNotConfigured) {

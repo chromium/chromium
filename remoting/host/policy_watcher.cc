@@ -176,34 +176,33 @@ std::unique_ptr<base::DictionaryValue> PolicyWatcher::GetPlatformPolicies() {
 std::unique_ptr<base::DictionaryValue> PolicyWatcher::GetDefaultPolicies() {
   auto result = std::make_unique<base::DictionaryValue>();
   result->SetBoolKey(key::kRemoteAccessHostFirewallTraversal, true);
-  result->SetBoolKey(key::kRemoteAccessHostRequireCurtain, false);
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-  result->SetBoolKey(key::kRemoteAccessHostMatchUsername, false);
-#endif
   result->Set(key::kRemoteAccessHostClientDomainList,
               std::make_unique<base::ListValue>());
   result->Set(key::kRemoteAccessHostDomainList,
               std::make_unique<base::ListValue>());
+  result->SetBoolKey(key::kRemoteAccessHostAllowRelayedConnection, true);
+  result->SetStringKey(key::kRemoteAccessHostUdpPortRange, "");
+  result->SetIntKey(key::kRemoteAccessHostClipboardSizeBytes, -1);
+  result->SetBoolKey(key::kRemoteAccessHostAllowRemoteSupportConnections, true);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+  result->SetBoolKey(key::kRemoteAccessHostMatchUsername, false);
+#endif
+#if !BUILDFLAG(IS_CHROMEOS)
+  result->SetBoolKey(key::kRemoteAccessHostRequireCurtain, false);
   result->SetStringKey(key::kRemoteAccessHostTokenUrl, std::string());
   result->SetStringKey(key::kRemoteAccessHostTokenValidationUrl, std::string());
   result->SetStringKey(key::kRemoteAccessHostTokenValidationCertificateIssuer,
                        std::string());
   result->SetBoolKey(key::kRemoteAccessHostAllowClientPairing, true);
   result->SetBoolKey(key::kRemoteAccessHostAllowGnubbyAuth, true);
-  result->SetBoolKey(key::kRemoteAccessHostAllowRelayedConnection, true);
-  result->SetStringKey(key::kRemoteAccessHostUdpPortRange, "");
-
-#if BUILDFLAG(IS_WIN)
-  result->SetBoolKey(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance,
-                     false);
-#endif
-  result->SetIntKey(key::kRemoteAccessHostClipboardSizeBytes, -1);
-  result->SetBoolKey(key::kRemoteAccessHostAllowRemoteSupportConnections, true);
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   result->SetBoolKey(key::kRemoteAccessHostAllowFileTransfer, true);
   result->SetBoolKey(key::kRemoteAccessHostEnableUserInterface, true);
   result->SetBoolKey(key::kRemoteAccessHostAllowRemoteAccessConnections, true);
   result->SetIntKey(key::kRemoteAccessHostMaximumSessionDurationMinutes, 0);
+#endif
+#if BUILDFLAG(IS_WIN)
+  result->SetBoolKey(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance,
+                     false);
 #endif
   return result;
 }
@@ -302,6 +301,7 @@ void PolicyWatcher::HandleDeprecatedPolicies(base::DictionaryValue* dict) {
   }
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 namespace {
 void CopyDictionaryValue(const base::DictionaryValue& from,
                          base::DictionaryValue& to,
@@ -312,6 +312,7 @@ void CopyDictionaryValue(const base::DictionaryValue& from,
   }
 }
 }  // namespace
+#endif
 
 std::unique_ptr<base::DictionaryValue>
 PolicyWatcher::StoreNewAndReturnChangedPolicies(
@@ -330,6 +331,7 @@ PolicyWatcher::StoreNewAndReturnChangedPolicies(
     iter.Advance();
   }
 
+#if !BUILDFLAG(IS_CHROMEOS)
   // If one of ThirdPartyAuthConfig policies changed, we need to include all.
   if (changed_policies->FindKey(key::kRemoteAccessHostTokenUrl) ||
       changed_policies->FindKey(key::kRemoteAccessHostTokenValidationUrl) ||
@@ -342,6 +344,7 @@ PolicyWatcher::StoreNewAndReturnChangedPolicies(
     CopyDictionaryValue(*new_policies, *changed_policies,
                         key::kRemoteAccessHostTokenValidationCertificateIssuer);
   }
+#endif
 
   // Save the new policies.
   effective_policies_.swap(new_policies);

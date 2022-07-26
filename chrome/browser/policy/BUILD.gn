@@ -258,7 +258,7 @@ source_set("policy_specific_browser_tests") {
     ]
   }
 
-  if (!is_chromeos_ash) {
+  if (!is_chromeos) {
     sources += [ "test/variation_restrict_parameter_policy_browsertest.cc" ]
     deps += [ "//components/variations/service" ]
   }
