@@ -122,6 +122,10 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   WaylandBufferHandle* GetBufferHandle(WaylandSurface* requestor,
                                        uint32_t buffer_id);
 
+  // Gets the buffer format of |buffer_id| used for |requestor| if it is a
+  // DMA based buffer.
+  uint32_t GetBufferFormat(WaylandSurface* requestor, uint32_t buffer_id);
+
   // Tells the |buffer_manager_gpu_ptr_| the result of a swap call and provides
   // it with the presentation feedback.
   void OnSubmission(gfx::AcceleratedWidget widget,

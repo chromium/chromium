@@ -37,7 +37,6 @@ class WaylandBufferBackingDmabuf : public WaylandBufferBacking {
   const std::vector<uint32_t> strides_;
   const std::vector<uint32_t> offsets_;
   const std::vector<uint64_t> modifiers_;
-  const uint32_t format_;
   const uint32_t planes_count_;
 };
 

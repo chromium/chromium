@@ -245,6 +245,18 @@ WaylandBufferHandle* WaylandBufferManagerHost::GetBufferHandle(
   return it->second->GetBufferHandle(requestor);
 }
 
+uint32_t WaylandBufferManagerHost::GetBufferFormat(WaylandSurface* requestor,
+                                                   uint32_t buffer_id) {
+  DCHECK(base::CurrentUIThread::IsSet());
+  DCHECK(requestor);
+
+  auto it = buffer_backings_.find(buffer_id);
+  if (it == buffer_backings_.end())
+    return DRM_FORMAT_INVALID;
+
+  return it->second.get()->format();
+}
+
 void WaylandBufferManagerHost::CommitOverlays(
     gfx::AcceleratedWidget widget,
     uint32_t frame_id,

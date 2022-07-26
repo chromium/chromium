@@ -22,7 +22,8 @@ void WaylandBufferBackingSolidColor::RequestBufferHandle(
     base::OnceCallback<void(wl::Object<wl_buffer>)> callback) {
   DCHECK(!callback.is_null());
   std::move(callback).Run(
-      connection_->surface_augmenter()->CreateSolidColorBuffer(color_, size()));
+      connection()->surface_augmenter()->CreateSolidColorBuffer(color_,
+                                                                size()));
 }
 
 }  // namespace ui

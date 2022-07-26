@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "drm_fourcc.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -31,9 +32,12 @@ class WaylandBufferBacking {
   WaylandBufferBacking& operator=(const WaylandBufferBacking&) = delete;
   WaylandBufferBacking(const WaylandConnection* connection,
                        uint32_t buffer_id,
-                       const gfx::Size& size);
+                       const gfx::Size& size,
+                       uint32_t format = DRM_FORMAT_INVALID);
   virtual ~WaylandBufferBacking();
 
+  const WaylandConnection* connection() const { return connection_; }
+  uint32_t format() const { return format_; }
   uint32_t id() const { return buffer_id_; }
   gfx::Size size() const { return size_; }
 
@@ -49,11 +53,13 @@ class WaylandBufferBacking {
   // Same as above but does not do the requesting.
   WaylandBufferHandle* GetBufferHandle(WaylandSurface* requestor);
 
- protected:
+ private:
   // Non-owned pointer to the main connection.
   raw_ptr<const WaylandConnection> connection_;
 
- private:
+  // DRM buffer format if specified, otherwise DRM_FORMAT_INVALID (0)
+  const uint32_t format_;
+
   // Requests a new wl_buffer. |callback| will be run with the created wl_buffer
   // object when creation is complete.
   virtual void RequestBufferHandle(
