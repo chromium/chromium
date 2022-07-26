@@ -413,7 +413,11 @@ void HistorySyncBridge::GetData(StorageKeyList storage_keys,
     // Query the redirect chain that ended in this visit.
     std::vector<VisitRow> redirect_visits =
         history_backend_->GetRedirectChain(final_visit);
-    DCHECK(!redirect_visits.empty());
+    if (redirect_visits.empty()) {
+      // This can happen if there's invalid data in the DB (e.g. broken referrer
+      // "links"). In that case, skip this item.
+      continue;
+    }
     DCHECK_EQ(redirect_visits.back().visit_id, final_visit.visit_id);
 
     // Query the corresponding URLs.
@@ -500,7 +504,11 @@ void HistorySyncBridge::OnURLVisited(HistoryBackend* history_backend,
   // Query the redirect chain that ended in this visit.
   std::vector<VisitRow> redirect_visits =
       history_backend_->GetRedirectChain(visit_row);
-  DCHECK(!redirect_visits.empty());
+  if (redirect_visits.empty()) {
+    // This can happen if there's invalid data in the DB (e.g. broken referrer
+    // "links"). In that case, ignore the change.
+    return;
+  }
   DCHECK_EQ(redirect_visits.back().visit_id, visit_row.visit_id);
 
   // Query the corresponding URLs.
@@ -592,7 +600,11 @@ void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row) {
   // Query the redirect chain that ended in this visit.
   std::vector<VisitRow> redirect_visits =
       history_backend_->GetRedirectChain(visit_row);
-  DCHECK(!redirect_visits.empty());
+  if (redirect_visits.empty()) {
+    // This can happen if there's invalid data in the DB (e.g. broken referrer
+    // "links"). In that case, ignore the change.
+    return;
+  }
   DCHECK_EQ(redirect_visits.back().visit_id, visit_row.visit_id);
 
   // Query the corresponding URLs.
