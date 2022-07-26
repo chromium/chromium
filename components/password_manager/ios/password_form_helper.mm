@@ -284,6 +284,7 @@ constexpr char kCommandPrefix[] = "passwordForm";
 }
 
 - (void)fillPasswordForm:(const autofill::PasswordFormFillData&)formData
+                 inFrame:(web::WebFrame*)frame
        completionHandler:(nullable void (^)(BOOL))completionHandler {
   web::WebFrame* mainFrame = web::GetMainFrame(_webState);
   if (!mainFrame) {
@@ -335,6 +336,7 @@ constexpr char kCommandPrefix[] = "passwordForm";
 }
 
 - (void)fillPasswordForm:(FormRendererId)formIdentifier
+                      inFrame:(web::WebFrame*)frame
         newPasswordIdentifier:(FieldRendererId)newPasswordIdentifier
     confirmPasswordIdentifier:(FieldRendererId)confirmPasswordIdentifier
             generatedPassword:(NSString*)generatedPassword
@@ -369,6 +371,7 @@ constexpr char kCommandPrefix[] = "passwordForm";
 }
 
 - (void)fillPasswordFormWithFillData:(const password_manager::FillData&)fillData
+                             inFrame:(web::WebFrame*)frame
                     triggeredOnField:(FieldRendererId)uniqueFieldID
                    completionHandler:
                        (nullable void (^)(BOOL))completionHandler {

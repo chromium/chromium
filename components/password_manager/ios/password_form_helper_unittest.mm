@@ -253,6 +253,7 @@ TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillData) {
 
   __block int call_counter = 0;
   [helper_ fillPasswordFormWithFillData:fill_data
+                                inFrame:web::GetMainFrame(web_state())
                        triggeredOnField:username_field_id
                       completionHandler:^(BOOL complete) {
                         ++call_counter;
@@ -285,6 +286,7 @@ TEST_F(PasswordFormHelperTest, FillPasswordFormWithFillDataFillingFailure) {
 
   __block int call_counter = 0;
   [helper_ fillPasswordFormWithFillData:fill_data
+                                inFrame:web::GetMainFrame(web_state())
                        triggeredOnField:username_field_id
                       completionHandler:^(BOOL complete) {
                         ++call_counter;
@@ -315,6 +317,7 @@ TEST_F(PasswordFormHelperTest, FindAndFillOnePasswordForm) {
   __block int call_counter = 0;
   __block int success_counter = 0;
   [helper_ fillPasswordForm:form_data
+                    inFrame:web::GetMainFrame(web_state())
           completionHandler:^(BOOL complete) {
             ++call_counter;
             if (complete) {
@@ -348,6 +351,7 @@ TEST_F(PasswordFormHelperTest, FindAndFillOnePasswordFormFillingFailure) {
 
   __block int call_counter = 0;
   [helper_ fillPasswordForm:form_data
+                    inFrame:web::GetMainFrame(web_state())
           completionHandler:^(BOOL complete) {
             ++call_counter;
           }];
@@ -422,6 +426,7 @@ TEST_F(PasswordFormHelperTest, RefillFormFilledOnUserTrigger) {
               password_field_id.value(), "super!secret", &fill_data);
   __block int call_counter = 0;
   [helper_ fillPasswordFormWithFillData:fill_data
+                                inFrame:web::GetMainFrame(web_state())
                        triggeredOnField:username_field_id
                       completionHandler:^(BOOL complete) {
                         ++call_counter;
@@ -440,6 +445,7 @@ TEST_F(PasswordFormHelperTest, RefillFormFilledOnUserTrigger) {
   __block bool called = NO;
   __block bool success = NO;
   [helper_ fillPasswordForm:form_data
+                    inFrame:web::GetMainFrame(web_state())
           completionHandler:^(BOOL res) {
             called = YES;
             success = res;
@@ -475,6 +481,7 @@ TEST_F(PasswordFormHelperTest, RefillFormWithUserTypedInput) {
   __block bool called = NO;
   __block bool success = NO;
   [helper_ fillPasswordForm:form_data
+                    inFrame:web::GetMainFrame(web_state())
           completionHandler:^(BOOL res) {
             called = YES;
             success = res;
@@ -490,6 +497,7 @@ TEST_F(PasswordFormHelperTest, RefillFormWithUserTypedInput) {
 
   success = NO;
   [helper_ fillPasswordForm:form_data
+                    inFrame:web::GetMainFrame(web_state())
           completionHandler:^(BOOL res) {
             success = res;
           }];
@@ -522,6 +530,7 @@ TEST_F(PasswordFormHelperTest, FillPasswordIntoFormWithUserTypedUsername) {
   __block bool called = NO;
   __block bool success = NO;
   [helper_ fillPasswordFormWithFillData:fill_data
+                                inFrame:web::GetMainFrame(web_state())
                        triggeredOnField:password_field_id
                       completionHandler:^(BOOL res) {
                         called = YES;

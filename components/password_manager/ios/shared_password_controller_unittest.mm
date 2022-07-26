@@ -4,6 +4,7 @@
 
 #import "components/password_manager/ios/shared_password_controller.h"
 
+#include "base/strings/sys_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/form_data.h"
@@ -20,6 +21,7 @@
 #include "components/password_manager/ios/test_helpers.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +38,12 @@ using ::testing::Return;
 
 namespace password_manager {
 
+namespace {
+
+const std::string kTestURL = "https://www.chromium.org/";
+NSString* kTestFrameID = @"dummy-frame-id";
+
+}  // namespace
 class MockPasswordManager : public PasswordManagerInterface {
  public:
   MOCK_METHOD(void, DidNavigateMainFrame, (bool), (override));
@@ -129,10 +137,15 @@ class SharedPasswordControllerTest : public PlatformTest {
     [suggestion_helper_ verify];
     [form_helper_ verify];
     UniqueIDDataTabHelper::CreateForWebState(&web_state_);
+
+    auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    web_frames_manager_ = web_frames_manager.get();
+    web_state_.SetWebFramesManager(std::move(web_frames_manager));
   }
 
  protected:
   web::FakeWebState web_state_;
+  web::FakeWebFramesManager* web_frames_manager_;
   testing::StrictMock<MockPasswordManager> password_manager_;
   id form_helper_;
   id suggestion_helper_;
@@ -397,6 +410,15 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
       form_id, field_id, field_id};
   [controller_ formEligibleForGenerationFound:form_generation_data];
 
+  web_state_.SetCurrentURL(GURL(kTestURL));
+  web_state_.SetContentIsHTML(true);
+
+  auto web_frame =
+      web::FakeWebFrame::Create(base::SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/true, GURL(kTestURL));
+  web::FakeWebFrame* frame = web_frame.get();
+  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
   FormSuggestion* suggestion = [FormSuggestion
       suggestionWithValue:@"test-value"
        displayDescription:@"test-description"
@@ -419,6 +441,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
         return YES;
       }];
   [[form_helper_ expect] fillPasswordForm:form_id
+                                  inFrame:frame
                     newPasswordIdentifier:field_id
                 confirmPasswordIdentifier:field_id
                         generatedPassword:[OCMArg isNotNil]
@@ -442,7 +465,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
                       uniqueFormID:form_id
                    fieldIdentifier:@"test-field-id"
                      uniqueFieldID:field_id
-                           frameID:@"test-frame-id"
+                           frameID:kTestFrameID
                  completionHandler:nil];
 
   [delegate_ verify];

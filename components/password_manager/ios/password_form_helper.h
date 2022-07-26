@@ -76,14 +76,22 @@ class WebState;
 // Autofills credentials into the page. Credentials and input fields are
 // specified by |formData|. Invokes |completionHandler| when finished with YES
 // if successful and NO otherwise.
+// TODO(crbug.com/1344776) after the cross origin iframe support is implemented
+// to trigger filling directly in |frame| instead of triggering the filling
+// recursively from the main frame.
 - (void)fillPasswordForm:(const autofill::PasswordFormFillData&)formData
+                 inFrame:(web::WebFrame*)frame
        completionHandler:(nullable void (^)(BOOL))completionHandler;
 
 // Fills new password field for (optional as @"") |newPasswordIdentifier| and
 // for (optional as @"") confirm password field |confirmPasswordIdentifier| in
 // the form identified by |formData|. Invokes |completionHandler| with true if
 // any fields were filled, false otherwise.
+// TODO(crbug.com/1344776) after the cross origin iframe support is implemented
+// to trigger filling directly in |frame| instead of triggering the filling
+// recursively from the main frame.
 - (void)fillPasswordForm:(autofill::FormRendererId)formIdentifier
+                      inFrame:(web::WebFrame*)frame
         newPasswordIdentifier:(autofill::FieldRendererId)newPasswordIdentifier
     confirmPasswordIdentifier:
         (autofill::FieldRendererId)confirmPasswordIdentifier
@@ -94,7 +102,11 @@ class WebState;
 // Credentials and input fields are specified by |fillData|. |uniqueFieldID|
 // specifies the unput on which the suggestion was accepted. Invokes
 // |completionHandler| when finished with YES if successful and NO otherwise.
+// TODO(crbug.com/1344776) after the cross origin iframe support is implemented
+// to trigger filling directly in |frame| instead of triggering the filling
+// recursively from the main frame.
 - (void)fillPasswordFormWithFillData:(const password_manager::FillData&)fillData
+                             inFrame:(web::WebFrame*)frame
                     triggeredOnField:(autofill::FieldRendererId)uniqueFieldID
                    completionHandler:(nullable void (^)(BOOL))completionHandler;
 

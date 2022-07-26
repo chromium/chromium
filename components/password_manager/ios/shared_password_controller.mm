@@ -61,6 +61,7 @@ using autofill::PasswordFormGenerationData;
 using autofill::password_generation::LogPasswordGenerationEvent;
 using autofill::password_generation::PasswordGenerationType;
 using base::SysNSStringToUTF16;
+using base::SysNSStringToUTF8;
 using base::SysUTF16ToNSString;
 using base::SysUTF8ToNSString;
 using l10n_util::GetNSString;
@@ -69,13 +70,13 @@ using password_manager::AccountSelectFillData;
 using password_manager::FillData;
 using password_manager::GetPageURLAndCheckTrustLevel;
 using password_manager::JsonStringToFormData;
-using password_manager::metrics_util::LogPasswordDropdownShown;
-using password_manager::metrics_util::PasswordDropdownState;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordGenerationFrameHelper;
 using password_manager::PasswordManagerClient;
 using password_manager::PasswordManagerDriver;
 using password_manager::PasswordManagerInterface;
+using password_manager::metrics_util::LogPasswordDropdownShown;
+using password_manager::metrics_util::PasswordDropdownState;
 
 namespace {
 
@@ -132,6 +133,9 @@ NSString* const kSuggestionSuffix = @" ••••••••";
 
   // Identifier of the last focused field.
   FieldRendererId _lastFocusedFieldIdentifier;
+
+  // Identifier of the last focused frame.
+  web::WebFrame* _lastFocusedFrame;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
@@ -178,6 +182,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
       autofill::password_generation::PASSWORD_GENERATION_CONTEXT_MENU_PRESSED);
   [self generatePasswordForFormId:_lastFocusedFormIdentifier
                   fieldIdentifier:_lastFocusedFieldIdentifier
+                          inFrame:_lastFocusedFrame
               isManuallyTriggered:YES];
 }
 
@@ -284,6 +289,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   _lastTypedValue = nil;
   _lastFocusedFormIdentifier = FormRendererId();
   _lastFocusedFieldIdentifier = FieldRendererId();
+  _lastFocusedFrame = nullptr;
   _passwordManager = nullptr;
 }
 
@@ -326,8 +332,12 @@ NSString* const kSuggestionSuffix = @" ••••••••";
       _passwordManager->OnPasswordNoLongerGenerated(
           _delegate.passwordManagerDriver);
     } else {
+      web::WebFrame* frame = web::GetWebFrameWithId(
+          _webState, SysNSStringToUTF8(formQuery.frameID));
+
       // Inject updated value to possibly update confirmation field.
       [self injectGeneratedPasswordForFormId:formQuery.uniqueFormID
+                                     inFrame:frame
                            generatedPassword:formQuery.typedValue
                            completionHandler:nil];
     }
@@ -423,6 +433,9 @@ NSString* const kSuggestionSuffix = @" ••••••••";
               uniqueFieldID:(FieldRendererId)uniqueFieldID
                     frameID:(NSString*)frameID
           completionHandler:(SuggestionHandledCompletion)completion {
+  web::WebFrame* frame =
+      web::GetWebFrameWithId(_webState, SysNSStringToUTF8(frameID));
+
   switch (suggestion.identifier) {
     case autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY: {
       completion();
@@ -437,6 +450,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
       // whether user injects a generated password or cancels.
       [self generatePasswordForFormId:uniqueFormID
                       fieldIdentifier:uniqueFieldID
+                              inFrame:frame
                   isManuallyTriggered:NO];
       password_manager::metrics_util::LogPasswordDropdownItemSelected(
           password_manager::metrics_util::PasswordDropdownSelectedOption::
@@ -461,6 +475,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
       }
 
       [self.formHelper fillPasswordFormWithFillData:*fillData
+                                            inFrame:frame
                                    triggeredOnField:uniqueFieldID
                                   completionHandler:^(BOOL success) {
                                     completion();
@@ -486,6 +501,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
        completionHandler:(void (^)(BOOL))completionHandler {
   [self.suggestionHelper processWithPasswordFormFillData:formData];
   [self.formHelper fillPasswordForm:formData
+                            inFrame:web::GetMainFrame(_webState)
                   completionHandler:completionHandler];
 }
 
@@ -616,6 +632,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
 
 - (void)generatePasswordForFormId:(FormRendererId)formIdentifier
                   fieldIdentifier:(FieldRendererId)fieldIdentifier
+                          inFrame:(web::WebFrame*)frame
               isManuallyTriggered:(BOOL)isManuallyTriggered {
   const autofill::PasswordFormGenerationData* generationData =
       [self formForGenerationFromFormID:formIdentifier];
@@ -655,6 +672,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
                               autofill::password_generation::PASSWORD_ACCEPTED);
                           [weakSelf
                               injectGeneratedPasswordForFormId:formIdentifier
+                                                       inFrame:frame
                                              generatedPassword:
                                                  weakSelf
                                                      .generatedPotentialPassword
@@ -672,6 +690,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
 }
 
 - (void)injectGeneratedPasswordForFormId:(FormRendererId)formIdentifier
+                                 inFrame:(web::WebFrame*)frame
                        generatedPassword:(NSString*)generatedPassword
                        completionHandler:(void (^)())completionHandler {
   const autofill::PasswordFormGenerationData* generationData =
@@ -697,6 +716,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   };
 
   [self.formHelper fillPasswordForm:formIdentifier
+                            inFrame:frame
               newPasswordIdentifier:newPasswordUniqueId
           confirmPasswordIdentifier:confirmPasswordUniqueId
                   generatedPassword:generatedPassword
@@ -760,12 +780,14 @@ NSString* const kSuggestionSuffix = @" ••••••••";
       !frame->CanCallJavaScriptFunction() || params.input_missing) {
     _lastFocusedFormIdentifier = FormRendererId();
     _lastFocusedFieldIdentifier = FieldRendererId();
+    _lastFocusedFrame = nullptr;
     return;
   }
 
   if (params.type == "focus") {
     _lastFocusedFormIdentifier = params.unique_form_id;
     _lastFocusedFieldIdentifier = params.unique_field_id;
+    _lastFocusedFrame = frame;
   }
 
   // If there's a change in password forms on a page, they should be parsed

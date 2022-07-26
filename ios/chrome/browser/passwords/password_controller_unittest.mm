@@ -229,6 +229,7 @@ ACTION_P(InvokeEmptyConsumerWithForms, store) {
 @property(nonatomic, assign) BOOL isPasswordGenerated;
 
 - (void)injectGeneratedPasswordForFormId:(FormRendererId)formIdentifier
+                                 inFrame:(web::WebFrame*)frame
                        generatedPassword:(NSString*)generatedPassword
                        completionHandler:(void (^)())completionHandler;
 
@@ -431,6 +432,7 @@ class PasswordControllerTest : public PlatformTest {
     __block BOOL block_was_called = NO;
     [passwordController_.sharedPasswordController
         injectGeneratedPasswordForFormId:FormRendererId(1)
+                                 inFrame:web::GetMainFrame(web_state())
                        generatedPassword:password
                        completionHandler:^() {
                          block_was_called = YES;
