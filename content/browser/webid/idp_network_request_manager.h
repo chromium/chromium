@@ -158,7 +158,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   // Request a new token for this user account and RP from the IDP.
   virtual void SendTokenRequest(const GURL& token_url,
                                 const std::string& account,
-                                const std::string& request,
+                                const std::string& url_encoded_post_data,
                                 TokenRequestCallback callback);
 
   // Send logout request to a single target.

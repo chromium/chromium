@@ -159,7 +159,6 @@ struct MockConfiguration {
   bool delay_token_response;
   bool customized_dialog;
   bool wait_for_callback;
-  std::string post_request_body;
 };
 
 static const MockClientIdConfiguration kDefaultClientMetadata{
@@ -184,8 +183,7 @@ static const MockConfiguration kConfigurationValid{
     FetchStatus::kSuccess,
     false /* delay_token_response */,
     false /* customized_dialog */,
-    true /* wait_for_callback */,
-    "" /* post_request_body */};
+    true /* wait_for_callback */};
 
 static const RequestExpectations kExpectationSuccess{
     RequestTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
@@ -321,9 +319,9 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
   void SendTokenRequest(const GURL& token_url,
                         const std::string& account,
-                        const std::string& request,
+                        const std::string& url_encoded_post_data,
                         TokenRequestCallback callback) override {
-    delegate_->SendTokenRequest(token_url, account, request,
+    delegate_->SendTokenRequest(token_url, account, url_encoded_post_data,
                                 std::move(callback));
   }
 
@@ -388,11 +386,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
   void SendTokenRequest(const GURL& token_url,
                         const std::string& account,
-                        const std::string& request,
+                        const std::string& url_encoded_post_data,
                         TokenRequestCallback callback) override {
-    if (!config_.post_request_body.empty()) {
-      EXPECT_EQ(config_.post_request_body, request);
-    }
     fetched_endpoints_ |= FetchedEndpoint::TOKEN;
     std::string delivered_token =
         config_.token_response == FetchStatus::kSuccess ? config_.token
@@ -432,18 +427,22 @@ class IdpNetworkRequestManagerParamChecker
     : public TestIdpNetworkRequestManager {
  public:
   void SetExpectations(const std::string& expected_client_id,
-                       const std::string& expected_selected_account_id,
-                       const std::string& expected_revocation_hint) {
+                       const std::string& expected_selected_account_id) {
     expected_client_id_ = expected_client_id;
     expected_selected_account_id_ = expected_selected_account_id;
-    expected_revocation_hint_ = expected_revocation_hint;
+  }
+
+  void SetExpectedTokenPostData(
+      const std::string& expected_url_encoded_post_data) {
+    expected_url_encoded_post_data_ = expected_url_encoded_post_data;
   }
 
   void FetchClientMetadata(const GURL& endpoint,
                            const std::string& client_id,
                            FetchClientMetadataCallback callback) override {
     EXPECT_EQ(config_.manifest.client_metadata_endpoint, endpoint);
-    EXPECT_EQ(expected_client_id_, client_id);
+    if (expected_client_id_)
+      EXPECT_EQ(expected_client_id_, client_id);
     TestIdpNetworkRequestManager::FetchClientMetadata(endpoint, client_id,
                                                       std::move(callback));
   }
@@ -452,25 +451,29 @@ class IdpNetworkRequestManagerParamChecker
                            const std::string& client_id,
                            AccountsRequestCallback callback) override {
     EXPECT_EQ(config_.manifest.accounts_endpoint, accounts_url);
-    EXPECT_EQ(expected_client_id_, client_id);
+    if (expected_client_id_)
+      EXPECT_EQ(expected_client_id_, client_id);
     TestIdpNetworkRequestManager::SendAccountsRequest(accounts_url, client_id,
                                                       std::move(callback));
   }
 
   void SendTokenRequest(const GURL& token_url,
                         const std::string& account,
-                        const std::string& request,
+                        const std::string& url_encoded_post_data,
                         TokenRequestCallback callback) override {
     EXPECT_EQ(config_.manifest.token_endpoint, token_url);
-    EXPECT_EQ(expected_selected_account_id_, account);
-    TestIdpNetworkRequestManager::SendTokenRequest(token_url, account, request,
-                                                   std::move(callback));
+    if (expected_selected_account_id_)
+      EXPECT_EQ(expected_selected_account_id_, account);
+    if (expected_url_encoded_post_data_)
+      EXPECT_EQ(expected_url_encoded_post_data_, url_encoded_post_data);
+    TestIdpNetworkRequestManager::SendTokenRequest(
+        token_url, account, url_encoded_post_data, std::move(callback));
   }
 
  private:
-  std::string expected_client_id_;
-  std::string expected_selected_account_id_;
-  std::string expected_revocation_hint_;
+  absl::optional<std::string> expected_client_id_;
+  absl::optional<std::string> expected_selected_account_id_;
+  absl::optional<std::string> expected_url_encoded_post_data_;
 };
 
 class TestApiPermissionDelegate : public MockApiPermissionDelegate {
@@ -865,8 +868,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, SuccessfulRequest) {
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
       std::make_unique<IdpNetworkRequestManagerParamChecker>();
   checker->SetExpectations(kDefaultRequestParameters.client_id,
-                           kConfigurationValid.accounts[0].id,
-                           /* expected_revocation_hint=*/"");
+                           kConfigurationValid.accounts[0].id);
   SetNetworkRequestManager(std::move(checker));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
@@ -883,8 +885,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, ManifestListSuccess) {
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
       std::make_unique<IdpNetworkRequestManagerParamChecker>();
   checker->SetExpectations(kDefaultRequestParameters.client_id,
-                           kConfigurationValid.accounts[0].id,
-                           /* expected_revocation_hint=*/"");
+                           kConfigurationValid.accounts[0].id);
   SetNetworkRequestManager(std::move(checker));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
@@ -1838,18 +1839,21 @@ TEST_F(BasicFederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
   CheckAllFedCmSessionIDs();
 }
 
-// Test that disclosure text is shown for first time user.
+// Test the disclosure_text_shown value in the token post data for sign-up case.
 TEST_F(BasicFederatedAuthRequestImplTest, DisclosureTextShownForFirstTimeUser) {
-  MockConfiguration configuration = kConfigurationValid;
-  configuration.post_request_body =
+  std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
+      std::make_unique<IdpNetworkRequestManagerParamChecker>();
+  checker->SetExpectedTokenPostData(
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
-      "&account_id=" + std::string(kAccountId) + "&disclosure_text_shown=true";
+      "&account_id=" + std::string(kAccountId) + "&disclosure_text_shown=true");
+  SetNetworkRequestManager(std::move(checker));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
 }
 
-// Test that disclosure text is not shown for returning user.
+// Test the disclosure_text_shown value in the token post data for returning
+// user case.
 TEST_F(BasicFederatedAuthRequestImplTest,
        DisclosureTextNotShownForReturningUser) {
   // Pretend the sharing permission has been granted for this account.
@@ -1859,10 +1863,31 @@ TEST_F(BasicFederatedAuthRequestImplTest,
                                    kAccountId))
       .WillOnce(Return(true));
 
+  std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
+      std::make_unique<IdpNetworkRequestManagerParamChecker>();
+  checker->SetExpectedTokenPostData("client_id=" + std::string(kClientId) +
+                                    "&nonce=" + std::string(kNonce) +
+                                    "&account_id=" + std::string(kAccountId) +
+                                    "&disclosure_text_shown=false");
+  SetNetworkRequestManager(std::move(checker));
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+}
+
+// Test that the values in the token post data are escaped according to the
+// application/x-www-form-urlencoded spec.
+TEST_F(BasicFederatedAuthRequestImplTest, TokenEndpointPostDataEscaping) {
+  const std::string kAccountIdWithSpace("account id");
   MockConfiguration configuration = kConfigurationValid;
-  configuration.post_request_body =
+  configuration.accounts[0].id = kAccountIdWithSpace;
+
+  std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
+      std::make_unique<IdpNetworkRequestManagerParamChecker>();
+  checker->SetExpectedTokenPostData(
       "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
-      "&account_id=" + std::string(kAccountId) + "&disclosure_text_shown=false";
+      "&account_id=account+id&disclosure_text_shown=true");
+  SetNetworkRequestManager(std::move(checker));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
 }

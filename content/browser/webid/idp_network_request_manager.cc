@@ -90,7 +90,7 @@ constexpr char kRevokeAccountKey[] = "account_id";
 constexpr char kRevokeRequestKey[] = "request";
 
 // Body content types.
-constexpr char kRequestBodyContentType[] = "application/x-www-form-urlencoded";
+constexpr char kUrlEncodedContentType[] = "application/x-www-form-urlencoded";
 constexpr char kResponseBodyContentType[] = "application/json";
 
 // 1 MiB is an arbitrary upper bound that should account for any reasonable
@@ -638,18 +638,20 @@ void IdpNetworkRequestManager::SendAccountsRequest(
       maxResponseSizeInKiB * 1024);
 }
 
-void IdpNetworkRequestManager::SendTokenRequest(const GURL& token_url,
-                                                const std::string& account,
-                                                const std::string& request,
-                                                TokenRequestCallback callback) {
-  if (request.empty()) {
+void IdpNetworkRequestManager::SendTokenRequest(
+    const GURL& token_url,
+    const std::string& account,
+    const std::string& url_encoded_post_data,
+    TokenRequestCallback callback) {
+  if (url_encoded_post_data.empty()) {
     std::move(callback).Run(FetchStatus::kInvalidRequestError, std::string());
     return;
   }
 
   std::unique_ptr<network::SimpleURLLoader> url_loader =
       CreateCredentialedUrlLoader(token_url,
-                                  /* send_referrer= */ true, request);
+                                  /* send_referrer= */ true,
+                                  url_encoded_post_data);
   DownloadJsonAndParse(
       std::move(url_loader),
       base::BindOnce(&OnTokenRequestParsed, std::move(callback)),
@@ -784,22 +786,23 @@ std::unique_ptr<network::SimpleURLLoader>
 IdpNetworkRequestManager::CreateCredentialedUrlLoader(
     const GURL& target_url,
     bool send_referrer,
-    absl::optional<std::string> request_body) const {
+    absl::optional<std::string> url_encoded_post_data) const {
   auto resource_request = CreateCredentialedResourceRequest(
       target_url, send_referrer, relying_party_origin_,
       client_security_state_.Clone());
-  if (request_body) {
+  if (url_encoded_post_data) {
     resource_request->method = net::HttpRequestHeaders::kPostMethod;
     resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
-                                        kRequestBodyContentType);
+                                        kUrlEncodedContentType);
   }
 
   auto traffic_annotation = CreateTrafficAnnotation();
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        traffic_annotation);
-  if (request_body)
-    loader->AttachStringForUpload(*request_body, kRequestBodyContentType);
+  if (url_encoded_post_data)
+    loader->AttachStringForUpload(*url_encoded_post_data,
+                                  kUrlEncodedContentType);
   return loader;
 }
 

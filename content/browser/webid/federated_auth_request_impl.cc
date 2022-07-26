@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -52,24 +53,26 @@ static constexpr base::TimeDelta kMaxRejectionTime = base::Seconds(60);
 // TODO(cbiesinger): Determine what the right number is.
 static constexpr size_t kMaxProvidersInManifestList = 1ul;
 
-std::string FormatRequestParamsWithoutScope(const std::string& client_id,
-                                            const std::string& nonce,
-                                            const std::string& account_id,
-                                            bool is_sign_in) {
+std::string ComputeUrlEncodedTokenPostData(const std::string& client_id,
+                                           const std::string& nonce,
+                                           const std::string& account_id,
+                                           bool is_sign_in) {
   std::string query;
   if (!client_id.empty())
-    query += "client_id=" + client_id;
+    query +=
+        "client_id=" + base::EscapeUrlEncodedData(client_id, /*use_plus=*/true);
 
   if (!nonce.empty()) {
     if (!query.empty())
       query += "&";
-    query += "nonce=" + nonce;
+    query += "nonce=" + base::EscapeUrlEncodedData(nonce, /*use_plus=*/true);
   }
 
   if (!account_id.empty()) {
     if (!query.empty())
       query += "&";
-    query += "account_id=" + account_id;
+    query += "account_id=" +
+             base::EscapeUrlEncodedData(account_id, /*use_plus=*/true);
   }
   // For new users signing up, we show some disclosure text to remind them about
   // data sharing between IDP and RP. For returning users signing in, such
@@ -776,8 +779,8 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
 
   network_manager_->SendTokenRequest(
       endpoints_.token, account_id_,
-      FormatRequestParamsWithoutScope(client_id_, nonce_, account_id,
-                                      is_sign_in),
+      ComputeUrlEncodedTokenPostData(client_id_, nonce_, account_id,
+                                     is_sign_in),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
                      weak_ptr_factory_.GetWeakPtr()));
 }
