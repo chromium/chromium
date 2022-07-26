@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://bugs.chromium.org/p/chromium/issues/detail?id=1346508">
+
+<input type=datetime-local>
+
+<script>
+  testRunner.dumpAsText();
+  testRunner.setDumpConsoleMessages(true);
+  const input = document.querySelector('input');
+  // Forcing layout on the input is required to generate console warnings.
+  input.getBoundingClientRect();
+
+  console.log('These values should not generate console warnings.');
+  input.value = '2022-07-22T06:44:31.200';
+  input.value = '2022-07-22T06:44:31.20';
+  input.value = '2022-07-22T06:44:31.2';
+  input.value = '2022-07-22 06:44:31';
+  input.value = '';
+
+  console.log('These values should generate console warnings.');
+  input.value = 'asdf';
+  input.value = '2022-07-22T06:44:3';
+  input.value = '2022-07-22T06:4';
+</script>
