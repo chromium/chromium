@@ -102,15 +102,18 @@ absl::optional<CredentialMetadata> UnsealCredentialId(
     const std::string& rp_id,
     base::span<const uint8_t> credential_id);
 
-// EncodeRpIdAndUserId encodes the concatenation of RP ID and user ID for
-// storage in the macOS keychain.
+// EncodeRpIdAndUserIdDeprecated encodes the concatenation of RP ID and user ID
+// for storage in the macOS keychain.
 //
 // This encoding allows lookup of credentials for a given RP and user but
-// without the credential ID.
+// without the credential ID. This is "deprecated" because we're going to
+// abandon that encoding for CredentialMetadata v3. Querying by user ID will
+// require iterating over all credentials for the RP ID and looking at the
+// unsealed metadata.
 COMPONENT_EXPORT(DEVICE_FIDO)
-std::string EncodeRpIdAndUserId(const std::string& secret,
-                                const std::string& rp_id,
-                                base::span<const uint8_t> user_id);
+std::string EncodeRpIdAndUserIdDeprecated(const std::string& secret,
+                                          const std::string& rp_id,
+                                          base::span<const uint8_t> user_id);
 
 // EncodeRpId encodes the given RP ID for storage in the macOS keychain.
 COMPONENT_EXPORT(DEVICE_FIDO)

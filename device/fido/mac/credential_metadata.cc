@@ -352,9 +352,9 @@ absl::optional<CredentialMetadata> UnsealCredentialId(
   return UnsealLegacyCredentialId(secret, rp_id, credential_id);
 }
 
-std::string EncodeRpIdAndUserId(const std::string& secret,
-                                const std::string& rp_id,
-                                base::span<const uint8_t> user_id) {
+std::string EncodeRpIdAndUserIdDeprecated(const std::string& secret,
+                                          const std::string& rp_id,
+                                          base::span<const uint8_t> user_id) {
   // Encoding RP ID along with the user ID hides whether the same user ID was
   // reused on different RPs.
   const auto* user_id_data = reinterpret_cast<const char*>(user_id.data());

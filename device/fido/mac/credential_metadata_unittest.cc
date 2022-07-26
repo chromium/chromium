@@ -45,8 +45,8 @@ class CredentialMetadataTest : public ::testing::Test {
   }
 
   std::string EncodeRpIdAndUserId(base::StringPiece user_id) {
-    return device::fido::mac::EncodeRpIdAndUserId(key_, rp_id_,
-                                                  to_bytes(user_id));
+    return device::fido::mac::EncodeRpIdAndUserIdDeprecated(key_, rp_id_,
+                                                            to_bytes(user_id));
   }
   std::string EncodeRpId() {
     return device::fido::mac::EncodeRpId(key_, rp_id_);
@@ -113,11 +113,11 @@ TEST_F(CredentialMetadataTest, EncodeRpIdAndUserId) {
   EXPECT_EQ(EncodeRpIdAndUserId("user"), EncodeRpIdAndUserId("user"));
   EXPECT_NE(EncodeRpIdAndUserId("userA"), EncodeRpIdAndUserId("userB"));
   EXPECT_NE(EncodeRpIdAndUserId("user"),
-            device::fido::mac::EncodeRpIdAndUserId(key_, "notacme.com",
-                                                   to_bytes("user")));
+            device::fido::mac::EncodeRpIdAndUserIdDeprecated(
+                key_, "notacme.com", to_bytes("user")));
   EXPECT_NE(EncodeRpIdAndUserId("user"),
-            device::fido::mac::EncodeRpIdAndUserId(wrong_key_, rp_id_,
-                                                   to_bytes("user")));
+            device::fido::mac::EncodeRpIdAndUserIdDeprecated(wrong_key_, rp_id_,
+                                                             to_bytes("user")));
 }
 
 TEST_F(CredentialMetadataTest, EncodeRpId) {

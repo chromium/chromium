@@ -112,7 +112,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
   // user ID. Returns true if deleting succeeded or no matching credential
   // exists, and false if an error occurred.
   bool DeleteCredentialsForUserId(const std::string& rp_id,
-                                  base::span<const uint8_t> user_id) const;
+                                  const std::vector<uint8_t>& user_id) const;
 
   // PlatformCredentialStore:
   void DeleteCredentials(base::Time created_not_before,
@@ -136,7 +136,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
  private:
   absl::optional<std::list<Credential>> FindCredentialsImpl(
       const std::string& rp_id,
-      absl::optional<base::span<const uint8_t>> user_id,
       const std::set<std::vector<uint8_t>>& credential_ids) const;
 
   bool DeleteCredentialById(base::span<const uint8_t> credential_id) const;

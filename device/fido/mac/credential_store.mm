@@ -214,7 +214,7 @@ TouchIdCredentialStore::CreateCredential(
       params, kSecAttrLabel,
       base::SysUTF8ToNSString(EncodeRpId(config_.metadata_secret, rp_id)));
   CFDictionarySetValue(params, kSecAttrApplicationTag,
-                       base::SysUTF8ToNSString(EncodeRpIdAndUserId(
+                       base::SysUTF8ToNSString(EncodeRpIdAndUserIdDeprecated(
                            config_.metadata_secret, rp_id, user.id)));
   CFDictionarySetValue(params, kSecAttrApplicationLabel,
                        [NSData dataWithBytes:credential_id.data()
@@ -269,14 +269,14 @@ TouchIdCredentialStore::FindCredentialsFromCredentialDescriptorList(
     // returns *all* credentials for |rp_id|.
     return std::list<Credential>();
   }
-  return FindCredentialsImpl(rp_id, /*user_id=*/absl::nullopt, credential_ids);
+  return FindCredentialsImpl(rp_id, credential_ids);
 }
 
 absl::optional<std::list<Credential>>
 TouchIdCredentialStore::FindResidentCredentials(
     const std::string& rp_id) const {
-  absl::optional<std::list<Credential>> credentials = FindCredentialsImpl(
-      rp_id, /*user_id=*/absl::nullopt, /*credential_ids=*/{});
+  absl::optional<std::list<Credential>> credentials =
+      FindCredentialsImpl(rp_id, /*credential_ids=*/{});
   if (!credentials) {
     return absl::nullopt;
   }
@@ -301,9 +301,9 @@ absl::optional<CredentialMetadata> TouchIdCredentialStore::UnsealMetadata(
 
 bool TouchIdCredentialStore::DeleteCredentialsForUserId(
     const std::string& rp_id,
-    base::span<const uint8_t> user_id) const {
+    const std::vector<uint8_t>& user_id) const {
   absl::optional<std::list<Credential>> credentials =
-      FindCredentialsImpl(rp_id, user_id, /*credential_ids=*/{});
+      FindCredentialsImpl(rp_id, /*credential_ids=*/{});
   if (!credentials) {
     return false;
   }
@@ -312,6 +312,9 @@ bool TouchIdCredentialStore::DeleteCredentialsForUserId(
         UnsealMetadata(rp_id, credential);
     if (!metadata) {
       FIDO_LOG(ERROR) << "UnsealMetadata failed";
+      continue;
+    }
+    if (user_id != metadata->user_id) {
       continue;
     }
     if (!DeleteCredentialById(credential.credential_id)) {
@@ -386,8 +389,8 @@ std::vector<std::pair<Credential, CredentialMetadata>>
 TouchIdCredentialStore::FindCredentialsForTesting(AuthenticatorConfig config,
                                                   std::string rp_id) {
   TouchIdCredentialStore store(std::move(config));
-  absl::optional<std::list<Credential>> credentials = store.FindCredentialsImpl(
-      rp_id, /*user_id=*/absl::nullopt, /*credential_ids=*/{});
+  absl::optional<std::list<Credential>> credentials =
+      store.FindCredentialsImpl(rp_id, /*credential_ids=*/{});
   DCHECK(credentials) << "FindCredentialsImpl shouldn't fail in tests";
   std::vector<std::pair<Credential, CredentialMetadata>> result;
   for (Credential& credential : *credentials) {
@@ -402,15 +405,9 @@ TouchIdCredentialStore::FindCredentialsForTesting(AuthenticatorConfig config,
 absl::optional<std::list<Credential>>
 TouchIdCredentialStore::FindCredentialsImpl(
     const std::string& rp_id,
-    absl::optional<base::span<const uint8_t>> user_id,
     const std::set<std::vector<uint8_t>>& credential_ids) const {
   base::ScopedCFTypeRef<CFMutableDictionaryRef> query =
       DefaultKeychainQuery(config_, rp_id);
-  if (user_id) {
-    CFDictionarySetValue(query, kSecAttrApplicationTag,
-                         base::SysUTF8ToNSString(EncodeRpIdAndUserId(
-                             config_.metadata_secret, rp_id, *user_id)));
-  }
   if (authentication_context_) {
     CFDictionarySetValue(query, kSecUseAuthenticationContext,
                          authentication_context_);
