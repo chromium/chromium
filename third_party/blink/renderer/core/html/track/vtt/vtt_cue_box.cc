@@ -151,6 +151,9 @@ LayoutObject* VTTCueBox::CreateLayoutObject(const ComputedStyle& style,
   if (IsInRegion())
     return HTMLDivElement::CreateLayoutObject(style, legacy);
 
+  // We create a standard block-flow container.
+  // See the comment in vtt_cue_layout_algorithm.h about how we adjust
+  // VTTCueBox positions.
   if (RuntimeEnabledFeatures::LayoutNGVTTCueEnabled())
     return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
 

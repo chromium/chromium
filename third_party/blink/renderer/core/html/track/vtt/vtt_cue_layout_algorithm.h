@@ -22,6 +22,7 @@ class VTTCueBox;
 // https://w3c.github.io/webvtt/#apply-webvtt-cue-settings .
 //
 // This class is used in a ResizeObserver callback for VTTCueBox.
+// See https://bit.ly/3vfUajH for more details.
 class VttCueLayoutAlgorithm {
   STACK_ALLOCATED();
   using PassKey = base::PassKey<VttCueLayoutAlgorithm>;
