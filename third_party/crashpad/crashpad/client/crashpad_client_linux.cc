@@ -462,6 +462,7 @@ bool CrashpadClient::StartHandler(
   if (!SpawnSubprocess(argv, nullptr, handler_sock.get(), false, nullptr)) {
     return false;
   }
+  handler_sock.reset();
 
   pid_t handler_pid = -1;
   if (!IsRegularFile(base::FilePath("/proc/sys/kernel/yama/ptrace_scope"))) {
