@@ -1,3 +1,8 @@
+# When picking a reviewer for Fuchsia-related OWNERShip, please start by looking
+# at git history to find the most relevant owner. The team would appreciate it
+# if you would also add chromium-fuchsia-reviews@google.com so that a shadowed
+# reviewer is added automatically. Thank you.
+
 ddorwin@chromium.org
 fdegans@chromium.org
 grt@chromium.org
