@@ -67,7 +67,7 @@ if (optimize_webui) {
       "chrome://resources/js/cr.m.js",
       "chrome://resources/mojo/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-lite.js",
       "chrome://resources/mojo/ash/services/cellular_setup/public/mojom/esim_manager.mojom-lite.js",
-      "chrome://resources/mojo/chromeos/ash/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js",
+      "chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js",
       "chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js",
       "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js",
       "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js",
