@@ -304,6 +304,7 @@ source_set("unit_tests_internal") {
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/safe_browsing",
     "//ios/chrome/browser/ssl",
     "//ios/chrome/browser/web",

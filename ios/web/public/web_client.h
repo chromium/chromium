@@ -191,6 +191,10 @@ class WebClient {
   // Notify the embedder that |web_state| will display a prompt for the user.
   virtual void WillDisplayMediaCapturePermissionPrompt(
       web::WebState* web_state) const;
+
+  // Returns whether `url1` and `url2` are actually pointing to the same page.
+  virtual bool IsPointingToSameDocument(const GURL& url1,
+                                        const GURL& url2) const;
 };
 
 }  // namespace web

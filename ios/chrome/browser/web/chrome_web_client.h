@@ -61,6 +61,8 @@ class ChromeWebClient : public web::WebClient {
   void CleanupNativeRestoreURLs(web::WebState* web_state) const override;
   void WillDisplayMediaCapturePermissionPrompt(
       web::WebState* web_state) const override;
+  bool IsPointingToSameDocument(const GURL& url1,
+                                const GURL& url2) const override;
 
  private:
   // Reference to a view that is attached to a window.

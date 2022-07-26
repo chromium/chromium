@@ -6,8 +6,9 @@
 
 #import <Foundation/Foundation.h>
 
-#include "ios/web/common/features.h"
-#include "ios/web/public/init/web_main_parts.h"
+#import "ios/web/common/features.h"
+#import "ios/web/public/init/web_main_parts.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -121,5 +122,10 @@ UserAgentType WebClient::GetDefaultUserAgent(web::WebState* web_state,
 
 void WebClient::LogDefaultUserAgent(web::WebState* web_state,
                                     const GURL& url) const {}
+
+bool WebClient::IsPointingToSameDocument(const GURL& url1,
+                                         const GURL& url2) const {
+  return url1 == url2;
+}
 
 }  // namespace web
