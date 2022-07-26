@@ -15,6 +15,14 @@ namespace client {
 class CaptureClientObserver;
 
 // An interface implemented by an object that manages input capture.
+//
+// The intended semantics of window-capture are that:
+//   * At most one window on the system can register as "capturing" input.
+//   * If a window is capturing input, then all input events will get routed to
+//     this window.
+//   * The window may choose to release capture while processing an event. The
+//     resulting behavior is platform dependent (e.g. whether the event is
+//     redispatched to the window server).
 class AURA_EXPORT CaptureClient {
  public:
   // Does a capture on the |window|.
