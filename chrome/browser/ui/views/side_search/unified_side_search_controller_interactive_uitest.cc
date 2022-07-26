@@ -247,7 +247,14 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
   EXPECT_FALSE(side_panel->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SidePanelCrashesCloseSidePanel) {
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1347306): This test is flakey on macOS.
+#define MAYBE_SidePanelCrashesCloseSidePanel \
+  DISABLED_SidePanelCrashesCloseSidePanel
+#else
+#define MAYBE_SidePanelCrashesCloseSidePanel SidePanelCrashesCloseSidePanel
+#endif
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test, MAYBE_SidePanelCrashesCloseSidePanel) {
   auto* browser_view = BrowserViewFor(browser());
   auto* coordinator = browser_view->side_panel_coordinator();
   coordinator->SetNoDelaysForTesting();
