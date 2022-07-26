@@ -148,7 +148,7 @@ void FakePermissionBrokerClient::OpenPathAndRegisterClient(
   std::string client_id;
   do {
     client_id = base::UnguessableToken::Create().ToString();
-  } while (base::Contains(clients, client_id));
+  } while (base::Contains(clients_, client_id));
 
   base::ScopedFD dup_lifeline_fd(HANDLE_EINTR(dup(lifeline_fd)));
   if (!dup_lifeline_fd.is_valid()) {
@@ -172,8 +172,8 @@ void FakePermissionBrokerClient::OpenPathAndRegisterClient(
                                 dup_lifeline_fd.get()));
     return;
   }
-  clients.emplace(client_id, UsbInterfaces(path, std::move(controller),
-                                           std::move(dup_lifeline_fd)));
+  clients_.emplace(client_id, UsbInterfaces(path, std::move(dup_lifeline_fd),
+                                            std::move(controller)));
 
   // No concern of OpenPath failure causing orphan client record here, as the
   // inserted client's record will still be removed when requester does error
@@ -185,8 +185,8 @@ void FakePermissionBrokerClient::OpenPathAndRegisterClient(
 void FakePermissionBrokerClient::DetachInterface(const std::string& client_id,
                                                  uint8_t iface_num,
                                                  ResultCallback callback) {
-  auto client_it = clients.find(client_id);
-  if (client_it == clients.end()) {
+  auto client_it = clients_.find(client_id);
+  if (client_it == clients_.end()) {
     LOG(ERROR) << "Unknown client_id: " << client_id;
     std::move(callback).Run(false);
     return;
@@ -203,8 +203,8 @@ void FakePermissionBrokerClient::DetachInterface(const std::string& client_id,
 void FakePermissionBrokerClient::ReattachInterface(const std::string& client_id,
                                                    uint8_t iface_num,
                                                    ResultCallback callback) {
-  auto client_it = clients.find(client_id);
-  if (client_it == clients.end()) {
+  auto client_it = clients_.find(client_id);
+  if (client_it == clients_.end()) {
     LOG(ERROR) << "Unknown client_id: " << client_id;
     std::move(callback).Run(false);
     return;
@@ -347,11 +347,11 @@ bool FakePermissionBrokerClient::RequestPortImpl(uint16_t port,
 
 FakePermissionBrokerClient::UsbInterfaces::UsbInterfaces(
     const std::string& path,
-    std::unique_ptr<base::FileDescriptorWatcher::Controller> controller,
-    base::ScopedFD lifeline_fd)
+    base::ScopedFD lifeline_fd,
+    std::unique_ptr<base::FileDescriptorWatcher::Controller> controller)
     : path(std::move(path)),
-      controller(std::move(controller)),
-      lifeline_fd(std::move(lifeline_fd)) {}
+      lifeline_fd(std::move(lifeline_fd)),
+      controller(std::move(controller)) {}
 
 FakePermissionBrokerClient::UsbInterfaces::~UsbInterfaces() = default;
 
