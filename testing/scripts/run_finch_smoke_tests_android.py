@@ -335,15 +335,15 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     Returns:
       True if browser did not crash or False if the browser crashed.
     """
+    isolate_root_dir = os.path.dirname(
+        self.options.isolated_script_test_output)
+    logcat_filename = '{}_{}_test_run_logcat.txt'.format(
+        self.product_name(), test_run_variation)
     self.layout_test_results_subdir = ('%s_smoke_test_artifacts' %
                                        test_run_variation)
     self.test_specific_browser_args = extra_browser_args or []
-    logcat_file = os.path.join(
-        os.path.dirname(self.options.isolated_script_test_output),
-        self.layout_test_results_subdir,
-        '{}_{}_test_run_logcat.txt'.format(self.product_name(),
-                                           test_run_variation))
-    with self._archive_logcat(logcat_file,
+
+    with self._archive_logcat(os.path.join(isolate_root_dir, logcat_filename),
                               '{} {} tests'.format(self.product_name(),
                                                    test_run_variation)):
       # Make sure the browser is not running before the tests run
@@ -353,6 +353,13 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
 
     self._include_variation_prefix(test_run_variation)
     self.process_and_upload_results()
+
+    final_logcat_path = os.path.join(isolate_root_dir,
+                                     self.layout_test_results_subdir,
+                                     logcat_filename)
+    shutil.move(os.path.join(isolate_root_dir, logcat_filename),
+                final_logcat_path)
+
     with open(self.wpt_output, 'r') as curr_test_results:
       curr_results_dict = json.load(curr_test_results)
       results_dict['tests'][test_run_variation] = curr_results_dict['tests']
