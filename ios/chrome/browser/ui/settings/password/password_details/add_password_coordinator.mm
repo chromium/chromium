@@ -129,14 +129,14 @@
   [self.delegate passwordDetailsTableViewControllerDidFinish:self];
 }
 
-- (void)setUpdatedPasswordForm:
-    (const password_manager::PasswordForm&)passwordForm {
-  [self.delegate setMostRecentlyUpdatedPasswordDetails:passwordForm];
+- (void)setUpdatedPassword:
+    (const password_manager::CredentialUIEntry&)credential {
+  [self.delegate setMostRecentlyUpdatedPasswordDetails:credential];
 }
 
-- (void)showPasswordDetailsControllerWithForm:
-    (const password_manager::PasswordForm&)passwordForm {
-  [self.delegate dismissAddViewControllerAndShowPasswordDetails:passwordForm
+- (void)showPasswordDetailsControllerWithCredential:
+    (const password_manager::CredentialUIEntry&)credential {
+  [self.delegate dismissAddViewControllerAndShowPasswordDetails:credential
                                                     coordinator:self];
 }
 

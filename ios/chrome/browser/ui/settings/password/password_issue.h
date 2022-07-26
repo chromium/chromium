@@ -7,17 +7,28 @@
 
 #import <Foundation/Foundation.h>
 
+namespace password_manager {
+struct CredentialUIEntry;
+}
+
 @class CrURL;
 
-// Protocol used by `PasswordIssueTableViewController` to display items.
-@protocol PasswordIssue
+// Interface used by `PasswordIssueTableViewController` to display items.
+@interface PasswordIssue : NSObject
 
 // Associated URL to retrieve a favicon.
 @property(nonatomic, readwrite, strong) CrURL* URL;
 // Associated website.
-@property(nonatomic, readonly) NSString* website;
+@property(nonatomic, copy, readonly) NSString* website;
 // Associated username.
-@property(nonatomic, readonly) NSString* username;
+@property(nonatomic, copy, readonly) NSString* username;
+// Credential being displayed in Password Details screen.
+@property(nonatomic, readonly) password_manager::CredentialUIEntry credential;
+
+- (instancetype)initWithCredential:
+    (password_manager::CredentialUIEntry)credential NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

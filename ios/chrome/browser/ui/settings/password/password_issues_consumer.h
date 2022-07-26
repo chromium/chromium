@@ -11,7 +11,7 @@
 @protocol PasswordIssuesConsumer <NSObject>
 
 // Pass password issues to the consumer.
-- (void)setPasswordIssues:(NSArray<id<PasswordIssue>>*)passwords;
+- (void)setPasswordIssues:(NSArray<PasswordIssue*>*)passwords;
 
 @end
 

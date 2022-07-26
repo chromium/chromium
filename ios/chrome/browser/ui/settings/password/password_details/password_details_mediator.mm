@@ -46,10 +46,11 @@ using InsecureCredentialsView =
     _passwordCheckObserver.reset(
         new PasswordCheckObserverBridge(self, manager));
     NSMutableSet<NSString*>* usernames = [[NSMutableSet alloc] init];
-    auto forms = manager->GetAllCredentials();
-    for (const auto& form : forms) {
-      if (form.signon_realm == credential.signon_realm) {
-        [usernames addObject:base::SysUTF16ToNSString(form.username_value)];
+    auto credentials =
+        manager->GetSavedPasswordsPresenter()->GetSavedCredentials();
+    for (const auto& cred : credentials) {
+      if (cred.signon_realm == credential.signon_realm) {
+        [usernames addObject:base::SysUTF16ToNSString(cred.username)];
       }
     }
     [usernames removeObject:base::SysUTF16ToNSString(credential.username)];
@@ -134,25 +135,18 @@ using InsecureCredentialsView =
 }
 
 - (void)compromisedCredentialsDidChange:(InsecureCredentialsView)credentials {
-  [self fetchPasswordWith:credentials];
+  [self fetchPasswordWith:_manager->GetUnmutedCompromisedCredentials()];
 }
 
 #pragma mark - Private
 
 // Updates password details and sets it to a consumer.
-- (void)fetchPasswordWith:(InsecureCredentialsView)credentials {
+- (void)fetchPasswordWith:
+    (const std::vector<password_manager::CredentialUIEntry>&)credentials {
   PasswordDetails* password =
       [[PasswordDetails alloc] initWithCredential:_credential];
-  password.compromised = NO;
-
-  for (const auto& credential : credentials) {
-    if (std::tie(credential.signon_realm, credential.username,
-                 credential.password) == std::tie(_credential.signon_realm,
-                                                  _credential.username,
-                                                  _credential.password))
-      password.compromised = YES;
-  }
-
+  password.compromised = std::find(credentials.begin(), credentials.end(),
+                                   _credential) != credentials.end();
   [self.consumer setPassword:password];
 }
 

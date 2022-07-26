@@ -18,6 +18,10 @@ class Browser;
 @protocol PasswordManagerViewControllerDelegate;
 @protocol PasswordManagerViewControllerPresentationDelegate;
 
+namespace password_manager {
+struct CredentialUIEntry;
+}
+
 @interface PasswordManagerViewController
     : SettingsRootTableViewController <PasswordsConsumer,
                                        SettingsControllerProtocol>
@@ -29,7 +33,7 @@ class Browser;
 
 // Stores the most recently updated credential.
 - (void)setMostRecentlyUpdatedPasswordDetails:
-    (const password_manager::PasswordForm&)password;
+    (const password_manager::CredentialUIEntry&)credential;
 
 @property(nonatomic, weak) id<PasswordsSettingsCommands> handler;
 

@@ -65,34 +65,8 @@ class IOSChromePasswordCheckManager
 
   // Obtains all unmuted compromised credentials that are present in the
   // password store.
-  std::vector<password_manager::CredentialWithPassword>
+  std::vector<password_manager::CredentialUIEntry>
   GetUnmutedCompromisedCredentials() const;
-
-  password_manager::SavedPasswordsPresenter::SavedPasswordsView
-  GetAllCredentials() const;
-
-  password_manager::SavedPasswordsPresenter::SavedPasswordsView
-  GetSavedPasswordsFor(
-      const password_manager::CredentialWithPassword& credential) const;
-
-  // Edits |username| and |password| for |form| and its duplicates.
-  bool EditPasswordForm(const password_manager::PasswordForm& form,
-                        const std::u16string& new_username,
-                        const std::u16string& new_password);
-
-  // Adds new password credentials |form| to the store.
-  bool AddPasswordForm(const password_manager::PasswordForm& form);
-
-  // Edits password form using |insecure_credentials_manager_|.
-  void EditCompromisedPasswordForm(const password_manager::PasswordForm& form,
-                                   base::StringPiece password);
-
-  // Deletes |form| and its duplicates.
-  void DeletePasswordForm(const password_manager::PasswordForm& form);
-
-  // Deletes compromised credentials which are related to |form|.
-  void DeleteCompromisedPasswordForm(
-      const password_manager::PasswordForm& form);
 
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
   void RemoveObserver(Observer* observer) {

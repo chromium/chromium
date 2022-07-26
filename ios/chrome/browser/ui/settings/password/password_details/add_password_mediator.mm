@@ -14,6 +14,7 @@
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator_delegate.h"
@@ -33,16 +34,15 @@ namespace {
 bool CheckForDuplicates(
     GURL url,
     NSString* username,
-    const password_manager::SavedPasswordsPresenter::SavedPasswordsView&
-        credentials) {
+    std::vector<password_manager::CredentialUIEntry> credentials) {
   std::string signon_realm = password_manager::GetSignonRealm(
       password_manager_util::StripAuthAndParams(url));
   std::u16string username_value = SysNSStringToUTF16(username);
   auto have_equal_username_and_realm =
       [&signon_realm,
-       &username_value](const password_manager::PasswordForm& form) {
-        return signon_realm == form.signon_realm &&
-               username_value == form.username_value;
+       &username_value](const password_manager::CredentialUIEntry& credential) {
+        return signon_realm == credential.signon_realm &&
+               username_value == credential.username;
       };
   if (base::ranges::any_of(credentials, have_equal_username_and_realm))
     return true;
@@ -119,19 +119,17 @@ bool CheckForDuplicates(
     return;
   }
 
-  password_manager::PasswordForm passwordForm;
   DCHECK([self isURLValid]);
 
-  passwordForm.url = self.URL;
-  passwordForm.signon_realm =
-      password_manager::GetSignonRealm(passwordForm.url);
-  passwordForm.username_value = SysNSStringToUTF16(username);
-  passwordForm.password_value = SysNSStringToUTF16(password);
-  passwordForm.in_store = password_manager::PasswordForm::Store::kProfileStore;
-  passwordForm.type = password_manager::PasswordForm::Type::kManuallyAdded;
+  password_manager::CredentialUIEntry credential;
+  credential.url = self.URL;
+  credential.signon_realm = password_manager::GetSignonRealm(credential.url);
+  credential.username = SysNSStringToUTF16(username);
+  credential.password = SysNSStringToUTF16(password);
+  credential.stored_in = {password_manager::PasswordForm::Store::kProfileStore};
 
-  _manager->AddPasswordForm(passwordForm);
-  [self.delegate setUpdatedPasswordForm:passwordForm];
+  _manager->GetSavedPasswordsPresenter()->AddCredential(credential);
+  [self.delegate setUpdatedPassword:credential];
   [self.delegate dismissPasswordDetailsTableViewController];
 }
 
@@ -144,8 +142,9 @@ bool CheckForDuplicates(
   __weak __typeof(self) weakSelf = self;
   _validationTaskTracker->PostTaskAndReplyWithResult(
       _sequencedTaskRunner.get(), FROM_HERE,
-      base::BindOnce(&CheckForDuplicates, self.URL, username,
-                     _manager->GetAllCredentials()),
+      base::BindOnce(
+          &CheckForDuplicates, self.URL, username,
+          _manager->GetSavedPasswordsPresenter()->GetSavedCredentials()),
       base::BindOnce(^(bool duplicateFound) {
         [weakSelf.consumer onDuplicateCheckCompletion:duplicateFound];
       }));
@@ -159,10 +158,11 @@ bool CheckForDuplicates(
   std::string signon_realm = password_manager::GetSignonRealm(
       password_manager_util::StripAuthAndParams(self.URL));
   std::u16string username_value = SysNSStringToUTF16(username);
-  for (const auto& form : _manager->GetAllCredentials()) {
-    if (form.signon_realm == signon_realm &&
-        form.username_value == username_value) {
-      [self.delegate showPasswordDetailsControllerWithForm:form];
+  for (const auto& credential :
+       _manager->GetSavedPasswordsPresenter()->GetSavedCredentials()) {
+    if (credential.signon_realm == signon_realm &&
+        credential.username == username_value) {
+      [self.delegate showPasswordDetailsControllerWithCredential:credential];
       return;
     }
   }

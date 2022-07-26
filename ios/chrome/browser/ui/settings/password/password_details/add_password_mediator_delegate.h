@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_ADD_PASSWORD_MEDIATOR_DELEGATE_H_
 
 namespace password_manager {
-struct PasswordForm;
+struct CredentialUIEntry;
 }  // namespace password_manager
 
 // Delegate for AddPasswordMediator.
@@ -17,14 +17,14 @@ struct PasswordForm;
 
 // Called after a new credential is added or an existing one is updated via the
 // add credential flow.
-- (void)setUpdatedPasswordForm:
-    (const password_manager::PasswordForm&)passwordForm;
+- (void)setUpdatedPassword:
+    (const password_manager::CredentialUIEntry&)credential;
 
 // Called when the "View Password" is tapped in the section alert. The section
 // alert is shown when there exists an existing credential with the same
 // username/website combination as that of the credential being added manually.
-- (void)showPasswordDetailsControllerWithForm:
-    (const password_manager::PasswordForm&)passwordForm;
+- (void)showPasswordDetailsControllerWithCredential:
+    (const password_manager::CredentialUIEntry&)credential;
 
 @end
 

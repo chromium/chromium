@@ -299,7 +299,7 @@ bool ShouldShowSettingsUI() {
 @property(assign) NSInteger compromisedPasswordsCount;
 
 // Stores the most recently created or updated password form.
-@property(nonatomic, assign) absl::optional<password_manager::PasswordForm>
+@property(nonatomic, assign) absl::optional<password_manager::CredentialUIEntry>
     mostRecentlyUpdatedPassword;
 
 // Stores the PasswordFormContentItem which has form attribute's username and
@@ -382,8 +382,8 @@ bool ShouldShowSettingsUI() {
 }
 
 - (void)setMostRecentlyUpdatedPasswordDetails:
-    (const password_manager::PasswordForm&)password {
-  self.mostRecentlyUpdatedPassword = password;
+    (const password_manager::CredentialUIEntry&)credential {
+  self.mostRecentlyUpdatedPassword = credential;
 }
 
 #pragma mark - UIViewController
@@ -945,8 +945,7 @@ bool ShouldShowSettingsUI() {
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   if (self.mostRecentlyUpdatedPassword) {
-    if (self.mostRecentlyUpdatedPassword->username_value ==
-            form.username_value &&
+    if (self.mostRecentlyUpdatedPassword->username == form.username_value &&
         self.mostRecentlyUpdatedPassword->signon_realm == form.signon_realm) {
       self.mostRecentlyUpdatedItem = passwordItem;
       self.mostRecentlyUpdatedPassword = absl::nullopt;
@@ -980,8 +979,7 @@ bool ShouldShowSettingsUI() {
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   if (self.mostRecentlyUpdatedPassword) {
-    if (self.mostRecentlyUpdatedPassword->username_value ==
-            form.username_value &&
+    if (self.mostRecentlyUpdatedPassword->username == form.username_value &&
         self.mostRecentlyUpdatedPassword->signon_realm == form.signon_realm) {
       self.legacyMostRecentlyUpdatedItem = passwordItem;
       self.mostRecentlyUpdatedPassword = absl::nullopt;
@@ -1893,7 +1891,9 @@ bool ShouldShowSettingsUI() {
               : base::mac::ObjCCastStrict<LegacyPasswordFormContentItem>(
                     [model itemAtIndexPath:indexPath])
                     .form;
-      [self.handler showDetailedViewForForm:form];
+      [self.handler
+          showDetailedViewForCredential:password_manager::CredentialUIEntry(
+                                            form)];
       break;
     }
     case ItemTypeBlocked: {
@@ -1907,7 +1907,9 @@ bool ShouldShowSettingsUI() {
               : base::mac::ObjCCastStrict<LegacyPasswordFormContentItem>(
                     [model itemAtIndexPath:indexPath])
                     .form;
-      [self.handler showDetailedViewForForm:form];
+      [self.handler
+          showDetailedViewForCredential:password_manager::CredentialUIEntry(
+                                            form)];
       break;
     }
     case ItemTypeExportPasswordsButton:

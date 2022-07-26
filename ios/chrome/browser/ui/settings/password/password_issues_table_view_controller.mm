@@ -79,12 +79,12 @@ bool IsFaviconEnabled() {
       forSectionWithIdentifier:SectionIdentifierContent];
 
   if (IsFaviconEnabled()) {
-    for (id<PasswordIssue> password in self.passwords) {
+    for (PasswordIssue* password in self.passwords) {
       [model addItem:[self passwordIssueItem:password]
           toSectionWithIdentifier:SectionIdentifierContent];
     }
   } else {
-    for (id<PasswordIssue> password in self.passwords) {
+    for (PasswordIssue* password in self.passwords) {
       [model addItem:[self legacyPasswordIssueItem:password]
           toSectionWithIdentifier:SectionIdentifierContent];
     }
@@ -100,7 +100,7 @@ bool IsFaviconEnabled() {
   return footerItem;
 }
 
-- (PasswordIssueContentItem*)passwordIssueItem:(id<PasswordIssue>)password {
+- (PasswordIssueContentItem*)passwordIssueItem:(PasswordIssue*)password {
   PasswordIssueContentItem* passwordItem =
       [[PasswordIssueContentItem alloc] initWithType:ItemTypePassword];
   passwordItem.password = password;
@@ -110,7 +110,7 @@ bool IsFaviconEnabled() {
 }
 
 - (LegacyPasswordIssueContentItem*)legacyPasswordIssueItem:
-    (id<PasswordIssue>)password {
+    (PasswordIssue*)password {
   DCHECK(!IsFaviconEnabled());
   LegacyPasswordIssueContentItem* passwordItem =
       [[LegacyPasswordIssueContentItem alloc] initWithType:ItemTypePassword];

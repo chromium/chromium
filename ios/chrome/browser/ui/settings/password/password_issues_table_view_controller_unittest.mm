@@ -7,8 +7,9 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/ui/settings/password/password_issue_with_form.h"
+#import "ios/chrome/browser/ui/settings/password/password_issue.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues_presenter.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
@@ -26,7 +27,7 @@
 // presenter methods are called correctly.
 @interface FakePasswordIssuesPresenter : NSObject <PasswordIssuesPresenter>
 
-@property(nonatomic) id<PasswordIssue> presentedPassword;
+@property(nonatomic) PasswordIssue* presentedPassword;
 
 @end
 
@@ -35,7 +36,7 @@
 - (void)dismissPasswordIssuesTableViewController {
 }
 
-- (void)presentPasswordIssueDetails:(id<PasswordIssue>)password {
+- (void)presentPasswordIssueDetails:(PasswordIssue*)password {
   _presentedPassword = password;
 }
 
@@ -71,7 +72,9 @@ class PasswordIssuesTableViewControllerTest
     form.scheme = password_manager::PasswordForm::Scheme::kHtml;
     NSMutableArray* passwords = [[NSMutableArray alloc] init];
     [passwords
-        addObject:[[PasswordIssueWithForm alloc] initWithPasswordForm:form]];
+        addObject:[[PasswordIssue alloc]
+                      initWithCredential:password_manager::CredentialUIEntry(
+                                             form)]];
 
     PasswordIssuesTableViewController* passwords_controller =
         static_cast<PasswordIssuesTableViewController*>(controller());

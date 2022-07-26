@@ -63,7 +63,7 @@ scoped_refptr<TestPasswordStore> CreateAndUseTestPasswordStore(
 // consumer methods are called correctly.
 @interface FakePasswordIssuesConsumer : NSObject <PasswordIssuesConsumer>
 
-@property(nonatomic) NSArray<id<PasswordIssue>>* passwords;
+@property(nonatomic) NSArray<PasswordIssue*>* passwords;
 
 @property(nonatomic, assign) BOOL passwordIssuesListChangedWasCalled;
 
@@ -71,7 +71,7 @@ scoped_refptr<TestPasswordStore> CreateAndUseTestPasswordStore(
 
 @implementation FakePasswordIssuesConsumer
 
-- (void)setPasswordIssues:(NSArray<id<PasswordIssue>>*)passwords {
+- (void)setPasswordIssues:(NSArray<PasswordIssue*>*)passwords {
   _passwords = passwords;
   _passwordIssuesListChangedWasCalled = YES;
 }
@@ -154,7 +154,7 @@ TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesChanged) {
 
   EXPECT_EQ(1u, [[consumer() passwords] count]);
 
-  id<PasswordIssue> password = [[consumer() passwords] objectAtIndex:0];
+  PasswordIssue* password = [[consumer() passwords] objectAtIndex:0];
 
   EXPECT_NSEQ(@"alice", password.username);
   EXPECT_NSEQ(@"example.com", password.website);

@@ -172,12 +172,13 @@
   [self.passwordIssuesCoordinator start];
 }
 
-- (void)showDetailedViewForForm:(const password_manager::PasswordForm&)form {
+- (void)showDetailedViewForCredential:
+    (const password_manager::CredentialUIEntry&)credential {
   DCHECK(!self.passwordDetailsCoordinator);
   self.passwordDetailsCoordinator = [[PasswordDetailsCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser
-                            credential:password_manager::CredentialUIEntry(form)
+                            credential:credential
                           reauthModule:self.reauthModule
                   passwordCheckManager:[self passwordCheckManager].get()];
   self.passwordDetailsCoordinator.delegate = self;
@@ -256,18 +257,19 @@
 }
 
 - (void)setMostRecentlyUpdatedPasswordDetails:
-    (const password_manager::PasswordForm&)password {
-  [self.passwordsViewController setMostRecentlyUpdatedPasswordDetails:password];
+    (const password_manager::CredentialUIEntry&)credential {
+  [self.passwordsViewController
+      setMostRecentlyUpdatedPasswordDetails:credential];
 }
 
 - (void)dismissAddViewControllerAndShowPasswordDetails:
-            (const password_manager::PasswordForm&)password
+            (const password_manager::CredentialUIEntry&)credential
                                            coordinator:(AddPasswordCoordinator*)
                                                            coordinator {
   DCHECK(self.addPasswordCoordinator &&
          self.addPasswordCoordinator == coordinator);
   [self passwordDetailsTableViewControllerDidFinish:coordinator];
-  [self showDetailedViewForForm:password];
+  [self showDetailedViewForCredential:credential];
   [self.passwordDetailsCoordinator
           showPasswordDetailsInEditModeWithoutAuthentication];
 }

@@ -16,7 +16,7 @@
 - (void)dismissPasswordIssuesTableViewController;
 
 // Called when Password Details screen should be shown.
-- (void)presentPasswordIssueDetails:(id<PasswordIssue>)password;
+- (void)presentPasswordIssueDetails:(PasswordIssue*)password;
 
 @end
 
