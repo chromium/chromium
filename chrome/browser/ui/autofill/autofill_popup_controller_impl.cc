@@ -130,9 +130,9 @@ void AutofillPopupControllerImpl::Show(
                                    !suggestions.empty());
 #endif
     view_->Show();
-    // TODO(crbug.com/1055981): `this| can be destroyed synchronously at this
+    // TODO(crbug.com/1055981): `this` can be destroyed synchronously at this
     // point.
-    if (!weak_this)
+    if (!weak_this || !view_)
       return;
 
     // We only fire the event when a new popup shows. We do not fire the
@@ -598,6 +598,8 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
                                  /*has_suggestions=*/false);
 #endif
 
+  // TODO(crbug.com/1341374, crbug.com/1277218): Move this into the asynchronous
+  // call?
   if (view_) {
     // We need to fire the event while view is not deleted yet.
     FireControlsChangedEvent(false);
