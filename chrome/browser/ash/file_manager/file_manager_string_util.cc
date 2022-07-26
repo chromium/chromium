@@ -241,22 +241,6 @@ void AddStringsForMediaPlayer(base::Value::Dict* dict) {
              IDS_MEDIA_PLAYER_VOLUME_SLIDER_LABEL);
 }
 
-void AddStringsForAudioPlayer(base::Value::Dict* dict) {
-  SET_STRING("AUDIO_ERROR", IDS_FILE_BROWSER_AUDIO_ERROR);
-  SET_STRING("AUDIO_OFFLINE", IDS_FILE_BROWSER_AUDIO_OFFLINE);
-  SET_STRING("AUDIO_PLAYER_DEFAULT_ARTIST",
-             IDS_FILE_BROWSER_AUDIO_PLAYER_DEFAULT_ARTIST);
-  SET_STRING("AUDIO_PLAYER_TITLE", IDS_FILE_BROWSER_AUDIO_PLAYER_TITLE);
-  SET_STRING("AUDIO_PLAYER_SHUFFLE_BUTTON_LABEL",
-             IDS_AUDIO_PLAYER_SHUFFLE_BUTTON_LABEL);
-  SET_STRING("AUDIO_PLAYER_REPEAT_BUTTON_LABEL",
-             IDS_AUDIO_PLAYER_REPEAT_BUTTON_LABEL);
-  SET_STRING("AUDIO_PLAYER_OPEN_PLAY_LIST_BUTTON_LABEL",
-             IDS_AUDIO_PLAYER_OPEN_PLAY_LIST_BUTTON_LABEL);
-  SET_STRING("AUDIO_PLAYER_ARTWORK_EXPAND_BUTTON_LABEL",
-             IDS_AUDIO_PLAYER_ARTWORK_EXPAND_BUTTON_LABEL);
-}
-
 void AddStringsForCloudImport(base::Value::Dict* dict) {
   SET_STRING("CLOUD_IMPORT_TITLE", IDS_FILE_BROWSER_CLOUD_IMPORT_TITLE);
   SET_STRING("CLOUD_IMPORT_DESTINATION_FOLDER",
@@ -950,7 +934,6 @@ base::Value::Dict GetFileManagerStrings() {
   AddStringsForMediaView(&dict);
   AddStringsForFileTypes(&dict);
   AddStringsForMediaPlayer(&dict);
-  AddStringsForAudioPlayer(&dict);
   AddStringsForCloudImport(&dict);
   AddStringsForCrUiMenuItemShortcuts(&dict);
   AddStringsForFileErrors(&dict);

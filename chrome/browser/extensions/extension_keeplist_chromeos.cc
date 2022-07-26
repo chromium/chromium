@@ -62,7 +62,6 @@ bool ExtensionAppRunsInOS(const std::string& app_id) {
   static base::NoDestructor<std::set<base::StringPiece>> keep_list({
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     arc::kPlayStoreAppId, extension_misc::kFilesManagerAppId,
-        file_manager::kAudioPlayerAppId,
 #endif
 
         extension_misc::kGoogleKeepAppId, extension_misc::kCalculatorAppId,

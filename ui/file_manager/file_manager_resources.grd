@@ -29,21 +29,6 @@
       <include name="IDR_FILE_MANAGER_ICON_192" file="file_manager/common/images/icon192.png" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ICON_256" file="file_manager/common/images/icon256.png" type="BINDATA" />
 
-      <!-- The AudioPlayer app pages and scripts. -->
-      <include name="IDR_AUDIO_PLAYER_MANIFEST" file="audio_player/manifest.json" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_BACKGROUND_HTML" file="audio_player/background.html" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_MODULE" file="audio_player/audio_player.html" allowexternalscript="true" flattenhtml="true" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_FAVICON_16" file="audio_player/icons/audio-player-favicon-16.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_FAVICON_32" file="audio_player/icons/audio-player-favicon-32.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_16" file="audio_player/icons/audio-player-16.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_32" file="audio_player/icons/audio-player-32.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_48" file="audio_player/icons/audio-player-48.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_64" file="audio_player/icons/audio-player-64.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_96" file="audio_player/icons/audio-player-96.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_128" file="audio_player/icons/audio-player-128.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_192" file="audio_player/icons/audio-player-192.png" type="BINDATA" />
-      <include name="IDR_AUDIO_PLAYER_ICON_256" file="audio_player/icons/audio-player-256.png" type="BINDATA" />
-
       <!-- Image loader extension manifest and scripts. -->
       <if expr="chromeos_ash">
         <include name="IDR_IMAGE_LOADER_MANIFEST" file="image_loader/manifest.json" type="BINDATA" />

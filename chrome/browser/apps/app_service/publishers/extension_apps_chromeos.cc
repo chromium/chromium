@@ -790,12 +790,11 @@ void ExtensionAppsChromeOs::SetShowInFields(
     App& app) {
   ExtensionAppsBase::SetShowInFields(extension, app);
 
-  // Explicitly mark AudioPlayer and QuickOffice as being able to handle
-  // intents even though they are otherwise hidden from the user. Otherwise,
-  // extensions are only published if they have file_browser_handlers, which
-  // means they need to handle intents.
-  if (extension->id() == file_manager::kAudioPlayerAppId ||
-      extension_misc::IsQuickOfficeExtension(extension->id()) ||
+  // Explicitly mark QuickOffice as being able to handle intents even though it
+  // is otherwise hidden from the user. Otherwise, extensions are only published
+  // if they have file_browser_handlers, which means they need to handle
+  // intents.
+  if (extension_misc::IsQuickOfficeExtension(extension->id()) ||
       extension->is_extension()) {
     app.handles_intents = true;
   }
@@ -806,10 +805,9 @@ void ExtensionAppsChromeOs::SetShowInFields(
     const extensions::Extension* extension) {
   ExtensionAppsBase::SetShowInFields(app, extension);
 
-  // Explicitly mark these apps as being able to handle intents even though they
-  // are otherwise hidden from the user.
-  if (extension->id() == file_manager::kAudioPlayerAppId ||
-      extension_misc::IsQuickOfficeExtension(extension->id())) {
+  // Explicitly mark QuickOffice as being able to handle intents even though it
+  // is otherwise hidden from the user.
+  if (extension_misc::IsQuickOfficeExtension(extension->id())) {
     app->handles_intents = apps::mojom::OptionalBool::kTrue;
   }
 

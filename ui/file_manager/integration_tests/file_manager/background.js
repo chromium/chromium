@@ -71,15 +71,6 @@ export {FILE_MANAGER_EXTENSIONS_ID};
 export let remoteCall;
 
 /**
- * Extension ID of Audio Player.
- * @type {string}
- * @const
- */
-export const AUDIO_PLAYER_APP_ID = 'cjbfomnbifhcdnihkgipgfcihmgjfhbf';
-
-export const audioPlayerApp = new RemoteCall(AUDIO_PLAYER_APP_ID);
-
-/**
  * Opens a Files app's main window.
  *
  * TODO(mtomasz): Pass a volumeId or an enum value instead of full paths.

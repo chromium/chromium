@@ -39,8 +39,6 @@ group("closure_compile") {
   testonly = true
 
   deps = [
-    "audio_player/elements:closure_compile",
-    "audio_player/js:closure_compile",
     "file_manager/background/js:closure_compile",
     "file_manager/common/js:closure_compile",
     "file_manager/foreground/elements:closure_compile",
@@ -96,10 +94,9 @@ preprocess_if_expr("preprocess_static_image_loader") {
   out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/manifest_preprocess_static_image_loader.json"
 
-  in_files = audio_static_js_files + image_loader_static_js_files
+  in_files = image_loader_static_js_files
 
   deps = [
-    "//ui/file_manager/audio_player/js:js_modules",
     "//ui/file_manager/image_loader:background",
     "//ui/file_manager/image_loader:js_modules",
   ]
@@ -129,12 +126,9 @@ preprocess_if_expr("preprocess_generated_image_loader") {
   out_manifest =
       "$target_gen_dir/manifest_preprocess_generated_image_loader.json"
 
-  in_files = audio_generated_js_files + image_loader_generated_js_files
+  in_files = image_loader_generated_js_files
 
-  deps = [
-    "//ui/file_manager/audio_player/elements:web_components",
-    "//ui/file_manager/image_loader:copy_from_filesapp",
-  ]
+  deps = [ "//ui/file_manager/image_loader:copy_from_filesapp" ]
 }
 
 ts_library("build_ts") {
@@ -177,30 +171,17 @@ generated_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 generate_grd("build_grd") {
   out_grd = generated_grd
 
-  grdp_files = [
-    "$target_gen_dir/audio_player/static_resources.grdp",
-    "$target_gen_dir/file_manager/static_resources.grdp",
-  ]
+  grdp_files = [ "$target_gen_dir/file_manager/static_resources.grdp" ]
 
   deps = [
     ":build_ts",
-    "audio_player:build_static_grdp",
     "file_manager:build_static_grdp",
-    "//ui/file_manager/audio_player/js:build",
-    "//ui/file_manager/audio_player/js:build_background",
-    "//ui/file_manager/audio_player/js:build_worker",
     "//ui/file_manager/file_manager:fix_broken_images",
     "//ui/file_manager/image_loader:build",
   ]
 
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
   input_files = [
-    "audio_player/js/main.rollup.js",
-    "audio_player/js/main_background.rollup.js",
-    "audio_player/js/metadata_worker.rollup.js",
-    "audio_player/js/shared.rollup.js",
-    "audio_player/js/runtime_loaded_test_util.rollup.js",
-
     # Fix broken images:
     "file_manager/images/files/ui/arrow_right.svg",
     "file_manager/images/files/ui/state_banner_icon.svg",
@@ -210,13 +191,8 @@ generate_grd("build_grd") {
     "image_loader/background.rollup.js",
   ]
 
-  resource_path_rewrites = [
-    "audio_player/js/main.rollup.js|audio_player/js/main.js",
-    "audio_player/js/main_background.rollup.js|audio_player/js/main_background.js",
-    "audio_player/js/metadata_worker.rollup.js|audio_player/js/metadata_worker.js",
-    "audio_player/js/runtime_loaded_test_util.rollup.js|audio_player/js/runtime_loaded_test_util.js",
-    "image_loader/background.rollup.js|image_loader/background.js",
-  ]
+  resource_path_rewrites =
+      [ "image_loader/background.rollup.js|image_loader/background.js" ]
 
   if (optimize_webui) {
     input_files += [

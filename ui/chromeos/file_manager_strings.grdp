@@ -425,13 +425,6 @@
     An error occured during installation of your Linux application.
   </message>
 
-  <message name="IDS_FILE_BROWSER_AUDIO_ERROR" desc="In the Audio Player, message informing that the file could not be played.">
-    This file could not be played.
-  </message>
-  <message name="IDS_FILE_BROWSER_AUDIO_OFFLINE" desc="In the Audio Player, message informing that the audio file could not be played in the offline mode.">
-    This file is not available offline.
-  </message>
-
   <message name="IDS_FILE_BROWSER_RECOVERED_FILES_FROM_GOOGLE_DRIVE_DIRECTORY_NAME" desc="The name of the direcotry which stores files recovered from Google Drive directory when the locally stored Google Drive data is found to be broken.">
     Recovered files from Google Drive
   </message>
@@ -1404,12 +1397,6 @@
   <message name="IDS_FILE_BROWSER_ERROR_UNRESOLVABLE_FILE" desc="Error message when the file attempted to open from Downloads panel was not found under paths managed by file manager.">
     This file has wandered off somewhere. Please check your download location setting and try again.
   </message>
-  <message name="IDS_FILE_BROWSER_AUDIO_PLAYER_TITLE" desc="Title of the Audio Player window.">
-    Audio Player
-  </message>
-  <message name="IDS_FILE_BROWSER_AUDIO_PLAYER_DEFAULT_ARTIST" desc="In the Audio Player window, default artist name used when artist name is unknown.">
-    Unknown Artist
-  </message>
 
   <message name="IDS_FILE_BROWSER_FILE_ERROR_GENERIC" desc="In the File Manager, the error message when the file operation failed.">
     An error occurred.
@@ -1552,20 +1539,6 @@
   </message>
   <message name="IDS_MEDIA_PLAYER_VOLUME_SLIDER_LABEL" desc="Label for the volume slider of media player.">
     Volume slider
-  </message>
-
-<!-- Audio Player -->
-  <message name="IDS_AUDIO_PLAYER_SHUFFLE_BUTTON_LABEL" desc="Label for the Shuffle button of audio player.">
-    Shuffle
-  </message>
-  <message name="IDS_AUDIO_PLAYER_REPEAT_BUTTON_LABEL" desc="Label for the Repeat button of audio player">
-    Repeat
-  </message>
-  <message name="IDS_AUDIO_PLAYER_OPEN_PLAY_LIST_BUTTON_LABEL" desc="Label for a button which is used to open play list in audio player.">
-    Open play list
-  </message>
-  <message name="IDS_AUDIO_PLAYER_ARTWORK_EXPAND_BUTTON_LABEL" desc="Label for an expand button which is used to show/hide artwork.">
-    Artwork
   </message>
 
 <!-- Data Leak Prevention -->

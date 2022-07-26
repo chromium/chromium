@@ -210,10 +210,6 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kCalculatorChromeApp, launch_source);
   } else if (app_id == extension_misc::kTextEditorAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kText, launch_source);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  } else if (app_id == file_manager::kAudioPlayerAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kAudioPlayer, launch_source);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (app_id == web_app::kCalculatorAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kCalculator, launch_source);
   } else if (app_id == web_app::kCanvasAppId) {

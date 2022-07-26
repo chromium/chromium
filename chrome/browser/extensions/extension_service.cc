@@ -144,10 +144,6 @@ const char* const kObsoleteComponentExtensionIds[] = {
     // The Video Player chrome app became obsolete in m93, but is preserved for
     // continued test coverage.
     "jcgeabjmjgoblfofpppfkcoakmfobdko",  // Video Player
-    // The Audio Player chrome app became obsolete in m97. This entry can be
-    // removed after references to kAudioPlayerAppId in component_loader.cc
-    // are removed.
-    "cjbfomnbifhcdnihkgipgfcihmgjfhbf"  // Audio Player
 };
 
 }  // namespace

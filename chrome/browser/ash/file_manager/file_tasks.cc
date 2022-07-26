@@ -267,7 +267,6 @@ bool IsFallbackFileHandler(const FullTaskDescriptor& task) {
       kFileManagerAppId,
       kFileManagerSwaAppId,
       kTextEditorAppId,
-      kAudioPlayerAppId,
       extension_misc::kQuickOfficeComponentExtensionId,
       extension_misc::kQuickOfficeInternalExtensionId,
       extension_misc::kQuickOfficeExtensionId};

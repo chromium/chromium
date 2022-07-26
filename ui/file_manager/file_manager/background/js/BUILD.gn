@@ -14,10 +14,7 @@ import("//ui/webui/resources/js/cr.gni")
 # document externally-exposed targets visible with this helper, and hide
 # transitive dependencies (but note those transitive dependencies should move
 # elsewhere too).
-related_apps = [
-  "//ui/file_manager/audio_player/*",
-  "//ui/file_manager/file_manager/*",
-]
+related_apps = [ "//ui/file_manager/file_manager/*" ]
 
 group("closure_compile") {
   testonly = true

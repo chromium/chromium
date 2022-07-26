@@ -106,7 +106,6 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   // Eche application need context when launching. Pinning these creates an
   // item that does nothing.
   const char* kNoPinAppIds[] = {
-      file_manager::kAudioPlayerAppId,
       ash::eche_app::kEcheAppId,
   };
   if (base::Contains(kNoPinAppIds, app_id))

@@ -78,7 +78,6 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Separate ChromeOS list, as it is quite large.
     case IDR_ARC_SUPPORT_MANIFEST:
-    case IDR_AUDIO_PLAYER_MANIFEST:
     case IDR_CHROME_APP_MANIFEST:
     case IDR_FILEMANAGER_MANIFEST:
     case IDR_IMAGE_LOADER_MANIFEST:
