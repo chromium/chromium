@@ -2857,16 +2857,6 @@
     "expiry_milestone": 89
   },
   {
-    "name": "enable-suggested-files",
-    "owners": [ "wrong", "tby" ],
-    "expiry_milestone": 100
-  },
-  {
-    "name": "enable-suggested-local-files",
-    "owners": [ "tby", "wrong" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "enable-suggestions-with-substring-match",
     "owners": [ "autofill-squad-muc@google.com" ],
     "expiry_milestone": 102

@@ -19,10 +19,6 @@ const base::Feature kEnableZeroStateMixedTypesRanker{
     "EnableZeroStateMixedTypesRanker", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEnableAppReinstallZeroState{
     "EnableAppReinstallZeroState", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kEnableSuggestedFiles{"EnableSuggestedFiles",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kEnableSuggestedLocalFiles{
-    "EnableSuggestedLocalFiles", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableAppListLaunchRecording{
     "EnableAppListLaunchRecording", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kLauncherSettingsSearch{"LauncherSettingsSearch",
@@ -61,14 +57,6 @@ bool IsZeroStateMixedTypesRankerEnabled() {
 
 bool IsAppReinstallZeroStateEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppReinstallZeroState);
-}
-
-bool IsSuggestedFilesEnabled() {
-  return base::FeatureList::IsEnabled(kEnableSuggestedFiles);
-}
-
-bool IsSuggestedLocalFilesEnabled() {
-  return base::FeatureList::IsEnabled(kEnableSuggestedLocalFiles);
 }
 
 bool IsLauncherSettingsSearchEnabled() {

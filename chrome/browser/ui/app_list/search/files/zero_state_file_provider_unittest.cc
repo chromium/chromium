@@ -116,11 +116,6 @@ TEST_P(ZeroStateFileProviderTest, NoResultsWithQuery) {
 }
 
 TEST_P(ZeroStateFileProviderTest, ResultsProvided) {
-  // Disable flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {app_list_features::kEnableSuggestedLocalFiles});
-
   WriteFile("exists_1.txt");
   WriteFile("exists_2.png");
   WriteFile("exists_3.pdf");
@@ -137,11 +132,6 @@ TEST_P(ZeroStateFileProviderTest, ResultsProvided) {
 }
 
 TEST_P(ZeroStateFileProviderTest, OldFilesNotReturned) {
-  // Disable flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {app_list_features::kEnableSuggestedLocalFiles});
-
   WriteFile("new.txt");
   WriteFile("old.png");
   auto now = base::Time::Now();

@@ -206,9 +206,7 @@ ItemSuggestCache::ItemSuggestCache(
     : made_request_(false),
       enabled_(kEnabled.Get()),
       server_url_(kServerUrl.Get()),
-      multiple_queries_per_session_(
-          app_list_features::IsSuggestedFilesEnabled() ||
-          kMultipleQueriesPerSession.Get()),
+      multiple_queries_per_session_(kMultipleQueriesPerSession.Get()),
       on_results_updated_(on_results_updated),
       profile_(profile),
       url_loader_factory_(std::move(url_loader_factory)) {

@@ -6795,17 +6795,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(feature_engagement::kEnableIPH)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-suggested-files", flag_descriptions::kEnableSuggestedFilesName,
-     flag_descriptions::kEnableSuggestedFilesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(app_list_features::kEnableSuggestedFiles)},
-
-    {"enable-suggested-local-files",
-     flag_descriptions::kEnableSuggestedLocalFilesName,
-     flag_descriptions::kEnableSuggestedLocalFilesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(app_list_features::kEnableSuggestedLocalFiles)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     {"autofill-always-return-cloud-tokenized-card",
      flag_descriptions::kAutofillAlwaysReturnCloudTokenizedCardName,
      flag_descriptions::kAutofillAlwaysReturnCloudTokenizedCardDescription,

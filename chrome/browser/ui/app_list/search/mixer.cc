@@ -123,11 +123,6 @@ Mixer::~Mixer() = default;
 void Mixer::InitializeRankers(Profile* profile) {
   search_result_ranker_ = std::make_unique<SearchResultRanker>(profile);
   search_result_ranker_->InitializeRankers();
-
-  if (app_list_features::IsSuggestedFilesEnabled() ||
-      app_list_features::IsSuggestedLocalFilesEnabled()) {
-    chip_ranker_ = std::make_unique<ChipRanker>(profile);
-  }
 }
 
 size_t Mixer::AddGroup(size_t max_results) {
