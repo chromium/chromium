@@ -12,6 +12,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/port_util.h"
 #include "net/base/url_util.h"
+#include "net/http/http_network_session.h"
 #include "net/log/net_log_values.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_resolution_request.h"
@@ -266,8 +267,6 @@ DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
       isolation_key_(isolation_key),
       context_(context),
       visitor_(visitor),
-      // TODO(vasilvv): pass ClientSocketFactory through QuicContext.
-      client_socket_factory_(ClientSocketFactory::GetDefaultFactory()),
       quic_context_(context->quic_context()),
       net_log_(NetLogWithSource::Make(context->net_log(),
                                       NetLogSourceType::WEB_TRANSPORT_CLIENT)),
@@ -462,8 +461,10 @@ int DedicatedWebTransportHttp3Client::DoConnect() {
 
   // TODO(vasilvv): consider unifying parts of this code with QuicSocketFactory
   // (which currently has a lot of code specific to QuicChromiumClientSession).
-  socket_ = client_socket_factory_->CreateDatagramClientSocket(
-      DatagramSocket::DEFAULT_BIND, net_log_.net_log(), net_log_.source());
+  socket_ = context_->GetNetworkSessionContext()
+                ->client_socket_factory->CreateDatagramClientSocket(
+                    DatagramSocket::DEFAULT_BIND, net_log_.net_log(),
+                    net_log_.source());
   if (quic_context_->params()->enable_socket_recv_optimization)
     socket_->EnableRecvOptimization();
   socket_->UseNonBlockingIO();
