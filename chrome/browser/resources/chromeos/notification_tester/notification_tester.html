@@ -91,6 +91,10 @@
     max-width: 32rem;
   }
 
+  .go-link {
+    color: rgb(0, 0, 0);
+  }
+
   .countdown {
     color: rgb(0, 0, 0);
     font-size: 1rem;
@@ -160,7 +164,7 @@
         no-custom-input="true"></select-custom>
 
       <select-custom select-value="{{notifMetadata.displaySource}}"
-        display-label="Display Source" 
+        display-label="Display Source"
         select-elements="[[displaySourceSelectList]]" selectid="source">
       </select-custom>
 
@@ -291,6 +295,10 @@
       <div class="form-item error">
         Note: Notifications generated while a delayed notification is
         underway may not appear synchronously.
+      </div>
+
+      <div class="form-item error go-link">
+        See go/cros-notification-tester to understand how to best use this tool.
       </div>
 
       <button type="button" id="generateNotifBtn" on-click="onClickGenerate">
