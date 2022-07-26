@@ -1032,7 +1032,9 @@ void TestResponseProvider::GetLanguageResponse(
                      kTranslateInfobarModalTranslateTargetLanguageItemAXId)]
       performAction:grey_tap()];
   // Select "Dutch" from the table view.
-  [[[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Dutch")]
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(@"Dutch"),
+                                          grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 300)
       onElementWithMatcher:grey_accessibilityID(
                                kTranslateInfobarLanguageSelectionTableViewAXId)]
