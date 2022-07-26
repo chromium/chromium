@@ -2506,6 +2506,7 @@ if (!is_android) {
         "../browser/ui/views/chrome_cleaner_dialog_browsertest_win.cc",
         "../browser/ui/views/chrome_cleaner_reboot_dialog_browsertest_win.cc",
         "../browser/ui/views/settings_reset_prompt_dialog_browsertest.cc",
+        "../browser/ui/views/try_chrome_dialog_win/try_chrome_dialog_browsertest.cc",
         "../browser/ui/views/uninstall_view_browsertest.cc",
         "../test/delayload/delayload_hook_browsertest.cc",
       ]
@@ -9500,7 +9501,6 @@ if (!is_android) {
           "../browser/ui/views/accessibility/post_install_announcement_browsertest.cc",
           "../browser/ui/views/frame/browser_window_property_manager_browsertest_win.cc",
           "../browser/ui/views/status_icons/status_tray_state_changer_interactive_uitest_win.cc",
-          "../browser/ui/views/try_chrome_dialog_win/try_chrome_dialog_browsertest.cc",
         ]
         if (use_aura) {
           sources += [ "../browser/ui/views/tooltip/tooltip_aura_interactive_uitest_win.cc" ]
