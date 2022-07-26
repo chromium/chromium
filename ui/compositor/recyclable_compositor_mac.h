@@ -52,8 +52,6 @@ class COMPOSITOR_EXPORT RecyclableCompositorMac
                      const gfx::DisplayColorSpaces& display_color_spaces);
 
  private:
-  friend class RecyclableCompositorMacFactory;
-
   // Invalidate the compositor's surface information.
   void InvalidateSurface();
 
@@ -70,38 +68,6 @@ class COMPOSITOR_EXPORT RecyclableCompositorMac
   std::unique_ptr<ui::AcceleratedWidgetMac> accelerated_widget_mac_;
   ui::Compositor compositor_;
   std::unique_ptr<ui::CompositorLock> compositor_suspended_lock_;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-// RecyclableCompositorMacFactory
-//
-// The factory through which RecyclableCompositorMacs are created and recycled.
-
-class COMPOSITOR_EXPORT RecyclableCompositorMacFactory {
- public:
-  static RecyclableCompositorMacFactory* Get();
-
-  // Create a compositor, or recycle a preexisting one.
-  std::unique_ptr<RecyclableCompositorMac> CreateCompositor(
-      ui::ContextFactory* context_factory,
-      bool force_new_compositor = false);
-
-  // Delete a compositor, or allow it to be recycled.
-  void RecycleCompositor(std::unique_ptr<RecyclableCompositorMac> compositor);
-
-  // Destroy any compositors that are being kept around for recycling.
-  void DisableRecyclingForShutdown();
-
- private:
-  friend class base::NoDestructor<ui::RecyclableCompositorMacFactory>;
-  friend class RecyclableCompositorMac;
-  RecyclableCompositorMacFactory();
-  ~RecyclableCompositorMacFactory();
-  void ReduceSpareCompositors();
-
-  bool recycling_disabled_ = false;
-  std::list<std::unique_ptr<RecyclableCompositorMac>> compositors_;
-  base::WeakPtrFactory<RecyclableCompositorMacFactory> weak_factory_;
 };
 
 }  // namespace ui

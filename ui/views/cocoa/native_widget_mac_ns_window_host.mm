@@ -525,8 +525,7 @@ void NativeWidgetMacNSWindowHost::CreateCompositor(
   ui::ContextFactory* context_factory =
       ViewsDelegate::GetInstance()->GetContextFactory();
   DCHECK(context_factory);
-  compositor_ = ui::RecyclableCompositorMacFactory::Get()->CreateCompositor(
-      context_factory);
+  compositor_ = std::make_unique<ui::RecyclableCompositorMac>(context_factory);
   compositor_->widget()->SetNSView(this);
   compositor_->compositor()->SetBackgroundColor(
       translucent ? SK_ColorTRANSPARENT : SK_ColorWHITE);
@@ -583,8 +582,7 @@ void NativeWidgetMacNSWindowHost::DestroyCompositor() {
     return;
   compositor_->widget()->ResetNSView();
   compositor_->compositor()->SetRootLayer(nullptr);
-  ui::RecyclableCompositorMacFactory::Get()->RecycleCompositor(
-      std::move(compositor_));
+  compositor_.reset();
 }
 
 bool NativeWidgetMacNSWindowHost::SetWindowTitle(const std::u16string& title) {

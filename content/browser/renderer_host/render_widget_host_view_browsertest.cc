@@ -1202,17 +1202,15 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
    public:
     ScopedParentLayer(BrowserCompositorMac* browser_compositor)
         : browser_compositor_(browser_compositor) {
-      recyclable_compositor_ =
-          ui::RecyclableCompositorMacFactory::Get()->CreateCompositor(
-              content::GetContextFactory());
+      recyclable_compositor_ = std::make_unique<ui::RecyclableCompositorMac>(
+          content::GetContextFactory());
       layer_.SetCompositorForTesting(recyclable_compositor_->compositor());
     }
 
     ~ScopedParentLayer() {
       browser_compositor_->SetParentUiLayer(nullptr);
       layer_.ResetCompositor();
-      ui::RecyclableCompositorMacFactory::Get()->RecycleCompositor(
-          std::move(recyclable_compositor_));
+      recyclable_compositor_.reset();
     }
 
     ui::Layer* layer() { return &layer_; }

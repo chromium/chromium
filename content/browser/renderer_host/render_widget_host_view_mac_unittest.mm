@@ -2293,7 +2293,7 @@ TEST_F(RenderWidgetHostViewMacTest, TransformToRootNoParentLayer) {
 
 TEST_F(RenderWidgetHostViewMacTest, TransformToRootWithParentLayer) {
   std::unique_ptr<ui::RecyclableCompositorMac> compositor =
-      ui::RecyclableCompositorMacFactory::Get()->CreateCompositor(
+      std::make_unique<ui::RecyclableCompositorMac>(
           ImageTransportFactory::GetInstance()->GetContextFactory());
   std::unique_ptr<ui::Layer> root_surface_layer =
       std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
