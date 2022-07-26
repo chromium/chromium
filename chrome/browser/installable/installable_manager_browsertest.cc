@@ -1949,6 +1949,29 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckScreenshots) {
   EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
 }
 
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckScreenshotsNumber) {
+  base::RunLoop run_loop;
+  std::unique_ptr<CallbackTester> tester(
+      new CallbackTester(run_loop.QuitClosure()));
+
+  InstallableParams params = GetManifestParams();
+  params.fetch_screenshots = true;
+
+  NavigateAndRunInstallableManager(
+      browser(), tester.get(), params,
+      GetURLOfPageWithServiceWorkerAndManifest(
+          "/banners/manifest_with_too_many_screenshots.json"));
+
+  run_loop.Run();
+
+  EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
+  EXPECT_FALSE(tester->manifest_url().is_empty());
+
+  EXPECT_FALSE(tester->valid_manifest());
+  EXPECT_EQ(8u, tester->screenshots().size());
+  EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
+}
+
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
                        CheckLargeScreenshotsFilteredOut) {
   base::RunLoop run_loop;

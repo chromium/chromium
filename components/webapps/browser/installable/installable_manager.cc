@@ -60,6 +60,9 @@ const int kMaximumIconSizeInPx = std::numeric_limits<int>::max();
 // size for triggering banners.
 const int kMinimumPrimaryIconSizeInPx = 144;
 
+// Maximum number of screenshots allowed, the rest will be ignored.
+const int kMaximumNumOfScreenshots = 8;
+
 // This constant is the smallest possible adaptive launcher icon size for any
 // device density.
 // The ideal icon size is 83dp (see documentation for
@@ -889,7 +892,11 @@ void InstallableManager::CheckAndFetchScreenshots() {
 
   screenshots_downloading_ = 0;
 
+  int num_of_screenshots = 0;
+
   for (const auto& url : manifest().screenshots) {
+    if (++num_of_screenshots > kMaximumNumOfScreenshots)
+      break;
     // A screenshot URL that's in the map is already taken care of.
     if (downloaded_screenshots_.count(url.src) > 0)
       continue;
@@ -930,7 +937,11 @@ void InstallableManager::OnScreenshotFetched(GURL screenshot_url,
   if (--screenshots_downloading_ == 0) {
     // Now that all images have finished downloading, populate screenshots in
     // the order they are declared in the manifest.
+    int num_of_screenshots = 0;
     for (const auto& url : manifest().screenshots) {
+      if (++num_of_screenshots > kMaximumNumOfScreenshots)
+        break;
+
       auto iter = downloaded_screenshots_.find(url.src);
       if (iter == downloaded_screenshots_.end())
         continue;
