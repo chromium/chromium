@@ -49,9 +49,6 @@ const base::Feature kAppStoreBilling {
 const base::Feature kAppStoreBillingDebug{"AppStoreBillingDebug",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kDownRankJustInTimePaymentApp{
-    "DownRankJustInTimePaymentApp", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kPaymentHandlerPopUpSizeWindow{
     "PaymentHandlerPopUpSizeWindow", base::FEATURE_ENABLED_BY_DEFAULT};
 

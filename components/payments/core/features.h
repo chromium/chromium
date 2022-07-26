@@ -47,10 +47,6 @@ extern const base::Feature kWebPaymentsJustInTimePaymentApp;
 // ShippingAddressChangeEvent is redacted of fine-grained details.
 extern const base::Feature kWebPaymentsRedactShippingAddress;
 
-// If enabled, just-in-time installable payment handlers are ranked lower than
-// complete autofill instruments in payment sheet's method selection section.
-extern const base::Feature kDownRankJustInTimePaymentApp;
-
 // Desktop only, if enabled payment handler window size matches the pop up
 // window size.
 extern const base::Feature kPaymentHandlerPopUpSizeWindow;

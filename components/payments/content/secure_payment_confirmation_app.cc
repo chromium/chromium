@@ -124,12 +124,6 @@ bool SecurePaymentConfirmationApp::IsCompleteForPayment() const {
   return true;
 }
 
-uint32_t SecurePaymentConfirmationApp::GetCompletenessScore() const {
-  // This value is used for sorting multiple apps, but this app always appears
-  // on its own.
-  return 0;
-}
-
 bool SecurePaymentConfirmationApp::CanPreselect() const {
   return true;
 }

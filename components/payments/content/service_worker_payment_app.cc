@@ -383,12 +383,6 @@ bool ServiceWorkerPaymentApp::IsCompleteForPayment() const {
   return true;
 }
 
-uint32_t ServiceWorkerPaymentApp::GetCompletenessScore() const {
-  // Return max value to ensure that SW payment app always score higher than
-  // autofill.
-  return std::numeric_limits<uint32_t>::max();
-}
-
 bool ServiceWorkerPaymentApp::CanPreselect() const {
   // Do not preselect the payment app when the name and/or icon is missing.
   return !GetLabel().empty() && icon_bitmap() && !icon_bitmap()->drawsNothing();

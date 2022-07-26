@@ -80,10 +80,6 @@ bool AndroidPaymentApp::IsCompleteForPayment() const {
   return true;
 }
 
-uint32_t AndroidPaymentApp::GetCompletenessScore() const {
-  return 0;
-}
-
 bool AndroidPaymentApp::CanPreselect() const {
   return true;
 }

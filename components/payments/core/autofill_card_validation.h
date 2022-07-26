@@ -38,23 +38,6 @@ CreditCardCompletionStatus GetCompletionStatusForCard(
     const std::string& app_locale,
     const std::vector<autofill::AutofillProfile*> billing_addresses);
 
-// Returns the credit card's completeness score. The score is used for sorting
-// available cards before showing them to the user in payment sheet. Different
-// fields are weighted according to the effort needed to complete them. The
-// weights are set so that the number of missing fields matters most (i.e. cards
-// with any three missing fields are scored lower than cards with any two
-// missing fields which are in turn scored lower than cards with only one
-// missing field). When number of missing fields are equal the order of
-// importance is 1-missing card number 2-missing address 3-missing card holder's
-// name 4-invalid expiry date. A complete card gets the highest score which is
-// 37 and each score represents a unique set of missing/invalid fields (i.e. Two
-// cards will tie if and only if they both have identical missing/invalid
-// fields).
-uint32_t GetCompletenessScore(
-    const autofill::CreditCard& credit_card,
-    const std::string& app_locale,
-    const std::vector<autofill::AutofillProfile*> billing_addresses);
-
 // Return the message to be displayed to the user, indicating what's missing
 // to make the credit card complete for payment. If more than one thing is
 // missing, the message will be a generic "more information required".

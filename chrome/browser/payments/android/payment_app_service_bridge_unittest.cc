@@ -44,7 +44,6 @@ class MockApp : public PaymentApp {
   // PaymentApp implementation:
   MOCK_METHOD1(InvokePaymentApp, void(base::WeakPtr<Delegate> delegate));
   MOCK_CONST_METHOD0(IsCompleteForPayment, bool());
-  MOCK_CONST_METHOD0(GetCompletenessScore, uint32_t());
   MOCK_CONST_METHOD0(CanPreselect, bool());
   MOCK_CONST_METHOD0(GetMissingInfoLabel, std::u16string());
   MOCK_CONST_METHOD0(HasEnrolledInstrument, bool());

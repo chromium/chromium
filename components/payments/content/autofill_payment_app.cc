@@ -88,11 +88,6 @@ bool AutofillPaymentApp::IsCompleteForPayment() const {
                                     billing_profiles_) <= CREDIT_CARD_EXPIRED;
 }
 
-uint32_t AutofillPaymentApp::GetCompletenessScore() const {
-  return ::payments::GetCompletenessScore(credit_card_, app_locale_,
-                                          billing_profiles_);
-}
-
 bool AutofillPaymentApp::CanPreselect() const {
   return IsCompleteForPayment();
 }

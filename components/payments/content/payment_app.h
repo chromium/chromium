@@ -74,9 +74,6 @@ class PaymentApp {
   // Returns whether the app is complete to be used for payment without further
   // editing.
   virtual bool IsCompleteForPayment() const = 0;
-  // Returns the calculated completeness score. Used to sort the list of
-  // available apps.
-  virtual uint32_t GetCompletenessScore() const = 0;
   // Returns whether the app can be preselected in the payment sheet. If none of
   // the apps can be preselected, the user must explicitly select an app from a
   // list.

@@ -21,9 +21,6 @@ void TestPaymentApp::InvokePaymentApp(
 bool TestPaymentApp::IsCompleteForPayment() const {
   return true;
 }
-uint32_t TestPaymentApp::GetCompletenessScore() const {
-  return 0;
-}
 bool TestPaymentApp::CanPreselect() const {
   return true;
 }

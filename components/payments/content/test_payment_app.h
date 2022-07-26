@@ -22,7 +22,6 @@ class TestPaymentApp : public PaymentApp {
   // PaymentApp:
   void InvokePaymentApp(base::WeakPtr<Delegate> delegate) override;
   bool IsCompleteForPayment() const override;
-  uint32_t GetCompletenessScore() const override;
   bool CanPreselect() const override;
   std::u16string GetMissingInfoLabel() const override;
   bool HasEnrolledInstrument() const override;

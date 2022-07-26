@@ -50,27 +50,6 @@ CreditCardCompletionStatus GetCompletionStatusForCard(
   return status;
 }
 
-uint32_t GetCompletenessScore(
-    const autofill::CreditCard& credit_card,
-    const std::string& app_locale,
-    const std::vector<autofill::AutofillProfile*> billing_addresses) {
-  CreditCardCompletionStatus status =
-      GetCompletionStatusForCard(credit_card, app_locale, billing_addresses);
-  // The absolute values of weights do not matter as long as their relative
-  // value guarantees the following three features: 1- Each score represents a
-  // unique set of missing fields 2- Cards with more number of missing fields
-  // score less. 3- Relative weight of each field corresponds to the relative
-  // effort needed to complete the field (e.g. filling address info is harder
-  // than card holder's name). Completeness weights for all fields are
-  // identiacal to their equivalent in checkAndUpdateCardCompleteness from
-  // AutofillPaymentInstrument.java, Please modify the weights in both files if
-  // needed.
-  return 6 * !(CREDIT_CARD_EXPIRED & status) +
-         8 * !(CREDIT_CARD_NO_CARDHOLDER & status) +
-         10 * !(CREDIT_CARD_NO_BILLING_ADDRESS & status) +
-         13 * !(CREDIT_CARD_NO_NUMBER & status);
-}
-
 std::u16string GetCompletionMessageForCard(CreditCardCompletionStatus status) {
   switch (status) {
     // No message is shown for complete or expired card (which will be fixable)
