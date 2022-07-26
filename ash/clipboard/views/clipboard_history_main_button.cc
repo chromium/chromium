@@ -5,23 +5,18 @@
 #include "ash/clipboard/views/clipboard_history_main_button.h"
 
 #include "ash/clipboard/views/clipboard_history_item_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/focus_ring.h"
 
 namespace ash {
-namespace {
-
-// The menu background's color type.
-constexpr ash::AshColorProvider::BaseLayerType kMenuBackgroundColorType =
-    ash::AshColorProvider::BaseLayerType::kOpaque;
-
-}  // namespace
 
 ClipboardHistoryMainButton::ClipboardHistoryMainButton(
     ClipboardHistoryItemView* container)
@@ -110,22 +105,21 @@ void ClipboardHistoryMainButton::PaintButtonContents(gfx::Canvas* canvas) {
   if (!should_highlight_)
     return;
 
-  // Use the light mode as default because the light mode is the default mode
-  // of the native theme which decides the context menu's background color.
-  // TODO(andrewxu): remove this line after https://crbug.com/1143009 is
-  // fixed.
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
-
   // Highlight the background when the menu item is selected or pressed.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
 
-  auto* color_provider = AshColorProvider::Get();
-  const std::pair<SkColor, float> base_color_and_opacity =
-      color_provider->GetInkDropBaseColorAndOpacity(
-          color_provider->GetBaseLayerColor(kMenuBackgroundColorType));
-  flags.setColor(SkColorSetA(base_color_and_opacity.first,
-                             base_color_and_opacity.second * 0xFF));
+  // Use the color in light mode when dark/light mode is not enabled. As the
+  // background color of the context menu is from NativeTheme when the feature
+  // is not enabled, and light mode is the default color of NativeTheme. If
+  // dark/light mode is enabled, the background color of the context menus
+  // inside SystemUI will be overridden to align with current system color mode.
+  const SkColor color =
+      features::IsDarkLightModeEnabled()
+          ? GetColorProvider()->GetColor(kColorAshInkDrop)
+          : SkColorSetA(SK_ColorBLACK,
+                        StyleUtil::kLightInkDropOpacity * SK_AlphaOPAQUE);
+  flags.setColor(color);
   flags.setStyle(cc::PaintFlags::kFill_Style);
   canvas->DrawRect(GetLocalBounds(), flags);
 }
