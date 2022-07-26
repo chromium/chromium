@@ -826,3 +826,4 @@ crbug.com/1228246 http/tests/inspector-protocol/fetch/fetch-cors-preflight-sw.js
 crbug.com/1228246 http/tests/inspector-protocol/network/request-interception-patterns.js [ Slow ]
 crbug.com/1228246 http/tests/inspector-protocol/fetch/disable-with-response-in-flight.js [ Slow ]
 crbug.com/1306770 http/tests/inspector-protocol/network/interception-download.js [ Slow ]
+crbug.com/1344358 inspector-protocol/page/frameNavigatedContext.js [ Slow ]
