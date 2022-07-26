@@ -6,7 +6,9 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
+#import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -37,14 +39,9 @@ const float kPlaceholderTitleCornerRadius = 2.0f;
 // The corner radius of this container.
 const float kCornerRadius = 16;
 
-// The shadow radius of this container.
-const float kShadowRadius = 60;
-
-// The shadow opacity of this container.
-const float kShadowOpacity = 0.06;
-
-// The shadow offset of this container.
-const CGSize kShadowOffset = CGSizeMake(0, 20);
+// The shadow offsets of this container.
+const CGFloat kHorizontalShadowOffset = 10;
+const CGFloat kVerticalShadowOffset = 20;
 
 // Vertical space allocated to the Trending Queries module content.
 const float kTrendingQueriesContentHeight = 103;
@@ -74,13 +71,30 @@ const float kTrendingQueriesContentHeight = 103;
     self.layer.cornerRadius = kCornerRadius;
     self.backgroundColor =
         [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
-    self.layer.shadowColor = [UIColor blackColor].CGColor;
-    self.layer.shadowOffset = kShadowOffset;
-    self.layer.shadowRadius = kShadowRadius;
-    self.layer.shadowOpacity = kShadowOpacity;
+
+    // Create content container with same background as this view so that a
+    // shadow view can be placed under it to create a shadow effect.
+    UIImageView* shadow = [[UIImageView alloc]
+        initWithImage:StretchableImageNamed(@"menu_shadow")];
+    shadow.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:shadow];
+    AddSameConstraintsToSidesWithInsets(
+        shadow, self,
+        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kBottom |
+            LayoutSides::kTrailing,
+        {-kHorizontalShadowOffset, -kVerticalShadowOffset,
+         -kVerticalShadowOffset, -kHorizontalShadowOffset});
+
+    UIView* contentContainer = [[UIView alloc] init];
+    contentContainer.backgroundColor =
+        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+    contentContainer.layer.cornerRadius = kCornerRadius;
+    contentContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:contentContainer];
+    AddSameConstraints(self, contentContainer);
 
     contentView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:contentView];
+    [contentContainer addSubview:contentView];
 
     NSString* titleString = [self titleString];
     if ([titleString length] > 0) {
@@ -91,14 +105,14 @@ const float kTrendingQueriesContentHeight = 103;
       self.title.textColor = [UIColor colorNamed:kTextSecondaryColor];
       self.title.accessibilityTraits |= UIAccessibilityTraitHeader;
       self.title.translatesAutoresizingMaskIntoConstraints = NO;
-      [self addSubview:self.title];
+      [contentContainer addSubview:self.title];
       [NSLayoutConstraint activateConstraints:@[
         // Title constraints.
         [self.title.leadingAnchor
-            constraintEqualToAnchor:self.leadingAnchor
+            constraintEqualToAnchor:contentContainer.leadingAnchor
                            constant:kContentHorizontalInset],
-        [self.topAnchor constraintEqualToAnchor:self.title.topAnchor
-                                       constant:-kTitleTopInset],
+        [contentContainer.topAnchor constraintEqualToAnchor:self.title.topAnchor
+                                                   constant:-kTitleTopInset],
         // Ensures placeholder for title is visible.
         [self.title.widthAnchor
             constraintGreaterThanOrEqualToConstant:kTitleMinimumWidth],
@@ -106,23 +120,27 @@ const float kTrendingQueriesContentHeight = 103;
             constraintGreaterThanOrEqualToConstant:kTitleMinimumHeight],
         // contentView constraints.
         [contentView.leadingAnchor
-            constraintEqualToAnchor:self.leadingAnchor
+            constraintEqualToAnchor:contentContainer.leadingAnchor
                            constant:kContentHorizontalInset],
         [contentView.trailingAnchor
-            constraintEqualToAnchor:self.trailingAnchor
+            constraintEqualToAnchor:contentContainer.trailingAnchor
                            constant:-kContentHorizontalInset],
-        [contentView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+        [contentView.bottomAnchor
+            constraintEqualToAnchor:contentContainer.bottomAnchor],
         [contentView.topAnchor
             constraintEqualToAnchor:self.title.bottomAnchor
                            constant:kContentTitleVerticalSpacing],
       ]];
     } else {
       [NSLayoutConstraint activateConstraints:@[
-        [contentView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+        [contentView.leadingAnchor
+            constraintEqualToAnchor:contentContainer.leadingAnchor],
         [contentView.trailingAnchor
-            constraintEqualToAnchor:self.trailingAnchor],
-        [contentView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
-        [contentView.topAnchor constraintEqualToAnchor:self.topAnchor],
+            constraintEqualToAnchor:contentContainer.trailingAnchor],
+        [contentView.bottomAnchor
+            constraintEqualToAnchor:contentContainer.bottomAnchor],
+        [contentView.topAnchor
+            constraintEqualToAnchor:contentContainer.topAnchor],
       ]];
     }
     self.heightConstraint = [self.heightAnchor
