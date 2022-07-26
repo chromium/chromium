@@ -15,9 +15,11 @@
 #include "ash/rotator/screen_rotation_animator_observer.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/common/extensions/api/autotest_private.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom-forward.h"
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -332,6 +334,8 @@ class AutotestPrivateGetLacrosInfoFunction : public ExtensionFunction {
  private:
   ~AutotestPrivateGetLacrosInfoFunction() override;
   ResponseAction Run() override;
+  static api::autotest_private::LacrosState ToLacrosState(
+      crosapi::BrowserManager::State state);
 };
 
 class AutotestPrivateGetArcAppFunction : public ExtensionFunction {

@@ -1948,11 +1948,37 @@ AutotestPrivateIsLacrosPrimaryBrowserFunction::Run() {
 AutotestPrivateGetLacrosInfoFunction::~AutotestPrivateGetLacrosInfoFunction() =
     default;
 
+// static
+api::autotest_private::LacrosState
+AutotestPrivateGetLacrosInfoFunction::ToLacrosState(
+    crosapi::BrowserManager::State state) {
+  switch (state) {
+    case crosapi::BrowserManager::State::NOT_INITIALIZED:
+      return api::autotest_private::LACROS_STATE_NOTINITIALIZED;
+    case crosapi::BrowserManager::State::MOUNTING:
+      return api::autotest_private::LACROS_STATE_MOUNTING;
+    case crosapi::BrowserManager::State::UNAVAILABLE:
+      return api::autotest_private::LACROS_STATE_UNAVAILABLE;
+    case crosapi::BrowserManager::State::STOPPED:
+      return api::autotest_private::LACROS_STATE_STOPPED;
+    case crosapi::BrowserManager::State::CREATING_LOG_FILE:
+      return api::autotest_private::LACROS_STATE_CREATINGLOGFILE;
+    case crosapi::BrowserManager::State::STARTING:
+      return api::autotest_private::LACROS_STATE_STARTING;
+    case crosapi::BrowserManager::State::RUNNING:
+      return api::autotest_private::LACROS_STATE_RUNNING;
+    case crosapi::BrowserManager::State::TERMINATING:
+      return api::autotest_private::LACROS_STATE_TERMINATING;
+  }
+}
+
 ExtensionFunction::ResponseAction AutotestPrivateGetLacrosInfoFunction::Run() {
   DVLOG(1) << "AutotestPrivateGetLacrosInfoFunction";
   auto* browser_manager = crosapi::BrowserManager::Get();
   auto result = std::make_unique<base::DictionaryValue>();
   result->SetBoolKey("isRunning", browser_manager->IsRunning());
+  result->SetStringKey("state", api::autotest_private::ToString(
+                                    ToLacrosState(browser_manager->state_)));
   result->SetBoolKey("isKeepAlive", browser_manager->IsKeepAliveEnabled());
   result->SetStringKey("lacrosPath",
                        browser_manager->lacros_path().MaybeAsASCII());

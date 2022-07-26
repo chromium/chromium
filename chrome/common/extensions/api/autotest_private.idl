@@ -261,9 +261,24 @@ namespace autotestPrivate {
 
   callback IsLacrosPrimaryBrowserCallback = void (boolean primary);
 
+  // crosapi::BrowserManager::State
+  enum LacrosState {
+    NotInitialized,
+    Mounting,
+    Unavailable,
+    Stopped,
+    CreatingLogFile,
+    Starting,
+    Running,
+    Terminating
+  };
+
   dictionary LacrosInfo {
-    // True iff lacros is running currently.
+    // True iff lacros is running currently. TODO(neis): Remove once the Tast
+    // use has been eliminated.
     boolean isRunning;
+    // The state of lacros.
+    LacrosState state;
     // True iff keepalive is enabled for lacros.
     boolean isKeepAlive;
     // Path to lacros-chrome directory. Note that this may change over time if

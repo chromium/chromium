@@ -52,6 +52,10 @@ namespace ash {
 class ApkWebAppService;
 }
 
+namespace extensions {
+class AutotestPrivateGetLacrosInfoFunction;
+}
+
 namespace policy {
 class CloudPolicyCore;
 }
@@ -294,6 +298,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   };
 
  protected:
+  // NOTE: You may have to update tests if you make changes to State, as state_
+  // is exposed via autotest_private.
   enum class State {
     // Lacros is not initialized yet.
     // Lacros-chrome loading depends on user type, so it needs to wait
@@ -350,6 +356,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // installation when lacros-chrome starts at arbitrary points of time, so it
   // needs to be kept alive.
   friend class ash::ApkWebAppService;
+  // Only for exposing state_ to Tast tests.
+  friend class extensions::AutotestPrivateGetLacrosInfoFunction;
 
   // Holds the data for restoring a window from the desk template.
   // The request to restore a window may come when the browser service is not
@@ -538,6 +546,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Creates windows from template data.
   void RestoreWindowsFromTemplate();
 
+  // NOTE: The state is exposed to tests via autotest_private.
   State state_ = State::NOT_INITIALIZED;
 
   std::unique_ptr<crosapi::BrowserLoader> browser_loader_;
