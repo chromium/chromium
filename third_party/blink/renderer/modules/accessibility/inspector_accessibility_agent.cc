@@ -1042,6 +1042,11 @@ Response InspectorAccessibilityAgent::queryAXTree(
 
   while (!reachable.IsEmpty()) {
     AXObject* ax_object = reachable.back();
+    if (ax_object->IsDetached() ||
+        !ax_object->AccessibilityIsIncludedInTree()) {
+      reachable.pop_back();
+      continue;
+    }
     ui::AXNodeData node_data;
     ax_object->Serialize(&node_data, ui::kAXModeComplete);
     reachable.pop_back();
