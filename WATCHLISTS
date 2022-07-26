@@ -1882,6 +1882,10 @@
                   '|chrome/android/features/start_surface/' \
                   '|chrome/android/.*/src/org/chromium/chrome/browser/tasks/'
     },
+    'tabs': {
+      'filepath': 'chrome/browser/ui/tabs/'\
+                  '|chrome/browser/ui/views/tabs/',
+    },
     'tbmv2_metrics': {
       'filepath': 'third_party/catapult/tracing/tracing/metrics'
     },
@@ -1996,6 +2000,10 @@
     },
     'usb': {
       'filepath': '/usb/',
+    },
+    'user_education': {
+      'filepath': 'chrome/browser/ui/user_education/'\
+                  '|chrome/browser/ui/views/user_education/',
     },
     'version_assembly': {
       'filepath': 'chrome/app/version_assembly',
@@ -2894,6 +2902,7 @@
                                  'mattsimmons+watch@chromium.org',
                                  'davidjm+watch@chromium.org',
                                  'spdonghao+watch@chromium.org'],
+    'tabs': ['mickeyburks+watch@chromium.org'],
     'tbmv2_metrics': ['speed-metrics-reviews@chromium.org'],
     'telemetry': ['telemetry-reviews@chromium.org'],
     'test_runner': ['einbinder+watch-test-runner@chromium.org'],
@@ -2939,6 +2948,7 @@
     'unified_consent': ['wfh+watch@chromuium.org'],
     'usb': ['mattreynolds+watch@chromium.org',
             'odejesush+watch@chromium.org'],
+    'user_education': ['mickeyburks+watch@chromium.org'],
     'version_assembly': ['caitkp+watch@chromium.org',
                          'gab+watch@chromium.org'],
     'video': ['posciak+watch@chromium.org'],
