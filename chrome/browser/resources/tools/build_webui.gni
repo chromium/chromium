@@ -200,6 +200,10 @@ template("build_webui") {
       }
       extra_deps += [ ":copy_mojo" ]
     }
+
+    if (defined(invoker.ts_extra_deps)) {
+      extra_deps += invoker.ts_extra_deps
+    }
   }
 
   if (optimize) {
