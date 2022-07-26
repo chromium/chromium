@@ -87,12 +87,12 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private final BottomSheetObserver mBottomSheetObserver;
     private final LargeIconBridge mIconBridge;
     private final Tracker mFeatureEngagementTracker;
-    private final Profile mProfile;
+    private final Supplier<Profile> mProfileSupplier;
 
     private long mShareStartTime;
     private boolean mExcludeFirstParty;
     private boolean mIsMultiWindow;
-    private boolean mShouldUseUsageRanking;
+    private boolean mDisableUsageRankingForTesting;
     private Set<Integer> mContentTypes;
     private Activity mActivity;
     private ActivityLifecycleDispatcher mLifecycleDispatcher;
@@ -126,7 +126,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
      * @param modelBuilder The {@link ShareSheetPropertyModelBuilder} for the share sheet.
      * @param isIncognito Whether the share sheet was opened in incognito mode or not.
      * @param imageEditorModuleProvider Image Editor module entry point if present in the APK.
-     * @param profile The most recent profile of the User.
+     * @param profileSupplier A profile supplier to pull the current profile of the User.
      */
     // TODO(crbug/1022172): Should be package-protected once modularization is complete.
     public ShareSheetCoordinator(BottomSheetController controller,
@@ -134,7 +134,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             ShareSheetPropertyModelBuilder modelBuilder, Callback<Tab> printTab,
             LargeIconBridge iconBridge, boolean isIncognito,
             ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker,
-            Profile profile) {
+            Supplier<Profile> profileSupplier) {
         mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
@@ -171,8 +171,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mBottomSheetController.addObserver(mBottomSheetObserver);
         mIconBridge = iconBridge;
         mFeatureEngagementTracker = featureEngagementTracker;
-        mProfile = profile;
-        mShouldUseUsageRanking = mProfile != null;
+        mProfileSupplier = profileSupplier;
     }
 
     protected void destroy() {
@@ -323,7 +322,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 mWindowAndroid, mTabProvider, mBottomSheetController, mBottomSheet, shareParams,
                 mPrintTabCallback, mIsIncognito, mShareStartTime, this, mImageEditorModuleProvider,
                 mFeatureEngagementTracker, getUrlToShare(shareParams, chromeShareExtras),
-                mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails, mProfile);
+                mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails, mProfileSupplier);
         mIsMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
 
         return mChromeProvidedSharingOptionsProvider.getPropertyModels(
@@ -343,10 +342,11 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 /*accessibilityDescription=*/null,
                 (shareParams)
                         -> {
+                    Profile profile = mProfileSupplier.get();
                     recordShareMetrics("SharingHubAndroid.MoreSelected",
-                            mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails, mProfile);
+                            mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails, profile);
                     mBottomSheetController.hideContent(mBottomSheet, true);
-                    ShareHelper.showDefaultShareUi(params, mProfile, saveLastUsed);
+                    ShareHelper.showDefaultShareUi(params, profile, saveLastUsed);
                     // Reset callback to prevent cancel() being called when the custom sheet is
                     // closed. The callback will be called by ShareHelper on actions from the
                     // default share UI.
@@ -356,8 +356,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     }
 
     @VisibleForTesting
-    void setShouldUseUsageRankingForTesting(boolean shouldUseUsageRanking) {
-        mShouldUseUsageRanking = shouldUseUsageRanking;
+    void setDisableUsageRankingForTesting(boolean shouldDisableUsageRanking) {
+        mDisableUsageRankingForTesting = shouldDisableUsageRanking;
     }
 
     /**
@@ -381,7 +381,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             return;
         }
 
-        if (mShouldUseUsageRanking) {
+        if (!mDisableUsageRankingForTesting) {
             createThirdPartyPropertyModelsFromUsageRanking(
                     activity, params, contentTypes, saveLastUsed, callback);
             return;
@@ -405,7 +405,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private void createThirdPartyPropertyModelsFromUsageRanking(Activity activity,
             ShareParams params, Set<Integer> contentTypes, boolean saveLastUsed,
             Callback<List<PropertyModel>> callback) {
-        assert mProfile != null;
+        Profile profile = mProfileSupplier.get();
+        assert profile != null;
 
         String type = contentTypesToTypeForRanking(contentTypes);
 
@@ -445,10 +446,10 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
 
         // TODO(ellyjones): Does !saveLastUsed always imply that we shouldn't incorporate the share
         // into our ranking?
-        boolean persist = !mProfile.isOffTheRecord() && saveLastUsed;
+        boolean persist = !profile.isOffTheRecord() && saveLastUsed;
 
         ShareRankingBridge.rank(
-                mProfile, type, availableActivities, fold, length, persist, ranking -> {
+                profile, type, availableActivities, fold, length, persist, ranking -> {
                     onThirdPartyShareTargetsReceived(
                             callback, resolveInfos, activity, params, saveLastUsed, ranking);
                 });
