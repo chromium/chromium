@@ -324,12 +324,12 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
         std::make_unique<SuggestionChipContainerView>(contents_view), 0);
   }
 
-  apps_grid_view_ = scrollable_container_->AddChildView(
-      std::make_unique<PagedAppsGridView>(contents_view, a11y_announcer,
-                                          /*folder_delegate=*/nullptr,
-                                          /*folder_controller=*/this,
-                                          /*container_delegate=*/this,
-                                          /*focus_delegate=*/this));
+  apps_grid_view_ =
+      scrollable_container_->AddChildView(std::make_unique<PagedAppsGridView>(
+          contents_view, a11y_announcer,
+          /*folder_delegate=*/nullptr,
+          /*folder_controller=*/this,
+          /*container_delegate=*/this, app_list_keyboard_controller_.get()));
   apps_grid_view_->Init();
   apps_grid_view_->pagination_model()->AddObserver(this);
   if (features::IsProductivityLauncherEnabled())
@@ -736,10 +736,6 @@ void AppsContainerView::OnNudgeRemoved() {
   UpdateTopLevelGridDimensions();
 
   apps_grid_view_->AnimateOnNudgeRemoved();
-}
-
-bool AppsContainerView::MoveFocusUpFromAppsGrid(int column) {
-  return app_list_keyboard_controller_->MoveFocusUpFromAppsGrid(column);
 }
 
 void AppsContainerView::UpdateForNewSortingOrder(

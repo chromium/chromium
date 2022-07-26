@@ -720,7 +720,7 @@ void AppListFolderView::CreatePagedAppsGrid(ContentsView* contents_view) {
   PagedAppsGridView* items_grid_view =
       contents_container_->AddChildView(std::make_unique<PagedAppsGridView>(
           contents_view, a11y_announcer_, this, /*folder_controller=*/nullptr,
-          /*container_delegate=*/this, /*focus_delegate=*/nullptr));
+          /*container_delegate=*/this, /*keyboard_controller=*/nullptr));
   contents_container_->layer()->SetMasksToBounds(true);
   items_grid_view_ = items_grid_view;
 
@@ -785,7 +785,7 @@ void AppListFolderView::CreateScrollableAppsGrid() {
   auto* items_grid_view =
       scroll_contents->AddChildView(std::make_unique<ScrollableAppsGridView>(
           a11y_announcer_, view_delegate_, this, scroll_view_,
-          /*folder_controller=*/nullptr, /*focus_delegate=*/nullptr));
+          /*folder_controller=*/nullptr, /*keyboard_controller=*/nullptr));
   items_grid_view_ = items_grid_view;
   items_grid_view->Init();
   items_grid_view->SetMaxColumns(kMaxFolderColumns);

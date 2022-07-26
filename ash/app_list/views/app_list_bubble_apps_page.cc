@@ -215,7 +215,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
       scroll_contents->AddChildView(std::make_unique<ScrollableAppsGridView>(
           a11y_announcer, view_delegate,
           /*folder_delegate=*/nullptr, scroll_view_, folder_controller,
-          /*focus_delegate=*/this));
+          app_list_keyboard_controller_.get()));
   scrollable_apps_grid_view_->SetDragAndDropHostOfCurrentAppList(
       drag_and_drop_host);
   scrollable_apps_grid_view_->Init();
@@ -588,10 +588,6 @@ void AppListBubbleAppsPage::OnNudgeRemoved() {
   StartSlideInAnimation(scrollable_apps_grid_view_, offset,
                         base::Milliseconds(300),
                         gfx::Tween::ACCEL_40_DECEL_100_3, base::DoNothing());
-}
-
-bool AppListBubbleAppsPage::MoveFocusUpFromAppsGrid(int column) {
-  return app_list_keyboard_controller_->MoveFocusUpFromAppsGrid(column);
 }
 
 ContinueSectionView* AppListBubbleAppsPage::GetContinueSectionView() {

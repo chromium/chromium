@@ -18,8 +18,8 @@ class ScrollView;
 
 namespace ash {
 
+class AppListKeyboardController;
 class AppListViewDelegate;
-class AppsGridViewFocusDelegate;
 
 // An apps grid that shows all the apps in a long scrolling list. Used for
 // the clamshell mode bubble launcher. Implemented as a single "page" of apps.
@@ -35,7 +35,7 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
                          AppsGridViewFolderDelegate* folder_delegate,
                          views::ScrollView* scroll_view,
                          AppListFolderController* folder_controller,
-                         AppsGridViewFocusDelegate* focus_delegate);
+                         AppListKeyboardController* keyboard_controller);
   ScrollableAppsGridView(const ScrollableAppsGridView&) = delete;
   ScrollableAppsGridView& operator=(const ScrollableAppsGridView&) = delete;
   ~ScrollableAppsGridView() override;

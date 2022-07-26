@@ -49,12 +49,12 @@ ScrollableAppsGridView::ScrollableAppsGridView(
     AppsGridViewFolderDelegate* folder_delegate,
     views::ScrollView* parent_scroll_view,
     AppListFolderController* folder_controller,
-    AppsGridViewFocusDelegate* focus_delegate)
+    AppListKeyboardController* keyboard_controller)
     : AppsGridView(a11y_announcer,
                    view_delegate,
                    folder_delegate,
                    folder_controller,
-                   focus_delegate),
+                   keyboard_controller),
       scroll_view_(parent_scroll_view) {
   DCHECK(scroll_view_);
   view_structure_.Init(PagedViewStructure::Mode::kSinglePage);

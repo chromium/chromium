@@ -16,7 +16,6 @@
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
-#include "ash/app_list/views/apps_grid_view_focus_delegate.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/ash_export.h"
@@ -52,7 +51,6 @@ class ASH_EXPORT AppsContainerView
       public PaginationModelObserver,
       public PagedAppsGridView::ContainerDelegate,
       public AppListToastContainerView::Delegate,
-      public AppsGridViewFocusDelegate,
       public views::FocusChangeListener,
       public AppListViewProvider {
  public:
@@ -181,9 +179,6 @@ class ASH_EXPORT AppsContainerView
 
   // AppListToastContainerView::Delegate:
   void OnNudgeRemoved() override;
-
-  // AppsGridViewFocusDelegate:
-  bool MoveFocusUpFromAppsGrid(int column) override;
 
   // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
   // app list container.

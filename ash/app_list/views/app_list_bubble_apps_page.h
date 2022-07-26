@@ -11,7 +11,6 @@
 #include "ash/app_list/app_list_view_provider.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
-#include "ash/app_list/views/apps_grid_view_focus_delegate.h"
 #include "ash/ash_export.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -60,7 +59,6 @@ class ASH_EXPORT AppListBubbleAppsPage
       public views::ViewObserver,
       public AppListModelProvider::Observer,
       public AppListToastContainerView::Delegate,
-      public AppsGridViewFocusDelegate,
       public AppListViewProvider {
  public:
   METADATA_HEADER(AppListBubbleAppsPage);
@@ -128,9 +126,6 @@ class ASH_EXPORT AppListBubbleAppsPage
 
   // AppListToastContainerView::Delegate:
   void OnNudgeRemoved() override;
-
-  // AppsGridViewFocusDelegate:
-  bool MoveFocusUpFromAppsGrid(int column) override;
 
   // AppListViewProvider:
   ContinueSectionView* GetContinueSectionView() override;

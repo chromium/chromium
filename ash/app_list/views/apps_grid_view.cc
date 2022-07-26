@@ -24,9 +24,9 @@
 #include "ash/app_list/views/app_list_drag_and_drop_host.h"
 #include "ash/app_list/views/app_list_folder_controller.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/app_list/views/app_list_keyboard_controller.h"
 #include "ash/app_list/views/app_list_view_util.h"
 #include "ash/app_list/views/apps_grid_context_menu.h"
-#include "ash/app_list/views/apps_grid_view_focus_delegate.h"
 #include "ash/app_list/views/apps_grid_view_folder_delegate.h"
 #include "ash/app_list/views/ghost_image_view.h"
 #include "ash/app_list/views/pulsing_block_view.h"
@@ -261,12 +261,12 @@ AppsGridView::AppsGridView(AppListA11yAnnouncer* a11y_announcer,
                            AppListViewDelegate* app_list_view_delegate,
                            AppsGridViewFolderDelegate* folder_delegate,
                            AppListFolderController* folder_controller,
-                           AppsGridViewFocusDelegate* focus_delegate)
+                           AppListKeyboardController* keyboard_controller)
     : folder_delegate_(folder_delegate),
       folder_controller_(folder_controller),
       a11y_announcer_(a11y_announcer),
       app_list_view_delegate_(app_list_view_delegate),
-      focus_delegate_(focus_delegate) {
+      keyboard_controller_(keyboard_controller) {
   DCHECK(a11y_announcer_);
   DCHECK(app_list_view_delegate_);
   // Top-level grids must have a folder controller.
@@ -1864,8 +1864,8 @@ bool AppsGridView::HandleVerticalFocusMovement(bool arrow_up) {
 
   if (target_page < 0) {
     // Move focus up outside the apps grid if target page is negative.
-    if (focus_delegate_ &&
-        focus_delegate_->MoveFocusUpFromAppsGrid(target_col)) {
+    if (keyboard_controller_ &&
+        keyboard_controller_->MoveFocusUpFromAppsGrid(target_col)) {
       // The delegate handled the focus move.
       return true;
     }

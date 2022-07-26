@@ -32,7 +32,7 @@ class Layer;
 
 namespace ash {
 
-class AppsGridViewFocusDelegate;
+class AppListKeyboardController;
 class ContentsView;
 class PaginationController;
 
@@ -71,7 +71,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
                     AppsGridViewFolderDelegate* folder_delegate,
                     AppListFolderController* folder_controller,
                     ContainerDelegate* container_delegate,
-                    AppsGridViewFocusDelegate* focus_delegate);
+                    AppListKeyboardController* keyboard_controller);
   PagedAppsGridView(const PagedAppsGridView&) = delete;
   PagedAppsGridView& operator=(const PagedAppsGridView&) = delete;
   ~PagedAppsGridView() override;
