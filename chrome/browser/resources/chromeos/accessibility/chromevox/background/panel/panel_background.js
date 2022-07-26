@@ -36,11 +36,6 @@ export class PanelBackground {
       throw 'Trying to create two copies of singleton PanelBackground';
     }
     PanelBackground.instance = new PanelBackground();
-    // Temporarily expose the panel background instance on the window object so
-    // it can be accessed from other renderers as we transition the logic to the
-    // background context.
-    window.panelBackground = PanelBackground.instance;
-
     PanelBackground.stateObserver_ = new PanelStateObserver();
     ChromeVoxState.addObserver(PanelBackground.stateObserver_);
 
