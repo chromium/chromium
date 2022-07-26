@@ -104,6 +104,7 @@
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
@@ -2288,14 +2289,57 @@ std::pair<RemoteFrame*, PortalToken> WebLocalFrameImpl::CreatePortal(
     HTMLPortalElement* portal,
     mojo::PendingAssociatedReceiver<mojom::blink::Portal> portal_receiver,
     mojo::PendingAssociatedRemote<mojom::blink::PortalClient> portal_client) {
-  auto [portal_frame, portal_token] = client_->CreatePortal(
-      std::move(portal_receiver), std::move(portal_client), portal);
-  return {To<WebRemoteFrameImpl>(portal_frame)->GetFrame(), portal_token};
+  mojom::blink::FrameReplicationStatePtr initial_replicated_state =
+      mojom::blink::FrameReplicationState::New();
+  PortalToken portal_token;
+  RemoteFrameToken frame_token;
+  base::UnguessableToken devtools_frame_token;
+
+  auto remote_frame_interfaces =
+      mojom::blink::RemoteFrameInterfacesFromRenderer::New();
+  mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+      remote_frame_host = remote_frame_interfaces->frame_host_receiver
+                              .InitWithNewEndpointAndPassRemote();
+  mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame>
+      remote_frame_receiver =
+          remote_frame_interfaces->frame.InitWithNewEndpointAndPassReceiver();
+
+  GetFrame()->GetLocalFrameHostRemote().CreatePortal(
+      std::move(portal_receiver), std::move(portal_client),
+      std::move(remote_frame_interfaces), &initial_replicated_state,
+      &portal_token, &frame_token, &devtools_frame_token);
+  WebRemoteFrameImpl* portal_frame =
+      WebRemoteFrameImpl::CreateForPortalOrFencedFrame(
+          mojom::blink::TreeScopeType::kDocument, frame_token,
+          devtools_frame_token, portal, std::move(remote_frame_host),
+          std::move(remote_frame_receiver),
+          std::move(initial_replicated_state));
+  return std::make_pair(portal_frame->GetFrame(), portal_token);
 }
 
 RemoteFrame* WebLocalFrameImpl::AdoptPortal(HTMLPortalElement* portal) {
-  auto* portal_frame =
-      To<WebRemoteFrameImpl>(client_->AdoptPortal(portal->GetToken(), portal));
+  mojom::blink::FrameReplicationStatePtr replicated_state =
+      mojom::blink::FrameReplicationState::New();
+  RemoteFrameToken frame_token;
+  base::UnguessableToken devtools_frame_token;
+
+  auto remote_frame_interfaces =
+      mojom::blink::RemoteFrameInterfacesFromRenderer::New();
+  mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+      remote_frame_host = remote_frame_interfaces->frame_host_receiver
+                              .InitWithNewEndpointAndPassRemote();
+  mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame>
+      remote_frame_receiver =
+          remote_frame_interfaces->frame.InitWithNewEndpointAndPassReceiver();
+
+  GetFrame()->GetLocalFrameHostRemote().AdoptPortal(
+      portal->GetToken(), std::move(remote_frame_interfaces), &replicated_state,
+      &frame_token, &devtools_frame_token);
+  WebRemoteFrameImpl* portal_frame =
+      WebRemoteFrameImpl::CreateForPortalOrFencedFrame(
+          mojom::blink::TreeScopeType::kDocument, frame_token,
+          devtools_frame_token, portal, std::move(remote_frame_host),
+          std::move(remote_frame_receiver), std::move(replicated_state));
   return portal_frame->GetFrame();
 }
 
@@ -2304,9 +2348,32 @@ RemoteFrame* WebLocalFrameImpl::CreateFencedFrame(
     mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>
         receiver,
     mojom::blink::FencedFrameMode mode) {
-  WebRemoteFrame* frame =
-      client_->CreateFencedFrame(fenced_frame, std::move(receiver), mode);
-  return To<WebRemoteFrameImpl>(frame)->GetFrame();
+  mojom::blink::FrameReplicationStatePtr initial_replicated_state =
+      mojom::blink::FrameReplicationState::New();
+  RemoteFrameToken frame_token;
+  base::UnguessableToken devtools_frame_token;
+  auto remote_frame_interfaces =
+      mojom::blink::RemoteFrameInterfacesFromRenderer::New();
+  mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+      remote_frame_host = remote_frame_interfaces->frame_host_receiver
+                              .InitWithNewEndpointAndPassRemote();
+  mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame>
+      remote_frame_receiver =
+          remote_frame_interfaces->frame.InitWithNewEndpointAndPassReceiver();
+
+  GetFrame()->GetLocalFrameHostRemote().CreateFencedFrame(
+      std::move(receiver), mode, std::move(remote_frame_interfaces),
+      &initial_replicated_state, &frame_token, &devtools_frame_token);
+
+  WebRemoteFrameImpl* remote_frame =
+      WebRemoteFrameImpl::CreateForPortalOrFencedFrame(
+          mojom::blink::TreeScopeType::kDocument, frame_token,
+          devtools_frame_token, fenced_frame, std::move(remote_frame_host),
+          std::move(remote_frame_receiver),
+          std::move(initial_replicated_state));
+
+  client_->DidCreateFencedFrame(frame_token);
+  return remote_frame->GetFrame();
 }
 
 void WebLocalFrameImpl::DidChangeContentsSize(const gfx::Size& size) {

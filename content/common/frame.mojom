@@ -352,11 +352,6 @@ struct RemoteFrameInterfacesFromBrowser {
   pending_associated_remote<blink.mojom.RemoteFrameHost> frame_host;
 };
 
-struct RemoteFrameInterfacesFromRenderer {
-  pending_associated_remote<blink.mojom.RemoteFrame> frame;
-  pending_associated_receiver<blink.mojom.RemoteFrameHost> frame_host_receiver;
-};
-
 // Struct for communication channels of the RemoteMainFrame in blink.
 struct RemoteMainFrameInterfaces {
   pending_associated_remote<blink.mojom.RemoteMainFrameHost> main_frame_host;
@@ -666,63 +661,6 @@ interface FrameHost {
   // is only non-null on when status == CreateNewWindowStatus::kSuccess.
   [Sync] CreateNewWindow(CreateNewWindowParams params)
       => (CreateNewWindowStatus status, CreateNewWindowReply? reply);
-
-  // Sent by the renderer process to request the creation of a new portal.
-  // |portal| is the pipe to be used for the Portal object, |client| is the pipe
-  // used to communicate back with the caller. Returns:
-  // |initial_replicated_state| - the replicated state associated with that
-  //                              RenderFrameProxy
-  // |portal_token| - the unique identifier for the portal
-  // |frame_token| - the unique identifier of the RenderFrameProxy
-  // |devtools_frame_token| - the unique identifier of the frame node in the
-  //                          frame tree
-  [Sync] CreatePortal(
-      pending_associated_receiver<blink.mojom.Portal> portal,
-      pending_associated_remote<blink.mojom.PortalClient> client,
-      RemoteFrameInterfacesFromRenderer remote_frame_interfaces)
-      => (blink.mojom.FrameReplicationState initial_replicated_state,
-          blink.mojom.PortalToken portal_token,
-          blink.mojom.RemoteFrameToken frame_token,
-          mojo_base.mojom.UnguessableToken devtools_frame_token);
-
-  // Requests that this frame adopts the portal identified by |portal_token|.
-  // Returns:
-  // |replicated_state| - the replicated state associated with that
-  //                      RenderFrameProxy
-  // |frame_token| - the unique identifier of the RenderFrameProxy
-  // |devtools_frame_token| - the unique identifier of the frame node in the
-  //                          frame tree
-  [Sync] AdoptPortal(
-      blink.mojom.PortalToken portal_token,
-      RemoteFrameInterfacesFromRenderer remote_frame_interfaces)
-      => (blink.mojom.FrameReplicationState replicated_state,
-          blink.mojom.RemoteFrameToken frame_token,
-          mojo_base.mojom.UnguessableToken devtools_frame_token);
-
-  // Sent by the frame in a renderer process that hosts/owns a <fencedframe>
-  // element, to the browser process requesting the creation of a new fenced
-  // frame tree that will host the contents of the <fencedframe> element.
-  // `fenced_frame` - the receiver that the browser will bind to receive
-  //                  messages from the renderer.
-  // `initial_replication_state` - the replicated state associated with the
-  //                               above RenderFrameProxy. This state is
-  //                               default-constructed, and thus has an opaque
-  //                               origin. This ensures that the origin that the
-  //                               proxy host is initialized with in the browser
-  //                               and renderer processes both match. For more
-  //                               info about this parameter see
-  //                               crbug.com/1028269.
-  // `frame_token` - the unique identifier of the RenderFrameProxy
-  // `devtools_frame_token` - the unique identifier of the main FrameTreeNode in
-  //                          the "inner" fenced frame FrameTree
-  [Sync] CreateFencedFrame(
-      pending_associated_receiver<blink.mojom.FencedFrameOwnerHost>
-        fenced_frame,
-      blink.mojom.FencedFrameMode mode,
-      RemoteFrameInterfacesFromRenderer remote_frame_interfaces)
-      => (blink.mojom.FrameReplicationState initial_replication_state,
-          blink.mojom.RemoteFrameToken frame_token,
-          mojo_base.mojom.UnguessableToken devtools_frame_token);
 
   // Asynchronously creates a child frame. A routing ID must be allocated first
   // by calling RenderMessageFilter::GenerateFrameRoutingID()

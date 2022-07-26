@@ -273,7 +273,7 @@ TestRenderFrameHost* TestRenderFrameHost::AppendFencedFrame(
   FencedFrame* fenced_frame = fenced_frames_.back().get();
   // Create stub RemoteFrameInterfaces.
   auto remote_frame_interfaces =
-      mojom::RemoteFrameInterfacesFromRenderer::New();
+      blink::mojom::RemoteFrameInterfacesFromRenderer::New();
   remote_frame_interfaces->frame_host_receiver =
       mojo::AssociatedRemote<blink::mojom::RemoteFrameHost>()
           .BindNewEndpointAndPassDedicatedReceiver();

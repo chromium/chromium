@@ -44,11 +44,11 @@ class CORE_EXPORT WebRemoteFrameImpl final
       mojom::blink::TreeScopeType,
       const RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
-      const WebElement& frame_owner,
+      HTMLFrameOwnerElement* frame_owner,
       mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
           remote_frame_host,
       mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
-      mojom::FrameReplicationStatePtr replicated_state);
+      mojom::blink::FrameReplicationStatePtr replicated_state);
 
   WebRemoteFrameImpl(mojom::blink::TreeScopeType,
                      const RemoteFrameToken& frame_token);
@@ -110,6 +110,8 @@ class CORE_EXPORT WebRemoteFrameImpl final
   gfx::Rect GetCompositingRect();
 
   void SetReplicatedState(mojom::FrameReplicationStatePtr replicated_state);
+  void SetReplicatedState(
+      mojom::blink::FrameReplicationStatePtr replicated_state);
 
  private:
   friend class RemoteFrameClientImpl;

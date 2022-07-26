@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
-#include "content/common/frame.mojom.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -20,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom.h"
 
 namespace content {
@@ -68,7 +68,8 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
   // Called from a synchronous IPC from the renderer process in order to create
   // the proxy. `remote_frame_interfaces` must not be null.
   RenderFrameProxyHost* CreateProxyAndAttachPortal(
-      mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces);
+      blink::mojom::RemoteFrameInterfacesFromRendererPtr
+          remote_frame_interfaces);
 
   // Closes the contents associated with this object gracefully, and destroys
   // itself thereafter. This will fire unload and related event handlers.

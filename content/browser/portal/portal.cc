@@ -121,7 +121,8 @@ void Portal::DestroySelf() {
 }
 
 RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal(
-    mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces) {
+    blink::mojom::RemoteFrameInterfacesFromRendererPtr
+        remote_frame_interfaces) {
   DCHECK(remote_frame_interfaces);
   WebContentsImpl* outer_contents_impl = GetPortalHostContents();
 

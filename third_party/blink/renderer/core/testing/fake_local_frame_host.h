@@ -163,6 +163,22 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
                        const WTF::String& srcdoc_value) override;
   void ReceivedDelegatedCapability(
       blink::mojom::DelegatedCapability delegated_capability) override;
+  void CreatePortal(
+      mojo::PendingAssociatedReceiver<mojom::blink::Portal> portal,
+      mojo::PendingAssociatedRemote<mojom::blink::PortalClient> client,
+      mojom::blink::RemoteFrameInterfacesFromRendererPtr
+          remote_frame_interfaces,
+      CreatePortalCallback callback) override;
+  void AdoptPortal(const PortalToken& portal_token,
+                   mojom::blink::RemoteFrameInterfacesFromRendererPtr
+                       remote_frame_interfaces,
+                   AdoptPortalCallback callback) override;
+  void CreateFencedFrame(
+      mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>,
+      mojom::blink::FencedFrameMode,
+      mojom::blink::RemoteFrameInterfacesFromRendererPtr
+          remote_frame_interfaces,
+      CreateFencedFrameCallback) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

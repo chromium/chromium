@@ -8,6 +8,7 @@
 
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
@@ -45,6 +46,36 @@
 
 namespace blink {
 
+namespace {
+mojom::blink::FrameReplicationStatePtr ToBlinkFrameReplicationState(
+    mojom::FrameReplicationStatePtr to_convert) {
+  mojom::blink::FrameReplicationStatePtr result =
+      mojom::blink::FrameReplicationState::New();
+  result->origin = SecurityOrigin::CreateFromUrlOrigin(to_convert->origin);
+  result->name = WebString::FromUTF8(to_convert->name);
+  result->unique_name = WebString::FromUTF8(to_convert->unique_name);
+
+  for (const auto& header : to_convert->permissions_policy_header)
+    result->permissions_policy_header.push_back(header);
+
+  result->active_sandbox_flags = to_convert->active_sandbox_flags;
+  result->frame_policy = to_convert->frame_policy;
+  result->insecure_request_policy = to_convert->insecure_request_policy;
+
+  for (const auto& value : to_convert->insecure_navigations_set)
+    result->insecure_navigations_set.push_back(value);
+
+  result->has_potentially_trustworthy_unique_origin =
+      to_convert->has_potentially_trustworthy_unique_origin;
+  result->has_active_user_gesture = to_convert->has_active_user_gesture;
+  result->has_received_user_gesture_before_nav =
+      to_convert->has_received_user_gesture_before_nav;
+  result->is_ad_frame = to_convert->is_ad_frame;
+  return result;
+}
+
+}  // namespace
+
 WebRemoteFrame* WebRemoteFrame::FromFrameToken(
     const RemoteFrameToken& frame_token) {
   auto* frame = RemoteFrame::FromFrameToken(frame_token);
@@ -71,23 +102,6 @@ WebRemoteFrame* WebRemoteFrame::CreateMainFrame(
     mojom::FrameReplicationStatePtr replicated_state) {
   return WebRemoteFrameImpl::CreateMainFrame(
       web_view, frame_token, devtools_frame_token, opener,
-      std::move(remote_frame_host), std::move(receiver),
-      std::move(replicated_state));
-}
-
-// static
-WebRemoteFrame* WebRemoteFrame::CreateForPortalOrFencedFrame(
-    mojom::blink::TreeScopeType scope,
-    const RemoteFrameToken& frame_token,
-    const base::UnguessableToken& devtools_frame_token,
-    const WebElement& frame_owner,
-    CrossVariantMojoAssociatedRemote<mojom::blink::RemoteFrameHostInterfaceBase>
-        remote_frame_host,
-    CrossVariantMojoAssociatedReceiver<mojom::blink::RemoteFrameInterfaceBase>
-        receiver,
-    mojom::FrameReplicationStatePtr replicated_state) {
-  return WebRemoteFrameImpl::CreateForPortalOrFencedFrame(
-      scope, frame_token, devtools_frame_token, frame_owner,
       std::move(remote_frame_host), std::move(receiver),
       std::move(replicated_state));
 }
@@ -128,27 +142,23 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForPortalOrFencedFrame(
     mojom::blink::TreeScopeType scope,
     const RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
-    const WebElement& frame_owner,
+    HTMLFrameOwnerElement* frame_owner,
     mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
         remote_frame_host,
     mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
-    mojom::FrameReplicationStatePtr replicated_state) {
-  auto* frame = MakeGarbageCollected<WebRemoteFrameImpl>(scope, frame_token);
-
+    mojom::blink::FrameReplicationStatePtr replicated_state) {
   // We first convert this to a raw blink::Element*, and manually convert this
   // to an HTMLElement*. That is the only way the IsA<> and To<> casts below
   // will work.
-  Element* element = frame_owner;
-  DCHECK(IsA<HTMLPortalElement>(element) ||
-         IsA<HTMLFencedFrameElement>(element));
-  ExecutionContext* execution_context = element->GetExecutionContext();
+  DCHECK(IsA<HTMLPortalElement>(frame_owner) ||
+         IsA<HTMLFencedFrameElement>(frame_owner));
+  auto* frame = MakeGarbageCollected<WebRemoteFrameImpl>(scope, frame_token);
+  ExecutionContext* execution_context = frame_owner->GetExecutionContext();
   DCHECK(RuntimeEnabledFeatures::PortalsEnabled(execution_context) ||
          RuntimeEnabledFeatures::FencedFramesEnabled(execution_context));
-  HTMLFrameOwnerElement* frame_owner_element =
-      To<HTMLFrameOwnerElement>(element);
-  LocalFrame* host_frame = frame_owner_element->GetDocument().GetFrame();
+  LocalFrame* host_frame = frame_owner->GetDocument().GetFrame();
   frame->InitializeCoreFrame(
-      *host_frame->GetPage(), frame_owner_element, /*parent=*/nullptr,
+      *host_frame->GetPage(), frame_owner, /*parent=*/nullptr,
       /*previous_sibling=*/nullptr, FrameInsertType::kInsertInConstructor,
       g_null_atom, &host_frame->window_agent_factory(), devtools_frame_token,
       std::move(remote_frame_host), std::move(receiver));
@@ -390,20 +400,25 @@ WebRemoteFrameImpl::WebRemoteFrameImpl(mojom::blink::TreeScopeType scope,
       frame_client_(MakeGarbageCollected<RemoteFrameClientImpl>(this)) {}
 
 void WebRemoteFrameImpl::SetReplicatedState(
-    mojom::FrameReplicationStatePtr state) {
+    mojom::FrameReplicationStatePtr replicated_state) {
+  SetReplicatedState(ToBlinkFrameReplicationState(std::move(replicated_state)));
+}
+
+void WebRemoteFrameImpl::SetReplicatedState(
+    mojom::blink::FrameReplicationStatePtr state) {
   RemoteFrame* remote_frame = GetFrame();
   DCHECK(remote_frame);
 
   remote_frame->SetReplicatedOrigin(
-      SecurityOrigin::CreateFromUrlOrigin(state->origin),
-      state->has_potentially_trustworthy_unique_origin);
+      state->origin, state->has_potentially_trustworthy_unique_origin);
 
 #if DCHECK_IS_ON()
   scoped_refptr<const SecurityOrigin> security_origin_before_sandbox_flags =
       remote_frame->GetSecurityContext()->GetSecurityOrigin();
 #endif
 
-  remote_frame->SetReplicatedSandboxFlags(state->active_sandbox_flags);
+  remote_frame->DidSetFramePolicyHeaders(state->active_sandbox_flags,
+                                         state->permissions_policy_header);
 
 #if DCHECK_IS_ON()
   // If |state->has_potentially_trustworthy_unique_origin| is set,
@@ -419,14 +434,11 @@ void WebRemoteFrameImpl::SetReplicatedState(
   }
 #endif
 
-  remote_frame->SetReplicatedName(
-      blink::WebString::FromUTF8(state->name),
-      blink::WebString::FromUTF8(state->unique_name));
+  remote_frame->SetReplicatedName(state->name, state->unique_name);
   remote_frame->SetInsecureRequestPolicy(state->insecure_request_policy);
-  remote_frame->SetInsecureNavigationsSet(state->insecure_navigations_set);
+  remote_frame->EnforceInsecureNavigationsSet(state->insecure_navigations_set);
   remote_frame->SetReplicatedIsAdFrame(state->is_ad_frame);
-  remote_frame->SetReplicatedPermissionsPolicyHeader(
-      state->permissions_policy_header);
+
   if (state->has_active_user_gesture) {
     // TODO(crbug.com/1087963): This should be hearing about sticky activations
     // and setting those (as well as the active one?). But the call to

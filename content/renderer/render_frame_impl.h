@@ -505,20 +505,8 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::WebPolicyContainerBindParams policy_container_bind_params)
       override;
   void InitializeAsChildFrame(blink::WebLocalFrame* parent) override;
-  std::pair<blink::WebRemoteFrame*, blink::PortalToken> CreatePortal(
-      blink::CrossVariantMojoAssociatedReceiver<
-          blink::mojom::PortalInterfaceBase> portal_endpoint,
-      blink::CrossVariantMojoAssociatedRemote<
-          blink::mojom::PortalClientInterfaceBase> client_endpoint,
-      const blink::WebElement& portal_element) override;
-  blink::WebRemoteFrame* AdoptPortal(
-      const blink::PortalToken& portal_token,
-      const blink::WebElement& portal_element) override;
-  blink::WebRemoteFrame* CreateFencedFrame(
-      const blink::WebElement& fenced_frame_element,
-      blink::CrossVariantMojoAssociatedReceiver<
-          blink::mojom::FencedFrameOwnerHostInterfaceBase> receiver,
-      blink::mojom::FencedFrameMode mode) override;
+  void DidCreateFencedFrame(
+      const blink::RemoteFrameToken& frame_token) override;
   blink::WebFrame* FindFrame(const blink::WebString& name) override;
   void WillDetach() override;
   void FrameDetached() override;

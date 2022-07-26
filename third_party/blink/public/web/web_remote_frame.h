@@ -23,7 +23,6 @@ namespace mojom {
 enum class TreeScopeType;
 }
 class InterfaceRegistry;
-class WebElement;
 class WebLocalFrameClient;
 class WebString;
 class WebView;
@@ -43,19 +42,6 @@ class WebRemoteFrame : public WebFrame {
       const RemoteFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
       WebFrame* opener,
-      CrossVariantMojoAssociatedRemote<mojom::RemoteFrameHostInterfaceBase>
-          remote_frame_host,
-      CrossVariantMojoAssociatedReceiver<mojom::RemoteFrameInterfaceBase>
-          receiver,
-      mojom::FrameReplicationStatePtr replicated_state);
-
-  // Also performs core initialization to associate the created remote frame
-  // with the provided <portal> or <fencedframe> element.
-  BLINK_EXPORT static WebRemoteFrame* CreateForPortalOrFencedFrame(
-      mojom::TreeScopeType,
-      const RemoteFrameToken& frame_token,
-      const base::UnguessableToken& devtools_frame_token,
-      const WebElement& frame_owner,
       CrossVariantMojoAssociatedRemote<mojom::RemoteFrameHostInterfaceBase>
           remote_frame_host,
       CrossVariantMojoAssociatedReceiver<mojom::RemoteFrameInterfaceBase>

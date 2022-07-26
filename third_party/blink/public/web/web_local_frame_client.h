@@ -251,32 +251,8 @@ class BLINK_EXPORT WebLocalFrameClient {
   // client can complete its initialization making use of it.
   virtual void InitializeAsChildFrame(WebLocalFrame* parent) {}
 
-  // Request the creation of a new portal.
-  virtual std::pair<WebRemoteFrame*, PortalToken> CreatePortal(
-      CrossVariantMojoAssociatedReceiver<mojom::PortalInterfaceBase>
-          portal_endpoint,
-      CrossVariantMojoAssociatedRemote<mojom::PortalClientInterfaceBase>
-          client_endpoint,
-      const WebElement& portal_element) {
-    return std::pair<WebRemoteFrame*, PortalToken>(nullptr, PortalToken());
-  }
-
-  // Request the creation of a remote frame which corresponds to an existing
-  // portal.
-  virtual blink::WebRemoteFrame* AdoptPortal(const PortalToken& portal_token,
-                                             const WebElement& portal_element) {
-    return nullptr;
-  }
-
-  // Request the creation of a new fenced frame, and return the WebRemoteFrame*
-  // associated with it.
-  virtual WebRemoteFrame* CreateFencedFrame(
-      const WebElement& fenced_frame_element,
-      CrossVariantMojoAssociatedReceiver<
-          mojom::FencedFrameOwnerHostInterfaceBase> receiver,
-      blink::mojom::FencedFrameMode mode) {
-    return nullptr;
-  }
+  // Notification a new fenced frame was created.
+  virtual void DidCreateFencedFrame(const blink::RemoteFrameToken& token) {}
 
   // Called when Blink cannot find a frame with the given name in the frame's
   // browsing instance.  This gives the embedder a chance to return a frame

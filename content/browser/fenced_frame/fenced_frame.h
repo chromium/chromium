@@ -49,7 +49,8 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   // `FrameTree`, for use by the embedding RenderFrameHostImpl.
   // `remote_frame_interfaces` must not be null.
   RenderFrameProxyHost* CreateProxyAndAttachToOuterFrameTree(
-      mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces);
+      blink::mojom::RemoteFrameInterfacesFromRendererPtr
+          remote_frame_interfaces);
 
   // blink::mojom::FencedFrameOwnerHost implementation.
   void Navigate(const GURL& url,

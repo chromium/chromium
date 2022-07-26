@@ -3453,100 +3453,10 @@ void RenderFrameImpl::InitializeAsChildFrame(blink::WebLocalFrame* parent) {
   Initialize(parent);
 }
 
-std::pair<blink::WebRemoteFrame*, blink::PortalToken>
-RenderFrameImpl::CreatePortal(
-    blink::CrossVariantMojoAssociatedReceiver<blink::mojom::PortalInterfaceBase>
-        portal_endpoint,
-    blink::CrossVariantMojoAssociatedRemote<
-        blink::mojom::PortalClientInterfaceBase> client_endpoint,
-    const blink::WebElement& portal_element) {
-  blink::mojom::FrameReplicationStatePtr initial_replicated_state =
-      blink::mojom::FrameReplicationState::New();
-  blink::PortalToken portal_token;
-  blink::RemoteFrameToken frame_token;
-  base::UnguessableToken devtools_frame_token;
-
-  auto remote_frame_interfaces =
-      mojom::RemoteFrameInterfacesFromRenderer::New();
-  mojo::PendingAssociatedRemote<blink::mojom::RemoteFrameHost>
-      remote_frame_host = remote_frame_interfaces->frame_host_receiver
-                              .InitWithNewEndpointAndPassRemote();
-  mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrame>
-      remote_frame_receiver =
-          remote_frame_interfaces->frame.InitWithNewEndpointAndPassReceiver();
-
-  GetFrameHost()->CreatePortal(
-      std::move(portal_endpoint), std::move(client_endpoint),
-      std::move(remote_frame_interfaces), &initial_replicated_state,
-      &portal_token, &frame_token, &devtools_frame_token);
-  return std::make_pair(
-      blink::WebRemoteFrame::CreateForPortalOrFencedFrame(
-          blink::mojom::TreeScopeType::kDocument, frame_token,
-          devtools_frame_token, portal_element, std::move(remote_frame_host),
-          std::move(remote_frame_receiver),
-          std::move(initial_replicated_state)),
-      portal_token);
-}
-
-blink::WebRemoteFrame* RenderFrameImpl::AdoptPortal(
-    const blink::PortalToken& portal_token,
-    const blink::WebElement& portal_element) {
-  blink::mojom::FrameReplicationStatePtr replicated_state =
-      blink::mojom::FrameReplicationState::New();
-  blink::RemoteFrameToken frame_token;
-  base::UnguessableToken devtools_frame_token;
-
-  auto remote_frame_interfaces =
-      mojom::RemoteFrameInterfacesFromRenderer::New();
-  mojo::PendingAssociatedRemote<blink::mojom::RemoteFrameHost>
-      remote_frame_host = remote_frame_interfaces->frame_host_receiver
-                              .InitWithNewEndpointAndPassRemote();
-  mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrame>
-      remote_frame_receiver =
-          remote_frame_interfaces->frame.InitWithNewEndpointAndPassReceiver();
-
-  GetFrameHost()->AdoptPortal(portal_token, std::move(remote_frame_interfaces),
-                              &replicated_state, &frame_token,
-                              &devtools_frame_token);
-  return blink::WebRemoteFrame::CreateForPortalOrFencedFrame(
-      blink::mojom::TreeScopeType::kDocument, frame_token, devtools_frame_token,
-      portal_element, std::move(remote_frame_host),
-      std::move(remote_frame_receiver), std::move(replicated_state));
-}
-
-blink::WebRemoteFrame* RenderFrameImpl::CreateFencedFrame(
-    const blink::WebElement& fenced_frame,
-    blink::CrossVariantMojoAssociatedReceiver<
-        blink::mojom::FencedFrameOwnerHostInterfaceBase> receiver,
-    blink::mojom::FencedFrameMode mode) {
-  blink::mojom::FrameReplicationStatePtr initial_replicated_state =
-      blink::mojom::FrameReplicationState::New();
-  blink::RemoteFrameToken frame_token;
-  base::UnguessableToken devtools_frame_token;
-  auto remote_frame_interfaces =
-      mojom::RemoteFrameInterfacesFromRenderer::New();
-  mojo::PendingAssociatedRemote<blink::mojom::RemoteFrameHost>
-      remote_frame_host = remote_frame_interfaces->frame_host_receiver
-                              .InitWithNewEndpointAndPassRemote();
-  mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrame>
-      remote_frame_receiver =
-          remote_frame_interfaces->frame.InitWithNewEndpointAndPassReceiver();
-
-  GetFrameHost()->CreateFencedFrame(
-      std::move(receiver), mode, std::move(remote_frame_interfaces),
-      &initial_replicated_state, &frame_token, &devtools_frame_token);
-
-  blink::WebRemoteFrame* remote_frame =
-      blink::WebRemoteFrame::CreateForPortalOrFencedFrame(
-          blink::mojom::TreeScopeType::kDocument, frame_token,
-          devtools_frame_token, fenced_frame, std::move(remote_frame_host),
-          std::move(remote_frame_receiver),
-          std::move(initial_replicated_state));
-
+void RenderFrameImpl::DidCreateFencedFrame(
+    const blink::RemoteFrameToken& frame_token) {
   for (auto& observer : observers_)
     observer.DidCreateFencedFrame(frame_token);
-
-  return remote_frame;
 }
 
 blink::WebFrame* RenderFrameImpl::FindFrame(const blink::WebString& name) {

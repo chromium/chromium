@@ -2175,6 +2175,23 @@ class CONTENT_EXPORT RenderFrameHostImpl
                        const std::string& srcdoc_value) override;
   void ReceivedDelegatedCapability(
       blink::mojom::DelegatedCapability delegated_capability) override;
+  void CreatePortal(
+      mojo::PendingAssociatedReceiver<blink::mojom::Portal> pending_receiver,
+      mojo::PendingAssociatedRemote<blink::mojom::PortalClient> client,
+      blink::mojom::RemoteFrameInterfacesFromRendererPtr
+          remote_frame_interfaces,
+      CreatePortalCallback callback) override;
+  void AdoptPortal(const blink::PortalToken& portal_token,
+                   blink::mojom::RemoteFrameInterfacesFromRendererPtr
+                       remote_frame_interfaces,
+                   AdoptPortalCallback callback) override;
+  void CreateFencedFrame(
+      mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
+          pending_receiver,
+      blink::mojom::FencedFrameMode mode,
+      blink::mojom::RemoteFrameInterfacesFromRendererPtr
+          remote_frame_interfaces,
+      CreateFencedFrameCallback callback) override;
 
   // blink::mojom::BackForwardCacheControllerHost:
   void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason) override;
@@ -2744,21 +2761,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // mojom::FrameHost:
   void CreateNewWindow(mojom::CreateNewWindowParamsPtr params,
                        CreateNewWindowCallback callback) override;
-  void CreatePortal(
-      mojo::PendingAssociatedReceiver<blink::mojom::Portal> pending_receiver,
-      mojo::PendingAssociatedRemote<blink::mojom::PortalClient> client,
-      mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
-      CreatePortalCallback callback) override;
-  void AdoptPortal(
-      const blink::PortalToken& portal_token,
-      mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
-      AdoptPortalCallback callback) override;
-  void CreateFencedFrame(
-      mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
-          pending_receiver,
-      blink::mojom::FencedFrameMode mode,
-      mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
-      CreateFencedFrameCallback callback) override;
   void GetKeepAliveHandleFactory(
       mojo::PendingReceiver<blink::mojom::KeepAliveHandleFactory> receiver)
       override;

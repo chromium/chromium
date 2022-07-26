@@ -7506,7 +7506,7 @@ void RenderFrameHostImpl::CreateNewWindow(
 void RenderFrameHostImpl::CreatePortal(
     mojo::PendingAssociatedReceiver<blink::mojom::Portal> pending_receiver,
     mojo::PendingAssociatedRemote<blink::mojom::PortalClient> client,
-    mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
+    blink::mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
     CreatePortalCallback callback) {
   if (!Portal::IsEnabled()) {
     frame_host_associated_receiver_.ReportBadMessage(
@@ -7577,7 +7577,7 @@ void RenderFrameHostImpl::CreatePortal(
 
 void RenderFrameHostImpl::AdoptPortal(
     const blink::PortalToken& portal_token,
-    mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
+    blink::mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
     AdoptPortalCallback callback) {
   Portal* portal = FindPortalByToken(portal_token);
   if (!portal) {
@@ -7626,7 +7626,7 @@ void RenderFrameHostImpl::CreateFencedFrame(
     mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
         pending_receiver,
     blink::mojom::FencedFrameMode mode,
-    mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
+    blink::mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
     CreateFencedFrameCallback callback) {
   // We should defer fenced frame creation during prerendering, so creation at
   // this point is an error.

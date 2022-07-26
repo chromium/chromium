@@ -174,7 +174,8 @@ FrameTree* FencedFrame::LoadingTree() {
 }
 
 RenderFrameProxyHost* FencedFrame::CreateProxyAndAttachToOuterFrameTree(
-    mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces) {
+    blink::mojom::RemoteFrameInterfacesFromRendererPtr
+        remote_frame_interfaces) {
   DCHECK(remote_frame_interfaces);
   DCHECK(outer_delegate_frame_tree_node_);
   // Connect the outer delegate RenderFrameHost with the inner main

@@ -150,34 +150,6 @@ class MockFrameHost : public mojom::FrameHost {
         std::move(browser_interface_broker_receiver));
   }
 
-  void CreatePortal(
-      mojo::PendingAssociatedReceiver<blink::mojom::Portal>,
-      mojo::PendingAssociatedRemote<blink::mojom::PortalClient>,
-      mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
-      CreatePortalCallback callback) override {
-    std::move(callback).Run(blink::mojom::FrameReplicationState::New(),
-                            blink::PortalToken(), blink::RemoteFrameToken(),
-                            base::UnguessableToken());
-  }
-
-  void AdoptPortal(
-      const blink::PortalToken&,
-      mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
-      AdoptPortalCallback callback) override {
-    std::move(callback).Run(blink::mojom::FrameReplicationState::New(),
-                            blink::RemoteFrameToken(),
-                            base::UnguessableToken());
-  }
-
-  void CreateFencedFrame(
-      mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>,
-      blink::mojom::FencedFrameMode,
-      mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
-      CreateFencedFrameCallback) override {
-    NOTREACHED() << "At the moment, content::FencedFrame is not used in any "
-                    "unit tests, so this path should not be hit";
-  }
-
   void DidCommitSameDocumentNavigation(
       mojom::DidCommitProvisionalLoadParamsPtr params,
       mojom::DidCommitSameDocumentNavigationParamsPtr same_doc_params)

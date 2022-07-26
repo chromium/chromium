@@ -509,10 +509,6 @@ void RemoteFrame::SetInsecureRequestPolicy(
   security_context_.SetInsecureRequestPolicy(policy);
 }
 
-void RemoteFrame::SetInsecureNavigationsSet(const WebVector<unsigned>& set) {
-  security_context_.SetInsecureNavigationsSet(set);
-}
-
 void RemoteFrame::FrameRectsChanged(const gfx::Size& local_frame_size,
                                     const gfx::Rect& rect_in_local_root) {
   pending_visual_properties_.rect_in_local_root = rect_in_local_root;

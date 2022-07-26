@@ -2357,7 +2357,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CallCreateProxyAndAttachPortalTwice) {
          blink::mojom::Portal::NavigateCallback callback) {
         // Create stub RemoteFrameInterfaces.
         auto remote_frame_interfaces =
-            mojom::RemoteFrameInterfacesFromRenderer::New();
+            blink::mojom::RemoteFrameInterfacesFromRenderer::New();
         remote_frame_interfaces->frame_host_receiver =
             mojo::AssociatedRemote<blink::mojom::RemoteFrameHost>()
                 .BindNewEndpointAndPassDedicatedReceiver();

@@ -113,7 +113,6 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
   void SetReplicatedSandboxFlags(network::mojom::blink::WebSandboxFlags);
   void SetInsecureRequestPolicy(mojom::blink::InsecureRequestPolicy);
-  void SetInsecureNavigationsSet(const WebVector<unsigned>&);
   void FrameRectsChanged(const gfx::Size& local_frame_size,
                          const gfx::Rect& screen_space_rect);
   void InitializeFrameVisualProperties(const FrameVisualProperties& properties);

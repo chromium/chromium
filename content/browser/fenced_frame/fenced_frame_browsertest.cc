@@ -15,7 +15,6 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/frame.mojom-test-utils.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_features.h"
@@ -40,6 +39,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -257,24 +257,27 @@ namespace {
 // connects a NavigationDelayer which delays the FencedFrameOwnerHost's
 // Navigate mojo method.
 class NavigationDelayerInterceptor
-    : public mojom::FrameHostInterceptorForTesting {
+    : public blink::mojom::LocalFrameHostInterceptorForTesting {
  public:
   explicit NavigationDelayerInterceptor(RenderFrameHostImpl* render_frame_host,
                                         base::TimeDelta duration)
       : render_frame_host_(render_frame_host),
         duration_(duration),
-        impl_(render_frame_host_->frame_host_receiver_for_testing()
+        impl_(render_frame_host_->local_frame_host_receiver_for_testing()
                   .SwapImplForTesting(this)) {}
 
   ~NavigationDelayerInterceptor() override = default;
 
-  mojom::FrameHost* GetForwardingInterface() override { return impl_; }
+  blink::mojom::LocalFrameHost* GetForwardingInterface() override {
+    return impl_;
+  }
 
   void CreateFencedFrame(
       mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
           pending_receiver,
       blink::mojom::FencedFrameMode mode,
-      mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
+      blink::mojom::RemoteFrameInterfacesFromRendererPtr
+          remote_frame_interfaces,
       CreateFencedFrameCallback callback) override {
     mojo::PendingAssociatedRemote<blink::mojom::FencedFrameOwnerHost>
         original_remote;
@@ -325,7 +328,7 @@ class NavigationDelayerInterceptor
   raw_ptr<RenderFrameHostImpl> render_frame_host_;
   std::unique_ptr<NavigationDelayer> navigate_interceptor_;
   const base::TimeDelta duration_;
-  raw_ptr<mojom::FrameHost> impl_;
+  raw_ptr<blink::mojom::LocalFrameHost> impl_;
 };
 
 }  // namespace
