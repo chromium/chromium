@@ -952,6 +952,12 @@
       <message name="IDS_SEARCH_RESUMPTION_MODULE_SUBTITLE" desc="Subtitle of the search resumption module on NTP or Start surface.">
         Based on your last tab
       </message>
+      <message name="IDS_ACCESSIBILITY_EXPANDED" is_accessibility_with_no_ui="true" desc="Content description when the search resumption module is expanded.">
+        Expanded
+      </message>
+      <message name="IDS_ACCESSIBILITY_COLLAPSED" is_accessibility_with_no_ui="true" desc="Content description when the search resumption module is collapsed.">
+        Collapsed
+      </message>
     </messages>
   </release>
 </grit>
