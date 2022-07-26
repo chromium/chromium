@@ -52,8 +52,7 @@ out_folder: Specifies the location to write the wrapped files. If not specified,
             |target_gen_dir| is used.
 minify: Whether to minify HTML/CSS with
         third_party/node/node_modules/html-minifier. Defaults to false.
-use_js: html_to_wrapper only. Whether to output .js files instead of .ts files.
-        Defaults to false.
+use_js: Whether to output .js files instead of .ts files. Defaults to false.
 ```
 
 #### **Example**

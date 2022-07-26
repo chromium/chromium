@@ -148,11 +148,12 @@ def main(argv):
   parser.add_argument('--out_folder', required=True)
   parser.add_argument('--in_files', required=True, nargs="*")
   parser.add_argument('--minify', action='store_true')
+  parser.add_argument('--use_js', action='store_true')
   args = parser.parse_args(argv)
 
   in_folder = path.normpath(path.join(_CWD, args.in_folder))
   out_folder = path.normpath(path.join(_CWD, args.out_folder))
-  extension = '.ts'
+  extension = '.js' if args.use_js else '.ts'
 
   # The folder to be used to read the CSS files to be wrapped.
   wrapper_in_folder = in_folder
