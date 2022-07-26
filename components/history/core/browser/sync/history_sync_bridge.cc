@@ -326,33 +326,39 @@ absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(
       DLOG(ERROR) << "Skipping invalid visit, reason "
                   << static_cast<int>(*specifics_error);
       RecordSpecificsError(*specifics_error);
-      // If this was a newly-added visit, immediately untrack it again.
-      if (entity_change->type() == syncer::EntityChange::ACTION_ADD) {
-        change_processor()->UntrackEntityForClientTagHash(
-            entity_change->data().client_tag_hash);
-      }
+      continue;
+    }
+
+    if (specifics.originator_cache_guid() == GetLocalCacheGuid()) {
+      // This is likely a reflection, i.e. an update that came from this client.
+      // (Unless a different client is misbehaving and sending data with this
+      // client's cache GUID.) So no need to do anything with it; the data is
+      // already here.
+      // Note: For other data types, the processor filters out reflection
+      // updates before they reach the bridge, but here that's not possible
+      // because metadata is not tracked.
       continue;
     }
 
     switch (entity_change->type()) {
       case syncer::EntityChange::ACTION_ADD:
       case syncer::EntityChange::ACTION_UPDATE: {
-        // First try updating an existing row. In addition to actual updates,
-        // this can also happen during initial merge (if Sync was enabled before
-        // and this entity was already downloaded back then).
-        // TODO(crbug.com/1329131): ...or if the visit was untracked.
+        // First try updating an existing row. Since metadata isn't tracked for
+        // this data type, the processor can't distinguish "ADD" from "UPDATE".
+        // Note: Because metadata isn't tracked (and thus no version numbers
+        // exist), it's theoretically possible to receive an older version of an
+        // already-existing entity here. This should be very rare in practice
+        // and would be tricky to handle (would have to store version numbers
+        // elsewhere), so just ignore this case.
         if (UpdateEntityInBackend(&id_remapper, specifics)) {
           // Updating worked - there was a matching visit in the DB already.
-          // This happens during initial merge, or when an existing visit got
-          // untracked. Nothing further to be done here.
+          // Nothing further to be done here.
         } else {
           // Updating didn't work, so actually add the data instead.
           if (!AddEntityInBackend(&id_remapper, specifics)) {
-            // Something went wrong - stop tracking the entity.
+            // Something went wrong.
             RecordDatabaseError(
                 SyncHistoryDatabaseError::kApplySyncChangesAddSyncedVisit);
-            change_processor()->UntrackEntityForClientTagHash(
-                entity_change->data().client_tag_hash);
             break;
           }
         }
@@ -360,8 +366,13 @@ absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(
       }
       case syncer::EntityChange::ACTION_DELETE:
         // Deletes are not supported - they're handled via
-        // HISTORY_DELETE_DIRECTIVE instead.
-        DLOG(ERROR) << "Received unexpected deletion for HISTORY";
+        // HISTORY_DELETE_DIRECTIVE instead. And, since metadata isn't tracked,
+        // the processor should never send deletions anyway (even if a different
+        // client uploaded a tombstone). [Edge case: Metadata for unsynced
+        // entities *is* tracked, but then an incoming tombstone would result in
+        // a conflict that'd be resolved as "local edit wins over remote
+        // deletion", so still no ACTION_DELETE would arrive here.]
+        NOTREACHED();
         break;
     }
   }
@@ -542,7 +553,9 @@ void HistorySyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
   }
 
   // No need to send any actual deletions: A HistoryDeleteDirective will take
-  // care of that. Just untrack all entities and clear their metadata.
+  // care of that. Just untrack all entities and clear their metadata. (The only
+  // case where such metadata actually exists is if there are entities that are
+  // waiting for a commit. Clear their metadata, to cancel those commits.)
   auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
   if (!sync_metadata_database_->GetAllSyncMetadata(metadata_batch.get())) {
     RecordDatabaseError(SyncHistoryDatabaseError::kOnURLsDeletedReadMetadata);
@@ -609,7 +622,8 @@ void HistorySyncBridge::OnVisitDeleted(const VisitRow& visit_row) {
   // No need to send an actual deletion: Either this was an expiry, in which
   // no deletion should be sent, or if it's an actual deletion, then a
   // HistoryDeleteDirective will take care of that. Just untrack the entity and
-  // delete its metadata.
+  // delete its metadata (just in case this entity was waiting to be committed -
+  // otherwise no metadata exists anyway).
   std::string storage_key = GetStorageKeyFromVisitRow(visit_row);
   sync_metadata_database_->ClearSyncMetadata(syncer::HISTORY, storage_key);
   change_processor()->UntrackEntityForStorageKey(storage_key);
