@@ -14046,7 +14046,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14100,7 +14100,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14154,7 +14154,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14208,7 +14208,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14263,7 +14263,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14318,7 +14318,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14373,7 +14373,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14428,7 +14428,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14483,7 +14483,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14538,7 +14538,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14593,7 +14593,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14647,7 +14647,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14701,7 +14701,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14755,7 +14755,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14810,7 +14810,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14865,7 +14865,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14919,7 +14919,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -14973,7 +14973,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -15027,7 +15027,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -15081,7 +15081,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -15135,7 +15135,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -15189,7 +15189,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],
@@ -15243,7 +15243,7 @@
           ],
           "dimension_sets": [
             {
-              "cpu": "x86-64",
+              "cpu": "arm64",
               "os": "Mac-12"
             }
           ],

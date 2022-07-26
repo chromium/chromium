@@ -619,7 +619,7 @@
       'ios-device': 'ios_device_release_compile_only',
       'ios-device (reclient shadow)': 'ios_device_release_compile_only_reclient',
       'ios-simulator': 'ios_simulator_debug_static_bot_xctest',
-      'ios-simulator-full-configs': 'ios_simulator_debug_static_bot_xctest',
+      'ios-simulator-full-configs': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest',
       'mac-arm64-on-arm64-rel': 'mac_arm64_release_bot',
       'mac-arm64-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
@@ -1222,7 +1222,7 @@
       'ios-simulator': 'ios_simulator_code_coverage_partial_instrumentation_xctest',
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-cronet': 'ios_cronet_xctest',
-      'ios-simulator-full-configs': 'ios_simulator_code_coverage_partial_instrumentation_xctest',
+      'ios-simulator-full-configs': 'ios_simulator_code_coverage_partial_instrumentation_xctest_arm64',
       'ios-simulator-inverse-fieldtrials-fyi': 'ios_simulator_debug_static_bot_invert_fieldtrials_xctest',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest',
@@ -2918,6 +2918,10 @@
 
     'ios_simulator_code_coverage_partial_instrumentation_xctest': [
       'use_clang_coverage', 'debug_static_bot', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest', 'ios_disable_xcode_project_generation',
+    ],
+    
+    'ios_simulator_code_coverage_partial_instrumentation_xctest_arm64': [
+      'use_clang_coverage', 'debug_static_bot', 'arm64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest', 'ios_disable_xcode_project_generation',
     ],
 
     'ios_simulator_debug_static_bot_invert_fieldtrials_xctest': [
