@@ -17,6 +17,7 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check_op.h"
@@ -361,7 +362,7 @@ void HomeButton::OnThemeChanged() {
   ShelfControlButton::OnThemeChanged();
   if (ripple_layer_delegate_) {
     ripple_layer_delegate_->set_color(
-        AshColorProvider::Get()->GetInkDropBaseColorAndOpacity().first);
+        GetColorProvider()->GetColor(kColorAshInkDropOpaqueColor));
   }
   if (label_container_) {
     label_container_->layer()->SetColor(
@@ -422,8 +423,10 @@ void HomeButton::AnimateNudgeRipple(views::AnimationBuilder& builder) {
   ui::Layer* ripple_layer = nudge_ripple_layer_.layer();
 
   float ripple_diameter = ShelfControlButton::CalculatePreferredSize().width();
+  auto* color_provider = GetColorProvider();
+  DCHECK(color_provider);
   ripple_layer_delegate_ = std::make_unique<views::CircleLayerDelegate>(
-      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity().first,
+      color_provider->GetColor(kColorAshInkDropOpaqueColor),
       /*radius=*/ripple_diameter / 2);
 
   // The bounds are set with respect to |shelf_container_layer| stated below.

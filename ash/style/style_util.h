@@ -32,6 +32,11 @@ class ASH_EXPORT StyleUtil {
     kHighlightOpacity = 1 << 2
   };
 
+  static constexpr float kLightInkDropOpacity = 0.08f;
+  static constexpr float kDarkInkDropOpacity = 0.06f;
+
+  static float GetInkDropOpacity();
+
   // Creates an InkDrop instance for `host`. All styles are configured to show
   // the highlight when the ripple is visible.
   static std::unique_ptr<views::InkDrop> CreateInkDrop(

@@ -31,7 +31,8 @@
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
@@ -444,10 +445,6 @@ ShelfWidget::DelegateView::DelegateView(ShelfWidget* shelf_widget, Shelf* shelf)
   drag_handle_ = AddChildView(
       std::make_unique<DragHandle>(kDragHandleCornerRadius, shelf));
 
-  const std::pair<SkColor, float> base_color_and_opacity =
-      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity();
-  animating_drag_handle_.SetColor(base_color_and_opacity.first);
-  animating_drag_handle_.SetOpacity(base_color_and_opacity.second + 0.075);
   animating_drag_handle_.SetRoundedCornerRadius(
       {kDragHandleCornerRadius, kDragHandleCornerRadius,
        kDragHandleCornerRadius, kDragHandleCornerRadius});
@@ -485,6 +482,9 @@ void ShelfWidget::DelegateView::OnThemeChanged() {
   shelf_widget_->background_animator_.PaintBackground(
       shelf_widget_->shelf_layout_manager()->GetShelfBackgroundType(),
       AnimationChangeType::IMMEDIATE);
+  animating_drag_handle_.SetOpacity(StyleUtil::GetInkDropOpacity() + 0.075);
+  animating_drag_handle_.SetColor(
+      GetColorProvider()->GetColor(kColorAshInkDropOpaqueColor));
 }
 
 bool ShelfWidget::DelegateView::CanActivate() const {

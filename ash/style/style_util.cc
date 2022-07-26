@@ -5,6 +5,7 @@
 #include "ash/style/style_util.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ui/color/color_id.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
@@ -14,6 +15,13 @@
 #include "ui/views/controls/focus_ring.h"
 
 namespace ash {
+
+// static
+float StyleUtil::GetInkDropOpacity() {
+  return DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+             ? kDarkInkDropOpacity
+             : kLightInkDropOpacity;
+}
 
 // static
 std::unique_ptr<views::InkDrop> StyleUtil::CreateInkDrop(

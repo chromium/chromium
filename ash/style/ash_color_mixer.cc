@@ -8,6 +8,7 @@
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "ash/style/temp_palette.h"
 #include "ash/system/tray/tray_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -28,9 +29,6 @@ constexpr int kAlpha60 = SK_AlphaOPAQUE * 0.6f;
 constexpr int kAlpha80 = SK_AlphaOPAQUE * 0.8f;
 constexpr int kAlpha90 = SK_AlphaOPAQUE * 0.9f;
 constexpr int kAlpha95 = SK_AlphaOPAQUE * 0.95f;
-
-constexpr int kLightInkDropOpacity = SK_AlphaOPAQUE * 0.08f;
-constexpr int kDarkInkDropOpacity = SK_AlphaOPAQUE * 0.06f;
 
 // Color of second tone is always 30% opacity of the color of first tone.
 constexpr int kSecondToneOpacity = SK_AlphaOPAQUE * 0.3f;
@@ -201,14 +199,23 @@ void AddContentColors(ui::ColorMixer& mixer,
   if (key.user_color.has_value()) {
     mixer[kColorAshInkDrop] = ui::SelectBasedOnDarkInput(
         {*key.user_color}, /*output_transform_for_dark_input=*/
-        ui::SetAlpha(SK_ColorWHITE, kDarkInkDropOpacity),
+        ui::SetAlpha(SK_ColorWHITE,
+                     StyleUtil::kDarkInkDropOpacity * SK_AlphaOPAQUE),
         /*output_transform_for_light_input=*/
-        ui::SetAlpha(SK_ColorBLACK, kLightInkDropOpacity));
+        ui::SetAlpha(SK_ColorBLACK,
+                     StyleUtil::kLightInkDropOpacity * SK_AlphaOPAQUE));
+    mixer[kColorAshInkDropOpaqueColor] = ui::SelectBasedOnDarkInput(
+        {*key.user_color}, SK_ColorWHITE, SK_ColorBLACK);
   } else {
     // Default `user_color` is dark if color_mode is dark.
     mixer[kColorAshInkDrop] =
-        use_dark_color ? ui::SetAlpha(SK_ColorWHITE, kDarkInkDropOpacity)
-                       : ui::SetAlpha(SK_ColorBLACK, kLightInkDropOpacity);
+        use_dark_color
+            ? ui::SetAlpha(SK_ColorWHITE,
+                           StyleUtil::kDarkInkDropOpacity * SK_AlphaOPAQUE)
+            : ui::SetAlpha(SK_ColorBLACK,
+                           StyleUtil::kLightInkDropOpacity * SK_AlphaOPAQUE);
+    mixer[kColorAshInkDropOpaqueColor] =
+        ui::ColorTransform(use_dark_color ? SK_ColorWHITE : SK_ColorBLACK);
   }
 }
 

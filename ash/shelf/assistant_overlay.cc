@@ -16,7 +16,7 @@
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
@@ -69,9 +69,8 @@ constexpr int kHideDurationMs = 200;
 AssistantOverlay::AssistantOverlay(HomeButton* host_view)
     : ripple_layer_(std::make_unique<ui::Layer>()),
       host_view_(host_view),
-      circle_layer_delegate_(
-          AshColorProvider::Get()->GetInkDropBaseColorAndOpacity().first,
-          kRippleCircleInitRadiusDip) {
+      circle_layer_delegate_(gfx::kPlaceholderColor,
+                             kRippleCircleInitRadiusDip) {
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   layer()->SetName("AssistantOverlay:ROOT_LAYER");
   layer()->SetMasksToBounds(false);
@@ -215,7 +214,7 @@ const char* AssistantOverlay::GetClassName() const {
 void AssistantOverlay::OnThemeChanged() {
   views::View::OnThemeChanged();
   circle_layer_delegate_.set_color(
-      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity().first);
+      GetColorProvider()->GetColor(kColorAshInkDropOpaqueColor));
   SchedulePaint();
 }
 
