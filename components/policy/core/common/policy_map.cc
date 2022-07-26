@@ -607,14 +607,14 @@ bool PolicyMap::EntryHasHigherPriority(const PolicyMap::Entry& lhs,
           : GetPriority(lhs.source, lhs.scope,
                         cloud_policy_overrides_platform_policy_,
                         cloud_user_policy_overrides_cloud_machine_policy_,
-                        is_user_affiliated_);
+                        IsUserAffiliated());
   PolicyPriorityBrowser rhs_priority =
       using_default_precedence
           ? GetPriority(rhs.source, rhs.scope, false, false, false)
           : GetPriority(rhs.source, rhs.scope,
                         cloud_policy_overrides_platform_policy_,
                         cloud_user_policy_overrides_cloud_machine_policy_,
-                        is_user_affiliated_);
+                        IsUserAffiliated());
   return std::tie(lhs.level, lhs_priority) > std::tie(rhs.level, rhs_priority);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }

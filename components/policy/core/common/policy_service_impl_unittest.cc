@@ -2256,6 +2256,33 @@ TEST_F(PolicyServiceTest, IgnoreUserCloudPrecedencePolicies) {
             policy_service_->GetPolicies(chrome_namespace)
                 .GetValue(key::kTranslateEnabled, base::Value::Type::BOOLEAN));
 }
+
+TEST_F(PolicyServiceTest, PolicyMessages) {
+  const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
+
+  std::vector<std::pair<std::string, base::Value>> policies;
+  policies.emplace_back(key::kCloudUserPolicyOverridesCloudMachinePolicy,
+                        base::Value(true));
+  auto policy_bundle =
+      CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+                   std::move(policies), chrome_namespace);
+
+  PolicyMap expected_chrome;
+  expected_chrome.Set(key::kCloudUserPolicyOverridesCloudMachinePolicy,
+                      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                      POLICY_SOURCE_PLATFORM, base::Value(true), nullptr);
+  expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                      POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
+  // An error message should appear because the user is unaffiliated.
+  expected_chrome.GetMutable(key::kCloudUserPolicyOverridesCloudMachinePolicy)
+      ->AddMessage(PolicyMap::MessageType::kError,
+                   IDS_POLICY_IGNORED_UNAFFILIATED);
+
+  provider0_.UpdatePolicy(std::move(policy_bundle));
+  RunUntilIdle();
+
+  EXPECT_TRUE(VerifyPolicies(chrome_namespace, expected_chrome));
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 
 }  // namespace policy
