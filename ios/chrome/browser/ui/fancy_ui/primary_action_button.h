@@ -5,10 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_FANCY_UI_PRIMARY_ACTION_BUTTON_H_
 #define IOS_CHROME_BROWSER_UI_FANCY_UI_PRIMARY_ACTION_BUTTON_H_
 
-#import <MaterialComponents/MaterialButtons.h>
+@class UIButton;
 
-@interface PrimaryActionButton : MDCFlatButton
-
-@end
+// Returns a flat material-styled button.
+UIButton* CreatePrimaryActionButton();
 
 #endif  // IOS_CHROME_BROWSER_UI_FANCY_UI_PRIMARY_ACTION_BUTTON_H_

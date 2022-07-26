@@ -50,7 +50,7 @@ const NSTimeInterval kUploadTotalTime = 5;
 @implementation SafeModeViewController {
   __weak id<SafeModeViewControllerDelegate> _delegate;
   UIView* _innerView;
-  PrimaryActionButton* _startButton;
+  UIButton* _startButton;
   UILabel* _uploadDescription;
   UIProgressView* _uploadProgress;
   NSDate* _uploadStartTime;
@@ -210,7 +210,7 @@ const NSTimeInterval kUploadTotalTime = 5;
   [self centerView:description afterView:awSnap];
   [_innerView addSubview:description];
 
-  _startButton = [[PrimaryActionButton alloc] init];
+  _startButton = CreatePrimaryActionButton();
   NSString* startText =
       NSLocalizedString(@"IDS_IOS_SAFE_MODE_RELOAD_CHROME", @"");
   [_startButton setTitle:startText forState:UIControlStateNormal];

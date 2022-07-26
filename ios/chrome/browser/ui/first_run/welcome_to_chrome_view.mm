@@ -132,7 +132,7 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   UILabel* _optInLabel;
   UILabel* _managedLabel;
   UIImageView* _enterpriseIcon;
-  PrimaryActionButton* _OKButton;
+  UIButton* _OKButton;
 }
 
 // Subview properties are lazily instantiated upon their first use.
@@ -151,7 +151,7 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
 // The Chrome logo image view.
 @property(strong, nonatomic, readonly) UIImageView* enterpriseIcon;
 // The "Accept & Continue" button.
-@property(strong, nonatomic, readonly) PrimaryActionButton* OKButton;
+@property(strong, nonatomic, readonly) UIButton* OKButton;
 
 // Subview layout methods.  They must be called in the order declared here, as
 // subsequent subview layouts depend on the layouts that precede them.
@@ -330,9 +330,9 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   return _enterpriseIcon;
 }
 
-- (PrimaryActionButton*)OKButton {
+- (UIButton*)OKButton {
   if (!_OKButton) {
-    _OKButton = [[PrimaryActionButton alloc] initWithFrame:CGRectZero];
+    _OKButton = CreatePrimaryActionButton();
     [_OKButton addTarget:self
                   action:@selector(OKButtonWasTapped)
         forControlEvents:UIControlEventTouchUpInside];
@@ -677,7 +677,7 @@ const char kTermsOfServiceUrl[] = "internal://terms-of-service";
   UIFont* font = [UIFont
       systemFontOfSize:kOKButtonTitleLabelFontSize[[self widthSizeClassIdiom]]
                 weight:UIFontWeightMedium];
-  [self.OKButton setTitleFont:font forState:UIControlStateNormal];
+  self.OKButton.titleLabel.font = font;
   CGSize size = [self.OKButton
       sizeThatFits:CGSizeMake(CGFLOAT_MAX,
                               kOKButtonHeight[[self widthSizeClassIdiom]])];
