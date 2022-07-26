@@ -1332,7 +1332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioCapturerDroppedData" units="%"
-    expires_after="2023-01-15">
+    expires_after="2023-01-22">
   <owner>olka@chromium.org</owner>
   <owner>gustaf@chromium.org</owner>
   <summary>
@@ -1359,7 +1359,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioCapturerMissedReadDeadline" units="%"
-    expires_after="2023-01-15">
+    expires_after="2023-01-22">
   <owner>olka@chromium.org</owner>
   <owner>gustaf@chromium.org</owner>
   <summary>
@@ -1891,7 +1891,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Controls.CTR" enum="MediaControlsCTREvent"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2829,7 +2829,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GpuMemoryBufferVideoFramePool.OddOffset.Mappable"
-    enum="Boolean" expires_after="2022-11-20">
+    enum="Boolean" expires_after="2023-01-22">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
   <summary>
@@ -2879,7 +2879,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GpuMemoryBufferVideoFramePool.UnsupportedFormat"
-    enum="VideoPixelFormatUnion" expires_after="2022-11-20">
+    enum="VideoPixelFormatUnion" expires_after="2023-01-22">
   <owner>magchen@chromium.org</owner>
   <owner>mcasas@chromium.org</owner>
   <summary>
@@ -4384,7 +4384,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Session.ActiveTime" units="ms"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -5118,7 +5118,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.VideoCapture.Windows.NumberOfRetriesNeededForMFGetDeviceStreamCategory"
-    units="retries" expires_after="2022-11-20">
+    units="retries" expires_after="2023-01-22">
   <owner>guidou@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -5855,7 +5855,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Session.Launch" units="ms"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Total time to launch a Cast Streaming mirror session.</summary>

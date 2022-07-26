@@ -480,7 +480,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PageLoad.FinalTargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2022-11-20">
+    enum="LocaleCodeISO639" expires_after="2023-01-22">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -535,7 +535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PageLoad.InitialTargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2022-11-20">
+    enum="LocaleCodeISO639" expires_after="2023-01-22">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -644,7 +644,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PageLoad.Ranker.Version" units="version"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -682,7 +682,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.Ranker.Model.Status" enum="RankerModelStatus"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>rogerm@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -939,7 +939,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.Translation.TargetLanguage" enum="LocaleCodeISO639"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -964,7 +964,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.Translation.TimeToBeReady" units="ms"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -977,7 +977,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.Translation.TimeToLoad" units="ms"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>

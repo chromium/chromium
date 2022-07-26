@@ -572,7 +572,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosLargeCursor" enum="BooleanEnabled"
-    expires_after="2022-11-21">
+    expires_after="2023-01-22">
   <owner>dtseng@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -594,7 +594,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosScreenMagnifier" enum="BooleanEnabled"
-    expires_after="2022-11-18">
+    expires_after="2023-01-22">
   <owner>dtseng@chromium.org</owner>
   <owner>josiahk@google.com</owner>
   <owner>kenjibaheux@google.com</owner>
@@ -1338,7 +1338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Performance.HandleAXEvents" units="ms"
-    expires_after="2022-11-18">
+    expires_after="2023-01-22">
   <owner>aleventhal@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>

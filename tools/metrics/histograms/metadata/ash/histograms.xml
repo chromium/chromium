@@ -1240,7 +1240,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.ScreenshotsPerWeek" units="int"
-    expires_after="2022-11-13">
+    expires_after="2023-01-22">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -2012,7 +2012,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeskTemplate.NewTemplate" enum="BooleanHit"
-    expires_after="2022-11-22">
+    expires_after="2023-01-22">
   <owner>avynn@google.com</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -5043,7 +5043,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowDragFromShelfResult" enum="ShelfWindowDragResult"
-    expires_after="2022-10-30">
+    expires_after="2023-01-22">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>

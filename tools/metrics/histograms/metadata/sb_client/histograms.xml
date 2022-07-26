@@ -52,7 +52,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.CheckDownloadStats.Exe"
-    enum="SBClientDownloadCheckDownloadStats" expires_after="2022-11-13">
+    enum="SBClientDownloadCheckDownloadStats" expires_after="2023-01-22">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

@@ -802,7 +802,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.ORB.BlockingReason"
-    enum="OrbBlockingDecisionReason" expires_after="2022-11-20">
+    enum="OrbBlockingDecisionReason" expires_after="2023-01-22">
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <summary>
@@ -813,7 +813,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.ORB.CorbVsOrb" enum="CorbVsOrb"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <summary>
@@ -827,7 +827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.ORB.CorbVsOrb.OrbBlockedAndCorbDidnt.Reason"
-    enum="OrbBlockingDecisionReason" expires_after="2022-11-20">
+    enum="OrbBlockingDecisionReason" expires_after="2023-01-22">
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <summary>

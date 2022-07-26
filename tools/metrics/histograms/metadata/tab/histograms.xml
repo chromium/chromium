@@ -442,7 +442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Preview.MemoryUsage.CompressedData.TotalKiB" units="KB"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>

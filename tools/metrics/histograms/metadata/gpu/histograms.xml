@@ -641,7 +641,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="GPU.DirectComposition.DCLayerResult.Video"
-    enum="DCLayerResult" expires_after="2022-11-20">
+    enum="DCLayerResult" expires_after="2023-01-22">
 <!-- Name completed by histogram_suffixes name="GPU.ProtectedVideoType" -->
 
   <owner>magchen@chromium.org</owner>
@@ -856,7 +856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.EstablishGpuChannelSyncTime" units="ms"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -1248,7 +1248,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.PaintOpReader.DeserializationError"
-    enum="PaintOpDeserializationError" expires_after="2022-11-20">
+    enum="PaintOpDeserializationError" expires_after="2023-01-22">
   <owner>junov@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1353,7 +1353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.Rasterization.Raster.MSAASampleCountLog2" units="count"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>penghuang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1364,7 +1364,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.Rasterization.Raster.NumPaintOps" units="count"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>penghuang@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>Number of paint ops in a raster task.</summary>
@@ -1610,7 +1610,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.Vulkan.PipelineCache.vkCreateGraphicsPipelines"
-    units="microseconds" expires_after="2022-11-20">
+    units="microseconds" expires_after="2023-01-22">
   <owner>backer@chromium.org</owner>
   <owner>penghuang@chromium.org</owner>
   <owner>vasilyt@chromium.org</owner>

@@ -1512,7 +1512,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested.History"
-    units="boolean" expires_after="2022-10-30">
+    units="boolean" expires_after="2023-01-22">
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -1524,7 +1524,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested.HistoryOrSuggest"
-    units="boolean" expires_after="2022-10-30">
+    units="boolean" expires_after="2023-01-22">
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -1536,7 +1536,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Omnibox.SearchPrefetch.SearchWhatYouTypedWasAlsoSuggested.Suggest"
-    units="boolean" expires_after="2022-10-30">
+    units="boolean" expires_after="2023-01-22">
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>

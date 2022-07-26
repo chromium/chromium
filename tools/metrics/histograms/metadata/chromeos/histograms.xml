@@ -956,7 +956,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Intents.IntentPickerAction"
-    enum="IntentPickerDialogAction" expires_after="2023-01-15">
+    enum="IntentPickerDialogAction" expires_after="2023-01-22">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -1360,7 +1360,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.MessageCenter.ScrollActionReason"
-    enum="ChromeOSMessageCenterScrollActionReason" expires_after="2022-11-22">
+    enum="ChromeOSMessageCenterScrollActionReason" expires_after="2023-01-22">
   <owner>yoshiki@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <owner>leandre@chromium.org</owner>
@@ -1490,7 +1490,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.SAML.Scraping.PasswordCountAll" units="passwords"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>mslus@chromium.org</owner>
   <owner>emaxx@chromium.org</owner>
   <summary>

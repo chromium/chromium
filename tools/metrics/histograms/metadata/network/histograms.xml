@@ -262,7 +262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.ESim.InstallationResult"
-    enum="NetworkCellularESimInstallResult" expires_after="2022-11-06">
+    enum="NetworkCellularESimInstallResult" expires_after="2023-01-22">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>jiajunz@google.com</owner>
@@ -312,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.ESim.InstallViaQrCode.Result"
-    enum="HermesResponseStatus" expires_after="2022-11-06">
+    enum="HermesResponseStatus" expires_after="2023-01-22">
   <owner>azeemarshad@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
@@ -2965,7 +2965,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.DeletedOldCacheData" enum="Boolean"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>

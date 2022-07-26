@@ -173,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.CancelReason" enum="DownloadCancelReason"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records why the download is canceled.</summary>
@@ -678,7 +678,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Download.NetworkConnectionType.StartNew"
-    enum="NetworkConnectionType" expires_after="2022-11-13">
+    enum="NetworkConnectionType" expires_after="2023-01-22">
 <!-- Name completed by histogram_suffixes name="DownloadSource" -->
 
   <owner>dtrainor@chromium.org</owner>

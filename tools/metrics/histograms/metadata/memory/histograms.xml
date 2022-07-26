@@ -2167,7 +2167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.OnDiskSizeKb.5min" units="KB"
-    expires_after="2022-11-20">
+    expires_after="2023-01-22">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
