@@ -58,6 +58,6 @@ public class ChromeLauncherActivity extends Activity {
 
         // The effect of this activity's theme is currently limited to CCTs, so we should only apply
         // dynamic colors when we enable them everywhere.
-        DynamicColors.applyIfAvailable(this);
+        DynamicColors.applyToActivityIfAvailable(this);
     }
 }
