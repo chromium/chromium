@@ -11,6 +11,7 @@ import './site_permissions_site_group.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ItemDelegate} from './item.js';
 import {navigation, Page} from './navigation_helper.js';
 import {getTemplate} from './site_permissions_by_site.html.js';
 import {SiteSettingsDelegate} from './site_settings_mixin.js';
@@ -41,15 +42,15 @@ export class ExtensionsSitePermissionsBySiteElement extends PolymerElement {
     };
   }
 
-  delegate: SiteSettingsDelegate;
+  delegate: ItemDelegate&SiteSettingsDelegate;
   private siteGroups_: chrome.developerPrivate.SiteGroup[];
 
   override ready() {
-    // TODO(crbug.com/1253673): Observe for changes in extension host
-    // permissions.
     super.ready();
     this.refreshUserAndExtensionSites_();
     this.delegate.getUserSiteSettingsChangedTarget().addListener(
+        this.refreshUserAndExtensionSites_.bind(this));
+    this.delegate.getItemStateChangedTarget().addListener(
         this.refreshUserAndExtensionSites_.bind(this));
   }
 

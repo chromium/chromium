@@ -403,6 +403,9 @@
   <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ALL_SITES_PAGE_TITLE" desc="The title for the all sites subpage for extensions site permissions management.">
     All sites
   </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ALL_SITES_EXTENSION_COUNT" desc="The subtext displayed for sites in the all sites subpage showing the number of extensions that can run for that site.">
+    <ph name="NUM_EXTENSIONS">$1</ph> extensions
+  </message>
   <message name="IDS_EXTENSIONS_PERMITTED_SITES" desc="The label above the list of sites that extensions are always permitted to run in.">
     All extensions allowed
   </message>

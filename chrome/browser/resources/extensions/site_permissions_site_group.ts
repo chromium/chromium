@@ -97,29 +97,40 @@ export class SitePermissionsSiteGroupElement extends PolymerElement {
   }
 
   private getEtldOrSiteSubText_(): string {
-    if (this.data.sites.length === 1) {
-      return this.getSiteSubtext_(this.data.sites[0].siteList);
+    // TODO(crbug.com/1253673): Revisit what to show for this eTLD+1 group's
+    // subtext. For now, default to showing no text if there is any mix of sites
+    // under the group (i.e. user permitted/restricted/specified by extensions).
+    const siteList = this.data.sites[0].siteList;
+    const isSiteListConsistent =
+        this.data.sites.every(site => site.siteList === siteList);
+    if (!isSiteListConsistent) {
+      return '';
     }
 
-    const areAllPermitted = this.data.sites.every(
-        site =>
-            site.siteList === chrome.developerPrivate.UserSiteSet.PERMITTED);
-    if (areAllPermitted) {
+    if (siteList === chrome.developerPrivate.UserSiteSet.PERMITTED) {
       return loadTimeData.getString('permittedSites');
     }
 
-    const areAllRestricted = this.data.sites.every(
-        site =>
-            site.siteList === chrome.developerPrivate.UserSiteSet.RESTRICTED);
-    return areAllRestricted ? loadTimeData.getString('restrictedSites') : '';
+    return siteList === chrome.developerPrivate.UserSiteSet.RESTRICTED ?
+        loadTimeData.getString('restrictedSites') :
+        loadTimeData.getStringF(
+            'sitePermissionsAllSitesExtensionCount', this.data.numExtensions);
   }
 
-  private getSiteSubtext_(siteList: chrome.developerPrivate.UserSiteSet):
-      string {
+  private getSiteSubtext_(siteInfo: chrome.developerPrivate.SiteInfo): string {
+    if (siteInfo.numExtensions > 0) {
+      return loadTimeData.getStringF(
+          'sitePermissionsAllSitesExtensionCount', siteInfo.numExtensions);
+    }
+
     return loadTimeData.getString(
-        siteList === chrome.developerPrivate.UserSiteSet.PERMITTED ?
+        siteInfo.siteList === chrome.developerPrivate.UserSiteSet.PERMITTED ?
             'permittedSites' :
             'restrictedSites');
+  }
+
+  private showEditSitePermissionsDialogButton_(): boolean {
+    return !this.isExpandable_ && !!this.data.sites[0].siteList;
   }
 
   private onEditSiteClick_() {

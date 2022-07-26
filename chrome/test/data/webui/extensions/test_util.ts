@@ -5,6 +5,7 @@
 /** @fileoverview Common utilities for extension ui tests. */
 import {ItemDelegate} from 'chrome://extensions/extensions.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 import {MockController, MockMethod} from 'chrome://webui-test/mock_controller.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
@@ -82,6 +83,7 @@ export class ListenerMock {
  * A mock delegate for the item, capable of testing functionality.
  */
 export class MockItemDelegate extends ClickMock implements ItemDelegate {
+  itemStateChangedTarget: FakeChromeEvent = new FakeChromeEvent();
   deleteItem(_id: string) {}
   setItemEnabled(_id: string, _isEnabled: boolean) {}
   setItemAllowedIncognito(_id: string, _isAllowedIncognito: boolean) {}
@@ -114,6 +116,10 @@ export class MockItemDelegate extends ClickMock implements ItemDelegate {
   }
 
   recordUserAction(_metricName: string) {}
+
+  getItemStateChangedTarget() {
+    return this.itemStateChangedTarget;
+  }
 }
 
 /**

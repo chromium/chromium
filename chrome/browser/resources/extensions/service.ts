@@ -26,8 +26,6 @@ export interface ServiceInterface extends ActivityLogDelegate,
   notifyDragInstallInProgress(): void;
   loadUnpackedFromDrag(): Promise<boolean>;
   installDroppedFile(): void;
-  getItemStateChangedTarget():
-      ChromeEvent<(data: chrome.developerPrivate.EventData) => void>;
   getProfileStateChangedTarget():
       ChromeEvent<(info: chrome.developerPrivate.ProfileInfo) => void>;
   getProfileConfiguration(): Promise<chrome.developerPrivate.ProfileInfo>;

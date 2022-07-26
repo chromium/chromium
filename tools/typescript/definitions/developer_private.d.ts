@@ -391,12 +391,12 @@ declare global {
       };
 
       export type SiteInfo = {
-        siteList: UserSiteSet,
-        site: string,
+        siteList?: UserSiteSet, numExtensions: number, site: string,
       };
 
       export type SiteGroup = {
         etldPlusOne: string,
+        numExtensions: number,
         sites: SiteInfo[],
       };
 

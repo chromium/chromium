@@ -26,13 +26,16 @@ suite('SitePermissionsSiteGroupElement', function() {
   test('clicking expand shows all sites within this group', async function() {
     element.data = {
       etldPlusOne: 'google.ca',
+      numExtensions: 0,
       sites: [
         {
           siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
+          numExtensions: 0,
           site: 'https://images.google.ca',
         },
         {
           siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
+          numExtensions: 0,
           site: 'http://google.ca',
         },
       ],
@@ -59,13 +62,16 @@ suite('SitePermissionsSiteGroupElement', function() {
   test('no subtext shown for sites from different sets', async function() {
     element.data = {
       etldPlusOne: 'google.ca',
+      numExtensions: 0,
       sites: [
         {
           siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
+          numExtensions: 0,
           site: 'https://images.google.ca',
         },
         {
           siteList: chrome.developerPrivate.UserSiteSet.RESTRICTED,
+          numExtensions: 0,
           site: 'http://google.ca',
         },
       ],
@@ -91,8 +97,10 @@ suite('SitePermissionsSiteGroupElement', function() {
   test('full site shown if there is only one site in group', async function() {
     element.data = {
       etldPlusOne: 'example.com',
+      numExtensions: 0,
       sites: [{
         siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
+        numExtensions: 0,
         site: 'https://a.example.com',
       }],
     };
@@ -110,8 +118,10 @@ suite('SitePermissionsSiteGroupElement', function() {
       async function() {
         element.data = {
           etldPlusOne: 'example.com',
+          numExtensions: 0,
           sites: [{
             siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
+            numExtensions: 0,
             site: 'https://a.example.com',
           }],
         };
@@ -139,13 +149,16 @@ suite('SitePermissionsSiteGroupElement', function() {
       async function() {
         element.data = {
           etldPlusOne: 'google.ca',
+          numExtensions: 0,
           sites: [
             {
               siteList: chrome.developerPrivate.UserSiteSet.PERMITTED,
+              numExtensions: 0,
               site: 'https://images.google.ca',
             },
             {
               siteList: chrome.developerPrivate.UserSiteSet.RESTRICTED,
+              numExtensions: 0,
               site: 'http://google.ca',
             },
           ],

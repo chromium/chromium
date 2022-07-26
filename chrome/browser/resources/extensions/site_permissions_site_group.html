@@ -60,7 +60,10 @@
         expanded="{{expanded_}}">
     </cr-expand-button>
   </template>
-  <template is="dom-if" if="[[!isExpandable_]]">
+  <!-- TODO(crbug.com/1253673): Always show this once the option to edit
+       extension permissions for a site is added for the dialog. -->
+  <template is="dom-if"
+      if="[[showEditSitePermissionsDialogButton_(data)]]">
     <cr-icon-button class="subpage-arrow" id="edit-one-site-button"
         on-click="onEditSiteClick_">
     </cr-icon-button>
@@ -73,10 +76,14 @@
           style$="background-image:[[getFaviconUrl_(item.site)]]"></div>
       <div class="site-and-subtext">
         <span class="site">[[item.site]]</span>
-        <span class="site-subtext">[[getSiteSubtext_(item.siteList)]]</span>
+        <span class="site-subtext">[[getSiteSubtext_(item)]]</span>
       </div>
-      <cr-icon-button class="subpage-arrow" on-click="onEditSiteInListClick_">
-      </cr-icon-button>
+      <!-- TODO(crbug.com/1253673): Always show this once the option to edit
+           extension permissions for a site is added for the dialog. -->
+      <template is="dom-if" if="[[item.siteList]]">
+        <cr-icon-button class="subpage-arrow" on-click="onEditSiteInListClick_">
+        </cr-icon-button>
+      </template>
     </div>
   </template>
 </div>
