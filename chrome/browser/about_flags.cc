@@ -5181,6 +5181,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxZeroSuggestPrefetchingDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kZeroSuggestPrefetching)},
 
+    {"omnibox-zero-suggest-prefetching-on-srp",
+     flag_descriptions::kOmniboxZeroSuggestPrefetchingOnSRPName,
+     flag_descriptions::kOmniboxZeroSuggestPrefetchingOnSRPDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kZeroSuggestPrefetchingOnSRP)},
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
     {"omnibox-experimental-keyword-mode",

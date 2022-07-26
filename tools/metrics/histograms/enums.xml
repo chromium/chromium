@@ -56981,6 +56981,7 @@ from previous Chrome versions.
   <int value="-1191671217" label="TabGroupsNewBadgePromo:disabled"/>
   <int value="-1191258368" label="PageInfoPerformanceHints:disabled"/>
   <int value="-1190174011" label="enable-hdr"/>
+  <int value="-1188042082" label="ZeroSuggestPrefetchingOnSRP:enabled"/>
   <int value="-1187546444" label="MuteNotificationSnoozeAction:enabled"/>
   <int value="-1187251500" label="OmniboxPedalsBatch2NonEnglish:disabled"/>
   <int value="-1186760297" label="ForceSpectreVariant2Mitigation:disabled"/>
@@ -61161,6 +61162,7 @@ from previous Chrome versions.
   <int value="1497609106" label="ContextualNudges:enabled"/>
   <int value="1497924954" label="js-flags"/>
   <int value="1498398756" label="TemporaryHoldingSpace:disabled"/>
+  <int value="1499009324" label="ZeroSuggestPrefetchingOnSRP:disabled"/>
   <int value="1499163193" label="PostScriptPrinting:disabled"/>
   <int value="1500390299" label="NtpCustomizationMenuV2:disabled"/>
   <int value="1502417134" label="BulkTabRestore:disabled"/>

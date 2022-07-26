@@ -149,6 +149,10 @@ const base::Feature kZeroSuggestOnNTPForSignedOutUsers{
 const base::Feature kZeroSuggestPrefetching{"ZeroSuggestPrefetching",
                                             enabled_by_default_desktop_only};
 
+// Enables prefetching of the zero prefix suggestions for eligible users on SRP.
+const base::Feature kZeroSuggestPrefetchingOnSRP{
+    "ZeroSuggestPrefetchingOnSRP", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Features to provide non personalized head search suggestion from a compact
 // on device model. More specifically, feature name with suffix Incognito /
 // NonIncognito will only controls behaviors under incognito / non-incognito

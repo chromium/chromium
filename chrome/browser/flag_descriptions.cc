@@ -1943,12 +1943,16 @@ const char kOmniboxRemoveSuggestionHeaderChevronDescription[] =
     "Remove the chevron on the right side of omnibox suggestion search header.";
 
 const char kOmniboxZeroSuggestPrefetchingName[] =
-    "Omnibox Zero Prefix Suggestion Prefetching";
+    "Omnibox Zero Prefix Suggestion Prefetching on NTP";
 const char kOmniboxZeroSuggestPrefetchingDescription[] =
-    "Enables prefetching of the zero prefix suggestions for signed-in users. "
-    "The options indicate the duration for which the response will be stored "
-    "in the HTTP cache. If no or zero duration is provided, the existing "
-    "in-memory cache will used instead of HTTP cache.";
+    "Enables prefetching of the zero prefix suggestions for eligible users "
+    "on the New Tab page.";
+
+const char kOmniboxZeroSuggestPrefetchingOnSRPName[] =
+    "Omnibox Zero Prefix Suggestion Prefetching on SRP";
+const char kOmniboxZeroSuggestPrefetchingOnSRPDescription[] =
+    "Enables prefetching of the zero prefix suggestions for eligible users "
+    "on the Search Results page.";
 
 const char kOmniboxOnDeviceHeadSuggestionsName[] =
     "Omnibox on device head suggestions (non-incognito only)";

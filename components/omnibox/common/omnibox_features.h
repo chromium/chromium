@@ -45,6 +45,7 @@ extern const base::Feature kLocalHistorySuggestRevamp;
 extern const base::Feature kOmniboxLocalZeroSuggestAgeThreshold;
 extern const base::Feature kZeroSuggestOnNTPForSignedOutUsers;
 extern const base::Feature kZeroSuggestPrefetching;
+extern const base::Feature kZeroSuggestPrefetchingOnSRP;
 // Related, kMaxZeroSuggestMatches.
 
 // On Device Head Suggest.
