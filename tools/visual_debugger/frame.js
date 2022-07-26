@@ -41,7 +41,7 @@ class CircularBuffer {
 class DrawFrame {
   static maxBufferNumFrames = 10000;
   static frameBuffer = new CircularBuffer(DrawFrame.maxBufferNumFrames);
-
+  static buffer_map = new Object();
   static count() { return DrawFrame.frameBuffer.instances.length; }
 
   static get(index) {
@@ -57,11 +57,24 @@ class DrawFrame {
     this.logs_ = json.logs;
     this.drawTexts_ = json.text;
     this.drawCalls_ = json.drawcalls.map(c => new DrawCall(c));
+    this.buffer_map = json.buff_map;
     this.submissionFreezeIndex_ = -1;
     if (json.new_sources) {
       for (const s of json.new_sources) {
         new Source(s);
       }
+    }
+
+    for (let buff in this.buffer_map) {
+      let image = new ImageData(Uint8ClampedArray
+                                  .from(this.buffer_map[buff]["buffer"]),
+                                this.buffer_map[buff]["width"],
+                                this.buffer_map[buff]["height"]);
+      createImageBitmap(image)
+        .then(res => {
+          DrawFrame.buffer_map[buff] = res;
+          return res;
+        });
     }
 
     // Retain the original JSON, so that the file can be saved to local disk.
@@ -144,9 +157,10 @@ class DrawFrame {
 
   draw(canvas, context, scale, orientationDeg, transformMatrix) {
     for (const call of this.drawCalls_) {
-      if (call.drawIndex_ > this.submissionFreezeIndex()) break;
-
-      call.draw(canvas, context, scale, orientationDeg, transformMatrix);
+      if (call.drawIndex_ > this.submissionFreezeIndex())
+        break;
+      call.draw(canvas, context, scale, orientationDeg,
+                transformMatrix, DrawFrame.buffer_map);
     }
 
     context.fillStyle = 'black';

@@ -195,7 +195,7 @@ class VisualDebuggerTest : public testing::Test {
 
       VizDebuggerInternal::DrawCall draw_call(draw_index, source_index, option,
                                               gfx::Size(size_x, size_y),
-                                              gfx::Vector2dF(pos_x, pos_y));
+                                              gfx::Vector2dF(pos_x, pos_y), -1);
 
       draw_calls_.push_back(draw_call);
     }

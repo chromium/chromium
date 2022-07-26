@@ -44,6 +44,7 @@ class DrawCall {
       this.color_ = json.option.color;
       this.alpha_ = DrawCall.alphaIntToHex(json.option.alpha)
     }
+    this.buffer_id = json.buff_id;
   }
 
   // Used in conversion of Json.
@@ -60,7 +61,7 @@ class DrawCall {
     return value.toString(16).padStart(2, '0');
   }
 
-  draw(canvas, context, scale, orientationDeg, transformMatrix) {
+  draw(canvas, context, scale, orientationDeg, transformMatrix, buffer_map) {
     let filter = undefined;
     const filters = Filter.enabledInstances();
     // TODO: multiple filters can match the same draw call. For now, let's just
@@ -96,6 +97,13 @@ class DrawCall {
                         newCallPosAndDimension[1],
                         newCallPosAndDimension[2],
                         newCallPosAndDimension[3]);
+    if(buffer_map[this.buffer_id.toString()]) {
+      context.drawImage(buffer_map[this.buffer_id.toString()],
+                        newCallPosAndDimension[0],
+                        newCallPosAndDimension[1],
+                        newCallPosAndDimension[2],
+                        newCallPosAndDimension[3]);
+    }
   }
 
   // Rotates and flips quads from draw calls

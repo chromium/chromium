@@ -24,6 +24,10 @@ static const int kVizDebuggerVersion = 1;
 
 std::atomic<bool> VizDebugger::enabled_;
 
+VizDebugger::BufferInfo::BufferInfo() = default;
+VizDebugger::BufferInfo::~BufferInfo() = default;
+VizDebugger::BufferInfo::BufferInfo(const BufferInfo& a) = default;
+
 VizDebugger* VizDebugger::GetInstance() {
   static VizDebugger g_debugger;
   return &g_debugger;
@@ -75,6 +79,13 @@ VizDebugger::VizDebugger()
 
 VizDebugger::~VizDebugger() = default;
 
+void VizDebugger::SubmitBuffer(int buff_id, VizDebugger::BufferInfo buffer) {
+  VizDebugger::Buffer buff;
+  buff.id = buff_id;
+  buff.buffer_info = buffer;
+  buffers_.emplace_back(buff);
+}
+
 base::Value VizDebugger::FrameAsJson(const uint64_t counter,
                                      const gfx::Size& window_pix,
                                      base::TimeTicks time_ticks) {
@@ -123,10 +134,28 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
       list_xy.Append(static_cast<double>(each.pos.y()));
       dict.SetKey("pos", std::move(list_xy));
     }
+    dict.SetInteger("buff_id", std::move(each.buff_id));
 
     draw_calls.Append(std::move(dict));
   }
   global_dict.SetKey("drawcalls", std::move(draw_calls));
+
+  base::DictionaryValue buff_map;
+  for (auto&& each : buffers_) {
+    base::DictionaryValue dict;
+    dict.SetInteger("width", each.buffer_info.width);
+    dict.SetInteger("height", each.buffer_info.height);
+    base::ListValue lst;
+    for (auto& buffer : each.buffer_info.buffer) {
+      lst.Append(buffer.color_r);
+      lst.Append(buffer.color_g);
+      lst.Append(buffer.color_b);
+      lst.Append(buffer.color_a);
+    }
+    dict.SetKey("buffer", std::move(lst));
+    buff_map.SetKey(base::NumberToString(each.id), std::move(dict));
+  }
+  global_dict.SetKey("buff_map", std::move(buff_map));
 
   base::ListValue logs;
   for (auto&& log : logs_) {
@@ -216,26 +245,34 @@ void VizDebugger::RegisterSource(StaticSource* src) {
 void VizDebugger::Draw(const gfx::SizeF& obj_size,
                        const gfx::Vector2dF& pos,
                        const VizDebugger::StaticSource* dcs,
-                       VizDebugger::DrawOption option) {
+                       VizDebugger::DrawOption option,
+                       int* id) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_compositor_thread_checker_);
-  Draw(gfx::Size(obj_size.width(), obj_size.height()), pos, dcs, option);
+  Draw(gfx::Size(obj_size.width(), obj_size.height()), pos, dcs, option, id);
 }
 
 void VizDebugger::Draw(const gfx::Size& obj_size,
                        const gfx::Vector2dF& pos,
                        const VizDebugger::StaticSource* dcs,
-                       VizDebugger::DrawOption option) {
+                       VizDebugger::DrawOption option,
+                       int* id) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_compositor_thread_checker_);
-  DrawInternal(obj_size, pos, dcs, option);
+  DrawInternal(obj_size, pos, dcs, option, id);
 }
 
 void VizDebugger::DrawInternal(const gfx::Size& obj_size,
                                const gfx::Vector2dF& pos,
                                const VizDebugger::StaticSource* dcs,
-                               VizDebugger::DrawOption option) {
+                               VizDebugger::DrawOption option,
+                               int* id) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_compositor_thread_checker_);
+  int local_id_buffer = -1;
+  if (id != nullptr) {
+    local_id_buffer = buffer_id++;
+    *id = local_id_buffer;
+  }
   draw_rect_calls_.emplace_back(submission_count_++, dcs->reg_index, option,
-                                obj_size, pos);
+                                obj_size, pos, local_id_buffer);
 }
 
 void VizDebugger::DrawText(const gfx::PointF& pos,
