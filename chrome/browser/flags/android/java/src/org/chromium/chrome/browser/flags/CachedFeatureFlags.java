@@ -66,8 +66,6 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.CREATE_SAFEBROWSING_ON_STARTUP, false)
                     .put(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA, false)
                     .put(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE, true)
-                    .put(ChromeFeatureList.DYNAMIC_COLOR_ANDROID, true)
-                    .put(ChromeFeatureList.DYNAMIC_COLOR_BUTTONS_ANDROID, true)
                     .put(ChromeFeatureList.EARLY_LIBRARY_LOAD, true)
                     .put(ChromeFeatureList.ELASTIC_OVERSCROLL, true)
                     .put(ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS, true)

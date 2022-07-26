@@ -15,8 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -32,13 +30,6 @@ import org.chromium.ui.util.ColorUtils;
 public class ThemeUtils {
     private static final String TAG = "ThemeUtils";
     private static final float LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA = 0.2f;
-
-    // This param is used to split the dynamic colors launch into a minimal launch that is primarily
-    // activity specific, and then a later launch that will be app wide.
-    private static final String FULL_DYNAMIC_COLORS_PARAM = "dynamic_color_full";
-    public static final BooleanCachedFieldTrialParameter ENABLE_FULL_DYNAMIC_COLORS =
-            new BooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.DYNAMIC_COLOR_ANDROID, FULL_DYNAMIC_COLORS_PARAM, true);
 
     /**
      * The background color to use for a given {@link Tab}. This will either be the color specified

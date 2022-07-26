@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 
 import java.util.ArrayList;
@@ -89,8 +88,6 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sCreateSafebrowsingOnStartup);
                 add(ChromeFeatureList.sCriticalPersistedTabData);
                 add(ChromeFeatureList.sDownloadsAutoResumptionNative);
-                add(ChromeFeatureList.sDynamicColorAndroid);
-                add(ChromeFeatureList.sDynamicColorButtonsAndroid);
                 add(ChromeFeatureList.sEarlyLibraryLoad);
                 add(ChromeFeatureList.sElasticOverscroll);
                 add(ChromeFeatureList.sElidePrioritizationOfPreNativeBootstrapTasks);
@@ -178,7 +175,6 @@ public class ChromeCachedFlags {
                         add(TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO);
                         add(TabUiFeatureUtilities.GRID_TAB_SWITCHER_FOR_TABLETS_POLISH);
                         add(TabUiFeatureUtilities.TAB_STRIP_TAB_WIDTH);
-                        add(ThemeUtils.ENABLE_FULL_DYNAMIC_COLORS);
                     }
                 };
         tryToCatchMissingParameters(fieldTrialsToCache);

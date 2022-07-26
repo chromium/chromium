@@ -91,8 +91,6 @@ extern const base::Feature kDownloadHomeForExternalApp;
 extern const base::Feature kDownloadNotificationBadge;
 extern const base::Feature kDownloadRename;
 extern const base::Feature kDuetTabStripIntegrationAndroid;
-extern const base::Feature kDynamicColorAndroid;
-extern const base::Feature kDynamicColorButtonsAndroid;
 extern const base::Feature kExperimentsForAgsa;
 extern const base::Feature kExploreSites;
 extern const base::Feature kFocusOmniboxInIncognitoTabIntents;

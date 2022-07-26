@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
-import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
@@ -212,10 +211,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     @CallSuper
     protected void applyThemeOverlays() {
         setTheme(R.style.ColorOverlay_ChromiumAndroid);
+        DynamicColors.applyIfAvailable(this);
 
-        if (supportsDynamicColors()) {
-            DynamicColors.applyIfAvailable(this);
-        }
         DeferredStartupHandler.getInstance().addDeferredTask(() -> {
             // #registerSyntheticFieldTrial requires native.
             boolean isDynamicColorAvailable = DynamicColors.isDynamicColorAvailable();
@@ -236,24 +233,14 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             setTheme(R.style.ThemeOverlay_DisableOverscroll);
         }
 
+        // TODO(https://crbug.com/1345778): Remove these overlays.
         // We apply an extra theme overlay to override some of the dynamic colors. For example,
         // android:textColorHighlight is overridden by dynamic colors, preventing us from specifying
         // the alpha for the selected text highlight. In this case, the overridden colors should
         // still use dynamic colors, as in the android:textColorHighlight example where we use a
         // color state list that depends on colorPrimary.
         setTheme(R.style.ThemeOverlay_DynamicColorOverrides);
-
-        if (ChromeFeatureList.sDynamicColorButtonsAndroid.isEnabled()) {
-            setTheme(R.style.ThemeOverlay_DynamicButtons);
-        }
-    }
-
-    /**
-     * Returns whether the activity supports dynamic colors. For most activities this is only true
-     * if full dynamic colors are enabled.
-     */
-    protected boolean supportsDynamicColors() {
-        return ThemeUtils.ENABLE_FULL_DYNAMIC_COLORS.getValue();
+        setTheme(R.style.ThemeOverlay_DynamicButtons);
     }
 
     /**

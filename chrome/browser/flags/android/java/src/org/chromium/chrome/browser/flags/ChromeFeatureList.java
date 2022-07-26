@@ -337,8 +337,6 @@ public abstract class ChromeFeatureList {
     public static final String DOWNLOAD_OFFLINE_CONTENT_PROVIDER =
             "UseDownloadOfflineContentProvider";
     public static final String DOWNLOAD_LATER = "DownloadLater";
-    public static final String DYNAMIC_COLOR_ANDROID = "DynamicColorAndroid";
-    public static final String DYNAMIC_COLOR_BUTTONS_ANDROID = "DynamicColorButtonsAndroid";
     public static final String EARLY_LIBRARY_LOAD = "EarlyLibraryLoad";
     public static final String ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS =
             "ElidePrioritizationOfPreNativeBootstrapTasks";
@@ -632,10 +630,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(CRITICAL_PERSISTED_TAB_DATA, false);
     public static final CachedFlag sDownloadsAutoResumptionNative =
             new CachedFlag(DOWNLOADS_AUTO_RESUMPTION_NATIVE, true);
-    public static final CachedFlag sDynamicColorAndroid =
-            new CachedFlag(DYNAMIC_COLOR_ANDROID, true);
-    public static final CachedFlag sDynamicColorButtonsAndroid =
-            new CachedFlag(DYNAMIC_COLOR_BUTTONS_ANDROID, true);
     public static final CachedFlag sEarlyLibraryLoad = new CachedFlag(EARLY_LIBRARY_LOAD, true);
     public static final CachedFlag sElasticOverscroll = new CachedFlag(ELASTIC_OVERSCROLL, true);
     public static final CachedFlag sElidePrioritizationOfPreNativeBootstrapTasks =

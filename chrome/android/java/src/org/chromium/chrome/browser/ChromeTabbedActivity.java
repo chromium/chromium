@@ -2931,11 +2931,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
-    @Override
-    protected boolean supportsDynamicColors() {
-        return ChromeFeatureList.sDynamicColorAndroid.isEnabled();
-    }
-
     /**
      * Reports that a new tab launcher shortcut was selected or an action equivalent to a shortcut
      * was performed.

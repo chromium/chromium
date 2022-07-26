@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.S
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -87,16 +86,14 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mCrowButton = findViewById(R.id.crow_chip_view);
         mItemText = findViewById(R.id.menu_item_text);
 
-        if (ChromeFeatureList.sDynamicColorButtonsAndroid.isEnabled()) {
-            final ColorStateList textColor = AppCompatResources.getColorStateList(
-                    mContext, R.color.default_text_color_accent1_tint_list);
-            mFollowingChipView.getPrimaryTextView().setTextColor(textColor);
-            mFollowChipView.getPrimaryTextView().setTextColor(textColor);
-            mCrowButton.getPrimaryTextView().setTextColor(textColor);
-            final ColorStateList backgroundColor = AppCompatResources.getColorStateList(
-                    mContext, R.color.menu_footer_chip_background_list);
-            mFollowChipView.setBackgroundTintList(backgroundColor);
-        }
+        final ColorStateList textColor = AppCompatResources.getColorStateList(
+                mContext, R.color.default_text_color_accent1_tint_list);
+        mFollowingChipView.getPrimaryTextView().setTextColor(textColor);
+        mFollowChipView.getPrimaryTextView().setTextColor(textColor);
+        mCrowButton.getPrimaryTextView().setTextColor(textColor);
+        final ColorStateList backgroundColor = AppCompatResources.getColorStateList(
+                mContext, R.color.menu_footer_chip_background_list);
+        mFollowChipView.setBackgroundTintList(backgroundColor);
     }
 
     /**

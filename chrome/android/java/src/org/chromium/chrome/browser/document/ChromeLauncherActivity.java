@@ -12,7 +12,6 @@ import com.google.android.material.color.DynamicColors;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 
 /**
@@ -59,8 +58,6 @@ public class ChromeLauncherActivity extends Activity {
 
         // The effect of this activity's theme is currently limited to CCTs, so we should only apply
         // dynamic colors when we enable them everywhere.
-        if (ThemeUtils.ENABLE_FULL_DYNAMIC_COLORS.getValue()) {
-            DynamicColors.applyIfAvailable(this);
-        }
+        DynamicColors.applyIfAvailable(this);
     }
 }
