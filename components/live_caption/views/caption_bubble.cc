@@ -609,6 +609,7 @@ void CaptionBubble::Init() {
   AddChildView(std::move(header_container));
   AddChildView(std::move(content_container));
 
+  SetCaptionBubbleStyle();
   UpdateContentSize();
 }
 
@@ -668,9 +669,7 @@ std::u16string CaptionBubble::GetAccessibleWindowTitle() const {
 }
 
 void CaptionBubble::OnThemeChanged() {
-  if (ThemeColorsChanged()) {
-    SetCaptionBubbleStyle();
-  }
+  SetCaptionBubbleStyle();
 
   // Call this after SetCaptionButtonStyle(), not before, since
   // SetCaptionButtonStyle() calls set_color(), which OnThemeChanged() will
@@ -727,37 +726,6 @@ void CaptionBubble::OnTextChanged() {
 
   if (hide_on_inactivity_ && GetWidget()->IsVisible())
     ResetInactivityTimer();
-}
-
-bool CaptionBubble::ThemeColorsChanged() {
-  const auto* const color_provider = GetColorProvider();
-  SkColor text_color =
-      color_provider->GetColor(ui::kColorLiveCaptionBubbleForegroundDefault);
-  SkColor icon_color =
-      color_provider->GetColor(ui::kColorLiveCaptionBubbleButtonIcon);
-  SkColor icon_disabled_color =
-      color_provider->GetColor(ui::kColorLiveCaptionBubbleButtonIconDisabled);
-  SkColor link_color =
-      color_provider->GetColor(ui::kColorLiveCaptionBubbleLink);
-  SkColor checkbox_color =
-      color_provider->GetColor(ui::kColorLiveCaptionBubbleCheckbox);
-  SkColor background_color =
-      color_provider->GetColor(ui::kColorLiveCaptionBubbleBackgroundDefault);
-
-  bool theme_colors_changed =
-      text_color != text_color_ || icon_color != icon_color_ ||
-      icon_disabled_color != icon_disabled_color_ ||
-      link_color != link_color_ || checkbox_color != checkbox_color_ ||
-      background_color != background_color_;
-
-  text_color_ = text_color;
-  icon_color_ = icon_color;
-  icon_disabled_color_ = icon_disabled_color;
-  link_color_ = link_color;
-  checkbox_color_ = checkbox_color;
-  background_color_ = background_color;
-
-  return theme_colors_changed;
 }
 
 void CaptionBubble::OnErrorChanged(
@@ -857,6 +825,14 @@ size_t CaptionBubble::GetNumLinesInLabel() const {
 
 int CaptionBubble::GetNumLinesVisible() {
   return is_expanded_ ? kNumLinesExpanded : kNumLinesCollapsed;
+}
+
+void CaptionBubble::SetCaptionBubbleStyle() {
+  SetTextSizeAndFontFamily();
+  if (GetWidget()) {
+    SetTextColor();
+    SetBackgroundColor();
+  }
 }
 
 double CaptionBubble::GetTextScaleFactor() {
@@ -1130,15 +1106,6 @@ bool CaptionBubble::HasActivity() {
 
 views::Label* CaptionBubble::GetLabelForTesting() {
   return static_cast<views::Label*>(label_);
-}
-
-void CaptionBubble::SetCaptionBubbleStyle() {
-  SetTextSizeAndFontFamily();
-  if (GetWidget()) {
-    SetTextColor();
-    SetBackgroundColor();
-    GetWidget()->ThemeChanged();
-  }
 }
 
 base::RetainingOneShotTimer* CaptionBubble::GetInactivityTimerForTesting() {

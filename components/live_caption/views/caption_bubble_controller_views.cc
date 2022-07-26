@@ -27,7 +27,6 @@ CaptionBubbleControllerViews::CaptionBubbleControllerViews() {
       /* hide_on_inactivity= */ true);
   caption_widget_ =
       views::BubbleDialogDelegateView::CreateBubble(caption_bubble_);
-  caption_bubble_->SetCaptionBubbleStyle();
 }
 
 CaptionBubbleControllerViews::~CaptionBubbleControllerViews() {
