@@ -622,6 +622,11 @@ void SyncEngineImpl::SendInterestedTopicsToInvalidator() {
   if (!sessions_invalidation_enabled_) {
     invalidation_enabled_types.Remove(syncer::SESSIONS);
   }
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, don't subscribe to HISTORY invalidations, to save network
+  // traffic.
+  invalidation_enabled_types.Remove(HISTORY);
+#endif
   // kUseSyncInvalidations means that the new invalidations system is
   // used for all data types except Wallet and Offer, so only keep these types.
   if (base::FeatureList::IsEnabled(kSyncSendInterestedDataTypes) &&

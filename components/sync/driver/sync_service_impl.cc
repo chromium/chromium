@@ -1256,6 +1256,11 @@ void SyncServiceImpl::UpdateDataTypesForInvalidations() {
   if (!sessions_invalidations_enabled_) {
     types.Remove(SESSIONS);
   }
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, don't subscribe to HISTORY invalidations, to save network
+  // traffic.
+  types.Remove(HISTORY);
+#endif
   if (!(base::FeatureList::IsEnabled(kUseSyncInvalidations) &&
         base::FeatureList::IsEnabled(kUseSyncInvalidationsForWalletAndOffer))) {
     types.RemoveAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
