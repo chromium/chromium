@@ -74149,6 +74149,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="15" label="PaintPropertyTreeBulderNonStackingContextScroll"/>
   <int value="16" label="VisualViewportPaintPropertyTreeBuilderUpdate"/>
   <int value="17" label="VideoPainterPaintReplaced"/>
+  <int value="18"
+      label="PaintPropertyTreeBuilderPaintPropertyChangedOnlyNonRerasterValues"/>
+  <int value="19"
+      label="PaintPropertyTreeBuilderPaintPropertyChangedOnlySimpleValues"/>
+  <int value="20"
+      label="PaintPropertyTreeBuilderPaintPropertyChangedOnlyValues"/>
+  <int value="21" label="PaintPropertyTreeBuilderPaintPropertyAddedOrRemoved"/>
 </enum>
 
 <enum name="PaintHoldingCommitTrigger">

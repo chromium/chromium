@@ -4112,6 +4112,32 @@ void PaintPropertyTreeBuilder::UpdateForChildren() {
   }
 }
 
+namespace {
+PaintArtifactCompositorUpdateReason PACUpdateReasonForPaintPropertyChange(
+    PaintPropertyChangeType change) {
+  switch (change) {
+    case (PaintPropertyChangeType::kChangedOnlyNonRerasterValues):
+      return PaintArtifactCompositorUpdateReason::
+          kPaintPropertyTreeBuilderPaintPropertyChangedOnlyNonRerasterValues;
+    case (PaintPropertyChangeType::kChangedOnlySimpleValues):
+      return PaintArtifactCompositorUpdateReason::
+          kPaintPropertyTreeBuilderPaintPropertyChangedOnlySimpleValues;
+    case (PaintPropertyChangeType::kChangedOnlyValues):
+      return PaintArtifactCompositorUpdateReason::
+          kPaintPropertyTreeBuilderPaintPropertyChangedOnlyValues;
+    case (PaintPropertyChangeType::kNodeAddedOrRemoved):
+      return PaintArtifactCompositorUpdateReason::
+          kPaintPropertyTreeBuilderPaintPropertyAddedOrRemoved;
+    default:
+      // The other values for PaintPropertyChangeType should not cause a
+      // paint artifact compositor update.
+      NOTREACHED();
+  }
+  return PaintArtifactCompositorUpdateReason::
+      kPaintPropertyTreeBuilderPaintPropertyChanged;
+}
+}  // namespace
+
 void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
   // We need to update property tree states of paint chunks.
   auto max_change = properties_changed_.Max();
@@ -4135,9 +4161,8 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
   }
 
   if (max_change > PaintPropertyChangeType::kChangedOnlyCompositedValues) {
-    object_.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate(
-        PaintArtifactCompositorUpdateReason::
-            kPaintPropertyTreeBuilderPaintPropertyChanged);
+    auto reason = PACUpdateReasonForPaintPropertyChange(max_change);
+    object_.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate(reason);
   }
 
   if (auto* box = DynamicTo<LayoutBox>(object_)) {

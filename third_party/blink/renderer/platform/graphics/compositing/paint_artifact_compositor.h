@@ -61,7 +61,11 @@ enum class PaintArtifactCompositorUpdateReason {
   kPaintPropertyTreeBulderNonStackingContextScroll = 15,
   kVisualViewportPaintPropertyTreeBuilderUpdate = 16,
   kVideoPainterPaintReplaced = 17,
-  kCount = 18
+  kPaintPropertyTreeBuilderPaintPropertyChangedOnlyNonRerasterValues = 18,
+  kPaintPropertyTreeBuilderPaintPropertyChangedOnlySimpleValues = 19,
+  kPaintPropertyTreeBuilderPaintPropertyChangedOnlyValues = 20,
+  kPaintPropertyTreeBuilderPaintPropertyAddedOrRemoved = 21,
+  kCount = 22
 };
 
 class LayerListBuilder {
