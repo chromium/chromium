@@ -854,6 +854,10 @@ class BuildConfigGenerator extends DefaultTask {
                 // Every target that has a dep on androidx_window_window will need these checks turned off.
                 sb.append('  enable_bytecode_checks = false\n')
                 break
+            case 'androidx_asynclayoutinflater_asynclayoutinflater':
+                sb.append('\n')
+                sb.append('  # References AppCompatActivity using reflection, if exists.\n')
+                sb.append('  enable_bytecode_checks = false\n')
             case 'androidx_startup_startup_runtime':
                 sb.append('  # Keeps emoji2 code. See http://crbug.com/1205141\n')
                 sb.append('  ignore_proguard_configs = true\n')
