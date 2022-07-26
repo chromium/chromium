@@ -419,6 +419,11 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   display_modes_ = native_info.display_modes_;
   maximum_cursor_size_ = native_info.maximum_cursor_size_;
   display_color_spaces_ = native_info.display_color_spaces_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  snapshot_color_space_ = native_info.snapshot_color_space_;
+#endif
+
   bits_per_channel_ = native_info.bits_per_channel_;
   refresh_rate_ = native_info.refresh_rate_;
   is_interlaced_ = native_info.is_interlaced_;
@@ -491,6 +496,17 @@ gfx::Insets ManagedDisplayInfo::GetOverscanInsetsInPixel() const {
   return gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(
       overscan_insets_in_dip_, device_scale_factor_));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ManagedDisplayInfo::SetSnapshotColorSpace(
+    const gfx::ColorSpace& snapshot_color) {
+  snapshot_color_space_ = snapshot_color;
+}
+
+gfx::ColorSpace ManagedDisplayInfo::GetSnapshotColorSpace() const {
+  return snapshot_color_space_;
+}
+#endif
 
 void ManagedDisplayInfo::SetManagedDisplayModes(
     const ManagedDisplayModeList& display_modes) {

@@ -345,6 +345,7 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
   new_info.set_display_color_spaces(
       CreateDisplayColorSpaces(snapshot->color_space(), allow_high_bit_depth,
                                snapshot->hdr_static_metadata()));
+  new_info.SetSnapshotColorSpace(snapshot->color_space());
   constexpr int32_t kNormalBitDepth = 8;
   new_info.set_bits_per_channel(
       allow_high_bit_depth ? snapshot->bits_per_channel() : kNormalBitDepth);

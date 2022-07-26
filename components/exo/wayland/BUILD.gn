@@ -204,6 +204,7 @@ source_set("wayland") {
 
     if (enable_color_manager) {
       deps += [
+        "//ash:ash",
         "//components/exo/wayland/protocol:chrome_color_management_protocol",
         "//ui/base/wayland:color_manager_util",
       ]

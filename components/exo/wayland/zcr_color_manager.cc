@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "ash/shell.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -195,7 +196,15 @@ class ColorManagerObserver : public WaylandDisplayObserver {
   }
 
   gfx::ColorSpace GetColorSpace() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Snapshot ColorSpace is only valid for ScreenAsh.
+    return ash::Shell::Get()
+        ->display_manager()
+        ->GetDisplayInfo(wayland_display_handler_->id())
+        .GetSnapshotColorSpace();
+#else
     return gfx::ColorSpace::CreateSRGB();
+#endif
   }
 
   WaylandDisplayHandler* wayland_display_handler() {

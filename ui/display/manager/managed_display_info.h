@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/types/display_constants.h"
@@ -241,6 +242,12 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   void SetOverscanInsets(const gfx::Insets& insets_in_dip);
   gfx::Insets GetOverscanInsetsInPixel() const;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Snapshot ColorSpace is only valid for Ash Chrome.
+  void SetSnapshotColorSpace(const gfx::ColorSpace& snapshot_color);
+  gfx::ColorSpace GetSnapshotColorSpace() const;
+#endif
+
   // Sets/Gets the flag to clear overscan insets.
   bool clear_overscan_insets() const { return clear_overscan_insets_; }
   void set_clear_overscan_insets(bool clear) { clear_overscan_insets_ = clear; }
@@ -383,6 +390,11 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
 
   // Colorimetry information of the Display.
   gfx::DisplayColorSpaces display_color_spaces_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Color Space information as generated from the display EDID.
+  gfx::ColorSpace snapshot_color_space_;
+#endif
 
   // Bit depth of every channel, extracted from its EDID, usually 8, but can be
   // 0 if EDID says so or if the EDID (retrieval) was faulty.
