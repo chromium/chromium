@@ -2658,7 +2658,7 @@ scoped_refptr<StyleInitialData> StyleEngine::MaybeCreateAndGetInitialData() {
     return initial_data_;
   if (const PropertyRegistry* registry = document_->GetPropertyRegistry()) {
     if (!registry->IsEmpty())
-      initial_data_ = StyleInitialData::Create(*registry);
+      initial_data_ = StyleInitialData::Create(GetDocument(), *registry);
   }
   return initial_data_;
 }

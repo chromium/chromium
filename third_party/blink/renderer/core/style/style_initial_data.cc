@@ -3,19 +3,28 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/style/style_initial_data.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 
 #include "third_party/blink/renderer/core/css/property_registry.h"
 
 namespace blink {
 
-StyleInitialData::StyleInitialData(const PropertyRegistry& registry) {
+StyleInitialData::StyleInitialData(Document& document,
+                                   const PropertyRegistry& registry) {
   for (const auto& entry : registry) {
-    CSSVariableData* data = entry.value->InitialVariableData();
-    if (!data)
+    const CSSValue* specified_initial_value = entry.value->Initial();
+    if (!specified_initial_value)
       continue;
-    variables_.SetData(entry.key, data);
-    if (const CSSValue* initial = entry.value->Initial())
-      variables_.SetValue(entry.key, initial);
+
+    const CSSValue* computed_initial_value =
+        &StyleBuilderConverter::ConvertRegisteredPropertyInitialValue(
+            document, *specified_initial_value);
+    scoped_refptr<CSSVariableData> computed_initial_data =
+        StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
+            *computed_initial_value, false /* is_animation_tainted */);
+
+    variables_.SetData(entry.key, std::move(computed_initial_data));
+    variables_.SetValue(entry.key, computed_initial_value);
   }
 }
 

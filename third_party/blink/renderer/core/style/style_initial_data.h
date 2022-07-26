@@ -15,6 +15,7 @@
 
 namespace blink {
 
+class Document;
 class PropertyRegistry;
 
 // Holds data stored on the initial ComputedStyle only.
@@ -24,8 +25,9 @@ class PropertyRegistry;
 class CORE_EXPORT StyleInitialData : public RefCounted<StyleInitialData> {
  public:
   static scoped_refptr<StyleInitialData> Create(
+      Document& document,
       const PropertyRegistry& registry) {
-    return base::AdoptRef(new StyleInitialData(registry));
+    return base::AdoptRef(new StyleInitialData(document, registry));
   }
 
   bool operator==(const StyleInitialData& other) const;
@@ -48,7 +50,7 @@ class CORE_EXPORT StyleInitialData : public RefCounted<StyleInitialData> {
   }
 
  private:
-  StyleInitialData(const PropertyRegistry&);
+  StyleInitialData(Document&, const PropertyRegistry&);
 
   // Initial values for all registered properties. This is set on
   // the initial style, and then shared with all other styles that directly or

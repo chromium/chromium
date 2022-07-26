@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
-#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
@@ -39,23 +38,19 @@ const PropertyRegistration* PropertyRegistration::From(
   return registry ? registry->Registration(property_name) : nullptr;
 }
 
-PropertyRegistration::PropertyRegistration(
-    const AtomicString& name,
-    const CSSSyntaxDefinition& syntax,
-    bool inherits,
-    const CSSValue* initial,
-    scoped_refptr<CSSVariableData> initial_variable_data)
+PropertyRegistration::PropertyRegistration(const AtomicString& name,
+                                           const CSSSyntaxDefinition& syntax,
+                                           bool inherits,
+                                           const CSSValue* initial)
     : syntax_(syntax),
       inherits_(inherits),
       initial_(initial),
-      initial_variable_data_(std::move(initial_variable_data)),
       interpolation_types_(
           CSSInterpolationTypesMap::CreateInterpolationTypesForCSSSyntax(
               name,
               syntax,
               *this)),
-      referenced_(false) {
-}
+      referenced_(false) {}
 
 PropertyRegistration::~PropertyRegistration() = default;
 
@@ -137,11 +132,6 @@ PropertyRegistration* PropertyRegistration::MaybeCreateForDeclaredProperty(
       return nullptr;
     if (!ComputationallyIndependent(*initial))
       return nullptr;
-    initial = &StyleBuilderConverter::ConvertRegisteredPropertyInitialValue(
-        document, *initial);
-    initial_variable_data =
-        StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
-            *initial, is_animation_tainted);
   }
 
   // For non-universal @property rules, the initial value is required for the
@@ -149,8 +139,8 @@ PropertyRegistration* PropertyRegistration::MaybeCreateForDeclaredProperty(
   if (!initial && !syntax->IsUniversal())
     return nullptr;
 
-  return MakeGarbageCollected<PropertyRegistration>(
-      name, *syntax, inherits, initial, initial_variable_data);
+  return MakeGarbageCollected<PropertyRegistration>(name, *syntax, inherits,
+                                                    initial);
 }
 
 void PropertyRegistration::registerProperty(
@@ -192,7 +182,6 @@ void PropertyRegistration::registerProperty(
       document->ElementSheet().Contents()->ParserContext();
 
   const CSSValue* initial = nullptr;
-  scoped_refptr<CSSVariableData> initial_variable_data;
   if (property_definition->hasInitialValue()) {
     CSSTokenizer tokenizer(property_definition->initialValue());
     const auto tokens = tokenizer.TokenizeToEOF();
@@ -211,11 +200,6 @@ void PropertyRegistration::registerProperty(
           "The initial value provided is not computationally independent.");
       return;
     }
-    initial = &StyleBuilderConverter::ConvertRegisteredPropertyInitialValue(
-        *document, *initial);
-    initial_variable_data =
-        StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
-            *initial, is_animation_tainted);
   } else {
     if (!syntax_definition->IsUniversal()) {
       exception_state.ThrowDOMException(
@@ -224,11 +208,10 @@ void PropertyRegistration::registerProperty(
       return;
     }
   }
-  registry.RegisterProperty(
-      atomic_name,
-      *MakeGarbageCollected<PropertyRegistration>(
-          atomic_name, *syntax_definition, property_definition->inherits(),
-          initial, std::move(initial_variable_data)));
+  registry.RegisterProperty(atomic_name,
+                            *MakeGarbageCollected<PropertyRegistration>(
+                                atomic_name, *syntax_definition,
+                                property_definition->inherits(), initial));
 
   document->GetStyleEngine().PropertyRegistryChanged();
 }

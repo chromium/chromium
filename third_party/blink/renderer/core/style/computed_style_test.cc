@@ -821,7 +821,8 @@ TEST_F(ComputedStyleTest, InitialVariableNames) {
   PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
   registry->RegisterProperty("--x", *CreateLengthRegistration("--x", 1));
   registry->RegisterProperty("--y", *CreateLengthRegistration("--y", 2));
-  style->SetInitialData(StyleInitialData::Create(*registry));
+  style->SetInitialData(
+      StyleInitialData::Create(*Document::CreateForTest(), *registry));
 
   EXPECT_EQ(2u, style->GetVariableNames().size());
   EXPECT_TRUE(style->GetVariableNames().Contains("--x"));
@@ -883,7 +884,8 @@ TEST_F(ComputedStyleTest, InitialAndInheritedAndNonInheritedVariableNames) {
   PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
   registry->RegisterProperty("--b", *CreateLengthRegistration("--b", 1));
   registry->RegisterProperty("--e", *CreateLengthRegistration("--e", 2));
-  style->SetInitialData(StyleInitialData::Create(*registry));
+  style->SetInitialData(
+      StyleInitialData::Create(*Document::CreateForTest(), *registry));
 
   const bool inherited = true;
   style->SetVariableData("--a", CreateVariableData("foo"), inherited);
@@ -943,7 +945,8 @@ TEST_F(ComputedStyleTest, GetVariableNamesWithInitialData_Invalidation) {
   {
     PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
     registry->RegisterProperty("--x", *CreateLengthRegistration("--x", 1));
-    style->SetInitialData(StyleInitialData::Create(*registry));
+    style->SetInitialData(
+        StyleInitialData::Create(*Document::CreateForTest(), *registry));
   }
   EXPECT_EQ(style->GetVariableNames().size(), 1u);
   EXPECT_TRUE(style->GetVariableNames().Contains("--x"));
@@ -953,7 +956,8 @@ TEST_F(ComputedStyleTest, GetVariableNamesWithInitialData_Invalidation) {
     PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
     registry->RegisterProperty("--y", *CreateLengthRegistration("--y", 2));
     registry->RegisterProperty("--z", *CreateLengthRegistration("--z", 3));
-    style->SetInitialData(StyleInitialData::Create(*registry));
+    style->SetInitialData(
+        StyleInitialData::Create(*Document::CreateForTest(), *registry));
   }
   EXPECT_EQ(style->GetVariableNames().size(), 2u);
   EXPECT_TRUE(style->GetVariableNames().Contains("--y"));

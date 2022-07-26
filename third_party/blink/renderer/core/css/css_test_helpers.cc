@@ -76,7 +76,7 @@ PropertyRegistration* CreatePropertyRegistration(const String& name) {
   DCHECK(syntax_definition);
   return MakeGarbageCollected<PropertyRegistration>(
       AtomicString(name), *syntax_definition, false /* inherits */,
-      nullptr /* initial */, nullptr /* initial_variable_data */);
+      nullptr /* initial */);
 }
 
 PropertyRegistration* CreateLengthRegistration(const String& name, int px) {
@@ -85,8 +85,7 @@ PropertyRegistration* CreateLengthRegistration(const String& name, int px) {
   const CSSValue* initial =
       CSSNumericLiteralValue::Create(px, CSSPrimitiveValue::UnitType::kPixels);
   return MakeGarbageCollected<PropertyRegistration>(
-      AtomicString(name), *syntax_definition, false /* inherits */, initial,
-      CreateVariableData(initial->CssText()));
+      AtomicString(name), *syntax_definition, false /* inherits */, initial);
 }
 
 void RegisterProperty(Document& document,
