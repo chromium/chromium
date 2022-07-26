@@ -117,6 +117,7 @@ class AutomationAXTreeWrapper : public ui::AXTreeObserver,
   ui::AXTreeID GetParentTreeID() const override;
   ui::AXNode* GetRootAsAXNode() const override;
   ui::AXNode* GetParentNodeFromParentTreeAsAXNode() const override;
+  std::string ToString() const override;
 
  private:
   // AXTreeObserver overrides.

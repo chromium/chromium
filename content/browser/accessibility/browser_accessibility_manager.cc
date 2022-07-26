@@ -394,6 +394,10 @@ const ui::AXTreeData& BrowserAccessibilityManager::GetTreeData() const {
   return ax_tree()->data();
 }
 
+std::string BrowserAccessibilityManager::ToString() const {
+  return GetTreeData().ToString();
+}
+
 void BrowserAccessibilityManager::OnWindowFocused() {
   if (IsRootTree())
     FireFocusEventsIfNeeded();

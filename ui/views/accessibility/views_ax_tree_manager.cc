@@ -4,8 +4,6 @@
 
 #include "ui/views/accessibility/views_ax_tree_manager.h"
 
-#include <string>
-
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
@@ -103,6 +101,10 @@ ui::AXNode* ViewsAXTreeManager::GetParentNodeFromParentTreeAsAXNode() const {
   // TODO(nektar): Implement stiching of AXTrees, e.g. a dialog to the main
   // window.
   return nullptr;
+}
+
+std::string ViewsAXTreeManager::ToString() const {
+  return "<ViewsAXTreeManager>";
 }
 
 void ViewsAXTreeManager::OnViewEvent(View* view, ax::mojom::Event event) {
