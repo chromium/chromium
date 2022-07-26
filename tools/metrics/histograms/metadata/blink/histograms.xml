@@ -1584,45 +1584,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Blink.ImageDecoders.IncrementallyDecodedByteSize{BlinkIncrementalDecodeImageTypes}"
-    units="bytes" expires_after="2021-11-14">
-  <owner>mbarowsky@chromium.org</owner>
-  <owner>andrescj@chromium.org</owner>
-  <summary>
-    Images for which only partial image data has been received before decoding
-    begins. This may be because the image is very large or complex (less
-    compressed) or because of slow network or resource loading. More precisely,
-    the bucket in which the decode will be counted (IncrementallyDecoded or
-    InitiallyFullyDecoded) is computed when the DeferredImageDecoder is about to
-    create the first DecodingImageGenerator for an image and the byte size is
-    emitted when all data is received. {BlinkIncrementalDecodeImageTypes}
-  </summary>
-  <token key="BlinkIncrementalDecodeImageTypes"
-      variants="BlinkIncrementalDecodeImageTypes"/>
-</histogram>
-
-<histogram
-    name="Blink.ImageDecoders.InitiallyFullyDecodedByteSize{BlinkIncrementalDecodeImageTypes}"
-    units="bytes" expires_after="2021-12-19">
-  <owner>mbarowsky@chromium.org</owner>
-  <owner>andrescj@chromium.org</owner>
-  <summary>
-    Images for which all image data has been received before decoding begins.
-    This may be because the image has a small file size (very compressed),
-    because of a fast network/resource loading connection, because the data was
-    preloaded with JavaScript, or because a decode was requested through
-    JavaScript IMG.decode() API, which must wait for all data to be received per
-    the specification. More precisely, the bucket in which the decode will be
-    counted (IncrementallyDecoded or InitiallyFullyDecoded) is computed when the
-    DeferredImageDecoder is about to create the first DecodingImageGenerator for
-    an image and the byte size is emitted when all data is received.
-    {BlinkIncrementalDecodeImageTypes}
-  </summary>
-  <token key="BlinkIncrementalDecodeImageTypes"
-      variants="BlinkIncrementalDecodeImageTypes"/>
-</histogram>
-
 <histogram name="Blink.ImageDecoders.Jpeg.Area" units="pixels"
     expires_after="2022-05-01">
   <owner>andrescj@chromium.org</owner>
@@ -2273,19 +2234,6 @@ chromium-metrics-reviews@google.com.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
-  </summary>
-</histogram>
-
-<histogram name="Blink.ResourceLoadScheduler.TrafficBytes.KBPerFrameStatus"
-    enum="RendererSchedulerFrameType2" expires_after="2020-02-02">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
-  <summary>
-    Total encoded size of resources associated with frames of a particular type.
-    Recorded when a fetch has been completed.
-
-    Each bucket of the histogram cointains the total size of all requests
-    associated with frames with a particular frame status in kilobytes.
   </summary>
 </histogram>
 
