@@ -56,9 +56,14 @@ export class CrTreeItemElement extends CrTreeBaseElement {
     this.labelElement.textContent = this.label_;
     this.toggleAttribute(SELECTED_ATTR, false);
     this.rowElement.setAttribute('aria-selected', 'false');
-    this.addEventListener('click', this.handleClick.bind(this));
-    this.addEventListener('mousedown', this.handleMouseDown.bind(this));
-    this.addEventListener('dblclick', this.handleDblClick.bind(this));
+    const expand = this.shadowRoot!.querySelector<HTMLElement>('.expand-icon');
+    assert(expand);
+    expand.addEventListener('click', this.handleExpandClick_.bind(this));
+    expand.addEventListener(
+        'mousedown', this.handleExpandMouseDown_.bind(this));
+    this.addEventListener('click', this.handleClick_.bind(this));
+    this.addEventListener('mousedown', this.handleMouseDown_.bind(this));
+    this.addEventListener('dblclick', this.handleDblClick_.bind(this));
   }
 
   override attributeChangedCallback(
@@ -182,30 +187,40 @@ export class CrTreeItemElement extends CrTreeBaseElement {
   }
 
   // Mouse event handlers
-  handleMouseDown(e: MouseEvent) {
+  private handleMouseDown_(e: MouseEvent) {
     if (e.button === 2) {  // right
-      this.handleClick(e);
+      this.handleClick_(e);
+    }
+  }
+
+  private handleExpandMouseDown_(e: MouseEvent) {
+    if (e.button === 2) {  // right
+      this.handleExpandClick_(e);
     }
   }
 
   /**
    * Handles double click events on the tree item.
    */
-  handleDblClick(e: Event) {
+  private handleDblClick_(e: Event) {
     const expanded = this.expanded;
     this.expanded = !expanded;
     e.stopPropagation();
   }
 
   /**
+   * Called when the user clicks on a tree item's expand icon.
+   */
+  private handleExpandClick_(e: Event) {
+    this.expanded = !this.expanded;
+    e.stopPropagation();
+  }
+
+  /**
    * Called when the user clicks on a tree item.
    */
-  handleClick(e: Event) {
-    if ((e.target as HTMLElement).classList.contains('expand-icon')) {
-      this.expanded = !this.expanded;
-    } else {
-      this.toggleAttribute(SELECTED_ATTR, true);
-    }
+  private handleClick_(e: Event) {
+    this.toggleAttribute(SELECTED_ATTR, true);
     e.stopPropagation();
   }
 

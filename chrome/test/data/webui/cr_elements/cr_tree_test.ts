@@ -136,4 +136,27 @@ suite('cr-tree', function() {
     assertFalse(bar.hasChildren);
     assertEquals(0, bar.items.length);
   });
+
+  test('expand on icon click', async () => {
+    tree.selectedItem = root;
+    assertFalse(root.expanded);
+    let whenExpand = eventToPromise('cr-tree-item-expand', tree);
+    const expand = root.shadowRoot!.querySelector<HTMLElement>('.expand-icon');
+    assertTrue(!!expand);
+    expand.click();
+    await whenExpand;
+
+    assertTrue(root.expanded);
+    assertFalse(bar.expanded);
+    whenExpand = eventToPromise('cr-tree-item-expand', tree);
+    const barExpand =
+        bar.shadowRoot!.querySelector<HTMLElement>('.expand-icon');
+    assertTrue(!!barExpand);
+    barExpand.click();
+
+    assertTrue(root.expanded);
+    assertTrue(bar.expanded);
+    // Selection isn't impacted by clicking the expand icon.
+    assertEquals(root, tree.selectedItem);
+  });
 });
