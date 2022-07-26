@@ -449,6 +449,8 @@ void VideoOverlayWindowViews::SetUpViews() {
 void VideoOverlayWindowViews::OnRootViewReady() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   GetNativeWindow()->SetProperty(ash::kWindowPipTypeKey, true);
+  if (chromeos::features::IsDarkLightModeEnabled())
+    highlight_border_overlay_ = std::make_unique<HighlightBorderOverlay>(this);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   GetRootView()->SetPaintToLayer(ui::LAYER_TEXTURED);

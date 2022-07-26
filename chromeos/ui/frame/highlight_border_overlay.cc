@@ -140,10 +140,14 @@ void HighlightBorderOverlay::UpdateLayerVisibilityAndBounds() {
   // layer.
   const auto window_state_type =
       window_->GetProperty(chromeos::kWindowStateTypeKey);
-  if ((chromeos::TabletState::Get()->InTabletMode() &&
+
+  // TabletState might be nullptr in some tests.
+  const bool in_tablet_mode = chromeos::TabletState::Get() &&
+                              chromeos::TabletState::Get()->InTabletMode();
+  if ((in_tablet_mode &&
        window_state_type != chromeos::WindowStateType::kFloated &&
        window_state_type != chromeos::WindowStateType::kPip) ||
-      (!chromeos::TabletState::Get()->InTabletMode() &&
+      (!in_tablet_mode &&
        window_state_type == chromeos::WindowStateType::kFullscreen) ||
       border_region.width() > layer_bounds.width() ||
       border_region.height() > layer_bounds.height()) {

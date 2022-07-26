@@ -9,6 +9,7 @@
 #include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
+#include "chromeos/ui/frame/highlight_border_overlay.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -169,6 +170,13 @@ class VideoOverlayWindowViews : public OverlayWindowViews,
   raw_ptr<ToggleMicrophoneButton> toggle_microphone_button_ = nullptr;
   raw_ptr<ToggleCameraButton> toggle_camera_button_ = nullptr;
   raw_ptr<HangUpButton> hang_up_button_ = nullptr;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Generates a nine patch layer painted with a highlight border for ChromeOS
+  // ASH only, not including LaCrOS. Highlight border for chrome pip window in
+  // LaCrOS will be added when `ash::NonClientFrameViewAsh` is created.
+  std::unique_ptr<HighlightBorderOverlay> highlight_border_overlay_;
+#endif
 
   // Current playback state on the video in Picture-in-Picture window. It is
   // used to toggle play/pause/replay button.
