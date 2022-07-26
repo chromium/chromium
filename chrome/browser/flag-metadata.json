@@ -3331,7 +3331,7 @@
   {
     "name": "extension-workflow-justification",
     "owners": [ "igorruvinov", "zmin" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "extensions-menu-access-control",
