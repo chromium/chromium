@@ -256,6 +256,9 @@ extern const char kAutofillEnableVirtualCardMetadataDescription[];
 extern const char kAutofillEnforceDelaysInStrikeDatabaseName[];
 extern const char kAutofillEnforceDelaysInStrikeDatabaseDescription[];
 
+extern const char kAutofillFillIbanFieldsName[];
+extern const char kAutofillFillIbanFieldsDescription[];
+
 extern const char kAutofillFillMerchantPromoCodeFieldsName[];
 extern const char kAutofillFillMerchantPromoCodeFieldsDescription[];
 

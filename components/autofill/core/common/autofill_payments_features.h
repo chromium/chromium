@@ -39,6 +39,7 @@ extern const base::Feature
     kAutofillEnableVirtualCardManagementInDesktopSettingsPage;
 extern const base::Feature kAutofillEnableVirtualCardMetadata;
 extern const base::Feature kAutofillEnforceDelaysInStrikeDatabase;
+extern const base::Feature kAutofillFillIbanFields;
 extern const base::Feature kAutofillFillMerchantPromoCodeFields;
 extern const base::Feature kAutofillParseIbanFields;
 extern const base::Feature kAutofillParseMerchantPromoCodeFields;

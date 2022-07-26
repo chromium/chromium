@@ -470,6 +470,12 @@ const char kAutofillEnforceDelaysInStrikeDatabaseDescription[] =
     "When enabled, if previous Autofill feature offer was declined, "
     "Chrome will wait for some time before showing the offer again.";
 
+extern const char kAutofillFillIbanFieldsName[] =
+    "Enable Autofill of IBAN fields in forms";
+extern const char kAutofillFillIbanFieldsDescription[] =
+    "When enabled, Autofill will attempt to fill IBAN (International Bank "
+    "Account Number) fields when data is available.";
+
 const char kAutofillFillMerchantPromoCodeFieldsName[] =
     "Enable Autofill of promo code fields in forms";
 const char kAutofillFillMerchantPromoCodeFieldsDescription[] =

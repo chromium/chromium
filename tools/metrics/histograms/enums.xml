@@ -59297,6 +59297,7 @@ from previous Chrome versions.
   <int value="309795366" label="ScrollUnification:disabled"/>
   <int value="310143091"
       label="AutofillImportNonFocusableCreditCardForms:enabled"/>
+  <int value="310183389" label="AutofillFillIbanFields:enabled"/>
   <int value="312112911" label="FilesWebDriveOffice:enabled"/>
   <int value="313112736" label="HandwritingLegacyRecognitionAllLang:enabled"/>
   <int value="313253630" label="AutofillRefreshStyleAndroid:enabled"/>
@@ -59441,6 +59442,7 @@ from previous Chrome versions.
   <int value="392107748" label="PwaUpdateDialogForIcon:disabled"/>
   <int value="392782890" label="SafeBrowsingTelemetryForApkDownloads:enabled"/>
   <int value="393704200" label="account-consistency"/>
+  <int value="395148768" label="AutofillFillIbanFields:disabled"/>
   <int value="397226364" label="PasswordNotes:enabled"/>
   <int value="397275669" label="QuickCommands:disabled"/>
   <int value="398903399" label="GenericSensorExtraClasses:disabled"/>

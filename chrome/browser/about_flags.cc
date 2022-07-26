@@ -9017,6 +9017,11 @@ const FeatureEntry kFeatureEntries[] = {
      PLATFORM_FEATURE_NAME_TYPE("CrOSLateBootMediaDynamicCgroup")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"autofill-fill-iban-fields",
+     flag_descriptions::kAutofillFillIbanFieldsName,
+     flag_descriptions::kAutofillFillIbanFieldsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillFillIbanFields)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

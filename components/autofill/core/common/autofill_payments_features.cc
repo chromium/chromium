@@ -155,6 +155,11 @@ const base::Feature kAutofillEnableVirtualCardMetadata{
 const base::Feature kAutofillEnforceDelaysInStrikeDatabase{
     "AutofillEnforceDelaysInStrikeDatabase", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, Autofill will attempt to fill IBAN (International Bank Account
+// Number) fields when data is available.
+const base::Feature kAutofillFillIbanFields{"AutofillFillIbanFields",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, Autofill will attempt to fill merchant promo/coupon/gift code
 // fields when data is available.
 const base::Feature kAutofillFillMerchantPromoCodeFields{
