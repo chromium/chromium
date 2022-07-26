@@ -967,9 +967,13 @@ std::u16string AutocompleteResult::GetHeaderForSuggestionGroup(
 bool AutocompleteResult::IsSuggestionGroupHidden(
     PrefService* prefs,
     SuggestionGroupId suggestion_group_id) const {
+  const auto& it = suggestion_groups_map_.find(suggestion_group_id);
+  DCHECK(it != suggestion_groups_map_.end());
+
+  DCHECK(it->second.original_group_id.has_value());
   omnibox::SuggestionGroupVisibility user_preference =
       omnibox::GetUserPreferenceForSuggestionGroupVisibility(
-          prefs, static_cast<int>(suggestion_group_id));
+          prefs, it->second.original_group_id.value());
 
   if (user_preference == omnibox::SuggestionGroupVisibility::HIDDEN)
     return true;
@@ -977,9 +981,21 @@ bool AutocompleteResult::IsSuggestionGroupHidden(
     return false;
 
   DCHECK_EQ(user_preference, omnibox::SuggestionGroupVisibility::DEFAULT);
+  return it->second.hidden;
+}
+
+void AutocompleteResult::SetSuggestionGroupHidden(
+    PrefService* prefs,
+    SuggestionGroupId suggestion_group_id,
+    bool hidden) const {
   const auto& it = suggestion_groups_map_.find(suggestion_group_id);
   DCHECK(it != suggestion_groups_map_.end());
-  return it->second.hidden;
+
+  DCHECK(it->second.original_group_id.has_value());
+  omnibox::SetUserPreferenceForSuggestionGroupVisibility(
+      prefs, it->second.original_group_id.value(),
+      hidden ? omnibox::SuggestionGroupVisibility::HIDDEN
+             : omnibox::SuggestionGroupVisibility::SHOWN);
 }
 
 SuggestionGroupPriority AutocompleteResult::GetPriorityForSuggestionGroup(

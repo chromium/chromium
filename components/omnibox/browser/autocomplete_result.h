@@ -239,11 +239,20 @@ class AutocompleteResult {
       SuggestionGroupId suggestion_group_id) const;
 
   // Returns whether or not |suggestion_group_id| should be collapsed in the UI.
-  // This method takes into account both the user's stored |prefs| as well as
+  // This method takes into account both the user's stored prefs as well as
   // the server-provided visibility hint for |suggestion_group_id|.
-  // DCHECKs whether |suggestion_group_id| is found in |suggestion_groups_map_|.
+  // DCHECKs whether |suggestion_group_id| is found in |suggestion_groups_map_|
+  // and whether the group info contains the original server provided group ID.
   bool IsSuggestionGroupHidden(PrefService* prefs,
                                SuggestionGroupId suggestion_group_id) const;
+
+  // Sets the UI collapsed/expanded state of the |suggestion_group_id| in the
+  // user's stored prefs based on the value of |hidden|.
+  // DCHECKs whether |suggestion_group_id| is found in |suggestion_groups_map_|
+  // and whether the group info contains the original server provided group ID.
+  void SetSuggestionGroupHidden(PrefService* prefs,
+                                SuggestionGroupId suggestion_group_id,
+                                bool hidden) const;
 
   // Returns the priority associated with |suggestion_group_id|.
   // DCHECKs whether |suggestion_group_id| is found in |suggestion_groups_map_|.

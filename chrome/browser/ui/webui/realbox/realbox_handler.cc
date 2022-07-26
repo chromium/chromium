@@ -693,15 +693,13 @@ void RealboxHandler::ToggleSuggestionGroupIdVisibility(
   // It should be safe to cast |suggestion_group_id| to SuggestionGroupId type,
   // since the group ID was originally passed to the page by the browser.
   // TODO(crbug.com/1343512): Investigate migrating this enum to a proto enum
-  // to take advantage of its safe built-in conversion logic.
-  omnibox::SuggestionGroupVisibility new_value =
+  // to take advantage of its built-in check for conversion from int32 type.
+  const auto& group_id = static_cast<SuggestionGroupId>(suggestion_group_id);
+  const bool current_visibility =
       autocomplete_controller_->result().IsSuggestionGroupHidden(
-          profile_->GetPrefs(),
-          static_cast<SuggestionGroupId>(suggestion_group_id))
-          ? omnibox::SuggestionGroupVisibility::SHOWN
-          : omnibox::SuggestionGroupVisibility::HIDDEN;
-  omnibox::SetSuggestionGroupVisibility(profile_->GetPrefs(),
-                                        suggestion_group_id, new_value);
+          profile_->GetPrefs(), group_id);
+  autocomplete_controller_->result().SetSuggestionGroupHidden(
+      profile_->GetPrefs(), group_id, !current_visibility);
 }
 
 void RealboxHandler::LogCharTypedToRepaintLatency(base::TimeDelta latency) {

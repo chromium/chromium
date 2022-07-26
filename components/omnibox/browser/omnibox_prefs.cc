@@ -71,16 +71,17 @@ SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(
   return SuggestionGroupVisibility::DEFAULT;
 }
 
-void SetSuggestionGroupVisibility(PrefService* prefs,
-                                  int suggestion_group_id,
-                                  SuggestionGroupVisibility new_value) {
+void SetUserPreferenceForSuggestionGroupVisibility(
+    PrefService* prefs,
+    int suggestion_group_id,
+    SuggestionGroupVisibility visibility) {
   DCHECK(prefs);
 
   DictionaryPrefUpdate update(prefs, kSuggestionGroupVisibility);
-  update->SetIntKey(base::NumberToString(suggestion_group_id), new_value);
+  update->SetIntKey(base::NumberToString(suggestion_group_id), visibility);
 
   base::SparseHistogram::FactoryGet(
-      new_value == SuggestionGroupVisibility::SHOWN
+      visibility == SuggestionGroupVisibility::SHOWN
           ? kToggleSuggestionGroupIdOnHistogram
           : kToggleSuggestionGroupIdOffHistogram,
       base::HistogramBase::kUmaTargetedHistogramFlag)

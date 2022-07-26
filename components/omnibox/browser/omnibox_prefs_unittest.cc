@@ -45,8 +45,8 @@ TEST_F(OmniboxPrefsTest, SuggestionGroupId) {
     histogram()->ExpectTotalCount(kToggleSuggestionGroupIdOnHistogram, 0);
   }
   {
-    SetSuggestionGroupVisibility(GetPrefs(), kOnboardingGroupId,
-                                 SuggestionGroupVisibility::HIDDEN);
+    SetUserPreferenceForSuggestionGroupVisibility(
+        GetPrefs(), kOnboardingGroupId, SuggestionGroupVisibility::HIDDEN);
 
     // Expect |kOnboardingGroupId| to have been toggled hidden.
     EXPECT_EQ(SuggestionGroupVisibility::HIDDEN,
@@ -63,10 +63,10 @@ TEST_F(OmniboxPrefsTest, SuggestionGroupId) {
     histogram()->ExpectTotalCount(kToggleSuggestionGroupIdOnHistogram, 0);
   }
   {
-    SetSuggestionGroupVisibility(GetPrefs(), kOnboardingGroupId,
-                                 SuggestionGroupVisibility::SHOWN);
-    SetSuggestionGroupVisibility(GetPrefs(), kRZPSGroupId,
-                                 SuggestionGroupVisibility::HIDDEN);
+    SetUserPreferenceForSuggestionGroupVisibility(
+        GetPrefs(), kOnboardingGroupId, SuggestionGroupVisibility::SHOWN);
+    SetUserPreferenceForSuggestionGroupVisibility(
+        GetPrefs(), kRZPSGroupId, SuggestionGroupVisibility::HIDDEN);
 
     // Expect |kOnboardingGroupId| to have been toggled visible again.
     EXPECT_EQ(SuggestionGroupVisibility::SHOWN,

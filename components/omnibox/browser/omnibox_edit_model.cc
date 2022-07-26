@@ -1969,14 +1969,11 @@ bool OmniboxEditModel::TriggerPopupSelectionAction(
     case OmniboxPopupSelection::FOCUSED_BUTTON_HEADER: {
       DCHECK(match.suggestion_group_id.has_value());
 
-      omnibox::SuggestionGroupVisibility new_value =
-          result().IsSuggestionGroupHidden(GetPrefService(),
-                                           match.suggestion_group_id.value())
-              ? omnibox::SuggestionGroupVisibility::SHOWN
-              : omnibox::SuggestionGroupVisibility::HIDDEN;
-      omnibox::SetSuggestionGroupVisibility(
-          GetPrefService(), static_cast<int>(match.suggestion_group_id.value()),
-          new_value);
+      const bool current_visibility = result().IsSuggestionGroupHidden(
+          GetPrefService(), match.suggestion_group_id.value());
+      result().SetSuggestionGroupHidden(GetPrefService(),
+                                        match.suggestion_group_id.value(),
+                                        !current_visibility);
       break;
     }
     case OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH:

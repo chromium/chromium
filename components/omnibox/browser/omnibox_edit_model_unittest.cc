@@ -745,12 +745,15 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   matches[4].suggestion_group_id = kNewGroupId;
 
   auto* result = &model()->autocomplete_controller()->result_;
-  AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
-                          TestSchemeClassifier());
   result->AppendMatches(matches);
+
   SuggestionGroupsMap suggestion_groups_map;
   suggestion_groups_map[kNewGroupId].header = u"header";
+  suggestion_groups_map[kNewGroupId].original_group_id = 12345;
   result->MergeSuggestionGroupsMap(suggestion_groups_map);
+
+  AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
+                          TestSchemeClassifier());
   result->SortAndCull(input, nullptr);
   model()->OnPopupResultChanged();
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
@@ -826,17 +829,19 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
   const auto kNewGroupId = SuggestionGroupId::kNonPersonalizedZeroSuggest1;
   matches[2].suggestion_group_id = kNewGroupId;
   matches[3].suggestion_group_id = kNewGroupId;
-  omnibox::SetSuggestionGroupVisibility(
-      pref_service(), static_cast<int>(kNewGroupId),
-      omnibox::SuggestionGroupVisibility::HIDDEN);
 
   auto* result = &model()->autocomplete_controller()->result_;
-  AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
-                          TestSchemeClassifier());
   result->AppendMatches(matches);
+
   SuggestionGroupsMap suggestion_groups_map;
   suggestion_groups_map[kNewGroupId].header = u"header";
+  suggestion_groups_map[kNewGroupId].original_group_id = 12345;
   result->MergeSuggestionGroupsMap(suggestion_groups_map);
+  result->SetSuggestionGroupHidden(pref_service(), kNewGroupId,
+                                   /*hidden=*/true);
+
+  AutocompleteInput input(u"match", metrics::OmniboxEventProto::NTP,
+                          TestSchemeClassifier());
   result->SortAndCull(input, nullptr);
   model()->OnPopupResultChanged();
   EXPECT_EQ(0u, model()->GetPopupSelection().line);
@@ -898,13 +903,17 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
   matches[2].fill_into_edit = u"a3";
   const auto kNewGroupId = SuggestionGroupId::kNonPersonalizedZeroSuggest1;
   matches[2].suggestion_group_id = kNewGroupId;
+
   auto* result = &model()->autocomplete_controller()->result_;
-  AutocompleteInput input(u"a", metrics::OmniboxEventProto::NTP,
-                          TestSchemeClassifier());
   result->AppendMatches(matches);
+
   SuggestionGroupsMap suggestion_groups_map;
   suggestion_groups_map[kNewGroupId].header = u"header";
+  suggestion_groups_map[kNewGroupId].original_group_id = 12345;
   result->MergeSuggestionGroupsMap(suggestion_groups_map);
+
+  AutocompleteInput input(u"a", metrics::OmniboxEventProto::NTP,
+                          TestSchemeClassifier());
   result->SortAndCull(input, nullptr);
   model()->OnPopupResultChanged();
 
