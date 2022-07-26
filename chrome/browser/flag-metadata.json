@@ -3491,7 +3491,7 @@
   {
     "name": "files-web-drive-office",
     "owners": [ "jboulic", "petermarshall", "simmonsjosh@google.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 120
   },
   {
     "name": "fill-on-account-select",
