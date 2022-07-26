@@ -41,6 +41,9 @@ AppDeduplicationServiceFactory* AppDeduplicationServiceFactory::GetInstance() {
 // app deduplication.
 bool AppDeduplicationServiceFactory::
     IsAppDeduplicationServiceAvailableForProfile(Profile* profile) {
+  if (!base::FeatureList::IsEnabled(features::kAppDeduplicationService)) {
+    return false;
+  }
   return AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile);
 }
 

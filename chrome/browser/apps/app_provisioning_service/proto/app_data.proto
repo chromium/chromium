@@ -51,3 +51,14 @@ message IconInfo {
   optional string icon_path = 1;
   optional bool is_masking_allowed = 2;
 }
+
+// A group of apps that considered as duplicated. This group will also include
+// meta data for duplication in the future, e.g. confidence, etc.
+message DuplicateGroup {
+  repeated App apps = 1;
+}
+
+// A map for duplicate groups, each group is defined by a string key.
+message DuplicatedAppsMap {
+  map<string, DuplicateGroup> duplicated_apps_map = 1;
+}
