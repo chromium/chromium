@@ -4,7 +4,7 @@
 
 #include "services/device/geolocation/empty_wifi_data_provider.h"
 
-#include "services/device/geolocation/wifi_data_provider_manager.h"
+#include "services/device/geolocation/wifi_data_provider_handle.h"
 
 namespace device {
 
@@ -26,7 +26,7 @@ bool EmptyWifiDataProvider::GetData(WifiData* data) {
 void EmptyWifiDataProvider::ForceRescan() {}
 
 // static
-WifiDataProvider* WifiDataProviderManager::DefaultFactoryFunction() {
+WifiDataProvider* WifiDataProviderHandle::DefaultFactoryFunction() {
   return new EmptyWifiDataProvider();
 }
 

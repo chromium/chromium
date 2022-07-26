@@ -13,7 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
-#include "services/device/geolocation/wifi_data_provider_manager.h"
+#include "services/device/geolocation/wifi_data_provider_handle.h"
 
 using chromeos::NetworkHandler;
 
@@ -186,7 +186,7 @@ bool WifiDataProviderChromeOs::GetAccessPointData(
 }
 
 // static
-WifiDataProvider* WifiDataProviderManager::DefaultFactoryFunction() {
+WifiDataProvider* WifiDataProviderHandle::DefaultFactoryFunction() {
   return new WifiDataProviderChromeOs();
 }
 

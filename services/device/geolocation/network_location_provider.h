@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "services/device/geolocation/network_location_request.h"
-#include "services/device/geolocation/wifi_data_provider_manager.h"
+#include "services/device/geolocation/wifi_data_provider_handle.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
@@ -58,7 +58,7 @@ class NetworkLocationProvider : public LocationProvider,
   void RequestPosition();
 
   // Gets called when new wifi data is available, either via explicit request to
-  // or callback from |wifi_data_provider_manager_|.
+  // or callback from |wifi_data_provider_handle_|.
   void OnWifiDataUpdate();
 
   bool IsStarted() const;
@@ -69,10 +69,9 @@ class NetworkLocationProvider : public LocationProvider,
 
   // The wifi data provider, acquired via global factories. Valid between
   // StartProvider() and StopProvider(), and checked via IsStarted().
-  raw_ptr<WifiDataProviderManager, DanglingUntriaged>
-      wifi_data_provider_manager_;
+  std::unique_ptr<WifiDataProviderHandle> wifi_data_provider_handle_;
 
-  WifiDataProviderManager::WifiDataUpdateCallback wifi_data_update_callback_;
+  WifiDataProviderHandle::WifiDataUpdateCallback wifi_data_update_callback_;
 
 #if BUILDFLAG(IS_MAC)
   // Used to keep track of macOS System Permission changes. Also, ensures

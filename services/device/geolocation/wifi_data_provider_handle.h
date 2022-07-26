@@ -7,13 +7,13 @@
 // instance of the wifi data provider manager, which is used by multiple
 // NetworkLocationProvider objects.
 //
-// This file provides WifiDataProviderManager, which provides static methods to
+// This file provides WifiDataProviderHandle, which provides static methods to
 // access the singleton instance. The singleton instance uses a private
 // implementation of WifiDataProvider to abstract across platforms and also to
 // allow mock providers to be used for testing.
 
-#ifndef SERVICES_DEVICE_GEOLOCATION_WIFI_DATA_PROVIDER_MANAGER_H_
-#define SERVICES_DEVICE_GEOLOCATION_WIFI_DATA_PROVIDER_MANAGER_H_
+#ifndef SERVICES_DEVICE_GEOLOCATION_WIFI_DATA_PROVIDER_HANDLE_H_
+#define SERVICES_DEVICE_GEOLOCATION_WIFI_DATA_PROVIDER_HANDLE_H_
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -25,36 +25,32 @@ namespace device {
 
 class WifiDataProvider;
 
-// A manager for wifi data providers.
+// A handle for using wifi data providers.
 //
-// We use a singleton instance of this class which is shared by multiple network
-// location providers. These location providers access the instance through the
-// Register and Unregister methods.
-class WifiDataProviderManager {
+// We use a singleton instance of WifiDataProvider which is shared by multiple
+// network location providers.
+class WifiDataProviderHandle {
  public:
-  typedef WifiDataProvider* (*ImplFactoryFunction)(void);
+  typedef WifiDataProvider* (*ImplFactoryFunction)();
+  typedef base::RepeatingClosure WifiDataUpdateCallback;
 
   // Sets the factory function which will be used by Register to create the
   // implementation used by the singleton instance. This factory approach is
-  // used both to abstract accross platform-specific implementations and to
+  // used both to abstract across platform-specific implementations and to
   // inject mock implementations for testing.
   static void SetFactoryForTesting(ImplFactoryFunction factory_function_in);
 
   // Resets the factory function to the default.
   static void ResetFactoryForTesting();
 
-  typedef base::RepeatingClosure WifiDataUpdateCallback;
+  // Creates a handle on WifiDataProvider.
+  static std::unique_ptr<WifiDataProviderHandle> CreateHandle(
+      WifiDataUpdateCallback* callback);
 
-  // Registers a callback, which will be run whenever new data is available.
-  // Instantiates the singleton if necessary, and always returns it.
-  static WifiDataProviderManager* Register(WifiDataUpdateCallback* callback);
+  ~WifiDataProviderHandle();
 
-  WifiDataProviderManager(const WifiDataProviderManager&) = delete;
-  WifiDataProviderManager& operator=(const WifiDataProviderManager&) = delete;
-
-  // Removes a callback. If this is the last callback, deletes the singleton
-  // instance. Return value indicates success.
-  static bool Unregister(WifiDataUpdateCallback* callback);
+  WifiDataProviderHandle(const WifiDataProviderHandle&) = delete;
+  WifiDataProviderHandle& operator=(const WifiDataProviderHandle&) = delete;
 
   // Returns true if the data provider is currently delayed by polling policy.
   bool DelayedByPolicy();
@@ -67,10 +63,7 @@ class WifiDataProviderManager {
   void ForceRescan();
 
  private:
-  // Private constructor and destructor, callers access singleton through
-  // Register and Unregister.
-  WifiDataProviderManager();
-  ~WifiDataProviderManager();
+  explicit WifiDataProviderHandle(WifiDataUpdateCallback* callback);
 
   void AddCallback(WifiDataUpdateCallback* callback);
   bool RemoveCallback(WifiDataUpdateCallback* callback);
@@ -81,18 +74,15 @@ class WifiDataProviderManager {
 
   static WifiDataProvider* DefaultFactoryFunction();
 
-  // The singleton-like instance of this class. (Not 'true' singleton, as it
-  // may go through multiple create/destroy/create cycles per process instance,
-  // e.g. when under test).
-  static WifiDataProviderManager* instance_;
+  static scoped_refptr<WifiDataProvider> GetOrCreateProvider();
 
   // The factory function used to create the singleton instance.
   static ImplFactoryFunction factory_function_;
 
-  // The internal implementation.
   scoped_refptr<WifiDataProvider> impl_;
+  WifiDataUpdateCallback* callback_;
 };
 
 }  // namespace device
 
-#endif  // SERVICES_DEVICE_GEOLOCATION_WIFI_DATA_PROVIDER_MANAGER_H_
+#endif  // SERVICES_DEVICE_GEOLOCATION_WIFI_DATA_PROVIDER_HANDLE_H_

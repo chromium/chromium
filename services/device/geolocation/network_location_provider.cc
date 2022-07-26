@@ -44,8 +44,7 @@ NetworkLocationProvider::NetworkLocationProvider(
     const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     const std::string& api_key,
     PositionCache* position_cache)
-    : wifi_data_provider_manager_(nullptr),
-      wifi_data_update_callback_(
+    : wifi_data_update_callback_(
           base::BindRepeating(&NetworkLocationProvider::OnWifiDataUpdate,
                               base::Unretained(this))),
       is_wifi_data_complete_(false),
@@ -109,7 +108,7 @@ void NetworkLocationProvider::OnSystemPermissionUpdated(
     location_provider_update_callback_.Run(this, error_position);
   }
   if (!was_permission_granted && is_system_permission_granted_ && IsStarted()) {
-    wifi_data_provider_manager_->ForceRescan();
+    wifi_data_provider_handle_->ForceRescan();
     OnWifiDataUpdate();
   }
 }
@@ -130,7 +129,7 @@ void NetworkLocationProvider::OnWifiDataUpdate() {
     return;
   }
 #endif
-  is_wifi_data_complete_ = wifi_data_provider_manager_->GetData(&wifi_data_);
+  is_wifi_data_complete_ = wifi_data_provider_handle_->GetData(&wifi_data_);
   if (is_wifi_data_complete_) {
     wifi_timestamp_ = base::Time::Now();
     is_new_data_available_ = true;
@@ -149,7 +148,7 @@ void NetworkLocationProvider::OnWifiDataUpdate() {
   // data changes, but is on the order of a few seconds to several minutes.
   // In this case it is better to call RequestPosition and return a cached
   // position estimate if it is available.
-  bool delayed = wifi_data_provider_manager_->DelayedByPolicy();
+  bool delayed = wifi_data_provider_handle_->DelayedByPolicy();
   if (is_wifi_data_complete_ || delayed)
     RequestPosition();
 }
@@ -176,10 +175,10 @@ void NetworkLocationProvider::StartProvider(bool high_accuracy) {
   if (IsStarted())
     return;
 
-  // Registers a callback with the data provider. The first call to Register()
-  // will create a singleton data provider that will be deleted on Unregister().
-  wifi_data_provider_manager_ =
-      WifiDataProviderManager::Register(&wifi_data_update_callback_);
+  // Registers a callback with the data provider.
+  // Releasing the handle will automatically unregister the callback.
+  wifi_data_provider_handle_ =
+      WifiDataProviderHandle::CreateHandle(&wifi_data_update_callback_);
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -193,8 +192,7 @@ void NetworkLocationProvider::StartProvider(bool high_accuracy) {
 void NetworkLocationProvider::StopProvider() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(IsStarted());
-  wifi_data_provider_manager_->Unregister(&wifi_data_update_callback_);
-  wifi_data_provider_manager_ = nullptr;
+  wifi_data_provider_handle_ = nullptr;
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -301,7 +299,7 @@ void NetworkLocationProvider::RequestPosition() {
 }
 
 bool NetworkLocationProvider::IsStarted() const {
-  return wifi_data_provider_manager_ != nullptr;
+  return wifi_data_provider_handle_ != nullptr;
 }
 
 }  // namespace device

@@ -24,7 +24,7 @@
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
-#include "services/device/geolocation/wifi_data_provider_manager.h"
+#include "services/device/geolocation/wifi_data_provider_handle.h"
 
 namespace device {
 namespace {
@@ -341,7 +341,7 @@ std::unique_ptr<dbus::Response> NetworkManagerWlanApi::GetAccessPointProperty(
 }  // namespace
 
 // static
-WifiDataProvider* WifiDataProviderManager::DefaultFactoryFunction() {
+WifiDataProvider* WifiDataProviderHandle::DefaultFactoryFunction() {
   return new WifiDataProviderLinux();
 }
 

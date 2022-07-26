@@ -16,7 +16,7 @@
 #include "base/win/windows_version.h"
 #include "services/device/geolocation/wifi_data_provider_common.h"
 #include "services/device/geolocation/wifi_data_provider_common_win.h"
-#include "services/device/geolocation/wifi_data_provider_manager.h"
+#include "services/device/geolocation/wifi_data_provider_handle.h"
 
 namespace device {
 
@@ -215,7 +215,7 @@ bool WindowsWlanApi::GetInterfaceDataWLAN(const HANDLE wlan_handle,
 
 }  // anonymous namespace
 
-WifiDataProvider* WifiDataProviderManager::DefaultFactoryFunction() {
+WifiDataProvider* WifiDataProviderHandle::DefaultFactoryFunction() {
   return new WifiDataProviderWin();
 }
 

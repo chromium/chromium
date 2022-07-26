@@ -131,7 +131,7 @@ MockWifiDataProvider* MockWifiDataProvider::instance_ = nullptr;
 class GeolocationNetworkProviderTest : public testing::Test {
  public:
   void TearDown() override {
-    WifiDataProviderManager::ResetFactoryForTesting();
+    WifiDataProviderHandle::ResetFactoryForTesting();
     grant_system_permission_by_default_ = true;
   }
 
@@ -173,7 +173,7 @@ class GeolocationNetworkProviderTest : public testing::Test {
       : wifi_data_provider_(MockWifiDataProvider::CreateInstance()) {
     // TODO(joth): Really these should be in SetUp, not here, but they take no
     // effect on Mac OS Release builds if done there. I kid not. Figure out why.
-    WifiDataProviderManager::SetFactoryForTesting(
+    WifiDataProviderHandle::SetFactoryForTesting(
         MockWifiDataProvider::GetInstance);
   }
 

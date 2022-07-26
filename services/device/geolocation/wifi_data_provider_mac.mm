@@ -12,7 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "services/device/geolocation/wifi_data_provider_common.h"
-#include "services/device/geolocation/wifi_data_provider_manager.h"
+#include "services/device/geolocation/wifi_data_provider_handle.h"
 
 namespace device {
 
@@ -90,7 +90,7 @@ const int kNoWifiPollingIntervalMilliseconds = 20 * 1000;  // 20s
 }  // namespace
 
 // static
-WifiDataProvider* WifiDataProviderManager::DefaultFactoryFunction() {
+WifiDataProvider* WifiDataProviderHandle::DefaultFactoryFunction() {
   return new WifiDataProviderMac();
 }
 
