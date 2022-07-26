@@ -36,6 +36,11 @@ public class ChromeApplicationTestUtils {
     private static final String TAG = "ApplicationTestUtils";
     private static final float FLOAT_EPSILON = 0.001f;
 
+    // Increase the default timeout, as it can take a long time for Android to
+    // fully stop/start Chrome.
+    private static final long CHROME_STOP_START_TIMEOUT_MS =
+            Math.max(10000L, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
+
     private static PowerManager.WakeLock sWakeLock;
 
     // TODO(jbudorick): fix deprecation warning crbug.com/537347
@@ -114,7 +119,7 @@ public class ChromeApplicationTestUtils {
             Criteria.checkThat(getVisibleActivitiesError(), state,
                     Matchers.anyOf(Matchers.equalTo(ApplicationState.HAS_STOPPED_ACTIVITIES),
                             Matchers.equalTo(ApplicationState.HAS_DESTROYED_ACTIVITIES)));
-        });
+        }, CHROME_STOP_START_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     /** Waits until Chrome is in the foreground. */
@@ -122,7 +127,7 @@ public class ChromeApplicationTestUtils {
         CriteriaHelper.pollInstrumentationThread(() -> {
             Criteria.checkThat(ApplicationStatus.getStateForApplication(),
                     Matchers.is(ApplicationState.HAS_RUNNING_ACTIVITIES));
-        });
+        }, CHROME_STOP_START_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     /**
