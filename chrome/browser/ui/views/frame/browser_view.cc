@@ -1271,7 +1271,7 @@ void BrowserView::SetBounds(const gfx::Rect& bounds) {
     return;
 
   ExitFullscreen();
-  GetWidget()->SetBounds(bounds);
+  frame_->SetBounds(bounds);
 }
 
 void BrowserView::Close() {
@@ -4056,17 +4056,13 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
         Activate();
       }
 
-      // Maximized windows must be restored to move to another display.
-      const bool was_maximized = frame_->IsMaximized();
-      if (was_maximized)
-        frame_->Restore();
-
+      const bool was_maximized = IsMaximized();
       if (restore_pre_fullscreen_bounds_callback_.is_null()) {
-        // TODO(crbug.com/1227805): GetRestoredBounds() yields maximized bounds
-        // on Linux when the window is maximized and then made fullscreen on the
-        // current screen, before (now) requesting fullscreen on another screen.
-        // This causes the window's pre-maximized (restored) bounds to be lost.
-        const gfx::Rect restored_bounds = frame_->GetRestoredBounds();
+        // Use GetBounds(), rather than GetRestoredBounds(), when the window is
+        // not maximized, to restore snapped window bounds on fullscreen exit.
+        // TODO(crbug.com/1034783): Support lower-layer fullscreen-on-display.
+        const gfx::Rect bounds_to_restore =
+            was_maximized ? GetRestoredBounds() : GetBounds();
         restore_pre_fullscreen_bounds_callback_ = base::BindOnce(
             [](base::WeakPtr<BrowserView> view, const gfx::Rect& bounds,
                bool maximize) {
@@ -4075,14 +4071,25 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
                 // screen was disconnected or repositioned during fullscreen.
                 view->frame()->SetBoundsConstrained(bounds);
                 if (maximize)
-                  view->frame()->Maximize();
+                  view->Maximize();
               }
             },
-            weak_ptr_factory_.GetWeakPtr(), restored_bounds, was_maximized);
+            weak_ptr_factory_.GetWeakPtr(), bounds_to_restore, was_maximized);
       }
 
-      frame_->SetBounds({display.work_area().origin(),
-                         frame_->GetWindowBoundsInScreen().size()});
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // Always Restore() on ChromeOS Ash, to support moving snapped windows.
+      // TODO(crbug.com/1250088): Find a similar workaround on ChromeOS Lacros.
+      // TODO(crbug.com/1034783): Support lower-layer fullscreen-on-display.
+      const bool should_restore_window = true;
+#else
+      const bool should_restore_window = was_maximized;
+#endif
+      // Restore the window as needed, so it can be moved to the target display.
+      if (should_restore_window)
+        Restore();
+      SetBounds({display.work_area().origin(),
+                 frame_->GetWindowBoundsInScreen().size()});
     }
   }
   frame_->SetFullscreen(fullscreen);
