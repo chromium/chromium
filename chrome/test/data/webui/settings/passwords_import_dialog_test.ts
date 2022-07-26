@@ -7,10 +7,11 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+import {ImportDialogState} from 'chrome://settings/lazy_load.js';
 import {PasswordManagerImpl} from 'chrome://settings/settings.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -29,32 +30,72 @@ suite('PasswordsImportDialog', function() {
     elementFactory = new PasswordSectionElementFactory(document);
   });
 
-  test('hasCorrectInitialState', function() {
+  test('hasCorrectInitialState', async function() {
     const importDialog = elementFactory.createPasswordsImportDialog();
-    assertTrue(isVisible(importDialog.$.cancel));
-    assertTrue(isVisible(importDialog.$.chooseFile));
-    assertEquals(
-        loadTimeData.getString('cancel'),
-        importDialog.$.cancel.textContent!.trim());
-    assertEquals(
-        loadTimeData.getString('importPasswordsChooseFile'),
-        importDialog.$.chooseFile.textContent!.trim());
-  });
+    assertEquals(importDialog.dialogState, ImportDialogState.START);
 
-  test('triggersImportWithChooseFileButton', async function() {
-    const importDialog = elementFactory.createPasswordsImportDialog();
-    assertTrue(isVisible(importDialog.$.chooseFile));
+    const cancel =
+        importDialog.shadowRoot!.querySelector<HTMLElement>('#cancel');
+    assertTrue(!!cancel);
+    const chooseFile =
+        importDialog.shadowRoot!.querySelector<HTMLElement>('#chooseFile');
+    assertTrue(!!chooseFile);
 
-    importDialog.$.chooseFile.click();
-    await passwordManager.whenCalled('importPasswords');
+    assertTrue(isVisible(cancel));
+    assertTrue(isVisible(chooseFile));
+
+    assertEquals(importDialog.i18n('cancel'), cancel.textContent!.trim());
+    assertEquals(
+        importDialog.i18n('importPasswordsChooseFile'),
+        chooseFile.textContent!.trim());
+    assertEquals(
+        importDialog.i18n('importPasswordsGenericDescription'),
+        importDialog.$.descriptionText.textContent!.trim());
+
+    cancel.click();
     await eventToPromise('close', importDialog);
   });
 
-  test('cancelButtonClosesDialog', async function() {
+  test('hasCorrectSuccessState', async function() {
     const importDialog = elementFactory.createPasswordsImportDialog();
-    assertTrue(isVisible(importDialog.$.cancel));
+    assertEquals(importDialog.dialogState, ImportDialogState.START);
+    passwordManager.setImportResults({
+      status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
+      numberImported: 42,
+      failedImports: [],
+      fileName: 'test.csv',
+    });
 
-    importDialog.$.cancel.click();
+    const chooseFile =
+        importDialog.shadowRoot!.querySelector<HTMLElement>('#chooseFile');
+    assertTrue(!!chooseFile);
+    assertTrue(isVisible(chooseFile));
+    chooseFile.click();
+    // Import flow should have been triggered.
+    await passwordManager.whenCalled('importPasswords');
+    await flushTasks();
+    // After the import, the dialog should switch to SUCCESS state.
+    assertEquals(importDialog.dialogState, ImportDialogState.SUCCESS);
+    assertFalse(isVisible(chooseFile));
+
+    const expectedSuccessSummary =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'importPasswordsSuccessSummaryDevice', 42);
+    const successSummary = importDialog.$.descriptionText.textContent!.trim();
+    assertEquals(expectedSuccessSummary, successSummary);
+
+    const successTip =
+        importDialog.shadowRoot!.querySelector<HTMLElement>('#successTip');
+    assertTrue(!!successTip);
+    assertEquals(
+        importDialog.i18n('importPasswordsSuccessTip', 'test.csv'),
+        successTip.textContent!.trim());
+
+    const done = importDialog.shadowRoot!.querySelector<HTMLElement>('#done');
+    assertTrue(!!done);
+    assertEquals(importDialog.i18n('done'), done.textContent!.trim());
+    assertTrue(isVisible(done));
+    done.click();
     await eventToPromise('close', importDialog);
   });
 });

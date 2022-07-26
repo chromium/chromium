@@ -768,6 +768,14 @@
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_DESCRIPTION_GENERIC" desc="Text shown to the user on the dialog for importing passwords, before the user has chosen the file to import passwords from.">
     To import passwords, select a CSV file.
   </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_SUMMARY_DEVICE" desc="Text on the dialog for importing passwords that shows how many passwords have been stored on the user device, after the user has chosen the file to import passwords from.">
+    {NUM_PASSWORDS, plural,
+     =1 {1 password imported to this device}
+     other {{NUM_PASSWORDS} passwords imported to this device}}
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_TIP" desc="Message is shown on the dialog for importing passwords, after a successful import. It is an advice for the user, that they should consider deleting the file, which they used for importing passwords from.">
+    Consider deleting <ph name="FILENAME"><ex>file_name.csv</ex>$1</ph>, so others who use this device can't see your passwords.
+  </message>
   <message name="IDS_SETTINGS_PASSWORDS_EXPORT_MENU_ITEM" desc="A menu item in the More Actions menu above the password list in Chrome's settings. Selecting this action will open a dialog, through which the user can export their passwords outside of Chrome.">
     Export passwords...
   </message>

@@ -9,8 +9,12 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../settings_shared.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
@@ -19,12 +23,19 @@ import {getTemplate} from './passwords_import_dialog.html.js';
 export interface PasswordsImportDialogElement {
   $: {
     dialog: CrDialogElement,
-    cancel: HTMLElement,
-    chooseFile: HTMLElement,
+    descriptionText: HTMLElement,
   };
 }
 
-export class PasswordsImportDialogElement extends PolymerElement {
+const PasswordsImportDialogElementBase = I18nMixin(PolymerElement);
+
+export enum ImportDialogState {
+  START,
+  SUCCESS,
+}
+
+export class PasswordsImportDialogElement extends
+    PasswordsImportDialogElementBase {
   static get is() {
     return 'passwords-import-dialog';
   }
@@ -33,28 +44,59 @@ export class PasswordsImportDialogElement extends PolymerElement {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      dialogState: Number,
+
+      importDialogStateEnum_: {
+        type: Object,
+        value: ImportDialogState,
+        readOnly: true,
+      },
+
+      descriptionText_: String,
+    };
+  }
+
+  dialogState: ImportDialogState;
+  private results_: chrome.passwordsPrivate.ImportResults|null;
+  private descriptionText_: string;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
-  /** Closes the dialog. */
-  close() {
-    this.$.dialog.close();
+  override connectedCallback() {
+    super.connectedCallback();
+    this.descriptionText_ = this.i18n('importPasswordsGenericDescription');
+    this.dialogState = ImportDialogState.START;
+  }
+
+  private isState_(state: ImportDialogState): boolean {
+    return this.dialogState === state;
   }
 
   /**
-   * Handler for clicking the 'chooseFile' button.
+   * Handler for clicking the 'chooseFile' button. It triggers import flow.
    */
-  private onChooseFileClick_() {
-    this.passwordManager_.importPasswords(
+  private async onChooseFileClick_() {
+    this.results_ = await this.passwordManager_.importPasswords(
         chrome.passwordsPrivate.PasswordStoreSet.DEVICE);
-    this.close();
+    this.descriptionText_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'importPasswordsSuccessSummaryDevice',
+            this.results_.numberImported);
+    this.dialogState = ImportDialogState.SUCCESS;
   }
 
-  /**
-   * Handler for clicking the 'cancel' button.
-   */
+  private getSuccessTip_(): string {
+    return this.i18n('importPasswordsSuccessTip', this.results_!.fileName);
+  }
+
   private onCancelClick_() {
-    this.close();
+    this.$.dialog.cancel();
+  }
+
+  private onCloseClick_() {
+    this.$.dialog.close();
   }
 }
 

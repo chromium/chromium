@@ -352,6 +352,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       IDS_SETTINGS_COMPROMISED_PASSWORDS_COUNT_SHORT);
   plural_string_handler->AddLocalizedString(
       "safetyCheckPasswordsWeak", IDS_SETTINGS_WEAK_PASSWORDS_COUNT_SHORT);
+  plural_string_handler->AddLocalizedString(
+      "importPasswordsSuccessSummaryDevice",
+      IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_SUMMARY_DEVICE);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   // Add the metrics handler to write uma stats.
