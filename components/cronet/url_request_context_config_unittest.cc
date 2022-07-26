@@ -339,6 +339,8 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
             https_svcb_options.extra_time_percent);
   EXPECT_EQ(base::FeatureList::IsEnabled(net::features::kUseDnsHttpsSvcbAlpn),
             params->use_dns_https_svcb_alpn);
+
+  EXPECT_FALSE(config->skip_logging);
 }
 
 TEST(URLRequestContextConfigTest, SetSupportedQuicVersion) {
@@ -1751,6 +1753,7 @@ TEST(URLRequestContextConfigTest, WrongBidiStreamDetectBrokenConnectionValue) {
 TEST(URLRequestContextConfigTest, HttpsSvcbOptions) {
   base::test::TaskEnvironment task_environment_(
       base::test::TaskEnvironment::MainThreadType::IO);
+
   std::unique_ptr<URLRequestContextConfig> config =
       URLRequestContextConfig::CreateURLRequestContextConfig(
           // Enable QUIC.
@@ -1795,7 +1798,6 @@ TEST(URLRequestContextConfigTest, HttpsSvcbOptions) {
           true,
           // Optional network thread priority.
           absl::optional<double>());
-
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
@@ -1822,6 +1824,92 @@ TEST(URLRequestContextConfigTest, HttpsSvcbOptions) {
   const net::HttpNetworkSessionParams* params =
       context->GetNetworkSessionParams();
   EXPECT_TRUE(params->use_dns_https_svcb_alpn);
+}
+
+TEST(URLRequestContextConfigTest, SkipLogging) {
+  base::test::TaskEnvironment task_environment_(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  std::unique_ptr<URLRequestContextConfig> config =
+      URLRequestContextConfig::CreateURLRequestContextConfig(
+          // Enable QUIC.
+          true,
+          // QUIC User Agent ID.
+          "Default QUIC User Agent ID",
+          // Enable SPDY.
+          true,
+          // Enable Brotli.
+          false,
+          // Type of http cache.
+          URLRequestContextConfig::HttpCacheType::DISK,
+          // Max size of http cache in bytes.
+          1024000,
+          // Disable caching for HTTP responses. Other information may be stored
+          // in the cache.
+          false,
+          // Storage path for http cache and cookie storage.
+          "/data/data/org.chromium.net/app_cronet_test/test_storage",
+          // Accept-Language request header field.
+          "foreign-language",
+          // User-Agent request header field.
+          "fake agent",
+          // JSON encoded experimental options.
+          "{\"skip_logging\":true}",
+          // MockCertVerifier to use for testing purposes.
+          std::unique_ptr<net::CertVerifier>(),
+          // Enable network quality estimator.
+          false,
+          // Enable Public Key Pinning bypass for local trust anchors.
+          true,
+          // Optional network thread priority.
+          absl::optional<double>());
+  net::URLRequestContextBuilder builder;
+  config->ConfigureURLRequestContextBuilder(&builder);
+  EXPECT_TRUE(config->effective_experimental_options.contains("skip_logging"));
+  EXPECT_TRUE(config->skip_logging);
+}
+
+TEST(URLRequestContextConfigTest, WrongSkipLoggingValue) {
+  base::test::TaskEnvironment task_environment_(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  std::unique_ptr<URLRequestContextConfig> config =
+      URLRequestContextConfig::CreateURLRequestContextConfig(
+          // Enable QUIC.
+          true,
+          // QUIC User Agent ID.
+          "Default QUIC User Agent ID",
+          // Enable SPDY.
+          true,
+          // Enable Brotli.
+          false,
+          // Type of http cache.
+          URLRequestContextConfig::HttpCacheType::DISK,
+          // Max size of http cache in bytes.
+          1024000,
+          // Disable caching for HTTP responses. Other information may be stored
+          // in the cache.
+          false,
+          // Storage path for http cache and cookie storage.
+          "/data/data/org.chromium.net/app_cronet_test/test_storage",
+          // Accept-Language request header field.
+          "foreign-language",
+          // User-Agent request header field.
+          "fake agent",
+          // JSON encoded experimental options.
+          "{\"skip_logging\":10}",
+          // MockCertVerifier to use for testing purposes.
+          std::unique_ptr<net::CertVerifier>(),
+          // Enable network quality estimator.
+          false,
+          // Enable Public Key Pinning bypass for local trust anchors.
+          true,
+          // Optional network thread priority.
+          absl::optional<double>());
+
+  net::URLRequestContextBuilder builder;
+  config->ConfigureURLRequestContextBuilder(&builder);
+  EXPECT_FALSE(config->effective_experimental_options.contains("skip_logging"));
 }
 
 // See stale_host_resolver_unittest.cc for test of StaleDNS options.

@@ -26,6 +26,15 @@ public final class CronetLoggerFactory {
             "com.google.net.cronet.telemetry.CronetLoggerImpl";
 
     /**
+     * Bypasses CronetLoggerFactory logic and always creates a NoOpLogger.
+     * To be used only as a kill-switch for logging.
+     * @return a NoOpLogger instance.
+     */
+    public static CronetLogger createNoOpLogger() {
+        return sDefaultLogger;
+    }
+
+    /**
      * @return The correct CronetLogger to be used for logging.
      */
     public static CronetLogger createLogger(Context ctx, CronetSource source) {

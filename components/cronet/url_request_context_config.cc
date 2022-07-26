@@ -185,6 +185,10 @@ const char kBidiStreamDetectBrokenConnection[] =
 const char kUseDnsHttpsSvcbFieldTrialName[] = "UseDnsHttpsSvcb";
 const char kUseDnsHttpsSvcbUseAlpn[] = "use_alpn";
 
+// Runtime flag to bypass Cronet's logging: When set to true logging calls will
+// be skipped. If missing, logging will happen.
+const char kSkipLogging[] = "skip_logging";
+
 // "goaway_sessions_on_ip_change" is default on for iOS unless overridden via
 // experimental options explicitly.
 #if BUILDFLAG(IS_IOS)
@@ -306,7 +310,8 @@ URLRequestContextConfig::URLRequestContextConfig(
       experimental_options(std::move(experimental_options)),
       network_thread_priority(network_thread_priority),
       bidi_stream_detect_broken_connection(false),
-      heartbeat_interval(base::Seconds(0)) {
+      heartbeat_interval(base::Seconds(0)),
+      skip_logging(false) {
   SetContextConfigExperimentalOptions();
 }
 
@@ -380,22 +385,34 @@ URLRequestContextConfig::ParseExperimentalOptions(
 void URLRequestContextConfig::SetContextConfigExperimentalOptions() {
   const base::Value* heartbeat_interval_value =
       experimental_options.Find(kBidiStreamDetectBrokenConnection);
-  if (!heartbeat_interval_value)
-    return;
-
-  if (!heartbeat_interval_value->is_int()) {
-    LOG(ERROR) << "\"" << kBidiStreamDetectBrokenConnection
-               << "\" config params \"" << heartbeat_interval_value
-               << "\" is not an int";
-    experimental_options.Remove(kBidiStreamDetectBrokenConnection);
-    effective_experimental_options.Remove(kBidiStreamDetectBrokenConnection);
-    return;
+  if (heartbeat_interval_value) {
+    if (!heartbeat_interval_value->is_int()) {
+      LOG(ERROR) << "\"" << kBidiStreamDetectBrokenConnection
+                 << "\" config params \"" << heartbeat_interval_value
+                 << "\" is not an int";
+      experimental_options.Remove(kBidiStreamDetectBrokenConnection);
+      effective_experimental_options.Remove(kBidiStreamDetectBrokenConnection);
+    } else {
+      int heartbeat_interval_secs = heartbeat_interval_value->GetInt();
+      heartbeat_interval = base::Seconds(heartbeat_interval_secs);
+      bidi_stream_detect_broken_connection = heartbeat_interval_secs > 0;
+      experimental_options.Remove(kBidiStreamDetectBrokenConnection);
+    }
   }
 
-  int heartbeat_interval_secs = heartbeat_interval_value->GetInt();
-  heartbeat_interval = base::Seconds(heartbeat_interval_secs);
-  bidi_stream_detect_broken_connection = heartbeat_interval_secs > 0;
-  experimental_options.Remove(kBidiStreamDetectBrokenConnection);
+  const base::Value* skip_logging_value =
+      experimental_options.Find(kSkipLogging);
+  if (skip_logging_value) {
+    if (!skip_logging_value->is_bool()) {
+      LOG(ERROR) << "\"" << kSkipLogging << "\" config params \""
+                 << skip_logging_value << "\" is not a bool";
+      experimental_options.Remove(kSkipLogging);
+      effective_experimental_options.Remove(kSkipLogging);
+    } else {
+      skip_logging = skip_logging_value->GetBool();
+      experimental_options.Remove(kSkipLogging);
+    }
+  }
 }
 
 void URLRequestContextConfig::SetContextBuilderExperimentalOptions(

@@ -230,6 +230,11 @@ void CronetContextAdapter::StopNetLog(JNIEnv* env,
   context_->StopNetLog();
 }
 
+bool CronetContextAdapter::SkipLogging(JNIEnv* env,
+                                       const JavaParamRef<jobject>& jcaller) {
+  return context_->skip_logging() ? JNI_TRUE : JNI_FALSE;
+}
+
 int CronetContextAdapter::default_load_flags() const {
   return context_->default_load_flags();
 }

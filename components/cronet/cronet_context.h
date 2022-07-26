@@ -183,6 +183,8 @@ class CronetContext {
   }
   base::TimeDelta heartbeat_interval() const { return heartbeat_interval_; }
 
+  bool skip_logging() const { return skip_logging_; }
+
   // NetworkTasks performs tasks on the network thread and owns objects that
   // live on the network thread.
   class NetworkTasks : public net::EffectiveConnectionTypeObserver,
@@ -376,6 +378,9 @@ class CronetContext {
   // If |bidi_stream_detect_broken_connection_| is true, this suggests the
   // period of the heartbeat signal.
   base::TimeDelta heartbeat_interval_;
+
+  // Whether Cronet's logging should be skipped or not.
+  bool skip_logging_;
 
   const int default_load_flags_;
 

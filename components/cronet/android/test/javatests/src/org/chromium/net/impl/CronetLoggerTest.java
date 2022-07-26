@@ -233,6 +233,31 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     @Feature({"Cronet"})
+    @OnlyRunNativeCronet
+    public void testLoggingKillSwitch() throws JSONException {
+        final String url = NativeTestServer.getEchoBodyURL();
+        JSONObject jsonExperimentalOptions = new JSONObject().put("skip_logging", true);
+        final String experimentalOptions = jsonExperimentalOptions.toString();
+        ExperimentalCronetEngine.Builder builder =
+                (ExperimentalCronetEngine.Builder) mTestFramework.mBuilder;
+        builder.setExperimentalOptions(experimentalOptions);
+        CronetEngine engine = builder.build();
+
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        UrlRequest.Builder requestBuilder =
+                engine.newUrlRequestBuilder(url, callback, callback.getExecutor());
+        UrlRequest request = requestBuilder.build();
+        request.start();
+        callback.blockForDone();
+
+        // Test-logger should be bypassed.
+        assertEquals(0, mTestLogger.callsToLogCronetEngineCreation());
+        assertEquals(0, mTestLogger.callsToLogCronetTrafficInfo());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
     public void testEngineCreation() throws JSONException {
         JSONObject staleDns = new JSONObject()
                                       .put("enable", true)

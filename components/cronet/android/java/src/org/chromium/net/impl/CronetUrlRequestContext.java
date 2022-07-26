@@ -163,6 +163,11 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     private long mNetworkHandle = DEFAULT_NETWORK_HANDLE;
 
     private final int mCronetEngineId;
+
+    /** Whether Cronet's logging should be skipped or not. */
+    private final boolean mSkipLogging;
+
+    /** The logger to be used for logging. */
     private final CronetLogger mLogger;
 
     int getCronetEngineId() {
@@ -200,10 +205,15 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             if (mUrlRequestContextAdapter == 0) {
                 throw new NullPointerException("Context Adapter creation failed.");
             }
+            mSkipLogging = CronetUrlRequestContextJni.get().skipLogging(
+                    mUrlRequestContextAdapter, CronetUrlRequestContext.this);
         }
 
-        mLogger = CronetLoggerFactory.createLogger(builder.getContext(), getCronetSource());
-
+        if (mSkipLogging) {
+            mLogger = CronetLoggerFactory.createNoOpLogger();
+        } else {
+            mLogger = CronetLoggerFactory.createLogger(builder.getContext(), getCronetSource());
+        }
         try {
             mLogger.logCronetEngineCreation(getCronetEngineId(),
                     new CronetEngineBuilderInfo(builder), buildCronetVersion(), getCronetSource());
@@ -816,5 +826,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         @NativeClassQualifiedName("CronetContextAdapter")
         void provideThroughputObservations(
                 long nativePtr, CronetUrlRequestContext caller, boolean should);
+
+        @NativeClassQualifiedName("CronetContextAdapter")
+        boolean skipLogging(long nativePtr, CronetUrlRequestContext caller);
     }
 }
