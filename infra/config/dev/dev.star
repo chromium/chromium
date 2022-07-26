@@ -32,6 +32,20 @@ luci.project(
             groups = "project-chromium-admins",
         ),
     ],
+    bindings = [
+        luci.binding(
+            roles = "role/weetbix.reader",
+            groups = "all",
+        ),
+        luci.binding(
+            roles = "role/weetbix.queryUser",
+            groups = "authenticated-users",
+        ),
+        luci.binding(
+            roles = "role/weetbix.editor",
+            groups = "project-chromium-committers",
+        ),
+    ],
 )
 
 luci.logdog(
