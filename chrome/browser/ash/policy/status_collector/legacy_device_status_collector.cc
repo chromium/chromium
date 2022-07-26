@@ -1232,71 +1232,6 @@ class DeviceStatusCollectorState : public StatusCollectorState {
       }
     }
 
-    // Process SystemResult.
-    const auto& system_result = probe_result->system_result;
-    if (!system_result.is_null()) {
-      switch (system_result->which()) {
-        case cros_healthd::SystemResult::Tag::kError: {
-          LOG(ERROR) << "cros_healthd: Error getting system info: "
-                     << system_result->get_error()->msg;
-          break;
-        }
-
-        case cros_healthd::SystemResult::Tag::kSystemInfo: {
-          const auto& system_info = system_result->get_system_info();
-          em::SystemStatus* const system_status_out =
-              response_params_.device_status->mutable_system_status();
-          if (report_vpd_info) {
-            if (system_info->first_power_date.has_value()) {
-              system_status_out->set_first_power_date(
-                  system_info->first_power_date.value());
-              SetDeviceStatusReported();
-            }
-            if (system_info->manufacture_date.has_value()) {
-              system_status_out->set_manufacture_date(
-                  system_info->manufacture_date.value());
-              SetDeviceStatusReported();
-            }
-            if (system_info->product_sku_number.has_value()) {
-              system_status_out->set_vpd_sku_number(
-                  system_info->product_sku_number.value());
-              SetDeviceStatusReported();
-            }
-            if (system_info->product_serial_number.has_value()) {
-              system_status_out->set_vpd_serial_number(
-                  system_info->product_serial_number.value());
-              SetDeviceStatusReported();
-            }
-          }
-          if (report_system_info) {
-            system_status_out->set_marketing_name(system_info->marketing_name);
-            if (system_info->bios_version.has_value()) {
-              system_status_out->set_bios_version(
-                  system_info->bios_version.value());
-            }
-            if (system_info->board_name.has_value()) {
-              system_status_out->set_board_name(
-                  system_info->board_name.value());
-            }
-            if (system_info->board_version.has_value()) {
-              system_status_out->set_board_version(
-                  system_info->board_version.value());
-            }
-            if (system_info->chassis_type) {
-              system_status_out->set_chassis_type(
-                  system_info->chassis_type->value);
-            }
-            if (system_info->product_name.has_value()) {
-              system_status_out->set_product_name(
-                  system_info->product_name.value());
-            }
-            SetDeviceStatusReported();
-          }
-          break;
-        }
-      }
-    }
-
     // Process SystemResultV2.
     const auto& system_result_v2 = probe_result->system_result_v2;
     if (!system_result_v2.is_null()) {
@@ -1309,6 +1244,66 @@ class DeviceStatusCollectorState : public StatusCollectorState {
 
         case cros_healthd::SystemResultV2::Tag::kSystemInfoV2: {
           const auto& system_info_v2 = system_result_v2->get_system_info_v2();
+
+          em::SystemStatus* const system_status_out =
+              response_params_.device_status->mutable_system_status();
+          if (report_vpd_info && !system_info_v2->vpd_info.is_null()) {
+            const auto& vpd_info = system_info_v2->vpd_info;
+            if (vpd_info->activate_date.has_value()) {
+              system_status_out->set_first_power_date(
+                  vpd_info->activate_date.value());
+              SetDeviceStatusReported();
+            }
+            if (vpd_info->mfg_date.has_value()) {
+              system_status_out->set_manufacture_date(
+                  vpd_info->mfg_date.value());
+              SetDeviceStatusReported();
+            }
+            if (vpd_info->sku_number.has_value()) {
+              system_status_out->set_vpd_sku_number(
+                  vpd_info->sku_number.value());
+              SetDeviceStatusReported();
+            }
+            if (vpd_info->serial_number.has_value()) {
+              system_status_out->set_vpd_serial_number(
+                  vpd_info->serial_number.value());
+              SetDeviceStatusReported();
+            }
+          }
+          if (report_system_info) {
+            if (!system_info_v2->dmi_info.is_null()) {
+              const auto& dmi_info = system_info_v2->dmi_info;
+              if (dmi_info->bios_version.has_value()) {
+                system_status_out->set_bios_version(
+                    dmi_info->bios_version.value());
+                SetDeviceStatusReported();
+              }
+              if (dmi_info->board_name.has_value()) {
+                system_status_out->set_board_name(dmi_info->board_name.value());
+                SetDeviceStatusReported();
+              }
+              if (dmi_info->board_version.has_value()) {
+                system_status_out->set_board_version(
+                    dmi_info->board_version.value());
+                SetDeviceStatusReported();
+              }
+              if (dmi_info->chassis_type) {
+                system_status_out->set_chassis_type(
+                    dmi_info->chassis_type->value);
+                SetDeviceStatusReported();
+              }
+            }
+            if (!system_info_v2->os_info.is_null()) {
+              const auto& os_info = system_info_v2->os_info;
+              if (os_info->marketing_name.has_value()) {
+                system_status_out->set_marketing_name(
+                    os_info->marketing_name.value());
+              }
+              system_status_out->set_product_name(os_info->code_name);
+              SetDeviceStatusReported();
+            }
+          }
+
           em::SmbiosInfo* const smbios_info_out =
               response_params_.device_status->mutable_smbios_info();
           em::BootInfo* const boot_info_out =
@@ -2005,7 +2000,6 @@ void LegacyDeviceStatusCollector::FetchCrosHealthdData(
     case CrosHealthdCollectionMode::kFull: {
       if (report_vpd_info_ || report_system_info_) {
         categories_to_probe.push_back(ProbeCategoryEnum::kSystem);
-        categories_to_probe.push_back(ProbeCategoryEnum::kSystem2);
       }
       if (report_storage_status_) {
         categories_to_probe.push_back(
