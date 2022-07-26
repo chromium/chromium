@@ -281,13 +281,11 @@ target(partition_alloc_target_type, "partition_alloc") {
     "//build/config/compiler:compiler_buildflags",
   ]
 
-  # TODO(https://crbug.com/1151236): Remove this dependency on Abseil once PA
-  # no longer includes any headers directly from base/.
-  deps = [ "//third_party/abseil-cpp:absl" ]
   configs += [
     ":partition_alloc_implementation",
     ":memory_tagging",
   ]
+  deps = []
   public_configs = []
   if (is_android) {
     # tagging.cc requires __arm_mte_set_* functions.
