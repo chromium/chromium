@@ -9,6 +9,7 @@
 #import "base/callback.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -2123,13 +2124,33 @@ id<GREYMatcher> EditDoneButton() {
   // Sign-in and synced user.
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:5.0];
 
   // Add passwords for the user.
   SaveExamplePasswordForms();
 
   OpenPasswordSettings();
 
-  [GetInteractionForPasswordEntry(@"example11.com, user1")
+  // Make sure the cell is loaded properly before tapping on it.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[[EarlGrey
+        selectElementWithMatcher:grey_allOf(ButtonWithAccessibilityLabel(
+                                                @"example12.com, user2"),
+                                            grey_sufficientlyVisible(), nil)]
+           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
+                                                    kScrollAmount)
+        onElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    return error == nil;
+  };
+
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"Waiting for the cell to load");
+
+  [GetInteractionForPasswordEntry(@"example12.com, user2")
       performAction:grey_tap()];
 
   // Metric: Passwords in the password manager.
