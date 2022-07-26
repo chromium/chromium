@@ -550,7 +550,7 @@ void PrintPreviewHandler::OnPrinterTypeDenyListReady(
 }
 
 PrintPreviewUI* PrintPreviewHandler::print_preview_ui() {
-  return static_cast<PrintPreviewUI*>(web_ui()->GetController());
+  return web_ui()->GetController()->GetAs<PrintPreviewUI>();
 }
 
 bool PrintPreviewHandler::ShouldReceiveRendererMessage(int request_id) {
