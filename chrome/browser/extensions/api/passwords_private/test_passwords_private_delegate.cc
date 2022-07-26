@@ -195,9 +195,9 @@ void TestPasswordsPrivateDelegate::SetAccountStorageOptIn(
   is_opted_in_for_account_storage_ = opt_in;
 }
 
-std::vector<api::passwords_private::InsecureCredential>
+std::vector<api::passwords_private::PasswordUiEntry>
 TestPasswordsPrivateDelegate::GetCompromisedCredentials() {
-  api::passwords_private::InsecureCredential credential;
+  api::passwords_private::PasswordUiEntry credential;
   credential.username = "alice";
   credential.urls.shown = "example.com";
   credential.urls.link = "https://example.com";
@@ -214,75 +214,43 @@ TestPasswordsPrivateDelegate::GetCompromisedCredentials() {
           TimeFormat::FORMAT_ELAPSED, TimeFormat::LENGTH_LONG, base::Days(3)));
   credential.compromised_info->compromise_type =
       api::passwords_private::COMPROMISE_TYPE_LEAKED;
-  std::vector<api::passwords_private::InsecureCredential> credentials;
+  credential.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
+  std::vector<api::passwords_private::PasswordUiEntry> credentials;
   credentials.push_back(std::move(credential));
   return credentials;
 }
 
-std::vector<api::passwords_private::InsecureCredential>
+std::vector<api::passwords_private::PasswordUiEntry>
 TestPasswordsPrivateDelegate::GetWeakCredentials() {
-  api::passwords_private::InsecureCredential credential;
+  api::passwords_private::PasswordUiEntry credential;
   credential.username = "bob";
   credential.urls.shown = "example.com";
   credential.urls.link = "https://example.com";
   credential.is_android_credential = false;
   credential.change_password_url =
       std::make_unique<std::string>("https://example.com/change-password");
-  std::vector<api::passwords_private::InsecureCredential> credentials;
+  credential.stored_in = api::passwords_private::PASSWORD_STORE_SET_DEVICE;
+  std::vector<api::passwords_private::PasswordUiEntry> credentials;
   credentials.push_back(std::move(credential));
   return credentials;
-}
-
-void TestPasswordsPrivateDelegate::GetPlaintextInsecurePassword(
-    api::passwords_private::InsecureCredential credential,
-    api::passwords_private::PlaintextReason reason,
-    content::WebContents* web_contents,
-    PlaintextInsecurePasswordCallback callback) {
-  // Return a mocked password value.
-  if (!plaintext_password_) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  credential.password =
-      std::make_unique<std::string>(base::UTF16ToUTF8(*plaintext_password_));
-  std::move(callback).Run(std::move(credential));
-}
-
-// Fake implementation of ChangeInsecureCredential. This succeeds if the
-// delegate knows of a insecure credential with the same id.
-bool TestPasswordsPrivateDelegate::ChangeInsecureCredential(
-    const api::passwords_private::InsecureCredential& credential,
-    base::StringPiece new_password) {
-  return IsCredentialPresentInInsecureCredentialsList(credential);
-}
-
-// Fake implementation of RemoveInsecureCredential. This succeeds if the
-// delegate knows of a insecure credential with the same id.
-bool TestPasswordsPrivateDelegate::RemoveInsecureCredential(
-    const api::passwords_private::InsecureCredential& credential) {
-  return base::EraseIf(insecure_credentials_,
-                       [&credential](const auto& insecure_credential) {
-                         return insecure_credential.id == credential.id;
-                       }) != 0;
 }
 
 // Fake implementation of MuteInsecureCredential. This succeeds if the
 // delegate knows of a insecure credential with the same id.
 bool TestPasswordsPrivateDelegate::MuteInsecureCredential(
-    const api::passwords_private::InsecureCredential& credential) {
+    const api::passwords_private::PasswordUiEntry& credential) {
   return IsCredentialPresentInInsecureCredentialsList(credential);
 }
 
 // Fake implementation of UnmuteInsecureCredential. This succeeds if the
 // delegate knows of a insecure credential with the same id.
 bool TestPasswordsPrivateDelegate::UnmuteInsecureCredential(
-    const api::passwords_private::InsecureCredential& credential) {
+    const api::passwords_private::PasswordUiEntry& credential) {
   return IsCredentialPresentInInsecureCredentialsList(credential);
 }
 
 void TestPasswordsPrivateDelegate::RecordChangePasswordFlowStarted(
-    const api::passwords_private::InsecureCredential& credential,
+    const api::passwords_private::PasswordUiEntry& credential,
     bool is_manual_flow) {
   last_change_flow_url_ =
       credential.change_password_url ? *credential.change_password_url : "";
@@ -304,7 +272,7 @@ void TestPasswordsPrivateDelegate::StopPasswordCheck() {
 }
 
 void TestPasswordsPrivateDelegate::StartAutomatedPasswordChange(
-    const api::passwords_private::InsecureCredential& credential,
+    const api::passwords_private::PasswordUiEntry& credential,
     StartAutomatedPasswordChangeCallback callback) {
   std::move(callback).Run(credential.change_password_url &&
                           GURL(*credential.change_password_url).is_valid());
@@ -341,7 +309,7 @@ void TestPasswordsPrivateDelegate::SetIsAccountStoreDefault(bool is_default) {
 }
 
 void TestPasswordsPrivateDelegate::AddCompromisedCredential(int id) {
-  api::passwords_private::InsecureCredential cred;
+  api::passwords_private::PasswordUiEntry cred;
   cred.id = id;
   insecure_credentials_.push_back(std::move(cred));
 }
@@ -361,7 +329,7 @@ void TestPasswordsPrivateDelegate::SendPasswordExceptionsList() {
 }
 
 bool TestPasswordsPrivateDelegate::IsCredentialPresentInInsecureCredentialsList(
-    const api::passwords_private::InsecureCredential& credential) {
+    const api::passwords_private::PasswordUiEntry& credential) {
   return std::any_of(insecure_credentials_.begin(), insecure_credentials_.end(),
                      [&credential](const auto& insecure_credential) {
                        return insecure_credential.id == credential.id;

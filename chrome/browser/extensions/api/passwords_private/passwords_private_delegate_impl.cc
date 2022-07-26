@@ -149,23 +149,6 @@ ConvertToPasswordFormStores(
   return {};
 }
 
-extensions::api::passwords_private::PasswordStoreSet ConvertToAPIStore(
-    const base::flat_set<password_manager::PasswordForm::Store>& stores) {
-  if (stores.contains(password_manager::PasswordForm::Store::kAccountStore) &&
-      stores.contains(password_manager::PasswordForm::Store::kProfileStore)) {
-    return extensions::api::passwords_private::
-        PASSWORD_STORE_SET_DEVICE_AND_ACCOUNT;
-  }
-  if (stores.contains(password_manager::PasswordForm::Store::kAccountStore)) {
-    return extensions::api::passwords_private::PASSWORD_STORE_SET_ACCOUNT;
-  }
-  if (stores.contains(password_manager::PasswordForm::Store::kProfileStore)) {
-    return extensions::api::passwords_private::PASSWORD_STORE_SET_DEVICE;
-  }
-  NOTREACHED();
-  return extensions::api::passwords_private::PASSWORD_STORE_SET_DEVICE;
-}
-
 }  // namespace
 
 namespace extensions {
@@ -195,7 +178,9 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
               base::BindRepeating(&PasswordsPrivateDelegateImpl::
                                       OnAccountStorageOptInStateChanged,
                                   base::Unretained(this)))),
-      password_check_delegate_(profile, &saved_passwords_presenter_),
+      password_check_delegate_(profile,
+                               &saved_passwords_presenter_,
+                               &credential_id_generator_),
       current_entries_initialized_(false),
       is_initialized_(false),
       web_contents_(nullptr) {
@@ -417,7 +402,7 @@ void PasswordsPrivateDelegateImpl::SetCredentials(
       entry.username = base::UTF16ToUTF8(credential.username);
       entry.note = base::UTF16ToUTF8(credential.note.value);
       entry.id = id;
-      entry.stored_in = ConvertToAPIStore(credential.stored_in);
+      entry.stored_in = StoreSetFromCredential(credential);
       entry.is_android_credential =
           password_manager::IsValidAndroidFacetURI(credential.signon_realm);
       if (!credential.federation_origin.opaque()) {
@@ -547,56 +532,28 @@ void PasswordsPrivateDelegateImpl::SetAccountStorageOptIn(
       signin_metrics::ReauthAccessPoint::kPasswordSettings, base::DoNothing());
 }
 
-std::vector<api::passwords_private::InsecureCredential>
+std::vector<api::passwords_private::PasswordUiEntry>
 PasswordsPrivateDelegateImpl::GetCompromisedCredentials() {
   return password_check_delegate_.GetCompromisedCredentials();
 }
 
-std::vector<api::passwords_private::InsecureCredential>
+std::vector<api::passwords_private::PasswordUiEntry>
 PasswordsPrivateDelegateImpl::GetWeakCredentials() {
   return password_check_delegate_.GetWeakCredentials();
 }
 
-void PasswordsPrivateDelegateImpl::GetPlaintextInsecurePassword(
-    api::passwords_private::InsecureCredential credential,
-    api::passwords_private::PlaintextReason reason,
-    content::WebContents* web_contents,
-    PlaintextInsecurePasswordCallback callback) {
-  // TODO(crbug.com/495290): Pass the native window directly to the
-  // reauth-handling code.
-  web_contents_ = web_contents;
-  password_access_authenticator_.EnsureUserIsAuthenticated(
-      GetReauthPurpose(reason),
-      base::BindOnce(&PasswordsPrivateDelegateImpl::
-                         OnGetPlaintextInsecurePasswordAuthResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(credential),
-                     reason, std::move(callback)));
-}
-
-bool PasswordsPrivateDelegateImpl::ChangeInsecureCredential(
-    const api::passwords_private::InsecureCredential& credential,
-    base::StringPiece new_password) {
-  return password_check_delegate_.ChangeInsecureCredential(credential,
-                                                           new_password);
-}
-
-bool PasswordsPrivateDelegateImpl::RemoveInsecureCredential(
-    const api::passwords_private::InsecureCredential& credential) {
-  return password_check_delegate_.RemoveInsecureCredential(credential);
-}
-
 bool PasswordsPrivateDelegateImpl::MuteInsecureCredential(
-    const api::passwords_private::InsecureCredential& credential) {
+    const api::passwords_private::PasswordUiEntry& credential) {
   return password_check_delegate_.MuteInsecureCredential(credential);
 }
 
 bool PasswordsPrivateDelegateImpl::UnmuteInsecureCredential(
-    const api::passwords_private::InsecureCredential& credential) {
+    const api::passwords_private::PasswordUiEntry& credential) {
   return password_check_delegate_.UnmuteInsecureCredential(credential);
 }
 
 void PasswordsPrivateDelegateImpl::RecordChangePasswordFlowStarted(
-    const api::passwords_private::InsecureCredential& credential,
+    const api::passwords_private::PasswordUiEntry& credential,
     bool is_manual_flow) {
   password_check_delegate_.RecordChangePasswordFlowStarted(credential,
                                                            is_manual_flow);
@@ -622,7 +579,7 @@ PasswordsPrivateDelegateImpl::GetPasswordCheckStatus() {
 }
 
 void PasswordsPrivateDelegateImpl::StartAutomatedPasswordChange(
-    const api::passwords_private::InsecureCredential& credential,
+    const api::passwords_private::PasswordUiEntry& credential,
     StartAutomatedPasswordChangeCallback callback) {
   if (!credential.change_password_url) {
     std::move(callback).Run(false);
@@ -725,20 +682,6 @@ void PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult(
   bool accepted = password_manager_porter_->Export(web_contents);
   std::move(accepted_callback)
       .Run(accepted ? std::string() : kExportInProgress);
-}
-
-void PasswordsPrivateDelegateImpl::OnGetPlaintextInsecurePasswordAuthResult(
-    api::passwords_private::InsecureCredential credential,
-    api::passwords_private::PlaintextReason reason,
-    PlaintextInsecurePasswordCallback callback,
-    bool authenticated) {
-  if (!authenticated) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  std::move(callback).Run(password_check_delegate_.GetPlaintextInsecurePassword(
-      std::move(credential)));
 }
 
 void PasswordsPrivateDelegateImpl::OnAccountStorageOptInStateChanged() {

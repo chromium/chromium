@@ -33,6 +33,10 @@ api::passwords_private::UrlCollection CreateUrlCollectionFromCredential(
 api::passwords_private::UrlCollection CreateUrlCollectionFromGURL(
     const GURL& url);
 
+// Returns PasswordStoreSet for |credential|.
+extensions::api::passwords_private::PasswordStoreSet StoreSetFromCredential(
+    const password_manager::CredentialUIEntry& credential);
+
 // This class is an id generator for an arbitrary key type. It is used by both
 // PasswordManagerPresenter and PasswordCheckDelegate to create ids send to the
 // UI. It is similar to base::IDMap, but has the following important

@@ -246,49 +246,6 @@ class PasswordsPrivateGetWeakCredentialsFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class PasswordsPrivateGetPlaintextInsecurePasswordFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.getPlaintextInsecurePassword",
-                             PASSWORDSPRIVATE_GETPLAINTEXTINSECUREPASSWORD)
-
- protected:
-  ~PasswordsPrivateGetPlaintextInsecurePasswordFunction() override;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-
- private:
-  void GotCredential(
-      absl::optional<api::passwords_private::InsecureCredential> credential);
-};
-
-class PasswordsPrivateChangeInsecureCredentialFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.changeInsecureCredential",
-                             PASSWORDSPRIVATE_CHANGEINSECURECREDENTIAL)
-
- protected:
-  ~PasswordsPrivateChangeInsecureCredentialFunction() override;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
-class PasswordsPrivateRemoveInsecureCredentialFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.removeInsecureCredential",
-                             PASSWORDSPRIVATE_REMOVEINSECURECREDENTIAL)
-
- protected:
-  ~PasswordsPrivateRemoveInsecureCredentialFunction() override;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class PasswordsPrivateMuteInsecureCredentialFunction
     : public ExtensionFunction {
  public:

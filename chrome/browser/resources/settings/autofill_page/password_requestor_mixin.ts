@@ -43,25 +43,6 @@ export const PasswordRequestorMixin = dedupingMixin(
               id, reason);
           // </if>
         }
-
-        getPlaintextInsecurePassword(
-            credential: chrome.passwordsPrivate.InsecureCredential,
-            reason: chrome.passwordsPrivate.PlaintextReason):
-            Promise<chrome.passwordsPrivate.InsecureCredential> {
-          return new Promise(resolve => {
-            PasswordManagerImpl.getInstance()
-                .getPlaintextInsecurePassword(credential, reason)
-                .then(insecureCredential => resolve(insecureCredential), () => {
-                  // <if expr="chromeos_ash or chromeos_lacros">
-                  // If no password was found, refresh auth token and retry.
-                  this.tokenRequestManager.request(() => {
-                    this.getPlaintextInsecurePassword(credential, reason)
-                        .then(resolve);
-                  });
-                  // </if>
-                });
-          });
-        }
       }
 
       return PasswordRequestorMixin;
@@ -71,10 +52,6 @@ export interface PasswordRequestorMixinInterface {
   requestPlaintextPassword(
       id: number,
       reason: chrome.passwordsPrivate.PlaintextReason): Promise<string>;
-  getPlaintextInsecurePassword(
-      credential: chrome.passwordsPrivate.InsecureCredential,
-      reason: chrome.passwordsPrivate.PlaintextReason):
-      Promise<chrome.passwordsPrivate.InsecureCredential>;
   // <if expr="chromeos_ash or chromeos_lacros">
   tokenRequestManager: BlockingRequestManager;
   // </if>

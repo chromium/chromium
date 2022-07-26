@@ -93,9 +93,9 @@ export const PasswordCheckMixin = dedupingMixin(
         }
 
         passwordManager: PasswordManagerProxy|null = null;
-        leakedPasswords: chrome.passwordsPrivate.InsecureCredential[];
-        mutedPasswords: chrome.passwordsPrivate.InsecureCredential[];
-        weakPasswords: chrome.passwordsPrivate.InsecureCredential[];
+        leakedPasswords: chrome.passwordsPrivate.PasswordUiEntry[];
+        mutedPasswords: chrome.passwordsPrivate.PasswordUiEntry[];
+        weakPasswords: chrome.passwordsPrivate.PasswordUiEntry[];
         compromisedPasswordsCount: string;
         weakPasswordsCount: string;
         insecurePasswordsCount: string;
@@ -201,7 +201,7 @@ export const PasswordCheckMixin = dedupingMixin(
          * entities should appear in the bottom.
          */
         updateCompromisedPasswordList(
-            newList: chrome.passwordsPrivate.InsecureCredential[]) {
+            newList: chrome.passwordsPrivate.PasswordUiEntry[]) {
           if (this.isMutedPasswordsEnabled) {
             this.updateLeakedAndMutedPasswordLists(newList);
             return;
@@ -211,9 +211,9 @@ export const PasswordCheckMixin = dedupingMixin(
         }
 
         private updateLeakedAndMutedPasswordLists(
-            newList: chrome.passwordsPrivate.InsecureCredential[]) {
+            newList: chrome.passwordsPrivate.PasswordUiEntry[]) {
           const isMutedPredicate =
-              (item: chrome.passwordsPrivate.InsecureCredential) =>
+              (item: chrome.passwordsPrivate.PasswordUiEntry) =>
                   !!item.compromisedInfo && item.compromisedInfo.isMuted;
           this.leakedPasswords = this.createCombinedCompromisedPasswordList(
               this.leakedPasswords,
@@ -223,12 +223,12 @@ export const PasswordCheckMixin = dedupingMixin(
         }
 
         private createCombinedCompromisedPasswordList(
-            oldList: chrome.passwordsPrivate.InsecureCredential[],
-            newList: chrome.passwordsPrivate.InsecureCredential[]):
-            chrome.passwordsPrivate.InsecureCredential[] {
+            oldList: chrome.passwordsPrivate.PasswordUiEntry[],
+            newList: chrome.passwordsPrivate.PasswordUiEntry[]):
+            chrome.passwordsPrivate.PasswordUiEntry[] {
           const map = new Map(newList.map(item => ([item.id, item])));
 
-          const resultList: chrome.passwordsPrivate.InsecureCredential[] = [];
+          const resultList: chrome.passwordsPrivate.PasswordUiEntry[] = [];
 
           for (const item of oldList) {
             // If element is present in newList
@@ -242,9 +242,8 @@ export const PasswordCheckMixin = dedupingMixin(
           const addedResults = Array.from(map.values());
           addedResults.sort((lhs, rhs) => {
             // Phished passwords are always shown above leaked passwords.
-            const isPhished =
-                (cred: chrome.passwordsPrivate.InsecureCredential) =>
-                    cred.compromisedInfo!.compromiseType !==
+            const isPhished = (cred: chrome.passwordsPrivate.PasswordUiEntry) =>
+                cred.compromisedInfo!.compromiseType !==
                 chrome.passwordsPrivate.CompromiseType.LEAKED;
             if (isPhished(lhs) !== isPhished(rhs)) {
               return isPhished(lhs) ? -1 : 1;
@@ -273,9 +272,9 @@ export const PasswordCheckMixin = dedupingMixin(
 
 export interface PasswordCheckMixinInterface {
   passwordManager: PasswordManagerProxy|null;
-  leakedPasswords: chrome.passwordsPrivate.InsecureCredential[];
-  mutedPasswords: chrome.passwordsPrivate.InsecureCredential[];
-  weakPasswords: chrome.passwordsPrivate.InsecureCredential[];
+  leakedPasswords: chrome.passwordsPrivate.PasswordUiEntry[];
+  mutedPasswords: chrome.passwordsPrivate.PasswordUiEntry[];
+  weakPasswords: chrome.passwordsPrivate.PasswordUiEntry[];
   compromisedPasswordsCount: string;
   weakPasswordsCount: string;
   insecurePasswordsCount: string;
@@ -283,5 +282,5 @@ export interface PasswordCheckMixinInterface {
   isInitialStatus: boolean;
   isMutedPasswordsEnabled: boolean;
   updateCompromisedPasswordList(
-      newList: chrome.passwordsPrivate.InsecureCredential[]): void;
+      newList: chrome.passwordsPrivate.PasswordUiEntry[]): void;
 }

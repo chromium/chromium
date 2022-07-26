@@ -7,7 +7,7 @@
  * chrome.passwordsPrivate which facilitates testing.
  */
 
-type InsecureCredentials = chrome.passwordsPrivate.InsecureCredential[];
+type InsecureCredentials = chrome.passwordsPrivate.PasswordUiEntry[];
 export type SavedPasswordListChangedListener =
     (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void;
 export type PasswordExceptionListChangedListener =
@@ -235,32 +235,26 @@ export interface PasswordManagerProxy {
    * @param credential The credential for which to start the flow.
    */
   startAutomatedPasswordChange(
-      credential: chrome.passwordsPrivate.InsecureCredential): Promise<boolean>;
-
-  /**
-   * Requests to remove |insecureCredential| from the password store.
-   */
-  removeInsecureCredential(
-      insecureCredential: chrome.passwordsPrivate.InsecureCredential): void;
+      credential: chrome.passwordsPrivate.PasswordUiEntry): Promise<boolean>;
 
   /**
    * Dismisses / mutes the |insecureCredential| in the passwords store.
    */
   muteInsecureCredential(insecureCredential:
-                             chrome.passwordsPrivate.InsecureCredential): void;
+                             chrome.passwordsPrivate.PasswordUiEntry): void;
 
   /**
    * Restores / unmutes the |insecureCredential| in the passwords store.
    */
-  unmuteInsecureCredential(
-      insecureCredential: chrome.passwordsPrivate.InsecureCredential): void;
+  unmuteInsecureCredential(insecureCredential:
+                               chrome.passwordsPrivate.PasswordUiEntry): void;
 
   /**
    * Records the state of a change password flow for |insecureCredential|
    * and notes it is a manual flow via |isManualFlow|.
    */
   recordChangePasswordFlowStarted(
-      insecureCredential: chrome.passwordsPrivate.InsecureCredential,
+      insecureCredential: chrome.passwordsPrivate.PasswordUiEntry,
       isManualFlow: boolean): void;
 
   /**
@@ -295,25 +289,6 @@ export interface PasswordManagerProxy {
    */
   removePasswordCheckStatusListener(
       listener: PasswordCheckStatusChangedListener): void;
-
-  /**
-   * Requests the plaintext password for |credential|. |callback| gets invoked
-   * with the same |credential|, whose |password| field will be set.
-   * @return A promise that resolves to the InsecureCredential with the password
-   *     field populated.
-   */
-  getPlaintextInsecurePassword(
-      credential: chrome.passwordsPrivate.InsecureCredential,
-      reason: chrome.passwordsPrivate.PlaintextReason):
-      Promise<chrome.passwordsPrivate.InsecureCredential>;
-
-  /**
-   * Requests to change the password of |credential| to |new_password|.
-   * @return A promise that resolves when the password is updated.
-   */
-  changeInsecureCredential(
-      credential: chrome.passwordsPrivate.InsecureCredential,
-      newPassword: string): Promise<void>;
 
   /**
    * Records a given interaction on the Password Check page.
@@ -535,7 +510,7 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   startAutomatedPasswordChange(credential:
-                                   chrome.passwordsPrivate.InsecureCredential) {
+                                   chrome.passwordsPrivate.PasswordUiEntry) {
     return new Promise<boolean>(resolve => {
       chrome.passwordsPrivate.startAutomatedPasswordChange(credential, resolve);
     });
@@ -579,23 +554,18 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
     });
   }
 
-  removeInsecureCredential(insecureCredential:
-                               chrome.passwordsPrivate.InsecureCredential) {
-    chrome.passwordsPrivate.removeInsecureCredential(insecureCredential);
-  }
-
   muteInsecureCredential(insecureCredential:
-                             chrome.passwordsPrivate.InsecureCredential) {
+                             chrome.passwordsPrivate.PasswordUiEntry) {
     chrome.passwordsPrivate.muteInsecureCredential(insecureCredential);
   }
 
   unmuteInsecureCredential(insecureCredential:
-                               chrome.passwordsPrivate.InsecureCredential) {
+                               chrome.passwordsPrivate.PasswordUiEntry) {
     chrome.passwordsPrivate.unmuteInsecureCredential(insecureCredential);
   }
 
   recordChangePasswordFlowStarted(
-      insecureCredential: chrome.passwordsPrivate.InsecureCredential,
+      insecureCredential: chrome.passwordsPrivate.PasswordUiEntry,
       isManualFlow: boolean) {
     chrome.passwordsPrivate.recordChangePasswordFlowStarted(
         insecureCredential, isManualFlow);
@@ -627,32 +597,6 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
                                         PasswordCheckStatusChangedListener) {
     chrome.passwordsPrivate.onPasswordCheckStatusChanged.removeListener(
         listener);
-  }
-
-  getPlaintextInsecurePassword(
-      credential: chrome.passwordsPrivate.InsecureCredential,
-      reason: chrome.passwordsPrivate.PlaintextReason) {
-    return new Promise<chrome.passwordsPrivate.InsecureCredential>(
-        (resolve, reject) => {
-          chrome.passwordsPrivate.getPlaintextInsecurePassword(
-              credential, reason, credentialWithPassword => {
-                if (chrome.runtime.lastError) {
-                  reject(chrome.runtime.lastError.message);
-                  return;
-                }
-
-                resolve(credentialWithPassword);
-              });
-        });
-  }
-
-  changeInsecureCredential(
-      credential: chrome.passwordsPrivate.InsecureCredential,
-      newPassword: string) {
-    return new Promise<void>(resolve => {
-      chrome.passwordsPrivate.changeInsecureCredential(
-          credential, newPassword, resolve);
-    });
   }
 
   /** override */

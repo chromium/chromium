@@ -97,7 +97,7 @@ void PasswordsPrivateEventRouter::OnAccountStorageOptInStateChanged(
 }
 
 void PasswordsPrivateEventRouter::OnCompromisedCredentialsChanged(
-    std::vector<api::passwords_private::InsecureCredential>
+    std::vector<api::passwords_private::PasswordUiEntry>
         compromised_credentials) {
   auto extension_event = std::make_unique<Event>(
       events::PASSWORDS_PRIVATE_ON_COMPROMISED_CREDENTIALS_INFO_CHANGED,
@@ -108,7 +108,7 @@ void PasswordsPrivateEventRouter::OnCompromisedCredentialsChanged(
 }
 
 void PasswordsPrivateEventRouter::OnWeakCredentialsChanged(
-    std::vector<api::passwords_private::InsecureCredential> weak_credentials) {
+    std::vector<api::passwords_private::PasswordUiEntry> weak_credentials) {
   auto extension_event = std::make_unique<Event>(
       events::PASSWORDS_PRIVATE_ON_WEAK_CREDENTIALS_CHANGED,
       api::passwords_private::OnWeakCredentialsChanged::kEventName,

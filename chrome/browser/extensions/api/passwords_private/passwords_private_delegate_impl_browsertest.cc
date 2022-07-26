@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateDelegateImplBrowserTest,
   PasswordsPrivateDelegateImpl delegate(browser()->profile());
 
   const GURL url(kUrl);
-  api::passwords_private::InsecureCredential credential;
+  api::passwords_private::PasswordUiEntry credential;
   credential.username = kUsername;
   credential.change_password_url = std::make_unique<std::string>(kUrl);
   base::MockCallback<

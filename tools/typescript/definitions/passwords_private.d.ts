@@ -83,6 +83,13 @@ declare global {
         link: string;
       }
 
+      export interface CompromisedInfo {
+        compromiseTime: number;
+        elapsedTimeSinceCompromise: string;
+        compromiseType: CompromiseType;
+        isMuted: boolean;
+      }
+
       export interface PasswordUiEntry {
         urls: UrlCollection;
         username: string;
@@ -92,6 +99,9 @@ declare global {
         storedIn: PasswordStoreSet;
         isAndroidCredential: boolean;
         note: string;
+        changePasswordUrl?: string;
+        hasStartableScript: boolean;
+        compromisedInfo?: CompromisedInfo;
       }
 
       export interface ExceptionEntry {
@@ -102,24 +112,6 @@ declare global {
       export interface PasswordExportProgress {
         status: ExportProgressStatus;
         folderName?: string;
-      }
-
-      export interface CompromisedInfo {
-        compromiseTime: number;
-        elapsedTimeSinceCompromise: string;
-        compromiseType: CompromiseType;
-        isMuted: boolean;
-      }
-
-      export interface InsecureCredential {
-        id: number;
-        urls: UrlCollection;
-        isAndroidCredential: boolean;
-        changePasswordUrl?: string;
-        hasStartableScript: boolean;
-        username: string;
-        password?: string;
-        compromisedInfo?: CompromisedInfo;
       }
 
       export interface PasswordCheckStatus {
@@ -168,23 +160,15 @@ declare global {
           callback: (isOptedIn: boolean) => void): void;
       export function optInForAccountStorage(optIn: boolean): void;
       export function getCompromisedCredentials(
-          callback: (credentials: Array<InsecureCredential>) => void): void;
+          callback: (credentials: Array<PasswordUiEntry>) => void): void;
       export function getWeakCredentials(
-          callback: (credentials: Array<InsecureCredential>) => void): void;
-      export function getPlaintextInsecurePassword(
-          credential: InsecureCredential, reason: PlaintextReason,
-          callback: (credential: InsecureCredential) => void): void;
-      export function changeInsecureCredential(
-          credential: InsecureCredential, newPassword: string,
-          callback?: () => void): void;
-      export function removeInsecureCredential(
-          credential: InsecureCredential, callback?: () => void): void;
+          callback: (credentials: Array<PasswordUiEntry>) => void): void;
       export function muteInsecureCredential(
-          credential: InsecureCredential, callback?: () => void): void;
+          credential: PasswordUiEntry, callback?: () => void): void;
       export function unmuteInsecureCredential(
-          credential: InsecureCredential, callback?: () => void): void;
+          credential: PasswordUiEntry, callback?: () => void): void;
       export function recordChangePasswordFlowStarted(
-          credential: InsecureCredential, isManualFlow: boolean): void;
+          credential: PasswordUiEntry, isManualFlow: boolean): void;
       export function refreshScriptsIfNecessary(
           callback?: () => void): void;
       export function startPasswordCheck(callback?: () => void): void;
@@ -192,7 +176,7 @@ declare global {
       export function getPasswordCheckStatus(
           callback: (status: PasswordCheckStatus) => void): void;
       export function startAutomatedPasswordChange(
-          credential: InsecureCredential,
+          credential: PasswordUiEntry,
           callback?: (success: boolean) => void): void;
       export function isAccountStoreDefault(
           callback: (isDefault: boolean) => void): void;
@@ -210,9 +194,9 @@ declare global {
       export const onAccountStorageOptInStateChanged:
           ChromeEvent<(optInState: boolean) => void>;
       export const onCompromisedCredentialsChanged:
-          ChromeEvent<(credentials: Array<InsecureCredential>) => void>;
+          ChromeEvent<(credentials: Array<PasswordUiEntry>) => void>;
       export const onWeakCredentialsChanged:
-          ChromeEvent<(credentials: Array<InsecureCredential>) => void>;
+          ChromeEvent<(credentials: Array<PasswordUiEntry>) => void>;
       export const onPasswordCheckStatusChanged:
           ChromeEvent<(status: PasswordCheckStatus) => void>;
     }

@@ -39,9 +39,6 @@ class PasswordsPrivateDelegate : public KeyedService {
   using StartPasswordCheckCallback =
       base::OnceCallback<void(password_manager::BulkLeakCheckService::State)>;
 
-  using PlaintextInsecurePasswordCallback = base::OnceCallback<void(
-      absl::optional<api::passwords_private::InsecureCredential>)>;
-
   using StartAutomatedPasswordChangeCallback = base::OnceCallback<void(bool)>;
 
   ~PasswordsPrivateDelegate() override = default;
@@ -161,47 +158,27 @@ class PasswordsPrivateDelegate : public KeyedService {
   // Obtains information about compromised credentials. This includes the last
   // time a check was run, as well as all compromised credentials that are
   // present in the password store.
-  virtual std::vector<api::passwords_private::InsecureCredential>
+  virtual std::vector<api::passwords_private::PasswordUiEntry>
   GetCompromisedCredentials() = 0;
 
   // Obtains information about weak credentials.
-  virtual std::vector<api::passwords_private::InsecureCredential>
+  virtual std::vector<api::passwords_private::PasswordUiEntry>
   GetWeakCredentials() = 0;
-
-  // Requests the plaintext password for |credential| due to |reason|. If
-  // successful, |callback| gets invoked with the same |credential|, whose
-  // |password| field will be set.
-  virtual void GetPlaintextInsecurePassword(
-      api::passwords_private::InsecureCredential credential,
-      api::passwords_private::PlaintextReason reason,
-      content::WebContents* web_contents,
-      PlaintextInsecurePasswordCallback callback) = 0;
-
-  // Attempts to change the stored password of |credential| to |new_password|.
-  // Returns whether the change succeeded.
-  virtual bool ChangeInsecureCredential(
-      const api::passwords_private::InsecureCredential& credential,
-      base::StringPiece new_password) = 0;
-
-  // Attempts to remove |credential| from the password store. Returns whether
-  // the remove succeeded.
-  virtual bool RemoveInsecureCredential(
-      const api::passwords_private::InsecureCredential& credential) = 0;
 
   // Attempts to mute |credential| from the password store. Returns whether
   // the mute succeeded.
   virtual bool MuteInsecureCredential(
-      const api::passwords_private::InsecureCredential& credential) = 0;
+      const api::passwords_private::PasswordUiEntry& credential) = 0;
 
   // Attempts to unmute |credential| from the password store. Returns whether
   // the unmute succeeded.
   virtual bool UnmuteInsecureCredential(
-      const api::passwords_private::InsecureCredential& credential) = 0;
+      const api::passwords_private::PasswordUiEntry& credential) = 0;
 
   // Records that a change password flow was started for |credential| and
   // whether |is_manual_flow| applies to the flow.
   virtual void RecordChangePasswordFlowStarted(
-      const api::passwords_private::InsecureCredential& credential,
+      const api::passwords_private::PasswordUiEntry& credential,
       bool is_manual_flow) = 0;
 
   // Refreshes the cache for automatic password change scripts if that is stale
@@ -223,7 +200,7 @@ class PasswordsPrivateDelegate : public KeyedService {
   // whether the credential was changed successfully by calling `callback` with
   // a boolean parameter.
   virtual void StartAutomatedPasswordChange(
-      const api::passwords_private::InsecureCredential& credential,
+      const api::passwords_private::PasswordUiEntry& credential,
       StartAutomatedPasswordChangeCallback callback) = 0;
 
   // Returns a pointer to the current instance of InsecureCredentialsManager.

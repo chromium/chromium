@@ -186,9 +186,9 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
     base::RunLoop().RunUntilIdle();
   }
 
-  std::vector<extensions::api::passwords_private::InsecureCredential>
+  std::vector<extensions::api::passwords_private::PasswordUiEntry>
   GetCompromisedCredentials() override {
-    std::vector<extensions::api::passwords_private::InsecureCredential>
+    std::vector<extensions::api::passwords_private::PasswordUiEntry>
         compromised(compromised_password_count_);
     for (int i = 0; i < compromised_password_count_; ++i) {
       compromised[i].username = "test" + base::NumberToString(i);
@@ -196,9 +196,9 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
     return compromised;
   }
 
-  std::vector<extensions::api::passwords_private::InsecureCredential>
+  std::vector<extensions::api::passwords_private::PasswordUiEntry>
   GetWeakCredentials() override {
-    std::vector<extensions::api::passwords_private::InsecureCredential> weak(
+    std::vector<extensions::api::passwords_private::PasswordUiEntry> weak(
         weak_password_count_);
     for (int i = 0; i < weak_password_count_; ++i) {
       weak[i].username = "test" + base::NumberToString(i);

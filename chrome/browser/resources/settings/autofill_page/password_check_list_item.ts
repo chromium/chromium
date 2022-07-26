@@ -88,7 +88,7 @@ export class PasswordCheckListItemElement extends
     };
   }
 
-  item: chrome.passwordsPrivate.InsecureCredential;
+  item: chrome.passwordsPrivate.PasswordUiEntry;
   isPasswordVisible: boolean;
   private password_: string;
   clickedChangePassword: boolean;
@@ -188,9 +188,9 @@ export class PasswordCheckListItemElement extends
   showPassword() {
     this.passwordManager_.recordPasswordCheckInteraction(
         PasswordCheckInteraction.SHOW_PASSWORD);
-    this.getPlaintextInsecurePassword(
-            this.item, chrome.passwordsPrivate.PlaintextReason.VIEW)
-        .then(insecureCredential => this.item = insecureCredential);
+    this.requestPlaintextPassword(
+            this.item.id, chrome.passwordsPrivate.PlaintextReason.VIEW)
+        .then(password => this.set('item.password', password), _error => {});
   }
 
   private onReadonlyInputTap_() {

@@ -119,6 +119,16 @@ chrome.passwordsPrivate.UrlCollection;
 
 /**
  * @typedef {{
+ *   compromiseTime: number,
+ *   elapsedTimeSinceCompromise: string,
+ *   compromiseType: !chrome.passwordsPrivate.CompromiseType,
+ *   isMuted: boolean
+ * }}
+ */
+chrome.passwordsPrivate.CompromisedInfo;
+
+/**
+ * @typedef {{
  *   urls: !chrome.passwordsPrivate.UrlCollection,
  *   username: string,
  *   password: (string|undefined),
@@ -126,7 +136,10 @@ chrome.passwordsPrivate.UrlCollection;
  *   id: number,
  *   storedIn: !chrome.passwordsPrivate.PasswordStoreSet,
  *   isAndroidCredential: boolean,
- *   note: string
+ *   note: string,
+ *   changePasswordUrl: (string|undefined),
+ *   hasStartableScript: boolean,
+ *   compromisedInfo: (!chrome.passwordsPrivate.CompromisedInfo|undefined)
  * }}
  */
 chrome.passwordsPrivate.PasswordUiEntry;
@@ -146,30 +159,6 @@ chrome.passwordsPrivate.ExceptionEntry;
  * }}
  */
 chrome.passwordsPrivate.PasswordExportProgress;
-
-/**
- * @typedef {{
- *   compromiseTime: number,
- *   elapsedTimeSinceCompromise: string,
- *   compromiseType: !chrome.passwordsPrivate.CompromiseType,
- *   isMuted: boolean
- * }}
- */
-chrome.passwordsPrivate.CompromisedInfo;
-
-/**
- * @typedef {{
- *   urls: !chrome.passwordsPrivate.UrlCollection,
- *   id: number,
- *   isAndroidCredential: boolean,
- *   changePasswordUrl: (string|undefined),
- *   hasStartableScript: boolean,
- *   username: string,
- *   password: (string|undefined),
- *   compromisedInfo: (!chrome.passwordsPrivate.CompromisedInfo|undefined)
- * }}
- */
-chrome.passwordsPrivate.InsecureCredential;
 
 /**
  * @typedef {{
@@ -323,53 +312,22 @@ chrome.passwordsPrivate.optInForAccountStorage = function(optIn) {};
 
 /**
  * Requests the latest compromised credentials.
- * @param {function(!Array<!chrome.passwordsPrivate.InsecureCredential>): void}
+ * @param {function(!Array<!chrome.passwordsPrivate.PasswordUiEntry>): void}
  *     callback
  */
 chrome.passwordsPrivate.getCompromisedCredentials = function(callback) {};
 
 /**
  * Requests the latest weak credentials.
- * @param {function(!Array<!chrome.passwordsPrivate.InsecureCredential>): void}
+ * @param {function(!Array<!chrome.passwordsPrivate.PasswordUiEntry>): void}
  *     callback
  */
 chrome.passwordsPrivate.getWeakCredentials = function(callback) {};
 
 /**
- * Requests the plaintext password for |credential|. |callback| gets invoked
- * with the same |credential|, whose |password| field will be set.
- * @param {!chrome.passwordsPrivate.InsecureCredential} credential The insecure
- *     credential whose password is being retrieved.
- * @param {!chrome.passwordsPrivate.PlaintextReason} reason The reason why the
- *     plaintext password is requested.
- * @param {function(!chrome.passwordsPrivate.InsecureCredential): void} callback
- *     The callback that gets invoked with the result.
- */
-chrome.passwordsPrivate.getPlaintextInsecurePassword = function(credential, reason, callback) {};
-
-/**
- * Requests to change the password of |credential| to |new_password|. Invokes
- * |callback| or raises an error depending on whether the operation succeeded.
- * @param {!chrome.passwordsPrivate.InsecureCredential} credential The
- *     credential whose password should be changed.
- * @param {string} new_password The new password.
- * @param {function(): void=} callback The callback that gets invoked in the
- *     end.
- */
-chrome.passwordsPrivate.changeInsecureCredential = function(credential, new_password, callback) {};
-
-/**
- * Requests to remove |credential| from the password store. Invokes |callback|
- * on completion.
- * @param {!chrome.passwordsPrivate.InsecureCredential} credential
- * @param {function(): void=} callback
- */
-chrome.passwordsPrivate.removeInsecureCredential = function(credential, callback) {};
-
-/**
  * Requests to mute |credential| from the password store. Invokes |callback| on
  * completion.
- * @param {!chrome.passwordsPrivate.InsecureCredential} credential
+ * @param {!chrome.passwordsPrivate.PasswordUiEntry} credential
  * @param {function(): void=} callback
  */
 chrome.passwordsPrivate.muteInsecureCredential = function(credential, callback) {};
@@ -377,15 +335,15 @@ chrome.passwordsPrivate.muteInsecureCredential = function(credential, callback) 
 /**
  * Requests to unmute |credential| from the password store. Invokes |callback|
  * on completion.
- * @param {!chrome.passwordsPrivate.InsecureCredential} credential
+ * @param {!chrome.passwordsPrivate.PasswordUiEntry} credential
  * @param {function(): void=} callback
  */
 chrome.passwordsPrivate.unmuteInsecureCredential = function(credential, callback) {};
 
 /**
  * Records that a change password flow was started for |credential|.
- * @param {!chrome.passwordsPrivate.InsecureCredential} credential The
- *     credential for which the flow was triggered.
+ * @param {!chrome.passwordsPrivate.PasswordUiEntry} credential The credential
+ *     for which the flow was triggered.
  * @param {boolean} isManualFlow
  * @param {function(): void=} callback
  */
@@ -421,7 +379,7 @@ chrome.passwordsPrivate.getPasswordCheckStatus = function(callback) {};
  * Starts an automated password change for |credential|. Invokes |callback| on
  * completion with a boolean parameter that signals whether the credential was
  * changed successfully.
- * @param {!chrome.passwordsPrivate.InsecureCredential} credential
+ * @param {!chrome.passwordsPrivate.PasswordUiEntry} credential
  * @param {function(boolean): void=} callback
  */
 chrome.passwordsPrivate.startAutomatedPasswordChange = function(credential, callback) {};

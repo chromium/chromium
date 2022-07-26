@@ -209,7 +209,7 @@ export class SettingsPasswordCheckElement extends
   private showPasswordEditDialog_: boolean;
   private showPasswordRemoveDialog_: boolean;
   private showPasswordEditDisclaimer_: boolean;
-  private activePassword_: chrome.passwordsPrivate.InsecureCredential|null;
+  private activePassword_: chrome.passwordsPrivate.PasswordUiEntry|null;
   private showCompromisedCredentialsBody_: boolean;
   private showMutedPasswordsSection_: boolean;
   private showNoCompromisedPasswordsLabel_: boolean;
@@ -427,11 +427,12 @@ export class SettingsPasswordCheckElement extends
 
   private onEditPasswordClick_() {
     assert(this.activePassword_);
-    this.getPlaintextInsecurePassword(
-            this.activePassword_, chrome.passwordsPrivate.PlaintextReason.EDIT)
+    this.requestPlaintextPassword(
+            this.activePassword_.id,
+            chrome.passwordsPrivate.PlaintextReason.EDIT)
         .then(
-            insecureCredential => {
-              this.activePassword_ = insecureCredential;
+            password => {
+              this.activePassword_!.password = password;
               this.showPasswordEditDialog_ = true;
             },
             _error => {
@@ -851,8 +852,8 @@ export class SettingsPasswordCheckElement extends
     this.notifyPath('clickedChangePasswordIds_.size');
   }
 
-  private clickedChangePassword_(
-      item: chrome.passwordsPrivate.InsecureCredential): boolean {
+  private clickedChangePassword_(item: chrome.passwordsPrivate.PasswordUiEntry):
+      boolean {
     return this.clickedChangePasswordIds_.has(item.id);
   }
 

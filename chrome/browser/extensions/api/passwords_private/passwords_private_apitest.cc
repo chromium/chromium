@@ -247,35 +247,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetWeakCredentials) {
   EXPECT_TRUE(RunPasswordsSubtest("getWeakCredentials")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetPlaintextInsecurePassword) {
-  EXPECT_TRUE(RunPasswordsSubtest("getPlaintextInsecurePassword")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       GetPlaintextInsecurePasswordFails) {
-  ResetPlaintextPassword();
-  EXPECT_TRUE(RunPasswordsSubtest("getPlaintextInsecurePasswordFails"))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       ChangeInsecureCredentialWithEmptyPasswordFails) {
-  EXPECT_TRUE(
-      RunPasswordsSubtest("changeInsecureCredentialWithEmptyPasswordFails"))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ChangeInsecureCredentialFails) {
-  EXPECT_TRUE(RunPasswordsSubtest("changeInsecureCredentialFails")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       ChangeInsecureCredentialSucceeds) {
-  AddCompromisedCredential(0);
-  EXPECT_TRUE(RunPasswordsSubtest("changeInsecureCredentialSucceeds"))
-      << message_;
-}
-
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, OptInForAccountStorage) {
   SetOptedInForAccountStorage(false);
   EXPECT_TRUE(RunPasswordsSubtest("optInForAccountStorage")) << message_;
@@ -284,24 +255,6 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, OptInForAccountStorage) {
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, OptOutForAccountStorage) {
   SetOptedInForAccountStorage(true);
   EXPECT_TRUE(RunPasswordsSubtest("optOutForAccountStorage")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, RemoveInsecureCredentialFails) {
-  EXPECT_TRUE(RunPasswordsSubtest("removeInsecureCredentialFails")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       RemoveInsecureCredentialSucceeds) {
-  AddCompromisedCredential(0);
-  EXPECT_TRUE(RunPasswordsSubtest("removeInsecureCredentialSucceeds"))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
-                       MuteInsecureCredentialSucceeds) {
-  AddCompromisedCredential(0);
-  EXPECT_TRUE(RunPasswordsSubtest("muteInsecureCredentialSucceeds"))
-      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, MuteInsecureCredentialFails) {

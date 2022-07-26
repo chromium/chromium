@@ -62,6 +62,7 @@ export function createPasswordEntry(params?: PasswordEntryParams):
     isAndroidCredential: params.isAndroidCredential || false,
     note: note,
     password: '',
+    hasStartableScript: false,
   };
 }
 
@@ -171,9 +172,10 @@ export function createCreditCardEntry():
  */
 export function makeInsecureCredential(
     url: string, username: string,
-    id?: number): chrome.passwordsPrivate.InsecureCredential {
+    id?: number): chrome.passwordsPrivate.PasswordUiEntry {
   return {
     id: id || 0,
+    storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
     changePasswordUrl: `http://${url}/`,
     hasStartableScript: false,
     urls: {
@@ -182,6 +184,7 @@ export function makeInsecureCredential(
       link: `http://${url}/`,
     },
     username: username,
+    note: '',
     isAndroidCredential: false,
   };
 }
@@ -192,7 +195,7 @@ export function makeInsecureCredential(
 export function makeCompromisedCredential(
     url: string, username: string, type: chrome.passwordsPrivate.CompromiseType,
     id?: number, elapsedMinSinceCompromise?: number,
-    isMuted?: boolean): chrome.passwordsPrivate.InsecureCredential {
+    isMuted?: boolean): chrome.passwordsPrivate.PasswordUiEntry {
   const credential = makeInsecureCredential(url, username, id);
   elapsedMinSinceCompromise = elapsedMinSinceCompromise || 0;
   credential.compromisedInfo = {

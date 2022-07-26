@@ -46,7 +46,7 @@ export class SettingsPasswordRemoveConfirmationDialogElement extends
     };
   }
 
-  item: chrome.passwordsPrivate.InsecureCredential;
+  item: chrome.passwordsPrivate.PasswordUiEntry;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
@@ -59,7 +59,7 @@ export class SettingsPasswordRemoveConfirmationDialogElement extends
   private onRemoveClick_() {
     this.passwordManager_.recordPasswordCheckInteraction(
         PasswordCheckInteraction.REMOVE_PASSWORD);
-    this.passwordManager_.removeInsecureCredential(this.item);
+    this.passwordManager_.removeSavedPassword(this.item.id, this.item.storedIn);
     this.$.dialog.close();
   }
 

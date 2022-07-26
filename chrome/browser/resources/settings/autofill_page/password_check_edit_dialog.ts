@@ -72,7 +72,7 @@ export class SettingsPasswordCheckEditDialogElement extends
     };
   }
 
-  item: chrome.passwordsPrivate.InsecureCredential|null;
+  item: chrome.passwordsPrivate.PasswordUiEntry|null;
   private visible: boolean;
   private inputInvalid_: boolean;
   private passwordManager_: PasswordManagerProxy =
@@ -104,8 +104,11 @@ export class SettingsPasswordCheckEditDialogElement extends
     this.passwordManager_.recordPasswordCheckInteraction(
         PasswordCheckInteraction.EDIT_PASSWORD);
     assert(this.item);
-    this.passwordManager_
-        .changeInsecureCredential(this.item, this.$.passwordInput.value)
+    const params: chrome.passwordsPrivate.ChangeSavedPasswordParams = {
+      username: this.item.username,
+      password: this.$.passwordInput.value,
+    };
+    this.passwordManager_.changeSavedPassword(this.item.id, params)
         .finally(() => {
           this.close();
         });
