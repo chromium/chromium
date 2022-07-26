@@ -4,17 +4,17 @@
 
 import {Point} from './constants.js';
 
-export type Gesture = {
-  type: string,
-  detail: PinchEventDetail,
-};
+export interface Gesture {
+  type: string;
+  detail: PinchEventDetail;
+}
 
-export type PinchEventDetail = {
-  center: Point,
-  direction?: string,
-  scaleRatio?: number|null,
-  startScaleRatio?: number|null,
-};
+export interface PinchEventDetail {
+  center: Point;
+  direction?: string;
+  scaleRatio?: number|null;
+  startScaleRatio?: number|null;
+}
 
 // A class that listens for touch events and produces events when these
 // touches form gestures (e.g. pinching).

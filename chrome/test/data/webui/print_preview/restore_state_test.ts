@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getInstance, MarginsType, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, ScalingType, SerializedSettings, Setting, SettingsMixinInterface} from 'chrome://print/print_preview.js';
+import {getInstance, MarginsType, NativeInitialSettings, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, ScalingType, SerializedSettings, Settings, SettingsMixinInterface} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -65,20 +65,22 @@ suite(restore_state_test.suiteName, function() {
         (stickySettings.vendorOptions! as {[key: string]: any})['printArea'],
         page.settings.vendorItems.value.printArea);
 
-    [['margins', 'marginsType'],
-     ['color', 'isColorEnabled'],
-     ['headerFooter', 'isHeaderFooterEnabled'],
-     ['layout', 'isLandscapeEnabled'],
-     ['collate', 'isCollateEnabled'],
-     ['cssBackground', 'isCssBackgroundEnabled'],
-     ['scaling', 'scaling'],
-     ['scalingType', 'scalingType'],
-     ['scalingTypePdf', 'scalingTypePdf'],
-    ].forEach(keys => {
-      assertEquals(
-          (stickySettings as {[key: string]: any})[keys[1]!],
-          (page.settings! as {[key: string]: Setting})[keys[0]!]!.value);
-    });
+    ([
+      ['margins', 'marginsType'],
+      ['color', 'isColorEnabled'],
+      ['headerFooter', 'isHeaderFooterEnabled'],
+      ['layout', 'isLandscapeEnabled'],
+      ['collate', 'isCollateEnabled'],
+      ['cssBackground', 'isCssBackgroundEnabled'],
+      ['scaling', 'scaling'],
+      ['scalingType', 'scalingType'],
+      ['scalingTypePdf', 'scalingTypePdf'],
+    ] as Array<[keyof Settings, string]>)
+        .forEach(keys => {
+          assertEquals(
+              (stickySettings as {[key: string]: any})[keys[1]!],
+              page.settings![keys[0]!]!.value);
+        });
   }
 
   /**

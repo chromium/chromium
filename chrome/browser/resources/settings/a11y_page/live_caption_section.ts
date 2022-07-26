@@ -30,11 +30,11 @@ import {getTemplate} from './live_caption_section.html.js';
  * |downloadProgress| is the display-friendly download progress as the language
  *     model is being downloaded.
  */
-type LiveCaptionLanguage = {
-  displayName: string,
-  code: string,
-  downloadProgress: string,
-};
+interface LiveCaptionLanguage {
+  displayName: string;
+  code: string;
+  downloadProgress: string;
+}
 
 type LiveCaptionLanguageList = LiveCaptionLanguage[];
 

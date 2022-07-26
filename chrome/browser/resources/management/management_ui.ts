@@ -24,10 +24,10 @@ import {BrowserReportingResponse, Extension, ManagementBrowserProxy, ManagementB
 import {DeviceReportingResponse, DeviceReportingType} from './management_browser_proxy.js';
 // </if>
 
-type BrowserReportingData = {
-  messageIds: string[],
-  icon: string,
-};
+interface BrowserReportingData {
+  messageIds: string[];
+  icon: string;
+}
 
 const ManagementUiElementBase = WebUIListenerMixin(I18nMixin(PolymerElement));
 

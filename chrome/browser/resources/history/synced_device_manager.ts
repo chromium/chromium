@@ -26,15 +26,15 @@ import {ForeignSession, ForeignSessionTab} from './externs.js';
 import {HistorySyncedDeviceCardElement} from './synced_device_card.js';
 import {getTemplate} from './synced_device_manager.html.js';
 
-type ForeignDeviceInternal = {
-  device: string,
-  lastUpdateTime: string,
-  opened: boolean,
-  separatorIndexes: number[],
-  timestamp: number,
-  tabs: ForeignSessionTab[],
-  tag: string,
-};
+interface ForeignDeviceInternal {
+  device: string;
+  lastUpdateTime: string;
+  opened: boolean;
+  separatorIndexes: number[];
+  timestamp: number;
+  tabs: ForeignSessionTab[];
+  tag: string;
+}
 
 declare global {
   interface HTMLElementEventMap {

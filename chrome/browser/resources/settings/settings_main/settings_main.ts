@@ -29,10 +29,10 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 
 import {getTemplate} from './settings_main.html.js';
 
-type MainPageVisibility = {
-  about: boolean,
-  settings: boolean,
-};
+interface MainPageVisibility {
+  about: boolean;
+  settings: boolean;
+}
 
 export interface SettingsMainElement {
   $: {

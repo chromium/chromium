@@ -28,19 +28,19 @@ import {GoogleAppProxy, GoogleAppProxyImpl} from './google_app_proxy.js';
 import {GoogleAppsMetricsProxyImpl} from './google_apps_metrics_proxy.js';
 import {getTemplate} from './nux_google_apps.html.js';
 
-type AppItem = {
-  id: number,
-  name: string,
-  icon: string,
-  url: string,
-  bookmarkId: string|null,
-  selected: boolean,
-};
+interface AppItem {
+  id: number;
+  name: string;
+  icon: string;
+  url: string;
+  bookmarkId: string|null;
+  selected: boolean;
+}
 
-type AppItemModel = {
-  item: AppItem,
-  set: (p1: string, p2: boolean) => void,
-};
+interface AppItemModel {
+  item: AppItem;
+  set: (p1: string, p2: boolean) => void;
+}
 
 const KEYBOARD_FOCUSED = 'keyboard-focused';
 

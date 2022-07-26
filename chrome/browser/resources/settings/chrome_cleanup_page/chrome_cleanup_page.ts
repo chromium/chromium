@@ -79,31 +79,31 @@ enum ChromeCleanupOngoingAction {
   CLEANING = 2,
 }
 
-type ChromeCleanupCardActionButton = {
-  label: string,
-  doAction: () => void,
-};
+interface ChromeCleanupCardActionButton {
+  label: string;
+  doAction: () => void;
+}
 
-type ChromeCleanupCardComponents = {
-  title: string|null,
-  explanation: string|null,
-  actionButton: ChromeCleanupCardActionButton|null,
-  flags: number,
-};
+interface ChromeCleanupCardComponents {
+  title: string|null;
+  explanation: string|null;
+  actionButton: ChromeCleanupCardActionButton|null;
+  flags: number;
+}
 
 /**
  * Represents the file path structure of a base::FilePath.
  * dirname ends with a separator.
  */
-export type ChromeCleanupFilePath = {
-  dirname: string,
-  basename: string,
-};
+export interface ChromeCleanupFilePath {
+  dirname: string;
+  basename: string;
+}
 
-export type ChromeCleanerScannerResults = {
-  files: ChromeCleanupFilePath[],
-  registryKeys: string[],
-};
+export interface ChromeCleanerScannerResults {
+  files: ChromeCleanupFilePath[];
+  registryKeys: string[];
+}
 
 /**
  * @fileoverview

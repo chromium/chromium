@@ -12,24 +12,25 @@ import {CrTreeItemElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isMac, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-type TreeInfo = {
-  payload?: object,
-  children?: TreeInfo[], label: string,
-};
+interface TreeInfo {
+  payload?: object;
+  children?: TreeInfo[];
+  label: string;
+}
 
-type CertificateInfo = {
-  general: {[key: string]: string},
-  hierarchy: TreeInfo[],
-  isError: boolean,
-};
+interface CertificateInfo {
+  general: {[key: string]: string};
+  hierarchy: TreeInfo[];
+  isError: boolean;
+}
 
-type TreeItemDetail = {
+interface TreeItemDetail {
   payload: {
     val?: string,
     index?: number,
-  },
-  children: {[key: string|number]: CrTreeItemElement},
-};
+  };
+  children: {[key: string|number]: CrTreeItemElement};
+}
 
 /**
  * Initialize the certificate viewer dialog by wiring up the close button,

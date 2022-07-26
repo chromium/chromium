@@ -4,37 +4,37 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-export type DataCollectorItem = {
-  name: string,
-  isIncluded: boolean,
-  protoEnum: number,
-};
+export interface DataCollectorItem {
+  name: string;
+  isIncluded: boolean;
+  protoEnum: number;
+}
 
-export type IssueDetails = {
-  caseId: string,
-  emailAddress: string,
-  issueDescription: string,
-};
+export interface IssueDetails {
+  caseId: string;
+  emailAddress: string;
+  issueDescription: string;
+}
 
-export type PIIDataItem = {
-  piiTypeDescription: string,
-  piiType: number,
-  detectedData: string,
-  count: number,
-  keep: boolean,
-  expandDetails: boolean,
-};
+export interface PIIDataItem {
+  piiTypeDescription: string;
+  piiType: number;
+  detectedData: string;
+  count: number;
+  keep: boolean;
+  expandDetails: boolean;
+}
 
-export type StartDataCollectionResult = {
-  success: boolean,
-  errorMessage: string,
-};
+export interface StartDataCollectionResult {
+  success: boolean;
+  errorMessage: string;
+}
 
-export type UrlGenerationResult = {
-  success: boolean,
-  url: string,
-  errorMessage: string,
-};
+export interface UrlGenerationResult {
+  success: boolean;
+  url: string;
+  errorMessage: string;
+}
 
 export interface BrowserProxy {
   /**

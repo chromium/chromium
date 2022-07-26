@@ -26,22 +26,22 @@ export enum UpdateStatus {
 }
 
 // <if expr="_google_chrome and is_macosx">
-export type PromoteUpdaterStatus = {
-  hidden: boolean,
-  disabled: boolean,
-  actionable: boolean,
-  text?: string,
-};
+export interface PromoteUpdaterStatus {
+  hidden: boolean;
+  disabled: boolean;
+  actionable: boolean;
+  text?: string;
+}
 // </if>
 
-export type UpdateStatusChangedEvent = {
-  status: UpdateStatus,
-  progress?: number,
-  message?: string,
-  connectionTypes?: string,
-  version?: string,
-  size?: string,
-};
+export interface UpdateStatusChangedEvent {
+  status: UpdateStatus;
+  progress?: number;
+  message?: string;
+  connectionTypes?: string;
+  version?: string;
+  size?: string;
+}
 
 
 export interface AboutPageBrowserProxy {

@@ -2689,13 +2689,14 @@ function addMappingAction(
   });
 }
 
-type Field = {
-  size: number,
-  label: string,
-  formatter: (data: Uint8Array, offset: number) => string,
-  extraTreeItemFormatter?: (data: Uint8Array, offset: number,
-                            item: CrTreeItemElement, label: string) => void,
-};
+interface Field {
+  size: number;
+  label: string;
+  formatter: (data: Uint8Array, offset: number) => string;
+  extraTreeItemFormatter?:
+      (data: Uint8Array, offset: number, item: CrTreeItemElement,
+       label: string) => void;
+}
 
 /**
  * Renders a tree view to display the raw data in readable text.

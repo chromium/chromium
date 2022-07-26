@@ -42,25 +42,25 @@ import {getTemplate} from './pdf_viewer.html.js';
 import {KeyEventData, PDFViewerBaseElement} from './pdf_viewer_base.js';
 import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 
-type EmailMessageData = {
-  type: string,
-  to: string,
-  cc: string,
-  bcc: string,
-  subject: string,
-  body: string,
-};
+interface EmailMessageData {
+  type: string;
+  to: string;
+  cc: string;
+  bcc: string;
+  subject: string;
+  body: string;
+}
 
-type NavigateMessageData = {
-  type: string,
-  url: string,
-  disposition: WindowOpenDisposition,
-};
+interface NavigateMessageData {
+  type: string;
+  url: string;
+  disposition: WindowOpenDisposition;
+}
 
-type ZoomBounds = {
-  min: number,
-  max: number,
-};
+interface ZoomBounds {
+  min: number;
+  max: number;
+}
 
 /**
  * Return the filename component of a URL, percent decoded if possible.

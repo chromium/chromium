@@ -24,7 +24,7 @@ import {Error, State} from '../data/state.js';
 import {NativeLayer, NativeLayerImpl} from '../native_layer.js';
 import {areRangesEqual} from '../print_preview_utils.js';
 
-import {MARGIN_KEY_MAP, MarginObject, PrintPreviewMarginControlContainerElement} from './margin_control_container.js';
+import {MARGIN_KEY_MAP, PrintPreviewMarginControlContainerElement} from './margin_control_container.js';
 import {PluginProxy, PluginProxyImpl} from './plugin_proxy.js';
 import {getTemplate} from './preview_area.html.js';
 import {SettingsMixin} from './settings_mixin.js';
@@ -574,7 +574,7 @@ export class PrintPreviewPreviewAreaElement extends
       const customMarginsChanged =
           Object.values(CustomMarginsOrientation).some(side => {
             return this.margins.get(side) !==
-                (customMargins as MarginObject)[MARGIN_KEY_MAP.get(side)!];
+                customMargins[MARGIN_KEY_MAP.get(side)!];
           });
       if (customMarginsChanged) {
         return true;

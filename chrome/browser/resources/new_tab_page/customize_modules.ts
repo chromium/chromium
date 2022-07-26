@@ -24,13 +24,13 @@ declare global {
   }
 }
 
-type ModuleSetting = {
-  name: string,
-  id: string,
-  checked: boolean,
-  initiallyChecked: boolean,
-  disabled: boolean,
-};
+interface ModuleSetting {
+  name: string;
+  id: string;
+  checked: boolean;
+  initiallyChecked: boolean;
+  disabled: boolean;
+}
 
 
 export interface CustomizeModulesElement {

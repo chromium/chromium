@@ -6,12 +6,12 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {NuxNtpBackgroundInteractions} from '../shared/module_metrics_proxy.js';
 
-export type NtpBackgroundData = {
-  id: number,
-  imageUrl: string,
-  thumbnailClass: string,
-  title: string,
-};
+export interface NtpBackgroundData {
+  id: number;
+  imageUrl: string;
+  thumbnailClass: string;
+  title: string;
+}
 
 export interface NtpBackgroundProxy {
   clearBackground(): void;

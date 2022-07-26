@@ -2,32 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export type Attachment = {
-  name: string,
-  size: number,
-  readable: boolean,
-};
+export interface Attachment {
+  name: string;
+  size: number;
+  readable: boolean;
+}
 
 export enum DisplayAnnotationsAction {
   DISPLAY_ANNOTATIONS = 'display-annotations',
   HIDE_ANNOTATIONS = 'hide-annotations',
 }
 
-export type DocumentMetadata = {
-  author: string,
-  canSerializeDocument: boolean,
-  creationDate: string,
-  creator: string,
-  fileSize: string,
-  keywords: string,
-  linearized: boolean,
-  modDate: string,
-  pageSize: string,
-  producer: string,
-  subject: string,
-  title: string,
-  version: string,
-};
+export interface DocumentMetadata {
+  author: string;
+  canSerializeDocument: boolean;
+  creationDate: string;
+  creator: string;
+  fileSize: string;
+  keywords: string;
+  linearized: boolean;
+  modDate: string;
+  pageSize: string;
+  producer: string;
+  subject: string;
+  title: string;
+  version: string;
+}
 
 /** Enumeration of page fitting types. */
 export enum FittingType {
@@ -37,11 +37,11 @@ export enum FittingType {
   FIT_TO_HEIGHT = 'fit-to-height',
 }
 
-export type NamedDestinationMessageData = {
-  messageId: string,
-  pageNumber: number,
-  namedDestinationView?: string,
-};
+export interface NamedDestinationMessageData {
+  messageId: string;
+  pageNumber: number;
+  namedDestinationView?: string;
+}
 
 /**
  * Enumeration of save message request types. Must match `SaveRequestType` in
@@ -53,10 +53,10 @@ export enum SaveRequestType {
   EDITED,
 }
 
-export type Point = {
-  x: number,
-  y: number,
-};
+export interface Point {
+  x: number;
+  y: number;
+}
 
 export type ExtendedKeyEvent = KeyboardEvent&{
   fromScriptingAPI?: boolean,

@@ -5,10 +5,10 @@
 import {highlight} from 'chrome://resources/js/search_highlight_utils.js';
 import {Tab} from './tab_search.mojom-webui.js';
 
-type Range = {
-  start: number,
-  length: number,
-};
+interface Range {
+  start: number;
+  length: number;
+}
 
 export function highlightText(
     container: HTMLElement, text: string, ranges: Range[]|undefined) {

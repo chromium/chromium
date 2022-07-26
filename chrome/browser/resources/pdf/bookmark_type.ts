@@ -14,12 +14,12 @@
  * |children| is an array of the |Bookmark|s that are below this in a table of
  * contents tree
  */
-export type Bookmark = {
-  title: string,
-  children: Bookmark[],
-  page?: number,
-  x?: number,
-  y?: number,
-  zoom?: number,
-  uri?: string,
-};
+export interface Bookmark {
+  title: string;
+  children: Bookmark[];
+  page?: number;
+  x?: number;
+  y?: number;
+  zoom?: number;
+  uri?: string;
+}

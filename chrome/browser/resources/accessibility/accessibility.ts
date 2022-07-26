@@ -21,9 +21,9 @@ enum AXMode {
   PDF = 1 << 7,
 }
 
-type Data = {
-  type: 'browser'|'page'|'widget',
-};
+interface Data {
+  type: 'browser'|'page'|'widget';
+}
 
 type BrowserData = Data&{
   name: string,
@@ -58,21 +58,20 @@ type WidgetData = Data&{
 
 type EnabledStatus = 'disabled'|'off'|'on';
 
-type InitData = {
-  browsers: BrowserData[],
-  pages: PageData[],
-  viewsAccessibility: boolean,
-  widgets: WidgetData[],
+interface InitData {
+  browsers: BrowserData[];
+  pages: PageData[];
+  viewsAccessibility: boolean;
+  widgets: WidgetData[];
 
-  html: EnabledStatus,
-  internal: EnabledStatus,
-  native: EnabledStatus,
-  pdf: EnabledStatus,
-  screenreader: EnabledStatus,
-  text: EnabledStatus,
-  web: EnabledStatus,
-
-};
+  html: EnabledStatus;
+  internal: EnabledStatus;
+  native: EnabledStatus;
+  pdf: EnabledStatus;
+  screenreader: EnabledStatus;
+  text: EnabledStatus;
+  web: EnabledStatus;
+}
 
 type RequestType = 'showOrRefreshTree';
 

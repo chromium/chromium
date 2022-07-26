@@ -12,26 +12,26 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './activity_log_stream_item.html.js';
 
-export type StreamItem = {
-  name?: string,
-  timestamp: number,
-  activityType: chrome.activityLogPrivate.ExtensionActivityType,
-  pageUrl?: string,
-  argUrl: string,
-  args: string,
-  webRequestInfo?: string,
-  expanded: boolean,
-};
+export interface StreamItem {
+  name?: string;
+  timestamp: number;
+  activityType: chrome.activityLogPrivate.ExtensionActivityType;
+  pageUrl?: string;
+  argUrl: string;
+  args: string;
+  webRequestInfo?: string;
+  expanded: boolean;
+}
 
 /**
  * A struct used to describe each argument for an activity (each item in
  * the parsed version of |data.args|). Contains the argument's value itself
  * and its index.
  */
-export type StreamArgItem = {
-  arg: string,
-  index: number,
-};
+export interface StreamArgItem {
+  arg: string;
+  index: number;
+}
 
 /**
  * Placeholder for arg_url that can occur in |StreamItem.args|. Sometimes we

@@ -6,9 +6,9 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
-export type FontsData = {
-  fontList: Array<[string, string, string]>,
-};
+export interface FontsData {
+  fontList: Array<[string, string, string]>;
+}
 
 export interface FontsBrowserProxy {
   fetchFontsData(): Promise<FontsData>;

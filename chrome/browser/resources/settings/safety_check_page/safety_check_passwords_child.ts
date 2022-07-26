@@ -21,10 +21,10 @@ import {SafetyCheckCallbackConstants, SafetyCheckPasswordsStatus} from './safety
 import {SafetyCheckIconStatus} from './safety_check_child.js';
 import {getTemplate} from './safety_check_passwords_child.html.js';
 
-type PasswordsChangedEvent = {
-  newState: SafetyCheckPasswordsStatus,
-  displayString: string,
-};
+interface PasswordsChangedEvent {
+  newState: SafetyCheckPasswordsStatus;
+  displayString: string;
+}
 
 const SettingsSafetyCheckPasswordsChildElementBase =
     WebUIListenerMixin(I18nMixin(PolymerElement));

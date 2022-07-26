@@ -14,10 +14,10 @@ export type InitializeModuleCallback = () => Promise<HTMLElement|null>;
 
 export type InitializeModuleCallbackV2 = () => Promise<HTMLElement>;
 
-export type Module = {
-  element: HTMLElement,
-  descriptor: ModuleDescriptor,
-};
+export interface Module {
+  element: HTMLElement;
+  descriptor: ModuleDescriptor;
+}
 
 export enum ModuleHeight {
   DYNAMIC = -1,

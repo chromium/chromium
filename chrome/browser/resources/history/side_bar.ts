@@ -27,10 +27,10 @@ import {BrowserServiceImpl} from './browser_service.js';
 import {Page, TABBED_PAGES} from './router.js';
 import {getTemplate} from './side_bar.html.js';
 
-export type FooterInfo = {
-  managed: boolean,
-  otherFormsOfHistory: boolean,
-};
+export interface FooterInfo {
+  managed: boolean;
+  otherFormsOfHistory: boolean;
+}
 
 export interface HistorySideBarElement {
   $: {

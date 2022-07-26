@@ -9,11 +9,12 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 /**
  * @see chrome/browser/ui/webui/settings/people_handler.cc
  */
-export type StoredAccount = {
-  fullName?: string,
-  givenName?: string, email: string,
-  avatarImage?: string,
-};
+export interface StoredAccount {
+  fullName?: string;
+  givenName?: string;
+  email: string;
+  avatarImage?: string;
+}
 
 /**
  * TODO(crbug.com/1322559): signedIn doesn't indicate if the user is signed-in,
@@ -25,23 +26,23 @@ export type StoredAccount = {
  * sync consent. Rename to make this clear.
  * @see chrome/browser/ui/webui/settings/people_handler.cc
  */
-export type SyncStatus = {
-  statusAction: StatusAction,
-  childUser?: boolean,
-  disabled?: boolean,
-  domain?: string,
-  hasError?: boolean,
-  hasPasswordsOnlyError?: boolean,
-  hasUnrecoverableError?: boolean,
-  managed?: boolean,
-  firstSetupInProgress?: boolean,
-  signedIn?: boolean,
-  signedInUsername?: string,
-  statusActionText?: string,
-  statusText?: string,
-  supervisedUser?: boolean,
-  syncSystemEnabled?: boolean,
-};
+export interface SyncStatus {
+  statusAction: StatusAction;
+  childUser?: boolean;
+  disabled?: boolean;
+  domain?: string;
+  hasError?: boolean;
+  hasPasswordsOnlyError?: boolean;
+  hasUnrecoverableError?: boolean;
+  managed?: boolean;
+  firstSetupInProgress?: boolean;
+  signedIn?: boolean;
+  signedInUsername?: string;
+  statusActionText?: string;
+  statusText?: string;
+  supervisedUser?: boolean;
+  syncSystemEnabled?: boolean;
+}
 
 /**
  * Must be kept in sync with the return values of getSyncErrorAction in
@@ -64,37 +65,37 @@ export enum StatusAction {
  * require changes to the C++ handler, which is already functional. See
  * PeopleHandler::PushSyncPrefs() for more details.
  */
-export type SyncPrefs = {
-  appsRegistered: boolean,
-  appsSynced: boolean,
-  autofillRegistered: boolean,
-  autofillSynced: boolean,
-  bookmarksRegistered: boolean,
-  bookmarksSynced: boolean,
-  customPassphraseAllowed: boolean,
-  encryptAllData: boolean,
-  extensionsRegistered: boolean,
-  extensionsSynced: boolean,
-  passphraseRequired: boolean,
-  passwordsRegistered: boolean,
-  passwordsSynced: boolean,
-  paymentsIntegrationEnabled: boolean,
-  preferencesRegistered: boolean,
-  preferencesSynced: boolean,
-  readingListRegistered: boolean,
-  readingListSynced: boolean,
-  syncAllDataTypes: boolean,
-  tabsRegistered: boolean,
-  tabsSynced: boolean,
-  themesRegistered: boolean,
-  themesSynced: boolean,
-  trustedVaultKeysRequired: boolean,
-  typedUrlsRegistered: boolean,
-  typedUrlsSynced: boolean,
-  wifiConfigurationsRegistered: boolean,
-  wifiConfigurationsSynced: boolean,
-  explicitPassphraseTime?: string,
-};
+export interface SyncPrefs {
+  appsRegistered: boolean;
+  appsSynced: boolean;
+  autofillRegistered: boolean;
+  autofillSynced: boolean;
+  bookmarksRegistered: boolean;
+  bookmarksSynced: boolean;
+  customPassphraseAllowed: boolean;
+  encryptAllData: boolean;
+  extensionsRegistered: boolean;
+  extensionsSynced: boolean;
+  passphraseRequired: boolean;
+  passwordsRegistered: boolean;
+  passwordsSynced: boolean;
+  paymentsIntegrationEnabled: boolean;
+  preferencesRegistered: boolean;
+  preferencesSynced: boolean;
+  readingListRegistered: boolean;
+  readingListSynced: boolean;
+  syncAllDataTypes: boolean;
+  tabsRegistered: boolean;
+  tabsSynced: boolean;
+  themesRegistered: boolean;
+  themesSynced: boolean;
+  trustedVaultKeysRequired: boolean;
+  typedUrlsRegistered: boolean;
+  typedUrlsSynced: boolean;
+  wifiConfigurationsRegistered: boolean;
+  wifiConfigurationsSynced: boolean;
+  explicitPassphraseTime?: string;
+}
 
 /**
  * Names of the individual data type properties to be cached from

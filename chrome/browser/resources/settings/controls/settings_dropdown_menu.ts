@@ -29,10 +29,10 @@ import {getTemplate} from './settings_dropdown_menu.html.js';
  * The |name| is shown in the gui.  The |value| us use to set or compare with
  * the preference value.
  */
-type DropdownMenuOption = {
-  name: string,
-  value: number|string,
-};
+interface DropdownMenuOption {
+  name: string;
+  value: number|string;
+}
 
 export type DropdownMenuOptionList = DropdownMenuOption[];
 

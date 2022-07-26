@@ -2,34 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export type KeepAlive = {
-  origin: string,
-  count: number,
-};
+export interface KeepAlive {
+  origin: string;
+  count: number;
+}
 
-export type ProfileState = {
-  profilePath: string,
-  localProfileName: string,
-  signinState: string,
-  signinRequired: boolean,
-  gaiaName: string,
-  gaiaId: string,
-  userName: string,
-  hostedDomain: string,
-  isSupervised: boolean,
-  isOmitted: boolean,
-  isEphemeral: boolean,
-  userAcceptedAccountManagement: boolean,
-  keepAlives: KeepAlive[],
-  signedAccounts: string[],
-  isLoaded: boolean,
-  hasOffTheRecord: boolean,
-};
+export interface ProfileState {
+  profilePath: string;
+  localProfileName: string;
+  signinState: string;
+  signinRequired: boolean;
+  gaiaName: string;
+  gaiaId: string;
+  userName: string;
+  hostedDomain: string;
+  isSupervised: boolean;
+  isOmitted: boolean;
+  isEphemeral: boolean;
+  userAcceptedAccountManagement: boolean;
+  keepAlives: KeepAlive[];
+  signedAccounts: string[];
+  isLoaded: boolean;
+  hasOffTheRecord: boolean;
+}
 
-export type ProfileStateElement = {
-  profileState: ProfileState,
-  expanded: boolean,
-};
+export interface ProfileStateElement {
+  profileState: ProfileState;
+  expanded: boolean;
+}
 
 /**
  * @fileoverview A helper object used by the profile internals debug page

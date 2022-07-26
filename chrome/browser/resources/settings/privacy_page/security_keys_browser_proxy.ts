@@ -34,21 +34,21 @@ export enum Ctap2Status {
  *
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export type Credential = {
-  credentialId: string,
-  relyingPartyId: string,
-  userHandle: string,
-  userName: string,
-  userDisplayName: string,
-};
+export interface Credential {
+  credentialId: string;
+  relyingPartyId: string;
+  userHandle: string;
+  userName: string;
+  userDisplayName: string;
+}
 
 /**
  * Encapsulates information about an authenticator's biometric sensor.
  */
-export type SensorInfo = {
-  maxTemplateFriendlyName: number,
-  maxSamplesForEnroll: number|null,
-};
+export interface SensorInfo {
+  maxTemplateFriendlyName: number;
+  maxSamplesForEnroll: number|null;
+}
 
 /**
  * SampleStatus is the result for reading an individual sample ("touch")
@@ -65,20 +65,20 @@ export enum SampleStatus {
  *
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export type SampleResponse = {
-  status: SampleStatus,
-  remaining: number,
-};
+export interface SampleResponse {
+  status: SampleStatus;
+  remaining: number;
+}
 
 /**
  * EnrollmentResponse is the final response to an enrollment suboperation,
  *
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export type EnrollmentResponse = {
-  code: Ctap2Status,
-  enrollment: Enrollment|null,
-};
+export interface EnrollmentResponse {
+  code: Ctap2Status;
+  enrollment: Enrollment|null;
+}
 
 /**
  * Enrollment represents a valid fingerprint template stored on a security
@@ -86,23 +86,23 @@ export type EnrollmentResponse = {
  *
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export type Enrollment = {
-  name: string,
-  id: string,
-};
+export interface Enrollment {
+  name: string;
+  id: string;
+}
 
 /**
  * SetPINResponse represents the response to startSetPIN and setPIN requests.
  *
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export type SetPINResponse = {
-  done: boolean,
-  error?: number,
-  currentMinPinLength?: number,
-  newMinPinLength?: number,
-  retries?: number,
-};
+export interface SetPINResponse {
+  done: boolean;
+  error?: number;
+  currentMinPinLength?: number;
+  newMinPinLength?: number;
+  retries?: number;
+}
 
 /**
  * StartCredentialManagementResponse is the response to
@@ -110,10 +110,10 @@ export type SetPINResponse = {
  *
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export type StartCredentialManagementResponse = {
-  minPinLength: number,
-  supportsUpdateUserInformation: boolean,
-};
+export interface StartCredentialManagementResponse {
+  minPinLength: number;
+  supportsUpdateUserInformation: boolean;
+}
 
 /**
  * CredentialManagementResponse is the response to a deleteCredential or
@@ -121,10 +121,10 @@ export type StartCredentialManagementResponse = {
  *
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export type CredentialManagementResponse = {
-  success: boolean,
-  message: string,
-};
+export interface CredentialManagementResponse {
+  success: boolean;
+  message: string;
+}
 
 export interface SecurityKeysPINBrowserProxy {
   /**
@@ -301,10 +301,10 @@ export interface SecurityKeysBioEnrollProxy {
  * It can be passed to functions in |SecurityKeysPhonesBrowserProxy| to identify
  * a specific phone.
  */
-export type SecurityKeysPhone = {
-  name: string,
-  publicKey: string,
-};
+export interface SecurityKeysPhone {
+  name: string;
+  publicKey: string;
+}
 
 /**
  * A pair of lists of |SecurityKeysPhone|s. The first is a list of phones known

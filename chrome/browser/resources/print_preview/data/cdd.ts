@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-type OptionWithDefault = {
-  is_default?: boolean,
-};
+interface OptionWithDefault {
+  is_default?: boolean;
+}
 
-export type LocalizedString = {
-  locale: string,
-  value: string,
-};
+export interface LocalizedString {
+  locale: string;
+  value: string;
+}
 
 export type VendorCapabilitySelectOption = {
   display_name?: string,
@@ -26,34 +26,36 @@ export enum VendorCapabilityValueType {
   STRING = 'STRING',
 }
 
-type SelectCapability = {
-  option?: VendorCapabilitySelectOption[],
-};
+interface SelectCapability {
+  option?: VendorCapabilitySelectOption[];
+}
 
-type TypedValueCapability = {
-  default?: number|string|boolean,
-  value_type?: VendorCapabilityValueType,
-};
+interface TypedValueCapability {
+  default?: number|string|boolean;
+  value_type?: VendorCapabilityValueType;
+}
 
-type RangeCapability = {
-  default: number,
-};
+interface RangeCapability {
+  default: number;
+}
 
 /**
  * Specifies a custom vendor capability.
  */
-export type VendorCapability = {
-  id: string,
-  display_name?: string,
-  display_name_localized?: LocalizedString[], type: string,
-  select_cap?: SelectCapability,
-  typed_value_cap?: TypedValueCapability,
-  range_cap?: RangeCapability,
-};
+export interface VendorCapability {
+  id: string;
+  display_name?: string;
+  display_name_localized?: LocalizedString[];
+  type: string;
+  select_cap?: SelectCapability;
+  typed_value_cap?: TypedValueCapability;
+  range_cap?: RangeCapability;
+}
 
-export type CapabilityWithReset = {
-  reset_to_default?: boolean, option: OptionWithDefault[],
-};
+export interface CapabilityWithReset {
+  reset_to_default?: boolean;
+  option: OptionWithDefault[];
+}
 
 export type ColorOption = {
   type?: string,
@@ -65,14 +67,14 @@ export type ColorCapability = {
   option: ColorOption[],
 }&CapabilityWithReset;
 
-type CollateCapability = {
-  default?: boolean,
-};
+interface CollateCapability {
+  default?: boolean;
+}
 
-export type CopiesCapability = {
-  default?: number,
-  max?: number,
-};
+export interface CopiesCapability {
+  default?: number;
+  max?: number;
+}
 
 export type DuplexOption = {
   type?: string,
@@ -113,9 +115,9 @@ export type DpiCapability = {
   option: DpiOption[],
 }&CapabilityWithReset;
 
-type PinCapability = {
-  supported?: boolean,
-};
+interface PinCapability {
+  supported?: boolean;
+}
 
 
 /**
@@ -123,25 +125,25 @@ type PinCapability = {
  * Pin capability is not a part of standard CDD description and is defined
  * only on Chrome OS.
  */
-export type CddCapabilities = {
-  vendor_capability?: VendorCapability[],
-  collate?: CollateCapability,
-  color?: ColorCapability,
-  copies?: CopiesCapability,
-  duplex?: DuplexCapability,
-  page_orientation?: PageOrientationCapability,
-  media_size?: MediaSizeCapability,
-  dpi?: DpiCapability,
+export interface CddCapabilities {
+  vendor_capability?: VendorCapability[];
+  collate?: CollateCapability;
+  color?: ColorCapability;
+  copies?: CopiesCapability;
+  duplex?: DuplexCapability;
+  page_orientation?: PageOrientationCapability;
+  media_size?: MediaSizeCapability;
+  dpi?: DpiCapability;
   // <if expr="chromeos_ash or chromeos_lacros">
-  pin?: PinCapability,
+  pin?: PinCapability;
   // </if>
-};
+}
 
 /**
  * The CDD (Cloud Device Description) describes the capabilities of a print
  * destination.
  */
-export type Cdd = {
-  version: string,
-  printer: CddCapabilities,
-};
+export interface Cdd {
+  version: string;
+  printer: CddCapabilities;
+}

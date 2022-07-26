@@ -38,10 +38,10 @@ import {Router} from '../router.js';
 import {SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckParentStatus} from './safety_check_browser_proxy.js';
 import {getTemplate} from './safety_check_page.html.js';
 
-type ParentChangedEvent = {
-  newState: SafetyCheckParentStatus,
-  displayString: string,
-};
+interface ParentChangedEvent {
+  newState: SafetyCheckParentStatus;
+  displayString: string;
+}
 
 const SettingsSafetyCheckPageElementBase =
     WebUIListenerMixin(I18nMixin(PolymerElement));

@@ -8,10 +8,10 @@ import {IronIconsetSvgElement} from 'chrome://resources/polymer/v3_0/iron-iconse
 import {inDarkMode} from './dark_mode_mixin.js';
 import {LocalizedString} from './data/cdd.js';
 
-export type Range = {
-  to: number,
-  from: number,
-};
+export interface Range {
+  to: number;
+  from: number;
+}
 
 /**
  * Returns true if the contents of the two page ranges are equal.

@@ -5,14 +5,14 @@
 /** @fileoverview Definitions for chrome.getAndroidSandboxStatus */
 
 declare namespace chrome {
-  type AndroidSandboxStatus = {
-    androidBuildId: string,
-    pid: string,
-    procStatus: string,
-    seccompStatus: number,
-    secontext: string,
-    uid: string,
-  };
+  interface AndroidSandboxStatus {
+    androidBuildId: string;
+    pid: string;
+    procStatus: string;
+    seccompStatus: number;
+    secontext: string;
+    uid: string;
+  }
 
   type GetAndroidStatusCallback = (status: AndroidSandboxStatus) => void;
 

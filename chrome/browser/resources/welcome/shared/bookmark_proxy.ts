@@ -4,11 +4,11 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-export type BookmarkData = {
-  parentId: string,
-  title: string,
-  url: string,
-};
+export interface BookmarkData {
+  parentId: string;
+  title: string;
+  url: string;
+}
 
 export type AddBookmarkCallback = (node: chrome.bookmarks.BookmarkTreeNode) =>
     void;

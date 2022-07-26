@@ -10,29 +10,29 @@
 /**
  * Settings and state for a particular enabled language.
  */
-export type LanguageState = {
-  language: chrome.languageSettingsPrivate.Language,
-  removable: boolean,
-  spellCheckEnabled: boolean,
-  translateEnabled: boolean,
-  isManaged: boolean,
-  isForced: boolean,
-  downloadDictionaryFailureCount: number,
+export interface LanguageState {
+  language: chrome.languageSettingsPrivate.Language;
+  removable: boolean;
+  spellCheckEnabled: boolean;
+  translateEnabled: boolean;
+  isManaged: boolean;
+  isForced: boolean;
+  downloadDictionaryFailureCount: number;
   downloadDictionaryStatus:
-      (chrome.languageSettingsPrivate.SpellcheckDictionaryStatus|null),
-};
+      (chrome.languageSettingsPrivate.SpellcheckDictionaryStatus|null);
+}
 
 /**
  * Settings and state for spellcheck languages.
  */
-export type SpellCheckLanguageState = {
-  language: chrome.languageSettingsPrivate.Language,
-  spellCheckEnabled: boolean,
-  isManaged: boolean,
-  downloadDictionaryFailureCount: number,
+export interface SpellCheckLanguageState {
+  language: chrome.languageSettingsPrivate.Language;
+  spellCheckEnabled: boolean;
+  isManaged: boolean;
+  downloadDictionaryFailureCount: number;
   downloadDictionaryStatus:
-      (chrome.languageSettingsPrivate.SpellcheckDictionaryStatus|null),
-};
+      (chrome.languageSettingsPrivate.SpellcheckDictionaryStatus|null);
+}
 
 /**
  * Languages data to expose to consumers.
@@ -50,17 +50,17 @@ export type SpellCheckLanguageState = {
  * spellCheckOffLanguages: an array of spell check languages that are currently
  *     not in use, including the languages force-disabled by policy.
  */
-export type LanguagesModel = {
-  supported: chrome.languageSettingsPrivate.Language[],
-  enabled: LanguageState[],
-  translateTarget: string,
-  alwaysTranslate: chrome.languageSettingsPrivate.Language[],
-  neverTranslate: chrome.languageSettingsPrivate.Language[],
-  spellCheckOnLanguages: SpellCheckLanguageState[],
-  spellCheckOffLanguages: SpellCheckLanguageState[],
+export interface LanguagesModel {
+  supported: chrome.languageSettingsPrivate.Language[];
+  enabled: LanguageState[];
+  translateTarget: string;
+  alwaysTranslate: chrome.languageSettingsPrivate.Language[];
+  neverTranslate: chrome.languageSettingsPrivate.Language[];
+  spellCheckOnLanguages: SpellCheckLanguageState[];
+  spellCheckOffLanguages: SpellCheckLanguageState[];
   // TODO(dpapad): Wrap prospectiveUILanguage with if expr "is_win" block.
-  prospectiveUILanguage?: string,
-};
+  prospectiveUILanguage?: string;
+}
 
 /**
  * Helper methods for reading and writing language settings.

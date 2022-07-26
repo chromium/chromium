@@ -28,33 +28,33 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {getTemplate} from './protocol_handlers.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 
-export type HandlerEntry = {
-  host: string,
-  is_default: boolean,
-  protocol: string,
-  protocol_display_name: string,
-  spec: string,
-};
+export interface HandlerEntry {
+  host: string;
+  is_default: boolean;
+  protocol: string;
+  protocol_display_name: string;
+  spec: string;
+}
 
-export type ProtocolEntry = {
-  handlers: HandlerEntry[],
-  protocol: string,
-  protocol_display_name: string,
-};
+export interface ProtocolEntry {
+  handlers: HandlerEntry[];
+  protocol: string;
+  protocol_display_name: string;
+}
 
-export type AppHandlerEntry = {
-  host: string,
-  protocol: string,
-  protocol_display_name: string,
-  spec: string,
-  app_id: string,
-};
+export interface AppHandlerEntry {
+  host: string;
+  protocol: string;
+  protocol_display_name: string;
+  spec: string;
+  app_id: string;
+}
 
-export type AppProtocolEntry = {
-  handlers: AppHandlerEntry[],
-  protocol: string,
-  protocol_display_name: string,
-};
+export interface AppProtocolEntry {
+  handlers: AppHandlerEntry[];
+  protocol: string;
+  protocol_display_name: string;
+}
 
 export interface ProtocolHandlersElement {
   $: {

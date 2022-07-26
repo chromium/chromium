@@ -47,21 +47,21 @@ export enum PrinterState {
   UNKNOWN = 2,
 }
 
-type StatusReasonEntry = {
-  reason: PrinterStatusReason,
-  severity: PrinterStatusSeverity,
-};
+interface StatusReasonEntry {
+  reason: PrinterStatusReason;
+  severity: PrinterStatusSeverity;
+}
 
 /**
  * A container for the results of a printer status query. A printer status query
  * can return multiple error reasons. |timestamp| is set at the time of status
  * creation.
  */
-export type PrinterStatus = {
-  printerId: string,
-  statusReasons: StatusReasonEntry[],
-  timestamp: number,
-};
+export interface PrinterStatus {
+  printerId: string;
+  statusReasons: StatusReasonEntry[];
+  timestamp: number;
+}
 
 export const ERROR_STRING_KEY_MAP: Map<PrinterStatusReason, string> = new Map([
   [PrinterStatusReason.DEVICE_ERROR, 'printerStatusDeviceError'],

@@ -10,12 +10,12 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 // Profile info (colors and avatar) sent from C++.
-export type ProfileInfo = {
-  backgroundColor: string,
-  pictureUrl: string,
-  isManaged: boolean,
-  welcomeTitle: string,
-};
+export interface ProfileInfo {
+  backgroundColor: string;
+  pictureUrl: string;
+  isManaged: boolean;
+  welcomeTitle: string;
+}
 
 export interface ProfileCustomizationBrowserProxy {
   // Called when the page is ready.

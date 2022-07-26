@@ -19,15 +19,15 @@ export interface PDFPlugin extends HTMLIFrameElement {
   setViewportChangedCallback(callback: ViewportChangedCallback): void;
 }
 
-export type SerializedKeyEvent = {
-  keyCode: number,
-  code: string,
-  key: string,
-  shiftKey: boolean,
-  ctrlKey: boolean,
-  altKey: boolean,
-  metaKey: boolean,
-};
+export interface SerializedKeyEvent {
+  keyCode: number;
+  code: string;
+  key: string;
+  shiftKey: boolean;
+  ctrlKey: boolean;
+  altKey: boolean;
+  metaKey: boolean;
+}
 
 /**
  * Turn a dictionary received from postMessage into a key event.

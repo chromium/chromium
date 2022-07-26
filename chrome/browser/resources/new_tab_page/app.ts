@@ -30,16 +30,16 @@ import {Action as VoiceAction, recordVoiceAction} from './voice_search_overlay.j
 import {WindowProxy} from './window_proxy.js';
 
 
-type ExecutePromoBrowserCommandData = {
-  commandId: Command,
-  clickInfo: ClickInfo,
-};
+interface ExecutePromoBrowserCommandData {
+  commandId: Command;
+  clickInfo: ClickInfo;
+}
 
-type CanShowPromoWithBrowserCommandData = {
-  frameType: string,
-  messageType: string,
-  commandId: Command,
-};
+interface CanShowPromoWithBrowserCommandData {
+  frameType: string;
+  messageType: string;
+  commandId: Command;
+}
 
 /**
  * Elements on the NTP. This enum must match the numbering for NTPElement in

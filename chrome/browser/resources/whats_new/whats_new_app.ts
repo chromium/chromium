@@ -14,16 +14,16 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './whats_new_app.html.js';
 import {WhatsNewProxyImpl} from './whats_new_proxy.js';
 
-type CommandData = {
-  commandId: number,
-  clickInfo: ClickInfo,
-};
+interface CommandData {
+  commandId: number;
+  clickInfo: ClickInfo;
+}
 
 // TODO (https://www.crbug.com/1219381): Add some additional parameters so
 // that we can filter the messages a bit better.
-type BrowserCommandMessageData = {
-  data: CommandData,
-};
+interface BrowserCommandMessageData {
+  data: CommandData;
+}
 
 export class WhatsNewAppElement extends PolymerElement {
   static get is() {

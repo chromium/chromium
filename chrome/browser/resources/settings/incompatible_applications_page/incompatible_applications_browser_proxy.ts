@@ -18,11 +18,11 @@ export enum ActionTypes {
   UPGRADE = 2,
 }
 
-export type IncompatibleApplication = {
-  name: string,
-  type: ActionTypes,
-  url: string,
-};
+export interface IncompatibleApplication {
+  name: string;
+  type: ActionTypes;
+  url: string;
+}
 
 export interface IncompatibleApplicationsBrowserProxy {
   /**

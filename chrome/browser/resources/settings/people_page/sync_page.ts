@@ -50,14 +50,14 @@ import {getTemplate} from './sync_page.html.js';
 
 // TODO(rbpotter): Remove this typedef when this file is no longer needed by OS
 // Settings.
-type SyncRoutes = {
-  BASIC: Route,
-  PEOPLE: Route,
-  SYNC: Route,
-  SYNC_ADVANCED: Route,
-  OS_SYNC: Route,
-  OS_PEOPLE: Route,
-};
+interface SyncRoutes {
+  BASIC: Route;
+  PEOPLE: Route;
+  SYNC: Route;
+  SYNC_ADVANCED: Route;
+  OS_SYNC: Route;
+  OS_PEOPLE: Route;
+}
 
 function getSyncRoutes(): SyncRoutes {
   const router = Router.getInstance();

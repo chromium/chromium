@@ -44,10 +44,10 @@ import {SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_
 import {getTemplate} from './privacy_page.html.js';
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
-type BlockAutoplayStatus = {
-  enabled: boolean,
-  pref: chrome.settingsPrivate.PrefObject,
-};
+interface BlockAutoplayStatus {
+  enabled: boolean;
+  pref: chrome.settingsPrivate.PrefObject;
+}
 
 export interface SettingsPrivacyPageElement {
   $: {

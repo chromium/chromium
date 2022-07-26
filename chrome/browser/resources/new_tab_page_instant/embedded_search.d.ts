@@ -12,11 +12,11 @@
 declare namespace chrome {
   export namespace embeddedSearch {
     export namespace newTabPage {
-      export type MostVisitedItemData = {
-        direction: 'rtl' | 'ltr',
-        title: string,
-        url: string,
-      };
+      export interface MostVisitedItemData {
+        direction: 'rtl'|'ltr';
+        title: string;
+        url: string;
+      }
       export function getMostVisitedItemData(rid: number): MostVisitedItemData;
 
       export let ntpTheme: {

@@ -25,142 +25,142 @@ import {Size} from './size.js';
  * setting, or an empty string if the setting should not be saved in the
  * serialized state.
  */
-export type Setting = {
-  value: any,
-  unavailableValue: any,
-  valid: boolean,
-  available: boolean,
-  setByPolicy: boolean,
-  setFromUi: boolean,
-  key: string,
-  updatesPreview: boolean,
-};
+export interface Setting {
+  value: any;
+  unavailableValue: any;
+  valid: boolean;
+  available: boolean;
+  setByPolicy: boolean;
+  setFromUi: boolean;
+  key: string;
+  updatesPreview: boolean;
+}
 
-export type Settings = {
-  pages: Setting,
-  copies: Setting,
-  collate: Setting,
-  layout: Setting,
-  color: Setting,
-  customMargins: Setting,
-  mediaSize: Setting,
-  margins: Setting,
-  dpi: Setting,
-  scaling: Setting,
-  scalingType: Setting,
-  scalingTypePdf: Setting,
-  duplex: Setting,
-  duplexShortEdge: Setting,
-  cssBackground: Setting,
-  selectionOnly: Setting,
-  headerFooter: Setting,
-  rasterize: Setting,
-  vendorItems: Setting,
-  otherOptions: Setting,
-  ranges: Setting,
-  pagesPerSheet: Setting,
+export interface Settings {
+  pages: Setting;
+  copies: Setting;
+  collate: Setting;
+  layout: Setting;
+  color: Setting;
+  customMargins: Setting;
+  mediaSize: Setting;
+  margins: Setting;
+  dpi: Setting;
+  scaling: Setting;
+  scalingType: Setting;
+  scalingTypePdf: Setting;
+  duplex: Setting;
+  duplexShortEdge: Setting;
+  cssBackground: Setting;
+  selectionOnly: Setting;
+  headerFooter: Setting;
+  rasterize: Setting;
+  vendorItems: Setting;
+  otherOptions: Setting;
+  ranges: Setting;
+  pagesPerSheet: Setting;
   // <if expr="chromeos_ash or chromeos_lacros">
-  pin: Setting,
-  pinValue: Setting,
+  pin: Setting;
+  pinValue: Setting;
   // </if>
-};
+}
 
-export type SerializedSettings = {
-  version: number,
-  recentDestinations?: RecentDestination[],
-  dpi?: DpiOption,
-  mediaSize?: MediaSizeOption,
-  marginsType?: MarginsType,
-  customMargins?: MarginsSetting,
-  isColorEnabled?: boolean,
-  isDuplexEnabled?: boolean,
-  isDuplexShortEdge?: boolean,
-  isHeaderFooterEnabled?: boolean,
-  isLandscapeEnabled?: boolean,
-  isCollateEnabled?: boolean,
-  isCssBackgroundEnabled?: boolean,
-  scaling?: string,
-  scalingType?: ScalingType,
-  scalingTypePdf?: ScalingType,
-  vendorOptions?: object,
+export interface SerializedSettings {
+  version: number;
+  recentDestinations?: RecentDestination[];
+  dpi?: DpiOption;
+  mediaSize?: MediaSizeOption;
+  marginsType?: MarginsType;
+  customMargins?: MarginsSetting;
+  isColorEnabled?: boolean;
+  isDuplexEnabled?: boolean;
+  isDuplexShortEdge?: boolean;
+  isHeaderFooterEnabled?: boolean;
+  isLandscapeEnabled?: boolean;
+  isCollateEnabled?: boolean;
+  isCssBackgroundEnabled?: boolean;
+  scaling?: string;
+  scalingType?: ScalingType;
+  scalingTypePdf?: ScalingType;
+  vendorOptions?: object;
   // <if expr="chromeos_ash or chromeos_lacros">
-  isPinEnabled?: boolean,
-  pinValue?: string,
+  isPinEnabled?: boolean;
+  pinValue?: string;
   // </if>
-};
+}
 
-export type PolicyEntry = {
-  value: any,
-  managed: boolean,
-  applyOnDestinationUpdate: boolean,
-};
+export interface PolicyEntry {
+  value: any;
+  managed: boolean;
+  applyOnDestinationUpdate: boolean;
+}
 
-export type PolicyObjectEntry = {
-  defaultMode?: any,
-  allowedMode?: any,
-  value?: number,
-};
+export interface PolicyObjectEntry {
+  defaultMode?: any;
+  allowedMode?: any;
+  value?: number;
+}
 
-export type PolicySettings = {
-  headerFooter?: PolicyEntry,
-  cssBackground?: PolicyEntry,
-  mediaSize?: PolicyEntry,
-  sheets?: PolicyEntry,
-  color?: PolicyEntry,
-  duplex?: PolicyEntry,
-  pin?: PolicyEntry,
-  printPdfAsImageAvailability?: PolicyEntry,
-  printPdfAsImage?: PolicyEntry,
-};
+export interface PolicySettings {
+  headerFooter?: PolicyEntry;
+  cssBackground?: PolicyEntry;
+  mediaSize?: PolicyEntry;
+  sheets?: PolicyEntry;
+  color?: PolicyEntry;
+  duplex?: PolicyEntry;
+  pin?: PolicyEntry;
+  printPdfAsImageAvailability?: PolicyEntry;
+  printPdfAsImage?: PolicyEntry;
+}
 
-type CloudJobTicketPrint = {
-  page_orientation?: object,
-  dpi?: object,
-  vendor_ticket_item?: object[],
-  copies?: object,
-  media_size?: object,
-  duplex?: object,
-  color?: {vendor_id?: string, type?: string},
-  collate?: object,
-};
+interface CloudJobTicketPrint {
+  page_orientation?: object;
+  dpi?: object;
+  vendor_ticket_item?: object[];
+  copies?: object;
+  media_size?: object;
+  duplex?: object;
+  color?: {vendor_id?: string, type?: string};
+  collate?: object;
+}
 
-type CloudJobTicket = {
-  version: string,
-  print: CloudJobTicketPrint,
-};
+interface CloudJobTicket {
+  version: string;
+  print: CloudJobTicketPrint;
+}
 
-export type MediaSizeValue = {
-  width_microns: number,
-  height_microns: number,
-};
+export interface MediaSizeValue {
+  width_microns: number;
+  height_microns: number;
+}
 
-export type Ticket = {
-  collate: boolean,
-  color: number,
-  copies: number,
-  deviceName: string,
-  dpiHorizontal: number,
-  dpiVertical: number,
-  duplex: DuplexMode,
-  headerFooterEnabled: boolean,
-  landscape: boolean,
-  marginsType: MarginsType,
-  mediaSize: MediaSizeValue,
-  pagesPerSheet: number,
-  previewModifiable: boolean,
-  printerType: PrinterType,
-  rasterizePDF: boolean,
-  scaleFactor: number,
-  scalingType: ScalingType,
-  shouldPrintBackgrounds: boolean,
-  shouldPrintSelectionOnly: boolean,
-  advancedSettings?: object,
-  capabilities?: string,
-  marginsCustom?: MarginsSetting,
-  openPDFInPreview?: boolean,
-  pinValue?: string,
-  ticket?: string,
-};
+export interface Ticket {
+  collate: boolean;
+  color: number;
+  copies: number;
+  deviceName: string;
+  dpiHorizontal: number;
+  dpiVertical: number;
+  duplex: DuplexMode;
+  headerFooterEnabled: boolean;
+  landscape: boolean;
+  marginsType: MarginsType;
+  mediaSize: MediaSizeValue;
+  pagesPerSheet: number;
+  previewModifiable: boolean;
+  printerType: PrinterType;
+  rasterizePDF: boolean;
+  scaleFactor: number;
+  scalingType: ScalingType;
+  shouldPrintBackgrounds: boolean;
+  shouldPrintSelectionOnly: boolean;
+  advancedSettings?: object;
+  capabilities?: string;
+  marginsCustom?: MarginsSetting;
+  openPDFInPreview?: boolean;
+  pinValue?: string;
+  ticket?: string;
+}
 
 export type PrintTicket = Ticket&{
   dpiDefault: boolean,

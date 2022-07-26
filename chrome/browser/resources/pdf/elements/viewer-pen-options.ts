@@ -10,11 +10,11 @@ import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/
 
 import {getTemplate} from './viewer-pen-options.html.js';
 
-type Color = {
-  name: string,
-  color: string,
-  outline?: boolean,
-};
+interface Color {
+  name: string;
+  color: string;
+  outline?: boolean;
+}
 
 const colors: Color[] = [
   // row 1
@@ -51,10 +51,10 @@ const colors: Color[] = [
   {name: 'annotationColorLightTeal', color: '#b2dfdb'},
 ];
 
-type Size = {
-  name: string,
-  size: number,
-};
+interface Size {
+  name: string;
+  size: number;
+}
 
 const sizes: Size[] = [
   {name: 'annotationSize1', size: 0},

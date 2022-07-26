@@ -8,25 +8,25 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
-type ModuleData = {
-  code_id: string,
-  description: string,
-  digital_signer: string,
-  location: string,
-  name: string,
-  process_types: string,
-  type_description: string,
-  version: string,
-  third_party_module_status: string,
-};
+interface ModuleData {
+  code_id: string;
+  description: string;
+  digital_signer: string;
+  location: string;
+  name: string;
+  process_types: string;
+  type_description: string;
+  version: string;
+  third_party_module_status: string;
+}
 
-type ModuleListData = {
-  moduleCount: number,
-  moduleList: ModuleData[],
-  thirdPartyFeatureStatus: string,
-  thirdPartyFeatureEnabled: boolean,
-  hasModules: boolean,
-};
+interface ModuleListData {
+  moduleCount: number;
+  moduleList: ModuleData[];
+  thirdPartyFeatureStatus: string;
+  thirdPartyFeatureEnabled: boolean;
+  hasModules: boolean;
+}
 
 type DomBindElement = HTMLElement&{data: ModuleListData};
 

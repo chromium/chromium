@@ -37,10 +37,10 @@ import {Route, Router} from '../router.js';
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './local_data_browser_proxy.js';
 import {getTemplate} from './site_data.html.js';
 
-type SelectedItem = {
-  item: LocalDataItem,
-  index: number,
-};
+interface SelectedItem {
+  item: LocalDataItem;
+  index: number;
+}
 
 export interface SiteDataElement {
   $: {

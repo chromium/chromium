@@ -12,12 +12,12 @@ export enum MeasurementSystemUnitType {
   IMPERIAL = 1,  // inches
 }
 
-type MeasurementSystemPrefs = {
-  precision: number,
-  decimalPlaces: number,
-  ptsPerUnit: number,
-  unitSymbol: string,
-};
+interface MeasurementSystemPrefs {
+  precision: number;
+  decimalPlaces: number;
+  ptsPerUnit: number;
+  unitSymbol: string;
+}
 
 export class MeasurementSystem {
   /**

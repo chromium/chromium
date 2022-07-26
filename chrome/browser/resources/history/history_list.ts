@@ -28,11 +28,11 @@ import {HistoryEntry, HistoryQuery, QueryState} from './externs.js';
 import {HistoryItemElement, searchResultsTitle} from './history_item.js';
 import {getTemplate} from './history_list.html.js';
 
-export type ActionMenuModel = {
-  index: number,
-  item: HistoryEntry,
-  target: HTMLElement,
-};
+export interface ActionMenuModel {
+  index: number;
+  item: HistoryEntry;
+  target: HTMLElement;
+}
 
 type OpenMenuEvent = CustomEvent<ActionMenuModel>;
 

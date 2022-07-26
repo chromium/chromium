@@ -43,10 +43,10 @@ const enum ActivityLogSubpage {
  * for this component if the extensionId from the URL does not correspond to
  * installed extension.
  */
-export type ActivityLogExtensionPlaceholder = {
-  id: string,
-  isPlaceholder: boolean,
-};
+export interface ActivityLogExtensionPlaceholder {
+  id: string;
+  isPlaceholder: boolean;
+}
 
 export interface ExtensionsActivityLogElement {
   $: {

@@ -34,25 +34,25 @@ export enum ContentSettingProvider {
 /**
  * Stores information about if a content setting is valid, and why.
  */
-type IsValid = {
-  isValid: boolean,
-  reason: string|null,
-};
+interface IsValid {
+  isValid: boolean;
+  reason: string|null;
+}
 
 /**
  * Stores origin information. The |hasPermissionSettings| will be set to true
  * when this origin has permissions or when there is a pattern permission
  * affecting this origin.
  */
-export type OriginInfo = {
-  origin: string,
-  engagement: number,
-  usage: number,
-  numCookies: number,
-  hasPermissionSettings: boolean,
-  isInstalled: boolean,
-  isPartitioned: boolean,
-};
+export interface OriginInfo {
+  origin: string;
+  engagement: number;
+  usage: number;
+  numCookies: number;
+  hasPermissionSettings: boolean;
+  isInstalled: boolean;
+  isPartitioned: boolean;
+}
 
 /**
  * Represents a list of sites, grouped under the same eTLD+1. For example, an
@@ -60,84 +60,84 @@ export type OriginInfo = {
  * "https://login.example.com" and "http://example.com" under a common eTLD+1 of
  * "example.com".
  */
-export type SiteGroup = {
-  etldPlus1: string,
-  numCookies: number,
-  origins: OriginInfo[],
-  hasInstalledPWA: boolean,
-};
+export interface SiteGroup {
+  etldPlus1: string;
+  numCookies: number;
+  origins: OriginInfo[];
+  hasInstalledPWA: boolean;
+}
 
 /**
  * The site exception information passed from the C++ handler.
  * See also: SiteException.
  */
-export type RawSiteException = {
-  embeddingOrigin: string,
-  incognito: boolean,
-  isEmbargoed: boolean,
-  origin: string,
-  displayName: string,
-  type: string,
-  setting: ContentSetting,
-  source: SiteSettingSource,
-};
+export interface RawSiteException {
+  embeddingOrigin: string;
+  incognito: boolean;
+  isEmbargoed: boolean;
+  origin: string;
+  displayName: string;
+  type: string;
+  setting: ContentSetting;
+  source: SiteSettingSource;
+}
 
 /**
  * The site exception after it has been converted/filtered for UI use.
  * See also: RawSiteException.
  */
-export type SiteException = {
-  category: ContentSettingsTypes,
-  embeddingOrigin: string,
-  incognito: boolean,
-  isEmbargoed: boolean,
-  origin: string,
-  displayName: string,
-  setting: ContentSetting,
-  enforcement: chrome.settingsPrivate.Enforcement|null,
-  controlledBy: chrome.settingsPrivate.ControlledBy,
+export interface SiteException {
+  category: ContentSettingsTypes;
+  embeddingOrigin: string;
+  incognito: boolean;
+  isEmbargoed: boolean;
+  origin: string;
+  displayName: string;
+  setting: ContentSetting;
+  enforcement: chrome.settingsPrivate.Enforcement|null;
+  controlledBy: chrome.settingsPrivate.ControlledBy;
   // <if expr="chromeos_ash">
-  showAndroidSmsNote?: boolean,
+  showAndroidSmsNote?: boolean;
   // </if>
-};
+}
 
 /**
  * Represents a list of exceptions recently configured for a site, where recent
  * is defined by the maximum number of sources parameter passed to
  * GetRecentSitePermissions.
  */
-export type RecentSitePermissions = {
-  origin: string,
-  incognito: boolean,
-  recentPermissions: RawSiteException[],
-};
+export interface RecentSitePermissions {
+  origin: string;
+  incognito: boolean;
+  recentPermissions: RawSiteException[];
+}
 
 /**
  * The chooser exception information passed from the C++ handler.
  * See also: ChooserException.
  */
-export type RawChooserException = {
-  chooserType: ChooserType,
-  displayName: string,
-  object: Object,
-  sites: RawSiteException[],
-};
+export interface RawChooserException {
+  chooserType: ChooserType;
+  displayName: string;
+  object: Object;
+  sites: RawSiteException[];
+}
 
 /**
  * The chooser exception after it has been converted/filtered for UI use.
  * See also: RawChooserException.
  */
-export type ChooserException = {
-  chooserType: ChooserType,
-  displayName: string,
-  object: Object,
-  sites: SiteException[],
-};
+export interface ChooserException {
+  chooserType: ChooserType;
+  displayName: string;
+  object: Object;
+  sites: SiteException[];
+}
 
-export type DefaultContentSetting = {
-  setting: ContentSetting,
-  source: ContentSettingProvider,
-};
+export interface DefaultContentSetting {
+  setting: ContentSetting;
+  source: ContentSettingProvider;
+}
 
 /**
  * The primary cookie setting states that are possible. Must be kept in sync
@@ -151,19 +151,19 @@ export enum CookiePrimarySetting {
   BLOCK_ALL = 3,
 }
 
-export type MediaPickerEntry = {
-  name: string,
-  id: string,
-};
+export interface MediaPickerEntry {
+  name: string;
+  id: string;
+}
 
-export type ZoomLevelEntry = {
-  displayName: string,
-  origin: string,
-  originForFavicon: string,
-  setting: string,
-  source: string,
-  zoom: string,
-};
+export interface ZoomLevelEntry {
+  displayName: string;
+  origin: string;
+  originForFavicon: string;
+  setting: string;
+  source: string;
+  zoom: string;
+}
 
 export interface SiteSettingsPrefsBrowserProxy {
   /**

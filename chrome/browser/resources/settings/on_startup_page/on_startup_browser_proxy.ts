@@ -6,11 +6,11 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
-export type NtpExtension = {
-  id: string,
-  name: string,
-  canBeDisabled: boolean,
-};
+export interface NtpExtension {
+  id: string;
+  name: string;
+  canBeDisabled: boolean;
+}
 
 export interface OnStartupBrowserProxy {
   getNtpExtension(): Promise<NtpExtension|null>;

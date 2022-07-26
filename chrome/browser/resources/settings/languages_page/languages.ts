@@ -22,10 +22,10 @@ import {CrSettingsPrefs} from '../prefs/prefs_types.js';
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
 import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
 
-type SpellCheckLanguages = {
-  on: SpellCheckLanguageState[],
-  off: SpellCheckLanguageState[],
-};
+interface SpellCheckLanguages {
+  on: SpellCheckLanguageState[];
+  off: SpellCheckLanguageState[];
+}
 
 const MoveType = chrome.languageSettingsPrivate.MoveType;
 
@@ -51,15 +51,15 @@ const kTranslateLanguageSynonyms: {[key: string]: string} = {
 // one in ui/base/ime/ash/extension_ime_util.h.
 const kArcImeLanguage: string = '_arc_ime_language_';
 
-type ModelArgs = {
-  supportedLanguages: chrome.languageSettingsPrivate.Language[],
-  translateTarget: string,
-  alwaysTranslateCodes: string[],
-  neverTranslateCodes: string[],
-  startingUILanguage: string,
-  supportedInputMethods?: chrome.languageSettingsPrivate.InputMethod[],
-  currentInputMethodId?: string,
-};
+interface ModelArgs {
+  supportedLanguages: chrome.languageSettingsPrivate.Language[];
+  translateTarget: string;
+  alwaysTranslateCodes: string[];
+  neverTranslateCodes: string[];
+  startingUILanguage: string;
+  supportedInputMethods?: chrome.languageSettingsPrivate.InputMethod[];
+  currentInputMethodId?: string;
+}
 
 /**
  * Singleton element that generates the languages model on start-up and

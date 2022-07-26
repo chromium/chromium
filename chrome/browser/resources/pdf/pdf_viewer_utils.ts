@@ -7,26 +7,26 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 
 import {LayoutOptions, ViewportRect} from './viewport.js';
 
-export type DocumentDimensionsMessageData = {
-  type: string,
-  height: number,
-  width: number,
-  pageDimensions: ViewportRect[],
-  layoutOptions?: LayoutOptions,
-};
+export interface DocumentDimensionsMessageData {
+  type: string;
+  height: number;
+  width: number;
+  pageDimensions: ViewportRect[];
+  layoutOptions?: LayoutOptions;
+}
 
-export type DestinationMessageData = {
-  type: string,
-  page: number,
-  x: number,
-  y: number,
-  zoom: number,
-};
+export interface DestinationMessageData {
+  type: string;
+  page: number;
+  x: number;
+  y: number;
+  zoom: number;
+}
 
-export type RequiredSaveResult = {
-  fileName: string,
-  dataToSave: ArrayBuffer,
-};
+export interface RequiredSaveResult {
+  fileName: string;
+  dataToSave: ArrayBuffer;
+}
 
 /**
  * Determines if the event has the platform-equivalent of the Windows ctrl key

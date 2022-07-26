@@ -6,19 +6,19 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // clang-format on
 
-export type CookieDetails = {
-  hasChildren: boolean,
-  id: string,
-  idPath: string,
-  title: string,
-  totalUsage: string,
-  type: string,
-};
+export interface CookieDetails {
+  hasChildren: boolean;
+  id: string;
+  idPath: string;
+  title: string;
+  totalUsage: string;
+  type: string;
+}
 
-export type CookieDataForDisplay = {
-  content: string,
-  label: string,
-};
+export interface CookieDataForDisplay {
+  content: string;
+  label: string;
+}
 
 // This structure maps the various cookie type names from C++ (hence the
 // underscores) to arrays of the different types of data each has, along with

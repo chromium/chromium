@@ -14,33 +14,33 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 /**
  * @see chrome/browser/ui/webui/settings/search_engines_handler.cc
  */
-export type SearchEngine = {
-  canBeDefault: boolean,
-  canBeEdited: boolean,
-  canBeRemoved: boolean,
-  canBeActivated: boolean,
-  canBeDeactivated: boolean,
-  default: boolean,
-  displayName: string,
-  extension?: {id: string, name: string, canBeDisabled: boolean, icon: string},
-  iconURL?: string,
-  id: number,
-  isOmniboxExtension: boolean,
-  keyword: string,
-  modelIndex: number,
-  name: string,
-  shouldConfirmDeletion: boolean,
-  url: string,
-  urlLocked: boolean,
-};
+export interface SearchEngine {
+  canBeDefault: boolean;
+  canBeEdited: boolean;
+  canBeRemoved: boolean;
+  canBeActivated: boolean;
+  canBeDeactivated: boolean;
+  default: boolean;
+  displayName: string;
+  extension?: {id: string, name: string, canBeDisabled: boolean, icon: string};
+  iconURL?: string;
+  id: number;
+  isOmniboxExtension: boolean;
+  keyword: string;
+  modelIndex: number;
+  name: string;
+  shouldConfirmDeletion: boolean;
+  url: string;
+  urlLocked: boolean;
+}
 
-export type SearchEnginesInfo = {
-  defaults: SearchEngine[],
-  actives: SearchEngine[],
-  others: SearchEngine[],
-  extensions: SearchEngine[],
-  [key: string]: SearchEngine[],
-};
+export interface SearchEnginesInfo {
+  defaults: SearchEngine[];
+  actives: SearchEngine[];
+  others: SearchEngine[];
+  extensions: SearchEngine[];
+  [key: string]: SearchEngine[];
+}
 
 /**
  * Contains all recorded interactions on the search engines settings page.

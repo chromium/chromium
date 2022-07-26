@@ -4,10 +4,10 @@
 
 import {Point} from './constants.js';
 
-type ScrollVelocity = {
-  x: number,
-  y: number,
-};
+interface ScrollVelocity {
+  x: number;
+  y: number;
+}
 
 export interface ViewportInterface {
   position: Point;

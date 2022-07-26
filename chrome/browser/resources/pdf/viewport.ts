@@ -13,30 +13,30 @@ import {SwipeDetector, SwipeDirection} from './swipe_detector.js';
 import {ViewportInterface} from './viewport_scroller.js';
 import {InactiveZoomManager, ZoomManager} from './zoom_manager.js';
 
-export type ViewportRect = {
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-};
+export interface ViewportRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 
-export type DocumentDimensions = {
-  width: number,
-  height: number,
-  pageDimensions: ViewportRect[],
-  layoutOptions?: LayoutOptions,
-};
+export interface DocumentDimensions {
+  width: number;
+  height: number;
+  pageDimensions: ViewportRect[];
+  layoutOptions?: LayoutOptions;
+}
 
-export type LayoutOptions = {
-  direction: number,
-  defaultPageOrientation: number,
-  twoUpViewEnabled: boolean,
-};
+export interface LayoutOptions {
+  direction: number;
+  defaultPageOrientation: number;
+  twoUpViewEnabled: boolean;
+}
 
-export type Size = {
-  width: number,
-  height: number,
-};
+export interface Size {
+  width: number;
+  height: number;
+}
 
 /** @return The area of the intersection of the rects */
 function getIntersectionArea(rect1: ViewportRect, rect2: ViewportRect): number {

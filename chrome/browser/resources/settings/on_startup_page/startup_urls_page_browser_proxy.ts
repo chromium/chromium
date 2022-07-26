@@ -6,12 +6,12 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
-export type StartupPageInfo = {
-  modelIndex: number,
-  title: string,
-  tooltip: string,
-  url: string,
-};
+export interface StartupPageInfo {
+  modelIndex: number;
+  title: string;
+  tooltip: string;
+  url: string;
+}
 
 export interface StartupUrlsPageBrowserProxy {
   loadStartupPages(): void;

@@ -61,56 +61,57 @@ export enum PinModeRestriction {
 /**
  * Policies affecting print settings values and availability.
  */
-export type Policies = {
-  headerFooter?: {allowedMode?: boolean, defaultMode?: boolean},
+export interface Policies {
+  headerFooter?: {allowedMode?: boolean, defaultMode?: boolean};
   cssBackground?: {
     allowedMode?: BackgroundGraphicsModeRestriction,
     defaultMode?: BackgroundGraphicsModeRestriction,
-  },
-  mediaSize?: {defaultMode?: {width: number, height: number}},
-  sheets?: {value?: number},
+  };
+  mediaSize?: {defaultMode?: {width: number, height: number}};
+  sheets?: {value?: number};
   color?: {
     allowedMode?: ColorModeRestriction,
     defaultMode?: ColorModeRestriction,
-  },
+  };
   duplex?: {
     allowedMode?: DuplexModeRestriction,
     defaultMode?: DuplexModeRestriction,
-  },
+  };
   // <if expr="chromeos_ash or chromeos_lacros">
-  pin?: {allowedMode?: PinModeRestriction, defaultMode?: PinModeRestriction},
+  pin?: {allowedMode?: PinModeRestriction, defaultMode?: PinModeRestriction};
   // </if>
-  printPdfAsImage?: {defaultMode?: boolean},
-  printPdfAsImageAvailability?: {allowedMode?: boolean},
-};
+  printPdfAsImage?: {defaultMode?: boolean};
+  printPdfAsImageAvailability?: {allowedMode?: boolean};
+}
 
 /**
  * @see corresponding field name definitions in print_preview_handler.cc
  */
-export type NativeInitialSettings = {
-  isInKioskAutoPrintMode: boolean,
-  isInAppKioskMode: boolean,
-  uiLocale: string,
-  thousandsDelimiter: string,
-  decimalDelimiter: string,
-  unitType: MeasurementSystemUnitType,
-  previewModifiable: boolean,
-  previewIsFromArc: boolean,
-  documentTitle: string,
-  documentHasSelection: boolean,
-  shouldPrintSelectionOnly: boolean,
-  printerName: string,
-  policies?: Policies,
-          serializedAppStateStr: string|null,
-          serializedDefaultDestinationSelectionRulesStr: string|null,
-          pdfPrinterDisabled: boolean,
-          destinationsManaged: boolean,
-  isDriveMounted?: boolean,
-};
+export interface NativeInitialSettings {
+  isInKioskAutoPrintMode: boolean;
+  isInAppKioskMode: boolean;
+  uiLocale: string;
+  thousandsDelimiter: string;
+  decimalDelimiter: string;
+  unitType: MeasurementSystemUnitType;
+  previewModifiable: boolean;
+  previewIsFromArc: boolean;
+  documentTitle: string;
+  documentHasSelection: boolean;
+  shouldPrintSelectionOnly: boolean;
+  printerName: string;
+  policies?: Policies;
+  serializedAppStateStr: string|null;
+  serializedDefaultDestinationSelectionRulesStr: string|null;
+  pdfPrinterDisabled: boolean;
+  destinationsManaged: boolean;
+  isDriveMounted?: boolean;
+}
 
-export type CapabilitiesResponse = {
-  printer?: LocalDestinationInfo, capabilities: Cdd|null,
-};
+export interface CapabilitiesResponse {
+  printer?: LocalDestinationInfo;
+  capabilities: Cdd|null;
+}
 
 /**
  * An interface to the native Chromium printing system layer.

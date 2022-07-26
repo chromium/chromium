@@ -10,26 +10,26 @@ import {Destination, DestinationOptionalParams, DestinationOrigin, PrinterType} 
 import {DestinationProvisionalType} from './destination.js';
 // </if>
 
-type ObjectMap = {
-  [k: string]: any,
-};
+interface ObjectMap {
+  [k: string]: any;
+}
 
-export type LocalDestinationInfo = {
-  deviceName: string,
-  printerName: string,
-  printerDescription?: string,
-  cupsEnterprisePrinter?: boolean,
-  printerOptions?: ObjectMap,
-};
+export interface LocalDestinationInfo {
+  deviceName: string;
+  printerName: string;
+  printerDescription?: string;
+  cupsEnterprisePrinter?: boolean;
+  printerOptions?: ObjectMap;
+}
 
-export type ExtensionDestinationInfo = {
-  extensionId: string,
-  extensionName: string,
-  id: string,
-  name: string,
-  description?: string,
-  provisional?: boolean,
-};
+export interface ExtensionDestinationInfo {
+  extensionId: string;
+  extensionName: string;
+  id: string;
+  name: string;
+  description?: string;
+  provisional?: boolean;
+}
 
 /**
  * @param type The type of printer to parse.

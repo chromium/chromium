@@ -18,16 +18,13 @@ import {PrintPreviewMarginControlElement} from './margin_control.js';
 import {getTemplate} from './margin_control_container.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
-export const MARGIN_KEY_MAP: Map<CustomMarginsOrientation, string> = new Map([
-  [CustomMarginsOrientation.TOP, 'marginTop'],
-  [CustomMarginsOrientation.RIGHT, 'marginRight'],
-  [CustomMarginsOrientation.BOTTOM, 'marginBottom'],
-  [CustomMarginsOrientation.LEFT, 'marginLeft'],
-]);
-
-export type MarginObject = {
-  [side: string]: number,
-};
+export const MARGIN_KEY_MAP:
+    Map<CustomMarginsOrientation, keyof MarginsSetting> = new Map([
+      [CustomMarginsOrientation.TOP, 'marginTop'],
+      [CustomMarginsOrientation.RIGHT, 'marginRight'],
+      [CustomMarginsOrientation.BOTTOM, 'marginBottom'],
+      [CustomMarginsOrientation.LEFT, 'marginLeft'],
+    ]);
 
 const MINIMUM_DISTANCE: number = 72;  // 1 inch
 
@@ -161,7 +158,7 @@ export class PrintPreviewMarginControlContainerElement extends
     if (this.available_ && this.resetMargins_) {
       // Set the custom margins values to the current document margins if the
       // custom margins were reset.
-      const newMargins: MarginObject = {};
+      const newMargins: Partial<MarginsSetting> = {};
       for (const side of Object.values(CustomMarginsOrientation)) {
         const key = MARGIN_KEY_MAP.get(side)!;
         newMargins[key] = this.documentMargins.get(side);
@@ -182,7 +179,7 @@ export class PrintPreviewMarginControlContainerElement extends
     this.shadowRoot!.querySelectorAll('print-preview-margin-control')
         .forEach(control => {
           const key = MARGIN_KEY_MAP.get(control.side)!;
-          const newValue = (margins as MarginObject)[key] || 0;
+          const newValue = margins[key] || 0;
           control.setPositionInPts(newValue);
           control.setTextboxValue(newValue);
         });
@@ -382,10 +379,10 @@ export class PrintPreviewMarginControlContainerElement extends
       marginSide: CustomMarginsOrientation, marginValue: number) {
     const oldMargins = this.getSettingValue('customMargins') as MarginsSetting;
     const key = MARGIN_KEY_MAP.get(marginSide)!;
-    if ((oldMargins as MarginObject)[key] === marginValue) {
+    if (oldMargins[key] === marginValue) {
       return;
     }
-    const newMargins = Object.assign({}, oldMargins) as MarginObject;
+    const newMargins = Object.assign({}, oldMargins);
     newMargins[key] = marginValue;
     this.setSetting('customMargins', newMargins);
   }

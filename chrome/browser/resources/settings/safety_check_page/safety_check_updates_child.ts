@@ -25,10 +25,10 @@ import {SafetyCheckCallbackConstants, SafetyCheckUpdatesStatus} from './safety_c
 import {SafetyCheckIconStatus} from './safety_check_child.js';
 import {getTemplate} from './safety_check_updates_child.html.js';
 
-type UpdatesChangedEvent = {
-  newState: SafetyCheckUpdatesStatus,
-  displayString: string,
-};
+interface UpdatesChangedEvent {
+  newState: SafetyCheckUpdatesStatus;
+  displayString: string;
+}
 
 const SettingsSafetyCheckUpdatesChildElementBase =
     RelaunchMixin(WebUIListenerMixin(I18nMixin(PolymerElement)));

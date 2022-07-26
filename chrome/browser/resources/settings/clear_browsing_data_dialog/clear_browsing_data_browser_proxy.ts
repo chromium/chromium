@@ -15,37 +15,37 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
  * An InstalledApp represents a domain with data that the user might want
  * to protect from being deleted.
  */
-export type InstalledApp = {
-  registerableDomain: string,
-  reasonBitfield: number,
-  exampleOrigin: string,
-  isChecked: boolean,
-  storageSize: number,
-  hasNotifications: boolean,
-  appName: string,
-};
+export interface InstalledApp {
+  registerableDomain: string;
+  reasonBitfield: number;
+  exampleOrigin: string;
+  isChecked: boolean;
+  storageSize: number;
+  hasNotifications: boolean;
+  appName: string;
+}
 
 /**
  * ClearBrowsingDataResult contains any possible follow-up notices that should
  * be shown to the user.
  */
-export type ClearBrowsingDataResult = {
-  showHistoryNotice: boolean,
-  showPasswordsNotice: boolean,
-};
+export interface ClearBrowsingDataResult {
+  showHistoryNotice: boolean;
+  showPasswordsNotice: boolean;
+}
 
 /**
  * UpdateSyncStateEvent contains relevant information for a summary of a user's
  * updated Sync State.
  */
-export type UpdateSyncStateEvent = {
-  signedIn: boolean,
-  syncConsented: boolean,
-  syncingHistory: boolean,
-  shouldShowCookieException: boolean,
-  isNonGoogleDse: boolean,
-  nonGoogleSearchHistoryString: string,
-};
+export interface UpdateSyncStateEvent {
+  signedIn: boolean;
+  syncConsented: boolean;
+  syncingHistory: boolean;
+  shouldShowCookieException: boolean;
+  isNonGoogleDse: boolean;
+  nonGoogleSearchHistoryString: string;
+}
 
 export interface ClearBrowsingDataBrowserProxy {
   /**

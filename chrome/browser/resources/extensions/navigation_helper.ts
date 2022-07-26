@@ -23,11 +23,11 @@ export enum Dialog {
   OPTIONS = 'options',
 }
 
-export type PageState = {
-  page: Page,
-  extensionId?: string,
-  subpage?: Dialog,
-};
+export interface PageState {
+  page: Page;
+  extensionId?: string;
+  subpage?: Dialog;
+}
 
 type Listener = (pageState: PageState) => void;
 

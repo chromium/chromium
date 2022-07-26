@@ -13,23 +13,23 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './activity_log_history_item.html.js';
 
-export type ActivityGroup = {
-  activityIds: Set<string>,
-  key: string,
-  count: number,
-  activityType: chrome.activityLogPrivate.ExtensionActivityFilter,
-  countsByUrl: Map<string, number>,
-  expanded: boolean,
-};
+export interface ActivityGroup {
+  activityIds: Set<string>;
+  key: string;
+  count: number;
+  activityType: chrome.activityLogPrivate.ExtensionActivityFilter;
+  countsByUrl: Map<string, number>;
+  expanded: boolean;
+}
 
 /**
  * A struct used to describe each url and its associated counts. The id is
  * unique for each item in the list of URLs and is used for the tooltip.
  */
-export type PageUrlItem = {
-  page: string,
-  count: number,
-};
+export interface PageUrlItem {
+  page: string;
+  count: number;
+}
 
 export class ActivityLogHistoryItemElement extends PolymerElement {
   static get is() {

@@ -17,7 +17,7 @@ export {PageLayoutInfo} from './data/document_info.js';
 export {ExtensionDestinationInfo, LocalDestinationInfo} from './data/local_parsers.js';
 export {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './data/margins.js';
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';
-export {DuplexMode, DuplexType, getInstance, PolicyObjectEntry, PrintPreviewModelElement, PrintTicket, SerializedSettings, Setting, whenReady} from './data/model.js';
+export {DuplexMode, DuplexType, getInstance, PolicyObjectEntry, PrintPreviewModelElement, PrintTicket, SerializedSettings, Setting, Settings, whenReady} from './data/model.js';
 // <if expr="chromeos_ash or chromeos_lacros">
 export {PrintServerStore, PrintServerStoreEventType} from './data/print_server_store.js';
 // </if>

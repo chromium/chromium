@@ -27,10 +27,10 @@ import {WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
 /**
  * The strings contained in the arrays should be valid DOM-element tag names.
  */
-type NuxOnboardingModules = {
-  'new-user': string[],
-  'returning-user': string[],
-};
+interface NuxOnboardingModules {
+  'new-user': string[];
+  'returning-user': string[];
+}
 
 /**
  * This list needs to be updated if new modules need to be supported in the

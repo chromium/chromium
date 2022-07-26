@@ -18,10 +18,10 @@ import {Store} from './store.js';
 import {BookmarkElement, BookmarkNode, DragData, DropDestination, NodeMap, ObjectMap} from './types.js';
 import {canEditNode, canReorderChildren, getDisplayedList, hasChildFolders, isShowingSearch, normalizeNode} from './util.js';
 
-type NormalizedDragData = {
-  elements: BookmarkNode[],
-  sameProfile: boolean,
-};
+interface NormalizedDragData {
+  elements: BookmarkNode[];
+  sameProfile: boolean;
+}
 
 function isBookmarkItem(element: Element): boolean {
   return element.tagName === 'BOOKMARKS-ITEM';

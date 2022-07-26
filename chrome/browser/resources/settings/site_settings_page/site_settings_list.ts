@@ -23,16 +23,16 @@ import {SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '
 
 import {getTemplate} from './site_settings_list.html.js';
 
-export type CategoryListItem = {
-  route: Route,
-  id: ContentSettingsTypes,
-  label: string,
-  icon?: string,
-  enabledLabel?: string,
-  disabledLabel?: string,
-  otherLabel?: string,
-  shouldShow?: () => boolean,
-};
+export interface CategoryListItem {
+  route: Route;
+  id: ContentSettingsTypes;
+  label: string;
+  icon?: string;
+  enabledLabel?: string;
+  disabledLabel?: string;
+  otherLabel?: string;
+  shouldShow?: () => boolean;
+}
 
 export function defaultSettingLabel(
     setting: string, enabled: string, disabled: string,

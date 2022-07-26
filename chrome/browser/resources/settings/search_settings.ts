@@ -26,11 +26,11 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
    * A data structure used by callers to combine the results of multiple search
    * requests.
    */
-  export type SearchResult = {
-    canceled: boolean,
-    didFindMatches: boolean,
-    wasClearSearch: boolean,
-  };
+  export interface SearchResult {
+    canceled: boolean;
+    didFindMatches: boolean;
+    wasClearSearch: boolean;
+  }
 
   /**
    * A CSS attribute indicating that a node should be ignored during searching.
@@ -293,11 +293,11 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
     }
   }
 
-  type Queues = {
-    high: Task[],
-    middle: Task[],
-    low: Task[],
-  };
+  interface Queues {
+    high: Task[];
+    middle: Task[];
+    low: Task[];
+  }
 
   class TaskQueue {
     private request_: SearchRequest;

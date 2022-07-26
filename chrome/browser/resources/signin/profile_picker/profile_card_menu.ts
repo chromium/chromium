@@ -30,20 +30,20 @@ import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_b
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
 import {getTemplate} from './profile_card_menu.html.js';
 
-export type Statistics = {
-  BrowsingHistory: number,
-  Passwords: number,
-  Bookmarks: number,
-  Autofill: number,
-};
+export interface Statistics {
+  BrowsingHistory: number;
+  Passwords: number;
+  Bookmarks: number;
+  Autofill: number;
+}
 
 /**
  * This is the data structure sent back and forth between C++ and JS.
  */
-export type StatisticsResult = {
-  profilePath: string,
-  statistics: Statistics,
-};
+export interface StatisticsResult {
+  profilePath: string;
+  statistics: Statistics;
+}
 
 /**
  * Profile statistics data types.
@@ -133,7 +133,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   }
 
   profileState: ProfileState;
-  private statistics_: {[key: string]: number};
+  private statistics_: Statistics;
   private profileStatistics_: ProfileStatistics[];
   private removeWarningText_: string;
   private removeWarningTitle_: string;
@@ -236,7 +236,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     }
   }
 
-  private getProfileStatisticCount_(dataType: string): string {
+  private getProfileStatisticCount_(dataType: keyof Statistics): string {
     const count = this.statistics_[dataType];
     return (count === undefined) ? this.i18n('removeWarningCalculating') :
                                    count.toString();

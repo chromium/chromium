@@ -24,26 +24,26 @@ export enum ChangePageOrigin {
   PAGE_SELECTOR = 'pageSelector',
 }
 
-export type ChangePageAndXyDetail = {
-  page: number,
-  x: number,
-  y: number,
-  origin: ChangePageOrigin,
-};
+export interface ChangePageAndXyDetail {
+  page: number;
+  x: number;
+  y: number;
+  origin: ChangePageOrigin;
+}
 
-export type ChangePageDetail = {
-  page: number,
-  origin: ChangePageOrigin,
-};
+export interface ChangePageDetail {
+  page: number;
+  origin: ChangePageOrigin;
+}
 
-export type ChangeZoomDetail = {
-  zoom: number,
-};
+export interface ChangeZoomDetail {
+  zoom: number;
+}
 
-export type NavigateDetail = {
-  newtab: boolean,
-  uri: string,
-};
+export interface NavigateDetail {
+  newtab: boolean;
+  uri: string;
+}
 
 declare global {
   interface HTMLElementEventMap {

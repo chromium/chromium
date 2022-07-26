@@ -12,10 +12,10 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {CookieDetails} from './cookie_info.js';
 // clang-format on
 
-export type LocalDataItem = {
-  localData: string,
-  site: string,
-};
+export interface LocalDataItem {
+  localData: string;
+  site: string;
+}
 
 export interface LocalDataBrowserProxy {
   getDisplayList(filter: string): Promise<LocalDataItem[]>;

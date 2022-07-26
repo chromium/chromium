@@ -10,9 +10,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {appendParam} from 'chrome://resources/js/util.m.js';
 
 
-type EventLogEntry = {
-  [key: string]: number|string,
-};
+interface EventLogEntry {
+  [key: string]: number|string;
+}
 
 /**
  * Requests the list of WebRTC logs from the backend.

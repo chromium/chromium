@@ -16,9 +16,9 @@ import {getTemplate} from './discards_tab.html.js';
 import {LifecycleUnitDiscardReason, LifecycleUnitLoadingState, LifecycleUnitState} from './lifecycle_unit_state.mojom-webui.js';
 import {SortedTableMixin} from './sorted_table_mixin.js';
 
-type DictType = {
-  [key: string]: (boolean|number|string),
-};
+interface DictType {
+  [key: string]: (boolean|number|string);
+}
 
 /**
  * Compares two TabDiscardsInfos based on the data in the provided sort-key.

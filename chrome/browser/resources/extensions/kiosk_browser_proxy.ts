@@ -9,24 +9,24 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-export type KioskSettings = {
-  kioskEnabled: boolean,
-  autoLaunchEnabled: boolean,
-};
+export interface KioskSettings {
+  kioskEnabled: boolean;
+  autoLaunchEnabled: boolean;
+}
 
-export type KioskApp = {
-  id: string,
-  name: string,
-  iconURL: string,
-  autoLaunch: boolean,
-  isLoading: boolean,
-};
+export interface KioskApp {
+  id: string;
+  name: string;
+  iconURL: string;
+  autoLaunch: boolean;
+  isLoading: boolean;
+}
 
-export type KioskAppSettings = {
-  apps: KioskApp[],
-  disableBailout: boolean,
-  hasAutoLaunchApp: boolean,
-};
+export interface KioskAppSettings {
+  apps: KioskApp[];
+  disableBailout: boolean;
+  hasAutoLaunchApp: boolean;
+}
 
 /** @interface */
 export interface KioskBrowserProxy {

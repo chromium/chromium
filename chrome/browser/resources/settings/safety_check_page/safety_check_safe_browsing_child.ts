@@ -20,10 +20,10 @@ import {SafetyCheckCallbackConstants, SafetyCheckSafeBrowsingStatus} from './saf
 import {SafetyCheckIconStatus} from './safety_check_child.js';
 import {getTemplate} from './safety_check_safe_browsing_child.html.js';
 
-type SafeBrowsingChangedEvent = {
-  newState: SafetyCheckSafeBrowsingStatus,
-  displayString: string,
-};
+interface SafeBrowsingChangedEvent {
+  newState: SafetyCheckSafeBrowsingStatus;
+  displayString: string;
+}
 
 const SettingsSafetyCheckSafeBrowsingChildElementBase =
     WebUIListenerMixin(I18nMixin(PolymerElement));

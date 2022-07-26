@@ -7,10 +7,10 @@ import {$} from 'chrome://resources/js/util.m.js';
 
 type Process = [number, string, boolean];
 
-type ProcessList = {
-  message: string,
-  processes: Process[],
-};
+interface ProcessList {
+  message: string;
+  processes: Process[];
+}
 
 function requestProcessList() {
   sendWithPromise('requestProcessList').then(onProcessListReceived);

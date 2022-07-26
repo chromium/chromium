@@ -24,11 +24,11 @@ import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {DownloadsBrowserProxy, DownloadsBrowserProxyImpl} from './downloads_browser_proxy.js';
 import {getTemplate} from './downloads_page.html.js';
 
-type AccountInfo = {
-  linked: boolean,
-  account: {name: string, login: string},
-  folder: {name: string, link: string},
-};
+interface AccountInfo {
+  linked: boolean;
+  account: {name: string, login: string};
+  folder: {name: string, link: string};
+}
 
 const SettingsDownloadsPageElementBase =
     WebUIListenerMixin(PrefsMixin(PolymerElement));

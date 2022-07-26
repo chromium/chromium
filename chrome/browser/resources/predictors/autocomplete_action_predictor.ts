@@ -5,16 +5,16 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-type AutocompleteActionPredictorDb = {
-  enabled: boolean,
+interface AutocompleteActionPredictorDb {
+  enabled: boolean;
   db: Array<{
     user_text: string,
     url: string,
     hit_count: number,
     miss_count: number,
     confidence: number,
-  }>,
-};
+  }>;
+}
 
 /**
  * Requests the database from the backend.

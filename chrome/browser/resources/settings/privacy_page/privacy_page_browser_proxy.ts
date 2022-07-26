@@ -8,16 +8,16 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
-export type MetricsReporting = {
-  enabled: boolean,
-  managed: boolean,
-};
+export interface MetricsReporting {
+  enabled: boolean;
+  managed: boolean;
+}
 
-export type ResolverOption = {
-  name: string,
-  value: string,
-  policy: string,
-};
+export interface ResolverOption {
+  name: string;
+  value: string;
+  policy: string;
+}
 
 /**
  * Contains the possible string values for the secure DNS mode. This must be
@@ -39,11 +39,11 @@ export enum SecureDnsUiManagementMode {
   DISABLED_PARENTAL_CONTROLS = 2,
 }
 
-export type SecureDnsSetting = {
-  mode: SecureDnsMode,
-  config: string,
-  managementMode: SecureDnsUiManagementMode,
-};
+export interface SecureDnsSetting {
+  mode: SecureDnsMode;
+  config: string;
+  managementMode: SecureDnsUiManagementMode;
+}
 
 export interface PrivacyPageBrowserProxy {
   // <if expr="_google_chrome and not chromeos_ash">

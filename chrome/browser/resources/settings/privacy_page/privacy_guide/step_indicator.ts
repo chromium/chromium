@@ -13,10 +13,10 @@ import {getTemplate} from './step_indicator.html.js';
 
 const StepIndicatorBase = I18nMixin(PolymerElement);
 
-export type StepIndicatorModel = {
-  active: number,
-  total: number,
-};
+export interface StepIndicatorModel {
+  active: number;
+  total: number;
+}
 
 export class StepIndicator extends StepIndicatorBase {
   static get is() {

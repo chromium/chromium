@@ -12,19 +12,19 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
  * app is registered in the system.
  * @see chrome/browser/ui/webui/settings/chromeos/android_apps_handler.cc
  */
-export type AndroidAppsInfo = {
-  playStoreEnabled: boolean,
-  settingsAppAvailable: boolean,
-};
+export interface AndroidAppsInfo {
+  playStoreEnabled: boolean;
+  settingsAppAvailable: boolean;
+}
 
 /**
  * An object containing messages for web permissisions origin
  * and the messages multidevice feature state.
  */
-export type AndroidSmsInfo = {
-  origin: string,
-  enabled: boolean,
-};
+export interface AndroidSmsInfo {
+  origin: string;
+  enabled: boolean;
+}
 
 export interface AndroidInfoBrowserProxy {
   /**

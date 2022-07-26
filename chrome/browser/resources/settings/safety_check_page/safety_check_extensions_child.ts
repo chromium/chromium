@@ -19,10 +19,10 @@ import {SafetyCheckCallbackConstants, SafetyCheckExtensionsStatus} from './safet
 import {SafetyCheckIconStatus} from './safety_check_child.js';
 import {getTemplate} from './safety_check_extensions_child.html.js';
 
-type ExtensionsChangedEvent = {
-  newState: SafetyCheckExtensionsStatus,
-  displayString: string,
-};
+interface ExtensionsChangedEvent {
+  newState: SafetyCheckExtensionsStatus;
+  displayString: string;
+}
 
 const SettingsSafetyCheckExtensionsChildElementBase =
     WebUIListenerMixin(I18nMixin(PolymerElement));

@@ -11,10 +11,10 @@ export type RemoveVisitsRequest = Array<{
   timestamps: number[],
 }>;
 
-export type QueryResult = {
-  info: HistoryQuery,
-  value: HistoryEntry[],
-};
+export interface QueryResult {
+  info: HistoryQuery;
+  value: HistoryEntry[];
+}
 
 /**
  * @fileoverview Defines a singleton object, history.BrowserService, which

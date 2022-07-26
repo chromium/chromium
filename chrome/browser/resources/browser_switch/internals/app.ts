@@ -122,10 +122,11 @@ class BrowserSwitchInternalsAppElement extends
 
     for (const [rulesetName, ruleset] of Object.entries(rulesets)) {
       for (const [listName, rules] of Object.entries(ruleset as RuleSet)) {
-        this.push(listNameToProperty[listName], ...rules.map((rule) => ({
-                                                               rulesetName,
-                                                               rule,
-                                                             })));
+        this.push(
+            listNameToProperty[listName], ...rules.map((rule: string) => ({
+                                                         rulesetName,
+                                                         rule,
+                                                       })));
       }
     }
   }

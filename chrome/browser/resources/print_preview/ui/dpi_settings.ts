@@ -16,9 +16,9 @@ import {getTemplate} from './dpi_settings.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 type LabelledDpiOption = DpiOption&SelectOption;
-export type LabelledDpiCapability = {
-  option: LabelledDpiOption[],
-};
+export interface LabelledDpiCapability {
+  option: LabelledDpiOption[];
+}
 
 const PrintPreviewDpiSettingsElementBase = SettingsMixin(PolymerElement);
 

@@ -15,13 +15,13 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {getTemplate} from './other_options_settings.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
-type CheckboxOption = {
-  name: string,
-  label: string,
-  value?: boolean,
-  managed?: boolean,
-  available?: boolean,
-};
+interface CheckboxOption {
+  name: string;
+  label: string;
+  value?: boolean;
+  managed?: boolean;
+  available?: boolean;
+}
 
 const PrintPreviewOtherOptionsSettingsElementBase =
     SettingsMixin(I18nMixin(PolymerElement));

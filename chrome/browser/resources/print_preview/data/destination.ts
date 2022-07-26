@@ -67,15 +67,15 @@ export enum ColorMode {
   COLOR = 2,
 }
 
-export type RecentDestination = {
-  id: string,
-  origin: DestinationOrigin,
-  capabilities: Cdd|null,
-  displayName: string,
-  extensionId: string,
-  extensionName: string,
-  icon?: string,
-};
+export interface RecentDestination {
+  id: string;
+  origin: DestinationOrigin;
+  capabilities: Cdd|null;
+  displayName: string;
+  extensionId: string;
+  extensionName: string;
+  icon?: string;
+}
 
 export function isPdfPrinter(id: string): boolean {
   // <if expr="chromeos_ash or chromeos_lacros">
@@ -121,16 +121,16 @@ export function createRecentDestinationKey(
   return createDestinationKey(recentDestination.id, recentDestination.origin);
 }
 
-export type DestinationOptionalParams = {
-  isEnterprisePrinter?: boolean,
+export interface DestinationOptionalParams {
+  isEnterprisePrinter?: boolean;
   // <if expr="chromeos_ash or chromeos_lacros">
-  provisionalType?: DestinationProvisionalType,
+  provisionalType?: DestinationProvisionalType;
   // </if>
-  extensionId?: string,
-  extensionName?: string,
-  description?: string,
-  location?: string,
-};
+  extensionId?: string;
+  extensionName?: string;
+  description?: string;
+  location?: string;
+}
 
 /**
  * List of capability types considered color.

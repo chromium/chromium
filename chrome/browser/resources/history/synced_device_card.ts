@@ -22,9 +22,9 @@ import {SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
 import {ForeignSessionTab} from './externs.js';
 import {getTemplate} from './synced_device_card.html.js';
 
-type OpenTabEvent = {
-  model: {tab: ForeignSessionTab},
-};
+interface OpenTabEvent {
+  model: {tab: ForeignSessionTab};
+}
 
 declare global {
   interface HTMLElementTagNameMap {

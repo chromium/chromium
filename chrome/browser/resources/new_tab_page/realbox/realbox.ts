@@ -20,16 +20,16 @@ import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {RealboxDropdownElement} from './realbox_dropdown.js';
 import {AutocompleteMatchWithImageData, RealboxIconElement} from './realbox_icon.js';
 
-type Input = {
-  text: string,
-  inline: string,
-};
+interface Input {
+  text: string;
+  inline: string;
+}
 
-type InputUpdate = {
-  text?: string,
-  inline?: string,
-  moveCursorToEnd?: boolean,
-};
+interface InputUpdate {
+  text?: string;
+  inline?: string;
+  moveCursorToEnd?: boolean;
+}
 
 export interface RealboxElement {
   $: {

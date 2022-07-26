@@ -10,10 +10,10 @@ import {BookmarksPageState} from './types.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
-type Watch = {
-  localProperty: string,
-  valueGetter: (p: BookmarksPageState) => any,
-};
+interface Watch {
+  localProperty: string;
+  valueGetter: (p: BookmarksPageState) => any;
+}
 
 export const StoreClientMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&

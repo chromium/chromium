@@ -40,23 +40,23 @@ import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_bro
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {OriginInfo, SiteGroup} from './site_settings_prefs_browser_proxy.js';
 
-type ActionMenuModel = {
-  actionScope: string,
-  index: number,
-  item: SiteGroup,
-  origin: string,
-  isPartitioned: boolean,
-  path: string,
-  target: HTMLElement,
-};
+interface ActionMenuModel {
+  actionScope: string;
+  index: number;
+  item: SiteGroup;
+  origin: string;
+  isPartitioned: boolean;
+  path: string;
+  target: HTMLElement;
+}
 
 type OpenMenuEvent = CustomEvent<ActionMenuModel>;
 type RemoveSiteEvent = CustomEvent<ActionMenuModel>;
 
-type SelectedItem = {
-  item: SiteGroup,
-  index: number,
-};
+interface SelectedItem {
+  item: SiteGroup;
+  index: number;
+}
 
 declare global {
   interface HTMLElementEventMap {

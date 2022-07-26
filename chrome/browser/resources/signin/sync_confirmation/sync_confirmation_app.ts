@@ -20,10 +20,10 @@ import {getTemplate} from './sync_confirmation_app.html.js';
 import {SyncConfirmationBrowserProxy, SyncConfirmationBrowserProxyImpl} from './sync_confirmation_browser_proxy.js';
 
 
-type AccountInfo = {
-  src: string,
-  showEnterpriseBadge: boolean,
-};
+interface AccountInfo {
+  src: string;
+  showEnterpriseBadge: boolean;
+}
 
 const SyncConfirmationAppElementBase = WebUIListenerMixin(PolymerElement);
 

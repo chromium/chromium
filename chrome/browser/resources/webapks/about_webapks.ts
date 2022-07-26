@@ -5,28 +5,28 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 
-type WebApkInfo = {
-  name: string,
-  shortName: string,
-  packageName: string,
-  id: string,
-  shellApkVersion: number,
-  versionCode: number,
-  uri: string,
-  scope: string,
-  manifestUrl: string,
-  manifestStartUrl: string,
-  displayMode: string,
-  orientation: string,
-  themeColor: string,
-  backgroundColor: string,
-  lastUpdateCheckTimeMs: number,
-  lastUpdateCompletionTimeMs: number,
-  relaxUpdates: boolean,
-  backingBrowser: string,
-  isBackingBrowser: boolean,
-  updateStatus: string,
-};
+interface WebApkInfo {
+  name: string;
+  shortName: string;
+  packageName: string;
+  id: string;
+  shellApkVersion: number;
+  versionCode: number;
+  uri: string;
+  scope: string;
+  manifestUrl: string;
+  manifestStartUrl: string;
+  displayMode: string;
+  orientation: string;
+  themeColor: string;
+  backgroundColor: string;
+  lastUpdateCheckTimeMs: number;
+  lastUpdateCompletionTimeMs: number;
+  relaxUpdates: boolean;
+  backingBrowser: string;
+  isBackingBrowser: boolean;
+  updateStatus: string;
+}
 
 /**
  * Creates and returns an element (with |text| as content) assigning it the

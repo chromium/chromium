@@ -10,16 +10,16 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
  * An object describing a source browser profile that may be imported.
  * The structure of this data must be kept in sync with C++ ImportDataHandler.
  */
-export type BrowserProfile = {
-  name: string,
-  index: number,
-  profileName: string,
-  history: boolean,
-  favorites: boolean,
-  passwords: boolean,
-  search: boolean,
-  autofillFormData: boolean,
-};
+export interface BrowserProfile {
+  name: string;
+  index: number;
+  profileName: string;
+  history: boolean;
+  favorites: boolean;
+  passwords: boolean;
+  search: boolean;
+  autofillFormData: boolean;
+}
 
 /**
  * These string values must be kept in sync with the C++ ImportDataHandler.

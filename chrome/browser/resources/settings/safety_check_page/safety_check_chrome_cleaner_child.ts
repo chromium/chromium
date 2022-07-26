@@ -20,10 +20,10 @@ import {SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus} from './sa
 import {SafetyCheckIconStatus} from './safety_check_child.js';
 import {getTemplate} from './safety_check_chrome_cleaner_child.html.js';
 
-type ChromeCleanerChangedEvent = {
-  newState: SafetyCheckChromeCleanerStatus,
-  displayString: string,
-};
+interface ChromeCleanerChangedEvent {
+  newState: SafetyCheckChromeCleanerStatus;
+  displayString: string;
+}
 
 const SettingsSafetyCheckChromeCleanerChildElementBase =
     WebUIListenerMixin(I18nMixin(PolymerElement));

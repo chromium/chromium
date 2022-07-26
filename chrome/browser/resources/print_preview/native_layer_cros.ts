@@ -8,20 +8,20 @@ import {Cdd} from './data/cdd.js';
 import {ExtensionDestinationInfo} from './data/local_parsers.js';
 import {PrinterStatus} from './data/printer_status_cros.js';
 
-export type PrinterSetupResponse = {
-  printerId: string,
-  capabilities: Cdd,
-};
+export interface PrinterSetupResponse {
+  printerId: string;
+  capabilities: Cdd;
+}
 
-export type PrintServer = {
-  id: string,
-  name: string,
-};
+export interface PrintServer {
+  id: string;
+  name: string;
+}
 
-export type PrintServersConfig = {
-  printServers: PrintServer[],
-  isSingleServerFetchingMode: boolean,
-};
+export interface PrintServersConfig {
+  printServers: PrintServer[];
+  isSingleServerFetchingMode: boolean;
+}
 
 /**
  * An interface to the Chrome OS platform specific part of the native Chromium
