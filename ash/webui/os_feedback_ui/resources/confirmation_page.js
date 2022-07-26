@@ -81,7 +81,6 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
    * @protected
    */
   getMessage_() {
-    // TODO(xiangdongkong): Localize the strings.
     if (this.isOffline_()) {
       return this.i18n('thankYouNoteOffline');
     }
