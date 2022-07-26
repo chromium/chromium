@@ -2581,22 +2581,6 @@
             ]
         }
     ],
-    "CoalesceIndependentBeginFrame": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CoalesceIndependentBeginFrame"
-                    ]
-                }
-            ]
-        }
-    ],
     "Collections": [
         {
             "platforms": [

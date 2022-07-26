@@ -241,10 +241,7 @@ class CompositorImpl::HostBeginFrameObserver
       return;
     }
 
-    static const bool kCoalesce = base::FeatureList::IsEnabled(
-        ::features::kCoalesceIndependentBeginFrame);
-    if (kCoalesce &&
-        (base::TimeTicks::Now() - args.frame_time) > args.interval) {
+    if ((base::TimeTicks::Now() - args.frame_time) > args.interval) {
       begin_frame_args_ = args;
       pending_coalesce_callback_ = true;
       task_runner_->PostDelayedTask(

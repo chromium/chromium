@@ -305,7 +305,6 @@ CONTENT_EXPORT extern const base::Feature kWebXrArModule;
 CONTENT_EXPORT extern const base::Feature kAccessibilityPageZoom;
 CONTENT_EXPORT extern const base::Feature
     kBackgroundMediaRendererHasModerateBinding;
-CONTENT_EXPORT extern const base::Feature kCoalesceIndependentBeginFrame;
 CONTENT_EXPORT extern const base::Feature kOnDemandAccessibilityEvents;
 CONTENT_EXPORT extern const base::Feature kRequestDesktopSiteAdditions;
 CONTENT_EXPORT extern const base::Feature kRequestDesktopSiteExceptions;
