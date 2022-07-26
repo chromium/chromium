@@ -807,7 +807,7 @@ void WaylandSurface::SetRoundedClipBounds(
 }
 
 void WaylandSurface::SetBackgroundColor(
-    absl::optional<SkColor> background_color) {
+    absl::optional<SkColor4f> background_color) {
   if (GetAugmentedSurface())
     pending_state_.background_color = background_color;
 }

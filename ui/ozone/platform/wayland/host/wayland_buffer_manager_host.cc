@@ -180,7 +180,7 @@ void WaylandBufferManagerHost::CreateShmBasedBuffer(mojo::PlatformHandle shm_fd,
 }
 
 void WaylandBufferManagerHost::CreateSolidColorBuffer(const gfx::Size& size,
-                                                      SkColor color,
+                                                      const SkColor4f& color,
                                                       uint32_t buffer_id) {
   DCHECK(base::CurrentUIThread::IsSet());
   DCHECK(error_message_.empty());

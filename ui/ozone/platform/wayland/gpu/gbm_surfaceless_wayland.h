@@ -73,7 +73,7 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
               bool has_alpha) override;
   void SetForceGlFlushOnSwapBuffers() override;
 
-  BufferId GetOrCreateSolidColorBuffer(SkColor color, const gfx::Size& size);
+  BufferId GetOrCreateSolidColorBuffer(SkColor4f color, const gfx::Size& size);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceFactoryTest,
@@ -92,7 +92,7 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
     ~SolidColorBufferHolder();
 
     BufferId GetOrCreateSolidColorBuffer(
-        SkColor color,
+        SkColor4f color,
         WaylandBufferManagerGpu* buffer_manager);
 
     void OnSubmission(BufferId buffer_id,
@@ -104,14 +104,14 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
     // anything and stored on the gpu side for convenience so that WBHM doesn't
     // become more complex.
     struct SolidColorBuffer {
-      SolidColorBuffer(SkColor color, BufferId buffer_id)
+      SolidColorBuffer(const SkColor4f& color, BufferId buffer_id)
           : color(color), buffer_id(buffer_id) {}
       SolidColorBuffer(SolidColorBuffer&& buffer) = default;
       SolidColorBuffer& operator=(SolidColorBuffer&& buffer) = default;
       ~SolidColorBuffer() = default;
 
       // Color of the buffer.
-      SkColor color = SK_ColorWHITE;
+      SkColor4f color = SkColors::kWhite;
       // The buffer id that is mapped with the buffer id created on the browser
       // side.
       BufferId buffer_id = 0;

@@ -75,7 +75,7 @@ wl::Object<augmented_sub_surface> SurfaceAugmenter::CreateAugmentedSubSurface(
 }
 
 wl::Object<wl_buffer> SurfaceAugmenter::CreateSolidColorBuffer(
-    SkColor color,
+    const SkColor4f& color,
     const gfx::Size& size) {
   wl_array color_data;
   wl_array_init(&color_data);

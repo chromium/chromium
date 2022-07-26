@@ -219,7 +219,7 @@ void WaylandBufferManagerGpu::CreateShmBasedBuffer(base::ScopedFD shm_fd,
   RunOrQueueTask(std::move(task));
 }
 
-void WaylandBufferManagerGpu::CreateSolidColorBuffer(SkColor color,
+void WaylandBufferManagerGpu::CreateSolidColorBuffer(SkColor4f color,
                                                      const gfx::Size& size,
                                                      uint32_t buf_id) {
   DCHECK(gpu_thread_runner_);
@@ -478,7 +478,7 @@ void WaylandBufferManagerGpu::CreateShmBasedBufferTask(base::ScopedFD shm_fd,
                                      length, size, buffer_id);
 }
 
-void WaylandBufferManagerGpu::CreateSolidColorBufferTask(SkColor color,
+void WaylandBufferManagerGpu::CreateSolidColorBufferTask(SkColor4f color,
                                                          const gfx::Size& size,
                                                          uint32_t buf_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);

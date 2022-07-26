@@ -79,7 +79,7 @@ struct WaylandOverlayConfig {
   gfx::RRectF rounded_clip_bounds;
 
   // Optional: background color of this overlay plane.
-  absl::optional<SkColor> background_color;
+  absl::optional<SkColor4f> background_color;
 };
 
 }  // namespace wl

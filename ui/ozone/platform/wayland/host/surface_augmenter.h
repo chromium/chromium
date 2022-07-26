@@ -42,7 +42,7 @@ class SurfaceAugmenter : public wl::GlobalObjectRegistrar<SurfaceAugmenter> {
   wl::Object<augmented_sub_surface> CreateAugmentedSubSurface(
       wl_subsurface* subsurface);
 
-  wl::Object<wl_buffer> CreateSolidColorBuffer(SkColor color,
+  wl::Object<wl_buffer> CreateSolidColorBuffer(const SkColor4f& color,
                                                const gfx::Size& size);
 
  private:

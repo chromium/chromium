@@ -100,7 +100,7 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   // ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom. The
   // availability of this depends on existence of surface-augmenter protocol.
   void CreateSolidColorBuffer(const gfx::Size& size,
-                              SkColor color,
+                              const SkColor4f& color,
                               uint32_t buffer_id) override;
 
   // Called by the GPU to destroy the imported wl_buffer with a |buffer_id|.

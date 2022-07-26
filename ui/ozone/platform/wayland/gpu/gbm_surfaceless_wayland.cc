@@ -45,7 +45,7 @@ GbmSurfacelessWayland::SolidColorBufferHolder::~SolidColorBufferHolder() =
 
 BufferId
 GbmSurfacelessWayland::SolidColorBufferHolder::GetOrCreateSolidColorBuffer(
-    SkColor color,
+    SkColor4f color,
     WaylandBufferManagerGpu* buffer_manager) {
   BufferId next_buffer_id = 0;
 

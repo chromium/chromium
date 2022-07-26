@@ -9,7 +9,7 @@ import "ui/gfx/mojom/gpu_fence_handle.mojom";
 import "ui/gfx/mojom/overlay_transform.mojom";
 import "ui/gfx/mojom/overlay_priority_hint.mojom";
 import "ui/gfx/mojom/rrect_f.mojom";
-import "skia/public/mojom/skcolor.mojom";
+import "skia/public/mojom/skcolor4f.mojom";
 
 // This is not a mirror of ui::OverlayPlane, it only contains things that are
 // useful to ozone/wayland.
@@ -64,5 +64,5 @@ struct WaylandOverlayConfig {
   gfx.mojom.RRectF rounded_clip_bounds;
 
   // Optional: background color of this overlay plane.
-  skia.mojom.SkColor? background_color;
+  skia.mojom.SkColor4f? background_color;
 };

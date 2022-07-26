@@ -353,7 +353,11 @@ SkPath ConvertPathToDIP(const SkPath& path_in_pixels, float scale) {
 
 void SkColorToWlArray(const SkColor& color, wl_array& array) {
   SkColor4f precise_color = SkColor4f::FromColor(color);
-  for (float component : precise_color.array()) {
+  SkColorToWlArray(precise_color, array);
+}
+
+void SkColorToWlArray(const SkColor4f& color, wl_array& array) {
+  for (float component : color.array()) {
     float* ptr = static_cast<float*>(wl_array_add(&array, sizeof(float)));
     DCHECK(ptr);
     *ptr = component;

@@ -160,7 +160,7 @@ class WaylandSurface {
   // Sets the background color for this surface, which will be blended with the
   // wl_buffer contents during the compositing step on the Wayland compositor
   // side.
-  void SetBackgroundColor(absl::optional<SkColor> background_color);
+  void SetBackgroundColor(absl::optional<SkColor4f> background_color);
 
   // Validates the |pending_state_| and generates the corresponding requests.
   // Then copy |pending_states_| to |states_|.
@@ -253,7 +253,7 @@ class WaylandSurface {
     // Optional background color for this surface. This information
     // can be used by Wayland compositor to correctly display delegated textures
     // which require background color applied.
-    absl::optional<SkColor> background_color;
+    absl::optional<SkColor4f> background_color;
   };
 
   // Tracks the last sent src and dst values across wayland protocol s.t. we

@@ -104,6 +104,9 @@ SkPath ConvertPathToDIP(const SkPath& path_in_pixels, float scale);
 // Converts SkColor into wl_array.
 void SkColorToWlArray(const SkColor& color, wl_array& array);
 
+// Converts SkColor4f into wl_array.
+void SkColorToWlArray(const SkColor4f& color, wl_array& array);
+
 }  // namespace wl
 
 #endif  // UI_OZONE_PLATFORM_WAYLAND_COMMON_WAYLAND_UTIL_H_

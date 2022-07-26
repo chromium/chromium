@@ -11,7 +11,7 @@ namespace ui {
 
 WaylandBufferBackingSolidColor::WaylandBufferBackingSolidColor(
     const WaylandConnection* connection,
-    SkColor color,
+    SkColor4f color,
     const gfx::Size& size,
     uint32_t buffer_id)
     : WaylandBufferBacking(connection, buffer_id, size), color_(color) {}

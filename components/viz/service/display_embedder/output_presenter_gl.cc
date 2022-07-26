@@ -422,11 +422,6 @@ void OutputPresenterGL::ScheduleOverlayPlane(
             gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING);
     }
 #endif
-    // TODO(crbug.com/1308932): OverlayPlaneData to SkColor4f will make this
-    // unnecessary.
-    absl::optional<SkColor> overlay_plane_data_color;
-    if (overlay_plane_candidate.color)
-      overlay_plane_data_color = overlay_plane_candidate.color->toSkColor();
 
     // Access fence takes priority over composite fence iff it exists.
     if (access) {
@@ -449,7 +444,7 @@ void OutputPresenterGL::ScheduleOverlayPlane(
             overlay_plane_candidate.priority_hint,
             overlay_plane_candidate.rounded_corners,
             overlay_plane_candidate.color_space,
-            overlay_plane_candidate.hdr_metadata, overlay_plane_data_color,
+            overlay_plane_candidate.hdr_metadata, overlay_plane_candidate.color,
             overlay_plane_candidate.is_solid_color));
   }
 #elif BUILDFLAG(IS_APPLE)

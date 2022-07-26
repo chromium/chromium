@@ -5,7 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_MOJOM_WAYLAND_OVERLAY_CONFIG_MOJOM_TRAITS_H_
 #define UI_OZONE_PLATFORM_WAYLAND_MOJOM_WAYLAND_OVERLAY_CONFIG_MOJOM_TRAITS_H_
 
-#include "skia/public/mojom/skcolor_mojom_traits.h"
+#include "skia/public/mojom/skcolor4f_mojom_traits.h"
 #include "ui/gfx/mojom/gpu_fence_handle_mojom_traits.h"
 #include "ui/gfx/mojom/overlay_priority_hint_mojom_traits.h"
 #include "ui/gfx/mojom/overlay_transform_mojom_traits.h"
@@ -70,7 +70,7 @@ struct StructTraits<wl::mojom::WaylandOverlayConfigDataView,
     return input.rounded_clip_bounds;
   }
 
-  static const absl::optional<SkColor>& background_color(
+  static const absl::optional<SkColor4f>& background_color(
       const wl::WaylandOverlayConfig& input) {
     return input.background_color;
   }

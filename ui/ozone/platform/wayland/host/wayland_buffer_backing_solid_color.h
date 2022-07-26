@@ -20,7 +20,7 @@ class WaylandBufferBackingSolidColor : public WaylandBufferBacking {
   WaylandBufferBackingSolidColor& operator=(
       const WaylandBufferBackingSolidColor&) = delete;
   WaylandBufferBackingSolidColor(const WaylandConnection* connection,
-                                 SkColor color,
+                                 SkColor4f color,
                                  const gfx::Size& size,
                                  uint32_t buffer_id);
   ~WaylandBufferBackingSolidColor() override;
@@ -30,7 +30,7 @@ class WaylandBufferBackingSolidColor : public WaylandBufferBacking {
   void RequestBufferHandle(
       base::OnceCallback<void(wl::Object<wl_buffer>)> callback) override;
 
-  SkColor color_;
+  SkColor4f color_;
 };
 
 }  // namespace ui

@@ -5,7 +5,7 @@
 module ui.ozone.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
-import "skia/public/mojom/skcolor.mojom";
+import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/accelerated_widget.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
@@ -68,7 +68,7 @@ interface WaylandBufferManagerHost {
   // used to identify imported wl_buffers on the browser process side and map
   // them with the buffer objects on the gpu process side.
   CreateSolidColorBuffer(gfx.mojom.Size size,
-                         skia.mojom.SkColor color,
+                         skia.mojom.SkColor4f color,
                          uint32 buffer_id);
 
   // These two methods are independent from the type of rendering.
