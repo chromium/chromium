@@ -226,10 +226,8 @@ LoginDisplay* LoginDisplayHostMojo::GetLoginDisplay() {
 }
 
 ExistingUserController* LoginDisplayHostMojo::GetExistingUserController() {
-  if (!existing_user_controller_) {
-    LOG(WARNING) << "Triggered crbug/1307919 in Mojo host";
+  if (!existing_user_controller_)
     CreateExistingUserController();
-  }
   return existing_user_controller_.get();
 }
 
