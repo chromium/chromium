@@ -906,6 +906,8 @@ class Browser : public TabStripModelObserver,
   void ExitFullscreenModeForTab(content::WebContents* web_contents) override;
   bool IsFullscreenForTabOrPending(
       const content::WebContents* web_contents) override;
+  bool IsFullscreenForTabOrPending(const content::WebContents* web_contents,
+                                   int64_t* display_id) override;
   blink::mojom::DisplayMode GetDisplayMode(
       const content::WebContents* web_contents) override;
   blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel(

@@ -154,6 +154,12 @@ void WebContentsDelegate::CreateSmsPrompt(
 
 bool WebContentsDelegate::IsFullscreenForTabOrPending(
     const WebContents* web_contents) {
+  return IsFullscreenForTabOrPending(web_contents, /*display_id=*/nullptr);
+}
+
+bool WebContentsDelegate::IsFullscreenForTabOrPending(
+    const WebContents* web_contents,
+    int64_t* display_id) {
   return false;
 }
 

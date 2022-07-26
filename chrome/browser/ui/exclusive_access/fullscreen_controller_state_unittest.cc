@@ -19,6 +19,7 @@
 #include "content/public/common/url_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/types/display_constants.h"
 
 // The FullscreenControllerStateUnitTest unit test suite exhastively tests
 // the FullscreenController through all permutations of events. The behavior
@@ -452,6 +453,37 @@ TEST_F(FullscreenControllerStateUnitTest,
   EXPECT_FALSE(lambda_called);
   GetFullscreenController()->FullscreenTransititionCompleted();
   EXPECT_TRUE(lambda_called);
+}
+
+// Tests that the overloaded version of IsFullscreenForTabOrPending writes the
+// display ID.
+TEST_F(FullscreenControllerStateUnitTest,
+       IsFullscreenForTabOrPendingWritesDisplayId) {
+  AddTab(browser(), GURL(url::kAboutBlankURL));
+  content::WebContents* const tab =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  // Should not overwrite `display_id` when not in fullscreen (or pending).
+  int64_t display_id = display::kDefaultDisplayId;
+  EXPECT_FALSE(
+      GetFullscreenController()->IsFullscreenForTabOrPending(tab, &display_id));
+  EXPECT_EQ(display::kDefaultDisplayId, display_id);
+
+  // During transition `display_id` should be overwritten with the display ID.
+  ASSERT_TRUE(InvokeEvent(TAB_FULLSCREEN_TRUE));
+  EXPECT_TRUE(GetFullscreenController()->IsFullscreenForTabOrPending(tab));
+  display_id = display::kDefaultDisplayId;
+  EXPECT_TRUE(GetFullscreenController()->IsFullscreenForTabOrPending(tab));
+  EXPECT_TRUE(
+      GetFullscreenController()->IsFullscreenForTabOrPending(tab, &display_id));
+  EXPECT_NE(display::kDefaultDisplayId, display_id);
+
+  // After transition, `display_id` should be overwritten with the display ID.
+  GetFullscreenController()->FullscreenTransititionCompleted();
+  display_id = display::kDefaultDisplayId;
+  EXPECT_TRUE(GetFullscreenController()->IsFullscreenForTabOrPending(tab));
+  EXPECT_TRUE(
+      GetFullscreenController()->IsFullscreenForTabOrPending(tab, &display_id));
+  EXPECT_NE(display::kDefaultDisplayId, display_id);
 }
 
 // Test that switching tabs takes the browser out of tab fullscreen.

@@ -105,6 +105,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/display/screen.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -1755,6 +1756,20 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
 
   bool IsFullscreenForTabOrPending(const WebContents* web_contents) override {
     return is_fullscreen_;
+  }
+
+  bool IsFullscreenForTabOrPending(const WebContents* web_contents,
+                                   int64_t* display_id) override {
+    const bool fullscreen = IsFullscreenForTabOrPending(web_contents);
+    if (fullscreen && display_id) {
+      // Workaround for WebContents::GetNativeView not being const.
+      // TODO(crbug.com/1347558): Make WebContents::GetNativeView const.
+      DCHECK_EQ(web_contents_, web_contents);
+      *display_id = display::Screen::GetScreen()
+                        ->GetDisplayNearestView(web_contents_->GetNativeView())
+                        .id();
+    }
+    return fullscreen;
   }
 
   const blink::mojom::FullscreenOptions& fullscreen_options() {

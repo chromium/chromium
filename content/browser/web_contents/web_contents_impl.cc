@@ -177,6 +177,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/animation/animation.h"
 
@@ -1241,6 +1242,16 @@ std::string WebContentsImpl::GetTitleForMediaControls() {
   if (!delegate_)
     return std::string();
   return delegate_->GetTitleForMediaControls(this);
+}
+
+bool WebContentsImpl::IsFullscreenOnDisplay(int64_t display_id) const {
+  if (!delegate_)
+    return false;
+  DCHECK_NE(display_id, display::kInvalidDisplayId);
+  int64_t fullscreen_display = display::kInvalidDisplayId;
+  if (!delegate_->IsFullscreenForTabOrPending(this, &fullscreen_display))
+    return false;
+  return fullscreen_display == display_id;
 }
 
 // Returns the NavigationController for the primary FrameTree, i.e. the one
@@ -5480,9 +5491,6 @@ base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
   // fullscreen if it does. This is theoretically quadratic-ish (fullscreen
   // contentses x each one's opener length) but neither of those is expected to
   // ever be a large number.
-
-  auto* screen = display::Screen::GetScreen();
-
   auto fullscreen_set_copy = *FullscreenContentsSet(GetBrowserContext());
   for (auto* fullscreen_contents : fullscreen_set_copy) {
     // Checking IsFullscreen() for tabs in the fullscreen set may seem
@@ -5490,10 +5498,8 @@ base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
     // it's possible that the delegate's notion of fullscreen may have changed
     // outside of WebContents's notice.
     if (fullscreen_contents->IsFullscreen() &&
-        (display_id == display::kInvalidDisplayId || !screen ||
-         display_id ==
-             screen->GetDisplayNearestView(fullscreen_contents->GetNativeView())
-                 .id())) {
+        (display_id == display::kInvalidDisplayId ||
+         fullscreen_contents->IsFullscreenOnDisplay(display_id))) {
       auto opener_contentses = GetAllOpeningWebContents(fullscreen_contents);
       if (opener_contentses.count(this))
         fullscreen_contents->ExitFullscreen(true);
@@ -5511,10 +5517,8 @@ base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
 
   for (auto* opener : GetAllOpeningWebContents(this)) {
     // Drop fullscreen if the WebContents is in it, and...
-    if (opener->IsFullscreen() &&
-        (display_id == display::kInvalidDisplayId || !screen ||
-         display_id ==
-             screen->GetDisplayNearestView(opener->GetNativeView()).id()))
+    if (opener->IsFullscreen() && (display_id == display::kInvalidDisplayId ||
+                                   opener->IsFullscreenOnDisplay(display_id)))
       opener->ExitFullscreen(true);
 
     // ...block the WebContents from entering fullscreen until further notice.
