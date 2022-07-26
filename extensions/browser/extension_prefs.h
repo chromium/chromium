@@ -202,11 +202,6 @@ class ExtensionPrefs : public KeyedService {
   // Note that blocklisted extensions are NOT marked as disabled!
   bool IsExtensionDisabled(const std::string& id) const;
 
-  // Get/Set the order that the browser actions appear in the toolbar.
-  // TODO(devlin): Remove this. The pref is no longer used.
-  ExtensionIdList GetToolbarOrder() const;
-  void SetToolbarOrder(const ExtensionIdList& extension_ids);
-
   // Get/Set the set of extensions that are pinned to the toolbar. Only used
   // when the experiment ExtensionsMenu is active."
   // TODO(crbug.com/943702): Remove reference to experiment when it launches or

@@ -114,28 +114,6 @@ class ExtensionPrefsLastPingDay : public ExtensionPrefsTest {
 };
 TEST_F(ExtensionPrefsLastPingDay, LastPingDay) {}
 
-// Tests the GetToolbarOrder/SetToolbarOrder functions.
-class ExtensionPrefsToolbarOrder : public ExtensionPrefsTest {
- public:
-  void Initialize() override {
-    list_.push_back(prefs_.AddExtensionAndReturnId("1"));
-    list_.push_back(prefs_.AddExtensionAndReturnId("2"));
-    list_.push_back(prefs_.AddExtensionAndReturnId("3"));
-    ExtensionIdList before_list = prefs()->GetToolbarOrder();
-    EXPECT_TRUE(before_list.empty());
-    prefs()->SetToolbarOrder(list_);
-  }
-
-  void Verify() override {
-    ExtensionIdList result = prefs()->GetToolbarOrder();
-    ASSERT_EQ(list_, result);
-  }
-
- private:
-  ExtensionIdList list_;
-};
-TEST_F(ExtensionPrefsToolbarOrder, ToolbarOrder) {}
-
 // Tests the IsExtensionDisabled/SetExtensionState functions.
 class ExtensionPrefsExtensionState : public ExtensionPrefsTest {
  public:

@@ -777,6 +777,11 @@ const char kStabilityCrashCount[] =
 const char kPrivacySandboxApisEnabledV2Init[] =
     "privacy_sandbox.apis_enabled_v2_init";
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Deprecated 07/2022.
+const char kExtensionToolbar[] = "extensions.toolbar";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1025,6 +1030,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kPrivacySandboxFlocEnabled, true);
   registry->RegisterBooleanPref(kPrivacySandboxFlocDataAccessibleSince, false);
   registry->RegisterBooleanPref(kPrivacySandboxApisEnabledV2Init, false);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Deprecated 07/2022
+  registry->RegisterListPref(kExtensionToolbar);
+#endif
 }
 
 }  // namespace
@@ -2014,6 +2024,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kPrivacySandboxFlocEnabled);
   profile_prefs->ClearPref(kPrivacySandboxFlocDataAccessibleSince);
   profile_prefs->ClearPref(kPrivacySandboxApisEnabledV2Init);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Added 07/2022.
+  profile_prefs->ClearPref(kExtensionToolbar);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
