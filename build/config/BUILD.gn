@@ -48,9 +48,6 @@ config("feature_flags") {
   defines = []
   if (dcheck_always_on) {
     defines += [ "DCHECK_ALWAYS_ON=1" ]
-    if (dcheck_is_configurable) {
-      defines += [ "DCHECK_IS_CONFIGURABLE" ]
-    }
   }
   if (use_udev) {
     # TODO(brettw) should probably be "=1".

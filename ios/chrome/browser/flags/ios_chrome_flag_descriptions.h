@@ -7,6 +7,8 @@
 
 #include "Availability.h"
 
+#include "base/debug/debugging_buildflags.h"
+
 // Please add names and descriptions in alphabetical order.
 
 namespace flag_descriptions {
@@ -147,11 +149,11 @@ extern const char kContentSuggestionsUIViewControllerMigrationDescription[];
 extern const char kCrashpadIOSName[];
 extern const char kCrashpadIOSDescription[];
 
-#if defined(DCHECK_IS_CONFIGURABLE)
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 // Title and description for the flag to enable configurable DCHECKs.
 extern const char kDcheckIsFatalName[];
 extern const char kDcheckIsFatalDescription[];
-#endif  // defined(DCHECK_IS_CONFIGURABLE)
+#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 // Title and description for the flag to show a modified fullscreen modal promo
 // with a button that would send the users in the Settings.app to update the

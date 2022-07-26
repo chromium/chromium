@@ -182,7 +182,7 @@ void DcheckEmptyFunction1() {
 }
 void DcheckEmptyFunction2() {}
 
-#if defined(DCHECK_IS_CONFIGURABLE)
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 class ScopedDcheckSeverity {
  public:
   ScopedDcheckSeverity(logging::LogSeverity new_severity)
@@ -195,7 +195,7 @@ class ScopedDcheckSeverity {
  private:
   logging::LogSeverity old_severity_;
 };
-#endif  // defined(DCHECK_IS_CONFIGURABLE)
+#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 // https://crbug.com/709067 tracks test flakiness on iOS.
 #if BUILDFLAG(IS_IOS)
@@ -204,12 +204,12 @@ class ScopedDcheckSeverity {
 #define MAYBE_Dcheck Dcheck
 #endif
 TEST_F(CheckTest, MAYBE_Dcheck) {
-#if defined(DCHECK_IS_CONFIGURABLE)
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   // DCHECKs are enabled, and LOGGING_DCHECK is mutable, but defaults to
   // non-fatal. Set it to LOGGING_FATAL to get the expected behavior from the
   // rest of this test.
   ScopedDcheckSeverity dcheck_severity(logging::LOGGING_FATAL);
-#endif  // defined(DCHECK_IS_CONFIGURABLE)
+#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 #if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
   // Release build.
@@ -305,7 +305,7 @@ TEST_F(CheckTest, CheckEqStatements) {
     CHECK_EQ(false, true);  // Unreached.
 }
 
-#if defined(DCHECK_IS_CONFIGURABLE)
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 TEST_F(CheckTest, ConfigurableDCheck) {
   // Verify that DCHECKs default to non-fatal in configurable-DCHECK builds.
   // Note that we require only that DCHECK is non-fatal by default, rather
@@ -348,7 +348,7 @@ TEST_F(CheckTest, ConfigurableDCheckFeature) {
     EXPECT_LT(logging::LOGGING_DCHECK, logging::LOGGING_FATAL);
   }
 }
-#endif  // defined(DCHECK_IS_CONFIGURABLE)
+#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 struct StructWithOstream {
   bool operator==(const StructWithOstream& o) const { return &o == this; }

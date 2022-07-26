@@ -394,6 +394,7 @@ buildflag_header("debugging_buildflags") {
   flags = [
     "PA_DCHECK_IS_ON=$_dcheck_is_on",
     "PA_EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
+    "PA_DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
   ]
 }
 

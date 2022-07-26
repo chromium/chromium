@@ -401,11 +401,11 @@ PA_COMPONENT_EXPORT(PARTITION_ALLOC) extern std::ostream* g_swallow_stream;
 
 // Definitions for DCHECK et al.
 
-#if defined(DCHECK_IS_CONFIGURABLE)
+#if BUILDFLAG(PA_DCHECK_IS_CONFIGURABLE)
 PA_COMPONENT_EXPORT(PARTITION_ALLOC) extern LogSeverity LOGGING_DCHECK;
 #else
 constexpr LogSeverity LOGGING_DCHECK = LOGGING_FATAL;
-#endif  // defined(DCHECK_IS_CONFIGURABLE)
+#endif  // BUILDFLAG(PA_DCHECK_IS_CONFIGURABLE)
 
 // Redefine the standard assert to use our nice log files
 #undef assert

@@ -2520,6 +2520,7 @@ buildflag_header("debugging_buildflags") {
       is_debug && strip_absolute_paths_from_debug_symbols && is_mac
 
   flags = [
+    "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
     "ENABLE_LOCATION_SOURCE=$enable_location_source",
     "FROM_HERE_USES_LOCATION_BUILTINS=$from_here_uses_location_builtins",
     "ENABLE_PROFILING=$enable_profiling",

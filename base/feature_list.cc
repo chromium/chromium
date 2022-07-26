@@ -191,10 +191,10 @@ bool ParseEnableFeatures(const std::string& enable_features,
 
 }  // namespace
 
-#if defined(DCHECK_IS_CONFIGURABLE)
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 const Feature kDCheckIsFatalFeature{"DcheckIsFatal",
                                     FEATURE_DISABLED_BY_DEFAULT};
-#endif  // defined(DCHECK_IS_CONFIGURABLE)
+#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 FeatureList::FeatureList() = default;
 
@@ -478,7 +478,7 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
   // Note: Intentional leak of global singleton.
   g_feature_list_instance = instance.release();
 
-#if defined(DCHECK_IS_CONFIGURABLE)
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   // Update the behaviour of LOGGING_DCHECK to match the Feature configuration.
   // DCHECK is also forced to be FATAL if we are running a death-test.
   // TODO(crbug.com/1057995#c11): --gtest_internal_run_death_test doesn't
@@ -493,7 +493,7 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
   } else {
     logging::LOGGING_DCHECK = logging::LOG_INFO;
   }
-#endif  // defined(DCHECK_IS_CONFIGURABLE)
+#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 }
 
 // static

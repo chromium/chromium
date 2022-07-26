@@ -78,14 +78,14 @@ GetThreadPoolInitParams() {
                content::GetMinForegroundThreadsInRendererThreadPool()));
 }
 
-#if defined(DCHECK_IS_CONFIGURABLE)
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 void V8DcheckCallbackHandler(const char* file, int line, const char* message) {
   // TODO(siggi): Set a crash key or a breadcrumb so the fact that we hit a
   //     V8 DCHECK gets out in the crash report.
   ::logging::LogMessage(file, line, logging::LOGGING_DCHECK).stream()
       << message;
 }
-#endif  // defined(DCHECK_IS_CONFIGURABLE)
+#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 }  // namespace
 
@@ -95,7 +95,7 @@ RenderProcessImpl::RenderProcessImpl()
     : RenderProcess(GetThreadPoolInitParams()) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-#if defined(DCHECK_IS_CONFIGURABLE)
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   // Some official builds ship with DCHECKs compiled in. Failing DCHECKs then
   // are either fatal or simply log the error, based on a feature flag.
   // Make sure V8 follows suit by setting a Dcheck handler that forwards to
@@ -114,7 +114,7 @@ RenderProcessImpl::RenderProcessImpl()
 
     v8::V8::SetFlagsFromString(kDisabledFlags, sizeof(kDisabledFlags));
   }
-#endif  // defined(DCHECK_IS_CONFIGURABLE)
+#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
   if (base::SysInfo::IsLowEndDevice()) {
     std::string optimize_flag("--optimize-for-size");
