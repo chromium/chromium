@@ -1017,21 +1017,21 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
                        SessionType) {
   // Temporary session always supported.
-  EXPECT_SUCCESS(
+  EXPECT_ECK(
       IsSessionTypeSupported(kExternalClearKey, SessionType::kTemporary));
 
   // Persistent sessions always supported by External Clear Key.
-  EXPECT_SUCCESS(IsSessionTypeSupported(kExternalClearKey,
-                                        SessionType::kPersistentLicense));
+  EXPECT_ECK(IsSessionTypeSupported(kExternalClearKey,
+                                    SessionType::kPersistentLicense));
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
                        Robustness) {
   // External Clear Key doesn't require a robustness string.
-  EXPECT_SUCCESS(IsVideoRobustnessSupported(kExternalClearKey, nullptr));
-  EXPECT_SUCCESS(IsVideoRobustnessSupported(kExternalClearKey, ""));
-  EXPECT_SUCCESS(IsAudioRobustnessSupported(kExternalClearKey, nullptr));
-  EXPECT_SUCCESS(IsAudioRobustnessSupported(kExternalClearKey, ""));
+  EXPECT_ECK(IsVideoRobustnessSupported(kExternalClearKey, nullptr));
+  EXPECT_ECK(IsVideoRobustnessSupported(kExternalClearKey, ""));
+  EXPECT_ECK(IsAudioRobustnessSupported(kExternalClearKey, nullptr));
+  EXPECT_ECK(IsAudioRobustnessSupported(kExternalClearKey, ""));
 
   // Non-empty robustness string will be rejected, including valid Widevine
   // robustness strings.
@@ -1047,16 +1047,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
                        EncryptionScheme) {
-  EXPECT_SUCCESS(IsAudioEncryptionSchemeSupported(kExternalClearKey, nullptr));
-  EXPECT_SUCCESS(IsAudioEncryptionSchemeSupported(kExternalClearKey, "cenc"));
-  EXPECT_SUCCESS(IsAudioEncryptionSchemeSupported(kExternalClearKey, "cbcs"));
-  EXPECT_SUCCESS(
-      IsAudioEncryptionSchemeSupported(kExternalClearKey, "cbcs-1-9"));
-  EXPECT_SUCCESS(IsVideoEncryptionSchemeSupported(kExternalClearKey, nullptr));
-  EXPECT_SUCCESS(IsVideoEncryptionSchemeSupported(kExternalClearKey, "cenc"));
-  EXPECT_SUCCESS(IsVideoEncryptionSchemeSupported(kExternalClearKey, "cbcs"));
-  EXPECT_SUCCESS(
-      IsVideoEncryptionSchemeSupported(kExternalClearKey, "cbcs-1-9"));
+  EXPECT_ECK(IsAudioEncryptionSchemeSupported(kExternalClearKey, nullptr));
+  EXPECT_ECK(IsAudioEncryptionSchemeSupported(kExternalClearKey, "cenc"));
+  EXPECT_ECK(IsAudioEncryptionSchemeSupported(kExternalClearKey, "cbcs"));
+  EXPECT_ECK(IsAudioEncryptionSchemeSupported(kExternalClearKey, "cbcs-1-9"));
+  EXPECT_ECK(IsVideoEncryptionSchemeSupported(kExternalClearKey, nullptr));
+  EXPECT_ECK(IsVideoEncryptionSchemeSupported(kExternalClearKey, "cenc"));
+  EXPECT_ECK(IsVideoEncryptionSchemeSupported(kExternalClearKey, "cbcs"));
+  EXPECT_ECK(IsVideoEncryptionSchemeSupported(kExternalClearKey, "cbcs-1-9"));
 
   // Invalid encryption schemes will be rejected.
   EXPECT_UNSUPPORTED(
