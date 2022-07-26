@@ -27,6 +27,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -493,6 +494,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
                                  .putExtra(EXTRA_FOLDER_ID, id.toString());
             } else {
                 fillIn = new Intent(Intent.ACTION_VIEW);
+                fillIn.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_BOOKMARK_ID, id.toString());
                 if (!TextUtils.isEmpty(url)) {
                     fillIn = fillIn.addCategory(Intent.CATEGORY_BROWSABLE).setData(Uri.parse(url));
                 } else {

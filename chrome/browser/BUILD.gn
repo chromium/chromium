@@ -2796,6 +2796,7 @@ static_library("browser") {
       "android/reading_list/reading_list_notification_service_factory.h",
       "android/recently_closed_tabs_bridge.cc",
       "android/recently_closed_tabs_bridge.h",
+      "android/renderer_host/chrome_navigation_ui_data_android.cc",
       "android/reparenting_task.cc",
       "android/resource_id.h",
       "android/resource_mapper.cc",

@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.renderer_host.ChromeNavigationUIData;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -254,8 +255,11 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
         for (BookmarkId id : bookmarks) {
             if (id == null) continue;
             GURL url = model.getBookmarkById(id).getUrl();
-            tabDelegate.createNewTab(
-                    new LoadUrlParams(url), TabLaunchType.FROM_LONGPRESS_BACKGROUND, null);
+            LoadUrlParams params = new LoadUrlParams(url);
+            ChromeNavigationUIData navData = new ChromeNavigationUIData();
+            navData.setBookmarkId(id.getType() == BookmarkType.NORMAL ? id.getId() : -1);
+            params.setNavigationUIDataSupplier(navData::createUnownedNativeCopy);
+            tabDelegate.createNewTab(params, TabLaunchType.FROM_LONGPRESS_BACKGROUND, null);
             if (id.getType() == BookmarkType.READING_LIST) {
                 model.setReadStatusForReadingList(url, true);
             }

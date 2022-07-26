@@ -94,6 +94,7 @@ std::unique_ptr<content::NavigationUIData> ChromeNavigationUIData::Clone() {
 
   copy->is_no_state_prefetching_ = is_no_state_prefetching_;
   copy->prerender_histogram_prefix_ = prerender_histogram_prefix_;
+  copy->bookmark_id_ = bookmark_id_;
 
   return std::move(copy);
 }

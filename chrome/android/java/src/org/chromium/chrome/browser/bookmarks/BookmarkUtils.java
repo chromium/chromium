@@ -341,7 +341,7 @@ public class BookmarkUtils {
 
         // Tablet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            openUrl(context, url, activity == null ? null : activity.getComponentName(),
+            openUrl(context, url, folderId, activity == null ? null : activity.getComponentName(),
                     /*launchType=*/null, isIncognito);
             return;
         }
@@ -471,11 +471,11 @@ public class BookmarkUtils {
 
         if (bookmarkItem.getId().getType() == BookmarkType.READING_LIST
                 && !bookmarkItem.isFolder()) {
-            openReadingListItem(context, bookmarkItem.getUrl().getSpec(), openBookmarkComponentName,
-                    isIncognito);
+            openReadingListItem(context, bookmarkItem.getUrl().getSpec(), bookmarkItem.getId(),
+                    openBookmarkComponentName, isIncognito);
             model.setReadStatusForReadingList(bookmarkItem.getUrl(), true);
         } else {
-            openUrl(context, bookmarkItem.getUrl().getSpec(), openBookmarkComponentName,
+            openUrl(context, bookmarkItem.getUrl().getSpec(), bookmarkId, openBookmarkComponentName,
                     /*launchType=*/null, isIncognito);
         }
         return true;
@@ -537,13 +537,15 @@ public class BookmarkUtils {
      * @param launchType If not null, url is opened in a new tab with the specified {@link
      *         TabLaunchType}.
      */
-    private static void openUrl(Context context, String url, ComponentName componentName,
-            @Nullable @TabLaunchType Integer launchType, boolean isOffTheRecord) {
+    private static void openUrl(Context context, String url, BookmarkId id,
+            ComponentName componentName, @Nullable @TabLaunchType Integer launchType,
+            boolean isOffTheRecord) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.putExtra(
                 Browser.EXTRA_APPLICATION_ID, context.getApplicationContext().getPackageName());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, PageTransition.AUTO_BOOKMARK);
+        intent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_BOOKMARK_ID, id.toString());
 
         if (launchType != null) {
             IntentHandler.setTabLaunchType(intent, launchType);
@@ -568,12 +570,12 @@ public class BookmarkUtils {
         IntentHandler.startActivityForTrustedIntent(intent);
     }
 
-    private static void openReadingListItem(
-            Context context, String url, ComponentName componentName, boolean isOffTheRecord) {
+    private static void openReadingListItem(Context context, String url, BookmarkId id,
+            ComponentName componentName, boolean isOffTheRecord) {
         if (ReadingListFeatures.shouldUseCustomTab()) {
             openReadingListInCustomTab(context, url, isOffTheRecord);
         } else {
-            openUrl(context, url, componentName,
+            openUrl(context, url, id, componentName,
                     DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                             ? null
                             : TabLaunchType.FROM_READING_LIST,

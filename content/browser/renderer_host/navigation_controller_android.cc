@@ -254,11 +254,14 @@ void NavigationControllerAndroid::LoadUrl(
     const JavaParamRef<jobject>& j_initiator_origin,
     jboolean has_user_gesture,
     jboolean should_clear_history_list,
-    jlong input_start) {
+    jlong input_start,
+    jlong navigation_ui_data_ptr) {
   DCHECK(url);
   NavigationController::LoadURLParams params(
       GURL(ConvertJavaStringToUTF8(env, url)));
-
+  // Wrap the raw pointer in case on an early return.
+  std::unique_ptr<NavigationUIData> navigation_ui_data = base::WrapUnique(
+      reinterpret_cast<NavigationUIData*>(navigation_ui_data_ptr));
   params.load_type =
       static_cast<NavigationController::LoadURLType>(load_url_type);
   params.transition_type = ui::PageTransitionFromInt(transition_type);
@@ -316,6 +319,8 @@ void NavigationControllerAndroid::LoadUrl(
 
   if (input_start != 0)
     params.input_start = base::TimeTicks::FromUptimeMillis(input_start);
+
+  params.navigation_ui_data = std::move(navigation_ui_data);
 
   navigation_controller_->LoadURLWithParams(params);
 }

@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.content_public.browser.navigation_controller.LoadURLType;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.Referrer;
@@ -49,6 +50,7 @@ public class LoadUrlParams {
     private long mInputStartTimestamp;
     private boolean mHasUserGesture;
     private boolean mShouldClearHistoryList;
+    private Supplier<Long> mNavigationUIDataSupplier;
 
     /**
      * Creates an instance with default page transition type.
@@ -577,6 +579,16 @@ public class LoadUrlParams {
             return true;
         }
         return LoadUrlParamsJni.get().isDataScheme(mBaseUrlForDataUrl);
+    }
+
+    /** Set the {@link NavigationUIData}. */
+    public void setNavigationUIDataSupplier(Supplier<Long> navigationUIDataSupplier) {
+        mNavigationUIDataSupplier = navigationUIDataSupplier;
+    }
+
+    /** Returns the supplier for {@link NavigationUIData} or null. */
+    public Supplier<Long> getNavigationUIDataSupplier() {
+        return mNavigationUIDataSupplier;
     }
 
     @NativeMethods
