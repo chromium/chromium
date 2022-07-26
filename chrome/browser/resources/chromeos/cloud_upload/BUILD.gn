@@ -1,0 +1,16 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "cloud_upload"
+
+  static_files = [ "main.html" ]
+  web_component_files = [ "cloud_upload_dialog.ts" ]
+
+  html_to_wrapper_template = "native"
+
+  ts_deps = [ "//ui/webui/resources:library" ]
+}

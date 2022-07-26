@@ -3116,6 +3116,7 @@ static_library("ui") {
       "//chrome/browser/resources:internet_config_dialog_resources",
       "//chrome/browser/resources:internet_detail_dialog_resources",
       "//chrome/browser/resources/chromeos:multidevice_setup_resources",
+      "//chrome/browser/resources/chromeos/cloud_upload:resources",
       "//chrome/browser/ui/app_list/search/cros_action_history:cros_action_proto",
       "//chrome/browser/ui/app_list/search/ranking:proto",
       "//chrome/browser/ui/app_list/search/search_result_ranker:app_launch_event_logger_proto",
