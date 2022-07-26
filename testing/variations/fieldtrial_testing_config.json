@@ -595,6 +595,24 @@
             ]
         }
     ],
+    "ArcVmLimitCacheBalloonPolicy": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "ResponsiveBalloonDeflation_20220706",
+                    "params": {
+                        "responsive": "true"
+                    },
+                    "enable_features": [
+                        "ArcVmBalloonPolicy"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcVmMemorySize": [
         {
             "platforms": [
