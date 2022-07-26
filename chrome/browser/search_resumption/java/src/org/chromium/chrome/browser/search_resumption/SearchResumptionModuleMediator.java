@@ -35,9 +35,6 @@ import java.util.List;
  */
 public class SearchResumptionModuleMediator
         implements OnSuggestionsReceivedListener, SignInStateObserver {
-    static final String ACTION_CLICK = "SearchResumptionModule.NTP.Click";
-    private static final String ACTION_SHOW = "SearchResumptionModule.NTP.Show";
-
     private final ViewStub mStub;
     private final Tab mTabToTrackSuggestion;
     private final SearchResumptionTileBuilder mTileBuilder;
@@ -99,6 +96,7 @@ public class SearchResumptionModuleMediator
         if (!initializeModule()) return;
         mTileBuilder.buildSuggestionTile(autocompleteResult.getSuggestionsList(),
                 mModuleLayoutView.findViewById(R.id.search_resumption_module_tiles_container));
+        SearchResumptionModuleUtils.recordModuleShown();
     }
 
     /**
@@ -108,6 +106,7 @@ public class SearchResumptionModuleMediator
         if (!initializeModule()) return;
         mTileBuilder.buildSuggestionTile(texts, urls,
                 mModuleLayoutView.findViewById(R.id.search_resumption_module_tiles_container));
+        SearchResumptionModuleUtils.recordModuleShown();
     }
 
     void destroy() {
@@ -210,7 +209,6 @@ public class SearchResumptionModuleMediator
                 mModel, mModuleLayoutView, new SearchResumptionModuleViewBinder());
         mModel.set(SearchResumptionModuleProperties.EXPAND_COLLAPSE_CLICK_CALLBACK,
                 this::onExpandedOrCollapsed);
-        RecordUserAction.record(ACTION_SHOW);
         return true;
     }
 
@@ -223,9 +221,12 @@ public class SearchResumptionModuleMediator
     /**
      * Saves the user's choice of expanding/collapsing of the suggestions in the SharedPreference.
      */
-    private void onExpandedOrCollapsed(Boolean expanded) {
+    @VisibleForTesting
+    void onExpandedOrCollapsed(Boolean expanded) {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP, !expanded);
+        RecordUserAction.record(expanded ? SearchResumptionModuleUtils.ACTION_EXPAND
+                                         : SearchResumptionModuleUtils.ACTION_COLLAPSE);
     }
 
     @VisibleForTesting

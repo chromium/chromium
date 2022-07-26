@@ -85953,6 +85953,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="Not enough results"/>
 </enum>
 
+<enum name="SearchResumptionModule.ModuleShowStatus">
+  <int value="0" label="Module is shown and expanded"/>
+  <int value="1" label="Module is shown and collapsed"/>
+</enum>
+
 <enum name="SearchTemplateURLEvent">
   <summary>
     Events within the TemplateURL system we log, i.e. edge cases.
