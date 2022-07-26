@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.ClockSkew.{SkewDirection}" units="minutes"
-    expires_after="2022-11-01">
+    expires_after="2023-04-01">
   <owner>kyraseevers@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -55,13 +55,28 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="SkewDirection">
     <variant name="AddMinutes"
+        summary="The raw clock skew value was positive or zero, so these
+                 cookies were adjusted to expire later."/>
+    <variant name="AddMinutes12To24Hours"
         summary="The raw clock skew value was positive, so these cookies were
-                 adjusted to expire later."/>
+                 adjusted to expire later. The range of bucket values for
+                 this metric is 720 to 1440 minutes (12 to 24 hours)."/>
     <variant name="SubtractMinutes"
         summary="The raw clock skew value was negative, so these cookies were
                  adjusted to expire quicker. This histogram can only record
                  positive values, so all counts are adjusted to their
                  positive counterparts."/>
+    <variant name="SubtractMinutes12To24Hours"
+        summary="The raw clock skew value was negative, so these cookies were
+                 adjusted to expire quicker. This histogram can only record
+                 positive values, so all counts are adjusted to their
+                 positive counterparts.The range of bucket values for this
+                 metric is 720 to 1440 minutes (12 to 24 hours)."/>
+    <variant name="WithoutAddMinutesExpires"
+        summary="The raw clock skew value was positive AND the addition of
+                 these minutes caused the cookie to delay expiring until
+                 later. If this cookie was not adjusted for clock skew, it
+                 would have expired immediately."/>
   </token>
 </histogram>
 

@@ -75,6 +75,7 @@ using base::Time;
 namespace net {
 
 static constexpr int kMinutesInTwelveHours = 12 * 60;
+static constexpr int kMinutesInTwentyFourHours = 24 * 60;
 
 namespace {
 
@@ -493,18 +494,32 @@ Time CanonicalCookie::ParseExpiration(const ParsedCookie& pc,
       base::TimeDelta clock_skew = (current - server_time);
       // Record the magnitude (absolute value) of the skew in minutes.
       int clock_skew_magnitude = clock_skew.magnitude().InMinutes();
+      // Determine the new expiry with clock skew factored in.
+      Time adjusted_expiry = parsed_expiry + (current - server_time);
       if (clock_skew.is_positive() || clock_skew.is_zero()) {
         UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ClockSkew.AddMinutes",
                                     clock_skew_magnitude, 1,
                                     kMinutesInTwelveHours, 100);
+        UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ClockSkew.AddMinutes12To24Hours",
+                                    clock_skew_magnitude, kMinutesInTwelveHours,
+                                    kMinutesInTwentyFourHours, 100);
+        // Also record the range of minutes added that allowed the cookie to
+        // avoid expiring immediately.
+        if (parsed_expiry <= Time::Now() && adjusted_expiry > Time::Now()) {
+          UMA_HISTOGRAM_CUSTOM_COUNTS(
+              "Cookie.ClockSkew.WithoutAddMinutesExpires", clock_skew_magnitude,
+              1, kMinutesInTwentyFourHours, 100);
+        }
       } else if (clock_skew.is_negative()) {
         // These histograms only support positive numbers, so negative skews
         // will be converted to positive (via magnitude) before recording.
         UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ClockSkew.SubtractMinutes",
                                     clock_skew_magnitude, 1,
                                     kMinutesInTwelveHours, 100);
+        UMA_HISTOGRAM_CUSTOM_COUNTS(
+            "Cookie.ClockSkew.SubtractMinutes12To24Hours", clock_skew_magnitude,
+            kMinutesInTwelveHours, kMinutesInTwentyFourHours, 100);
       }
-      Time adjusted_expiry = parsed_expiry + (current - server_time);
       // Record if we were going to expire the cookie before we added the clock
       // skew.
       UMA_HISTOGRAM_BOOLEAN(
