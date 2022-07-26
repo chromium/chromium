@@ -39,6 +39,12 @@ constexpr char kTabsTypeName[] = "tabs";
 constexpr char kWifiConfigurationsTypeName[] = "wifiConfigurations";
 
 UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
+  static_assert(40 == syncer::GetNumModelTypes(),
+                "Almost always when adding a new ModelType, you must tie it to "
+                "a UserSelectableType below (new or existing) so the user can "
+                "disable syncing of that data. Today you must also update the "
+                "UI code yourself; crbug.com/1067282 and related bugs will "
+                "improve that");
   // UserSelectableTypeInfo::type_name is used in js code and shouldn't be
   // changed without updating js part.
   switch (type) {
