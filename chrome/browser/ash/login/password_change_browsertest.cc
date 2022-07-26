@@ -6,15 +6,21 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
+#include "ash/components/cryptohome/system_salt_getter.h"
+#include "ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "ash/components/login/auth/public/key.h"
 #include "ash/components/login/auth/public/user_context.h"
 #include "ash/components/login/auth/stub_authenticator.h"
 #include "ash/components/login/auth/stub_authenticator_builder.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
@@ -23,6 +29,7 @@
 #include "chrome/browser/ash/login/signin/signin_error_notifier.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
+#include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -38,7 +45,12 @@
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_password_changed_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
@@ -84,24 +96,6 @@ class PasswordChangeTestBase : public LoginManagerTest {
     EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   }
 
-  // Sets up UserSessionManager to use stub authenticator that reports a
-  // password change, and attempts login.
-  // Password changed OOBE dialog is expected to show up after calling this.
-  void SetUpStubAuthenticatorAndAttemptLogin(const std::string& old_password) {
-    EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
-    UserContext user_context = GetTestUserContext();
-
-    auto authenticator_builder =
-        std::make_unique<StubAuthenticatorBuilder>(user_context);
-    authenticator_builder->SetUpPasswordChange(
-        old_password,
-        base::BindRepeating(
-            &PasswordChangeTestBase::HandleDataRecoveryStatusChange,
-            base::Unretained(this)));
-    login_mixin_.AttemptLoginUsingAuthenticator(
-        user_context, std::move(authenticator_builder));
-  }
-
   void WaitForPasswordChangeScreen() {
     OobeScreenWaiter(GaiaPasswordChangedView::kScreenId).Wait();
     OobeWindowVisibilityWaiter(true).Wait();
@@ -118,6 +112,31 @@ class PasswordChangeTestBase : public LoginManagerTest {
       test_account_id_, user_manager::UserType::USER_TYPE_REGULAR,
       user_manager::User::OAuthTokenStatus::OAUTH2_TOKEN_STATUS_INVALID};
   LoginManagerMixin login_mixin_{&mixin_host_, {test_user_info_}};
+};
+
+// Test fixture that uses a stub authenticator.
+//
+// Prefer using `PasswordChangeTest` for new tests instead.
+class PasswordChangeStubAuthTest : public PasswordChangeTestBase {
+ protected:
+  // Sets up UserSessionManager to use stub authenticator that reports a
+  // password change, and attempts login.
+  // Password changed OOBE dialog is expected to show up after calling this.
+  void SetUpStubAuthenticatorAndAttemptLogin(const std::string& old_password) {
+    EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+    UserContext user_context = GetTestUserContext();
+
+    auto authenticator_builder =
+        std::make_unique<StubAuthenticatorBuilder>(user_context);
+    authenticator_builder->SetUpPasswordChange(
+        old_password,
+        base::BindRepeating(
+            &PasswordChangeStubAuthTest::HandleDataRecoveryStatusChange,
+            base::Unretained(this)));
+    login_mixin_.AttemptLoginUsingAuthenticator(
+        user_context, std::move(authenticator_builder));
+  }
+
   StubAuthenticator::DataRecoveryStatus data_recovery_status_ =
       StubAuthenticator::DataRecoveryStatus::kNone;
 
@@ -130,32 +149,88 @@ class PasswordChangeTestBase : public LoginManagerTest {
   }
 };
 
-using PasswordChangeTest = PasswordChangeTestBase;
+// Test fixture that uses a fake UserDataAuth in order to simulate password
+// change flows.
+// The parameter specifies whether AuthSession-based cryptohome API is used.
+class PasswordChangeTest : public PasswordChangeTestBase,
+                           public testing::WithParamInterface<bool> {
+ protected:
+  PasswordChangeTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kUseAuthsessionAuthentication);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kUseAuthsessionAuthentication);
+    }
+  }
 
-IN_PROC_BROWSER_TEST_F(PasswordChangeTest, MigrateOldCryptohome) {
+  void SetUpOnMainThread() override {
+    PasswordChangeTestBase::SetUpOnMainThread();
+    // Make `FakeUserDataAuthClient` perform actual password checks when
+    // handling authentication requests. This is necessary for triggering the
+    // password change UI flow.
+    FakeUserDataAuthClient::TestApi::Get()->set_enable_auth_check(true);
+  }
+
+  void AddFakeUser(const std::string& password) {
+    // Add the user. Initially it has no keys.
+    auto account_identifier =
+        cryptohome::CreateAccountIdentifierFromAccountId(test_account_id_);
+    FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(account_identifier);
+
+    // Hash the password, as only hashed passwords appear at the userdataauth
+    // level.
+    Key key(password);
+    key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
+                  SystemSaltGetter::ConvertRawSaltToHexString(
+                      FakeCryptohomeMiscClient::GetStubSystemSalt()));
+
+    // Add the password key to the user.
+    cryptohome::Key cryptohome_key;
+    cryptohome_key.mutable_data()->set_label(kCryptohomeGaiaKeyLabel);
+    cryptohome_key.set_secret(key.GetSecret());
+    FakeUserDataAuthClient::TestApi::Get()->AddKey(account_identifier,
+                                                   cryptohome_key);
+  }
+
+  void SetGaiaScreenCredentials(const AccountId& account_id,
+                                const std::string& password) {
+    LoginDisplayHost::default_host()
+        ->GetOobeUI()
+        ->GetView<GaiaScreenHandler>()
+        ->ShowSigninScreenForTest(account_id.GetUserEmail(), password,
+                                  FakeGaiaMixin::kEmptyUserServices);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_P(PasswordChangeTest, MigrateOldCryptohome) {
+  AddFakeUser("old user password");
   OpenGaiaDialog(test_account_id_);
 
   base::HistogramTester histogram_tester;
-  SetUpStubAuthenticatorAndAttemptLogin("old user password");
+  SetGaiaScreenCredentials(test_account_id_, "new user password");
   WaitForPasswordChangeScreen();
   histogram_tester.ExpectBucketCount("Login.PasswordChanged.ReauthReason",
                                      ReauthReason::OTHER, 1);
 
   test::OobeJS().CreateVisibilityWaiter(true, kPasswordStep)->Wait();
 
-  // Fill out and submit the old password passed to the stub authenticator.
+  // Fill out and submit the old password passed to the userdataauth.
   test::OobeJS().TypeIntoPath("old user password", kOldPasswordInput);
   test::OobeJS().ClickOnPath(kSendPasswordButton);
 
-  // User session should start, and whole OOBE screen is expected to be hidden,
+  // User session should start, and whole OOBE screen is expected to be hidden.
   OobeWindowVisibilityWaiter(false).Wait();
-  EXPECT_EQ(StubAuthenticator::DataRecoveryStatus::kRecovered,
-            data_recovery_status_);
 
   login_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordChangeTest, SubmitOnEnterKeyPressed) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeStubAuthTest, SubmitOnEnterKeyPressed) {
   OpenGaiaDialog(test_account_id_);
 
   base::HistogramTester histogram_tester;
@@ -180,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, SubmitOnEnterKeyPressed) {
   login_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordChangeTest, RetryOnWrongPassword) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeStubAuthTest, RetryOnWrongPassword) {
   OpenGaiaDialog(test_account_id_);
   SetUpStubAuthenticatorAndAttemptLogin("old user password");
   WaitForPasswordChangeScreen();
@@ -212,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, RetryOnWrongPassword) {
   login_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordChangeTest, SkipDataRecovery) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeStubAuthTest, SkipDataRecovery) {
   OpenGaiaDialog(test_account_id_);
   SetUpStubAuthenticatorAndAttemptLogin("old user password");
   WaitForPasswordChangeScreen();
@@ -237,7 +312,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, SkipDataRecovery) {
   login_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordChangeTest, TryAgainAfterForgetLinkClick) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeStubAuthTest,
+                       TryAgainAfterForgetLinkClick) {
   OpenGaiaDialog(test_account_id_);
   SetUpStubAuthenticatorAndAttemptLogin("old user password");
   WaitForPasswordChangeScreen();
@@ -268,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, TryAgainAfterForgetLinkClick) {
   login_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordChangeTest, ClosePasswordChangedDialog) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeStubAuthTest, ClosePasswordChangedDialog) {
   OpenGaiaDialog(test_account_id_);
   SetUpStubAuthenticatorAndAttemptLogin("old user password");
   WaitForPasswordChangeScreen();
@@ -288,7 +364,11 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, ClosePasswordChangedDialog) {
   OobeScreenWaiter(GaiaPasswordChangedView::kScreenId).Wait();
 }
 
-class PasswordChangeTokenCheck : public PasswordChangeTestBase {
+INSTANTIATE_TEST_SUITE_P(AuthSessionAvailability,
+                         PasswordChangeTest,
+                         testing::Bool());
+
+class PasswordChangeTokenCheck : public PasswordChangeStubAuthTest {
  public:
   PasswordChangeTokenCheck() {
     login_mixin_.AppendRegularUsers(1);
@@ -298,14 +378,14 @@ class PasswordChangeTokenCheck : public PasswordChangeTestBase {
   }
 
  protected:
-  // PasswordChangeTestBase:
+  // PasswordChangeStubAuthTest:
   void SetUpInProcessBrowserTestFixture() override {
-    PasswordChangeTestBase::SetUpInProcessBrowserTestFixture();
+    PasswordChangeStubAuthTest::SetUpInProcessBrowserTestFixture();
     TokenHandleUtil::SetInvalidTokenForTesting(kTokenHandle);
   }
   void TearDownInProcessBrowserTestFixture() override {
     TokenHandleUtil::SetInvalidTokenForTesting(nullptr);
-    PasswordChangeTestBase::TearDownInProcessBrowserTestFixture();
+    PasswordChangeStubAuthTest::TearDownInProcessBrowserTestFixture();
   }
 
   UserContext GetTestUserContext() override {
