@@ -359,6 +359,11 @@ extern const char kIOSEnablePasswordManagerBrandingUpdateDescription[];
 extern const char kIOSPasswordUISplitName[];
 extern const char kIOSPasswordUISplitDescription[];
 
+// Title and description for the flag to enable password saving and
+// filling in cross-origin iframes on IOS.
+extern const char kIOSPasswordManagerCrossOriginIframeSupportName[];
+extern const char kIOSPasswordManagerCrossOriginIframeSupportDescription[];
+
 // Title and description for the flag to enable Shared Highlighting color
 // change in iOS.
 extern const char kIOSSharedHighlightingColorChangeName[];

@@ -95,6 +95,11 @@ const base::Feature kIOSEnablePasswordManagerBrandingUpdate{
 // Password Manager view.
 const base::Feature kIOSPasswordUISplit = {"IOSPasswordUISplit",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables password saving and filling in cross-origin iframes on IOS.
+const base::Feature kIOSPasswordManagerCrossOriginIframeSupport = {
+    "IOSPasswordManagerCrossOriginIframeSupport",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // IS_IOS
 
 // Enables (un)muting compromised passwords from bulk leak check in settings.

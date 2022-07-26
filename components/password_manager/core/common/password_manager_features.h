@@ -38,6 +38,7 @@ extern const base::Feature kInferConfirmationPasswordField;
 extern const base::Feature kIOSEnablePasswordManagerBrandingUpdate;
 #if BUILDFLAG(IS_IOS)
 extern const base::Feature kIOSPasswordUISplit;
+extern const base::Feature kIOSPasswordManagerCrossOriginIframeSupport;
 #endif  // IS_IOS
 extern const base::Feature kMuteCompromisedPasswords;
 extern const base::Feature kPasswordNotes;

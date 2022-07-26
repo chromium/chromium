@@ -1065,6 +1065,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-password-ui-split", flag_descriptions::kIOSPasswordUISplitName,
      flag_descriptions::kIOSPasswordUISplitDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordUISplit)},
+    {"ios-password-manager-cross-origin-iframe-support",
+     flag_descriptions::kIOSPasswordManagerCrossOriginIframeSupportName,
+     flag_descriptions::kIOSPasswordManagerCrossOriginIframeSupportDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kIOSPasswordManagerCrossOriginIframeSupport)},
     {"omnibox-adaptive-suggestions-count",
      flag_descriptions::kAdaptiveSuggestionsCountName,
      flag_descriptions::kAdaptiveSuggestionsCountDescription, flags_ui::kOsIos,
