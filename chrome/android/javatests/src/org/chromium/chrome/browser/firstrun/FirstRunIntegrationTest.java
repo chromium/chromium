@@ -669,7 +669,8 @@ public class FirstRunIntegrationTest {
         CriteriaHelper.pollUiThread(
                 () -> freActivity.getSupportFragmentManager().getFragments().size() > 0);
         // Make sure native is initialized so that the subsequent transition is not blocked.
-        CriteriaHelper.pollUiThread((() -> freActivity.isNativeSideIsInitializedForTest()),
+        CriteriaHelper.pollUiThread(
+                (() -> freActivity.getNativeInitializationPromise().isFulfilled()),
                 "native never initialized.");
 
         waitForActivity(CustomTabActivity.class);
@@ -923,7 +924,8 @@ public class FirstRunIntegrationTest {
 
         launchViewIntent(TEST_URL);
         FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
-        CriteriaHelper.pollUiThread((() -> firstRunActivity.isNativeSideIsInitializedForTest()),
+        CriteriaHelper.pollUiThread(
+                (() -> firstRunActivity.getNativeInitializationPromise().isFulfilled()),
                 "native never initialized.");
 
         unblockOnFlowIsKnown();
@@ -987,7 +989,8 @@ public class FirstRunIntegrationTest {
 
         launchCustomTabs(TEST_URL);
         FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
-        CriteriaHelper.pollUiThread((() -> firstRunActivity.isNativeSideIsInitializedForTest()),
+        CriteriaHelper.pollUiThread(
+                (() -> firstRunActivity.getNativeInitializationPromise().isFulfilled()),
                 "native never initialized.");
 
         unblockOnFlowIsKnown();

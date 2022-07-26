@@ -344,7 +344,8 @@ public class FirstRunActivitySigninAndSyncTest {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mFirstRunActivity = ApplicationTestUtils.waitForActivityWithClass(
                 FirstRunActivity.class, Stage.RESUMED, () -> context.startActivity(intent));
-        CriteriaHelper.pollUiThread(mFirstRunActivity::isNativeSideIsInitializedForTest);
+        CriteriaHelper.pollUiThread(
+                () -> mFirstRunActivity.getNativeInitializationPromise().isFulfilled());
     }
 
     private static class LinkClick implements ViewAction {

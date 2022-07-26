@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.firstrun;
 
 import android.os.Bundle;
 
+import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
 
 /**
@@ -92,4 +93,10 @@ public interface FirstRunPageDelegate {
      * Returns the supplier that supplies child account status.
      */
     OneshotSupplier<Boolean> getChildAccountStatusSupplier();
+
+    /**
+     * Returns the promise that provides information about native initialization. Callers can use
+     * {@link Promise#isFulfilled()} to check whether the native has already been initialized.
+     */
+    Promise<Void> getNativeInitializationPromise();
 }

@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -148,7 +149,11 @@ public class SigninFirstRunFragmentRenderTest {
         mFragment = new CustomSigninFirstRunFragment();
         mFragment.setPageDelegate(mFirstRunPageDelegateMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mFragment.onNativeInitialized();
+            Promise<Void> nativeSideIsInitialized = new Promise<>();
+            nativeSideIsInitialized.fulfill(null);
+            when(mFirstRunPageDelegateMock.getNativeInitializationPromise())
+                    .thenReturn(nativeSideIsInitialized);
+
             OneshotSupplierImpl<Boolean> childAccountStatusListener = new OneshotSupplierImpl<>();
             childAccountStatusListener.set(false);
             when(mFirstRunPageDelegateMock.getChildAccountStatusSupplier())
@@ -302,7 +307,6 @@ public class SigninFirstRunFragmentRenderTest {
     public void testFragmentWhenCannotUseGooglePlayService(
             boolean nightModeEnabled, int orientation) throws IOException {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(false);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
 
         launchActivityWithFragment(orientation);
 
