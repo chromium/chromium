@@ -853,6 +853,7 @@ if (is_apple) {
 }
 
 group("test_fonts_resources") {
+  testonly = true
   deps = []
   data_deps = []
 
@@ -873,27 +874,30 @@ group("test_fonts_resources") {
 source_set("test_fonts") {
   testonly = true
 
-  sources = [ "ext/test_fonts.h" ]
-  deps = [
-    ":test_fonts_resources",
-    "//base/test:test_support",
-    "//skia",
-  ]
+  deps = [ ":test_fonts_resources" ]
 
   if (is_fuchsia) {
-    sources += [
-      "ext/test_fonts_fuchsia.cc",
+    public = [
+      "ext/test_fonts.h",
       "ext/test_fonts_fuchsia.h",
     ]
-    deps += [
+    sources = [ "ext/test_fonts_fuchsia.cc" ]
+    public_deps = [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
+      "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp_base",
+    ]
+    deps += [
+      "//base",
+      "//skia",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }
   if (is_mac) {
-    sources += [ "ext/test_fonts_mac.mm" ]
+    public = [ "ext/test_fonts.h" ]
+    sources = [ "ext/test_fonts_mac.mm" ]
+    deps += [ "//base" ]
   }
 }
 

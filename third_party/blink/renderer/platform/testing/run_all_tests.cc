@@ -37,9 +37,12 @@
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
-#include "skia/ext/test_fonts.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+
+#if BUILDFLAG(IS_FUCHSIA)
+#include "skia/ext/test_fonts.h"
+#endif
 
 namespace {
 
