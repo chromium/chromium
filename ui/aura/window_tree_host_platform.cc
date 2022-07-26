@@ -52,7 +52,7 @@ WindowTreeHostPlatform::WindowTreeHostPlatform(
     ui::PlatformWindowInitProperties properties,
     std::unique_ptr<Window> window)
     : WindowTreeHost(std::move(window)) {
-  bounds_in_pixels_ = properties.bounds;
+  size_in_pixels_ = properties.bounds.size();
   CreateCompositor(false, false, properties.enable_compositing_based_throttling,
                    properties.compositor_memory_limit_mb);
   CreateAndSetPlatformWindow(std::move(properties));
@@ -65,10 +65,10 @@ WindowTreeHostPlatform::WindowTreeHostPlatform(std::unique_ptr<Window> window)
 
 void WindowTreeHostPlatform::CreateAndSetPlatformWindow(
     ui::PlatformWindowInitProperties properties) {
-  // Cache initial bounds used to create |platform_window_| so that it does not
+  // Cache initial size used to create |platform_window_| so that it does not
   // end up propagating unneeded bounds change event when it is first notified
   // through OnBoundsChanged, which may lead to unneeded re-layouts, etc.
-  bounds_in_pixels_ = properties.bounds;
+  size_in_pixels_ = properties.bounds.size();
 #if defined(USE_OZONE)
   platform_window_ = ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
       this, std::move(properties));
@@ -197,18 +197,18 @@ void WindowTreeHostPlatform::OnBoundsChanged(const BoundsChange& change) {
   }
   float current_scale = compositor()->device_scale_factor();
   float new_scale = ui::GetScaleFactorForNativeView(window());
-  gfx::Rect old_bounds = bounds_in_pixels_;
   auto weak_ref = GetWeakPtr();
-  bounds_in_pixels_ = change.bounds;
-  if (bounds_in_pixels_.origin() != old_bounds.origin()) {
-    OnHostMovedInPixels(bounds_in_pixels_.origin());
+  auto new_size = GetBoundsInPixels().size();
+  bool size_changed = size_in_pixels_ != new_size;
+  size_in_pixels_ = new_size;
+  if (change.origin_changed) {
+    OnHostMovedInPixels();
     // Changing the bounds may destroy this.
     if (!weak_ref)
       return;
   }
-  if (bounds_in_pixels_.size() != old_bounds.size() ||
-      current_scale != new_scale) {
-    OnHostResizedInPixels(bounds_in_pixels_.size());
+  if (size_changed || current_scale != new_scale) {
+    OnHostResizedInPixels(new_size);
     // Changing the size may destroy this.
     if (!weak_ref)
       return;

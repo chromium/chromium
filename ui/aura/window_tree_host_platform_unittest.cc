@@ -135,8 +135,7 @@ class DeleteHostWindowTreeHostObserver : public WindowTreeHostObserver {
   TestWindowTreeHost* host() { return host_.get(); }
 
   // WindowTreeHostObserver:
-  void OnHostMovedInPixels(WindowTreeHost* host,
-                           const gfx::Point& new_origin_in_pixels) override {
+  void OnHostMovedInPixels(WindowTreeHost* host) override {
     host_->RemoveObserver(this);
     host_.reset();
   }

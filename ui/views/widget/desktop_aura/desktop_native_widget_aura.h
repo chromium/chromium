@@ -263,8 +263,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void OnHostCloseRequested(aura::WindowTreeHost* host) override;
   void OnHostResized(aura::WindowTreeHost* host) override;
   void OnHostWorkspaceChanged(aura::WindowTreeHost* host) override;
-  void OnHostMovedInPixels(aura::WindowTreeHost* host,
-                           const gfx::Point& new_origin_in_pixels) override;
+  void OnHostMovedInPixels(aura::WindowTreeHost* host) override;
 
  private:
   friend class RootWindowDestructionObserver;

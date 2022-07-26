@@ -301,11 +301,12 @@ void WaylandWindow::SetBoundsInPixels(const gfx::Rect& bounds_px) {
   gfx::Rect adjusted_bounds_px = AdjustBoundsToConstraintsPx(bounds_px);
   if (bounds_px_ == adjusted_bounds_px)
     return;
+  bool origin_changed = bounds_px_.origin() != adjusted_bounds_px.origin();
   bounds_px_ = adjusted_bounds_px;
 
   if (update_visual_size_immediately_for_testing_)
     UpdateVisualSize(bounds_px.size(), window_scale());
-  delegate_->OnBoundsChanged(bounds_px_);
+  delegate_->OnBoundsChanged({origin_changed});
 }
 
 gfx::Rect WaylandWindow::GetBoundsInPixels() const {

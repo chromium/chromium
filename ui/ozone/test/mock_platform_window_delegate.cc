@@ -10,9 +10,9 @@ MockPlatformWindowDelegate::MockPlatformWindowDelegate() {}
 
 MockPlatformWindowDelegate::~MockPlatformWindowDelegate() {}
 
-bool operator==(const PlatformWindowDelegate::BoundsChange& bounds,
-                const gfx::Rect& rect) {
-  return bounds.bounds == rect;
+bool operator==(const PlatformWindowDelegate::BoundsChange& a,
+                const PlatformWindowDelegate::BoundsChange& b) {
+  return a.origin_changed == b.origin_changed;
 }
 
 }  // namespace ui

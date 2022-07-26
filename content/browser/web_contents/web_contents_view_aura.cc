@@ -600,8 +600,7 @@ class WebContentsViewAura::WindowObserver
     pending_window_changes_.reset();
   }
 
-  void OnHostMovedInPixels(aura::WindowTreeHost* host,
-                           const gfx::Point& new_origin_in_pixels) override {
+  void OnHostMovedInPixels(aura::WindowTreeHost* host) override {
     if (!ShouldNotifyOfBoundsChanges())
       return;
 

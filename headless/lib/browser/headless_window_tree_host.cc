@@ -61,7 +61,7 @@ void HeadlessWindowTreeHost::SetBoundsInPixels(const gfx::Rect& bounds) {
   bool size_changed = bounds_.size() != bounds.size();
   bounds_ = bounds;
   if (origin_changed)
-    OnHostMovedInPixels(bounds.origin());
+    OnHostMovedInPixels();
   if (size_changed)
     OnHostResizedInPixels(bounds.size());
 }

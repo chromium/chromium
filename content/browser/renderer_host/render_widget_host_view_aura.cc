@@ -2111,11 +2111,8 @@ void RenderWidgetHostViewAura::OnWindowFocused(aura::Window* gained_focus,
 ////////////////////////////////////////////////////////////////////////////////
 // RenderWidgetHostViewAura, aura::WindowTreeHostObserver implementation:
 
-void RenderWidgetHostViewAura::OnHostMovedInPixels(
-    aura::WindowTreeHost* host,
-    const gfx::Point& new_origin_in_pixels) {
-  TRACE_EVENT1("ui", "RenderWidgetHostViewAura::OnHostMovedInPixels",
-               "new_origin_in_pixels", new_origin_in_pixels.ToString());
+void RenderWidgetHostViewAura::OnHostMovedInPixels(aura::WindowTreeHost* host) {
+  TRACE_EVENT0("ui", "RenderWidgetHostViewAura::OnHostMovedInPixels");
 
   UpdateScreenInfo();
 }

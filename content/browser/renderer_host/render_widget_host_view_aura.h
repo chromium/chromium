@@ -334,8 +334,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
                        aura::Window* lost_focus) override;
 
   // Overridden from aura::WindowTreeHostObserver:
-  void OnHostMovedInPixels(aura::WindowTreeHost* host,
-                           const gfx::Point& new_origin_in_pixels) override;
+  void OnHostMovedInPixels(aura::WindowTreeHost* host) override;
 
   // RenderFrameMetadataProvider::Observer implementation.
   void OnRenderFrameMetadataChangedBeforeActivation(

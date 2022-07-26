@@ -1409,11 +1409,8 @@ void DesktopNativeWidgetAura::OnHostWorkspaceChanged(
   native_widget_delegate_->OnNativeWidgetWorkspaceChanged();
 }
 
-void DesktopNativeWidgetAura::OnHostMovedInPixels(
-    aura::WindowTreeHost* host,
-    const gfx::Point& new_origin_in_pixels) {
-  TRACE_EVENT1("views", "DesktopNativeWidgetAura::OnHostMovedInPixels",
-               "new_origin_in_pixels", new_origin_in_pixels.ToString());
+void DesktopNativeWidgetAura::OnHostMovedInPixels(aura::WindowTreeHost* host) {
+  TRACE_EVENT0("views", "DesktopNativeWidgetAura::OnHostMovedInPixels");
 
   native_widget_delegate_->OnNativeWidgetMove();
 }

@@ -45,8 +45,8 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD0(OnMouseEnter, void());
 };
 
-bool operator==(const PlatformWindowDelegate::BoundsChange& bounds,
-                const gfx::Rect& rect);
+bool operator==(const PlatformWindowDelegate::BoundsChange& a,
+                const PlatformWindowDelegate::BoundsChange& b);
 
 }  // namespace ui
 

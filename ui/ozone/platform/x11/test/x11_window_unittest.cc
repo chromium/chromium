@@ -25,6 +25,7 @@
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
+#include "ui/ozone/test/mock_platform_window_delegate.h"
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
 
 namespace ui {
@@ -32,6 +33,8 @@ namespace ui {
 namespace {
 
 constexpr int kPointerDeviceId = 1;
+
+using BoundsChange = PlatformWindowDelegate::BoundsChange;
 
 class TestPlatformWindowDelegate : public PlatformWindowDelegate {
  public:
@@ -44,10 +47,11 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
   gfx::AcceleratedWidget widget() const { return widget_; }
   PlatformWindowState state() const { return state_; }
 
-  void WaitForBoundsSet(const gfx::Rect& expected_bounds) {
-    if (changed_bounds_ == expected_bounds)
+  void WaitForBoundsChange(
+      const PlatformWindowDelegate::BoundsChange& expected_change) {
+    if (expected_change_ == expected_change)
       return;
-    expected_bounds_ = expected_bounds;
+    expected_change_ = expected_change;
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
@@ -56,8 +60,9 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
   // PlatformWindowDelegate:
   void OnBoundsChanged(
       const PlatformWindowDelegate::BoundsChange& change) override {
-    changed_bounds_ = change.bounds;
-    if (!quit_closure_.is_null() && changed_bounds_ == expected_bounds_)
+    changed_ = change;
+    size_px_ = window_->GetBoundsInPixels().size();
+    if (!quit_closure_.is_null() && changed_ == expected_change_)
       std::move(quit_closure_).Run();
   }
   void OnDamageRect(const gfx::Rect& damaged_region) override {}
@@ -80,8 +85,8 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
   void OnMouseEnter() override {}
   SkPath GetWindowMaskForWindowShapeInPixels() override {
     SkPath window_mask;
-    int right = changed_bounds_.width();
-    int bottom = changed_bounds_.height();
+    int right = size_px_.width();
+    int bottom = size_px_.height();
 
     window_mask.moveTo(0, 0);
     window_mask.lineTo(0, bottom);
@@ -93,11 +98,15 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
     return window_mask;
   }
 
+  void set_window(X11Window* window) { window_ = window; }
+
  private:
+  X11Window* window_ = nullptr;
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
   PlatformWindowState state_ = PlatformWindowState::kUnknown;
-  gfx::Rect changed_bounds_;
-  gfx::Rect expected_bounds_;
+  PlatformWindowDelegate::BoundsChange changed_{false};
+  gfx::Size size_px_;
+  PlatformWindowDelegate::BoundsChange expected_change_{false};
 
   // Ends the run loop.
   base::OnceClosure quit_closure_;
@@ -270,6 +279,7 @@ TEST_F(X11WindowTest, DISABLED_Shape) {
   ShapedX11ExtensionDelegate x11_extension_delegate;
   constexpr gfx::Rect bounds(100, 100, 100, 100);
   auto window = CreateX11Window(&delegate, bounds, &x11_extension_delegate);
+  delegate.set_window(window.get());
   window->Show(false);
 
   const x11::Window x11_window = window->window();
@@ -402,6 +412,7 @@ TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
   constexpr gfx::Rect bounds(100, 100, 100, 100);
   x11_extension_delegate.set_guessed_bounds(bounds);
   auto window = CreateX11Window(&delegate, bounds, &x11_extension_delegate);
+  delegate.set_window(window.get());
   x11::Window x11_window = window->window();
   window->Show(false);
 
@@ -432,7 +443,7 @@ TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
   // Ensure it continues in browser fullscreen mode and bounds are restored to
   // |initial_bounds|.
   EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
-  delegate.WaitForBoundsSet(initial_bounds);
+  delegate.WaitForBoundsChange({false});
   EXPECT_EQ(initial_bounds, window->GetBoundsInPixels());
 
   // Emulate window resize (through X11 configure events) while in browser
@@ -448,14 +459,14 @@ TEST_F(X11WindowTest, MAYBE_WindowManagerTogglesFullscreen) {
     base::RunLoop().RunUntilIdle();
   }
   EXPECT_EQ(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
-  delegate.WaitForBoundsSet(initial_bounds);
+  delegate.WaitForBoundsChange({false});
   EXPECT_EQ(initial_bounds, window->GetBoundsInPixels());
 
   // Calling Widget::SetFullscreen(false) should clear the widget's fullscreen
   // state and clean things up.
   window->ToggleFullscreen();
   EXPECT_NE(window->GetPlatformWindowState(), PlatformWindowState::kFullScreen);
-  delegate.WaitForBoundsSet(initial_bounds);
+  delegate.WaitForBoundsChange({false});
   EXPECT_EQ(initial_bounds, window->GetBoundsInPixels());
 }
 
@@ -467,6 +478,7 @@ TEST_F(X11WindowTest,
   TestPlatformWindowDelegate delegate;
   constexpr gfx::Rect bounds(10, 10, 100, 100);
   auto window = CreateX11Window(&delegate, bounds, nullptr);
+  delegate.set_window(window.get());
   window->Show(false);
   window->Activate();
 

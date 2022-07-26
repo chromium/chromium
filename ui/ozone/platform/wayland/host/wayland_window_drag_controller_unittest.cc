@@ -64,6 +64,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
   }
 
   MockWaylandPlatformWindowDelegate& delegate() { return delegate_; }
+  WaylandWindow* window() { return window_.get(); }
 
  protected:
   using State = WaylandWindowDragController::State;
@@ -215,10 +216,11 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
   });
 
   EXPECT_CALL(delegate_, OnBoundsChanged(_))
-      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& bounds) {
+      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& change) {
         EXPECT_EQ(State::kDetached, drag_controller()->state());
         EXPECT_EQ(kDragging, test_step);
-        EXPECT_EQ(gfx::Point(20, 20), bounds.bounds.origin());
+        EXPECT_EQ(gfx::Point(20, 20), window_->GetBoundsInDIP().origin());
+        EXPECT_TRUE(change.origin_changed);
 
         SendDndDrop();
         test_step = kDropping;
@@ -292,10 +294,11 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
   });
 
   EXPECT_CALL(delegate_, OnBoundsChanged(_))
-      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& bounds) {
+      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& change) {
         EXPECT_EQ(State::kDetached, drag_controller()->state());
         EXPECT_EQ(kDragging, test_step);
-        EXPECT_EQ(gfx::Point(20, 20), bounds.bounds.origin());
+        EXPECT_EQ(gfx::Point(20, 20), window_->GetBoundsInDIP().origin());
+        EXPECT_TRUE(change.origin_changed);
 
         SendDndDrop();
         test_step = kDropping;
@@ -448,10 +451,11 @@ TEST_P(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
   });
 
   EXPECT_CALL(delegate_, OnBoundsChanged(_))
-      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& bounds) {
+      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& change) {
         EXPECT_EQ(State::kDetached, drag_controller()->state());
         EXPECT_EQ(kDragging, test_step);
-        EXPECT_EQ(gfx::Point(20, 20), bounds.bounds.origin());
+        EXPECT_EQ(gfx::Point(20, 20), window_->GetBoundsInDIP().origin());
+        EXPECT_TRUE(change.origin_changed);
 
         SendDndLeave();
         SendDndDrop();
@@ -557,10 +561,11 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
   });
 
   EXPECT_CALL(delegate_, OnBoundsChanged(_))
-      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& bounds) {
+      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& change) {
         EXPECT_EQ(State::kDetached, drag_controller()->state());
         EXPECT_EQ(kDragging, test_step);
-        EXPECT_EQ(gfx::Point(50, 50), bounds.bounds.origin());
+        EXPECT_EQ(gfx::Point(50, 50), window_->GetBoundsInDIP().origin());
+        EXPECT_TRUE(change.origin_changed);
 
         // Exit |source_window| and enter the |target_window|.
         SendDndLeave();
@@ -687,10 +692,11 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
   } test_step = kStarted;
 
   EXPECT_CALL(delegate_, OnBoundsChanged(_))
-      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& bounds) {
+      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& change) {
         EXPECT_EQ(State::kDetached, drag_controller()->state());
         EXPECT_EQ(kDragging, test_step);
-        EXPECT_EQ(gfx::Point(50, 50), bounds.bounds.origin());
+        EXPECT_EQ(gfx::Point(50, 50), window_->GetBoundsInDIP().origin());
+        EXPECT_TRUE(change.origin_changed);
 
         // Exit |source_window| and enter the |target_window|.
         SendDndLeave();
@@ -858,18 +864,23 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached_TOUCH) {
   Sync();
 }
 
+using BoundsChange = PlatformWindowDelegate::BoundsChange;
+
 TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
   const gfx::Rect original_bounds = window_->GetBoundsInPixels();
   wl::ScopedWlArray states({XDG_TOPLEVEL_STATE_ACTIVATED});
 
   // Maximize and check restored bounds is correctly set.
   constexpr gfx::Rect kMaximizedBounds{1024, 768};
-  EXPECT_CALL(delegate_, OnBoundsChanged(testing::Eq(kMaximizedBounds)));
+  EXPECT_CALL(delegate_, OnBoundsChanged(testing::Eq(BoundsChange(false))));
   window_->Maximize();
   states.AddStateToWlArray(XDG_TOPLEVEL_STATE_MAXIMIZED);
   SendConfigureEvent(surface_->xdg_surface(), kMaximizedBounds.size(), 1,
                      states.get());
   Sync();
+
+  EXPECT_EQ(kMaximizedBounds, window_->GetBoundsInDIP());
+
   auto restored_bounds = window_->GetRestoredBoundsInDIP();
   EXPECT_EQ(original_bounds, restored_bounds);
 
@@ -970,10 +981,12 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
   });
 
   EXPECT_CALL(delegate_, OnBoundsChanged(_))
-      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& bounds) {
+      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& change) {
         EXPECT_EQ(State::kDetached, drag_controller()->state());
         EXPECT_EQ(kDragging, test_step);
-        EXPECT_EQ(gfx::Point(100, 100), bounds.bounds.origin());
+        EXPECT_TRUE(change.origin_changed);
+        EXPECT_EQ(gfx::Point(100, 100), window_->GetBoundsInDIP().origin());
+        EXPECT_TRUE(change.origin_changed);
 
         // Send a few wl_pointer::motion events skipping sync and dispatch
         // checks, which will be done at |kDropping| test step handling.
@@ -1034,7 +1047,9 @@ TEST_P(WaylandWindowDragControllerTest, MotionEventsSkippedWhileReattaching) {
     self->SendDndMotion({30, 30});
     EXPECT_CALL(self->delegate(), OnBoundsChanged(_))
         .WillOnce([&](const PlatformWindowDelegate::BoundsChange& change) {
-          EXPECT_EQ(gfx::Point(30, 30), change.bounds.origin());
+          EXPECT_EQ(gfx::Point(30, 30),
+                    self->window()->GetBoundsInDIP().origin());
+          EXPECT_TRUE(change.origin_changed);
         });
     self->Sync();
 

@@ -660,13 +660,11 @@ void WindowTreeHost::OnAcceleratedWidgetAvailable() {
   }
 }
 
-void WindowTreeHost::OnHostMovedInPixels(
-    const gfx::Point& new_location_in_pixels) {
-  TRACE_EVENT1("ui", "WindowTreeHost::OnHostMovedInPixels", "origin",
-               new_location_in_pixels.ToString());
+void WindowTreeHost::OnHostMovedInPixels() {
+  TRACE_EVENT0("ui", "WindowTreeHost::OnHostMovedInPixels");
 
   for (WindowTreeHostObserver& observer : observers_)
-    observer.OnHostMovedInPixels(this, new_location_in_pixels);
+    observer.OnHostMovedInPixels(this);
 }
 
 void WindowTreeHost::OnHostResizedInPixels(

@@ -342,7 +342,7 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   // Returns the location of the RootWindow on native screen.
   virtual gfx::Point GetLocationOnScreenInPixels() const = 0;
 
-  void OnHostMovedInPixels(const gfx::Point& new_location_in_pixels);
+  void OnHostMovedInPixels();
   void OnHostResizedInPixels(const gfx::Size& new_size_in_pixels);
   void OnHostWorkspaceChanged();
   void OnHostDisplayChanged();

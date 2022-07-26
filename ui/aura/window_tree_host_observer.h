@@ -12,10 +12,6 @@
 
 class SkRegion;
 
-namespace gfx {
-class Point;
-}
-
 namespace aura {
 class WindowTreeHost;
 
@@ -25,8 +21,7 @@ class AURA_EXPORT WindowTreeHostObserver {
   virtual void OnHostResized(WindowTreeHost* host) {}
 
   // Called when the host is moved on screen.
-  virtual void OnHostMovedInPixels(WindowTreeHost* host,
-                                   const gfx::Point& new_origin_in_pixels) {}
+  virtual void OnHostMovedInPixels(WindowTreeHost* host) {}
 
   // Called when the host is moved to a different workspace.
   virtual void OnHostWorkspaceChanged(WindowTreeHost* host) {}

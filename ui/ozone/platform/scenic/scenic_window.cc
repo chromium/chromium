@@ -395,6 +395,7 @@ void ScenicWindow::UpdateSize() {
   const float height = view_properties_->bounding_box.max.y -
                        view_properties_->bounding_box.min.y;
 
+  const gfx::Point old_origin = bounds_.origin();
   bounds_ = gfx::Rect(ceilf(width * device_pixel_ratio_),
                       ceilf(height * device_pixel_ratio_));
 
@@ -418,8 +419,7 @@ void ScenicWindow::UpdateSize() {
   // separately and we need to make sure our sizes change is committed.
   safe_presenter_.QueuePresent();
 
-  PlatformWindowDelegate::BoundsChange bounds;
-  bounds.bounds = bounds_;
+  PlatformWindowDelegate::BoundsChange bounds(old_origin != bounds_.origin());
   bounds.system_ui_overlap =
       ConvertInsets(device_pixel_ratio_, *view_properties_);
   delegate_->OnBoundsChanged(bounds);

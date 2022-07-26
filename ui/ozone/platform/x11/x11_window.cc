@@ -550,7 +550,7 @@ void X11Window::SetBoundsInPixels(const gfx::Rect& bounds) {
   // Even if the pixel bounds didn't change this call to the delegate should
   // still happen. The device scale factor may have changed which effectively
   // changes the bounds.
-  OnXWindowBoundsChanged(new_bounds_in_pixels);
+  platform_window_delegate_->OnBoundsChanged({origin_changed});
 }
 
 gfx::Rect X11Window::GetBoundsInPixels() const {
@@ -663,6 +663,7 @@ void X11Window::ToggleFullscreen() {
   // Do not go through SetBounds as long as it adjusts bounds and sets them to X
   // Server. Instead, we just store the bounds and notify the client that the
   // window occupies the entire screen.
+  bool origin_changed = bounds_in_pixels_.origin() != new_bounds_px.origin();
   bounds_in_pixels_ = new_bounds_px;
 
   // If there is a restore in flight, then set a flag to ignore the single
@@ -676,7 +677,7 @@ void X11Window::ToggleFullscreen() {
 
   // This must be the final call in this function, as `this` may be deleted
   // during the observation of this event.
-  platform_window_delegate_->OnBoundsChanged(new_bounds_px);
+  platform_window_delegate_->OnBoundsChanged({origin_changed});
 }
 
 void X11Window::Maximize() {
@@ -1430,10 +1431,6 @@ void X11Window::OnXWindowDamageEvent(const gfx::Rect& damage_rect) {
   platform_window_delegate_->OnDamageRect(damage_rect);
 }
 
-void X11Window::OnXWindowBoundsChanged(const gfx::Rect& bounds) {
-  platform_window_delegate_->OnBoundsChanged(bounds);
-}
-
 void X11Window::OnXWindowCloseRequested() {
   platform_window_delegate_->OnCloseRequest();
 }
@@ -2137,7 +2134,7 @@ void X11Window::HandleEvent(const x11::Event& xev) {
     gfx::Point window_origin = gfx::Point() + (root_point - window_point);
     if (bounds_in_pixels_.origin() != window_origin) {
       bounds_in_pixels_.set_origin(window_origin);
-      NotifyBoundsChanged(bounds_in_pixels_);
+      NotifyBoundsChanged(/*origin changed=*/true);
     }
   }
 
@@ -2300,9 +2297,9 @@ void X11Window::OnConfigureEvent(const x11::ConfigureNotifyEvent& configure,
   bounds_in_pixels_ = new_bounds_px;
 
   if (size_changed)
-    DispatchResize();
+    DispatchResize(origin_changed);
   else if (origin_changed)
-    NotifyBoundsChanged(bounds_in_pixels_);
+    NotifyBoundsChanged(/*origin changed=*/true);
 }
 
 void X11Window::SetWMSpecState(bool enabled,
@@ -2372,13 +2369,13 @@ void X11Window::OnFrameExtentsUpdated() {
 
 // Removes |delayed_resize_task_| from the task queue (if it's in the queue) and
 // adds it back at the end of the queue.
-void X11Window::DispatchResize() {
+void X11Window::DispatchResize(bool origin_changed) {
   if (update_counter_ == x11::Sync::Counter{} ||
       configure_counter_value_ == 0) {
     // WM doesn't support _NET_WM_SYNC_REQUEST. Or we are too slow, so
     // _NET_WM_SYNC_REQUEST is disabled by the compositor.
     delayed_resize_task_.Reset(base::BindOnce(
-        &X11Window::DelayedResize, base::Unretained(this), bounds_in_pixels_));
+        &X11Window::DelayedResize, base::Unretained(this), origin_changed));
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, delayed_resize_task_.callback());
     return;
@@ -2395,10 +2392,10 @@ void X11Window::DispatchResize() {
   // If _NET_WM_SYNC_REQUEST is used to synchronize with compositor during
   // resizing, the compositor will not resize the window, until last resize is
   // handled, so we don't need accumulate resize events.
-  DelayedResize(bounds_in_pixels_);
+  DelayedResize(origin_changed);
 }
 
-void X11Window::DelayedResize(const gfx::Rect& bounds_in_pixels) {
+void X11Window::DelayedResize(bool origin_changed) {
   if (configure_counter_value_is_extended_ &&
       (current_counter_value_ % 2) == 0) {
     // Increase the |extended_update_counter_|, so the compositor will know we
@@ -2410,7 +2407,7 @@ void X11Window::DelayedResize(const gfx::Rect& bounds_in_pixels) {
   }
 
   CancelResize();
-  NotifyBoundsChanged(bounds_in_pixels);
+  NotifyBoundsChanged(/*origin changed=*/origin_changed);
 
   // No more member accesses here: bounds change propagation may have deleted
   // |this| (e.g. when a chrome window is snapped into a tab strip. Further
@@ -2473,9 +2470,9 @@ void X11Window::UpdateWindowRegion(
   }
 }
 
-void X11Window::NotifyBoundsChanged(const gfx::Rect& new_bounds_in_px) {
+void X11Window::NotifyBoundsChanged(bool origin_changed) {
   ResetWindowRegion();
-  OnXWindowBoundsChanged(new_bounds_in_px);
+  platform_window_delegate_->OnBoundsChanged({origin_changed});
 }
 
 bool X11Window::InitializeAsStatusIcon() {

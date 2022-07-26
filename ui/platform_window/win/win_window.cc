@@ -311,8 +311,7 @@ void WinWindow::OnWindowPosChanged(WINDOWPOS* window_pos) {
   if (!(window_pos->flags & SWP_NOSIZE) || !(window_pos->flags & SWP_NOMOVE)) {
     RECT cr;
     GetClientRect(hwnd(), &cr);
-    delegate_->OnBoundsChanged(gfx::Rect(
-        window_pos->x, window_pos->y, cr.right - cr.left, cr.bottom - cr.top));
+    delegate_->OnBoundsChanged({true});
   }
 }
 

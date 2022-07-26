@@ -117,9 +117,9 @@ void AshWindowTreeHostUnified::OnCursorVisibilityChangedNative(bool show) {
     host->AsWindowTreeHost()->OnCursorVisibilityChanged(show);
 }
 
-void AshWindowTreeHostUnified::OnBoundsChanged(const BoundsChange& bounds) {
+void AshWindowTreeHostUnified::OnBoundsChanged(const BoundsChange& change) {
   if (platform_window())
-    OnHostResizedInPixels(bounds.bounds.size());
+    OnHostResizedInPixels(platform_window()->GetBoundsInPixels().size());
 }
 
 void AshWindowTreeHostUnified::OnWindowDestroying(aura::Window* window) {

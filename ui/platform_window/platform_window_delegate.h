@@ -46,12 +46,13 @@ enum class PlatformWindowOcclusionState {
 class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
  public:
   struct COMPONENT_EXPORT(PLATFORM_WINDOW) BoundsChange {
-    BoundsChange();
-    BoundsChange(const gfx::Rect& bounds);
-    ~BoundsChange();
+    BoundsChange() = delete;
+    constexpr BoundsChange(bool origin_changed)
+        : origin_changed(origin_changed) {}
+    ~BoundsChange() = default;
 
-    // The dimensions of the window, in physical window coordinates.
-    gfx::Rect bounds;
+    // True if the bounds change resulted in the origin change.
+    bool origin_changed : 1;
 
 #if BUILDFLAG(IS_FUCHSIA)
     // The widths of border regions which are obscured by overlapping

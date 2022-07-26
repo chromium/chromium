@@ -97,7 +97,8 @@ class AURA_EXPORT WindowTreeHostPlatform : public WindowTreeHost,
   gfx::AcceleratedWidget widget_;
   std::unique_ptr<ui::PlatformWindow> platform_window_;
   gfx::NativeCursor current_cursor_;
-  gfx::Rect bounds_in_pixels_;
+  // TODO: use compositor's size.
+  gfx::Size size_in_pixels_;
 
   std::unique_ptr<ui::KeyboardHook> keyboard_hook_;
 

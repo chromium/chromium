@@ -50,8 +50,9 @@ void StubWindow::SetBoundsInPixels(const gfx::Rect& bounds) {
   // Even if the pixel bounds didn't change this call to the delegate should
   // still happen. The device scale factor may have changed which effectively
   // changes the bounds.
+  bool origin_changed = bounds_.origin() != bounds.origin();
   bounds_ = bounds;
-  delegate_->OnBoundsChanged(bounds);
+  delegate_->OnBoundsChanged({origin_changed});
 }
 
 gfx::Rect StubWindow::GetBoundsInPixels() const {

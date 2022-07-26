@@ -159,7 +159,7 @@ class DemoWindow : public ui::PlatformWindowDelegate {
 
   // ui::PlatformWindowDelegate:
   void OnBoundsChanged(const BoundsChange& bounds) override {
-    host_->Resize(bounds.bounds.size());
+    host_->Resize(platform_window_->GetBoundsInPixels().size());
   }
 
   void OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) override {
