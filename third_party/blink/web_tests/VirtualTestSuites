@@ -1207,12 +1207,6 @@
     "args": ["--enable-features=CorsNonWildcardRequestHeadersSupport"]
   },
   {
-    "prefix": "enable-experimental-async-stack-tagging-api",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["inspector-protocol/runtime"],
-    "args": ["--js-flags=--experimental-async-stack-tagging-api"]
-  },
-  {
     "prefix": "system-color-picker-appearance",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["fast/forms/color-scheme/color/color-picker-appearance.html"],

@@ -1,3 +1,0 @@
-Tests that async stack tagging API works as expected.
-Skipping: async stack tagging API not enabled.
-
