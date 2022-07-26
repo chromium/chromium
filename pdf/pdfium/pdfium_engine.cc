@@ -1363,6 +1363,10 @@ bool PDFiumEngine::OnRightMouseDown(const blink::WebMouseEvent& event) {
     return true;
   }
 
+  // Before examining the selection, first refresh the link. Due to keyboard
+  // events and possibly other events, the saved link info may be stale.
+  UpdateLinkUnderCursor(GetLinkAtPosition(point));
+
   // Handle the case when focus starts outside a form text area and stays
   // outside.
   if (selection_.empty())
