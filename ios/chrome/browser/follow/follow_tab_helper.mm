@@ -166,6 +166,12 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
     return;
   }
 
+  // Always show IPH for eligible website if experimental setting is enabled.
+  if (experimental_flags::ShouldAlwaysShowFollowIPH()) {
+    PresentFollowIPH();
+    return;
+  }
+
   feature_engagement::Tracker* feature_engagement_tracker =
       feature_engagement::TrackerFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
