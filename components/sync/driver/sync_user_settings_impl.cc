@@ -132,8 +132,6 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetRegisteredSelectableTypes()
       registered_types.Put(type);
     }
   }
-  // TODO(crbug.com/1330894): Apps datatypes shouldn't be registered on
-  // secondary Lacros profiles.
   return registered_types;
 }
 
