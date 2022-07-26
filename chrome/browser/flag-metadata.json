@@ -3511,7 +3511,7 @@
   {
     "name": "font-access",
     "owners": [ "dslee" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 108
   },
   {
     "name": "force-color-profile",
