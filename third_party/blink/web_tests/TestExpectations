@@ -7055,3 +7055,9 @@ crbug.com/1346822 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/cs
 crbug.com/1346822 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/top-level-await.https.html [ Failure Pass ]
 crbug.com/1346822 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-roundRect.https.html [ Failure Pass ]
 crbug.com/1343935 [ Mac10.15 ] external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-body.html [ Failure Pass ]
+
+# Sheriff 2022-07-26
+crbug.com/1347459 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoration-style-inherit-links.html [ Skip ]
+crbug.com/1347459 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoration-style-inherit-not-propagated-by-out-of-flow.html [ Skip ]
+crbug.com/1347459 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoration-style-inherit-simple-underlines.html [ Skip ]
+crbug.com/1347459 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoration-style.html [ Skip ]
