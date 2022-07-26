@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ios_chrome_field_trials.h"
+#import "ios/chrome/browser/ios_chrome_field_trials.h"
 
-#include "base/check.h"
-#include "base/path_service.h"
-#include "components/metrics/persistent_histograms.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/chrome_paths.h"
-#include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
+#import "base/check.h"
+#import "base/path_service.h"
+#import "components/metrics/persistent_histograms.h"
+#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/chrome_paths.h"
+#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
+#import "ios/chrome/browser/ui/first_run/trending_queries_field_trial.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -33,4 +34,7 @@ void IOSChromeFieldTrials::SetUpFeatureControllingFieldTrials(
   DCHECK(low_entropy_provider);
   fre_field_trial::Create(*low_entropy_provider, feature_list,
                           GetApplicationContext()->GetLocalState());
+  trending_queries_field_trial::Create(
+      *low_entropy_provider, feature_list,
+      GetApplicationContext()->GetLocalState());
 }
