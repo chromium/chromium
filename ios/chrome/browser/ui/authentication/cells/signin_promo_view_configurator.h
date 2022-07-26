@@ -29,12 +29,7 @@
                              hasCloseButton:(BOOL)hasCloseButton
     NS_DESIGNATED_INITIALIZER;
 
-// Configures a sign-in promo view with the default standard style.
-// TODO(crbug.com/1328877): Remove this method and replace usages with the
-// `configureSigninPromoView:WithStyle:`.
-- (void)configureSigninPromoView:(SigninPromoView*)signinPromoView;
-
-// Configure `signinPromoView` with the given `promoViewStyle` style.
+// Configure |signinPromoView| with the given |promoViewStyle| style.
 - (void)configureSigninPromoView:(SigninPromoView*)signinPromoView
                        withStyle:(SigninPromoViewStyle)promoViewStyle;
 

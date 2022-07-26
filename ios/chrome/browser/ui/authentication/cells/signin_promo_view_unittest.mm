@@ -87,13 +87,16 @@ TEST_F(SigninPromoViewTest, CompactLayout) {
       [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
   view.mode = SigninPromoViewModeNoAccounts;
   [currentWindow.rootViewController.view addSubview:view];
-  // Ensure that default layout is not compact.
+  // The default mode should not be compact.
   EXPECT_FALSE(view.compactLayout);
   // In full layout, the primary button is rounded with background color.
   EXPECT_TRUE(view.primaryButton.backgroundColor);
   EXPECT_GT(view.primaryButton.layer.cornerRadius, 0.0);
 
-  [view setCompactLayout:YES];
+  view = [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  view.mode = SigninPromoViewModeNoAccounts;
+  view.compactLayout = YES;
+  EXPECT_TRUE(view.compactLayout);
   // In compact layout, the primary button is plain.
   EXPECT_FALSE(view.primaryButton.backgroundColor);
   EXPECT_EQ(view.primaryButton.layer.cornerRadius, 0.0);

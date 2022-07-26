@@ -7,6 +7,7 @@
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
+#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -38,7 +39,8 @@ const CGFloat kMargin = 16;
   cell.signinPromoView.delegate = self.delegate;
   cell.signinPromoView.textLabel.text = self.text;
   [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-  [self.configurator configureSigninPromoView:cell.signinPromoView];
+  [self.configurator configureSigninPromoView:cell.signinPromoView
+                                    withStyle:SigninPromoViewStyleStandard];
   if (styler.cellTitleColor)
     cell.signinPromoView.textLabel.textColor = styler.cellTitleColor;
   if (styler.tintColor) {

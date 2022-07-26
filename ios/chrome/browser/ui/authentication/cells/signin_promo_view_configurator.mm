@@ -62,10 +62,38 @@ using l10n_util::GetNSStringF;
   return self;
 }
 
-- (void)configureSigninPromoView:(SigninPromoView*)signinPromoView {
+- (void)configureSigninPromoView:(SigninPromoView*)signinPromoView
+                       withStyle:(SigninPromoViewStyle)promoViewStyle {
   signinPromoView.closeButton.hidden = !self.hasCloseButton;
   signinPromoView.mode = self.signinPromoViewMode;
+  switch (promoViewStyle) {
+    case SigninPromoViewStyleStandard: {
+      signinPromoView.compactLayout = NO;
+      [self configureStandardSigninPromoView:signinPromoView];
+      break;
+    }
+    case SigninPromoViewStyleTitled: {
+      signinPromoView.compactLayout = NO;
+      [self configureTitledPromoView:signinPromoView];
+      break;
+    }
+    case SigninPromoViewStyleTitledCompact: {
+      signinPromoView.compactLayout = YES;
+      [self configureTitledPromoView:signinPromoView];
+      break;
+    }
+  }
+  if (self.signinPromoViewMode != SigninPromoViewModeNoAccounts) {
+    [self assignProfileImageToSigninPromoView:signinPromoView];
+  }
+}
 
+#pragma mark - Private
+
+// Configures the view elements of the |signinPromoView| to conform to the
+// |SigninPromoViewStyleStandard| style.
+- (void)configureStandardSigninPromoView:(SigninPromoView*)signinPromoView {
+  signinPromoView.titleLabel.hidden = YES;
   NSString* name =
       self.userGivenName.length ? self.userGivenName : self.userEmail;
   std::u16string name16 = SysNSStringToUTF16(name);
@@ -76,7 +104,7 @@ using l10n_util::GetNSStringF;
       NSString* signInString = GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
       [signinPromoView.primaryButton setTitle:signInString
                                      forState:UIControlStateNormal];
-      return;
+      break;
     }
     case SigninPromoViewModeSigninWithAccount: {
       [signinPromoView.primaryButton
@@ -94,8 +122,21 @@ using l10n_util::GetNSStringF;
       break;
     }
   }
-  DCHECK(name);
-  DCHECK_NE(self.signinPromoViewMode, SigninPromoViewModeNoAccounts);
+}
+
+// Configures the view elements of the |signinPromoView| to conform to
+// |SigninPromoViewStyleTitled| or |SigninPromoViewStyleTitledCompact| style.
+- (void)configureTitledPromoView:(SigninPromoView*)signinPromoView {
+  // In the titled Promo views (both compact and non compact the primary button
+  // text will use "continue" regardless of the promo mode.
+  signinPromoView.titleLabel.hidden = NO;
+  NSString* signInString = GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE);
+  [signinPromoView.primaryButton setTitle:signInString
+                                 forState:UIControlStateNormal];
+}
+
+// Sets profile image to a given |signinPromoView|.
+- (void)assignProfileImageToSigninPromoView:(SigninPromoView*)signinPromoView {
   UIImage* image = self.userImage;
   DCHECK(image);
   CGSize avatarSize =
@@ -103,28 +144,6 @@ using l10n_util::GetNSStringF;
   DCHECK_EQ(avatarSize.width, image.size.width);
   DCHECK_EQ(avatarSize.height, image.size.height);
   [signinPromoView setProfileImage:image];
-}
-
-- (void)configureSigninPromoView:(SigninPromoView*)signinPromoView
-                       withStyle:(SigninPromoViewStyle)promoViewStyle {
-  switch (promoViewStyle) {
-    case SigninPromoViewStyleStandard: {
-      signinPromoView.titleLabel.hidden = YES;
-      signinPromoView.compactLayout = NO;
-      [self configureSigninPromoView:signinPromoView];
-      return;
-    }
-    case SigninPromoViewStyleTitled: {
-      signinPromoView.titleLabel.hidden = NO;
-      signinPromoView.compactLayout = NO;
-      break;
-    }
-    case SigninPromoViewStyleTitledCompact: {
-      signinPromoView.titleLabel.hidden = NO;
-      signinPromoView.compactLayout = YES;
-      break;
-    }
-  }
 }
 
 @end
