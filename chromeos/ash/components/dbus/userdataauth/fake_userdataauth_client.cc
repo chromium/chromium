@@ -354,6 +354,7 @@ void FakeUserDataAuthClient::Unmount(
   ReturnProtobufMethodCallback(::user_data_auth::UnmountReply(),
                                std::move(callback));
 }
+
 void FakeUserDataAuthClient::Mount(
     const ::user_data_auth::MountRequest& request,
     MountCallback callback) {
@@ -400,6 +401,27 @@ void FakeUserDataAuthClient::Mount(
       users_.insert({*account_id, UserCryptohomeState()});
   UserCryptohomeState& user_state = user_it->second;
 
+  if (!was_inserted) {
+    const cryptohome::Key& key = request.authorization().key();
+    switch (AuthenticateViaAuthFactors(*account_id,
+                                       /*factor_label=*/key.data().label(),
+                                       /*secret=*/key.secret(),
+                                       /*wildcard_allowed=*/true)) {
+      case AuthResult::kAuthSuccess:
+        break;
+      case AuthResult::kUserNotFound:
+        NOTREACHED();
+        break;
+      case AuthResult::kFactorNotFound:
+        reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
+        return;
+      case AuthResult::kAuthFailed:
+        reply.set_error(
+            ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
+        return;
+    }
+  }
+
   // The real cryptohome supports this, but it's not used in chrome at the
   // moment and thus not properly supported by fake cryptohome.
   LOG_IF(WARNING, !was_inserted && request.has_create())
@@ -432,6 +454,7 @@ void FakeUserDataAuthClient::Mount(
 
   reply.set_sanitized_username(GetStubSanitizedUsername(*account_id));
 }
+
 void FakeUserDataAuthClient::Remove(
     const ::user_data_auth::RemoveRequest& request,
     RemoveCallback callback) {
