@@ -3715,7 +3715,7 @@
       'mac_optional_gpu_tests_rel': {
         'args': [
           # Added to debug crbug.com/1293967.
-          '--extra-browser-args=--disable-background-media-suspend --disable-renderer-backgrounding',
+          '--extra-browser-args=--disable-background-media-suspend --disable-renderer-backgrounding --disable-background-timer-throttling',
         ],
       },
     },
@@ -3767,7 +3767,7 @@
       'chromeos-amd64-generic-rel': {
         'args': [
           # Added to debug crbug.com/1293967.
-          '--extra-browser-args=--disable-features=BackgroundVideoPauseOptimization --disable-background-media-suspend --disable-renderer-backgrounding',
+          '--extra-browser-args=--disable-features=BackgroundVideoPauseOptimization --disable-background-media-suspend --disable-renderer-backgrounding --disable-background-timer-throttling',
         ],
         'swarming': {
           'quickrun_shards': 40,
