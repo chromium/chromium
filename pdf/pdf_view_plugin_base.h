@@ -103,7 +103,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void SetIsSelecting(bool is_selecting) override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
   void DocumentFocusChanged(bool document_has_focus) override;
-  void SetLinkUnderCursor(const std::string& link_under_cursor) override;
 
   // PaintManager::Client:
   void OnPaint(const std::vector<gfx::Rect>& paint_rects,
@@ -262,8 +261,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   PaintManager& paint_manager() { return paint_manager_; }
 
-  const std::string& link_under_cursor() const { return link_under_cursor_; }
-
   SkBitmap& image_data() { return image_data_; }
 
   virtual bool full_frame() const = 0;
@@ -358,9 +355,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // `PdfViewWebPlugin`, so all methods should be protected or public.
 
   PaintManager paint_manager_{this};
-
-  // The URL currently under the cursor.
-  std::string link_under_cursor_;
 
   // Image data buffer for painting.
   SkBitmap image_data_;

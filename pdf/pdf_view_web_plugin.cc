@@ -664,7 +664,7 @@ bool PdfViewWebPlugin::ExecuteEditCommand(const blink::WebString& name,
 
 blink::WebURL PdfViewWebPlugin::LinkAtPosition(
     const gfx::Point& /*position*/) const {
-  return GURL(link_under_cursor());
+  return GURL(link_under_cursor_);
 }
 
 bool PdfViewWebPlugin::StartFind(const blink::WebString& search_text,
@@ -934,6 +934,11 @@ void PdfViewWebPlugin::SetSelectedText(const std::string& selected_text) {
   selected_text_ = blink::WebString::FromUTF8(selected_text);
   client_->TextSelectionChanged(selected_text_, /*offset=*/0,
                                 gfx::Range(0, selected_text_.length()));
+}
+
+void PdfViewWebPlugin::SetLinkUnderCursor(
+    const std::string& link_under_cursor) {
+  link_under_cursor_ = link_under_cursor;
 }
 
 bool PdfViewWebPlugin::IsValidLink(const std::string& url) {

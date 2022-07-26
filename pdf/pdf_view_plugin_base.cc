@@ -322,11 +322,6 @@ void PdfViewPluginBase::DocumentFocusChanged(bool document_has_focus) {
   SendMessage(std::move(message));
 }
 
-void PdfViewPluginBase::SetLinkUnderCursor(
-    const std::string& link_under_cursor) {
-  link_under_cursor_ = link_under_cursor;
-}
-
 bool PdfViewPluginBase::HandleInputEvent(const blink::WebInputEvent& event) {
   // Ignore user input in read-only mode.
   if (engine()->IsReadOnly())

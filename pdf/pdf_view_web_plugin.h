@@ -293,6 +293,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void CaretChanged(const gfx::Rect& caret_rect) override;
   void EnteredEditMode() override;
   void SetSelectedText(const std::string& selected_text) override;
+  void SetLinkUnderCursor(const std::string& link_under_cursor) override;
   bool IsValidLink(const std::string& url) override;
 
   // pdf::mojom::PdfListener:
@@ -583,6 +584,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Handler for accessibility data updates.
   std::unique_ptr<PdfAccessibilityDataHandler> const
       pdf_accessibility_data_handler_;
+
+  // The URL currently under the cursor.
+  std::string link_under_cursor_;
 
   // The id of the current find operation, or -1 if no current operation is
   // present.
