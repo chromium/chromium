@@ -191,8 +191,15 @@ IN_PROC_BROWSER_TEST_F(PortalRecentlyAudibleBrowserTest,
   EXPECT_TRUE(ActiveTabChangesTo(TabAlertState::AUDIO_PLAYING, false));
 }
 
+// TODO(crbug.com/1155813): Test is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ActivateWithTonePlayingInPortal \
+  DISABLED_ActivateWithTonePlayingInPortal
+#else
+#define MAYBE_ActivateWithTonePlayingInPortal ActivateWithTonePlayingInPortal
+#endif
 IN_PROC_BROWSER_TEST_F(PortalRecentlyAudibleBrowserTest,
-                       ActivateWithTonePlayingInPortal) {
+                       MAYBE_ActivateWithTonePlayingInPortal) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
