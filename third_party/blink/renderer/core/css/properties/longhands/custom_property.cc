@@ -73,10 +73,14 @@ void CustomProperty::ApplyInitial(StyleResolverState& state) const {
     return;
   }
 
-  state.Style()->SetVariableData(name_, registration_->InitialVariableData(),
+  const StyleInitialData* initial_data = state.StyleRef().InitialData().get();
+  DCHECK(initial_data);
+  CSSVariableData* initial_variable_data = initial_data->GetVariableData(name_);
+  const CSSValue* initial_value = initial_data->GetVariableValue(name_);
+
+  state.Style()->SetVariableData(name_, initial_variable_data,
                                  is_inherited_property);
-  state.Style()->SetVariableValue(name_, registration_->Initial(),
-                                  is_inherited_property);
+  state.Style()->SetVariableValue(name_, initial_value, is_inherited_property);
 }
 
 void CustomProperty::ApplyInherit(StyleResolverState& state) const {
@@ -217,7 +221,7 @@ const CSSValue* CustomProperty::ParseTyped(
 bool CustomProperty::HasInitialValue() const {
   if (!registration_)
     return false;
-  return registration_->InitialVariableData();
+  return registration_->Initial();
 }
 
 bool CustomProperty::SupportsGuaranteedInvalid() const {

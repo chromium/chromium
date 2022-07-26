@@ -95,6 +95,10 @@ class CORE_EXPORT StyleResolverState {
     DCHECK(style_);
     return *style_;
   }
+  const ComputedStyle& StyleRef() const {
+    DCHECK(style_);
+    return *style_;
+  }
   scoped_refptr<ComputedStyle> TakeStyle();
 
   const CSSToLengthConversionData& CssToLengthConversionData() const {

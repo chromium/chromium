@@ -268,20 +268,24 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
       value = CSSInheritedValue::Create();
   }
 
+  const StyleInitialData* initial_data = state.StyleRef().InitialData().get();
+  DCHECK(initial_data);
+  const CSSValue* initial_value = initial_data->GetVariableValue(name);
+
   // Handle CSS-wide keywords (except 'revert', which should have been
   // handled already).
   DCHECK(!value->IsRevertValue());
   if (value->IsInitialValue() || (value->IsUnsetValue() && !is_inherited)) {
-    value = Registration().Initial();
+    value = initial_value;
   } else if (value->IsInheritedValue() ||
              (value->IsUnsetValue() && is_inherited)) {
     value = state.ParentStyle()->GetVariableValue(name, is_inherited);
     if (!value) {
-      value = Registration().Initial();
+      value = initial_value;
     }
     conversion_checkers.push_back(
-        std::make_unique<InheritedCustomPropertyChecker>(
-            name, is_inherited, value, Registration().Initial()));
+        std::make_unique<InheritedCustomPropertyChecker>(name, is_inherited,
+                                                         value, initial_value));
   }
 
   if (const auto* resolved_declaration =
