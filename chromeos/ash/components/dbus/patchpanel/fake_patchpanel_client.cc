@@ -35,4 +35,17 @@ FakePatchPanelClient::~FakePatchPanelClient() {
 
 void FakePatchPanelClient::GetDevices(GetDevicesCallback callback) {}
 
+void FakePatchPanelClient::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void FakePatchPanelClient::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void FakePatchPanelClient::NotifyNetworkConfigurationChanged() {
+  for (auto& observer : observer_list_)
+    observer.NetworkConfigurationChanged();
+}
+
 }  // namespace ash

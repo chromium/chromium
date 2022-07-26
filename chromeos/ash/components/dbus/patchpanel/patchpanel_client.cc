@@ -22,6 +22,14 @@ namespace {
 
 PatchPanelClient* g_instance = nullptr;
 
+void OnSignalConnected(const std::string& interface_name,
+                       const std::string& signal_name,
+                       bool success) {
+  DCHECK_EQ(interface_name, patchpanel::kPatchPanelInterface);
+  LOG_IF(DFATAL, !success) << "Failed to connect to D-Bus signal; interface: "
+                           << interface_name << "; signal: " << signal_name;
+}
+
 // "Real" implementation of PatchPanelClient talking to the PatchPanel daemon
 // on the Chrome OS side.
 class PatchPanelClientImpl : public PatchPanelClient {
@@ -53,6 +61,15 @@ class PatchPanelClientImpl : public PatchPanelClient {
     patchpanel_proxy_ = bus->GetObjectProxy(
         patchpanel::kPatchPanelServiceName,
         dbus::ObjectPath(patchpanel::kPatchPanelServicePath));
+    ConnectToSignals();
+  }
+
+  void AddObserver(Observer* observer) override {
+    observer_list_.AddObserver(observer);
+  }
+
+  void RemoveObserver(Observer* observer) override {
+    observer_list_.RemoveObserver(observer);
   }
 
  private:
@@ -70,8 +87,28 @@ class PatchPanelClientImpl : public PatchPanelClient {
         std::make_move_iterator(response.devices().end())));
   }
 
+  void OnNetworkConfigurationChanged(dbus::Signal* signal) {
+    for (auto& observer : observer_list_) {
+      observer.NetworkConfigurationChanged();
+    }
+  }
+
+  // Connects the dbus signals.
+  void ConnectToSignals() {
+    patchpanel_proxy_->ConnectToSignal(
+        patchpanel::kPatchPanelInterface,
+        patchpanel::kNetworkConfigurationChangedSignal,
+        base::BindRepeating(
+            &PatchPanelClientImpl::OnNetworkConfigurationChanged,
+            weak_factory_.GetWeakPtr()),
+        base::BindOnce(&OnSignalConnected));
+  }
+
   // D-Bus proxy for the PatchPanel daemon, not owned.
   dbus::ObjectProxy* patchpanel_proxy_ = nullptr;
+
+  // List of observers for dbus signals.
+  base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<PatchPanelClientImpl> weak_factory_{this};
 };

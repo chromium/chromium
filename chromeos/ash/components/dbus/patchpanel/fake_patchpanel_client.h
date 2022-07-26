@@ -7,6 +7,8 @@
 
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 
+#include "base/observer_list.h"
+
 namespace ash {
 
 // FakePatchPanelClient is a stub implementation of PatchPanelClient used for
@@ -22,6 +24,8 @@ class COMPONENT_EXPORT(PATCHPANEL) FakePatchPanelClient
 
   // PatchPanelClient:
   void GetDevices(GetDevicesCallback callback) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
 
  protected:
   friend class PatchPanelClient;
@@ -30,6 +34,12 @@ class COMPONENT_EXPORT(PATCHPANEL) FakePatchPanelClient
   ~FakePatchPanelClient() override;
 
   void Init(dbus::Bus* bus) override {}
+
+  // Calls NetworkConfigurationChanged() on Observer instances.
+  void NotifyNetworkConfigurationChanged();
+
+  // List of observers.
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace ash
