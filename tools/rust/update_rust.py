@@ -38,6 +38,15 @@ RUST_SUB_REVISION = 1
 CRUBIT_REVISION = 'd9b0ad4c09b46328dcc7a5ec28ce86cca56e0389'
 CRUBIT_SUB_REVISION = 1
 
+# If not None, use a Rust package build with an older LLVM version than
+# specified in tools/clang/scripts/update.py. This is a fallback for when an
+# LLVM update breaks the Rust build.
+#
+# This should almost always be None. When a breakage happens the fallback
+# should be temporary. Once fixed, the Rust revision above should be updated and
+# FALLBACK_CLANG_VERSION should be reset to None.
+FALLBACK_CLANG_VERSION = 'llvmorg-15-init-15652-g89a99ec9-5'
+
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
@@ -53,12 +62,15 @@ VERSION_STAMP_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
 
 # Get the target version as specified above.
 def GetPackageVersion():
+    if FALLBACK_CLANG_VERSION:
+        clang_version = FALLBACK_CLANG_VERSION
+    else:
+        from update import (CLANG_REVISION, CLANG_SUB_REVISION)
+        clang_version = f'{CLANG_REVISION}-{CLANG_SUB_REVISION}'
     # TODO(lukasza): Include CRUBIT_REVISION and CRUBIT_SUB_REVISION once we
     # include Crubit binaries in the generated package.  See also a TODO comment
     # in BuildCrubit in package_rust.py.
-    from update import (CLANG_REVISION, CLANG_SUB_REVISION)
-    return '%s-%s-%s-%s' % (RUST_REVISION, RUST_SUB_REVISION, CLANG_REVISION,
-                            CLANG_SUB_REVISION)
+    return '%s-%s-%s' % (RUST_REVISION, RUST_SUB_REVISION, clang_version)
 
 
 # Get the version of the toolchain package we already have.
