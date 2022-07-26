@@ -64,17 +64,9 @@ bool LayoutNGTextControlSingleLine::NodeAtPoint(
   //  - we hit regions not in any decoration buttons.
   Element* container = ContainerElement();
   HTMLElement* inner_editor = InnerEditorElement();
-  Element* view_port = EditingViewPortElement();
   if (result.InnerNode()->IsDescendantOf(inner_editor) ||
       result.InnerNode() == GetNode() ||
       (container && container == result.InnerNode())) {
-    PhysicalOffset inner_editor_accumulated_offset = accumulated_offset;
-    if (container && view_port) {
-      if (auto* view_port_box = view_port->GetLayoutBox())
-        inner_editor_accumulated_offset += view_port_box->PhysicalLocation();
-      if (auto* container_box = container->GetLayoutBox())
-        inner_editor_accumulated_offset += container_box->PhysicalLocation();
-    }
     LayoutTextControl::HitInnerEditorElement(
         *this, *inner_editor, result, hit_test_location, accumulated_offset);
   }

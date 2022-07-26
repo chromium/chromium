@@ -158,17 +158,6 @@ bool LayoutTextControlSingleLine::NodeAtPoint(
   if (result.InnerNode()->IsDescendantOf(InnerEditorElement()) ||
       result.InnerNode() == GetNode() ||
       (container && container == result.InnerNode())) {
-    PhysicalOffset inner_editor_accumulated_offset = accumulated_offset;
-    if (container && EditingViewPortElement()) {
-      if (EditingViewPortElement()->GetLayoutBox()) {
-        inner_editor_accumulated_offset +=
-            EditingViewPortElement()->GetLayoutBox()->PhysicalLocation();
-      }
-      if (container->GetLayoutBox()) {
-        inner_editor_accumulated_offset +=
-            container->GetLayoutBox()->PhysicalLocation();
-      }
-    }
     HitInnerEditorElement(*this, *InnerEditorElement(), result,
                           hit_test_location, accumulated_offset);
   }
