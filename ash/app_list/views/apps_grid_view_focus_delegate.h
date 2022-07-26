@@ -10,6 +10,8 @@
 namespace ash {
 
 // A delegate which allows an AppsGridView to request custom focus changes.
+// TODO(jamescook): Eliminate this interface and have AppsGridView call
+// directly into AppListKeyboardController.
 class ASH_EXPORT AppsGridViewFocusDelegate {
  public:
   // Requests that focus move up and out (usually to the recent apps list).

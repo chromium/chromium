@@ -16,6 +16,7 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/app_list/views/app_list_keyboard_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_notifier.h"
@@ -149,12 +150,12 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
   AppListItemView* selected_view_ = nullptr;
 };
 
-RecentAppsView::RecentAppsView(Delegate* delegate,
+RecentAppsView::RecentAppsView(AppListKeyboardController* keyboard_controller,
                                AppListViewDelegate* view_delegate)
-    : delegate_(delegate),
+    : keyboard_controller_(keyboard_controller),
       view_delegate_(view_delegate),
       grid_delegate_(std::make_unique<GridDelegateImpl>(view_delegate_)) {
-  DCHECK(delegate_);
+  DCHECK(keyboard_controller_);
   DCHECK(view_delegate_);
   layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
@@ -312,7 +313,7 @@ void RecentAppsView::MoveFocusUp() {
   // This function should only run when a child has focus.
   DCHECK(Contains(GetFocusManager()->GetFocusedView()));
   DCHECK(!children().empty());
-  delegate_->MoveFocusUpFromRecents();
+  keyboard_controller_->MoveFocusUpFromRecents();
 }
 
 void RecentAppsView::MoveFocusDown() {
@@ -321,7 +322,7 @@ void RecentAppsView::MoveFocusDown() {
   DCHECK(Contains(GetFocusManager()->GetFocusedView()));
   int column = GetColumnOfFocusedChild();
   DCHECK_GE(column, 0);
-  delegate_->MoveFocusDownFromRecents(column);
+  keyboard_controller_->MoveFocusDownFromRecents(column);
 }
 
 int RecentAppsView::GetColumnOfFocusedChild() const {

@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "ash/app_list/app_list_model_provider.h"
+#include "ash/app_list/app_list_view_provider.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/apps_grid_view_focus_delegate.h"
-#include "ash/app_list/views/recent_apps_view.h"
 #include "ash/ash_export.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -59,9 +59,9 @@ class ASH_EXPORT AppListBubbleAppsPage
     : public views::View,
       public views::ViewObserver,
       public AppListModelProvider::Observer,
-      public RecentAppsView::Delegate,
       public AppListToastContainerView::Delegate,
-      public AppsGridViewFocusDelegate {
+      public AppsGridViewFocusDelegate,
+      public AppListViewProvider {
  public:
   METADATA_HEADER(AppListBubbleAppsPage);
 
@@ -126,17 +126,17 @@ class ASH_EXPORT AppListBubbleAppsPage
   void OnActiveAppListModelsChanged(AppListModel* model,
                                     SearchModel* search_model) override;
 
-  // RecentAppsView::Delegate:
-  void MoveFocusUpFromRecents() override;
-  void MoveFocusDownFromRecents(int column) override;
-
   // AppListToastContainerView::Delegate:
-  bool MoveFocusUpFromToast(int column) override;
-  bool MoveFocusDownFromToast(int column) override;
   void OnNudgeRemoved() override;
 
   // AppsGridViewFocusDelegate:
   bool MoveFocusUpFromAppsGrid(int column) override;
+
+  // AppListViewProvider:
+  ContinueSectionView* GetContinueSectionView() override;
+  RecentAppsView* GetRecentAppsView() override;
+  AppsGridView* GetAppsGridView() override;
+  AppListToastContainerView* GetToastContainerView() override;
 
   // Updates the visibility of the continue section based on user preference.
   void UpdateContinueSectionVisibility();

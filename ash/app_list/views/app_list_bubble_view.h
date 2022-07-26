@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/app_list/app_list_view_provider.h"
 #include "ash/app_list/views/app_list_folder_controller.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"

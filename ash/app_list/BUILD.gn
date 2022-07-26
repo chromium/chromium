@@ -33,6 +33,7 @@ source_set("app_list") {
     "app_list_util.cc",
     "app_list_util.h",
     "app_list_view_delegate.h",
+    "app_list_view_provider.h",
     "apps_grid_row_change_animator.cc",
     "apps_grid_row_change_animator.h",
     "grid_index.cc",

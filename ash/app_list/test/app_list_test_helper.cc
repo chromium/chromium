@@ -220,11 +220,11 @@ AppListFolderView* AppListTestHelper::GetFullscreenFolderView() {
 }
 
 RecentAppsView* AppListTestHelper::GetFullscreenRecentAppsView() {
-  return GetAppsContainerView()->GetRecentApps();
+  return GetAppsContainerView()->GetRecentAppsView();
 }
 
 ContinueSectionView* AppListTestHelper::GetFullscreenContinueSectionView() {
-  return GetAppsContainerView()->GetContinueSection();
+  return GetAppsContainerView()->GetContinueSectionView();
 }
 
 PagedAppsGridView* AppListTestHelper::GetRootPagedAppsGridView() {

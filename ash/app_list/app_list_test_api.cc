@@ -30,6 +30,7 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
+#include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
@@ -245,7 +246,7 @@ RecentAppsView* GetRecentAppsView() {
   if (ShouldUseBubbleAppList())
     return GetAppListBubbleView()->apps_page_for_test()->recent_apps_for_test();
 
-  return GetAppsContainerView()->GetRecentApps();
+  return GetAppsContainerView()->GetRecentAppsView();
 }
 
 SearchBoxView* GetSearchBoxView() {

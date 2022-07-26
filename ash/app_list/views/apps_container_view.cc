@@ -24,6 +24,7 @@
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/page_switcher.h"
+#include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/app_list/views/suggestion_chip_container_view.h"
@@ -60,6 +61,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/flex_layout.h"
@@ -167,9 +169,10 @@ constexpr base::TimeDelta kZeroStateSearchTimeout = base::Milliseconds(16);
 // makes applying identical transforms to suggested content views easier.
 class AppsContainerView::ContinueContainer : public views::View {
  public:
-  ContinueContainer(AppsContainerView* apps_container,
-                    AppListViewDelegate* view_delegate)
-      : view_delegate_(view_delegate), separator_(apps_container->separator()) {
+  ContinueContainer(AppListKeyboardController* keyboard_controller,
+                    AppListViewDelegate* view_delegate,
+                    views::Separator* separator)
+      : view_delegate_(view_delegate), separator_(separator) {
     DCHECK(view_delegate_);
     DCHECK(separator_);
     SetPaintToLayer(ui::LAYER_NOT_DRAWN);
@@ -184,7 +187,7 @@ class AppsContainerView::ContinueContainer : public views::View {
     continue_section_->layer()->SetFillsBoundsOpaquely(false);
 
     recent_apps_ = AddChildView(
-        std::make_unique<RecentAppsView>(apps_container, view_delegate));
+        std::make_unique<RecentAppsView>(keyboard_controller, view_delegate));
     recent_apps_->SetPaintToLayer();
     recent_apps_->layer()->SetFillsBoundsOpaquely(false);
 
@@ -258,6 +261,8 @@ class AppsContainerView::ContinueContainer : public views::View {
 
 AppsContainerView::AppsContainerView(ContentsView* contents_view)
     : contents_view_(contents_view),
+      app_list_keyboard_controller_(
+          std::make_unique<AppListKeyboardController>(this)),
       app_list_nudge_controller_(std::make_unique<AppListNudgeController>()) {
   AppListModelProvider::Get()->AddObserver(this);
 
@@ -292,8 +297,9 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
     dialog_controller_ = std::make_unique<SearchResultPageDialogController>(
         contents_view_->GetSearchBoxView());
 
-    continue_container_ = scrollable_container_->AddChildView(
-        std::make_unique<ContinueContainer>(this, view_delegate));
+    continue_container_ =
+        scrollable_container_->AddChildView(std::make_unique<ContinueContainer>(
+            app_list_keyboard_controller_.get(), view_delegate, separator_));
     continue_container_->continue_section()->SetNudgeController(
         app_list_nudge_controller_.get());
     // Update the suggestion tasks after the app list nudge controller is set in
@@ -305,7 +311,9 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
     if (features::IsLauncherAppSortEnabled()) {
       toast_container_ = scrollable_container_->AddChildView(
           std::make_unique<AppListToastContainerView>(
-              app_list_nudge_controller_.get(), a11y_announcer, view_delegate,
+              app_list_nudge_controller_.get(),
+              app_list_keyboard_controller_.get(), a11y_announcer,
+              view_delegate,
               /*delegate=*/this, /*tablet_mode=*/true));
       toast_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
     }
@@ -341,10 +349,6 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
   app_list_folder_view_ = AddChildView(std::move(app_list_folder_view));
   // The folder view is initially hidden.
   app_list_folder_view_->SetVisible(false);
-
-  app_list_keyboard_controller_ = std::make_unique<AppListKeyboardController>(
-      this, continue_container_ ? continue_container_->recent_apps() : nullptr,
-      toast_container_, apps_grid_view_);
 
   // NOTE: At this point, the apps grid folder and recent apps grids are not
   // fully initialized - they require an `app_list_config_` instance (because
@@ -720,23 +724,6 @@ void AppsContainerView::OnCardifiedStateEnded() {
   MaybeRemoveGradientMask();
 }
 
-// RecentAppsView::Delegate:
-void AppsContainerView::MoveFocusUpFromRecents() {
-  app_list_keyboard_controller_->MoveFocusUpFromRecents();
-}
-
-void AppsContainerView::MoveFocusDownFromRecents(int column) {
-  app_list_keyboard_controller_->MoveFocusDownFromRecents(column);
-}
-
-bool AppsContainerView::MoveFocusUpFromToast(int column) {
-  return app_list_keyboard_controller_->MoveFocusUpFromToast(column);
-}
-
-bool AppsContainerView::MoveFocusDownFromToast(int column) {
-  return app_list_keyboard_controller_->MoveFocusDownFromToast(column);
-}
-
 void AppsContainerView::OnNudgeRemoved() {
   const int continue_container_height =
       continue_container_->GetPreferredSize().height();
@@ -869,16 +856,24 @@ void AppsContainerView::UpdateContinueSectionVisibility() {
   continue_container_->FadeInViews();
 }
 
-ContinueSectionView* AppsContainerView::GetContinueSection() {
+ContinueSectionView* AppsContainerView::GetContinueSectionView() {
   if (!continue_container_)
     return nullptr;
   return continue_container_->continue_section();
 }
 
-RecentAppsView* AppsContainerView::GetRecentApps() {
+RecentAppsView* AppsContainerView::GetRecentAppsView() {
   if (!continue_container_)
     return nullptr;
   return continue_container_->recent_apps();
+}
+
+AppsGridView* AppsContainerView::GetAppsGridView() {
+  return apps_grid_view_;
+}
+
+AppListToastContainerView* AppsContainerView::GetToastContainerView() {
+  return toast_container_;
 }
 
 void AppsContainerView::UpdateControlVisibility(AppListViewState app_list_state,
@@ -1449,12 +1444,13 @@ const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
 }
 
 void AppsContainerView::UpdateRecentApps(bool needs_layout) {
-  if (!GetRecentApps() || !app_list_config_)
+  RecentAppsView* recent_apps = GetRecentAppsView();
+  if (!recent_apps || !app_list_config_)
     return;
 
   AppListModelProvider* const model_provider = AppListModelProvider::Get();
-  GetRecentApps()->SetModels(model_provider->search_model(),
-                             model_provider->model());
+  recent_apps->SetModels(model_provider->search_model(),
+                         model_provider->model());
   if (needs_layout)
     Layout();
 }
@@ -1582,10 +1578,10 @@ void AppsContainerView::DisableFocusForShowingActiveFolder(bool disabled) {
     suggestion_chip_container_view_->DisableFocusForShowingActiveFolder(
         disabled);
   }
-  if (auto* recent_apps = GetRecentApps(); recent_apps) {
+  if (auto* recent_apps = GetRecentAppsView(); recent_apps) {
     recent_apps->DisableFocusForShowingActiveFolder(disabled);
   }
-  if (auto* continue_section = GetContinueSection(); continue_section) {
+  if (auto* continue_section = GetContinueSectionView(); continue_section) {
     continue_section->DisableFocusForShowingActiveFolder(disabled);
   }
   apps_grid_view_->DisableFocusForShowingActiveFolder(disabled);

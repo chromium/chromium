@@ -32,6 +32,7 @@
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/privacy_container_view.h"
 #include "ash/app_list/views/productivity_launcher_search_view.h"
+#include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/remove_query_confirmation_dialog.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"

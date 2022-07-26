@@ -9,6 +9,7 @@
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
+#include "ash/app_list/views/app_list_keyboard_controller.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/apps_grid_context_menu.h"
@@ -51,6 +52,7 @@ constexpr auto kReorderUndoInteriorMargin = gfx::Insets::TLBR(8, 16, 8, 8);
 
 AppListToastContainerView::AppListToastContainerView(
     AppListNudgeController* nudge_controller,
+    AppListKeyboardController* keyboard_controller,
     AppListA11yAnnouncer* a11y_announcer,
     AppListViewDelegate* view_delegate,
     Delegate* delegate,
@@ -60,8 +62,10 @@ AppListToastContainerView::AppListToastContainerView(
       view_delegate_(view_delegate),
       delegate_(delegate),
       nudge_controller_(nudge_controller),
+      keyboard_controller_(keyboard_controller),
       current_toast_(AppListToastType::kNone) {
   DCHECK(a11y_announcer_);
+  DCHECK(keyboard_controller_);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
@@ -88,10 +92,10 @@ bool AppListToastContainerView::OnKeyPressed(const ui::KeyEvent& event) {
     return false;
 
   if (event.key_code() == ui::VKEY_UP)
-    return delegate_->MoveFocusUpFromToast(focused_app_column_);
+    return keyboard_controller_->MoveFocusUpFromToast(focused_app_column_);
 
   if (event.key_code() == ui::VKEY_DOWN)
-    return delegate_->MoveFocusDownFromToast(focused_app_column_);
+    return keyboard_controller_->MoveFocusDownFromToast(focused_app_column_);
 
   return false;
 }

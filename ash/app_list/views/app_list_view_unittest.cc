@@ -31,6 +31,7 @@
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/page_switcher.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
+#include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_container_view.h"
@@ -387,7 +388,7 @@ class AppListViewTest : public views::ViewsTestBase {
   }
 
   RecentAppsView* recent_apps() {
-    return contents_view()->apps_container_view()->GetRecentApps();
+    return contents_view()->apps_container_view()->GetRecentAppsView();
   }
 
   views::View* assistant_page_view() {
@@ -1380,8 +1381,8 @@ TEST_F(AppListViewFocusTest, OpeningFolderRemovesOtherViewsFromAccessibility) {
   // Note: For fullscreen app list, the search box is part of the focus cycle
   // when a folder is open.
   // ProductivityLauncher uses recent apps and continue section.
-  auto* recent_apps_view = apps_container_view->GetRecentApps();
-  auto* continue_section_view = apps_container_view->GetContinueSection();
+  auto* recent_apps_view = apps_container_view->GetRecentAppsView();
+  auto* continue_section_view = apps_container_view->GetContinueSectionView();
   // Non-ProductivityLauncher uses suggestion chips.
   auto* suggestion_chip_container =
       apps_container_view->suggestion_chip_container_view_for_test();

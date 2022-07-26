@@ -7,24 +7,15 @@
 
 #include "ash/ash_export.h"
 
-namespace views {
-class View;
-}  // namespace views
-
 namespace ash {
 
-class AppListToastContainerView;
-class AppsGridView;
-class RecentAppsView;
+class AppListViewProvider;
 
 // Common code that implements keyboard traversal logic in
 // `AppListBubbleAppsPage` and `AppsContainerView`.
 class ASH_EXPORT AppListKeyboardController {
  public:
-  AppListKeyboardController(views::View* app_list_view,
-                            RecentAppsView* recent_apps,
-                            AppListToastContainerView* toast_container,
-                            AppsGridView* apps_grid_view);
+  explicit AppListKeyboardController(AppListViewProvider* view_provider);
   AppListKeyboardController(const AppListKeyboardController&) = delete;
   AppListKeyboardController& operator=(const AppListKeyboardController&) =
       delete;
@@ -52,10 +43,7 @@ class ASH_EXPORT AppListKeyboardController {
   bool HandleMovingFocusToAppsGrid(int column);
   bool HandleMovingFocusToRecents(int column);
 
-  views::View* const app_list_view_;
-  RecentAppsView* const recent_apps_;
-  AppListToastContainerView* const toast_container_;
-  AppsGridView* const apps_grid_view_;
+  AppListViewProvider* const view_provider_;
 };
 
 }  // namespace ash

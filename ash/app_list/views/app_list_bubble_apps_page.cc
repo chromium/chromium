@@ -118,6 +118,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
     SearchBoxView* search_box)
     : view_delegate_(view_delegate),
       search_box_(search_box),
+      app_list_keyboard_controller_(
+          std::make_unique<AppListKeyboardController>(this)),
       app_list_nudge_controller_(std::make_unique<AppListNudgeController>()) {
   DCHECK(view_delegate);
   DCHECK(drag_and_drop_host);
@@ -184,8 +186,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   continue_section_->AddObserver(this);
 
   // Recent apps row.
-  recent_apps_ = scroll_contents->AddChildView(
-      std::make_unique<RecentAppsView>(this, view_delegate));
+  recent_apps_ = scroll_contents->AddChildView(std::make_unique<RecentAppsView>(
+      app_list_keyboard_controller_.get(), view_delegate));
   recent_apps_->UpdateAppListConfig(app_list_config);
   // Observe changes in continue section visibility, to keep separator
   // visibility in sync.
@@ -202,7 +204,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   if (features::IsLauncherAppSortEnabled()) {
     toast_container_ = scroll_contents->AddChildView(
         std::make_unique<AppListToastContainerView>(
-            app_list_nudge_controller_.get(), a11y_announcer, view_delegate,
+            app_list_nudge_controller_.get(),
+            app_list_keyboard_controller_.get(), a11y_announcer, view_delegate,
             /*delegate=*/this,
             /*tablet_mode=*/false));
   }
@@ -227,9 +230,6 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   layout->SetFlexForView(scrollable_apps_grid_view_, 1);
 
   scroll_view_->SetContents(std::move(scroll_contents));
-
-  app_list_keyboard_controller_ = std::make_unique<AppListKeyboardController>(
-      this, recent_apps_, toast_container_, scrollable_apps_grid_view_);
 
   UpdateSuggestions();
   UpdateContinueSectionVisibility();
@@ -575,22 +575,6 @@ void AppListBubbleAppsPage::OnViewVisibilityChanged(
     UpdateSeparatorVisibility();
 }
 
-void AppListBubbleAppsPage::MoveFocusUpFromRecents() {
-  app_list_keyboard_controller_->MoveFocusUpFromRecents();
-}
-
-void AppListBubbleAppsPage::MoveFocusDownFromRecents(int column) {
-  app_list_keyboard_controller_->MoveFocusDownFromRecents(column);
-}
-
-bool AppListBubbleAppsPage::MoveFocusUpFromToast(int column) {
-  return app_list_keyboard_controller_->MoveFocusUpFromToast(column);
-}
-
-bool AppListBubbleAppsPage::MoveFocusDownFromToast(int column) {
-  return app_list_keyboard_controller_->MoveFocusDownFromToast(column);
-}
-
 void AppListBubbleAppsPage::OnNudgeRemoved() {
   const gfx::Rect current_grid_bounds = scrollable_apps_grid_view_->bounds();
 
@@ -608,6 +592,22 @@ void AppListBubbleAppsPage::OnNudgeRemoved() {
 
 bool AppListBubbleAppsPage::MoveFocusUpFromAppsGrid(int column) {
   return app_list_keyboard_controller_->MoveFocusUpFromAppsGrid(column);
+}
+
+ContinueSectionView* AppListBubbleAppsPage::GetContinueSectionView() {
+  return continue_section_;
+}
+
+RecentAppsView* AppListBubbleAppsPage::GetRecentAppsView() {
+  return recent_apps_;
+}
+
+AppListToastContainerView* AppListBubbleAppsPage::GetToastContainerView() {
+  return toast_container_;
+}
+
+AppsGridView* AppListBubbleAppsPage::GetAppsGridView() {
+  return scrollable_apps_grid_view_;
 }
 
 ui::Layer* AppListBubbleAppsPage::GetPageAnimationLayerForTest() {

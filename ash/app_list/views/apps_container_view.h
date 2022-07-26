@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "ash/app_list/app_list_model_provider.h"
+#include "ash/app_list/app_list_view_provider.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/views/app_list_folder_controller.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
@@ -17,7 +18,6 @@
 #include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/apps_grid_view_focus_delegate.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
-#include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
@@ -51,10 +51,10 @@ class ASH_EXPORT AppsContainerView
       public AppListFolderController,
       public PaginationModelObserver,
       public PagedAppsGridView::ContainerDelegate,
-      public RecentAppsView::Delegate,
       public AppListToastContainerView::Delegate,
       public AppsGridViewFocusDelegate,
-      public views::FocusChangeListener {
+      public views::FocusChangeListener,
+      public AppListViewProvider {
  public:
   explicit AppsContainerView(ContentsView* contents_view);
 
@@ -179,13 +179,7 @@ class ASH_EXPORT AppsContainerView
   void OnCardifiedStateStarted() override;
   void OnCardifiedStateEnded() override;
 
-  // RecentAppsView::Delegate:
-  void MoveFocusUpFromRecents() override;
-  void MoveFocusDownFromRecents(int column) override;
-
   // AppListToastContainerView::Delegate:
-  bool MoveFocusUpFromToast(int column) override;
-  bool MoveFocusDownFromToast(int column) override;
   void OnNudgeRemoved() override;
 
   // AppsGridViewFocusDelegate:
@@ -211,8 +205,12 @@ class ASH_EXPORT AppsContainerView
   // Updates the nudge in `toast_container_` when app list visibility changes.
   void OnAppListVisibilityChanged(bool shown);
 
-  ContinueSectionView* GetContinueSection();
-  RecentAppsView* GetRecentApps();
+  // AppListViewProvider:
+  ContinueSectionView* GetContinueSectionView() override;
+  RecentAppsView* GetRecentAppsView() override;
+  AppsGridView* GetAppsGridView() override;
+  AppListToastContainerView* GetToastContainerView() override;
+
   views::Separator* separator() { return separator_; }
   PagedAppsGridView* apps_grid_view() { return apps_grid_view_; }
   FolderBackgroundView* folder_background_view() {
