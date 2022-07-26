@@ -2764,7 +2764,7 @@
     // with window-placement permission.
     {
       name: "WindowPlacementEnhancedScreenLabels",
-      status: "experimental",
+      status: "stable",
     },
     // Allows sites to request fullscreen when the set of screens change.
     {
