@@ -3202,7 +3202,7 @@
     ],
 
     'official_goma_mac_perf': [
-      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'pgo_phase_0',
+      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'pgo_phase_0',
     ],
 
     'official_goma_mac_perf_pgo': [
