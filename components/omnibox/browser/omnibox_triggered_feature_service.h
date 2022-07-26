@@ -21,7 +21,8 @@ class OmniboxTriggeredFeatureService {
     kRichAutocompletion = 0,
     kBookmarkPaths = 1,
     kShortBookmarkSuggestionsByTotalInputLength = 2,
-    kMaxValue = kShortBookmarkSuggestionsByTotalInputLength,
+    kFuzzyUrlSuggestions = 3,
+    kMaxValue = kFuzzyUrlSuggestions,
   };
   using Features = std::set<Feature>;
 

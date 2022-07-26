@@ -34,6 +34,7 @@
 #include "components/omnibox/browser/bookmark_provider.h"
 #include "components/omnibox/browser/history_quick_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/url_formatter/elide_url.h"
 #include "url/gurl.h"
@@ -42,7 +43,7 @@ namespace {
 
 // Histogram names for measuring sub-provider match conversion efficacy.
 // Reminder in case other sub-providers or metrics are added: update
-// the `Omnibox.FuzzyMatchConversion` entry in histograms.xml.
+// the `Omnibox.HistoryFuzzy.MatchConversion` entry in histograms.xml.
 const char kMetricMatchConversionHistoryQuick[] =
     "Omnibox.HistoryFuzzy.MatchConversion.HistoryQuick";
 const char kMetricMatchConversionBookmark[] =
@@ -558,13 +559,19 @@ void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
     }
   }
 
-  // When in the counterfactual group, we do all the work of finding fuzzy
-  // matches, but do not provide the benefit. To reduce risk of unintended
-  // consequences downstream (for example showing fewer suggestions than
-  // normal), the matches are cleared here instead of at end of result
-  // processing pipeline so they won't interact or dedupe with other matches.
-  if (OmniboxFieldTrial::kFuzzyUrlSuggestionsCounterfactual.Get()) {
-    matches_.clear();
+  if (!matches_.empty()) {
+    // This will likely produce some false positives.
+    client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+        OmniboxTriggeredFeatureService::Feature::kFuzzyUrlSuggestions);
+
+    // When in the counterfactual group, we do all the work of finding fuzzy
+    // matches, but do not provide the benefit. To reduce risk of unintended
+    // consequences downstream (for example showing fewer suggestions than
+    // normal), the matches are cleared here instead of at end of result
+    // processing pipeline so they won't interact or dedupe with other matches.
+    if (OmniboxFieldTrial::kFuzzyUrlSuggestionsCounterfactual.Get()) {
+      matches_.clear();
+    }
   }
 }
 
