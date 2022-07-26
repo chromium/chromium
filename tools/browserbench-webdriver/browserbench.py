@@ -152,6 +152,8 @@ class BrowserBench(object):
         'sub-test': the sub test. For the final score, this is not present.
         'value': the type of measurement: 'score', 'max'...
       'measurement': the measured value.
+    The format for this is documented at
+    https://skia.googlesource.com/buildbot/+/refs/heads/main/perf/FORMAT.md
     '''
     all_results = []
     for suite, results in measurements.items():
@@ -182,9 +184,15 @@ class BrowserBench(object):
             'test': self._name,
             'version': self._version,
             'browser': self._browser,
-            'browser-version': self._GetBrowserVersion(optargs),
         },
-        'results': self._ConvertMeasurementsToSkiaFormat(measurements)
+        'results': self._ConvertMeasurementsToSkiaFormat(measurements),
+        'links': {
+            # Links is used for metadata that is not interpreted by skia. Skia
+            # expects key value pairs with the value a link. As there is no a
+            # good place to link the version to, about:blank is used.
+            self._GetBrowserVersion(optargs):
+            'about:blank',
+        }
     }
     data['key'].update(extra_key_values)
     print(json.dumps(data, sort_keys=True, indent=2, separators=(',', ': ')))
