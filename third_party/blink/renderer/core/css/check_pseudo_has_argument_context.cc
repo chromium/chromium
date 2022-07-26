@@ -34,12 +34,6 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
   bool contains_child_or_descendant_combinator = false;
   bool sibling_combinator_at_leftmost = false;
 
-  // The explicit ':scope' in ':has' argument selector is not considered
-  // for getting the depth and adjacent distance.
-  // TODO(blee@igalia.com) Need to clarify the :scope dependency in relative
-  // selector definition.
-  // - spec : https://www.w3.org/TR/selectors-4/#relative
-  // - csswg issue : https://github.com/w3c/csswg-drafts/issues/6399
   for (selector = GetCurrentRelationAndNextCompound(selector, relation);
        selector;
        selector = GetCurrentRelationAndNextCompound(selector, relation)) {
