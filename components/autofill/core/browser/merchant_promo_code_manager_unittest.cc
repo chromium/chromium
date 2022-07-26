@@ -106,6 +106,7 @@ TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
           test_query_id, autoselect_first_suggestion,
           UnorderedElementsAre(
               Field(&Suggestion::main_text, promo_code_suggestion.main_text),
+              Field(&Suggestion::frontend_id, POPUP_ITEM_ID_SEPARATOR),
               Field(&Suggestion::main_text, footer_suggestion.main_text))))
       .Times(3);
 
