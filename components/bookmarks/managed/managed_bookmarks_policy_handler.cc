@@ -39,21 +39,21 @@ void ManagedBookmarksPolicyHandler::ApplyPolicySettings(
   if (!value || !value->is_list())
     return;
 
-  prefs->SetString(prefs::kManagedBookmarksFolderName, GetFolderName(*value));
+  prefs->SetString(prefs::kManagedBookmarksFolderName,
+                   GetFolderName(value->GetList()));
   base::Value::List filtered(FilterBookmarks(std::move(value->GetList())));
   prefs->SetValue(prefs::kManagedBookmarks, base::Value(std::move(filtered)));
 }
 
 std::string ManagedBookmarksPolicyHandler::GetFolderName(
-    const base::Value& list) {
-  DCHECK(list.is_list());
+    const base::Value::List& list) {
   // Iterate over the list, and try to find the FolderName.
-  for (const auto& el : list.GetListDeprecated()) {
+  for (const auto& el : list) {
     if (!el.is_dict())
       continue;
 
     const std::string* name =
-        el.FindStringKey(ManagedBookmarksTracker::kFolderName);
+        el.GetDict().FindString(ManagedBookmarksTracker::kFolderName);
     if (name)
       return *name;
   }
