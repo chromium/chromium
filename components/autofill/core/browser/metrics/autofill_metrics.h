@@ -1343,6 +1343,22 @@ class AutofillMetrics {
     const raw_ptr<FormInteractionsUkmLogger> logger_;
   };
 
+  enum class PredictionState {
+    kNone = 0,
+    kServer = 1,
+    kHeuristics = 2,
+    kBoth = 3,
+    kMaxValue = kBoth
+  };
+
+  enum class AutocompleteState {
+    kNone = 0,
+    kValid = 1,
+    kGarbage = 2,
+    kOff = 3,
+    kMaxValue = kOff
+  };
+
   AutofillMetrics() = delete;
   AutofillMetrics(const AutofillMetrics&) = delete;
   AutofillMetrics& operator=(const AutofillMetrics&) = delete;
@@ -2129,6 +2145,17 @@ class AutofillMetrics {
   // value.
   static void LogIsValueNotAutofilledOverExistingValueSameAsSubmittedValue(
       bool is_same);
+
+  // Logs a field's (PredictionState, AutocompleteState) pair on form submit.
+  static void LogAutocompletePredictionCollisionState(
+      PredictionState prediction_state,
+      AutocompleteState autocomplete_state);
+
+  // Logs a field's server and heuristic type on form submit. This is only used
+  // for fields with autocomplete=garbage.
+  static void LogAutocompletePredictionCollisionTypes(
+      ServerFieldType server_type,
+      ServerFieldType heuristic_types);
 
  private:
   static void Log(AutocompleteEvent event);

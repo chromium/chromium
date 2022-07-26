@@ -230,8 +230,7 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
   // type hint or whether autocomplete should be enabled at all. Ignore the
   // latter type of attribute value.
   if (tokens.empty() ||
-      (tokens.size() == 1 &&
-       (tokens[0] == "on" || tokens[0] == "off" || tokens[0] == "false"))) {
+      (tokens.size() == 1 && ShouldIgnoreAutocompleteAttribute(tokens[0]))) {
     return absl::nullopt;
   }
 
@@ -288,6 +287,11 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
     return absl::nullopt;
 
   return result;
+}
+
+bool ShouldIgnoreAutocompleteAttribute(base::StringPiece autocomplete) {
+  return autocomplete == "on" || autocomplete == "off" ||
+         autocomplete == "false";
 }
 
 base::StringPiece HtmlFieldModeToStringPiece(HtmlFieldMode mode) {

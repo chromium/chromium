@@ -23,6 +23,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -9176,6 +9177,69 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn({profile_metrics::BrowserProfileType::kRegular,
                        profile_metrics::BrowserProfileType::kIncognito,
                        profile_metrics::BrowserProfileType::kGuest}));
+
+// Tests that autocomplete-related metrics are emitted correctly on form
+// submission.
+TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
+  // `kAutocompleteValues` corresponds to empty, valid, garbage and off.
+  constexpr base::StringPiece kAutocompleteValues[]{"", "name", "asdf", "off"};
+  // The 4 possible combinations of heuristic and server type status:
+  // - Neither a fillable heuristic type nor a fillable server type.
+  // - Only a fillable server type.
+  // - Only a fillable heuristic type.
+  // - Both a fillable heuristic type and a fillable server type.
+  // NO_SERVER_DATA and UNKNOWN_TYPE are both unfillable types, but
+  // NO_SERVER_DATA is ignored in the PredictionCollisionType metric.
+  constexpr ServerFieldType kTypeClasses[][2]{
+      {UNKNOWN_TYPE, NO_SERVER_DATA},
+      {UNKNOWN_TYPE, EMAIL_ADDRESS},
+      {ADDRESS_HOME_COUNTRY, UNKNOWN_TYPE},
+      {ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS}};
+
+  // Create a form with one field per kAutofillValue x kTypeClass combination.
+  FormData form;
+  form.name = u"MyForm";
+  form.url = GURL("https://myform.com/form.html");
+  form.action = GURL("https://myform.com/submit.html");
+  std::vector<ServerFieldType> heuristic_types, server_types;
+  for (const auto& autocomplete : kAutocompleteValues) {
+    for (const auto& types : kTypeClasses) {
+      FormFieldData field;
+      test::CreateTestFormField("", "", "", "text", &field);
+      field.autocomplete_attribute = std::string(autocomplete);
+      form.fields.push_back(field);
+      heuristic_types.push_back(types[0]);
+      server_types.push_back(types[1]);
+    }
+  }
+  // Override the types and simulate seeing the form on page load.
+  auto form_structure = std::make_unique<TestFormStructure>(form);
+  form_structure->DetermineHeuristicTypes(nullptr, nullptr);
+  form_structure->SetFieldTypes(heuristic_types, server_types);
+  browser_autofill_manager_->AddSeenFormStructure(std::move(form_structure));
+
+  // Submit the form and verify that all metrics are collected correctly.
+  base::HistogramTester histogram_tester;
+  FormSubmitted(form);
+
+  // Expect one entry for each possible PredictionStateAutocompleteStatePair.
+  // Fields without type predictions and autocomplete attributes are ignored.
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Autocomplete.PredictionCollisionState", form.fields.size() - 1);
+  for (int i = 0; i < 15; i++) {
+    histogram_tester.ExpectBucketCount(
+        "Autofill.Autocomplete.PredictionCollisionState", i, 1);
+  }
+
+  // The PredictionCollisionType metric is collected for every field with
+  // autocomplete=garbage. This amounts 1 vote per `kTypeClass` here.
+  // Fields NO_SERVER_DATA are ignored for the .Server metric.
+  const std::string kTypeHistogram =
+      "Autofill.Autocomplete.PredictionCollisionType.";
+  histogram_tester.ExpectTotalCount(kTypeHistogram + "Heuristics", 4);
+  histogram_tester.ExpectTotalCount(kTypeHistogram + "Server", 3);
+  histogram_tester.ExpectTotalCount(kTypeHistogram + "ServerOrHeuristics", 4);
+}
 
 // Test that if a form is mixed content we show a warning instead of any
 // suggestions.

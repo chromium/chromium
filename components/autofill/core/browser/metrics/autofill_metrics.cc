@@ -3602,6 +3602,44 @@ void AutofillMetrics::
       is_same);
 }
 
+// static
+void AutofillMetrics::LogAutocompletePredictionCollisionState(
+    PredictionState prediction_state,
+    AutocompleteState autocomplete_state) {
+  if (prediction_state == PredictionState::kNone &&
+      autocomplete_state == AutocompleteState::kNone) {
+    return;
+  }
+  // The buckets are calculated by using the least significant two bits to
+  // encode the `autocomplete_state`, and the next two bits to encode the
+  // `prediction_state`.
+  int bucket = (static_cast<int>(prediction_state) << 2) |
+               static_cast<int>(autocomplete_state);
+  // Without (kNone, kNone), 4*4 - 1 = 15 possible pairs remain. Log the bucket
+  // 0-based, in order to interpret the metric as an enum.
+  DCHECK(1 <= bucket && bucket <= 15);
+  UMA_HISTOGRAM_ENUMERATION("Autofill.Autocomplete.PredictionCollisionState",
+                            bucket - 1, 15);
+}
+
+// static
+void AutofillMetrics::LogAutocompletePredictionCollisionTypes(
+    ServerFieldType server_type,
+    ServerFieldType heuristic_type) {
+  const std::string kHistogramName =
+      "Autofill.Autocomplete.PredictionCollisionType.";
+  if (server_type != NO_SERVER_DATA) {
+    base::UmaHistogramEnumeration(kHistogramName + "Server", server_type,
+                                  ServerFieldType::MAX_VALID_FIELD_TYPE);
+  }
+  base::UmaHistogramEnumeration(kHistogramName + "Heuristics", heuristic_type,
+                                ServerFieldType::MAX_VALID_FIELD_TYPE);
+  base::UmaHistogramEnumeration(
+      kHistogramName + "ServerOrHeuristics",
+      server_type != NO_SERVER_DATA ? server_type : heuristic_type,
+      ServerFieldType::MAX_VALID_FIELD_TYPE);
+}
+
 const std::string PaymentsRpcResultToMetricsSuffix(
     AutofillClient::PaymentsRpcResult result) {
   std::string result_suffix;

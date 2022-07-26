@@ -63,6 +63,7 @@
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/form_processing/autocomplete_attribute_processing_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
@@ -200,6 +201,41 @@ void LogLanguageMetrics(const translate::LanguageState* language_state) {
         language_state->current_language());
     AutofillMetrics::LogFieldParsingPageTranslationStatusMetric(
         language_state->IsPageTranslated());
+  }
+}
+
+void LogAutocompletePredictionCollisionTypeMetrics(
+    const FormStructure& form_structure) {
+  for (size_t i = 0; i < form_structure.field_count(); i++) {
+    const AutofillField* field = form_structure.field(i);
+    auto heuristic_type = field->heuristic_type();
+    auto server_type = field->server_type();
+
+    auto prediction_state = AutofillMetrics::PredictionState::kNone;
+    if (IsFillableFieldType(heuristic_type)) {
+      prediction_state = IsFillableFieldType(server_type)
+                             ? AutofillMetrics::PredictionState::kBoth
+                             : AutofillMetrics::PredictionState::kHeuristics;
+    } else if (IsFillableFieldType(server_type)) {
+      prediction_state = AutofillMetrics::PredictionState::kServer;
+    }
+
+    // An unparsable autocomplete attribute is treated like kNone.
+    auto autocomplete_state = AutofillMetrics::AutocompleteState::kNone;
+    if (ShouldIgnoreAutocompleteAttribute(field->autocomplete_attribute)) {
+      autocomplete_state = AutofillMetrics::AutocompleteState::kOff;
+    } else if (auto autocomplete = ParseAutocompleteAttribute(*field)) {
+      autocomplete_state = autocomplete->field_type != HTML_TYPE_UNRECOGNIZED
+                               ? AutofillMetrics::AutocompleteState::kValid
+                               : AutofillMetrics::AutocompleteState::kGarbage;
+    }
+
+    AutofillMetrics::LogAutocompletePredictionCollisionState(
+        prediction_state, autocomplete_state);
+    if (autocomplete_state == AutofillMetrics::AutocompleteState::kGarbage) {
+      AutofillMetrics::LogAutocompletePredictionCollisionTypes(server_type,
+                                                               heuristic_type);
+    }
   }
 }
 
@@ -668,6 +704,9 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
         form, submitted_form.get(), client()->IsAutocompleteEnabled());
     return;
   }
+
+  // Log metrics about the autocomplete attribute usage in the submitted form.
+  LogAutocompletePredictionCollisionTypeMetrics(*submitted_form);
 
   // Log interaction time metrics for the ablation study.
   if (!initial_interaction_timestamp_.is_null()) {

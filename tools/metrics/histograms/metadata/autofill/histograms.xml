@@ -443,6 +443,54 @@ chromium-metrics-reviews@google.com.
   <token key="AutofillFormType" variants="AutofillFormType"/>
 </histogram>
 
+<histogram name="Autofill.Autocomplete.PredictionCollisionState"
+    enum="PredictionStateAutocompleteStatePair" expires_after="2022-12-31">
+  <owner>koerber@google.com</owner>
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records a pair of (PredictionState, AutocompleteState) for each field in a
+    submitted form. PredictionState indicates if server and/or heuristic type
+    prediction were available. AutocompleteState indicates if the autocomplete
+    attribute was present and whether it was valid. Emitted on form submission.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Autocomplete.PredictionCollisionType.Heuristics"
+    enum="AutofillServerFieldType" expires_after="2022-12-31">
+  <owner>koerber@google.com</owner>
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records the heuristic type of each field with autocomplete=garbage in a
+    submitted form. Emitted on form submission.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Autocomplete.PredictionCollisionType.Server"
+    enum="AutofillServerFieldType" expires_after="2022-12-31">
+  <owner>koerber@google.com</owner>
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records the server type of each field with autocomplete=garbage in a
+    submitted form. Emitted on form submission.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.Autocomplete.PredictionCollisionType.ServerOrHeuristics"
+    enum="AutofillServerFieldType" expires_after="2022-12-31">
+  <owner>koerber@google.com</owner>
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Records the server type of each field with autocomplete=garbage in a
+    submitted form. If no server type is available, the heuristics type is
+    logged instead. Emitted on form submission.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AutocompleteQuery" enum="BooleanCreated"
     expires_after="M85">
   <owner>michaelbai@chromium.org</owner>

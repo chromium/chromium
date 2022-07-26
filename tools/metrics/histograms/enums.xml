@@ -78115,6 +78115,31 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Very likely"/>
 </enum>
 
+<enum name="PredictionStateAutocompleteStatePair">
+  <int value="0"
+      label="No server or heuristic type, valid autocomplete attribute"/>
+  <int value="1"
+      label="No server or heuristic type, garbage autocomplete attribute"/>
+  <int value="2" label="No server or heuristic type, autocomplete=off"/>
+  <int value="3"
+      label="Only server type, no (parseable) autocomplete attribute"/>
+  <int value="4" label="Only server type, valid autocomplete attribute"/>
+  <int value="5" label="Only server type, garbage autocomplete attribute"/>
+  <int value="6" label="Only server type, autocomplete=off"/>
+  <int value="7"
+      label="Only heuristic type, no (parseable) autocomplete attribute"/>
+  <int value="8" label="Only heuristic type, valid autocomplete attribute"/>
+  <int value="9" label="Only heuristic type, garbage autocomplete attribute"/>
+  <int value="10" label="Only heuristic type, autocomplete=off"/>
+  <int value="11"
+      label="Server and heuristic type, no (parseable) autocomplete attribute"/>
+  <int value="12"
+      label="Server and heuristic type, valid autocomplete attribute"/>
+  <int value="13"
+      label="Server and heuristic type, garbage autocomplete attribute"/>
+  <int value="14" label="Server and heuristic type, autocomplete=off"/>
+</enum>
+
 <enum name="PredictionStatus">
   <int value="0" label="No prediction"/>
   <int value="1" label="Successful prediction"/>
