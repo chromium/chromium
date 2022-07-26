@@ -6524,7 +6524,7 @@
   {
     "name": "web-bundles",
     "owners": [ "//content/browser/web_package/OWNERS" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 114
   },
   {
     "name": "web-feed",
