@@ -315,6 +315,11 @@ extern const char kForceStartupSigninPromoDescription[];
 extern const char kEnableUnicornAccountSupportName[];
 extern const char kEnableUnicornAccountSupportDescription[];
 
+// Title and description for the flag to enable displaying fullscreen promos via
+// the Fullscreen Promos Manager.
+extern const char kFullscreenPromosManagerName[];
+extern const char kFullscreenPromosManagerDescription[];
+
 // Title and description for the command line switch used to determine the
 // active fullscreen viewport adjustment mode.
 extern const char kFullscreenSmoothScrollingName[];

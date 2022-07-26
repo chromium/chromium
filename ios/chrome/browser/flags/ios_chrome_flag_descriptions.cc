@@ -358,6 +358,11 @@ const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
     "Chrome.";
 
+const char kFullscreenPromosManagerName[] = "Fullscreen Promos Manager";
+const char kFullscreenPromosManagerDescription[] =
+    "When enabled, the display of fullscreen promos will be coordinated by a "
+    "central manager living at the application level.";
+
 const char kFullscreenSmoothScrollingName[] = "Fullscreen Smooth Scrolling";
 const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "
