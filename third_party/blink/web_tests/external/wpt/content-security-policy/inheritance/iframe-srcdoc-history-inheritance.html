@@ -40,9 +40,10 @@ promise_test(async t => {
 
   const promise = new Promise((resolve, reject) => {
     img.onload = resolve;
-    // First the security policy violation should be reported, which will finish
-    // this test. If for some reason the error event is fired without the
-    // violation being reported, something else went wrong—fail the test.
+    // If the img is blocked because of Content Security Policy, a violation
+    // should be reported first, and the test will fail. If for some other
+    // reason the error event is fired without the violation being reported,
+    // something else went wrong, hence the test should fail.
     img.error = e => {
       reject(new Error("The srcdoc iframe's img failed to load but not due to " +
                        "a CSP violation"));
@@ -52,8 +53,7 @@ promise_test(async t => {
         "new CSP. It means it was different and wasn't restored from history"));
     };
   });
-  // The srcdoc iframe tries to load an image, and should generate a security
-  // policy violation.
+  // The srcdoc iframe tries to load an image, which should succeed.
   img.src = "/common/square.png";
 
   return promise;
