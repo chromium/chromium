@@ -85,6 +85,14 @@ DEFAULT_SIZES_XORG = ("1600x1200,1600x900,1440x900,1366x768,1360x768,1280x1024,"
                       "800x600,1680x1050,1920x1080,1920x1200,2560x1440,"
                       "2560x1600,3840x2160,3840x2560")
 
+# Decides number of monitors and their resolution that should be run for the
+# wayland session.
+WAYLAND_DESKTOP_SIZES_ENV = "CHROME_REMOTE_DESKTOP_WAYLAND_DESKTOP_SIZES"
+
+# Default wayland monitor size if `CHROME_REMOTE_DESKTOP_DEFAULT_DESKTOP_SIZES`
+# env variable is not set.
+DEFAULT_WAYLAND_DESKTOP_SIZES = "1280x720"
+
 SCRIPT_PATH = os.path.abspath(sys.argv[0])
 SCRIPT_DIR = os.path.dirname(SCRIPT_PATH)
 
@@ -851,10 +859,23 @@ class WaylandDesktop(Desktop):
       return False
     return True
 
-  def _gnome_shell_cmd(self, screen_width=1280, screen_height=720):
-    return ["gnome-shell", "--wayland", "--headless", "--virtual-monitor",
-            "%sx%s" % (screen_width, screen_height), "--wayland-display",
-            self._wayland_socket, "--no-x11", "--replace"]
+  def _gnome_shell_cmd(self):
+    wayland_desktop_sizes = os.environ.get(
+      WAYLAND_DESKTOP_SIZES_ENV, DEFAULT_WAYLAND_DESKTOP_SIZES)
+    gnome_shell_cmd = [
+      "gnome-shell", "--wayland", "--headless", "--wayland-display",
+      self._wayland_socket, "--no-x11", "--replace"]
+    try:
+      for resolution in wayland_desktop_sizes.strip().split(","):
+        width, height = re.split("x|X", resolution.strip())
+        gnome_shell_cmd.extend(["--virtual-monitor", "%sx%s" %
+                               (width.strip(), height.strip())])
+    except Exception as exc:
+      logging.error("Expected one or more comma separated resolutions in "
+                    "width1xheight1[,width2xheight2] format, got: %s" %
+                    wayland_desktop_sizes)
+      raise exc
+    return gnome_shell_cmd
 
   def _launch_server(self, *args, **kwargs):
     if not self._is_gnome_shell_present():
