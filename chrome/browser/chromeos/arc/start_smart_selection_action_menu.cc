@@ -23,6 +23,9 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/features.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "content/public/browser/context_menu_params.h"
 #include "ui/base/layout.h"
 #include "ui/base/models/image_model.h"
@@ -40,18 +43,17 @@ namespace arc {
 
 namespace {
 
-apps::mojom::IntentPtr CreateIntent(
+apps::IntentPtr CreateIntent(
     arc::ArcIntentHelperMojoDelegate::IntentInfo arc_intent,
     arc::ArcIntentHelperMojoDelegate::ActivityName activity) {
-  auto intent = apps::mojom::Intent::New();
-  intent->action = std::move(arc_intent.action);
+  auto intent = std::make_unique<apps::Intent>(arc_intent.action);
   intent->data = std::move(arc_intent.data);
   intent->mime_type = std::move(arc_intent.type);
-  intent->categories = std::move(arc_intent.categories);
-  intent->ui_bypassed = arc_intent.ui_bypassed
-                            ? apps::mojom::OptionalBool::kTrue
-                            : apps::mojom::OptionalBool::kFalse;
-  intent->extras = std::move(arc_intent.extras);
+  if (arc_intent.categories.has_value())
+    intent->categories = std::move(arc_intent.categories.value());
+  intent->ui_bypassed = arc_intent.ui_bypassed;
+  if (arc_intent.extras.has_value())
+    intent->extras = std::move(arc_intent.extras.value());
 
   intent->activity_name = std::move(activity.activity_name);
 
@@ -161,12 +163,22 @@ void StartSmartSelectionActionMenu::ExecuteCommand(int command_id) {
     return;
   }
   // The app that this intent points to is able to handle it, launch it.
-  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-      actions_[index].app_id, ui::EF_NONE,
-      CreateIntent(std::move(actions_[index].action_intent),
-                   std::move(actions_[index].activity)),
-      apps::mojom::LaunchSource::kFromSmartTextContextMenu,
-      apps::MakeWindowInfo(display.id()));
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
+        actions_[index].app_id, ui::EF_NONE,
+        CreateIntent(std::move(actions_[index].action_intent),
+                     std::move(actions_[index].activity)),
+        apps::LaunchSource::kFromSmartTextContextMenu,
+        std::make_unique<apps::WindowInfo>(display.id()));
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
+        actions_[index].app_id, ui::EF_NONE,
+        apps::ConvertIntentToMojomIntent(
+            CreateIntent(std::move(actions_[index].action_intent),
+                         std::move(actions_[index].activity))),
+        apps::mojom::LaunchSource::kFromSmartTextContextMenu,
+        apps::MakeWindowInfo(display.id()));
+  }
 }
 
 void StartSmartSelectionActionMenu::HandleTextSelectionActions(

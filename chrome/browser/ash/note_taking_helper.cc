@@ -54,6 +54,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/features.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -214,10 +215,16 @@ NoteTakingHelper::LaunchResult LaunchWebAppInternal(const std::string& app_id,
   // Apps in 'kDefaultAllowedAppIds' might not have a note-taking intent filter.
   // They can just launch without the intent.
   if (has_note_taking_intent_filter) {
-    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-        app_id, ui::EF_NONE,
-        ConvertIntentToMojomIntent(apps_util::CreateCreateNoteIntent()),
-        apps::mojom::LaunchSource::kFromShelf);
+    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+      apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
+          app_id, ui::EF_NONE, apps_util::CreateCreateNoteIntent(),
+          apps::LaunchSource::kFromShelf);
+    } else {
+      apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
+          app_id, ui::EF_NONE,
+          apps::ConvertIntentToMojomIntent(apps_util::CreateCreateNoteIntent()),
+          apps::mojom::LaunchSource::kFromShelf);
+    }
   } else {
     if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
       apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(

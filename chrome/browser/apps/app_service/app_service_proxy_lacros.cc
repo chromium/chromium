@@ -172,6 +172,34 @@ void AppServiceProxyLacros::LaunchAppWithFiles(
   remote_crosapi_app_service_proxy_->Launch(std::move(params));
 }
 
+void AppServiceProxyLacros::LaunchAppWithIntent(const std::string& app_id,
+                                                int32_t event_flags,
+                                                IntentPtr intent,
+                                                LaunchSource launch_source,
+                                                WindowInfoPtr window_info) {
+  CHECK(intent);
+
+  if (!remote_crosapi_app_service_proxy_) {
+    return;
+  }
+
+  if (crosapi_app_service_proxy_version_ <
+      int{crosapi::mojom::AppServiceProxy::MethodMinVersions::
+              kLaunchMinVersion}) {
+    LOG(WARNING) << "Ash AppServiceProxy version "
+                 << crosapi_app_service_proxy_version_
+                 << " does not support Launch().";
+    return;
+  }
+
+  auto params = CreateCrosapiLaunchParamsWithEventFlags(
+      this, app_id, event_flags, launch_source,
+      window_info ? window_info->display_id : display::kInvalidDisplayId);
+  params->intent =
+      apps_util::ConvertAppServiceToCrosapiIntent(intent, profile_);
+  remote_crosapi_app_service_proxy_->Launch(std::move(params));
+}
+
 void AppServiceProxyLacros::LaunchAppWithIntent(
     const std::string& app_id,
     int32_t event_flags,

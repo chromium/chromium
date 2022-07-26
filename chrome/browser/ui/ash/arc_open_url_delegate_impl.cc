@@ -45,7 +45,10 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/custom_tab.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/features.h"
+#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -185,15 +188,12 @@ GURL ConvertToMonikerFileUrl(Profile* profile, GURL external_file_url) {
       base::FilePath(fusebox::MonikerMap::GetFilename(moniker)));
 }
 
-apps::mojom::IntentPtr ConvertLaunchIntent(
+apps::IntentPtr ConvertLaunchIntent(
     Profile* profile,
     const arc::mojom::LaunchIntentPtr& launch_intent) {
-  apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
-
   const char* action =
       apps_util::ConvertArcToAppServiceIntentAction(launch_intent->action);
-  if (action)
-    intent->action = action;
+  auto intent = std::make_unique<apps::Intent>(action ? action : "");
 
   intent->url = launch_intent->data;
   intent->mime_type = launch_intent->type;
@@ -202,19 +202,17 @@ apps::mojom::IntentPtr ConvertLaunchIntent(
 
   if (launch_intent->files.has_value() && launch_intent->files->size() > 0) {
     std::vector<std::string> mime_types;
-    intent->files = std::vector<apps::mojom::IntentFilePtr>();
     for (const auto& file_info : *launch_intent->files) {
-      auto file = apps::mojom::IntentFile::New();
-
-      file->url = arc::ArcUrlToExternalFileUrl(file_info->content_uri);
+      GURL url = arc::ArcUrlToExternalFileUrl(file_info->content_uri);
       if (ash::features::IsArcFuseBoxFileSharingEnabled()) {
-        file->url = ConvertToMonikerFileUrl(profile, file->url);
+        url = ConvertToMonikerFileUrl(profile, url);
       }
+      apps::IntentFilePtr file = std::make_unique<apps::IntentFile>(url);
 
       file->mime_type = file_info->type;
       file->file_name = file_info->name;
       file->file_size = file_info->size;
-      intent->files->push_back(std::move(file));
+      intent->files.push_back(std::move(file));
       mime_types.push_back(file_info->type);
     }
 
@@ -459,7 +457,7 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
     return;
   }
 
-  apps::mojom::IntentPtr intent = ConvertLaunchIntent(profile, arc_intent);
+  apps::IntentPtr intent = ConvertLaunchIntent(profile, arc_intent);
 
   auto disposition = WindowOpenDisposition::NEW_WINDOW;
   proxy->AppRegistryCache().ForOneApp(
@@ -472,6 +470,12 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
   int event_flags = apps::GetEventFlags(disposition,
                                         /*prefer_container=*/false);
 
-  proxy->LaunchAppWithIntent(app_id, event_flags, std::move(intent),
-                             apps::mojom::LaunchSource::kFromArc);
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    proxy->LaunchAppWithIntent(app_id, event_flags, std::move(intent),
+                               apps::LaunchSource::kFromArc);
+  } else {
+    proxy->LaunchAppWithIntent(app_id, event_flags,
+                               apps::ConvertIntentToMojomIntent(intent),
+                               apps::mojom::LaunchSource::kFromArc);
+  }
 }

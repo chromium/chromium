@@ -32,7 +32,9 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
@@ -244,17 +246,15 @@ void ExecuteAppServiceTask(
     }
   }
 
-  constexpr auto launch_source = apps::mojom::LaunchSource::kFromFileManager;
-
   std::vector<GURL> file_urls;
-  std::vector<apps::mojom::IntentFilePtr> intent_files;
+  std::vector<apps::IntentFilePtr> intent_files;
   file_urls.reserve(file_system_urls.size());
   intent_files.reserve(file_system_urls.size());
   for (size_t i = 0; i < file_system_urls.size(); i++) {
     file_urls.push_back(file_system_urls[i].ToGURL());
 
-    auto file = apps::mojom::IntentFile::New();
-    file->url = file_system_urls[i].ToGURL();
+    auto file =
+        std::make_unique<apps::IntentFile>(file_system_urls[i].ToGURL());
     file->mime_type = mime_types.at(i);
     intent_files.push_back(std::move(file));
   }
@@ -267,33 +267,61 @@ void ExecuteAppServiceTask(
     DCHECK(task.task_type == TASK_TYPE_WEB_APP ||
            task.task_type == TASK_TYPE_FILE_HANDLER);
   }
-  apps::mojom::IntentPtr intent =
-      apps_util::CreateViewIntentFromFiles(std::move(intent_files));
-
+  apps::IntentPtr intent = std::make_unique<apps::Intent>(
+      apps_util::kIntentActionView, std::move(intent_files));
   intent->activity_name = task.action_id;
 
-  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
-      task.app_id, ui::EF_NONE, std::move(intent), launch_source,
-      apps::MakeWindowInfo(display::kDefaultDisplayId),
-      base::BindOnce(
-          [](FileTaskFinishedCallback done, TaskType task_type, bool success) {
-            if (!success) {
-              std::move(done).Run(
-                  extensions::api::file_manager_private::TASK_RESULT_FAILED,
-                  "");
-            } else if (task_type == TASK_TYPE_WEB_APP) {
-              // TODO(benwells): return the correct code here, depending on how
-              // the app will be opened in multiprofile.
-              std::move(done).Run(
-                  extensions::api::file_manager_private::TASK_RESULT_OPENED,
-                  "");
-            } else {
-              std::move(done).Run(extensions::api::file_manager_private::
-                                      TASK_RESULT_MESSAGE_SENT,
-                                  "");
-            }
-          },
-          std::move(done), task.task_type));
+  if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
+        task.app_id, ui::EF_NONE, std::move(intent),
+        apps::LaunchSource::kFromFileManager,
+        std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId),
+        base::BindOnce(
+            [](FileTaskFinishedCallback done, TaskType task_type,
+               bool success) {
+              if (!success) {
+                std::move(done).Run(
+                    extensions::api::file_manager_private::TASK_RESULT_FAILED,
+                    "");
+              } else if (task_type == TASK_TYPE_WEB_APP) {
+                // TODO(benwells): return the correct code here, depending on
+                // how the app will be opened in multiprofile.
+                std::move(done).Run(
+                    extensions::api::file_manager_private::TASK_RESULT_OPENED,
+                    "");
+              } else {
+                std::move(done).Run(extensions::api::file_manager_private::
+                                        TASK_RESULT_MESSAGE_SENT,
+                                    "");
+              }
+            },
+            std::move(done), task.task_type));
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
+        task.app_id, ui::EF_NONE, apps::ConvertIntentToMojomIntent(intent),
+        apps::mojom::LaunchSource::kFromFileManager,
+        apps::MakeWindowInfo(display::kDefaultDisplayId),
+        base::BindOnce(
+            [](FileTaskFinishedCallback done, TaskType task_type,
+               bool success) {
+              if (!success) {
+                std::move(done).Run(
+                    extensions::api::file_manager_private::TASK_RESULT_FAILED,
+                    "");
+              } else if (task_type == TASK_TYPE_WEB_APP) {
+                // TODO(benwells): return the correct code here, depending on
+                // how the app will be opened in multiprofile.
+                std::move(done).Run(
+                    extensions::api::file_manager_private::TASK_RESULT_OPENED,
+                    "");
+              } else {
+                std::move(done).Run(extensions::api::file_manager_private::
+                                        TASK_RESULT_MESSAGE_SENT,
+                                    "");
+              }
+            },
+            std::move(done), task.task_type));
+  }
 }
 
 }  // namespace file_tasks
