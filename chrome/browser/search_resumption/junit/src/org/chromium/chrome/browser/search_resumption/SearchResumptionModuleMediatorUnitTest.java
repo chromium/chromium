@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleUtils.ModuleShowStatus;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -127,6 +128,8 @@ public class SearchResumptionModuleMediatorUnitTest {
     private IdentityServicesProvider mIdentityServicesProvider;
     @Mock
     private SigninManager mSignInManager;
+    @Mock
+    private SyncService mSyncServiceMock;
 
     private UserActionTester mActionTester;
     private SearchResumptionModuleMediator mMediator;
@@ -157,7 +160,10 @@ public class SearchResumptionModuleMediatorUnitTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         doReturn(mSignInManager).when(mIdentityServicesProvider).getSigninManager(any());
 
+        SyncService.overrideForTests(mSyncServiceMock);
+
         mActionTester = new UserActionTester();
+
         mMediator =
                 new SearchResumptionModuleMediator(mParent, mTabToTrack, mProfile, mTileBuilder);
         verify(mAutocompleteController).addOnSuggestionsReceivedListener(mListener.capture());
@@ -259,6 +265,14 @@ public class SearchResumptionModuleMediatorUnitTest {
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         mMediator.onTemplateURLServiceChanged();
         verify(mModuleLayoutView, times(2)).setVisibility(View.VISIBLE);
+
+        when(mSyncServiceMock.hasKeepEverythingSynced()).thenReturn(false);
+        mMediator.syncStateChanged();
+        verify(mModuleLayoutView, times(3)).setVisibility(View.GONE);
+
+        when(mSyncServiceMock.hasKeepEverythingSynced()).thenReturn(true);
+        mMediator.syncStateChanged();
+        verify(mModuleLayoutView, times(3)).setVisibility(View.VISIBLE);
     }
 
     @Test
