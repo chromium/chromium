@@ -319,15 +319,6 @@ bool PaintInvalidator::InvalidatePaint(
        reason == PaintInvalidationReason::kJustCreated))
     pending_delayed_paint_invalidations_.push_back(&object);
 
-  if (auto* local_frame = DynamicTo<LocalFrame>(object.GetFrame()->Top())) {
-    if (auto* mf_checker =
-            local_frame->View()->GetMobileFriendlinessChecker()) {
-      if (tree_builder_context &&
-          (!pre_paint_info || pre_paint_info->is_last_for_node))
-        mf_checker->NotifyInvalidatePaint(object);
-    }
-  }
-
   return reason != PaintInvalidationReason::kNone;
 }
 

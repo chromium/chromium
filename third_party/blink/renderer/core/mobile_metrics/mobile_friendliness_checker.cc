@@ -20,6 +20,9 @@
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -64,15 +67,31 @@ MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
 
 MobileFriendlinessChecker::~MobileFriendlinessChecker() = default;
 
-void MobileFriendlinessChecker::NotifyPaint() {
+void MobileFriendlinessChecker::NotifyPaintBegin() {
   DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
   DCHECK(frame_view_->GetFrame().IsOutermostMainFrame());
+
+  ignore_beyond_viewport_scope_count_ =
+      frame_view_->LayoutViewport()->MaximumScrollOffset().x() == 0 &&
+      frame_view_->GetPage()
+              ->GetVisualViewport()
+              .MaximumScrollOffsetAtScale(initial_scale_)
+              .x() == 0;
+  is_painting_ = true;
+
   if (timer_.IsActive() ||
       base::TimeTicks::Now() - last_evaluated_ < kEvaluationInterval) {
     return;
   }
 
   timer_.StartOneShot(kEvaluationDelay, FROM_HERE);
+}
+
+void MobileFriendlinessChecker::NotifyPaintEnd() {
+  DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
+  DCHECK(frame_view_->GetFrame().IsOutermostMainFrame());
+  ignore_beyond_viewport_scope_count_ = 0;
+  is_painting_ = false;
 }
 
 void MobileFriendlinessChecker::WillBeRemovedFromFrame() {
@@ -380,6 +399,24 @@ int CountBadTapTargets(wtf_size_t rightmost_position,
 
 }  // namespace
 
+MobileFriendlinessChecker* MobileFriendlinessChecker::From(
+    const Document& document) {
+  DCHECK(document.GetFrame());
+
+  auto* local_frame = DynamicTo<LocalFrame>(document.GetFrame()->Top());
+  if (local_frame == nullptr)
+    return nullptr;
+
+  MobileFriendlinessChecker* mfc =
+      local_frame->View()->GetMobileFriendlinessChecker();
+  if (!mfc || !mfc->is_painting_)
+    return nullptr;
+
+  DCHECK_EQ(DocumentLifecycle::kInPaint, document.Lifecycle().GetState());
+  DCHECK(!document.IsPrintingOrPaintingPreview());
+  return mfc;
+}
+
 // Counts and calculate ration of bad tap targets. The process is a surface scan
 // with region tracking by Fenwick tree. The detail of the algorithm is
 // go/bad-tap-target-ukm
@@ -472,10 +509,12 @@ void MobileFriendlinessChecker::DidFinishLifecycleUpdate(
       .viewport_initial_scale_x10 = viewport_initial_scale_x10_,
       .viewport_hardcoded_width = viewport_hardcoded_width_,
       .allow_user_zoom = allow_user_zoom_,
-      .small_text_ratio = text_area_sizes_.SmallTextRatio(),
+      .small_text_ratio = area_sizes_.SmallTextRatio(),
       .text_content_outside_viewport_percentage =
-          ComputeContentOutsideViewport(),
+          area_sizes_.TextContentsOutsideViewportPercentage(
+              frame_view_->GetPage()->GetVisualViewport().Size().GetArea()),
       .bad_tap_targets_ratio = ComputeBadTapTargetsRatio()});
+
   last_evaluated_ = base::TimeTicks::Now();
 }
 
@@ -513,61 +552,68 @@ void MobileFriendlinessChecker::NotifyViewportUpdated(
   }
 }
 
-int MobileFriendlinessChecker::TextAreaWithFontSize::SmallTextRatio() const {
+int MobileFriendlinessChecker::AreaSizes::SmallTextRatio() const {
   if (total_text_area == 0)
     return 0;
 
   return small_font_area * 100 / total_text_area;
 }
 
-void MobileFriendlinessChecker::NotifyInvalidatePaint(
-    const LayoutObject& object) {
+int MobileFriendlinessChecker::AreaSizes::TextContentsOutsideViewportPercentage(
+    int viewport_area) const {
+  return std::ceil(content_beyond_viewport_area * 100 / viewport_area);
+}
+
+void MobileFriendlinessChecker::UpdateTextAreaSizes(
+    const PhysicalRect& text_rect,
+    int font_size) {
+  double actual_font_size = font_size * initial_scale_ / viewport_scalar_;
+  double area = text_rect.Width() * text_rect.Height();
+  if (std::round(actual_font_size) < kSmallFontThresholdInDips)
+    area_sizes_.small_font_area += area;
+
+  area_sizes_.total_text_area += area;
+}
+
+void MobileFriendlinessChecker::UpdateBeyondViewportAreaSizes(
+    const PhysicalRect& paint_rect) {
+  DCHECK(is_painting_);
+  if (ignore_beyond_viewport_scope_count_ != 0)
+    return;
+
+  int frame_width = frame_view_->GetPage()->GetVisualViewport().Size().width();
+
+  // TODO(kumagi): Map paint_rect from the local transform space to the viewport
+  // space.
+  PhysicalRect viewport_rect(
+      LayoutUnit(), LayoutUnit(),
+      LayoutUnit(frame_width * viewport_scalar_ / initial_scale_),
+      LayoutUnit(kIntMaxForLayoutUnit));
+  int original_size =
+      ClampTo<int>((paint_rect.Width() * paint_rect.Height()).ToInt());
+  viewport_rect.Intersect(paint_rect);
+
+  area_sizes_.content_beyond_viewport_area +=
+      original_size -
+      ClampTo<int>((viewport_rect.Width() * viewport_rect.Height()).ToInt());
+}
+
+void MobileFriendlinessChecker::NotifyPaintTextFragment(
+    const PhysicalRect& paint_rect,
+    int font_size) {
   DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
   DCHECK(frame_view_->GetFrame().IsOutermostMainFrame());
 
-  // Compute small text ratio.
-  if (const auto* text = DynamicTo<LayoutText>(object)) {
-    const auto& style = text->StyleRef();
-
-    // Ignore elements that users cannot see.
-    if (style.Visibility() != EVisibility::kVisible)
-      return;
-
-    // Ignore elements intended only for screen readers.
-    if (style.HasOutOfFlowPosition() && style.ClipLeft().IsZero() &&
-        style.ClipRight().IsZero() && style.ClipTop().IsZero() &&
-        style.ClipBottom().IsZero())
-      return;
-
-    double actual_font_size =
-        style.FontSize() * initial_scale_ / viewport_scalar_;
-    double area = text->PhysicalAreaSize();
-    if (std::round(actual_font_size) < kSmallFontThresholdInDips)
-      text_area_sizes_.small_font_area += area;
-
-    text_area_sizes_.total_text_area += area;
-  }
+  UpdateTextAreaSizes(paint_rect, font_size);
+  UpdateBeyondViewportAreaSizes(paint_rect);
 }
 
-int MobileFriendlinessChecker::ComputeContentOutsideViewport() {
-  int frame_width = frame_view_->GetPage()->GetVisualViewport().Size().width();
-  if (frame_width == 0) {
-    return 0;
-  }
+void MobileFriendlinessChecker::NotifyPaintReplaced(
+    const PhysicalRect& paint_rect) {
+  DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
+  DCHECK(frame_view_->GetFrame().IsLocalRoot());
 
-  const auto* root_frame_viewport = frame_view_->GetRootFrameViewport();
-  if (root_frame_viewport == nullptr) {
-    return 0;
-  }
-
-  int content_width =
-      root_frame_viewport->LayoutViewport().ContentsSize().width() *
-      initial_scale_;
-  int max_scroll_offset = content_width - frame_width;
-
-  // We use ceil function here because we want to treat 100.1% as 101 which
-  // requires a scroll bar.
-  return std::ceil(max_scroll_offset * 100.0 / frame_width);
+  UpdateBeyondViewportAreaSizes(paint_rect);
 }
 
 void MobileFriendlinessChecker::Trace(Visitor* visitor) const {

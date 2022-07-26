@@ -8,6 +8,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
+#include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 
@@ -121,6 +122,8 @@ class ScopedBoxContentsPaintState : public ScopedPaintState {
 
  private:
   void AdjustForBoxContents(const LayoutBox&);
+  absl::optional<MobileFriendlinessChecker::IgnoreBeyondViewportScope>
+      mf_ignore_scope_;
 };
 
 }  // namespace blink

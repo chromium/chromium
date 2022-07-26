@@ -1836,6 +1836,28 @@ TEST_P(VisualViewportTest, FractionalMaxScrollOffset) {
             scrollable_area->MaximumScrollOffset());
 }
 
+// Tests that the scroll offset is consistent when scale specified.
+TEST_P(VisualViewportTest, MaxScrollOffsetAtScale) {
+  InitializeWithDesktopSettings();
+  WebView()->MainFrameViewWidget()->Resize(gfx::Size(101, 201));
+  NavigateTo("about:blank");
+
+  VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
+
+  WebView()->SetPageScaleFactor(0.1);
+  EXPECT_EQ(ScrollOffset(), visual_viewport.MaximumScrollOffsetAtScale(1.0));
+
+  WebView()->SetPageScaleFactor(2);
+  EXPECT_EQ(ScrollOffset(), visual_viewport.MaximumScrollOffsetAtScale(1.0));
+
+  WebView()->SetPageScaleFactor(5);
+  EXPECT_EQ(ScrollOffset(), visual_viewport.MaximumScrollOffsetAtScale(1.0));
+
+  WebView()->SetPageScaleFactor(10);
+  EXPECT_EQ(ScrollOffset(101. / 2., 201. / 2.),
+            visual_viewport.MaximumScrollOffsetAtScale(2.0));
+}
+
 // Tests that the slow scrolling after an impl scroll on the visual viewport is
 // continuous. crbug.com/453460 was caused by the impl-path not updating the
 // ScrollAnimatorBase class.
