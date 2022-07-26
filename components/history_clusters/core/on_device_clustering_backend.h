@@ -85,6 +85,7 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
 
   // Clusters |visits| on background thread.
   static std::vector<history::Cluster> ClusterVisitsOnBackgroundThread(
+      ClusteringRequestSource clustering_request_source,
       bool engagement_score_provider_is_valid,
       std::vector<history::ClusterVisit> visits,
       base::flat_map<std::string, optimization_guide::EntityMetadata>

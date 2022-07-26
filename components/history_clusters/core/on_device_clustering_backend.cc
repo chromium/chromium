@@ -25,6 +25,7 @@
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/keyword_cluster_finalizer.h"
 #include "components/history_clusters/core/label_cluster_finalizer.h"
+#include "components/history_clusters/core/metrics_cluster_finalizer.h"
 #include "components/history_clusters/core/noisy_cluster_finalizer.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
@@ -327,7 +328,8 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
   base::OnceCallback<std::vector<history::Cluster>()> clustering_callback =
       base::BindOnce(
           &OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread,
-          engagement_score_provider_ != nullptr, std::move(cluster_visits),
+          clustering_request_source, engagement_score_provider_ != nullptr,
+          std::move(cluster_visits),
           std::move(human_readable_entity_name_to_entity_metadata_map));
 
   switch (clustering_request_source) {
@@ -345,6 +347,7 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
 // static
 std::vector<history::Cluster>
 OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
+    ClusteringRequestSource clustering_request_source,
     bool engagement_score_provider_is_valid,
     std::vector<history::ClusterVisit> visits,
     base::flat_map<std::string, optimization_guide::EntityMetadata>
@@ -390,6 +393,12 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
       human_readable_entity_name_to_entity_metadata_map));
   if (GetConfig().should_label_clusters) {
     cluster_finalizers.push_back(std::make_unique<LabelClusterFinalizer>());
+  }
+  if (clustering_request_source ==
+      ClusteringRequestSource::kKeywordCacheGeneration) {
+    // Only log metrics for whole clusters when it is a query-less state to get
+    // a better lay of the land. We estimate this by using the request source.
+    cluster_finalizers.push_back(std::make_unique<MetricsClusterFinalizer>());
   }
 
   // Group visits into clusters.
