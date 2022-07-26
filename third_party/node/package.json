@@ -24,7 +24,6 @@
     "eslint-plugin-jsdoc": "37.5.1",
     "html-minifier": "4.0.0",
     "polymer-bundler": "4.0.10",
-    "polymer-css-build": "0.7.0",
     "rollup": "2.58.0",
     "svgo": "2.8.0",
     "terser": "5.3.3",
