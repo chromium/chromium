@@ -73,7 +73,7 @@ const std::string kPolicyWithOneTemplate =
     "2\",\"title\":\"Example2\"}],\"active_tab_index\":1,\"window_id\":0,"
     "\"display_id\":\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}}]";
 
-// Search |entry_list| for |entry_query| as a uuid and returns true if
+// Search `entry_list` for `entry_query` as a uuid and returns true if
 // found, false if not.
 bool FindUuidInUuidList(
     const std::string& uuid_query,

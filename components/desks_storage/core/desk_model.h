@@ -105,20 +105,20 @@ class DeskModel {
 
   using AddOrUpdateEntryCallback =
       base::OnceCallback<void(AddOrUpdateEntryStatus status)>;
-  // Add or update a desk template by |new_entry|'s UUID.
+  // Add or update a desk template by `new_entry`'s UUID.
   // The given template's name could be cleaned (e.g. removing trailing
   // whitespace) and truncated to a reasonable length before saving. This method
-  // will also validate the given |new_entry|. If the |new_entry| is missing
-  // critical information, such as |uuid|, |callback| will be called with
-  // |kInvalidArgument|. If the given desk template could not be persisted due
-  // to any backend error, |callback| will be called with |kFailure|.
+  // will also validate the given `new_entry`. If the `new_entry` is missing
+  // critical information, such as `uuid`, `callback` will be called with
+  // `kInvalidArgument`. If the given desk template could not be persisted due
+  // to any backend error, `callback` will be called with `kFailure`.
   virtual void AddOrUpdateEntry(std::unique_ptr<ash::DeskTemplate> new_entry,
                                 AddOrUpdateEntryCallback callback) = 0;
 
   using GetTemplateJsonCallback =
       base::OnceCallback<void(GetTemplateJsonStatus status,
                               const std::string& json_representation)>;
-  // Retrieves a template based on its |uuid|, if found returns a std::string
+  // Retrieves a template based on its `uuid`, if found returns a std::string
   // containing the json representation of the template queried.
   virtual void GetTemplateJson(const std::string& uuid,
                                apps::AppRegistryCache* app_cache,
@@ -126,7 +126,7 @@ class DeskModel {
 
   using DeleteEntryCallback =
       base::OnceCallback<void(DeleteEntryStatus status)>;
-  // Remove entry with |uuid| from entries. If the entry with |uuid| does not
+  // Remove entry with `uuid` from entries. If the entry with `uuid` does not
   // exist, then the deletion is considered a success.
   virtual void DeleteEntry(const std::string& uuid,
                            DeleteEntryCallback callback) = 0;

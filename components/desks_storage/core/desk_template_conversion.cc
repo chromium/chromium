@@ -394,7 +394,7 @@ int32_t StringToWindowOpenDisposition(const std::string& disposition) {
   }
 }
 
-// Convert App JSON to |app_restore::AppLaunchInfo|.
+// Convert App JSON to `app_restore::AppLaunchInfo`.
 std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
     const base::Value& app) {
   int32_t window_id;
@@ -418,8 +418,8 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
 
   std::string app_type;
   if (!GetString(app, kAppType, &app_type)) {
-    // This should never happen. |APP_NOT_SET| corresponds to empty |app_id|.
-    // This method will early return when |app_id| is empty.
+    // This should never happen. `APP_NOT_SET` corresponds to empty `app_id`.
+    // This method will early return when `app_id` is empty.
     NOTREACHED();
     return nullptr;
   }
@@ -483,7 +483,7 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
       }
     }
   }
-  // For Chrome apps and PWAs, the |app_id| is sufficient for identification.
+  // For Chrome apps and PWAs, the `app_id` is sufficient for identification.
 
   return app_launch_info;
 }
@@ -492,7 +492,7 @@ bool IsValidWindowState(const std::string& window_state) {
   return base::Contains(kValidWindowStates, window_state);
 }
 
-// Convert JSON string WindowState |state| to ui::WindowShowState used by
+// Convert JSON string WindowState `state` to ui::WindowShowState used by
 // the app_restore::WindowInfo struct.
 ui::WindowShowState ToUiWindowState(const std::string& window_state) {
   if (window_state == kWindowStateNormal)
@@ -513,7 +513,7 @@ ui::WindowShowState ToUiWindowState(const std::string& window_state) {
   return ui::WindowShowState::SHOW_STATE_NORMAL;
 }
 
-// Convert JSON string WindowState |state| to chromeos::WindowStateType used by
+// Convert JSON string WindowState `state` to chromeos::WindowStateType used by
 // the app_restore::WindowInfo struct.
 chromeos::WindowStateType ToChromeOsWindowState(
     const std::string& window_state) {
@@ -567,7 +567,7 @@ void FillArcExtraWindowInfoFromJson(
   }
 }
 
-// Fill |out_window_info| with information from JSON |app|.
+// Fill `out_window_info` with information from JSON `app`.
 void FillWindowInfoFromJson(const base::Value& app,
                             app_restore::WindowInfo* out_window_info) {
   std::string window_state;
@@ -625,7 +625,7 @@ void FillWindowInfoFromJson(const base::Value& app,
     out_window_info->app_title.emplace(base::UTF8ToUTF16(title));
 }
 
-// Convert a desk template to |app_restore::RestoreData|.
+// Convert a desk template to `app_restore::RestoreData`.
 std::unique_ptr<app_restore::RestoreData> ConvertJsonToRestoreData(
     const base::Value* desk) {
   std::unique_ptr<app_restore::RestoreData> restore_data =
@@ -678,7 +678,7 @@ base::Value ConvertSizeToValue(const gfx::Size& size) {
   return size_value;
 }
 
-// Convert ui::WindowStateType |window_state| to std::string used by the
+// Convert ui::WindowStateType `window_state` to std::string used by the
 // base::Value representation.
 std::string ChromeOsWindowStateToString(
     const chromeos::WindowStateType& window_state) {
@@ -703,7 +703,7 @@ std::string ChromeOsWindowStateToString(
   }
 }
 
-// Convert ui::WindowShowState |state| to JSON used by the base::Value
+// Convert ui::WindowShowState `state` to JSON used by the base::Value
 // representation.
 std::string UiWindowStateToString(const ui::WindowShowState& window_state) {
   switch (window_state) {
