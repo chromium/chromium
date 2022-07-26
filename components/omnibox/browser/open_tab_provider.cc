@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
+#include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/tab_matcher.h"
 
@@ -37,12 +38,11 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Preprocess the query into lowercase terms.
-  std::vector<std::u16string> query_terms;
-  for (const std::u16string& term :
-       base::SplitString(base::i18n::ToLower(adjusted_input.text()), u" ",
-                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    query_terms.push_back(term);
-  }
+  const auto adjusted_input_text = std::u16string(
+      base::TrimWhitespace(base::i18n::ToLower(adjusted_input.text()),
+                           base::TrimPositions::TRIM_ALL));
+  std::vector<std::u16string> query_terms =
+      String16VectorFromString16(adjusted_input_text, nullptr);
 
   // Perform basic substring matching on the query terms.
   for (auto* web_contents : client_->GetTabMatcher().GetOpenTabs()) {
