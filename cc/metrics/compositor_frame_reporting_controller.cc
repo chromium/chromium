@@ -25,7 +25,7 @@ using FrameTerminationStatus = CompositorFrameReporter::FrameTerminationStatus;
 constexpr char kTraceCategory[] = "cc,benchmark";
 constexpr int kNumOfStages = static_cast<int>(StageType::kStageTypeCount);
 constexpr int kNumDispatchStages =
-    static_cast<int>(EventMetrics::DispatchStage::kMaxValue) + 1;
+    static_cast<int>(EventMetrics::DispatchStage::kMaxValue);
 }  // namespace
 
 CompositorFrameReportingController::CompositorFrameReportingController(
@@ -37,8 +37,9 @@ CompositorFrameReportingController::CompositorFrameReportingController(
       latency_ukm_reporter_(std::make_unique<LatencyUkmReporter>()),
       previous_latency_predictions_main_(kNumOfStages, base::Microseconds(-1)),
       previous_latency_predictions_impl_(kNumOfStages, base::Microseconds(-1)),
-      dispatch_latency_predictions_(kNumDispatchStages,
-                                    base::Microseconds(-1)) {
+      event_latency_predictions_(
+          CompositorFrameReporter::EventLatencyPredictions(
+              kNumDispatchStages)) {
   if (should_report_ukm) {
     // UKM metrics should be reported if and only if `latency_ukm_reporter` is
     // set on `global_trackers_`.
@@ -509,7 +510,7 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
 
       // TODO(crbug.com/1334827): Consider using a separate container to
       // differentiate event predictions with and without a main dispatch stage.
-      reporter->SetEventLatencyPredictions(dispatch_latency_predictions_);
+      reporter->CalculateEventLatencyPrediction(event_latency_predictions_);
 
       // For presented frames, if `reporter` was cloned from another reporter,
       // and the original reporter is still alive, then check whether the cloned

@@ -148,6 +148,16 @@ class CC_EXPORT CompositorFrameReporter {
     ~StageData();
   };
 
+  struct CC_EXPORT EventLatencyPredictions {
+    std::vector<base::TimeDelta> dispatch_latency_predictions;
+    base::TimeDelta transition_time;
+    base::TimeDelta total_event_duration;
+    EventLatencyPredictions();
+    explicit EventLatencyPredictions(const int num_dispatch_stages);
+    EventLatencyPredictions(const EventLatencyPredictions&);
+    ~EventLatencyPredictions();
+  };
+
   using SmoothThread = FrameInfo::SmoothThread;
 
   // Holds a processed list of Blink breakdowns with an `Iterator` class to
@@ -364,8 +374,9 @@ class CC_EXPORT CompositorFrameReporter {
 
   // Sets EventLatency stage duration predictions based on previous trace
   // durations using exponentially weighted averages.
-  void SetEventLatencyPredictions(
-      std::vector<base::TimeDelta>& predicted_latencies);
+  void CalculateEventLatencyPrediction(
+      CompositorFrameReporter::EventLatencyPredictions&
+          event_latency_predictions);
 
   ReporterType get_reporter_type() { return reporter_type_; }
 
