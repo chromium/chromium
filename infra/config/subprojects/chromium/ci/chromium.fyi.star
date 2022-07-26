@@ -372,6 +372,10 @@ ci.builder(
         short_name = "lsf",
     ),
     os = os.LINUX_DEFAULT,
+    # Some tests on this bot depend on being unauthenticated with GS, so
+    # don't run the tests inside a luci-auth context to avoid having the
+    # BOTO config setup for the task's service account.
+    # TODO(crbug.com/1217155): Fix this.
     builder_spec = builder_config.builder_spec(
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -389,7 +393,7 @@ ci.builder(
             ],
         ),
         skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "gs://lacros-amd64-generic-rel-skylab-try",
+            gs_bucket = "lacros-amd64-generic-rel-skylab-try",
         ),
         test_results_config = builder_config.test_results_config(
             config = "staging_server",

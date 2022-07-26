@@ -39,7 +39,7 @@
                 "config": "staging_server"
               },
               "skylab_upload_location": {
-                "gs_bucket": "gs://lacros-amd64-generic-rel-skylab-try"
+                "gs_bucket": "lacros-amd64-generic-rel-skylab-try"
               }
             }
           }
