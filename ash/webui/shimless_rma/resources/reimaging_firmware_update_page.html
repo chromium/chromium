@@ -5,7 +5,7 @@
 </style>
 <base-page equal-panes>
   <div slot="left-pane">
-    <h1>[[i18n('firmwareUpdatePageTitleText')]]</h1>
+    <h1 id="titleText">[[getTitleText_(status_)]]</h1>
     <div class="icon-message">
       <iron-icon icon="shimless-icon:warning"
           class="warning-icon small-icon" hidden="[[!shouldShowWarning_]]">

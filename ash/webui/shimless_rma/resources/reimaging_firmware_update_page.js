@@ -183,6 +183,17 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
     this.imgAlt_ = this.i18n(
         !this.status_ ? 'downloadingAltText' : STATUS_ALT_MAP[this.status_]);
   }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getTitleText_() {
+    return this.i18n(
+        this.status_ === UpdateRoFirmwareStatus.kComplete ?
+            'firmwareUpdateInstallCompleteTitleText' :
+            'firmwareUpdateInstallImageTitleText');
+  }
 }
 
 customElements.define(UpdateRoFirmwarePage.is, UpdateRoFirmwarePage);

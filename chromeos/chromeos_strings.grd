@@ -3129,8 +3129,11 @@ Try tapping the mic to ask me anything.
         DRAM part number
       </message>
       <!-- RO firmware reimaging page -->
-      <message name="IDS_SHIMLESS_RMA_FIRMWARE_UPDATE_TITLE" desc="The title for the page when reimaging is in progress.">
+      <message name="IDS_SHIMLESS_RMA_FIRMWARE_UPDATE_INSTALL_IMAGE_TITLE" desc="The title for the page when the device firmware is expected to be installed.">
         Install firmware image
+      </message>
+      <message name="IDS_SHIMLESS_RMA_FIRMWARE_UPDATE_INSTALL_COMPLETE_TITLE" desc="The title for the page when the device firmware installation is complete.">
+        Install complete
       </message>
       <message name="IDS_SHIMLESS_RMA_FIRMWARE_WAIT_FOR_USB" desc="The prompt to insert a thumb drive with the recovery image for this device.">
         Insert external storage, such as a USB drive or an SD card, with the downloaded Chromebook Recovery Utility image
