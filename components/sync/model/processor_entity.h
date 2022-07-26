@@ -68,12 +68,15 @@ class ProcessorEntity {
   bool RequiresCommitData() const;
 
   // Whether it's safe to clear the metadata for this entity. This means that
-  // the entity is deleted and either knowledge of this entity has never left
-  // this client or it is up to date with the server.
+  // the entity is deleted and it is up to date with the server (i.e. is *not*
+  // unsynced).
   bool CanClearMetadata() const;
 
-  // Returns true if the specified update version does not contain new data.
-  bool UpdateIsReflection(int64_t update_version) const;
+  // Returns true if the specified `update_version` is already known, i.e. is
+  // small or equal to the last known server version.
+  // This is the case for reflections, but can also be true in some other edge
+  // cases (e.g. updates were received out of order).
+  bool IsVersionAlreadyKnown(int64_t update_version) const;
 
   // Records that an update from the server was received but ignores its data.
   void RecordIgnoredRemoteUpdate(const UpdateResponseData& response_data);

@@ -156,7 +156,7 @@ TEST_F(ProcessorEntityTest, DefaultEntity) {
   EXPECT_FALSE(entity->RequiresCommitRequest());
   EXPECT_FALSE(entity->RequiresCommitData());
   EXPECT_FALSE(entity->CanClearMetadata());
-  EXPECT_FALSE(entity->UpdateIsReflection(1));
+  EXPECT_FALSE(entity->IsVersionAlreadyKnown(1));
   EXPECT_FALSE(entity->HasCommitData());
 }
 
@@ -179,7 +179,7 @@ TEST_F(ProcessorEntityTest, NewLocalItem) {
   EXPECT_TRUE(entity->RequiresCommitRequest());
   EXPECT_FALSE(entity->RequiresCommitData());
   EXPECT_FALSE(entity->CanClearMetadata());
-  EXPECT_FALSE(entity->UpdateIsReflection(1));
+  EXPECT_FALSE(entity->IsVersionAlreadyKnown(1));
   EXPECT_TRUE(entity->HasCommitData());
 
   EXPECT_EQ(kValue1, entity->commit_data().specifics.preference().value());
@@ -195,7 +195,7 @@ TEST_F(ProcessorEntityTest, NewLocalItem) {
   EXPECT_FALSE(entity->RequiresCommitRequest());
   EXPECT_FALSE(entity->RequiresCommitData());
   EXPECT_FALSE(entity->CanClearMetadata());
-  EXPECT_FALSE(entity->UpdateIsReflection(1));
+  EXPECT_FALSE(entity->IsVersionAlreadyKnown(1));
 
   const EntityData& data = *request.entity;
   EXPECT_EQ("", data.id);
@@ -228,7 +228,7 @@ TEST_F(ProcessorEntityTest, NewLocalItem) {
   EXPECT_FALSE(entity->RequiresCommitRequest());
   EXPECT_FALSE(entity->RequiresCommitData());
   EXPECT_FALSE(entity->CanClearMetadata());
-  EXPECT_TRUE(entity->UpdateIsReflection(1));
+  EXPECT_TRUE(entity->IsVersionAlreadyKnown(1));
   EXPECT_FALSE(entity->HasCommitData());
 }
 
@@ -254,9 +254,9 @@ TEST_F(ProcessorEntityTest, NewServerItem) {
   EXPECT_FALSE(entity->RequiresCommitRequest());
   EXPECT_FALSE(entity->RequiresCommitData());
   EXPECT_FALSE(entity->CanClearMetadata());
-  EXPECT_TRUE(entity->UpdateIsReflection(9));
-  EXPECT_TRUE(entity->UpdateIsReflection(10));
-  EXPECT_FALSE(entity->UpdateIsReflection(11));
+  EXPECT_TRUE(entity->IsVersionAlreadyKnown(9));
+  EXPECT_TRUE(entity->IsVersionAlreadyKnown(10));
+  EXPECT_FALSE(entity->IsVersionAlreadyKnown(11));
   EXPECT_FALSE(entity->HasCommitData());
 }
 
@@ -297,8 +297,8 @@ TEST_F(ProcessorEntityTest, NewServerTombstone) {
   EXPECT_FALSE(entity->RequiresCommitRequest());
   EXPECT_FALSE(entity->RequiresCommitData());
   EXPECT_TRUE(entity->CanClearMetadata());
-  EXPECT_TRUE(entity->UpdateIsReflection(1));
-  EXPECT_FALSE(entity->UpdateIsReflection(2));
+  EXPECT_TRUE(entity->IsVersionAlreadyKnown(1));
+  EXPECT_FALSE(entity->IsVersionAlreadyKnown(2));
   EXPECT_FALSE(entity->HasCommitData());
 }
 
@@ -324,8 +324,8 @@ TEST_F(ProcessorEntityTest, ServerTombstone) {
   EXPECT_FALSE(entity->RequiresCommitRequest());
   EXPECT_FALSE(entity->RequiresCommitData());
   EXPECT_TRUE(entity->CanClearMetadata());
-  EXPECT_TRUE(entity->UpdateIsReflection(2));
-  EXPECT_FALSE(entity->UpdateIsReflection(3));
+  EXPECT_TRUE(entity->IsVersionAlreadyKnown(2));
+  EXPECT_FALSE(entity->IsVersionAlreadyKnown(3));
   EXPECT_FALSE(entity->HasCommitData());
 }
 

@@ -142,7 +142,7 @@ bool ProcessorEntity::CanClearMetadata() const {
   return metadata_.is_deleted() && !IsUnsynced();
 }
 
-bool ProcessorEntity::UpdateIsReflection(int64_t update_version) const {
+bool ProcessorEntity::IsVersionAlreadyKnown(int64_t update_version) const {
   return metadata_.server_version() >= update_version;
 }
 

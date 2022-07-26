@@ -149,7 +149,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     return nullptr;
   }
 
-  if (entity && entity->UpdateIsReflection(update.response_version)) {
+  if (entity && entity->IsVersionAlreadyKnown(update.response_version)) {
     // Seen this update before; just ignore it.
     return nullptr;
   }

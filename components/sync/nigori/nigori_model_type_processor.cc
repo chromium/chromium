@@ -163,7 +163,7 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
   // are adding the following DCHECK to simplify the code.
   DCHECK(!updates[0].entity.is_deleted());
 
-  if (entity_->UpdateIsReflection(updates[0].response_version)) {
+  if (entity_->IsVersionAlreadyKnown(updates[0].response_version)) {
     // Seen this update before; just ignore it.
     bridge_->ApplySyncChanges(/*data=*/absl::nullopt);
     return;
