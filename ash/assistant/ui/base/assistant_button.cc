@@ -7,12 +7,15 @@
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/base/assistant_button_listener.h"
 #include "ash/assistant/util/histogram_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
+#include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -54,7 +57,6 @@ AssistantButton::AssistantButton(AssistantButtonListener* listener,
   SetHasInkDropActionOnClick(true);
   views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
                                                /*highlight_on_hover=*/false);
-  UpdateInkDropColors();
   views::InstallCircleHighlightPathGenerator(this, gfx::Insets(kInkDropInset));
 
   // Image.
@@ -145,7 +147,17 @@ void AssistantButton::OnPaintBackground(gfx::Canvas* canvas) {
 void AssistantButton::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  UpdateInkDropColors();
+  // Updates inkdrop color and opacity.
+  const bool is_enabled = features::IsProductivityLauncherEnabled();
+  const bool base_color =
+      is_enabled ? GetColorProvider()->GetColor(kColorAshInkDropOpaqueColor)
+                 : SK_ColorBLACK;
+  const float opacity = is_enabled ? StyleUtil::GetInkDropOpacity()
+                                   : StyleUtil::kDarkInkDropOpacity;
+
+  auto* ink_drop = views::InkDrop::Get(this);
+  ink_drop->SetBaseColor(base_color);
+  ink_drop->SetVisibleOpacity(opacity);
 
   if (!icon_color_type_.has_value() || !icon_description_.has_value())
     return;
@@ -160,15 +172,6 @@ void AssistantButton::OnThemeChanged() {
 void AssistantButton::OnButtonPressed() {
   assistant::util::IncrementAssistantButtonClickCount(id_);
   listener_->OnButtonPressed(id_);
-}
-
-void AssistantButton::UpdateInkDropColors() {
-  ScopedAssistantLightModeAsDefault scoped_assistant_light_mode_as_default;
-
-  std::pair<SkColor, float> base_color_and_opacity =
-      ColorProvider::Get()->GetInkDropBaseColorAndOpacity();
-  views::InkDrop::Get(this)->SetBaseColor(base_color_and_opacity.first);
-  views::InkDrop::Get(this)->SetVisibleOpacity(base_color_and_opacity.second);
 }
 
 BEGIN_METADATA(AssistantButton, views::ImageButton)

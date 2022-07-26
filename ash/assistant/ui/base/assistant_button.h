@@ -87,7 +87,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantButton
 
  private:
   void OnButtonPressed();
-  void UpdateInkDropColors();
 
   AssistantButtonListener* listener_;
   const AssistantButtonId id_;

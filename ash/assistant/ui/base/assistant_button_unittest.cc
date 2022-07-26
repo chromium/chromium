@@ -132,9 +132,11 @@ TEST_F(AssistantButtonTest, IconColorType) {
   params.accessible_name_id = IDS_ASH_ASSISTANT_DIALOG_PLATE_KEYBOARD_ACCNAME;
   params.icon_color_type = ColorProvider::ContentLayerType::kIconColorPrimary;
 
-  std::unique_ptr<AssistantButton> button = AssistantButton::Create(
-      nullptr, vector_icons::kKeyboardIcon,
-      AssistantButtonId::kKeyboardInputToggle, std::move(params));
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  AssistantButton* button =
+      widget->GetContentsView()->AddChildView(AssistantButton::Create(
+          nullptr, vector_icons::kKeyboardIcon,
+          AssistantButtonId::kKeyboardInputToggle, std::move(params)));
 
   const SkBitmap light_mode_expected_image =
       *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconSizeInDip,
@@ -156,10 +158,6 @@ TEST_F(AssistantButtonTest, IconColorType) {
   dark_light_mode_controller->ToggleColorMode();
   const bool dark_mode_status = dark_light_mode_controller->IsDarkModeEnabled();
   ASSERT_NE(initial_dark_mode_status, dark_mode_status);
-
-  // Manually triggers OnThemeChanged as the button is not attached to an UI
-  // tree.
-  button->OnThemeChanged();
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
       dark_mode_status ? dark_mode_expected_image : light_mode_expected_image,
       *button->GetImage(views::Button::STATE_NORMAL).bitmap()));
