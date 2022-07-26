@@ -91,6 +91,10 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   ~MessageView() override;
 
+  // Abort all layer animations. Unimplemented by default, used in
+  // `AshNotificationView` to abort animations when it's widget is being closed.
+  virtual void AbortAllLayerAnimations() {}
+
   // Updates this view with an additional grouped notification. If the view
   // wasn't previously grouped it also takes care of converting the view to
   // the grouped notification state.
