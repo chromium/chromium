@@ -15,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+import org.chromium.url.GURL;
 
 /**
  * Properties defined here reflect the state of the AccountSelection-components.
@@ -81,8 +82,8 @@ class AccountSelectionProperties {
     static class DataSharingConsentProperties {
         static class Properties {
             public String mIdpForDisplay;
-            public String mTermsOfServiceUrl;
-            public String mPrivacyPolicyUrl;
+            public GURL mTermsOfServiceUrl;
+            public GURL mPrivacyPolicyUrl;
         }
 
         static final ReadableObjectPropertyKey<Properties> PROPERTIES =

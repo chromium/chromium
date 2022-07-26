@@ -18,7 +18,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
-import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.Button;
@@ -49,6 +48,7 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.ButtonCompat;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -143,13 +143,13 @@ class AccountSelectionViewBinder {
         }
     }
 
-    static SpanApplier.SpanInfo createLink(Context context, String url, String tag) {
-        if (TextUtils.isEmpty(url)) return null;
+    static SpanApplier.SpanInfo createLink(Context context, GURL url, String tag) {
+        if (GURL.isEmptyOrInvalid(url)) return null;
 
         String startTag = "<" + tag + ">";
         String endTag = "</" + tag + ">";
         Callback<View> onClickCallback = v -> {
-            CustomTabActivity.showInfoPage(context, url);
+            CustomTabActivity.showInfoPage(context, url.getSpec());
         };
         return new SpanApplier.SpanInfo(
                 startTag, endTag, new NoUnderlineClickableSpan(context, onClickCallback));

@@ -464,9 +464,9 @@ public class AccountSelectionControllerTest {
         DataSharingConsentProperties.Properties dataSharingProperties =
                 mModel.get(ItemProperties.DATA_SHARING_CONSENT)
                         .get(DataSharingConsentProperties.PROPERTIES);
-        assertEquals("Incorrect privacy policy URL", TEST_URL_PRIVACY_POLICY.getSpec(),
+        assertEquals("Incorrect privacy policy URL", TEST_URL_PRIVACY_POLICY,
                 dataSharingProperties.mPrivacyPolicyUrl);
-        assertEquals("Incorrect terms of service URL", TEST_URL_TERMS_OF_SERVICE.getSpec(),
+        assertEquals("Incorrect terms of service URL", TEST_URL_TERMS_OF_SERVICE,
                 dataSharingProperties.mTermsOfServiceUrl);
         assertTrue(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
         assertEquals("Incorrect provider ETLD+1", TEST_ETLD_PLUS_ONE_2,

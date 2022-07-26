@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -51,6 +52,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
 import java.util.Collections;
 
@@ -59,6 +61,7 @@ import java.util.Collections;
  * sheet.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowGURL.class})
 public class AccountSelectionViewTest {
     private static final GURL TEST_PROFILE_PIC = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
 
@@ -306,8 +309,8 @@ public class AccountSelectionViewTest {
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties();
         properties.mIdpForDisplay = idpEtldPlusOne;
-        properties.mTermsOfServiceUrl = "https://rp.com/tos";
-        properties.mPrivacyPolicyUrl = "https://rp.com/privacy";
+        properties.mTermsOfServiceUrl = new GURL("https://www.one.com/");
+        properties.mPrivacyPolicyUrl = new GURL("https://www.two.com/");
 
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROPERTIES, properties)

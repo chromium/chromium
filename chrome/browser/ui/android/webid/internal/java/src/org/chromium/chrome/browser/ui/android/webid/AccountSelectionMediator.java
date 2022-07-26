@@ -370,8 +370,8 @@ class AccountSelectionMediator {
         DataSharingConsentProperties.Properties properties =
                 new DataSharingConsentProperties.Properties();
         properties.mIdpForDisplay = idpForDisplay;
-        properties.mTermsOfServiceUrl = metadata.getTermsOfServiceUrl().getValidSpecOrEmpty();
-        properties.mPrivacyPolicyUrl = metadata.getPrivacyPolicyUrl().getValidSpecOrEmpty();
+        properties.mTermsOfServiceUrl = metadata.getTermsOfServiceUrl();
+        properties.mPrivacyPolicyUrl = metadata.getPrivacyPolicyUrl();
 
         return new PropertyModel.Builder(DataSharingConsentProperties.ALL_KEYS)
                 .with(DataSharingConsentProperties.PROPERTIES, properties)
