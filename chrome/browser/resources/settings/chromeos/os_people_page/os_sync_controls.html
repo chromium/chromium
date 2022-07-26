@@ -41,6 +41,9 @@
     <div id="osAppsCheckboxLabel"
         label-disabled$="[[areDataTypeTogglesDisabled_]]">
       $i18n{osSyncAppsCheckboxLabel}
+      <div class="secondary" hidden="[[!showAppsCheckboxSublabel_]]">
+        $i18n{osSyncAppsCheckboxSublabel}
+      </div>
     </div>
     <cr-toggle id="osAppsControl"
         checked="{{osSyncPrefs.osAppsSynced}}"

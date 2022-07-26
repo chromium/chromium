@@ -272,6 +272,10 @@
   <message name="IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of apps across devices.">
     Apps
   </message>
+  <message name="IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_SUBLABEL" translateable="false" desc="Disclaimer shown under label for the checkbox which enables syncing of apps across devices.">
+    <!-- TODO(crbug.com/1330894): Remove "translateable=false" once definitive string is available. -->
+    Web apps are synced with Chrome browser on non-Chrome OS devices
+  </message>
   <message name="IDS_OS_SETTINGS_SYNC_PRINTERS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of printers across devices.">
     Printers
   </message>

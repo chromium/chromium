@@ -10,6 +10,7 @@ import '../../settings_shared.css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -101,6 +102,15 @@ class OsSyncControlsElement extends OsSyncControlsElementBase {
         type: Boolean,
         value: true,
         computed: `computeDataTypeTogglesDisabled_(osSyncPrefs.syncAllOsTypes)`,
+      },
+
+      /**
+       * Whether to show apps checkbox sublabel, which contains disclaimer about
+       * Web apps and relevant if checkbox value is shared with Lacros.
+       */
+      showAppsCheckboxSublabel_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('appsToggleSharingEnabled'),
       },
 
       /**

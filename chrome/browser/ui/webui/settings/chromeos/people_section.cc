@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -48,6 +49,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/user_manager/user.h"
@@ -472,6 +474,8 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
       {"osSyncWifiConfigurationsCheckboxLabel",
        IDS_OS_SETTINGS_WIFI_CONFIGURATIONS_CHECKBOX_LABEL},
       {"osSyncAppsCheckboxLabel", IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_LABEL},
+      {"osSyncAppsCheckboxSublabel",
+       IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_SUBLABEL},
       {"osSyncTurnOn", IDS_OS_SETTINGS_SYNC_TURN_ON},
       {"osSyncFeatureLabel", IDS_OS_SETTINGS_SYNC_FEATURE_LABEL},
   };
@@ -480,6 +484,10 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "syncSettingsCategorizationEnabled",
       chromeos::features::IsSyncSettingsCategorizationEnabled());
+  html_source->AddBoolean(
+      "appsToggleSharingEnabled",
+      base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing) &&
+          crosapi::browser_util::IsLacrosEnabled());
   html_source->AddString(
       "browserSettingsSyncSetupUrl",
       base::StrCat({chrome::kChromeUISettingsURL, chrome::kSyncSetupSubPage}));
