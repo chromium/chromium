@@ -27,6 +27,10 @@ const char kAllowLoopbackInPeerConnection[] =
 // This is used in blimp to emulate android fonts on linux.
 const char kAndroidFontsPath[]          = "android-fonts-path";
 
+// Causes the Attribution Report API to run without delays or noise.
+const char kAttributionReportingDebugMode[] =
+    "attribution-reporting-debug-mode";
+
 // Causes the browser process to crash on startup.
 const char kBrowserCrashTest[]              = "crash-test";
 
@@ -51,9 +55,6 @@ const char kBrowserTest[] = "browser-test";
 const char kChangeStackGuardOnFork[] = "change-stack-guard-on-fork";
 const char kChangeStackGuardOnForkEnabled[] = "enable";
 const char kChangeStackGuardOnForkDisabled[] = "disable";
-
-// Causes the Conversion Measurement API to run without delays or noise.
-const char kConversionsDebugMode[] = "conversions-debug-mode";
 
 // Enables gating of getDisplayMedia by the display-capture permissions-policy.
 // This switch supports the shipping of display-capture, as it allows admins to

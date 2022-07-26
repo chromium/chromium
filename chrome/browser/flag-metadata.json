@@ -376,6 +376,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "attribution-reporting-debug-mode",
+    "owners": [ "//content/browser/attribution_reporting/OWNERS" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "audio-settings-page",
     "owners": [ "gordonseto", "michaelcheco", "cros-peripherals@google.com" ],
     "expiry_milestone": 113
@@ -1063,11 +1068,6 @@
     "name": "contextual-triggers-selection-size",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
     "expiry_milestone": 108
-  },
-  {
-    "name": "conversion-measurement-debug-mode",
-    "owners": [ "//content/browser/attribution_reporting/OWNERS" ],
-    "expiry_milestone": 105
   },
   {
     "name": "copy-link-to-text",

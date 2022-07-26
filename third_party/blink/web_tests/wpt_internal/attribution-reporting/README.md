@@ -112,7 +112,7 @@ a basic test that utilizes helpers for Event-Level reports.
 
 Attribution Reporting APIs add noise to the report content and delay to report
 delivery. In order for the tests to run without this noise and delay, chrome
-must run with command-line switch `--conversions-debug-mode`. For this reason,
+must run with command-line switch `--attribution-reporting-debug-mode`. For this reason,
 all Attribution Reporting tests are virtual tests. You can run the tests by
 
 ```shell
@@ -120,10 +120,10 @@ all Attribution Reporting tests are virtual tests. You can run the tests by
 autoninja -C out/Default blink_tests
 
 # Run all Attribution Reporting tests
-third_party/blink/tools/run_web_tests.py -t Default virtual/conversions-debug-mode/wpt_internal/attribution-reporting
+third_party/blink/tools/run_web_tests.py -t Default virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting
 
 # Run a single test
-third_party/blink/tools/run_web_tests.py -t Default virtual/conversions-debug-mode/wpt_internal/attribution-reporting/<test-name>.sub.https.html
+third_party/blink/tools/run_web_tests.py -t Default virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/<test-name>.sub.https.html
 ```
 
 ## Server Code

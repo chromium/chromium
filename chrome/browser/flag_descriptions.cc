@@ -96,6 +96,13 @@ const char kAriaElementReflectionDescription[] =
     "Enable setting ARIA relationship attributes that reference other elements "
     "directly without an IDREF";
 
+const char kAttributionReportingDebugModeName[] =
+    "Attribution Reporting Debug Mode";
+const char kAttributionReportingDebugModeDescription[] =
+    "Enables debug mode for the Attribution Reporting API. This removes all "
+    "reporting delays and noise. Only works if the Attribution Reporting API "
+    "is already enabled.";
+
 const char kBrokerFileOperationsOnDiskCacheInNetworkServiceName[] =
     "Broker file operations on disk cache in the Network Service";
 const char kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription[] =
@@ -122,13 +129,6 @@ const char kContentLanguagesInLanguagePickerName[] =
 const char kContentLanguagesInLanguagePickerDescription[] =
     "Enables bringing user's content languages that are translatable to the "
     "top of the list with all languages shown in the translate menu";
-
-const char kConversionMeasurementDebugModeName[] =
-    "Conversion Measurement Debug Mode";
-const char kConversionMeasurementDebugModeDescription[] =
-    "Enables debug mode for the Conversion Measurement API. This removes all "
-    "reporting delays and noise. Only works if the Conversion Measurement API "
-    "is already enabled.";
 
 const char kForceStartupSigninPromoName[] = "Force Start-up Signin Promo";
 const char kForceStartupSigninPromoDescription[] =

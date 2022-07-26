@@ -78,6 +78,9 @@ extern const char kAnimatedImageResumeDescription[];
 extern const char kAriaElementReflectionName[];
 extern const char kAriaElementReflectionDescription[];
 
+extern const char kAttributionReportingDebugModeName[];
+extern const char kAttributionReportingDebugModeDescription[];
+
 extern const char kBrokerFileOperationsOnDiskCacheInNetworkServiceName[];
 extern const char kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription[];
 
@@ -91,9 +94,6 @@ extern const char kCSSContainerQueriesDescription[];
 
 extern const char kContentLanguagesInLanguagePickerName[];
 extern const char kContentLanguagesInLanguagePickerDescription[];
-
-extern const char kConversionMeasurementDebugModeName[];
-extern const char kConversionMeasurementDebugModeDescription[];
 
 extern const char kDebugHistoryInterventionNoUserActivationName[];
 extern const char kDebugHistoryInterventionNoUserActivationDescription[];

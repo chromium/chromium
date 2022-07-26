@@ -235,7 +235,7 @@ void LogMetricsOnReportCompleted(const AttributionReport& report,
 
 std::unique_ptr<AttributionStorageDelegate> MakeStorageDelegate() {
   bool debug_mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kConversionsDebugMode);
+      switches::kAttributionReportingDebugMode);
 
   if (debug_mode) {
     return std::make_unique<AttributionStorageDelegateImpl>(

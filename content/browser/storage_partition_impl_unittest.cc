@@ -720,7 +720,7 @@ class StoragePartitionImplTest : public testing::Test {
     // Prevent test flakiness as a result of randomized responses in the
     // Attribution Reporting API.
     command_line_.GetProcessCommandLine()->AppendSwitch(
-        switches::kConversionsDebugMode);
+        switches::kAttributionReportingDebugMode);
 
     // Configures the Conversion API to run in memory to speed up its
     // initialization and avoid timeouts. See https://crbug.com/1080764.

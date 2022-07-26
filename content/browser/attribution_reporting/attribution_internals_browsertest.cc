@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithManager_DebugModeEnabled) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kConversionsDebugMode);
+      switches::kAttributionReportingDebugMode);
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 

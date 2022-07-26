@@ -147,9 +147,9 @@ external/wpt/feature-policy/experimental-features/vertical-scroll-touch-block-ma
 external/wpt/permissions-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html [ Skip ]
 [ Linux ] virtual/threaded/external/wpt/permissions-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html [ Pass ]
 
-# These tests require command line arguments so only virtual/conversions-debug-mode version is run.
+# These tests require command line arguments so only virtual/attribution-reporting-debug-mode version is run.
 wpt_internal/attribution-reporting/* [ Skip ]
-virtual/conversions-debug-mode/wpt_internal/attribution-reporting/* [ Pass ]
+virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/* [ Pass ]
 
 # This test requires a compositor to pass as root scrollbar scrolling is always
 # done on the compositor thread.

@@ -192,7 +192,7 @@ void AttributionInternalsHandlerImpl::IsAttributionReportingEnabled(
           /*impression_origin=*/nullptr, /*conversion_origin=*/nullptr,
           /*reporting_origin=*/nullptr);
   bool debug_mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kConversionsDebugMode);
+      switches::kAttributionReportingDebugMode);
   std::move(callback).Run(attribution_reporting_enabled, debug_mode);
 }
 

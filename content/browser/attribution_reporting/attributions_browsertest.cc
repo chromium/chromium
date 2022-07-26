@@ -156,7 +156,7 @@ class AttributionsBrowserTest : public ContentBrowserTest {
   AttributionsBrowserTest() { AttributionManagerImpl::RunInMemoryForTesting(); }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kConversionsDebugMode);
+    command_line->AppendSwitch(switches::kAttributionReportingDebugMode);
 
     // Sets up the blink runtime feature for ConversionMeasurement.
     command_line->AppendSwitch(

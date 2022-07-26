@@ -7293,10 +7293,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableTranslateSubFramesDescription, kOsAll,
      FEATURE_VALUE_TYPE(translate::kTranslateSubFrames)},
 
-    {"conversion-measurement-debug-mode",
-     flag_descriptions::kConversionMeasurementDebugModeName,
-     flag_descriptions::kConversionMeasurementDebugModeDescription, kOsAll,
-     SINGLE_VALUE_TYPE(switches::kConversionsDebugMode)},
+    {"attribution-reporting-debug-mode",
+     flag_descriptions::kAttributionReportingDebugModeName,
+     flag_descriptions::kAttributionReportingDebugModeDescription, kOsAll,
+     SINGLE_VALUE_TYPE(switches::kAttributionReportingDebugMode)},
 
     {"client-storage-access-context-auditing",
      flag_descriptions::kClientStorageAccessContextAuditingName,
