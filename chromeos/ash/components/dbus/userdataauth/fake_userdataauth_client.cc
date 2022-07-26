@@ -790,6 +790,7 @@ void FakeUserDataAuthClient::AuthenticateAuthSession(
     AuthenticateAuthSessionCallback callback) {
   last_authenticate_auth_session_request_ = request;
   ::user_data_auth::AuthenticateAuthSessionReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
 
   const std::string auth_session_id = request.auth_session_id();
 
@@ -797,14 +798,40 @@ void FakeUserDataAuthClient::AuthenticateAuthSession(
   if (it == auth_sessions_.end()) {
     reply.set_error(::user_data_auth::CryptohomeErrorCode::
                         CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
-  } else if (cryptohome_error_ !=
-             ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
-    reply.set_error(cryptohome_error_);
-  } else {
-    it->second.authenticated = true;
-    reply.set_authenticated(true);
+    return;
   }
-  ReturnProtobufMethodCallback(reply, std::move(callback));
+  AuthSessionData& auth_session = it->second;
+
+  if (cryptohome_error_ !=
+      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    reply.set_error(cryptohome_error_);
+    return;
+  }
+
+  const cryptohome::Key& key = request.authorization().key();
+  switch (AuthenticateViaAuthFactors(auth_session.account,
+                                     /*factor_label=*/key.data().label(),
+                                     /*secret=*/key.secret(),
+                                     /*wildcard_allowed=*/false)) {
+    case AuthResult::kAuthSuccess:
+      // Proceed to marking the auth session authenticated.
+      break;
+    case AuthResult::kUserNotFound:
+      reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                          CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
+      return;
+    case AuthResult::kFactorNotFound:
+      reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                          CRYPTOHOME_ERROR_KEY_NOT_FOUND);
+      return;
+    case AuthResult::kAuthFailed:
+      reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                          CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
+      return;
+  }
+
+  auth_session.authenticated = true;
+  reply.set_authenticated(true);
 }
 
 void FakeUserDataAuthClient::AddCredentials(
