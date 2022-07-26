@@ -128,9 +128,9 @@ class CONTENT_EXPORT AggregatableReportScheduler {
   // outlive `this`.
   raw_ref<AggregationServiceStorageContext> storage_context_;
 
-  // Using a raw reference is safe because it's owned by `timer_`. Do not use
-  // once destruction has begun as `timer_` is destroyed before this reference.
-  raw_ref<TimerDelegate> timer_delegate_;
+  // Using a raw pointer is safe because it's owned by `timer_`. Will be cleared
+  // in the destructor to avoid a dangling pointer.
+  raw_ptr<TimerDelegate> timer_delegate_;
 
   ReportSchedulerTimer timer_;
 };

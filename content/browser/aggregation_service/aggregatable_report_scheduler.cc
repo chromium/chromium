@@ -32,12 +32,14 @@ AggregatableReportScheduler::AggregatableReportScheduler(
         on_scheduled_report_time_reached)
     : storage_context_(*storage_context),
       timer_delegate_(
-          *(new TimerDelegate(storage_context,
-                              std::move(on_scheduled_report_time_reached)))),
-      timer_(base::WrapUnique(&*timer_delegate_)) {
+          new TimerDelegate(storage_context,
+                            std::move(on_scheduled_report_time_reached))),
+      timer_(base::WrapUnique(timer_delegate_.get())) {
   DCHECK(storage_context);
 }
-AggregatableReportScheduler::~AggregatableReportScheduler() = default;
+AggregatableReportScheduler::~AggregatableReportScheduler() {
+  timer_delegate_ = nullptr;
+}
 
 void AggregatableReportScheduler::ScheduleRequest(
     AggregatableReportRequest request) {
