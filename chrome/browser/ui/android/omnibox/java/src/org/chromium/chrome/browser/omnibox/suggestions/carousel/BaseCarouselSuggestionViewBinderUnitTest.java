@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -64,9 +65,9 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     @Mock
     Resources mResources;
 
-    ModelList mTiles;
-
-    PropertyModel mModel;
+    private ModelList mTiles;
+    private PropertyModel mModel;
+    private Configuration mConfiguration;
 
     @Before
     public void setUp() {
@@ -75,6 +76,8 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         PropertyModelChangeProcessor.create(mModel, mView, BaseCarouselSuggestionViewBinder::bind);
 
         mTiles = new ModelList();
+        mConfiguration = new Configuration();
+        mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
 
         when(mView.getHeaderTextView()).thenReturn(mHeaderTextView);
         when(mView.getHeaderView()).thenReturn(mHeaderView);
@@ -84,6 +87,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
 
         when(mResources.getDimensionPixelSize(eq(R.dimen.omnibox_carousel_suggestion_padding)))
                 .thenReturn(SUGGESTION_VERTICAL_PADDING);
+        when(mResources.getConfiguration()).thenReturn(mConfiguration);
     }
 
     @Test
@@ -153,7 +157,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
      * tile_view_padding
      */
     @Test
-    public void formFactor_itemSpacingPhone_computed() {
+    public void formFactor_itemSpacingPhone_computedPortrait() {
         int tileSpacingMaximum = 28;
         int displayWidth = 1440;
         int tileViewPaddingEdgePortrait = 12;
@@ -172,40 +176,13 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         when(mResources.getDisplayMetrics()).thenReturn(displayMetrics);
 
         final int expectedSpacingPx =
-                (int) ((displayWidth - tileViewPaddingEdgePortrait - tileViewwidth * 4.7) / 4);
+                (int) ((displayWidth - tileViewPaddingEdgePortrait - tileViewwidth * 4.5) / 4);
         Assert.assertEquals(expectedSpacingPx,
                 BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.PHONE, mResources));
     }
 
-    /**
-     * We expect value to be fixed as tile_view_padding is larger than the tile margin value
-     * computed
-     */
     @Test
-    public void formFactor_itemSpacingPhone_fixed() {
-        int tileSpacingMaximum = 28;
-        int displayWidth = 2990;
-        int tileViewPaddingEdgePortrait = 12;
-        int tileViewwidth = 280;
-
-        when(mResources.getDimensionPixelOffset(
-                     eq(R.dimen.omnibox_suggestion_carousel_spacing_maximum)))
-                .thenReturn(tileSpacingMaximum);
-        when(mResources.getDimensionPixelSize(eq(R.dimen.tile_view_padding_edge_portrait)))
-                .thenReturn(tileViewPaddingEdgePortrait);
-        when(mResources.getDimensionPixelOffset(eq(R.dimen.tile_view_width)))
-                .thenReturn(tileViewwidth);
-
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        displayMetrics.widthPixels = displayWidth;
-        when(mResources.getDisplayMetrics()).thenReturn(displayMetrics);
-
-        Assert.assertEquals(tileSpacingMaximum,
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.PHONE, mResources));
-    }
-
-    @Test
-    public void formFactor_itemSpacingTablet() {
+    public void formFactor_itemSpacingTabletPortrait() {
         final int paddingPx = 100;
         when(mResources.getDimensionPixelSize(eq(R.dimen.tile_view_padding_edge_portrait)))
                 .thenReturn(paddingPx);
@@ -222,5 +199,35 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
                 BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.TABLET, mResources));
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
         verify(mView, times(1)).setItemSpacingPx(eq(spacingPx));
+    }
+
+    @Test
+    public void formFactor_itemSpacingPhone_landscape() {
+        int landscapePadding = 123456789;
+
+        mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+
+        // Ignore all other dimensions. Allow the logic to return garbage (or crash) if expectation
+        // is not met.
+        when(mResources.getDimensionPixelOffset(eq(R.dimen.tile_view_padding_landscape)))
+                .thenReturn(landscapePadding);
+
+        Assert.assertEquals(landscapePadding,
+                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.PHONE, mResources));
+    }
+
+    @Test
+    public void formFactor_itemSpacingTablet_landscape() {
+        int landscapePadding = 123456789;
+
+        mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+
+        // Ignore all other dimensions. Allow the logic to return garbage (or crash) if expectation
+        // is not met.
+        when(mResources.getDimensionPixelOffset(eq(R.dimen.tile_view_padding_landscape)))
+                .thenReturn(landscapePadding);
+
+        Assert.assertEquals(landscapePadding,
+                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.TABLET, mResources));
     }
 }
