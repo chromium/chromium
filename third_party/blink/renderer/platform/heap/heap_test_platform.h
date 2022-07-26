@@ -68,10 +68,10 @@ class HeapTestingPlatformAdapter final : public v8::Platform {
   bool IdleTasksEnabled(v8::Isolate* isolate) final {
     return platform_->IdleTasksEnabled(isolate);
   }
-  std::unique_ptr<v8::JobHandle> PostJob(
+  std::unique_ptr<v8::JobHandle> CreateJob(
       v8::TaskPriority priority,
       std::unique_ptr<v8::JobTask> job_task) final {
-    return platform_->PostJob(priority, std::move(job_task));
+    return platform_->CreateJob(priority, std::move(job_task));
   }
   double MonotonicallyIncreasingTime() final {
     return platform_->MonotonicallyIncreasingTime();
