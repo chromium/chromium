@@ -490,12 +490,6 @@ class WebViewFinchTestCase(FinchTestCase):
   def wpt_product_name(cls):
     return ANDROID_WEBVIEW
 
-  @property
-  def tests(self):
-    return super(WebViewFinchTestCase, self).tests + [
-        'svg/pservers/reftests/radialgradient-basic-002.svg',
-    ]
-
   @classmethod
   def finch_seed_download_args(cls):
     return [
