@@ -473,7 +473,7 @@ std::string ExtensionsInternalsSource::GetSource() {
   return chrome::kChromeUIExtensionsInternalsHost;
 }
 
-std::string ExtensionsInternalsSource::GetMimeType(const std::string& path) {
+std::string ExtensionsInternalsSource::GetMimeType(const GURL& url) {
   return "text/plain";
 }
 

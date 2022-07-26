@@ -77,7 +77,7 @@ class ExtensionIconSource : public content::URLDataSource,
 
   // content::URLDataSource implementation.
   std::string GetSource() override;
-  std::string GetMimeType(const std::string&) override;
+  std::string GetMimeType(const GURL&) override;
   void StartDataRequest(
       const GURL& url,
       const content::WebContents::Getter& wc_getter,

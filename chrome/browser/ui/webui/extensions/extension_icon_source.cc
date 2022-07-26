@@ -111,7 +111,7 @@ std::string ExtensionIconSource::GetSource() {
   return chrome::kChromeUIExtensionIconHost;
 }
 
-std::string ExtensionIconSource::GetMimeType(const std::string&) {
+std::string ExtensionIconSource::GetMimeType(const GURL&) {
   // We need to explicitly return a mime type, otherwise if the user tries to
   // drag the image they get no extension.
   return "image/png";
