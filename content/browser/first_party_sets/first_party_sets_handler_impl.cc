@@ -25,6 +25,7 @@
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_client.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -76,13 +77,28 @@ FirstPartySetsHandlerImpl::FlattenedSets SetListToFlattenedSets(
 // from a site to its owner.
 void UpdateCustomizationMap(
     const std::vector<FirstPartySetParser::SingleSet>& set_list,
-    base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>>&
-        site_to_owner) {
+    FirstPartySetsHandlerImpl::PolicyCustomization& site_to_owner) {
   for (const auto& [owner, members] : set_list) {
     site_to_owner.emplace(owner, owner);
     for (const net::SchemefulSite& member : members)
       site_to_owner.emplace(member, owner);
   }
+}
+
+// Parses the policy and computes the PolicyCustomization that represents the
+// changes needed to apply `policy` to `sets`.
+FirstPartySetsHandler::PolicyCustomization GetCustomizationForPolicyInternal(
+    const base::Value::Dict& policy,
+    const FirstPartySetsHandlerImpl::FlattenedSets& sets) {
+  FirstPartySetParser::ParsedPolicySetLists parsed_policy;
+  absl::optional<FirstPartySetParser::PolicyParsingError> error =
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy,
+                                                         &parsed_policy);
+  // Provide empty customization if the policy is malformed.
+  return error.has_value()
+             ? FirstPartySetsHandlerImpl::PolicyCustomization()
+             : FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+                   sets, parsed_policy);
 }
 
 }  // namespace
@@ -117,9 +133,32 @@ FirstPartySetsHandler::ValidateEnterprisePolicy(
       policy, /*out_sets=*/nullptr);
 }
 
-// TODO (https://crbug.com/1325050): Call this function when NetworkContext are
-// created in order to provide the customizations to the
-// FirstPartySetsAccessDelegate.
+void FirstPartySetsHandlerImpl::GetCustomizationForPolicy(
+    const base::Value::Dict& policy,
+    base::OnceCallback<void(FirstPartySetsHandler::PolicyCustomization)>
+        callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  PolicyCustomization customization;
+  if (sets_.has_value()) {
+    std::move(callback).Run(
+        GetCustomizationForPolicyInternal(policy, sets_.value()));
+    return;
+  }
+  // Add to the deque of callbacks that will be processed once the list
+  // of First-Party Sets has been fully initialized.
+
+  // TODO (https://crbug.com/1325050): Refactor on_sets_ready_callbacks_
+  // to avoid copying `sets` as an argument.
+  // See https://crrev.com/c/chromium/src/+/3759166/comments/eb14f62f_6d17475a
+  on_sets_ready_callbacks_.push_back(
+      base::BindOnce(
+          [](base::Value::Dict policy, FlattenedSets sets) {
+            return GetCustomizationForPolicyInternal(policy, sets);
+          },
+          policy.Clone())
+          .Then(std::move(callback)));
+}
+
 FirstPartySetsHandlerImpl::PolicyCustomization
 FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
     const FlattenedSets& sets,

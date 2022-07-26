@@ -22,6 +22,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Optional;
 using ::testing::Pair;
@@ -583,6 +584,115 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                                     SerializesTo("https://example.test")))));
 }
 
+class FirstPartySetsHandlerGetCustomizationForPolicyTest
+    : public FirstPartySetsHandlerImplEnabledTest {
+ public:
+  FirstPartySetsHandlerGetCustomizationForPolicyTest() {
+    FirstPartySetsHandlerImpl::GetInstance()
+        ->SetEmbedderWillProvidePublicSetsForTesting(true);
+    FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
+                                                   /*flag_value=*/"");
+  }
+
+  // Writes the public list of First-Party Sets which GetCustomizationForPolicy
+  // awaits.
+  //
+  // Initializes the First-Party Sets with the following relationship:
+  //
+  // [
+  //   {
+  //     "owner": "https://owner1.test",
+  //     "members": ["https://member1.test", "https://member2.test"]
+  //   }
+  // ]
+  void InitPublicFirstPartySets() {
+    const std::string input =
+        R"({"owner": "https://owner1.test", )"
+        R"("members": ["https://member1.test", "https://member2.test"]})";
+    ASSERT_TRUE(base::JSONReader::Read(input));
+    FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
+        WritePublicSetsFile(input));
+
+    FirstPartySetsHandlerImpl::FlattenedSets public_sets =
+        MakeFlattenedSetsFromMap(
+            {{"https://owner1.test",
+              {"https://member1.test", "https://member2.test"}}});
+
+    ASSERT_THAT(GetSetsAndWait(), public_sets);
+  }
+
+ protected:
+  base::OnceCallback<void(PolicyCustomization)> GetCustomizationCallback() {
+    return future_.GetCallback();
+  }
+
+  PolicyCustomization GetCustomization() { return future_.Take(); }
+
+ private:
+  base::test::TestFuture<FirstPartySetsHandler::PolicyCustomization> future_;
+};
+
+TEST_F(FirstPartySetsHandlerGetCustomizationForPolicyTest,
+       DefaultOverridesPolicy_DefaultCustomizations) {
+  base::Value policy = base::JSONReader::Read(R"({})").value();
+  FirstPartySetsHandlerImpl::GetInstance()->GetCustomizationForPolicy(
+      policy.GetDict(), GetCustomizationCallback());
+
+  InitPublicFirstPartySets();
+  EXPECT_THAT(GetCustomization(), PolicyCustomization());
+}
+
+TEST_F(FirstPartySetsHandlerGetCustomizationForPolicyTest,
+       MalformedOverridesPolicy_DefaultCustomizations) {
+  base::Value policy = base::JSONReader::Read(R"({
+    "replacements": 123,
+    "additions": true
+  })")
+                           .value();
+  FirstPartySetsHandlerImpl::GetInstance()->GetCustomizationForPolicy(
+      policy.GetDict(), GetCustomizationCallback());
+
+  InitPublicFirstPartySets();
+  EXPECT_THAT(GetCustomization(), PolicyCustomization());
+}
+
+TEST_F(FirstPartySetsHandlerGetCustomizationForPolicyTest,
+       NonDefaultOverridesPolicy_NonDefaultCustomizations) {
+  base::Value policy = base::JSONReader::Read(R"(
+                {
+                "replacements": [
+                  {
+                    "owner": "https://member1.test",
+                    "members": ["https://owner3.test"]
+                  }
+                ],
+                "additions": [
+                  {
+                    "owner": "https://owner2.test",
+                    "members": ["https://member2.test"]
+                  }
+                ]
+              }
+            )")
+                           .value();
+  FirstPartySetsHandlerImpl::GetInstance()->GetCustomizationForPolicy(
+      policy.GetDict(), GetCustomizationCallback());
+
+  InitPublicFirstPartySets();
+  EXPECT_THAT(GetCustomization(),
+              UnorderedElementsAre(
+                  Pair(SerializesTo("https://owner1.test"),
+                       Optional(SerializesTo("https://owner2.test"))),
+                  Pair(SerializesTo("https://member1.test"),
+                       Optional(SerializesTo("https://member1.test"))),
+                  Pair(SerializesTo("https://owner3.test"),
+                       Optional(SerializesTo("https://member1.test"))),
+                  Pair(SerializesTo("https://member2.test"),
+                       Optional(SerializesTo("https://owner2.test"))),
+                  Pair(SerializesTo("https://owner2.test"),
+                       Optional(SerializesTo("https://owner2.test")))));
+}
+
 TEST(FirstPartySetsProfilePolicyCustomizations, EmptyPolicySetLists) {
   EXPECT_THAT(FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
                   MakeFlattenedSetsFromMap(
@@ -592,7 +702,7 @@ TEST(FirstPartySetsProfilePolicyCustomizations, EmptyPolicySetLists) {
 }
 
 TEST(FirstPartySetsProfilePolicyCustomizations,
-     Replacements__NoIntersection_NoRemoval) {
+     Replacements_NoIntersection_NoRemoval) {
   PolicyCustomization customization =
       FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
           MakeFlattenedSetsFromMap(

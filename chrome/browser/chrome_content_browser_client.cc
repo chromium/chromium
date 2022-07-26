@@ -58,7 +58,6 @@
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/font_family_cache.h"
 #include "chrome/browser/gpu/chrome_browser_main_extra_parts_gpu.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
@@ -6632,21 +6631,6 @@ bool ChromeContentBrowserClient::WillProvidePublicFirstPartySets() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableComponentUpdate) &&
          base::FeatureList::IsEnabled(features::kFirstPartySets);
-}
-
-base::Value::Dict ChromeContentBrowserClient::GetFirstPartySetsOverrides() {
-  if (!g_browser_process) {
-    // If browser process doesn't exist (e.g. in minimal mode on Android),
-    // we can't provide any overrides.
-    return base::Value::Dict();
-  }
-  PrefService* local_state = g_browser_process->local_state();
-  if (!local_state || !local_state->FindPreference(
-                          first_party_sets::kFirstPartySetsOverrides)) {
-    return base::Value::Dict();
-  }
-  return local_state->GetValueDict(first_party_sets::kFirstPartySetsOverrides)
-      .Clone();
 }
 
 content::mojom::AlternativeErrorPageOverrideInfoPtr

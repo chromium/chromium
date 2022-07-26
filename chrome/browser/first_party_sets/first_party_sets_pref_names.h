@@ -5,18 +5,11 @@
 #ifndef CHROME_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_PREF_NAMES_H_
 #define CHROME_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_PREF_NAMES_H_
 
-class PrefRegistrySimple;
-
 namespace first_party_sets {
 
 // Add Profile prefs below.
 extern const char kFirstPartySetsEnabled[];
-
-// Add Local State prefs below.
 extern const char kFirstPartySetsOverrides[];
-
-void RegisterProfilePrefs(PrefRegistrySimple* registry);
-void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 }  // namespace first_party_sets
 

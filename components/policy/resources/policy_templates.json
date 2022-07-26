@@ -31274,7 +31274,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       },
       'features' : {
         'dynamic_refresh': False,
-        'per_profile': False,
+        'per_profile': True,
       },
       'future_on': ['chrome.*', 'chrome_os', 'android', 'webview_android'],
       'tags': [],

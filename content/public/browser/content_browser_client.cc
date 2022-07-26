@@ -1364,10 +1364,6 @@ bool ContentBrowserClient::WillProvidePublicFirstPartySets() {
   return false;
 }
 
-base::Value::Dict ContentBrowserClient::GetFirstPartySetsOverrides() {
-  return base::Value::Dict();
-}
-
 mojom::AlternativeErrorPageOverrideInfoPtr
 ContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
     const GURL& url,

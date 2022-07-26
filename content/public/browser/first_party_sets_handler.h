@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FIRST_PARTY_SETS_HANDLER_H_
 #define CONTENT_PUBLIC_BROWSER_FIRST_PARTY_SETS_HANDLER_H_
 
-#include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
@@ -44,6 +43,13 @@ class CONTENT_EXPORT FirstPartySetsHandler {
     int error_index;
   };
 
+  // The keys are member sites and the values are their owners in the final
+  // list of First-Party Sets that result from combining the public sets and
+  // the per-profile Overrides policy. Entries of site -> absl::nullopt means
+  // the key site is considered deleted from the existing First-Party Sets.
+  using PolicyCustomization =
+      base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>>;
+
   virtual ~FirstPartySetsHandler() = default;
 
   // Returns the singleton instance.
@@ -81,6 +87,17 @@ class CONTENT_EXPORT FirstPartySetsHandler {
 
   // Resets the state on the instance for testing.
   virtual void ResetForTesting() = 0;
+
+  // Computes a representation of the changes that need to be made to the
+  // browser's list of First-Party Sets to respect the `policy` value of the
+  // First-Party Sets Overrides enterprise policy.
+  //
+  // The customization is will be returned via `callback` since the
+  // customization must be computed after the list of First-Party Sets is
+  // initialized, which occurs asynchronously.
+  virtual void GetCustomizationForPolicy(
+      const base::Value::Dict& policy,
+      base::OnceCallback<void(PolicyCustomization)> callback) = 0;
 };
 
 }  // namespace content

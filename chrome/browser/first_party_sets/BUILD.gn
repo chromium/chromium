@@ -15,12 +15,18 @@ source_set("first_party_sets") {
   sources = [
     "first_party_sets_overrides_policy_handler.cc",
     "first_party_sets_overrides_policy_handler.h",
+    "first_party_sets_policy_service.cc",
+    "first_party_sets_policy_service.h",
+    "first_party_sets_policy_service_factory.cc",
+    "first_party_sets_policy_service_factory.h",
     "first_party_sets_pref_names.cc",
     "first_party_sets_pref_names.h",
   ]
   deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/content",
     "//components/policy:generated",
     "//components/policy:policy_code_generate",
     "//components/policy/content/",

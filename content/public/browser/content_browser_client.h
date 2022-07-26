@@ -2276,12 +2276,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // embedder to call content::FirstPartySetsHandler::SetPublicFirstPartySets.
   virtual bool WillProvidePublicFirstPartySets();
 
-  // Returns a base::Value::Dict containing the value of the First-Party Sets
-  // Overrides enterprise policy.
-  // If the policy was not present or it was invalid, this returns an empty
-  // base::Value::Dict.
-  virtual base::Value::Dict GetFirstPartySetsOverrides();
-
   // Gets information required for an alternative error page from web app's
   // manifest for |url|, including theme color, background color and app short
   // name. The |error_code| is the network error as specified in

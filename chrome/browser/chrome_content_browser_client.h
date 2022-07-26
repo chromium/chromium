@@ -789,7 +789,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool IsFindInPageDisabledForOrigin(const url::Origin& origin) override;
   bool WillProvidePublicFirstPartySets() override;
-  base::Value::Dict GetFirstPartySetsOverrides() override;
 
   bool ShouldPreconnectNavigation(
       content::BrowserContext* browser_context) override;

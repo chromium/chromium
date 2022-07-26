@@ -27,6 +27,8 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -51,6 +53,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/storage_partition.h"
@@ -995,11 +998,18 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       fps_access_delegate_remote;
   network_context_params->first_party_sets_access_delegate_receiver =
       fps_access_delegate_remote.BindNewPipeAndPassReceiver();
-  // TODO(crbug.com/1325050): NotifyReady() will be called by the remote
-  // handle owner with the proper input in the follow up changes.
-  fps_access_delegate_remote->NotifyReady(
-      network::mojom::FirstPartySetsReadyEvent::New());
-  fps_access_delegate_remote_set_.Add(std::move(fps_access_delegate_remote));
+
+  if (first_party_sets::FirstPartySetsPolicyService* fps_service =
+          first_party_sets::FirstPartySetsPolicyServiceFactory::
+              GetForBrowserContext(profile_);
+      fps_service) {
+    fps_service->AddRemoteAccessDelegate(std::move(fps_access_delegate_remote));
+  } else {
+    // Immediately notify ready if First-Party Sets is disabled globally or
+    // disabled locally by this `profile_`.
+    fps_access_delegate_remote->NotifyReady(
+        network::mojom::FirstPartySetsReadyEvent::New());
+  }
 }
 
 base::FilePath ProfileNetworkContextService::GetPartitionPath(

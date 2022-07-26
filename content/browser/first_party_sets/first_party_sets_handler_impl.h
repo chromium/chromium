@@ -31,20 +31,15 @@ namespace content {
 // Class FirstPartySetsHandlerImpl is a singleton, it allows an embedder to
 // provide First-Party Sets inputs from custom sources, then parses/merges the
 // inputs to form the current First-Party Sets data, compares them with the
-// persisted First-Party Sets data used during the last browser session to get a
-// list of sites that changed the First-Party Set they are part of, invokes the
-// provided callback with the current First-Party Sets data, and writes
+// persisted First-Party Sets data used during the last browser session to get
+// a list of sites that changed the First-Party Set they are part of, invokes
+// the provided callback with the current First-Party Sets data, and writes
 // the current First-Party Sets data to disk.
 class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
  public:
   using FlattenedSets = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
   using SetsReadyOnceCallback = base::OnceCallback<void(FlattenedSets)>;
-  // The keys are member sites and the values are their owners in the final
-  // list of First-Party Sets that result from combining the public sets and
-  // the per-profile Overrides policy. Entries of site -> absl::nullopt means
-  // the key site is considered deleted from the existing First-Party Sets.
-  using PolicyCustomization =
-      base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>>;
+  using PolicyCustomization = FirstPartySetsHandler::PolicyCustomization;
 
   static FirstPartySetsHandlerImpl* GetInstance();
 
@@ -79,6 +74,9 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   bool IsEnabled() const override;
   void SetPublicFirstPartySets(base::File sets_file) override;
   void ResetForTesting() override;
+  void GetCustomizationForPolicy(
+      const base::Value::Dict& policy,
+      base::OnceCallback<void(PolicyCustomization)> callback) override;
 
   // Sets whether FPS is enabled (for testing).
   void SetEnabledForTesting(bool enabled) {
@@ -91,9 +89,9 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
     embedder_will_provide_public_sets_ = enabled_ && will_provide;
   }
 
-  // Compares the map `old_sets` to `current_sets` and returns the set of sites
-  // that: 1) were in `old_sets` but are no longer in `current_sets`, i.e. leave
-  // the FPSs; or, 2) mapped to a different owner site.
+  // Compares the map `old_sets` to `current_sets` and returns the set of
+  // sites that: 1) were in `old_sets` but are no longer in `current_sets`,
+  // i.e. leave the FPSs; or, 2) mapped to a different owner site.
   //
   // This method assumes that the sites were normalized properly when the maps
   // were created. Made public only for testing,
@@ -102,8 +100,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       const base::flat_map<net::SchemefulSite, net::SchemefulSite>&
           current_sets);
 
-  // Computes information needed by the FirstPartySetsAccessDelegate in order to
-  // update the browser's list of First-Party Sets to respect a profile's
+  // Computes information needed by the FirstPartySetsAccessDelegate in order
+  // to update the browser's list of First-Party Sets to respect a profile's
   // setting for the per-profile FirstPartySetsOverrides policy.
   static PolicyCustomization ComputeEnterpriseCustomizations(
       const FlattenedSets& sets,
@@ -142,16 +140,16 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // Whether Init has been called already or not.
   bool initialized_ = false;
 
-  // Represents the mapping of site -> site, where keys are members of sets, and
-  // values are owners of the sets. Owners are explicitly represented as members
-  // of the set.
+  // Represents the mapping of site -> site, where keys are members of sets,
+  // and values are owners of the sets. Owners are explicitly represented as
+  // members of the set.
   //
   // Optional because it is unset until all of the required inputs have been
   // received.
   absl::optional<FlattenedSets> sets_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The sets that were persisted during the last run of Chrome. Initially unset
-  // (nullopt) until it has been read from disk.
+  // The sets that were persisted during the last run of Chrome. Initially
+  // unset (nullopt) until it has been read from disk.
   absl::optional<std::string> raw_persisted_sets_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,6 +36,8 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
   DependsOn(chromeos::CertificateProviderServiceFactory::GetInstance());
 #endif
   DependsOn(PrivacySandboxSettingsFactory::GetInstance());
+  DependsOn(
+      first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance());
 }
 
 ProfileNetworkContextServiceFactory::~ProfileNetworkContextServiceFactory() {}

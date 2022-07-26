@@ -16,20 +16,9 @@ namespace first_party_sets {
 // policy.
 const char kFirstPartySetsEnabled[] = "first_party_sets.enabled";
 
-void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kFirstPartySetsEnabled, true);
-}
-
-// *************** LOCAL STATE PREFS ***************
-
 // A dictionary pref that can contain up to two lists of First-Party Sets that
 // enterprises can use to override the list of First-Party Sets by either
 // replacing or adding to the existing list.
 const char kFirstPartySetsOverrides[] = "first_party_sets.overrides";
-
-void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(kFirstPartySetsOverrides,
-                                   base::DictionaryValue());
-}
 
 }  // namespace first_party_sets

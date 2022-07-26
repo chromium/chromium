@@ -18305,7 +18305,7 @@
         "prefs": {
           "first_party_sets.overrides": {
             "default_value": {},
-            "location": "local_state"
+            "location": "user_profile"
           }
         }
       },
@@ -18315,7 +18315,7 @@
         "prefs": {
           "first_party_sets.overrides": {
             "default_value": {},
-            "location": "local_state"
+            "location": "user_profile"
           }
         }
       },
@@ -18330,7 +18330,7 @@
         "prefs": {
           "first_party_sets.overrides": {
             "default_value": {},
-            "location": "local_state"
+            "location": "user_profile"
           }
         }
       },
@@ -18355,7 +18355,7 @@
         "prefs": {
           "first_party_sets.overrides": {
             "default_value": {},
-            "location": "local_state"
+            "location": "user_profile"
           }
         }
       },
@@ -18393,7 +18393,7 @@
                 }
               ]
             },
-            "location": "local_state"
+            "location": "user_profile"
           }
         }
       }

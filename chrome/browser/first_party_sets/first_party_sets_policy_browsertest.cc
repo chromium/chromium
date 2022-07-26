@@ -429,23 +429,21 @@ INSTANTIATE_TEST_SUITE_P(
                                          PrefState::kDisabled,
                                          PrefState::kEnabled)));
 
-class DISABLED_OverridesPolicyEmptyBrowsertest
-    : public EnabledPolicyBrowsertest {
+class OverridesPolicyEmptyBrowsertest : public EnabledPolicyBrowsertest {
  public:
   void SetUpPolicyMapWithOverridesPolicy() override {
     // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
-    // POLICY_SCOPE_MACHINE - since this policy lives on local state, not per
-    // profile
+    // POLICY_SCOPE_USER - since this policy is per profile, not on local state
     // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise
     // policy
     policy_map().Set(policy::key::kFirstPartySetsOverrides,
-                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                      POLICY_SOURCE_ENTERPRISE_DEFAULT,
                      base::JSONReader::Read(R"( {} )"), nullptr);
   }
 };
 
-IN_PROC_BROWSER_TEST_P(DISABLED_OverridesPolicyEmptyBrowsertest,
+IN_PROC_BROWSER_TEST_P(OverridesPolicyEmptyBrowsertest,
                        SetCookiesFromSamePartyContext) {
   // The initial First-Party Sets were:
   // {owner: A, members: [B, C]}
@@ -464,23 +462,21 @@ IN_PROC_BROWSER_TEST_P(DISABLED_OverridesPolicyEmptyBrowsertest,
 
 INSTANTIATE_TEST_SUITE_P(
     FirstPartySets,
-    DISABLED_OverridesPolicyEmptyBrowsertest,
+    OverridesPolicyEmptyBrowsertest,
     ::testing::Combine(::testing::Bool(),
                        ::testing::Values(PrefState::kDefault,
                                          PrefState::kDisabled,
                                          PrefState::kEnabled)));
 
-class DISABLED_OverridesPolicyReplacementBrowsertest
-    : public EnabledPolicyBrowsertest {
+class OverridesPolicyReplacementBrowsertest : public EnabledPolicyBrowsertest {
  public:
   void SetUpPolicyMapWithOverridesPolicy() override {
     // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
-    // POLICY_SCOPE_MACHINE - since this policy lives on local state, not per
-    // profile
+    // POLICY_SCOPE_USER - since this policy is per profile, not on local state
     // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise
     // policy
     policy_map().Set(policy::key::kFirstPartySetsOverrides,
-                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                      POLICY_SOURCE_ENTERPRISE_DEFAULT,
                      base::JSONReader::Read(R"(
                               {
@@ -498,7 +494,7 @@ class DISABLED_OverridesPolicyReplacementBrowsertest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(DISABLED_OverridesPolicyReplacementBrowsertest,
+IN_PROC_BROWSER_TEST_P(OverridesPolicyReplacementBrowsertest,
                        SetCookiesFromSamePartyContext) {
   // The initial First-Party Sets were:
   // {owner: A, members: [B, C]}
@@ -529,23 +525,21 @@ IN_PROC_BROWSER_TEST_P(DISABLED_OverridesPolicyReplacementBrowsertest,
 
 INSTANTIATE_TEST_SUITE_P(
     FirstPartySets,
-    DISABLED_OverridesPolicyReplacementBrowsertest,
+    OverridesPolicyReplacementBrowsertest,
     ::testing::Combine(::testing::Bool(),
                        ::testing::Values(PrefState::kDefault,
                                          PrefState::kDisabled,
                                          PrefState::kEnabled)));
 
-class DISABLED_OverridesPolicyAdditionBrowsertest
-    : public EnabledPolicyBrowsertest {
+class OverridesPolicyAdditionBrowsertest : public EnabledPolicyBrowsertest {
  public:
   void SetUpPolicyMapWithOverridesPolicy() override {
     // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
-    // POLICY_SCOPE_MACHINE - since this policy lives on local state, not per
-    // profile
+    // POLICY_SCOPE_USER - since this policy is per profile, not on local state
     // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise
     // policy
     policy_map().Set(policy::key::kFirstPartySetsOverrides,
-                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                      POLICY_SOURCE_ENTERPRISE_DEFAULT,
                      base::JSONReader::Read(R"(
                               {
@@ -562,7 +556,7 @@ class DISABLED_OverridesPolicyAdditionBrowsertest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(DISABLED_OverridesPolicyAdditionBrowsertest,
+IN_PROC_BROWSER_TEST_P(OverridesPolicyAdditionBrowsertest,
                        SetCookiesFromSamePartyContext) {
   // The initial First-Party Sets were:
   // {owner: A, members: [B, C]}
@@ -581,23 +575,22 @@ IN_PROC_BROWSER_TEST_P(DISABLED_OverridesPolicyAdditionBrowsertest,
 
 INSTANTIATE_TEST_SUITE_P(
     FirstPartySets,
-    DISABLED_OverridesPolicyAdditionBrowsertest,
+    OverridesPolicyAdditionBrowsertest,
     ::testing::Combine(::testing::Bool(),
                        ::testing::Values(PrefState::kDefault,
                                          PrefState::kDisabled,
                                          PrefState::kEnabled)));
 
-class DISABLED_OverridesPolicyReplacementAndAdditionBrowsertest
+class OverridesPolicyReplacementAndAdditionBrowsertest
     : public EnabledPolicyBrowsertest {
  public:
   void SetUpPolicyMapWithOverridesPolicy() override {
     // POLICY_LEVEL_MANDATORY - since administrators will control FPS policy
-    // POLICY_SCOPE_MACHINE - since this policy lives on local state, not per
-    // profile
+    // POLICY_SCOPE_USER - since this policy is per profile, not on local state
     // POLICY_SOURCE_ENTERPRISE_DEFAULT - since this is an enterprise
     // policy
     policy_map().Set(policy::key::kFirstPartySetsOverrides,
-                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                      POLICY_SOURCE_ENTERPRISE_DEFAULT,
                      base::JSONReader::Read(R"(
                               {
@@ -619,9 +612,8 @@ class DISABLED_OverridesPolicyReplacementAndAdditionBrowsertest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(
-    DISABLED_OverridesPolicyReplacementAndAdditionBrowsertest,
-    SetCookiesFromSamePartyContext) {
+IN_PROC_BROWSER_TEST_P(OverridesPolicyReplacementAndAdditionBrowsertest,
+                       SetCookiesFromSamePartyContext) {
   // The initial First-Party Sets were:
   // {owner: A, members: [B, C]}
   //
@@ -658,7 +650,7 @@ IN_PROC_BROWSER_TEST_P(
 
 INSTANTIATE_TEST_SUITE_P(
     FirstPartySets,
-    DISABLED_OverridesPolicyReplacementAndAdditionBrowsertest,
+    OverridesPolicyReplacementAndAdditionBrowsertest,
     ::testing::Combine(::testing::Bool(),
                        ::testing::Values(PrefState::kDefault,
                                          PrefState::kDisabled,

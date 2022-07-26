@@ -964,29 +964,3 @@ TEST_F(
   EXPECT_FALSE(result.HasSwitch(switches::kForceAppMode));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-class ChromeContentBrowserGetFirstPartySetsOverridesTest
-    : public testing::Test {
- public:
-  ChromeContentBrowserGetFirstPartySetsOverridesTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
-
- protected:
-  ScopedTestingLocalState testing_local_state_;
-  ChromeContentBrowserClient client_;
-};
-
-TEST_F(ChromeContentBrowserGetFirstPartySetsOverridesTest, PrefUnset) {
-  EXPECT_EQ(client_.GetFirstPartySetsOverrides(), base::Value::Dict());
-}
-
-TEST_F(ChromeContentBrowserGetFirstPartySetsOverridesTest,
-       PrefSetWithValidDict) {
-  base::Value::Dict valid_dict;
-  valid_dict.Set("additions", base::Value(base::Value::List()));
-  base::Value expected_value(std::move(valid_dict));
-  testing_local_state_.Get()->Set(first_party_sets::kFirstPartySetsOverrides,
-                                  expected_value.Clone());
-  EXPECT_EQ(client_.GetFirstPartySetsOverrides(),
-            expected_value.Clone().GetDict());
-}
