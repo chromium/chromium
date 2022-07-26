@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "content/test/test_blink_web_unit_test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
 #include "third_party/blink/renderer/core/paint/paint_timing.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -78,8 +80,6 @@ class LocalFrameViewTest : public RenderingTest {
  private:
   Persistent<AnimationMockChromeClient> chrome_client_;
 };
-
-using LocalFrameViewSimTest = SimTest;
 
 TEST_F(LocalFrameViewTest, SetPaintInvalidationDuringUpdateAllLifecyclePhases) {
   SetBodyInnerHTML("<div id='a' style='color: blue'>A</div>");
@@ -319,6 +319,8 @@ TEST_F(LocalFrameViewTest,
   EXPECT_TRUE(
       frame_view->RequiresMainThreadScrollingForBackgroundAttachmentFixed());
 }
+
+class LocalFrameViewSimTest : public SimTest {};
 
 // Ensure the fragment navigation "scroll into view and focus" behavior doesn't
 // activate synchronously while rendering is blocked waiting on a stylesheet.
@@ -563,6 +565,39 @@ TEST_F(LocalFrameViewSimTest, NestedCrossOriginPaintEligibility) {
   EXPECT_FALSE(outer_frame_timing.FirstEligibleToPaint().is_null());
   EXPECT_TRUE(inner_frame_document->View()->ShouldThrottleRenderingForTest());
   EXPECT_TRUE(inner_frame_timing.FirstEligibleToPaint().is_null());
+}
+
+class LocalFrameViewRemoteParentSimTest : public LocalFrameViewSimTest {
+ public:
+  LocalFrameViewRemoteParentSimTest() {
+    content::TestBlinkWebUnitTestSupport::SetThreadedAnimationEnabled(true);
+  }
+  void SetUp() override {
+    LocalFrameViewSimTest::SetUp();
+    InitializeRemote();
+  }
+};
+
+TEST_F(LocalFrameViewRemoteParentSimTest, ThrottledLocalRootAnimationUpdate) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete("<div>Hello, world!</div>");
+  Document* document = LocalFrameRoot().GetFrame()->GetDocument();
+
+  // Emulate user-land script
+  WebString source = WebString::FromASCII(R"JS(
+    let div = document.querySelector('div');
+    let kf = [ { transform: 'rotate(0)' }, { transform: 'rotate(180deg)' } ];
+    let tm = { duration: 1000, iterations: Infinity };
+    let an = div.animate(kf, tm);
+  )JS");
+  ClassicScript::CreateUnspecifiedScript(source)->RunScript(
+      document->domWindow());
+  Compositor().BeginFrame();
+  // Emulate FrameWidget.UpdateRenderThrottlingStatusForSubFrame mojo message.
+  // When the local root frame is throttled, cc animation update steps should
+  // not run.
+  document->View()->UpdateRenderThrottlingStatus(true, false, false, true);
 }
 
 class TestLifecycleObserver

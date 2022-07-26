@@ -2770,6 +2770,11 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
             document.GetDocumentAnimations().GetAnimationsCount();
       });
 
+  // If this is a throttled local root, then we shouldn't run animation steps
+  // below, because the cc animation data structures might not even exist.
+  if (frame_->IsLocalRoot() && ShouldThrottleRendering())
+    return;
+
   if (auto* animation_host = GetCompositorAnimationHost()) {
     animation_host->SetAnimationCounts(total_animations_count);
   }
