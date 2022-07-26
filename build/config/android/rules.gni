@@ -1521,6 +1521,7 @@ if (enable_java_templates) {
         ":${_java_binary_target_name}__host",
         ":${_java_binary_target_name}__java_binary_script",
         ":${_java_binary_target_name}__validate",
+        "//third_party/robolectric:robolectric_runtime_jars",
       ]
 
       # Add non-libary deps, since the __host target does not depend on them.

@@ -1400,7 +1400,11 @@ if (enable_java_templates) {
   #
   template("java_binary_script") {
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
+      forward_variables_from(invoker,
+                             TESTONLY_AND_VISIBILITY + [
+                                   "data",
+                                   "deps",
+                                 ])
 
       _main_class = invoker.main_class
       _build_config = invoker.build_config
@@ -1424,8 +1428,7 @@ if (enable_java_templates) {
       if (use_jacoco_coverage) {
         args += [
           "--classpath",
-          rebase_path("//third_party/jacoco/lib/jacocoagent.jar",
-                      root_build_dir),
+          "lib.java/third_party/jacoco/jacocoagent.jar",
         ]
       }
       if (use_jacoco_coverage || !treat_warnings_as_errors) {
@@ -4005,7 +4008,15 @@ if (enable_java_templates) {
         }
         deps = [ ":$_build_config_target_name" ]
         if (_is_robolectric) {
+          # An uninstrumented robolectric platform .jar is needed by the test
+          # runner for two reasons:
+          # 1) To provide a copy of org.json (we could pull from maven instead
+          #    if we wanted)
+          # 2) It uses reflection to discover test classes, and test classes
+          #    fail to load with NoClassDefFoundErrors if their referenced
+          #    Android symbols do not exist in the classpath.
           extra_classpath_jars = [ _robolectric_jar_path ]
+          data = extra_classpath_jars
         }
       }
     }
