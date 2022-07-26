@@ -34,7 +34,7 @@
 //
 // `CHECK_IS_TEST` is thread safe.
 
-#define CHECK_IS_TEST() base::internal::check_is_test_impl();
+#define CHECK_IS_TEST() base::internal::check_is_test_impl()
 
 namespace base::internal {
 BASE_EXPORT void check_is_test_impl();
