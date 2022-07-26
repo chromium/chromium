@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="1645954272419197032">Bevestig de apparaatgegevens</translation>
 <translation id="1662989795263954667">Gestopt: geen inkt meer</translation>
+<translation id="1664796644829245314">Voorbeeld van <ph name="PREVIEW_OBJECT" /> laten zien</translation>
 <translation id="1668469839109562275">Ingebouwde VPN</translation>
 <translation id="1672499492233627739">Videofeed van webcam</translation>
 <translation id="1676557873873341166">Video opnemen</translation>
@@ -722,6 +723,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
 <translation id="7212734716605298123">Firmware-updates voor externe apparaten</translation>
 <translation id="7216409898977639127">Mobiele provider</translation>
+<translation id="725133483556299729">E-mailadres selecteren</translation>
 <translation id="7271040990581020067">De scanner wordt momenteel gebruikt. Probeer het later opnieuw.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281209642468917121">Selecteer 1 of meer componenten en probeer het opnieuw of sla de kalibratie over</translation>
@@ -799,6 +801,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7978412674231730200">Privésleutel</translation>
 <translation id="7982789257301363584">Netwerk</translation>
 <translation id="7994702968232966508">EAP-methode</translation>
+<translation id="8018928621986160031">Opgeslagen in <ph name="FILE_LOCATION" /></translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Modus voor automatische kleuren aanzetten</translation>

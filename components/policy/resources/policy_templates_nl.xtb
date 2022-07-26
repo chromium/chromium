@@ -2930,6 +2930,11 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
 <translation id="408076456549153854">Inloggen bij browser aanzetten</translation>
 <translation id="4081127242481747676">Instellingen voor sensoren</translation>
 <translation id="4082498585300984671">Functie 'Click-to-call' aanzetten</translation>
+<translation id="4082809879536562387">Hiermee kun je de periode in milliseconden instellen tussen de eerste melding dat een <ph name="PRODUCT_OS_NAME" />-apparaat opnieuw moet worden opgestart om een update in behandeling uit te voeren en het einde van de periode zoals vermeld in het <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />-beleid.
+
+      Als dit beleid niet is ingesteld, wordt de standaardperiode van 259.200.000 milliseconden (3 dagen) gebruikt voor <ph name="PRODUCT_OS_NAME" />-apparaten.
+
+      Voor rollbacks en andere <ph name="PRODUCT_OS_NAME" />-updates waarmee een powerwash wordt uitgevoerd op het apparaat, krijgt de gebruiker altijd meteen een melding als de update beschikbaar is, onafhankelijk van de waarde van dit beleid.</translation>
 <translation id="4086150283035515220">Als je het beleid toepast, wordt gebruikers gevraagd waar ze elk bestand willen opslaan voordat het bestand wordt gedownload. Als je het beleid niet toepast, worden downloads onmiddellijk gestart en wordt gebruikers niet gevraagd waar ze het bestand willen opslaan.
 
       Als je het beleid niet instelt, kunnen gebruikers deze instelling zelf wijzigen.</translation>
@@ -5085,6 +5090,15 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
 
       Als je het beleid niet instelt, wordt er geen maximumlengte afgedwongen.</translation>
 <translation id="6553143066970470539">Percentage voor helderheid van scherm</translation>
+<translation id="6555557921186817432">Plan automatisch opnieuw opstarten in nadat een <ph name="PRODUCT_OS_NAME" />-update is toegepast.
+
+      Als je dit beleid instelt op True, wordt automatisch opnieuw opstarten ingepland als een <ph name="PRODUCT_OS_NAME" />-update is toegepast. Opnieuw opstarten is vereist om het updateproces af te ronden. Opnieuw opstarten wordt onmiddellijk ingepland, maar kan op het apparaat tot 24 uur worden vertraagd als een gebruiker het apparaat momenteel gebruikt.
+
+      Als je dit beleid instelt op False, wordt automatisch opnieuw opstarten niet ingepland nadat een <ph name="PRODUCT_OS_NAME" />-update is toegepast. Het updateproces wordt afgerond als de gebruiker het apparaat opnieuw opstart.
+
+      Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of negeren.
+
+      Opmerking: Automatisch opnieuw opstarten staat alleen aan terwijl het inlogscherm wordt getoond of er een kiosk-app-sessie wordt uitgevoerd.</translation>
 <translation id="6559057113164934677">Niet toestaan dat sites toegang krijgen tot de camera en microfoon</translation>
 <translation id="6559221564468029245">Als je dit beleid toepast of niet instelt, worden gebruikers niet als inactief gezien als er audio wordt afgespeeld. Hierdoor wordt voorkomen dat de time-out voor inactiviteit wordt bereikt en dat de actie bij inactiviteit wordt ondernomen. Het dimmen, uitzetten of vergrendelen van het scherm wordt nog wel uitgevoerd na de ingestelde periode, ongeacht of er audio wordt afgespeeld.
 

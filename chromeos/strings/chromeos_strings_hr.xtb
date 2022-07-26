@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">Povijest</translation>
 <translation id="1645954272419197032">Potvrdite informacije uređaja</translation>
 <translation id="1662989795263954667">Zaustavljeno – nema tinte</translation>
+<translation id="1664796644829245314">Pregled: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Ugrađeni VPN</translation>
 <translation id="1672499492233627739">Videofeed web-kamere</translation>
 <translation id="1676557873873341166">Snimanje videozapisa</translation>
@@ -799,6 +800,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="7978412674231730200">Osobni ključ</translation>
 <translation id="7982789257301363584">Mreža</translation>
 <translation id="7994702968232966508">EAP metoda</translation>
+<translation id="8018928621986160031">Spremljeno na lokaciju <ph name="FILE_LOCATION" /></translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Omogućite način automatske boje</translation>

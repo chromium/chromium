@@ -1465,6 +1465,7 @@
 <translation id="4969341057194253438">Изтриване на записа</translation>
 <translation id="4973922308112707173">Двойно перфориране в горната част</translation>
 <translation id="4976702386844183910">Последно посещение: <ph name="DATE" /></translation>
+<translation id="498323057460789381">Грешка при потвърждаването на схемата: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Да се използва ли микрофонът?</translation>
 <translation id="4984339528288761049">Prc5 (плик)</translation>
 <translation id="4989163558385430922">Преглед на всички</translation>
@@ -2729,6 +2730,7 @@
 <translation id="8508648098325802031">Икона за търсене</translation>
 <translation id="8511402995811232419">Управление на „бисквитките“</translation>
 <translation id="851353418319061866">Проверка на точността</translation>
+<translation id="8513580896341796021">Изтеглянето започна. За да го видите, натиснете |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">HID устройство, разрешено от администратора ви</translation>
 <translation id="8522552481199248698">Chrome може да ви помогне да защитите профила си в Google и да промените паролата си.</translation>
 <translation id="8530813470445476232">Изчистете историята си на сърфиране, „бисквитките“, кеша и др. в настройките на Chrome</translation>
