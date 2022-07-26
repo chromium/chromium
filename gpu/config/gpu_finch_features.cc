@@ -143,8 +143,15 @@ const base::Feature kDefaultEnableGpuRasterization{
 };
 
 // Enables the use of out of process rasterization for canvas.
-const base::Feature kCanvasOopRasterization{"CanvasOopRasterization",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kCanvasOopRasterization {
+  "CanvasOopRasterization",
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // Enables the use of MSAA in skia on Ice Lake and later intel architectures.
 const base::Feature kEnableMSAAOnNewIntelGPUs{
