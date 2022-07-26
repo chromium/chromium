@@ -101,7 +101,7 @@ Similar to HTTP tests, many WPT (a.k.a. web-platform-tests under
 tests require some setup before running in Content Shell:
 
 ```bash
-vpython third_party/blink/tools/run_blink_wptserve.py -t <build directory>
+vpython3 third_party/blink/tools/run_blink_wptserve.py -t <build directory>
 ```
 
 Then run the test:
@@ -144,7 +144,7 @@ If you want to debug WPT with devtools in Content Shell, you will first need to
 start the server:
 
 ```bash
-vpython third_party/blink/tools/run_blink_wptserve.py
+vpython3 third_party/blink/tools/run_blink_wptserve.py
 ```
 
 Then start Content Shell with some additional flags:
