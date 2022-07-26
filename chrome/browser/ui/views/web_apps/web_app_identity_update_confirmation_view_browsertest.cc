@@ -125,8 +125,9 @@ IN_PROC_BROWSER_TEST_F(WebAppIdentityUpdateConfirmationViewBrowserTest,
 
 // This test verifies that the App Identity Update dialog closes if the app that
 // was asking for an identity change is uninstalled while the dialog is open.
+// Disabled due to flake. https://crbug.com/1347280
 IN_PROC_BROWSER_TEST_F(WebAppIdentityUpdateConfirmationViewBrowserTest,
-                       CloseAppIdUpdateDialogOnUninstall) {
+                       DISABLED_CloseAppIdUpdateDialogOnUninstall) {
   views::NamedWidgetShownWaiter app_id_waiter(
       views::test::AnyWidgetTestPasskey(),
       "WebAppIdentityUpdateConfirmationView");
