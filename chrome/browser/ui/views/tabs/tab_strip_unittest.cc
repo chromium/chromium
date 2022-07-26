@@ -173,7 +173,7 @@ class TabStripTestBase : public ChromeViewsTestBase {
   }
 
   views::BoundsAnimator* bounds_animator() {
-    return &tab_strip_->tab_container_->bounds_animator();
+    return &tab_strip_->tab_container_->GetBoundsAnimator();
   }
 
   int GetActiveTabWidth() { return tab_strip_->GetActiveTabWidth(); }
@@ -195,7 +195,7 @@ class TabStripTestBase : public ChromeViewsTestBase {
   std::vector<TabGroupViews*> ListGroupViews() const {
     std::vector<TabGroupViews*> result;
     for (auto const& group_view_pair :
-         tab_strip_->tab_container_->group_views())
+         tab_strip_->tab_container_->GetGroupViews())
       result.push_back(group_view_pair.second.get());
     return result;
   }

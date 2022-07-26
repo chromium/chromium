@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/tab_container.h"
-#include <memory>
+#include "chrome/browser/ui/views/tabs/tab_container_impl.h"
 
+#include <memory>
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -63,7 +64,7 @@ class TabContainerTest : public ChromeViewsTestBase {
     std::unique_ptr<TabDragContextBase> drag_context =
         std::make_unique<FakeTabDragContext>();
     std::unique_ptr<TabContainer> tab_container =
-        std::make_unique<TabContainer>(
+        std::make_unique<TabContainerImpl>(
             tab_strip_controller_.get(), nullptr /*hover_card_controller*/,
             drag_context.get(), tab_slot_controller_.get(),
             nullptr /*scroll_contents_view*/);
@@ -127,7 +128,7 @@ class TabContainerTest : public ChromeViewsTestBase {
     tab_container_->GetTabAtModelIndex(model_index)->set_group(group);
     tab_strip_controller_->AddTabToGroup(model_index, group);
 
-    auto& group_views = tab_container_->group_views();
+    auto& group_views = tab_container_->GetGroupViews();
     if (group_views.find(group) == group_views.end())
       tab_container_->OnGroupCreated(group);
 
@@ -143,7 +144,7 @@ class TabContainerTest : public ChromeViewsTestBase {
     tab_strip_controller_->RemoveTabFromGroup(model_index);
 
     bool group_is_empty = true;
-    for (Tab* tab : tab_container_->layout_helper()->GetTabs()) {
+    for (Tab* tab : tab_container_->GetLayoutHelper()->GetTabs()) {
       if (tab->group() == old_group)
         group_is_empty = false;
     }
@@ -168,7 +169,7 @@ class TabContainerTest : public ChromeViewsTestBase {
 
   std::vector<TabGroupViews*> ListGroupViews() const {
     std::vector<TabGroupViews*> result;
-    for (auto const& group_view_pair : tab_container_->group_views())
+    for (auto const& group_view_pair : tab_container_->GetGroupViews())
       result.push_back(group_view_pair.second.get());
     return result;
   }
@@ -180,7 +181,7 @@ class TabContainerTest : public ChromeViewsTestBase {
     views::View::Views all_children = tab_container_->children();
 
     const int num_tab_slot_views =
-        tab_container_->GetTabCount() + tab_container_->group_views().size();
+        tab_container_->GetTabCount() + tab_container_->GetGroupViews().size();
 
     return views::View::Views(all_children.begin(),
                               all_children.begin() + num_tab_slot_views);
@@ -201,7 +202,7 @@ class TabContainerTest : public ChromeViewsTestBase {
       absl::optional<tab_groups::TabGroupId> curr_group = tab->group();
       if (curr_group.has_value() && curr_group != prev_group) {
         ordered_views.push_back(
-            tab_container_->group_views()[curr_group.value()]->header());
+            tab_container_->GetGroupViews()[curr_group.value()]->header());
       }
       prev_group = curr_group;
 
@@ -257,7 +258,7 @@ TEST_F(TabContainerTest, ExitsClosingModeAtStandardWidth) {
 
   // Create just enough tabs so tabs are not full size.
   const int standard_width = TabStyleViews::GetStandardWidth();
-  while (tab_container_->layout_helper()->active_tab_width() ==
+  while (tab_container_->GetLayoutHelper()->active_tab_width() ==
          standard_width) {
     AddTab(0);
     tab_container_->CompleteAnimationAndLayout();
@@ -275,14 +276,14 @@ TEST_F(TabContainerTest, ExitsClosingModeAtStandardWidth) {
   // constraining tab widths to below full size.
   tab_container_->RemoveTab(tab_container_->GetTabCount() - 2, false);
   tab_container_->CompleteAnimationAndLayout();
-  ASSERT_LT(tab_container_->layout_helper()->active_tab_width(),
+  ASSERT_LT(tab_container_->GetLayoutHelper()->active_tab_width(),
             standard_width);
 
   // Close the last tab; tab closing mode should allow tabs to resize to full
   // size.
   tab_container_->RemoveTab(tab_container_->GetTabCount() - 1, false);
   tab_container_->CompleteAnimationAndLayout();
-  EXPECT_EQ(tab_container_->layout_helper()->active_tab_width(),
+  EXPECT_EQ(tab_container_->GetLayoutHelper()->active_tab_width(),
             standard_width);
 }
 
@@ -352,7 +353,7 @@ TEST_F(TabContainerTest, DropIndexForDragLocationIsCorrect) {
   tab_container_->CompleteAnimationAndLayout();
 
   TabGroupHeader* const group_header =
-      tab_container_->group_views()[group]->header();
+      tab_container_->GetGroupViews()[group]->header();
 
   using DropIndex = BrowserRootView::DropIndex;
 

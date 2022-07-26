@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/tabs/tab_container_impl.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
@@ -525,7 +526,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     // If this is a header drag, start painting the group highlight.
     TabGroupHeader* header = views::AsViewClass<TabGroupHeader>(views[0]);
     if (header) {
-      tab_strip_->tab_container_->group_views()[header->group().value()]
+      tab_strip_->tab_container_->GetGroupViews()[header->group().value()]
           ->highlight()
           ->SetVisible(true);
       // Make sure the bounds of the group views are up to date right now
@@ -558,7 +559,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       TabGroupHeader* header = views::AsViewClass<TabGroupHeader>(view);
       if (header) {
         // Disable the group highlight now that the drag is ended.
-        tab_strip_->tab_container_->group_views()[header->group().value()]
+        tab_strip_->tab_container_->GetGroupViews()[header->group().value()]
             ->highlight()
             ->SetVisible(false);
         ideal_bounds = tab_strip_->ideal_bounds(header->group().value());
@@ -857,8 +858,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     for (int i = 0; i < GetTabCount(); ++i) {
       gfx::Rect bounds(ideal_bounds(i));
       bounds.set_x(positions[i]);
-      tab_strip_->tab_container_->tabs_view_model()->set_ideal_bounds(i,
-                                                                      bounds);
+      tab_strip_->tab_container_->GetTabsViewModel()->set_ideal_bounds(i,
+                                                                       bounds);
     }
   }
 
@@ -888,11 +889,11 @@ TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
       hover_card_controller_(std::make_unique<TabHoverCardController>(this)),
       drag_context_(AddChildView(std::make_unique<TabDragContextImpl>(this))),
       tab_container_(AddChildViewAt(
-          std::make_unique<TabContainer>(controller_.get(),
-                                         hover_card_controller_.get(),
-                                         drag_context_.get(),
-                                         this,
-                                         this),
+          std::make_unique<TabContainerImpl>(controller_.get(),
+                                             hover_card_controller_.get(),
+                                             drag_context_.get(),
+                                             this,
+                                             this),
           0)) {
   // TODO(pbos): This is probably incorrect, the background of individual tabs
   // depend on their selected state. This should probably be pushed down into
@@ -1116,7 +1117,7 @@ void TabStrip::OnGroupVisualsChanged(
     const tab_groups::TabGroupId& group,
     const tab_groups::TabGroupVisualData* old_visuals,
     const tab_groups::TabGroupVisualData* new_visuals) {
-  tab_container_->group_views()[group]->OnGroupVisualsChanged();
+  tab_container_->GetGroupViews()[group]->OnGroupVisualsChanged();
   // The group title may have changed size, so update bounds.
   // First exit tab closing mode, unless this change was a collapse, in which
   // case we want to stay in tab closing mode.
@@ -1142,10 +1143,10 @@ void TabStrip::ToggleTabGroup(const tab_groups::TabGroupId& group,
     }
 
     const int current_group_width =
-        tab_container_->group_views()[group]->GetBounds().width();
+        tab_container_->GetGroupViews()[group]->GetBounds().width();
     // A collapsed group only has the width of its header, which is slightly
     // smaller for collapsed groups compared to expanded groups.
-    const int collapsed_group_width = tab_container_->group_views()[group]
+    const int collapsed_group_width = tab_container_->GetGroupViews()[group]
                                           ->header()
                                           ->GetCollapsedHeaderWidth();
     const CloseTabSource source =
@@ -1234,8 +1235,8 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
     }
 
     new_active_tab->ActiveStateChanged();
-    tab_container_->layout_helper()->SetActiveTab(selected_tabs_.active(),
-                                                  new_selection.active());
+    tab_container_->GetLayoutHelper()->SetActiveTab(selected_tabs_.active(),
+                                                    new_selection.active());
     if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
       tab_container_->ScrollTabToVisible(new_selection.active().value());
     }
@@ -1330,7 +1331,7 @@ TabDragContext* TabStrip::GetDragContext() {
 }
 
 int TabStrip::GetPinnedTabCount() const {
-  return tab_container_->layout_helper()->GetPinnedTabCount();
+  return tab_container_->GetLayoutHelper()->GetPinnedTabCount();
 }
 
 bool TabStrip::IsAnimating() const {
@@ -1429,7 +1430,7 @@ void TabStrip::CloseTab(Tab* tab, CloseTabSource source) {
     // If the tab is already closing, close the next tab. We do this so that the
     // user can rapidly close tabs by clicking the close button and not have
     // the animations interfere with that.
-    std::vector<Tab*> all_tabs = tab_container_->layout_helper()->GetTabs();
+    std::vector<Tab*> all_tabs = tab_container_->GetLayoutHelper()->GetTabs();
     auto it = std::find(all_tabs.begin(), all_tabs.end(), tab);
     while (it < all_tabs.end() && (*it)->closing()) {
       it++;
@@ -1728,7 +1729,7 @@ absl::optional<int> TabStrip::GetCustomBackgroundId(
 }
 
 gfx::Rect TabStrip::GetTabAnimationTargetBounds(const Tab* tab) {
-  return tab_container_->bounds_animator().GetTargetBounds(tab);
+  return tab_container_->GetBoundsAnimator().GetTargetBounds(tab);
 }
 
 float TabStrip::GetHoverOpacityForTab(float range_parameter) const {
@@ -1880,7 +1881,7 @@ void TabStrip::Init() {
 
 std::map<tab_groups::TabGroupId, TabGroupHeader*> TabStrip::GetGroupHeaders() {
   std::map<tab_groups::TabGroupId, TabGroupHeader*> group_headers;
-  for (const auto& group_view_pair : tab_container_->group_views()) {
+  for (const auto& group_view_pair : tab_container_->GetGroupViews()) {
     group_headers.insert(std::make_pair(group_view_pair.first,
                                         group_view_pair.second->header()));
   }
@@ -1921,7 +1922,7 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
 }
 
 bool TabStrip::ShouldHighlightCloseButtonAfterRemove() {
-  return tab_container_->in_tab_close();
+  return tab_container_->InTabClose();
 }
 
 bool TabStrip::TitlebarBackgroundIsTransparent() const {
@@ -1935,11 +1936,11 @@ bool TabStrip::TitlebarBackgroundIsTransparent() const {
 }
 
 int TabStrip::GetActiveTabWidth() const {
-  return tab_container_->layout_helper()->active_tab_width();
+  return tab_container_->GetLayoutHelper()->active_tab_width();
 }
 
 int TabStrip::GetInactiveTabWidth() const {
-  return tab_container_->layout_helper()->inactive_tab_width();
+  return tab_container_->GetLayoutHelper()->inactive_tab_width();
 }
 
 const Tab* TabStrip::GetLastVisibleTab() const {
@@ -1968,7 +1969,7 @@ void TabStrip::CloseTabInternal(int model_index, CloseTabSource source) {
   if (!controller_->BeforeCloseTab(model_index, source))
     return;
 
-  if (!tab_container_->in_tab_close() && IsAnimating()) {
+  if (!tab_container_->InTabClose() && IsAnimating()) {
     // Cancel any current animations. We do this as remove uses the current
     // ideal bounds and we need to know ideal bounds is in a good state.
     tab_container_->CompleteAnimationAndLayout();
@@ -2159,7 +2160,8 @@ void TabStrip::TabContextMenuController::ShowContextMenuForViewImpl(
 }
 
 const gfx::Rect& TabStrip::ideal_bounds(tab_groups::TabGroupId group) const {
-  return tab_container_->layout_helper()->group_header_ideal_bounds().at(group);
+  return tab_container_->GetLayoutHelper()->group_header_ideal_bounds().at(
+      group);
 }
 
 void TabStrip::OnMouseEntered(const ui::MouseEvent& event) {
@@ -2203,7 +2205,8 @@ void TabStrip::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void TabStrip::OnViewFocused(views::View* observed_view) {
-  auto index = tab_container_->tabs_view_model()->GetIndexOfView(observed_view);
+  auto index =
+      tab_container_->GetTabsViewModel()->GetIndexOfView(observed_view);
   if (index.has_value())
     controller_->OnKeyboardFocusedTabChanged(index);
 }

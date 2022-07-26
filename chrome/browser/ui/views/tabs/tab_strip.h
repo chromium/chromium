@@ -190,7 +190,7 @@ class TabStrip : public views::View,
 
   // Returns the TabGroupHeader with ID |id|.
   TabGroupHeader* group_header(const tab_groups::TabGroupId& id) const {
-    return tab_container_->group_views().at(id).get()->header();
+    return tab_container_->GetGroupViews().at(id).get()->header();
   }
 
   // Returns the active index, or kNoTab if no tab is active.
@@ -400,7 +400,7 @@ class TabStrip : public views::View,
 
   // Retrieves the ideal bounds for the Tab at the specified index.
   const gfx::Rect& ideal_bounds(int tab_data_index) const {
-    return tab_container_->tabs_view_model()->ideal_bounds(tab_data_index);
+    return tab_container_->GetTabsViewModel()->ideal_bounds(tab_data_index);
   }
 
   // Retrieves the ideal bounds for the Tab Group Header at the specified group.
