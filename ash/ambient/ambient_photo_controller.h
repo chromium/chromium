@@ -169,6 +169,8 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
 
   void TryReadPhotoFromCache();
 
+  void OnPhotoCacheReadComplete(::ambient::PhotoCacheEntry cache_entry);
+
   void OnPhotoRawDataDownloaded(bool is_related_image,
                                 base::RepeatingClosure on_done,
                                 std::string&& data);
