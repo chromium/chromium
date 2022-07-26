@@ -184,7 +184,7 @@ export class FilteredVolumeManager extends EventTarget {
    * @return {boolean}
    * @private
    */
-  isFuseBoxFileSystem(diskFileSystemType) {
+  isFuseBoxFileSystem_(diskFileSystemType) {
     return diskFileSystemType === 'fusebox';
   }
 
@@ -195,7 +195,7 @@ export class FilteredVolumeManager extends EventTarget {
    * @return {boolean}
    * @private
    */
-  isMediaStoreVolume(volumeInfo) {
+  isMediaStoreVolume_(volumeInfo) {
     return MEDIA_STORE_VOLUME_TYPES.indexOf(volumeInfo.volumeType) >= 0;
   }
 
@@ -217,7 +217,7 @@ export class FilteredVolumeManager extends EventTarget {
 
     // If the media store filter is enabled and the volume is not supported
     // by the Android MediaStore, remove the volume from the UI.
-    if (this.isMediaStoreOnly_ && !this.isMediaStoreVolume(volumeInfo)) {
+    if (this.isMediaStoreOnly_ && !this.isMediaStoreVolume_(volumeInfo)) {
       return false;
     }
 
@@ -229,9 +229,9 @@ export class FilteredVolumeManager extends EventTarget {
     } else if (this.isFuseBoxOnly_) {
       // SelectFileAsh requires native volumes. Note: DocumentsProvider and
       // FSPs return false here, until they are implemented in the fusebox.
-      return this.isFuseBoxFileSystem(volumeInfo.diskFileSystemType) ||
+      return this.isFuseBoxFileSystem_(volumeInfo.diskFileSystemType) ||
           VolumeManagerCommon.VolumeType.isNative(volumeInfo.volumeType);
-    } else if (this.isFuseBoxFileSystem(volumeInfo.diskFileSystemType)) {
+    } else if (this.isFuseBoxFileSystem_(volumeInfo.diskFileSystemType)) {
       // Normal Files app: remove fusebox volumes.
       return false;
     }
