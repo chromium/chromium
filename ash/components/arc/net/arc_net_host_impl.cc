@@ -45,6 +45,27 @@ namespace {
 
 constexpr int kGetNetworksListLimit = 100;
 
+std::string PackedIPAddressToString(sa_family_t family,
+                                    const std::string& data) {
+  if (family != AF_INET && family != AF_INET6) {
+    NET_LOG(ERROR) << "Invalid IP family " << family;
+    return "";
+  }
+  if (family == AF_INET && data.length() != sizeof(in_addr)) {
+    NET_LOG(ERROR) << "Invalid packed IPv4 data size " << data.length()
+                   << ", expected " << sizeof(in_addr);
+    return "";
+  }
+  if (family == AF_INET6 && data.length() != sizeof(in6_addr)) {
+    NET_LOG(ERROR) << "Invalid packed IPv6 data size " << data.length()
+                   << ", expected " << sizeof(in6_addr);
+    return "";
+  }
+
+  char buf[INET6_ADDRSTRLEN] = {0};
+  return !inet_ntop(family, data.data(), buf, sizeof(buf)) ? "" : buf;
+}
+
 chromeos::NetworkStateHandler* GetStateHandler() {
   return chromeos::NetworkHandler::Get()->network_state_handler();
 }
@@ -440,6 +461,22 @@ std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
           IPv4AddressToString(arc_it->second.host_ipv4_addr());
       network->arc_ipv4_prefix_length =
           arc_it->second.ipv4_subnet().prefix_len();
+      // Fill in DNS proxy addresses.
+      network->dns_proxy_addresses = std::vector<std::string>();
+      if (arc_it->second.dns_proxy_ipv4_addr().length() > 0) {
+        auto dns_proxy_ipv4_addr = PackedIPAddressToString(
+            AF_INET, arc_it->second.dns_proxy_ipv4_addr());
+        if (!dns_proxy_ipv4_addr.empty()) {
+          network->dns_proxy_addresses->push_back(dns_proxy_ipv4_addr);
+        }
+      }
+      if (arc_it->second.dns_proxy_ipv6_addr().length() > 0) {
+        auto dns_proxy_ipv6_addr = PackedIPAddressToString(
+            AF_INET6, arc_it->second.dns_proxy_ipv6_addr());
+        if (!dns_proxy_ipv6_addr.empty()) {
+          network->dns_proxy_addresses->push_back(dns_proxy_ipv6_addr);
+        }
+      }
     }
     networks.push_back(std::move(network));
   }
