@@ -37,10 +37,10 @@ void RegisterPoliciesForChannelAssociatedInterfaces(
       .SetAssociatedPolicy<subresource_filter::mojom::SubresourceFilterHost>(
           content::MojoBinderAssociatedPolicy::kGrant);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(https://crbug.com/1278141): Revisit this decision after Prerender2
-  // support desktops.
-  // TODO(https://crbug.com/1259007): Introduce kExperimentalGrant and
-  // replace kGrant with kExperimentalGrant.
+  // LocalFrameHost supports content scripts related APIs, which are
+  // RequestScriptInjectionPermission, GetInstallState, SendRequestIPC, and
+  // notifying CSS selector updates. These APIs are used by Chrome Extensions
+  // under proper permission managements beyond the page boundaries.
   if (blink::features::IsPrerender2Enabled()) {
     policy_map.SetAssociatedPolicy<extensions::mojom::LocalFrameHost>(
         content::MojoBinderAssociatedPolicy::kGrant);
