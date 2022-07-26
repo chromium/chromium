@@ -58,7 +58,7 @@ namespace {
 
 #if BUILDFLAG(ENABLE_WIDEVINE)
 SupportedCodecs GetVP9Codecs(
-    const std::vector<media::VideoCodecProfile>& profiles) {
+    const base::flat_set<media::VideoCodecProfile>& profiles) {
   if (profiles.empty()) {
     // If no profiles are specified, then all are supported.
     return media::EME_CODEC_VP9_PROFILE0 | media::EME_CODEC_VP9_PROFILE2;
@@ -85,7 +85,7 @@ SupportedCodecs GetVP9Codecs(
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 SupportedCodecs GetHevcCodecs(
-    const std::vector<media::VideoCodecProfile>& profiles) {
+    const base::flat_set<media::VideoCodecProfile>& profiles) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kLacrosEnablePlatformHevc)) {
@@ -152,13 +152,13 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability) {
 
   // For compatibility with older CDMs different profiles are only used
   // with some video codecs.
-  for (const auto& codec : capability.video_codecs) {
-    switch (codec.first) {
+  for (const auto& [codec, video_codec_info] : capability.video_codecs) {
+    switch (codec) {
       case media::VideoCodec::kVP8:
         supported_codecs |= media::EME_CODEC_VP8;
         break;
       case media::VideoCodec::kVP9:
-        supported_codecs |= GetVP9Codecs(codec.second);
+        supported_codecs |= GetVP9Codecs(video_codec_info.video_codec_profiles);
         break;
       case media::VideoCodec::kAV1:
         supported_codecs |= media::EME_CODEC_AV1;
@@ -170,11 +170,12 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability) {
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
       case media::VideoCodec::kHEVC:
-        supported_codecs |= GetHevcCodecs(codec.second);
+        supported_codecs |=
+            GetHevcCodecs(video_codec_info.video_codec_profiles);
         break;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
       default:
-        DVLOG(1) << "Unexpected supported codec: " << GetCodecName(codec.first);
+        DVLOG(1) << "Unexpected supported codec: " << GetCodecName(codec);
         break;
     }
   }

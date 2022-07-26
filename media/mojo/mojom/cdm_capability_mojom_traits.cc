@@ -22,6 +22,20 @@ bool AreUnique(const std::vector<T>& values) {
 }  // namespace
 
 // static
+bool StructTraits<media::mojom::VideoCodecInfoDataView, media::VideoCodecInfo>::
+    Read(media::mojom::VideoCodecInfoDataView input,
+         media::VideoCodecInfo* output) {
+  std::vector<media::VideoCodecProfile> video_codec_profiles;
+  if (!input.ReadVideoCodecProfiles(&video_codec_profiles)) {
+    return false;
+  }
+
+  *output = media::VideoCodecInfo(std::move(video_codec_profiles),
+                                  input.supports_clear_lead());
+  return true;
+}
+
+// static
 bool StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability>::
     Read(media::mojom::CdmCapabilityDataView input,
          media::CdmCapability* output) {
@@ -36,12 +50,6 @@ bool StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability>::
   media::CdmCapability::VideoCodecMap video_codecs;
   if (!input.ReadVideoCodecs(&video_codecs))
     return false;
-
-  // Ensure that the VideoCodecProfiles in each entry are unique.
-  for (const auto& codec : video_codecs) {
-    if (!AreUnique(codec.second))
-      return false;
-  }
 
   std::vector<media::EncryptionScheme> encryption_schemes;
   if (!input.ReadEncryptionSchemes(&encryption_schemes))

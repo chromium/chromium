@@ -229,7 +229,7 @@ bool GetVideoCodecs(const base::Value& manifest,
   // As the manifest string does not include profiles, specify {} to indicate
   // that all relevant profiles should be considered supported.
   media::CdmCapability::VideoCodecMap result;
-  const std::vector<media::VideoCodecProfile> kAllProfiles = {};
+  const media::VideoCodecInfo kAllProfiles;
   for (const auto& codec : supported_codecs) {
     if (codec == kCdmSupportedCodecVp8) {
       result.emplace(media::VideoCodec::kVP8, kAllProfiles);

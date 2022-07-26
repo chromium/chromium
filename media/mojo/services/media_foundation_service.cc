@@ -317,7 +317,7 @@ absl::optional<CdmCapability> GetCdmCapability(
     if (IsTypeSupportedInternal(cdm_factory, key_system, is_hw_secure, type)) {
       // IsTypeSupported() does not support querying profiling, so specify {}
       // to indicate all relevant profiles should be considered supported.
-      const std::vector<media::VideoCodecProfile> kAllProfiles = {};
+      const media::VideoCodecInfo kAllProfiles;
       capability.video_codecs.emplace(video_codec, kAllProfiles);
     }
   }
@@ -350,9 +350,9 @@ absl::optional<CdmCapability> GetCdmCapability(
   // of the encryption schemes which work for all codecs.
   base::flat_set<EncryptionScheme> intersection(
       std::begin(kAllEncryptionSchemes), std::end(kAllEncryptionSchemes));
-  for (auto codec : capability.video_codecs) {
+  for (const auto& [video_codec, _] : capability.video_codecs) {
     const auto schemes = GetSupportedEncryptionSchemes(
-        cdm_factory, key_system, is_hw_secure, codec.first, robustness);
+        cdm_factory, key_system, is_hw_secure, video_codec, robustness);
     intersection = base::STLSetIntersection<base::flat_set<EncryptionScheme>>(
         intersection, schemes);
   }

@@ -18,6 +18,22 @@
 namespace mojo {
 
 template <>
+struct StructTraits<media::mojom::VideoCodecInfoDataView,
+                    media::VideoCodecInfo> {
+  static const base::flat_set<media::VideoCodecProfile>& video_codec_profiles(
+      const media::VideoCodecInfo& input) {
+    return input.video_codec_profiles;
+  }
+
+  static const bool& supports_clear_lead(const media::VideoCodecInfo& input) {
+    return input.supports_clear_lead;
+  }
+
+  static bool Read(media::mojom::VideoCodecInfoDataView input,
+                   media::VideoCodecInfo* output);
+};
+
+template <>
 struct StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability> {
   static const std::vector<media::AudioCodec>& audio_codecs(
       const media::CdmCapability& input) {

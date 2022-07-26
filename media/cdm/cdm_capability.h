@@ -17,10 +17,32 @@
 
 namespace media {
 
+struct MEDIA_EXPORT VideoCodecInfo {
+  VideoCodecInfo();
+  VideoCodecInfo(base::flat_set<VideoCodecProfile> video_codec_profiles,
+                 bool supports_clear_lead);
+  VideoCodecInfo(base::flat_set<VideoCodecProfile> video_codec_profiles);
+  VideoCodecInfo(const VideoCodecInfo& other);
+  ~VideoCodecInfo();
+
+  // Set of VideoCodecProfiles supported. If no profiles for a
+  // particular codec are specified, then it is assumed that all
+  // profiles are supported by the CDM.
+  base::flat_set<VideoCodecProfile> video_codec_profiles;
+
+  // We default to supports_clear_lead = true because in majority of cases,
+  // the CDM does support clear lead. In a few cases, (b/231241602), we
+  // need to adjust this boolean to handle cases where clear lead results
+  // in issues for the user.
+  bool supports_clear_lead = true;
+};
+
+bool MEDIA_EXPORT operator==(const VideoCodecInfo& lhs,
+                             const VideoCodecInfo& rhs);
+
 // Capabilities supported by a Content Decryption Module.
 struct MEDIA_EXPORT CdmCapability {
-  using VideoCodecMap = std::map<VideoCodec, std::vector<VideoCodecProfile>>;
-
+  using VideoCodecMap = std::map<VideoCodec, VideoCodecInfo>;
   CdmCapability();
   CdmCapability(std::vector<AudioCodec> audio_codecs,
                 VideoCodecMap video_codecs,
@@ -35,11 +57,8 @@ struct MEDIA_EXPORT CdmCapability {
   // separately.
   std::vector<AudioCodec> audio_codecs;
 
-  // Map of video codecs and associated profiles supported by the CDM
-  // (e.g. vp8). This is the set of codecs supported by the media pipeline
-  // using the CDM. For a supported VideoCodec, if the vector of
-  // VideoCodecProfiles is empty, then it assumes that all profiles of the
-  // specified codecs may actually be supported.
+  // Map of video codecs and a struct containing the associated profiles
+  // supported by the CDM (e.g. vp8) and whether clear lead is supported.
   VideoCodecMap video_codecs;
 
   // List of encryption schemes supported by the CDM (e.g. cenc).

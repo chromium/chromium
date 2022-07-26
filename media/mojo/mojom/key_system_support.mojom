@@ -7,6 +7,18 @@ module media.mojom;
 import "media/mojo/mojom/content_decryption_module.mojom";
 import "media/mojo/mojom/media_types.mojom";
 
+struct VideoCodecInfo {
+  // Array of VideoCodecProfiles supported. If no profiles for a
+  // particular codec are specified, then it is assumed that all
+  // profiles are supported by the CDM.
+  array<VideoCodecProfile> video_codec_profiles;
+
+  // A boolean that contains info about whether the video codec
+  // supports clear lead. This defaults to true except for specific
+  // cases involving Windows codecs.
+  bool supports_clear_lead = true;
+};
+
 // TODO(xhwang): Use "set" instead of "array" if supported by mojom.
 struct CdmCapability {
   // List of audio codecs supported by the CDM (e.g. opus). This does not
@@ -14,11 +26,9 @@ struct CdmCapability {
   // codec profiles separately. The list of supported codecs should be unique.
   array<AudioCodec> audio_codecs;
 
-  // Map from video codecs to associated profiles supported by the CDM
-  // (e.g. vp8). If no profiles for a particular codec are specified, then
-  // it is assumed that all profiles are supported by the CDM. The list of
-  // profiles for each codec should be unique.
-  map<VideoCodec, array<VideoCodecProfile>> video_codecs;
+  // Map of video codecs and a struct containing the associated profiles
+  // supported by the CDM (e.g. vp8) and whether clear lead is supported.
+  map<VideoCodec, VideoCodecInfo> video_codecs;
 
   array<EncryptionScheme> encryption_schemes;
   array<CdmSessionType> session_types;

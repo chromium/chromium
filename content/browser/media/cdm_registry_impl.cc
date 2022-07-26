@@ -94,15 +94,16 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
   // indicate that all relevant profiles should be considered supported.
   std::vector<media::AudioCodec> audio_codecs;
   media::CdmCapability::VideoCodecMap video_codecs;
+  const media::VideoCodecInfo kAllProfiles;
   for (const auto& codec : overridden_codecs) {
     if (codec == "vp8")
-      video_codecs[media::VideoCodec::kVP8] = {};
+      video_codecs.emplace(media::VideoCodec::kVP8, kAllProfiles);
     else if (codec == "vp9")
-      video_codecs[media::VideoCodec::kVP9] = {};
+      video_codecs.emplace(media::VideoCodec::kVP9, kAllProfiles);
     else if (codec == "avc1")
-      video_codecs[media::VideoCodec::kH264] = {};
+      video_codecs.emplace(media::VideoCodec::kH264, kAllProfiles);
     else if (codec == "hevc")
-      video_codecs[media::VideoCodec::kHEVC] = {};
+      video_codecs.emplace(media::VideoCodec::kHEVC, kAllProfiles);
     else if (codec == "mp4a")
       audio_codecs.push_back(media::AudioCodec::kAAC);
     else if (codec == "vorbis")
