@@ -1,3 +1,16 @@
-include_rules  =  [
+include_rules = [
   "+fuchsia_web/webinstance_host",
 ]
+
+specific_include_rules = {
+  "cast_streaming_shell\.cc": [
+    "+components/cast/message_port",
+    "+components/cast_streaming",
+    "+fuchsia_web/cast_streaming",
+    "+fuchsia_web/webengine/switches.h",
+
+    # TODO(crbug.com/1255292): Remove once Structured Configuration is available
+    # and use of the switch is no longer required.
+    "+media/base",
+  ]
+}

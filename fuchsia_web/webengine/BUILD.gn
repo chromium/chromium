@@ -342,7 +342,10 @@ source_set("context_provider") {
 # common. Consider moving these and other files in engine/ to common/ or
 # elsewhere.
 source_set("switches") {
-  visibility += [ "//fuchsia_web/webinstance_host" ]
+  visibility += [
+    "//fuchsia_web/shell:cast_streaming_shell_exe",
+    "//fuchsia_web/webinstance_host",
+  ]
   deps = [ "//base" ]
   sources = [
     "features.h",

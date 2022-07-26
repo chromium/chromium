@@ -76,3 +76,49 @@ executable("web_engine_shell_exec") {
     "//url",
   ]
 }
+
+fuchsia_component("cast_streaming_shell_component") {
+  testonly = true
+  manifest = "cast_streaming_shell.cmx"
+  data_deps = [ ":cast_streaming_shell_exe" ]
+}
+
+fuchsia_package("cast_streaming_shell_pkg") {
+  testonly = true
+  package_name = "cast_streaming_shell"
+  deps = [ ":cast_streaming_shell_component" ]
+}
+
+fuchsia_package_installer("cast_streaming_shell") {
+  testonly = true
+  package = ":cast_streaming_shell_pkg"
+  package_name = "cast_streaming_shell"
+  package_deps = [ [
+        "//fuchsia_web/webengine:web_engine",
+        "web_engine",
+      ] ]
+}
+
+executable("cast_streaming_shell_exe") {
+  testonly = true
+  sources = [ "cast_streaming_shell.cc" ]
+
+  deps = [
+    ":remote_debugging_port",
+    "//base",
+    "//components/cast/message_port:message_port",
+    "//components/cast_streaming/browser:test_sender",
+    "//components/openscreen_platform:openscreen_platform_net",
+    "//fuchsia_web/cast_streaming",
+    "//fuchsia_web/common/test:test_support",
+    "//fuchsia_web/webengine:switches",
+    "//fuchsia_web/webinstance_host",
+    "//media",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/pkg/fdio",
+    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//url",
+  ]
+}

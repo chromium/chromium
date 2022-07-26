@@ -2382,7 +2382,7 @@ def CheckSpamLogging(input_api, output_api):
             r"^chrome[\\/]installer[\\/]setup[\\/].*",
             r"^chromecast[\\/]",
             r"^components[\\/]browser_watcher[\\/]"
-            r"dump_stability_report_main_win.cc$",
+            r"dump_stability_report_main_win\.cc$",
             r"^components[\\/]media_control[\\/]renderer[\\/]"
             r"media_playback_options\.cc$",
             r"^components[\\/]viz[\\/]service[\\/]display[\\/]"
@@ -2396,9 +2396,9 @@ def CheckSpamLogging(input_api, output_api):
             r"^courgette[\\/]courgette_minimal_tool\.cc$",
             r"^courgette[\\/]courgette_tool\.cc$",
             r"^extensions[\\/]renderer[\\/]logging_native_handler\.cc$",
-            r"^fuchsia_web[\\/]common[\\/]init_logging.cc$",
-            r"^fuchsia_web[\\/]runners[\\/]common[\\/]web_component.cc$",
-            r"^fuchsia_web[\\/]shell[\\/]web_engine_shell.cc$",
+            r"^fuchsia_web[\\/]common[\\/]init_logging\.cc$",
+            r"^fuchsia_web[\\/]runners[\\/]common[\\/]web_component\.cc$",
+            r"^fuchsia_web[\\/]shell[\\/].*_shell\.cc$",
             r"^headless[\\/]app[\\/]headless_shell\.cc$",
             r"^ipc[\\/]ipc_logging\.cc$",
             r"^native_client_sdk[\\/]",
@@ -2406,9 +2406,9 @@ def CheckSpamLogging(input_api, output_api):
             r"^remoting[\\/]host[\\/].*",
             r"^sandbox[\\/]linux[\\/].*",
             r"^storage[\\/]browser[\\/]file_system[\\/]" +
-            r"dump_file_system.cc$",
+            r"dump_file_system\.cc$",
             r"^tools[\\/]",
-            r"^ui[\\/]base[\\/]resource[\\/]data_pack.cc$",
+            r"^ui[\\/]base[\\/]resource[\\/]data_pack\.cc$",
             r"^ui[\\/]aura[\\/]bench[\\/]bench_main\.cc$",
             r"^ui[\\/]ozone[\\/]platform[\\/]cast[\\/]",
             r"^ui[\\/]base[\\/]x[\\/]xwmstartupcheck[\\/]"
