@@ -4,6 +4,7 @@
 
 #include "base/check.h"
 
+#include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
 
 // check.h is a widely included header and its size has significant impact on
@@ -32,7 +33,7 @@ namespace {
 
 // DCHECK_IS_CONFIGURABLE and ENABLE_LOG_ERROR_NOT_REACHED are both interested
 // in non-FATAL DCHECK()/NOTREACHED() reports.
-#if defined(DCHECK_IS_CONFIGURABLE) || BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE) || BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
 void DCheckDumpOnceWithoutCrashing(LogMessage* log_message) {
   // Best-effort gate to prevent multiple DCHECKs from being dumped. This will
   // race if multiple threads DCHECK at the same time, but we'll eventually stop
@@ -68,10 +69,10 @@ class NotReachedLogMessage : public LogMessage {
 };
 #else
 using NotReachedLogMessage = LogMessage;
-#endif  // defined(DCHECK_IS_CONFIGURABLE) ||
+#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE) ||
         // BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
 
-#if defined(DCHECK_IS_CONFIGURABLE)
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 class DCheckLogMessage : public LogMessage {
  public:
@@ -109,7 +110,7 @@ using DCheckWin32ErrorLogMessage = Win32ErrorLogMessage;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 using DCheckErrnoLogMessage = ErrnoLogMessage;
 #endif  // BUILDFLAG(IS_WIN)
-#endif  // defined(DCHECK_IS_CONFIGURABLE)
+#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 }  // namespace
 

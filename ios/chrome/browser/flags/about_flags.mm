@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#import "base/debug/debugging_buildflags.h"
 #import "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
@@ -597,11 +598,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kMaxZeroSuggestMatches,
                                     kOmniboxMaxZPSMatchesVariations,
                                     "OmniboxMaxZPSVariations")},
-#if defined(DCHECK_IS_CONFIGURABLE)
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
     {"dcheck-is-fatal", flag_descriptions::kDcheckIsFatalName,
      flag_descriptions::kDcheckIsFatalDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(base::kDCheckIsFatalFeature)},
-#endif  // defined(DCHECK_IS_CONFIGURABLE)
+#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
     {"autofill-use-mobile-label-disambiguation",
      flag_descriptions::kAutofillUseMobileLabelDisambiguationName,
      flag_descriptions::kAutofillUseMobileLabelDisambiguationDescription,
@@ -1472,7 +1473,7 @@ std::vector<std::string> RegisterAllFeatureVariationParameters(
   // Occasionally DCHECK crashes on canary can be very distuptive.  An
   // experimental flag was added to aid in temporarily disabling this for
   // canary testers.
-#if defined(DCHECK_IS_CONFIGURABLE)
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   if (experimental_flags::AreDCHECKCrashesDisabled()) {
     std::vector<base::FeatureList::FeatureOverrideInfo> overrides;
     overrides.push_back(
@@ -1480,7 +1481,7 @@ std::vector<std::string> RegisterAllFeatureVariationParameters(
          base::FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE});
     feature_list->RegisterExtraFeatureOverrides(std::move(overrides));
   }
-#endif  // defined(DCHECK_IS_CONFIGURABLE)
+#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
   return GetGlobalFlagsState().RegisterAllFeatureVariationParameters(
       flags_storage, feature_list);
