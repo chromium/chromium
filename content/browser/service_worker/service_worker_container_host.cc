@@ -743,19 +743,10 @@ ServiceWorkerContainerHost::GetOrCreateServiceWorkerObjectHost(
   return service_worker_object_hosts_[version_id]->AsWeakPtr();
 }
 
-void ServiceWorkerContainerHost::RemoveServiceWorkerObjectHostOnConnectionError(
+void ServiceWorkerContainerHost::RemoveServiceWorkerObjectHost(
     int64_t version_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::Contains(service_worker_object_hosts_, version_id));
-
-  // check if receivers are empty
-  {
-    auto& service_worker_object_host = service_worker_object_hosts_[version_id];
-    // If there are still receivers, the object is still being used.
-    if (service_worker_object_host->has_receivers()) {
-      return;
-    }
-  }
 
   // ServiceWorkerObjectHost to be deleted may have the last reference to
   // ServiceWorkerVersion that indirectly owns this ServiceWorkerContainerHost.

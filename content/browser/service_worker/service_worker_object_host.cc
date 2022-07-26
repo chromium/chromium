@@ -205,9 +205,7 @@ ServiceWorkerObjectHost::ServiceWorkerObjectHost(
   DCHECK(context_->GetLiveRegistration(version_->registration_id()));
   version_->AddObserver(this);
   receivers_.set_disconnect_handler(base::BindRepeating(
-      &ServiceWorkerContainerHost::
-          RemoveServiceWorkerObjectHostOnConnectionError,
-      base::Unretained(container_host), version_->version_id()));
+      &ServiceWorkerObjectHost::OnConnectionError, base::Unretained(this)));
 }
 
 ServiceWorkerObjectHost::~ServiceWorkerObjectHost() {
@@ -312,6 +310,14 @@ void ServiceWorkerObjectHost::DispatchExtendableMessageEvent(
     // can't postMessage to one (https://crbug.com/371690).
     NOTREACHED();
   }
+}
+
+void ServiceWorkerObjectHost::OnConnectionError() {
+  // If there are still receivers, |this| is still being used.
+  if (!receivers_.empty())
+    return;
+  // Will destroy |this|.
+  container_host_->RemoveServiceWorkerObjectHost(version_->version_id());
 }
 
 }  // namespace content
