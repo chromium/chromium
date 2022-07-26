@@ -351,6 +351,8 @@ bool DocumentTransitionStyleTracker::Capture() {
   // Now we know that we can start a transition. Update the state and populate
   // `element_data_map_`.
   state_ = State::kCapturing;
+  InvalidateHitTestingCache();
+
   captured_tag_count_ = transition_tags.size() + OldRootDataTagSize();
 
   element_data_map_.ReserveCapacityForSize(captured_tag_count_);
@@ -401,6 +403,10 @@ void DocumentTransitionStyleTracker::CaptureResolved() {
   DCHECK_EQ(state_, State::kCapturing);
 
   state_ = State::kCaptured;
+  // TODO(crbug.com/1347473): We should also suppress hit testing at this point,
+  // since we're about to start painting the element as a captured snapshot, but
+  // we still haven't given script chance to modify the DOM to the new state.
+  InvalidateHitTestingCache();
 
   // Since the elements will be unset, we need to invalidate their style first.
   // TODO(vmpstr): We don't have to invalidate the pseudo styles at this point,
@@ -434,6 +440,8 @@ bool DocumentTransitionStyleTracker::Start() {
     return false;
 
   state_ = State::kStarted;
+  InvalidateHitTestingCache();
+
   HeapHashMap<Member<Element>, viz::SharedElementResourceId>
       element_snapshot_ids;
   bool found_new_tags = false;
@@ -525,6 +533,7 @@ void DocumentTransitionStyleTracker::Abort() {
 
 void DocumentTransitionStyleTracker::EndTransition() {
   state_ = State::kFinished;
+  InvalidateHitTestingCache();
 
   // We need a style invalidation to remove the pseudo element tree. This needs
   // to be done before we clear the data, since we need to invalidate the shared
@@ -1186,6 +1195,17 @@ void DocumentTransitionStyleTracker::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(element_data_map_);
   visitor->Trace(pending_shared_element_tags_);
+}
+
+void DocumentTransitionStyleTracker::InvalidateHitTestingCache() {
+  // Hit-testing data is cached based on the current DOM version. Normally, this
+  // version is incremented any time there is a DOM modification or an attribute
+  // change to some element (which can result in a new style). However, with
+  // shared element transitions, we dynamically create and destroy hit-testable
+  // pseudo elements based on the current state. This means that we have to
+  // manually modify the DOM tree version since there is no other mechanism that
+  // will do it.
+  document_->IncDOMTreeVersion();
 }
 
 void DocumentTransitionStyleTracker::ElementData::Trace(

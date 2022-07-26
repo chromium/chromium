@@ -75,6 +75,11 @@ class CORE_EXPORT DocumentTransition
   // element transition.
   bool NeedsSharedElementEffectNode(const LayoutObject& object) const;
 
+  // Returns true if this object is painted via pseudo elements. Note that this
+  // is different from NeedsSharedElementFromEffectNode() since the root may not
+  // be a shared element, but require an effect node.
+  bool IsRepresentedViaPseudoElements(const LayoutObject& object) const;
+
   // Updates an effect node. This effect populates the shared element id and the
   // shared element resource id. The return value is a result of updating the
   // effect node.

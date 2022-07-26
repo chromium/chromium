@@ -321,12 +321,24 @@ bool DocumentTransition::NeedsSharedElementEffectNode(
   // transitioning. The reason for this is that we want the root to have an
   // effect which can be hoisted up be the sibling of the layout view. This
   // simplifies calling code to have a consistent stacking context structure.
-  if (auto* layout_view = DynamicTo<LayoutView>(object))
+  if (IsA<LayoutView>(object))
     return state_ != State::kIdle;
 
   // Otherwise check if the layout object has an active shared element.
   auto* element = DynamicTo<Element>(object.GetNode());
   return element && style_tracker_ && style_tracker_->IsSharedElement(element);
+}
+
+bool DocumentTransition::IsRepresentedViaPseudoElements(
+    const LayoutObject& object) const {
+  if (!style_tracker_)
+    return false;
+
+  if (IsA<LayoutView>(object))
+    return style_tracker_->IsRootTransitioning();
+
+  auto* element = DynamicTo<Element>(object.GetNode());
+  return element && style_tracker_->IsSharedElement(element);
 }
 
 PaintPropertyChangeType DocumentTransition::UpdateEffect(

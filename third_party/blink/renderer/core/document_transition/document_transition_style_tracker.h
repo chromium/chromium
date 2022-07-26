@@ -202,6 +202,8 @@ class DocumentTransitionStyleTracker
   absl::optional<RootData> GetCurrentRootData() const;
   HashSet<AtomicString> AllRootTags() const;
 
+  void InvalidateHitTestingCache();
+
   Member<Document> document_;
   State state_ = State::kIdle;
   int captured_tag_count_ = 0;
