@@ -44,7 +44,10 @@ ts_library("build_ts") {
     "toolbar_test.ts",
     "util_test.ts",
   ]
-  deps = [ "//chrome/browser/resources/bookmarks:build_ts" ]
+  deps = [
+    "//chrome/browser/resources/bookmarks:build_ts",
+    "//chrome/test/data/webui:build_ts",
+  ]
   definitions = [
     "//tools/typescript/definitions/bookmarks.d.ts",
     "//tools/typescript/definitions/bookmark_manager_private.d.ts",

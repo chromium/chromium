@@ -100,7 +100,7 @@ suite('<bookmarks-toolbar>', function() {
   });
 
   test('delete button is disabled when items are unmodifiable', function() {
-    store.data.nodes['3'].unmodifiable = 'managed';
+    store.data.nodes['3']!.unmodifiable = 'managed';
     store.data.selection.items = new Set(['2', '3']);
     store.notifyObservers();
     flush();
