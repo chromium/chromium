@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 
+#include "build/build_config.h"
+
 namespace enterprise_connectors {
 
 namespace constants {
@@ -13,6 +15,13 @@ const char kBinaryFileName[] = "chrome-management-service";
 const char kGroupName[] = "chromemgmt";
 
 const char kSigningKeyFilePath[] = "enrollment/DeviceTrustSigningKey";
+
+#if BUILDFLAG(IS_MAC)
+const char kTemporaryDeviceTrustSigningKeyLabel[] =
+    "GoogleChromeEnterpriseTempDTSigningKey";
+
+const char kDeviceTrustSigningKeyLabel[] = "GoogleChromeEnterpriseDTSigningKey";
+#endif
 
 }  // namespace constants
 

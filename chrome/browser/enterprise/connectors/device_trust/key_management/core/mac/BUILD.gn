@@ -2,10 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("helper") {
-  public = [ "secure_enclave_helper.h" ]
+source_set("mac") {
+  public = [
+    "secure_enclave_client.h",
+    "secure_enclave_helper.h",
+  ]
 
   sources = [
+    "secure_enclave_client.cc",
+    "secure_enclave_client_impl.h",
+    "secure_enclave_client_impl.mm",
     "secure_enclave_helper.cc",
     "secure_enclave_helper_impl.h",
     "secure_enclave_helper_impl.mm",
@@ -13,7 +19,10 @@ source_set("helper") {
 
   public_deps = [ "//base" ]
 
-  deps = [ "//third_party/boringssl" ]
+  deps = [
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
+    "//third_party/boringssl",
+  ]
 
   frameworks = [
     "CoreFoundation.framework",
@@ -25,14 +34,39 @@ source_set("helper") {
 
 source_set("test_support") {
   testonly = true
-  public = [ "mock_secure_enclave_helper.h" ]
+  public = [
+    "mock_secure_enclave_client.h",
+    "mock_secure_enclave_helper.h",
+  ]
 
-  sources = [ "mock_secure_enclave_helper.cc" ]
+  sources = [
+    "mock_secure_enclave_client.cc",
+    "mock_secure_enclave_helper.cc",
+  ]
 
   frameworks = [ "Security.framework" ]
 
   public_deps = [
-    ":helper",
+    ":mac",
     "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "secure_enclave_client_unittest.mm" ]
+
+  deps = [
+    ":mac",
+    ":test_support",
+    "//base",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "Security.framework",
   ]
 }

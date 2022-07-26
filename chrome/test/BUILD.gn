@@ -8279,6 +8279,10 @@ test("unit_tests") {
     ]
   }
 
+  if (is_mac) {
+    deps += [ "../browser/enterprise/connectors/device_trust/key_management/core/mac:unit_tests" ]
+  }
+
   if (is_win || is_mac || is_linux) {
     deps += [ "../services/system_signals:unit_tests" ]
   }

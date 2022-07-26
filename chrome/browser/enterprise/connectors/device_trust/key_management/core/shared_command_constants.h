@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_SHARED_COMMAND_CONSTANTS_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_SHARED_COMMAND_CONSTANTS_H_
 
+#include "build/build_config.h"
+
 // Defines constants shared by both the browser and installers chrome
 // management service executable.
 namespace enterprise_connectors {
@@ -26,6 +28,14 @@ extern const char kGroupName[];
 
 // Path to where the signing key is stored.
 extern const char kSigningKeyFilePath[];
+
+#if BUILDFLAG(IS_MAC)
+// Temporary label for the secure enclave device trust signing key.
+extern const char kTemporaryDeviceTrustSigningKeyLabel[];
+
+// Permanent label for the secure enclave device trust signing key.
+extern const char kDeviceTrustSigningKeyLabel[];
+#endif
 
 }  // namespace constants
 
