@@ -2420,6 +2420,12 @@ Color ComputedStyle::VisitedDependentColor(
                unvisited_color.Alpha());
 }
 
+bool ComputedStyle::VisitedDependentColorIsCurrentColor() const {
+  if (InsideLink() == EInsideLink::kInsideVisitedLink)
+    return InternalVisitedColorIsCurrentColor();
+  return ColorIsCurrentColor();
+}
+
 Color ComputedStyle::ResolvedColor(const StyleColor& color) const {
   bool visited_link = (InsideLink() == EInsideLink::kInsideVisitedLink);
   Color current_color =

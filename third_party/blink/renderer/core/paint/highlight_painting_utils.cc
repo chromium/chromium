@@ -213,7 +213,7 @@ Color HighlightColor(const Document& document,
                        !UseUaHighlightColors(pseudo, *pseudo_style))) {
     if (!document.InForcedColorsMode() ||
         pseudo_style->ForcedColorAdjust() != EForcedColorAdjust::kAuto) {
-      if (pseudo_style->ColorIsCurrentColor()) {
+      if (pseudo_style->VisitedDependentColorIsCurrentColor()) {
         if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled())
           return previous_layer_color;
         else
@@ -288,7 +288,7 @@ Color HighlightPaintingUtils::HighlightBackgroundColor(
       Color highlight_color =
           pseudo_style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
       if (pseudo_style->IsBackgroundColorCurrentColor() &&
-          pseudo_style->ColorIsCurrentColor()) {
+          pseudo_style->VisitedDependentColorIsCurrentColor()) {
         if (RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled() &&
             previous_layer_color.has_value()) {
           highlight_color = previous_layer_color.value();

@@ -844,6 +844,16 @@
       type_name: "bool",
       default_value: "true",
       inherited: true,
+      computed_style_custom_functions: ["getter"],
+    },
+    {
+      name: "InternalVisitedColorIsCurrentColor",
+      field_template: "primitive",
+      field_group: "inherited",
+      type_name: "bool",
+      default_value: "true",
+      inherited: true,
+      computed_style_custom_functions: ["getter"],
     },
     {
       name: "WillChangeProperties",

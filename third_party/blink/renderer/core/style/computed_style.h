@@ -2748,6 +2748,7 @@ class ComputedStyle : public ComputedStyleBase,
   // Color utility functions.
   CORE_EXPORT Color
   VisitedDependentColor(const CSSProperty& color_property) const;
+  CORE_EXPORT bool VisitedDependentColorIsCurrentColor() const;
 
   // -webkit-appearance utility functions.
   bool HasEffectiveAppearance() const {
@@ -2983,6 +2984,7 @@ class ComputedStyle : public ComputedStyleBase,
   }
   const StyleAutoColor& CaretColor() const { return CaretColorInternal(); }
   const StyleColor& GetColor() const { return ColorInternal(); }
+  bool ColorIsCurrentColor() const { return ColorIsCurrentColorInternal(); }
   const StyleColor& ColumnRuleColor() const {
     return ColumnRuleColorInternal();
   }
@@ -3000,6 +3002,9 @@ class ComputedStyle : public ComputedStyleBase,
   }
   const StyleColor& InternalVisitedColor() const {
     return InternalVisitedColorInternal();
+  }
+  bool InternalVisitedColorIsCurrentColor() const {
+    return InternalVisitedColorIsCurrentColorInternal();
   }
   const StyleAutoColor& InternalVisitedCaretColor() const {
     return InternalVisitedCaretColorInternal();

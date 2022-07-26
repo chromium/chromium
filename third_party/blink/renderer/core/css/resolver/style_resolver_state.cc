@@ -74,20 +74,19 @@ StyleResolverState::StyleResolverState(
       can_cache_base_style_(blink::CanCacheBaseStyle(style_request)) {
   DCHECK(!!parent_style_ == !!layout_parent_style_);
 
-  if (!parent_style_) {
-    parent_style_ = element_context_.ParentStyle();
+  if (UsesHighlightPseudoInheritance()) {
+    DCHECK(originating_element_style_);
+  } else {
+    if (!parent_style_)
+      parent_style_ = element_context_.ParentStyle();
+    if (!layout_parent_style_)
+      layout_parent_style_ = element_context_.LayoutParentStyle();
   }
-
-  if (!layout_parent_style_)
-    layout_parent_style_ = element_context_.LayoutParentStyle();
 
   if (!layout_parent_style_)
     layout_parent_style_ = parent_style_;
 
   DCHECK(document.IsActive());
-
-  if (UsesHighlightPseudoInheritance())
-    DCHECK(originating_element_style_);
 }
 
 StyleResolverState::~StyleResolverState() {

@@ -3242,6 +3242,7 @@ const CSSValue* ForcedColorAdjust::CSSValueFromComputedStyleInternal(
 void InternalVisitedColor::ApplyInitial(StyleResolverState& state) const {
   state.Style()->SetInternalVisitedColor(
       state.Style()->InitialColorForColorScheme());
+  state.Style()->SetInternalVisitedColorIsCurrentColor(false);
 }
 
 void InternalVisitedColor::ApplyInherit(StyleResolverState& state) const {
@@ -3252,6 +3253,8 @@ void InternalVisitedColor::ApplyInherit(StyleResolverState& state) const {
   } else {
     style->SetInternalVisitedColor(state.ParentStyle()->GetColor());
   }
+  state.Style()->SetInternalVisitedColorIsCurrentColor(
+      state.ParentStyle()->InternalVisitedColorIsCurrentColor());
 }
 
 void InternalVisitedColor::ApplyValue(StyleResolverState& state,
@@ -3260,16 +3263,23 @@ void InternalVisitedColor::ApplyValue(StyleResolverState& state,
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kCurrentcolor) {
     ApplyInherit(state);
+    state.Style()->SetInternalVisitedColorIsCurrentColor(true);
+    if (state.UsesHighlightPseudoInheritance() &&
+        state.OriginatingElementStyle()) {
+      state.Style()->SetInternalVisitedColor(
+          state.OriginatingElementStyle()->InternalVisitedColor());
+    }
     return;
   }
   if (value.IsInitialColorValue()) {
     DCHECK_EQ(state.GetElement(), state.GetDocument().documentElement());
     state.Style()->SetInternalVisitedColor(
         state.Style()->InitialColorForColorScheme());
-    return;
+  } else {
+    state.Style()->SetInternalVisitedColor(
+        StyleBuilderConverter::ConvertStyleColor(state, value, true));
   }
-  state.Style()->SetInternalVisitedColor(
-      StyleBuilderConverter::ConvertStyleColor(state, value, true));
+  state.Style()->SetInternalVisitedColorIsCurrentColor(false);
 }
 
 const blink::Color InternalVisitedColor::ColorIncludingFallback(

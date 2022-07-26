@@ -963,11 +963,6 @@ void StyleResolver::ApplyInheritance(Element& element,
     // the element has rules but no matched properties, we currently clone.
 
     state.SetStyle(ComputedStyle::Clone(*state.ParentStyle()));
-    state.Style()->SetInsideLink(state.ElementLinkState());
-    state.Style()->SetInForcedColorsMode(
-        style_request.originating_element_style->InForcedColorsMode());
-    state.Style()->SetForcedColorAdjust(
-        style_request.originating_element_style->ForcedColorAdjust());
   } else {
     scoped_refptr<ComputedStyle> style = CreateComputedStyle();
     style->InheritFrom(
@@ -1012,6 +1007,17 @@ void StyleResolver::InitStyleAndApplyInheritance(
   }
   state.Style()->SetStyleType(style_request.pseudo_id);
   state.Style()->SetPseudoArgument(style_request.pseudo_argument);
+
+  // For highlight inheritance, propagate link visitedness and forced-colors
+  // status from the originating element, even if we have no parent highlight
+  // ComputedStyle we can inherit from.
+  if (UsesHighlightPseudoInheritance(style_request.pseudo_id)) {
+    state.Style()->SetInsideLink(state.ElementLinkState());
+    state.Style()->SetInForcedColorsMode(
+        style_request.originating_element_style->InForcedColorsMode());
+    state.Style()->SetForcedColorAdjust(
+        style_request.originating_element_style->ForcedColorAdjust());
+  }
 
   if (!style_request.IsPseudoStyleRequest() && element.IsLink()) {
     state.Style()->SetIsLink();
