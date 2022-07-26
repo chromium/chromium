@@ -109,26 +109,26 @@ ContainerQueryParser::ContainerQueryParser(const CSSParserContext& context)
                           context.GetExecutionContext(),
                           MediaQueryParser::SyntaxLevel::kLevel4) {}
 
-const MediaQueryExpNode* ContainerQueryParser::ParseQuery(String value) {
+const MediaQueryExpNode* ContainerQueryParser::ParseCondition(String value) {
   auto tokens = CSSTokenizer(value).TokenizeToEOF();
   CSSParserTokenRange range(tokens);
-  return ParseQuery(range);
+  return ParseCondition(range);
 }
 
-const MediaQueryExpNode* ContainerQueryParser::ParseQuery(
+const MediaQueryExpNode* ContainerQueryParser::ParseCondition(
     CSSParserTokenRange range) {
   range.ConsumeWhitespace();
-  const MediaQueryExpNode* node = ConsumeContainerQuery(range);
+  const MediaQueryExpNode* node = ConsumeContainerCondition(range);
   if (!range.AtEnd())
     return nullptr;
   return node;
 }
 
-// <container-query> = ( <container-condition> )
+// <query-in-parens> = ( <container-condition> )
 //                   | ( <size-feature> )
 //                   | style( <style-query> )
 //                   | <general-enclosed>
-const MediaQueryExpNode* ContainerQueryParser::ConsumeContainerQuery(
+const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
     CSSParserTokenRange& range) {
   CSSParserTokenRange original_range = range;
 
@@ -171,7 +171,7 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeContainerCondition(
     CSSParserTokenRange& range) {
   return ConsumeNotAndOr(
       [this](CSSParserTokenRange& range) {
-        return this->ConsumeContainerQuery(range);
+        return this->ConsumeQueryInParens(range);
       },
       range);
 }

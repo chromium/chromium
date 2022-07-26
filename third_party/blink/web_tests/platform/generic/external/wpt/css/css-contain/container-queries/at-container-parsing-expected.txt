@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 111 tests; 110 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 113 tests; 112 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS (width)
 PASS (min-width: 0px)
 PASS (max-width: 0px)
@@ -48,6 +48,9 @@ PASS (width < calc(10px + 10em))
 PASS (width < max(10px, 10em))
 PASS (calc(10px + 10em) < width)
 PASS (calc(10px + 10em) < width < max(30px, 30em))
+PASS (width: 100px) and (height: 100px)
+PASS (width: 100px) or (height: 100px)
+PASS not (width: 100px)
 PASS foo(width)
 PASS size(width)
 PASS (asdf)
@@ -75,32 +78,31 @@ PASS screen or (width: 100px)
 PASS not screen and (width: 100px)
 PASS not screen or (width: 100px)
 PASS (width: 100px), (height: 100px)
-PASS (width: 100px) and (height: 100px)
-PASS (width: 100px) or (height: 100px)
-PASS not (width: 100px)
 PASS foo (width: 100px)
-PASS Container selector: foo
-PASS Container selector:  foo
-PASS Container selector:  foo 
-PASS Container selector: foo foo
-PASS Container selector: 1px
-PASS Container selector: 50gil
-PASS Container selector: name(foo)
-PASS Container selector: type(inline-size)
-PASS Container selector: "foo"
-PASS Container selector: "inherit"
-PASS Container selector: none
-PASS Container selector: None
-PASS Container selector: normal
-PASS Container selector: Normal
-PASS Container selector: auto
-PASS Container selector: Auto
-PASS Container selector: and
-PASS Container selector: or
-PASS Container selector: not
-PASS Container selector: And
-PASS Container selector: oR
-PASS Container selector: nOt
+PASS name not (width <= 500px)
+PASS not (width <= 500px)
+PASS Container name: foo
+PASS Container name:  foo
+PASS Container name:  foo 
+PASS Container name: foo foo
+PASS Container name: 1px
+PASS Container name: 50gil
+PASS Container name: name(foo)
+PASS Container name: type(inline-size)
+PASS Container name: "foo"
+PASS Container name: "inherit"
+PASS Container name: none
+PASS Container name: None
+PASS Container name: normal
+PASS Container name: Normal
+PASS Container name: auto
+PASS Container name: Auto
+PASS Container name: and
+PASS Container name: or
+PASS Container name: not
+PASS Container name: And
+PASS Container name: oR
+PASS Container name: nOt
 PASS style(--my-prop: foo)
 PASS style(--my-prop: foo - bar ())
 PASS style(not ((--foo: calc(10px + 2em)) and ((--foo: url(x)))))

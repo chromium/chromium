@@ -22,16 +22,16 @@ class CORE_EXPORT ContainerQueryParser {
  public:
   explicit ContainerQueryParser(const CSSParserContext&);
 
-  // https://drafts.csswg.org/css-contain-3/#typedef-container-query
-  const MediaQueryExpNode* ParseQuery(String);
-  const MediaQueryExpNode* ParseQuery(CSSParserTokenRange);
+  // https://drafts.csswg.org/css-contain-3/#typedef-container-condition
+  const MediaQueryExpNode* ParseCondition(String);
+  const MediaQueryExpNode* ParseCondition(CSSParserTokenRange);
 
  private:
   friend class ContainerQueryParserTest;
 
   using FeatureSet = MediaQueryParser::FeatureSet;
 
-  const MediaQueryExpNode* ConsumeContainerQuery(CSSParserTokenRange&);
+  const MediaQueryExpNode* ConsumeQueryInParens(CSSParserTokenRange&);
   const MediaQueryExpNode* ConsumeContainerCondition(CSSParserTokenRange&);
   const MediaQueryExpNode* ConsumeFeatureQuery(CSSParserTokenRange&,
                                                const FeatureSet&);

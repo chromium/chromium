@@ -1172,12 +1172,11 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
   if (prelude.Peek().GetType() == kIdentToken) {
     auto* ident = DynamicTo<CSSCustomIdentValue>(
         css_parsing_utils::ConsumeSingleContainerName(prelude, *context_));
-    if (!ident)
-      return nullptr;
-    name = ident->Value();
+    if (ident)
+      name = ident->Value();
   }
 
-  const MediaQueryExpNode* query = query_parser.ParseQuery(prelude);
+  const MediaQueryExpNode* query = query_parser.ParseCondition(prelude);
   if (!query)
     return nullptr;
   ContainerQuery* container_query = MakeGarbageCollected<ContainerQuery>(
