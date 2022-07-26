@@ -1498,7 +1498,8 @@ chromium-metrics-reviews@google.com.
   <owner>kazinova@google.com</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
-    This metric records whether filling was successful or not on IOS.
+    This metric records whether filling was successful or not on IOS. The metric
+    is recorded when filling upon suggestion click or on page load.
   </summary>
 </histogram>
 
