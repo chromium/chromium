@@ -354,4 +354,34 @@ TEST(CSSParserFastPathsTest, IsValidKeywordPropertyAndValueOverflowClip) {
       CSSParserMode::kHTMLStandardMode));
 }
 
+TEST(CSSParserFastPathsTest, InternalColorsOnlyAllowedInUaMode) {
+  EXPECT_EQ(CSSParserFastPaths::ParseColor("blue", kHTMLStandardMode),
+            CSSIdentifierValue::Create(CSSValueID::kBlue));
+  EXPECT_EQ(CSSParserFastPaths::ParseColor("blue", kHTMLQuirksMode),
+            CSSIdentifierValue::Create(CSSValueID::kBlue));
+  EXPECT_EQ(CSSParserFastPaths::ParseColor("blue", kUASheetMode),
+            CSSIdentifierValue::Create(CSSValueID::kBlue));
+
+  EXPECT_EQ(CSSParserFastPaths::ParseColor("-internal-spelling-error-color",
+                                           kHTMLStandardMode),
+            nullptr);
+  EXPECT_EQ(CSSParserFastPaths::ParseColor("-internal-spelling-error-color",
+                                           kHTMLQuirksMode),
+            nullptr);
+  EXPECT_EQ(
+      CSSParserFastPaths::ParseColor("-internal-spelling-error-color",
+                                     kUASheetMode),
+      CSSIdentifierValue::Create(CSSValueID::kInternalSpellingErrorColor));
+
+  EXPECT_EQ(CSSParserFastPaths::ParseColor("-internal-grammar-error-color",
+                                           kHTMLStandardMode),
+            nullptr);
+  EXPECT_EQ(CSSParserFastPaths::ParseColor("-internal-grammar-error-color",
+                                           kHTMLQuirksMode),
+            nullptr);
+  EXPECT_EQ(CSSParserFastPaths::ParseColor("-internal-grammar-error-color",
+                                           kUASheetMode),
+            CSSIdentifierValue::Create(CSSValueID::kInternalGrammarErrorColor));
+}
+
 }  // namespace blink

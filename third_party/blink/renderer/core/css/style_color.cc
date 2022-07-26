@@ -61,7 +61,13 @@ bool StyleColor::IsColorKeyword(CSSValueID id) {
   //   '-webkit-focus-ring-color'
   //   '-internal-quirk-inherit'
   //
-  return (id >= CSSValueID::kAqua && id <= CSSValueID::kInternalQuirkInherit) ||
+  // css-text-decor
+  // <https://github.com/w3c/csswg-drafts/issues/7522>
+  //   '-internal-spelling-error-color'
+  //   '-internal-grammar-error-color'
+  //
+  return (id >= CSSValueID::kAqua &&
+          id <= CSSValueID::kInternalGrammarErrorColor) ||
          (id >= CSSValueID::kAliceblue && id <= CSSValueID::kYellowgreen) ||
          id == CSSValueID::kMenu;
 }
@@ -84,6 +90,8 @@ bool StyleColor::IsSystemColor(CSSValueID id) {
     case CSSValueID::kGraytext:
     case CSSValueID::kHighlight:
     case CSSValueID::kHighlighttext:
+    case CSSValueID::kInternalGrammarErrorColor:
+    case CSSValueID::kInternalSpellingErrorColor:
     case CSSValueID::kLinktext:
     case CSSValueID::kMark:
     case CSSValueID::kMarktext:

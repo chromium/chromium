@@ -635,6 +635,10 @@ Color LayoutTheme::DefaultSystemColor(
       return InactiveListBoxSelectionBackgroundColor(color_scheme);
     case CSSValueID::kInternalInactiveListBoxSelectionText:
       return InactiveListBoxSelectionForegroundColor(color_scheme);
+    case CSSValueID::kInternalSpellingErrorColor:
+      return PlatformSpellingMarkerUnderlineColor();
+    case CSSValueID::kInternalGrammarErrorColor:
+      return PlatformGrammarMarkerUnderlineColor();
     default:
       break;
   }

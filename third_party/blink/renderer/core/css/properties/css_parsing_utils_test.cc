@@ -23,9 +23,9 @@ using css_parsing_utils::ConsumeIdSelector;
 using css_parsing_utils::ConsumeIfDelimiter;
 using css_parsing_utils::ConsumeIfIdent;
 
-CSSParserContext* MakeContext() {
+CSSParserContext* MakeContext(CSSParserMode mode = kHTMLStandardMode) {
   return MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+      mode, SecureContextMode::kInsecureContext);
 }
 
 TEST(CSSParsingUtilsTest, BasicShapeUseCount) {
@@ -316,6 +316,40 @@ TEST(CSSParsingUtilsTest, NoSystemColor) {
     EXPECT_EQ(ConsumeColorForTest(expectation.css_text,
                                   AllowedColorKeywords::kNoSystemColor),
               expectation.not_allowed_expectation);
+  }
+}
+
+TEST(CSSParsingUtilsTest, InternalColorsOnlyAllowedInUaMode) {
+  auto ConsumeColorForTest = [](String css_text, CSSParserMode mode) {
+    auto tokens = CSSTokenizer(css_text).TokenizeToEOF();
+    CSSParserTokenRange range(tokens);
+    return css_parsing_utils::ConsumeColor(range, *MakeContext(mode));
+  };
+
+  struct {
+    STACK_ALLOCATED();
+
+   public:
+    String css_text;
+    CSSIdentifierValue* ua_expectation;
+    CSSIdentifierValue* other_expectation;
+  } expectations[]{
+      {"blue", CSSIdentifierValue::Create(CSSValueID::kBlue),
+       CSSIdentifierValue::Create(CSSValueID::kBlue)},
+      {"-internal-spelling-error-color",
+       CSSIdentifierValue::Create(CSSValueID::kInternalSpellingErrorColor),
+       nullptr},
+      {"-internal-grammar-error-color",
+       CSSIdentifierValue::Create(CSSValueID::kInternalGrammarErrorColor),
+       nullptr},
+  };
+  for (auto& expectation : expectations) {
+    EXPECT_EQ(ConsumeColorForTest(expectation.css_text, kHTMLStandardMode),
+              expectation.other_expectation);
+    EXPECT_EQ(ConsumeColorForTest(expectation.css_text, kHTMLQuirksMode),
+              expectation.other_expectation);
+    EXPECT_EQ(ConsumeColorForTest(expectation.css_text, kUASheetMode),
+              expectation.ua_expectation);
   }
 }
 
