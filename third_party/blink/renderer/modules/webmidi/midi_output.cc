@@ -242,7 +242,13 @@ MIDIOutput::MIDIOutput(MIDIAccess* access,
                        const String& name,
                        const String& version,
                        PortState state)
-    : MIDIPort(access, id, manufacturer, name, kTypeOutput, version, state),
+    : MIDIPort(access,
+               id,
+               manufacturer,
+               name,
+               MIDIPortType::kOutput,
+               version,
+               state),
       port_index_(port_index) {}
 
 MIDIOutput::~MIDIOutput() = default;

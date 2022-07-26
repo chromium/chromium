@@ -30,14 +30,14 @@ class MODULES_EXPORT MIDIAccessInitializer : public ScriptPromiseResolver,
     String id;
     String manufacturer;
     String name;
-    MIDIPort::TypeCode type;
+    MIDIPortType type;
     String version;
     midi::mojom::PortState state;
 
     PortDescriptor(const String& id,
                    const String& manufacturer,
                    const String& name,
-                   MIDIPort::TypeCode type,
+                   MIDIPortType type,
                    const String& version,
                    midi::mojom::PortState state)
         : id(id),

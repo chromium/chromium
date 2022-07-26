@@ -75,7 +75,7 @@ MIDIAccess::MIDIAccess(
       has_pending_activity_(false) {
   dispatcher_->SetClient(this);
   for (const auto& port : ports) {
-    if (port.type == MIDIPort::kTypeInput) {
+    if (port.type == MIDIPortType::kInput) {
       inputs_.push_back(MakeGarbageCollected<MIDIInput>(
           this, port.id, port.manufacturer, port.name, port.version,
           ToDeviceState(port.state)));

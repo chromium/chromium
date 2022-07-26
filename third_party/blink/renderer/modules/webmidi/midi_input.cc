@@ -47,7 +47,13 @@ MIDIInput::MIDIInput(MIDIAccess* access,
                      const String& name,
                      const String& version,
                      PortState state)
-    : MIDIPort(access, id, manufacturer, name, kTypeInput, version, state) {}
+    : MIDIPort(access,
+               id,
+               manufacturer,
+               name,
+               MIDIPortType::kInput,
+               version,
+               state) {}
 
 EventListener* MIDIInput::onmidimessage() {
   return GetAttributeEventListener(event_type_names::kMidimessage);
@@ -80,7 +86,7 @@ void MIDIInput::DidReceiveMIDIData(unsigned port_index,
   if (!length)
     return;
 
-  if (GetConnection() != kConnectionStateOpen)
+  if (GetConnection() != MIDIPortConnectionState::kOpen)
     return;
 
   // Drop sysex message here when the client does not request it. Note that this
