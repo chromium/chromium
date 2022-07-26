@@ -34,3 +34,18 @@ avd_settings {
     value: "on"
   }
 }
+
+min_sdk: 28
+install_privileged_apk_partition: "/system"
+
+privileged_apk {
+  package_name: "chrome_internal/third_party/google3/apks/gmscore/x86"
+  version: "0h92P9pOxl5e5D8ImqTtJydx6qu6qxOhsZxzeKerjCwC"
+  dest_path: "generic_android28/gmscore_apks"
+}
+
+privileged_apk {
+  package_name: "chrome_internal/third_party/google3/apks/phonesky/x86"
+  version: "bzwRpftuEvDQnEXNuAGZyWUcNJGwd7NNc6Qq6YklXdsC"
+  dest_path: "generic_android28/phonesky_apks"
+}

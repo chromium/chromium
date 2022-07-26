@@ -90,6 +90,42 @@ def _Load(avd_proto_path):
     return text_format.Merge(avd_proto_file.read(), avd_pb2.Avd())
 
 
+def _FindMinSdkFile(apk_dir, min_sdk):
+  """Finds the apk file associated with the min_sdk file.
+
+  This reads a version.json file located in the apk_dir to find an apk file
+  that is closest without going over the min_sdk.
+
+  Args:
+    apk_dir: The directory to look for apk files.
+    min_sdk: The minimum sdk version supported by the device.
+
+  Returns:
+    The path to the file that suits the minSdkFile or None
+  """
+  json_file = os.path.join(apk_dir, 'version.json')
+  if not os.path.exists(json_file):
+    logging.error('Json version file not found: %s', json_file)
+    return None
+
+  min_sdk_found = None
+  curr_min_sdk_version = 0
+  with open(json_file) as f:
+    data = json.loads(f.read())
+    # Finds the entry that is closest to min_sdk without going over.
+    for entry in data:
+      if (entry['min_sdk'] > curr_min_sdk_version
+          and entry['min_sdk'] <= min_sdk):
+        min_sdk_found = entry
+        curr_min_sdk_version = entry['min_sdk']
+
+    if not min_sdk_found:
+      logging.error('No suitable apk file found that suits the minimum sdk.')
+      return None
+
+    return os.path.join(apk_dir, min_sdk_found['file_name'])
+
+
 class _AvdManagerAgent:
   """Private utility for interacting with avdmanager."""
 
@@ -270,6 +306,8 @@ class AvdConfig:
     self._InstallCipdPackages(packages=[
         self._config.emulator_package,
         self._config.system_image_package,
+        *self._config.privileged_apk,
+        *self._config.additional_apk,
     ])
 
     android_avd_home = self._avd_home
@@ -344,13 +382,14 @@ class AvdConfig:
                               self._config)
       # Enable debug for snapshot when it is set to True
       debug_tags = 'init,snapshot' if snapshot else None
-      # Installing privileged apks requires modifying the system image.
-      writable_system = bool(privileged_apk_tuples)
-      instance.Start(ensure_system_settings=False,
-                     read_only=False,
-                     writable_system=writable_system,
-                     gpu_mode=_DEFAULT_GPU_MODE,
-                     debug_tags=debug_tags)
+      instance.Start(
+          ensure_system_settings=False,
+          read_only=False,
+          # Installing privileged apks requires modifying the system
+          # image.
+          writable_system=True,
+          gpu_mode=_DEFAULT_GPU_MODE,
+          debug_tags=debug_tags)
 
       assert instance.device is not None, '`instance.device` not initialized.'
       # Android devices with full-disk encryption are encrypted on first boot,
@@ -360,11 +399,29 @@ class AvdConfig:
       # like M, otherwise the avd may have "Encryption Unsuccessful" error.
       instance.device.WaitUntilFullyBooted(decrypt=True, timeout=180, retries=0)
 
+      if not additional_apks:
+        additional_apks = []
+      for apk_package in self._config.additional_apk:
+        apk_dir = os.path.join(COMMON_CIPD_ROOT, apk_package.dest_path)
+        for f in os.listdir(apk_dir):
+          if os.path.isfile(f) and f.endswith('.apk'):
+            additional_apks.append(os.path.join(apk_dir, f))
+
       if additional_apks:
-        for additional_apk in additional_apks:
-          instance.device.Install(additional_apk,
-                                  allow_downgrade=True,
-                                  reinstall=True)
+        for apk in additional_apks:
+          instance.device.Install(apk, allow_downgrade=True, reinstall=True)
+
+      if not privileged_apk_tuples:
+        privileged_apk_tuples = []
+      for pkg in self._config.privileged_apk:
+        apk_dir = os.path.join(COMMON_CIPD_ROOT, pkg.dest_path)
+        apk_file = _FindMinSdkFile(apk_dir, self._config.min_sdk)
+        # Some of these files come from chrome internal, so may not be
+        # available to non-internal permissioned users.
+        if os.path.exists(apk_file):
+          logging.info('Adding privilege apk for install: %s', apk_file)
+          privileged_apk_tuples.append(
+              (apk_file, self._config.install_privileged_apk_partition))
 
       if privileged_apk_tuples:
         system_app.InstallPrivilegedApps(instance.device, privileged_apk_tuples)
@@ -489,6 +546,8 @@ class AvdConfig:
           self._config.avd_package,
           self._config.emulator_package,
           self._config.system_image_package,
+          *self._config.privileged_apk,
+          *self._config.additional_apk,
       ]
     for pkg in packages:
       # Skip when no version exists to prevent "IsAvailable()" returning False

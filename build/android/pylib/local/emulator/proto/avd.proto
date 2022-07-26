@@ -80,4 +80,16 @@ message Avd {
 
   // How to configure the AVD at creation.
   AvdSettings avd_settings = 6;
+
+  // min sdk level for emulator.
+  uint32 min_sdk = 7;
+
+  // The partition to install the privileged apk.
+  // version 27 and below is /system. After that it can be
+  // /system, /product, or /vendor
+  string install_privileged_apk_partition = 8;
+
+  // Needed for gmscore/phonesky support.
+  repeated CIPDPackage privileged_apk = 9;
+  repeated CIPDPackage additional_apk = 10;
 }
