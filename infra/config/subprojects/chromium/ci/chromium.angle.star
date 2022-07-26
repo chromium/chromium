@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.angle builder group."""
 
-load("//lib/builders.star", "goma", "xcode")
+load("//lib/builders.star", "goma", "sheriff_rotations", "xcode")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
 
@@ -18,6 +18,7 @@ ci.defaults.set(
         "perf_dashboard_machine_group": "ChromiumANGLE",
     },
     service_account = ci.gpu.SERVICE_ACCOUNT,
+    sheriff_rotations = sheriff_rotations.ANGLE,
     thin_tester_cores = 2,
 )
 

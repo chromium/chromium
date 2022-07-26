@@ -142,6 +142,7 @@ def _rotation(name):
 # Arbitrary elements can't be added, new rotations must be added in SoM code
 sheriff_rotations = struct(
     ANDROID = _rotation("android"),
+    ANGLE = _rotation("angle"),
     CHROMIUM = _rotation("chromium"),
     FUCHSIA = _rotation("fuchsia"),
     CHROMIUM_CLANG = _rotation("chromium.clang"),
