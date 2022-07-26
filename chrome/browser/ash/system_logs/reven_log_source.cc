@@ -285,7 +285,7 @@ void RevenLogSource::Fetch(SysLogsSourceCallback callback) {
   probe_service_->ProbeTelemetryInfo(
       {ProbeCategories::kBluetooth, ProbeCategories::kBus,
        ProbeCategories::kCpu, ProbeCategories::kGraphics,
-       ProbeCategories::kMemory, ProbeCategories::kSystem2,
+       ProbeCategories::kMemory, ProbeCategories::kSystem,
        ProbeCategories::kTpm},
       base::BindOnce(&RevenLogSource::OnTelemetryInfoProbeResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

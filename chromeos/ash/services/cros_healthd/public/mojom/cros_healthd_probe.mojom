@@ -27,7 +27,7 @@ enum CpuArchitectureEnum {
 // An enumeration of each category of information that cros_healthd can report.
 //
 // NextMinVersion: 2, NextIndex: 21
-[Extensible]
+[Stable, Extensible]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 16,
   kBattery = 0,
@@ -50,9 +50,6 @@ enum ProbeCategoryEnum {
   kNetworkInterface = 18,
   kInput = 19,
   [MinVersion=1] kAudioHardware = 20,
-
-  // TODO(b/190459636): Rename it to kSystem after migration.
-  kSystem2 = 0x10000,
 };
 
 // An enumeration of the different categories of errors that can occur when
@@ -742,18 +739,17 @@ struct SupportedCapabilities {
   int16 max_tx_power@3;
 };
 
-// System probe result. Can either be populated with the SystemInfo or an error
-// retrieving the information.
-// DEPRECATED(b/188508561): Use SystemResultV2 instead.
-union SystemResult {
-  // Valid SystemInfo.
-  SystemInfo system_info;
-  // The error that occurred attempting to retrieve SystemInfo.
+// System probe result. DEPRECATED.
+union DEPRECATE_SystemResult {
+  // Valid DEPRECATE_SystemInfo.
+  DEPRECATE_SystemInfo system_info;
+  // The error that occurred attempting to retrieve DEPRECATE_SystemInfo.
   ProbeError error;
 };
 
 // System probe result. Can either be populated with the SystemInfoV2 or an
 // error retrieving the information.
+// TODO(b/190459636): Rename it to SystemResult.
 union SystemResultV2 {
   // Valid SystemInfoV2.
   SystemInfoV2 system_info_v2;
@@ -761,11 +757,11 @@ union SystemResultV2 {
   ProbeError error;
 };
 
-// System Information.
-// DEPRECATED(b/188508561): Use SystemInfoV2 instead.
+// System Information. DEPRECATED.
+// TODO(b/190459636): Delete struct elements.
 //
 // NextMinVersion: 1, NextIndex: 12
-struct SystemInfo {
+struct DEPRECATE_SystemInfo {
   // The date the device was first activated.
   // Format: YYYY-WW.
   string? first_power_date@0;
@@ -1617,10 +1613,8 @@ struct TelemetryInfo {
   // Information about the device's Bluetooth adapters and devices. Only present
   // when kBluetooth was included in the categories input to ProbeTelemetryInfo.
   BluetoothResult? bluetooth_result@8;
-  // Information about the system. Only present when kSystem was included in
-  // the categories input to ProbeTelemetryInfo.
-  // DEPRECATED(b/188508561): Use system_result_v2 instead.
-  SystemResult? system_result@9;
+  // Information about the system. DEPRECATED.
+  DEPRECATE_SystemResult? deprecate_system_result@9;
   // Information about the networking devices and associated networks of the
   // system. Only present when kNetwork was included in the categories input to
   // ProbeTelemetryInfo.
@@ -1634,8 +1628,8 @@ struct TelemetryInfo {
   // Information about the bus devices. Only present when kBus was included
   // in the categories input to ProbeTelemetryInfo.
   BusResult? bus_result@13;
-  // Information about the system. Only present when kSystem2 was included in
-  // the categories input to ProbeTelemetryInfo.
+  // Information about the system. Only present when kSystem was included in the
+  // categories input to ProbeTelemetryInfo.
   SystemResultV2? system_result_v2@14;
   // Information about the tpm. Only present when kTpm was included in
   // the categories input to ProbeTelemetryInfo.
