@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/contextualsearch/contextual_search_delegate.h"
+#include "components/contextual_search/core/browser/contextual_search_delegate.h"
 
 #include <algorithm>
 #include <memory>
@@ -10,32 +10,17 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
-#include "base/strings/escape.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/android/contextualsearch/contextual_search_field_trial.h"
-#include "chrome/browser/android/proto/client_discourse_context.pb.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/language/language_model_manager_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/translate/translate_service.h"
+#include "components/contextual_search/core/browser/contextual_search_field_trial.h"
 #include "components/contextual_search/core/browser/public.h"
 #include "components/contextual_search/core/browser/resolved_search_term.h"
-#include "components/language/core/browser/language_model.h"
-#include "components/language/core/browser/language_model_manager.h"
-#include "components/language/core/browser/pref_names.h"
-#include "components/prefs/pref_service.h"
+#include "components/contextual_search/core/proto/client_discourse_context.pb.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "components/variations/net/variations_http_headers.h"
-#include "components/variations/variations_associated_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_status_code.h"
@@ -46,8 +31,6 @@
 #include "url/gurl.h"
 
 using content::RenderFrameHost;
-using language::LanguageModel;
-using unified_consent::UrlKeyedDataCollectionConsentHelper;
 
 namespace {
 
@@ -84,6 +67,36 @@ const char kXssiEscape[] = ")]}'\n";
 const char kDiscourseContextHeaderName[] = "X-Additional-Discourse-Context";
 const char kDoPreventPreloadValue[] = "1";
 
+// Populates and returns the discourse context.
+const net::HttpRequestHeaders GetDiscourseContext(
+    const ContextualSearchContext& context) {
+  discourse_context::ClientDiscourseContext proto;
+  discourse_context::Display* display = proto.add_display();
+  display->set_uri(context.GetBasePageUrl().spec());
+
+  discourse_context::Media* media = display->mutable_media();
+  media->set_mime_type(context.GetBasePageEncoding());
+
+  discourse_context::Selection* selection = display->mutable_selection();
+  selection->set_content(base::UTF16ToUTF8(context.GetSurroundingText()));
+  selection->set_start(context.GetStartOffset());
+  selection->set_end(context.GetEndOffset());
+  selection->set_is_uri_encoded(false);
+
+  std::string serialized;
+  proto.SerializeToString(&serialized);
+
+  std::string encoded_context;
+  base::Base64Encode(serialized, &encoded_context);
+  // The server memoizer expects a web-safe encoding.
+  std::replace(encoded_context.begin(), encoded_context.end(), '+', '-');
+  std::replace(encoded_context.begin(), encoded_context.end(), '/', '_');
+
+  net::HttpRequestHeaders headers;
+  headers.SetHeader(kDiscourseContextHeaderName, encoded_context);
+  return headers;
+}
+
 }  // namespace
 
 // Handles tasks for the ContextualSearchManager in a separable, testable way.
@@ -98,11 +111,10 @@ ContextualSearchDelegate::ContextualSearchDelegate(
       search_term_callback_(std::move(search_term_callback)),
       surrounding_text_callback_(std::move(surrounding_text_callback)) {}
 
-ContextualSearchDelegate::~ContextualSearchDelegate() {
-}
+ContextualSearchDelegate::~ContextualSearchDelegate() = default;
 
 void ContextualSearchDelegate::GatherAndSaveSurroundingText(
-    base::WeakPtr<NativeContextualSearchContext> contextual_search_context,
+    base::WeakPtr<ContextualSearchContext> contextual_search_context,
     content::WebContents* web_contents) {
   DCHECK(web_contents);
   blink::mojom::LocalFrame::GetTextSurroundingSelectionCallback callback =
@@ -127,7 +139,7 @@ void ContextualSearchDelegate::GatherAndSaveSurroundingText(
 }
 
 void ContextualSearchDelegate::StartSearchTermResolutionRequest(
-    base::WeakPtr<NativeContextualSearchContext> contextual_search_context,
+    base::WeakPtr<ContextualSearchContext> contextual_search_context,
     content::WebContents* web_contents) {
   DCHECK(web_contents);
   if (context_ == nullptr)
@@ -184,8 +196,8 @@ void ContextualSearchDelegate::ResolveSearchTermFromContext() {
           policy {
             cookies_allowed: NO
             setting:
-              "This feature can be disabled by turning off 'Touch to Search' in "
-              "Chrome for Android settings."
+              "This feature can be disabled by turning off 'Touch to Search' "
+              "in Chrome for Android settings."
             chrome_policy {
               ContextualSearchEnabled {
                   policy_options {mode: MANDATORY}
@@ -285,7 +297,7 @@ ContextualSearchDelegate::GetResolvedSearchTermFromJson(
 }
 
 std::string ContextualSearchDelegate::BuildRequestUrl(
-    NativeContextualSearchContext* context) {
+    ContextualSearchContext* context) {
   if (!template_url_service_ ||
       !template_url_service_->GetDefaultSearchProvider()) {
     return std::string();
@@ -300,14 +312,13 @@ std::string ContextualSearchDelegate::BuildRequestUrl(
   // Set the Coca-integration version.
   // This is based on our current active feature.
   int contextual_cards_version =
-        contextual_search::kContextualCardsDefinitionsIntegration;
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kContextualSearchTranslations)) {
+      contextual_search::kContextualCardsDefinitionsIntegration;
+  if (base::FeatureList::IsEnabled(kContextualSearchTranslations)) {
     contextual_cards_version =
         contextual_search::kContextualCardsTranslationsIntegration;
   }
   // Mixin the debug setting.
-  if (base::FeatureList::IsEnabled(chrome::android::kContextualSearchDebug)) {
+  if (base::FeatureList::IsEnabled(kContextualSearchDebug)) {
     contextual_cards_version +=
         contextual_search::kContextualCardsServerDebugMixin;
   }
@@ -333,9 +344,7 @@ std::string ContextualSearchDelegate::BuildRequestUrl(
 
   std::string request(
       template_url->contextual_search_url_ref().ReplaceSearchTerms(
-          search_terms_args,
-          template_url_service_->search_terms_data(),
-          NULL));
+          search_terms_args, template_url_service_->search_terms_data(), NULL));
 
   // The switch/param should be the URL up to and including the endpoint.
   std::string replacement_url = field_trial_->GetResolverURLPrefix();
@@ -390,35 +399,6 @@ void ContextualSearchDelegate::OnTextSurroundingSelectionAvailable(
   surrounding_text_callback_.Run(context_->GetBasePageEncoding(),
                                  sample_surrounding_text, selection_start,
                                  selection_end);
-}
-
-const net::HttpRequestHeaders ContextualSearchDelegate::GetDiscourseContext(
-    const NativeContextualSearchContext& context) {
-  discourse_context::ClientDiscourseContext proto;
-  discourse_context::Display* display = proto.add_display();
-  display->set_uri(context.GetBasePageUrl().spec());
-
-  discourse_context::Media* media = display->mutable_media();
-  media->set_mime_type(context.GetBasePageEncoding());
-
-  discourse_context::Selection* selection = display->mutable_selection();
-  selection->set_content(base::UTF16ToUTF8(context.GetSurroundingText()));
-  selection->set_start(context.GetStartOffset());
-  selection->set_end(context.GetEndOffset());
-  selection->set_is_uri_encoded(false);
-
-  std::string serialized;
-  proto.SerializeToString(&serialized);
-
-  std::string encoded_context;
-  base::Base64Encode(serialized, &encoded_context);
-  // The server memoizer expects a web-safe encoding.
-  std::replace(encoded_context.begin(), encoded_context.end(), '+', '-');
-  std::replace(encoded_context.begin(), encoded_context.end(), '/', '_');
-
-  net::HttpRequestHeaders headers;
-  headers.SetHeader(kDiscourseContextHeaderName, encoded_context);
-  return headers;
 }
 
 // Decodes the given response from the search term resolution request and sets

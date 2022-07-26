@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/contextualsearch/contextual_search_delegate.h"
+#include "components/contextual_search/core/browser/contextual_search_delegate.h"
 
 #include <stddef.h>
 
@@ -19,11 +19,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chrome/browser/android/contextualsearch/native_contextual_search_context.h"
-#include "chrome/browser/android/proto/client_discourse_context.pb.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/common/chrome_switches.h"
+#include "components/contextual_search/core/browser/contextual_search_context.h"
 #include "components/contextual_search/core/browser/resolved_search_term.h"
+#include "components/contextual_search/core/proto/client_discourse_context.pb.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -37,6 +35,25 @@ const char kSomeSpecificBasePage[] = "http://some.specific.host.name.com/";
 const char kDiscourseContextHeaderName[] = "X-Additional-Discourse-Context";
 
 }  // namespace
+
+class WeakContextualSearchContext : public ContextualSearchContext {
+ public:
+  WeakContextualSearchContext(const std::string& home_country,
+                              const GURL& page_url,
+                              const std::string& encoding) {
+    SetResolveProperties(home_country, /*may_send_base_page_url=*/true);
+    SetBasePageUrl(page_url);
+    SetBasePageEncoding(encoding);
+  }
+  ~WeakContextualSearchContext() = default;
+
+  base::WeakPtr<WeakContextualSearchContext> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<WeakContextualSearchContext> weak_factory_{this};
+};
 
 // Unit tests for the native |ContextualSearchDelegate|.
 class ContextualSearchDelegateTest : public testing::Test {
@@ -63,7 +80,6 @@ class ContextualSearchDelegateTest : public testing::Test {
         base::BindRepeating(
             &ContextualSearchDelegateTest::recordSampleSelectionAvailable,
             base::Unretained(this)));
-    feature_list_.InitAndEnableFeature(chrome::android::kRelatedSearches);
   }
 
   void TearDown() override {
@@ -79,7 +95,8 @@ class ContextualSearchDelegateTest : public testing::Test {
     // Set a default search provider that supports Contextual Search.
     TemplateURLData data;
     data.SetURL("https://foobar.com/url?bar={searchTerms}");
-    data.contextual_search_url = "https://foobar.com/_/contextualsearch?"
+    data.contextual_search_url =
+        "https://foobar.com/_/contextualsearch?"
         "{google:contextualSearchVersion}{google:contextualSearchContextData}";
     TemplateURLService* template_url_service = new TemplateURLService(NULL, 0);
     TemplateURL* template_url =
@@ -98,7 +115,7 @@ class ContextualSearchDelegateTest : public testing::Test {
       const std::u16string& surrounding_text,
       int start_offset,
       int end_offset) {
-    test_context_ = new NativeContextualSearchContext(
+    test_context_ = std::make_unique<WeakContextualSearchContext>(
         std::string(), GURL(kSomeSpecificBasePage), "utf-8");
     // ContextualSearchDelegate class takes ownership of the context.
     delegate_->SetContextForTesting(test_context_->GetWeakPtr());
@@ -135,12 +152,12 @@ class ContextualSearchDelegateTest : public testing::Test {
   // from tests, but can be called here because this is a friend class.
   //-------------------------------------------------------------------
   void CreateTestContext() {
-    test_context_ = new NativeContextualSearchContext(
+    test_context_ = std::make_unique<WeakContextualSearchContext>(
         std::string(), GURL(kSomeSpecificBasePage), "utf-8");
     delegate_->SetContextForTesting(test_context_->GetWeakPtr());
   }
 
-  void DestroyTestContext() { delete test_context_; }
+  void DestroyTestContext() { test_context_.reset(); }
 
   // Call the OnTextSurroundingSelectionAvailable.
   // Cannot be in an actual test because OnTextSurroundingSelectionAvailable
@@ -177,11 +194,10 @@ class ContextualSearchDelegateTest : public testing::Test {
   void SetSurroundingContext(const std::u16string& surrounding_text,
                              int start_offset,
                              int end_offset) {
-    test_context_ = new NativeContextualSearchContext(
+    test_context_ = std::make_unique<WeakContextualSearchContext>(
         std::string(), GURL(kSomeSpecificBasePage), "utf-8");
     test_context_->SetSelectionSurroundings(start_offset, end_offset,
                                             surrounding_text);
-    // ContextualSearchDelegate class takes ownership of the context.
     delegate_->SetContextForTesting(test_context_->GetWeakPtr());
   }
 
@@ -305,8 +321,7 @@ class ContextualSearchDelegateTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
 
-  // Will be owned by the delegate.
-  raw_ptr<NativeContextualSearchContext> test_context_;
+  std::unique_ptr<WeakContextualSearchContext> test_context_;
 
   // Features to enable
   base::test::ScopedFeatureList feature_list_;
@@ -477,8 +492,8 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidDistantEndAndRange) {
 TEST_F(ContextualSearchDelegateTest, ExpandSelectionLargeNumbers) {
   std::u16string surrounding = u"Barack Obama just spoke.";
   std::string selected_text = "Ob";
-  CreateSearchContextAndRequestSearchTerm(selected_text, surrounding,
-                                          268435450, 268435455);
+  CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 268435450,
+                                          268435455);
   SetResponseStringAndSimulateResponse(selected_text, "268435440", "268435455");
 
   EXPECT_EQ(-10, start_adjust());
@@ -721,18 +736,10 @@ TEST_F(ContextualSearchDelegateTest, ResponseWithRelatedSearches) {
               std::string::npos);
 }
 
-TEST_F(ContextualSearchDelegateTest, ResponseWithRelatedSearchesWhenDisabled) {
-  base::test::ScopedFeatureList local_feature_list;
-  local_feature_list.InitAndDisableFeature(chrome::android::kRelatedSearches);
-  CreateDefaultSearchContextAndRequestSearchTerm();
-  std::string response("{\"rsearches\":{\"RSS 1\",\"RSS 2\"}");
-  SimulateResponseReturned(response);
-  EXPECT_TRUE(related_searches_json().empty());
-}
-
 TEST_F(ContextualSearchDelegateTest, ResponseWithEmptyRelatedSearches) {
   CreateDefaultSearchContextAndRequestSearchTerm();
-  std::string response("{\"rsearches\":{}");
+  // A response without a related searches tag.
+  std::string response("{\"no_suggestions_tag\":\"test\"}");
   SimulateResponseReturned(response);
   EXPECT_TRUE(related_searches_json().empty());
 }

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/contextualsearch/native_contextual_search_context.h"
 
+#include <string>
+
 #include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/ContextualSearchContext_jni.h"
 #include "components/translate/core/common/translate_constants.h"
@@ -13,14 +15,6 @@
 NativeContextualSearchContext::NativeContextualSearchContext(JNIEnv* env,
                                                              jobject obj) {
   java_object_.Reset(env, obj);
-}
-
-NativeContextualSearchContext::NativeContextualSearchContext(
-    const std::string& home_country,
-    const GURL& page_url,
-    const std::string& encoding)
-    : ContextualSearchContext(home_country, page_url, encoding) {
-  java_object_ = nullptr;
 }
 
 NativeContextualSearchContext::~NativeContextualSearchContext() = default;

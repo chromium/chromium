@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_FIELD_TRIAL_H_
-#define CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_FIELD_TRIAL_H_
+#ifndef COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_FIELD_TRIAL_H_
+#define COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_FIELD_TRIAL_H_
 
 #include <stddef.h>
 
 #include <string>
+
+#include "base/feature_list.h"
+
+extern const base::Feature kContextualSearchDebug;
+extern const base::Feature kContextualSearchTranslations;
 
 // Manages the Contextual Search field trials for native classes.
 class ContextualSearchFieldTrial {
@@ -88,4 +93,4 @@ class ContextualSearchFieldTrial {
   int contextual_cards_version_;
 };
 
-#endif  // CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_FIELD_TRIAL_H_
+#endif  // COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_FIELD_TRIAL_H_

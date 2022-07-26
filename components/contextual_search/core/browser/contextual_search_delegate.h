@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_DELEGATE_H_
-#define CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_DELEGATE_H_
+#ifndef COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_H_
+#define COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_H_
 
 #include <stddef.h>
 
@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/android/contextualsearch/native_contextual_search_context.h"
+#include "components/contextual_search/core/browser/contextual_search_context.h"
 #include "components/contextual_search/core/browser/resolved_search_term.h"
 #include "net/http/http_request_headers.h"
 
@@ -59,7 +59,7 @@ class ContextualSearchDelegate
 
   // Gathers surrounding text and saves it locally in the given context.
   void GatherAndSaveSurroundingText(
-      base::WeakPtr<NativeContextualSearchContext> contextual_search_context,
+      base::WeakPtr<ContextualSearchContext> contextual_search_context,
       content::WebContents* web_contents);
 
   // Starts an asynchronous search term resolution request.
@@ -68,16 +68,8 @@ class ContextualSearchDelegate
   // When the response is available the callback specified in the constructor
   // is run.
   void StartSearchTermResolutionRequest(
-      base::WeakPtr<NativeContextualSearchContext> contextual_search_context,
+      base::WeakPtr<ContextualSearchContext> contextual_search_context,
       content::WebContents* web_contents);
-
-  // Gets the target language for translation purposes for this user.
-  // TODO(donnd): remove these language accessors once the transition to the
-  // Chrome Language Model is complete.
-  std::string GetTargetLanguage();
-
-  // Returns the accept languages preference string.
-  std::string GetAcceptLanguages();
 
  private:
   // Friend our test which allows our private methods to be used in helper
@@ -111,23 +103,12 @@ class ContextualSearchDelegate
 
   // Builds and returns the search term resolution request URL.
   // |context| is used to help build the query.
-  std::string BuildRequestUrl(NativeContextualSearchContext* context);
-
-  // Uses the TemplateURL service to construct a search term resolution URL from
-  // the given parameters.
-  std::string GetSearchTermResolutionUrlString(
-      const std::string& selected_text,
-      const std::string& base_page_url,
-      const bool may_send_base_page_url);
+  std::string BuildRequestUrl(ContextualSearchContext* context);
 
   void OnTextSurroundingSelectionAvailable(
       const std::u16string& surrounding_text,
       uint32_t start_offset,
       uint32_t end_offset);
-
-  // Populates and returns the discourse context.
-  const net::HttpRequestHeaders GetDiscourseContext(
-      const NativeContextualSearchContext& context);
 
   // Builds a Resolved Search Term by decoding the given JSON string.
   std::unique_ptr<ResolvedSearchTerm> GetResolvedSearchTermFromJson(
@@ -180,7 +161,7 @@ class ContextualSearchDelegate
 
   // For testing.
   void SetContextForTesting(
-      const base::WeakPtr<NativeContextualSearchContext>& context) {
+      const base::WeakPtr<ContextualSearchContext>& context) {
     context_ = context;
   }
 
@@ -204,7 +185,7 @@ class ContextualSearchDelegate
 
   // Used to hold the context until an upcoming search term request is started.
   // Owned by the Java ContextualSearchContext.
-  base::WeakPtr<NativeContextualSearchContext> context_;
+  base::WeakPtr<ContextualSearchContext> context_;
 };
 
-#endif  // CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_DELEGATE_H_
+#endif  // COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_H_
