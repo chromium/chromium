@@ -83,7 +83,7 @@ TEST_F(GuestIdTest, DuplicateContainerNamesInPrefsAreRemoved) {
   RemoveDuplicateContainerEntries(prefs);
 
   const base::Value::List& result =
-      prefs->Get(prefs::kGuestOsContainers)->GetList();
+      prefs->GetValueList(prefs::kGuestOsContainers);
 
   ASSERT_EQ(result.size(), 3);
   EXPECT_EQ(result[0].GetDict(), dictionary1);
