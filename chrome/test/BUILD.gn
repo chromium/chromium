@@ -3972,6 +3972,7 @@ if (!is_android) {
         "../browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_browsertest.cc",
         "../browser/ui/webui/chromeos/login/oobe_display_chooser_browsertest.cc",
         "../browser/ui/webui/chromeos/login/testapi/oobe_test_api_browsertest.cc",
+        "../browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync_dialog_browsertest.cc",
         "../browser/ui/webui/chromeos/parent_access/parent_access_browsertest_base.cc",
         "../browser/ui/webui/chromeos/parent_access/parent_access_browsertest_base.h",
         "../browser/ui/webui/chromeos/parent_access/parent_access_dialog_browsertest.cc",

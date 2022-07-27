@@ -42,8 +42,8 @@ void ManageMirrorSyncUI::BindInterface(
 void ManageMirrorSyncUI::CreatePageHandler(
     mojo::PendingReceiver<chromeos::manage_mirrorsync::mojom::PageHandler>
         receiver) {
-  page_handler_ =
-      std::make_unique<ManageMirrorSyncPageHandler>(std::move(receiver));
+  page_handler_ = std::make_unique<ManageMirrorSyncPageHandler>(
+      std::move(receiver), Profile::FromWebUI(web_ui()));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ManageMirrorSyncUI)
