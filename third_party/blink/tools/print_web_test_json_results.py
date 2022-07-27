@@ -1,11 +1,11 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 import json
 import optparse
 import os
 import sys
 
 from blinkpy.common.host import Host
-from blinkpy.web_tests.port import platform_options, configuration_options
+from blinkpy.web_tests.port.factory import platform_options, configuration_options
 
 
 def main(argv):
@@ -35,7 +35,7 @@ def main(argv):
             with open(args[0], 'r') as fp:
                 txt = fp.read()
         else:
-            print >> sys.stderr, "file not found: %s" % args[0]
+            print("file not found: %s" % args[0], file=sys.stderr)
             sys.exit(1)
     else:
         txt = host.filesystem.read_text_file(
@@ -56,7 +56,7 @@ def main(argv):
         tests_to_print += failures.keys()
     if options.flakes:
         tests_to_print += flakes.keys()
-    print "\n".join(sorted(tests_to_print))
+    print("\n".join(sorted(tests_to_print)))
 
     if options.ignored_failures_path:
         with open(options.ignored_failures_path, 'r') as fp:
@@ -67,12 +67,12 @@ def main(argv):
         _, ignored_failures, _ = decode_results(results, options.expected)
         new_failures = set(failures.keys()) - set(ignored_failures.keys())
         if new_failures:
-            print "New failures:"
-            print "\n".join(sorted(new_failures))
+            print("New failures:")
+            print("\n".join(sorted(new_failures)))
             print
         if ignored_failures:
-            print "Ignored failures:"
-            print "\n".join(sorted(ignored_failures.keys()))
+            print("Ignored failures:")
+            print("\n".join(sorted(ignored_failures.keys())))
         if new_failures:
             return 1
         return 0
