@@ -2369,12 +2369,12 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
         (ancestor->NeedsAdjacentStyleRecalc() && !ignore_adjacent_style)) {
       is_dirty = true;
     }
+    if (NodeLayoutUpgrade::GetReasons(*ancestor) & upgrade_mask)
+      is_dirty = true;
     if (is_dirty) {
       if (auto* style = ancestor->GetComputedStyle())
         return !style->IsEnsuredOutsideFlatTree();
     }
-    if (NodeLayoutUpgrade::GetReasons(*ancestor) & upgrade_mask)
-      is_dirty = true;
 
     auto* element = DynamicTo<Element>(ancestor);
     if (!element)
