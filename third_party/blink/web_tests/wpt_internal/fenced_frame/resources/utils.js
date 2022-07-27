@@ -88,10 +88,13 @@ function attachContext(object_constructor, html, headers, origin) {
 
   // Transform the headers into the expected format.
   // https://web-platform-tests.org/writing-tests/server-pipes.html#headers
+  function escape(s) {
+    return s.replace('(', '\\(').replace(')', '\\)');
+  }
   const formatted_headers = headers.map((header) => {
-    return `header(${header[0]}, ${header[1]})`;
+    return `header(${escape(header[0])}, ${escape(header[1])})`;
   });
-  url.searchParams.append('pipe', formatted_headers.join("|"));
+  url.searchParams.append('pipe', formatted_headers.join('|'));
 
   const object = object_constructor(url);
 
