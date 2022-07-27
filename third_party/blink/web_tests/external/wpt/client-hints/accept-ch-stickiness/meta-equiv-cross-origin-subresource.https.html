@@ -8,11 +8,6 @@
 <script src="resources/accept-ch-test.js"></script>
 
 <script>
-run_test({ name: "meta-name accept-ch cross origin subresource",
-    initial_url: host_info.HTTPS_REMOTE_ORIGIN + echo,
-    accept_url: host_info.HTTPS_REMOTE_ORIGIN + metaname_accept,
-    expect_url: host_info.HTTPS_REMOTE_ORIGIN + do_not_expect,
-    type: "subresource" });
 run_test({ name: "meta-equiv delegate-ch cross origin subresource",
     initial_url: host_info.HTTPS_REMOTE_ORIGIN + echo,
     accept_url: host_info.HTTPS_REMOTE_ORIGIN + metaequiv_delegate,

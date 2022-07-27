@@ -878,14 +878,6 @@ void TokenPreloadScanner::HandleMetaNameAttribute(
     HandleMetaReferrer(content_attribute_value, document_parameters_.get(),
                        &css_scanner_);
   }
-
-  if (EqualIgnoringASCIICase(name_attribute_value, http_names::kAcceptCH) &&
-      RuntimeEnabledFeatures::ClientHintsMetaNameAcceptCHEnabled()) {
-    meta_ch_values.push_back(MetaCHValue{
-        .value = content_attribute->GetValue(),
-        .type = network::MetaCHType::NameAcceptCH,
-        .is_doc_preloader = scanner_type_ == ScannerType::kMainDocument});
-  }
 }
 
 void TokenPreloadScanner::ScanCommon(

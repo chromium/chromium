@@ -40644,7 +40644,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4078" label="V8Navigator_AdAuctionComponents_Method"/>
   <int value="4079" label="ClientHintsUAFullVersionList"/>
   <int value="4080" label="WebAppManifestLaunchHandler"/>
-  <int value="4081" label="ClientHintsMetaNameAcceptCH"/>
+  <int value="4081" label="OBSOLETE_ClientHintsMetaNameAcceptCH"/>
   <int value="4082" label="CSSMatchMediaUnknown"/>
   <int value="4083" label="CSSMediaListUnknown"/>
   <int value="4084" label="CSSOMMediaConditionUnknown"/>

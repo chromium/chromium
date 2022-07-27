@@ -429,8 +429,6 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
     accept_ch_url_ = https_server_.GetURL("/accept_ch.html");
     http_equiv_accept_ch_url_ =
         https_server_.GetURL("/http_equiv_accept_ch.html");
-    meta_name_accept_ch_url_ =
-        https_server_.GetURL("/meta_name_accept_ch.html");
     meta_equiv_delegate_ch_url_ =
         https_server_.GetURL("/meta_equiv_delegate_ch.html");
 
@@ -451,25 +449,18 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
         https_server_.GetURL("/accept_ch_with_iframe.html");
     http_equiv_accept_ch_with_iframe_url_ =
         https_server_.GetURL("/http_equiv_accept_ch_with_iframe.html");
-    meta_name_accept_ch_with_iframe_url_ =
-        https_server_.GetURL("/meta_name_accept_ch_with_iframe.html");
     meta_equiv_delegate_ch_with_iframe_url_ =
         https_server_.GetURL("/meta_equiv_delegate_ch_with_iframe.html");
     accept_ch_with_subresource_url_ =
         https_server_.GetURL("/accept_ch_with_subresource.html");
     http_equiv_accept_ch_with_subresource_url_ =
         https_server_.GetURL("/http_equiv_accept_ch_with_subresource.html");
-    meta_name_accept_ch_with_subresource_url_ =
-        https_server_.GetURL("/meta_name_accept_ch_with_subresource.html");
     meta_equiv_delegate_ch_with_subresource_url_ =
         https_server_.GetURL("/meta_equiv_delegate_ch_with_subresource.html");
     accept_ch_with_subresource_iframe_url_ =
         https_server_.GetURL("/accept_ch_with_subresource_iframe.html");
     http_equiv_accept_ch_with_subresource_iframe_url_ = https_server_.GetURL(
         "/http_equiv_accept_ch_with_subresource_iframe."
-        "html");
-    meta_name_accept_ch_with_subresource_iframe_url_ = https_server_.GetURL(
-        "/meta_name_accept_ch_with_subresource_iframe."
         "html");
     meta_equiv_delegate_ch_with_subresource_iframe_url_ = https_server_.GetURL(
         "/meta_equiv_delegate_ch_with_subresource_iframe."
@@ -478,8 +469,6 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
         https_server_.GetURL("/accept_ch_img_localhost.html");
     http_equiv_accept_ch_img_localhost_ =
         https_server_.GetURL("/http_equiv_accept_ch_img_localhost.html");
-    meta_name_accept_ch_img_localhost_ =
-        https_server_.GetURL("/meta_name_accept_ch_img_localhost.html");
     meta_equiv_delegate_ch_img_localhost_ =
         https_server_.GetURL("/meta_equiv_delegate_ch_img_localhost.html");
 
@@ -488,20 +477,14 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
     accept_ch_empty_ = https_server_.GetURL("/accept_ch_empty.html");
     http_equiv_accept_ch_injection_ =
         https_server_.GetURL("/http_equiv_accept_ch_injection.html");
-    meta_name_accept_ch_injection_ =
-        https_server_.GetURL("/meta_name_accept_ch_injection.html");
     meta_equiv_delegate_ch_injection_ =
         https_server_.GetURL("/meta_equiv_delegate_ch_injection.html");
     http_equiv_accept_ch_delegation_foo_ =
         https_server_.GetURL("/http_equiv_accept_ch_delegation_foo.html");
-    meta_name_accept_ch_delegation_foo_ =
-        https_server_.GetURL("/meta_name_accept_ch_delegation_foo.html");
     meta_equiv_delegate_ch_delegation_foo_ =
         https_server_.GetURL("/meta_equiv_delegate_ch_delegation_foo.html");
     http_equiv_accept_ch_delegation_bar_ =
         https_server_.GetURL("/http_equiv_accept_ch_delegation_bar.html");
-    meta_name_accept_ch_delegation_bar_ =
-        https_server_.GetURL("/meta_name_accept_ch_delegation_bar.html");
     meta_equiv_delegate_ch_delegation_bar_ =
         https_server_.GetURL("/meta_equiv_delegate_ch_delegation_bar.html");
     http_equiv_accept_ch_delegation_merge_ =
@@ -603,9 +586,6 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
   const GURL& http_equiv_accept_ch_url() const {
     return http_equiv_accept_ch_url_;
   }
-  const GURL& meta_name_accept_ch_url() const {
-    return meta_name_accept_ch_url_;
-  }
   const GURL& meta_equiv_delegate_ch_url() const {
     return meta_equiv_delegate_ch_url_;
   }
@@ -640,9 +620,6 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
   const GURL& http_equiv_accept_ch_with_iframe_url() const {
     return http_equiv_accept_ch_with_iframe_url_;
   }
-  const GURL& meta_name_accept_ch_with_iframe_url() const {
-    return meta_name_accept_ch_with_iframe_url_;
-  }
   const GURL& meta_equiv_delegate_ch_with_iframe_url() const {
     return meta_equiv_delegate_ch_with_iframe_url_;
   }
@@ -654,9 +631,6 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
   }
   const GURL& http_equiv_accept_ch_with_subresource_url() const {
     return http_equiv_accept_ch_with_subresource_url_;
-  }
-  const GURL& meta_name_accept_ch_with_subresource_url() const {
-    return meta_name_accept_ch_with_subresource_url_;
   }
   const GURL& meta_equiv_delegate_ch_with_subresource_url() const {
     return meta_equiv_delegate_ch_with_subresource_url_;
@@ -671,9 +645,6 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
   const GURL& http_equiv_accept_ch_with_subresource_iframe_url() const {
     return http_equiv_accept_ch_with_subresource_iframe_url_;
   }
-  const GURL& meta_name_accept_ch_with_subresource_iframe_url() const {
-    return meta_name_accept_ch_with_subresource_iframe_url_;
-  }
   const GURL& meta_equiv_delegate_ch_with_subresource_iframe_url() const {
     return meta_equiv_delegate_ch_with_subresource_iframe_url_;
   }
@@ -686,9 +657,6 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
   }
   const GURL& http_equiv_accept_ch_img_localhost() const {
     return http_equiv_accept_ch_img_localhost_;
-  }
-  const GURL& meta_name_accept_ch_img_localhost() const {
-    return meta_name_accept_ch_img_localhost_;
   }
   const GURL& meta_equiv_delegate_ch_img_localhost() const {
     return meta_equiv_delegate_ch_img_localhost_;
@@ -703,9 +671,6 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
   const GURL& http_equiv_accept_ch_injection() const {
     return http_equiv_accept_ch_injection_;
   }
-  const GURL& meta_name_accept_ch_injection() const {
-    return meta_name_accept_ch_injection_;
-  }
   const GURL& meta_equiv_delegate_ch_injection() const {
     return meta_equiv_delegate_ch_injection_;
   }
@@ -714,9 +679,6 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
   const GURL& http_equiv_accept_ch_delegation_foo() const {
     return http_equiv_accept_ch_delegation_foo_;
   }
-  const GURL& meta_name_accept_ch_delegation_foo() const {
-    return meta_name_accept_ch_delegation_foo_;
-  }
   const GURL& meta_equiv_delegate_ch_delegation_foo() const {
     return meta_equiv_delegate_ch_delegation_foo_;
   }
@@ -724,9 +686,6 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
   // A page where hints are delegated to the third-party site `bar.com`.
   const GURL& http_equiv_accept_ch_delegation_bar() const {
     return http_equiv_accept_ch_delegation_bar_;
-  }
-  const GURL& meta_name_accept_ch_delegation_bar() const {
-    return meta_name_accept_ch_delegation_bar_;
   }
   const GURL& meta_equiv_delegate_ch_delegation_bar() const {
     return meta_equiv_delegate_ch_delegation_bar_;
@@ -825,7 +784,6 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
 
   std::string intercept_iframe_resource_;
   bool intercept_to_http_equiv_iframe_ = false;
-  bool intercept_to_meta_accept_iframe_ = false;
   bool intercept_to_meta_delegate_iframe_ = false;
   mutable base::Lock count_headers_lock_;
 
@@ -884,10 +842,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
     }
 
     const std::string iframe_url =
-        intercept_to_meta_accept_iframe_
-            ? https_cross_origin_server_.GetURL("/meta_name_accept_ch.html")
-                  .spec()
-        : intercept_to_meta_delegate_iframe_
+        intercept_to_meta_delegate_iframe_
             ? https_cross_origin_server_.GetURL("/meta_equiv_delegate_ch.html")
                   .spec()
         : intercept_to_http_equiv_iframe_
@@ -1217,38 +1172,30 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
   net::EmbeddedTestServer http2_server_;
   GURL accept_ch_url_;
   GURL http_equiv_accept_ch_url_;
-  GURL meta_name_accept_ch_url_;
   GURL meta_equiv_delegate_ch_url_;
   GURL without_accept_ch_url_;
   GURL without_accept_ch_local_url_;
   GURL accept_ch_with_iframe_url_;
   GURL http_equiv_accept_ch_with_iframe_url_;
-  GURL meta_name_accept_ch_with_iframe_url_;
   GURL meta_equiv_delegate_ch_with_iframe_url_;
   GURL accept_ch_with_subresource_url_;
   GURL http_equiv_accept_ch_with_subresource_url_;
-  GURL meta_name_accept_ch_with_subresource_url_;
   GURL meta_equiv_delegate_ch_with_subresource_url_;
   GURL accept_ch_with_subresource_iframe_url_;
   GURL http_equiv_accept_ch_with_subresource_iframe_url_;
-  GURL meta_name_accept_ch_with_subresource_iframe_url_;
   GURL meta_equiv_delegate_ch_with_subresource_iframe_url_;
   GURL without_accept_ch_img_foo_com_;
   GURL without_accept_ch_img_localhost_;
   GURL accept_ch_img_localhost_;
   GURL http_equiv_accept_ch_img_localhost_;
-  GURL meta_name_accept_ch_img_localhost_;
   GURL meta_equiv_delegate_ch_img_localhost_;
   GURL redirect_url_;
   GURL accept_ch_empty_;
   GURL http_equiv_accept_ch_injection_;
-  GURL meta_name_accept_ch_injection_;
   GURL meta_equiv_delegate_ch_injection_;
   GURL http_equiv_accept_ch_delegation_foo_;
-  GURL meta_name_accept_ch_delegation_foo_;
   GURL meta_equiv_delegate_ch_delegation_foo_;
   GURL http_equiv_accept_ch_delegation_bar_;
-  GURL meta_name_accept_ch_delegation_bar_;
   GURL meta_equiv_delegate_ch_delegation_bar_;
   GURL http_equiv_accept_ch_delegation_merge_;
   GURL meta_equiv_delegate_ch_delegation_merge_;
@@ -1299,7 +1246,6 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ClientHintsBrowserTestForMetaTagTypes,
     testing::Values(network::MetaCHType::HttpEquivAcceptCH,
-                    network::MetaCHType::NameAcceptCH,
                     network::MetaCHType::HttpEquivDelegateCH));
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, CorsChecks) {
@@ -1328,16 +1274,6 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, HttpEquivWorks) {
 
   SetClientHintExpectationsOnMainFrame(false);
   SetClientHintExpectationsOnSubresources(true);
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-  histogram_tester.ExpectTotalCount("ClientHints.UpdateEventCount", 0);
-}
-IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, MetaNameWorks) {
-  const GURL gurl = meta_name_accept_ch_img_localhost();
-  base::HistogramTester histogram_tester;
-
-  SetClientHintExpectationsOnMainFrame(false);
-  SetClientHintExpectationsOnSubresources(false);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   histogram_tester.ExpectTotalCount("ClientHints.UpdateEventCount", 0);
@@ -1374,9 +1310,6 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
   switch (GetParam()) {
     case network::MetaCHType::HttpEquivAcceptCH:
       gurl = http_equiv_accept_ch_url();
-      break;
-    case network::MetaCHType::NameAcceptCH:
-      gurl = meta_name_accept_ch_url();
       break;
     case network::MetaCHType::HttpEquivDelegateCH:
       gurl = meta_equiv_delegate_ch_url();
@@ -1877,17 +1810,6 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, InjectAcceptCH_HttpEquiv) {
   EXPECT_EQ(expected_client_hints_number, count_client_hints_headers_seen());
 }
 
-IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, InjectAcceptCH_MetaName) {
-  // Go to page where hints are injected via javascript into an named meta
-  // tag. It shouldn't get hints itself (due to first visit),
-  // but subresources should get all the client hints.
-  GURL gurl = meta_name_accept_ch_injection();
-  SetClientHintExpectationsOnMainFrame(false);
-  SetClientHintExpectationsOnSubresources(false);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-  EXPECT_EQ(0u, count_client_hints_headers_seen());
-}
-
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, InjectAcceptCH_MetaDelegate) {
   // Go to page where hints are injected via javascript into an named meta
   // tag. It shouldn't get hints itself (due to first visit),
@@ -1916,18 +1838,6 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToFoo_HttpEquiv) {
             third_party_client_hints_count_seen_on_unique_request());
 }
 
-IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToFoo_MetaName) {
-  // Go to a page which delegates hints to `foo.com`.
-  GURL gurl = meta_name_accept_ch_delegation_foo();
-  SetClientHintExpectationsOnMainFrame(false);
-  SetClientHintExpectationsOnSubresources(false);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-  EXPECT_EQ(0u, count_client_hints_headers_seen());
-  EXPECT_EQ(4u, third_party_unique_request_count_seen());
-  EXPECT_EQ(expected_default_third_party_client_hints_number * 4,
-            third_party_client_hints_count_seen_on_unique_request());
-}
-
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToFoo_MetaDelegate) {
   // Go to a page which delegates hints to `foo.com`.
   GURL gurl = meta_equiv_delegate_ch_delegation_foo();
@@ -1945,18 +1855,6 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToFoo_MetaDelegate) {
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToBar_HttpEquiv) {
   // Go to a page which delegates hints to `bar.com`.
   GURL gurl = http_equiv_accept_ch_delegation_bar();
-  SetClientHintExpectationsOnMainFrame(false);
-  SetClientHintExpectationsOnSubresources(false);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-  EXPECT_EQ(0u, count_client_hints_headers_seen());
-  EXPECT_EQ(4u, third_party_unique_request_count_seen());
-  EXPECT_EQ(expected_default_third_party_client_hints_number * 4,
-            third_party_client_hints_count_seen_on_unique_request());
-}
-
-IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToBar_MetaName) {
-  // Go to a page which delegates hints to `bar.com`.
-  GURL gurl = meta_name_accept_ch_delegation_bar();
   SetClientHintExpectationsOnMainFrame(false);
   SetClientHintExpectationsOnSubresources(false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
@@ -2113,9 +2011,6 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes, Default) {
     case network::MetaCHType::HttpEquivAcceptCH:
       gurl = http_equiv_accept_ch_img_localhost();
       break;
-    case network::MetaCHType::NameAcceptCH:
-      gurl = meta_name_accept_ch_img_localhost();
-      break;
     case network::MetaCHType::HttpEquivDelegateCH:
       gurl = meta_equiv_delegate_ch_img_localhost();
       break;
@@ -2124,8 +2019,7 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes, Default) {
   base::HistogramTester histogram_tester;
 
   SetClientHintExpectationsOnMainFrame(false);
-  SetClientHintExpectationsOnSubresources(GetParam() !=
-                                          network::MetaCHType::NameAcceptCH);
+  SetClientHintExpectationsOnSubresources(true);
 
   // Add client hints for the embedded test server.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
@@ -2136,10 +2030,7 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes, Default) {
   EXPECT_EQ(2u, count_ua_mobile_client_hints_headers_seen());
   EXPECT_EQ(2u, count_ua_platform_client_hints_headers_seen());
   EXPECT_EQ(0u, count_save_data_client_hints_headers_seen());
-  EXPECT_EQ(GetParam() == network::MetaCHType::NameAcceptCH
-                ? 0u
-                : expected_client_hints_number,
-            count_client_hints_headers_seen());
+  EXPECT_EQ(expected_client_hints_number, count_client_hints_headers_seen());
 
   // Requests to third party servers should not have client hints attached.
   EXPECT_EQ(1u, third_party_request_count_seen());
@@ -2216,10 +2107,6 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
       gurl = http_equiv_accept_ch_with_iframe_url();
       intercept_to_http_equiv_iframe_ = true;
       break;
-    case network::MetaCHType::NameAcceptCH:
-      gurl = meta_name_accept_ch_with_iframe_url();
-      intercept_to_meta_accept_iframe_ = true;
-      break;
     case network::MetaCHType::HttpEquivDelegateCH:
       gurl = meta_equiv_delegate_ch_with_iframe_url();
       intercept_to_meta_delegate_iframe_ = true;
@@ -2284,9 +2171,6 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
     case network::MetaCHType::HttpEquivAcceptCH:
       gurl = http_equiv_accept_ch_with_subresource_url();
       break;
-    case network::MetaCHType::NameAcceptCH:
-      gurl = meta_name_accept_ch_with_subresource_url();
-      break;
     case network::MetaCHType::HttpEquivDelegateCH:
       gurl = meta_equiv_delegate_ch_with_subresource_url();
       break;
@@ -2349,9 +2233,6 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
     case network::MetaCHType::HttpEquivAcceptCH:
       gurl = http_equiv_accept_ch_with_subresource_iframe_url();
       break;
-    case network::MetaCHType::NameAcceptCH:
-      gurl = meta_name_accept_ch_with_subresource_iframe_url();
-      break;
     case network::MetaCHType::HttpEquivDelegateCH:
       gurl = meta_equiv_delegate_ch_with_subresource_iframe_url();
       break;
@@ -2372,9 +2253,8 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-  // `gurl` loads accept_ch(),  meta_name_accept_ch_url(), or
-  // meta_equiv_delegate_ch_url() as a subresource in an iframe.
-  // The request to persist client hints  should be disregarded.
+  // `gurl` loads accept_ch() or meta_equiv_delegate_ch_url() as a subresource
+  // in an iframe. The request to persist client hints  should be disregarded.
   histogram_tester.ExpectTotalCount("ClientHints.UpdateSize", 0);
 }
 
@@ -2444,9 +2324,6 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
   switch (GetParam()) {
     case network::MetaCHType::HttpEquivAcceptCH:
       gurl = http_equiv_accept_ch_url();
-      break;
-    case network::MetaCHType::NameAcceptCH:
-      gurl = meta_name_accept_ch_url();
       break;
     case network::MetaCHType::HttpEquivDelegateCH:
       gurl = meta_equiv_delegate_ch_url();
@@ -2677,9 +2554,6 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
     case network::MetaCHType::HttpEquivAcceptCH:
       gurl = http_equiv_accept_ch_with_iframe_url();
       break;
-    case network::MetaCHType::NameAcceptCH:
-      gurl = meta_name_accept_ch_with_iframe_url();
-      break;
     case network::MetaCHType::HttpEquivDelegateCH:
       gurl = meta_equiv_delegate_ch_with_iframe_url();
       break;
@@ -2909,9 +2783,6 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
     case network::MetaCHType::HttpEquivAcceptCH:
       gurl = http_equiv_accept_ch_url();
       break;
-    case network::MetaCHType::NameAcceptCH:
-      gurl = meta_name_accept_ch_url();
-      break;
     case network::MetaCHType::HttpEquivDelegateCH:
       gurl = meta_equiv_delegate_ch_url();
       break;
@@ -3027,9 +2898,6 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
     case network::MetaCHType::HttpEquivAcceptCH:
       gurl = http_equiv_accept_ch_img_localhost();
       break;
-    case network::MetaCHType::NameAcceptCH:
-      gurl = meta_name_accept_ch_img_localhost();
-      break;
     case network::MetaCHType::HttpEquivDelegateCH:
       gurl = meta_equiv_delegate_ch_img_localhost();
       break;
@@ -3051,17 +2919,13 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes,
           gurl, GURL(), ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
   base::RunLoop().RunUntilIdle();
 
-  SetClientHintExpectationsOnSubresources(GetParam() !=
-                                          network::MetaCHType::NameAcceptCH);
+  SetClientHintExpectationsOnSubresources(true);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   EXPECT_EQ(2u, count_user_agent_hint_headers_seen());
   EXPECT_EQ(2u, count_ua_mobile_client_hints_headers_seen());
   EXPECT_EQ(2u, count_ua_platform_client_hints_headers_seen());
   EXPECT_EQ(0u, count_save_data_client_hints_headers_seen());
-  EXPECT_EQ(GetParam() == network::MetaCHType::NameAcceptCH
-                ? 0u
-                : expected_client_hints_number,
-            count_client_hints_headers_seen());
+  EXPECT_EQ(expected_client_hints_number, count_client_hints_headers_seen());
   EXPECT_EQ(1u, third_party_request_count_seen());
   EXPECT_EQ(3u, third_party_client_hints_count_seen());
 
@@ -3240,17 +3104,13 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTestForMetaTagTypes, UseCounter) {
     case network::MetaCHType::HttpEquivAcceptCH:
       gurl = http_equiv_accept_ch_url();
       break;
-    case network::MetaCHType::NameAcceptCH:
-      gurl = meta_name_accept_ch_url();
-      break;
     case network::MetaCHType::HttpEquivDelegateCH:
       gurl = meta_equiv_delegate_ch_url();
       break;
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-  if (GetParam() != network::MetaCHType::NameAcceptCH)
-    web_feature_waiter->Wait();
+  web_feature_waiter->Wait();
 }
 
 class CriticalClientHintsBrowserTest : public InProcessBrowserTest {

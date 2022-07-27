@@ -53,10 +53,6 @@ enum class MetaCHType {
   // Introduced in M69.
   HttpEquivAcceptCH,
   // This syntax can activate and delegate client hints to any origin.
-  // <meta name="accept-ch" content="Sec-CH-DPR=(https://foo.com/)">
-  // Introduced in M100.
-  NameAcceptCH,
-  // This syntax can activate and delegate client hints to any origin.
   // <meta http-equiv="delegate-ch" content="Sec-CH-DPR https://foo.com/">
   // Introduced in M105.
   HttpEquivDelegateCH,

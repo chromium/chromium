@@ -3397,7 +3397,7 @@ enum WebFeature {
   kV8Navigator_AdAuctionComponents_Method = 4078,
   kClientHintsUAFullVersionList = 4079,
   kWebAppManifestLaunchHandler = 4080,
-  kClientHintsMetaNameAcceptCH = 4081,
+  kOBSOLETE_ClientHintsMetaNameAcceptCH = 4081,
   kCSSMatchMediaUnknown = 4082,
   kCSSMediaListUnknown = 4083,
   kCSSOMMediaConditionUnknown = 4084,

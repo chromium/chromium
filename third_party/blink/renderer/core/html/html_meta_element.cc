@@ -622,9 +622,6 @@ void HTMLMetaElement::ProcessContent() {
       UseCounter::Count(&GetDocument(),
                         WebFeature::kHTMLMetaElementMonetization);
     }
-  } else if (EqualIgnoringASCIICase(name_value, http_names::kAcceptCH)) {
-    ProcessMetaCH(GetDocument(), content_value,
-                  network::MetaCHType::NameAcceptCH, is_sync_parser_);
   }
 }
 
@@ -670,10 +667,6 @@ void HTMLMetaElement::ProcessMetaCH(Document& document,
       if (!RuntimeEnabledFeatures::ClientHintsMetaHTTPEquivAcceptCHEnabled())
         return;
       break;
-    case network::MetaCHType::NameAcceptCH:
-      if (!RuntimeEnabledFeatures::ClientHintsMetaNameAcceptCHEnabled())
-        return;
-      break;
     case network::MetaCHType::HttpEquivDelegateCH:
       if (!RuntimeEnabledFeatures::ClientHintsMetaEquivDelegateCHEnabled())
         return;
@@ -699,9 +692,6 @@ void HTMLMetaElement::ProcessMetaCH(Document& document,
     case network::MetaCHType::HttpEquivAcceptCH:
       UseCounter::Count(document,
                         WebFeature::kClientHintsMetaHTTPEquivAcceptCH);
-      break;
-    case network::MetaCHType::NameAcceptCH:
-      UseCounter::Count(document, WebFeature::kClientHintsMetaNameAcceptCH);
       break;
     case network::MetaCHType::HttpEquivDelegateCH:
       UseCounter::Count(document, WebFeature::kClientHintsMetaEquivDelegateCH);

@@ -372,10 +372,6 @@
       status: "stable",
     },
     {
-      name: "ClientHintsMetaNameAcceptCH",
-      status: "experimental",
-    },
-    {
       name: "ClientHintThirdPartyDelegation",
       status: "stable",
     },

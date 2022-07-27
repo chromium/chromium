@@ -101,20 +101,21 @@ TEST_F(HTMLPreloadScannerDocumentTest, XHRResponseDocument) {
 }
 
 TEST_F(HTMLPreloadScannerDocumentTest,
-       SetsClientHintsPreferencesOnFrameMetaName) {
+       SetsClientHintsPreferencesOnFrameDelegateCH) {
   // Create a prefetch only document since that will ensure only the preload
   // scanner runs.
   ProvideNoStatePrefetchClientTo(
       *GetDocument().GetPage(), MakeGarbageCollected<MockNoStatePrefetchClient>(
                                     *GetDocument().GetPage()));
   EXPECT_TRUE(GetDocument().IsPrefetchOnly());
-  main_resource_->Complete(R"(<meta name="Accept-CH" content="sec-ch-dpr">)");
+  main_resource_->Complete(
+      R"(<meta http-equiv="Delegate-CH" content="sec-ch-dpr">)");
   EXPECT_TRUE(GetDocument().GetFrame()->GetClientHintsPreferences().ShouldSend(
       network::mojom::WebClientHintsType::kDpr));
 }
 
 TEST_F(HTMLPreloadScannerDocumentTest,
-       SetsClientHintsPreferencesOnFrameHttpEquiv) {
+       SetsClientHintsPreferencesOnFrameAcceptCH) {
   // Create a prefetch only document since that will ensure only the preload
   // scanner runs.
   ProvideNoStatePrefetchClientTo(

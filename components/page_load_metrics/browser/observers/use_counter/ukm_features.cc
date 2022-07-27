@@ -240,7 +240,6 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kScriptSchedulingType_InOrder,
           WebFeature::kScriptSchedulingType_Async,
           WebFeature::kClientHintsMetaHTTPEquivAcceptCH,
-          WebFeature::kClientHintsMetaNameAcceptCH,
           WebFeature::kAutomaticLazyAds,
           WebFeature::kAutomaticLazyEmbeds,
           WebFeature::kCookieDomainNonASCII,

@@ -53,9 +53,9 @@ class HTMLParserOptions;
 class HTMLTokenizer;
 class SegmentedString;
 
-// Encapsulates values from the <meta http-equiv="accept-ch">, <meta
-// name="accept-ch">, or <meta http-equiv="delegate-ch"> tags. These are
-// collected by the preload scanner to be later handled on the main thread.
+// Encapsulates values from the <meta http-equiv="accept-ch"> or
+// <meta http-equiv="delegate-ch"> tags. These are collected by the preload
+// scanner to be later handled on the main thread.
 struct MetaCHValue {
   AtomicString value;
   network::MetaCHType type = network::MetaCHType::HttpEquivAcceptCH;

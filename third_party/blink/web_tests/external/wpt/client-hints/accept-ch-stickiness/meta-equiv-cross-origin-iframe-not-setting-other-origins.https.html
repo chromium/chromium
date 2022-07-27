@@ -8,11 +8,6 @@
 <script src="resources/accept-ch-test.js"></script>
 
 <script>
-run_test({ name: "meta-name accept-ch cross origin iframe not setting other origins",
-    initial_url: echo,
-    accept_url: host_info.HTTPS_REMOTE_ORIGIN + metaname_accept,
-    expect_url: do_not_expect,
-    type: "iframe" });
 run_test({ name: "meta-equiv delegate-ch cross origin iframe not setting other origins",
     initial_url: echo,
     accept_url: host_info.HTTPS_REMOTE_ORIGIN + metaequiv_delegate,

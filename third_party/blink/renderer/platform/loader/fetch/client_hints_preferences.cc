@@ -71,7 +71,6 @@ bool ClientHintsPreferences::UpdateFromMetaCH(
         enabled_hints_.SetIsEnabled(newly_enabled, true);
       break;
     }
-    case network::MetaCHType::NameAcceptCH:
     case network::MetaCHType::HttpEquivDelegateCH: {
       if (!is_doc_preloader_or_sync_parser)
         break;
