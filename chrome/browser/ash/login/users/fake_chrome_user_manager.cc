@@ -732,11 +732,6 @@ bool FakeChromeUserManager::ShouldReportUser(const std::string& user_id) const {
   return false;
 }
 
-bool FakeChromeUserManager::IsManagedSessionEnabledForUser(
-    const user_manager::User& active_user) const {
-  return true;
-}
-
 bool FakeChromeUserManager::IsFullManagementDisclosureNeeded(
     policy::DeviceLocalAccountPolicyBroker* broker) const {
   return true;

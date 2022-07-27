@@ -241,7 +241,6 @@ class UserTypeByDeviceTypeMetricsProviderTest
     device_policy()->policy_data().set_public_key_version(1);
     policy::DeviceLocalAccountTestHelper::SetupDeviceLocalAccount(
         &device_local_account_policy_, kAccountId1, kDisplayName1);
-    SetManagedSessionsEnabled(/* managed_sessions_enabled */ true);
   }
 
   void BuildDeviceLocalAccountPolicy() {
@@ -281,13 +280,6 @@ class UserTypeByDeviceTypeMetricsProviderTest
     policy::DeviceLocalAccountTestHelper::AddPublicSession(&proto, username);
     RefreshDevicePolicy();
     policy_test_server_mixin_.UpdateDevicePolicy(proto);
-  }
-
-  void SetManagedSessionsEnabled(bool managed_sessions_enabled) {
-    device_local_account_policy_.payload()
-        .mutable_devicelocalaccountmanagedsessionenabled()
-        ->set_value(managed_sessions_enabled);
-    UploadDeviceLocalAccountPolicy();
   }
 
   void WaitForDisplayName(const std::string& user_id,

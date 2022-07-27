@@ -321,7 +321,6 @@ extern const char kTimeLimitLocalOverride[];
 extern const char kUsageTimeLimit[];
 extern const char kScreenTimeLastState[];
 extern const char kNetworkFileSharesAllowed[];
-extern const char kManagedSessionEnabled[];
 extern const char kManagedSessionUseFullLoginWarning[];
 extern const char kTPMFirmwareUpdateCleanupDismissed[];
 extern const char kTPMUpdatePlannedNotificationShownTime[];

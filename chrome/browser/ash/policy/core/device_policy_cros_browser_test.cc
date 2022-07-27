@@ -34,9 +34,6 @@ void DeviceLocalAccountTestHelper::SetupDeviceLocalAccount(
   policy_builder->policy_data().set_settings_entity_id(kAccountId);
   policy_builder->policy_data().set_public_key_version(1);
   policy_builder->payload().mutable_userdisplayname()->set_value(kDisplayName);
-  policy_builder->payload()
-      .mutable_devicelocalaccountmanagedsessionenabled()
-      ->set_value(true);
 }
 
 void DeviceLocalAccountTestHelper::AddPublicSession(

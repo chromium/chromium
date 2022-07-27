@@ -960,11 +960,6 @@ const char kScreenTimeLastState[] = "screen_time.last_state";
 // Shares for Chrome OS feature.
 const char kNetworkFileSharesAllowed[] = "network_file_shares.allowed";
 
-// Boolean pref indicating whether the currently running public session runs in
-// the old standard "public session" mode (false), or in the new "managed
-// session" mode which has lifted restrictions (true).
-const char kManagedSessionEnabled[] = "managed_session.enabled";
-
 // Boolean pref indicating whether the message displayed on the login screen for
 // the managed guest session should be the full warning or not.
 // True means the full warning should be displayed.

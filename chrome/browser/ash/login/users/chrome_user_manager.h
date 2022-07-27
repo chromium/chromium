@@ -52,11 +52,6 @@ class ChromeUserManager : public user_manager::UserManagerBase,
   // policy::DeviceStatusCollector).
   virtual bool ShouldReportUser(const std::string& user_id) const = 0;
 
-  // Checks whether 'DeviceLocalAccountManagedSessionEnabled' policy is enabled
-  // for `active_user`.
-  virtual bool IsManagedSessionEnabledForUser(
-      const user_manager::User& active_user) const = 0;
-
   // Checks whether full management disclosure is needed for the public/managed
   // session login screen UI. Full disclosure is needed if the session is
   // managed and any risky extensions or network certificates are forced
