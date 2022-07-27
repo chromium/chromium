@@ -89,7 +89,7 @@ public class WebViewPackageError {
                 String.format(Locale.US, DIFFERENT_WEBVIEW_PROVIDER_DIALOG_MESSAGE, label));
 
         boolean canOpenCurrentProvider = canOpenCurrentWebViewProviderDevTools();
-        boolean canChangeProvider = canChangeWebViewProvider();
+        boolean canChangeProvider = canAccessWebViewProviderDeveloperSetting();
         if (canChangeProvider) {
             mErrorMessage.setActionButton(
                     CHANGE_WEBVIEW_PROVIDER_BUTTON_TEXT, v -> openChangeWebViewProviderSettings());
@@ -127,7 +127,7 @@ public class WebViewPackageError {
                                 + "provider.",
                         systemWebViewPackage.packageName));
 
-        if (canChangeWebViewProvider()) {
+        if (canAccessWebViewProviderDeveloperSetting()) {
             builder.setPositiveButton(CHANGE_WEBVIEW_PROVIDER_BUTTON_TEXT,
                     (dialog, id) -> openChangeWebViewProviderSettings());
         }
@@ -175,9 +175,16 @@ public class WebViewPackageError {
         return intent;
     }
 
-    private boolean canChangeWebViewProvider() {
+    /**
+     * Check if the user can open the settings activity to change WebView providers or not.
+     */
+    public static boolean canAccessWebViewProviderDeveloperSetting() {
         // Switching WebView providers is possible from API >= 24.
-        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N);
+        // The activity to change WebView provider is only enabled for admin user, see
+        // https://crbug.com/1347418#comment8.
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                && PackageManagerUtils.canResolveActivity(
+                        new Intent(Settings.ACTION_WEBVIEW_SETTINGS));
     }
 
     private void openChangeWebViewProviderSettings() {
