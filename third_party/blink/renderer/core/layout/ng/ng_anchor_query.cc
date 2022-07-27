@@ -52,10 +52,30 @@ const NGPhysicalFragment* NGLogicalAnchorQuery::Fragment(
   return nullptr;
 }
 
+void NGLogicalAnchorQuery::Set(const AtomicString& name,
+                               const NGLogicalAnchorReference& reference) {
+  const auto result = anchor_references_.insert(name, reference);
+  if (result.is_new_entry)
+    return;
+
+  NGLogicalAnchorReference& existing = result.stored_value->value;
+  if (existing.fragment->GetLayoutObject() !=
+      reference.fragment->GetLayoutObject()) {
+    // If this is the same name on a different |LayoutObject|, ignore it.
+    // This logic assumes that callers call this function in the correct order.
+    // TODO(crbug.com/1309178): Should we overwrite or ignore? Needs tests.
+    return;
+  }
+
+  // If this is a fragment from the same |LayoutObject|, unite the rect.
+  existing.rect.Unite(reference.rect);
+}
+
 void NGPhysicalAnchorQuery::SetFromLogical(
     const NGLogicalAnchorQuery& logical_query,
     const WritingModeConverter& converter) {
   for (const auto& it : logical_query.anchor_references_) {
+    DCHECK_EQ(AnchorReference(it.key), nullptr);
     anchor_references_.Set(
         it.key, MakeGarbageCollected<NGPhysicalAnchorReference>(
                     converter.ToPhysical(it.value.rect), it.value.fragment));
@@ -69,8 +89,7 @@ void NGLogicalAnchorQuery::SetFromPhysical(
   for (const auto& it : physical_query.anchor_references_) {
     LogicalRect rect = converter.ToLogical(it.value->rect);
     rect.offset += additional_offset;
-    anchor_references_.Set(
-        it.key, NGLogicalAnchorReference{rect, it.value->fragment.Get()});
+    Set(it.key, NGLogicalAnchorReference{rect, it.value->fragment.Get()});
   }
 }
 

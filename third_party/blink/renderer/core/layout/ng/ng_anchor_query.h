@@ -83,10 +83,7 @@ class NGLogicalAnchorQuery {
   const LogicalRect* Rect(const AtomicString& name) const;
   const NGPhysicalFragment* Fragment(const AtomicString& name) const;
 
-  void Set(const AtomicString& name,
-           const NGLogicalAnchorReference& reference) {
-    anchor_references_.Set(name, reference);
-  }
+  void Set(const AtomicString& name, const NGLogicalAnchorReference& reference);
   void SetFromPhysical(const NGPhysicalAnchorQuery& physical_query,
                        const WritingModeConverter& converter,
                        const LogicalOffset& additional_offset);
