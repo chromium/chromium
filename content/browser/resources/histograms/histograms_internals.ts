@@ -125,11 +125,11 @@ function setExpanded(histogramNode: HTMLElement, expanded: boolean) {
   collapse.style.display = expanded ? 'inline' : 'none';
 }
 
-type Histogram = {
-  name: string,
-  header: string,
-  body: string,
-};
+interface Histogram {
+  name: string;
+  header: string;
+  body: string;
+}
 
 /**
  * Callback from backend with the list of histograms. Builds the UI.

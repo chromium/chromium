@@ -95,6 +95,9 @@ module.exports = {
          assertionStyle: 'as',
       }],
 
+      // https://google.github.io/styleguide/tsguide.html#interfaces-vs-type-aliases
+      "@typescript-eslint/consistent-type-definitions": ['error', 'interface'],
+
       // https://google.github.io/styleguide/jsguide.html#naming
       '@typescript-eslint/naming-convention': [
         'error',

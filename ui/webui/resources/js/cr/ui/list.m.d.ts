@@ -7,14 +7,14 @@ import {ListItem} from './list_item.m.js';
 import {ListSelectionController} from './list_selection_controller.m.js';
 import {ListSelectionModel} from './list_selection_model.m.js';
 
-export type Size = {
-  height: number,
-  marginBottom: number,
-  marginLeft: number,
-  marginRight: number,
-  marginTop: number,
-  width: number,
-};
+export interface Size {
+  height: number;
+  marginBottom: number;
+  marginLeft: number;
+  marginRight: number;
+  marginTop: number;
+  width: number;
+}
 
 declare class List extends HTMLUListElement {
   constructor();

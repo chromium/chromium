@@ -15,16 +15,16 @@
  *
  * @see chrome/browser/ui/webui/settings/certificates_handler.cc
  */
-export type CertificateProvisioningProcess = {
-  certProfileId: string,
-  certProfileName: string,
-  isDeviceWide: boolean,
-  lastUnsuccessfulMessage: string,
-  status: string,
-  stateId: number,
-  timeSinceLastUpdate: string,
-  publicKey: string,
-};
+export interface CertificateProvisioningProcess {
+  certProfileId: string;
+  certProfileName: string;
+  isDeviceWide: boolean;
+  lastUnsuccessfulMessage: string;
+  status: string;
+  stateId: number;
+  timeSinceLastUpdate: string;
+  publicKey: string;
+}
 
 export interface CertificateProvisioningBrowserProxy {
   /**

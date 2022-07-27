@@ -13,11 +13,11 @@ import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 const invalidationCountersMap:
     {[key: string]: {count: number, time: string}} = {};
 
-type CountersArrayEntry = {
-  type: string,
-  count: number,
-  time: string,
-};
+interface CountersArrayEntry {
+  type: string;
+  count: number;
+  time: string;
+}
 
 /**
  * Redraws the counters table with the most recent information.

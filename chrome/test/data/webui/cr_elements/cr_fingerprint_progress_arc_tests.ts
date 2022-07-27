@@ -57,10 +57,10 @@ suite('cr_fingerprint_progress_arc_test', function() {
   /**
    * An object descrbing a 2d point.
    */
-  type Point = {
-    x: number,
-    y: number,
-  };
+  interface Point {
+    x: number;
+    y: number;
+  }
 
   const canvasColor: string = 'rgba(255, 255, 255, 1.0)';
 

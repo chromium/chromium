@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export type Action = {
-  name: string,
-};
+export interface Action {
+  name: string;
+}
 
 export type DeferredAction = (callback: (p: Action|null) => void) => void;
 

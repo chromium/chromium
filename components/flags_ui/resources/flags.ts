@@ -31,14 +31,14 @@ Object.assign(
 
 // Declare properties that are augmented on some HTMLElement instances by
 // jstemplate.
-type WithExtras = {
-  internal_name: string,
-};
+interface WithExtras {
+  internal_name: string;
+}
 
-type Tab = {
-  tabEl: HTMLElement,
-  panelEl: HTMLElement,
-};
+interface Tab {
+  tabEl: HTMLElement;
+  panelEl: HTMLElement;
+}
 
 const tabs: Tab[] = [
   {
@@ -282,29 +282,29 @@ function showRestartToast(show: boolean) {
  * `is_default` is true if the feature is in its default state.
  * `choices` is only set if the entry has multiple values.
  */
-type Feature = {
-  internal_name: string,
-  name: string,
-  description: string,
-  enabled: boolean,
-  is_default: boolean,
-  supported_platforms: string[],
+interface Feature {
+  internal_name: string;
+  name: string;
+  description: string;
+  enabled: boolean;
+  is_default: boolean;
+  supported_platforms: string[];
   choices?: Array<{
-           internal_name: string,
-           description: string,
-           selected: boolean,
-         }>,
-};
+    internal_name: string,
+    description: string,
+    selected: boolean,
+  }>;
+}
 
-type ExperimentalFeaturesData = {
-  supportedFeatures: Feature[],
-  unsupportedFeatures: Feature[],
-  needsRestart: boolean,
-  showBetaChannelPromotion: boolean,
-  showDevChannelPromotion: boolean,
-  showOwnerWarning: boolean,
-  showSystemFlagsLink: boolean,
-};
+interface ExperimentalFeaturesData {
+  supportedFeatures: Feature[];
+  unsupportedFeatures: Feature[];
+  needsRestart: boolean;
+  showBetaChannelPromotion: boolean;
+  showDevChannelPromotion: boolean;
+  showOwnerWarning: boolean;
+  showSystemFlagsLink: boolean;
+}
 
 /**
  * Called by the WebUI to re-populate the page with data representing the
@@ -406,11 +406,11 @@ function handleSelectExperimentalFeatureChoice(
 }
 
 /** Type for storing the elements which are searched on. */
-type SearchContent = {
-  link: NodeListOf<HTMLElement>|null,
-  title: NodeListOf<HTMLElement>|null,
-  description: NodeListOf<HTMLElement>|null,
-};
+interface SearchContent {
+  link: NodeListOf<HTMLElement>|null;
+  title: NodeListOf<HTMLElement>|null;
+  description: NodeListOf<HTMLElement>|null;
+}
 
 const emptySearchContent: SearchContent = Object.freeze({
   link: null,

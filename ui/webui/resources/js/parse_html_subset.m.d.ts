@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export type SanitizeInnerHtmlOpts = {
-  substitutions?: string[],
-  attrs?: string[],
-  tags?: string[],
-};
+export interface SanitizeInnerHtmlOpts {
+  substitutions?: string[];
+  attrs?: string[];
+  tags?: string[];
+}
 
 export function sanitizeInnerHtml(
     rawString: string, opts?: SanitizeInnerHtmlOpts): string;

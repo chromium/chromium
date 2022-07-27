@@ -85,11 +85,11 @@ export function createRawChooserException(
  * In the real (non-test) code, this data comes from the C++ handler.
  * Only used for tests.
  */
-export type SiteSettingsPref = {
-  defaults: {[key in ContentSettingsTypes]: DefaultContentSetting},
-  exceptions: {[key in ContentSettingsTypes]: RawSiteException[]},
-  chooserExceptions: {[key in ContentSettingsTypes]: RawChooserException[]},
-};
+export interface SiteSettingsPref {
+  defaults: {[key in ContentSettingsTypes]: DefaultContentSetting};
+  exceptions: {[key in ContentSettingsTypes]: RawSiteException[]};
+  chooserExceptions: {[key in ContentSettingsTypes]: RawChooserException[]};
+}
 
 /**
  * Helper to create a mock SiteSettingsPref.

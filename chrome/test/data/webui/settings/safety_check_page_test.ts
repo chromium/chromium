@@ -95,16 +95,16 @@ function fireSafetyCheckChromeCleanerEvent(
       SafetyCheckCallbackConstants.CHROME_CLEANER_CHANGED, event);
 }
 
-type SafetyCheckChildExpectation = {
-  page: HTMLElement,
-  iconStatus: SafetyCheckIconStatus,
-  label: string,
-  buttonLabel?: string,
-  buttonAriaLabel?: string,
-  buttonClass?: string,
-  managedIcon?: boolean,
-  rowClickable?: boolean,
-};
+interface SafetyCheckChildExpectation {
+  page: HTMLElement;
+  iconStatus: SafetyCheckIconStatus;
+  label: string;
+  buttonLabel?: string;
+  buttonAriaLabel?: string;
+  buttonClass?: string;
+  managedIcon?: boolean;
+  rowClickable?: boolean;
+}
 
 /**
  * Verify that the safety check child inside the page has been configured as

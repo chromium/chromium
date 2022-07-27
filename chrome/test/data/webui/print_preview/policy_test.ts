@@ -38,10 +38,12 @@ const policy_tests = {
 
 Object.assign(window, {policy_tests: policy_tests});
 
-type AllowedDefaultModePolicySetup = {
-  settingName: string,
-  serializedSettingName?: string, allowedMode: any, defaultMode: any,
-};
+interface AllowedDefaultModePolicySetup {
+  settingName: string;
+  serializedSettingName?: string;
+  allowedMode: any;
+  defaultMode: any;
+}
 
 class PolicyTestPluralStringProxy extends TestPluralStringProxy {
   override text: string = '';

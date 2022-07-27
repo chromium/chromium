@@ -31,10 +31,10 @@ export class ClickMock {
   }
 }
 
-type ListenerInfo = {
-  satisfied: boolean,
-  args: any,
-};
+interface ListenerInfo {
+  satisfied: boolean;
+  args: any;
+}
 
 /**
  * A mock to test receiving expected events and verify that they were called

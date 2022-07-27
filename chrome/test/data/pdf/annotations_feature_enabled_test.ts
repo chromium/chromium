@@ -260,7 +260,10 @@ chrome.test.runTests([
     const touch1 = {pointerId: 11, pointerType: 'touch'};
     const touch2 = {pointerId: 22, pointerType: 'touch'};
 
-    type Expectation = {type: string, init: PointerEventInit};
+    interface Expectation {
+      type: string;
+      init: PointerEventInit;
+    }
 
     function checkExpectations(expectations: Expectation[]) {
       chrome.test.assertEq(expectations.length, events.length);
@@ -268,7 +271,9 @@ chrome.test.runTests([
         const event = events.shift()!;
         const expectation = expectations.shift()!;
         chrome.test.assertEq(expectation.type, event.type);
-        type IndexableType = {[key: string]: any};
+        interface IndexableType {
+          [key: string]: any;
+        }
         for (const key of Object.keys(expectation.init)) {
           chrome.test.assertEq(
               (expectation.init as IndexableType)[key],

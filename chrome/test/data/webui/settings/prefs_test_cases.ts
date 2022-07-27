@@ -8,10 +8,10 @@
  * for a given pref, not every "next" value is different from the previous
  * value; this tests what happens when stale changes are reported.
  */
-type TestCase = {
-  pref: chrome.settingsPrivate.PrefObject,
-  nextValues: any[],
-};
+interface TestCase {
+  pref: chrome.settingsPrivate.PrefObject;
+  nextValues: any[];
+}
 
 export const prefsTestCases: TestCase[] = [
   {

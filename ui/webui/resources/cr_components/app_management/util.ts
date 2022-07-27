@@ -14,10 +14,10 @@ import {isPermissionEnabled} from './permission_util.js';
  * @fileoverview Utility functions for the App Management page.
  */
 
-type AppManagementPageState = {
-  apps: Record<string, App>,
-  selectedAppId: string|null,
-};
+interface AppManagementPageState {
+  apps: Record<string, App>;
+  selectedAppId: string|null;
+}
 
 export function createEmptyState(): AppManagementPageState {
   return {

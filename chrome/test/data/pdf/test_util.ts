@@ -117,12 +117,12 @@ export class MockViewportChangedCallback {
   }
 }
 
-type PageDimensions = {
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-};
+interface PageDimensions {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 
 export class MockDocumentDimensions implements DocumentDimensions {
   width: number;

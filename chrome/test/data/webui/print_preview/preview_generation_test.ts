@@ -40,14 +40,14 @@ const preview_generation_test = {
 
 Object.assign(window, {preview_generation_test: preview_generation_test});
 
-type ValidateScalingChangeParams = {
-  printTicket: string,
-  scalingTypeKey: string,
-  expectedTicketId: number,
-  expectedTicketScaleFactor: number,
-  expectedScalingValue: string,
-  expectedScalingType: ScalingType,
-};
+interface ValidateScalingChangeParams {
+  printTicket: string;
+  scalingTypeKey: string;
+  expectedTicketId: number;
+  expectedTicketScaleFactor: number;
+  expectedScalingValue: string;
+  expectedScalingType: ScalingType;
+}
 
 suite(preview_generation_test.suiteName, function() {
   let page: PrintPreviewAppElement;

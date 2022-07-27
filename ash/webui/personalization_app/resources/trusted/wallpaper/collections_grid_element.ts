@@ -38,31 +38,32 @@ enum TileType {
   FAILURE = 'failure',
 }
 
-type LoadingTile = {
-  type: TileType.LOADING,
-};
+interface LoadingTile {
+  type: TileType.LOADING;
+}
 
 /**
  * Type that represents a collection that failed to load. The preview image
  * is still displayed, but is grayed out and unclickable.
  */
-type FailureTile = {
-  type: TileType.FAILURE,
-  id: string,
-  name: string,
-  preview: [],
-};
+interface FailureTile {
+  type: TileType.FAILURE;
+  id: string;
+  name: string;
+  preview: [];
+}
 
 /**
  * A displayable type constructed from up to three LocalImages or a
  * WallpaperCollection.
  */
-type ImageTile = {
-  type: TileType.IMAGE_GOOGLE_PHOTOS|TileType.IMAGE_LOCAL|TileType.IMAGE_ONLINE,
-  id: string,
-  name: string,
-  count?: string, preview: Url[],
-};
+interface ImageTile {
+  type: TileType.IMAGE_GOOGLE_PHOTOS|TileType.IMAGE_LOCAL|TileType.IMAGE_ONLINE;
+  id: string;
+  name: string;
+  count?: string;
+  preview: Url[];
+}
 
 type Tile = LoadingTile|FailureTile|ImageTile;
 

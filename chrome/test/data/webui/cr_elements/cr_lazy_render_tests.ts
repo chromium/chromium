@@ -15,7 +15,10 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 suite('cr-lazy-render', function() {
   let lazy: CrLazyRenderElement<HTMLElement>;
 
-  type BindData = {name: string, checked: boolean};
+  interface BindData {
+    name: string;
+    checked: boolean;
+  }
 
   let bind: HTMLElement&BindData;
 

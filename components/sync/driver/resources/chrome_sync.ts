@@ -98,22 +98,22 @@ export function triggerRefresh() {
   chrome.send('triggerRefresh');
 }
 
-export type SyncNode = {
-  BASE_VERSION: string,
-  BASE_VERSION_STRING: string,
-  ID: string,
-  IS_DIR: boolean,
-  METAHANDLE: number,
-  NON_UNIQUE_NAME: string,
-  PARENT_ID: string,
-  UNIQUE_SERVER_TAG: string,
-  SERVER_VERSION: string,
-  SERVER_VERSION_TIME: string,
-  SERVER_SPECIFICS: string,
-  SPECIFICS: string,
-  modelType: string,
-  positionIndex?: number,
-};
+export interface SyncNode {
+  BASE_VERSION: string;
+  BASE_VERSION_STRING: string;
+  ID: string;
+  IS_DIR: boolean;
+  METAHANDLE: number;
+  NON_UNIQUE_NAME: string;
+  PARENT_ID: string;
+  UNIQUE_SERVER_TAG: string;
+  SERVER_VERSION: string;
+  SERVER_VERSION_TIME: string;
+  SERVER_SPECIFICS: string;
+  SPECIFICS: string;
+  modelType: string;
+  positionIndex?: number;
+}
 
 export type SyncNodeMap = Array<{type: string, nodes: SyncNode[]}>;
 

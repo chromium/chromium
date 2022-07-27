@@ -10,16 +10,4 @@ module.exports = {
   'rules' : {
     'eqeqeq' : ['error', 'always', {'null' : 'ignore'}],
   },
-
-  'overrides': [{
-    'files': ['**/*.ts'],
-    'parser': '../../../third_party/node/node_modules/@typescript-eslint/parser',
-    'plugins': [
-      '@typescript-eslint',
-    ],
-    'rules': {
-      // https://google.github.io/styleguide/tsguide.html#interfaces-vs-type-aliases
-      '@typescript-eslint/consistent-type-definitions' : ['error', 'interface'],
-    },
-  }],
 };

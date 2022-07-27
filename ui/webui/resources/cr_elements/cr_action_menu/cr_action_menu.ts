@@ -15,32 +15,32 @@ import {getDeepActiveElement} from '../../js/util.m.js';
 
 import {getTemplate} from './cr_action_menu.html.js';
 
-type ShowAtConfig = {
-  top?: number,
-  left?: number,
-  width?: number,
-  height?: number,
-  anchorAlignmentX?: number,
-  anchorAlignmentY?: number,
-  minX?: number,
-  minY?: number,
-  maxX?: number,
-  maxY?: number,
-  noOffset?: boolean,
-};
+interface ShowAtConfig {
+  top?: number;
+  left?: number;
+  width?: number;
+  height?: number;
+  anchorAlignmentX?: number;
+  anchorAlignmentY?: number;
+  minX?: number;
+  minY?: number;
+  maxX?: number;
+  maxY?: number;
+  noOffset?: boolean;
+}
 
-export type ShowAtPositionConfig = {
-  top: number,
-  left: number,
-  width?: number,
-  height?: number,
-  anchorAlignmentX?: number,
-  anchorAlignmentY?: number,
-  minX?: number,
-  minY?: number,
-  maxX?: number,
-  maxY?: number,
-};
+export interface ShowAtPositionConfig {
+  top: number;
+  left: number;
+  width?: number;
+  height?: number;
+  anchorAlignmentX?: number;
+  anchorAlignmentY?: number;
+  minX?: number;
+  minY?: number;
+  maxX?: number;
+  maxY?: number;
+}
 
 export enum AnchorAlignment {
   BEFORE_START = -2,

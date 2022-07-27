@@ -14,46 +14,46 @@ enum StorageType {
   SYNCABLE,
 }
 
-type BucketTableEntry = {
-  'bucketId': bigint,
-  'storageKey': string,
-  'type': StorageType,
-  'name': string,
-  'usage': bigint,
-  'useCount': bigint,
-  'lastAccessed': Time,
-  'lastModified': Time,
-};
+interface BucketTableEntry {
+  'bucketId': bigint;
+  'storageKey': string;
+  'type': StorageType;
+  'name': string;
+  'usage': bigint;
+  'useCount': bigint;
+  'lastAccessed': Time;
+  'lastModified': Time;
+}
 
-type RetrieveBucketsTableResult = {
-  entries: BucketTableEntry[],
-};
+interface RetrieveBucketsTableResult {
+  entries: BucketTableEntry[];
+}
 
-type StorageTypeBucketTableEntry = {
-  'bucketId': string,
-  'name': string,
-  'usage': string,
-  'useCount': string,
-  'lastAccessed': string,
-  'lastModified': string,
-};
+interface StorageTypeBucketTableEntry {
+  'bucketId': string;
+  'name': string;
+  'usage': string;
+  'useCount': string;
+  'lastAccessed': string;
+  'lastModified': string;
+}
 
 type EntriesForStorageType = StorageTypeBucketTableEntry[];
 
-type StorageTypeEntries = {
+interface StorageTypeEntries {
   // key = storageType
-  [key: string]: EntriesForStorageType,
-};
+  [key: string]: EntriesForStorageType;
+}
 
-type StorageKeyData = {
-  'bucketCount': number,
-  'storageKeyEntries': StorageTypeEntries,
-};
+interface StorageKeyData {
+  'bucketCount': number;
+  'storageKeyEntries': StorageTypeEntries;
+}
 
-type BucketTableEntriesByStorageKey = {
+interface BucketTableEntriesByStorageKey {
   // key = storageKey
-  [key: string]: StorageKeyData,
-};
+  [key: string]: StorageKeyData;
+}
 
 // Converts a mojo time to a JS time.
 function convertMojoTimeToJS(mojoTime: Time): Date {

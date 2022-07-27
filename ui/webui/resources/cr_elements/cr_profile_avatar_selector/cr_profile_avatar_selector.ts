@@ -20,13 +20,13 @@ import {getImage} from '../../js/icon.js';
 
 import {getTemplate} from './cr_profile_avatar_selector.html.js';
 
-export type AvatarIcon = {
-  url: string,
-  label: string,
-  index: number,
-  isGaiaAvatar: boolean,
-  selected: boolean,
-};
+export interface AvatarIcon {
+  url: string;
+  label: string;
+  index: number;
+  isGaiaAvatar: boolean;
+  selected: boolean;
+}
 
 export class CrProfileAvatarSelectorElement extends PolymerElement {
   static get is() {

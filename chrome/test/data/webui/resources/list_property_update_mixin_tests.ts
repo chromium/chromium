@@ -8,14 +8,14 @@ import {ListPropertyUpdateMixin} from 'chrome://resources/js/list_property_updat
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-type SimpleArrayEntry = {
-  id: number,
-};
+interface SimpleArrayEntry {
+  id: number;
+}
 
-type ComplexArrayEntry = {
-  letter: string,
-  words: string[],
-};
+interface ComplexArrayEntry {
+  letter: string;
+  words: string[];
+}
 
 /** A test element that implements the ListPropertyUpdateMixin. */
 const ListPropertyUpdateMixinTestElementBase =

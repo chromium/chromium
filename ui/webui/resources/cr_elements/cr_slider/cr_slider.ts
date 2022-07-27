@@ -25,11 +25,11 @@ import {getTemplate} from './cr_slider.html.js';
  * aria-valuemax, and aria-valuenow, and is optional. If missing, |value| will
  * be used instead.
  */
-export type SliderTick = {
-  value: number,
-  label: string,
-  ariaValue?: number,
-};
+export interface SliderTick {
+  value: number;
+  label: string;
+  ariaValue?: number;
+}
 
 function clamp(min: number, max: number, value: number): number {
   return Math.min(max, Math.max(min, value));

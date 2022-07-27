@@ -199,12 +199,12 @@ suite(restore_state_test.suiteName, function() {
    * values being sent to the native layer.
    */
   test(assert(restore_state_test.TestNames.SaveValues), async function() {
-    type TestCase = {
-      section: string,
-      settingName: string,
-      key: string,
-      value: any,
-    };
+    interface TestCase {
+      section: string;
+      settingName: string;
+      key: string;
+      value: any;
+    }
 
     /**
      * Array of section names, setting names, keys for serialized state, and

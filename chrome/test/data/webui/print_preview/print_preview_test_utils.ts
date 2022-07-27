@@ -226,10 +226,10 @@ export function getDefaultOrientation(device: CapabilitiesResponse): string {
   return assert(options!.find(opt => !!opt.is_default)!.type!);
 }
 
-type ExtensionPrinters = {
-  destinations: Destination[],
-  infoLists: ExtensionDestinationInfo[][],
-};
+interface ExtensionPrinters {
+  destinations: Destination[];
+  infoLists: ExtensionDestinationInfo[][];
+}
 
 export function getExtensionDestinations(): ExtensionPrinters {
   const destinations: Destination[] = [];

@@ -146,18 +146,18 @@ function shouldShowHistorySyncCard(syncBrowserProxy: TestSyncBrowserProxy):
       !!syncBrowserProxy.testSyncStatus.signedIn;
 }
 
-type AssertCardComponentsVisibleParams = {
-  page: SettingsPrivacyGuidePageElement,
-  isSettingFooterVisibleExpected?: boolean,
-  isBackButtonVisibleExpected?: boolean,
-  isWelcomeFragmentVisibleExpected?: boolean,
-  isCompletionFragmentVisibleExpected?: boolean,
-  isMsbbFragmentVisibleExpected?: boolean,
-  isClearOnExitFragmentVisibleExpected?: boolean,
-  isHistorySyncFragmentVisibleExpected?: boolean,
-  isSafeBrowsingFragmentVisibleExpected?: boolean,
-  isCookiesFragmentVisibleExpected?: boolean,
-};
+interface AssertCardComponentsVisibleParams {
+  page: SettingsPrivacyGuidePageElement;
+  isSettingFooterVisibleExpected?: boolean;
+  isBackButtonVisibleExpected?: boolean;
+  isWelcomeFragmentVisibleExpected?: boolean;
+  isCompletionFragmentVisibleExpected?: boolean;
+  isMsbbFragmentVisibleExpected?: boolean;
+  isClearOnExitFragmentVisibleExpected?: boolean;
+  isHistorySyncFragmentVisibleExpected?: boolean;
+  isSafeBrowsingFragmentVisibleExpected?: boolean;
+  isCookiesFragmentVisibleExpected?: boolean;
+}
 
 function assertCardComponentsVisible({
   page,

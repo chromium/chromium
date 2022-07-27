@@ -13,40 +13,40 @@ enum StorageType {
   SYNCABLE,
 }
 
-type BucketTableEntry = {
-  'bucketId': bigint,
-  'storageKey': string,
-  'type': StorageType,
-  'name': string,
-  'usage': bigint,
-  'useCount': bigint,
-  'lastAccessed': Time,
-  'lastModified': Time,
-};
+interface BucketTableEntry {
+  'bucketId': bigint;
+  'storageKey': string;
+  'type': StorageType;
+  'name': string;
+  'usage': bigint;
+  'useCount': bigint;
+  'lastAccessed': Time;
+  'lastModified': Time;
+}
 
-type GetDiskAvailabilityAndTempPoolSizeResult = {
-  totalSpace: bigint,
-  availableSpace: bigint,
-  tempPoolSize: bigint,
-};
+interface GetDiskAvailabilityAndTempPoolSizeResult {
+  totalSpace: bigint;
+  availableSpace: bigint;
+  tempPoolSize: bigint;
+}
 
-type GetGlobalUsageResult = {
-  usage: bigint,
-  unlimitedUsage: bigint,
-};
+interface GetGlobalUsageResult {
+  usage: bigint;
+  unlimitedUsage: bigint;
+}
 
-type GetStatisticsResult = {
+interface GetStatisticsResult {
   evictionStatistics: {
     'errors-on-getting-usage-and-quota': string,
     'evicted-buckets': string,
     'eviction-rounds': string,
     'skipped-eviction-rounds': string,
-  },
-};
+  };
+}
 
-type RetrieveBucketsTableResult = {
-  entries: BucketTableEntry[],
-};
+interface RetrieveBucketsTableResult {
+  entries: BucketTableEntry[];
+}
 
 function urlPort(url: URL): number {
   if (url.port) {

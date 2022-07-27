@@ -11,32 +11,32 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {$, createElementWithClassName} from 'chrome://resources/js/util.m.js';
 
-type Metric = {
-  name: string,
-  value: [number, number],
-};
+interface Metric {
+  name: string;
+  value: [number, number];
+}
 
-type UkmEntry = {
-  name: string,
-  metrics: Metric[],
-};
+interface UkmEntry {
+  name: string;
+  metrics: Metric[];
+}
 
-type UkmDataSource = {
-  id: [number, number],
-  entries: UkmEntry[],
-  url?: string,
-};
+interface UkmDataSource {
+  id: [number, number];
+  entries: UkmEntry[];
+  url?: string;
+}
 
 /**
  * The Ukm data sent from the browser.
  */
-type UkmData = {
-  state: boolean,
-  client_id: number[],
-  session_id: string,
-  sources: UkmDataSource[],
-  is_sampling_enabled: boolean,
-};
+interface UkmData {
+  state: boolean;
+  client_id: number[];
+  session_id: string;
+  sources: UkmDataSource[];
+  is_sampling_enabled: boolean;
+}
 
 /**
  * Stores source id and number of entries shown. If there is a new source id

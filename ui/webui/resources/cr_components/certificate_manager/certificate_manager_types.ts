@@ -16,20 +16,20 @@ import {CertificatesError, CertificatesImportError,CertificateSubnode, Certifica
 /**
  * The payload of the 'certificate-action' event.
  */
-export type CertificateActionEventDetail = {
-  action: CertificateAction,
-  subnode: CertificateSubnode|NewCertificateSubNode|null,
-  certificateType: CertificateType,
-  anchor: HTMLElement,
-};
+export interface CertificateActionEventDetail {
+  action: CertificateAction;
+  subnode: CertificateSubnode|NewCertificateSubNode|null;
+  certificateType: CertificateType;
+  anchor: HTMLElement;
+}
 
 /**
  * The payload of the 'certificates-error' event.
  */
-export type CertificatesErrorEventDetail = {
-  error: CertificatesError|CertificatesImportError|null,
-  anchor: HTMLElement|null,
-};
+export interface CertificatesErrorEventDetail {
+  error: CertificatesError|CertificatesImportError|null;
+  anchor: HTMLElement|null;
+}
 
 /**
  * Enumeration of actions that require a popup menu to be shown to the user.
@@ -51,10 +51,10 @@ export const CertificateActionEvent = 'certificate-action';
 /**
  * The payload of the 'certificate-provisioning-view-details-action' event.
  */
-export type CertificateProvisioningActionEventDetail = {
-  model: CertificateProvisioningProcess,
-  anchor: HTMLElement,
-};
+export interface CertificateProvisioningActionEventDetail {
+  model: CertificateProvisioningProcess;
+  anchor: HTMLElement;
+}
 // </if>
 
 /**

@@ -11,15 +11,15 @@ import {requestDataAndRegisterForUpdates, requestStart, requestStopClearData, re
 import {ProtocolEvent} from './traffic_log.js';
 
 // Contains the latest snapshot of sync about info.
-type TypeStatus = {
-  name: string,
-  num_entries: number,
-  num_live: number,
-};
+interface TypeStatus {
+  name: string;
+  num_entries: number;
+  num_live: number;
+}
 
-type Detail = {
-  is_sensitive: boolean,
-};
+interface Detail {
+  is_sensitive: boolean;
+}
 
 export let aboutInfo: {details?: Detail[], type_status?: TypeStatus[]} = {};
 
@@ -52,11 +52,11 @@ function refreshAboutInfo(newAboutInfo: object) {
   jstProcess(new JsEvalContext(aboutInfo), aboutInfoDiv);
 }
 
-type EntityCount = {
-  modelType: string,
-  entities: number,
-  nonTombstoneEntities: number,
-};
+interface EntityCount {
+  modelType: string;
+  entities: number;
+  nonTombstoneEntities: number;
+}
 
 function onEntityCountsUpdatedEvent(response: {entityCounts: EntityCount[]}) {
   if (!aboutInfo.type_status) {

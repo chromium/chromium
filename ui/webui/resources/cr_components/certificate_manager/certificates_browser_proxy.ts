@@ -12,24 +12,24 @@ import {sendWithPromise} from '../../js/cr.m.js';
 /**
  * @see chrome/browser/ui/webui/settings/certificates_handler.cc
  */
-export type CertificateSubnode = {
-  extractable: boolean,
-  id: string,
-  name: string,
-  policy: boolean,
-  webTrustAnchor: boolean,
-  canBeDeleted: boolean,
-  canBeEdited: boolean,
-  untrusted: boolean,
-};
+export interface CertificateSubnode {
+  extractable: boolean;
+  id: string;
+  name: string;
+  policy: boolean;
+  webTrustAnchor: boolean;
+  canBeDeleted: boolean;
+  canBeEdited: boolean;
+  untrusted: boolean;
+}
 
 /**
  * A data structure describing a certificate that is currently being imported,
  * therefore it has no ID yet, but it has a name. Used within JS only.
  */
-export type NewCertificateSubNode = {
-  name: string,
-};
+export interface NewCertificateSubNode {
+  name: string;
+}
 
 /**
  * Top-level grouping node in a certificate list, representing an organization
@@ -38,27 +38,27 @@ export type NewCertificateSubNode = {
  * own CertificatesOrgGroup with |name| set to its display name.
  * @see chrome/browser/ui/webui/settings/certificates_handler.cc
  */
-export type CertificatesOrgGroup = {
-  id: string,
-  name: string,
-  containsPolicyCerts: boolean,
-  subnodes: CertificateSubnode[],
-};
+export interface CertificatesOrgGroup {
+  id: string;
+  name: string;
+  containsPolicyCerts: boolean;
+  subnodes: CertificateSubnode[];
+}
 
-export type CaTrustInfo = {
-  ssl: boolean,
-  email: boolean,
-  objSign: boolean,
-};
+export interface CaTrustInfo {
+  ssl: boolean;
+  email: boolean;
+  objSign: boolean;
+}
 
 /**
  * Generic error returned from C++ via a Promise reject callback.
  * @see chrome/browser/ui/webui/settings/certificates_handler.cc
  */
-export type CertificatesError = {
-  title: string,
-  description: string,
-};
+export interface CertificatesError {
+  title: string;
+  description: string;
+}
 
 /**
  * Enumeration of all possible certificate types.
@@ -76,11 +76,11 @@ export enum CertificateType {
  * fail to be imported.
  * @see chrome/browser/ui/webui/settings/certificates_handler.cc
  */
-export type CertificatesImportError = {
-  title: string,
-  description: string,
-  certificateErrors: Array<{name: string, error: string}>,
-};
+export interface CertificatesImportError {
+  title: string;
+  description: string;
+  certificateErrors: Array<{name: string, error: string}>;
+}
 
 export interface CertificatesBrowserProxy {
   /**

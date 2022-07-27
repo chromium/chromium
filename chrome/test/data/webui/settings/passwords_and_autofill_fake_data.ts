@@ -11,16 +11,16 @@ import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
 // clang-format on
 
-export type PasswordEntryParams = {
-  url?: string,
-  username?: string,
-  federationText?: string,
-  id?: number,
-  inAccountStore?: boolean,
-  inProfileStore?: boolean,
-  isAndroidCredential?: boolean,
-  note?: string,
-};
+export interface PasswordEntryParams {
+  url?: string;
+  username?: string;
+  federationText?: string;
+  id?: number;
+  inAccountStore?: boolean;
+  inProfileStore?: boolean;
+  isAndroidCredential?: boolean;
+  note?: string;
+}
 
 /**
  * Creates a single item for the list of passwords, in the format sent by the
@@ -66,10 +66,10 @@ export function createPasswordEntry(params?: PasswordEntryParams):
   };
 }
 
-export type ExceptionEntryParams = {
-  url?: string,
-  id?: number,
-};
+export interface ExceptionEntryParams {
+  url?: string;
+  id?: number;
+}
 
 /**
  * Creates a single item for the list of password exceptions. If no |id| is
@@ -92,11 +92,11 @@ export function createExceptionEntry(params?: ExceptionEntryParams):
   };
 }
 
-export type MultiStoreExceptionEntryParams = {
-  url?: string,
-  accountId?: number,
-  deviceId?: number,
-};
+export interface MultiStoreExceptionEntryParams {
+  url?: string;
+  accountId?: number;
+  deviceId?: number;
+}
 
 /**
  * Creates a new fake address entry for testing.

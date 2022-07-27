@@ -5,13 +5,13 @@
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
-type LogEntry = {
-  submodule: string,
-  event: string,
-  date: Date,
-  details: object,
-  textDetails: string,
-};
+interface LogEntry {
+  submodule: string;
+  event: string;
+  date: Date;
+  details: object;
+  textDetails: string;
+}
 
 /**
  * Creates a new log object which then immediately starts recording sync

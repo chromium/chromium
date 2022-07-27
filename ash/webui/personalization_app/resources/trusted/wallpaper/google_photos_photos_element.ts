@@ -58,11 +58,11 @@ export type GooglePhotosPhotoWithIndex = GooglePhotosPhoto&{index: number};
 export type GooglePhotosPhotosRow = GooglePhotosPhotoWithIndex[];
 
 /** A titled list of |GooglePhotosPhotosRow|'s to be rendered in a section. */
-export type GooglePhotosPhotosSection = {
-  date: string,
-  locations: Set<string>,
-  rows: GooglePhotosPhotosRow[],
-};
+export interface GooglePhotosPhotosSection {
+  date: string;
+  locations: Set<string>;
+  rows: GooglePhotosPhotosRow[];
+}
 
 export interface GooglePhotosPhotos {
   $: {grid: IronListElement, gridScrollThreshold: IronScrollThresholdElement};

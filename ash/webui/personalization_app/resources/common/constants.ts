@@ -27,8 +27,9 @@ export const kMaximumLocalImagePreviews = 4;
  * A displayable type constructed from WallpaperImages to display them as a
  * single unit. e.g. Dark/Light wallpaper images.
  */
-export type ImageTile = {
-  assetId?: bigint,
-  attribution?: string[],
-  unitId?: bigint, preview: Url[],
-};
+export interface ImageTile {
+  assetId?: bigint;
+  attribution?: string[];
+  unitId?: bigint;
+  preview: Url[];
+}
