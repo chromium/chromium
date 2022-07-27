@@ -148,6 +148,11 @@ void WebAppBrowserController::ToggleWindowControlsOverlayEnabled() {
       app_id(), !registrar().GetWindowControlsOverlayEnabled(app_id()));
 }
 
+bool WebAppBrowserController::AppUsesBorderlessMode() const {
+  DisplayMode display = registrar().GetAppEffectiveDisplayMode(app_id());
+  return display == DisplayMode::kBorderless;
+}
+
 gfx::Rect WebAppBrowserController::GetDefaultBounds() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (system_app_) {

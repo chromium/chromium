@@ -92,6 +92,7 @@ class WebAppBrowserController : public AppBrowserController,
   bool AppUsesWindowControlsOverlay() const override;
   bool IsWindowControlsOverlayEnabled() const override;
   void ToggleWindowControlsOverlayEnabled() override;
+  bool AppUsesBorderlessMode() const override;
   gfx::Rect GetDefaultBounds() const override;
   bool HasReloadButton() const override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)

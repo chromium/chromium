@@ -246,6 +246,10 @@ bool AppBrowserController::AppUsesWindowControlsOverlay() const {
   return false;
 }
 
+bool AppBrowserController::AppUsesBorderlessMode() const {
+  return false;
+}
+
 bool AppBrowserController::IsWindowControlsOverlayEnabled() const {
   return false;
 }
