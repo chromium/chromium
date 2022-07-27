@@ -79,6 +79,7 @@ function spawnChecked(cmd, args, options) {
 
   if (rv.status != 0 || rv.error) {
     console.error(rv.error);
+    console.error(rv.stderr.toString());
     throw new Error(`Spawned process failed with exit code ${rv.status}`);
   }
 
