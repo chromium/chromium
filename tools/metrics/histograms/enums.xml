@@ -57351,6 +57351,7 @@ from previous Chrome versions.
   <int value="-962030536" label="ChromeDuetLabeled:enabled"/>
   <int value="-960077963" label="EnableAuraTooltipsOnWindows:enabled"/>
   <int value="-959746153" label="SystemExtensions:disabled"/>
+  <int value="-959244784" label="ContextualSearchSuppressShortView:enabled"/>
   <int value="-959173180" label="AccessibilityPageZoom:disabled"/>
   <int value="-958950214" label="AllowDisableMouseAcceleration:disabled"/>
   <int value="-958372962" label="LacrosSupport:enabled"/>
@@ -57770,6 +57771,7 @@ from previous Chrome versions.
   <int value="-696225611" label="UseSerialBusEnumerator:disabled"/>
   <int value="-695764575" label="NearbySharingBackgroundScanning:enabled"/>
   <int value="-695687521" label="double-buffer-compositing"/>
+  <int value="-694943768" label="ContextualSearchSuppressShortView:disabled"/>
   <int value="-694622753" label="VizHitTest:disabled"/>
   <int value="-694187898" label="MashOopViz:disabled"/>
   <int value="-693881124"

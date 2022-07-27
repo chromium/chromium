@@ -41,6 +41,7 @@
 
     <!-- Contextual Search dimensions -->
     <dimen name="contextual_search_bar_image_size">36dp</dimen>
+    <dimen name="contextual_search_minimum_base_page_height">600dp</dimen>
     <dimen name="contextual_search_text_layer_min_height">
         @dimen/overlay_panel_text_layer_min_height
     </dimen>

@@ -312,6 +312,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.ContextualSearch.SuppressedViewTooSmall" enum="Boolean"
+    expires_after="M106">
+  <owner>donnd@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
+  <summary>
+    Records whether triggering the Touch To Search feature was suppressed due to
+    the base page view being too small. This may happen in landscape mode, on
+    very small phones, when a Partial Height Custom Tab is being displayed, or
+    when muliwindow is in use with a small window. The intent is to capture in
+    the log how many searches we lose when the gating Feature is enabled.
+    Recorded when a gesture that would normally trigger TTS suppresses the
+    bottom sheet from showing. Android only.
+  </summary>
+</histogram>
+
 <histogram name="Search.ContextualSearch.Tap.ResultsSeen" enum="Boolean"
     expires_after="M77">
   <owner>donnd@chromium.org</owner>

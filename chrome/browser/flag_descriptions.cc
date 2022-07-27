@@ -3340,6 +3340,11 @@ const char kContextualSearchForceCaptionName[] =
 const char kContextualSearchForceCaptionDescription[] =
     "Forces a caption to always be shown in the Touch to Search Bar.";
 
+const char kContextualSearchSuppressShortViewName[] =
+    "Contextual Search suppress short view";
+const char kContextualSearchSuppressShortViewDescription[] =
+    "Contextual Search suppress when the base page view is too short";
+
 const char kContextualSearchTranslationsName[] =
     "Contextual Search translations";
 const char kContextualSearchTranslationsDescription[] =

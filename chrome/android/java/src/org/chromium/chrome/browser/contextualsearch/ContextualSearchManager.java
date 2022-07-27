@@ -1903,6 +1903,14 @@ public class ContextualSearchManager
                 TypedValue.COMPLEX_UNIT_SP, sp, mActivity.getResources().getDisplayMetrics());
     }
 
+    /** Returns whether the View of the Base Page is too small to show our Overlay Panel. */
+    private boolean isViewTooSmall() {
+        int basePageHeight = getBasePageHeight();
+        return basePageHeight > 0
+                && basePageHeight < mActivity.getResources().getDimensionPixelSize(
+                           R.dimen.contextual_search_minimum_base_page_height);
+    }
+
     // ============================================================================================
     // Test helpers
     // ============================================================================================
@@ -1976,7 +1984,16 @@ public class ContextualSearchManager
 
     @VisibleForTesting
     public boolean isSuppressed() {
-        return mIsBottomSheetVisible || mIsAccessibilityModeEnabled;
+        boolean shouldSimplySuppress = mIsBottomSheetVisible || mIsAccessibilityModeEnabled;
+        if (shouldSimplySuppress) return true;
+
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW)) {
+            return false;
+        }
+
+        boolean isViewTooSmall = isViewTooSmall();
+        ContextualSearchUma.logViewTooSmall(isViewTooSmall);
+        return isViewTooSmall;
     }
 
     @NativeMethods
