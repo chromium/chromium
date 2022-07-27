@@ -71,7 +71,7 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     private FrameLayout mFragmentView;
     private ModalDialogManager mModalDialogManager;
     private SkipTosDialogPolicyListener mSkipTosDialogPolicyListener;
-    private @Nullable SigninFirstRunCoordinator mSigninFirstRunCoordinator;
+    private SigninFirstRunCoordinator mSigninFirstRunCoordinator;
     private @LoadPoint int mSlowestLoadPoint;
     private boolean mExitFirstRunCalled;
     private boolean mNativePolicyAndChildStatusLoaded;
@@ -83,6 +83,8 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     public void onAttach(Context context) {
         super.onAttach(context);
         mModalDialogManager = ((ModalDialogManagerHolder) getActivity()).getModalDialogManager();
+        mSigninFirstRunCoordinator = new SigninFirstRunCoordinator(requireContext(),
+                mModalDialogManager, this, PrivacyPreferencesManagerImpl.getInstance());
 
         getPageDelegate().getNativeInitializationPromise().then(result -> { onNativeLoaded(); });
         getPageDelegate().getPolicyLoadListener().onAvailable(hasPolicies -> onPolicyLoad());
@@ -105,6 +107,7 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
             mSkipTosDialogPolicyListener.destroy();
             mSkipTosDialogPolicyListener = null;
         }
+        mSigninFirstRunCoordinator.destroy();
     }
 
     @Override
@@ -125,12 +128,6 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         mFragmentView.addView(inflateFragmentView(inflater, getResources().getConfiguration()));
 
         return mFragmentView;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        setSigninFirstRunCoordinator(null);
     }
 
     @Override
@@ -157,9 +154,7 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     /** Implements {@link FirstRunFragment}. */
     @Override
     public void reset() {
-        if (mSigninFirstRunCoordinator != null) {
-            mSigninFirstRunCoordinator.reset();
-        }
+        mSigninFirstRunCoordinator.reset();
     }
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
@@ -227,21 +222,6 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         }
     }
 
-    /**
-     * Destroys the old coordinator if needed and sets {@link #mSigninFirstRunCoordinator}.
-     * @param coordinator the new coordinator instance (may be null).
-     */
-    private void setSigninFirstRunCoordinator(@Nullable SigninFirstRunCoordinator coordinator) {
-        if (mSigninFirstRunCoordinator != null) {
-            mSigninFirstRunCoordinator.destroy();
-        }
-        mSigninFirstRunCoordinator = coordinator;
-        if (mSigninFirstRunCoordinator != null && mNativePolicyAndChildStatusLoaded) {
-            mSigninFirstRunCoordinator.onNativePolicyAndChildStatusLoaded(
-                    getPageDelegate().getPolicyLoadListener().get());
-        }
-    }
-
     private void onNativeLoaded() {
         // This may happen when the native initialized supplier in FirstRunActivity calls back after
         // the fragment has been detached from the activity. See https://crbug.com/1294998.
@@ -271,8 +251,7 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         // the fragment has been detached from the activity. See https://crbug.com/1294998.
         if (getPageDelegate() == null) return;
 
-        if (mSigninFirstRunCoordinator != null
-                && getPageDelegate().getNativeInitializationPromise().isFulfilled()
+        if (getPageDelegate().getNativeInitializationPromise().isFulfilled()
                 && getPageDelegate().getChildAccountStatusSupplier().get() != null
                 && getPageDelegate().getPolicyLoadListener().get() != null
                 && !mNativePolicyAndChildStatusLoaded) {
@@ -295,9 +274,7 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
                         ? R.layout.signin_first_run_landscape_view
                         : R.layout.signin_first_run_portrait_view,
                 null, false);
-        setSigninFirstRunCoordinator(new SigninFirstRunCoordinator(requireContext(), view,
-                mModalDialogManager, this, PrivacyPreferencesManagerImpl.getInstance()));
-        notifyCoordinatorWhenNativePolicyAndChildStatusAreLoaded();
+        mSigninFirstRunCoordinator.setView(view);
         return view;
     }
 }

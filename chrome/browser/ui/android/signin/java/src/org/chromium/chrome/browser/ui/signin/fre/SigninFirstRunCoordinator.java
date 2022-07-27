@@ -7,12 +7,15 @@ package org.chromium.chrome.browser.ui.signin.fre;
 import android.content.Context;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
@@ -51,30 +54,30 @@ public class SigninFirstRunCoordinator {
 
     private final SigninFirstRunMediator mMediator;
 
+    @Nullable
+    private PropertyModelChangeProcessor<PropertyModel, SigninFirstRunView, PropertyKey>
+            mPropertyModelChangeProcessor;
+
     /**
      * Constructs a coordinator instance.
      *
      * @param context is used to create the UI.
-     * @param view is the FRE view including the selected account, the continue/dismiss buttons,
-     *        the footer string and other view components that change according to different state.
      * @param modalDialogManager is used to open dialogs like account picker dialog and uma dialog.
      * @param delegate is invoked to interact with classes outside the module.
      * @param privacyPreferencesManager is used to check whether metrics and crash reporting are
      *         disabled by policy and set the footer string accordingly.
      */
-    public SigninFirstRunCoordinator(Context context, SigninFirstRunView view,
-            ModalDialogManager modalDialogManager, Delegate delegate,
-            PrivacyPreferencesManager privacyPreferencesManager) {
+    public SigninFirstRunCoordinator(Context context, ModalDialogManager modalDialogManager,
+            Delegate delegate, PrivacyPreferencesManager privacyPreferencesManager) {
         mMediator = new SigninFirstRunMediator(
                 context, modalDialogManager, delegate, privacyPreferencesManager);
-        PropertyModelChangeProcessor.create(
-                mMediator.getModel(), view, SigninFirstRunViewBinder::bind);
     }
 
     /**
      * Releases the resources used by the coordinator.
      */
     public void destroy() {
+        setView(null);
         mMediator.destroy();
     }
 
@@ -85,6 +88,24 @@ public class SigninFirstRunCoordinator {
      */
     public void reset() {
         mMediator.reset();
+    }
+
+    /**
+     * Sets the view that is controlled by the coordinator.
+     * @param view is the FRE view including the selected account, the continue/dismiss buttons,
+     *        the footer string and other view components that change according to different state.
+     *        Can be null, in which case the coordinator will just detach from the previous view.
+     */
+    public void setView(@Nullable SigninFirstRunView view) {
+        if (mPropertyModelChangeProcessor != null) {
+            mPropertyModelChangeProcessor.destroy();
+            mPropertyModelChangeProcessor = null;
+        }
+
+        if (view != null) {
+            mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
+                    mMediator.getModel(), view, SigninFirstRunViewBinder::bind);
+        }
     }
 
     /**
