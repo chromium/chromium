@@ -6007,17 +6007,17 @@
   {
     "name": "sync-trusted-vault-passphrase-ios-rpc",
     "owners": [ "mastiz", "jlebel" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "sync-trusted-vault-passphrase-promo",
     "owners": [ "mastiz", "mmoskvitin" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "sync-trusted-vault-passphrase-recovery",
     "owners": [ "mastiz", "mmoskvitin" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "synthesized-restore-session",
