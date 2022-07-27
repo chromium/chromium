@@ -797,14 +797,19 @@ void InspectorIndexedDBAgent::requestDatabaseNames(
 }
 
 void InspectorIndexedDBAgent::requestDatabase(
-    const String& security_origin,
+    protocol::Maybe<String> security_origin,
+    protocol::Maybe<String> storage_key,
     const String& database_name,
     std::unique_ptr<RequestDatabaseCallback> request_callback) {
+  absl::variant<LocalFrame*, Response> frame_or_response = ResolveFrame(
+      std::move(security_origin), std::move(storage_key), inspected_frames_);
+  if (absl::holds_alternative<Response>(frame_or_response)) {
+    request_callback->sendFailure(absl::get<Response>(frame_or_response));
+  }
   scoped_refptr<DatabaseLoader> database_loader =
       DatabaseLoader::Create(std::move(request_callback));
-  database_loader->Start(
-      inspected_frames_->FrameWithSecurityOrigin(security_origin),
-      database_name);
+  database_loader->Start(absl::get<LocalFrame*>(frame_or_response),
+                         database_name);
 }
 
 void InspectorIndexedDBAgent::requestData(
