@@ -548,15 +548,6 @@
       implied_by: ["CSSContainerQueries"]
     },
     {
-      // The content-visibility: hidden-matchable feature. This is a planned
-      // follow-up to the main CSSContentVisibility feature, thus it is gated
-      // by a different flag.
-      // https://wicg.github.io/display-locking/
-      name: "CSSContentVisibilityHiddenMatchable",
-      origin_trial_feature_name: "BeforeMatchEvent",
-      status: "experimental"
-    },
-    {
       name: "CSSDynamicRangeMediaQueries",
       status: "stable"
     },

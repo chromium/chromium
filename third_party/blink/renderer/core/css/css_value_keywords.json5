@@ -1431,9 +1431,6 @@
     // none
     "back-button",
 
-    // content-visibility
-    "hidden-matchable",
-
     // -internal-empty-line-height
     // none
     "fabricated",

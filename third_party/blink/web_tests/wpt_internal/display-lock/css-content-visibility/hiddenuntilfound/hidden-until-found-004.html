@@ -1,7 +1,7 @@
 <!doctype HTML>
 <html>
 <meta charset="utf8">
-<title>CSS Content Visibility: hidden-matchable does not paint</title>
+<title>hidden=until-found does not paint</title>
 <link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
 <link rel="help" href="https://github.com/WICG/display-locking">
 <link rel="match" href="../container-ref.html">
@@ -9,7 +9,6 @@
 
 <style>
 #container {
-  content-visibility: hidden-matchable;
   width: 150px;
   height: 150px;
   background: lightblue;
@@ -21,7 +20,7 @@
 }
 </style>
 
-<div id=container>
+<div id=container hidden=until-found>
   Text.
   <div id=child></div>
   <span>inline child</span>

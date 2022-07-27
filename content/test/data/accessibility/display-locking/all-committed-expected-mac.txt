@@ -8,7 +8,6 @@ AXWebArea
 ++++++AXStaticText AXValue='nested activatable locked element will be in AX tree but without layout'
 ++AXStaticText AXValue='normal text 1'
 ++AXGroup
-++++AXStaticText AXValue='nested non-viewport-activatable locked element will not be in AX tree'
 ++AXStaticText AXValue='normal text 2'
 ++AXGroup
 ++++AXStaticText AXValue='nested non-activatable locked element will not be in AX tree'

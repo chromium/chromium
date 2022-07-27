@@ -97,12 +97,9 @@ class DisplayLockEmptyEventListener final : public NativeEventListener {
 };
 }  // namespace
 
-class DisplayLockContextTest
-    : public testing::Test,
-      private ScopedCSSContentVisibilityHiddenMatchableForTest {
+class DisplayLockContextTest : public testing::Test {
  public:
-  DisplayLockContextTest()
-      : ScopedCSSContentVisibilityHiddenMatchableForTest(true) {}
+  DisplayLockContextTest() = default;
 
   void SetUp() override { web_view_helper_.Initialize(); }
 
@@ -139,11 +136,12 @@ class DisplayLockContextTest
   }
 
   void LockElement(Element& element, bool activatable) {
-    StringBuilder value;
-    value.Append("content-visibility: hidden");
-    if (activatable)
-      value.Append("-matchable");
-    element.setAttribute(html_names::kStyleAttr, value.ToAtomicString());
+    if (activatable) {
+      element.setAttribute(html_names::kHiddenAttr, "until-found");
+    } else {
+      element.setAttribute(html_names::kStyleAttr,
+                           "content-visibility: hidden");
+    }
     UpdateAllLifecyclePhasesForTest();
   }
 
@@ -342,7 +340,7 @@ TEST_F(DisplayLockContextTest,
   // Check if we can still get the same result with the same query.
   Find(search_text, client);
   EXPECT_EQ(1, client.Count());
-  EXPECT_TRUE(container->GetDisplayLockContext()->IsLocked());
+  EXPECT_FALSE(container->GetDisplayLockContext()->IsLocked());
   EXPECT_GT(GetDocument().scrollingElement()->scrollTop(), 1000);
 }
 
@@ -569,7 +567,7 @@ TEST_F(DisplayLockContextTest, FindInPageWithChangedContent) {
   client.SetFrame(LocalMainFrame());
   Find("testing", client);
   EXPECT_EQ(3, client.Count());
-  EXPECT_TRUE(container->GetDisplayLockContext()->IsLocked());
+  EXPECT_FALSE(container->GetDisplayLockContext()->IsLocked());
 }
 
 TEST_F(DisplayLockContextTest, FindInPageWithNoMatchesWontUnlock) {
@@ -646,7 +644,7 @@ TEST_F(DisplayLockContextTest,
   EXPECT_EQ(2, client.Count());
   EXPECT_EQ(1, client.ActiveIndex());
 
-  EXPECT_TRUE(container->GetDisplayLockContext()->IsLocked());
+  EXPECT_FALSE(container->GetDisplayLockContext()->IsLocked());
   EXPECT_TRUE(activatable->GetDisplayLockContext()->IsLocked());
   EXPECT_TRUE(non_activatable->GetDisplayLockContext()->IsLocked());
   EXPECT_TRUE(nested_non_activatable->GetDisplayLockContext()->IsLocked());
@@ -682,8 +680,8 @@ TEST_F(DisplayLockContextTest,
   EXPECT_EQ(1, client.Count());
   EXPECT_EQ(1, client.ActiveIndex());
 
-  EXPECT_TRUE(container->GetDisplayLockContext()->IsLocked());
-  EXPECT_TRUE(child->GetDisplayLockContext()->IsLocked());
+  EXPECT_FALSE(container->GetDisplayLockContext()->IsLocked());
+  EXPECT_FALSE(child->GetDisplayLockContext()->IsLocked());
 }
 
 TEST_F(DisplayLockContextTest, CallUpdateStyleAndLayoutAfterChange) {
@@ -989,7 +987,7 @@ TEST_F(DisplayLockContextTest, DisplayLockPreventsActivation) {
 
   SetHtmlInnerHTML(R"HTML(
     <body>
-    <div id="nonviewport" style="content-visibility: hidden-matchable">
+    <div id="nonviewport" hidden=until-found>
       <div id="nonviewport-child"></div>
     </div>
     </body>
@@ -1989,13 +1987,10 @@ TEST_F(DisplayLockContextTest, DescendantNeedsPaintPropertyUpdateBlocked) {
   EXPECT_FALSE(handler_object->DescendantNeedsPaintPropertyUpdate());
 }
 
-class DisplayLockContextRenderingTest
-    : public RenderingTest,
-      private ScopedCSSContentVisibilityHiddenMatchableForTest {
+class DisplayLockContextRenderingTest : public RenderingTest {
  public:
   DisplayLockContextRenderingTest()
-      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()),
-        ScopedCSSContentVisibilityHiddenMatchableForTest(true) {}
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 
   void SetUp() override {
     EnableCompositing();
@@ -2858,18 +2853,14 @@ TEST_F(DisplayLockContextRenderingTest, UseCounter) {
     <style>
       .auto { content-visibility: auto; }
       .hidden { content-visibility: hidden; }
-      .matchable { content-visibility: hidden-matchable; }
     </style>
     <div id=e1></div>
     <div id=e2></div>
-    <div id=e3></div>
   )HTML");
 
   EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kContentVisibilityAuto));
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kContentVisibilityHidden));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kContentVisibilityHiddenMatchable));
 
   GetDocument().getElementById("e1")->classList().Add("auto");
   UpdateAllLifecyclePhasesForTest();
@@ -2877,24 +2868,12 @@ TEST_F(DisplayLockContextRenderingTest, UseCounter) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kContentVisibilityAuto));
   EXPECT_FALSE(
       GetDocument().IsUseCounted(WebFeature::kContentVisibilityHidden));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kContentVisibilityHiddenMatchable));
 
   GetDocument().getElementById("e2")->classList().Add("hidden");
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kContentVisibilityAuto));
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kContentVisibilityHidden));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kContentVisibilityHiddenMatchable));
-
-  GetDocument().getElementById("e3")->classList().Add("matchable");
-  UpdateAllLifecyclePhasesForTest();
-
-  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kContentVisibilityAuto));
-  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kContentVisibilityHidden));
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kContentVisibilityHiddenMatchable));
 }
 
 TEST_F(DisplayLockContextRenderingTest,
@@ -3216,14 +3195,11 @@ TEST_F(DisplayLockContextRenderingTest,
   EXPECT_TRUE(context->HadAnyViewportIntersectionNotifications());
 }
 
-class DisplayLockContextLegacyRenderingTest
-    : public RenderingTest,
-      private ScopedCSSContentVisibilityHiddenMatchableForTest,
-      private ScopedLayoutNGForTest {
+class DisplayLockContextLegacyRenderingTest : public RenderingTest,
+                                              private ScopedLayoutNGForTest {
  public:
   DisplayLockContextLegacyRenderingTest()
       : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()),
-        ScopedCSSContentVisibilityHiddenMatchableForTest(true),
         ScopedLayoutNGForTest(false) {}
 };
 

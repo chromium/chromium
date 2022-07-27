@@ -17,20 +17,18 @@
 
 namespace blink {
 
-class DisplayLockUtilitiesTest
-    : public RenderingTest,
-      private ScopedCSSContentVisibilityHiddenMatchableForTest {
+class DisplayLockUtilitiesTest : public RenderingTest {
  public:
   DisplayLockUtilitiesTest()
-      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()),
-        ScopedCSSContentVisibilityHiddenMatchableForTest(true) {}
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 
   void LockElement(Element& element, bool activatable) {
-    StringBuilder value;
-    value.Append("content-visibility: hidden");
-    if (activatable)
-      value.Append("-matchable");
-    element.setAttribute(html_names::kStyleAttr, value.ToAtomicString());
+    if (activatable) {
+      element.setAttribute(html_names::kHiddenAttr, "until-found");
+    } else {
+      element.setAttribute(html_names::kStyleAttr,
+                           "content-visibility: hidden");
+    }
     UpdateAllLifecyclePhasesForTest();
   }
 
@@ -40,12 +38,9 @@ class DisplayLockUtilitiesTest
   }
 };
 
-TEST_F(DisplayLockUtilitiesTest, ShouldIgnoreHiddenMatchableChildren) {
+TEST_F(DisplayLockUtilitiesTest, ShouldIgnoreHiddenUntilFoundChildren) {
   SetBodyInnerHTML(R"HTML(
-    <style>
-    .hidden { content-visibility: hidden-matchable }
-    </style>
-    <div class=hidden>
+    <div hidden=until-found>
       <div id=target></div>
     </div>
   )HTML");

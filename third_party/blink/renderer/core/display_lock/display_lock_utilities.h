@@ -220,11 +220,6 @@ class CORE_EXPORT DisplayLockUtilities {
       const Node& node,
       DisplayLockActivationReason reason);
 
-  // Returns the nearest inclusive ancestor of |element| that has
-  // content-visibility: hidden-matchable.
-  // TODO(crbug.com/1249939): Remove this.
-  static Element* NearestHiddenMatchableInclusiveAncestor(Element& element);
-
   // Ancestor navigation functions.
 
   // Helpers for ancestor navigation to find locks.

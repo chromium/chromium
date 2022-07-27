@@ -1,10 +1,10 @@
 <!doctype HTML>
 <meta charset="utf8">
-<title>Content Visibility: tab order navigation ignores hidden subtrees</title>
+<title>Content Visibility: tab order navigation ignores hidden=until-found subtrees</title>
 <link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
 <link rel="help" href="https://github.com/WICG/display-locking">
 <link rel="match" href="activated-removes-size-containment-ref.html">
-<meta name="assert" content="tab order navigation ignores hidden subtrees.">
+<meta name="assert" content="tab order navigation ignores hidden=until-found subtrees.">
 
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -12,14 +12,8 @@
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 
-<style>
-.hidden {
-  content-visibility: hidden-matchable;
-}
-</style>
-
 <input id=one type=text></input>
-<div class=hidden>
+<div hidden=until-found>
   <input id=two type=text></input>
   <input id=three type=text></input>
   <input id=four type=text></input>
@@ -46,5 +40,5 @@ async_test((t) => {
   }
 
   window.onload = () => { requestAnimationFrame(step1); };
-}, "Tab order navigation skips hidden subtrees");
+}, "Tab order navigation skips hidden=until-found subtrees");
 </script>

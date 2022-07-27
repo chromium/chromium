@@ -90,13 +90,6 @@ void DisplayLockContext::SetRequestedState(EContentVisibility state) {
               ? static_cast<uint16_t>(DisplayLockActivationReason::kFindInPage)
               : 0u);
       break;
-    case EContentVisibility::kHiddenMatchable:
-      UseCounter::Count(document_,
-                        WebFeature::kContentVisibilityHiddenMatchable);
-      RequestLock(
-          static_cast<uint16_t>(DisplayLockActivationReason::kAny) &
-          ~static_cast<uint16_t>(DisplayLockActivationReason::kViewport));
-      break;
   }
   // In a new state, we might need to either start or stop observing viewport
   // intersections.

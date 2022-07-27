@@ -2,13 +2,7 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 
-<style>
-.hidden {
-  content-visibility: hidden-matchable;
-}
-</style>
-
-<div class="hidden"></div>
+<div hidden=until-found></div>
 
 <script>
 async_test(t => {
