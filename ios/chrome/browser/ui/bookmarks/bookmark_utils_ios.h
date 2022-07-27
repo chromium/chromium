@@ -82,7 +82,7 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
 MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode* folder,
-    int position,
+    size_t position,
     bookmarks::BookmarkModel* bookmark_model,
     ChromeBrowserState* browser_state);
 

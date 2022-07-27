@@ -304,7 +304,7 @@ ui::mojom::DragOperation BookmarkMenuDelegate::GetDropOperation(
 
   const BookmarkNode* node = menu_id_to_node_map_[item->GetCommand()];
   const BookmarkNode* drop_parent = node->parent();
-  size_t index_to_drop_at = static_cast<size_t>(drop_parent->GetIndexOf(node));
+  size_t index_to_drop_at = drop_parent->GetIndexOf(node).value();
   BookmarkModel* model = GetBookmarkModel();
   switch (*position) {
     case views::MenuDelegate::DropPosition::kAfter:
@@ -345,8 +345,7 @@ views::View::DropCallback BookmarkMenuDelegate::GetDropCallback(
   DCHECK(model);
   const BookmarkNode* drop_parent = drop_node->parent();
   DCHECK(drop_parent);
-  size_t index_to_drop_at =
-      static_cast<size_t>(drop_parent->GetIndexOf(drop_node));
+  size_t index_to_drop_at = drop_parent->GetIndexOf(drop_node).value();
   switch (position) {
     case views::MenuDelegate::DropPosition::kAfter:
       index_to_drop_at++;

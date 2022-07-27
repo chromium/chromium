@@ -154,20 +154,20 @@ TEST_F(TreeNodeModelTest, GetIndexOf) {
   TestNode* child2 = root.Add(std::make_unique<TestNode>(), 1);
   TestNode* foo1 = child1->Add(std::make_unique<TestNode>(), 0);
 
-  EXPECT_EQ(-1, root.GetIndexOf(&root));
-  EXPECT_EQ(0, root.GetIndexOf(child1));
-  EXPECT_EQ(1, root.GetIndexOf(child2));
-  EXPECT_EQ(-1, root.GetIndexOf(foo1));
+  EXPECT_FALSE(root.GetIndexOf(&root).has_value());
+  EXPECT_EQ(0u, root.GetIndexOf(child1));
+  EXPECT_EQ(1u, root.GetIndexOf(child2));
+  EXPECT_FALSE(root.GetIndexOf(foo1).has_value());
 
-  EXPECT_EQ(-1, child1->GetIndexOf(&root));
-  EXPECT_EQ(-1, child1->GetIndexOf(child1));
-  EXPECT_EQ(-1, child1->GetIndexOf(child2));
-  EXPECT_EQ(0, child1->GetIndexOf(foo1));
+  EXPECT_FALSE(child1->GetIndexOf(&root).has_value());
+  EXPECT_FALSE(child1->GetIndexOf(child1).has_value());
+  EXPECT_FALSE(child1->GetIndexOf(child2).has_value());
+  EXPECT_EQ(0u, child1->GetIndexOf(foo1));
 
-  EXPECT_EQ(-1, child2->GetIndexOf(&root));
-  EXPECT_EQ(-1, child2->GetIndexOf(child2));
-  EXPECT_EQ(-1, child2->GetIndexOf(child1));
-  EXPECT_EQ(-1, child2->GetIndexOf(foo1));
+  EXPECT_FALSE(child2->GetIndexOf(&root).has_value());
+  EXPECT_FALSE(child2->GetIndexOf(child2).has_value());
+  EXPECT_FALSE(child2->GetIndexOf(child1).has_value());
+  EXPECT_FALSE(child2->GetIndexOf(foo1).has_value());
 }
 
 // Verifies whether a specified node has or not an ancestor.
@@ -237,11 +237,11 @@ TEST_F(TreeNodeModelTest, GetTotalNodeCount) {
 
   TestNode* bar1 = root.Add(std::make_unique<TestNode>(), 2);
 
-  EXPECT_EQ(9, root.GetTotalNodeCount());
-  EXPECT_EQ(3, child1->GetTotalNodeCount());
-  EXPECT_EQ(2, child2->GetTotalNodeCount());
-  EXPECT_EQ(2, foo2->GetTotalNodeCount());
-  EXPECT_EQ(1, bar1->GetTotalNodeCount());
+  EXPECT_EQ(9u, root.GetTotalNodeCount());
+  EXPECT_EQ(3u, child1->GetTotalNodeCount());
+  EXPECT_EQ(2u, child2->GetTotalNodeCount());
+  EXPECT_EQ(2u, foo2->GetTotalNodeCount());
+  EXPECT_EQ(1u, bar1->GetTotalNodeCount());
 }
 
 // Makes sure that we are notified when the node is renamed,

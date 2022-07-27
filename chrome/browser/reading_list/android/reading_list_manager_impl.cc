@@ -260,7 +260,7 @@ BookmarkNode* ReadingListManagerImpl::FindBookmarkByURL(const GURL& url) const {
 void ReadingListManagerImpl::RemoveBookmark(const GURL& url) {
   const BookmarkNode* node = FindBookmarkByURL(url);
   if (node)
-    root_->Remove(root_->GetIndexOf(node));
+    root_->Remove(root_->GetIndexOf(node).value());
 }
 
 const BookmarkNode* ReadingListManagerImpl::AddOrUpdateBookmark(

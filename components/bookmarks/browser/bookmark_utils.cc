@@ -235,19 +235,17 @@ void CopyToClipboard(BookmarkModel* model,
 
   // Create array of selected nodes with descendants filtered out.
   std::vector<const BookmarkNode*> filtered_nodes;
-  for (size_t i = 0; i < nodes.size(); ++i)
-    if (!HasSelectedAncestor(model, nodes, nodes[i]->parent()))
-      filtered_nodes.push_back(nodes[i]);
+  for (const auto* node : nodes) {
+    if (!HasSelectedAncestor(model, nodes, node->parent()))
+      filtered_nodes.push_back(node);
+  }
 
   BookmarkNodeData(filtered_nodes).WriteToClipboard();
 
   if (remove_nodes) {
     ScopedGroupBookmarkActions group_cut(model);
-    for (size_t i = 0; i < filtered_nodes.size(); ++i) {
-      int index = filtered_nodes[i]->parent()->GetIndexOf(filtered_nodes[i]);
-      if (index > -1)
-        model->Remove(filtered_nodes[i]);
-    }
+    for (const auto* node : filtered_nodes)
+      model->Remove(node);
   }
 }
 
@@ -472,8 +470,10 @@ const BookmarkNode* GetParentForNewNodes(
 
   if (index) {
     if (selection.size() == 1 && selection[0]->is_url()) {
-      *index = static_cast<size_t>(real_parent->GetIndexOf(selection[0]) + 1);
-      DCHECK_NE(0u, *index);
+      absl::optional<size_t> selection_index =
+          real_parent->GetIndexOf(selection[0]);
+      DCHECK(selection_index.has_value());
+      *index = selection_index.value() + 1;
     } else {
       *index = real_parent->children().size();
     }
@@ -511,8 +511,7 @@ void RemoveAllBookmarks(BookmarkModel* model, const GURL& url) {
   // Remove all the user bookmarks.
   for (size_t i = 0; i < bookmarks.size(); ++i) {
     const BookmarkNode* node = bookmarks[i];
-    int index = node->parent()->GetIndexOf(node);
-    if (index > -1 && model->client()->CanBeEditedByUser(node))
+    if (model->client()->CanBeEditedByUser(node))
       model->Remove(node);
   }
 }

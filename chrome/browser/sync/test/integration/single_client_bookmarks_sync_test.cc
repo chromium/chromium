@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, Sanity) {
           IsUrlBookmarkWithTitleAndUrl("Porsche",
                                        GURL("http://www.porsche.com"))));
 
-  ASSERT_EQ(1, tier1_a_url0->parent()->GetIndexOf(tier1_a_url0));
+  ASSERT_EQ(1u, tier1_a_url0->parent()->GetIndexOf(tier1_a_url0));
   Move(kSingleProfileIndex, tier1_a_url0, bar, bar->children().size());
   const BookmarkNode* boa =
       AddURL(kSingleProfileIndex, bar, bar->children().size(),

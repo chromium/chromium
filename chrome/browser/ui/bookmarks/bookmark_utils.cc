@@ -250,11 +250,13 @@ bool IsValidBookmarkDropLocation(Profile* profile,
       // Don't allow the drop if the user is attempting to drop on one of the
       // nodes being dragged.
       const BookmarkNode* node = nodes[i];
-      int node_index = (drop_parent == node->parent()) ?
-          drop_parent->GetIndexOf(nodes[i]) : -1;
-      if (node_index != -1 && (index == static_cast<size_t>(node_index) ||
-                               index == static_cast<size_t>(node_index) + 1))
+      absl::optional<size_t> node_index =
+          (drop_parent == node->parent()) ? drop_parent->GetIndexOf(nodes[i])
+                                          : absl::nullopt;
+      if (node_index.has_value() &&
+          (index == node_index.value() || index == node_index.value() + 1)) {
         return false;
+      }
 
       // drop_parent can't accept a child that is an ancestor.
       if (drop_parent->HasAncestor(node))

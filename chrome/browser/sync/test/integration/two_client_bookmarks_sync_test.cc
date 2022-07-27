@@ -2353,9 +2353,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
     }
   }
 
-  ASSERT_EQ(2, GetBookmarkBarNode(1)->GetIndexOf(folderA[1]));
-  ASSERT_EQ(1, GetBookmarkBarNode(1)->GetIndexOf(folderB[1]));
-  ASSERT_EQ(0, GetBookmarkBarNode(1)->GetIndexOf(folderC[1]));
+  ASSERT_EQ(2u, GetBookmarkBarNode(1)->GetIndexOf(folderA[1]));
+  ASSERT_EQ(1u, GetBookmarkBarNode(1)->GetIndexOf(folderB[1]));
+  ASSERT_EQ(0u, GetBookmarkBarNode(1)->GetIndexOf(folderC[1]));
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(BookmarksMatchChecker().Wait());

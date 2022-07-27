@@ -293,7 +293,8 @@ void View::ReorderChildView(View* view, size_t index) {
 
   // If |view| is already at the desired position, there's nothing to do.
   const auto pos =
-      std::next(children_.begin(), std::min(index, children_.size() - 1));
+      std::next(children_.begin(),
+                static_cast<ptrdiff_t>(std::min(index, children_.size() - 1)));
   if (i == pos)
     return;
 

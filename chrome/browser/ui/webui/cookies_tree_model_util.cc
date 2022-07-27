@@ -289,7 +289,7 @@ const CookieTreeNode* CookiesTreeModelUtil::GetTreeNodeFromPath(
     const std::string& path) {
   const CookieTreeNode* child = NULL;
   const CookieTreeNode* parent = root;
-  int child_index = -1;
+  absl::optional<size_t> child_index;
 
   // Validate the tree path and get the node pointer.
   for (const base::StringPiece& cur_node : base::SplitStringPiece(
@@ -300,13 +300,13 @@ const CookieTreeNode* CookiesTreeModelUtil::GetTreeNodeFromPath(
 
     child = id_map_.Lookup(node_id);
     child_index = parent->GetIndexOf(child);
-    if (child_index == -1)
+    if (!child_index.has_value())
       break;
 
     parent = child;
   }
 
-  return child_index >= 0 ? child : NULL;
+  return child_index.has_value() ? child : nullptr;
 }
 
 const CookieTreeNode* CookiesTreeModelUtil::GetTreeNodeFromTitle(

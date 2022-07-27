@@ -869,7 +869,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 - (void)handleMoveNode:(const bookmarks::BookmarkNode*)node
-            toPosition:(int)position {
+            toPosition:(size_t)position {
   [self.snackbarCommandsHandler
       showSnackbarMessage:
           bookmark_utils_ios::UpdateBookmarkPositionWithUndoToast(
@@ -2221,9 +2221,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   // existing contents), hence no change in index is necessary. It is required
   // to make these adjustments because this is how bookmark_model handles move
   // operations.
-  int newPosition = sourceIndexPath.row < destinationIndexPath.row
-                        ? destinationIndexPath.row + 1
-                        : destinationIndexPath.row;
+  size_t newPosition = sourceIndexPath.row < destinationIndexPath.row
+                           ? destinationIndexPath.row + 1
+                           : destinationIndexPath.row;
   [self handleMoveNode:node toPosition:newPosition];
 }
 

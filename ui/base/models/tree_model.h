@@ -74,7 +74,8 @@ class COMPONENT_EXPORT(UI_BASE) TreeModel {
   virtual Nodes GetChildren(const TreeModelNode* parent) const = 0;
 
   // Returns the index of |child| in |parent|.
-  virtual int GetIndexOf(TreeModelNode* parent, TreeModelNode* child) const = 0;
+  virtual absl::optional<size_t> GetIndexOf(TreeModelNode* parent,
+                                            TreeModelNode* child) const = 0;
 
   // Returns the parent of |node|, or NULL if |node| is the root.
   virtual TreeModelNode* GetParent(TreeModelNode* node) const = 0;

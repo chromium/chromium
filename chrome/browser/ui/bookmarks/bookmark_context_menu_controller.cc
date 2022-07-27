@@ -287,11 +287,8 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
     case IDC_BOOKMARK_BAR_REMOVE: {
       base::RecordAction(UserMetricsAction("BookmarkBar_ContextMenu_Remove"));
 
-      for (size_t i = 0; i < selection_.size(); ++i) {
-        int index = selection_[i]->parent()->GetIndexOf(selection_[i]);
-        if (index > -1)
-          model_->Remove(selection_[i]);
-      }
+      for (const auto* node : selection_)
+        model_->Remove(node);
       selection_.clear();
       break;
     }

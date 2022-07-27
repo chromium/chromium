@@ -932,7 +932,7 @@ TEST(BookmarkSpecificsConversionsTest, ReplaceUrlNodeWithUpdatedGUID) {
   EXPECT_EQ(kGuid, new_url->guid());
   EXPECT_EQ(kTitle, new_url->GetTitle());
   EXPECT_EQ(bookmark_bar_node, new_url->parent());
-  EXPECT_EQ(0, bookmark_bar_node->GetIndexOf(new_url));
+  EXPECT_EQ(0u, bookmark_bar_node->GetIndexOf(new_url));
   EXPECT_EQ(kUrl, new_url->url());
   EXPECT_EQ(kCreationTime, new_url->date_added());
   std::string out_value_url;
@@ -968,13 +968,13 @@ TEST(BookmarkSpecificsConversionsTest, ReplaceFolderNodeWithUpdatedGUID) {
   EXPECT_EQ(kGuid, new_folder->guid());
   EXPECT_EQ(kTitle, new_folder->GetTitle());
   EXPECT_EQ(bookmark_bar_node, new_folder->parent());
-  EXPECT_EQ(0, bookmark_bar_node->GetIndexOf(new_folder));
+  EXPECT_EQ(0u, bookmark_bar_node->GetIndexOf(new_folder));
   std::string out_value_folder;
   EXPECT_TRUE(new_folder->GetMetaInfo(kKey, &out_value_folder));
   EXPECT_EQ(kValue, out_value_folder);
   EXPECT_EQ(2u, new_folder->children().size());
-  EXPECT_EQ(0, new_folder->GetIndexOf(url1));
-  EXPECT_EQ(1, new_folder->GetIndexOf(url2));
+  EXPECT_EQ(0u, new_folder->GetIndexOf(url1));
+  EXPECT_EQ(1u, new_folder->GetIndexOf(url2));
 }
 
 TEST(BookmarkSpecificsConversionsTest,

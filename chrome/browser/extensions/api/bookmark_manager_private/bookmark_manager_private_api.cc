@@ -382,18 +382,16 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
   // No need to test return value, if we got an empty list, we insert at end.
   if (params->selected_id_list)
     GetNodesFromVector(model, *params->selected_id_list, &nodes);
-  int highest_index = -1;
-  for (size_t i = 0; i < nodes.size(); ++i) {
+  size_t highest_index = 0;
+  for (const BookmarkNode* node : nodes) {
     // + 1 so that we insert after the selection.
-    int index = parent_node->GetIndexOf(nodes[i]) + 1;
-    if (index > highest_index)
-      highest_index = index;
+    highest_index =
+        std::max(highest_index, parent_node->GetIndexOf(node).value() + 1);
   }
-  size_t insertion_index = (highest_index == -1)
-                               ? parent_node->children().size()
-                               : static_cast<size_t>(highest_index);
+  if (!highest_index)
+    highest_index = parent_node->children().size();
 
-  bookmarks::PasteFromClipboard(model, parent_node, insertion_index);
+  bookmarks::PasteFromClipboard(model, parent_node, highest_index);
   return NoArguments();
 }
 

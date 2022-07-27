@@ -99,7 +99,8 @@ class ManagedBookmarkServiceTest : public testing::Test {
     // The managed node always exists.
     ASSERT_TRUE(managed_->managed_node());
     ASSERT_TRUE(managed_->managed_node()->parent() == model_->root_node());
-    EXPECT_NE(-1, model_->root_node()->GetIndexOf(managed_->managed_node()));
+    EXPECT_TRUE(
+        model_->root_node()->GetIndexOf(managed_->managed_node()).has_value());
   }
 
   void TearDown() override { model_->RemoveObserver(&observer_); }

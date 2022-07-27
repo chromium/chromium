@@ -188,7 +188,7 @@ class CookiesTreeModelTest : public testing::Test {
       // swhost2 -> service worker -> https://swhost1:2
       // sharedworkerhost1 -> shared worker -> https://sharedworkerhost1:1,
       // sharedworkerhost2 -> shared worker -> https://sharedworkerhost2:2
-      EXPECT_EQ(63, cookies_model->GetRoot()->GetTotalNodeCount());
+      EXPECT_EQ(63u, cookies_model->GetRoot()->GetTotalNodeCount());
       EXPECT_EQ("A,B,C", GetDisplayedCookies(cookies_model.get()));
       EXPECT_EQ("http://gdbhost1:1/,http://gdbhost2:2/",
                 GetDisplayedDatabases(cookies_model.get()));
@@ -444,7 +444,7 @@ TEST_F(CookiesTreeModelTest, RemoveAll) {
   {
     // 2 nodes - root and app
     SCOPED_TRACE("After removing");
-    EXPECT_EQ(1, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(1u, cookies_model->GetRoot()->GetTotalNodeCount());
     EXPECT_EQ(0u, cookies_model->GetRoot()->children().size());
     EXPECT_EQ(std::string(), GetDisplayedCookies(cookies_model.get()));
     EXPECT_TRUE(mock_browsing_data_cookie_helper_->AllDeleted());
@@ -513,7 +513,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
         GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(60, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(60u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // swhost1 -> service worker -> https://swhost1:1 (3 nodes)
@@ -539,7 +539,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
         GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(57, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(57u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // sharedworkerhost2 -> shared worker -> https://sharedworkerhost2:2 (3
@@ -564,7 +564,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
               GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(54, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(54u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // sharedworkerhost1 -> shared worker -> https://sharedworkerhost1:1 (3 nodes)
@@ -587,7 +587,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(51, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(51u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // quotahost2 -> quotahost2 (2 objects)
@@ -611,7 +611,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(49, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(49u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // quotahost1 -> quotahost1 (2 objects)
@@ -633,7 +633,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(47, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(47u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // idbhost2 -> indexeddb -> http://idbhost2:2/ (3 objects)
@@ -655,7 +655,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(44, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(44u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // idbhost1 -> indexeddb -> http://idbhost1:1/ (3 objects)
@@ -676,7 +676,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(41, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(41u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // host2 -> localstorage -> http://host2:2/,
@@ -698,7 +698,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(36, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(36u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // host1 -> localstorage -> http://host1:1/,
@@ -718,7 +718,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(31, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(31u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // gdbhost2 -> database -> http://gdbhost2:2/ (3 objects)
@@ -736,7 +736,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(28, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(28u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
   // gdbhost1 -> database -> http://gdbhost1:1/ (3 objects)
   DeleteStoredObjects(cookies_model->GetRoot()->children()[8].get());
@@ -753,7 +753,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(25, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(25u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // fshost3 -> filesystem -> http://fshost3:1/ (3 objects)
@@ -771,7 +771,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(22, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(22u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // fshost2 -> filesystem -> http://fshost2:1/ (3 objects)
@@ -789,7 +789,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(19, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(19u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // fshost1 -> filesystem -> http://fshost1:1/ (3 objects)
@@ -806,7 +806,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(16, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(16u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // foo3 -> cookies -> c (3 objects)
@@ -823,7 +823,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(13, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(13u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // foo2 -> cookies -> b (3 objects)
@@ -840,7 +840,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(10, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(10u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // foo1 -> cookies -> a (3 objects)
@@ -857,7 +857,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(7, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(7u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // cshost2 -> cache storage -> https://cshost2:2/ (3 objects)
@@ -874,7 +874,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(4, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(4u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   // cshost1 -> cache storage -> https://cshost1:1/ (3 objects)
@@ -890,7 +890,7 @@ TEST_F(CookiesTreeModelTest, Remove) {
     EXPECT_EQ("", GetDisplayedServiceWorkers(cookies_model.get()));
     EXPECT_EQ("", GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("", GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(1, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(1u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 }
 
@@ -905,7 +905,7 @@ TEST_F(CookiesTreeModelTest, RemoveCookiesNode) {
     EXPECT_STREQ("B,C", GetDisplayedCookies(cookies_model.get()).c_str());
     // 61 because in this case, the origin remains, although the COOKIES
     // node beneath it has been deleted.
-    EXPECT_EQ(61, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(61u, cookies_model->GetRoot()->GetTotalNodeCount());
     EXPECT_EQ("http://gdbhost1:1/,http://gdbhost2:2/",
               GetDisplayedDatabases(cookies_model.get()));
     EXPECT_EQ("http://host1:1/,http://host2:2/",
@@ -950,7 +950,7 @@ TEST_F(CookiesTreeModelTest, RemoveCookiesNode) {
         GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(59, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(59u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   DeleteStoredObjects(
@@ -976,7 +976,7 @@ TEST_F(CookiesTreeModelTest, RemoveCookiesNode) {
         GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(57, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(57u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 }
 
@@ -1010,7 +1010,7 @@ TEST_F(CookiesTreeModelTest, RemoveCookieNode) {
               GetDisplayedCacheStorages(cookies_model.get()));
     // 61 because in this case, the origin remains, although the COOKIES
     // node beneath it has been deleted.
-    EXPECT_EQ(61, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(61u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   DeleteStoredObjects(
@@ -1036,7 +1036,7 @@ TEST_F(CookiesTreeModelTest, RemoveCookieNode) {
         GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(59, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(59u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 
   DeleteStoredObjects(
@@ -1062,7 +1062,7 @@ TEST_F(CookiesTreeModelTest, RemoveCookieNode) {
         GetDisplayedSharedWorkers(cookies_model.get()));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(cookies_model.get()));
-    EXPECT_EQ(57, cookies_model->GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(57u, cookies_model->GetRoot()->GetTotalNodeCount());
   }
 }
 
@@ -1135,7 +1135,7 @@ TEST_F(CookiesTreeModelTest, RemoveSingleCookieNode) {
     // swhost2 -> service worker -> https://swhost1:2
     // sharedworkerhost1 -> shared worker -> https://sharedworkerhost1:1
     // sharedworkerhost2 -> shared worker -> https://sharedworkerhost2:2
-    EXPECT_EQ(64, cookies_model.GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(64u, cookies_model.GetRoot()->GetTotalNodeCount());
     EXPECT_STREQ("A,B,C,D", GetDisplayedCookies(&cookies_model).c_str());
     EXPECT_EQ("http://gdbhost1:1/,http://gdbhost2:2/",
               GetDisplayedDatabases(&cookies_model));
@@ -1180,7 +1180,7 @@ TEST_F(CookiesTreeModelTest, RemoveSingleCookieNode) {
         GetDisplayedSharedWorkers(&cookies_model));
     EXPECT_EQ("https://cshost1:1/,https://cshost2:2/",
               GetDisplayedCacheStorages(&cookies_model));
-    EXPECT_EQ(60, cookies_model.GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(60u, cookies_model.GetRoot()->GetTotalNodeCount());
   }
 }
 
@@ -1255,7 +1255,7 @@ TEST_F(CookiesTreeModelTest, RemoveSingleCookieNodeOf3) {
     // swhost2 -> service worker -> https://swhost1:2
     // sharedworkerhost1 -> shared worker -> https://sharedworkerhost1:1
     // sharedworkerhost2 -> shared worker -> https://sharedworkerhost2:2
-    EXPECT_EQ(65, cookies_model.GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(65u, cookies_model.GetRoot()->GetTotalNodeCount());
     EXPECT_STREQ("A,B,C,D,E", GetDisplayedCookies(&cookies_model).c_str());
     EXPECT_EQ("http://gdbhost1:1/,http://gdbhost2:2/",
               GetDisplayedDatabases(&cookies_model));
@@ -1285,7 +1285,7 @@ TEST_F(CookiesTreeModelTest, RemoveSingleCookieNodeOf3) {
   {
     SCOPED_TRACE("Middle cookie in third cookie origin removed");
     EXPECT_STREQ("A,B,C,E", GetDisplayedCookies(&cookies_model).c_str());
-    EXPECT_EQ(64, cookies_model.GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(64u, cookies_model.GetRoot()->GetTotalNodeCount());
     EXPECT_EQ("http://gdbhost1:1/,http://gdbhost2:2/",
               GetDisplayedDatabases(&cookies_model));
     EXPECT_EQ("http://host1:1/,http://host2:2/",
@@ -1337,7 +1337,7 @@ TEST_F(CookiesTreeModelTest, RemoveSecondOrigin) {
     SCOPED_TRACE("Initial State 5 cookies");
     // 12 because there's the root, then foo1 -> cookies -> a,
     // foo2 -> cookies -> b, foo3 -> cookies -> c,d,e
-    EXPECT_EQ(12, cookies_model.GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(12u, cookies_model.GetRoot()->GetTotalNodeCount());
     EXPECT_STREQ("A,B,C,D,E", GetDisplayedCookies(&cookies_model).c_str());
   }
   DeleteStoredObjects(cookies_model.GetRoot()->children()[1].get());
@@ -1345,7 +1345,7 @@ TEST_F(CookiesTreeModelTest, RemoveSecondOrigin) {
     SCOPED_TRACE("Second origin removed");
     EXPECT_STREQ("A,C,D,E", GetDisplayedCookies(&cookies_model).c_str());
     // Left with root -> foo1 -> cookies -> a, foo3 -> cookies -> c,d,e
-    EXPECT_EQ(9, cookies_model.GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(9u, cookies_model.GetRoot()->GetTotalNodeCount());
   }
 }
 
@@ -1383,7 +1383,7 @@ TEST_F(CookiesTreeModelTest, OriginOrdering) {
 
   {
     SCOPED_TRACE("Initial State 8 cookies");
-    EXPECT_EQ(23, cookies_model.GetRoot()->GetTotalNodeCount());
+    EXPECT_EQ(23u, cookies_model.GetRoot()->GetTotalNodeCount());
     EXPECT_STREQ("F,E,C,B,A,G,D,H",
         GetDisplayedCookies(&cookies_model).c_str());
   }

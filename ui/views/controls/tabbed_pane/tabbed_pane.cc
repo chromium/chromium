@@ -566,8 +566,10 @@ void TabbedPane::SelectTab(Tab* new_selected_tab, bool animate) {
       focus_manager->SetFocusedView(new_selected_tab->contents());
   }
 
-  if (listener())
-    listener()->TabSelectedAt(tab_strip_->GetIndexOf(new_selected_tab).value());
+  if (listener()) {
+    listener()->TabSelectedAt(base::checked_cast<int>(
+        tab_strip_->GetIndexOf(new_selected_tab).value()));
+  }
 }
 
 void TabbedPane::SelectTabAt(size_t index, bool animate) {

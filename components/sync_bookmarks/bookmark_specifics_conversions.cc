@@ -438,13 +438,14 @@ const bookmarks::BookmarkNode* ReplaceBookmarkNodeGUID(
   const bookmarks::BookmarkNode* new_node = nullptr;
   if (node->is_folder()) {
     new_node = model->AddFolder(
-        node->parent(), node->parent()->GetIndexOf(node), node->GetTitle(),
-        node->GetMetaInfoMap(), node->date_added(), guid);
+        node->parent(), node->parent()->GetIndexOf(node).value(),
+        node->GetTitle(), node->GetMetaInfoMap(), node->date_added(), guid);
     MoveAllChildren(model, node, new_node);
   } else {
-    new_node = model->AddURL(node->parent(), node->parent()->GetIndexOf(node),
-                             node->GetTitle(), node->url(),
-                             node->GetMetaInfoMap(), node->date_added(), guid);
+    new_node =
+        model->AddURL(node->parent(), node->parent()->GetIndexOf(node).value(),
+                      node->GetTitle(), node->url(), node->GetMetaInfoMap(),
+                      node->date_added(), guid);
   }
 
   model->Remove(node);

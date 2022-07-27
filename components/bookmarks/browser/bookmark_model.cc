@@ -214,15 +214,15 @@ void BookmarkModel::Remove(const BookmarkNode* node) {
   DCHECK(!is_root_node(node));
   const BookmarkNode* parent = node->parent();
   DCHECK(parent);
-  size_t index = static_cast<size_t>(parent->GetIndexOf(node));
-  DCHECK_NE(static_cast<size_t>(-1), index);
+  absl::optional<size_t> index = parent->GetIndexOf(node).value();
+  DCHECK(index.has_value());
 
   // Removing a permanent node is problematic and can cause crashes elsewhere
   // that are difficult to trace back.
   CHECK(!is_permanent_node(node)) << "for type " << node->type();
 
   for (BookmarkModelObserver& observer : observers_)
-    observer.OnWillRemoveBookmarks(this, parent, index, node);
+    observer.OnWillRemoveBookmarks(this, parent, index.value(), node);
 
   std::set<GURL> removed_urls;
   std::unique_ptr<BookmarkNode> owned_node =
@@ -232,10 +232,12 @@ void BookmarkModel::Remove(const BookmarkNode* node) {
   if (store_)
     store_->ScheduleSave();
 
-  for (BookmarkModelObserver& observer : observers_)
-    observer.BookmarkNodeRemoved(this, parent, index, node, removed_urls);
+  for (BookmarkModelObserver& observer : observers_) {
+    observer.BookmarkNodeRemoved(this, parent, index.value(), node,
+                                 removed_urls);
+  }
 
-  undo_delegate()->OnBookmarkNodeRemoved(this, parent, index,
+  undo_delegate()->OnBookmarkNodeRemoved(this, parent, index.value(),
                                          std::move(owned_node));
 }
 
@@ -300,7 +302,7 @@ void BookmarkModel::Move(const BookmarkNode* node,
   DCHECK(!new_parent->HasAncestor(node));
 
   const BookmarkNode* old_parent = node->parent();
-  size_t old_index = old_parent->GetIndexOf(node);
+  size_t old_index = old_parent->GetIndexOf(node).value();
 
   if (old_parent == new_parent &&
       (index == old_index || index == old_index + 1)) {

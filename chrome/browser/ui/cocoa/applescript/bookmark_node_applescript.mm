@@ -108,7 +108,7 @@ using bookmarks::BookmarkNode;
 
 - (NSNumber*)index {
   const BookmarkNode* parent = _bookmarkNode->parent();
-  int index = parent->GetIndexOf(_bookmarkNode);
+  size_t index = parent->GetIndexOf(_bookmarkNode).value();
   // NOTE: AppleScript is 1-Based.
   return @(index + 1);
 }

@@ -2481,7 +2481,8 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
 TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
   SetUpCookiesTreeModel();
 
-  EXPECT_EQ(31, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(31u,
+            handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   auto verify_site_group = [](const base::Value& site_group,
                               std::string expected_etld_plus1) {
@@ -2520,7 +2521,8 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
     EXPECT_TRUE(cookie->IsPartitioned());
   }
 
-  EXPECT_EQ(22, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(22u,
+            handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   storage_and_cookie_list = GetOnStorageFetchedSentList();
   EXPECT_EQ(3U, storage_and_cookie_list.size());
@@ -2531,7 +2533,8 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
 
   handler()->HandleClearEtldPlus1DataAndCookies(args);
 
-  EXPECT_EQ(14, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(14u,
+            handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   storage_and_cookie_list = GetOnStorageFetchedSentList();
   EXPECT_EQ(2U, storage_and_cookie_list.size());
@@ -2576,7 +2579,8 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
 TEST_P(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
   SetUpCookiesTreeModel();
 
-  EXPECT_EQ(31, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(31u,
+            handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   base::Value::List args;
   args.Append(GetParam() ? "https://www.example.com/"
@@ -2705,7 +2709,8 @@ TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
   // Confirm that removing unpartitioned storage correctly removes the
   // appropriate nodes.
   SetUpCookiesTreeModel();
-  EXPECT_EQ(31, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(31u,
+            handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   base::Value::List args;
   args.Append("https://www.example.com/");
@@ -2853,7 +2858,8 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   // Confirm that usage info only returns unpartitioned storage.
   SetUpCookiesTreeModel();
 
-  EXPECT_EQ(31, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(31u,
+            handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   base::Value::List args;
   args.Append("www.example.com");

@@ -63,8 +63,7 @@ DragOperation DropBookmarks(Profile* profile,
         } else {
           model->Move(dragged_nodes[i], parent_node, index);
         }
-        index =
-            static_cast<size_t>(parent_node->GetIndexOf(dragged_nodes[i]) + 1);
+        index = parent_node->GetIndexOf(dragged_nodes[i]).value() + 1;
       }
       return copy ? DragOperation::kCopy : DragOperation::kMove;
     }

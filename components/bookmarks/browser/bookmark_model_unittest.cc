@@ -481,7 +481,7 @@ class BookmarkModelTest : public testing::Test,
     model_->AddObserver(this);
     ClearCounts();
 
-    if (model_->root_node()->GetIndexOf(managed_node) == -1)
+    if (!model_->root_node()->GetIndexOf(managed_node).has_value())
       ADD_FAILURE();
 
     return managed_node;

@@ -976,7 +976,7 @@ void TreeView::PopulateAccessibilityData(InternalNode* node,
 
     // Per the ARIA Spec, aria-posinset and aria-setsize are 1-based
     // not 0-based.
-    size_t pos_in_parent = node->parent()->GetIndexOf(node) + 1;
+    size_t pos_in_parent = node->parent()->GetIndexOf(node).value() + 1;
     size_t sibling_size = node->parent()->children().size();
     data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
                           static_cast<int32_t>(pos_in_parent));
@@ -1221,7 +1221,8 @@ TreeView::InternalNode* TreeView::GetInternalNodeForModelNode(
     LoadChildren(parent_internal_node);
   }
   size_t index =
-      model_->GetIndexOf(parent_internal_node->model_node(), model_node);
+      model_->GetIndexOf(parent_internal_node->model_node(), model_node)
+          .value();
   return parent_internal_node->children()[index].get();
 }
 
@@ -1307,7 +1308,7 @@ int TreeView::GetRowForInternalNode(InternalNode* node, int* depth) {
   int row = -1;
   const InternalNode* tmp_node = node;
   while (tmp_node->parent()) {
-    size_t index_in_parent = tmp_node->parent()->GetIndexOf(tmp_node);
+    size_t index_in_parent = tmp_node->parent()->GetIndexOf(tmp_node).value();
     (*depth)++;
     row++;  // For node.
     for (size_t i = 0; i < index_in_parent; ++i) {

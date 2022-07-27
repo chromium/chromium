@@ -236,7 +236,7 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
 MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode* folder,
-    int position,
+    size_t position,
     bookmarks::BookmarkModel* bookmark_model,
     ChromeBrowserState* browser_state) {
   DCHECK(node);
@@ -247,7 +247,7 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
     return nil;
   }
 
-  int old_index = node->parent()->GetIndexOf(node);
+  size_t old_index = node->parent()->GetIndexOf(node).value();
   // Early return if no change in position.
   if (node->parent() == folder && old_index == position) {
     return nil;

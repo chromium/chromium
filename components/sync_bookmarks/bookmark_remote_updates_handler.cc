@@ -216,7 +216,7 @@ void ApplyRemoteUpdate(
   UpdateBookmarkNodeFromSpecifics(update_entity.specifics.bookmark(), node,
                                   model, favicon_service);
   // Compute index information before updating the |tracker|.
-  const size_t old_index = static_cast<size_t>(old_parent->GetIndexOf(node));
+  const size_t old_index = old_parent->GetIndexOf(node).value();
   const size_t new_index = ComputeChildNodeIndex(
       new_parent, update_entity.specifics.bookmark().unique_position(),
       tracker);

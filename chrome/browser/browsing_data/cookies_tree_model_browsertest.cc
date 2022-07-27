@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTest, NoQuotaStorage) {
   observer.AwaitTreeModelEndBatch();
 
   // Quota storage has been accessed, but should not be present in the tree.
-  EXPECT_EQ(17, tree_model->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(17u, tree_model->GetRoot()->GetTotalNodeCount());
   auto node_counts = GetNodeTypeCounts(tree_model.get());
   EXPECT_EQ(16u, node_counts.size());
   EXPECT_EQ(0, node_counts[CookieTreeNode::DetailedInfo::TYPE_QUOTA]);
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTestQuotaOnly, QuotaStorageOnly) {
 
   // Quota storage has been accessed, only quota nodes should be present for
   // quota managed storage types.
-  EXPECT_EQ(8, tree_model->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(8u, tree_model->GetRoot()->GetTotalNodeCount());
 
   auto node_counts = GetNodeTypeCounts(tree_model.get());
   EXPECT_EQ(7u, node_counts.size());
