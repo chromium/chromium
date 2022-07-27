@@ -34,6 +34,11 @@ void MicrophonePrivacySwitchController::OnActiveUserPrefServiceChanged(
       base::BindRepeating(
           &MicrophonePrivacySwitchController::OnPreferenceChanged,
           base::Unretained(this)));
+
+  // Manually set the system input mute state to the value of the user
+  // preference when creating the controller during the browser initialization
+  // after creating the user profile.
+  SetSystemMute();
 }
 
 void MicrophonePrivacySwitchController::OnPreferenceChanged() {

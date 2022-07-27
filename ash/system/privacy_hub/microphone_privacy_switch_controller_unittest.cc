@@ -10,6 +10,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
@@ -49,10 +50,25 @@ class MicrophonePrivacySwitchControllerTest : public AshTestBase {
   std::unique_ptr<FakeMicrophoneMuteNotificationDelegate> delegate_;
 };
 
-TEST_F(MicrophonePrivacySwitchControllerTest, OnPreferenceChanged) {
-  static constexpr bool user_preferences[] = {false, true, false};
+TEST_F(MicrophonePrivacySwitchControllerTest, SetSystemMuteOnLogin) {
+  for (bool microphone_allowed : {false, true, false}) {
+    const bool microphone_muted = !microphone_allowed;
+    SetUserPref(microphone_allowed);
+    ASSERT_EQ(CrasAudioHandler::Get()->IsInputMuted(), microphone_muted);
+    const AccountId user1_account_id =
+        Shell::Get()->session_controller()->GetActiveAccountId();
 
-  for (bool microphone_allowed : user_preferences) {
+    SimulateUserLogin("other@user.test");
+    SetUserPref(microphone_muted);
+    EXPECT_EQ(CrasAudioHandler::Get()->IsInputMuted(), microphone_allowed);
+
+    SimulateUserLogin(user1_account_id);
+    EXPECT_EQ(CrasAudioHandler::Get()->IsInputMuted(), microphone_muted);
+  }
+}
+
+TEST_F(MicrophonePrivacySwitchControllerTest, OnPreferenceChanged) {
+  for (bool microphone_allowed : {false, true, false}) {
     SetUserPref(microphone_allowed);
     EXPECT_EQ(CrasAudioHandler::Get()->IsInputMuted(), !microphone_allowed);
   }
