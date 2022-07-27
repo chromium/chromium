@@ -119,6 +119,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/profiler/thread_profiler.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
+#include "chrome/common/profiler/unwind_util.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
@@ -1143,9 +1144,13 @@ void ChromeBrowserMainParts::PostCreateThreads() {
 // Sampling multiple threads might cause overhead on Android and we don't want
 // to enable it unless the data is needed.
 #if !BUILDFLAG(IS_ANDROID)
+  // We pass in CreateCoreUnwindersFactory here since it lives in the chrome/
+  // layer while TracingSamplerProfiler is outside of chrome/.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&tracing::TracingSamplerProfiler::CreateOnChildThread));
+      base::BindOnce(&tracing::TracingSamplerProfiler::
+                         CreateOnChildThreadWithCustomUnwinders,
+                     base::BindRepeating(&CreateCoreUnwindersFactory)));
 #endif
 
   tracing::SetupBackgroundTracingFieldTrial();
