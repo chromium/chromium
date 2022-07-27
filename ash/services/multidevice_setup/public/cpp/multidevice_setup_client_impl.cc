@@ -153,9 +153,6 @@ void MultiDeviceSetupClientImpl::SetFeatureEnabledState(
 
 const MultiDeviceSetupClient::FeatureStatesMap&
 MultiDeviceSetupClientImpl::GetFeatureStates() const {
-  PA_LOG(VERBOSE)
-      << "Responding to GetFeaturesStates() with the following cached map: "
-      << FeatureStatesMapToString(feature_states_map_);
   return feature_states_map_;
 }
 
