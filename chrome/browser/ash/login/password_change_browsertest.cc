@@ -255,13 +255,16 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeStubAuthTest, SubmitOnEnterKeyPressed) {
   login_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordChangeStubAuthTest, RetryOnWrongPassword) {
+IN_PROC_BROWSER_TEST_P(PasswordChangeTest, RetryOnWrongPassword) {
+  AddFakeUser("old user password");
   OpenGaiaDialog(test_account_id_);
-  SetUpStubAuthenticatorAndAttemptLogin("old user password");
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  SetGaiaScreenCredentials(test_account_id_, "new password");
+
   WaitForPasswordChangeScreen();
   test::OobeJS().CreateVisibilityWaiter(true, kPasswordStep)->Wait();
 
-  // Fill out and submit the old password passed to the stub authenticator.
+  // Fill out and submit the old password passed to the fake userdataauth.
   test::OobeJS().TypeIntoPath("incorrect old user password", kOldPasswordInput);
   test::OobeJS().ClickOnPath(kSendPasswordButton);
   // Expect the UI to report failure.
@@ -270,20 +273,12 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeStubAuthTest, RetryOnWrongPassword) {
       ->Wait();
   test::OobeJS().ExpectEnabledPath(kPasswordStep);
 
-  EXPECT_EQ(StubAuthenticator::DataRecoveryStatus::kRecoveryFailed,
-            data_recovery_status_);
-
-  data_recovery_status_ = StubAuthenticator::DataRecoveryStatus::kNone;
-
   // Submit the correct password.
   test::OobeJS().TypeIntoPath("old user password", kOldPasswordInput);
   test::OobeJS().ClickOnPath(kSendPasswordButton);
 
-  // User session should start, and whole OOBE screen is expected to be hidden,
+  // User session should start, and whole OOBE screen is expected to be hidden.
   OobeWindowVisibilityWaiter(false).Wait();
-  EXPECT_EQ(StubAuthenticator::DataRecoveryStatus::kRecovered,
-            data_recovery_status_);
-
   login_mixin_.WaitForActiveSession();
 }
 
