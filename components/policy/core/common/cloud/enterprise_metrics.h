@@ -146,7 +146,7 @@ enum MetricEnrollment {
   // command-line switch.
   kMetricEnrollmentMayNotBlockDevMode = 64,
   // Max value for use with enumeration histogram UMA functions.
-  kMaxValue = kMetricEnrollmentIllegalAccountForPackagedEDULicense
+  kMaxValue = kMetricEnrollmentMayNotBlockDevMode
 };
 
 // Events related to policy refresh.
