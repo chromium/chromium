@@ -1685,6 +1685,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.SearchResumptionModule.NotShown"
+    enum="SearchResumptionModule.ModuleNotShownReason"
+    expires_after="2022-10-31">
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <summary>
+    Logs the reason why the search resumption module is enabled but not shown on
+    the NTP. Recorded when NewTabPage is created and the search resumption
+    module fails to show.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.SearchResumptionModule.Show"
     enum="SearchResumptionModule.ModuleShowStatus" expires_after="2022-10-31">
   <owner>hanxi@chromium.org</owner>

@@ -42,10 +42,32 @@ public class SearchResumptionModuleUtils {
         int NUM_ENTRIES = 2;
     }
 
+    @IntDef({ModuleNotShownReason.NOT_ENOUGH_RESULT, ModuleNotShownReason.FEATURE_DISABLED,
+            ModuleNotShownReason.NOT_SIGN_IN, ModuleNotShownReason.NOT_SYNC,
+            ModuleNotShownReason.DEFAULT_ENGINE_NOT_GOOGLE, ModuleNotShownReason.NO_TAB_TO_TRACK,
+            ModuleNotShownReason.TAB_NOT_VALID, ModuleNotShownReason.TAB_EXPIRED,
+            ModuleNotShownReason.TAB_CHANGED, ModuleNotShownReason.NUM_ENTRIES})
+    // The ModuleNotShownReason should be consistent with
+    // SearchResumptionModule.ModuleNotShownReason in enums.xml.
+    public @interface ModuleNotShownReason {
+        int NOT_ENOUGH_RESULT = 0;
+        int FEATURE_DISABLED = 1;
+        int NOT_SIGN_IN = 2;
+        int NOT_SYNC = 3;
+        int DEFAULT_ENGINE_NOT_GOOGLE = 4;
+        int NO_TAB_TO_TRACK = 5;
+        int TAB_NOT_VALID = 6;
+        int TAB_EXPIRED = 7;
+        int TAB_CHANGED = 8;
+        int NUM_ENTRIES = 9;
+    }
+
     @VisibleForTesting
     static final String TAB_EXPIRATION_TIME_PARAM = "tab_expiration_time";
     @VisibleForTesting
     static final String UMA_MODULE_SHOW = "NewTabPage.SearchResumptionModule.Show";
+    @VisibleForTesting
+    static final String UMA_MODULE_NOT_SHOW = "NewTabPage.SearchResumptionModule.NotShow";
     static final String ACTION_CLICK = "SearchResumptionModule.NTP.Click";
     static final String ACTION_COLLAPSE = "SearchResumptionModule.NTP.Collapse";
     static final String ACTION_EXPAND = "SearchResumptionModule.NTP.Expand";
@@ -75,7 +97,10 @@ public class SearchResumptionModuleUtils {
         if (!shouldShowSearchResumptionModule(profile, currentTab)) return null;
 
         Tab tabToTrack = TabModelUtils.getMostRecentTab(tabModel, currentTab.getId());
-        if (tabToTrack == null) return null;
+        if (tabToTrack == null) {
+            recordModuleNotShownReason(ModuleNotShownReason.NO_TAB_TO_TRACK);
+            return null;
+        }
 
         if (!isTabToTrackValid(tabToTrack)) return null;
 
@@ -97,13 +122,23 @@ public class SearchResumptionModuleUtils {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
                 || !ChromeFeatureList.isEnabled(
                         ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID)) {
+            recordModuleNotShownReason(ModuleNotShownReason.FEATURE_DISABLED);
             return false;
         }
 
-        if (!TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()
-                || !IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount(
-                        ConsentLevel.SYNC)
-                || !SyncService.get().hasKeepEverythingSynced()) {
+        if (!TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()) {
+            recordModuleNotShownReason(ModuleNotShownReason.DEFAULT_ENGINE_NOT_GOOGLE);
+            return false;
+        }
+
+        if (!IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount(
+                    ConsentLevel.SYNC)) {
+            recordModuleNotShownReason(ModuleNotShownReason.NOT_SIGN_IN);
+            return false;
+        }
+
+        if (!SyncService.get().hasKeepEverythingSynced()) {
+            recordModuleNotShownReason(ModuleNotShownReason.NOT_SYNC);
             return false;
         }
 
@@ -123,15 +158,21 @@ public class SearchResumptionModuleUtils {
     static boolean isTabToTrackValid(Tab tabToTrack) {
         if (tabToTrack.isNativePage() || tabToTrack.isIncognito()
                 || GURL.isEmptyOrInvalid(tabToTrack.getUrl())) {
+            recordModuleNotShownReason(ModuleNotShownReason.TAB_NOT_VALID);
             return false;
         }
 
         // Only shows the module if the Tab to track was visited within an expiration time.
-        return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()
-                       - CriticalPersistedTabData.from(tabToTrack).getTimestampMillis())
+        if (TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()
+                    - CriticalPersistedTabData.from(tabToTrack).getTimestampMillis())
                 < ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                         ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
-                        TAB_EXPIRATION_TIME_PARAM, LAST_TAB_EXPIRATION_TIME_SECONDS);
+                        TAB_EXPIRATION_TIME_PARAM, LAST_TAB_EXPIRATION_TIME_SECONDS)) {
+            return true;
+        } else {
+            recordModuleNotShownReason(ModuleNotShownReason.TAB_EXPIRED);
+            return false;
+        }
     }
 
     /**
@@ -143,5 +184,13 @@ public class SearchResumptionModuleUtils {
         RecordHistogram.recordEnumeratedHistogram(UMA_MODULE_SHOW,
                 isCollapsed ? ModuleShowStatus.COLLAPSED : ModuleShowStatus.EXPANDED,
                 ModuleShowStatus.NUM_ENTRIES);
+    }
+
+    /**
+     * Records the reason why the search resumption module is not shown.
+     */
+    static void recordModuleNotShownReason(@ModuleNotShownReason int reason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                UMA_MODULE_NOT_SHOW, reason, ModuleNotShownReason.NUM_ENTRIES);
     }
 }
