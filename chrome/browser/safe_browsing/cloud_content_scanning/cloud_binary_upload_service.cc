@@ -45,31 +45,6 @@ bool IsConsumerScanRequest(const CloudBinaryUploadService::Request& request) {
   return request.device_token().empty();
 }
 
-std::string ResultToString(CloudBinaryUploadService::Result result) {
-  switch (result) {
-    case CloudBinaryUploadService::Result::UNKNOWN:
-      return "UNKNOWN";
-    case CloudBinaryUploadService::Result::SUCCESS:
-      return "SUCCESS";
-    case CloudBinaryUploadService::Result::UPLOAD_FAILURE:
-      return "UPLOAD_FAILURE";
-    case CloudBinaryUploadService::Result::TIMEOUT:
-      return "TIMEOUT";
-    case CloudBinaryUploadService::Result::FILE_TOO_LARGE:
-      return "FILE_TOO_LARGE";
-    case CloudBinaryUploadService::Result::FAILED_TO_GET_TOKEN:
-      return "FAILED_TO_GET_TOKEN";
-    case CloudBinaryUploadService::Result::UNAUTHORIZED:
-      return "UNAUTHORIZED";
-    case CloudBinaryUploadService::Result::FILE_ENCRYPTED:
-      return "FILE_ENCRYPTED";
-    case CloudBinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE:
-      return "DLP_SCAN_UNSUPPORTED_FILE_TYPE";
-    case CloudBinaryUploadService::Result::TOO_MANY_REQUESTS:
-      return "TOO_MANY_REQUESTS";
-  }
-}
-
 net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(bool is_app) {
   if (is_app) {
     return net::DefineNetworkTrafficAnnotation(

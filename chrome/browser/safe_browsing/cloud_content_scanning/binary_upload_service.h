@@ -60,6 +60,8 @@ class BinaryUploadService : public KeyedService {
     kMaxValue = TOO_MANY_REQUESTS,
   };
 
+  static std::string ResultToString(Result result);
+
   // Callbacks used to pass along the results of scanning. The response protos
   // will only be populated if the result is SUCCESS.
   using ContentAnalysisCallback =

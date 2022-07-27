@@ -48,6 +48,31 @@ absl::optional<GURL> GetUrlOverride() {
 
 }  // namespace
 
+std::string BinaryUploadService::ResultToString(Result result) {
+  switch (result) {
+    case Result::UNKNOWN:
+      return "UNKNOWN";
+    case Result::SUCCESS:
+      return "SUCCESS";
+    case Result::UPLOAD_FAILURE:
+      return "UPLOAD_FAILURE";
+    case Result::TIMEOUT:
+      return "TIMEOUT";
+    case Result::FILE_TOO_LARGE:
+      return "FILE_TOO_LARGE";
+    case Result::FAILED_TO_GET_TOKEN:
+      return "FAILED_TO_GET_TOKEN";
+    case Result::UNAUTHORIZED:
+      return "UNAUTHORIZED";
+    case Result::FILE_ENCRYPTED:
+      return "FILE_ENCRYPTED";
+    case Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE:
+      return "DLP_SCAN_UNSUPPORTED_FILE_TYPE";
+    case Result::TOO_MANY_REQUESTS:
+      return "TOO_MANY_REQUESTS";
+  }
+}
+
 BinaryUploadService::Request::Data::Data() = default;
 BinaryUploadService::Request::Data::Data(Data&&) = default;
 BinaryUploadService::Request::Data&

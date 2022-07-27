@@ -113,6 +113,13 @@ class FilesRequestHandler : public RequestHandlerBase {
       safe_browsing::BinaryUploadService::Result result,
       safe_browsing::BinaryUploadService::Request::Data data);
 
+  // Called when a request is finished early without uploading it.
+  // This is, e.g., called for encrypted files and responsible for posting the
+  // required data to safe-browsing ui.
+  void FinishRequestEarly(
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      safe_browsing::BinaryUploadService::Result result);
+
   // Upload the request for deep scanning using the binary upload service.
   // These methods exist so they can be overridden in tests as needed.
   // The `result` argument exists as an optimization to finish the request early
