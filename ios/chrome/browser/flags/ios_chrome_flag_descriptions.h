@@ -496,6 +496,10 @@ extern const char kOmniboxNewImplementationDescription[];
 extern const char kOmniboxPasteButtonName[];
 extern const char kOmniboxPasteButtonDescription[];
 
+// Title and description for the zero-suggest prefetching on the New Tab Page.
+extern const char kOmniboxZeroSuggestPrefetchingName[];
+extern const char kOmniboxZeroSuggestPrefetchingDescription[];
+
 // Title and description for the flag to enable the SwiftUI omnibox popup
 // implementation.
 extern const char kIOSOmniboxUpdatedPopupUIName[];
