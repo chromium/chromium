@@ -45,6 +45,8 @@ extern const char kManagementCrostini[];
 extern const char kManagementCrostiniContainerConfiguration[];
 extern const char kManagementReportExtensions[];
 extern const char kManagementReportAndroidApplications[];
+extern const char kManagementOnFileTransferEvent[];
+extern const char kManagementOnFileTransferVisibleData[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 extern const char kOnPremReportingExtensionStableId[];

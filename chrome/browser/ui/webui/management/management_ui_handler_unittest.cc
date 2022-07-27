@@ -1309,6 +1309,10 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
                           "[]", chrome_policies);
   SetConnectorPolicyValue(policy::key::kOnPrintEnterpriseConnector, "[]",
                           chrome_policies);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  SetConnectorPolicyValue(policy::key::kOnFileTransferEnterpriseConnector, "[]",
+                          chrome_policies);
+#endif
   SetConnectorPolicyValue(policy::key::kOnSecurityEventEnterpriseConnector,
                           "[]", chrome_policies);
   profile_no_domain->GetPrefs()->SetInteger(
@@ -1337,6 +1341,11 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   safe_browsing::SetAnalysisConnector(profile_no_domain->GetPrefs(),
                                       enterprise_connectors::PRINT,
                                       "[{\"service_provider\":\"google\"}]");
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  safe_browsing::SetAnalysisConnector(profile_no_domain->GetPrefs(),
+                                      enterprise_connectors::FILE_TRANSFER,
+                                      "[{\"service_provider\":\"google\"}]");
+#endif
   safe_browsing::SetOnSecurityEventReporting(profile_no_domain->GetPrefs(),
                                              true);
   profile_no_domain->GetPrefs()->SetInteger(
@@ -1361,7 +1370,12 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
   ASSERT_TRUE(info.is_dict());
   threat_protection_info = info.GetIfDict();
-  EXPECT_EQ(6u, threat_protection_info->FindList("info")->size());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const size_t expected_size = 7u;
+#else
+  const size_t expected_size = 6u;
+#endif
+  EXPECT_EQ(expected_size, threat_protection_info->FindList("info")->size());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION),
       base::UTF8ToUTF16(*threat_protection_info->FindString("description")));
@@ -1391,6 +1405,14 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
     value.Set("permission", kManagementOnPrintVisibleData);
     expected_info.Append(std::move(value));
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  {
+    base::Value::Dict value;
+    value.Set("title", kManagementOnFileTransferEvent);
+    value.Set("permission", kManagementOnFileTransferVisibleData);
+    expected_info.Append(std::move(value));
+  }
+#endif
   {
     base::Value::Dict value;
     value.Set("title", kManagementEnterpriseReportingEvent);

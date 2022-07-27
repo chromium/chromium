@@ -85,6 +85,9 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
      IDS_MANAGEMENT_REPORT_ANDROID_APPLICATIONS},
     {"proxyServerPrivacyDisclosure",
      IDS_MANAGEMENT_PROXY_SERVER_PRIVACY_DISCLOSURE},
+    {kManagementOnFileTransferEvent, IDS_MANAGEMENT_FILE_TRANSFER_EVENT},
+    {kManagementOnFileTransferVisibleData,
+     IDS_MANAGEMENT_FILE_TRANSFER_VISIBLE_DATA},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     {"browserReporting", IDS_MANAGEMENT_BROWSER_REPORTING},
     {"browserReportingExplanation",

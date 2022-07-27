@@ -180,6 +180,9 @@ const char kManagementReportPrintJobs[] = "managementReportPrintJobs";
 const char kManagementReportLoginLogout[] = "managementReportLoginLogout";
 const char kManagementReportCRDSessions[] = "managementReportCRDSessions";
 const char kManagementReportDlpEvents[] = "managementReportDlpEvents";
+const char kManagementOnFileTransferEvent[] = "managementOnFileTransferEvent";
+const char kManagementOnFileTransferVisibleData[] =
+    "managementOnFileTransferVisibleData";
 const char kManagementPrinting[] = "managementPrinting";
 const char kManagementCrostini[] = "managementCrostini";
 const char kManagementCrostiniContainerConfiguration[] =
@@ -817,14 +820,18 @@ base::Value ManagementUIHandler::GetThreatProtectionInfo(Profile* profile) {
     const char* title;
     const char* permission;
   } analysis_connector_permissions[] = {
-      {enterprise_connectors::FILE_ATTACHED, kManagementOnFileAttachedEvent,
-       kManagementOnFileAttachedVisibleData},
-      {enterprise_connectors::FILE_DOWNLOADED, kManagementOnFileDownloadedEvent,
-       kManagementOnFileDownloadedVisibleData},
-      {enterprise_connectors::BULK_DATA_ENTRY, kManagementOnBulkDataEntryEvent,
-       kManagementOnBulkDataEntryVisibleData},
-      {enterprise_connectors::PRINT, kManagementOnPrintEvent,
-       kManagementOnPrintVisibleData},
+    {enterprise_connectors::FILE_ATTACHED, kManagementOnFileAttachedEvent,
+     kManagementOnFileAttachedVisibleData},
+    {enterprise_connectors::FILE_DOWNLOADED, kManagementOnFileDownloadedEvent,
+     kManagementOnFileDownloadedVisibleData},
+    {enterprise_connectors::BULK_DATA_ENTRY, kManagementOnBulkDataEntryEvent,
+     kManagementOnBulkDataEntryVisibleData},
+    {enterprise_connectors::PRINT, kManagementOnPrintEvent,
+     kManagementOnPrintVisibleData},
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {enterprise_connectors::FILE_TRANSFER, kManagementOnFileTransferEvent,
+     kManagementOnFileTransferVisibleData},
+#endif
   };
   auto* connectors_service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
