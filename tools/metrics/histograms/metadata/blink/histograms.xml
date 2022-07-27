@@ -230,20 +230,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Canvas.IsComposited" enum="Boolean"
-    expires_after="2021-01-31">
-  <owner>aaronhk@chromium.org</owner>
-  <owner>fserb@chromium.org</owner>
-  <summary>
-    Records if the canvas context is composited or not. Recorded in
-    HTMLCanvasElement::GetCanvasRenderingContext.
-
-    Note: This has been recording bad data since at least 2020-01-01. It was
-    emitted in the wrong place and always recording false. Since it records the
-    same information as IsAccelerated, I am just going to let it expire.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Canvas.MaximumInflightResources"
     units="canvas resources" expires_after="2022-08-28">
   <owner>aaronhk@chromium.org</owner>
@@ -347,20 +333,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Stores the square root of the number of pixels in a new or resized offscreen
     canvas. Emitted from CanvasRenderingContextHost::RecordCanvasSizeToUMA.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Blink.Canvas.ToBlob.IdleTaskStatus"
-    enum="IdleTaskStatus" expires_after="2021-01-31">
-  <owner>fserb@chromium.org</owner>
-  <owner>aaronhk@chromium.org</owner>
-  <summary>
-    Records the status of the idle task when finishing a toBlob call.
-
-    In addition, metric values from OffscreenCanvas.convertToBlob API call are
-    also gathered into this histogram, because the logic flow is exactly the
-    same as canvas.toBlob. It's worth to note that the values can come from idle
-    tasks on either main or worker thread.
   </summary>
 </histogram>
 
