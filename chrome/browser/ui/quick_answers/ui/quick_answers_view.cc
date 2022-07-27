@@ -457,8 +457,9 @@ void QuickAnswersView::ShowRetryView() {
   main_view_->SetBackground(nullptr);
 
   // Add title.
-  content_view_->AddChildView(
+  auto* title_label = content_view_->AddChildView(
       std::make_unique<QuickAnswersTextLabel>(QuickAnswerText(title_)));
+  title_label->SetMaximumWidthSingleLine(GetLabelWidth());
 
   // Add error label.
   std::vector<std::unique_ptr<QuickAnswerUiElement>> description_labels;
@@ -542,8 +543,9 @@ void QuickAnswersView::AddContentView() {
       .SetInteriorMargin(kContentViewInsets)
       .SetDefault(views::kMarginsKey,
                   gfx::Insets::TLBR(0, 0, kLineSpacingDip, 0));
-  content_view_->AddChildView(
+  auto* title_label = content_view_->AddChildView(
       std::make_unique<QuickAnswersTextLabel>(QuickAnswerText(title_)));
+  title_label->SetMaximumWidthSingleLine(GetLabelWidth());
   std::string loading =
       l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_LOADING);
   content_view_->AddChildView(
@@ -620,23 +622,27 @@ void QuickAnswersView::AddGoogleIcon() {
                                               gfx::kPlaceholderColor));
 }
 
+int QuickAnswersView::GetBoundsWidth() {
+  return anchor_view_bounds_.width();
+}
+
+int QuickAnswersView::GetLabelWidth() {
+  return GetBoundsWidth() - kMainViewInsets.width() -
+         kContentViewInsets.width() - kGoogleIconInsets.width() -
+         kGoogleIconSizeDip;
+}
+
 void QuickAnswersView::ResetContentView() {
   content_view_->RemoveAllChildViews();
   first_answer_label_ = nullptr;
 }
 
 void QuickAnswersView::UpdateBounds() {
-  int desired_width = anchor_view_bounds_.width();
+  // Multi-line labels need to be resized to be compatible with bounds width.
+  if (first_answer_label_)
+    first_answer_label_->SizeToFit(GetLabelWidth());
 
-  // Multi-line labels need to be resized to be compatible with |desired_width|.
-  if (first_answer_label_) {
-    int label_desired_width = desired_width - kMainViewInsets.width() -
-                              kContentViewInsets.width() -
-                              kGoogleIconInsets.width() - kGoogleIconSizeDip;
-    first_answer_label_->SizeToFit(label_desired_width);
-  }
-
-  int height = GetHeightForWidth(desired_width);
+  int height = GetHeightForWidth(GetBoundsWidth());
   int y = anchor_view_bounds_.y() - kMarginDip - height;
 
   // Reserve space at the top since the view might expand for two-line answers.
@@ -650,7 +656,7 @@ void QuickAnswersView::UpdateBounds() {
     y = anchor_view_bounds_.bottom() + kMarginDip;
   }
 
-  gfx::Rect bounds = {{anchor_view_bounds_.x(), y}, {desired_width, height}};
+  gfx::Rect bounds = {{anchor_view_bounds_.x(), y}, {GetBoundsWidth(), height}};
   wm::ConvertRectFromScreen(GetWidget()->GetNativeWindow()->parent(), &bounds);
   GetWidget()->SetBounds(bounds);
 }
@@ -669,6 +675,8 @@ void QuickAnswersView::UpdateQuickAnswerResult(
 
   // Add title.
   View* title_view = AddHorizontalUiElements(quick_answer.title, content_view_);
+  auto* title_label = static_cast<Label*>(title_view->children().front());
+  title_label->SetMaximumWidthSingleLine(GetLabelWidth());
 
   // Add phonetics audio button for definition results.
   if (quick_answer.result_type == ResultType::kDefinitionResult &&
@@ -688,7 +696,6 @@ void QuickAnswersView::UpdateQuickAnswerResult(
           QuickAnswersTextLabel::kViewClassName;
   if (first_answer_is_single_label) {
     // Update announcement.
-    auto* title_label = static_cast<Label*>(title_view->children().front());
     auto* answer_label =
         static_cast<Label*>(first_answer_view->children().front());
     GetViewAccessibility().OverrideDescription(l10n_util::GetStringFUTF8(

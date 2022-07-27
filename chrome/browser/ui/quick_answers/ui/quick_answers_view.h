@@ -69,6 +69,8 @@ class QuickAnswersView : public views::View {
       View* container);
   void AddAssistantIcon();
   void AddGoogleIcon();
+  int GetBoundsWidth();
+  int GetLabelWidth();
   void ResetContentView();
   void UpdateBounds();
   void UpdateQuickAnswerResult(const quick_answers::QuickAnswer& quick_answer);
