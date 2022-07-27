@@ -3,6 +3,12 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.signin;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
 
 import android.content.res.Configuration;
@@ -253,9 +259,6 @@ public class SigninFirstRunFragmentRenderTest {
 
         launchActivityWithFragment(orientation);
 
-        CriteriaHelper.pollUiThread(() -> {
-            return !mFragment.getView().findViewById(R.id.signin_fre_selected_account).isShown();
-        });
         mRenderTestRule.render(
                 mFragment.getView(), "signin_first_run_fragment_when_signin_disabled_by_policy");
     }
@@ -472,5 +475,9 @@ public class SigninFirstRunFragmentRenderTest {
         });
         ApplicationTestUtils.waitForActivityState(
                 mChromeActivityTestRule.getActivity(), Stage.RESUMED);
+        // Parts of SigninFirstRunFragment are initialized asynchronously, so ensure the load
+        // spinner is not displayed before grabbing a screenshot.
+        onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
+                .check(matches(not(isDisplayed())));
     }
 }
