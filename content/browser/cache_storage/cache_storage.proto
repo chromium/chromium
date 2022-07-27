@@ -20,6 +20,8 @@ message CacheStorageIndex {
   repeated Cache cache = 1;
   optional string origin = 2 [deprecated = true];
   optional string storage_key = 3;
+  optional int64 bucket_id = 4;
+  optional bool bucket_is_default = 5;
 }
 
 message CacheHeaderMap {
