@@ -4156,7 +4156,7 @@
   {
     "name": "lens-camera-assisted-search",
     "owners": [ "yusuyoutube@google.com", "benwgold@google.com", "fgorski", "wylieb", "lens-chrome@google.com" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 107
   },
   {
     "name": "lightweight-reactions-android",
