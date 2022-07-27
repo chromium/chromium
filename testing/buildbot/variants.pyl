@@ -970,36 +970,36 @@
   },
   'CROS_TROGDOR_RELEASE_LKGM': {
     'skylab': {
-      'cros_board': 'trogor',
+      'cros_board': 'trogdor',
       'cros_chrome_version': '105.0.5190.0',
-      'cros_img': 'trogor-release/R106-14997.0.0',
+      'cros_img': 'trogdor-release/R106-14997.0.0',
     },
     'enabled': True,
     'identifier': 'TROGDOR_RELEASE_LKGM',
   },
   'CROS_TROGDOR_RELEASE_DEV': {
     'skylab': {
-      'cros_board': 'trogor',
+      'cros_board': 'trogdor',
       'cros_chrome_version': '105.0.5187.0',
-      'cros_img': 'trogor-release/R105-14985.0.0',
+      'cros_img': 'trogdor-release/R105-14985.0.0',
     },
     'enabled': True,
     'identifier': 'TROGDOR_RELEASE_DEV',
   },
   'CROS_TROGDOR_RELEASE_BETA': {
     'skylab': {
-      'cros_board': 'trogor',
+      'cros_board': 'trogdor',
       'cros_chrome_version': '104.0.5112.57',
-      'cros_img': 'trogor-release/R104-14909.79.0',
+      'cros_img': 'trogdor-release/R104-14909.79.0',
     },
     'enabled': True,
     'identifier': 'TROGDOR_RELEASE_BETA',
   },
   'CROS_TROGDOR_RELEASE_STABLE': {
     'skylab': {
-      'cros_board': 'trogor',
+      'cros_board': 'trogdor',
       'cros_chrome_version': '103.0.5060.132',
-      'cros_img': 'trogor-release/R103-14816.131.0',
+      'cros_img': 'trogdor-release/R103-14816.131.0',
     },
     'enabled': True,
     'identifier': 'TROGDOR_RELEASE_STABLE',

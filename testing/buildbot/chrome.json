@@ -2255,8 +2255,8 @@
     "skylab_tests": [
       {
         "args": [],
-        "cros_board": "trogor",
-        "cros_img": "trogor-release/R106-14997.0.0",
+        "cros_board": "trogdor",
+        "cros_img": "trogdor-release/R106-14997.0.0",
         "name": "lacros_all_tast_tests TROGDOR_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
@@ -2271,8 +2271,8 @@
       },
       {
         "args": [],
-        "cros_board": "trogor",
-        "cros_img": "trogor-release/R105-14985.0.0",
+        "cros_board": "trogdor",
+        "cros_img": "trogdor-release/R105-14985.0.0",
         "name": "lacros_all_tast_tests TROGDOR_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -2287,8 +2287,8 @@
       },
       {
         "args": [],
-        "cros_board": "trogor",
-        "cros_img": "trogor-release/R104-14909.79.0",
+        "cros_board": "trogdor",
+        "cros_img": "trogdor-release/R104-14909.79.0",
         "name": "lacros_all_tast_tests TROGDOR_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -2303,8 +2303,8 @@
       },
       {
         "args": [],
-        "cros_board": "trogor",
-        "cros_img": "trogor-release/R103-14816.131.0",
+        "cros_board": "trogdor",
+        "cros_img": "trogdor-release/R103-14816.131.0",
         "name": "lacros_all_tast_tests TROGDOR_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
