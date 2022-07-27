@@ -194,7 +194,7 @@ TEST_F(GuestOsMimeTypesServiceTest, Migrate) {
   PrefService* prefs = profile()->GetPrefs();
   prefs->Set("crostini.mime_types", std::move(old));
   GuestOsMimeTypesService::MigrateVerboseMimeTypePrefs(prefs);
-  EXPECT_EQ(expected, prefs->Get("crostini.mime_types")->Clone());
+  EXPECT_EQ(expected, prefs->GetValueDict("crostini.mime_types"));
 }
 
 }  // namespace guest_os
