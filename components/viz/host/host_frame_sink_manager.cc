@@ -311,8 +311,11 @@ void HostFrameSinkManager::OnConnectionLost() {
   connection_was_lost_ = true;
 
   receiver_.reset();
-  frame_sink_manager_remote_.reset();
+  // frame_sink_manager_ points to |frame_sink_manager_remote_| if using mojo.
+  // Set frame_sink_manager_ to nullptr before
+  // frame_sink_manager_remote_.reset() to avoid dangling ptr.
   frame_sink_manager_ = nullptr;
+  frame_sink_manager_remote_.reset();
 
   // Any cached back buffers are invalid once the connection to the
   // FrameSinkManager is lost.

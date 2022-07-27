@@ -295,14 +295,13 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
 
   const bool enable_sync_window_destruction_;
 
+  // Connections to/from FrameSinkManagerImpl.
+  mojo::Remote<mojom::FrameSinkManager> frame_sink_manager_remote_;
   // This will point to |frame_sink_manager_remote_| if using mojo or it may
   // point directly at FrameSinkManagerImpl in tests. Use this to make function
   // calls.
-  raw_ptr<mojom::FrameSinkManager, DanglingUntriaged> frame_sink_manager_ =
-      nullptr;
+  raw_ptr<mojom::FrameSinkManager> frame_sink_manager_ = nullptr;
 
-  // Connections to/from FrameSinkManagerImpl.
-  mojo::Remote<mojom::FrameSinkManager> frame_sink_manager_remote_;
   mojo::Receiver<mojom::FrameSinkManagerClient> receiver_{this};
 
   // Per CompositorFrameSink data.
