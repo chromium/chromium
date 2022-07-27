@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/payment_request_row_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
-#include "components/payments/content/autofill_payment_app.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_request_state.h"
 #include "components/payments/core/strings_util.h"
@@ -76,14 +75,8 @@ class PaymentMethodListItem : public PaymentRequestItemList::Item {
 
     switch (app_->type()) {
       case PaymentApp::Type::AUTOFILL:
-        // Since we are a list item, we only care about the on_edited callback.
-        dialog_->ShowCreditCardEditor(
-            BackNavigationType::kPaymentSheet,
-            /*on_edited=*/
-            base::BindOnce(&PaymentRequestState::SetSelectedApp, state(), app_),
-            /*on_added=*/
-            base::OnceCallback<void(const autofill::CreditCard&)>(),
-            static_cast<AutofillPaymentApp*>(app_.get())->credit_card());
+        // TODO(https://crbug.com/1209835): Remove this method entirely.
+        NOTREACHED() << "Autofill payment app is no longer supported";
         return;
       case PaymentApp::Type::UNDEFINED:
         // Intentionally fall through.

@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/validation.h"
-#include "components/payments/content/autofill_payment_app.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_app_service.h"
@@ -687,10 +686,7 @@ void PaymentRequestState::SetDefaultProfileSelections() {
                                    CREDIT_CARD_NO_BILLING_ADDRESS);
     }
   } else if (available_apps_[0]->type() == PaymentApp::Type::AUTOFILL) {
-    // Record the missing fields (if any) of the most complete app when
-    // it's autofill based. SW based apps are always complete.
-    static_cast<const AutofillPaymentApp*>(available_apps_[0].get())
-        ->RecordMissingFieldsForApp();
+    NOTREACHED() << "Autofill app shouldn't be available";
   }
 
   SelectDefaultShippingAddressAndNotifyObservers();
