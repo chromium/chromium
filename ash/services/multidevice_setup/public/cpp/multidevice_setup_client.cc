@@ -11,6 +11,25 @@ namespace ash {
 
 namespace multidevice_setup {
 
+namespace {
+
+std::string HostStatusToString(mojom::HostStatus status) {
+  switch (status) {
+    case mojom::HostStatus::kNoEligibleHosts:
+      return "[kNoEligibleHosts]";
+    case mojom::HostStatus::kEligibleHostExistsButNoHostSet:
+      return "[kEligibleHostExistsButNoHostSet]";
+    case mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation:
+      return "[kHostSetLocallyButWaitingForBackendConfirmation]";
+    case mojom::HostStatus::kHostSetButNotYetVerified:
+      return "[kHostSetButNotYetVerified]";
+    case mojom::HostStatus::kHostVerified:
+      return "[kHostVerified]";
+  }
+}
+
+}  // namespace
+
 // static
 MultiDeviceSetupClient::HostStatusWithDevice
 MultiDeviceSetupClient::GenerateDefaultHostStatusWithDevice() {
@@ -85,6 +104,20 @@ std::string FeatureStatesMapToString(
   stream << "{" << std::endl;
   for (const auto& item : map)
     stream << "  " << item.first << ": " << item.second << "," << std::endl;
+  stream << "}";
+  return stream.str();
+}
+
+std::string HostStatusWithDeviceToString(
+    const MultiDeviceSetupClient::HostStatusWithDevice&
+        host_status_with_device) {
+  std::ostringstream stream;
+  stream << "{" << std::endl;
+  stream << "  " << HostStatusToString(host_status_with_device.first) << ": "
+         << (host_status_with_device.second
+                 ? host_status_with_device.second->pii_free_name()
+                 : " no device")
+         << std::endl;
   stream << "}";
   return stream.str();
 }

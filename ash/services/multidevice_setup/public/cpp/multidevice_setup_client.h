@@ -95,6 +95,9 @@ class MultiDeviceSetupClient {
 
 std::string FeatureStatesMapToString(
     const MultiDeviceSetupClient::FeatureStatesMap& map);
+std::string HostStatusWithDeviceToString(
+    const MultiDeviceSetupClient::HostStatusWithDevice&
+        host_status_with_device);
 
 }  // namespace multidevice_setup
 

@@ -61,6 +61,9 @@ MultideviceFeatureAccessManagerImpl::MultideviceFeatureAccessManagerImpl(
   DCHECK(multidevice_setup_client_);
 
   current_feature_status_ = feature_status_provider_->GetStatus();
+  PA_LOG(VERBOSE) << __func__
+                  << ": current feature status = " << current_feature_status_;
+
   feature_status_provider_->AddObserver(this);
 
   pref_change_registrar_.Init(pref_service_);
@@ -307,6 +310,10 @@ void MultideviceFeatureAccessManagerImpl::
   const FeatureStatus previous_feature_status = current_feature_status_;
   current_feature_status_ = feature_status_provider_->GetStatus();
 
+  PA_LOG(VERBOSE) << __func__
+                  << ": previous feature status = " << previous_feature_status
+                  << ", current feature status = " << current_feature_status_;
+
   if (previous_feature_status == current_feature_status_)
     return;
 
@@ -338,6 +345,10 @@ void MultideviceFeatureAccessManagerImpl::
     FeatureStatusChangedCombinedAccessSetup() {
   const FeatureStatus previous_feature_status = current_feature_status_;
   current_feature_status_ = feature_status_provider_->GetStatus();
+
+  PA_LOG(VERBOSE) << __func__
+                  << ": previous feature status = " << previous_feature_status
+                  << ", current feature status = " << current_feature_status_;
 
   if (previous_feature_status == current_feature_status_)
     return;

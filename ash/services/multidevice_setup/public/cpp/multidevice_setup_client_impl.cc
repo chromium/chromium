@@ -137,6 +137,8 @@ void MultiDeviceSetupClientImpl::RemoveHostDevice() {
 
 const MultiDeviceSetupClient::HostStatusWithDevice&
 MultiDeviceSetupClientImpl::GetHostStatus() const {
+  PA_LOG(VERBOSE) << "Responding to GetHostStatus() with the following host = "
+                  << HostStatusWithDeviceToString(host_status_with_device_);
   return host_status_with_device_;
 }
 
@@ -182,6 +184,8 @@ void MultiDeviceSetupClientImpl::OnHostStatusChanged(
         std::make_pair(host_status, absl::nullopt /* host_device */);
   }
 
+  PA_LOG(INFO) << "Host status with device has changed. New status: "
+               << HostStatusWithDeviceToString(host_status_with_device_);
   NotifyHostStatusChanged(host_status_with_device_);
 }
 

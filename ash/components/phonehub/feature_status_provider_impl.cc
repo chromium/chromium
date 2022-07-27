@@ -163,6 +163,7 @@ FeatureStatusProviderImpl::~FeatureStatusProviderImpl() {
 }
 
 FeatureStatus FeatureStatusProviderImpl::GetStatus() const {
+  PA_LOG(VERBOSE) << __func__ << ": status = " << *status_;
   return *status_;
 }
 

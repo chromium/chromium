@@ -67,6 +67,57 @@ phone_hub_metrics::Screen GetMetricsScreen(
   }
 }
 
+std::string PhoneHubUIStateToString(PhoneHubUiController::UiState ui_state) {
+  switch (ui_state) {
+    case PhoneHubUiController::UiState::kOnboardingWithoutPhone:
+      return "[kOnboardingWithoutPhone]";
+
+    case PhoneHubUiController::UiState::kOnboardingWithPhone:
+      return "[kOnboardingWithPhone]";
+
+    case PhoneHubUiController::UiState::kPhoneConnected:
+      return "[kPhoneConnected]";
+
+    case PhoneHubUiController::UiState::kPhoneDisconnected:
+      return "[kPhoneDisconnected]";
+
+    case PhoneHubUiController::UiState::kPhoneConnecting:
+      return "[kPhoneConnecting]";
+
+    case PhoneHubUiController::UiState::kBluetoothDisabled:
+      return "[kBluetoothDisabled]";
+
+    case PhoneHubUiController::UiState::kTetherConnectionPending:
+      return "[kTetherConnectionPending]";
+
+    case PhoneHubUiController::UiState::kHidden:
+      return "[kHidden]";
+  }
+}
+
+std::string FeatureStatusToString(FeatureStatus feature_status) {
+  switch (feature_status) {
+    case FeatureStatus::kNotEligibleForFeature:
+      return "[kNotEligibleForFeature]";
+    case FeatureStatus::kEligiblePhoneButNotSetUp:
+      return "[kEligiblePhoneButNotSetUp]";
+    case FeatureStatus::kPhoneSelectedAndPendingSetup:
+      return "[kPhoneSelectedAndPendingSetup]";
+    case FeatureStatus::kDisabled:
+      return "[kDisabled]";
+    case FeatureStatus::kUnavailableBluetoothOff:
+      return "[kUnavailableBluetoothOff]";
+    case FeatureStatus::kEnabledButDisconnected:
+      return "[kEnabledButDisconnected]";
+    case FeatureStatus::kEnabledAndConnecting:
+      return "[kEnabledAndConnecting]";
+    case FeatureStatus::kEnabledAndConnected:
+      return "[kEnabledAndConnected]";
+    case FeatureStatus::kLockOrSuspended:
+      return "[kLockOrSuspended]";
+  }
+}
+
 }  // namespace
 
 PhoneHubUiController::PhoneHubUiController() {
@@ -109,6 +160,9 @@ std::unique_ptr<views::View> PhoneHubUiController::CreateStatusHeaderView(
 
 std::unique_ptr<PhoneHubContentView> PhoneHubUiController::CreateContentView(
     OnboardingView::Delegate* delegate) {
+  PA_LOG(VERBOSE) << __func__
+                  << ": ui state = " << PhoneHubUIStateToString(ui_state_);
+
   switch (ui_state_) {
     case UiState::kHidden:
       return nullptr;
@@ -162,8 +216,14 @@ void PhoneHubUiController::HandleBubbleOpened() {
       feature_status == FeatureStatus::kEnabledButDisconnected ||
       feature_status == FeatureStatus::kEnabledAndConnected;
 
-  if (!is_feature_enabled)
+  if (!is_feature_enabled) {
+    PA_LOG(VERBOSE) << __func__ << ": feature is not enabled. Feature status = "
+                    << FeatureStatusToString(feature_status);
     return;
+  }
+
+  PA_LOG(VERBOSE) << __func__ << ": feature is enabled. Feature status = "
+                  << FeatureStatusToString(feature_status);
 
   if (!has_requested_tether_scan_during_session_ &&
       phone_hub_manager_->GetTetherController()->GetStatus() ==
@@ -244,6 +304,9 @@ void PhoneHubUiController::UpdateUiState(
   if (new_state == ui_state_)
     return;
 
+  PA_LOG(VERBOSE) << __func__
+                  << ": old ui = " << PhoneHubUIStateToString(ui_state_)
+                  << ", new ui = " << PhoneHubUIStateToString(new_state);
   ui_state_ = new_state;
   for (auto& observer : observer_list_)
     observer.OnPhoneHubUiStateChanged();

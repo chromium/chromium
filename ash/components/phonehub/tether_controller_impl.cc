@@ -96,6 +96,7 @@ TetherControllerImpl::~TetherControllerImpl() {
 }
 
 TetherController::Status TetherControllerImpl::GetStatus() const {
+  PA_LOG(VERBOSE) << __func__ << ": status = " << status_;
   return status_;
 }
 
