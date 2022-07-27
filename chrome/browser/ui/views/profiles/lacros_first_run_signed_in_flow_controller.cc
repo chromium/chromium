@@ -75,7 +75,7 @@ LacrosFirstRunSignedInFlowController::LacrosFirstRunSignedInFlowController(
     ProfilePickerWebContentsHost* host,
     Profile* profile,
     std::unique_ptr<content::WebContents> contents,
-    ProfilePicker::FirstRunExitedCallback first_run_exited_callback)
+    ProfilePicker::DebugFirstRunExitedCallback first_run_exited_callback)
     : ProfilePickerSignedInFlowController(host,
                                           profile,
                                           std::move(contents),
@@ -91,6 +91,7 @@ LacrosFirstRunSignedInFlowController::~LacrosFirstRunSignedInFlowController() {
         .Run(sync_confirmation_seen_
                  ? ProfilePicker::FirstRunExitStatus::kQuitAtEnd
                  : ProfilePicker::FirstRunExitStatus::kQuitEarly,
+             ProfilePicker::FirstRunExitSource::kControllerDestructor,
              base::BindOnce(&HideProfilePickerAndRun,
                             ProfilePicker::BrowserOpenedCallback()));
   }
@@ -124,6 +125,7 @@ void LacrosFirstRunSignedInFlowController::FinishAndOpenBrowser(
 
   std::move(first_run_exited_callback_)
       .Run(ProfilePicker::FirstRunExitStatus::kCompleted,
+           ProfilePicker::FirstRunExitSource::kFlowFinished,
            base::BindOnce(&HideProfilePickerAndRun, std::move(callback)));
 }
 

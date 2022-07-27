@@ -47,6 +47,19 @@ class ProfilePicker {
   using FirstRunExitedCallback =
       base::OnceCallback<void(FirstRunExitStatus status,
                               base::OnceClosure callback)>;
+
+  // Added for bug investigation purposes.
+  // TODO(crbug.com/1340791): Remove this once the source of the bug is found.
+  enum class FirstRunExitSource {
+    kParamDestructor = 0,
+    kControllerDestructor = 1,
+    kFlowFinished = 2,
+    kReusingWindow = 3,
+  };
+  using DebugFirstRunExitedCallback =
+      base::OnceCallback<void(FirstRunExitStatus status,
+                              FirstRunExitSource source,
+                              base::OnceClosure callback)>;
 #endif
 
   // Only work when passed as the argument 'on_select_profile_target_url' to
@@ -147,6 +160,7 @@ class ProfilePicker {
     // intent to quit will be assumed and `first_run_exited_callback_` will be
     // called by the destructor with quit-related arguments.
     void NotifyFirstRunExited(FirstRunExitStatus exit_status,
+                              FirstRunExitSource exit_source,
                               base::OnceClosure maybe_callback);
 #endif
 

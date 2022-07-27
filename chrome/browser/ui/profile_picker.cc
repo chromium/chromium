@@ -49,7 +49,9 @@ const char ProfilePicker::kTaskManagerUrl[] =
 ProfilePicker::Params::~Params() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   NotifyAccountSelected(std::string());
-  NotifyFirstRunExited(FirstRunExitStatus::kQuitEarly, base::OnceClosure());
+  NotifyFirstRunExited(FirstRunExitStatus::kQuitEarly,
+                       FirstRunExitSource::kParamDestructor,
+                       base::OnceClosure());
 #endif
 }
 
@@ -103,10 +105,17 @@ void ProfilePicker::Params::NotifyAccountSelected(const std::string& gaia_id) {
 
 void ProfilePicker::Params::NotifyFirstRunExited(
     FirstRunExitStatus exit_status,
+    FirstRunExitSource exit_source,
     base::OnceClosure maybe_callback) {
-  if (first_run_exited_callback_)
-    std::move(first_run_exited_callback_)
-        .Run(exit_status, std::move(maybe_callback));
+  if (!first_run_exited_callback_)
+    return;
+
+  LOG(ERROR) << "Notifying FirstRun exit with status="
+             << static_cast<int>(exit_status)
+             << " from source=" << static_cast<int>(exit_source);
+
+  std::move(first_run_exited_callback_)
+      .Run(exit_status, std::move(maybe_callback));
 }
 #endif
 

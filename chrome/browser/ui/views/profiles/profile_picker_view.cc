@@ -387,8 +387,9 @@ void ProfilePickerView::UpdateParams(ProfilePicker::Params&& params) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Cancel any flow that was in progress.
   params_.NotifyAccountSelected(std::string());
-  params_.NotifyFirstRunExited(ProfilePicker::FirstRunExitStatus::kQuitEarly,
-                               base::OnceClosure());
+  params_.NotifyFirstRunExited(
+      ProfilePicker::FirstRunExitStatus::kQuitEarly,
+      ProfilePicker::FirstRunExitSource::kReusingWindow, base::OnceClosure());
 #endif
 
   params_ = std::move(params);

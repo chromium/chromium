@@ -24,7 +24,7 @@ class LacrosFirstRunSignedInFlowController
       ProfilePickerWebContentsHost* host,
       Profile* profile,
       std::unique_ptr<content::WebContents> contents,
-      ProfilePicker::FirstRunExitedCallback first_run_exited_callback);
+      ProfilePicker::DebugFirstRunExitedCallback first_run_exited_callback);
   ~LacrosFirstRunSignedInFlowController() override;
   LacrosFirstRunSignedInFlowController(
       const ProfilePickerSignedInFlowController&) = delete;
@@ -42,7 +42,7 @@ class LacrosFirstRunSignedInFlowController
   bool sync_confirmation_seen_ = false;
 
   // Callback that gets called if the onboarding finishes successfully.
-  ProfilePicker::FirstRunExitedCallback first_run_exited_callback_;
+  ProfilePicker::DebugFirstRunExitedCallback first_run_exited_callback_;
 
   std::unique_ptr<signin::IdentityManager::Observer> can_retry_init_observer_;
 
