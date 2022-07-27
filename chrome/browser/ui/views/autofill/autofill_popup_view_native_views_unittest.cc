@@ -171,12 +171,7 @@ TEST_F(AutofillPopupViewNativeViewsTest,
   view_->Show();
 }
 
-#if defined(THREAD_SANITIZER)
-#define MAYBE_AccessibilitySelectedEvent DISABLED_AccessibilitySelectedEvent
-#else
-#define MAYBE_AccessibilitySelectedEvent AccessibilitySelectedEvent
-#endif
-TEST_F(AutofillPopupViewNativeViewsTest, MAYBE_AccessibilitySelectedEvent) {
+TEST_F(AutofillPopupViewNativeViewsTest, AccessibilitySelectedEvent) {
   views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
   CreateAndShowView({autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
                      autofill::POPUP_ITEM_ID_SEPARATOR,
