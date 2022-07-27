@@ -614,6 +614,7 @@ preprocess_if_expr("preprocess_web_components") {
     "chromeos/os_bluetooth_page/os_paired_bluetooth_list.js",
     "chromeos/os_bluetooth_page/os_saved_devices_list.js",
     "chromeos/os_bluetooth_page/os_saved_devices_list_item.js",
+    "chromeos/os_bluetooth_page/os_remove_saved_device_dialog.js",
     "chromeos/os_bluetooth_page/settings_fast_pair_toggle.js",
     "chromeos/os_files_page/os_files_page.js",
     "chromeos/os_files_page/smb_shares_page.js",

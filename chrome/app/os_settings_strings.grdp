@@ -2248,6 +2248,19 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BLUETOOTH_SAVED_DEVICES" desc="Name of the settings page which displays Bluetooth saved devices.">
    Devices saved to your account
   </message>
+  <message name="IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_CANCEL" desc="Bluetooth saved devices subpage > Remove device dialog: Label for button that cancels removing the device.">
+    Cancel
+  </message>
+  <message name="IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_REMOVE" desc="Bluetooth saved devices subpage > Remove device dialog: Label for button that removes the device.">
+    Remove
+  </message>
+  <message name="IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_LABEL" desc="Bluetooth saved devices subpage > Remove device dialog: Label for dialog that removes the device.">
+    Remove <ph name="DEVICE">$1<ex>Beats</ex></ph> from <ph name="PRIMARY_EMAIL">$2<ex>john@google.com</ex></ph>.
+    Device can still be used locally.
+  </message>
+  <message name="IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_TITLE" desc="Bluetooth saved devices subpage > Remove device dialog: Title for dialog that removes the device.">
+    Remove device
+  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE" desc="Title of the settings dialog for adding or pairing Bluetooth a device.">
     Connect to Bluetooth device
   </message>
@@ -2281,7 +2294,6 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_BLUETOOTH_NO_SAVED_DEVICES_LABEL" desc="Label in Saved Devices sub-page when account has no saved devices.">
     No Fast Pair devices saved to <ph name="PRIMARY_EMAIL">$1<ex>example@google.com</ex></ph>
   </message>
-
 
   <!-- Parental Controls -->
   <message name="IDS_SETTINGS_PARENTAL_CONTROLS_PAGE_TITLE" desc="Name of the settings page which manages ChromeOS's parental controls.">

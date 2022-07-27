@@ -1,22 +1,21 @@
 // Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 /**
  * @fileoverview
- * Item in <os-saved-devices-list> that displays information for a saved
- * Bluetooth device.
+ * Settings dialog is used to remove a bluetooth saved device from
+ * the user's account.
  */
-
 import '../../settings_shared.css.js';
-import '../os_icons.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
+import {getDeviceName} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
 
 import {FastPairSavedDevice} from './settings_fast_pair_constants.js';
 
@@ -26,14 +25,13 @@ import {FastPairSavedDevice} from './settings_fast_pair_constants.js';
  * @implements {I18nBehaviorInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
-const SettingsSavedDevicesListItemElementBase =
+const SettingsBluetoothRemoveSavedDeviceDialogElementBase =
     mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
-
 /** @polymer */
-class SettingsSavedDevicesListItemElement extends
-    SettingsSavedDevicesListItemElementBase {
+class SettingsBluetoothRemoveSavedDeviceDialogElement extends
+    SettingsBluetoothRemoveSavedDeviceDialogElementBase {
   static get is() {
-    return 'os-settings-saved-devices-list-item';
+    return 'os-settings-bluetooth-remove-saved-device-dialog';
   }
 
   static get template() {
@@ -45,59 +43,42 @@ class SettingsSavedDevicesListItemElement extends
       /**
        * @protected {!FastPairSavedDevice}
        */
-      device: {
+      device_: {
         type: Object,
-      },
-
-      itemIndex: Number,
-
-      /** @protected */
-      shouldShowRemoveSavedDeviceDialog_: {
-        type: Boolean,
-        value: false,
       },
     };
   }
 
   /**
-   * @param {!FastPairSavedDevice} device
    * @private
    */
-  getDeviceName_(device) {
-    return device.name;
-  }
-
-  /**
-   * @param {!FastPairSavedDevice} device
-   * @private
-   */
-  getImageSrc_(device) {
-    return device.imageUrl;
+  getRemoveDeviceDialogBodyText_() {
+    return this.i18n(
+        'savedDevicesDialogLabel', this.device_.name,
+        loadTimeData.getString('primaryUserEmail'));
   }
 
   /**
    * @param {!Event} event
    * @private
    */
-  onMenuButtonTap_(event) {
-    const button = event.target;
-    /** @type {!CrActionMenuElement} */ (this.$.dotsMenu)
-        .showAt(/** @type {!HTMLElement} */ (button));
+  onRemoveTap_(event) {
+    const fireEvent = new CustomEvent('remove-saved-device', {
+      bubbles: true,
+      composed: true,
+      detail: {key: this.device_.accountKey},
+    });
+    this.dispatchEvent(fireEvent);
+    this.$.dialog.close();
+    event.preventDefault();
     event.stopPropagation();
   }
 
   /** @private */
-  onRemoveClick_() {
-    this.shouldShowRemoveSavedDeviceDialog_ = true;
-    this.$.dotsMenu.close();
-  }
-
-  /** @private */
-  onCloseRemoveDeviceDialog_() {
-    this.shouldShowRemoveSavedDeviceDialog_ = false;
+  onCancelClick_() {
+    this.$.dialog.close();
   }
 }
-
 customElements.define(
-    SettingsSavedDevicesListItemElement.is,
-    SettingsSavedDevicesListItemElement);
+    SettingsBluetoothRemoveSavedDeviceDialogElement.is,
+    SettingsBluetoothRemoveSavedDeviceDialogElement);

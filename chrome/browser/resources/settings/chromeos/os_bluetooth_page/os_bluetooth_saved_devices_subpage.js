@@ -75,6 +75,7 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
           return loadTimeData.getString('noDevicesWithEmail');
         },
       },
+
     };
   }
 
@@ -93,6 +94,14 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
   }
 
   /**
+   * @param {!Array<!FastPairSavedDevice>} devices
+   * @private
+   */
+  getSavedDevices_(devices) {
+    this.savedDevices_ = devices.slice(0);
+  }
+
+  /**
    * RouteObserverBehaviorInterface override
    * @param {!Route} route
    * @param {!Route=} oldRoute
@@ -106,18 +115,10 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
       return;
     }
   }
-
   /**
-   * @param {!Array<!FastPairSavedDevice>} devices
-   * @private
-   */
-  getSavedDevices_(devices) {
-    this.savedDevices_ = devices.slice(0);
-  }
-
-  /**
-   * @param {!Array<!FastPairSavedDevice>} devices
-   * @return {boolean}
+   * @param {!Array<!FastPairSavedDevice>}
+   *     devices
+   * @return boolean
    * @private
    */
   shouldShowDeviceList_(devices) {

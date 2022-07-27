@@ -54,7 +54,10 @@ suite('OsSavedDevicesListTest', function() {
 
     const listItem = getListItems()[1];
     listItem.$$('#dotsMenu').click();
+    await flushAsync();
     listItem.$$('#removeButton').click();
+    await flushAsync();
+    listItem.$$('#removeDeviceDialog').$$('#remove').click();
 
     await ironResizePromise;
     await flushAsync();
@@ -79,7 +82,7 @@ suite('OsSavedDevicesListTest', function() {
     savedDevicesList.devices_ = [device0, device1, device2, device1, device2];
 
     await ironResizePromise;
-    flush();
+    await flushAsync();
     assertEquals(getListItems().length, 5);
   });
 });

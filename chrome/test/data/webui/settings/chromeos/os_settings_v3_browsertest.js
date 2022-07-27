@@ -188,7 +188,7 @@ TEST_F('OSSettingsOsBluetoothSavedDevicesSubpageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
-// TODO Move this test back into the list of tests below once
+// TODO(crbug.com/1234871) Move this test back into the list of tests below once
 // Fast pair is launched.
 var OSSettingsOsBluetoothSavedDevicesListV3Test =
     class extends OSSettingsV3BrowserTest {

@@ -7,6 +7,7 @@
     height: 24px;
     width: 24px;
   }
+
 </style>
 <div focus-row-container>
   <!-- TODO: b/238808398 Add a11y label. -->
@@ -33,9 +34,16 @@
   </div>
 </div>
 <cr-action-menu id="dotsMenu" role-description="$i18n{menu}">
-  <button id="removeButton"
-      class="dropdown-item"
-      on-click="onRemoveTap_">
+  <button id="removeButton" class="dropdown-item"
+      on-click="onRemoveClick_">
     $i18n{savedDevicesRemove}
   </button>
 </cr-action-menu>
+
+<template is="dom-if" if="[[shouldShowRemoveSavedDeviceDialog_]]" restamp>
+  <os-settings-bluetooth-remove-saved-device-dialog
+      id="removeDeviceDialog"
+      device_="[[device]]"
+      on-close="onCloseRemoveDeviceDialog_">
+  </os-settings-bluetooth-remove-saved-device-dialog>
+</template>
