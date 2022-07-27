@@ -7,8 +7,10 @@
 -All/CastV2PerformanceTest.Performance/1
 -All/CastV2PerformanceTest.Performance/2
 -All/CastV2PerformanceTest.Performance/5
+-All/MediaHistoryBrowserTest.DoNotRecordWatchtime_Muted/0
 -All/PageLoadMetricsBackForwardCacheBrowserTest.LogsBasicPageForegroundDuration/BFCacheEnabled
 -All/PageLoadMetricsBackForwardCacheBrowserTest.LogsPageEndReasons/BFCacheEnabled
+-AvatarMenuBrowserTest.EditProfile_SigninRequired
 -BackForwardCachePageLoadMetricsObserverBrowserTest.CumulativeLayoutShiftAfterBackForwardCacheRestore
 -BackForwardCachePageLoadMetricsObserverBrowserTest.FirstPaintAfterBackForwardCacheRestore
 -BackForwardCachePageLoadMetricsObserverBrowserTest.LayoutShiftNormalization_AfterBackForwardCacheRestore
@@ -57,6 +59,7 @@
 -DevToolsExtensionTest.TestExtensionOnNewTab
 -DownloadTest.FeedbackServiceDiscardDownload
 -DownloadTestWithFakeSafeBrowsing.SendUncommonDownloadReportIfUserProceed
+-ExtensionWebRequestApiTest.WebRequestWithWithheldPermissions
 -ExternallyManagedAppManagerImplBrowserTest.CannotFetchManifest
 -EncryptedMediaTest.Playback_VideoOnly_WebM_VP9Profile2/0
 -EventPage/DeclarativeNetRequestLazyApiTest.TestMatchOutcome/0
@@ -67,6 +70,7 @@
 -FirstRunMasterPrefsVariationsSeedTests/FirstRunMasterPrefsVariationsSeedTest.Test/1
 -GetDisplayMediaChangeSourceBrowserTest.ChangeSource
 -HttpsOnlyModeBrowserTest.BadHttpsFollowedByGoodHttps
+-IdleServiceTest.Basic
 -InlineLoginHelperBrowserTest.UntrustedSigninDialogCancel
 -InspectUIFencedFrameTest.FencedFrameInFrontEnd
 -InspectUITest.LaunchUIDevtools
@@ -94,6 +98,7 @@
 -SaveAsMhtml/SavePageOriginalVsSavedComparisonTest.NestedFrames/0
 -SavePageOriginalVsSavedComparisonTest.AboutBlank/0
 -SavePageOriginalVsSavedComparisonTest.CrossSiteObject/0
+-SelectAllScreensTest.SelectAllScreensDisabledByDefault
 -SitePerProcessWebViewTest.ContentScript
 -SitePerProcessWebViewTest.ContentScriptInOOPIF
 -SSLUITest.BadCertFollowedByGoodCert
@@ -102,3 +107,4 @@
 -WebAppBrowserTest.WebAppCreateAndDeleteShortcut
 -WebAppFileHandlingBrowserTest_FeatureSwitchesOff.OsIntegrationIsRemoved
 -WorkerDevToolsTest.PauseInSharedWorkerInitialization
+-VariationsSafeModeEndToEndBrowserTest.ExtendedSafeModeEndToEnd
