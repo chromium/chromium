@@ -116,6 +116,7 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
             PasswordWithLocalData parsedPassword =
                     parsePwdWithLocalDataOrFail(pwdWithLocalData, failureCallback);
             if (parsedPassword == null) return;
+            assert parsedPassword.getPasswordSpecificsData().hasSignonRealm();
             assert !containsPasswordWithSameUniqueKey(mSavedPasswords.get(account), parsedPassword)
                 : "Trying to add password with the same unique key,"
                   + " updateLogin() should be called.";
@@ -133,6 +134,7 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
             if (parsedPassword == null) return;
             Account account = getAccountOrFail(syncingAccount, failureCallback);
             if (account == null) return;
+            assert parsedPassword.getPasswordSpecificsData().hasSignonRealm();
             List<PasswordWithLocalData> accountPasswords = mSavedPasswords.get(account);
             List<PasswordWithLocalData> loginsWithSameUsrAndOrigin =
                     filterPasswords(accountPasswords, pwd -> hasSameUniqueKey(pwd, parsedPassword));
@@ -212,8 +214,7 @@ public class FakePasswordStoreAndroidBackend implements PasswordStoreAndroidBack
     }
 
     private static boolean hasSignonRealm(PasswordWithLocalData pwd, String signonRealm) {
-        return pwd.getPasswordSpecificsData().hasSignonRealm()
-                && pwd.getPasswordSpecificsData().getSignonRealm().equals(signonRealm);
+        return pwd.getPasswordSpecificsData().getSignonRealm().contains(signonRealm);
     }
 
     private static boolean hasSameUniqueKey(

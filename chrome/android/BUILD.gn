@@ -1723,6 +1723,7 @@ android_library("chrome_test_java") {
     "//components/paint_preview/player/android:java",
     "//components/paint_preview/player/android:javatests",
     "//components/password_manager/core/browser:password_manager_java_enums",
+    "//components/password_manager/core/browser:unified_password_manager_proto_java",
     "//components/payments/content/android:java",
     "//components/payments/content/android:service_java",
     "//components/payments/mojom:mojom_java",

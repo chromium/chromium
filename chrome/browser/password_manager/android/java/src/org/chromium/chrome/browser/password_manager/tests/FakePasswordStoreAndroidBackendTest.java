@@ -52,25 +52,25 @@ public class FakePasswordStoreAndroidBackendTest {
                     .setUsernameValue("Todd Tester")
                     .setUsernameElement("username")
                     .setPasswordElement("pwd")
-                    .setOrigin("https://www.google.com/")
-                    .setSignonRealm("https://accounts.google.com/signin")
+                    .setOrigin("https://accounts.google.com/signin")
+                    .setSignonRealm("https://accounts.google.com")
                     .setPasswordValue("password")
                     .build();
     private static final PasswordSpecificsData sPasswordDataBlocklisted =
             PasswordSpecificsData.newBuilder()
                     .setUsernameElement("username")
                     .setPasswordElement("pwd")
-                    .setOrigin("https://www.google1.com/")
-                    .setSignonRealm("https://accounts.google.com/signin")
+                    .setOrigin("https://accounts.google.com/signin")
+                    .setSignonRealm("https://accounts.google.com")
                     .setPasswordValue("password")
                     .setBlacklisted(true)
                     .build();
-    private static final PasswordSpecificsData sPasswordDataNoSignonRealm =
+    private static final PasswordSpecificsData sPasswordDataNoOrigin =
             PasswordSpecificsData.newBuilder()
                     .setUsernameValue("Todd Tester")
                     .setUsernameElement("username")
                     .setPasswordElement("pwd")
-                    .setOrigin("https://www.google2.com/")
+                    .setSignonRealm("https://www.google.com")
                     .setPasswordValue("password")
                     .build();
 
@@ -80,9 +80,9 @@ public class FakePasswordStoreAndroidBackendTest {
             PasswordWithLocalData.newBuilder()
                     .setPasswordSpecificsData(sPasswordDataBlocklisted)
                     .build();
-    private static final PasswordWithLocalData sPwdWithLocalDataNoSignonRealm =
+    private static final PasswordWithLocalData sPwdWithLocalDataNoOrigin =
             PasswordWithLocalData.newBuilder()
-                    .setPasswordSpecificsData(sPasswordDataNoSignonRealm)
+                    .setPasswordSpecificsData(sPasswordDataNoOrigin)
                     .build();
     private static final String sTestAccountEmail = "test@email.com";
     private static final Optional<Account> sTestAccount =
@@ -122,7 +122,7 @@ public class FakePasswordStoreAndroidBackendTest {
                 ListPasswordsResult.newBuilder()
                         .addPasswordData(sPwdWithLocalData)
                         .addPasswordData(sPwdWithLocalDataBlocklisted)
-                        .addPasswordData(sPwdWithLocalDataNoSignonRealm)
+                        .addPasswordData(sPwdWithLocalDataNoOrigin)
                         .build();
         assertThat(actualPasswords, is(expectedPasswords));
     }
@@ -138,11 +138,10 @@ public class FakePasswordStoreAndroidBackendTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         ListPasswordsResult actualPasswords =
                 parseListPasswordResultOrFail(successCallback.getOnlyPayloadBlocking());
-        ListPasswordsResult expectedPasswords =
-                ListPasswordsResult.newBuilder()
-                        .addPasswordData(sPwdWithLocalData)
-                        .addPasswordData(sPwdWithLocalDataNoSignonRealm)
-                        .build();
+        ListPasswordsResult expectedPasswords = ListPasswordsResult.newBuilder()
+                                                        .addPasswordData(sPwdWithLocalData)
+                                                        .addPasswordData(sPwdWithLocalDataNoOrigin)
+                                                        .build();
         assertThat(actualPasswords, is(expectedPasswords));
     }
 
@@ -176,8 +175,8 @@ public class FakePasswordStoreAndroidBackendTest {
                         .setUsernameValue("Todd Tester")
                         .setUsernameElement("username")
                         .setPasswordElement("pwd")
-                        .setOrigin("https://www.google.com/")
-                        .setSignonRealm("https://accounts.google.com/signin")
+                        .setOrigin("https://accounts.google.com/signin")
+                        .setSignonRealm("https://accounts.google.com")
                         .setPasswordValue("UpdatedPassword")
                         .build();
         PasswordWithLocalData updatedPwdWithLocalData =
@@ -215,7 +214,7 @@ public class FakePasswordStoreAndroidBackendTest {
                 sPwdWithLocalData.toByteArray(), sTestAccount, () -> {}, unexpected -> fail());
         mBackend.addLogin(sPwdWithLocalDataBlocklisted.toByteArray(), sTestAccount,
                 () -> {}, unexpected -> fail());
-        mBackend.addLogin(sPwdWithLocalDataNoSignonRealm.toByteArray(), sTestAccount,
+        mBackend.addLogin(sPwdWithLocalDataNoOrigin.toByteArray(), sTestAccount,
                 () -> {}, unexpected -> fail());
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
