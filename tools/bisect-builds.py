@@ -106,8 +106,9 @@ else:
 class PathContext(object):
   """A PathContext is used to carry the information used to construct URLs and
   paths when dealing with the storage server and archives."""
-  def __init__(self, base_url, platform, good_revision, bad_revision,
-               is_asan, use_local_cache, flash_path = None):
+
+  def __init__(self, base_url, platform, good_revision, bad_revision, is_asan,
+               use_local_cache):
     super(PathContext, self).__init__()
     # Store off the input parameters.
     self.base_url = base_url
@@ -116,7 +117,6 @@ class PathContext(object):
     self.bad_revision = bad_revision
     self.is_asan = is_asan
     self.build_type = 'release'
-    self.flash_path = flash_path
     # Dictionary which stores svn revision number as key and it's
     # corresponding git hash as value. This data is populated in
     # _FetchAndParse and used later in GetDownloadURL while downloading
@@ -638,16 +638,6 @@ def RunRevision(context, revision, zip_file, profile, num_runs, command, args):
 
   # Run the build as many times as specified.
   testargs = ['--user-data-dir=%s' % profile] + args
-  # The sandbox must be run as root on Official Chrome, so bypass it.
-  if (context.flash_path and context.platform.startswith('linux')):
-    testargs.append('--no-sandbox')
-  if context.flash_path:
-    testargs.append('--ppapi-flash-path=%s' % context.flash_path)
-    # We have to pass a large enough Flash version, which currently needs not
-    # be correct. Instead of requiring the user of the script to figure out and
-    # pass the correct version we just spoof it.
-    testargs.append('--ppapi-flash-version=99.9.999.999')
-
   runcommand = []
   for token in shlex.split(command):
     if token == '%a':
@@ -1193,13 +1183,6 @@ def main():
                     'Default is HEAD. Can be a revision number, milestone '
                     'name (eg. M85, matches the most recent stable release of '
                     'that milestone) or version number (eg. 85.0.4183.121)')
-  parser.add_option('-f', '--flash_path',
-                    type='str',
-                    help='Absolute path to a recent Adobe Pepper Flash '
-                         'binary to be used in this bisection (e.g. '
-                         'on Windows C:\...\pepflashplayer.dll and on Linux '
-                         '/opt/google/chrome/PepperFlash/'
-                         'libpepflashplayer.so).')
   parser.add_option('-g',
                     '--good',
                     type='str',
@@ -1280,9 +1263,8 @@ def main():
     base_url = CHROMIUM_BASE_URL
 
   # Create the context. Initialize 0 for the revisions as they are set below.
-  context = PathContext(base_url, opts.archive, opts.good, opts.bad,
-                        opts.asan, opts.use_local_cache,
-                        opts.flash_path)
+  context = PathContext(base_url, opts.archive, opts.good, opts.bad, opts.asan,
+                        opts.use_local_cache)
 
   # Pick a starting point, try to get HEAD for this.
   if not opts.bad:
@@ -1293,10 +1275,6 @@ def main():
   # Find out when we were good.
   if not opts.good:
     context.good_revision = 0
-
-  if opts.flash_path:
-    msg = 'Could not find Flash binary at %s' % opts.flash_path
-    assert os.path.exists(opts.flash_path), msg
 
   context.good_revision = GetRevision(context.good_revision)
   context.bad_revision = GetRevision(context.bad_revision)
