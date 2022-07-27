@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
+#include "ash/webui/sample_system_web_app_ui/sample_system_web_app_untrusted_ui.h"
 
 #include "ash/webui/grit/ash_sample_system_web_app_untrusted_resources_map.h"
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
@@ -15,22 +15,22 @@
 
 namespace ash {
 
-UntrustedSampleSystemWebAppUI::UntrustedSampleSystemWebAppUI(
+SampleSystemWebAppUntrustedUI::SampleSystemWebAppUntrustedUI(
     content::WebUI* web_ui)
     : ui::UntrustedWebUIController(web_ui) {
   content::WebUIDataSource* untrusted_source =
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),
-          kChromeUIUntrustedSampleSystemWebAppURL);
+          kChromeUISampleSystemWebAppUntrustedURL);
   untrusted_source->AddResourcePaths(
       base::make_span(kAshSampleSystemWebAppUntrustedResources,
                       kAshSampleSystemWebAppUntrustedResourcesSize));
   untrusted_source->AddFrameAncestor(GURL(kChromeUISampleSystemWebAppURL));
 }
 
-UntrustedSampleSystemWebAppUI::~UntrustedSampleSystemWebAppUI() = default;
+SampleSystemWebAppUntrustedUI::~SampleSystemWebAppUntrustedUI() = default;
 
-void UntrustedSampleSystemWebAppUI::BindInterface(
+void SampleSystemWebAppUntrustedUI::BindInterface(
     mojo::PendingReceiver<mojom::sample_swa::UntrustedPageInterfacesFactory>
         factory) {
   if (untrusted_page_factory_.is_bound())
@@ -39,7 +39,7 @@ void UntrustedSampleSystemWebAppUI::BindInterface(
   untrusted_page_factory_.Bind(std::move(factory));
 }
 
-void UntrustedSampleSystemWebAppUI::CreateParentPage(
+void SampleSystemWebAppUntrustedUI::CreateParentPage(
     mojo::PendingRemote<mojom::sample_swa::ChildUntrustedPage>
         child_untrusted_page,
     mojo::PendingReceiver<mojom::sample_swa::ParentTrustedPage>
@@ -59,6 +59,6 @@ void UntrustedSampleSystemWebAppUI::CreateParentPage(
                                          std::move(parent_trusted_page));
 }
 
-WEB_UI_CONTROLLER_TYPE_IMPL(UntrustedSampleSystemWebAppUI)
+WEB_UI_CONTROLLER_TYPE_IMPL(SampleSystemWebAppUntrustedUI)
 
 }  // namespace ash

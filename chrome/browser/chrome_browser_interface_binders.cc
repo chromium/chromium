@@ -302,7 +302,7 @@
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 #include "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_ui.mojom.h"
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
-#include "ash/webui/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
+#include "ash/webui/sample_system_web_app_ui/sample_system_web_app_untrusted_ui.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SPEECH_SERVICE)
@@ -1273,7 +1273,7 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
   registry.ForWebUI<ash::DemoModeAppUntrustedUI>()
       .Add<ash::mojom::demo_mode::UntrustedPageHandlerFactory>();
-  registry.ForWebUI<ash::UntrustedSampleSystemWebAppUI>()
+  registry.ForWebUI<ash::SampleSystemWebAppUntrustedUI>()
       .Add<ash::mojom::sample_swa::UntrustedPageInterfacesFactory>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
 

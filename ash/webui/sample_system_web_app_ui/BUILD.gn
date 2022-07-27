@@ -17,8 +17,8 @@ static_library("sample_system_web_app_ui") {
     "sample_page_handler.h",
     "sample_system_web_app_ui.cc",
     "sample_system_web_app_ui.h",
-    "untrusted_sample_system_web_app_ui.cc",
-    "untrusted_sample_system_web_app_ui.h",
+    "sample_system_web_app_untrusted_ui.cc",
+    "sample_system_web_app_untrusted_ui.h",
     "url_constants.cc",
     "url_constants.h",
   ]

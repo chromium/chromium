@@ -4,7 +4,7 @@
 import {PARENT_PAGE_ORIGIN, parentPage} from './untrusted_page_interface.js';
 
 const header = document.querySelector<HTMLTitleElement>('#untrusted-title')!;
-header.textContent = 'Untrusted Sample System Web App';
+header.textContent = 'Sample System Web App Untrusted Page';
 
 // For testing purposes: notify the parent window the iframe has been embedded
 // successfully.

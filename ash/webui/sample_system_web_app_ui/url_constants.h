@@ -9,8 +9,8 @@ namespace ash {
 
 extern const char kChromeUISampleSystemWebAppHost[];
 extern const char kChromeUISampleSystemWebAppURL[];
-extern const char kChromeUIUntrustedSampleSystemWebAppHost[];
-extern const char kChromeUIUntrustedSampleSystemWebAppURL[];
+extern const char kChromeUISampleSystemWebAppUntrustedHost[];
+extern const char kChromeUISampleSystemWebAppUntrustedURL[];
 
 }  // namespace ash
 

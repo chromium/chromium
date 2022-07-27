@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_SAMPLE_SYSTEM_WEB_APP_UI_UNTRUSTED_SAMPLE_SYSTEM_WEB_APP_UI_H_
-#define ASH_WEBUI_SAMPLE_SYSTEM_WEB_APP_UI_UNTRUSTED_SAMPLE_SYSTEM_WEB_APP_UI_H_
+#ifndef ASH_WEBUI_SAMPLE_SYSTEM_WEB_APP_UI_SAMPLE_SYSTEM_WEB_APP_UNTRUSTED_UI_H_
+#define ASH_WEBUI_SAMPLE_SYSTEM_WEB_APP_UI_SAMPLE_SYSTEM_WEB_APP_UNTRUSTED_UI_H_
 
 #include "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_untrusted_ui.mojom.h"
 #include "ash/webui/sample_system_web_app_ui/url_constants.h"
@@ -21,26 +21,25 @@ class WebUI;
 
 namespace ash {
 
-class UntrustedSampleSystemWebAppUI;
+class SampleSystemWebAppUntrustedUI;
 
 class SampleSystemWebAppUntrustedUIConfig
-    : public SystemWebAppUntrustedUIConfig<UntrustedSampleSystemWebAppUI> {
+    : public SystemWebAppUntrustedUIConfig<SampleSystemWebAppUntrustedUI> {
  public:
   SampleSystemWebAppUntrustedUIConfig()
-      : SystemWebAppUntrustedUIConfig(kChromeUIUntrustedSampleSystemWebAppHost,
+      : SystemWebAppUntrustedUIConfig(kChromeUISampleSystemWebAppUntrustedHost,
                                       SystemWebAppType::SAMPLE) {}
 };
 
-// TODO(crbug.com/1345846): Rename to SampleSystemWebAppUntrustedUI.
-class UntrustedSampleSystemWebAppUI
+class SampleSystemWebAppUntrustedUI
     : public ui::UntrustedWebUIController,
       public mojom::sample_swa::UntrustedPageInterfacesFactory {
  public:
-  explicit UntrustedSampleSystemWebAppUI(content::WebUI* web_ui);
-  UntrustedSampleSystemWebAppUI(const UntrustedSampleSystemWebAppUI&) = delete;
-  UntrustedSampleSystemWebAppUI& operator=(
-      const UntrustedSampleSystemWebAppUI&) = delete;
-  ~UntrustedSampleSystemWebAppUI() override;
+  explicit SampleSystemWebAppUntrustedUI(content::WebUI* web_ui);
+  SampleSystemWebAppUntrustedUI(const SampleSystemWebAppUntrustedUI&) = delete;
+  SampleSystemWebAppUntrustedUI& operator=(
+      const SampleSystemWebAppUntrustedUI&) = delete;
+  ~SampleSystemWebAppUntrustedUI() override;
 
   void BindInterface(
       mojo::PendingReceiver<mojom::sample_swa::UntrustedPageInterfacesFactory>
@@ -62,4 +61,4 @@ class UntrustedSampleSystemWebAppUI
 
 }  // namespace ash
 
-#endif  // ASH_WEBUI_SAMPLE_SYSTEM_WEB_APP_UI_UNTRUSTED_SAMPLE_SYSTEM_WEB_APP_UI_H_
+#endif  // ASH_WEBUI_SAMPLE_SYSTEM_WEB_APP_UI_SAMPLE_SYSTEM_WEB_APP_UNTRUSTED_UI_H_
