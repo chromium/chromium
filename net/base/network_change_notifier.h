@@ -362,8 +362,16 @@ class NET_EXPORT NetworkChangeNotifier {
   // must do so before any other threads try to access the API below, and it
   // must outlive all other threads which might try to use it.
   static std::unique_ptr<NetworkChangeNotifier> CreateIfNeeded(
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      // TODO(crbug.com/1347382): Remove this section and align the behavior
+      // with other platforms or confirm that Lacros needs to be separated.
+      NetworkChangeNotifier::ConnectionType initial_type = CONNECTION_UNKNOWN,
+      NetworkChangeNotifier::ConnectionSubtype initial_subtype =
+          SUBTYPE_UNKNOWN);
+#else
       NetworkChangeNotifier::ConnectionType initial_type = CONNECTION_NONE,
       NetworkChangeNotifier::ConnectionSubtype initial_subtype = SUBTYPE_NONE);
+#endif
 
   // Returns the most likely cost attribute for the default network connection.
   // The value does not indicate with absolute certainty if using the connection
