@@ -141,11 +141,27 @@ chrome.metricsPrivate.recordLongTime = function(metricName, value) {};
 
 /**
  * Increments the count associated with the hash of |value| in the sparse
- * histogram defined by the |metricName|.
+ * histogram defined by the |metricName| using base::PersistentHash(value).
  * @param {string} metricName
  * @param {string} value
  */
-chrome.metricsPrivate.recordSparseHashable = function(metricName, value) {};
+ chrome.metricsPrivate.recordSparseHashable = function(metricName, value) {};
+
+/**
+ * Increments the count associated with the hash of |value| in the sparse
+ * histogram defined by the |metricName| using base::HashMetricName(value).
+ * @param {string} metricName
+ * @param {string} value
+ */
+chrome.metricsPrivate.recordSparseValueWithHashMetricName = function(metricName, value) {};
+
+ /**
+ * Increments the count associated with the hash of |value| in the sparse
+ * histogram defined by the |metricName| using base::PersistentHash(value).
+ * @param {string} metricName
+ * @param {string} value
+ */
+chrome.metricsPrivate.recordSparseValueWithPersistentHash = function(metricName, value) {};
 
 /**
  * Increments the count associated with |value| in the sparse histogram defined

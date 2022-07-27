@@ -48,8 +48,10 @@ declare namespace chrome {
     export function recordTime(metricName: string, value: number): void;
     export function recordMediumTime(metricName: string, value: number): void;
     export function recordLongTime(metricName: string, value: number): void;
-    export function recordSparseHashable(metricName: string, value: string):
-        void;
+    export function recordSparseValueWithHashMetricName(
+      metricName: string, value: string): void;
+    export function recordSparseValueWithPersistentHash(
+      metricName: string, value: string): void;
     export function recordSparseValue(metricName: string, value: number): void;
     export function recordValue(metric: MetricType, value: number): void;
     export function recordBoolean(metricName: string, value: boolean): void;

@@ -126,6 +126,36 @@ class MetricsPrivateRecordSparseHashableFunction
   ResponseAction Run() override;
 };
 
+class MetricsPrivateRecordSparseValueWithHashMetricNameFunction
+    : public MetricsHistogramHelperFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION(
+      "metricsPrivate.recordSparseValueWithHashMetricName",
+      METRICSPRIVATE_RECORDSPARSEVALUEWITHHASHMETRICNAME)
+
+ protected:
+  ~MetricsPrivateRecordSparseValueWithHashMetricNameFunction() override =
+      default;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+class MetricsPrivateRecordSparseValueWithPersistentHashFunction
+    : public MetricsHistogramHelperFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION(
+      "metricsPrivate.recordSparseValueWithPersistentHash",
+      METRICSPRIVATE_RECORDSPARSEVALUEWITHPERSISTENTHASH)
+
+ protected:
+  ~MetricsPrivateRecordSparseValueWithPersistentHashFunction() override =
+      default;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 class MetricsPrivateRecordSparseValueFunction
     : public MetricsHistogramHelperFunction {
  public:

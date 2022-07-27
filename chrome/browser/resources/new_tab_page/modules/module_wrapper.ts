@@ -56,7 +56,7 @@ export class ModuleWrapperElement extends PolymerElement {
 
     // Log module's id when module's info button is clicked.
     this.module.element.addEventListener('info-button-click', () => {
-      chrome.metricsPrivate.recordSparseHashable(
+      chrome.metricsPrivate.recordSparseValueWithPersistentHash(
           'NewTabPage.Modules.InfoButtonClicked', this.module.descriptor.id);
     }, {once: true});
 
@@ -99,7 +99,7 @@ export class ModuleWrapperElement extends PolymerElement {
 
     // Track whether the user hovered on the module.
     this.addEventListener('mouseover', () => {
-      chrome.metricsPrivate.recordSparseHashable(
+      chrome.metricsPrivate.recordSparseValueWithPersistentHash(
           'NewTabPage.Modules.Hover', this.module.descriptor.id);
     }, {
       capture: true,  // So that modules cannot swallow event.

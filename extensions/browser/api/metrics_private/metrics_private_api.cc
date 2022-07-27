@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_samples.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
@@ -32,6 +33,10 @@ namespace RecordValue = api::metrics_private::RecordValue;
 namespace RecordBoolean = api::metrics_private::RecordBoolean;
 namespace RecordEnumerationValue = api::metrics_private::RecordEnumerationValue;
 namespace RecordSparseHashable = api::metrics_private::RecordSparseHashable;
+namespace RecordSparseValueWithHashMetricName =
+    api::metrics_private::RecordSparseValueWithHashMetricName;
+namespace RecordSparseValueWithPersistentHash =
+    api::metrics_private::RecordSparseValueWithPersistentHash;
 namespace RecordSparseValue = api::metrics_private::RecordSparseValue;
 namespace RecordPercentage = api::metrics_private::RecordPercentage;
 namespace RecordCount = api::metrics_private::RecordCount;
@@ -151,6 +156,24 @@ ExtensionFunction::ResponseAction MetricsPrivateRecordValueFunction::Run() {
 ExtensionFunction::ResponseAction
 MetricsPrivateRecordSparseHashableFunction::Run() {
   auto params = RecordSparseHashable::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  base::UmaHistogramSparse(params->metric_name,
+                           base::PersistentHash(params->value));
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+MetricsPrivateRecordSparseValueWithHashMetricNameFunction::Run() {
+  auto params = RecordSparseValueWithHashMetricName::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  base::UmaHistogramSparse(params->metric_name,
+                           base::HashMetricName(params->value));
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+MetricsPrivateRecordSparseValueWithPersistentHashFunction::Run() {
+  auto params = RecordSparseValueWithPersistentHash::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   base::UmaHistogramSparse(params->metric_name,
                            base::PersistentHash(params->value));

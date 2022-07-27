@@ -157,8 +157,9 @@ export class CustomizeModulesElement extends I18nMixin
             handler.setModuleDisabled(id, !checked);
           }
           const base = `NewTabPage.Modules.${checked ? 'Enabled' : 'Disabled'}`;
-          chrome.metricsPrivate.recordSparseHashable(base, id);
-          chrome.metricsPrivate.recordSparseHashable(`${base}.Customize`, id);
+          chrome.metricsPrivate.recordSparseValueWithPersistentHash(base, id);
+          chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+              `${base}.Customize`, id);
         });
     // Discount toggle is a workaround for crbug.com/1199465 and will be
     // removed after module customization is better defined. Please avoid

@@ -32,7 +32,10 @@ export class MetricsTracker {
 export function fakeMetricsPrivate(): MetricsTracker {
   const metrics = new MetricsTracker();
   chrome.metricsPrivate.recordUserAction = (m) => metrics.record(m, 0);
-  chrome.metricsPrivate.recordSparseHashable = (m, v) => metrics.record(m, v);
+  chrome.metricsPrivate.recordSparseValueWithHashMetricName = (m, v) =>
+      metrics.record(m, v);
+  chrome.metricsPrivate.recordSparseValueWithPersistentHash = (m, v) =>
+      metrics.record(m, v);
   chrome.metricsPrivate.recordBoolean = (m, v) => metrics.record(m, v);
   chrome.metricsPrivate.recordValue = (m, v) => metrics.record(m.metricName, v);
   chrome.metricsPrivate.recordEnumerationValue = (m, v) => metrics.record(m, v);

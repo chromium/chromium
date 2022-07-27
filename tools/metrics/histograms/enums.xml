@@ -35184,6 +35184,8 @@ Called by update_extension_histograms.py.-->
   <int value="1689" label="FILEMANAGERPRIVATE_GETDRIVEQUOTAMETADATA"/>
   <int value="1690" label="DOWNLOADS_SETUIOPTIONS"/>
   <int value="1691" label="AUTOTESTPRIVATE_GETDESKCOUNT"/>
+  <int value="1692" label="METRICSPRIVATE_RECORDSPARSEVALUEWITHPERSISTENTHASH"/>
+  <int value="1693" label="METRICSPRIVATE_RECORDSPARSEVALUEWITHHASHMETRICNAME"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -54926,7 +54928,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <summary>
     Hash values for ISO 639 locale codes (including country and script tags e.g
     &quot;en-US&quot;). Each of these values is computed by casting the output
-    of base::HashMetricName(locale_string_id) to base::HistogramBase::Sample.
+    of base::HashMetricName(locale_string_id) to base::HistogramBase::Sample. JS
+    users should use metricsPrivate.recordSparseValueWithHashMetricName().
   </summary>
   <int value="-2132740958" label="gl"/>
   <int value="-2112894028" label="haw"/>

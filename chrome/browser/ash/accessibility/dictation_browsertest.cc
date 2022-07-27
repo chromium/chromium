@@ -11,7 +11,6 @@
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/shell.h"
 #include "base/bind.h"
-#include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
@@ -659,7 +658,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, Metrics) {
 
   // Ensure that we recorded the correct locale.
   histogram_tester_.ExpectUniqueSample(/*name=*/kLocaleMetric,
-                                       /*sample=*/base::PersistentHash("en-US"),
+                                       /*sample=*/base::HashMetricName("en-US"),
                                        /*expected_bucket_count=*/1);
   // Ensure that we recorded the type of speech recognition and listening
   // duration.

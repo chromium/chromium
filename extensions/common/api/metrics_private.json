@@ -190,7 +190,25 @@
       {
         "name": "recordSparseHashable",
         "type": "function",
-        "description": "Increments the count associated with the hash of |value| in the sparse histogram defined by the |metricName|.",
+        "description": "Increments the count associated with the hash of |value| in the sparse histogram defined by the |metricName| using base::PersistentHash(value). Prefer recordSparseValueWithPersistentHash.",
+        "parameters": [
+          {"name": "metricName", "type": "string"},
+          {"name": "value", "type": "string"}
+        ]
+      },
+      {
+        "name": "recordSparseValueWithHashMetricName",
+        "type": "function",
+        "description": "Increments the count associated with the hash of |value| in the sparse histogram defined by the |metricName| using base::HashMetricName(value).",
+        "parameters": [
+          {"name": "metricName", "type": "string"},
+          {"name": "value", "type": "string"}
+        ]
+      },
+      {
+        "name": "recordSparseValueWithPersistentHash",
+        "type": "function",
+        "description": "Increments the count associated with the hash of |value| in the sparse histogram defined by the |metricName| using base::PersistentHash(value).",
         "parameters": [
           {"name": "metricName", "type": "string"},
           {"name": "value", "type": "string"}

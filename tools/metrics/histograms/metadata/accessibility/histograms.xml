@@ -472,7 +472,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     The language used for speech recognition in dictation on ChromeOS. This is
-    logged each time Dictation is toggled on.
+    logged each time Dictation is toggled on. From M99 to M104 this was logged
+    using base::PersistantHash instead of base::HashMetricName; data from that
+    period can be decoded using a map between the two hashing functions. See
+    crbug.com/1342966.
   </summary>
 </histogram>
 

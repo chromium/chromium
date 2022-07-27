@@ -41,8 +41,11 @@ suite('OSSettingsSearchBox', () => {
 
     recordTime(metricName, value) {}
 
-    // Required to use recordSparsValue()
     recordSparseHashable(metricName, value) {}
+
+    recordSparseValueWithHashMetricName(metricName, value) {}
+
+    recordSparseValueWithPersistentHash(metricName, value) {}
   }
 
   /** @const {number} */

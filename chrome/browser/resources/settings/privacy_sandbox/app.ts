@@ -127,7 +127,7 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     super.ready();
     assert(!loadTimeData.getBoolean('isPrivacySandboxRestricted'));
 
-    chrome.metricsPrivate.recordSparseHashable(
+    chrome.metricsPrivate.recordSparseValueWithPersistentHash(
         'WebUI.Settings.PathVisited', '/privacySandbox');
 
     this.privacySandboxBrowserProxy_.getTopicsState().then(

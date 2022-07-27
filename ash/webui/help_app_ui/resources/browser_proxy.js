@@ -271,7 +271,7 @@ guestMessagePipe.registerHandler(
         // This is a google-internal histogram. If changing this, also change
         // the corresponding histograms file.
         if (!valid) {
-          chrome.metricsPrivate.recordSparseHashable(
+          chrome.metricsPrivate.recordSparseValueWithPersistentHash(
               'Discover.LauncherSearch.InvalidConceptInUpdate', item.id);
         }
         return valid;

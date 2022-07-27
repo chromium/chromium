@@ -359,7 +359,8 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
               loadTimeData.getBoolean('isOSSettings') ?
           'ChromeOS.Settings.PathVisited' :
           'WebUI.Settings.PathVisited';
-      chrome.metricsPrivate.recordSparseHashable(metricName, urlPath);
+      chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+          metricName, urlPath);
     }
 
     resetRouteForTesting() {

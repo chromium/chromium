@@ -44,7 +44,7 @@ export class MetricsUtils {
   recordSpeechRecognitionStarted() {
     chrome.metricsPrivate.recordBoolean(
         MetricsUtils.ON_DEVICE_SPEECH_METRIC, this.onDevice_);
-    chrome.metricsPrivate.recordSparseHashable(
+    chrome.metricsPrivate.recordSparseValueWithHashMetricName(
         MetricsUtils.LOCALE_METRIC, this.locale_);
     this.speechRecognitionStartTime_ = new Date();
   }
