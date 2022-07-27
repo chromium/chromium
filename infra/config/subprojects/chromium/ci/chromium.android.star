@@ -1211,9 +1211,11 @@ ci.builder(
         category = "on_cq",
         short_name = "M",
     ),
+    cores = 16,
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 4 * time.hour,
     tree_closing = True,
+    ssd = True,
 )
 
 ci.builder(
