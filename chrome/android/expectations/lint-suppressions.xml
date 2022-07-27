@@ -287,6 +287,9 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <!-- Temporarily suppressed until impelmentation is ready, see: https://crbug.com/1330631 -->
     <ignore regexp="The resource `R.string.price_drop_spotted_iph` appears to be unused"/>
 
+    <!-- TODO(https://crbug.com/1332596): Remove unused resources when UX is finalized. -->
+    <ignore regexp="The resource `R.string.search_resumption_module_subtitle` appears to be unused"/>
+
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>
