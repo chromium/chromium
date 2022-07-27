@@ -1352,7 +1352,7 @@ class V2App {
             content::WebContentsTester::CreateTestWebContents(profile,
                                                               nullptr)) {
     window_ = new extensions::AppWindow(
-        profile, new ChromeAppDelegate(profile, true), extension);
+        profile, std::make_unique<ChromeAppDelegate>(profile, true), extension);
     extensions::AppWindow::CreateParams params;
     params.window_type = window_type;
     // Note: normally, the creator RFH is the background page of the

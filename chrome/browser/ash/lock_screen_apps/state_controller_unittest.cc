@@ -1377,8 +1377,10 @@ TEST_F(LockScreenAppStateTest, TakeFocus) {
                                       true /* enable_app_launch */));
 
   auto regular_app_window = std::make_unique<TestAppWindow>(
-      profile(), new extensions::AppWindow(
-                     profile(), new ChromeAppDelegate(profile(), true), app()));
+      profile(),
+      new extensions::AppWindow(
+          profile(), std::make_unique<ChromeAppDelegate>(profile(), true),
+          app()));
   EXPECT_FALSE(state_controller()->HandleTakeFocus(
       regular_app_window->window()->web_contents(), true));
   EXPECT_TRUE(focus_cycler_delegate()->lock_screen_app_focused());

@@ -40,8 +40,8 @@ TEST_F(ShellNativeAppWindowAuraTest, Bounds) {
                            .Build())
           .Build();
 
-  AppWindow* app_window =
-      new AppWindow(browser_context(), new ShellAppDelegate, extension.get());
+  AppWindow* app_window = new AppWindow(
+      browser_context(), std::make_unique<ShellAppDelegate>(), extension.get());
 
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContents::Create(

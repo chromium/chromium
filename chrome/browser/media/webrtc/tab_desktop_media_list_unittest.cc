@@ -120,7 +120,9 @@ class TestAppWindow : public content::WebContentsObserver {
                 const extensions::Extension* extension,
                 std::unique_ptr<content::WebContents> contents) {
     window_ = new extensions::AppWindow(
-        profile, new ChromeAppDelegate(profile, false), extension);
+        profile,
+        std::make_unique<ChromeAppDelegate>(profile, /*keep_alive=*/false),
+        extension);
     window_->SetAppWindowContentsForTesting(
         std::make_unique<extensions::TestAppWindowContents>(
             std::move(contents)));

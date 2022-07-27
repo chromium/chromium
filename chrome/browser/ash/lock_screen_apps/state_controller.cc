@@ -436,7 +436,7 @@ extensions::AppWindow* StateController::CreateAppWindowForLockScreenAction(
 
   // The ownership of the window is passed to the caller of this method.
   note_app_window_ =
-      new extensions::AppWindow(context, app_delegate.release(), extension);
+      new extensions::AppWindow(context, std::move(app_delegate), extension);
   app_window_observation_.Observe(extensions::AppWindowRegistry::Get(
       lock_screen_profile_creator_->lock_screen_profile()));
   return note_app_window_;

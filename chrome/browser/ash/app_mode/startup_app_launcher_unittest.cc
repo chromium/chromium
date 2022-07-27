@@ -360,7 +360,8 @@ extensions::AppWindow* CreateAppWindow(Profile* profile,
                                        const TestKioskExtensionBuilder& builder,
                                        gfx::Rect bounds = {}) {
   extensions::AppWindow* app_window = new extensions::AppWindow(
-      profile, new ChromeAppDelegate(profile, true), builder.Build().get());
+      profile, std::make_unique<ChromeAppDelegate>(profile, true),
+      builder.Build().get());
   InitAppWindow(app_window, bounds);
   return app_window;
 }

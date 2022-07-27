@@ -27,11 +27,9 @@
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #endif
 
-ChromeAppWindowClient::ChromeAppWindowClient() {
-}
+ChromeAppWindowClient::ChromeAppWindowClient() = default;
 
-ChromeAppWindowClient::~ChromeAppWindowClient() {
-}
+ChromeAppWindowClient::~ChromeAppWindowClient() = default;
 
 // static
 ChromeAppWindowClient* ChromeAppWindowClient::GetInstance() {
@@ -48,7 +46,7 @@ extensions::AppWindow* ChromeAppWindowClient::CreateAppWindow(
 #else
   Profile* profile = Profile::FromBrowserContext(context);
   return new extensions::AppWindow(
-      context, new ChromeAppDelegate(profile, true), extension);
+      context, std::make_unique<ChromeAppDelegate>(profile, true), extension);
 #endif
 }
 

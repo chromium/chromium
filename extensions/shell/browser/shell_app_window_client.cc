@@ -11,16 +11,15 @@
 
 namespace extensions {
 
-ShellAppWindowClient::ShellAppWindowClient() {
-}
+ShellAppWindowClient::ShellAppWindowClient() = default;
 
-ShellAppWindowClient::~ShellAppWindowClient() {
-}
+ShellAppWindowClient::~ShellAppWindowClient() = default;
 
 AppWindow* ShellAppWindowClient::CreateAppWindow(
     content::BrowserContext* context,
     const Extension* extension) {
-  return new AppWindow(context, new ShellAppDelegate, extension);
+  return new AppWindow(context, std::make_unique<ShellAppDelegate>(),
+                       extension);
 }
 
 AppWindow* ShellAppWindowClient::CreateAppWindowForLockScreenAction(
