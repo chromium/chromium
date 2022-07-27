@@ -173,6 +173,9 @@ namespace {
 class ScopedInstallDanglingRawPtrChecks {
  public:
   ScopedInstallDanglingRawPtrChecks() {
+    enabled_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPartitionAllocDanglingPtr, {{"mode", "crash"}}}},
+        {/* disabled_features */});
     old_detected_fn_ = partition_alloc::GetDanglingRawPtrDetectedFn();
     old_dereferenced_fn_ = partition_alloc::GetDanglingRawPtrReleasedFn();
     InstallDanglingRawPtrChecks();
@@ -183,6 +186,7 @@ class ScopedInstallDanglingRawPtrChecks {
   }
 
  private:
+  test::ScopedFeatureList enabled_feature_list_;
   partition_alloc::DanglingRawPtrDetectedFn* old_detected_fn_;
   partition_alloc::DanglingRawPtrReleasedFn* old_dereferenced_fn_;
 };

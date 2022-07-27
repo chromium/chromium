@@ -3922,7 +3922,7 @@ TEST_P(PartitionAllocTest, RawPtrReleasedBeforeFree) {
 TEST_P(PartitionAllocDeathTest, ReleaseUnderflowRawPtr) {
   void* ptr = allocator.root()->Alloc(64 - kExtraAllocSize, type_name);
   auto* ref_count =
-      PartitionRefCountPointer(allocator.root()->Object2SlotStart(ptr));
+      PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr));
   ref_count->Acquire();
   EXPECT_FALSE(ref_count->Release());
   EXPECT_DEATH(ref_count->Release(), "");
@@ -3933,7 +3933,7 @@ TEST_P(PartitionAllocDeathTest, ReleaseUnderflowRawPtr) {
 TEST_P(PartitionAllocDeathTest, ReleaseUnderflowDanglingPtr) {
   void* ptr = allocator.root()->Alloc(64 - kExtraAllocSize, type_name);
   auto* ref_count =
-      PartitionRefCountPointer(allocator.root()->Object2SlotStart(ptr));
+      PartitionRefCountPointer(allocator.root()->ObjectToSlotStart(ptr));
   ref_count->AcquireFromUnprotectedPtr();
   EXPECT_FALSE(ref_count->ReleaseFromUnprotectedPtr());
   EXPECT_DEATH(ref_count->ReleaseFromUnprotectedPtr(), "");
