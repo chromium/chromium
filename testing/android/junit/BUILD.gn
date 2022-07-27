@@ -21,6 +21,7 @@ robolectric_library("junit_test_support") {
     "java/src/org/chromium/testing/local/PackageFilter.java",
     "java/src/org/chromium/testing/local/RunnerFilter.java",
     "java/src/org/chromium/testing/local/TestDir.java",
+    "java/src/org/chromium/testing/local/TestListComputer.java",
   ]
   deps = [
     "//third_party/junit",

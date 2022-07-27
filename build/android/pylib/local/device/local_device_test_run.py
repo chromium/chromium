@@ -361,6 +361,13 @@ class LocalDeviceTestRun(test_run.TestRun):
     # pylint: disable=no-self-use,unused-argument
     return True
 
+  #override
+  def GetTestsForListing(self):
+    ret = self._GetTests()
+    ret = FlattenTestList(ret)
+    ret.sort()
+    return ret
+
   def _GetTests(self):
     raise NotImplementedError
 
@@ -373,6 +380,17 @@ class LocalDeviceTestRun(test_run.TestRun):
 
   def _ShouldShard(self):
     raise NotImplementedError
+
+
+def FlattenTestList(values):
+  """Returns a list with all nested lists (shard groupings) expanded."""
+  ret = []
+  for v in values:
+    if isinstance(v, list):
+      ret += v
+    else:
+      ret.append(v)
+  return ret
 
 
 def SetAppCompatibilityFlagsIfNecessary(packages, device):

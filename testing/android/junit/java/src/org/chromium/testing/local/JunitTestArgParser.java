@@ -19,6 +19,7 @@ public class JunitTestArgParser {
     private final Set<String> mPackageFilters;
     private final Set<Class<?>> mRunnerFilters;
     private final Set<String> mGtestFilters;
+    private boolean mListTests;
     private File mJsonOutput;
     private String[] mTestJars;
 
@@ -35,7 +36,10 @@ public class JunitTestArgParser {
                     argName = args[i].substring(1, args[i].length());
                 }
                 try {
-                    if ("package-filter".equals(argName)) {
+                    if ("list-tests".equals(argName)) {
+                        // Read the command line argument after the flag.
+                        parsed.mListTests = true;
+                    } else if ("package-filter".equals(argName)) {
                         // Read the command line argument after the flag.
                         parsed.addPackageFilter(args[++i]);
                     } else if ("runner-filter".equals(argName)) {
@@ -70,6 +74,10 @@ public class JunitTestArgParser {
         mRunnerFilters = new HashSet<Class<?>>();
         mGtestFilters = new HashSet<String>();
         mJsonOutput = null;
+    }
+
+    public boolean isListTests() {
+        return mListTests;
     }
 
     public Set<String> getPackageFilters() {

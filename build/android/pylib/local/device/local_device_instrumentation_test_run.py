@@ -575,6 +575,14 @@ class LocalDeviceInstrumentationTestRun(
     return tests
 
   #override
+  def GetTestsForListing(self):
+    # Parent class implementation assumes _GetTests() returns strings rather
+    # than dicts.
+    test_dicts = self._GetTests()
+    test_dicts = local_device_test_run.FlattenTestList(test_dicts)
+    return sorted('{}#{}'.format(d['class'], d['method']) for d in test_dicts)
+
+  #override
   def _GroupTests(self, tests):
     batched_tests = dict()
     other_tests = []

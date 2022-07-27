@@ -181,6 +181,11 @@ def AddCommonOptions(parser):
       action='store_true',
       help='Whether to archive test output locally and generate '
            'a local results detail page.')
+
+  parser.add_argument('--list-tests',
+                      action='store_true',
+                      help='List available tests and exit.')
+
   parser.add_argument('--wrapper-script-args',
                       help='A string of args that were passed to the wrapper '
                       'script. This should probably not be edited by a '
@@ -1034,6 +1039,19 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
 
   contexts_to_notify_on_sigterm.append(env)
   contexts_to_notify_on_sigterm.append(test_run)
+
+  if args.list_tests:
+    try:
+      with out_manager, env, test_instance, test_run:
+        test_names = test_run.GetTestsForListing()
+      print('There are {} tests:'.format(len(test_names)))
+      for n in test_names:
+        print(n)
+      return 0
+    except NotImplementedError:
+      sys.stderr.write('Test does not support --list-tests (type={}).\n'.format(
+          args.command))
+      return 1
 
   ### Run.
   with out_manager, json_finalizer():

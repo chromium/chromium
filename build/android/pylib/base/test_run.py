@@ -37,6 +37,10 @@ class TestRun:
     """
     raise NotImplementedError
 
+  def GetTestsForListing(self):
+    """Returns a list of test names."""
+    raise NotImplementedError
+
   def TearDown(self):
     raise NotImplementedError
 
