@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -77,6 +78,11 @@ WebAppProvider* WebAppProvider::GetForLocalAppsUnchecked(Profile* profile) {
 
 // static
 WebAppProvider* WebAppProvider::GetForTest(Profile* profile) {
+  // Running a nested base::RunLoop outside of tests causes a deadlock. Crash
+  // immediately instead of deadlocking for easier debugging (especially for
+  // TAST tests which use prod binaries).
+  CHECK_IS_TEST();
+
   WebAppProvider* provider = GetForLocalAppsUnchecked(profile);
 
   if (provider->on_registry_ready().is_signaled())

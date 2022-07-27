@@ -4679,10 +4679,15 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver
   PWAInstallManagerObserver(
       Profile* profile,
       base::OnceCallback<void(const web_app::AppId&)> callback)
-      : callback_(std::move(callback)) {
-    auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-    if (provider)
-      observation_.Observe(&provider->install_manager());
+      : provider_(web_app::WebAppProvider::GetForWebApps(profile)),
+        callback_(std::move(callback)) {
+    if (!provider_)
+      return;
+    provider_->on_registry_ready().Post(
+        FROM_HERE,
+        base::BindOnce(&AutotestPrivateInstallPWAForCurrentURLFunction::
+                           PWAInstallManagerObserver::OnProviderReady,
+                       weak_factory_.GetWeakPtr()));
   }
 
   PWAInstallManagerObserver(const PWAInstallManagerObserver&) = delete;
@@ -4690,6 +4695,10 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver
       delete;
 
   ~PWAInstallManagerObserver() override {}
+
+  void OnProviderReady() {
+    observation_.Observe(&provider_->install_manager());
+  }
 
   void OnWebAppInstalled(const web_app::AppId& app_id) override {
     observation_.Reset();
@@ -4702,7 +4711,11 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
       observation_{this};
+  web_app::WebAppProvider* provider_;
   base::OnceCallback<void(const web_app::AppId&)> callback_;
+  base::WeakPtrFactory<
+      AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver>
+      weak_factory_{this};
 };
 
 AutotestPrivateInstallPWAForCurrentURLFunction::
