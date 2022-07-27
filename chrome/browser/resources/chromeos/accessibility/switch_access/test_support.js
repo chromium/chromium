@@ -8,20 +8,20 @@
 
 (async function() {
   let module = await import('./nodes/back_button_node.js');
-  window.BackButtonNode = module.BackButtonNode;
+  globalThis.BackButtonNode = module.BackButtonNode;
 
   module = await import('./focus_ring_manager.js');
-  window.FocusRingManager = module.FocusRingManager;
+  globalThis.FocusRingManager = module.FocusRingManager;
 
   module = await import('./navigator.js');
-  window.Navigator = module.Navigator;
+  globalThis.Navigator = module.Navigator;
 
   module = await import('./switch_access_constants.js');
-  window.SAConstants = module.SAConstants;
-  window.SwitchAccessMenuAction = module.SwitchAccessMenuAction;
+  globalThis.SAConstants = module.SAConstants;
+  globalThis.SwitchAccessMenuAction = module.SwitchAccessMenuAction;
 
   module = await import('./switch_access.js');
-  window.SwitchAccess = module.SwitchAccess;
+  globalThis.SwitchAccess = module.SwitchAccess;
 
   const focusRingState = {
     'primary': {'role': '', 'name': ''},
@@ -51,14 +51,14 @@
     return Navigator.byItem.desktopNode.find({attributes: {name}});
   }
 
-  window.doDefault = function(name, callback) {
+  globalThis.doDefault = function(name, callback) {
     transcript.push(`Performing default action on node with name=${name}`);
     const node = findAutomationNodeByName(name);
     node.doDefault();
     callback();
   };
 
-  window.pointScanClick = function(x, y, callback) {
+  globalThis.pointScanClick = function(x, y, callback) {
     transcript.push(`Clicking with point scanning at location x=${x} y=${y}`);
     SwitchAccess.mode = SAConstants.Mode.POINT_SCAN;
     Navigator.byPoint.point_ = {x, y};
@@ -66,7 +66,7 @@
     callback();
   };
 
-  window.waitForFocusRing = function(type, role, name, callback) {
+  globalThis.waitForFocusRing = function(type, role, name, callback) {
     transcript.push(`Waiting for type=${type} role=${role} name=${name}`);
     expectedType = type;
     expectedRole = role;
@@ -75,7 +75,8 @@
     checkFocusRingState();
   };
 
-  window.waitForEventOnAutomationNode = function(eventType, name, callback) {
+  globalThis.waitForEventOnAutomationNode = function(
+      eventType, name, callback) {
     transcript.push(`Waiting for eventType=${eventType} name=${name}`);
     const node = findAutomationNodeByName(name);
     const listener = () => {
@@ -108,7 +109,7 @@
     transcript.push(`Focus ring state: ${JSON.stringify(focusRingState)}`);
     checkFocusRingState();
   });
-  window.domAutomationController.send('ready');
+  globalThis.domAutomationController.send('ready');
 
   setInterval(() => {
     console.error(

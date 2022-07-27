@@ -11,7 +11,7 @@ export class Navigator {
   static initializeSingletonInstance(desktop) {
     Navigator.item_manager_ = new ItemScanManager(desktop);
     Navigator.point_manager_ = new PointScanManager();
-    window.getTreeForDebugging =
+    globalThis.getTreeForDebugging =
         Navigator.item_manager_.getTreeForDebugging.bind(
             Navigator.item_manager_);
   }
