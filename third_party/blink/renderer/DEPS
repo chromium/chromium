@@ -19,6 +19,7 @@ include_rules = [
     "+base/debug",
     "+base/feature_list.h",
     "+base/format_macros.h",
+    "+base/functional/function_ref.h",
     "+base/gtest_prod_util.h",
     "+base/hash/hash.h",
     "+base/i18n/rtl.h",

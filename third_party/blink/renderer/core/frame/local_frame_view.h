@@ -31,9 +31,9 @@
 #include "base/auto_reset.h"
 #include "base/callback_forward.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/functional/function_ref.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink-forward.h"
@@ -970,16 +970,16 @@ class CORE_EXPORT LocalFrameView final
                                Vector<AnnotatedRegionValue>&) const;
 
   void ForAllChildViewsAndPlugins(
-      absl::FunctionRef<void(EmbeddedContentView&)>);
-  void ForAllChildLocalFrameViews(absl::FunctionRef<void(LocalFrameView&)>);
+      base::FunctionRef<void(EmbeddedContentView&)>);
+  void ForAllChildLocalFrameViews(base::FunctionRef<void(LocalFrameView&)>);
 
   enum TraversalOrder { kPreOrder, kPostOrder };
   void ForAllNonThrottledLocalFrameViews(
-      absl::FunctionRef<void(LocalFrameView&)>,
+      base::FunctionRef<void(LocalFrameView&)>,
       TraversalOrder = kPreOrder);
-  void ForAllThrottledLocalFrameViews(absl::FunctionRef<void(LocalFrameView&)>);
+  void ForAllThrottledLocalFrameViews(base::FunctionRef<void(LocalFrameView&)>);
 
-  void ForAllRemoteFrameViews(absl::FunctionRef<void(RemoteFrameView&)>);
+  void ForAllRemoteFrameViews(base::FunctionRef<void(RemoteFrameView&)>);
 
   bool UpdateViewportIntersectionsForSubtree(
       unsigned parent_flags,

@@ -35,6 +35,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/functional/function_ref.h"
 #include "cc/layers/texture_layer_client.h"
 #include "cc/resources/cross_thread_shared_bitmap.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"
@@ -44,7 +45,6 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/config/gpu_feature_info.h"
-#include "third_party/abseil-cpp/absl/functional/function_ref.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgl_image_conversion.h"
@@ -457,7 +457,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     gpu::SyncToken receive_sync_token;
   };
 
-  using CopyFunctionRef = absl::FunctionRef<bool(const gpu::MailboxHolder&,
+  using CopyFunctionRef = base::FunctionRef<bool(const gpu::MailboxHolder&,
                                                  viz::ResourceFormat,
                                                  const gfx::Size&,
                                                  const gfx::ColorSpace&)>;

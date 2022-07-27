@@ -38,7 +38,6 @@ _CONFIG = [
             'gfx::RadToDeg',
 
             # absl
-            'absl::FunctionRef',
             'absl::MakeInt128',
             'absl::MakeUint128',
             'absl::get',
@@ -73,6 +72,7 @@ _CONFIG = [
             'base::File',
             'base::FileErrorOr',
             'base::FilePath',
+            'base::FunctionRef',
             'base::GetUniqueIdForProcess',
             'base::GUID',
             'base::HexStringToUInt64',

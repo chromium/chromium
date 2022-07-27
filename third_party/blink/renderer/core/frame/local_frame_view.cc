@@ -33,6 +33,7 @@
 #include "base/auto_reset.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
@@ -47,7 +48,6 @@
 #include "cc/tiles/frame_viewer_instrumentation.h"
 #include "cc/trees/layer_tree_host.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
-#include "third_party/abseil-cpp/absl/functional/function_ref.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
@@ -344,7 +344,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
 }
 
 void LocalFrameView::ForAllChildViewsAndPlugins(
-    absl::FunctionRef<void(EmbeddedContentView&)> function) {
+    base::FunctionRef<void(EmbeddedContentView&)> function) {
   for (Frame* child = frame_->Tree().FirstChild(); child;
        child = child->Tree().NextSibling()) {
     if (child->View())
@@ -374,7 +374,7 @@ void LocalFrameView::ForAllChildViewsAndPlugins(
 }
 
 void LocalFrameView::ForAllChildLocalFrameViews(
-    absl::FunctionRef<void(LocalFrameView&)> function) {
+    base::FunctionRef<void(LocalFrameView&)> function) {
   for (Frame* child = frame_->Tree().FirstChild(); child;
        child = child->Tree().NextSibling()) {
     auto* child_local_frame = DynamicTo<LocalFrame>(child);
@@ -388,7 +388,7 @@ void LocalFrameView::ForAllChildLocalFrameViews(
 // Note: if this logic is updated, `ForAllThrottledLocalFrameViews()` may
 // need to be updated as well.
 void LocalFrameView::ForAllNonThrottledLocalFrameViews(
-    absl::FunctionRef<void(LocalFrameView&)> function,
+    base::FunctionRef<void(LocalFrameView&)> function,
     TraversalOrder order) {
   if (ShouldThrottleRendering())
     return;
@@ -407,7 +407,7 @@ void LocalFrameView::ForAllNonThrottledLocalFrameViews(
 // Note: if this logic is updated, `ForAllNonThrottledLocalFrameViews()` may
 // need to be updated as well.
 void LocalFrameView::ForAllThrottledLocalFrameViews(
-    absl::FunctionRef<void(LocalFrameView&)> function) {
+    base::FunctionRef<void(LocalFrameView&)> function) {
   if (ShouldThrottleRendering())
     function(*this);
 
@@ -417,7 +417,7 @@ void LocalFrameView::ForAllThrottledLocalFrameViews(
 }
 
 void LocalFrameView::ForAllRemoteFrameViews(
-    absl::FunctionRef<void(RemoteFrameView&)> function) {
+    base::FunctionRef<void(RemoteFrameView&)> function) {
   for (Frame* child = frame_->Tree().FirstChild(); child;
        child = child->Tree().NextSibling()) {
     if (child->IsLocalFrame()) {
