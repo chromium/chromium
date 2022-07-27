@@ -46,4 +46,67 @@ promise_test(async t => {
   await promise_rejects_dom(t, 'InvalidStateError', iframeDOMException, iframeNavigator.subApps.add(subapp));
 }, "API is only supported in top-level browsing contexts.");
 
+promise_test(async t => {
+  const wrong_origin_url = 'https://some.other.origin/sub-app';
+  let subapp = {};
+  let install_options = {};
+  install_options["install_url"] = wrong_origin_url;
+  subapp[wrong_origin_url] = install_options;
+  await promise_rejects_dom(t, 'URLMismatchError', navigator.subApps.add(subapp));
+}, 'Wrong origin URL argument.');
+
+promise_test(async t => {
+  const same_origin_url = document.location.origin + '/sub-app';
+  let subapps = {};
+  let install_options = {};
+  install_options["install_url"] = same_origin_url;
+  subapps[same_origin_url] = install_options;
+
+  let add_call_return_value = [{unhashedAppId: same_origin_url, resultCode: 3}]
+  let expected_results = {same_origin_url: "expected-app-id-check-failed"};
+
+  await subapps_add_expect_reject_with_result(t, {}, add_call_return_value, expected_results);
+}, 'Service failed to add single sub-app.');
+
+promise_test(async t => {
+  let subapps = {};
+
+  const url_1 = document.location.origin + '/sub-app-1';
+  let install_options_1 = {};
+  install_options_1["install_url"] = url_1;
+  subapps[url_1] = install_options_1;
+
+  const url_2 = document.location.origin + '/sub-app-2';
+  let install_options_2 = {};
+  install_options_2["install_url"] = url_2;
+  subapps[url_2] = install_options_2;
+
+  let add_call_return_value = [{unhashedAppId: url_1, resultCode: 3},
+                               {unhashedAppId: url_2, resultCode: 5}]
+  let expected_results = {url_1: "expected-app-id-check-failed",
+                          url_2: "failure"};
+
+  await subapps_add_expect_reject_with_result(t, {}, add_call_return_value, expected_results);
+}, 'Service failed to add two sub-apps.');
+
+promise_test(async t => {
+  let subapps = {};
+
+  const url_1 = document.location.origin + '/sub-app-1';
+  let install_options_1 = {};
+  install_options_1["install_url"] = url_1;
+  subapps[url_1] = install_options_1;
+
+  const url_2 = document.location.origin + '/sub-app-2';
+  let install_options_2 = {};
+  install_options_2["install_url"] = url_2;
+  subapps[url_2] = install_options_2;
+
+  let add_call_return_value = [{unhashedAppId: url_1, resultCode: 1},
+                               {unhashedAppId: url_2, resultCode: 3}]
+  let expected_results = {url_1: "success-new-install",
+                          url_2: "expected-app-id-check-failed"};
+
+  await subapps_add_expect_reject_with_result(t, {}, add_call_return_value, expected_results);
+}, 'Service added one sub-app failed to add another sub-app.');
 </script>

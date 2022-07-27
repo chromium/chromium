@@ -179,6 +179,31 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, EndToEndAdd) {
   EXPECT_EQ(2ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
+// End-to-end test for add() with one succeeding and one failing install.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, EndToEndAddInvalidPath) {
+  NavigateToParentApp();
+  InstallParentApp();
+  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
+
+  const GURL kSubAppUrl = GetURL(kSubAppPath);
+  UnhashedAppId unhashed_sub_app_id =
+      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl);
+  // Invalid app that should fail because the URL cannot be loaded.
+  const GURL kInvalidSubAppUrl = GetURL(kSubAppPathInvalid);
+  UnhashedAppId unhashed_invalid_sub_app_id =
+      GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kInvalidSubAppUrl);
+
+  std::string command = "navigator.subApps.add({\"" + unhashed_sub_app_id +
+                        "\":{\"install_url\":\"" + kSubAppUrl.spec() +
+                        "\"},\"" + unhashed_invalid_sub_app_id +
+                        "\":{\"install_url\":\"" + kInvalidSubAppUrl.spec() +
+                        "\"}})";
+
+  // Add call promise should be rejected because an install failed.
+  EXPECT_FALSE(ExecJs(render_frame_host(), command));
+  EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
+}
+
 // Add a single sub-app and verify all sorts of things.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddSingle) {
   // Dependency graph:

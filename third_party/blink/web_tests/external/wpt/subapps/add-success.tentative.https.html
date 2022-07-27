@@ -14,7 +14,23 @@ subapps_test(async (t, mockSubAppsService) => {
   subapp[same_origin_url] = install_options;
 
   await navigator.subApps.add(subapp);
-}, 'Add API call works.');
+}, 'Add API call works with single sub app.');
+
+subapps_test(async (t, mockSubAppsService) => {
+  let subapps = {};
+
+  const url_1 = document.location.origin + '/sub-app-1';
+  let install_options_1 = {};
+  install_options_1["install_url"] = url_1;
+  subapps[url_1] = install_options_1;
+
+  const url_2 = document.location.origin + '/sub-app-2';
+  let install_options_2 = {};
+  install_options_2["install_url"] = url_2;
+  subapps[url_2] = install_options_2;
+
+  await navigator.subApps.add(subapps);
+}, 'Add API call works with multiple sub apps.');
 
 
 </script>

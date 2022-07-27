@@ -39,7 +39,7 @@ promise_test(async t => {
       await mockSubAppsService.reset();
       mockSubAppsService = null;
   });
-  await createMockSubAppsService(Status.FAILURE);
+  await createMockSubAppsService(Status.FAILURE, []);
   return promise_rejects_dom(t, 'OperationError', navigator.subApps.list());
 }, 'List call failed.');
 

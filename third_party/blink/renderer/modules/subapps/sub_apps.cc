@@ -25,6 +25,8 @@
 
 namespace blink {
 
+using mojom::blink::SubAppsServiceAddResultCode;
+using mojom::blink::SubAppsServiceAddResultPtr;
 using mojom::blink::SubAppsServiceListResultPtr;
 using mojom::blink::SubAppsServiceResult;
 
@@ -152,9 +154,18 @@ ScriptPromise SubApps::add(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   GetService()->Add(
       InstallParamsToMojo(sub_apps),
-      resolver->WrapCallbackInScriptScope(WTF::Bind(
-          [](ScriptPromiseResolver* resolver,
-             Vector<mojom::blink::SubAppsServiceAddResultPtr> mojom_results) {
+      resolver->WrapCallbackInScriptScope(
+          WTF::Bind([](ScriptPromiseResolver* resolver,
+                       Vector<SubAppsServiceAddResultPtr> mojom_results) {
+            for (const SubAppsServiceAddResultPtr& add_result : mojom_results) {
+              if (add_result->result_code !=
+                      SubAppsServiceAddResultCode::kSuccessNewInstall &&
+                  add_result->result_code !=
+                      SubAppsServiceAddResultCode::kSuccessAlreadyInstalled) {
+                return resolver->Reject(
+                    ResultsFromMojo(std::move(mojom_results)));
+              }
+            }
             resolver->Resolve(ResultsFromMojo(std::move(mojom_results)));
           })));
   return resolver->Promise();

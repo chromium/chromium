@@ -13,7 +13,7 @@ const Status = {
   FAILURE: 1,
 };
 
-async function createMockSubAppsService(service_result_code) {
+async function createMockSubAppsService(service_result_code, add_call_return_value) {
   if (typeof SubAppsServiceTest === 'undefined') {
     // Load test-only API helpers.
     const script = document.createElement('script');
@@ -37,7 +37,7 @@ async function createMockSubAppsService(service_result_code) {
 
   if (mockSubAppsService === null) {
     mockSubAppsService = new SubAppsServiceTest();
-    mockSubAppsService.initialize(service_result_code);
+    mockSubAppsService.initialize(service_result_code, add_call_return_value);
   }
 }
 
@@ -47,7 +47,27 @@ function subapps_test(func, description) {
       await mockSubAppsService.reset();
       mockSubAppsService = null;
     });
-    await createMockSubAppsService(Status.SUCCESS);
+    await createMockSubAppsService(Status.SUCCESS, []);
     await func(test, mockSubAppsService);
   }, description);
+}
+
+async function subapps_add_expect_reject_with_result(t, subapps, add_call_return_value, expected_results) {
+  t.add_cleanup(async () => {
+      await mockSubAppsService.reset();
+      mockSubAppsService = null;
+  });
+
+  await createMockSubAppsService(Status.FAILURE, add_call_return_value);
+
+  navigator.subApps.add(subapps)
+    .then(result => {
+      assert_unreached("Should have rejected.");
+    })
+    .catch(result => {
+      for (app_id in expected_results) {
+        assert_own_property(result, app_id, "Return results are missing entry for subapp.")
+        assert_equals(result[app_id], expected_results[app_id], "Return results are not as expected.")
+      }
+    });
 }
