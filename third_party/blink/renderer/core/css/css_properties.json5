@@ -3930,7 +3930,6 @@
         "auto", "stable", "both-edges"
       ],
       typedom_types: ["Keyword"],
-      runtime_flag: "ScrollbarGutter",
     },
     {
       name: "scrollbar-width",

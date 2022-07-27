@@ -6139,9 +6139,6 @@ const CSSValue* ScrollbarGutter::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  if (!RuntimeEnabledFeatures::ScrollbarGutterEnabled())
-    return nullptr;
-
   if (auto* value = css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(range))
     return value;
 

@@ -2014,10 +2014,6 @@
       status: "stable",
     },
     {
-      name: "ScrollbarGutter",
-      status: "stable",
-    },
-    {
       name: "ScrollbarWidth",
       status: "test",
     },
