@@ -101,8 +101,8 @@ void NavigatorMediaStream::getUserMedia(
   }
   MediaErrorState error_state;
   UserMediaRequest* request = UserMediaRequest::Create(
-      navigator.DomWindow(), user_media,
-      UserMediaRequest::MediaType::kUserMedia, options,
+      navigator.DomWindow(), user_media, UserMediaRequestType::kUserMedia,
+      options,
       MakeGarbageCollected<V8Callbacks>(success_callback, error_callback),
       error_state, surface);
   if (!request) {

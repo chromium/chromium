@@ -49,6 +49,8 @@ class ScriptWrappable;
 class TransferredMediaStreamTrack;
 class UserMediaController;
 
+enum class UserMediaRequestType { kUserMedia, kDisplayMedia, kDisplayMediaSet };
+
 class MODULES_EXPORT UserMediaRequest final
     : public GarbageCollected<UserMediaRequest>,
       public ExecutionContextLifecycleObserver {
@@ -70,8 +72,6 @@ class MODULES_EXPORT UserMediaRequest final
     kDeviceInUse
   };
 
-  enum class MediaType { kUserMedia, kDisplayMedia, kDisplayMediaSet };
-
   class Callbacks : public GarbageCollected<Callbacks> {
    public:
     virtual ~Callbacks() = default;
@@ -90,7 +90,7 @@ class MODULES_EXPORT UserMediaRequest final
 
   static UserMediaRequest* Create(ExecutionContext*,
                                   UserMediaController*,
-                                  MediaType media_type,
+                                  UserMediaRequestType media_type,
                                   const MediaStreamConstraints* options,
                                   Callbacks*,
                                   MediaErrorState&,
@@ -100,7 +100,7 @@ class MODULES_EXPORT UserMediaRequest final
 
   UserMediaRequest(ExecutionContext*,
                    UserMediaController*,
-                   MediaType media_type,
+                   UserMediaRequestType media_type,
                    MediaConstraints audio,
                    MediaConstraints video,
                    bool should_prefer_current_tab,
@@ -119,7 +119,7 @@ class MODULES_EXPORT UserMediaRequest final
   void FailConstraint(const String& constraint_name, const String& message);
   void Fail(Error name, const String& message);
 
-  MediaType MediaRequestType() const;
+  UserMediaRequestType MediaRequestType() const;
   bool Audio() const;
   bool Video() const;
   MediaConstraints AudioConstraints() const;
@@ -168,7 +168,7 @@ class MODULES_EXPORT UserMediaRequest final
   void Trace(Visitor*) const override;
 
  private:
-  MediaType media_type_;
+  UserMediaRequestType media_type_;
   MediaConstraints audio_;
   MediaConstraints video_;
   const bool should_prefer_current_tab_ = false;

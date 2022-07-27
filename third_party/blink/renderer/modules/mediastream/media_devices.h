@@ -58,7 +58,7 @@ class MODULES_EXPORT MediaDevices final
                              const MediaStreamConstraints*,
                              ExceptionState&);
   ScriptPromise SendUserMediaRequest(ScriptState*,
-                                     UserMediaRequest::MediaType,
+                                     UserMediaRequestType,
                                      const MediaStreamConstraints*,
                                      ExceptionState&);
 

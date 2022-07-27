@@ -31,16 +31,16 @@ static int32_t g_next_request_id = 0;
 
 // The histogram counts the number of calls to the JS APIs
 // getUserMedia() and getDisplayMedia().
-void UpdateAPICount(UserMediaRequest::MediaType media_type) {
+void UpdateAPICount(UserMediaRequestType media_type) {
   RTCAPIName api_name = RTCAPIName::kGetUserMedia;
   switch (media_type) {
-    case UserMediaRequest::MediaType::kUserMedia:
+    case UserMediaRequestType::kUserMedia:
       api_name = RTCAPIName::kGetUserMedia;
       break;
-    case UserMediaRequest::MediaType::kDisplayMedia:
+    case UserMediaRequestType::kDisplayMedia:
       api_name = RTCAPIName::kGetDisplayMedia;
       break;
-    case UserMediaRequest::MediaType::kDisplayMediaSet:
+    case UserMediaRequestType::kDisplayMediaSet:
       api_name = RTCAPIName::kGetDisplayMediaSet;
       break;
   }

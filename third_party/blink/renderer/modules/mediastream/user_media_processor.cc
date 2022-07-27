@@ -173,18 +173,18 @@ std::string GetOnTrackStartedLogString(
 void InitializeAudioTrackControls(UserMediaRequest* user_media_request,
                                   TrackControls* track_controls) {
   if (user_media_request->MediaRequestType() ==
-      UserMediaRequest::MediaType::kDisplayMedia) {
+      UserMediaRequestType::kDisplayMedia) {
     track_controls->requested = true;
     track_controls->stream_type = MediaStreamType::DISPLAY_AUDIO_CAPTURE;
     return;
   } else if (user_media_request->MediaRequestType() ==
-             UserMediaRequest::MediaType::kDisplayMediaSet) {
+             UserMediaRequestType::kDisplayMediaSet) {
     track_controls->requested = false;
     track_controls->stream_type = MediaStreamType::NO_SERVICE;
     return;
   }
 
-  DCHECK_EQ(UserMediaRequest::MediaType::kUserMedia,
+  DCHECK_EQ(UserMediaRequestType::kUserMedia,
             user_media_request->MediaRequestType());
   const MediaConstraints& constraints = user_media_request->AudioConstraints();
   DCHECK(!constraints.IsNull());
@@ -212,7 +212,7 @@ void InitializeAudioTrackControls(UserMediaRequest* user_media_request,
 void InitializeVideoTrackControls(UserMediaRequest* user_media_request,
                                   TrackControls* track_controls) {
   if (user_media_request->MediaRequestType() ==
-      UserMediaRequest::MediaType::kDisplayMedia) {
+      UserMediaRequestType::kDisplayMedia) {
     track_controls->requested = true;
     track_controls->stream_type =
         user_media_request->should_prefer_current_tab()
@@ -220,14 +220,14 @@ void InitializeVideoTrackControls(UserMediaRequest* user_media_request,
             : MediaStreamType::DISPLAY_VIDEO_CAPTURE;
     return;
   } else if (user_media_request->MediaRequestType() ==
-             UserMediaRequest::MediaType::kDisplayMediaSet) {
+             UserMediaRequestType::kDisplayMediaSet) {
     DCHECK(!user_media_request->should_prefer_current_tab());
     track_controls->requested = true;
     track_controls->stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET;
     return;
   }
 
-  DCHECK_EQ(UserMediaRequest::MediaType::kUserMedia,
+  DCHECK_EQ(UserMediaRequestType::kUserMedia,
             user_media_request->MediaRequestType());
   const MediaConstraints& constraints = user_media_request->VideoConstraints();
   DCHECK(!constraints.IsNull());

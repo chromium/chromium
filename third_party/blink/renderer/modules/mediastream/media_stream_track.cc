@@ -73,7 +73,7 @@ MediaStreamTrack* MediaStreamTrack::FromTransferredState(
   MediaErrorState error_state;
   // TODO(1288839): Set media_type, options, callbacks, surface appropriately
   UserMediaRequest* request = UserMediaRequest::Create(
-      window, user_media, UserMediaRequest::MediaType::kDisplayMedia,
+      window, user_media, UserMediaRequestType::kDisplayMedia,
       MediaStreamConstraints::Create(),
       MakeGarbageCollected<GetOpenDeviceRequestCallbacks>(), error_state,
       IdentifiableSurface());
