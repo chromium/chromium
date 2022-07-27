@@ -19,7 +19,7 @@ class VirtualDisplayMacUtilInteractiveUitest : public testing::Test {
 
   void SetUp() override {
     if (!display::test::VirtualDisplayMacUtil::IsAPIAvailable()) {
-      GTEST_SKIP() << "Skipping test for MacOS 11.0 and older.";
+      GTEST_SKIP() << "Skipping test for unsupported MacOS version.";
     }
 
     testing::Test::SetUp();

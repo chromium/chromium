@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MAYBE_AboutBlankCrossScreenPlacement) {
       .UpdateDisplay("100+100-801x802,901+100-802x802");
 #elif BUILDFLAG(IS_MAC)
   if (!display::test::VirtualDisplayMacUtil::IsAPIAvailable()) {
-    GTEST_SKIP() << "Skipping test for MacOS 11.0 and older.";
+    GTEST_SKIP() << "Skipping test for unsupported MacOS version.";
   }
   display::test::VirtualDisplayMacUtil virtual_display_mac_util;
   virtual_display_mac_util.WarmUp();
