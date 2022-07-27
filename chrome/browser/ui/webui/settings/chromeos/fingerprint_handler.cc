@@ -125,9 +125,7 @@ void FingerprintHandler::OnEnrollScanDone(device::mojom::ScanResult scan_result,
 
 void FingerprintHandler::OnAuthScanDone(
     const device::mojom::FingerprintMessagePtr msg,
-    const base::flat_map<std::string, std::vector<std::string>>& matches) {
-  NOTREACHED();
-}
+    const base::flat_map<std::string, std::vector<std::string>>& matches) {}
 
 void FingerprintHandler::OnSessionFailed() {
   LOG(ERROR) << "Fingerprint session failed.";
