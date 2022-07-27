@@ -121,4 +121,4 @@ export class AccessibilityCommon {
 
 InstanceChecker.closeExtraInstances();
 // Initialize the AccessibilityCommon extension.
-window.accessibilityCommon = new AccessibilityCommon();
+globalThis.accessibilityCommon = new AccessibilityCommon();
