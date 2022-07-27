@@ -4,8 +4,10 @@
 
 #include "ash/app_list/views/search_result_view.h"
 
+#include "ash/app_list/model/search/test_search_result.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/test/widget_test.h"
 
@@ -38,8 +40,12 @@ class SearchResultViewWidgetTest : public views::test::WidgetTest {
         /*list_view=*/nullptr, /*view_delegate=*/nullptr,
         /*dialog_controller=*/nullptr,
         SearchResultView::SearchResultViewType::kAnswerCard);
+    search_result_view_ = std::make_unique<SearchResultView>(
+        /*list_view=*/nullptr, /*view_delegate=*/nullptr,
+        /*dialog_controller=*/nullptr,
+        SearchResultView::SearchResultViewType::kDefault);
 
-    widget_->SetBounds(gfx::Rect(0, 0, 740, 200));
+    widget_->SetBounds(gfx::Rect(0, 0, 740, 300));
 
     widget_->GetContentsView()->AddChildView(answer_card_view_.get());
   }
@@ -51,6 +57,26 @@ class SearchResultViewWidgetTest : public views::test::WidgetTest {
   }
 
   SearchResultView* answer_card_view() { return answer_card_view_.get(); }
+  SearchResultView* search_result_view() { return search_result_view_.get(); }
+
+  views::LayoutOrientation GetTitleDetailsContainerOrientation(
+      SearchResultView* view) {
+    return view->title_and_details_container_->GetOrientation();
+  }
+
+  std::u16string GetTitleText(SearchResultView* view) {
+    std::u16string merged_string = u"";
+    for (const auto& label_tag_pair : view->title_label_tags_)
+      merged_string += label_tag_pair.GetLabel()->GetText();
+    return merged_string;
+  }
+
+  std::u16string GetDetailsText(SearchResultView* view) {
+    std::u16string merged_string = u"";
+    for (const auto& label_tag_pair : view->details_label_tags_)
+      merged_string += label_tag_pair.GetLabel()->GetText();
+    return merged_string;
+  }
 
   void SetSearchResultViewMultilineLabelHeight(
       SearchResultView* search_result_view,
@@ -62,11 +88,89 @@ class SearchResultViewWidgetTest : public views::test::WidgetTest {
     return search_result_view->PreferredHeight();
   }
 
+  void SetupTestSearchResult(TestSearchResult* result) {
+    std::vector<SearchResult::TextItem> title_text_vector;
+    SearchResult::TextItem title_text_item_1(
+        ash::SearchResultTextItemType::kString);
+    title_text_item_1.SetText(u"Test Search");
+    title_text_item_1.SetTextTags({});
+    title_text_vector.push_back(title_text_item_1);
+    SearchResult::TextItem title_text_item_2(
+        ash::SearchResultTextItemType::kString);
+    title_text_item_2.SetText(u" Result Title " +
+                              base::NumberToString16(result_id));
+    title_text_item_2.SetTextTags({});
+    title_text_vector.push_back(title_text_item_2);
+    result->SetTitleTextVector(title_text_vector);
+
+    std::vector<SearchResult::TextItem> details_text_vector;
+    SearchResult::TextItem details_text_item_1(
+        ash::SearchResultTextItemType::kString);
+    details_text_item_1.SetText(u"Test");
+    details_text_item_1.SetTextTags({});
+    details_text_vector.push_back(details_text_item_1);
+    SearchResult::TextItem details_text_item_2(
+        ash::SearchResultTextItemType::kString);
+    details_text_item_2.SetText(u" Search Result Details " +
+                                base::NumberToString16(result_id));
+    details_text_item_2.SetTextTags({});
+    details_text_vector.push_back(details_text_item_2);
+
+    result->set_result_id("Test Search Result " +
+                          base::NumberToString(result_id));
+    result->SetDetailsTextVector(details_text_vector);
+
+    result_id++;
+  }
+
  private:
+  int result_id = 0;
   TestAppListColorProvider color_provider_;  // Needed by AppListView.
   std::unique_ptr<SearchResultView> answer_card_view_;
+  std::unique_ptr<SearchResultView> search_result_view_;
   views::Widget* widget_;
 };
+
+TEST_F(SearchResultViewWidgetTest, SearchResultTextVectorUpdate) {
+  auto answer_card_result_0 = std::make_unique<TestSearchResult>();
+  SetupTestSearchResult(answer_card_result_0.get());
+  answer_card_view()->SetResult(answer_card_result_0.get());
+  answer_card_view()->OnResultChanged();
+  EXPECT_EQ(u"Test Search Result Title 0", GetTitleText(answer_card_view()));
+  EXPECT_EQ(u"Test Search Result Details 0",
+            GetDetailsText(answer_card_view()));
+
+  auto answer_card_result_1 = std::make_unique<TestSearchResult>();
+  SetupTestSearchResult(answer_card_result_1.get());
+  answer_card_view()->SetResult(answer_card_result_1.get());
+  answer_card_view()->OnResultChanged();
+  EXPECT_EQ(u"Test Search Result Title 1", GetTitleText(answer_card_view()));
+  EXPECT_EQ(u"Test Search Result Details 1",
+            GetDetailsText(answer_card_view()));
+
+  auto default_result_0 = std::make_unique<TestSearchResult>();
+  SetupTestSearchResult(default_result_0.get());
+  search_result_view()->SetResult(default_result_0.get());
+  search_result_view()->OnResultChanged();
+  EXPECT_EQ(u"Test Search Result Title 2", GetTitleText(search_result_view()));
+  EXPECT_EQ(u"Test Search Result Details 2",
+            GetDetailsText(search_result_view()));
+
+  auto default_result_1 = std::make_unique<TestSearchResult>();
+  SetupTestSearchResult(default_result_1.get());
+  search_result_view()->SetResult(default_result_1.get());
+  search_result_view()->OnResultChanged();
+  EXPECT_EQ(u"Test Search Result Title 3", GetTitleText(search_result_view()));
+  EXPECT_EQ(u"Test Search Result Details 3",
+            GetDetailsText(search_result_view()));
+}
+
+TEST_F(SearchResultViewWidgetTest, TitleAndDetailsContainerOrientationTest) {
+  EXPECT_EQ(GetTitleDetailsContainerOrientation(search_result_view()),
+            views::LayoutOrientation::kHorizontal);
+  EXPECT_EQ(GetTitleDetailsContainerOrientation(answer_card_view()),
+            views::LayoutOrientation::kVertical);
+}
 
 TEST_F(SearchResultViewWidgetTest, PreferredHeight) {
   static constexpr struct TestCase {

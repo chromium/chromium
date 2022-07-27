@@ -84,7 +84,22 @@ class SearchResultPageDialogController;
 class ASH_EXPORT SearchResultView : public SearchResultBaseView,
                                     public SearchResultActionsViewDelegate {
  public:
-  class LabelAndTag;
+  class LabelAndTag {
+   public:
+    LabelAndTag(views::Label* label, SearchResult::Tags tags);
+
+    LabelAndTag(const LabelAndTag& other);
+    LabelAndTag& operator=(const LabelAndTag& other);
+    ~LabelAndTag();
+
+    views::Label* GetLabel() const { return label_; }
+    SearchResult::Tags GetTags() const { return tags_; }
+
+   private:
+    views::Label* label_;  // Owned by views hierarchy.
+    SearchResult::Tags tags_;
+  };
+
   enum class SearchResultViewType {
     // The default vew type used for the majority of search results.
     kDefault,
