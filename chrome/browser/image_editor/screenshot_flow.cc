@@ -381,8 +381,7 @@ void ScreenshotFlow::SetCursor(ui::mojom::CursorType cursor_type) {
   }
 
 #if BUILDFLAG(IS_MAC)
-  if (cursor_type == ui::mojom::CursorType::kCross &&
-      lens::features::kRegionSearchMacCursorFix.Get()) {
+  if (cursor_type == ui::mojom::CursorType::kCross) {
     EventCaptureMac::SetCrossCursor();
     return;
   }

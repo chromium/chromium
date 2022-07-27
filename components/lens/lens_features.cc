@@ -25,9 +25,6 @@ const base::Feature kLensTransparentImagesFix{
 const base::Feature kLensSearchImageInScreenshotSharing{
     "LensSearchImageInScreenshotSharing", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::FeatureParam<bool> kRegionSearchMacCursorFix{
-    &kLensStandalone, "region-search-mac-cursor-fix", true};
-
 const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch{
     &kLensStandalone, "region-search-enable-ukm-logging", true};
 

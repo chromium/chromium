@@ -30,10 +30,6 @@ extern const base::Feature kLensTransparentImagesFix;
 // a "Search Image" button.
 extern const base::Feature kLensSearchImageInScreenshotSharing;
 
-// Enables a fix for cursor pointer/crosshair state over overlay on Mac.
-// TODO(crbug/1266514): make default and remove feature once launched.
-extern const base::FeatureParam<bool> kRegionSearchMacCursorFix;
-
 // Enables using `Google` as the visual search provider instead of `Google
 // Lens`.
 extern const base::FeatureParam<bool> kUseGoogleAsVisualSearchProvider;
