@@ -38,7 +38,8 @@ var PolymerSecurityTokenPinTest = class extends Polymer2DeprecatedTest {
   }
 };
 
-TEST_F('PolymerSecurityTokenPinTest', 'All', function() {
+// TODO(crbug.com/1347183): Port this test to work with Polymer3.
+TEST_F('PolymerSecurityTokenPinTest', 'DISABLED_All', function() {
   const DEFAULT_PARAMETERS = {
     enableUserInput: true,
     hasError: false,

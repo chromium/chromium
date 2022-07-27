@@ -2124,7 +2124,7 @@ bool IsOobeHidDetectionRevampEnabled() {
 }
 
 bool IsOobePolymer3Enabled() {
-  return base::FeatureList::IsEnabled(kEnableOobePolymer3);
+  return true;
 }
 
 bool IsOobeAddPersonPolymer3Enabled() {
