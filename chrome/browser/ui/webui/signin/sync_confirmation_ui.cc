@@ -133,11 +133,11 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
                         IDS_SYNC_CONFIRMATION_MANAGE_SYNC_BUTTON_LABEL);
 
       source->AddResourcePath(
-          "images/sync_confirmation_illustration.svg",
-          IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_SVG);
+          "images/sync_confirmation_signin_intercept_illustration.svg",
+          IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_SIGNIN_INTERCEPT_ILLUSTRATION_SVG);
       source->AddResourcePath(
-          "images/sync_confirmation_illustration_dark.svg",
-          IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_DARK_SVG);
+          "images/sync_confirmation_signin_intercept_illustration_dark.svg",
+          IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_SIGNIN_INTERCEPT_ILLUSTRATION_DARK_SVG);
       break;
     case SyncConfirmationStyle::kDefaultModal:
       AddStringResource(source, "syncConfirmationSyncInfoTitle", info_title_id);
