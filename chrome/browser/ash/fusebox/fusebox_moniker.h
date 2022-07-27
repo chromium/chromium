@@ -42,10 +42,9 @@ namespace fusebox {
 // that a b::UT). But an all-zero-bits b::UT is not just invalid,
 // b::UT::Deserialize(0, 0) will actually DCHECK-crash. The design assumption
 // is that b::UT values are only shared between trusted processes via trusted
-// channels. Here, the token is parsed from the FUSE filename and all manner of
-// processes (of various trustworthiness) can walk the file system. We don't
-// want "ls /media/fuse/fusebox/moniker/00000000000000000000000000000000" to
-// crash the Chrome process. So we use base::Token, a more forgiving type than
+// channels. Here, the token is parsed from the FUSE filename and we don't want
+// "ls /media/fuse/fusebox/moniker/00000000000000000000000000000000" to crash
+// the Chrome process. So we use base::Token, a more forgiving type than
 // base::UnguessableToken.
 //
 // See also the crrev.com/c/3645173 code review discussion.
