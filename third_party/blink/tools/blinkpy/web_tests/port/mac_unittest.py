@@ -56,10 +56,6 @@ class MacPortTest(port_testcase.PortTestCase):
                          {'mac', 'mac11', 'x86', 'release'})
 
     def test_versions(self):
-        # Workarounds where we need to bump up the version.
-        self.assert_name(None, 'mac10.16', 'mac-mac11')
-        self.assert_name('mac', 'mac10.16', 'mac-mac11')
-
         self.assert_name(None, 'mac11', 'mac-mac11')
         self.assert_name(None, 'mac12', 'mac-mac12')
         self.assert_name('mac', 'mac11', 'mac-mac11')
