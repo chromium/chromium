@@ -555,6 +555,9 @@ class _LogcatProcessor:
 
     def _FlushLines(self):
       """Prints queued lines after sending them through stack.py."""
+      if self._crash_lines_buffer is None:
+        return
+
       crash_lines = self._crash_lines_buffer
       self._crash_lines_buffer = None
       with tempfile.NamedTemporaryFile(mode='w') as f:
@@ -585,8 +588,7 @@ class _LogcatProcessor:
         self._crash_lines_buffer.append((parsed_line, dim))
         return
 
-      if self._crash_lines_buffer is not None:
-        self._FlushLines()
+      self._FlushLines()
 
       self._print_func(parsed_line, dim)
 
@@ -622,9 +624,11 @@ class _LogcatProcessor:
                stack_script_context,
                deobfuscate=None,
                verbose=False,
-               exit_on_match=None):
+               exit_on_match=None,
+               extra_package_names=None):
     self._device = device
     self._package_name = package_name
+    self._extra_package_names = extra_package_names or []
     self._verbose = verbose
     self._deobfuscator = deobfuscate
     if exit_on_match is not None:
@@ -670,12 +674,13 @@ class _LogcatProcessor:
     # ProcessLine method below also includes lines from processes which may
     # have already exited.
     self._primary_pid = None
-    for process in _GetPackageProcesses(self._device, self._package_name):
-      # We take only the first "main" process found in order to account for
-      # possibly forked() processes.
-      if ':' not in process.name and self._primary_pid is None:
-        self._primary_pid = process.pid
-      self._my_pids.add(process.pid)
+    for package_name in [self._package_name] + self._extra_package_names:
+      for process in _GetPackageProcesses(self._device, package_name):
+        # We take only the first "main" process found in order to account for
+        # possibly forked() processes.
+        if ':' not in process.name and self._primary_pid is None:
+          self._primary_pid = process.pid
+        self._my_pids.add(process.pid)
 
   def _GetPidStyle(self, pid, dim=False):
     if pid == self._primary_pid:
@@ -833,13 +838,15 @@ def _RunLogcat(device,
                stack_script_context,
                deobfuscate,
                verbose,
-               exit_on_match=None):
+               exit_on_match=None,
+               extra_package_names=None):
   logcat_processor = _LogcatProcessor(device,
                                       package_name,
                                       stack_script_context,
                                       deobfuscate,
                                       verbose,
-                                      exit_on_match=exit_on_match)
+                                      exit_on_match=exit_on_match,
+                                      extra_package_names=extra_package_names)
   device.RunShellCommand(['log', logcat_processor.nonce])
   for line in device.adb.Logcat(logcat_format='threadtime'):
     try:
@@ -1076,7 +1083,7 @@ class _Command:
   calls_exec = False
   supports_multiple_devices = True
 
-  def __init__(self, from_wrapper_script, is_bundle):
+  def __init__(self, from_wrapper_script, is_bundle, is_test_apk):
     self._parser = None
     self._from_wrapper_script = from_wrapper_script
     self.args = None
@@ -1085,6 +1092,7 @@ class _Command:
     self.install_dict = None
     self.devices = None
     self.is_bundle = is_bundle
+    self.is_test_apk = is_test_apk
     self.bundle_generation_info = None
     # Only support  incremental install from APK wrapper scripts.
     if is_bundle or not from_wrapper_script:
@@ -1390,6 +1398,8 @@ class _LaunchCommand(_Command):
     group.add_argument('url', nargs='?', help='A URL to launch with.')
 
   def Run(self):
+    if self.is_test_apk:
+      raise Exception('Use the bin/run_* scripts to run test apks.')
     if self.args.url and self.is_bundle:
       # TODO(digit): Support this, maybe by using 'dumpsys' as described
       # in the _LaunchUrl() comment.
@@ -1508,10 +1518,20 @@ To disable filtering, (but keep coloring), use --verbose.
         self.args.apk_path,
         self.bundle_generation_info,
         quiet=True)
+
+    extra_package_names = []
+    if self.is_test_apk and self.additional_apk_helpers:
+      for additional_apk_helper in self.additional_apk_helpers:
+        extra_package_names.append(additional_apk_helper.GetPackageName())
+
     try:
       _RunLogcat(self.devices[0],
-                 self.args.package_name, stack_script_context, deobfuscate,
-                 bool(self.args.verbose_count), self.args.exit_on_match)
+                 self.args.package_name,
+                 stack_script_context,
+                 deobfuscate,
+                 bool(self.args.verbose_count),
+                 self.args.exit_on_match,
+                 extra_package_names=extra_package_names)
     except KeyboardInterrupt:
       pass  # Don't show stack trace upon Ctrl-C
     finally:
@@ -1773,6 +1793,8 @@ class _RunCommand(_InstallCommand, _LaunchCommand, _LogcatCommand):
                        help='Install and launch, but do not enter logcat.')
 
   def Run(self):
+    if self.is_test_apk:
+      raise Exception('Use the bin/run_* scripts to run test apks.')
     logging.warning('Installing...')
     _InstallCommand.Run(self)
     logging.warning('Sending launch intent...')
@@ -1888,10 +1910,13 @@ _BUNDLE_COMMANDS = [
 ]
 
 
-def _ParseArgs(parser, from_wrapper_script, is_bundle):
+def _ParseArgs(parser, from_wrapper_script, is_bundle, is_test_apk):
   subparsers = parser.add_subparsers()
   command_list = _COMMANDS + (_BUNDLE_COMMANDS if is_bundle else [])
-  commands = [clazz(from_wrapper_script, is_bundle) for clazz in command_list]
+  commands = [
+      clazz(from_wrapper_script, is_bundle, is_test_apk)
+      for clazz in command_list
+  ]
 
   for command in commands:
     if from_wrapper_script or not command.needs_output_directory:
@@ -1908,13 +1933,17 @@ def _ParseArgs(parser, from_wrapper_script, is_bundle):
 def _RunInternal(parser,
                  output_directory=None,
                  additional_apk_paths=None,
-                 bundle_generation_info=None):
+                 bundle_generation_info=None,
+                 is_test_apk=False):
   colorama.init()
   parser.set_defaults(
       additional_apk_paths=additional_apk_paths,
       output_directory=output_directory)
   from_wrapper_script = bool(output_directory)
-  args = _ParseArgs(parser, from_wrapper_script, bool(bundle_generation_info))
+  args = _ParseArgs(parser,
+                    from_wrapper_script,
+                    is_bundle=bool(bundle_generation_info),
+                    is_test_apk=is_test_apk)
   run_tests_helper.SetLogLevel(args.verbose_count)
   if bundle_generation_info:
     args.command.RegisterBundleGenerationInfo(bundle_generation_info)
@@ -1999,6 +2028,39 @@ def RunForBundle(output_directory, bundle_path, bundle_apks_path,
       output_directory=output_directory,
       additional_apk_paths=additional_apk_paths,
       bundle_generation_info=bundle_generation_info)
+
+
+def RunForTestApk(*, output_directory, package_name, test_apk_path,
+                  test_apk_json, proguard_mapping_path, additional_apk_paths):
+  """Entry point for generated test apk wrapper scripts.
+
+  This is intended to make commands like logcat (with proguard deobfuscation)
+  available. The run_* scripts should be used to actually run tests.
+
+  Args:
+    output_dir: Chromium output directory path.
+    package_name: The package name for the test apk.
+    test_apk_path: The test apk to install.
+    test_apk_json: The incremental json dict for the test apk.
+    proguard_mapping_path: Input path to the Proguard mapping file, used to
+      deobfuscate Java stack traces.
+    additional_apk_paths: Additional APKs to install.
+  """
+  constants.SetOutputDirectory(output_directory)
+  devil_chromium.Initialize(output_directory=output_directory)
+
+  parser = argparse.ArgumentParser()
+  exists_or_none = lambda p: p if p and os.path.exists(p) else None
+
+  parser.set_defaults(apk_path=exists_or_none(test_apk_path),
+                      incremental_json=exists_or_none(test_apk_json),
+                      package_name=package_name,
+                      proguard_mapping_path=proguard_mapping_path)
+
+  _RunInternal(parser,
+               output_directory=output_directory,
+               additional_apk_paths=additional_apk_paths,
+               is_test_apk=True)
 
 
 def main():

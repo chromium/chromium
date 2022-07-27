@@ -3889,6 +3889,87 @@ if (enable_java_templates) {
         outputs = [ rts_file ]
       }
     }
+    _incremental_apk = !(defined(invoker.never_incremental) &&
+                         invoker.never_incremental) && incremental_install
+    _apk_operations_target_name = "${target_name}__apk_operations"
+    _apk_target = invoker.android_test_apk
+    if (defined(invoker.apk_under_test) && !_incremental_apk) {
+      # The actual target is defined in the test_runner_script template.
+      _install_artifacts_json =
+          "${target_gen_dir}/${target_name}.install_artifacts"
+      _install_artifacts_target_name = "${target_name}__install_artifacts"
+    }
+
+    action_with_pydeps(_apk_operations_target_name) {
+      testonly = true
+      script = "//build/android/gyp/create_test_apk_wrapper_script.py"
+      deps = []
+      _generated_script = "$root_build_dir/bin/${invoker.target_name}"
+      outputs = [ _generated_script ]
+      _apk_build_config =
+          get_label_info(_apk_target, "target_gen_dir") + "/" +
+          get_label_info(_apk_target, "name") + ".build_config.json"
+      _rebased_apk_build_config = rebase_path(_apk_build_config, root_build_dir)
+      args = [
+        "--script-output-path",
+        rebase_path(_generated_script, root_build_dir),
+        "--package-name",
+        "@FileArg($_rebased_apk_build_config:deps_info:package_name)",
+      ]
+      deps += [ "${_apk_target}$build_config_target_suffix" ]
+      if (_incremental_apk) {
+        args += [
+          "--test-apk-incremental-install-json",
+          "@FileArg($_rebased_apk_build_config:deps_info:incremental_install_json_path)",
+        ]
+      } else {
+        args += [
+          "--test-apk",
+          "@FileArg($_rebased_apk_build_config:deps_info:apk_path)",
+        ]
+      }
+      if (defined(invoker.proguard_mapping_path) && !_incremental_apk) {
+        args += [
+          "--proguard-mapping-path",
+          rebase_path(invoker.proguard_mapping_path, root_build_dir),
+        ]
+      }
+      if (defined(invoker.apk_under_test)) {
+        if (_incremental_apk) {
+          deps += [ "${invoker.apk_under_test}$build_config_target_suffix" ]
+          _apk_under_test_build_config =
+              get_label_info(invoker.apk_under_test, "target_gen_dir") + "/" +
+              get_label_info(invoker.apk_under_test, "name") +
+              ".build_config.json"
+          _rebased_apk_under_test_build_config =
+              rebase_path(_apk_under_test_build_config, root_build_dir)
+          _apk_under_test = "@FileArg($_rebased_apk_under_test_build_config:deps_info:incremental_apk_path)"
+        } else {
+          deps += [ ":${_install_artifacts_target_name}" ]
+          _rebased_install_artifacts_json =
+              rebase_path(_install_artifacts_json, root_build_dir)
+          _apk_under_test = "@FileArg($_rebased_install_artifacts_json[])"
+        }
+        args += [
+          "--additional-apk",
+          _apk_under_test,
+        ]
+      }
+      if (defined(invoker.additional_apks)) {
+        foreach(additional_apk, invoker.additional_apks) {
+          deps += [ "$additional_apk$build_config_target_suffix" ]
+          _build_config =
+              get_label_info(additional_apk, "target_gen_dir") + "/" +
+              get_label_info(additional_apk, "name") + ".build_config.json"
+          _rebased_build_config = rebase_path(_build_config, root_build_dir)
+          args += [
+            "--additional-apk",
+            "@FileArg($_rebased_build_config:deps_info:apk_path)",
+          ]
+        }
+        deps += invoker.additional_apks
+      }
+    }
     test_runner_script(target_name) {
       forward_variables_from(invoker,
                              [
@@ -3909,10 +3990,12 @@ if (enable_java_templates) {
       test_name = invoker.target_name
       test_type = "instrumentation"
       apk_target = invoker.android_test_apk
-      incremental_apk = !(defined(invoker.never_incremental) &&
-                          invoker.never_incremental) && incremental_install
+      incremental_apk = _incremental_apk
 
-      public_deps = [ apk_target ]
+      public_deps = [
+        ":$_apk_operations_target_name",
+        apk_target,
+      ]
       if (defined(invoker.apk_under_test)) {
         public_deps += [ invoker.apk_under_test ]
       }

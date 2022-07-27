@@ -711,7 +711,8 @@ template("test_runner_script") {
   if (defined(invoker.apk_under_test)) {
     _install_artifacts_json =
         "${target_gen_dir}/${target_name}.install_artifacts"
-    generated_file("${target_name}__install_artifacts") {
+    _install_artifacts_target_name = "${target_name}__install_artifacts"
+    generated_file(_install_artifacts_target_name) {
       deps = [ invoker.apk_under_test ]
       output_conversion = "json"
       outputs = [ _install_artifacts_json ]
@@ -839,7 +840,7 @@ template("test_runner_script") {
               rebase_path(_apk_under_test_build_config, root_build_dir)
           _apk_under_test = "@WrappedPath(@FileArg($_rebased_apk_under_test_build_config:deps_info:incremental_apk_path))"
         } else {
-          deps += [ ":${target_name}__install_artifacts" ]
+          deps += [ ":${_install_artifacts_target_name}" ]
           _rebased_install_artifacts_json =
               rebase_path(_install_artifacts_json, root_build_dir)
           _apk_under_test =

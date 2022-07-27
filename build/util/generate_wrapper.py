@@ -150,7 +150,7 @@ PY_TEMPLATE = textwrap.dedent("""\
       InsertWrapperScriptArgs(args)
       args = FilterIsolatedOutdirBasedArgs(outdir, args)
       executable_args = ExpandWrappedPaths(args)
-      cmd = [executable_path] + args + remaining_args
+      cmd = [executable_path] + executable_args + remaining_args
       if executable_path.endswith('.py'):
         cmd = [sys.executable] + cmd
       return subprocess.call(cmd)
