@@ -1127,8 +1127,10 @@ class PixelTestPages():
     # All these tests contain 4 or 8 solid colored rectangles
     # around 50x100 pixels, this should account for possible antialiasing and
     # color cenversion during RGB<->YUV conversions.
-    match_algo = algo.FuzzyMatchingAlgorithm(max_different_pixels=3000,
-                                             pixel_delta_threshold=50)
+    match_algo = algo.SobelMatchingAlgorithm(max_different_pixels=5000,
+                                             pixel_delta_threshold=50,
+                                             edge_threshold=30,
+                                             ignored_border_thickness=1)
     return [
         PixelTestPage('pixel_video_from_canvas_2d.html',
                       base_name + '_VideoStreamFrom2DCanvas',
@@ -1141,12 +1143,12 @@ class PixelTestPages():
                       browser_args=[],
                       matching_algorithm=match_algo),
         PixelTestPage('pixel_video_from_canvas_webgl2_alpha.html',
-                      base_name + '_VideoStreamFromWebGLCanvas',
+                      base_name + '_VideoStreamFromWebGLAlphaCanvas',
                       test_rect=[0, 0, 200, 200],
                       browser_args=[],
                       matching_algorithm=match_algo),
         PixelTestPage('pixel_video_from_canvas_webgl2.html',
-                      base_name + '_VideoStreamFromWebGLAlphaCanvas',
+                      base_name + '_VideoStreamFromWebGLCanvas',
                       test_rect=[0, 0, 200, 200],
                       browser_args=[],
                       matching_algorithm=match_algo),

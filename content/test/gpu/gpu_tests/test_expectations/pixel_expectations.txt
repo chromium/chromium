@@ -303,7 +303,7 @@ crbug.com/1136875 [ fuchsia-board-qemu-x64 ] Pixel_PrecisionRoundedCorner [ Retr
 
 # Still fails on Nexus 5 after all other Pixel_CanvasLowLatency* pass.
 crbug.com/1097752 [ android android-nexus-5 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
-crbug.com/1097752 [ android android-nexus-5 ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
+crbug.com/1097752 [ android android-nexus-5 ] Pixel_VideoStreamFromWebGLAlphaCanvas [ Failure ]
 
 # Fails on Fuchsia emulators
 crbug.com/1302427 [ fuchsia-board-qemu-x64 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
@@ -430,7 +430,7 @@ crbug.com/982292 [ mac release intel-0x3e9b ] Pixel_Video_MP4_FourColors_Rot_270
 # Flaking on Linux FYI Release (AMD RX 5500 XT)
 crbug.com/1340081 [ linux release amd-0x7340 ] Pixel_ScissorTestWithPreserveDrawingBuffer [ RetryOnFailure ]
 
-crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLAlphaCanvas [ Skip ]
+crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
