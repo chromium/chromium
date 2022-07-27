@@ -157,7 +157,7 @@
 <translation id="2304820083631266885">星球</translation>
 <translation id="2305020378527873881">已移除 <ph name="VOLUME_NAME" />。</translation>
 <translation id="2307462900900812319">配置网络</translation>
-<translation id="2325650632570794183">不支持此文件类型。请访问 Chrome 网上应用店，找到能打开此文件类型的应用。</translation>
+<translation id="2325650632570794183">不支持此文件类型。请访问 Chrome 应用商店，找到能打开此文件类型的应用。</translation>
 <translation id="2326539130272988168">保加利亚语</translation>
 <translation id="2352947182261340447">可用的本地存储空间不足。</translation>
 <translation id="23721837607121582">下载移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”</translation>
@@ -429,7 +429,7 @@
 <translation id="4720185134442950733">移动数据网络</translation>
 <translation id="4724850507808590449">已备份 <ph name="FILE_COUNT" /> 张照片</translation>
 <translation id="4725511304875193254">柯基犬</translation>
-<translation id="4732760563705710320">抱歉，您的投射设备不支持此视频。</translation>
+<translation id="4732760563705710320">抱歉，您的投放设备不支持此视频。</translation>
 <translation id="4737050008115666127">起落场</translation>
 <translation id="4747271164117300400">马其顿语</translation>
 <translation id="4759238208242260848">下载内容</translation>
@@ -697,7 +697,7 @@
 <translation id="6970230597523682626">保加利亚语</translation>
 <translation id="6973630695168034713">文件夹</translation>
 <translation id="6976795442547527108">狮子</translation>
-<translation id="6978611942794658017">此文件适用于采用 Windows 软件的 PC，不适用于运行 Chrome 操作系统的设备。请在 Chrome 网上应用店中搜索合适的替代应用。</translation>
+<translation id="6978611942794658017">此文件适用于采用 Windows 软件的 PC，不适用于运行 Chrome 操作系统的设备。请在 Chrome 应用商店中搜索合适的替代应用。</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6989942356279143254">瑞典语</translation>
 <translation id="6990081529015358884">空间不足</translation>
@@ -949,7 +949,7 @@
 <translation id="9130775360844693113">“<ph name="DESTINATION_NAME" />”的成员将会有权访问这些内容。</translation>
 <translation id="9131598836763251128">选择一个或多个文件</translation>
 <translation id="9133055936679483811">压缩失败。<ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">此文件适用于采用 Macintosh 软件的计算机，不适用于运行 Chrome 操作系统的设备。请在 Chrome 网上应用店中搜索合适的替代应用。</translation>
+<translation id="9134524245363717059">此文件适用于采用 Macintosh 软件的计算机，不适用于运行 Chrome 操作系统的设备。请在 Chrome 应用商店中搜索合适的替代应用。</translation>
 <translation id="9144340019284012223">加泰罗尼亚语</translation>
 <translation id="914873105831852105">PIN 码无效。您还有 1 次尝试机会。</translation>
 <translation id="9153934054460603056">保存身份信息和密码</translation>
