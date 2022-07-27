@@ -67,6 +67,7 @@ const AutocompleteAttributeTestcase kAutocompleteTestcases[]{
     {"section tel", absl::nullopt},
     {"no_section tel", absl::nullopt},
     {"no_section work tel", absl::nullopt},
+    {"section-random", {{"", HTML_MODE_NONE, HTML_TYPE_UNRECOGNIZED}}},
 
     // "webauthn" shouldn't prevent parsing, but is otherwise ignored.
     {"name webauthn", {{"", HTML_MODE_NONE, HTML_TYPE_NAME}}},

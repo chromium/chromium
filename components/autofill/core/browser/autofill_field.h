@@ -128,9 +128,9 @@ class AutofillField : public FormFieldData {
   // (i.e. overall_type_ != NO_SERVER_DATA ? overall_type_ : ComputedType())
   AutofillType Type() const;
 
-  // This function automatically chooses between server and heuristic autofill
-  // type, depending on the data available for this field alone.
-  // This type does not take into account the rationalization involving the
+  // This function automatically chooses among the Autofill server, heuristic
+  // and html type, depending on the data available for this field alone. This
+  // type does not take into account the rationalization involving the
   // surrounding fields.
   AutofillType ComputedType() const;
 
