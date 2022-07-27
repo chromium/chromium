@@ -22,12 +22,16 @@
 
 - (void)appState:(AppState*)appState
     willTransitionToInitStage:(InitStage)nextInitStage {
-  if (nextInitStage != InitStageFinal) {
+  if (nextInitStage != InitStageNormalUI) {
     return;
   }
-  // Starting the DiscoverFeedService at app initialization is required for the
-  // FollowingFeed.
-  if (IsWebChannelsEnabled() && self.appState.mainBrowserState) {
+  if (IsWebChannelsEnabled()) {
+    // Starting the DiscoverFeedService is required before users are able to
+    // interact with any tab because following a web channel (part of the
+    // Following Feed feature which depends on the DiscoverFeedService) is
+    // available on any tab, and not just the NTP where the Following Feed
+    // lives. This line is intended to crash if DiscoverFeedService is not able
+    // to be instantiated here.
     DiscoverFeedServiceFactory::GetForBrowserState(
         self.appState.mainBrowserState);
   }
