@@ -38,7 +38,9 @@ class FakePersonalizationAppWallpaperProvider
   void BindInterface(
       mojo::PendingReceiver<ash::personalization_app::mojom::WallpaperProvider>
           receiver) override;
+  bool IsEligibleForGooglePhotos() override;
 
+  // ash::personalization_app::mojom::WallpaperProvider:
   void MakeTransparent() override {}
 
   void MakeOpaque() override {}

@@ -36,6 +36,10 @@ void FakePersonalizationAppWallpaperProvider::BindInterface(
   wallpaper_receiver_.Bind(std::move(receiver));
 }
 
+bool FakePersonalizationAppWallpaperProvider::IsEligibleForGooglePhotos() {
+  return true;
+}
+
 void FakePersonalizationAppWallpaperProvider::FetchCollections(
     FetchCollectionsCallback callback) {
   std::vector<backdrop::Collection> collections;

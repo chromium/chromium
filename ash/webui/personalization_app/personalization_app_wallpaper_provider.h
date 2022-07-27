@@ -17,6 +17,10 @@ class PersonalizationAppWallpaperProvider : public mojom::WallpaperProvider {
  public:
   virtual void BindInterface(
       mojo::PendingReceiver<mojom::WallpaperProvider> receiver) = 0;
+
+  // Not all users that can view the personalization app can also see google
+  // photos. Users without a gaia account cannot use the photos APIs.
+  virtual bool IsEligibleForGooglePhotos() = 0;
 };
 
 }  // namespace personalization_app

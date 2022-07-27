@@ -116,6 +116,7 @@ class MockPersonalizationAppWallpaperProvider
               (mojo::PendingReceiver<
                   ash::personalization_app::mojom::WallpaperProvider> receiver),
               (override));
+  bool IsEligibleForGooglePhotos() override { return true; }
   MOCK_METHOD(void, MakeTransparent, (), (override));
   MOCK_METHOD(void, MakeOpaque, (), (override));
   MOCK_METHOD(void,

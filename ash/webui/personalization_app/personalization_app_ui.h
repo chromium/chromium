@@ -11,6 +11,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
+namespace content {
+class WebUIDataSource;
+}  // namespace content
+
 namespace ash {
 namespace personalization_app {
 
@@ -56,6 +60,7 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
           receiver);
 
  private:
+  void AddBooleans(content::WebUIDataSource* source);
   std::unique_ptr<PersonalizationAppAmbientProvider> ambient_provider_;
   std::unique_ptr<PersonalizationAppKeyboardBacklightProvider>
       keyboard_backlight_provider_;

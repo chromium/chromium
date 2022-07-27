@@ -125,6 +125,10 @@ void PersonalizationAppWallpaperProviderImpl::BindInterface(
   wallpaper_receiver_.Bind(std::move(receiver));
 }
 
+bool PersonalizationAppWallpaperProviderImpl::IsEligibleForGooglePhotos() {
+  return GetUser(profile_)->HasGaiaAccount();
+}
+
 void PersonalizationAppWallpaperProviderImpl::MakeTransparent() {
   auto* web_contents = web_ui_->GetWebContents();
 
