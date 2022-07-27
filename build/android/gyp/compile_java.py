@@ -600,15 +600,6 @@ def _ParseOptions(argv):
       '--generated-dir',
       help='Subdirectory within target_gen_dir to place extracted srcjars and '
       'annotation processor output for codesearch to find.')
-  parser.add_option(
-      '--bootclasspath',
-      action='append',
-      default=[],
-      help='Boot classpath for javac. If this is specified multiple times, '
-      'they will all be appended to construct the classpath.')
-  parser.add_option(
-      '--java-version',
-      help='Java language version to use in -source and -target args to javac.')
   parser.add_option('--classpath', action='append', help='Classpath to use.')
   parser.add_option(
       '--processorpath',
@@ -666,7 +657,6 @@ def _ParseOptions(argv):
   options, args = parser.parse_args(argv)
   build_utils.CheckOptions(options, parser, required=('jar_path', ))
 
-  options.bootclasspath = build_utils.ParseGnList(options.bootclasspath)
   options.classpath = build_utils.ParseGnList(options.classpath)
   options.processorpath = build_utils.ParseGnList(options.processorpath)
   options.java_srcjars = build_utils.ParseGnList(options.java_srcjars)
@@ -710,6 +700,9 @@ def main(argv):
 
   javac_args = [
       '-g',
+      # We currently target JDK 11 everywhere.
+      '--release',
+      '11',
       # Chromium only allows UTF8 source files.  Being explicit avoids
       # javac pulling a default encoding from the user's environment.
       '-encoding',
@@ -718,6 +711,9 @@ def main(argv):
       # See: http://blog.ltgt.net/most-build-tools-misuse-javac/
       '-sourcepath',
       ':',
+      # protobuf-generated files fail this check (javadoc has @deprecated,
+      # but method missing @Deprecated annotation).
+      '-Xlint:-dep-ann',
   ]
 
   if options.enable_errorprone:
@@ -747,30 +743,11 @@ def main(argv):
     if not ERRORPRONE_CHECKS_TO_APPLY:
       javac_args += ['-XDshould-stop.ifNoError=FLOW']
 
-  if options.java_version:
-    javac_args.extend([
-        '-source',
-        options.java_version,
-        '-target',
-        options.java_version,
-    ])
-  if options.java_version == '1.8':
-    # Android's boot jar doesn't contain all java classes.
-    options.bootclasspath.append(build_utils.RT_JAR_PATH)
-
   # This effectively disables all annotation processors, even including
   # annotation processors in service provider configuration files named
   # META-INF/. See the following link for reference:
   #     https://docs.oracle.com/en/java/javase/11/tools/javac.html
   javac_args.extend(['-proc:none'])
-
-  if options.bootclasspath:
-    # if we are targeting source code higher than java 8, we cannot use
-    # -bootclasspath anymore (deprecated). Instead just prepend the classpath.
-    if options.java_version != '1.8':
-      options.classpath = options.bootclasspath + options.classpath
-    else:
-      javac_args.extend(['-bootclasspath', ':'.join(options.bootclasspath)])
 
   if options.processorpath:
     javac_args.extend(['-processorpath', ':'.join(options.processorpath)])
@@ -780,8 +757,7 @@ def main(argv):
 
   javac_args.extend(options.javac_arg)
 
-  classpath_inputs = (
-      options.bootclasspath + options.classpath + options.processorpath)
+  classpath_inputs = options.classpath + options.processorpath
 
   depfile_deps = classpath_inputs
   # Files that are already inputs in GN should go in input_paths.

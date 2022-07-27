@@ -97,32 +97,36 @@ def find_api_calls(dump, api_classes, bad_calls):
   # |bad_calls| is the list of calls through API classes.  This list is built up
   #             by this function.
 
-  for line in dump:
-    if CLASS_RE.match(line):
-      caller_class = CLASS_RE.match(line).group(1)
-    if METHOD_RE.match(line):
-      caller_method = METHOD_RE.match(line).group(1)
-    if line[8:16] == ': invoke':
-      callee = line.split(' // ')[1].split('Method ')[1].split('\n')[0]
-      callee_class = callee.split('.')[0]
-      assert callee_class
-      if callee_class in api_classes:
-        callee_method = callee.split('.')[1]
-        assert callee_method
-        # Ignore constructor calls for now as every implementation class
-        # that extends an API class will call them.
-        # TODO(pauljensen): Look into enforcing restricting constructor calls.
-        # https://crbug.com/674975
-        if callee_method.startswith('"<init>"'):
-          continue
-        # Ignore VersionSafe calls
-        if 'VersionSafeCallbacks' in caller_class:
-          continue
-        bad_call = '%s/%s -> %s/%s' % (caller_class, caller_method,
-                                       callee_class, callee_method)
-        if bad_call in ALLOWED_EXCEPTIONS:
-          continue
-        bad_calls += [bad_call]
+  for i, line in enumerate(dump):
+    try:
+      if CLASS_RE.match(line):
+        caller_class = CLASS_RE.match(line).group(1)
+      if METHOD_RE.match(line):
+        caller_method = METHOD_RE.match(line).group(1)
+      if line.startswith(': invoke', 8) and not line.startswith('dynamic', 16):
+        callee = line.split(' // ')[1].split('Method ')[1].split('\n')[0]
+        callee_class = callee.split('.')[0]
+        assert callee_class
+        if callee_class in api_classes:
+          callee_method = callee.split('.')[1]
+          assert callee_method
+          # Ignore constructor calls for now as every implementation class
+          # that extends an API class will call them.
+          # TODO(pauljensen): Look into enforcing restricting constructor calls.
+          # https://crbug.com/674975
+          if callee_method.startswith('"<init>"'):
+            continue
+          # Ignore VersionSafe calls
+          if 'VersionSafeCallbacks' in caller_class:
+            continue
+          bad_call = '%s/%s -> %s/%s' % (caller_class, caller_method,
+                                         callee_class, callee_method)
+          if bad_call in ALLOWED_EXCEPTIONS:
+            continue
+          bad_calls += [bad_call]
+    except Exception:
+      sys.stderr.write(f'Failed on line {i+1}: {line}')
+      raise
 
 
 def check_api_calls(opts):
