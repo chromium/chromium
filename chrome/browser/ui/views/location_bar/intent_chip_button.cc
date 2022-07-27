@@ -22,6 +22,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -35,7 +36,7 @@ IntentChipButton::IntentChipButton(Browser* browser,
       browser_(browser),
       delegate_(delegate) {
   SetText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP));
-  SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP));
   SetProperty(views::kElementIdentifierKey, kIntentChipElementId);
 }
