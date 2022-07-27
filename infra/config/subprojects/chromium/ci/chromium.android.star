@@ -749,11 +749,6 @@ ci.builder(
         short_name = "M proguard",
     ),
     execution_timeout = 6 * time.hour,
-    # TODO(b/234140184) Once reproxy is fixed, remove the goma and reclient
-    # values
-    goma_backend = goma.backend.RBE_PROD,
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
-    reclient_instance = None,
 )
 
 ci.builder(
