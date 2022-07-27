@@ -252,7 +252,7 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
   int ReadResponseHead(storage::mojom::ServiceWorkerResourceReader* reader);
   int ReadDataHelper(storage::mojom::ServiceWorkerResourceReader* reader,
                      std::unique_ptr<DataPipeReader>& data_pipe_reader,
-                     net::IOBuffer* buf,
+                     scoped_refptr<net::IOBuffer> buf,
                      int buf_len);
 
   // If no write observer is set through set_write_observer(),

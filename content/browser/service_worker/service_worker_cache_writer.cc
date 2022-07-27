@@ -450,7 +450,7 @@ int ServiceWorkerCacheWriter::DoReadDataForCompare(int result) {
       return net::ERR_FAILED;
     }
     result = ReadDataHelper(compare_reader_.get(), compare_data_pipe_reader_,
-                            data_to_read_.get(), len_to_read_);
+                            data_to_read_, len_to_read_);
   }
   return result;
 }
@@ -699,9 +699,11 @@ class ServiceWorkerCacheWriter::DataPipeReader
   // Reads the body up to |num_bytes| bytes. |callback| is always called
   // asynchronously.
   using ReadCallback = base::OnceCallback<void(int /* result */)>;
-  void Read(net::IOBuffer* buffer, int num_bytes, ReadCallback callback) {
+  void Read(scoped_refptr<net::IOBuffer> buffer,
+            int num_bytes,
+            ReadCallback callback) {
     DCHECK(buffer);
-    buffer_ = buffer;
+    buffer_ = std::move(buffer);
     num_bytes_to_read_ = num_bytes;
     callback_ = std::move(callback);
 
@@ -761,7 +763,7 @@ class ServiceWorkerCacheWriter::DataPipeReader
   }
 
   // Parameters set on Read().
-  raw_ptr<net::IOBuffer, DanglingUntriaged> buffer_ = nullptr;
+  scoped_refptr<net::IOBuffer> buffer_;
   uint32_t num_bytes_to_read_ = 0;
   ReadCallback callback_;
 
@@ -785,7 +787,7 @@ class ServiceWorkerCacheWriter::DataPipeReader
 int ServiceWorkerCacheWriter::ReadDataHelper(
     storage::mojom::ServiceWorkerResourceReader* reader,
     std::unique_ptr<DataPipeReader>& data_pipe_reader,
-    net::IOBuffer* buf,
+    scoped_refptr<net::IOBuffer> buf,
     int buf_len) {
   if (!data_pipe_reader) {
     data_pipe_reader = std::make_unique<DataPipeReader>(
