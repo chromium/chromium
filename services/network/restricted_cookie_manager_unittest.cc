@@ -213,7 +213,10 @@ class RestrictedCookieManagerSync {
     cookie_service_->SetCookieFromString(
         url, site_for_cookies, top_frame_origin, cookie,
         partitioned_cookies_runtime_feature_enabled,
-        base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+        base::BindLambdaForTesting(
+            [&run_loop](bool site_for_cookies_ok, bool top_frame_origin_ok) {
+              run_loop.Quit();
+            }));
     run_loop.Run();
   }
 
@@ -1120,10 +1123,15 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieHttpOnly) {
 }
 
 TEST_P(RestrictedCookieManagerTest, SetCookieFromString) {
+  bool site_for_cookies_ok = false;
+  bool top_frame_origin_ok = false;
   EXPECT_TRUE(backend()->SetCookieFromString(
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       "new-name=new-value;path=/",
-      /*partitioned_cookies_runtime_feature_enabled=*/false));
+      /*partitioned_cookies_runtime_feature_enabled=*/false,
+      &site_for_cookies_ok, &top_frame_origin_ok));
+  EXPECT_TRUE(site_for_cookies_ok);
+  EXPECT_TRUE(top_frame_origin_ok);
   auto options = mojom::CookieManagerGetOptions::New();
   options->name = "new-name";
   options->match_type = mojom::CookieMatchType::EQUALS;
@@ -1133,6 +1141,20 @@ TEST_P(RestrictedCookieManagerTest, SetCookieFromString) {
           std::move(options),
           /*partitioned_cookies_runtime_feature_enabled=*/false),
       ElementsAre(net::MatchesCookieNameValue("new-name", "new-value")));
+}
+
+TEST_P(RestrictedCookieManagerTest, BadSetCookieFromString) {
+  bool site_for_cookies_ok = true;
+  bool top_frame_origin_ok = true;
+  // Purposely set an invalid cookie to return early before the DCHECK fails.
+  EXPECT_TRUE(backend()->SetCookieFromString(
+      kDefaultUrlWithPath, net::SiteForCookies(),
+      url::Origin::Create(GURL("https://not-example.com")),
+      "__Host-invalid=host_prefix_with_domain; Domain=example.com",
+      /*partitioned_cookies_runtime_feature_enabled=*/false,
+      &site_for_cookies_ok, &top_frame_origin_ok));
+  EXPECT_FALSE(site_for_cookies_ok);
+  EXPECT_FALSE(top_frame_origin_ok);
 }
 
 TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieFromWrongOrigin) {
@@ -1177,10 +1199,13 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieWithMismatchingDomain) {
 
 TEST_P(RestrictedCookieManagerTest, SetCookieFromStringWrongOrigin) {
   ExpectBadMessage();
+  bool site_for_cookies_ok = false;
+  bool top_frame_origin_ok = false;
   EXPECT_TRUE(backend()->SetCookieFromString(
       kOtherUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       "new-name=new-value;path=/",
-      /*partitioned_cookies_runtime_feature_enabled=*/false));
+      /*partitioned_cookies_runtime_feature_enabled=*/false,
+      &site_for_cookies_ok, &top_frame_origin_ok));
   ASSERT_TRUE(received_bad_message());
 }
 

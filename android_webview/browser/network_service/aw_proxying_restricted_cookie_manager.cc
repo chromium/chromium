@@ -143,7 +143,8 @@ void AwProxyingRestrictedCookieManager::SetCookieFromString(
         url, site_for_cookies, top_frame_origin, cookie,
         partitioned_cookies_runtime_feature_enabled, std::move(callback));
   } else {
-    std::move(callback).Run();
+    std::move(callback).Run(/*site_for_cookies_ok=*/true,
+                            /*top_frame_origin_ok=*/true);
   }
 }
 
