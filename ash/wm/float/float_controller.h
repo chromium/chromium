@@ -106,10 +106,6 @@ class ASH_EXPORT FloatController : public aura::WindowObserver,
   // Unfloats floated window.
   void ResetFloatedWindow();
 
-  // Updates `window`'s shadow and bounds depending on whether is in floated and
-  // if it is in tablet mode.
-  void MaybeUpdateWindowUIAndBoundsForTablet(aura::Window* window);
-
   // Only one floating window is allowed, updated when a new window
   // is floated.
   aura::Window* float_window_ = nullptr;

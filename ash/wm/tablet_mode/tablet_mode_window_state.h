@@ -20,9 +20,6 @@ class TabletModeWindowManager;
 // centered within the workspace.
 class TabletModeWindowState : public WindowState::State {
  public:
-  // Called when the window position might need to be updated.
-  static void UpdateWindowPosition(WindowState* window_state, bool animate);
-
   // The |window|'s state object will be modified to use this new window mode
   // state handler. |snap| is for carrying over a snapped state from clamshell
   // mode to tablet mode. If |snap| is false, then the window will be maximized,
@@ -43,14 +40,17 @@ class TabletModeWindowState : public WindowState::State {
 
   ~TabletModeWindowState() override;
 
-  void set_ignore_wm_events(bool ignore) { ignore_wm_events_ = ignore; }
+  // Called when the window position might need to be updated.
+  // TODO(sammiequon): Consolidate with `UpdateBounds`.
+  static void UpdateWindowPosition(
+      WindowState* window_state,
+      WindowState::BoundsChangeAnimationType animation_type);
 
   // Leaves the tablet mode by reverting to previous state object.
   void LeaveTabletMode(WindowState* window_state, bool was_in_overview);
 
-  // WindowState::State overrides:
+  // WindowState::State:
   void OnWMEvent(WindowState* window_state, const WMEvent* event) override;
-
   chromeos::WindowStateType GetType() const override;
   void AttachState(WindowState* window_state,
                    WindowState::State* previous_state) override;
@@ -60,6 +60,7 @@ class TabletModeWindowState : public WindowState::State {
     return old_window_bounds_in_screen_;
   }
   WindowState::State* old_state() { return old_state_.get(); }
+  void set_ignore_wm_events(bool ignore) { ignore_wm_events_ = ignore; }
 
  private:
   // Updates the window to |new_state_type| and resulting bounds:

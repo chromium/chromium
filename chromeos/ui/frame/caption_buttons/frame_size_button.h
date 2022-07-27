@@ -12,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/frame_caption_button.h"
 
 namespace chromeos {
@@ -30,6 +31,7 @@ class MultitaskMenu;
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
     : public views::FrameCaptionButton {
  public:
+  METADATA_HEADER(FrameSizeButton);
   FrameSizeButton(PressedCallback callback, FrameSizeButtonDelegate* delegate);
 
   FrameSizeButton(const FrameSizeButton&) = delete;

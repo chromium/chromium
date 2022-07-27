@@ -18,7 +18,6 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/check_op.h"
 #include "chromeos/ui/base/display_util.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/display/screen.h"
@@ -58,11 +57,14 @@ bool IsLandscapeOrientationForWindow(aura::Window* window) {
   return chromeos::IsLandscapeOrientation(orientation);
 }
 
-// Updates `window`'s bounds while in tablet mode.
+// Updates `window`'s bounds while in tablet mode. Note that this uses a bounds
+// animation which can be expensive. Called after a drag is completed or
+// switching from clamshell to tablet or vice versa.
 void UpdateWindowBoundsForTablet(aura::Window* window) {
   WindowState* window_state = WindowState::Get(window);
   DCHECK(window_state);
-  TabletModeWindowState::UpdateWindowPosition(window_state, /*animate=*/true);
+  TabletModeWindowState::UpdateWindowPosition(
+      window_state, WindowState::BoundsChangeAnimationType::kAnimate);
 }
 
 }  // namespace
@@ -291,14 +293,13 @@ void FloatController::OnTabletModeStarting() {
 
   if (!CanFloatWindowInTablet(floated_window))
     ResetFloatedWindow();
-
-  MaybeUpdateWindowUIAndBoundsForTablet(floated_window);
+  else
+    UpdateWindowBoundsForTablet(floated_window);
 }
 
 void FloatController::OnTabletModeEnding() {
   DCHECK(float_window_);
   scoped_window_tucker_.reset();
-  MaybeUpdateWindowUIAndBoundsForTablet(float_window_);
 }
 
 void FloatController::OnTabletControllerDestroyed() {
@@ -307,6 +308,10 @@ void FloatController::OnTabletControllerDestroyed() {
 
 void FloatController::OnDisplayMetricsChanged(const display::Display& display,
                                               uint32_t metrics) {
+  // TODO(sammiequon): Make this work for clamshell mode too.
+  if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
+    return;
+
   DCHECK(float_window_);
   if ((display::DisplayObserver::DISPLAY_METRIC_WORK_AREA & metrics) == 0)
     return;
@@ -314,7 +319,7 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
   if (!CanFloatWindowInTablet(float_window_))
     ResetFloatedWindow();
   else
-    MaybeUpdateWindowUIAndBoundsForTablet(float_window_);
+    UpdateWindowBoundsForTablet(float_window_);
 }
 
 void FloatController::ToggleFloat(aura::Window* window) {
@@ -345,12 +350,12 @@ void FloatController::Float(aura::Window* window) {
 
   tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
   display_observer_.emplace(this);
-  MaybeUpdateWindowUIAndBoundsForTablet(window);
 }
 
 void FloatController::Unfloat(aura::Window* window) {
   if (window != float_window_)
     return;
+
   // When a window is moved in/out from active desk container to float
   // container, it gets reparented and will use
   // `pre_added_to_workspace_window_bounds_` to update it's bounds, here we
@@ -369,7 +374,6 @@ void FloatController::Unfloat(aura::Window* window) {
   tablet_mode_observation_.Reset();
   display_observer_.reset();
   scoped_window_tucker_.reset();
-  MaybeUpdateWindowUIAndBoundsForTablet(window);
 }
 
 void FloatController::ResetFloatedWindow() {
@@ -378,22 +382,6 @@ void FloatController::ResetFloatedWindow() {
     ToggleFloat(float_window_);
     float_window_ = nullptr;
   }
-}
-
-void FloatController::MaybeUpdateWindowUIAndBoundsForTablet(
-    aura::Window* window) {
-  DCHECK(window);
-
-  // Update bounds and UI when entering or exiting tablet mode, or while in
-  // tablet mode.
-  if (chromeos::TabletState::Get()->state() ==
-      display::TabletState::kInClamshellMode) {
-    return;
-  }
-
-  // TODO(sophiewen): Update rounded corners and shadow.
-
-  UpdateWindowBoundsForTablet(window);
 }
 
 }  // namespace ash

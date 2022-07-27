@@ -16,6 +16,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -505,5 +506,8 @@ void FrameSizeButton::OnPieAnimationCompleted() {
 void FrameSizeButton::DestroyPieAnimation() {
   pie_animation_.reset();
 }
+
+BEGIN_METADATA(FrameSizeButton, views::FrameCaptionButton)
+END_METADATA
 
 }  // namespace chromeos

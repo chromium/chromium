@@ -2431,7 +2431,8 @@ void OverviewGrid::AddDraggedWindowIntoOverviewOnDragEnd(
     // its changed bounds.
     dragged_window->SetProperty(chromeos::kCanAttachToAnotherWindowKey, false);
     TabletModeWindowState::UpdateWindowPosition(
-        WindowState::Get(dragged_window), /*animate=*/false);
+        WindowState::Get(dragged_window),
+        WindowState::BoundsChangeAnimationType::kNone);
     const gfx::Rect new_bounds = dragged_window->bounds();
     if (old_bounds != new_bounds) {
       // It's for smoother animation.

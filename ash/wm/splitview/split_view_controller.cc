@@ -302,7 +302,8 @@ class SplitViewController::TabDraggedWindowObserver
         window->GetProperty(kTabDraggingSourceWindowKey);
     if (source_window) {
       TabletModeWindowState::UpdateWindowPosition(
-          WindowState::Get(source_window), /*animate=*/true);
+          WindowState::Get(source_window),
+          WindowState::BoundsChangeAnimationType::kAnimate);
     }
   }
 
@@ -2746,8 +2747,9 @@ void SplitViewController::EndWindowDragImpl(
       // Update the dragged window's bounds. It's possible that the dragged
       // window's bounds was changed during dragging. Update its bounds after
       // the drag ends to ensure it has the right bounds.
-      TabletModeWindowState::UpdateWindowPosition(WindowState::Get(window),
-                                                  /*animate=*/true);
+      TabletModeWindowState::UpdateWindowPosition(
+          WindowState::Get(window),
+          WindowState::BoundsChangeAnimationType::kAnimate);
     }
   } else {
     aura::Window* initiator_window =

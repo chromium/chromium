@@ -195,19 +195,6 @@ bool BoundsChangeIsFromVKAndAllowed(aura::Window* window) {
 
 }  // namespace
 
-// static
-void TabletModeWindowState::UpdateWindowPosition(WindowState* window_state,
-                                                 bool animate) {
-  gfx::Rect bounds_in_parent = GetBoundsInTabletMode(window_state);
-  if (bounds_in_parent == window_state->window()->GetTargetBounds())
-    return;
-
-  if (animate)
-    window_state->SetBoundsDirectAnimated(bounds_in_parent);
-  else
-    window_state->SetBoundsDirect(bounds_in_parent);
-}
-
 TabletModeWindowState::TabletModeWindowState(aura::Window* window,
                                              TabletModeWindowManager* creator,
                                              bool snap,
@@ -238,6 +225,30 @@ TabletModeWindowState::TabletModeWindowState(aura::Window* window,
 
 TabletModeWindowState::~TabletModeWindowState() {
   creator_->WindowStateDestroyed(window_);
+}
+
+// static
+void TabletModeWindowState::UpdateWindowPosition(
+    WindowState* window_state,
+    WindowState::BoundsChangeAnimationType animation_type) {
+  const gfx::Rect bounds_in_parent = GetBoundsInTabletMode(window_state);
+  if (bounds_in_parent == window_state->window()->GetTargetBounds())
+    return;
+
+  switch (animation_type) {
+    case WindowState::BoundsChangeAnimationType::kNone:
+      window_state->SetBoundsDirect(bounds_in_parent);
+      break;
+    case WindowState::BoundsChangeAnimationType::kCrossFade:
+      window_state->SetBoundsDirectCrossFade(bounds_in_parent);
+      break;
+    case WindowState::BoundsChangeAnimationType::kAnimate:
+      window_state->SetBoundsDirectAnimated(bounds_in_parent);
+      break;
+    case WindowState::BoundsChangeAnimationType::kAnimateZero:
+      NOTREACHED();
+      break;
+  }
 }
 
 void TabletModeWindowState::LeaveTabletMode(WindowState* window_state,

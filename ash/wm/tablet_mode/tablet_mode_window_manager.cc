@@ -413,8 +413,9 @@ void TabletModeWindowManager::OnWindowBoundsChanged(
 
   // Reposition all non maximizeable windows.
   for (auto& pair : window_state_map_) {
-    TabletModeWindowState::UpdateWindowPosition(WindowState::Get(pair.first),
-                                                /*animate=*/false);
+    TabletModeWindowState::UpdateWindowPosition(
+        WindowState::Get(pair.first),
+        WindowState::BoundsChangeAnimationType::kNone);
   }
   if (session)
     session->ResumeReposition();
