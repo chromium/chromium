@@ -118,7 +118,7 @@ bool WaitUntilInputFieldHasText(content::WebContents* web_content,
       }))",
       element_id, expected_text, static_cast<int>(expected_selection.start()),
       static_cast<int>(expected_selection.end()));
-  return ExecJs(web_content, script);
+  return EvalJs(web_content, script).ExtractBool();
 }
 
 using InputMethodLacrosBrowserTest = InProcessBrowserTest;
