@@ -163,12 +163,6 @@ void MessagePopupView::Show() {
 }
 
 void MessagePopupView::Close() {
-  // crbug/1337661: Ensure we abort any running layer animations before closing
-  // the widget. This is to prevent any callbacks from initiating additional
-  // animations.
-  if (message_view_)
-    message_view_->AbortAllLayerAnimations();
-
   if (!GetWidget()) {
     DeleteDelegate();
     return;
