@@ -132,6 +132,7 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
     helper_.hermes_euicc_test()->AddCarrierProfile(
         path, dbus::ObjectPath(CreateTestEuiccPath(euicc_num)), iccid,
         base::StringPrintf("%s%02d", "name_", num_profiles_created_),
+        base::StringPrintf("%s%02d", "nickname_", num_profiles_created_),
         base::StringPrintf("%s%02d", "service_provider_",
                            num_profiles_created_),
         activation_code,

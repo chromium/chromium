@@ -175,6 +175,7 @@ class CellularPolicyHandlerTest : public testing::Test {
     HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
         dbus::ObjectPath(kTestESimProfilePath),
         dbus::ObjectPath(kTestEuiccPath), kICCID, /*name=*/std::string(),
+        /*nickname=*/std::string(),
         /*service_provider=*/std::string(), /*activation_code=*/std::string(),
         kTesServicePath, hermes::profile::State::kInactive,
         hermes::profile::ProfileClass::kOperational,

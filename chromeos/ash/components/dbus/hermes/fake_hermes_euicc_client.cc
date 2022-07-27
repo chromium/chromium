@@ -28,6 +28,7 @@ const char* kFakeActivationCodePrefix = "1$SMDP.GSMA.COM$00000-00000-00000-000";
 const char* kFakeProfilePathPrefix = "/org/chromium/Hermes/Profile/";
 const char* kFakeIccidPrefix = "10000000000000000";
 const char* kFakeProfileNamePrefix = "FakeCellularNetwork_";
+const char* kFakeProfileNicknamePrefix = "FakeCellularNetworkNickname_";
 const char* kFakeServiceProvider = "Fake Wireless";
 const char* kFakeNetworkServicePathPrefix = "/service/cellular1";
 
@@ -125,6 +126,7 @@ dbus::ObjectPath FakeHermesEuiccClient::AddFakeCarrierProfile(
   AddCarrierProfile(
       carrier_profile_path, euicc_path,
       base::StringPrintf("%s%02d", kFakeIccidPrefix, index),
+      base::StringPrintf("%s%02d", kFakeProfileNicknamePrefix, index),
       base::StringPrintf("%s%02d", kFakeProfileNamePrefix, index),
       kFakeServiceProvider,
       activation_code.empty()
@@ -141,6 +143,7 @@ void FakeHermesEuiccClient::AddCarrierProfile(
     const dbus::ObjectPath& euicc_path,
     const std::string& iccid,
     const std::string& name,
+    const std::string& nickname,
     const std::string& service_provider,
     const std::string& activation_code,
     const std::string& network_service_path,
@@ -156,7 +159,7 @@ void FakeHermesEuiccClient::AddCarrierProfile(
   profile_properties->mcc_mnc().ReplaceValue(kDefaultMccMnc);
   profile_properties->activation_code().ReplaceValue(activation_code);
   profile_properties->name().ReplaceValue(name);
-  profile_properties->nick_name().ReplaceValue(name);
+  profile_properties->nick_name().ReplaceValue(nickname);
   profile_properties->state().ReplaceValue(state);
   profile_properties->profile_class().ReplaceValue(profile_class);
   profile_service_path_map_[path] = network_service_path;

@@ -138,8 +138,8 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
     hermes_euicc_test_->AddCarrierProfile(
         dbus::ObjectPath(kCellularEsimServicePath),
         dbus::ObjectPath(kTestEuiccPath), kTestIccid, kTestEsimProfileName,
-        "service_provider", "activation_code", kCellularEsimServicePath,
-        hermes::profile::State::kActive,
+        kTestEsimProfileName, "service_provider", "activation_code",
+        kCellularEsimServicePath, hermes::profile::State::kActive,
         hermes::profile::ProfileClass::kOperational,
         HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
             kAddProfileWithService);

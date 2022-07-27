@@ -363,7 +363,8 @@ class CrosNetworkConfigTest : public testing::Test {
   void SetupTestESimProfile(const std::string& eid,
                             const std::string& iccid,
                             const std::string& service_path,
-                            const std::string& profile_name) {
+                            const std::string& profile_name,
+                            const std::string& profile_nickname) {
     const char kTestEuiccPath[] = "euicc_path";
     const char kTestESimProfilePath[] = "profile_path";
 
@@ -372,7 +373,7 @@ class CrosNetworkConfigTest : public testing::Test {
                                               /*physical_slot=*/0);
     helper()->hermes_euicc_test()->AddCarrierProfile(
         dbus::ObjectPath(kTestESimProfilePath),
-        dbus::ObjectPath(kTestEuiccPath), iccid, profile_name,
+        dbus::ObjectPath(kTestEuiccPath), iccid, profile_name, profile_nickname,
         "service_provider", "activation_code", service_path,
         hermes::profile::State::kInactive,
         hermes::profile::ProfileClass::kOperational,
@@ -991,6 +992,7 @@ TEST_F(CrosNetworkConfigTest, ESimNetworkNameComesFromHermes) {
   const char kTestIccid[] = "iccid";
 
   const char kTestProfileName[] = "test_profile_name";
+  const char kTestProfileNickname[] = "test_profile_nickname";
   const char kTestNameFromShill[] = "shill_network_name";
 
   // Add a fake eSIM with name kTestProfileName.
@@ -1000,8 +1002,8 @@ TEST_F(CrosNetworkConfigTest, ESimNetworkNameComesFromHermes) {
   helper()->hermes_euicc_test()->AddCarrierProfile(
       dbus::ObjectPath(kTestProfileServicePath),
       dbus::ObjectPath(kTestEuiccPath), kTestIccid, kTestProfileName,
-      "service_provider", "activation_code", kTestProfileServicePath,
-      hermes::profile::State::kInactive,
+      kTestProfileNickname, "service_provider", "activation_code",
+      kTestProfileServicePath, hermes::profile::State::kInactive,
       hermes::profile::ProfileClass::kOperational,
       HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
           kAddProfileWithService);
@@ -1019,7 +1021,7 @@ TEST_F(CrosNetworkConfigTest, ESimNetworkNameComesFromHermes) {
 
   // The network's name should be the profile name (from Hermes), not the name
   // from Shill.
-  EXPECT_EQ(kTestProfileName, network->name);
+  EXPECT_EQ(kTestProfileNickname, network->name);
 }
 
 TEST_F(CrosNetworkConfigTest, GetDeviceStateList) {
@@ -2097,7 +2099,7 @@ TEST_F(CrosNetworkConfigTest, NetworkStateHasIccidAndEid) {
 
   // Add a fake eSIM network.
   SetupTestESimProfile(kTestEid, kTestIccid, "esim_service_path",
-                       "test_profile_name");
+                       "test_profile_name", "test_profile_nickname");
 
   // Fetch the Cellular network's managed properties for the eSIM profile.
   std::string esim_guid = std::string("esim_guid") + kTestIccid;
@@ -2114,10 +2116,11 @@ TEST_F(CrosNetworkConfigTest, ESimManagedPropertiesNameComesFromHermes) {
   const char kTestEid[] = "eid";
   const char kTestNameFromShill[] = "shill_network_name";
   const char kTestProfileName[] = "test_profile_name";
+  const char kTestProfileNickname[] = "test_profile_nickname";
 
   // Add a fake eSIM with name kTestProfileName.
   SetupTestESimProfile(kTestEid, kTestIccid, kTestProfileServicePath,
-                       kTestProfileName);
+                       kTestProfileName, kTestProfileNickname);
 
   // Change the network's name in Shill. Now, Hermes and Shill have different
   // names associated with the profile.
@@ -2128,7 +2131,7 @@ TEST_F(CrosNetworkConfigTest, ESimManagedPropertiesNameComesFromHermes) {
   // Fetch the Cellular network's managed properties for the eSIM profile.
   std::string esim_guid = std::string("esim_guid") + kTestIccid;
   mojom::ManagedPropertiesPtr properties = GetManagedProperties(esim_guid);
-  EXPECT_EQ(kTestProfileName, properties->name->active_value);
+  EXPECT_EQ(kTestProfileNickname, properties->name->active_value);
 }
 
 TEST_F(CrosNetworkConfigTest, GetAlwaysOnVpn) {

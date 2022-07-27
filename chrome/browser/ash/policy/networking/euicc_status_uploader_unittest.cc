@@ -216,7 +216,7 @@ class EuiccStatusUploaderTest : public testing::Test {
       ash::HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
           dbus::ObjectPath(test_profile.profile_path),
           dbus::ObjectPath(GetEuiccPath(/*euicc_id=*/0)), test_profile.iccid,
-          test_profile.guid, "service_provider", "activation_code",
+          test_profile.guid, "nickname", "service_provider", "activation_code",
           test_profile.service_path, test_profile.state,
           hermes::profile::ProfileClass::kOperational,
           ash::HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::

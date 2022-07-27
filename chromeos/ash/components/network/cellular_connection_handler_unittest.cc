@@ -177,8 +177,8 @@ class CellularConnectionHandlerTest : public testing::Test {
     helper_.hermes_euicc_test()->AddCarrierProfile(
         dbus::ObjectPath(CreateTestProfilePath(profile_num)),
         dbus::ObjectPath(CreateTestEuiccPath(euicc_num)), iccid,
-        CreateTestName(profile_num), "service_provider", "activation_code",
-        CreateTestServicePath(profile_num), state,
+        CreateTestName(profile_num), "nickname", "service_provider",
+        "activation_code", CreateTestServicePath(profile_num), state,
         hermes::profile::ProfileClass::kOperational, add_profile_behavior);
 
     if (!add_service) {

@@ -203,8 +203,9 @@ class CellularMetricsLoggerTest : public testing::Test {
                       const std::string& service_path) {
     network_state_test_helper_.hermes_euicc_test()->AddCarrierProfile(
         dbus::ObjectPath(service_path), dbus::ObjectPath(kTestEuiccPath),
-        kTestIccid, kTestProfileName, "service_provider", "activation_code",
-        service_path, state, hermes::profile::ProfileClass::kOperational,
+        kTestIccid, kTestProfileName, /*nickname=*/"", "service_provider",
+        "activation_code", service_path, state,
+        hermes::profile::ProfileClass::kOperational,
         HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
             kAddProfileWithService);
     base::RunLoop().RunUntilIdle();

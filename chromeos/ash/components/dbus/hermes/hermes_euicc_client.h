@@ -80,6 +80,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
         const dbus::ObjectPath& euicc_path,
         const std::string& iccid,
         const std::string& name,
+        const std::string& nickname,
         const std::string& service_provider,
         const std::string& activation_code,
         const std::string& network_service_path,

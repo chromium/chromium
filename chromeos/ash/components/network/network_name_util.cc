@@ -44,16 +44,16 @@ absl::optional<std::string> GetESimProfileName(
     }
 
     // We've found a profile corresponding to the network. If possible, use the
-    // profile's nickname, falling back to the name or the service provider.
+    // profile's nickname, falling back to the service provider or the name.
 
     if (!profile.nickname().empty())
       return base::UTF16ToUTF8(profile.nickname());
 
-    if (!profile.name().empty())
-      return base::UTF16ToUTF8(profile.name());
-
     if (!profile.service_provider().empty())
       return base::UTF16ToUTF8(profile.service_provider());
+
+    if (!profile.name().empty())
+      return base::UTF16ToUTF8(profile.name());
   }
 
   return absl::nullopt;
