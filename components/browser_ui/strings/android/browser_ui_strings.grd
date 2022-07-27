@@ -946,6 +946,12 @@
       <message name="IDS_SEARCH_RESUMPTION_MODULE_TITLE" desc="Title of the search resumption module on NTP or Start surface.">
         Suggested searches based on your last tab
       </message>
+      <message name="IDS_SEARCH_RESUMPTION_MODULE_TITLE_SHORT" desc="Title of the search resumption module on NTP or Start surface (short version).">
+        Suggested searches
+      </message>
+      <message name="IDS_SEARCH_RESUMPTION_MODULE_SUBTITLE" desc="Subtitle of the search resumption module on NTP or Start surface.">
+        Based on your last tab
+      </message>
     </messages>
   </release>
 </grit>

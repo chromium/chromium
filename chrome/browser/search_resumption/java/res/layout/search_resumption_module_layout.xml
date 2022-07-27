@@ -23,16 +23,32 @@
         android:paddingEnd="@dimen/search_resumption_module_header_padding_start"
         android:contentDescription="@string/search_resumption_module_title">
 
-        <TextView
+        <LinearLayout
             android:id="@+id/header_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:text="@string/search_resumption_module_title"
-            android:textAlignment="viewStart"
-            android:layout_toStartOf="@+id/header_option"
+            android:orientation="vertical"
             android:layout_alignParentStart="true"
-            android:textAppearance="@style/TextAppearance.TextMediumThick.Secondary"/>
+            android:layout_toStartOf="@+id/header_option">
+
+            <TextView
+                android:id="@+id/header_title_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="@string/search_resumption_module_title_short"
+                android:textAlignment="viewStart"
+                android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"/>
+
+            <TextView
+                android:id="@+id/header_sub_title_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="@string/search_resumption_module_subtitle"
+                android:textAlignment="viewStart"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/header_option"
