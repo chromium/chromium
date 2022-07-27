@@ -1328,6 +1328,11 @@ bool BrowserView::IsOnCurrentWorkspace() const {
   if (on_current_workspace.has_value())
     return on_current_workspace.value();
 
+  // If the window is not cloaked, it is not on another desktop because
+  // windows on another virtual desktop are always cloaked.
+  if (!gfx::IsWindowCloaked(native_win->GetHost()->GetAcceleratedWidget()))
+    return true;
+
   Microsoft::WRL::ComPtr<IVirtualDesktopManager> virtual_desktop_manager;
   if (!SUCCEEDED(::CoCreateInstance(_uuidof(VirtualDesktopManager), nullptr,
                                     CLSCTX_ALL,

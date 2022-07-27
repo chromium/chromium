@@ -365,6 +365,7 @@ component("gfx") {
   if (is_win) {
     libs = [
       "setupapi.lib",
+      "dwmapi.lib",
       "dwrite.lib",
     ]
     deps += [ "//components/crash/core/common" ]

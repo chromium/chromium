@@ -33,6 +33,11 @@ GFX_EXPORT void* GetWindowUserData(HWND hwnd);
 // of its children.
 GFX_EXPORT bool DoesWindowBelongToActiveWindow(HWND window);
 
+// Returns true if the specified window is cloaked.  Windows 10 and later
+// have cloaked windows which are windows with WS_VISIBLE attribute but not
+// displayed.
+GFX_EXPORT bool IsWindowCloaked(HWND hwnd);
+
 // Returns true if `window` is on the current virtual desktop, false if isn't,
 // and absl::nullopt if a COM method fails. Since this calls COM methods,
 // it can only be called from a COM thread.

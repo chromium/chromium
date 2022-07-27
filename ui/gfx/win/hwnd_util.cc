@@ -4,6 +4,7 @@
 
 #include "ui/gfx/win/hwnd_util.h"
 
+#include <dwmapi.h>  // DWMWA_CLOAKED
 #include <windows.h>
 
 #include "base/debug/gdi_debug_util_win.h"
@@ -112,6 +113,13 @@ void* GetWindowUserData(HWND hwnd) {
   if (process_id != ::GetCurrentProcessId())
     return NULL;
   return reinterpret_cast<void*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+}
+
+bool IsWindowCloaked(HWND hwnd) {
+  BOOL is_cloaked = FALSE;
+  return SUCCEEDED(DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED, &is_cloaked,
+                                         sizeof(is_cloaked))) &&
+         is_cloaked;
 }
 
 absl::optional<bool> IsWindowOnCurrentVirtualDesktop(
