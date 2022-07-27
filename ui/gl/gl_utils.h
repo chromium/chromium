@@ -43,12 +43,8 @@ GL_EXPORT bool UsePassthroughCommandDecoder(
 GL_EXPORT bool PassthroughCommandDecoderSupported();
 
 #if BUILDFLAG(IS_WIN)
-GL_EXPORT bool AreOverlaysSupportedWin();
-
 // Calculates present during in 100 ns from number of frames per second.
 GL_EXPORT unsigned int FrameRateToPresentDuration(float frame_rate);
-
-GL_EXPORT UINT GetOverlaySupportFlags(DXGI_FORMAT format);
 
 // BufferCount for the root surface swap chain.
 GL_EXPORT unsigned int DirectCompositionRootSurfaceBufferCount();

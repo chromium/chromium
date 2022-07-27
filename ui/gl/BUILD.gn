@@ -343,6 +343,8 @@ component("gl") {
       "delegated_ink_point_renderer_gpu.h",
       "direct_composition_child_surface_win.cc",
       "direct_composition_child_surface_win.h",
+      "direct_composition_support.cc",
+      "direct_composition_support.h",
       "direct_composition_surface_win.cc",
       "direct_composition_surface_win.h",
       "gl_angle_util_win.cc",

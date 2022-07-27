@@ -49,7 +49,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "ui/gl/direct_composition_surface_win.h"
+#include "ui/gl/direct_composition_support.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

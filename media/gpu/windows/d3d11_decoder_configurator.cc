@@ -16,7 +16,7 @@
 #include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_status.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gl/direct_composition_surface_win.h"
+#include "ui/gl/direct_composition_support.h"
 
 namespace media {
 
@@ -46,8 +46,7 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
   // https://crbug.com/911847. To enable Kaby Lake+ systems for using shared
   // handle, we disable decode swap chain support if shared handle is enabled.
   const bool supports_nv12_decode_swap_chain =
-      gl::DirectCompositionSurfaceWin::IsDecodeSwapChainSupported() &&
-      !use_shared_handle;
+      gl::DirectCompositionDecodeSwapChainSupported() && !use_shared_handle;
   const auto decoder_dxgi_format =
       bit_depth == 8 ? DXGI_FORMAT_NV12 : DXGI_FORMAT_P010;
   GUID decoder_guid = {};

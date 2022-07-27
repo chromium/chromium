@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/init/gl_initializer.h"
 
 #include <dwmapi.h>
@@ -17,6 +16,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/windows_version.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_egl_api_implementation.h"
@@ -133,7 +133,7 @@ GLDisplay* InitializeGLOneOffPlatform(uint64_t system_device_id) {
         LOG(ERROR) << "GLDisplayEGL::Initialize failed.";
         return nullptr;
       }
-      DirectCompositionSurfaceWin::InitializeOneOff(display);
+      InitializeDirectComposition(display);
       break;
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
@@ -172,7 +172,7 @@ bool InitializeStaticGLBindings(GLImplementationParts implementation) {
 }
 
 void ShutdownGLPlatform(GLDisplay* display) {
-  DirectCompositionSurfaceWin::ShutdownOneOff();
+  ShutdownDirectComposition();
   if (display)
     display->Shutdown();
   ClearBindingsEGL();

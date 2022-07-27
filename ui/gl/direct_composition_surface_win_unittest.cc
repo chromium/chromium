@@ -27,6 +27,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/dc_renderer_layer_params.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -126,7 +127,7 @@ class DirectCompositionSurfaceTest : public testing::Test {
     // Without this, the following check always fails.
     display_ = gl::init::InitializeGLNoExtensionsOneOff(
         /*init_bindings=*/true, /*system_device_id=*/0);
-    if (!DirectCompositionSurfaceWin::GetDirectCompositionDevice()) {
+    if (!DirectCompositionSupported()) {
       LOG(WARNING) << "DirectComposition not supported, skipping test.";
       return;
     }
@@ -134,9 +135,8 @@ class DirectCompositionSurfaceTest : public testing::Test {
     context_ = CreateGLContext(surface_);
     if (surface_)
       surface_->SetEnableDCLayers(true);
-    DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(false);
-    DirectCompositionSurfaceWin::SetOverlayFormatUsedForTesting(
-        DXGI_FORMAT_NV12);
+    SetDirectCompositionScaledOverlaysSupportedForTesting(false);
+    SetDirectCompositionOverlayFormatUsedForTesting(DXGI_FORMAT_NV12);
   }
 
   void TearDown() override {
@@ -414,7 +414,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
 
   // HW supports scaled overlays.
   // The input texture size is maller than the window size.
-  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
   // Onscreen quad.
   gfx::Rect quad_rect = gfx::Rect(100, 100);
@@ -932,7 +932,7 @@ TEST_F(DirectCompositionPixelTest, SkipVideoLayerEmptyContentsRect) {
     return;
   // Swap chain size is overridden to onscreen size only if scaled overlays
   // are supported.
-  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
   gfx::Size window_size(100, 100);
   EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
@@ -984,7 +984,7 @@ TEST_F(DirectCompositionPixelTest, NV12SwapChain) {
     return;
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
-  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
   gfx::Size window_size(100, 100);
   gfx::Size texture_size(50, 50);
@@ -1025,9 +1025,9 @@ TEST_F(DirectCompositionPixelTest, YUY2SwapChain) {
 
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
-  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
   // By default NV12 is used, so set it to YUY2 explicitly.
-  DirectCompositionSurfaceWin::SetOverlayFormatUsedForTesting(DXGI_FORMAT_YUY2);
+  SetDirectCompositionOverlayFormatUsedForTesting(DXGI_FORMAT_YUY2);
 
   gfx::Size window_size(100, 100);
   gfx::Size texture_size(50, 50);
@@ -1061,7 +1061,7 @@ TEST_F(DirectCompositionPixelTest, NonZeroBoundsOffset) {
     return;
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
-  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
   gfx::Size window_size(100, 100);
   gfx::Size texture_size(50, 50);
@@ -1099,7 +1099,7 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
     return;
   // Swap chain size is overridden to onscreen rect size only if scaled overlays
   // are supported.
-  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
 
   gfx::Size window_size(100, 100);
   EXPECT_TRUE(surface_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
@@ -1170,9 +1170,9 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
   // (3) Test if swap chain is adjusted to fit the monitor when overlay scaling
   // is not supported and video on-screen size is slightly smaller than the
   // monitor. Clipping is on.
-  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(false);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(false);
   gfx::Size monitor_size = window_size;
-  surface_->SetMonitorInfoForTesting(1, window_size);
+  SetDirectCompositionMonitorInfoForTesting(1, window_size);
   gfx::Rect on_screen_rect =
       gfx::Rect(0, 0, monitor_size.width() - 2, monitor_size.height() - 2);
   {
@@ -1206,7 +1206,7 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
   // (4) Test if the final on-screen size is adjusted to fit the monitor when
   // overlay scaling is supported and video on-screen size is slightly bigger
   // than the monitor. Clipping is off.
-  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
   on_screen_rect =
       gfx::Rect(0, 0, monitor_size.width() + 2, monitor_size.height() + 2);
   {
@@ -1511,7 +1511,7 @@ void RunBufferCountTest(scoped_refptr<DirectCompositionSurfaceWin> surface,
     return;
 
   if (for_video) {
-    DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+    SetDirectCompositionScaledOverlaysSupportedForTesting(true);
     EXPECT_TRUE(surface->SetEnableDCLayers(true));
   } else {
     EXPECT_TRUE(surface->SetEnableDCLayers(false));

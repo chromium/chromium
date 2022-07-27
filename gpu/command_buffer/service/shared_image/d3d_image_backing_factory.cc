@@ -13,7 +13,7 @@
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "ui/gfx/buffer_format_util.h"
-#include "ui/gl/direct_composition_surface_win.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_utils.h"
@@ -190,8 +190,8 @@ bool D3DImageBackingFactory::IsD3DSharedImageSupported(
 
 // static
 bool D3DImageBackingFactory::IsSwapChainSupported() {
-  return gl::DirectCompositionSurfaceWin::IsDirectCompositionSupported() &&
-         gl::DirectCompositionSurfaceWin::IsSwapChainTearingSupported();
+  return gl::DirectCompositionSupported() &&
+         gl::DXGISwapChainTearingSupported();
 }
 
 D3DImageBackingFactory::SwapChainBackings

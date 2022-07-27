@@ -13,6 +13,7 @@
 #include "ui/base/win/hidden_window.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gl/dc_layer_tree.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_context.h"
@@ -100,7 +101,7 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
     // Without this, the following check always fails.
     display_ = gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true,
                                                         /*system_device_id=*/0);
-    if (!gl::DirectCompositionSurfaceWin::GetDirectCompositionDevice()) {
+    if (!gl::DirectCompositionSupported()) {
       LOG(WARNING)
           << "GL implementation not using DirectComposition, skipping test.";
       return;

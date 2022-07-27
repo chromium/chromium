@@ -11,16 +11,12 @@
 #include <wrl/client.h>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
-#include "base/observer_list_threadsafe.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/mojom/dxgi_info.mojom.h"
 #include "ui/gl/child_window_win.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface_egl.h"
-#include "ui/gl/gpu_switching_observer.h"
 #include "ui/gl/vsync_observer.h"
 
 namespace gfx {
@@ -60,84 +56,6 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL {
   DirectCompositionSurfaceWin(const DirectCompositionSurfaceWin&) = delete;
   DirectCompositionSurfaceWin& operator=(const DirectCompositionSurfaceWin&) =
       delete;
-
-  static void InitializeOneOff(GLDisplayEGL* display);
-  static void ShutdownOneOff();
-
-  static IDCompositionDevice2* GetDirectCompositionDevice();
-
-  // Returns true if direct composition is supported.  We prefer to use direct
-  // composition even without hardware overlays, because it allows us to bypass
-  // blitting by DWM to the window redirection surface by using a flip mode swap
-  // chain.  Overridden with --disable-direct-composition.
-  static bool IsDirectCompositionSupported();
-
-  // Returns true if video overlays are supported and should be used. Overridden
-  // with --enable-direct-composition-video-overlays and
-  // --disable-direct-composition-video-overlays. This function is thread safe.
-  static bool AreOverlaysSupported();
-
-  // Returns if the GPU supports hardware overlays. This function is thread
-  // safe.
-  static bool AreHardwareOverlaysSupported();
-
-  // Returns true if zero copy decode swap chain is supported.
-  static bool IsDecodeSwapChainSupported();
-  static void DisableDecodeSwapChain();
-
-  // After this is called, overlay support is disabled during the
-  // current GPU process' lifetime.
-  static void DisableOverlays();
-
-  // Similar to the above but disables software overlay support.
-  static void DisableSoftwareOverlays();
-
-  // Returns true if scaled hardware overlays are supported.
-  static bool AreScaledOverlaysSupported();
-
-  // Returns preferred overlay format set when detecting overlay support.
-  static DXGI_FORMAT GetOverlayFormatUsedForSDR();
-
-  // Returns monitor size.
-  static gfx::Size GetPrimaryMonitorSize();
-
-  // Get the current number of all visible display monitors on the desktop.
-  static int GetNumOfMonitors();
-
-  // Returns overlay support flags for the given format.
-  // Caller should check for DXGI_OVERLAY_SUPPORT_FLAG_DIRECT and
-  // DXGI_OVERLAY_SUPPORT_FLAG_SCALING bits.
-  // This function is thread safe.
-  static UINT GetOverlaySupportFlags(DXGI_FORMAT format);
-
-  // Returns true if there is an HDR capable display connected.
-  static gfx::mojom::DXGIInfoPtr GetDXGIInfo();
-
-  // Returns true if swap chain tearing is supported.
-  static bool IsSwapChainTearingSupported();
-
-  static bool AllowTearing();
-
-  static void SetScaledOverlaysSupportedForTesting(bool value);
-
-  static void SetOverlayFormatUsedForTesting(DXGI_FORMAT format);
-
-  // On Intel GPUs where YUV overlays are supported, BGRA8 overlays are
-  // supported as well but IDXGIOutput3::CheckOverlaySupport() returns
-  // unsupported. So allow manually enabling BGRA8 overlay support.
-  static void EnableBGRA8OverlaysWithYUVOverlaySupport();
-
-  // Forces to enable NV12 overlay support regardless of the query results from
-  // IDXGIOutput3::CheckOverlaySupport().
-  static void ForceNV12OverlaySupport();
-
-  // Forces to enable RGBA101010A2 overlay support regardless of the query
-  // results from IDXGIOutput3::CheckOverlaySupport().
-  static void ForceRgb10a2OverlaySupport();
-
-  // Enable NV12 overlay support only when
-  // DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709 is supported.
-  static void SetCheckYCbCrStudioG22LeftP709ForNv12Support();
 
   // GLSurfaceEGL implementation.
   bool Initialize(GLSurfaceFormat format) override;
@@ -201,8 +119,6 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL {
                                         gfx::Point* offset,
                                         gfx::Rect* clip_rect) const;
 
-  void SetMonitorInfoForTesting(int num_of_monitors, gfx::Size monitor_size);
-
   DCLayerTree* GetLayerTreeForTesting() { return layer_tree_.get(); }
 
  protected:
@@ -214,54 +130,6 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL {
 
   scoped_refptr<DirectCompositionChildSurfaceWin> root_surface_;
   std::unique_ptr<DCLayerTree> layer_tree_;
-};
-
-class GL_EXPORT DirectCompositionOverlayCapsObserver
-    : public base::CheckedObserver {
- public:
-  virtual void OnOverlayCapsChanged() = 0;
-
- protected:
-  ~DirectCompositionOverlayCapsObserver() override = default;
-};
-
-// Upon receiving display notifications from ui::GpuSwitchingManager,
-// DirectCompositionOverlayCapsMonitor updates its overlay caps with the new
-// display setting and notifies DirectCompositionOverlayCapsObserver for the
-// overlay cap change.
-class GL_EXPORT DirectCompositionOverlayCapsMonitor
-    : public ui::GpuSwitchingObserver {
- public:
-  DirectCompositionOverlayCapsMonitor(
-      const DirectCompositionOverlayCapsMonitor&) = delete;
-  DirectCompositionOverlayCapsMonitor& operator=(
-      const DirectCompositionOverlayCapsMonitor&) = delete;
-
-  static DirectCompositionOverlayCapsMonitor* GetInstance();
-
-  // DirectCompositionOverlayCapsMonitor is running on GpuMain thread.
-  // AddObserver()/RemoveObserver() are thread safe.
-  void AddObserver(DirectCompositionOverlayCapsObserver* observer);
-  void RemoveObserver(DirectCompositionOverlayCapsObserver* observer);
-
-  // Called when the overlay caps have changed in DirectCompositionSurfaceWin.
-  void NotifyOverlayCapsChanged();
-
-  // Implements GpuSwitchingObserver.
-  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
-  void OnDisplayAdded() override;
-  void OnDisplayRemoved() override;
-  void OnDisplayMetricsChanged() override;
-
- private:
-  friend class base::NoDestructor<DirectCompositionOverlayCapsMonitor>;
-
-  DirectCompositionOverlayCapsMonitor();
-  ~DirectCompositionOverlayCapsMonitor() override;
-
-  scoped_refptr<
-      base::ObserverListThreadSafe<DirectCompositionOverlayCapsObserver>>
-      observer_list_;
 };
 
 }  // namespace gl

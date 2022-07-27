@@ -65,7 +65,7 @@
 #include "third_party/angle/include/EGL/eglext.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/color_space_win.h"
-#include "ui/gl/direct_composition_surface_win.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -1744,7 +1744,7 @@ bool DXVAVideoDecodeAccelerator::SetDecoderInputMediaType() {
     out_attributes->SetUINT32(MF_SA_D3D11_BINDFLAGS,
                               D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DECODER);
     // TODO(sunnyps): Find if we can always set resource sharing to disabled
-    if (gl::DirectCompositionSurfaceWin::IsDecodeSwapChainSupported()) {
+    if (gl::DirectCompositionDecodeSwapChainSupported()) {
       // Decode swap chains do not support shared resources.
       out_attributes->SetUINT32(MF_SA_D3D11_SHARED, FALSE);
       out_attributes->SetUINT32(MF_SA_D3D11_SHARED_WITHOUT_MUTEX, FALSE);

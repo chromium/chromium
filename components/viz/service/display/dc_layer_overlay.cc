@@ -30,7 +30,6 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/gl_switches.h"
-#include "ui/gl/gl_utils.h"
 
 namespace viz {
 
@@ -453,9 +452,7 @@ DCLayerOverlayProcessor::~DCLayerOverlayProcessor() {
 }
 
 void DCLayerOverlayProcessor::UpdateHasHwOverlaySupport() {
-  // gl::AreOverlaysSupportedWin() calls
-  // gl::DirectCompositionSurfaceWin::AreOverlaysSupported(). It's thread safe.
-  has_overlay_support_ = gl::AreOverlaysSupportedWin();
+  has_overlay_support_ = gl::DirectCompositionOverlaysSupported();
 }
 
 // Called on the Viz Compositor thread.
@@ -954,8 +951,8 @@ bool DCLayerOverlayProcessor::ShouldSkipOverlay(
   // some Intel's platforms (Icelake or above), Overlay can play HDR content by
   // supporting RGB10 format. Let overlay deal with HDR content in this
   // situation.
-  bool supports_rgb10a2_overlay =
-      gl::GetOverlaySupportFlags(DXGI_FORMAT_R10G10B10A2_UNORM) != 0;
+  bool supports_rgb10a2_overlay = gl::GetDirectCompositionOverlaySupportFlags(
+                                      DXGI_FORMAT_R10G10B10A2_UNORM) != 0;
   if (render_pass->content_color_usage == gfx::ContentColorUsage::kHDR &&
       !supports_rgb10a2_overlay) {
     // Media Foundation always uses overlays to render video, so do not skip.

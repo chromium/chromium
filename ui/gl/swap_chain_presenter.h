@@ -5,9 +5,9 @@
 #ifndef UI_GL_SWAP_CHAIN_PRESENTER_H_
 #define UI_GL_SWAP_CHAIN_PRESENTER_H_
 
-#include <windows.h>
 #include <d3d11.h>
 #include <dcomp.h>
+#include <windows.h>
 #include <wrl/client.h>
 
 #include "base/containers/circular_deque.h"

@@ -102,7 +102,7 @@
 #include "media/base/win/mf_feature_checks.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gl/dcomp_surface_registry.h"
-#include "ui/gl/direct_composition_surface_win.h"
+#include "ui/gl/direct_composition_support.h"
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -915,7 +915,7 @@ void GpuServiceImpl::RequestDXGIInfo(RequestDXGIInfoCallback callback) {
 void GpuServiceImpl::RequestDXGIInfoOnMainThread(
     RequestDXGIInfoCallback callback) {
   DCHECK(main_runner_->BelongsToCurrentThread());
-  dxgi_info_ = gl::DirectCompositionSurfaceWin::GetDXGIInfo();
+  dxgi_info_ = gl::GetDirectCompositionHDRMonitorDXGIInfo();
   io_runner_->PostTask(FROM_HERE,
                        base::BindOnce(std::move(callback), dxgi_info_.Clone()));
 }
@@ -1353,7 +1353,7 @@ void GpuServiceImpl::OnOverlayCapsChanged() {
 
   // Update DXGI adapter info in the GPU process through the GPU host mojom.
   auto old_dxgi_info = std::move(dxgi_info_);
-  dxgi_info_ = gl::DirectCompositionSurfaceWin::GetDXGIInfo();
+  dxgi_info_ = gl::GetDirectCompositionHDRMonitorDXGIInfo();
   if (!mojo::Equals(dxgi_info_, old_dxgi_info))
     gpu_host_->DidUpdateDXGIInfo(dxgi_info_.Clone());
 }

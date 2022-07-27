@@ -19,7 +19,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/video_types.h"
-#include "ui/gl/direct_composition_surface_win.h"
+#include "ui/gl/direct_composition_support.h"
 
 namespace viz {
 struct DebugRendererSettings;

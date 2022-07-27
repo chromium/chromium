@@ -19,7 +19,7 @@
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gl/dc_layer_tree.h"
-#include "ui/gl/direct_composition_surface_win.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_image_d3d.h"
 #include "ui/gl/gl_image_dcomp_surface.h"
 #include "ui/gl/gl_image_dxgi.h"
@@ -89,7 +89,7 @@ const char* ProtectedVideoTypeToString(gfx::ProtectedVideoType type) {
     case gfx::ProtectedVideoType::kClear:
       return "Clear";
     case gfx::ProtectedVideoType::kSoftwareProtected:
-      if (DirectCompositionSurfaceWin::AreOverlaysSupported())
+      if (DirectCompositionOverlaysSupported())
         return "SoftwareProtected.HasOverlaySupport";
       else
         return "SoftwareProtected.NoOverlaySupport";
@@ -309,15 +309,15 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
   if (content_is_hdr)
     return DXGI_FORMAT_R10G10B10A2_UNORM;
 
-  DXGI_FORMAT yuv_overlay_format =
-      DirectCompositionSurfaceWin::GetOverlayFormatUsedForSDR();
+  DXGI_FORMAT yuv_overlay_format = GetDirectCompositionSDROverlayFormat();
   // Always prefer YUV swap chain for hardware protected video for now.
   if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected)
     return yuv_overlay_format;
 
   if (failed_to_create_yuv_swapchain_ ||
-      !DirectCompositionSurfaceWin::AreHardwareOverlaysSupported())
+      !DirectCompositionHardwareOverlaysSupported()) {
     return DXGI_FORMAT_B8G8R8A8_UNORM;
+  }
 
   // Start out as YUV.
   if (!presentation_history_.Valid())
@@ -391,7 +391,7 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImages(
     if (FAILED(hr)) {
       DLOG(ERROR) << "Creating D3D11 video staging texture failed: " << std::hex
                   << hr;
-      DirectCompositionSurfaceWin::DisableOverlays();
+      DisableDirectCompositionOverlays();
       return nullptr;
     }
     DCHECK(staging_texture_);
@@ -449,7 +449,7 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImages(
     if (FAILED(hr)) {
       DLOG(ERROR) << "Creating D3D11 video upload texture failed: " << std::hex
                   << hr;
-      DirectCompositionSurfaceWin::DisableOverlays();
+      DisableDirectCompositionOverlays();
       return nullptr;
     }
     DCHECK(copy_texture_);
@@ -464,9 +464,9 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImages(
 }
 
 gfx::Size SwapChainPresenter::GetMonitorSize() {
-  if (DirectCompositionSurfaceWin::GetNumOfMonitors() == 1) {
+  if (GetDirectCompositionNumMonitors() == 1) {
     // Only one monitor. Return the size of this monitor.
-    return DirectCompositionSurfaceWin::GetPrimaryMonitorSize();
+    return GetDirectCompositionPrimaryMonitorSize();
   } else {
     gfx::Size monitor_size;
     // Get the monitor on which the overlay is displayed.
@@ -712,8 +712,7 @@ bool SwapChainPresenter::TryPresentToDecodeSwapChain(
 
   bool nv12_supported =
       (swap_chain_format == DXGI_FORMAT_NV12) &&
-      (DXGI_FORMAT_NV12 ==
-       DirectCompositionSurfaceWin::GetOverlayFormatUsedForSDR());
+      (DXGI_FORMAT_NV12 == GetDirectCompositionSDROverlayFormat());
   // TODO(sunnyps): Try using decode swap chain for uploaded video images.
   if (texture && nv12_supported && !failed_to_present_decode_swapchain_) {
     D3D11_TEXTURE2D_DESC texture_desc = {};
@@ -753,7 +752,7 @@ bool SwapChainPresenter::TryPresentToDecodeSwapChain(
                              (swap_chain_scale_x >= 1.0f) &&
                              (swap_chain_scale_y >= 1.0f);
     }
-    if (!DirectCompositionSurfaceWin::AreScaledOverlaysSupported()) {
+    if (!DirectCompositionScaledOverlaysSupported()) {
       compatible_transform = compatible_transform &&
                              (swap_chain_scale_x == 1.0f) &&
                              (swap_chain_scale_y == 1.0f);
@@ -1138,11 +1137,12 @@ bool SwapChainPresenter::PresentToSwapChain(ui::DCRendererLayerParams& params) {
       base::debug::DumpWithoutCrashing();
     }
   }
-  const bool use_swap_chain_tearing =
-      DirectCompositionSurfaceWin::AllowTearing();
-  UINT flags = use_swap_chain_tearing ? DXGI_PRESENT_ALLOW_TEARING : 0;
-  flags |= DXGI_PRESENT_USE_DURATION;
-  UINT interval = use_swap_chain_tearing ? 0 : 1;
+  UINT flags = DXGI_PRESENT_USE_DURATION;
+  UINT interval = 1;
+  if (DirectCompositionSwapChainTearingEnabled()) {
+    flags |= DXGI_PRESENT_ALLOW_TEARING;
+    interval = 0;
+  }
   // Ignore DXGI_STATUS_OCCLUDED since that's not an error but only indicates
   // that the window is occluded and we can stop rendering.
   hr = swap_chain_->Present(interval, flags);
@@ -1549,7 +1549,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
   desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
   desc.Flags =
       DXGI_SWAP_CHAIN_FLAG_YUV_VIDEO | DXGI_SWAP_CHAIN_FLAG_FULLSCREEN_VIDEO;
-  if (DirectCompositionSurfaceWin::AllowTearing())
+  if (DirectCompositionSwapChainTearingEnabled())
     desc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
   if (IsProtectedVideo(protected_video_type))
     desc.Flags |= DXGI_SWAP_CHAIN_FLAG_DISPLAY_ONLY;
@@ -1602,7 +1602,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
       desc.Flags |= DXGI_SWAP_CHAIN_FLAG_DISPLAY_ONLY;
     if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected)
       desc.Flags |= DXGI_SWAP_CHAIN_FLAG_HW_PROTECTED;
-    if (DirectCompositionSurfaceWin::AllowTearing())
+    if (DirectCompositionSwapChainTearingEnabled())
       desc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
 
     HRESULT hr = media_factory->CreateSwapChainForCompositionSurfaceHandle(
@@ -1619,7 +1619,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
     if (FAILED(hr)) {
       // Disable overlay support so dc_layer_overlay will stop sending down
       // overlay frames here and uses GL Composition instead.
-      DirectCompositionSurfaceWin::DisableOverlays();
+      DisableDirectCompositionOverlays();
       DLOG(ERROR) << "Failed to create "
                   << DxgiFormatToString(swap_chain_format)
                   << " swap chain of size " << swap_chain_size.ToString()

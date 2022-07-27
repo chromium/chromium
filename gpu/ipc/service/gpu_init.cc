@@ -55,7 +55,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "gpu/config/gpu_driver_bug_workarounds.h"
-#include "ui/gl/direct_composition_surface_win.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_surface_egl.h"
 #endif
 
@@ -95,22 +95,18 @@ void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
   // |disable_direct_composition| may not be correctly applied.
   // Also, this has to be called after falling back to SwiftShader decision is
   // finalized because this function depends on GL is ANGLE's GLES or not.
-  if (gpu_feature_info.IsWorkaroundEnabled(
-          gpu::ENABLE_BGRA8_OVERLAYS_WITH_YUV_OVERLAY_SUPPORT)) {
-    gl::DirectCompositionSurfaceWin::EnableBGRA8OverlaysWithYUVOverlaySupport();
-  }
-  if (gpu_feature_info.IsWorkaroundEnabled(gpu::FORCE_NV12_OVERLAY_SUPPORT)) {
-    gl::DirectCompositionSurfaceWin::ForceNV12OverlaySupport();
-  }
-  if (gpu_feature_info.IsWorkaroundEnabled(
-          gpu::FORCE_RGB10A2_OVERLAY_SUPPORT_FLAGS)) {
-    gl::DirectCompositionSurfaceWin::ForceRgb10a2OverlaySupport();
-  }
-  if (gpu_feature_info.IsWorkaroundEnabled(
-          gpu::CHECK_YCBCR_STUDIO_G22_LEFT_P709_FOR_NV12_SUPPORT)) {
-    gl::DirectCompositionSurfaceWin::
-        SetCheckYCbCrStudioG22LeftP709ForNv12Support();
-  }
+  gl::DirectCompositionOverlayWorkarounds workarounds = {
+      .enable_bgra8_overlays_with_yuv_overlay_support =
+          gpu_feature_info.IsWorkaroundEnabled(
+              gpu::ENABLE_BGRA8_OVERLAYS_WITH_YUV_OVERLAY_SUPPORT),
+      .force_nv12_overlay_support =
+          gpu_feature_info.IsWorkaroundEnabled(gpu::FORCE_NV12_OVERLAY_SUPPORT),
+      .force_rgb10a2_overlay_support = gpu_feature_info.IsWorkaroundEnabled(
+          gpu::FORCE_RGB10A2_OVERLAY_SUPPORT_FLAGS),
+      .check_ycbcr_studio_g22_left_p709_for_nv12_support =
+          gpu_feature_info.IsWorkaroundEnabled(
+              gpu::CHECK_YCBCR_STUDIO_G22_LEFT_P709_FOR_NV12_SUPPORT)};
+  SetDirectCompositionOverlayWorkarounds(workarounds);
 
   DCHECK(gpu_info);
   CollectHardwareOverlayInfo(&gpu_info->overlay_info);
@@ -725,10 +721,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
 #if BUILDFLAG(IS_WIN)
   if (gpu_feature_info_.IsWorkaroundEnabled(DISABLE_DECODE_SWAP_CHAIN))
-    gl::DirectCompositionSurfaceWin::DisableDecodeSwapChain();
+    gl::DisableDirectCompositionDecodeSwapChain();
   if (gpu_feature_info_.IsWorkaroundEnabled(
           DISABLE_DIRECT_COMPOSITION_SW_VIDEO_OVERLAYS)) {
-    gl::DirectCompositionSurfaceWin::DisableSoftwareOverlays();
+    gl::DisableDirectCompositionSoftwareOverlays();
   }
 #endif
 
@@ -914,7 +910,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 
 #if BUILDFLAG(IS_WIN)
   if (gpu_feature_info_.IsWorkaroundEnabled(DISABLE_DECODE_SWAP_CHAIN))
-    gl::DirectCompositionSurfaceWin::DisableDecodeSwapChain();
+    gl::DisableDirectCompositionDecodeSwapChain();
 #endif
 
   UMA_HISTOGRAM_ENUMERATION("GPU.GLImplementation", gl::GetGLImplementation());

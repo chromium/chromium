@@ -16,7 +16,7 @@
 #include "media/gpu/ipc/service/vda_video_decoder.h"
 #include "media/gpu/windows/d3d11_video_decoder.h"
 #include "media/gpu/windows/mf_audio_encoder.h"
-#include "ui/gl/direct_composition_surface_win.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
 
 namespace media {
@@ -48,7 +48,7 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
   }
   // Report that HDR is enabled if any display has HDR enabled.
   bool hdr_enabled = false;
-  auto dxgi_info = gl::DirectCompositionSurfaceWin::GetDXGIInfo();
+  auto dxgi_info = gl::GetDirectCompositionHDRMonitorDXGIInfo();
   for (const auto& output_desc : dxgi_info->output_descs)
     hdr_enabled |= output_desc->hdr_enabled;
   return D3D11VideoDecoder::Create(

@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
-#include "ui/gl/direct_composition_surface_win.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/swap_chain_presenter.h"
 
@@ -50,7 +50,7 @@ bool DCLayerTree::Initialize(HWND window) {
   d3d11_device_ = QueryD3D11DeviceObjectFromANGLE();
   DCHECK(d3d11_device_);
 
-  dcomp_device_ = DirectCompositionSurfaceWin::GetDirectCompositionDevice();
+  dcomp_device_ = GetDirectCompositionDevice();
   DCHECK(dcomp_device_);
 
   Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> desktop_device;
@@ -91,7 +91,7 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
     if (FAILED(d3d11_device_.As(&video_processor_wrapper.video_device))) {
       DLOG(ERROR) << "Failed to retrieve video device from D3D11 device";
       DCHECK(false);
-      DirectCompositionSurfaceWin::DisableOverlays();
+      DisableDirectCompositionOverlays();
       return nullptr;
     }
     DCHECK(video_processor_wrapper.video_device);
@@ -134,7 +134,7 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
                 << std::hex << hr;
     // It might fail again next time. Disable overlay support so
     // overlay processor will stop sending down overlay frames.
-    DirectCompositionSurfaceWin::DisableOverlays();
+    DisableDirectCompositionOverlays();
     return nullptr;
   }
   hr = video_processor_wrapper.video_device->CreateVideoProcessor(
@@ -145,7 +145,7 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
                 << hr;
     // It might fail again next time. Disable overlay support so
     // overlay processor will stop sending down overlay frames.
-    DirectCompositionSurfaceWin::DisableOverlays();
+    DisableDirectCompositionOverlays();
     return nullptr;
   }
   // Auto stream processing (the default) can hurt power consumption.

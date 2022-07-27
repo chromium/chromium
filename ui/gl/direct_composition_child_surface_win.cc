@@ -19,7 +19,7 @@
 #include "base/win/windows_version.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gl/direct_composition_surface_win.h"
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
@@ -44,8 +44,6 @@ namespace {
 // here which IDCompositionSurface is being rendered into. If another context
 // is made current, then this surface will be suspended.
 IDCompositionSurface* g_current_surface = nullptr;
-
-bool g_direct_composition_swap_chain_failed = false;
 
 // If damage_rect / full_chrome_rect >= kForceFullDamageThreshold, present
 // the swap chain with full damage.
@@ -110,16 +108,12 @@ DirectCompositionChildSurfaceWin::~DirectCompositionChildSurfaceWin() {
 
 bool DirectCompositionChildSurfaceWin::Initialize(GLSurfaceFormat format) {
   d3d11_device_ = QueryD3D11DeviceObjectFromANGLE();
-  dcomp_device_ = DirectCompositionSurfaceWin::GetDirectCompositionDevice();
+  dcomp_device_ = GetDirectCompositionDevice();
   if (!dcomp_device_)
     return false;
 
   EGLint pbuffer_attribs[] = {
-      EGL_WIDTH,
-      1,
-      EGL_HEIGHT,
-      1,
-      EGL_NONE,
+      EGL_WIDTH, 1, EGL_HEIGHT, 1, EGL_NONE,
   };
 
   default_surface_ = eglCreatePbufferSurface(display_->GetDisplay(),
@@ -168,7 +162,7 @@ bool DirectCompositionChildSurfaceWin::ReleaseDrawTexture(bool will_discard) {
       dcomp_surface_serial_++;
     } else if (!will_discard) {
       const bool use_swap_chain_tearing =
-          DirectCompositionSurfaceWin::AllowTearing();
+          DirectCompositionSwapChainTearingEnabled();
       UINT interval =
           first_swap_ || !vsync_enabled_ || use_swap_chain_tearing ? 0 : 1;
       UINT flags = use_swap_chain_tearing ? DXGI_PRESENT_ALLOW_TEARING : 0;
@@ -403,7 +397,7 @@ bool DirectCompositionChildSurfaceWin::SetDrawRectangle(
       DLOG(ERROR) << "CreateSurface failed with error " << std::hex << hr;
       // Disable direct composition because CreateSurface might fail again next
       // time.
-      g_direct_composition_swap_chain_failed = true;
+      SetDirectCompositionSwapChainFailed();
       return false;
     }
 
@@ -438,12 +432,12 @@ bool DirectCompositionChildSurfaceWin::SetDrawRectangle(
     desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
     desc.AlphaMode =
         has_alpha_ ? DXGI_ALPHA_MODE_PREMULTIPLIED : DXGI_ALPHA_MODE_IGNORE;
-    desc.Flags = DirectCompositionSurfaceWin::AllowTearing()
-                     ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING
-                     : 0;
-    desc.Flags |= IsWaitableSwapChainEnabled()
-                      ? DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT
-                      : 0;
+    desc.Flags = 0;
+    if (DirectCompositionSwapChainTearingEnabled())
+      desc.Flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+    if (IsWaitableSwapChainEnabled())
+      desc.Flags |= DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
+
     HRESULT hr = dxgi_factory->CreateSwapChainForComposition(
         d3d11_device_.Get(), &desc, nullptr, &swap_chain_);
     first_swap_ = true;
@@ -459,7 +453,7 @@ bool DirectCompositionChildSurfaceWin::SetDrawRectangle(
                   << std::hex << hr;
       // Disable direct composition because SwapChain creation might fail again
       // next time.
-      g_direct_composition_swap_chain_failed = true;
+      SetDirectCompositionSwapChainFailed();
       return false;
     }
 
@@ -584,12 +578,11 @@ bool DirectCompositionChildSurfaceWin::Resize(
   if (swap_chain_ && resize_only) {
     UINT buffer_count = gl::DirectCompositionRootSurfaceBufferCount();
     DXGI_FORMAT format = gfx::ColorSpaceWin::GetDXGIFormat(color_space_);
-    UINT flags = DirectCompositionSurfaceWin::AllowTearing()
-                     ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING
-                     : 0;
-    flags |= IsWaitableSwapChainEnabled()
-                 ? DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT
-                 : 0;
+    UINT flags = 0;
+    if (DirectCompositionSwapChainTearingEnabled())
+      flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+    if (IsWaitableSwapChainEnabled())
+      flags |= DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
     HRESULT hr = swap_chain_->ResizeBuffers(buffer_count, size.width(),
                                             size.height(), format, flags);
     UMA_HISTOGRAM_BOOLEAN("GPU.DirectComposition.SwapChainResizeResult",
@@ -784,11 +777,6 @@ void DirectCompositionChildSurfaceWin::CopyOffscreenTextureToDrawTexture() {
   context->CopySubresourceRegion(draw_texture_.Get(), 0, dcomp_update_offset_.x,
                                  dcomp_update_offset_.y, 0,
                                  offscreen_texture_.Get(), 0, &box);
-}
-
-// static
-bool DirectCompositionChildSurfaceWin::IsDirectCompositionSwapChainFailed() {
-  return g_direct_composition_swap_chain_failed;
 }
 
 }  // namespace gl

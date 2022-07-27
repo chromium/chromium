@@ -28,7 +28,7 @@
 #include <d3d11_1.h>
 #include "base/strings/stringprintf.h"
 #include "media/base/win/mf_helpers.h"
-#include "ui/gl/direct_composition_surface_win.h"
+#include "ui/gl/direct_composition_support.h"
 #endif
 
 namespace gl {
@@ -116,20 +116,11 @@ bool PassthroughCommandDecoderSupported() {
 }
 
 #if BUILDFLAG(IS_WIN)
-// This function is thread safe.
-bool AreOverlaysSupportedWin() {
-  return gl::DirectCompositionSurfaceWin::AreOverlaysSupported();
-}
-
 unsigned int FrameRateToPresentDuration(float frame_rate) {
   if (frame_rate == 0)
     return 0u;
   // Present duration unit is 100 ns.
   return static_cast<unsigned int>(1.0E7 / frame_rate);
-}
-
-UINT GetOverlaySupportFlags(DXGI_FORMAT format) {
-  return gl::DirectCompositionSurfaceWin::GetOverlaySupportFlags(format);
 }
 
 unsigned int DirectCompositionRootSurfaceBufferCount() {
@@ -145,8 +136,8 @@ bool ShouldForceDirectCompositionRootSurfaceFullDamage() {
             switches::kDirectCompositionForceFullDamageForTesting)) {
       return true;
     }
-    UINT brga_flags = DirectCompositionSurfaceWin::GetOverlaySupportFlags(
-        DXGI_FORMAT_B8G8R8A8_UNORM);
+    UINT brga_flags =
+        GetDirectCompositionOverlaySupportFlags(DXGI_FORMAT_B8G8R8A8_UNORM);
     constexpr UINT kSupportBits =
         DXGI_OVERLAY_SUPPORT_FLAG_DIRECT | DXGI_OVERLAY_SUPPORT_FLAG_SCALING;
     if ((brga_flags & kSupportBits) == 0)
