@@ -559,6 +559,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "autofill-parse-vcn-card-on-file-standalone-cvc-fields",
+    "owners": [ "nakulvaidya@google.com", "jsaul@google.com", "alexandertekle@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "autofill-prevent-overriding-prefilled-values",
     "owners": [ "vidhanj", "koerber" ],
     "expiry_milestone": 107

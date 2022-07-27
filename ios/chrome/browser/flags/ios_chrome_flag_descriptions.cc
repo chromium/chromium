@@ -81,6 +81,12 @@ const char kAutofillParseMerchantPromoCodeFieldsDescription[] =
     "When enabled, Autofill will attempt to find merchant promo/coupon/gift "
     "code fields when parsing forms.";
 
+const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[] =
+    "Parse standalone CVC fields for VCN card on file in forms";
+const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[] =
+    "When enabled, Autofill will attempt to find standalone CVC fields for VCN "
+    "card on file when parsing forms.";
+
 const char kAutofillPruneSuggestionsName[] = "Autofill Prune Suggestions";
 const char kAutofillPruneSuggestionsDescription[] =
     "Further limits the number of suggestions in the Autofill dropdown.";

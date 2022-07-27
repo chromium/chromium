@@ -58793,6 +58793,8 @@ from previous Chrome versions.
   <int value="-17698200" label="DoubleTapToZoomInTabletMode:disabled"/>
   <int value="-17373827" label="SharingDeviceExpiration:enabled"/>
   <int value="-16824589" label="ash-shelf-color"/>
+  <int value="-16732224"
+      label="AutofillParseVcnCardOnFileStandaloneCvcFields:enabled"/>
   <int value="-16413037" label="ReduceUserAgent:enabled"/>
   <int value="-16086999" label="TrimOnFreeze:enabled"/>
   <int value="-15879016"
@@ -60867,6 +60869,8 @@ from previous Chrome versions.
   <int value="1300282719" label="OfflinePagesBackgroundLoading:enabled"/>
   <int value="1300753556" label="ManualPasswordGenerationAndroid:disabled"/>
   <int value="1301902557" label="AutofillCreditCardAuthentication:disabled"/>
+  <int value="1302342960"
+      label="AutofillParseVcnCardOnFileStandaloneCvcFields:disabled"/>
   <int value="1302421166" label="NativeNotifications:disabled"/>
   <int value="1304636193" label="ArcEnableUnifiedAudioFocus:enabled"/>
   <int value="1305792241" label="SafeBrowsingEnhancedProtection:disabled"/>

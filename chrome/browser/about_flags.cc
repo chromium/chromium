@@ -9017,6 +9017,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillFillIbanFieldsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillFillIbanFields)},
 
+    {"autofill-parse-vcn-card-on-file-standalone-cvc-fields",
+     flag_descriptions::kAutofillParseVcnCardOnFileStandaloneCvcFieldsName,
+     flag_descriptions::
+         kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillParseVcnCardOnFileStandaloneCvcFields)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

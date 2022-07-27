@@ -1128,6 +1128,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableFeedBackgroundRefresh,
                                     kFeedBackgroundRefreshVariations,
                                     "FeedBackgroundRefresh")},
+    {"autofill-parse-vcn-card-on-file-standalone-cvc-fields",
+     flag_descriptions::kAutofillParseVcnCardOnFileStandaloneCvcFieldsName,
+     flag_descriptions::
+         kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillParseVcnCardOnFileStandaloneCvcFields)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

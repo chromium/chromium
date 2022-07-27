@@ -271,6 +271,9 @@ extern const char kAutofillParseIbanFieldsDescription[];
 extern const char kAutofillParseMerchantPromoCodeFieldsName[];
 extern const char kAutofillParseMerchantPromoCodeFieldsDescription[];
 
+extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[];
+extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
+
 extern const char kAutofillPreventOverridingPrefilledValuesName[];
 extern const char kAutofillPreventOverridingPrefilledValuesDescription[];
 

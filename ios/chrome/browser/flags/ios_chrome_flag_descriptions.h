@@ -68,6 +68,11 @@ extern const char kAutofillParseIbanFieldsDescription[];
 extern const char kAutofillParseMerchantPromoCodeFieldsName[];
 extern const char kAutofillParseMerchantPromoCodeFieldsDescription[];
 
+// Title and description for the flag to parse standalone CVC fields for VCN
+// card on file in Autofill.
+extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[];
+extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
+
 // Title and description for the flag that controls whether the maximum number
 // of Autofill suggestions shown is pruned.
 extern const char kAutofillPruneSuggestionsName[];
