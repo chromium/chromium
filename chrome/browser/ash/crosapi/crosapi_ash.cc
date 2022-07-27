@@ -86,6 +86,7 @@
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
 #include "chrome/browser/ash/crosapi/video_capture_device_factory_ash.h"
 #include "chrome/browser/ash/crosapi/virtual_keyboard_ash.h"
+#include "chrome/browser/ash/crosapi/volume_manager_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_extension_observer_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/crosapi/wallpaper_ash.h"
@@ -240,6 +241,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       video_capture_device_factory_ash_(
           std::make_unique<VideoCaptureDeviceFactoryAsh>()),
       virtual_keyboard_ash_(std::make_unique<VirtualKeyboardAsh>()),
+      volume_manager_ash_(std::make_unique<VolumeManagerAsh>()),
       vpn_extension_observer_ash_(std::make_unique<VpnExtensionObserverAsh>()),
       vpn_service_ash_(std::make_unique<VpnServiceAsh>()),
       wallpaper_ash_(std::make_unique<WallpaperAsh>()),
@@ -726,6 +728,11 @@ void CrosapiAsh::BindVideoCaptureDeviceFactory(
 void CrosapiAsh::BindVirtualKeyboard(
     mojo::PendingReceiver<mojom::VirtualKeyboard> receiver) {
   virtual_keyboard_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindVolumeManager(
+    mojo::PendingReceiver<crosapi::mojom::VolumeManager> receiver) {
+  volume_manager_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindVpnExtensionObserver(

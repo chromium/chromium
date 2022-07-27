@@ -202,6 +202,8 @@ source_set("crosapi") {
     "video_frame_handler_ash.h",
     "virtual_keyboard_ash.cc",
     "virtual_keyboard_ash.h",
+    "volume_manager_ash.cc",
+    "volume_manager_ash.h",
     "vpn_extension_observer_ash.cc",
     "vpn_extension_observer_ash.h",
     "vpn_service_ash.cc",

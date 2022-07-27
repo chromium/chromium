@@ -22,6 +22,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_running_on_chromeos.h"
@@ -222,6 +223,14 @@ class LoggingObserver : public VolumeManagerObserver {
     event.device_label = device_label;
     event.success = success;
     events_.push_back(event);
+  }
+
+  void OnShutdownStart(VolumeManager* volume_manager) override {
+    // Each test should remove its observer manually, so that they're all gone
+    // by the time VolumeManager shuts down, and this handler is never reached.
+    // In fact, it's more likely for UAF crash to happen before this code is
+    // reached.
+    NOTREACHED();
   }
 
  private:
@@ -1182,6 +1191,8 @@ TEST_F(VolumeManagerTest, ArchiveSourceFiltering) {
       volume_manager()->FindVolumeById("archive:3");
   ASSERT_FALSE(third_volume.get());
   EXPECT_EQ(3u, observer.events().size());
+
+  volume_manager()->RemoveObserver(&observer);
 }
 
 TEST_F(VolumeManagerTest, MTPPlugAndUnplug) {
@@ -1219,6 +1230,8 @@ TEST_F(VolumeManagerTest, MTPPlugAndUnplug) {
             observer.events()[1].type);
 
   EXPECT_FALSE(volume.get());
+
+  volume_manager()->RemoveObserver(&observer);
 }
 
 TEST_F(VolumeManagerTest, OnRenameEvent_Started) {

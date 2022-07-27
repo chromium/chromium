@@ -18,6 +18,7 @@ class Disk;
 namespace file_manager {
 
 class Volume;
+class VolumeManager;
 
 // Observer interface of volume related events.
 class VolumeManagerObserver {
@@ -73,6 +74,9 @@ class VolumeManagerObserver {
   virtual void OnRenameCompleted(const std::string& device_path,
                                  const std::string& device_label,
                                  bool success) {}
+
+  // Fired when the observed VolumeManager is starting to shut down.
+  virtual void OnShutdownStart(VolumeManager* volume_manager) {}
 };
 
 }  // namespace file_manager

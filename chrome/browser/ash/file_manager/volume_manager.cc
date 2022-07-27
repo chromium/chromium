@@ -778,6 +778,10 @@ void VolumeManager::Initialize() {
 }
 
 void VolumeManager::Shutdown() {
+  for (auto& observer : observers_) {
+    observer.OnShutdownStart(this);
+  }
+
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   snapshot_manager_.reset();

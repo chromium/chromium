@@ -244,6 +244,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/api/file_system/volume_list_provider_lacros.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -592,6 +593,12 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
     user_policy_provider_->Init(schema_registry_service_->registry());
     policy_provider = user_policy_provider_.get();
     user_cloud_policy_manager = nullptr;
+
+    // Start lacros-chrome volume list provider, which is robust against
+    // API unavailability in ash-chrome.
+    volume_list_provider_ =
+        std::make_unique<extensions::VolumeListProviderLacros>(this);
+    volume_list_provider_->Start();
   } else {
 #else
   {

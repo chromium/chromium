@@ -96,6 +96,7 @@ class WebPageInfoFactoryAsh;
 class UrlHandlerAsh;
 class VideoCaptureDeviceFactoryAsh;
 class VirtualKeyboardAsh;
+class VolumeManagerAsh;
 class VpnExtensionObserverAsh;
 class NetworkSettingsServiceAsh;
 
@@ -293,6 +294,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindVideoCaptureDeviceFactory(
       mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver)
       override;
+  void BindVolumeManager(
+      mojo::PendingReceiver<mojom::VolumeManager> receiver) override;
   void BindVpnExtensionObserver(
       mojo::PendingReceiver<crosapi::mojom::VpnExtensionObserver> receiver)
       override;
@@ -485,6 +488,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<VideoCaptureDeviceFactoryAsh>
       video_capture_device_factory_ash_;
   std::unique_ptr<VirtualKeyboardAsh> virtual_keyboard_ash_;
+  std::unique_ptr<VolumeManagerAsh> volume_manager_ash_;
   std::unique_ptr<VpnExtensionObserverAsh> vpn_extension_observer_ash_;
   std::unique_ptr<VpnServiceAsh> vpn_service_ash_;
   std::unique_ptr<WallpaperAsh> wallpaper_ash_;

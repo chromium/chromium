@@ -44,6 +44,12 @@ namespace base {
 class SequencedTaskRunner;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+namespace extensions {
+class VolumeListProviderLacros;
+}  // namespace extensions
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace policy {
 class AsyncPolicyProvider;
 class ConfigurationPolicyProvider;
@@ -259,6 +265,8 @@ class ProfileImpl : public Profile {
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<policy::AsyncPolicyProvider> user_policy_provider_;
+  // Provider (monitor and dispatcher) of volume list updates.
+  std::unique_ptr<extensions::VolumeListProviderLacros> volume_list_provider_;
 #endif
 
   std::unique_ptr<policy::ProfilePolicyConnector> profile_policy_connector_;
