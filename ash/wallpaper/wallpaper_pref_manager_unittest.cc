@@ -39,56 +39,52 @@ WallpaperInfo InfoWithType(WallpaperType type) {
 }
 
 base::Value CreateWallpaperInfoDict(WallpaperInfo info) {
-  base::Value wallpaper_info_dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict wallpaper_info_dict;
   if (info.asset_id.has_value()) {
-    wallpaper_info_dict.SetStringKey(
-        WallpaperPrefManager::kNewWallpaperAssetIdNodeName,
-        base::NumberToString(info.asset_id.value()));
+    wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperAssetIdNodeName,
+                            base::NumberToString(info.asset_id.value()));
   }
   if (info.dedup_key.has_value()) {
-    wallpaper_info_dict.SetStringKey(
-        WallpaperPrefManager::kNewWallpaperDedupKeyNodeName,
-        info.dedup_key.value());
+    wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperDedupKeyNodeName,
+                            info.dedup_key.value());
   }
   if (info.unit_id.has_value()) {
-    wallpaper_info_dict.SetStringKey(
-        WallpaperPrefManager::kNewWallpaperUnitIdNodeName,
-        base::NumberToString(info.unit_id.value()));
+    wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperUnitIdNodeName,
+                            base::NumberToString(info.unit_id.value()));
   }
-  base::Value online_wallpaper_variant_list(base::Value::Type::LIST);
+  base::Value::List online_wallpaper_variant_list;
   for (const auto& variant : info.variants) {
-    base::Value online_wallpaper_variant_dict(base::Value::Type::DICTIONARY);
-    online_wallpaper_variant_dict.SetStringKey(
+    base::Value::Dict online_wallpaper_variant_dict;
+    online_wallpaper_variant_dict.Set(
         WallpaperPrefManager::kNewWallpaperAssetIdNodeName,
         base::NumberToString(variant.asset_id));
-    online_wallpaper_variant_dict.SetStringKey(
+    online_wallpaper_variant_dict.Set(
         WallpaperPrefManager::kOnlineWallpaperUrlNodeName,
         variant.raw_url.spec());
-    online_wallpaper_variant_dict.SetIntKey(
+    online_wallpaper_variant_dict.Set(
         WallpaperPrefManager::kOnlineWallpaperTypeNodeName,
         static_cast<int>(variant.type));
     online_wallpaper_variant_list.Append(
         std::move(online_wallpaper_variant_dict));
   }
-  wallpaper_info_dict.SetKey(
+  wallpaper_info_dict.Set(
       WallpaperPrefManager::kNewWallpaperVariantListNodeName,
       std::move(online_wallpaper_variant_list));
-  wallpaper_info_dict.SetStringKey(
+  wallpaper_info_dict.Set(
       WallpaperPrefManager::kNewWallpaperCollectionIdNodeName,
       info.collection_id);
-  wallpaper_info_dict.SetStringKey(
-      WallpaperPrefManager::kNewWallpaperDateNodeName,
-      base::NumberToString(info.date.ToInternalValue()));
-  wallpaper_info_dict.SetStringKey(
-      WallpaperPrefManager::kNewWallpaperLocationNodeName, info.location);
-  wallpaper_info_dict.SetStringKey(
+  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperDateNodeName,
+                          base::NumberToString(info.date.ToInternalValue()));
+  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperLocationNodeName,
+                          info.location);
+  wallpaper_info_dict.Set(
       WallpaperPrefManager::kNewWallpaperUserFilePathNodeName,
       info.user_file_path);
-  wallpaper_info_dict.SetIntKey(
-      WallpaperPrefManager::kNewWallpaperLayoutNodeName, info.layout);
-  wallpaper_info_dict.SetIntKey(WallpaperPrefManager::kNewWallpaperTypeNodeName,
-                                static_cast<int>(info.type));
-  return wallpaper_info_dict;
+  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperLayoutNodeName,
+                          info.layout);
+  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperTypeNodeName,
+                          static_cast<int>(info.type));
+  return base::Value(std::move(wallpaper_info_dict));
 }
 
 void PutWallpaperInfoInPrefs(AccountId account_id,

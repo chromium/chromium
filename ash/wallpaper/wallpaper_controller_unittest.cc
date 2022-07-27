@@ -262,56 +262,52 @@ void RunAllTasksUntilIdle() {
   }
 }
 
-base::Value CreateWallpaperInfoDict(WallpaperInfo info) {
-  base::Value wallpaper_info_dict(base::Value::Type::DICTIONARY);
+base::Value::Dict CreateWallpaperInfoDict(WallpaperInfo info) {
+  base::Value::Dict wallpaper_info_dict;
   if (info.asset_id.has_value()) {
-    wallpaper_info_dict.SetStringKey(
-        WallpaperPrefManager::kNewWallpaperAssetIdNodeName,
-        base::NumberToString(info.asset_id.value()));
+    wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperAssetIdNodeName,
+                            base::NumberToString(info.asset_id.value()));
   }
   if (info.dedup_key.has_value()) {
-    wallpaper_info_dict.SetStringKey(
-        WallpaperPrefManager::kNewWallpaperDedupKeyNodeName,
-        info.dedup_key.value());
+    wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperDedupKeyNodeName,
+                            info.dedup_key.value());
   }
   if (info.unit_id.has_value()) {
-    wallpaper_info_dict.SetStringKey(
-        WallpaperPrefManager::kNewWallpaperUnitIdNodeName,
-        base::NumberToString(info.unit_id.value()));
+    wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperUnitIdNodeName,
+                            base::NumberToString(info.unit_id.value()));
   }
-  base::Value online_wallpaper_variant_list(base::Value::Type::LIST);
+  base::Value::List online_wallpaper_variant_list;
   for (const auto& variant : info.variants) {
-    base::Value online_wallpaper_variant_dict(base::Value::Type::DICTIONARY);
-    online_wallpaper_variant_dict.SetStringKey(
+    base::Value::Dict online_wallpaper_variant_dict;
+    online_wallpaper_variant_dict.Set(
         WallpaperPrefManager::kNewWallpaperAssetIdNodeName,
         base::NumberToString(variant.asset_id));
-    online_wallpaper_variant_dict.SetStringKey(
+    online_wallpaper_variant_dict.Set(
         WallpaperPrefManager::kOnlineWallpaperUrlNodeName,
         variant.raw_url.spec());
-    online_wallpaper_variant_dict.SetIntKey(
+    online_wallpaper_variant_dict.Set(
         WallpaperPrefManager::kOnlineWallpaperTypeNodeName,
         static_cast<int>(variant.type));
     online_wallpaper_variant_list.Append(
         std::move(online_wallpaper_variant_dict));
   }
-  wallpaper_info_dict.SetKey(
+  wallpaper_info_dict.Set(
       WallpaperPrefManager::kNewWallpaperVariantListNodeName,
       std::move(online_wallpaper_variant_list));
-  wallpaper_info_dict.SetStringKey(
+  wallpaper_info_dict.Set(
       WallpaperPrefManager::kNewWallpaperCollectionIdNodeName,
       info.collection_id);
-  wallpaper_info_dict.SetStringKey(
-      WallpaperPrefManager::kNewWallpaperDateNodeName,
-      base::NumberToString(info.date.ToInternalValue()));
-  wallpaper_info_dict.SetStringKey(
-      WallpaperPrefManager::kNewWallpaperLocationNodeName, info.location);
-  wallpaper_info_dict.SetStringKey(
+  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperDateNodeName,
+                          base::NumberToString(info.date.ToInternalValue()));
+  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperLocationNodeName,
+                          info.location);
+  wallpaper_info_dict.Set(
       WallpaperPrefManager::kNewWallpaperUserFilePathNodeName,
       info.user_file_path);
-  wallpaper_info_dict.SetIntKey(
-      WallpaperPrefManager::kNewWallpaperLayoutNodeName, info.layout);
-  wallpaper_info_dict.SetIntKey(WallpaperPrefManager::kNewWallpaperTypeNodeName,
-                                static_cast<int>(info.type));
+  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperLayoutNodeName,
+                          info.layout);
+  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperTypeNodeName,
+                          static_cast<int>(info.type));
   return wallpaper_info_dict;
 }
 
@@ -329,21 +325,19 @@ void PutWallpaperInfoInPrefs(AccountId account_id,
                              PrefService* pref_service,
                              const std::string& pref_name) {
   DictionaryPrefUpdate wallpaper_update(pref_service, pref_name);
-  base::Value wallpaper_info_dict = CreateWallpaperInfoDict(info);
+  base::Value::Dict wallpaper_info_dict = CreateWallpaperInfoDict(info);
   wallpaper_update->SetKey(account_id.GetUserEmail(),
-                           std::move(wallpaper_info_dict));
+                           base::Value(std::move(wallpaper_info_dict)));
 }
 
 void AssertWallpaperInfoInPrefs(const PrefService* pref_service,
                                 const char pref_name[],
                                 AccountId account_id,
                                 WallpaperInfo info) {
-  const base::Value* dict = pref_service->GetDictionary(pref_name);
-  DCHECK(dict);
-  const base::Value* stored_info_dict =
-      dict->FindDictKey(account_id.GetUserEmail());
-  DCHECK(stored_info_dict);
-  base::Value expected_info_dict = CreateWallpaperInfoDict(info);
+  const base::Value* pref_dict = pref_service->GetDictionary(pref_name);
+  const base::Value::Dict* stored_info_dict =
+      pref_dict->GetDict().FindDict(account_id.GetUserEmail());
+  base::Value::Dict expected_info_dict = CreateWallpaperInfoDict(info);
   EXPECT_EQ(expected_info_dict, *stored_info_dict);
 }
 
@@ -3233,14 +3227,13 @@ namespace {
 class WallpaperControllerPrefTest : public AshTestBase {
  public:
   WallpaperControllerPrefTest() {
-    base::Value property(base::Value::Type::DICTIONARY);
-    property.SetIntKey("rotation",
-                       static_cast<int>(display::Display::ROTATE_90));
-    property.SetIntKey("width", 800);
-    property.SetIntKey("height", 600);
+    base::Value::Dict property;
+    property.Set("rotation", static_cast<int>(display::Display::ROTATE_90));
+    property.Set("width", 800);
+    property.Set("height", 600);
 
     DictionaryPrefUpdate update(local_state(), prefs::kDisplayProperties);
-    update.Get()->SetKey("2200000000", std::move(property));
+    update.Get()->SetKey("2200000000", base::Value(std::move(property)));
   }
 
   ~WallpaperControllerPrefTest() override = default;
@@ -3415,28 +3408,26 @@ TEST_F(WallpaperControllerTest, SetWallpaperInfoCustom) {
 TEST_F(WallpaperControllerTest, OldOnlineInfoSynced_Discarded) {
   // Create a dictionary that looks like the preference from crrev.com/a040384.
   // DO NOT CHANGE as there are preferences like this in production.
-  base::Value wallpaper_info_dict(base::Value::Type::DICTIONARY);
-  wallpaper_info_dict.SetStringPath(
+  base::Value::Dict wallpaper_info_dict;
+  wallpaper_info_dict.Set(
       WallpaperPrefManager::kNewWallpaperDateNodeName,
       base::NumberToString(
           base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds()));
-  wallpaper_info_dict.SetStringPath(
-      WallpaperPrefManager::kNewWallpaperLocationNodeName, "location");
-  wallpaper_info_dict.SetStringPath(
+  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperLocationNodeName,
+                          "location");
+  wallpaper_info_dict.Set(
       WallpaperPrefManager::kNewWallpaperUserFilePathNodeName,
       "user_file_path");
-  wallpaper_info_dict.SetIntPath(
-      WallpaperPrefManager::kNewWallpaperLayoutNodeName,
-      WallpaperLayout::WALLPAPER_LAYOUT_CENTER);
-  wallpaper_info_dict.SetIntPath(
-      WallpaperPrefManager::kNewWallpaperTypeNodeName,
-      static_cast<int>(WallpaperType::kOnline));
+  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperLayoutNodeName,
+                          WallpaperLayout::WALLPAPER_LAYOUT_CENTER);
+  wallpaper_info_dict.Set(WallpaperPrefManager::kNewWallpaperTypeNodeName,
+                          static_cast<int>(WallpaperType::kOnline));
 
   {
     DictionaryPrefUpdate wallpaper_update(GetProfilePrefService(account_id_1),
                                           prefs::kSyncableWallpaperInfo);
     wallpaper_update->SetKey(account_id_1.GetUserEmail(),
-                             std::move(wallpaper_info_dict));
+                             base::Value(std::move(wallpaper_info_dict)));
   }
   SimulateUserLogin(account_id_1);
   task_environment()->RunUntilIdle();
