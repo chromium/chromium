@@ -2067,9 +2067,11 @@ class WaitToCallOnStartedEmbeddedWorkerInstanceClient
       : FakeEmbeddedWorkerInstanceClient(helper) {}
 
   void CallOnStarted() {
-    host()->OnStarted(blink::mojom::ServiceWorkerStartStatus::kNormalCompletion,
-                      true /* has_fetch_handler */, helper()->GetNextThreadId(),
-                      blink::mojom::EmbeddedWorkerStartTiming::New());
+    host()->OnStarted(
+        blink::mojom::ServiceWorkerStartStatus::kNormalCompletion,
+        blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable,
+        helper()->GetNextThreadId(),
+        blink::mojom::EmbeddedWorkerStartTiming::New());
   }
 
  protected:

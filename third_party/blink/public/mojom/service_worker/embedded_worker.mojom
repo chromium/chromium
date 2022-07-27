@@ -8,9 +8,9 @@ import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
+import "services/service_manager/public/mojom/interface_provider.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
-import "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom";
 import "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/renderer_preference_watcher.mojom";
@@ -18,16 +18,17 @@ import "third_party/blink/public/mojom/renderer_preferences.mojom";
 import "third_party/blink/public/mojom/script/script_type.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker.mojom";
-import "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom";
+import "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom";
+import "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
+import "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom";
 import "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom";
 import "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom";
-import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
-import "services/service_manager/public/mojom/interface_provider.mojom";
 import "url/mojom/url.mojom";
 
 // Parameters to launch a service worker. This is passed from the browser to the
@@ -222,10 +223,11 @@ interface EmbeddedWorkerInstanceHost {
   // for the browser process to start enforcing timeouts on script execution.
   OnScriptEvaluationStart();
   // Indicates that the worker has started. |thread_id| is the platform
-  // thread id the worker runs on. |has_fetch_handler| is true when the fetch
-  // event handler exists after initial script evaluation.
+  // thread id the worker runs on. |fetch_handler_type| represents the fetch
+  // handler type. The type is decided after initial script evaluation, and
+  // it can also represents the fetch event handler does not exist.
   OnStarted(ServiceWorkerStartStatus status,
-            bool has_fetch_handler,
+            blink.mojom.ServiceWorkerFetchHandlerType fetch_handler_type,
             int32 thread_id,
             EmbeddedWorkerStartTiming start_timing);
 

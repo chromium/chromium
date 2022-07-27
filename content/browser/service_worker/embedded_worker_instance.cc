@@ -660,7 +660,7 @@ void EmbeddedWorkerInstance::OnScriptEvaluationStart() {
 
 void EmbeddedWorkerInstance::OnStarted(
     blink::mojom::ServiceWorkerStartStatus start_status,
-    bool has_fetch_handler,
+    blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type,
     int thread_id,
     blink::mojom::EmbeddedWorkerStartTimingPtr start_timing) {
   TRACE_EVENT0("ServiceWorker", "EmbeddedWorkerInstance::OnStarted");
@@ -700,7 +700,7 @@ void EmbeddedWorkerInstance::OnStarted(
   thread_id_ = thread_id;
   inflight_start_info_.reset();
   for (auto& observer : listener_list_) {
-    observer.OnStarted(start_status, has_fetch_handler);
+    observer.OnStarted(start_status, fetch_handler_type);
     // |this| may be destroyed here. Fortunately we know there is only one
     // observer in production code.
   }

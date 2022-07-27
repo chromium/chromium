@@ -1188,7 +1188,7 @@ void ServiceWorkerVersion::OnStarting() {
 
 void ServiceWorkerVersion::OnStarted(
     blink::mojom::ServiceWorkerStartStatus start_status,
-    bool has_fetch_handler) {
+    blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type) {
   DCHECK_EQ(EmbeddedWorkerStatus::RUNNING, running_status());
 
   // TODO(falken): This maps kAbruptCompletion to kErrorScriptEvaluated, which
@@ -1201,9 +1201,11 @@ void ServiceWorkerVersion::OnStarted(
 
   if (status == blink::ServiceWorkerStatusCode::kOk &&
       fetch_handler_existence_ == FetchHandlerExistence::UNKNOWN) {
-    set_fetch_handler_existence(has_fetch_handler
-                                    ? FetchHandlerExistence::EXISTS
-                                    : FetchHandlerExistence::DOES_NOT_EXIST);
+    set_fetch_handler_existence(
+        (fetch_handler_type !=
+         blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler)
+            ? FetchHandlerExistence::EXISTS
+            : FetchHandlerExistence::DOES_NOT_EXIST);
   }
 
   // Fire all start callbacks.
