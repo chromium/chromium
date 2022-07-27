@@ -13,7 +13,13 @@
 
 namespace TemplateURLStarterPackData {
 
-const int kCurrentDataVersion = 4;
+// Update this whenever a change is made to any starter pack data.
+const int kCurrentDataVersion = 5;
+
+// Only update this if there's an incompatible change that requires force
+// updating the user's starter pack data. This will overwrite any of the
+// user's changes to the starter pack entries.
+const int kFirstCompatibleDataVersion = 5;
 
 const StarterPackEngine bookmarks = {
     .name_message_id = IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_NAME,
@@ -56,6 +62,10 @@ const StarterPackEngine* engines[] = {
 
 int GetDataVersion() {
   return kCurrentDataVersion;
+}
+
+int GetFirstCompatibleDataVersion() {
+  return kFirstCompatibleDataVersion;
 }
 
 std::vector<std::unique_ptr<TemplateURLData>> GetStarterPackEngines() {

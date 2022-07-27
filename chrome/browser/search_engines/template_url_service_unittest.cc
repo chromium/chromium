@@ -33,6 +33,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1503,6 +1504,53 @@ TEST_F(TemplateURLServiceTest, LoadEnsuresDefaultSearchProviderExists) {
   ASSERT_TRUE(model()->GetDefaultSearchProvider());
   EXPECT_TRUE(model()->GetDefaultSearchProvider()->SupportsReplacement(
       search_terms_data()));
+}
+
+// Make sure that the load routine does not update user modified starter pack
+// engines unless the current version is incompatible.
+TEST_F(TemplateURLServiceTest,
+       LoadUpdatesStarterPackOnlyIfIncompatibleVersion) {
+  test_util()->ResetModel(true);
+
+  // Modify a starter pack template URL. Verify load does NOT modify the title
+  // if current version is compatible (>= to first compatible version).
+  const int first_compatible_version =
+      TemplateURLStarterPackData::GetFirstCompatibleDataVersion();
+  test_util()->web_data_service()->SetStarterPackKeywordVersion(
+      first_compatible_version);
+
+  TemplateURL* t_url = model()->GetTemplateURLForKeyword(u"@history");
+  EXPECT_GT(t_url->starter_pack_id(), 0);
+  const std::u16string original_title = t_url->short_name();
+
+  model()->ResetTemplateURL(t_url, u"not history", u"@history", t_url->url());
+  base::RunLoop().RunUntilIdle();
+
+  // Reset the model and load it.
+  test_util()->ResetModel(true);
+
+  t_url = model()->GetTemplateURLForKeyword(u"@history");
+  EXPECT_EQ(t_url->short_name(), u"not history");
+
+  // Now test if current version is greater than last compatible version, we
+  // should still not modify the user edited data.
+  test_util()->web_data_service()->SetStarterPackKeywordVersion(
+      first_compatible_version + 1);
+  // Reset the model and load it.
+  test_util()->ResetModel(true);
+
+  t_url = model()->GetTemplateURLForKeyword(u"@history");
+  EXPECT_EQ(t_url->short_name(), u"not history");
+
+  // Now set the starter pack resource version to something less than the last
+  // compatible version number, and verify that the title gets overridden back
+  // to the default value.
+  test_util()->web_data_service()->SetStarterPackKeywordVersion(
+      first_compatible_version - 1);
+
+  test_util()->ResetModel(true);
+  t_url = model()->GetTemplateURLForKeyword(u"@history");
+  EXPECT_EQ(t_url->short_name(), original_title);
 }
 
 // Simulates failing to load the webdb and makes sure the default search

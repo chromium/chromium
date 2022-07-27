@@ -140,3 +140,41 @@ TEST(TemplateURLServiceUtilTest, MergeEnginesFromPrepopulateData_PlayAPI) {
   EXPECT_TRUE(local_turls[0]->created_from_play_api());
   EXPECT_EQ(local_turls[0]->prepopulate_id(), 0);
 }
+
+// Tests that user modified fields are preserved and overwritten appropriately
+// in MergeIntoEngineData().
+TEST(TemplateURLServiceUtilTest, MergeIntoEngineData) {
+  std::unique_ptr<TemplateURLData> original_turl_data =
+      CreatePrepopulateTemplateURLData(1, "google");
+  std::unique_ptr<TemplateURLData> url_to_update =
+      CreatePrepopulateTemplateURLData(1, "google");
+
+  // Modify the keyword and title for original_turl and set safe_for_autoreplace
+  // to false to simulate a "user edited" template url.
+  original_turl_data->SetShortName(u"modified name");
+  original_turl_data->SetKeyword(u"new keyword");
+  original_turl_data->safe_for_autoreplace = false;
+
+  std::unique_ptr<TemplateURL> original_turl =
+      std::make_unique<TemplateURL>(*original_turl_data);
+
+  // Set `merge_options` to kOverwriteUserEdits. This should NOT preserve the
+  // modified fields.  `url_to_update` should keep the default keyword and name
+  // values as well as safe_for_autoreplace being true.
+  MergeIntoEngineData(original_turl.get(), url_to_update.get(),
+                      MergeOptions::kOverwriteUserEdits);
+
+  EXPECT_TRUE(url_to_update->safe_for_autoreplace);
+  EXPECT_EQ(url_to_update->short_name(), u"Search engine name");
+  EXPECT_EQ(url_to_update->keyword(), u"google");
+
+  // Set `merge_options` to kDefault. This should preserve the modified
+  // keyword and title fields from original_turl and update url_to_update
+  // accordingly.
+  MergeIntoEngineData(original_turl.get(), url_to_update.get(),
+                      MergeOptions::kDefault);
+
+  EXPECT_FALSE(url_to_update->safe_for_autoreplace);
+  EXPECT_EQ(url_to_update->short_name(), u"modified name");
+  EXPECT_EQ(url_to_update->keyword(), u"new keyword");
+}

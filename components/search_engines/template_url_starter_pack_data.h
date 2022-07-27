@@ -40,8 +40,9 @@ struct StarterPackEngine {
 };
 
 extern const int kCurrentDataVersion;
+extern const int kFirstCompatibleDataVersion;
 
-/* Exposed for testing purposes */
+// Exposed for testing purposes
 extern const StarterPackEngine bookmarks;
 extern const StarterPackEngine history;
 extern const StarterPackEngine tabs;
@@ -49,6 +50,10 @@ extern const StarterPackEngine tabs;
 // Returns the current version of the starterpack data, so callers can know when
 // they need to re-merge.
 int GetDataVersion();
+
+// Returns the first compatible data version to the current data. Any starter
+// pack data version before this will be force updated regardless of user edits.
+int GetFirstCompatibleDataVersion();
 
 // Returns a vector of all starter pack engines, in TemplateURLData format.
 std::vector<std::unique_ptr<TemplateURLData>> GetStarterPackEngines();
