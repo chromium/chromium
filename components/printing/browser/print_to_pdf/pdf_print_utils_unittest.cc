@@ -4,6 +4,7 @@
 
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
 
+#include "components/printing/browser/print_to_pdf/pdf_print_result.h"
 #include "printing/page_number.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,16 +44,19 @@ TEST(PageRangeTextToPagesTest, General) {
                   ElementsAreArray<PageRange>({{0, 2}, {8, 9}, {3, 5}})));
 
   // Range with a start page greater than the end page results in an error.
-  EXPECT_THAT(TextPageRangesToPageRanges("6-4"),
-              VariantWith<PageRangeError>(PageRangeError::kInvalidRange));
+  EXPECT_THAT(
+      TextPageRangesToPageRanges("6-4"),
+      VariantWith<PdfPrintResult>(PdfPrintResult::kPageRangeInvalidRange));
 
   // Invalid input results in an error.
-  EXPECT_THAT(TextPageRangesToPageRanges("abcd"),
-              VariantWith<PageRangeError>(PageRangeError::kSyntaxError));
+  EXPECT_THAT(
+      TextPageRangesToPageRanges("abcd"),
+      VariantWith<PdfPrintResult>(PdfPrintResult::kPageRangeSyntaxError));
 
   // Invalid input results in an error.
-  EXPECT_THAT(TextPageRangesToPageRanges("1-3,9-a10,4-6"),
-              VariantWith<PageRangeError>(PageRangeError::kSyntaxError));
+  EXPECT_THAT(
+      TextPageRangesToPageRanges("1-3,9-a10,4-6"),
+      VariantWith<PdfPrintResult>(PdfPrintResult::kPageRangeSyntaxError));
 }
 
 }  // namespace

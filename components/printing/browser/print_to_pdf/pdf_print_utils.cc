@@ -33,7 +33,7 @@ static constexpr double kDefaultMarginInInches =
 
 }  // namespace
 
-absl::variant<printing::PageRanges, PageRangeError> TextPageRangesToPageRanges(
+absl::variant<printing::PageRanges, PdfPrintResult> TextPageRangesToPageRanges(
     base::StringPiece page_range_text) {
   printing::PageRanges page_ranges;
   for (const auto& range_string :
@@ -42,7 +42,7 @@ absl::variant<printing::PageRanges, PageRangeError> TextPageRangesToPageRanges(
     printing::PageRange range;
     if (range_string.find("-") == base::StringPiece::npos) {
       if (!base::StringToUint(range_string, &range.from))
-        return PageRangeError::kSyntaxError;
+        return PdfPrintResult::kPageRangeSyntaxError;
       range.to = range.from;
     } else if (range_string == "-") {
       range.from = 1;
@@ -54,25 +54,25 @@ absl::variant<printing::PageRanges, PageRangeError> TextPageRangesToPageRanges(
     } else if (base::StartsWith(range_string, "-")) {
       range.from = 1;
       if (!base::StringToUint(range_string.substr(1), &range.to))
-        return PageRangeError::kSyntaxError;
+        return PdfPrintResult::kPageRangeSyntaxError;
     } else if (base::EndsWith(range_string, "-")) {
       // See comment regarding kMaxPage above.
       range.to = printing::PageRange::kMaxPage + 1;
       if (!base::StringToUint(range_string.substr(0, range_string.length() - 1),
                               &range.from)) {
-        return PageRangeError::kSyntaxError;
+        return PdfPrintResult::kPageRangeSyntaxError;
       }
     } else {
       auto tokens = base::SplitStringPiece(
           range_string, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       if (tokens.size() != 2 || !base::StringToUint(tokens[0], &range.from) ||
           !base::StringToUint(tokens[1], &range.to)) {
-        return PageRangeError::kSyntaxError;
+        return PdfPrintResult::kPageRangeSyntaxError;
       }
     }
 
     if (range.from < 1 || range.from > range.to)
-      return PageRangeError::kInvalidRange;
+      return PdfPrintResult::kPageRangeInvalidRange;
 
     // Page numbers are 1-based in the dictionary.
     // Page numbers are 0-based for the print settings.

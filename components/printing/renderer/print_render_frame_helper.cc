@@ -2205,6 +2205,10 @@ void PrintRenderFrameHelper::Reset() {
   print_pages_params_.reset();
   notify_browser_of_print_failure_ = true;
   snapshotter_.reset();
+
+  // The callback is supposed to be consumed at this point meaning we
+  // reported results to the PrintWithParams() caller.
+  DCHECK(!print_with_params_callback_);
 }
 
 void PrintRenderFrameHelper::OnFramePreparedForPrintPages() {
@@ -2318,6 +2322,7 @@ bool PrintRenderFrameHelper::PrintPagesNative(
   if (print_with_params_callback_) {
     std::move(print_with_params_callback_)
         .Run(mojom::PrintWithParamsResult::NewParams(std::move(page_params)));
+    Reset();
     return true;
   }
 

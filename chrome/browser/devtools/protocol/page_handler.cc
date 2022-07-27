@@ -278,7 +278,7 @@ void PageHandler::OnPDFCreated(bool return_as_stream,
                                std::unique_ptr<PrintToPDFCallback> callback,
                                print_to_pdf::PdfPrintResult print_result,
                                scoped_refptr<base::RefCountedMemory> data) {
-  if (print_result != print_to_pdf::PdfPrintResult::PRINT_SUCCESS) {
+  if (print_result != print_to_pdf::PdfPrintResult::kPrintSuccess) {
     callback->sendFailure(protocol::Response::ServerError(
         print_to_pdf::PdfPrintResultToString(print_result)));
     return;

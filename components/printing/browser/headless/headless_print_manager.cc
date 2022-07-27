@@ -17,7 +17,6 @@
 #include "mojo/public/cpp/bindings/message.h"
 #endif
 
-using print_to_pdf::PageRangeError;
 using print_to_pdf::PdfPrintResult;
 
 namespace headless {
@@ -58,39 +57,31 @@ void HeadlessPrintManager::PrintToPdf(
     PrintToPdfCallback callback) {
   DCHECK(callback);
 
-  if (callback_) {
-    std::move(callback).Run(PdfPrintResult::SIMULTANEOUS_PRINT_ACTIVE,
+  if (print_to_pdf_callback_) {
+    std::move(callback).Run(PdfPrintResult::kSimultaneousPrintActive,
                             base::MakeRefCounted<base::RefCountedString>());
     return;
   }
 
   if (!rfh->IsRenderFrameLive()) {
-    std::move(callback).Run(PdfPrintResult::PRINTING_FAILED,
+    std::move(callback).Run(PdfPrintResult::kPrintFailure,
                             base::MakeRefCounted<base::RefCountedString>());
     return;
   }
 
-  absl::variant<printing::PageRanges, PageRangeError> parsed_ranges =
+  absl::variant<printing::PageRanges, PdfPrintResult> parsed_ranges =
       print_to_pdf::TextPageRangesToPageRanges(page_ranges);
-  if (absl::holds_alternative<PageRangeError>(parsed_ranges)) {
-    PdfPrintResult print_result;
-    switch (absl::get<PageRangeError>(parsed_ranges)) {
-      case PageRangeError::kSyntaxError:
-        print_result = PdfPrintResult::PAGE_RANGE_SYNTAX_ERROR;
-        break;
-      case PageRangeError::kInvalidRange:
-        print_result = PdfPrintResult::PAGE_RANGE_INVALID_RANGE;
-        break;
-    }
-    std::move(callback).Run(print_result,
+  if (absl::holds_alternative<PdfPrintResult>(parsed_ranges)) {
+    DCHECK_NE(absl::get<PdfPrintResult>(parsed_ranges),
+              PdfPrintResult::kPrintSuccess);
+    std::move(callback).Run(absl::get<PdfPrintResult>(parsed_ranges),
                             base::MakeRefCounted<base::RefCountedString>());
     return;
   }
 
   printing_rfh_ = rfh;
   print_pages_params->pages = absl::get<printing::PageRanges>(parsed_ranges);
-  set_cookie(print_pages_params->params->document_cookie);
-  callback_ = std::move(callback);
+  print_to_pdf_callback_ = std::move(callback);
 
   // There is no need for a weak pointer here since the mojo proxy is held
   // in the base class. If we're gone, mojo will discard the callback.
@@ -100,31 +91,14 @@ void HeadlessPrintManager::PrintToPdf(
                      base::Unretained(this)));
 }
 
-void HeadlessPrintManager::OnDidPrintWithParams(
-    printing::mojom::PrintWithParamsResultPtr result) {
-  if (result->is_failure_reason()) {
-    switch (result->get_failure_reason()) {
-      case printing::mojom::PrintFailureReason::kGeneralFailure:
-        ReleaseJob(PdfPrintResult::PRINTING_FAILED);
-        return;
-      case printing::mojom::PrintFailureReason::kInvalidPageRange:
-        ReleaseJob(PdfPrintResult::PAGE_COUNT_EXCEEDED);
-        return;
-    }
-  }
+void HeadlessPrintManager::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  PrintManager::RenderFrameDeleted(render_frame_host);
 
-  auto& content = *result->get_params()->content;
-  if (!content.metafile_data_region.IsValid()) {
-    ReleaseJob(PdfPrintResult::INVALID_MEMORY_HANDLE);
+  if (printing_rfh_ != render_frame_host)
     return;
-  }
-  base::ReadOnlySharedMemoryMapping map = content.metafile_data_region.Map();
-  if (!map.IsValid()) {
-    ReleaseJob(PdfPrintResult::METAFILE_MAP_ERROR);
-    return;
-  }
-  data_ = std::string(static_cast<const char*>(map.memory()), map.size());
-  ReleaseJob(PdfPrintResult::PRINT_SUCCESS);
+
+  FailJob(PdfPrintResult::kPrintFailure);
 }
 
 void HeadlessPrintManager::GetDefaultPrintSettings(
@@ -143,7 +117,7 @@ void HeadlessPrintManager::ScriptedPrint(
 }
 
 void HeadlessPrintManager::ShowInvalidPrinterSettingsError() {
-  ReleaseJob(PdfPrintResult::INVALID_PRINTER_SETTINGS);
+  FailJob(PdfPrintResult::kInvalidPrinterSettings);
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -187,17 +161,46 @@ void HeadlessPrintManager::SetAccessibilityTree(
 void HeadlessPrintManager::PdfWritingDone(int page_count) {}
 #endif
 
-void HeadlessPrintManager::RenderFrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  PrintManager::RenderFrameDeleted(render_frame_host);
+void HeadlessPrintManager::OnDidPrintWithParams(
+    printing::mojom::PrintWithParamsResultPtr result) {
+  if (result->is_failure_reason()) {
+    switch (result->get_failure_reason()) {
+      case printing::mojom::PrintFailureReason::kGeneralFailure:
+        FailJob(PdfPrintResult::kPrintFailure);
+        return;
+      case printing::mojom::PrintFailureReason::kInvalidPageRange:
+        FailJob(PdfPrintResult::kPageCountExceeded);
+        return;
+    }
+  }
 
-  if (printing_rfh_ != render_frame_host) {
+  auto& content = *result->get_params()->content;
+  if (!content.metafile_data_region.IsValid()) {
+    FailJob(PdfPrintResult::kInvalidMemoryHandle);
     return;
   }
 
-  if (callback_) {
-    std::move(callback_).Run(PdfPrintResult::PRINTING_FAILED,
-                             base::MakeRefCounted<base::RefCountedString>());
+  base::ReadOnlySharedMemoryMapping map = content.metafile_data_region.Map();
+  if (!map.IsValid()) {
+    FailJob(PdfPrintResult::kMetafileMapError);
+    return;
+  }
+
+  std::string data =
+      std::string(static_cast<const char*>(map.memory()), map.size());
+  std::move(print_to_pdf_callback_)
+      .Run(PdfPrintResult::kPrintSuccess,
+           base::RefCountedString::TakeString(&data));
+
+  Reset();
+}
+
+void HeadlessPrintManager::FailJob(PdfPrintResult result) {
+  DCHECK_NE(result, PdfPrintResult::kPrintSuccess);
+
+  if (print_to_pdf_callback_) {
+    std::move(print_to_pdf_callback_)
+        .Run(result, base::MakeRefCounted<base::RefCountedString>());
   }
 
   Reset();
@@ -205,30 +208,10 @@ void HeadlessPrintManager::RenderFrameDeleted(
 
 void HeadlessPrintManager::Reset() {
   printing_rfh_ = nullptr;
-  callback_.Reset();
-  data_.clear();
-}
 
-void HeadlessPrintManager::ReleaseJob(PdfPrintResult result) {
-  if (!callback_) {
-    DLOG(ERROR) << "ReleaseJob is called when callback_ is null. Check whether "
-                   "ReleaseJob is called more than once.";
-    return;
-  }
-
-  DCHECK(result == PdfPrintResult::PRINT_SUCCESS || data_.empty());
-  std::move(callback_).Run(result, base::RefCountedString::TakeString(&data_));
-  // TODO(https://crbug.com/1286556): In theory, this should not be needed. In
-  // practice, nothing seems to restrict receiving incoming Mojo method calls
-  // for reporting the printing state to `printing_rfh_`.
-  //
-  // This should probably be changed so that the browser pushes endpoints to the
-  // renderer rather than the renderer connecting on-demand to the browser...
-  if (printing_rfh_ && printing_rfh_->IsRenderFrameLive()) {
-    GetPrintRenderFrame(printing_rfh_)
-        ->PrintingDone(result == PdfPrintResult::PRINT_SUCCESS);
-  }
-  Reset();
+  // The callback is supposed to be consumed at this point meaning we
+  // reported results to the PrintToPdf() caller.
+  CHECK(!print_to_pdf_callback_);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(HeadlessPrintManager);

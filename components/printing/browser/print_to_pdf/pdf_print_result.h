@@ -10,16 +10,15 @@
 namespace print_to_pdf {
 
 enum class PdfPrintResult {
-  PRINT_SUCCESS,
-  PRINTING_FAILED,
-  INVALID_PRINTER_SETTINGS,
-  INVALID_MEMORY_HANDLE,
-  METAFILE_MAP_ERROR,
-  SIMULTANEOUS_PRINT_ACTIVE,
-  PAGE_RANGE_SYNTAX_ERROR,
-  PAGE_RANGE_INVALID_RANGE,
-  PAGE_COUNT_EXCEEDED,
-
+  kPrintSuccess,
+  kPrintFailure,
+  kInvalidPrinterSettings,
+  kInvalidMemoryHandle,
+  kMetafileMapError,
+  kSimultaneousPrintActive,
+  kPageRangeSyntaxError,
+  kPageRangeInvalidRange,
+  kPageCountExceeded,
 };
 
 std::string PdfPrintResultToString(PdfPrintResult result);

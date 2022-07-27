@@ -8,23 +8,23 @@ namespace print_to_pdf {
 
 std::string PdfPrintResultToString(PdfPrintResult result) {
   switch (result) {
-    case PdfPrintResult::PRINT_SUCCESS:
+    case PdfPrintResult::kPrintSuccess:
       return std::string();  // no error message
-    case PdfPrintResult::PRINTING_FAILED:
+    case PdfPrintResult::kPrintFailure:
       return "Printing failed";
-    case PdfPrintResult::INVALID_PRINTER_SETTINGS:
+    case PdfPrintResult::kInvalidPrinterSettings:
       return "Show invalid printer settings error";
-    case PdfPrintResult::INVALID_MEMORY_HANDLE:
+    case PdfPrintResult::kInvalidMemoryHandle:
       return "Invalid memory handle";
-    case PdfPrintResult::METAFILE_MAP_ERROR:
+    case PdfPrintResult::kMetafileMapError:
       return "Map to shared memory error";
-    case PdfPrintResult::SIMULTANEOUS_PRINT_ACTIVE:
+    case PdfPrintResult::kSimultaneousPrintActive:
       return "The previous printing job hasn't finished";
-    case PdfPrintResult::PAGE_RANGE_SYNTAX_ERROR:
+    case PdfPrintResult::kPageRangeSyntaxError:
       return "Page range syntax error";
-    case PdfPrintResult::PAGE_RANGE_INVALID_RANGE:
+    case PdfPrintResult::kPageRangeInvalidRange:
       return "Page range is invalid (start > end)";
-    case PdfPrintResult::PAGE_COUNT_EXCEEDED:
+    case PdfPrintResult::kPageCountExceeded:
       return "Page range exceeds page count";
   }
 }

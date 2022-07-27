@@ -53,8 +53,6 @@ class HeadlessPrintManager
 
   explicit HeadlessPrintManager(content::WebContents* web_contents);
 
-  void OnDidPrintWithParams(printing::mojom::PrintWithParamsResultPtr result);
-
   // WebContentsObserver overrides (via PrintManager):
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
@@ -86,12 +84,13 @@ class HeadlessPrintManager
   void PdfWritingDone(int page_count) override;
 #endif
 
+  void OnDidPrintWithParams(printing::mojom::PrintWithParamsResultPtr result);
+
+  void FailJob(print_to_pdf::PdfPrintResult result);
   void Reset();
-  void ReleaseJob(print_to_pdf::PdfPrintResult result);
 
   raw_ptr<content::RenderFrameHost> printing_rfh_ = nullptr;
-  PrintToPdfCallback callback_;
-  std::string data_;
+  PrintToPdfCallback print_to_pdf_callback_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
