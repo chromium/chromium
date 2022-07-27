@@ -107,6 +107,8 @@ void PasswordChangeRunView::CreateView() {
   // colapse with the ones insde `PasswordChangeRunProgress`.
   password_change_run_progress_ = AddChildView(
       std::make_unique<PasswordChangeRunProgress>(/*childrenIDsOffset=*/20));
+  password_change_run_progress_->SetProgressBarBackgrounColor(
+      GetColorProvider()->GetColor(ui::kColorIconDisabled));
 
   title_container_ = AddChildView(
       views::Builder<views::View>()
@@ -118,7 +120,12 @@ void PasswordChangeRunView::CreateView() {
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kPreferred,
-                                   /*adjust_height_for_width=*/true));
+                                   /*adjust_height_for_width=*/true))
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::TLBR(
+                      /*top=*/views::LayoutProvider::Get()->GetDistanceMetric(
+                          views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                      /*left=*/0, /*bottom=*/0, /*right=*/0));
 
   body_ = AddChildView(views::Builder<views::View>()
                            .SetID(static_cast<int>(ChildrenViewsIds::kBody))
@@ -164,6 +171,7 @@ void PasswordChangeRunView::SetDescription(const std::u16string& description) {
   body_->AddChildView(
       views::Builder<views::Label>()
           .SetText(description)
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetMultiLine(true)
           .SetTextStyle(views::style::STYLE_SECONDARY)
           .SetTextContext(views::style::CONTEXT_LABEL)
@@ -202,8 +210,8 @@ void PasswordChangeRunView::ShowUseGeneratedPasswordPrompt(
   title_container_->AddChildView(
       views::Builder<views::Label>()
           .SetText(suggested_password)
-          .SetTextStyle(views::style::STYLE_PRIMARY)
-          .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+          .SetTextStyle(views::style::STYLE_SECONDARY)
+          .SetTextContext(views::style::CONTEXT_LABEL)
           .SetID(static_cast<int>(ChildrenViewsIds::kSuggestedPassword))
           .Build());
 

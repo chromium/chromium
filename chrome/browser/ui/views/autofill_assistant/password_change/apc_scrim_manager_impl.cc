@@ -14,7 +14,7 @@
 
 namespace {
 
-constexpr float kScrimOpacity = 0.5;
+constexpr float kScrimOpacity = 0.26;
 
 }  // namespace
 
@@ -57,7 +57,7 @@ std::unique_ptr<views::View> ApcScrimManagerImpl::CreateOverlayView() {
   std::unique_ptr<views::View> view = std::make_unique<views::View>();
   view->SetVisible(false);
   view->SetBoundsRect(GetContentsWebView()->bounds());
-  view->SetBackground(views::CreateSolidBackground(SK_ColorLTGRAY));
+  view->SetBackground(views::CreateSolidBackground(SK_ColorBLACK));
   view->SetPaintToLayer();
   view->layer()->SetName("PasswordChangeRunScrim");
   view->layer()->SetOpacity(kScrimOpacity);

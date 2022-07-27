@@ -61,15 +61,17 @@ class PasswordChangeRunViewTest : public views::ViewsTestBase {
   PasswordChangeRunViewTest() {
     // Take ownership of the display.
     ON_CALL(display_delegate_, SetView)
-        .WillByDefault([&view = view_](std::unique_ptr<views::View> display) {
-          view = std::move(display);
-          return view.get();
+        .WillByDefault([&view = view_, &widget = widget_](
+                           std::unique_ptr<views::View> display) {
+          view = widget->SetContentsView(std::move(display));
+          return view;
         });
   }
   ~PasswordChangeRunViewTest() override = default;
 
   void SetUp() override {
     views::ViewsTestBase::SetUp();
+    widget_ = CreateTestWidget();
 
     // Always make sure that there is an object that can be tested.
     PasswordChangeRunDisplay::Create(controller_.GetWeakPtr(),
@@ -77,6 +79,11 @@ class PasswordChangeRunViewTest : public views::ViewsTestBase {
 
     // Create the views.
     view()->Show();
+  }
+
+  void TearDown() override {
+    widget_.reset();
+    views::ViewsTestBase::TearDown();
   }
 
   views::View* GetButtonContainer() {
@@ -100,7 +107,7 @@ class PasswordChangeRunViewTest : public views::ViewsTestBase {
   }
   MockPasswordChangeRunController* controller() { return &controller_; }
   PasswordChangeRunView* view() {
-    return static_cast<PasswordChangeRunView*>(view_.get());
+    return static_cast<PasswordChangeRunView*>(view_);
   }
 
  private:
@@ -109,7 +116,9 @@ class PasswordChangeRunViewTest : public views::ViewsTestBase {
   StrictMock<MockPasswordChangeRunController> controller_;
 
   // Variable required to simulate the display delegate.
-  std::unique_ptr<views::View> view_;
+  raw_ptr<views::View> view_;
+  // Widget to anchor the view and retrieve a color provider from.
+  std::unique_ptr<views::Widget> widget_;
 };
 
 TEST_F(PasswordChangeRunViewTest, CreateAndSetInTheProvidedDisplay) {

@@ -50,7 +50,13 @@ class PasswordChangeRunProgress : public views::View {
   // Returns the current progress bar step.
   autofill_assistant::password_change::ProgressStep GetCurrentProgressBarStep();
 
+  // Updates the progress bar background color.
+  void SetProgressBarBackgrounColor(SkColor color);
+
  private:
+  // Method ran once progress reaches end step.
+  void OnCompleted();
+
   // A progress step is made out of an icon, a progress bar or both.
   struct ProgressStepUIElements {
     raw_ptr<AnimatedProgressBar> progress_bar = nullptr;

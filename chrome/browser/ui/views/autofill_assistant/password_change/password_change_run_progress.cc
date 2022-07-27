@@ -8,9 +8,11 @@
 #include <vector>
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/autofill_assistant/password_change/vector_icons/vector_icons.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -28,7 +30,7 @@ constexpr int kNColumns = 7;
 constexpr int kIconColumnWidth = 28;
 constexpr int kBarColumnMinWidth = 46;
 
-constexpr int kAnimationDurationSeconds = 2;
+constexpr int kAnimationDurationSeconds = 1;
 
 int ProgressStepToIndex(
     autofill_assistant::password_change::ProgressStep progress_step) {
@@ -46,6 +48,25 @@ int ProgressStepToIndex(
       return 3;
     case autofill_assistant::password_change::ProgressStep::PROGRESS_STEP_END:
       return 4;
+  }
+}
+
+const gfx::VectorIcon& ProgressStepToIcon(
+    autofill_assistant::password_change::ProgressStep progress_step) {
+  switch (progress_step) {
+    case autofill_assistant::password_change::ProgressStep::
+        PROGRESS_STEP_UNSPECIFIED:
+    case autofill_assistant::password_change::ProgressStep::PROGRESS_STEP_START:
+      return autofill_assistant::password_change::
+          kPasswordChangeProgressStartIcon;
+    case autofill_assistant::password_change::ProgressStep::
+        PROGRESS_STEP_CHANGE_PASSWORD:
+      return vector_icons::kSettingsIcon;
+    case autofill_assistant::password_change::ProgressStep::
+        PROGRESS_STEP_SAVE_PASSWORD:
+      return kKeyIcon;
+    case autofill_assistant::password_change::ProgressStep::PROGRESS_STEP_END:
+      return vector_icons::kCheckCircleIcon;
   }
 }
 
@@ -87,14 +108,23 @@ class AnimatedProgressBar : public gfx::LinearAnimation,
   AnimatedProgressBar& operator=(const AnimatedProgressBar&) = delete;
   ~AnimatedProgressBar() override = default;
 
+  void SetAnimationEndedCallback(base::OnceClosure callback) {
+    animation_ended_callback_ = std::move(callback);
+  }
+
  private:
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override {
     SetValue(GetCurrentValue());
   };
 
-  // Override AnimationEnded to avoid ui/views/controls/progress_bar.h DCHECK.
-  void AnimationEnded(const gfx::Animation* animation) override {}
+  void AnimationEnded(const gfx::Animation* animation) override {
+    if (animation_ended_callback_) {
+      std::move(animation_ended_callback_).Run();
+    }
+  }
+
+  base::OnceClosure animation_ended_callback_;
 };
 
 PasswordChangeRunProgress::PasswordChangeRunProgress(int childrenIDsOffset) {
@@ -110,7 +140,9 @@ PasswordChangeRunProgress::PasswordChangeRunProgress(int childrenIDsOffset) {
       .icon = AddChildView(
           views::Builder<views::ImageView>()
               .SetImage(ui::ImageModel::FromVectorIcon(
-                  vector_icons::kSettingsIcon, ui::kColorIcon, kIconSize))
+                  ProgressStepToIcon(autofill_assistant::password_change::
+                                         ProgressStep::PROGRESS_STEP_START),
+                  ui::kColorIconDisabled, kIconSize))
               .SetHorizontalAlignment(views::ImageView::Alignment::kLeading)
               .SetID(static_cast<int>(ChildrenViewsIds::kStartStepIcon) +
                      childrenIDsOffset)
@@ -124,7 +156,10 @@ PasswordChangeRunProgress::PasswordChangeRunProgress(int childrenIDsOffset) {
       .icon = AddChildView(
           views::Builder<views::ImageView>()
               .SetImage(ui::ImageModel::FromVectorIcon(
-                  vector_icons::kSettingsIcon, ui::kColorIcon, kIconSize))
+                  ProgressStepToIcon(
+                      autofill_assistant::password_change::ProgressStep::
+                          PROGRESS_STEP_CHANGE_PASSWORD),
+                  ui::kColorIconDisabled, kIconSize))
               .SetHorizontalAlignment(views::ImageView::Alignment::kLeading)
               .SetID(
                   static_cast<int>(ChildrenViewsIds::kChangePasswordStepIcon) +
@@ -138,8 +173,11 @@ PasswordChangeRunProgress::PasswordChangeRunProgress(int childrenIDsOffset) {
           static_cast<int>(ChildrenViewsIds::kSavePasswordStepBar))),
       .icon = AddChildView(
           views::Builder<views::ImageView>()
-              .SetImage(ui::ImageModel::FromVectorIcon(kKeyIcon, ui::kColorIcon,
-                                                       kIconSize))
+              .SetImage(ui::ImageModel::FromVectorIcon(
+                  ProgressStepToIcon(
+                      autofill_assistant::password_change::ProgressStep::
+                          PROGRESS_STEP_SAVE_PASSWORD),
+                  ui::kColorIconDisabled, kIconSize))
               .SetHorizontalAlignment(views::ImageView::Alignment::kLeading)
               .SetID(static_cast<int>(ChildrenViewsIds::kSavePasswordStepIcon) +
                      childrenIDsOffset)
@@ -154,8 +192,9 @@ PasswordChangeRunProgress::PasswordChangeRunProgress(int childrenIDsOffset) {
           .icon = AddChildView(
               views::Builder<views::ImageView>()
                   .SetImage(ui::ImageModel::FromVectorIcon(
-                      vector_icons::kCheckCircleIcon, ui::kColorIcon,
-                      kIconSize))
+                      ProgressStepToIcon(autofill_assistant::password_change::
+                                             ProgressStep::PROGRESS_STEP_END),
+                      ui::kColorIconDisabled, kIconSize))
                   .SetHorizontalAlignment(views::ImageView::Alignment::kLeading)
                   .SetID(static_cast<int>(ChildrenViewsIds::kEndStepIcon) +
                          childrenIDsOffset)
@@ -171,16 +210,45 @@ void PasswordChangeRunProgress::SetProgressBarStep(
       ProgressStepToIndex(current_progress_step_))
     return;
 
+  progress_step_ui_elements_[current_progress_step_].icon->SetImage(
+      ui::ImageModel::FromVectorIcon(ProgressStepToIcon(current_progress_step_),
+                                     ui::kColorProgressBar, kIconSize));
+
   current_progress_step_ = next_progress_step;
   // TODO(crbug.com/1322419): Finish animation of the prior step by filling the
   // icon color. This needs to be done before start filling the next progress
   // bar.
+  if (current_progress_step_ ==
+      autofill_assistant::password_change::ProgressStep::PROGRESS_STEP_END) {
+    progress_step_ui_elements_
+        [autofill_assistant::password_change::ProgressStep::PROGRESS_STEP_END]
+            .progress_bar->SetAnimationEndedCallback(
+                base::BindOnce(&PasswordChangeRunProgress::OnCompleted,
+                               base::Unretained(this)));
+  }
   progress_step_ui_elements_[current_progress_step_].progress_bar->Start();
+}
+
+void PasswordChangeRunProgress::SetProgressBarBackgrounColor(SkColor color) {
+  for (auto const& ui_element : progress_step_ui_elements_) {
+    if (ui_element.second.progress_bar) {
+      ui_element.second.progress_bar->SetBackgroundColor(color);
+    }
+  }
 }
 
 autofill_assistant::password_change::ProgressStep
 PasswordChangeRunProgress::GetCurrentProgressBarStep() {
   return current_progress_step_;
+}
+
+void PasswordChangeRunProgress::OnCompleted() {
+  progress_step_ui_elements_
+      [autofill_assistant::password_change::ProgressStep::PROGRESS_STEP_END]
+          .icon->SetImage(ui::ImageModel::FromVectorIcon(
+              ProgressStepToIcon(autofill_assistant::password_change::
+                                     ProgressStep::PROGRESS_STEP_END),
+              ui::kColorProgressBar, kIconSize));
 }
 
 BEGIN_METADATA(PasswordChangeRunProgress, views::View)

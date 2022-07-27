@@ -14,6 +14,7 @@ aggregate_vector_icons("apc_vector_icons") {
     "enter_old_password.icon",
     "error_occurred.icon",
     "open_site_settings.icon",
+    "password_change_progress_start.icon",
     "save_new_password.icon",
     "unspecified_state.icon",
     "user_action_required.icon",
