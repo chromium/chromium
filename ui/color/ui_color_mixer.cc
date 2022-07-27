@@ -5,6 +5,7 @@
 #include "ui/color/ui_color_mixer.h"
 
 #include "build/build_config.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
@@ -161,6 +162,7 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorShadowValueKeyShadowElevationSixteen] =
       SetAlpha(kColorShadowBase, 0x1a);
   mixer[kColorSidePanelComboboxBorder] = {SK_ColorTRANSPARENT};
+  mixer[kColorSidePanelComboboxBackground] = {SK_ColorTRANSPARENT};
   mixer[kColorSliderThumb] = {kColorAccent};
   mixer[kColorSliderThumbMinimal] = {kColorSecondaryForeground};
   mixer[kColorSliderTrack] = {kColorSubtleAccent};

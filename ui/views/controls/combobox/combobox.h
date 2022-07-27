@@ -15,6 +15,7 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/combobox_model_observer.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/color/color_id.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/prefix_delegate.h"
 #include "ui/views/metadata/view_factory.h"
@@ -111,6 +112,7 @@ class VIEWS_EXPORT Combobox : public View,
   bool GetInvalid() const { return invalid_; }
 
   void SetBorderColorId(ui::ColorId color_id);
+  void SetBackgroundColorId(ui::ColorId color_id);
 
   // Sets whether there should be ink drop highlighting on hover/press.
   void SetEventHighlighting(bool should_highlight);
