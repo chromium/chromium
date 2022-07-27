@@ -34,7 +34,7 @@ export class NodeUtils {
       return NodeUtils.NodeState.NODE_STATE_INVISIBLE;
     }
     // Walk up the tree to make sure the window it is in is not invisible.
-    var window = NodeUtils.getNearestContainingWindow(node);
+    const window = NodeUtils.getNearestContainingWindow(node);
     if (window != null && window.state[chrome.automation.StateType.INVISIBLE]) {
       return NodeUtils.NodeState.NODE_STATE_INVISIBLE;
     }
