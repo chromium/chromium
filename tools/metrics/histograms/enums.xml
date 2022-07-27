@@ -80806,6 +80806,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="Service Worker timeout while processing event"/>
   <int value="8"
       label="Origin no longer has permission (auto-revoked due to abuse)"/>
+  <int value="9"
+      label="Chrome has no app-level permission, message was ignored"/>
+  <int value="10"
+      label="Chrome has no app-level permission, FCM was auto-revoked"/>
 </enum>
 
 <enum name="PushGetRegistrationStatus">
@@ -80856,6 +80860,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="11" label="Subscription has expired"/>
   <int value="12" label="Subscription has been refreshed"/>
   <int value="13" label="Abusive origin permission auto-revoked"/>
+  <int value="14"
+      label="Chrome has no app-level permissions, FCM auto-revoked"/>
 </enum>
 
 <enum name="PushUnregistrationStatus">
