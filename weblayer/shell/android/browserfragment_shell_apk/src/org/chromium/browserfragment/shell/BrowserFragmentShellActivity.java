@@ -15,6 +15,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.browserfragment.Browser;
 import org.chromium.browserfragment.BrowserFragment;
+import org.chromium.browserfragment.Tab;
+import org.chromium.browserfragment.TabManager;
 
 /**
  * Activity for managing the Demo Shell.
@@ -44,6 +46,18 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
 
     private void onBrowserReady(Browser browser) {
         BrowserFragment fragment = browser.createFragment();
+
+        ListenableFuture<TabManager> tabManagerFuture = fragment.getTabManager();
+
+        Futures.addCallback(tabManagerFuture, new FutureCallback<TabManager>() {
+            @Override
+            public void onSuccess(TabManager tabManager) {
+                Tab tab = tabManager.getActiveTab();
+                tab.navigate("https://google.com");
+            }
+            @Override
+            public void onFailure(Throwable thrown) {}
+        }, mContext.getMainExecutor());
 
         getSupportFragmentManager()
                 .beginTransaction()

@@ -32,7 +32,6 @@ public class Browser {
             "org.chromium.weblayer.intent.action.BROWSERSANDBOX";
 
     private IBrowserSandboxService mBrowserSandboxService;
-    private CallbackToFutureAdapter.Completer<Browser> mCompleter;
 
     private static class ConnectionSetup implements ServiceConnection {
         private CallbackToFutureAdapter.Completer<Browser> mCompleter;

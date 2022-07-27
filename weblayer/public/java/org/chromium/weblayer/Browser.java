@@ -91,10 +91,14 @@ public class Browser {
         mBrowserRestoreCallbacks = null;
     }
 
-    Browser(IBrowser impl, Fragment fragment) {
+    // Constructor for browserfragment to inject the {@code tabListCallback} on startup.
+    Browser(IBrowser impl, Fragment fragment, @Nullable TabListCallback tabListCallback) {
         mImpl = impl;
         mFragment = fragment;
         mTabListCallbacks = new ObserverList<TabListCallback>();
+        if (tabListCallback != null) {
+            mTabListCallbacks.addObserver(tabListCallback);
+        }
         mBrowserControlsOffsetCallbacks = new ObserverList<BrowserControlsOffsetCallback>();
         mBrowserRestoreCallbacks = new ObserverList<BrowserRestoreCallback>();
 
@@ -104,6 +108,10 @@ public class Browser {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
+    }
+
+    Browser(IBrowser impl, Fragment fragment) {
+        this(impl, fragment, null);
     }
 
     /**

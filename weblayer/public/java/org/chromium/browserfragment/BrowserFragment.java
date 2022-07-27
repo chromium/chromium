@@ -13,8 +13,12 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.concurrent.futures.CallbackToFutureAdapter;
 import androidx.fragment.app.Fragment;
+
+import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegate;
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegateClient;
@@ -28,6 +32,8 @@ public class BrowserFragment extends Fragment {
     private SurfaceView mSurfaceView;
     private Browser mBrowser;
     private IBrowserFragmentDelegate mDelegate;
+    private ListenableFuture<TabManager> mFutureTabManager;
+    private CallbackToFutureAdapter.Completer<TabManager> mTabManagerCompleter;
 
     private final IBrowserFragmentDelegateClient mClient =
             new IBrowserFragmentDelegateClient.Stub() {
@@ -43,6 +49,11 @@ public class BrowserFragment extends Fragment {
                                 resizeSurfaceView(right - left, bottom - top);
                             });
                 }
+
+                @Override
+                public void onStarted() {
+                    mTabManagerCompleter.set(new TabManager(mDelegate));
+                }
             };
 
     BrowserFragment(Browser browser, IBrowserFragmentDelegate delegate) throws RemoteException {
@@ -50,6 +61,11 @@ public class BrowserFragment extends Fragment {
         mBrowser = browser;
         mDelegate = delegate;
         mDelegate.setClient(mClient);
+        mFutureTabManager = CallbackToFutureAdapter.getFuture(completer -> {
+            mTabManagerCompleter = completer;
+            // Debug string.
+            return "TabManager Future";
+        });
     }
 
     @Override
@@ -159,5 +175,14 @@ public class BrowserFragment extends Fragment {
             mDelegate.resizeView(width, height);
         } catch (RemoteException e) {
         }
+    }
+
+    /**
+     * Returns a ListenableFuture to the TabManager, which becomes available after the
+     * BrowserFragments onStart method finished.
+     */
+    @NonNull
+    public ListenableFuture<TabManager> getTabManager() {
+        return mFutureTabManager;
     }
 }

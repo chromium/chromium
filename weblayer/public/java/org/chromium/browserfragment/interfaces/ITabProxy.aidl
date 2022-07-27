@@ -4,9 +4,7 @@
 
 package org.chromium.browserfragment.interfaces;
 
-import android.view.SurfaceControlViewHost.SurfacePackage;
-
-interface IBrowserFragmentDelegateClient {
-    void onSurfacePackageReady(in SurfacePackage surfacePackage) = 1;
-    void onStarted() = 2;
+interface ITabProxy {
+  // TODO(swestphal): Move this to the navigationController when we expose one.
+  void navigate(in String url) = 1;
 }

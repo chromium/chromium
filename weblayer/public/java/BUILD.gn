@@ -181,6 +181,7 @@ android_aidl("browserfragment_aidl") {
     "org/chromium/browserfragment/interfaces/IBrowserFragmentDelegateClient.aidl",
     "org/chromium/browserfragment/interfaces/IBrowserSandboxCallback.aidl",
     "org/chromium/browserfragment/interfaces/IBrowserSandboxService.aidl",
+    "org/chromium/browserfragment/interfaces/ITabProxy.aidl",
   ]
 }
 
@@ -193,6 +194,8 @@ android_library("browserfragment_java") {
   sources = [
     "org/chromium/browserfragment/Browser.java",
     "org/chromium/browserfragment/BrowserFragment.java",
+    "org/chromium/browserfragment/Tab.java",
+    "org/chromium/browserfragment/TabManager.java",
   ]
 
   resources_package = "org.chromium.browserfragment"
@@ -212,11 +215,14 @@ android_library("browserfragment_sandbox_java") {
   sources = [
     # Additional weblayer public files that are for the sandbox.
     "org/chromium/weblayer/BrowserFragmentDelegate.java",
+    "org/chromium/weblayer/BrowserFragmentTabDelegate.java",
     "org/chromium/weblayer/BrowserSandboxService.java",
+    "org/chromium/weblayer/TabProxy.java",
   ]
   resources_package = "org.chromium.weblayer"
   deps = [
     ":browserfragment_interfaces_java",
     ":java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

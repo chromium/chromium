@@ -105,21 +105,27 @@ public final class BrowserFragment extends RemoteFragment {
         super.onAttach(context);
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+    // Method for browserfragment to inject the {@code tabListCallback} on startup of the weblayer
+    // browser.
+    public void onCreate(Bundle savedInstanceState, @Nullable TabListCallback tabListCallback) {
         super.onCreate(savedInstanceState);
         if (mBrowser != null) {
             // If mBrowser is non-null, it means mBrowser came from a ViewModel.
             return;
         }
         try {
-            mBrowser = new Browser(mImpl.getBrowser(), this);
+            mBrowser = new Browser(mImpl.getBrowser(), this, tabListCallback);
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
         if (useViewModel()) {
             saveToViewModel(getViewModel());
         }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        onCreate(savedInstanceState, null);
     }
 
     @Override

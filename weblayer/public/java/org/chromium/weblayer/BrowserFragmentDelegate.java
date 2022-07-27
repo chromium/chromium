@@ -5,7 +5,6 @@
 package org.chromium.weblayer;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -14,8 +13,11 @@ import android.os.RemoteException;
 import android.view.SurfaceControlViewHost;
 import android.view.WindowManager;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegate;
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegateClient;
+import org.chromium.browserfragment.interfaces.ITabProxy;
 
 /**
  * This class acts as a proxy between the embedding app's BrowserFragment and
@@ -32,12 +34,15 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     // TODO(rayankans): Create an event handler instead of using the weblayer fragment directly.
     private BrowserFragment mFragment;
 
+    private BrowserFragmentTabDelegate mTabDelegate;
+
     private IBrowserFragmentDelegateClient mClient;
     private SurfaceControlViewHost mSurfaceControlViewHost;
 
     BrowserFragmentDelegate(Context context, WebLayer webLayer) {
         mContext = context;
         mWebLayer = webLayer;
+        mTabDelegate = new BrowserFragmentTabDelegate();
 
         mHandler.post(() -> {
             mFragment = (BrowserFragment) WebLayer.createBrowserFragment(DEFAULT_PROFILE);
@@ -67,10 +72,6 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
             mClient.onSurfacePackageReady(mSurfaceControlViewHost.getSurfacePackage());
         } catch (RemoteException e) {
         }
-
-        // TODO(rayankans): Expose tab/navigation API
-        mFragment.getBrowser().getActiveTab().getNavigationController().navigate(
-                Uri.parse("https://google.com"));
     }
 
     @Override
@@ -83,13 +84,23 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     }
 
     @Override
+    @Nullable
+    public ITabProxy getActiveTab() {
+        Tab activeTab = mTabDelegate.getActiveTab();
+        if (activeTab != null) {
+            return new TabProxy(activeTab);
+        }
+        return null;
+    }
+
+    @Override
     public void onAttach() {
         mHandler.post(() -> mFragment.onAttach(mContext));
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mHandler.post(() -> mFragment.onCreate(savedInstanceState));
+        mHandler.post(() -> mFragment.onCreate(savedInstanceState, mTabDelegate));
     }
 
     @Override
@@ -108,7 +119,13 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
 
     @Override
     public void onStart() {
-        mHandler.post(() -> mFragment.onStart());
+        mHandler.post(() -> {
+            mFragment.onStart();
+            try {
+                mClient.onStarted();
+            } catch (RemoteException e) {
+            }
+        });
     }
 
     @Override

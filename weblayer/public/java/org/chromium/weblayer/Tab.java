@@ -57,6 +57,8 @@ public class Tab {
     private @Nullable ActionModeCallback mActionModeCallback;
     // Id from the remote side.
     private final int mId;
+    // Guid from the remote side.
+    private final String mGuid;
 
     // Constructor for test mocking.
     protected Tab() {
@@ -67,6 +69,7 @@ public class Tab {
         mCallbacks = null;
         mScrollOffsetCallbacks = null;
         mId = 0;
+        mGuid = "";
     }
 
     Tab(ITab impl, Browser browser) {
@@ -74,6 +77,7 @@ public class Tab {
         mBrowser = browser;
         try {
             mId = impl.getId();
+            mGuid = impl.getGuid();
             mImpl.setClient(new TabClientImpl());
         } catch (RemoteException e) {
             throw new APICallException(e);
@@ -414,13 +418,7 @@ public class Tab {
      */
     @NonNull
     public String getGuid() {
-        ThreadCheck.ensureOnUiThread();
-        throwIfDestroyed();
-        try {
-            return mImpl.getGuid();
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
+        return mGuid;
     }
 
     /**

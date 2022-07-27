@@ -6,6 +6,7 @@ package org.chromium.browserfragment.interfaces;
 
 import android.os.Bundle;
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegateClient;
+import org.chromium.browserfragment.interfaces.ITabProxy;
 
 interface IBrowserFragmentDelegate {
     void setClient(in IBrowserFragmentDelegateClient client) = 1;
@@ -22,4 +23,7 @@ interface IBrowserFragmentDelegate {
     void onStop() = 9;
     void onResume() = 10;
     void onPause() = 11;
+
+    // Tab operations.
+    ITabProxy getActiveTab() = 14;
 }
