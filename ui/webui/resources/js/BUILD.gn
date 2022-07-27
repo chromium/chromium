@@ -152,12 +152,12 @@ preprocess_if_expr("preprocess_generated") {
 }
 
 group("closure_compile") {
-  deps = [
-    ":js_resources",
-    "cr:closure_compile",
-  ]
+  deps = [ ":js_resources" ]
   if (is_chromeos_ash) {
-    deps += [ "cr/ui:closure_compile" ]
+    deps += [
+      "cr:closure_compile",
+      "cr/ui:closure_compile",
+    ]
   }
 }
 
