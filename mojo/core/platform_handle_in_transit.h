@@ -55,8 +55,21 @@ class PlatformHandleInTransit {
   // lifetime.
   void CompleteTransit();
 
+  // Designates the relative trust level of the destination process compared to
+  // the source process, in the context of a handle transfer operation. This
+  // may be expanded to more granular degrees of trust in the future.
+  enum TransferTargetTrustLevel {
+    // No special constraints on what can be transferred or how.
+    kTrustedTarget,
+
+    // On some platforms, transfers with this destination type may be restricted
+    // to block certain types of handles.
+    kUntrustedTarget,
+  };
+
   // Transfers ownership of this (local) handle to |target_process|.
-  bool TransferToProcess(base::Process target_process);
+  bool TransferToProcess(base::Process target_process,
+                         TransferTargetTrustLevel trust = kTrustedTarget);
 
 #if BUILDFLAG(IS_WIN)
   HANDLE remote_handle() const { return remote_handle_; }

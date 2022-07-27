@@ -1775,6 +1775,8 @@ bool RenderProcessHostImpl::Init() {
     // Spawn the child process asynchronously to avoid blocking the UI thread.
     // As long as there's no renderer prefix, we can use the zygote process
     // at this stage.
+    mojo_invitation_.set_extra_flags(
+        MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS);
     child_process_launcher_ = std::make_unique<ChildProcessLauncher>(
         std::move(sandbox_delegate), std::move(cmd_line), GetID(), this,
         std::move(mojo_invitation_),

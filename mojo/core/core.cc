@@ -1338,6 +1338,10 @@ MojoResult Core::SendInvitation(
   for (auto& entry : attached_port_map)
     attached_ports.emplace_back(entry.first, std::move(entry.second));
 
+  connection_params.set_is_untrusted_process(
+      options &&
+      (options->flags & MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS));
+
   bool is_isolated =
       options && (options->flags & MOJO_SEND_INVITATION_FLAG_ISOLATED);
   RequestContext request_context;

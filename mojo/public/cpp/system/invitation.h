@@ -63,6 +63,8 @@ class MOJO_CPP_SYSTEM_EXPORT OutgoingInvitation {
 
   OutgoingInvitation& operator=(OutgoingInvitation&& other);
 
+  void set_extra_flags(MojoSendInvitationFlags flags) { extra_flags_ = flags; }
+
   // Creates a new message pipe, attaching one end to this invitation and
   // returning the other end to the caller. The invitee can extract the
   // attached endpoint (see |IncomingInvitation|) thus establishing end-to-end
@@ -149,6 +151,7 @@ class MOJO_CPP_SYSTEM_EXPORT OutgoingInvitation {
       base::StringPiece connection_name = {});
 
  private:
+  MojoSendInvitationFlags extra_flags_ = MOJO_SEND_INVITATION_FLAG_NONE;
   ScopedInvitationHandle handle_;
 };
 

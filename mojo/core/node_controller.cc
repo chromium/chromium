@@ -153,6 +153,8 @@ ConnectionParams CreateSyncNodeConnectionParams(
     const ProcessErrorCallback& process_error_callback,
     Channel::HandlePolicy& handle_policy) {
   ConnectionParams node_connection_params;
+  const bool is_untrusted_process = connection_params.is_untrusted_process();
+
   // BrokerHost owns itself.
   BrokerHost* broker_host = new BrokerHost(
       target_process.IsValid() ? target_process.Duplicate() : base::Process(),
@@ -167,6 +169,7 @@ ConnectionParams CreateSyncNodeConnectionParams(
     NamedPlatformChannel named_channel(options);
     node_connection_params =
         ConnectionParams(named_channel.TakeServerEndpoint());
+    node_connection_params.set_is_untrusted_process(is_untrusted_process);
     broker_host->SendNamedChannel(named_channel.GetServerName());
     return node_connection_params;
   }
@@ -177,6 +180,7 @@ ConnectionParams CreateSyncNodeConnectionParams(
   // a sync broker message to the client.
   PlatformChannel node_channel;
   node_connection_params = ConnectionParams(node_channel.TakeLocalEndpoint());
+  node_connection_params.set_is_untrusted_process(is_untrusted_process);
   bool channel_ok = broker_host->SendChannel(
       node_channel.TakeRemoteEndpoint().TakePlatformHandle());
   DCHECK(channel_ok);

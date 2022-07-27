@@ -27,7 +27,14 @@ namespace {
 #if BUILDFLAG(IS_WIN)
 HANDLE TransferHandle(HANDLE handle,
                       base::ProcessHandle from_process,
-                      base::ProcessHandle to_process) {
+                      base::ProcessHandle to_process,
+                      PlatformHandleInTransit::TransferTargetTrustLevel trust) {
+  if (trust == PlatformHandleInTransit::kUntrustedTarget) {
+    // TODO(https://crbug.com/1335974): Implement additional constraints
+    // regarding what type of handles may or may not be transferred to untrusted
+    // processes.
+  }
+
   HANDLE out_handle;
   BOOL result =
       ::DuplicateHandle(from_process, handle, to_process, &out_handle, 0, FALSE,
@@ -132,14 +139,16 @@ void PlatformHandleInTransit::CompleteTransit() {
   owning_process_ = base::Process();
 }
 
-bool PlatformHandleInTransit::TransferToProcess(base::Process target_process) {
+bool PlatformHandleInTransit::TransferToProcess(
+    base::Process target_process,
+    TransferTargetTrustLevel trust) {
   DCHECK(target_process.IsValid());
   DCHECK(!owning_process_.IsValid());
   DCHECK(handle_.is_valid());
 #if BUILDFLAG(IS_WIN)
   remote_handle_ =
       TransferHandle(handle_.ReleaseHandle(), base::GetCurrentProcessHandle(),
-                     target_process.Handle());
+                     target_process.Handle(), trust);
   if (remote_handle_ == INVALID_HANDLE_VALUE)
     return false;
 #endif
@@ -168,7 +177,8 @@ PlatformHandle PlatformHandleInTransit::TakeIncomingRemoteHandle(
     HANDLE handle,
     base::ProcessHandle owning_process) {
   return PlatformHandle(base::win::ScopedHandle(
-      TransferHandle(handle, owning_process, base::GetCurrentProcessHandle())));
+      TransferHandle(handle, owning_process, base::GetCurrentProcessHandle(),
+                     kTrustedTarget)));
 }
 #endif
 

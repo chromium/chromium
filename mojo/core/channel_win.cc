@@ -88,6 +88,7 @@ class ChannelWin : public Channel,
              scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
       : Channel(delegate, handle_policy),
         base::MessagePumpForIO::IOHandler(FROM_HERE),
+        is_untrusted_process_(connection_params.is_untrusted_process()),
         self_(this),
         io_task_runner_(io_task_runner) {
     if (connection_params.server_endpoint().is_valid()) {
@@ -123,8 +124,12 @@ class ChannelWin : public Channel,
       // to the process now rewriting them in the message.
       std::vector<PlatformHandleInTransit> handles = message->TakeHandles();
       for (auto& handle : handles) {
-        if (handle.handle().is_valid())
-          handle.TransferToProcess(remote_process().Duplicate());
+        if (handle.handle().is_valid()) {
+          handle.TransferToProcess(
+              remote_process().Duplicate(),
+              is_untrusted_process_ ? PlatformHandleInTransit::kUntrustedTarget
+                                    : PlatformHandleInTransit::kTrustedTarget);
+        }
       }
       message->SetHandles(std::move(handles));
     }
@@ -398,6 +403,8 @@ class ChannelWin : public Channel,
 
     OnError(error);
   }
+
+  const bool is_untrusted_process_;
 
   // Keeps the Channel alive at least until explicit shutdown on the IO thread.
   scoped_refptr<Channel> self_;

@@ -161,7 +161,7 @@ void OutgoingInvitation::Send(OutgoingInvitation invitation,
   SendInvitation(std::move(invitation.handle_), target_process,
                  channel_endpoint.TakePlatformHandle(),
                  MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL,
-                 MOJO_SEND_INVITATION_FLAG_NONE, error_callback, "");
+                 invitation.extra_flags_, error_callback, "");
 }
 
 // static
@@ -172,7 +172,7 @@ void OutgoingInvitation::Send(OutgoingInvitation invitation,
   SendInvitation(std::move(invitation.handle_), target_process,
                  server_endpoint.TakePlatformHandle(),
                  MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_SERVER,
-                 MOJO_SEND_INVITATION_FLAG_NONE, error_callback, "");
+                 invitation.extra_flags_, error_callback, "");
 }
 
 // static
@@ -183,7 +183,7 @@ void OutgoingInvitation::SendAsync(OutgoingInvitation invitation,
   SendInvitation(std::move(invitation.handle_), target_process,
                  channel_endpoint.TakePlatformHandle(),
                  MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_ASYNC,
-                 MOJO_SEND_INVITATION_FLAG_NONE, error_callback, "");
+                 invitation.extra_flags_, error_callback, "");
 }
 
 // static
@@ -196,8 +196,8 @@ ScopedMessagePipeHandle OutgoingInvitation::SendIsolated(
   SendInvitation(std::move(invitation.handle_), base::kNullProcessHandle,
                  channel_endpoint.TakePlatformHandle(),
                  MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL,
-                 MOJO_SEND_INVITATION_FLAG_ISOLATED, ProcessErrorCallback(),
-                 connection_name);
+                 MOJO_SEND_INVITATION_FLAG_ISOLATED | invitation.extra_flags_,
+                 ProcessErrorCallback(), connection_name);
   return pipe;
 }
 
@@ -211,8 +211,8 @@ ScopedMessagePipeHandle OutgoingInvitation::SendIsolated(
   SendInvitation(std::move(invitation.handle_), base::kNullProcessHandle,
                  server_endpoint.TakePlatformHandle(),
                  MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL_SERVER,
-                 MOJO_SEND_INVITATION_FLAG_ISOLATED, ProcessErrorCallback(),
-                 connection_name);
+                 MOJO_SEND_INVITATION_FLAG_ISOLATED | invitation.extra_flags_,
+                 ProcessErrorCallback(), connection_name);
   return pipe;
 }
 
