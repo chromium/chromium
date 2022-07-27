@@ -180,6 +180,8 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   void PaintCaretsIfNeeded(const ScopedPaintState&,
                            const PaintInfo&,
                            const PhysicalOffset& paint_offset);
+  bool PaintOverflowControls(const PaintInfo&,
+                             const PhysicalOffset& paint_offset);
 
   NGInlinePaintContext& EnsureInlineContext();
 

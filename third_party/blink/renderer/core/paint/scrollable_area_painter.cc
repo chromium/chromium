@@ -148,14 +148,14 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
   context.DrawPath(line_path.detach(), paint_flags, auto_dark_mode);
 }
 
-void ScrollableAreaPainter::PaintOverflowControls(
+bool ScrollableAreaPainter::PaintOverflowControls(
     const PaintInfo& paint_info,
     const gfx::Vector2d& paint_offset) {
   // Don't do anything if we have no overflow.
   const auto& box = *GetScrollableArea().GetLayoutBox();
   if (!box.IsScrollContainer() ||
       box.StyleRef().Visibility() != EVisibility::kVisible)
-    return;
+    return false;
 
   // Overflow controls are painted in the following paint phases:
   // - Overlay overflow controls of self-painting layers or reordered overlay
@@ -168,18 +168,18 @@ void ScrollableAreaPainter::PaintOverflowControls(
     if (box.HasSelfPaintingLayer() ||
         box.Layer()->NeedsReorderOverlayOverflowControls()) {
       if (paint_info.phase != PaintPhase::kOverlayOverflowControls)
-        return;
+        return false;
     } else if (paint_info.phase != PaintPhase::kForeground) {
-      return;
+      return false;
     }
   } else if (!ShouldPaintSelfBlockBackground(paint_info.phase)) {
-    return;
+    return false;
   }
 
   GraphicsContext& context = paint_info.context;
   const auto* fragment = paint_info.FragmentToPaint(box);
   if (!fragment)
-    return;
+    return false;
 
   const ClipPaintPropertyNode* clip = nullptr;
   const auto* properties = fragment->PaintProperties();
@@ -230,6 +230,8 @@ void ScrollableAreaPainter::PaintOverflowControls(
 
   // Paint our resizer last, since it sits on top of the scroll corner.
   PaintResizer(context, paint_offset, paint_info.GetCullRect());
+
+  return true;
 }
 
 void ScrollableAreaPainter::PaintScrollbar(GraphicsContext& context,

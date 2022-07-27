@@ -51,6 +51,7 @@ void BlockPainter::Paint(const PaintInfo& paint_info) {
   auto paint_offset = paint_state.PaintOffset();
   auto& local_paint_info = paint_state.MutablePaintInfo();
   PaintPhase original_phase = local_paint_info.phase;
+  bool painted_overflow_controls = false;
 
   if (original_phase == PaintPhase::kOutline) {
     local_paint_info.phase = PaintPhase::kDescendantOutlinesOnly;
@@ -64,6 +65,15 @@ void BlockPainter::Paint(const PaintInfo& paint_info) {
       local_paint_info.SetSkipsBackground(true);
     layout_block_.PaintObject(local_paint_info, paint_offset);
     local_paint_info.SetSkipsBackground(false);
+
+    // If possible, paint overflow controls before scrolling background to make
+    // it easier to merge scrolling background and scrolling contents into the
+    // same layer. The function checks if it's appropriate to paint overflow
+    // controls now.
+    if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
+      painted_overflow_controls =
+          PaintOverflowControls(local_paint_info, paint_offset);
+    }
 
     if (paint_location & kBackgroundPaintInContentsSpace) {
       local_paint_info.SetIsPaintingBackgroundInContentsSpace(true);
@@ -114,13 +124,11 @@ void BlockPainter::Paint(const PaintInfo& paint_info) {
     layout_block_.PaintObject(local_paint_info, paint_offset);
   }
 
-  // We paint scrollbars after we painted the other things, so that the
-  // scrollbars will sit above them.
-  local_paint_info.phase = original_phase;
-  if (auto* scrollable_area = layout_block_.GetScrollableArea()) {
-    ScrollableAreaPainter(*scrollable_area)
-        .PaintOverflowControls(local_paint_info,
-                               ToRoundedPoint(paint_offset).OffsetFromOrigin());
+  // If we haven't painted overflow controls, paint scrollbars after we painted
+  // the other things, so that the scrollbars will sit above them.
+  if (!painted_overflow_controls) {
+    local_paint_info.phase = original_phase;
+    PaintOverflowControls(local_paint_info, paint_offset);
   }
 }
 
@@ -372,6 +380,16 @@ void BlockPainter::PaintContents(const PaintInfo& paint_info,
   DCHECK(!layout_block_.ChildrenInline());
   PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
   layout_block_.PaintChildren(paint_info_for_descendants, paint_offset);
+}
+
+bool BlockPainter::PaintOverflowControls(const PaintInfo& paint_info,
+                                         const PhysicalOffset& paint_offset) {
+  if (auto* scrollable_area = layout_block_.GetScrollableArea()) {
+    return ScrollableAreaPainter(*scrollable_area)
+        .PaintOverflowControls(paint_info,
+                               ToRoundedPoint(paint_offset).OffsetFromOrigin());
+  }
+  return false;
 }
 
 }  // namespace blink
