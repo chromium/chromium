@@ -888,7 +888,6 @@
 <translation id="5906513782029855931">ಸೈಟ್‌ಗಳ URL ಗಳ ಬಗ್ಗೆ ತಿಳಿದುಕೊಳ್ಳುವುದರಿಂದ, ಕಾರ್ಯಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸುವುದಕ್ಕೆ ನಿಮಗೆ ಸಹಾಯ ಮಾಡಲು Google Assistant ಅನ್ನು ಅನುಮತಿಸುತ್ತದೆ. Assistant ಅನ್ನು Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಆಫ್ ಮಾಡಬಹುದು.</translation>
 <translation id="5916664084637901428">ಆನ್‌</translation>
 <translation id="5919204609460789179">ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು <ph name="PRODUCT_NAME" /> ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
-<translation id="593625682991400408">ಟ್ರಯಲ್‌ಗಳ ಅವಧಿಯಲ್ಲಿ, ಸ್ಪ್ಯಾಮ್, ವಂಚನೆ ಮತ್ತು ಸೈಟ್‌ಗಳ ನಡುವೆ ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯನ್ನು ಮಿತಿಗೊಳಿಸುವ ವಿದಾನಗಳನ್ನು Chrome ಅನ್ವೇಷಿಸುತ್ತಿದೆ. ನಿಮಗೆ ಜಾಹೀರಾತುಗಳನ್ನು ತೋರಿಸಲು Chrome ಸೈಟ್‌ಗಳು ಬಳಸಬಹುದಾದ ನಿಮ್ಮ <ph name="BEGIN_LINK" />ಆಸಕ್ತಿಗಳನ್ನು ಅಂದಾಜು ಮಾಡುತ್ತದೆ<ph name="END_LINK" />. ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ನೀವು ನಿರ್ವಹಿಸಬಹುದು.</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> ಸೇರಿಸಿ</translation>
 <translation id="5942872142862698679">ಹುಡುಕಲು Google ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5945035219773565305">ಪ್ರಸ್ತುತ ಶಿಫಾರಸು:  <ph name="RECOMMENDATION" /></translation>
@@ -975,6 +974,7 @@
 <translation id="6394791151443660613">ಹುಡುಕಿ: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">ಲಿಂಕ್</translation>
 <translation id="6397616442223433927">ಆನ್‌ಲೈನ್‌ಗೆ ಮರಳಿದ್ದೀರಿ</translation>
+<translation id="6401458660421980302">ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಬೇರೊಂದು ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸಲು, ಅಲ್ಲಿ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> ನಲ್ಲಿ <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6406506848690869874">ಸಿಂಕ್</translation>
@@ -1026,6 +1026,7 @@
 <translation id="6600954340915313787">Chrome ಗೆ ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="661266467055912436">ನಿಮಗಾಗಿ ಹಾಗೂ ವೆಬ್‌ನಲ್ಲಿರುವ ಎಲ್ಲರಿಗಾಗಿ ಸುರಕ್ಷತೆಯನ್ನು ಸುಧಾರಿಸುತ್ತದೆ.</translation>
 <translation id="6618554661997243500">ನಿಮಗಾಗಿ ಪ್ರಮುಖ ಸೈಟ್‌ಗಳು ಮತ್ತು ಸ್ಟೋರಿಗಳನ್ನು ವೀಕ್ಷಿಸಲು, ಹೋಮ್ ಬಟನ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
+<translation id="6621391692573306628">ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಬೇರೊಂದು ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸಲು, ಎರಡೂ ಸಾಧನಗಳಲ್ಲಿ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6627583120233659107">ಫೋಲ್ಡರ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6633067410344541938">ಅಜ್ಞಾತ ಮೋಡ್‌‌ ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="6636623428211296678">ಕೆಳಗೆ ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ ಅಥವಾ ಈಗಲೇ ಪೂರ್ಣಗೊಳಿಸಿ</translation>

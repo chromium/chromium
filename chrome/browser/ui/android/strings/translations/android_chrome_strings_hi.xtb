@@ -78,6 +78,7 @@
 <translation id="1344653310988386453">हाइलाइट किए गए टेक्स्ट का लिंक शामिल करें</translation>
 <translation id="1347468774581902829">गतिविधि प्रबंधित करें</translation>
 <translation id="1360432990279830238">साइन आउट करें और सिंक बंद करें?</translation>
+<translation id="1366525380420346469">यह सुविधा चालू होने पर</translation>
 <translation id="1373696734384179344">चयनित सामग्री डाउनलोड करने के लिए मेमोरी अपर्याप्‍त है.</translation>
 <translation id="1376578503827013741">गणना की जा रही है…</translation>
 <translation id="1382912999714108023">क्या यह मौजूदा जानकारी नहीं है? इसे अपडेट करने के लिए कृपया अपने बैंक से संपर्क करें.</translation>
@@ -514,6 +515,7 @@
 <translation id="3810973564298564668">प्रबंधित करें</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड हटाए गए</translation>
 <translation id="3819183753496523827">आप ऑफ़लाइन हैं. अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें.</translation>
+<translation id="3830886834687455630">अपने पासवर्ड की जांच करने के लिए, Google Play Services को अपडेट करें</translation>
 <translation id="3845098929839618392">गुप्त टैब में खोलें</translation>
 <translation id="3856096718352044181">कृपया पुष्टि करें कि यह एक मान्य डीएनएस सेवा है या थोड़ी देर बाद कोशिश करें</translation>
 <translation id="3858860766373142691">नाम</translation>
@@ -734,6 +736,7 @@
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5032430150487044192">क्यूआर कोड नहीं बनाया जा सकता</translation>
 <translation id="5039804452771397117">अनुमति दें</translation>
+<translation id="504456571576643789">इन बातों का ध्यान रखें</translation>
 <translation id="5054455334322721892">जब आप साइन इन रहते हैं, तब हो सकता है कि <ph name="BEGIN_LINK1" />अन्य तरह की गतिविधियां<ph name="END_LINK1" /> आपके Google खाते में सेव हो जाएं. आप किसी भी समय उन्हें मिटा सकते हैं.</translation>
 <translation id="5061533557687621530">मौसम की जानकारी के लिए, माइक पर टैप करें और “आज मौसम कैसा है?” कहें</translation>
 <translation id="506254248375231072">कोई टैब नहीं है</translation>
@@ -889,7 +892,6 @@
 <translation id="5906513782029855931">साइटों के यूआरएल के बारे में जानकारी होने पर, Google Assistant टास्क पूरे करने में आपकी मदद कर पाती है. Chrome की सेटिंग में जाकर, Assistant को बंद किया जा सकता है.</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5919204609460789179">सिंक शुरू करने के लिए <ph name="PRODUCT_NAME" /> अपडेट करें</translation>
-<translation id="593625682991400408">ट्रायल के दौरान, Chrome ऐसे तरीके खोज रहा है जिनसे स्पैम, धोखाधड़ी, और साइटों के बीच शेयर किए जाने वाले डेटा को सीमित किया जा सके. Chrome आपकी <ph name="BEGIN_LINK" />पसंद के विषयों का अनुमान<ph name="END_LINK" /> भी लगाता है. इस जानकारी का इस्तेमाल, साइटें आपको विज्ञापन दिखाने के लिए कर सकती हैं. सेटिंग में जाकर, अपनी पसंद के विषयों को मैनेज किया जा सकता है.</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> जोड़ें</translation>
 <translation id="5942872142862698679">खोजने के लिए Google का उपयोग किया जा रहा है</translation>
 <translation id="5945035219773565305">मौजूदा सुझाव: <ph name="RECOMMENDATION" /></translation>
@@ -1217,6 +1219,7 @@
 <translation id="7641339528570811325">ब्राउज़िंग डेटा साफ़ करें…</translation>
 <translation id="7646772052135772216">पासवर्ड को सिंक करने की सुविधा काम नहीं कर रही है</translation>
 <translation id="7655900163790317559">ब्लूटूथ चालू हो रहा है…</translation>
+<translation id="7656862631699126784">गुप्त टैब को लॉक करने वाली सेटिंग को चालू करें</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7663313374500954251">इस ब्राउज़र को <ph name="PARENT_NAME" /> की मदद से, मैनेज किया जाता है.</translation>
 <translation id="7665369617277396874">खाता जोड़ें</translation>
@@ -1519,6 +1522,7 @@
 <translation id="9159716826369098114"><ph name="TAB_COUNT" /> टैब के टैब ग्रुप को, नए बैकग्राउंड वाले टैब ग्रुप की तरह पहले जैसा करें.</translation>
 <translation id="9169507124922466868">नेविगेशन का इतिहास आधी स्क्रीन में खुला हुआ है</translation>
 <translation id="9187955620966010988">प्रतिक्रिया में बदलाव किया गया</translation>
+<translation id="9190276265094487094">सिंक किए हुए सभी डिवाइसों पर आपकी खोज का इतिहास सेव रहेगा, ताकि आप अपने पिछले काम को जारी रख सकें</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{जांच 1 मिनट पहले की गई}one{जांच # मिनट पहले की गई}other{जांच # मिनट पहले की गई}}</translation>
 <translation id="9204836675896933765">1 फ़ाइल बची है</translation>
 <translation id="9205933215779845960">वह पेज नहीं मिला. स्पेलिंग की जांच करें या <ph name="SEARCH_ENGINE" /> पर खोजें.</translation>

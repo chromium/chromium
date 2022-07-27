@@ -2982,6 +2982,11 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="408076456549153854">Aktifkan login browser</translation>
 <translation id="4081127242481747676">Setelan sensor</translation>
 <translation id="4082498585300984671">Mengaktifkan Fitur Click to Call</translation>
+<translation id="4082809879536562387">Memungkinkan Anda menyetel jangka waktu, dalam milidetik, antara notifikasi pertama yang memberi tahu bahwa perangkat <ph name="PRODUCT_OS_NAME" /> harus dimulai ulang untuk menerapkan update tertunda dan akhir dari jangka waktu yang ditentukan oleh kebijakan <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />.
+
+      Jika tidak disetel, jangka waktu default selama 259200000 milidetik (tiga hari) akan digunakan untuk perangkat <ph name="PRODUCT_OS_NAME" />.
+
+      Untuk rollback dan update <ph name="PRODUCT_OS_NAME" /> lainnya yang akan melakukan powerwash perangkat, pengguna akan langsung diberi tahu saat update tersedia, apa pun nilai kebijakan ini.</translation>
 <translation id="4086150283035515220">Jika kebijakan disetel ke Aktif, pengguna akan ditanyai lokasi penyimpanan file sebelum mendownload. Jika kebijakan disetel ke Nonaktif, download akan dimulai secara otomatis dan pengguna tidak akan ditanyai lokasi penyimpanan file.
 
       Jika kebijakan tidak disetel, pengguna akan dapat mengubah setelan ini.</translation>

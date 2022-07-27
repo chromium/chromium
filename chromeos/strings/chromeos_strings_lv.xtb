@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">Vēsture</translation>
 <translation id="1645954272419197032">Pārbaudiet informāciju par ierīci</translation>
 <translation id="1662989795263954667">Apturēts — beigusies tinte</translation>
+<translation id="1664796644829245314">Priekšskatīt attēlu <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Iebūvēts VPN</translation>
 <translation id="1672499492233627739">Tīmekļa kameras video plūsma</translation>
 <translation id="1676557873873341166">Notiek videoklipa uzņemšana</translation>
@@ -118,6 +119,7 @@
 <translation id="1851218745569890714">Videokonferences</translation>
 <translation id="1852934301711881861">Instalēt Chrome OS Flex</translation>
 <translation id="1856388568474281774">Lejupvērstais bulttaustiņš</translation>
+<translation id="1858620243986915808">Pievienot ekrānuzņēmumu</translation>
 <translation id="1871569928317311284">Izslēgt tumšo motīvu</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Izslēgt tumšo režīmu</translation>
@@ -797,6 +799,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7978412674231730200">Privātā atslēga</translation>
 <translation id="7982789257301363584">Tīkls</translation>
 <translation id="7994702968232966508">EAP metode</translation>
+<translation id="8018928621986160031">Saglabāti šeit: <ph name="FILE_LOCATION" /></translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Iespējot automātisko krāsu režīmu</translation>

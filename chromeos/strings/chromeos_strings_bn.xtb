@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1645954272419197032">ডিভাইসের তথ্য নিশ্চিত করুন</translation>
 <translation id="1662989795263954667">বন্ধ হয়ে গেছে - প্রিন্টারে কালি ফুরিয়ে গেছে</translation>
+<translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />-এর প্রিভিউ দেখুন</translation>
 <translation id="1668469839109562275">বিল্ট-ইন ভিপিএন</translation>
 <translation id="1672499492233627739">ওয়েবক্যাম ভিডিও ফিড</translation>
 <translation id="1676557873873341166">ভিডিও ক্যাপচার করা হচ্ছে</translation>
@@ -797,6 +798,7 @@
 <translation id="7978412674231730200">ব্যক্তিগত কী</translation>
 <translation id="7982789257301363584">নেটওয়ার্ক</translation>
 <translation id="7994702968232966508">EAP পদ্ধতি</translation>
+<translation id="8018928621986160031">"<ph name="FILE_LOCATION" />"-এ সেভ করা হয়েছে</translation>
 <translation id="802154636333426148">ডাউনলোড করা যায়নি</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">'অটো কালার' মোড চালু করুন</translation>

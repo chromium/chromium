@@ -1297,7 +1297,6 @@
 <translation id="2191754378957563929">사용</translation>
 <translation id="2192505247865591433">웹 브라우저</translation>
 <translation id="2193365732679659387">신뢰 설정</translation>
-<translation id="2194554416429452547">무료 체험 기간 동안 Chrome에서는 스팸, 사기 및 사이트 간 공유를 제한하는 방법을 탐색합니다. 또한 Chrome의 <ph name="ESTIMATE_INTERESTS_LINK" />을 기반으로 사이트가 광고를 표시할 수 있습니다. 설정에서 관심분야를 관리할 수 있습니다.</translation>
 <translation id="2194856509914051091">고려사항</translation>
 <translation id="2195331105963583686">이후로도 이 <ph name="DEVICE_TYPE" /> 기기를 계속 사용할 수는 있지만, 소프트웨어 및 보안 업데이트를 자동으로 받을 수 없게 됩니다.</translation>
 <translation id="2195729137168608510">이메일 보호</translation>
@@ -3914,6 +3913,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4689421377817139245">이 북마크를 내 iPhone에 동기화</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi 펌웨어에서 csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon 의 4개 파일을 생성하였습니다. 처음 3개 파일은 레지스터 덤프를 포함하는 바이너리 파일로 Intel에서 개인정보나 기기 식별 정보를 포함하지 않도록 선언되었습니다. 4번째 파일은 Intel 펌웨어의 실행 기록으로 모든 개인정보나 기기 식별 정보가 삭제되었지만 너무 커서 여기에 표시할 수 없습니다. 이러한 4개 파일은 최근에 발생한 기기의 Wi-Fi 문제로 인해 생성되었으며 관련 문제를 해결하기 위해 Intel과 공유됩니다.&gt;</translation>
 <translation id="4691791363716065510">이 사이트의 탭을 모두 닫을 때까지 <ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 볼 수 있게 됩니다.</translation>
+<translation id="4692342362587775867">이 사이트의 알림이 불편할 수 있음</translation>
 <translation id="4692623383562244444">검색엔진</translation>
 <translation id="4692736633446859167">이전에 <ph name="SITE" />의 확장 프로그램을 일절 허용하지 않았습니다. 여기에 이 사이트를 추가하면 다른 확장 프로그램도 <ph name="SITE" />에서 사이트 데이터 읽기 및 변경을 요청할 수 있습니다.</translation>
 <translation id="4693155481716051732">초밥</translation>
@@ -5307,6 +5307,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6086846494333236931">관리자가 설치함</translation>
 <translation id="6087746524533454243">브라우저의 정보 페이지를 찾는다면 다음으로 이동하세요.</translation>
 <translation id="6087960857463881712">멋진 얼굴</translation>
+<translation id="6088535503330933227">Chrome에서는 광고 스팸, 사기 및 사이트 간 공유를 제한하는 방법을 연구합니다. 또한 Chrome은 사이트에서 광고를 표시하는 데 사용할 수 있는 <ph name="ESTIMATE_INTERESTS_LINK" />합니다. 설정에서 관심분야를 관리할 수 있습니다.</translation>
 <translation id="608912389580139775">읽기 목록에 이 페이지를 추가하려면 북마크 아이콘을 클릭하세요.</translation>
 <translation id="6091761513005122595">공유가 성공적으로 마운트되었습니다.</translation>
 <translation id="6093888419484831006">업데이트를 취소하는 중...</translation>

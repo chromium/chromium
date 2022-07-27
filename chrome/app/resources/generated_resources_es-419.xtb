@@ -1282,7 +1282,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2191754378957563929">Sí</translation>
 <translation id="2192505247865591433">De:</translation>
 <translation id="2193365732679659387">Configuración de confianza</translation>
-<translation id="2194554416429452547">Durante las pruebas, Chrome explora maneras de limitar el spam, el fraude y el uso compartido entre sitios. Chrome también <ph name="ESTIMATE_INTERESTS_LINK" /> que pueden usar los sitios para mostrarte anuncios. Puedes administrar tus intereses en la Configuración.</translation>
 <translation id="2194856509914051091">Aspectos para tener en cuenta</translation>
 <translation id="2195331105963583686">De todos modos, podrás usar tu <ph name="DEVICE_TYPE" /> después de ese momento, pero ya no recibirá actualizaciones automáticas de software y seguridad</translation>
 <translation id="2195729137168608510">Protección de correo electrónico</translation>
@@ -2660,7 +2659,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3503995387997205657">Puedes restablecer tus apps anteriores.</translation>
 <translation id="3505030558724226696">Revocar el acceso al dispositivo</translation>
 <translation id="3505100368357440862">Sugerencias de compra</translation>
-<translation id="3507132249039706973">Se activó la protección estándar</translation>
+<translation id="3507132249039706973">Se activó la protección estándar.</translation>
 <translation id="3507421388498836150">Permisos actuales para "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3507888235492474624">Vuelve a buscar dispositivos Bluetooth</translation>
 <translation id="3508492320654304609">No se pudieron borrar tus datos de acceso</translation>
@@ -3896,6 +3895,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4689421377817139245">Sincronizar este favorito con tu iPhone</translation>
 <translation id="4690091457710545971">&lt;El firmware de Wi-Fi de Intel generó cuatro archivos: csr.lst, fh_regs.lst, radio_reg.lst y monitor.lst.sysmon. Intel utiliza los primeros tres, archivos binarios con volcados de registros, para incluir información que no identifique personas ni dispositivos. El último archivo es un rastro de ejecución del firmware de Intel del cual se eliminan los datos de identificación personal o de dispositivo; sin embargo, es demasiado grande para mostrarlo aquí. Se generaron estos archivos en respuesta a los recientes problemas de conectividad Wi-Fi en tu dispositivo y se compartirán con Intel para solucionarlos.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> podrá ver <ph name="FILENAME" /> hasta que cierres todas las pestañas de este sitio</translation>
+<translation id="4692342362587775867">Las notificaciones de este sitio pueden resultar invasivas.</translation>
 <translation id="4692623383562244444">Motores de búsqueda</translation>
 <translation id="4692736633446859167">Anteriormente elegiste no permitir ninguna extensión para <ph name="SITE" />. Si agregas el sitio aquí, otras extensiones también podrán solicitar leer y modificar tus datos del sitio en <ph name="SITE" />.</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -5289,6 +5289,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6086846494333236931">Instalado por el administrador</translation>
 <translation id="6087746524533454243">¿Buscas la página de información del navegador? Visita</translation>
 <translation id="6087960857463881712">Cara increíble</translation>
+<translation id="6088535503330933227">Chrome explora maneras de limitar el spam de anuncios, el fraude y el uso compartido entre sitios. Chrome también <ph name="ESTIMATE_INTERESTS_LINK" /> que pueden usar los sitios para mostrarte anuncios. Puedes administrar tus intereses en la Configuración.</translation>
 <translation id="608912389580139775">Para agregar esta página a tu lista de lectura, haz clic en el ícono de favoritos.</translation>
 <translation id="6091761513005122595">Se activó correctamente el recurso compartido.</translation>
 <translation id="6093888419484831006">Cancelando actualización…</translation>

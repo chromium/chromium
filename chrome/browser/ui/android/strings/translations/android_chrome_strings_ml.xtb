@@ -889,7 +889,6 @@
 <translation id="5906513782029855931">സൈറ്റുകളുടെ URL-കൾ അറിയുന്നതിലൂടെ Google Assistant-ന് നിങ്ങളുടെ ടാസ്ക്കുകൾ പൂർത്തിയാക്കാൻ സഹായിക്കാനാകും. നിങ്ങൾക്ക് Chrome ക്രമീകരണത്തിൽ Assistant ഓഫാക്കാം.</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
 <translation id="5919204609460789179">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന്, <ph name="PRODUCT_NAME" /> അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
-<translation id="593625682991400408">ട്രയലുകൾ നടക്കുമ്പോൾ, സ്പാം, വഞ്ചന, സൈറ്റുകൾക്കിടയിലുള്ള പങ്കിടൽ എന്നിവ പരിമിതപ്പെടുത്താനുള്ള വഴികൾ കണ്ടെത്താൻ Chrome ശ്രമിക്കുന്നു. Chrome <ph name="BEGIN_LINK" />നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ കണക്കാക്കുകയും<ph name="END_LINK" /> ചെയ്യുന്നു, നിങ്ങളെ പരസ്യങ്ങൾ കാണിക്കാൻ സൈറ്റുകൾക്ക് ഇത് ഉപയോഗിക്കാം. ക്രമീകരണത്തിൽ നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ മാനേജ് ചെയ്യാം.</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> ചേർക്കുക</translation>
 <translation id="5942872142862698679">തിരയാൻ Google ഉപയോഗിക്കുന്നു</translation>
 <translation id="5945035219773565305">നിലവിലെ നിർദ്ദേശം: <ph name="RECOMMENDATION" /></translation>
@@ -976,6 +975,7 @@
 <translation id="6394791151443660613">തിരയുക: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">ലിങ്ക്</translation>
 <translation id="6397616442223433927">ഓൺലൈനിൽ തിരിച്ചെത്തി</translation>
+<translation id="6401458660421980302">ഈ ടാബ് മറ്റൊരു ഉപകരണത്തിലേക്ക് അയയ്‌ക്കാൻ, അതിലെ Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> -ൽ <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">ബുക്ക്‌മാർക്ക് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6406506848690869874">Sync</translation>
@@ -1027,6 +1027,7 @@
 <translation id="6600954340915313787">Chrome-ലേക്ക് പ്കർത്തി</translation>
 <translation id="661266467055912436">നിങ്ങൾക്കും വെബിലെ എല്ലാവർക്കും സുരക്ഷ മെച്ചപ്പെടുത്തുന്നു.</translation>
 <translation id="6618554661997243500">നിങ്ങൾക്കുള്ള പ്രധാന സൈറ്റുകളും സ്‌റ്റോറികളും കാണാൻ, ഹോം ബട്ടൺ ടാപ്പ് ചെയ്യുക</translation>
+<translation id="6621391692573306628">ഈ ടാബ് മറ്റൊരു ഉപകരണത്തിലേക്ക് അയയ്‌ക്കാൻ, രണ്ട് ഉപകരണങ്ങളിലെയും Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="6627583120233659107">ഫോൾഡർ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6633067410344541938">അദൃശ്യ മോഡ് അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="6636623428211296678">ചുവടെ കൂടുതൽ ക്രമീകരണം അടുത്തറിയുകയോ ഇപ്പോൾ പൂർത്തിയാക്കുകയോ ചെയ്യുക</translation>

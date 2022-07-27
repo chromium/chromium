@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">История</translation>
 <translation id="1645954272419197032">Подтвердите информацию об устройстве</translation>
 <translation id="1662989795263954667">Печать прервана: нет чернил</translation>
+<translation id="1664796644829245314">Предварительный просмотр: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Встроенная VPN</translation>
 <translation id="1672499492233627739">Видеоизображение с веб-камеры</translation>
 <translation id="1676557873873341166">Запись видео…</translation>
@@ -118,6 +119,7 @@
 <translation id="1851218745569890714">Видеоконференции</translation>
 <translation id="1852934301711881861">Установить Chrome OS Flex</translation>
 <translation id="1856388568474281774">Стрелка вниз</translation>
+<translation id="1858620243986915808">Прикрепить скриншот</translation>
 <translation id="1871569928317311284">Выключить тёмную тему</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Выключить тёмную тему</translation>
@@ -797,6 +799,7 @@
 <translation id="7978412674231730200">Закрытый ключ</translation>
 <translation id="7982789257301363584">Сеть</translation>
 <translation id="7994702968232966508">Метод EAP</translation>
+<translation id="8018928621986160031">Сохранено (<ph name="FILE_LOCATION" />)</translation>
 <translation id="802154636333426148">Ошибка скачивания</translation>
 <translation id="8031884997696620457">HSPA+</translation>
 <translation id="80398733265834479">Включить автоматический цветовой режим</translation>

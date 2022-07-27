@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1645954272419197032">कृपया डिवाइस की जानकारी की पुष्टि करें</translation>
 <translation id="1662989795263954667">बंद हो गया - स्याही खत्म हो गई</translation>
+<translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> की झलक देखें</translation>
 <translation id="1668469839109562275">पहले से मौजूद वीपीएन</translation>
 <translation id="1672499492233627739">वेबकैम वीडियो फ़ीड</translation>
 <translation id="1676557873873341166">वीडियो रिकॉर्ड हो रहा है</translation>
@@ -798,6 +799,7 @@
 <translation id="7978412674231730200">निजी कुंजी</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7994702968232966508">EAP विधि</translation>
+<translation id="8018928621986160031">"<ph name="FILE_LOCATION" />" में सेव किए गए</translation>
 <translation id="802154636333426148">डाउनलोड विफल रहा</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">अपने-आप रंग तय करने वाला मोड चालू करें</translation>
