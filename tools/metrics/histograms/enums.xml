@@ -83949,6 +83949,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Write error"/>
 </enum>
 
+<enum name="RestrictedPrefetchReused">
+  <int value="0" label="Restricted prefetch not reused"/>
+  <int value="1" label="Restricted prefetch reused"/>
+</enum>
+
 <enum name="ReusedPasswordType">
   <int value="0" label="Saved password"/>
   <int value="1" label="Primary account password"/>

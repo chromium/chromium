@@ -98,6 +98,14 @@ enum ExternallyConditionalizedType {
   EXTERNALLY_CONDITIONALIZED_MAX
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class RestrictedPrefetchReused {
+  kNotReused = 0,
+  kReused = 1,
+  kMaxValue = kReused
+};
+
 void RecordPervasivePayloadIndex(const char* histogram_name, int index) {
   if (index != -1) {
     base::UmaHistogramExactLinear(histogram_name, index, 101);
@@ -1652,6 +1660,11 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
         request_->load_flags & LOAD_CAN_USE_RESTRICTED_PREFETCH) {
       updated_prefetch_response_->restricted_prefetch = false;
     }
+
+    base::UmaHistogramEnumeration("HttpCache.RestrictedPrefetchReuse",
+                                  restricted_prefetch_reuse
+                                      ? RestrictedPrefetchReused::kReused
+                                      : RestrictedPrefetchReused::kNotReused);
 
     TransitionToState(STATE_WRITE_UPDATED_PREFETCH_RESPONSE);
     return OK;

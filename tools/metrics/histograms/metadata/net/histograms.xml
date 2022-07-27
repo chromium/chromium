@@ -127,6 +127,17 @@ chromium-metrics-reviews@google.com.
   <summary>For each http cache transaction, the recorded pattern.</summary>
 </histogram>
 
+<histogram name="HttpCache.RestrictedPrefetchReuse"
+    enum="RestrictedPrefetchReused" expires_after="2023-02-01">
+  <owner>nrosenthal@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    For each http cache transaction, recorded whether a restricted prefetch (a
+    cross-origin prefetch with as=document) was reused, when response read from
+    the cache completes.
+  </summary>
+</histogram>
+
 <histogram name="Net.AlternateProtocolBrokenLocation"
     enum="BrokenAlternateProtocolLocation" expires_after="2022-12-18">
   <owner>dschinazi@chromium.org</owner>
