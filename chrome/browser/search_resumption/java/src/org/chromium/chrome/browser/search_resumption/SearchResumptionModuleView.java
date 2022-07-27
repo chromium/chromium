@@ -65,6 +65,13 @@ public class SearchResumptionModuleView extends LinearLayout {
         } else {
             mOptionView.setImageResource(org.chromium.ui.R.drawable.ic_expand_more_black_24dp);
         }
+
+        String collapseOrExpandedText = getContext().getResources().getString(
+                shouldExpand ? R.string.accessibility_expanded : R.string.accessibility_collapsed);
+        String description = getContext().getResources().getString(
+                R.string.search_resumption_module_title_short);
+        mHeaderView.setContentDescription(description + collapseOrExpandedText);
+
         mTileContainerView.configureExpandedCollapsed(shouldExpand, isAnimationEnabled);
     }
 }
