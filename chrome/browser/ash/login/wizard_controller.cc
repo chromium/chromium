@@ -2018,20 +2018,15 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
   if (current_screen_ == new_current || GetOobeUI() == nullptr)
     return;
 
-  if (new_current) {
-    // Check if we didn't come here via the previous screen logic.
-    if (current_screen_ &&
-        (!base::Contains(previous_screens_, current_screen_) ||
-         previous_screens_[current_screen_] != new_current)) {
-      previous_screens_[new_current] = current_screen_;
-    } else {
-      previous_screens_.erase(new_current);
-    }
+  // Check if we didn't come here via the previous screen logic.
+  if (current_screen_ && new_current &&
+      (!base::Contains(previous_screens_, current_screen_) ||
+       previous_screens_[current_screen_] != new_current)) {
+    previous_screens_[new_current] = current_screen_;
   }
 
   if (current_screen_) {
     current_screen_->Hide();
-    previous_screens_.erase(current_screen_);
   }
 
   current_screen_ = new_current;
