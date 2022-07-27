@@ -179,25 +179,27 @@ class MediaAppIntegrationDarkLightModeDisabledTest
 class MediaAppIntegrationPhotosIntegrationTest
     : public MediaAppIntegrationTest {
  public:
-  void TestPhotosIntegrationForVideo(bool expectation) {
-    TestPhotosIntegration(expectation, /* flag= */ "photosAvailableForVideo");
+  void TestPhotosIntegrationForVideo(bool expect_flag_enabled) {
+    TestPhotosIntegration(expect_flag_enabled,
+                          /* flag= */ "photosAvailableForVideo");
   }
 
-  void TestPhotosIntegrationForImage(bool expectation) {
-    TestPhotosIntegration(expectation, /* flag= */ "photosAvailableForImage");
+  void TestPhotosIntegrationForImage(bool expect_flag_enabled) {
+    TestPhotosIntegration(expect_flag_enabled,
+                          /* flag= */ "photosAvailableForImage");
   }
 
  private:
-  void TestPhotosIntegration(bool expectation, const char* flag) {
+  void TestPhotosIntegration(bool expect_flag_enabled, const char* flag) {
     InstallPhotosApp(profile());
     content::WebContents* web_ui = LaunchWithNoFiles();
 
-    EXPECT_EQ(expectation, GetFlagInApp(web_ui, flag));
+    EXPECT_EQ(expect_flag_enabled, GetFlagInApp(web_ui, flag));
   }
 
   apps::AppPtr MakePhotosApp() {
-    apps::AppPtr app = std::make_unique<apps::App>(apps::AppType::kChromeApp,
-                                                   arc::kGooglePhotosAppId);
+    auto app = std::make_unique<apps::App>(apps::AppType::kChromeApp,
+                                           arc::kGooglePhotosAppId);
     // TODO(b/239776967): expand testing to adjust app readiness.
     app->readiness = apps::Readiness::kReady;
     // Set arbitrary version-- it only matters when compared relative to our
@@ -1248,47 +1250,47 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppAllProfilesTest,
 IN_PROC_BROWSER_TEST_P(
     MediaAppIntegrationPhotosIntegrationImageEnabledWithParametersTest,
     PhotosIntegrationEnabledViaParameters) {
-  TestPhotosIntegrationForImage(/* expectation= */ true);
+  TestPhotosIntegrationForImage(/* expect_flag_enabled= */ true);
 }
 
 IN_PROC_BROWSER_TEST_P(
     MediaAppIntegrationPhotosIntegrationImageDisabledWithParametersTest,
     PhotosIntegrationDisabledViaParameters) {
-  TestPhotosIntegrationForImage(/* expectation= */ false);
+  TestPhotosIntegrationForImage(/* expect_flag_enabled= */ false);
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationPhotosIntegrationImageDisabledTest,
                        PhotosIntegrationDisabledViaFlag) {
-  TestPhotosIntegrationForImage(/* expectation= */ false);
+  TestPhotosIntegrationForImage(/* expect_flag_enabled= */ false);
 }
 
 IN_PROC_BROWSER_TEST_P(
     MediaAppIntegrationPhotosIntegrationImageVersionTooOldTest,
     PhotosVersionTooOldForImageIntegration) {
-  TestPhotosIntegrationForImage(/* expectation= */ false);
+  TestPhotosIntegrationForImage(/* expect_flag_enabled= */ false);
 }
 
 IN_PROC_BROWSER_TEST_P(
     MediaAppIntegrationPhotosIntegrationVideoEnabledWithParametersTest,
     PhotosIntegrationEnabledViaParameters) {
-  TestPhotosIntegrationForVideo(/* expectation= */ true);
+  TestPhotosIntegrationForVideo(/* expect_flag_enabled= */ true);
 }
 
 IN_PROC_BROWSER_TEST_P(
     MediaAppIntegrationPhotosIntegrationVideoDisabledWithParametersTest,
     PhotosIntegrationDisabledViaParameters) {
-  TestPhotosIntegrationForVideo(/* expectation= */ false);
+  TestPhotosIntegrationForVideo(/* expect_flag_enabled= */ false);
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationPhotosIntegrationVideoDisabledTest,
                        PhotosIntegrationDisabledViaFlag) {
-  TestPhotosIntegrationForVideo(/* expectation= */ false);
+  TestPhotosIntegrationForVideo(/* expect_flag_enabled= */ false);
 }
 
 IN_PROC_BROWSER_TEST_P(
     MediaAppIntegrationPhotosIntegrationVideoVersionTooOldTest,
     PhotosVersionTooOldForVideoIntegration) {
-  TestPhotosIntegrationForVideo(/* expectation= */ false);
+  TestPhotosIntegrationForVideo(/* expect_flag_enabled= */ false);
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationDarkLightModeEnabledTest,

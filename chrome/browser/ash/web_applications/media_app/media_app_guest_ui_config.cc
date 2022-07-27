@@ -35,13 +35,13 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   apps::AppRegistryCache& app_registry_cache =
       apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
 
-  bool photosInstalled = false;
-  auto photosVersion = base::Version();
+  bool photos_installed = false;
+  auto photos_version = base::Version();
   app_registry_cache.ForOneApp(
       arc::kGooglePhotosAppId,
-      [&photosInstalled, &photosVersion](const apps::AppUpdate& update) {
-        photosInstalled = apps_util::IsInstalled(update.Readiness());
-        photosVersion = base::Version(update.Version());
+      [&photos_installed, &photos_version](const apps::AppUpdate& update) {
+        photos_installed = apps_util::IsInstalled(update.Readiness());
+        photos_version = base::Version(update.Version());
       });
 
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
@@ -58,23 +58,23 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   version_info::Channel channel = chrome::GetChannel();
   source->AddBoolean("colorThemes",
                      chromeos::features::IsDarkLightModeEnabled());
-  auto minPhotosVersionForImage =
-      base::Version(base::GetFieldTrialParamValueByFeature(
+  base::Version min_photos_version_for_image(
+      base::GetFieldTrialParamValueByFeature(
           chromeos::features::kMediaAppPhotosIntegrationImage,
           "minPhotosVersionForImage"));
-  auto minPhotosVersionForVideo =
-      base::Version(base::GetFieldTrialParamValueByFeature(
+  base::Version min_photos_version_for_video(
+      base::GetFieldTrialParamValueByFeature(
           chromeos::features::kMediaAppPhotosIntegrationVideo,
           "minPhotosVersionForVideo"));
-  bool suitablePhotosVersion = photosInstalled && photosVersion.IsValid();
-  bool availableForImage = suitablePhotosVersion &&
-                           minPhotosVersionForImage.IsValid() &&
-                           photosVersion >= minPhotosVersionForImage;
-  bool availableForVideo = suitablePhotosVersion &&
-                           minPhotosVersionForVideo.IsValid() &&
-                           photosVersion >= minPhotosVersionForVideo;
-  source->AddBoolean("photosAvailableForImage", availableForImage);
-  source->AddBoolean("photosAvailableForVideo", availableForVideo);
+  bool suitable_photos_version = photos_installed && photos_version.IsValid();
+  bool available_for_image = suitable_photos_version &&
+                             min_photos_version_for_image.IsValid() &&
+                             photos_version >= min_photos_version_for_image;
+  bool available_for_video = suitable_photos_version &&
+                             min_photos_version_for_video.IsValid() &&
+                             photos_version >= min_photos_version_for_video;
+  source->AddBoolean("photosAvailableForImage", available_for_image);
+  source->AddBoolean("photosAvailableForVideo", available_for_video);
   source->AddBoolean("photosIntegrationImage",
                      base::FeatureList::IsEnabled(
                          chromeos::features::kMediaAppPhotosIntegrationImage));
