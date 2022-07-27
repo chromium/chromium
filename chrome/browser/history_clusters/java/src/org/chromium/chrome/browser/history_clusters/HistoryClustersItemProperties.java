@@ -32,6 +32,7 @@ class HistoryClustersItemProperties {
         int CLEAR_BROWSING_DATA = 6;
     }
 
+    static final WritableIntPropertyKey ACCESSIBILITY_STATE = new WritableIntPropertyKey();
     static final WritableObjectPropertyKey<Callback<String>> CHIP_CLICK_HANDLER =
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<OnClickListener> CLICK_HANDLER =
@@ -53,7 +54,7 @@ class HistoryClustersItemProperties {
     static final WritableObjectPropertyKey<CharSequence> URL = new WritableObjectPropertyKey<>();
     static final WritableIntPropertyKey VISIBILITY = new WritableIntPropertyKey();
 
-    static final PropertyKey[] ALL_KEYS = {CHIP_CLICK_HANDLER, CLICK_HANDLER, CLUSTER_VISIT,
-            DIVIDER_VISIBLE, END_BUTTON_CLICK_HANDLER, END_BUTTON_DRAWABLE, ICON_DRAWABLE, LABEL,
-            RELATED_SEARCHES, TITLE, URL, VISIBILITY};
+    static final PropertyKey[] ALL_KEYS = {ACCESSIBILITY_STATE, CHIP_CLICK_HANDLER, CLICK_HANDLER,
+            CLUSTER_VISIT, DIVIDER_VISIBLE, END_BUTTON_CLICK_HANDLER, END_BUTTON_DRAWABLE,
+            ICON_DRAWABLE, LABEL, RELATED_SEARCHES, TITLE, URL, VISIBILITY};
 }

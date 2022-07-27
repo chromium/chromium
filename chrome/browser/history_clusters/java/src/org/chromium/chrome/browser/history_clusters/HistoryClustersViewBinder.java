@@ -62,7 +62,10 @@ class HistoryClustersViewBinder {
 
     public static void bindClusterView(PropertyModel model, View view, PropertyKey key) {
         HistoryClusterView clusterView = (HistoryClusterView) view;
-        if (key == HistoryClustersItemProperties.CLICK_HANDLER) {
+        if (key == HistoryClustersItemProperties.ACCESSIBILITY_STATE) {
+            clusterView.setAccessibilityState(
+                    model.get(HistoryClustersItemProperties.ACCESSIBILITY_STATE));
+        } else if (key == HistoryClustersItemProperties.CLICK_HANDLER) {
             OnClickListener clickListener = model.get(HistoryClustersItemProperties.CLICK_HANDLER);
             clusterView.setOnClickListener(clickListener);
             clusterView.setEndButtonClickListener(clickListener);

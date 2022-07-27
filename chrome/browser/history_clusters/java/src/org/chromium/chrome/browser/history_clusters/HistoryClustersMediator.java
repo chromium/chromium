@@ -25,6 +25,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
 import org.chromium.chrome.browser.history_clusters.HistoryCluster.MatchPosition;
+import org.chromium.chrome.browser.history_clusters.HistoryClusterView.ClusterViewAccessibilityState;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -336,6 +337,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                                     -> setQueryState(QueryState.forQuery(
                                             rawLabel, mDelegate.getSearchEmptyString())));
                     existingModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, null);
+                    existingModel.set(HistoryClustersItemProperties.ACCESSIBILITY_STATE,
+                            ClusterViewAccessibilityState.CLICKABLE);
                 }
                 existingModel.set(HistoryClustersItemProperties.LABEL,
                         mResources.getQuantityString(R.plurals.history_clusters_n_matches,
@@ -357,6 +360,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                     AppCompatResources.getDrawable(mContext, R.drawable.ic_journeys);
             clusterModel.set(HistoryClustersItemProperties.ICON_DRAWABLE, journeysDrawable);
             clusterModel.set(HistoryClustersItemProperties.DIVIDER_VISIBLE, isQueryLess);
+            clusterModel.set(HistoryClustersItemProperties.ACCESSIBILITY_STATE,
+                    ClusterViewAccessibilityState.COLLAPSIBLE);
             ListItem clusterItem = new ListItem(ItemType.CLUSTER, clusterModel);
             mModelList.add(clusterItem);
 
@@ -495,6 +500,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         Drawable chevron = UiUtils.getTintedDrawable(mContext, R.drawable.ic_expand_less_black_24dp,
                 R.color.default_icon_color_tint_list);
         clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, chevron);
+        clusterModel.set(HistoryClustersItemProperties.ACCESSIBILITY_STATE,
+                ClusterViewAccessibilityState.EXPANDABLE);
 
         mModelList.removeRange(indexOfFirstVisit, itemsToHide.size());
         for (ListItem listItem : itemsToHide) {
@@ -513,6 +520,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         Drawable chevron = UiUtils.getTintedDrawable(mContext, R.drawable.ic_expand_more_black_24dp,
                 R.color.default_icon_color_tint_list);
         clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, chevron);
+        clusterModel.set(HistoryClustersItemProperties.ACCESSIBILITY_STATE,
+                ClusterViewAccessibilityState.COLLAPSIBLE);
         mModelList.addAll(itemsToShow, insertionIndex);
     }
 
