@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/overlay_window.h"
+#include "third_party/blink/public/mojom/mediasession/media_session.mojom.h"
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_observer.h"
 #include "ui/gfx/geometry/size.h"
@@ -35,7 +36,9 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& jwindow_android);
   void Destroy(JNIEnv* env);
-  void Play(JNIEnv* env);
+  void TogglePlayPause(JNIEnv* env);
+  void NextTrack(JNIEnv* env);
+  void PreviousTrack(JNIEnv* env);
   void CompositorViewCreated(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& compositor_view);
@@ -62,11 +65,12 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void UpdateNaturalSize(const gfx::Size& natural_size) override;
 
   // VideoOverlayWindow implementation
-  void SetPlaybackState(PlaybackState playback_state) override {}
+  void SetPlaybackState(PlaybackState playback_state) override;
   void SetPlayPauseButtonVisibility(bool is_visible) override;
   void SetSkipAdButtonVisibility(bool is_visible) override {}
-  void SetNextTrackButtonVisibility(bool is_visible) override {}
-  void SetPreviousTrackButtonVisibility(bool is_visible) override {}
+  void SetNextTrackButtonVisibility(bool is_visible) override;
+  void SetPreviousTrackButtonVisibility(bool is_visible) override;
+  // TODO(crbug.com/1331269): Implement video conferencing actions.
   void SetMicrophoneMuted(bool muted) override {}
   void SetCameraState(bool turned_on) override {}
   void SetToggleMicrophoneButtonVisibility(bool is_visible) override {}
@@ -76,6 +80,13 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   cc::Layer* GetLayerForTesting() override;
 
  private:
+  // Notify PictureInPictureActivity that visible actions have changed.
+  void MaybeNotifyVisibleActionsChanged();
+
+  // Maybe update visible actions. Returns true if update happened.
+  bool MaybeUpdateVisibleAction(
+      const media_session::mojom::MediaSessionAction& action,
+      bool is_visible);
   void CloseInternal();
 
   // A weak reference to Java PictureInPictureActivity object.
@@ -86,7 +97,8 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   gfx::Rect bounds_;
   gfx::Size video_size_;
 
-  bool is_play_pause_button_visible_ = false;
+  bool is_playing_ = false;
+  std::unordered_set<int> visible_actions_;
 
   raw_ptr<content::VideoPictureInPictureWindowController> controller_;
 };

@@ -32,27 +32,27 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.components.browser_ui.media.R;
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.components.thinwebview.CompositorViewFactory;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
-import org.chromium.content_public.browser.MediaSession;
-import org.chromium.content_public.browser.MediaSessionObserver;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.media_session.mojom.MediaSessionAction;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * A picture in picture activity which get created when requesting
@@ -60,8 +60,17 @@ import java.util.ArrayList;
  * OverlayWindowAndroid.
  */
 public class PictureInPictureActivity extends AsyncInitializationActivity {
-    private static final String ACTION_PLAY =
-            "org.chromium.chrome.browser.media.PictureInPictureActivity.Play";
+    // Used to filter media buttons' remote action intents.
+    private static final String MEDIA_ACTION =
+            "org.chromium.chrome.browser.media.PictureInPictureActivity.MediaAction";
+    // Used to determine which action button has been touched.
+    private static final String CONTROL_TYPE =
+            "org.chromium.chrome.browser.media.PictureInPictureActivity.ControlType";
+
+    // Used to verify Pre-T that the broadcast sender was Chrome. This extra can be removed when the
+    // min supported version is Android T.
+    private static final String EXTRA_RECEIVER_TOKEN =
+            "org.chromium.chrome.browser.media.PictureInPictureActivity.ReceiverToken";
 
     // Use for passing unique window id to each PictureInPictureActivity instance.
     private static final String NATIVE_POINTER_KEY =
@@ -87,13 +96,12 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     private Tab mInitiatorTab;
     private InitiatorTabObserver mTabObserver;
 
-    // Used to verify Pre-T that the broadcast sender was Chrome. This extra can be removed when the
-    // min supported version is Android T.
-    private static final String EXTRA_RECEIVER_TOKEN = "receiver_token";
-
     private CompositorView mCompositorView;
-    private MediaSessionObserver mMediaSessionObserver;
-    private boolean mIsPlayPauseVisible;
+
+    private boolean mIsPlaying;
+
+    // MediaSessionaction, RemoteAction pairs.
+    private HashMap<Integer, RemoteAction> mRemoteActions = new HashMap<>();
 
     // If present, this is the video's aspect ratio.
     private Rational mAspectRatio;
@@ -112,13 +120,27 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                 return;
             }
 
-            if (intent.getAction() == null || !intent.getAction().equals(ACTION_PLAY)) return;
+            if (intent.getAction() == null || !intent.getAction().equals(MEDIA_ACTION)) return;
             if (!intent.hasExtra(EXTRA_RECEIVER_TOKEN)
                     || intent.getIntExtra(EXTRA_RECEIVER_TOKEN, 0) != this.hashCode()) {
                 return;
             }
 
-            PictureInPictureActivityJni.get().play(nativeOverlayWindowAndroid);
+            switch (intent.getIntExtra(CONTROL_TYPE, -1)) {
+                case MediaSessionAction.PLAY:
+                case MediaSessionAction.PAUSE:
+                    // TODO(crbug.com/1345956): Play/pause state might get out of sync.
+                    PictureInPictureActivityJni.get().togglePlayPause(nativeOverlayWindowAndroid);
+                    return;
+                case MediaSessionAction.PREVIOUS_TRACK:
+                    PictureInPictureActivityJni.get().previousTrack(nativeOverlayWindowAndroid);
+                    return;
+                case MediaSessionAction.NEXT_TRACK:
+                    PictureInPictureActivityJni.get().nextTrack(nativeOverlayWindowAndroid);
+                    return;
+                default:
+                    return;
+            }
         }
     };
 
@@ -249,20 +271,12 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
         mMediaSessionReceiver = new MediaSessionBroadcastReceiver();
         ContextUtils.registerNonExportedBroadcastReceiver(
-                this, mMediaSessionReceiver, new IntentFilter(ACTION_PLAY));
+                this, mMediaSessionReceiver, new IntentFilter(MEDIA_ACTION));
+
+        initializeRemoteActions();
 
         PictureInPictureActivityJni.get().onActivityStart(
                 mNativeOverlayWindowAndroid, this, getWindowAndroid());
-
-        // Add an observer to refresh the Picture-in-Picture params if the media
-        // session state changes.
-        MediaSession mediaSession = MediaSession.fromWebContents(mInitiatorTab.getWebContents());
-        mMediaSessionObserver = new MediaSessionObserver(mediaSession) {
-            @Override
-            public void mediaSessionStateChanged(boolean isControllable, boolean isSuspended) {
-                updatePictureInPictureParams();
-            }
-        };
 
         // See if there are PiP hints in the extras.
         Size size = new Size(
@@ -291,11 +305,6 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         if (mMediaSessionReceiver != null) {
             unregisterReceiver(mMediaSessionReceiver);
             mMediaSessionReceiver = null;
-        }
-
-        if (mMediaSessionObserver != null) {
-            mMediaSessionObserver.stopObserving();
-            mMediaSessionObserver = null;
         }
 
         if (mInitiatorTab != null) {
@@ -346,29 +355,77 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     private PictureInPictureParams getPictureInPictureParams() {
         ArrayList<RemoteAction> actions = new ArrayList<>();
 
-        // If the associated media session is not controllable then we should
-        // place a play button in the Picture-in-Picture window that will
-        // trigger playback.
-        if (mMediaSessionObserver != null
-                && !mMediaSessionObserver.getMediaSession().isControllable()
-                && mIsPlayPauseVisible) {
-            Intent intent = new Intent(ACTION_PLAY);
-            intent.putExtra(EXTRA_RECEIVER_TOKEN, mMediaSessionReceiver.hashCode());
-            intent.putExtra(NATIVE_POINTER_KEY, mNativeOverlayWindowAndroid);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0,
-                    intent, IntentUtils.getPendingIntentMutabilityFlag(false));
-
-            actions.add(new RemoteAction(Icon.createWithResource(getApplicationContext(),
-                                                 R.drawable.ic_play_arrow_white_36dp),
-                    getApplicationContext().getResources().getText(R.string.accessibility_play), "",
-                    pendingIntent));
-        }
+        actions.add(mRemoteActions.get(MediaSessionAction.PREVIOUS_TRACK));
+        actions.add(mRemoteActions.get(
+                mIsPlaying ? MediaSessionAction.PAUSE : MediaSessionAction.PLAY));
+        actions.add(mRemoteActions.get(MediaSessionAction.NEXT_TRACK));
 
         PictureInPictureParams.Builder builder = new PictureInPictureParams.Builder();
         builder.setActions(actions);
         builder.setAspectRatio(mAspectRatio);
 
         return builder.build();
+    }
+
+    @SuppressLint("NewApi")
+    private void initializeRemoteActions() {
+        mRemoteActions.put(MediaSessionAction.PLAY, createRemoteAction(MediaSessionAction.PLAY));
+        mRemoteActions.put(MediaSessionAction.PAUSE, createRemoteAction(MediaSessionAction.PAUSE));
+        mRemoteActions.put(MediaSessionAction.PREVIOUS_TRACK,
+                createRemoteAction(MediaSessionAction.PREVIOUS_TRACK));
+        mRemoteActions.put(
+                MediaSessionAction.NEXT_TRACK, createRemoteAction(MediaSessionAction.NEXT_TRACK));
+    }
+
+    /**
+     * Create remote actions for picutre-in-picture window.
+     *
+     * @param action {@link MediaSessionAction} that the action button is corresponding to.
+     */
+    @SuppressLint("NewApi")
+    private RemoteAction createRemoteAction(int action) {
+        Intent intent = new Intent(MEDIA_ACTION);
+        intent.putExtra(EXTRA_RECEIVER_TOKEN, mMediaSessionReceiver.hashCode());
+        intent.putExtra(CONTROL_TYPE, action);
+        intent.putExtra(NATIVE_POINTER_KEY, mNativeOverlayWindowAndroid);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), action,
+                intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+        RemoteAction remoteAction;
+        switch (action) {
+            case MediaSessionAction.PLAY:
+                remoteAction = new RemoteAction(Icon.createWithResource(getApplicationContext(),
+                                                        R.drawable.ic_play_arrow_white_36dp),
+                        getApplicationContext().getResources().getText(R.string.accessibility_play),
+                        "", pendingIntent);
+                break;
+            case MediaSessionAction.PAUSE:
+                remoteAction = new RemoteAction(Icon.createWithResource(getApplicationContext(),
+                                                        R.drawable.ic_pause_white_36dp),
+                        getApplicationContext().getResources().getText(
+                                R.string.accessibility_pause),
+                        "", pendingIntent);
+                break;
+            case MediaSessionAction.NEXT_TRACK:
+                remoteAction = new RemoteAction(Icon.createWithResource(getApplicationContext(),
+                                                        R.drawable.ic_skip_next_white_36dp),
+                        getApplicationContext().getResources().getText(
+                                R.string.accessibility_next_track),
+                        "", pendingIntent);
+                break;
+            case MediaSessionAction.PREVIOUS_TRACK:
+                remoteAction = new RemoteAction(Icon.createWithResource(getApplicationContext(),
+                                                        R.drawable.ic_skip_previous_white_36dp),
+                        getApplicationContext().getResources().getText(
+                                R.string.accessibility_previous_track),
+                        "", pendingIntent);
+                break;
+            default:
+                remoteAction = null;
+        }
+
+        remoteAction.setEnabled(false);
+        return remoteAction;
     }
 
     @SuppressLint("NewApi")
@@ -400,8 +457,22 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     @CalledByNative
     @SuppressLint("NewAPI")
-    private void setPlayPauseButtonVisibility(boolean isVisible) {
-        mIsPlayPauseVisible = isVisible;
+    private void setPlaybackState(boolean isPlaying) {
+        mIsPlaying = isPlaying;
+        updatePictureInPictureParams();
+    }
+
+    @CalledByNative
+    @SuppressLint("NewAPI")
+    private void updateVisibleActions(int[] actions) {
+        HashSet<Integer> visibleActions = new HashSet<>();
+        for (int action : actions) visibleActions.add(action);
+
+        for (Integer actionKey : mRemoteActions.keySet()) {
+            RemoteAction remoteAction = mRemoteActions.get(actionKey);
+            if (remoteAction.isEnabled() == visibleActions.contains(actionKey)) continue;
+            remoteAction.setEnabled(!remoteAction.isEnabled());
+        }
         updatePictureInPictureParams();
     }
 
@@ -508,7 +579,9 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
         void destroy(long nativeOverlayWindowAndroid);
 
-        void play(long nativeOverlayWindowAndroid);
+        void togglePlayPause(long nativeOverlayWindowAndroid);
+        void nextTrack(long nativeOverlayWindowAndroid);
+        void previousTrack(long nativeOverlayWindowAndroid);
 
         void compositorViewCreated(long nativeOverlayWindowAndroid, CompositorView compositorView);
 
