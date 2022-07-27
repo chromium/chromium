@@ -175,15 +175,17 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
     return;
   }
 
-  recommended_rss_url_ = ios::GetChromeBrowserProvider()
-                             .GetFollowProvider()
-                             ->GetRecommendedSiteURL(web_page_urls);
+  recommended_url_ = ios::GetChromeBrowserProvider()
+                         .GetFollowProvider()
+                         ->GetRecommendedSiteURL(web_page_urls);
 
   // Do not show follow IPH if:
   // 1. The site is not recommended;
-  // 2. The IPH was shown too recently.
-  if (!recommended_rss_url_ ||
-      !IsFollowIPHShownFrequencyEligible(recommended_rss_url_)) {
+  // 2. The recommended url is empty (it happens if there's an error when
+  // fetching);
+  // 3. The IPH was shown too recently.
+  if (!recommended_url_ || recommended_url_.absoluteString.length == 0 ||
+      !IsFollowIPHShownFrequencyEligible(recommended_url_)) {
     return;
   }
 
@@ -260,7 +262,7 @@ void FollowTabHelper::UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls) {
 void FollowTabHelper::PresentFollowIPH() {
   DCHECK(follow_iph_presenter_);
   [follow_iph_presenter_ presentFollowWhileBrowsingIPH];
-  StoreFollowIPHPresentingTime(recommended_rss_url_);
+  StoreFollowIPHPresentingTime(recommended_url_);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(FollowTabHelper)
