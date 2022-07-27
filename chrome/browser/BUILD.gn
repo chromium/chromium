@@ -7885,7 +7885,7 @@ grit("resources") {
       "//chrome/browser/resources/chromeos/gaia_action_buttons:web_components",
       "//chrome/browser/resources/chromeos/parent_access:web_components",
       "//chrome/browser/resources/chromeos/parent_access/flows:web_components",
-      "//chrome/browser/resources/chromeos/set_time_dialog:web_components",
+      "//chrome/browser/resources/chromeos/set_time_dialog:html_wrapper_files",
       "//chrome/browser/resources/chromeos/smb_shares:web_components",
       "//chrome/browser/resources/chromeos/vm:web_components",
       "//chrome/browser/supervised_user:supervised_user_unscaled_resources",

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
@@ -29,6 +29,7 @@ js_library("set_time_browser_proxy") {
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
-html_to_js("web_components") {
-  js_files = [ "set_time_dialog.js" ]
+html_to_wrapper("html_wrapper_files") {
+  in_files = [ "set_time_dialog.html" ]
+  use_js = true
 }

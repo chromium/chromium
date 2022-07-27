@@ -193,6 +193,8 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
 
   source->AddResourcePath("set_time_browser_proxy.js",
                           IDR_SET_TIME_BROWSER_PROXY_JS);
+  source->AddResourcePath("set_time_dialog.html.js",
+                          IDR_SET_TIME_DIALOG_HTML_JS);
   source->AddResourcePath("set_time_dialog.js", IDR_SET_TIME_DIALOG_JS);
   source->SetDefaultResource(IDR_SET_TIME_HTML);
 

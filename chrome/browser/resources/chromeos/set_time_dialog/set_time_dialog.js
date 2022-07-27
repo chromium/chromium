@@ -22,9 +22,10 @@ import './strings.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SetTimeBrowserProxy, SetTimeBrowserProxyImpl} from './set_time_browser_proxy.js';
+import {getTemplate} from './set_time_dialog.html.js';
 
 /**
  * @return {!Array<!{id: string, name: string, selected: Boolean}>} Items for
@@ -116,7 +117,7 @@ function getTimezoneDelta(firstTimezoneId, secondsTimezoneId) {
 Polymer({
   is: 'set-time-dialog',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   // Remove listeners on detach.
   behaviors: [WebUIListenerBehavior],
