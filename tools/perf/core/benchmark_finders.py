@@ -60,11 +60,22 @@ def GetContribBenchmarks():
   """Returns the list of all contrib benchmarks.
   The benchmarks are sorted by order of their names.
   """
+  _BENCHMARKS_TO_SKIP = {
+      # This benchmark is intended to be a convenience base class for writing
+      # other benchmarks, and not a standalone benchmark.
+      'perf_benchmark_with_profiling.PerfBenchmarkWithProfiling',
+      'perf_benchmark_with_profiling_unittest.PerfBenchmarkForTesting',
+  }
+
   benchmarks = list(
       discover.DiscoverClasses(start_dir=path_util.GetContribDir(),
                                top_level_dir=path_util.GetPerfDir(),
                                base_class=benchmark_module.Benchmark,
                                index_by_class_name=True).values())
+  benchmarks = [
+      benchmark for benchmark in benchmarks
+      if benchmark.Name() not in _BENCHMARKS_TO_SKIP
+  ]
   benchmarks.sort(key=lambda b: b.Name())
   return benchmarks
 
