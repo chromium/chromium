@@ -411,6 +411,7 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   perfetto::TrackEvent::Register();
+  tracing::TracingSamplerProfiler::RegisterDataSource();
   SetTrackDescriptors();
   CustomEventRecorder::GetInstance();
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
