@@ -6,8 +6,8 @@
 load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "cpu", "goma", "os", "sheriff_rotations", "xcode")
-load("//lib/ci.star", "ci", "rbe_instance")
+load("//lib/builders.star", "cpu", "goma", "os", "reclient", "sheriff_rotations", "xcode")
+load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/structs.star", "structs")
 
@@ -172,7 +172,7 @@ ci.builder(
     os = os.MAC_DEFAULT,
     sheriff_rotations = args.ignore_default(None),
     goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = 40,
 )
 
@@ -484,7 +484,7 @@ ios_builder(
     tree_closing = False,
     sheriff_rotations = args.ignore_default(None),
     goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = 40,
 )
 

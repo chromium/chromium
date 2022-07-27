@@ -6,8 +6,8 @@
 load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os", "sheriff_rotations")
-load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
+load("//lib/builders.star", "goma", "os", "reclient", "sheriff_rotations")
+load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
@@ -15,8 +15,8 @@ ci.defaults.set(
     cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
@@ -108,7 +108,7 @@ ci.builder(
             ],
         },
     },
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -140,7 +140,7 @@ ci.builder(
         short_name = "asn",
     ),
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -172,7 +172,7 @@ ci.builder(
         short_name = "cfi",
     ),
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -206,7 +206,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -241,7 +241,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -269,7 +269,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -301,7 +301,7 @@ ci.builder(
         short_name = "arm",
     ),
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -328,7 +328,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -389,7 +389,7 @@ ci.builder(
         short_name = "jcz",
     ),
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     # TODO(crbug.com/1342987): Add to the sheriff rotation if/when the builder
     # is stable.
     sheriff_rotations = args.ignore_default(None),
@@ -426,7 +426,7 @@ ci.builder(
         short_name = "kvn",
     ),
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -459,7 +459,7 @@ ci.builder(
         short_name = "oct",
     ),
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     # TODO(crbug.com/1342987): Add to the sheriff rotation if/when the builder
     # is stable.
     sheriff_rotations = args.ignore_default(None),
@@ -522,7 +522,7 @@ ci.builder(
             ],
         },
     },
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -560,7 +560,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -597,7 +597,7 @@ ci.builder(
     tree_closing = False,
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -632,7 +632,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     # TODO(https://crbug.com/1342761): enable sheriff rotation and tree_closing
     # when the builder is stable.
     sheriff_rotations = args.ignore_default(None),
@@ -666,7 +666,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -697,7 +697,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     # This builder build 2 chrome(Ash and Lacros), so it need
     # more time.
     execution_timeout = 4 * time.hour,
@@ -730,7 +730,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.thin_tester(
@@ -793,7 +793,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     # TODO(crbug.com/1345687): Reduce back to 3 hours.
     execution_timeout = 6 * time.hour,
 )
@@ -824,5 +824,5 @@ ci.builder(
         short_name = "cfm",
     ),
     main_console_view = "main",
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )

@@ -5,9 +5,9 @@
 
 load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builders", "os", "sheriff_rotations")
+load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations")
 load("//lib/branches.star", "branches")
-load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
+load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
@@ -19,8 +19,8 @@ ci.defaults.set(
     notifies = ["chromium.linux"],
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     sheriff_rotations = sheriff_rotations.CHROMIUM,
     tree_closing = True,
@@ -163,7 +163,7 @@ ci.builder(
     # failure.
     tree_closing = False,
     notifies = ["Deterministic Linux", "close-on-any-step-failure"],
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
     free_space = builders.free_space.high,
     ssd = True,
 )
@@ -177,7 +177,7 @@ ci.builder(
     cores = 32,
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 7 * time.hour,
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
@@ -190,7 +190,7 @@ ci.builder(
     main_console_view = None,
     notifies = args.ignore_default([]),
     tree_closing = False,
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
     sheriff_rotations = args.ignore_default(None),
 )
 
@@ -243,7 +243,7 @@ ci.builder(
         short_name = "64",
     ),
     cq_mirrors_console_view = "mirrors",
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
@@ -272,7 +272,7 @@ ci.builder(
         short_name = "bld-wl",
     ),
     cq_mirrors_console_view = "mirrors",
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.thin_tester(
@@ -393,7 +393,7 @@ ci.builder(
         category = "release",
         short_name = "nsl",
     ),
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
@@ -419,7 +419,7 @@ ci.builder(
         category = "bfcache",
         short_name = "bfc",
     ),
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
@@ -445,7 +445,7 @@ ci.builder(
         category = "release",
         short_name = "trc",
     ),
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(

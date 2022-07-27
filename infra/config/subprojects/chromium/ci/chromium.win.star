@@ -6,8 +6,8 @@
 load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os", "sheriff_rotations")
-load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
+load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
+load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
@@ -15,8 +15,8 @@ ci.defaults.set(
     cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
     main_console_view = "main",
     os = os.WINDOWS_DEFAULT,
     pool = ci.DEFAULT_POOL,
