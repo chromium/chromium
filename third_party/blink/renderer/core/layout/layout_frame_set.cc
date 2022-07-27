@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_dimension.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
-#include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/frame_set_painter.h"
@@ -50,7 +49,7 @@ static int AdjustSizeToRemainingSize(int current,
 }
 
 LayoutFrameSet::LayoutFrameSet(HTMLFrameSetElement* frame_set)
-    : LayoutBox(frame_set), is_resizing_(false) {
+    : LayoutBox(frame_set) {
   SetInline(false);
 }
 
@@ -487,52 +486,6 @@ void LayoutFrameSet::ContinueResizing(GridAxis& axis, int position) {
   axis.deltas_[axis.split_being_resized_] -= delta;
   SetNeedsLayoutAndFullPaintInvalidation(
       layout_invalidation_reason::kSizeChanged);
-}
-
-bool LayoutFrameSet::UserResize(const MouseEvent& evt) {
-  NOT_DESTROYED();
-  if (!is_resizing_) {
-    if (NeedsLayout())
-      return false;
-    if (evt.type() == event_type_names::kMousedown &&
-        evt.button() ==
-            static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
-      gfx::PointF local_pos = AbsoluteToLocalPoint(evt.AbsoluteLocation());
-      StartResizing(cols_, local_pos.x());
-      StartResizing(rows_, local_pos.y());
-      if (cols_.split_being_resized_ != kNoSplit ||
-          rows_.split_being_resized_ != kNoSplit) {
-        SetIsResizing(true);
-        return true;
-      }
-    }
-  } else {
-    if (evt.type() == event_type_names::kMousemove ||
-        (evt.type() == event_type_names::kMouseup &&
-         evt.button() ==
-             static_cast<int16_t>(WebPointerProperties::Button::kLeft))) {
-      gfx::PointF local_pos = AbsoluteToLocalPoint(evt.AbsoluteLocation());
-      ContinueResizing(cols_, local_pos.x());
-      ContinueResizing(rows_, local_pos.y());
-      if (evt.type() == event_type_names::kMouseup &&
-          evt.button() ==
-              static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
-        SetIsResizing(false);
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
-void LayoutFrameSet::SetIsResizing(bool is_resizing) {
-  NOT_DESTROYED();
-  is_resizing_ = is_resizing;
-  if (LocalFrame* frame = GetFrame()) {
-    frame->GetEventHandler().SetResizingFrameSet(is_resizing ? FrameSet()
-                                                             : nullptr);
-  }
 }
 
 bool LayoutFrameSet::CanResizeRow(const gfx::Point& p) const {

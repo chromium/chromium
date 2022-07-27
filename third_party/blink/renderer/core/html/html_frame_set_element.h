@@ -31,6 +31,8 @@
 
 namespace blink {
 
+class MouseEvent;
+
 class HTMLFrameSetElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -83,6 +85,9 @@ class HTMLFrameSetElement final : public HTMLElement {
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void WillRecalcStyle(const StyleRecalcChange) override;
 
+  bool UserResize(const MouseEvent& event);
+  void SetIsResizing(bool is_resizing);
+
   Vector<HTMLDimension> row_lengths_;
   Vector<HTMLDimension> col_lengths_;
 
@@ -94,6 +99,8 @@ class HTMLFrameSetElement final : public HTMLElement {
   bool frameborder_;
   bool frameborder_set_;
   bool noresize_;
+
+  bool is_resizing_ = false;
 };
 
 }  // namespace blink

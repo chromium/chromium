@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_frame_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_frame_set.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -256,13 +257,14 @@ void HTMLFrameSetElement::AttachLayoutTree(AttachContext& context) {
   }
 
   HTMLElement::AttachLayoutTree(context);
+  is_resizing_ = false;
 }
 
 void HTMLFrameSetElement::DefaultEventHandler(Event& evt) {
   auto* mouse_event = DynamicTo<MouseEvent>(evt);
   if (mouse_event && !noresize_ && GetLayoutObject() &&
       GetLayoutObject()->IsFrameSet()) {
-    if (To<LayoutFrameSet>(GetLayoutObject())->UserResize(*mouse_event)) {
+    if (UserResize(*mouse_event)) {
       evt.SetDefaultHandled();
       return;
     }
@@ -290,6 +292,47 @@ void HTMLFrameSetElement::WillRecalcStyle(const StyleRecalcChange) {
     }
     ClearNeedsStyleRecalc();
   }
+}
+
+bool HTMLFrameSetElement::UserResize(const MouseEvent& event) {
+  auto& layout_frame_set = *To<LayoutFrameSet>(GetLayoutObject());
+  if (!is_resizing_) {
+    if (layout_frame_set.NeedsLayout())
+      return false;
+    if (event.type() == event_type_names::kMousedown && event.IsLeftButton()) {
+      gfx::PointF local_pos =
+          layout_frame_set.AbsoluteToLocalPoint(event.AbsoluteLocation());
+      layout_frame_set.StartResizing(layout_frame_set.cols_, local_pos.x());
+      layout_frame_set.StartResizing(layout_frame_set.rows_, local_pos.y());
+      if (layout_frame_set.cols_.split_being_resized_ !=
+              LayoutFrameSet::kNoSplit ||
+          layout_frame_set.rows_.split_being_resized_ !=
+              LayoutFrameSet::kNoSplit) {
+        SetIsResizing(true);
+        return true;
+      }
+    }
+  } else {
+    if (event.type() == event_type_names::kMousemove ||
+        (event.type() == event_type_names::kMouseup && event.IsLeftButton())) {
+      gfx::PointF local_pos =
+          layout_frame_set.AbsoluteToLocalPoint(event.AbsoluteLocation());
+      layout_frame_set.ContinueResizing(layout_frame_set.cols_, local_pos.x());
+      layout_frame_set.ContinueResizing(layout_frame_set.rows_, local_pos.y());
+      if (event.type() == event_type_names::kMouseup && event.IsLeftButton()) {
+        SetIsResizing(false);
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+void HTMLFrameSetElement::SetIsResizing(bool is_resizing) {
+  is_resizing_ = is_resizing;
+  if (LocalFrame* frame = GetDocument().GetFrame())
+    frame->GetEventHandler().SetResizingFrameSet(is_resizing ? this : nullptr);
 }
 
 }  // namespace blink

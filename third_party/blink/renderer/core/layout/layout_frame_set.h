@@ -30,7 +30,6 @@ namespace blink {
 
 class HTMLDimension;
 class HTMLFrameSetElement;
-class MouseEvent;
 
 enum FrameEdge {
   kLeftFrameEdge,
@@ -95,8 +94,6 @@ class LayoutFrameSet final : public LayoutBox {
   }
 
   FrameEdgeInfo EdgeInfo() const;
-
-  bool UserResize(const MouseEvent&);
 
   bool CanResizeRow(const gfx::Point&) const;
   bool CanResizeColumn(const gfx::Point&) const;
@@ -170,8 +167,6 @@ class LayoutFrameSet final : public LayoutBox {
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
   CursorDirective GetCursor(const PhysicalOffset&, ui::Cursor&) const override;
 
-  void SetIsResizing(bool);
-
   void LayOutAxis(GridAxis&, const Vector<HTMLDimension>&, int available_space);
   void ComputeEdgeInfo();
   void FillFromEdgeInfo(const FrameEdgeInfo&, int r, int c);
@@ -188,7 +183,8 @@ class LayoutFrameSet final : public LayoutBox {
   GridAxis rows_;
   GridAxis cols_;
 
-  bool is_resizing_;
+  // Temporal friend until we complete to move the resizing code.
+  friend HTMLFrameSetElement;
 };
 
 template <>
