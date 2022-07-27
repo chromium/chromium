@@ -478,6 +478,10 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Used to determine whether the animation between rows should be used.
   bool has_pending_row_change_ = false;
 
+  // Whether the context menu removed focus on a view when opening. Used to
+  // determine if the focus should be restored on context menu close.
+  bool focus_removed_by_context_menu_ = false;
+
   base::WeakPtrFactory<AppListItemView> weak_ptr_factory_{this};
 };
 

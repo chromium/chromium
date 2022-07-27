@@ -708,9 +708,12 @@ void AppListItemView::OnContextMenuModelReceived(
 
   menu_show_initiated_from_key_ = source_type == ui::MENU_SOURCE_KEYBOARD;
 
-  // Clear the existing focus in other elements to prevenn having a focus
+  // Clear the existing focus in other elements to prevent having a focus
   // indicator on other non-selected views.
-  GetFocusManager()->ClearFocus();
+  if (GetFocusManager()->GetFocusedView()) {
+    GetFocusManager()->ClearFocus();
+    focus_removed_by_context_menu_ = true;
+  }
 
   if (!grid_delegate_->IsSelectedView(this))
     grid_delegate_->ClearSelectedView();
@@ -1182,8 +1185,11 @@ void AppListItemView::OnMenuClosed() {
   if (!menu_show_initiated_from_key_)
     OnBlur();
 
-  // Restore the last focused view when exiting the menu.
-  GetFocusManager()->RestoreFocusedView();
+  if (focus_removed_by_context_menu_) {
+    // Restore the last focused view when exiting the menu.
+    GetFocusManager()->RestoreFocusedView();
+    focus_removed_by_context_menu_ = false;
+  }
 }
 
 void AppListItemView::OnSyncDragEnd() {

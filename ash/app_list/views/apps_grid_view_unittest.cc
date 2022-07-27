@@ -5944,6 +5944,36 @@ TEST_P(AppsGridViewClamshellTest,
   EXPECT_FALSE(app_list_folder_view()->folder_header_view()->HasTextFocus());
 }
 
+// Tests that right clicking an app will remove focus from other apps within the
+// apps grid. See https://crbug.com/1146365.
+TEST_P(AppsGridViewClamshellTest, FocusNotRestoredIfNoViewWasFocused) {
+  // Create a folder with a couple items.
+  model_->CreateAndPopulateFolderWithApps(2);
+  UpdateLayout();
+
+  // Open the folder item.
+  test_api_->PressItemAt(0);
+  ASSERT_TRUE(folder_apps_grid_view());
+
+  // Force focus on the title name of the folder.
+  app_list_folder_view()->FocusNameInput();
+  ASSERT_TRUE(app_list_folder_view()->folder_header_view()->HasTextFocus());
+
+  // Press Enter, the title should not have focus.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_RETURN);
+  ASSERT_FALSE(app_list_folder_view()->folder_header_view()->HasTextFocus());
+
+  // Right click on another element.
+  AppListItemView* const item_view =
+      GetItemViewInAppsGridAt(0, folder_apps_grid_view());
+  SimulateRightClickOrLongPressAt(item_view->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(app_list_folder_view()->folder_header_view()->HasTextFocus());
+
+  // Exit context menu. The focus should not get restored to the text.
+  item_view->CancelContextMenu();
+  EXPECT_FALSE(app_list_folder_view()->folder_header_view()->HasTextFocus());
+}
+
 TEST_P(AppsGridViewTabletTest, ChangeFolderNameShouldUpdateShadows) {
   SetVirtualKeyboardEnabled(true);
 
