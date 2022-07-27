@@ -8,10 +8,10 @@
 #include <iterator>
 #include <utility>
 
+#include "base/as_const.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace prefs {
@@ -268,15 +268,21 @@ bool DictionaryValueUpdate::GetDictionaryWithoutPathExpansion(
 
 bool DictionaryValueUpdate::GetListWithoutPathExpansion(
     base::StringPiece key,
-    const base::ListValue** out_value) const {
-  return value_->GetListWithoutPathExpansion(key, out_value);
+    const base::Value::List** out_value) const {
+  const base::Value::List* list = value_->GetDict().FindList(key);
+  if (!list)
+    return false;
+  if (out_value)
+    *out_value = list;
+  return true;
 }
 
 bool DictionaryValueUpdate::GetListWithoutPathExpansion(
     base::StringPiece key,
-    base::ListValue** out_value) {
+    base::Value::List** out_value) {
   RecordKey(key);
-  return value_->GetListWithoutPathExpansion(key, out_value);
+  return base::as_const(*this).GetListWithoutPathExpansion(
+      key, const_cast<const base::Value::List**>(out_value));
 }
 
 bool DictionaryValueUpdate::Remove(base::StringPiece path) {

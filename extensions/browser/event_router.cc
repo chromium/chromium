@@ -774,13 +774,12 @@ void EventRouter::RemoveFilterFromEvent(const std::string& event_name,
       extension_prefs_, extension_id,
       is_for_service_worker ? kFilteredServiceWorkerEvents : kFilteredEvents);
   auto filtered_events = update.Create();
-  ListValue* filter_list = NULL;
+  base::Value::List* filter_list = nullptr;
   if (!filtered_events ||
       !filtered_events->GetListWithoutPathExpansion(event_name, &filter_list)) {
     return;
   }
-  filter_list->GetList().erase(
-      base::ranges::find(filter_list->GetList(), *filter));
+  filter_list->erase(base::ranges::find(*filter_list, *filter));
 }
 
 const DictionaryValue* EventRouter::GetFilteredEvents(
@@ -1185,10 +1184,9 @@ void EventRouter::AddFilterToEvent(const std::string& event_name,
       is_for_service_worker ? kFilteredServiceWorkerEvents : kFilteredEvents);
   auto filtered_events = update.Create();
 
-  ListValue* filter_list = nullptr;
+  base::Value::List* filter_list = nullptr;
   if (!filtered_events->GetListWithoutPathExpansion(event_name, &filter_list)) {
-    filtered_events->SetWithoutPathExpansion(
-        event_name, std::make_unique<base::ListValue>());
+    filtered_events->SetKey(event_name, base::Value(base::Value::List()));
     filtered_events->GetListWithoutPathExpansion(event_name, &filter_list);
   }
 

@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
 
 namespace base {
@@ -120,9 +121,9 @@ class DictionaryValueUpdate {
       base::StringPiece key,
       std::unique_ptr<DictionaryValueUpdate>* out_value);
   bool GetListWithoutPathExpansion(base::StringPiece key,
-                                   const base::ListValue** out_value) const;
+                                   const base::Value::List** out_value) const;
   bool GetListWithoutPathExpansion(base::StringPiece key,
-                                   base::ListValue** out_value);
+                                   base::Value::List** out_value);
 
   // Removes the Value with the specified path from this dictionary (or one
   // of its child dictionaries, if the path is more than just a local key).
