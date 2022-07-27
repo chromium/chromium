@@ -58,6 +58,14 @@ imageset("ntp_opentabs") {
   ]
 }
 
+imageset("ntp_feed_signin_promo_icon") {
+  sources = [
+    "ntp_feed_signin_promo_icon.imageset/Contents.json",
+    "ntp_feed_signin_promo_icon.imageset/ntp_feed_signin_promo_icon@2x.png",
+    "ntp_feed_signin_promo_icon.imageset/ntp_feed_signin_promo_icon@3x.png",
+  ]
+}
+
 imageset("ntp_opentabs_header") {
   sources = [
     "ntp_opentabs_header.imageset/Contents.json",

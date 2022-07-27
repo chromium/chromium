@@ -48,6 +48,9 @@ extern NSString* const kTextfieldPlaceholderColor;
 extern NSString* const kToolbarButtonColor;
 // Color used for a shadow/separator next to a toolbar.
 extern NSString* const kToolbarShadowColor;
+// Simple primary color based on theme. White for light theme, black for dark
+// theme.
+extern NSString* const kSolidPrimaryColor;
 
 // Standard Colors
 

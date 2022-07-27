@@ -1104,14 +1104,21 @@
 // The y-position content offset for when the user has completely scrolled into
 // the Feed. Only takes sticky omnibox into consideration for non-iPad devices.
 - (CGFloat)offsetWhenScrolledIntoFeed {
-  if (![self shouldPinFakeOmnibox]) {
-    return -[self feedHeaderHeight];
+  CGFloat offset;
+  if ([self shouldPinFakeOmnibox]) {
+    offset = -(self.headerController.view.frame.size.height -
+               [self stickyOmniboxHeight] -
+               [self.feedHeaderViewController customSearchEngineViewHeight] -
+               content_suggestions::headerBottomPadding());
+  } else {
+    offset = -[self feedHeaderHeight];
   }
 
-  return -(self.headerController.view.frame.size.height -
-           [self stickyOmniboxHeight] -
-           [self.feedHeaderViewController customSearchEngineViewHeight] -
-           content_suggestions::headerBottomPadding());
+  if (self.feedTopSectionViewController) {
+    offset -= self.feedTopSectionViewController.view.frame.size.height;
+  }
+
+  return offset;
 }
 
 // The y-position content offset for when the fake omnibox
@@ -1124,6 +1131,9 @@
   if (IsSplitToolbarMode(self) &&
       IsContentSuggestionsHeaderMigrationEnabled()) {
     offset -= [self contentSuggestionsContentHeight];
+  }
+  if (self.feedTopSectionViewController) {
+    offset -= self.feedTopSectionViewController.view.frame.size.height;
   }
   return offset;
 }

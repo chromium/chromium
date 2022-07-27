@@ -42,6 +42,7 @@ group("resources") {
     ":secondary_background_color",
     ":separator_color",
     ":solid_button_text_color",
+    ":solid_primary_color",
     ":table_view_row_highlight_color",
     ":tertiary_background_color",
     ":text_primary_color",
@@ -189,6 +190,10 @@ colorset("separator_color") {
 
 colorset("solid_button_text_color") {
   sources = [ "solid_button_text_color.colorset/Contents.json" ]
+}
+
+colorset("solid_primary_color") {
+  sources = [ "solid_primary_color.colorset/Contents.json" ]
 }
 
 colorset("table_view_row_highlight_color") {

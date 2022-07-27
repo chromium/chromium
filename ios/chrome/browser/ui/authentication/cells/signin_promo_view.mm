@@ -40,6 +40,9 @@ typedef struct {
   const CGFloat kButtonTitleVerticalContentInset;
   // Button corner radius.
   const CGFloat kButtonCornerRadius;
+  // Margins for the close button.
+  const CGFloat kCloseButtonTrailingMargin;
+  const CGFloat kCloseButtonTopMargin;
 } PromoStyleValues;
 
 const PromoStyleValues kStandardPromoStyle = {
@@ -51,6 +54,8 @@ const PromoStyleValues kStandardPromoStyle = {
     12.0,  // kButtonTitleHorizontalContentInset
     8.0,   // kButtonTitleVerticalContentInset
     8.0,   // kButtonCornerRadius
+    5.0,   // kCloseButtonTrailingMargin
+    0.0,   // kCloseButtonTopMargin
 };
 
 const PromoStyleValues kCompactPromoStyle = {
@@ -62,6 +67,8 @@ const PromoStyleValues kCompactPromoStyle = {
     0.0,   // kButtonTitleHorizontalContentInset
     0.0,   // kButtonTitleVerticalContentInset
     0.0,   // kButtonCornerRadius
+    -9.0,  // kCloseButtonTrailingMargin
+    9.0,   // kCloseButtonTopMargin
 };
 
 // UI Refresh Constants:
@@ -72,8 +79,6 @@ constexpr CGFloat kStackViewHorizontalPadding = 16.0;
 
 // Non-profile icon background corner radius.
 constexpr CGFloat kNonProfileIconCornerRadius = 14;
-// Trailing margin for the close button.
-constexpr CGFloat kCloseButtonTrailingMargin = 5;
 // Size for the close button width and height.
 constexpr CGFloat kCloseButtonWidthHeight = 24;
 }
@@ -195,11 +200,7 @@ constexpr CGFloat kCloseButtonWidthHeight = 24;
       [_contentStackView.leadingAnchor
           constraintEqualToAnchor:self.leadingAnchor
                          constant:kStackViewHorizontalPadding],
-      // Close button constraints.
-      [_closeButton.topAnchor constraintEqualToAnchor:self.topAnchor],
-      [_closeButton.trailingAnchor
-          constraintEqualToAnchor:self.trailingAnchor
-                         constant:kCloseButtonTrailingMargin],
+      // Close button size constraints.
       [_closeButton.heightAnchor
           constraintEqualToConstant:kCloseButtonWidthHeight],
       [_closeButton.widthAnchor
@@ -234,7 +235,6 @@ constexpr CGFloat kCloseButtonWidthHeight = 24;
 }
 
 - (void)setNonProfileImage:(UIImage*)image {
-  DCHECK_EQ(self.mode, SigninPromoViewModeNoAccounts);
   [self updateImageSizeForProfileImage:NO];
   CGFloat imageSize = self.compactLayout
                           ? kCompactPromoStyle.kImageViewWidthHeight
@@ -242,7 +242,7 @@ constexpr CGFloat kCloseButtonWidthHeight = 24;
   DCHECK_EQ(imageSize, image.size.width);
   DCHECK_EQ(imageSize, image.size.height);
   self.imageView.image = image;
-  self.imageView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.imageView.backgroundColor = [UIColor colorNamed:kSolidPrimaryColor];
   self.imageView.layer.cornerRadius = kNonProfileIconCornerRadius;
 }
 
@@ -344,6 +344,13 @@ constexpr CGFloat kCloseButtonWidthHeight = 24;
           constraintEqualToAnchor:self.trailingAnchor
                          constant:-kStandardPromoStyle
                                        .kStackViewTrailingMargin],
+      [self.closeButton.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor
+                         constant:kStandardPromoStyle
+                                      .kCloseButtonTrailingMargin],
+      [self.closeButton.topAnchor
+          constraintEqualToAnchor:self.topAnchor
+                         constant:kStandardPromoStyle.kCloseButtonTopMargin],
     ];
   }
   return _standardLayoutConstraints;
@@ -364,6 +371,13 @@ constexpr CGFloat kCloseButtonWidthHeight = 24;
       [self.contentStackView.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor
                          constant:-kCompactPromoStyle.kStackViewTrailingMargin],
+      [self.closeButton.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor
+                         constant:kCompactPromoStyle
+                                      .kCloseButtonTrailingMargin],
+      [self.closeButton.topAnchor
+          constraintEqualToAnchor:self.topAnchor
+                         constant:kCompactPromoStyle.kCloseButtonTopMargin],
     ];
   }
   return _compactLayoutConstraints;
