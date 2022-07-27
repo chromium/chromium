@@ -22,6 +22,163 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="OOBEGestureNavigationPage">
+  <variant name="Back" summary="Gesture Navigation Back Page"/>
+  <variant name="Home" summary="Gesture Navigation Home Page"/>
+  <variant name="Intro" summary="Gesture Navigation Intro Page"/>
+  <variant name="Overview" summary="Gesture Navigation Overview Page"/>
+</variants>
+
+<variants name="OOBELegacyScreenName">
+  <variant name="Adb-sideloading"/>
+  <variant name="App-downloading"/>
+  <variant name="App-launch-splash"/>
+  <variant name="Arc_tos"/>
+  <variant name="Assistant-optin-flow"/>
+  <variant name="Auto-enrollment-check"/>
+  <variant name="Autolaunch"/>
+  <variant name="Debugging"/>
+  <variant name="Demo-preferences"/>
+  <variant name="Demo-setup"/>
+  <variant name="Device-disabled"/>
+  <variant name="Edu-coexistence-login"/>
+  <variant name="Encryption-migration"/>
+  <variant name="Enroll"/>
+  <variant name="Error-message"/>
+  <variant name="Family-link-notice"/>
+  <variant name="Fingerprint-setup"/>
+  <variant name="Gaia-signin"/>
+  <variant name="Gesture-navigation"/>
+  <variant name="Hid-detection"/>
+  <variant name="Image"/>
+  <variant name="Kiosk-enable"/>
+  <variant name="Locale-switch"/>
+  <variant name="Management-transition"/>
+  <variant name="Marketing-opt-in"/>
+  <variant name="Multidevice-setup-screen"/>
+  <variant name="Network"/>
+  <variant name="Network-selection"/>
+  <variant name="Offline-login"/>
+  <variant name="Oobe-eula-md"/>
+  <variant name="Oobe-update"/>
+  <variant name="Packaged-license"/>
+  <variant name="Parental-handoff"/>
+  <variant name="Pin-setup"/>
+  <variant name="Recommend-apps"/>
+  <variant name="Reset"/>
+  <variant name="Sync-consent"/>
+  <variant name="Tos"/>
+  <variant name="Update-required"/>
+  <variant name="User-creation"/>
+  <variant name="Wrong-hwid"/>
+</variants>
+
+<variants name="OOBEMarketingCountry">
+  <variant name="" summary="all countries"/>
+  <variant name="au" summary="Australia"/>
+  <variant name="ca" summary="Canada"/>
+  <variant name="de" summary="Germany"/>
+  <variant name="dk" summary="Denmark"/>
+  <variant name="es" summary="Spain"/>
+  <variant name="fi" summary="Finland"/>
+  <variant name="fr" summary="France"/>
+  <variant name="gb" summary="United Kingdom"/>
+  <variant name="it" summary="Italy"/>
+  <variant name="jp" summary="Japan"/>
+  <variant name="nl" summary="Netherlands"/>
+  <variant name="no" summary="Norway"/>
+  <variant name="se" summary="Sweden"/>
+  <variant name="us" summary="United States"/>
+</variants>
+
+<variants name="OOBENetworkError">
+  <variant name="AuthExtTimeout"/>
+  <variant name="Offline"/>
+  <variant name="Portal"/>
+  <variant name="Proxy"/>
+</variants>
+
+<variants name="OOBEScreenName_ExitReason">
+  <variant name="Adb-sideloading.Next"/>
+  <variant name="App-downloading.Next"/>
+  <variant name="Arc-tos.Accepted"/>
+  <variant name="Arc-tos.Back"/>
+  <variant name="Arc-tos.Skipped"/>
+  <variant name="Assistant-optin-flow.Next"/>
+  <variant name="Auto-enrollment-check.Next"/>
+  <variant name="Autolaunch.Canceled"/>
+  <variant name="Autolaunch.Completed"/>
+  <variant name="Connect.EnableDebugging"/>
+  <variant name="Connect.Next"/>
+  <variant name="Connect.QuickStart"/>
+  <variant name="Connect.SetupDemo"/>
+  <variant name="Connect.StartDemo"/>
+  <variant name="Connect.StartOsInstall"/>
+  <variant name="Debugging.Next"/>
+  <variant name="Demo-preferences.Canceled"/>
+  <variant name="Demo-preferences.Completed"/>
+  <variant name="Demo-setup.Completed"/>
+  <variant name="Device-disabled.Canceled"/>
+  <variant name="Edu-coexistence-login.Done"/>
+  <variant name="Enterprise-enrollment.Back"/>
+  <variant name="Enterprise-enrollment.BackToAutoEnrollmentCheck"/>
+  <variant name="Enterprise-enrollment.Completed"/>
+  <variant name="Enterprise-enrollment.TpmDbusError"/>
+  <variant name="Enterprise-enrollment.TpmError"/>
+  <variant name="Family-link-notice.Done"/>
+  <variant name="Fingerprint-setup.Done"/>
+  <variant name="Fingerprint-setup.Skipped"/>
+  <variant name="Gaia-signin.Back"/>
+  <variant name="Gaia-signin.Cancel"/>
+  <variant name="Gaia-signin.EnterpriseEnroll"/>
+  <variant name="Gaia-signin.SAMLVideoTimeout"/>
+  <variant name="Gaia-signin.StartConsumerKiosk"/>
+  <variant name="Gesture-navigation.Next"/>
+  <variant name="Hid-detection.Next"/>
+  <variant name="Hid-detection.StartDemo"/>
+  <variant name="Kiosk-enable.Next"/>
+  <variant name="Locale-switch.LocaleFetchFailed"/>
+  <variant name="Locale-switch.LocaleFetchTimeout"/>
+  <variant name="Locale-switch.NoSwitchNeeded"/>
+  <variant name="Locale-switch.SwitchFailed"/>
+  <variant name="Locale-switch.SwitchSucceded"/>
+  <variant name="Management-transition.Next"/>
+  <variant name="Marketing-opt-in.Next"/>
+  <variant name="Multidevice-setup-screen.Next"/>
+  <variant name="Network-selection.Back"/>
+  <variant name="Network-selection.Connected"/>
+  <variant name="Network-selection.OfflineDemoSetup"/>
+  <variant name="Oauth-enrollment.Back"/>
+  <variant name="Oauth-enrollment.Completed"/>
+  <variant name="Offline-login.Back"/>
+  <variant name="Offline-login.ReloadOnlineLogin"/>
+  <variant name="Oobe-eula-md.AcceptedWithoutStats"/>
+  <variant name="Oobe-eula-md.AcceptedWithStats"/>
+  <variant name="Oobe-eula-md.Back"/>
+  <variant name="Oobe-update.UpdateError"/>
+  <variant name="Oobe-update.UpdateNotRequired"/>
+  <variant name="Packaged-license.DontEnroll"/>
+  <variant name="Packaged-license.Enroll"/>
+  <variant name="Parental-Handoff.Done"/>
+  <variant name="Pin-setup.Done"/>
+  <variant name="Pin-setup.Skipped"/>
+  <variant name="Pin-setup.TimedOut"/>
+  <variant name="Recommend-apps.Selected"/>
+  <variant name="Recommend-apps.Skipped"/>
+  <variant name="Reset.Cancel"/>
+  <variant name="Saml-confirm-password.Cancel"/>
+  <variant name="Saml-confirm-password.TooManyAttempts"/>
+  <variant name="Sync-consent.Next"/>
+  <variant name="Terms-of-service.Accepted"/>
+  <variant name="Terms-of-service.Declined"/>
+  <variant name="User-creation.Cancel"/>
+  <variant name="User-creation.CreateChildAccount"/>
+  <variant name="User-creation.EnterpriseEnroll"/>
+  <variant name="User-creation.SignIn"/>
+  <variant name="User-creation.SignInAsChild"/>
+  <variant name="Wrong-hwid.Next"/>
+</variants>
+
 <histogram name="OOBE.ArcTermsOfServiceScreen.ReviewFollowingSetup"
     enum="BooleanChecked" expires_after="2022-12-04">
   <owner>raleksandrov@google.com</owner>
@@ -50,44 +207,49 @@ chromium-metrics-reviews@google.com.
   <summary>Time from the login screen start to user session start.</summary>
 </histogram>
 
-<histogram name="OOBE.ErrorScreensTime.Enrollment" units="ms"
+<histogram name="OOBE.ErrorScreensTime.Enrollment.{OOBENetworkError}"
+    units="ms" expires_after="2022-12-18">
+  <owner>raleksandrov@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Time spent on error screens during enrollment or autoenrollment when the
+    last error is {OOBENetworkError} error. Recorded when user leaves error
+    screen.
+  </summary>
+  <token key="OOBENetworkError" variants="OOBENetworkError"/>
+</histogram>
+
+<histogram name="OOBE.ErrorScreensTime.Signin.{OOBENetworkError}" units="ms"
     expires_after="2022-12-18">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
-    Time spent on error screens during enrollment or autoenrollment. Recorded
-    when user leaves error screen.
+    Time spent on error screens during signin when the last error is
+    {OOBENetworkError} error. Recorded when user leaves error screen.
   </summary>
+  <token key="OOBENetworkError" variants="OOBENetworkError"/>
 </histogram>
 
-<histogram name="OOBE.ErrorScreensTime.Signin" units="ms"
-    expires_after="2022-12-18">
+<histogram name="OOBE.ErrorScreensTime.Supervised.{OOBENetworkError}"
+    units="ms" expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
-    Time spent on error screens during signin. Recorded when user leaves error
-    screen.
+    Time spent on error screens during supervised user creation when the last
+    error is {OOBENetworkError} error. Recorded when user leaves error screen.
   </summary>
+  <token key="OOBENetworkError" variants="OOBENetworkError"/>
 </histogram>
 
-<histogram name="OOBE.ErrorScreensTime.Supervised" units="ms"
+<histogram name="OOBE.ErrorScreensTime.Update.{OOBENetworkError}" units="ms"
     expires_after="2022-10-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
-    Time spent on error screens during supervised user creation. Recorded when
-    user leaves error screen.
+    Time spent on error screens during update when the last error is
+    {OOBENetworkError} error. Recorded when user leaves error screen.
   </summary>
-</histogram>
-
-<histogram name="OOBE.ErrorScreensTime.Update" units="ms"
-    expires_after="2022-10-01">
-  <owner>raleksandrov@google.com</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Time spent on error screens during update. Recorded when user leaves error
-    screen.
-  </summary>
+  <token key="OOBENetworkError" variants="OOBENetworkError"/>
 </histogram>
 
 <histogram name="OOBE.EulaScreen.UserActions" enum="EulaScreenUserAction"
@@ -164,11 +326,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="OOBE.GestureNavigationScreen.PageShownTime"
+<histogram base="true"
+    name="OOBE.GestureNavigationScreen.PageShownTime.{OOBEGestureNavigationPage}"
     units="ms" expires_after="2021-08-09">
-<!-- Name completed by histogram_suffixes
-     name="GestureNavigationOOBEPage" -->
-
   <owner>mmourgos@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -176,6 +336,7 @@ chromium-metrics-reviews@google.com.
     screen is shown. Recorded when the gesture navigation oobe screen is
     exiting.
   </summary>
+  <token key="OOBEGestureNavigationPage" variants="OOBEGestureNavigationPage"/>
 </histogram>
 
 <histogram name="OOBE.HidDetectionScreen.BluetoothPairingAttempts"
@@ -214,26 +375,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OOBE.MarketingOptInScreen.BackendConnector"
+<histogram
+    name="OOBE.MarketingOptInScreen.BackendConnector.{OOBEMarketingCountry}"
     enum="MarketingOptInBackendConnectorEvent" expires_after="2022-11-30">
   <owner>rrsilva@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     The result of a request performed by the MarketingBackendConnector used in
-    the OOBE MarketingOptInScreen when subscribing the user to Chromebook
-    emails. This data is used to determine the success rate of the requests
-    being performed.
+    the OOBE MarketingOptInScreen when subscribing users in
+    {OOBEMarketingCountry} to Chromebook emails. This data is used to determine
+    the success rate of the requests being performed.
   </summary>
+  <token key="OOBEMarketingCountry" variants="OOBEMarketingCountry"/>
 </histogram>
 
-<histogram name="OOBE.MarketingOptInScreen.Event"
+<histogram name="OOBE.MarketingOptInScreen.Event.{OOBEMarketingCountry}"
     enum="MarketingOptInScreenEvent" expires_after="2022-04-24">
   <owner>rrsilva@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
-    Records the choice a user takes when prompted with a toggle on the OOBE
-    MarketingOptInScreen to subscribe to Chromebook emails.
+    Records the choice users in {OOBEMarketingCountry} takes when prompted with
+    a toggle on the OOBE MarketingOptInScreen to subscribe to Chromebook emails.
   </summary>
+  <token key="OOBEMarketingCountry" variants="OOBEMarketingCountry"/>
 </histogram>
 
 <histogram name="OOBE.MarketingOptInScreen.GeolocationResolve"
@@ -352,32 +516,38 @@ chromium-metrics-reviews@google.com.
   <summary>Whether the reocmmend apps screen is shown.</summary>
 </histogram>
 
-<histogram name="OOBE.StepCompletionTime" units="ms" expires_after="never">
+<histogram name="OOBE.StepCompletionTime.{OOBELegacyScreenName}" units="ms"
+    expires_after="never">
 <!-- expires-never: Core metric for monitoring OOBE flow regressions. -->
 
   <owner>alemate@chromium.org</owner>
   <owner>antrim@chromium.org</owner>
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
-  <summary>Time spent on specific OOBE screen.</summary>
+  <summary>Time spent on {OOBELegacyScreenName} OOBE screen.</summary>
+  <token key="OOBELegacyScreenName" variants="OOBELegacyScreenName"/>
 </histogram>
 
-<histogram name="OOBE.StepCompletionTimeByExitReason" units="ms"
-    expires_after="2023-02-01">
+<histogram
+    name="OOBE.StepCompletionTimeByExitReason.{OOBEScreenName_ExitReason}"
+    units="ms" expires_after="2023-02-01">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>Time spent on specific OOBE screen grouped by exit reason.</summary>
+  <token key="OOBEScreenName_ExitReason" variants="OOBEScreenName_ExitReason"/>
 </histogram>
 
-<histogram name="OOBE.StepShownStatus" enum="BooleanShown"
-    expires_after="never">
+<histogram name="OOBE.StepShownStatus.{OOBELegacyScreenName}"
+    enum="BooleanShown" expires_after="never">
 <!-- expires-never: Core metric for monitoring OOBE flow regressions. -->
 
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
-    Whether screen was shown or not. Recorded before showing screen.
+    Whether {OOBELegacyScreenName} screen was shown or not. Recorded before
+    showing screen.
   </summary>
+  <token key="OOBELegacyScreenName" variants="OOBELegacyScreenName"/>
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.Behavior" enum="SyncConsentBehavior"

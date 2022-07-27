@@ -2890,14 +2890,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Event.Scroll.ScrollerSize.OnScroll"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="GestureNavigationOOBEPage" separator=".">
-  <suffix name="Back" label="Gesture Navigation Back Page"/>
-  <suffix name="Home" label="Gesture Navigation Home Page"/>
-  <suffix name="Intro" label="Gesture Navigation Intro Page"/>
-  <suffix name="Overview" label="Gesture Navigation Overview Page"/>
-  <affected-histogram name="OOBE.GestureNavigationScreen.PageShownTime"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="GetAuthTokenType" separator=".">
   <suffix name="RemoteConsentApproved"
       label="The remote consent has been approved for the getAuthToken()
@@ -5740,17 +5732,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.RequestTime2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NetworkErrors" separator=".">
-  <suffix name="AuthExtTimeout" label="with the last error AuthExtTimeout"/>
-  <suffix name="Offline" label="with the last error Offline"/>
-  <suffix name="Portal" label="with the last error Portal"/>
-  <suffix name="Proxy" label="with the last error Proxy"/>
-  <affected-histogram name="OOBE.ErrorScreensTime.Enrollment"/>
-  <affected-histogram name="OOBE.ErrorScreensTime.Signin"/>
-  <affected-histogram name="OOBE.ErrorScreensTime.Supervised"/>
-  <affected-histogram name="OOBE.ErrorScreensTime.Update"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="NewTabPage_BackgroundService_RequestLatency"
     separator=".">
   <suffix name="Failure" label="Failed to fetch data from background service"/>
@@ -6111,153 +6092,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Omnibox.ClipboardSuggestionShownAge"/>
   <affected-histogram name="Omnibox.ClipboardSuggestionShownNumTimes"/>
   <affected-histogram name="Omnibox.ClipboardSuggestionShownWithCurrentURL"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="OobeMarketingCountries" separator=".">
-  <suffix name="au" label="Australia"/>
-  <suffix name="ca" label="Canada"/>
-  <suffix name="de" label="Germany"/>
-  <suffix name="dk" label="Denmark"/>
-  <suffix name="es" label="Spain"/>
-  <suffix name="fi" label="Finland"/>
-  <suffix name="fr" label="France"/>
-  <suffix name="gb" label="United Kingdom"/>
-  <suffix name="it" label="Italy"/>
-  <suffix name="jp" label="Japan"/>
-  <suffix name="nl" label="Netherlands"/>
-  <suffix name="no" label="Norway"/>
-  <suffix name="se" label="Sweden"/>
-  <suffix name="us" label="United States"/>
-  <affected-histogram name="OOBE.MarketingOptInScreen.BackendConnector"/>
-  <affected-histogram name="OOBE.MarketingOptInScreen.Event"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="OobeScreenName" separator=".">
-  <suffix name="Adb-sideloading" label=""/>
-  <suffix name="App-downloading" label=""/>
-  <suffix name="App-launch-splash" label=""/>
-  <suffix name="Arc_tos" label=""/>
-  <suffix name="Assistant-optin-flow" label=""/>
-  <suffix name="Auto-enrollment-check" label=""/>
-  <suffix name="Autolaunch" label=""/>
-  <suffix name="Debugging" label=""/>
-  <suffix name="Demo-preferences" label=""/>
-  <suffix name="Demo-setup" label=""/>
-  <suffix name="Device-disabled" label=""/>
-  <suffix name="Edu-coexistence-login" label=""/>
-  <suffix name="Encryption-migration" label=""/>
-  <suffix name="Enroll" label=""/>
-  <suffix name="Error-message" label=""/>
-  <suffix name="Family-link-notice" label=""/>
-  <suffix name="Fingerprint-setup" label=""/>
-  <suffix name="Gaia-signin" label=""/>
-  <suffix name="Gesture-navigation" label=""/>
-  <suffix name="Hid-detection" label=""/>
-  <suffix name="Image" label=""/>
-  <suffix name="Kiosk-enable" label=""/>
-  <suffix name="Locale-switch" label=""/>
-  <suffix name="Management-transition" label=""/>
-  <suffix name="Marketing-opt-in" label=""/>
-  <suffix name="Multidevice-setup-screen" label=""/>
-  <suffix name="Network" label=""/>
-  <suffix name="Network-selection" label=""/>
-  <suffix name="Offline-login" label=""/>
-  <suffix name="Oobe-eula-md" label=""/>
-  <suffix name="Oobe-update" label=""/>
-  <suffix name="Packaged-license" label=""/>
-  <suffix name="Parental-handoff" label=""/>
-  <suffix name="Pin-setup" label=""/>
-  <suffix name="Recommend-apps" label=""/>
-  <suffix name="Reset" label=""/>
-  <suffix name="Sync-consent" label=""/>
-  <suffix name="Tos" label=""/>
-  <suffix name="Update-required" label=""/>
-  <suffix name="User-creation" label=""/>
-  <suffix name="Wrong-hwid" label=""/>
-  <affected-histogram name="OOBE.StepCompletionTime"/>
-  <affected-histogram name="OOBE.StepShownStatus"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="OobeScreenName_ExitReason" separator=".">
-  <suffix name="Adb-sideloading.Next" label=""/>
-  <suffix name="App-downloading.Next" label=""/>
-  <suffix name="Arc-tos.Accepted" label=""/>
-  <suffix name="Arc-tos.Back" label=""/>
-  <suffix name="Arc-tos.Skipped" label=""/>
-  <suffix name="Assistant-optin-flow.Next" label=""/>
-  <suffix name="Auto-enrollment-check.Next" label=""/>
-  <suffix name="Autolaunch.Canceled" label=""/>
-  <suffix name="Autolaunch.Completed" label=""/>
-  <suffix name="Connect.EnableDebugging" label=""/>
-  <suffix name="Connect.Next" label=""/>
-  <suffix name="Connect.QuickStart" label=""/>
-  <suffix name="Connect.SetupDemo" label=""/>
-  <suffix name="Connect.StartDemo" label=""/>
-  <suffix name="Connect.StartOsInstall" label=""/>
-  <suffix name="Debugging.Next" label=""/>
-  <suffix name="Demo-preferences.Canceled" label=""/>
-  <suffix name="Demo-preferences.Completed" label=""/>
-  <suffix name="Demo-setup.Completed" label=""/>
-  <suffix name="Device-disabled.Canceled" label=""/>
-  <suffix name="Edu-coexistence-login.Done" label=""/>
-  <suffix name="Enterprise-enrollment.Back" label=""/>
-  <suffix name="Enterprise-enrollment.BackToAutoEnrollmentCheck" label=""/>
-  <suffix name="Enterprise-enrollment.Completed" label=""/>
-  <suffix name="Enterprise-enrollment.TpmDbusError" label=""/>
-  <suffix name="Enterprise-enrollment.TpmError" label=""/>
-  <suffix name="Family-link-notice.Done" label=""/>
-  <suffix name="Fingerprint-setup.Done" label=""/>
-  <suffix name="Fingerprint-setup.Skipped" label=""/>
-  <suffix name="Gaia-signin.Back" label=""/>
-  <suffix name="Gaia-signin.Cancel" label=""/>
-  <suffix name="Gaia-signin.EnterpriseEnroll" label=""/>
-  <suffix name="Gaia-signin.SAMLVideoTimeout" label=""/>
-  <suffix name="Gaia-signin.StartConsumerKiosk" label=""/>
-  <suffix name="Gesture-navigation.Next" label=""/>
-  <suffix name="Hid-detection.Next" label=""/>
-  <suffix name="Hid-detection.StartDemo" label=""/>
-  <suffix name="Kiosk-enable.Next" label=""/>
-  <suffix name="Locale-switch.LocaleFetchFailed" label=""/>
-  <suffix name="Locale-switch.LocaleFetchTimeout" label=""/>
-  <suffix name="Locale-switch.NoSwitchNeeded" label=""/>
-  <suffix name="Locale-switch.SwitchFailed" label=""/>
-  <suffix name="Locale-switch.SwitchSucceded" label=""/>
-  <suffix name="Management-transition.Next" label=""/>
-  <suffix name="Marketing-opt-in.Next" label=""/>
-  <suffix name="Multidevice-setup-screen.Next" label=""/>
-  <suffix name="Network-selection.Back" label=""/>
-  <suffix name="Network-selection.Connected" label=""/>
-  <suffix name="Network-selection.OfflineDemoSetup" label=""/>
-  <suffix name="Oauth-enrollment.Back" label=""/>
-  <suffix name="Oauth-enrollment.Completed" label=""/>
-  <suffix name="Offline-login.Back" label=""/>
-  <suffix name="Offline-login.ReloadOnlineLogin" label=""/>
-  <suffix name="Oobe-eula-md.AcceptedWithoutStats" label=""/>
-  <suffix name="Oobe-eula-md.AcceptedWithStats" label=""/>
-  <suffix name="Oobe-eula-md.Back" label=""/>
-  <suffix name="Oobe-update.UpdateError" label=""/>
-  <suffix name="Oobe-update.UpdateNotRequired" label=""/>
-  <suffix name="Packaged-license.DontEnroll" label=""/>
-  <suffix name="Packaged-license.Enroll" label=""/>
-  <suffix name="Parental-Handoff.Done" label=""/>
-  <suffix name="Pin-setup.Done" label=""/>
-  <suffix name="Pin-setup.Skipped" label=""/>
-  <suffix name="Pin-setup.TimedOut" label=""/>
-  <suffix name="Recommend-apps.Selected" label=""/>
-  <suffix name="Recommend-apps.Skipped" label=""/>
-  <suffix name="Reset.Cancel" label=""/>
-  <suffix name="Saml-confirm-password.Cancel" label=""/>
-  <suffix name="Saml-confirm-password.TooManyAttempts" label=""/>
-  <suffix name="Sync-consent.Next" label=""/>
-  <suffix name="Terms-of-service.Accepted" label=""/>
-  <suffix name="Terms-of-service.Declined" label=""/>
-  <suffix name="User-creation.Cancel" label=""/>
-  <suffix name="User-creation.CreateChildAccount" label=""/>
-  <suffix name="User-creation.EnterpriseEnroll" label=""/>
-  <suffix name="User-creation.SignIn" label=""/>
-  <suffix name="User-creation.SignInAsChild" label=""/>
-  <suffix name="Wrong-hwid.Next" label=""/>
-  <affected-histogram name="OOBE.StepCompletionTimeByExitReason"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="OsSettingsChangeType" separator=".">
