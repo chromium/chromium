@@ -288,7 +288,9 @@ void SetCrashKeyStringToStackTrace(CrashKeyString<Size>* key,
   key->Set(trace_string);
 }
 
-// Initializes the crash key subsystem if it is required.
+// Initializes the crash key subsystem if it is required. Calling this multiple
+// times is safe (though not thread-safe) and will not result in data loss from
+// crash keys set prior to the last initialization.
 CRASH_KEY_EXPORT void InitializeCrashKeys();
 
 #if defined(UNIT_TEST) || defined(CRASH_CORE_COMMON_IMPLEMENTATION)
