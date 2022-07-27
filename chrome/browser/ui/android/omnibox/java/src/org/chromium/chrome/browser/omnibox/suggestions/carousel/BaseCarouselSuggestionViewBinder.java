@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.view.View;
 
@@ -62,6 +63,10 @@ public final class BaseCarouselSuggestionViewBinder {
      * @return The requested item spacing, expressed in Pixels.
      */
     static int getItemSpacingPx(@FormFactor int formFactor, @NonNull Resources resources) {
+        if (resources.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            return resources.getDimensionPixelOffset(R.dimen.tile_view_padding_landscape);
+        }
+
         int maxTileSpacing = resources.getDimensionPixelOffset(
                 R.dimen.omnibox_suggestion_carousel_spacing_maximum);
         int tileViewPortraitEdgePadding =
@@ -70,8 +75,8 @@ public final class BaseCarouselSuggestionViewBinder {
             case FormFactor.PHONE:
                 int screenWidth = resources.getDisplayMetrics().widthPixels;
                 int tileViewWidth = resources.getDimensionPixelOffset(R.dimen.tile_view_width);
-                return Integer.min(maxTileSpacing,
-                        (int) ((screenWidth - tileViewPortraitEdgePadding - tileViewWidth * 4.7)
+                return Integer.max(-resources.getDimensionPixelOffset(R.dimen.tile_view_padding),
+                        (int) ((screenWidth - tileViewPortraitEdgePadding - tileViewWidth * 4.5)
                                 / 4));
             case FormFactor.TABLET:
                 return tileViewPortraitEdgePadding;

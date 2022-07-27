@@ -69,7 +69,7 @@ public class BaseCarouselSuggestionView extends LinearLayout {
             @Override
             public void getItemOffsets(
                     Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                outRect.left = mItemSpacingPx;
+                outRect.left = 0;
                 outRect.right = mItemSpacingPx;
             }
         });
