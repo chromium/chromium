@@ -992,29 +992,13 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
   // during the free operation, which will lead to taking the slower path that
   // involves quarantine.
   ALWAYS_INLINE void ClearAndDelete() noexcept {
-#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
-    // We cannot directly `delete` a wrapped pointer, since the tag bits
-    // atop will lead PA totally astray.
-    T* ptr = Impl::SafelyUnwrapPtrForExtraction(wrapped_ptr_);
-#else
-    T* ptr = wrapped_ptr_;
-#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
-    operator=(nullptr);
-    delete ptr;
+    delete GetForExtractionAndReset();
   }
   ALWAYS_INLINE void ClearAndDeleteArray() noexcept {
-#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
-    // We cannot directly `delete` a wrapped pointer, since the tag bits
-    // atop will lead PA totally astray.
-    T* ptr = Impl::SafelyUnwrapPtrForExtraction(wrapped_ptr_);
-#else
-    T* ptr = wrapped_ptr_;
-#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
-    operator=(nullptr);
-    delete[] ptr;
+    delete[] GetForExtractionAndReset();
   }
 
-  // Stop referencing the underlying pointer and return another raw_ptr instance
+  // Clear the underlying pointer and return another raw_ptr instance
   // that is allowed to dangle.
   // This can be useful in cases such as:
   // ```
@@ -1173,6 +1157,12 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
   // Any verifications can and should be skipped for performance reasons.
   ALWAYS_INLINE T* GetForComparison() const {
     return Impl::UnsafelyUnwrapPtrForComparison(wrapped_ptr_);
+  }
+
+  ALWAYS_INLINE T* GetForExtractionAndReset() {
+    T* ptr = GetForExtraction();
+    operator=(nullptr);
+    return ptr;
   }
 
   T* wrapped_ptr_;

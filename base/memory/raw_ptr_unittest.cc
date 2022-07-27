@@ -332,12 +332,7 @@ TEST_F(RawPtrTest, ClearAndDelete) {
                 .wrap_raw_ptr_cnt = 1,
                 .release_wrapped_ptr_cnt = 1,
                 .get_for_dereference_cnt = 0,
-#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
-                // When `MTECheckedPtr` is active, we must unwrap to delete.
                 .get_for_extraction_cnt = 1,
-#else
-                .get_for_extraction_cnt = 0,
-#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
                 .wrapped_ptr_swap_cnt = 0,
               }),
               CountingRawPtrHasCounts());
@@ -357,12 +352,7 @@ TEST_F(RawPtrTest, ClearAndDeleteArray) {
                 .wrap_raw_ptr_cnt = 1,
                 .release_wrapped_ptr_cnt = 1,
                 .get_for_dereference_cnt = 0,
-#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
-                // When `MTECheckedPtr` is active, we must unwrap to delete.
                 .get_for_extraction_cnt = 1,
-#else
-                .get_for_extraction_cnt = 0,
-#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
                 .wrapped_ptr_swap_cnt = 0,
               }),
               CountingRawPtrHasCounts());
