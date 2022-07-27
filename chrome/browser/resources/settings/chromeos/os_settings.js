@@ -8,6 +8,7 @@ import './bluetooth_page/bluetooth_device_list_item.js';
 import './bluetooth_page/bluetooth_page.js';
 import './bluetooth_page/bluetooth_subpage.js';
 import './device_page/audio.js';
+import './device_page/cros_audio_config.js';
 import './device_page/device_page.js';
 import './device_page/display.js';
 import './device_page/display_layout.js';
@@ -102,6 +103,7 @@ import './os_toolbar/os_toolbar.js';
 import './parental_controls_page/parental_controls_page.js';
 import './settings_scheduler_slider/settings_scheduler_slider.js';
 
+import * as crosAudioConfigMojomWebui from '../mojom-webui/audio/cros_audio_config.mojom-webui.js';
 import * as personalizationSearchMojomWebui from '../mojom-webui/personalization/search.mojom-webui.js';
 import * as routesMojomWebui from '../mojom-webui/routes.mojom-webui.js';
 import * as searchMojomWebui from '../mojom-webui/search/search.mojom-webui.js';
@@ -128,6 +130,7 @@ export {AmbientModeBrowserProxyImpl} from './ambient_mode_page/ambient_mode_brow
 export {AmbientModeTemperatureUnit, AmbientModeTopicSource} from './ambient_mode_page/constants.js';
 export {bluetoothApis} from './bluetooth_page/bluetooth_page.js';
 export {BluetoothPageBrowserProxyImpl} from './bluetooth_page/bluetooth_page_browser_proxy.js';
+export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';
 export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.js';
 export {GoogleAssistantBrowserProxyImpl} from './google_assistant_page/google_assistant_browser_proxy.js';
 export {ConsentStatus, DspHotwordState} from './google_assistant_page/google_assistant_page.js';
@@ -176,6 +179,7 @@ export {WallpaperBrowserProxyImpl} from './personalization_page/wallpaper_browse
 export {getPersonalizationSearchHandler, setPersonalizationSearchHandlerForTesting} from './personalization_search_handler.js';
 export {getSettingsSearchHandler, setSettingsSearchHandlerForTesting} from './settings_search_handler.js';
 export {
+  crosAudioConfigMojomWebui,
   personalizationSearchMojomWebui,
   routesMojomWebui,
   searchMojomWebui,

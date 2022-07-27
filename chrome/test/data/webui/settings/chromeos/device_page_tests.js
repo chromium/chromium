@@ -4,7 +4,7 @@
 
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setDisplayApiForTesting, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
+import {crosAudioConfigMojomWebui, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -14,6 +14,7 @@ import {flushTasks, isVisible, waitAfterNextRender} from 'chrome://test/test_uti
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
+import {defaultFakeAudioSystemProperties, FakeCrosAudioConfig} from './fake_cros_audio_config.js';
 import {FakeSystemDisplay} from './fake_system_display.js';
 
 /** @enum {string} */
@@ -704,6 +705,91 @@ suite('SettingsDevicePage', function() {
           isVisible(audioPage.shadowRoot.querySelector('#audioOutputTitle')));
       assertTrue(isVisible(
           audioPage.shadowRoot.querySelector('#audioOutputSubsection')));
+    });
+  });
+
+  suite(assert(TestNames.Audio), function() {
+    let audioPage;
+
+    /** @type {?FakeCrosAudioConfig} */
+    let crosAudioConfig;
+
+    // Static test audio system properties.
+    const mutedByPolicyFakeAudioSystemProperties = {
+      outputVolumePercent: 75,
+
+      /** @type {!MuteState} */
+      outputMuteState: crosAudioConfigMojomWebui.MuteState.kMutedByPolicy,
+    };
+
+    const maxVolumePercentFakeAudioSystemProperties = {
+      outputVolumePercent: 100,
+
+      /** @type {!MuteState} */
+      outputMuteState: crosAudioConfigMojomWebui.MuteState.kNotMuted,
+    };
+
+    const minVolumePercentFakeAudioSystemProperties = {
+      outputVolumePercent: 0,
+
+      /** @type {!MuteState} */
+      outputMuteState: crosAudioConfigMojomWebui.MuteState.kNotMuted,
+    };
+
+    setup(async function() {
+      loadTimeData.overrideValues({
+        enableAudioSettingsPage: true,
+      });
+      await init();
+
+      // FakeAudioConfig must be set before audio subpage is loaded.
+      crosAudioConfig = new FakeCrosAudioConfig();
+      setCrosAudioConfigForTesting(crosAudioConfig);
+      return showAndGetDeviceSubpage('audio', routes.AUDIO)
+          .then(function(page) {
+            audioPage = page;
+            return flushTasks();
+          });
+    });
+
+    test('output slider mojo test', async function() {
+      await flushTasks();
+
+      const outputVolumeSlider =
+          audioPage.shadowRoot.querySelector('#outputVolumeSlider');
+
+      // Test default properties.
+      assertEquals(
+          defaultFakeAudioSystemProperties.outputVolumePercent,
+          outputVolumeSlider.value);
+      assertFalse(outputVolumeSlider.disabled);
+
+      // Test max volume case.
+      crosAudioConfig.setAudioSystemProperties(
+          maxVolumePercentFakeAudioSystemProperties);
+      await flushTasks();
+      assertEquals(
+          maxVolumePercentFakeAudioSystemProperties.outputVolumePercent,
+          outputVolumeSlider.value);
+      assertFalse(outputVolumeSlider.disabled);
+
+      // Test min volume case.
+      crosAudioConfig.setAudioSystemProperties(
+          minVolumePercentFakeAudioSystemProperties);
+      await flushTasks();
+      assertEquals(
+          minVolumePercentFakeAudioSystemProperties.outputVolumePercent,
+          outputVolumeSlider.value);
+      assertFalse(outputVolumeSlider.disabled);
+
+      // Test kMutedByPolicy case.
+      crosAudioConfig.setAudioSystemProperties(
+          mutedByPolicyFakeAudioSystemProperties);
+      await flushTasks();
+      assertEquals(
+          mutedByPolicyFakeAudioSystemProperties.outputVolumePercent,
+          outputVolumeSlider.value);
+      assertTrue(outputVolumeSlider.disabled);
     });
   });
 

@@ -18,7 +18,7 @@ let crosAudioConfig = null;
  * The CrosAudioConfig implementation used for testing. Passing null reverses
  * the override.
  */
-export function setAudioConfigForTesting(testCrosAudioConfig) {
+export function setCrosAudioConfigForTesting(testCrosAudioConfig) {
   crosAudioConfig = testCrosAudioConfig;
 }
 

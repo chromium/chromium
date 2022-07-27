@@ -41,9 +41,13 @@
               icon="settings:volume-down">
           </iron-icon>
           <cr-slider class="audio-output-slider"
+              id ="outputVolumeSlider"
               min="0"
               max="100"
-              value="50">
+              disabled="[[isOutputVolumeSliderDisabled_(
+                  audioSystemProperties_.outputMuteState
+                )]]"
+              value="[[audioSystemProperties_.outputVolumePercent]]">
           </cr-slider>
           <iron-icon id="audioOutputSliderVolumeUpIcon"
               icon="settings:volume-up">
