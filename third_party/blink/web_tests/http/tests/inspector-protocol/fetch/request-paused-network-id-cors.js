@@ -7,8 +7,8 @@
   await dp.Network.enable();
   await dp.Fetch.enable();
 
-  const contentPromise = session.evaluateAsync(`
-      fetch("${url}", {method: 'POST', headers: {'X-DevTools-Test': 'foo'}, body: 'test'}).then(r => r.text())`);
+  session.evaluate(`
+      contentPromise = fetch("${url}", {method: 'POST', headers: {'X-DevTools-Test': 'foo'}, body: 'test'}).then(r => r.text())`);
 
   const eventsById = new Map();
   function onNetworkEvent(event) {
@@ -49,7 +49,7 @@
     body: btoa('response body')
   });
 
-  await contentPromise;
+  await session.evaluateAsync('contentPromise');
   testRunner.log(eventsById.get(request1.networkId), "Preflight request network events: ");
   testRunner.log(eventsById.get(request2.networkId), "Actual request network events: ");
   testRunner.completeTest();
