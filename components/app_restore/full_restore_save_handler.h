@@ -187,6 +187,10 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   // the window's associated AppRestoreData.
   std::string GetAppId(aura::Window* window);
 
+  // Returns the window id of a chrome app hosted in lacros. Returns -1 if
+  // `window` is not in the lacros save handler.
+  int GetLacrosChromeAppWindowId(aura::Window* window) const;
+
   // Fetches the app launch information from `app_id_to_app_launch_infos_` for
   // the given `profile_path` and `app_id`. `app_id` should be a Chrome app id.
   AppLaunchInfoPtr FetchAppLaunchInfo(const base::FilePath& profile_path,

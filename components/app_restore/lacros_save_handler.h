@@ -56,6 +56,10 @@ class COMPONENT_EXPORT(APP_RESTORE) LacrosSaveHandler {
   // Returns the app id that associates with `window`.
   std::string GetAppId(aura::Window* window);
 
+  // Returns the window id that associates with `window` of a chrome app.
+  // Returns -1 if the window is not in `window_candidates_`.
+  int GetLacrosChromeAppWindowId(aura::Window* window) const;
+
  private:
   friend class FullRestoreSaveHandlerTestApi;
 

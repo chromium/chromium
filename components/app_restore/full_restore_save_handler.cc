@@ -526,6 +526,12 @@ std::string FullRestoreSaveHandler::GetAppId(aura::Window* window) {
   }
 }
 
+int FullRestoreSaveHandler::GetLacrosChromeAppWindowId(
+    aura::Window* window) const {
+  DCHECK(lacros_save_handler_);
+  return lacros_save_handler_->GetLacrosChromeAppWindowId(window);
+}
+
 std::unique_ptr<app_restore::AppLaunchInfo>
 FullRestoreSaveHandler::FetchAppLaunchInfo(const base::FilePath& profile_path,
                                            const std::string& app_id) {

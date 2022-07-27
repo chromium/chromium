@@ -37,6 +37,7 @@
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
+#include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
@@ -234,7 +235,20 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
   const std::string app_id = full_restore::GetAppId(window);
   DCHECK(!app_id.empty());
 
-  const int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
+  auto& app_registry_cache =
+      apps::AppServiceProxyFactory::GetForProfile(user_profile)
+          ->AppRegistryCache();
+  const auto app_type = app_registry_cache.GetAppType(app_id);
+
+  // Get the window id needed to fetch app launch info. For chrome apps in
+  // lacros, the window id needs to be fetched from the `LacrosSaveHandler`. See
+  // https://crbug.com/1335491 for more details.
+  const int32_t window_id =
+      app_type == apps::AppType::kStandaloneBrowserChromeApp
+          ? full_restore::FullRestoreSaveHandler::GetInstance()
+                ->GetLacrosChromeAppWindowId(window)
+          : window->GetProperty(app_restore::kWindowIdKey);
+
   auto app_launch_info =
       std::make_unique<app_restore::AppLaunchInfo>(app_id, window_id);
 
@@ -258,10 +272,6 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
     }
   }
 
-  auto& app_registry_cache =
-      apps::AppServiceProxyFactory::GetForProfile(user_profile)
-          ->AppRegistryCache();
-  const auto app_type = app_registry_cache.GetAppType(app_id);
   if (app_id != app_constants::kChromeAppId &&
       app_id != app_constants::kLacrosAppId &&
       (app_type == apps::AppType::kChromeApp ||
