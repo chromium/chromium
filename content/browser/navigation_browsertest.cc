@@ -5794,13 +5794,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
 // new NavigationRequest, because it was trying to access the current
 // RenderFrameHost's PolicyContainerHost, which had not been set up yet by
 // RenderFrameHostImpl::DidNavigate.
-#if BUILDFLAG(IS_ANDROID)
-// Flaky on Android: https://crbug.com/1222320.
-#define MAYBE_Bug1210234 DISABLED_Bug1210234
-#else
-#define MAYBE_Bug1210234 Bug1210234
-#endif  // BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, MAYBE_Bug1210234) {
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, Bug1210234) {
   class NavigationWebContentsDelegate : public WebContentsDelegate {
    public:
     NavigationWebContentsDelegate(const GURL& url_to_intercept,
@@ -5833,11 +5827,24 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, MAYBE_Bug1210234) {
 
   ASSERT_TRUE(NavigateToURL(shell(), warmup_url));
 
-  // Since we committed a navigation, the next cross-origin navigation will
-  // create a speculative RenderFrameHost.
+  // Note that since we committed a navigation, the next cross-origin navigation
+  // will create a speculative RenderFrameHost (when site isolation is enabled).
 
-  EXPECT_TRUE(NavigateToURL(web_contents(), initial_url,
-                            /*expected_commit_url=*/redirection_url));
+  // Start the navigation to `initial_url` and wait until the web contents
+  // navigates to `redirection_url`. We cannot use helper functions like
+  // `NavigateToURLBlockUntilNavigationsComplete` because they wait for
+  // DidStopLoading and check the LastCommittedURL when they receive it.
+  // However, without SiteIsolation, an earlier DidStopLoading might be received
+  // when the WebContents has not yet committed the `redirection_url`.
+
+  // Prepare for the navigation.
+  WaitForLoadStop(web_contents());
+  TestNavigationObserver navigation_observer(redirection_url);
+  navigation_observer.WatchExistingWebContents();
+
+  shell()->LoadURL(initial_url);
+
+  navigation_observer.Wait();
 
   EXPECT_TRUE(IsLastCommittedEntryOfPageType(web_contents(), PAGE_TYPE_NORMAL));
   EXPECT_EQ(redirection_url, web_contents()->GetLastCommittedURL());
