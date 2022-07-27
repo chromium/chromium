@@ -867,7 +867,7 @@ crbug.com/1218169 [ chromeos chromeos-board-kevin ] deqp/functional/gles3/fragme
 crbug.com/1218169 [ chromeos chromeos-board-kevin ] deqp/functional/gles3/fragmentoutput/basic.float.html [ Failure ]
 crbug.com/1218509 [ chromeos chromeos-board-kevin ] deqp/functional/gles3/fbomultisample.2_samples.html [ RetryOnFailure ]
 crbug.com/1218509 [ chromeos chromeos-board-kevin ] deqp/functional/gles3/fbomultisample.4_samples.html [ RetryOnFailure ]
-crbug.com/1218509 [ chromeos chromeos-board-kevin ] deqp/functional/gles3/fbomultisample.8_samples.html [ RetryOnFailure ]
+crbug.com/1218509 [ chromeos chromeos-board-kevin ] deqp/functional/gles3/fbomultisample.8_samples.html [ Failure ]
 crbug.com/1218512 [ chromeos chromeos-board-kevin ] deqp/functional/gles3/shadertexturefunction/texturelodoffset.html [ Failure ]
 crbug.com/1218516 [ chromeos chromeos-board-kevin ] deqp/data/gles3/shaders/arrays.html [ Failure ]
 crbug.com/1218607 [ chromeos chromeos-board-kevin ] conformance2/reading/read-pixels-pack-parameters.html [ Failure ]
