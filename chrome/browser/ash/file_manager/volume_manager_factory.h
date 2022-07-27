@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_VOLUME_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_VOLUME_MANAGER_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -21,7 +21,7 @@ namespace file_manager {
 class VolumeManager;
 
 // Factory to create VolumeManager.
-class VolumeManagerFactory : public BrowserContextKeyedServiceFactory {
+class VolumeManagerFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns VolumeManager instance.
   static VolumeManager* Get(content::BrowserContext* context);
@@ -33,8 +33,6 @@ class VolumeManagerFactory : public BrowserContextKeyedServiceFactory {
 
  protected:
   // BrowserContextKeyedServiceFactory overrides:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
   KeyedService* BuildServiceInstanceFor(

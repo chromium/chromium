@@ -8,7 +8,6 @@
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 
@@ -32,9 +31,9 @@ ServiceFactory* ServiceFactory::GetInstance() {
 }
 
 ServiceFactory::ServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "Service",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildServicesRedirectedToOriginal()) {
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
   DependsOn(extensions::ExtensionSystemFactory::GetInstance());
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
@@ -49,11 +48,6 @@ KeyedService* ServiceFactory::BuildServiceInstanceFor(
 }
 
 bool ServiceFactory::ServiceIsCreatedWithBrowserContext() const { return true; }
-
-content::BrowserContext* ServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
-}
 
 }  // namespace file_system_provider
 }  // namespace ash

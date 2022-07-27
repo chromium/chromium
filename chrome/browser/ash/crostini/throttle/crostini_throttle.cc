@@ -7,8 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/concierge_helper_service.h"
 #include "chrome/browser/ash/crostini/throttle/crostini_active_window_throttle_observer.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
 namespace crostini {
@@ -33,7 +32,7 @@ class DefaultDelegateImpl : public CrostiniThrottle::Delegate {
   content::BrowserContext* context_;
 };
 
-class CrostiniThrottleFactory : public BrowserContextKeyedServiceFactory {
+class CrostiniThrottleFactory : public ProfileKeyedServiceFactory {
  public:
   static CrostiniThrottleFactory* GetInstance() {
     static base::NoDestructor<CrostiniThrottleFactory> instance;
@@ -54,16 +53,12 @@ class CrostiniThrottleFactory : public BrowserContextKeyedServiceFactory {
   friend class base::NoDestructor<CrostiniThrottleFactory>;
 
   CrostiniThrottleFactory()
-      : BrowserContextKeyedServiceFactory(
-            "CrostiniThrottleFactory",
-            BrowserContextDependencyManager::GetInstance()) {}
+      : ProfileKeyedServiceFactory("CrostiniThrottleFactory") {}
   ~CrostiniThrottleFactory() override = default;
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override {
-    if (context->IsOffTheRecord())
-      return nullptr;
     return new CrostiniThrottle(context);
   }
 };

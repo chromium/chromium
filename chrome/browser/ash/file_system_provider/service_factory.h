@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -15,7 +15,7 @@ namespace file_system_provider {
 class Service;
 
 // Creates services per profile.
-class ServiceFactory : public BrowserContextKeyedServiceFactory {
+class ServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns a service instance singleton, after creating it (if necessary).
   static Service* Get(content::BrowserContext* context);
@@ -40,8 +40,6 @@ class ServiceFactory : public BrowserContextKeyedServiceFactory {
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 }  // namespace file_system_provider

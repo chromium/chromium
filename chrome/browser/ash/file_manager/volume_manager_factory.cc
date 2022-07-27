@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/storage_monitor/storage_monitor.h"
 
 namespace file_manager {
@@ -25,12 +24,6 @@ VolumeManager* VolumeManagerFactory::Get(content::BrowserContext* context) {
 
 VolumeManagerFactory* VolumeManagerFactory::GetInstance() {
   return base::Singleton<VolumeManagerFactory>::get();
-}
-
-content::BrowserContext* VolumeManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Explicitly allow this manager in guest login mode.
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 bool VolumeManagerFactory::ServiceIsCreatedWithBrowserContext() const {
@@ -55,9 +48,10 @@ KeyedService* VolumeManagerFactory::BuildServiceInstanceFor(
 }
 
 VolumeManagerFactory::VolumeManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "VolumeManagerFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+          // Explicitly allow this manager in guest login mode.
+          ProfileSelections::BuildServicesForAllProfiles()) {
   DependsOn(drive::DriveIntegrationServiceFactory::GetInstance());
   DependsOn(ash::file_system_provider::ServiceFactory::GetInstance());
 }

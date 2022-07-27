@@ -23,7 +23,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/account_id/account_id.h"
 #include "components/gcm_driver/gcm_profile_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -105,9 +104,7 @@ class DeviceSyncClientHolder : public KeyedService {
 };
 
 DeviceSyncClientFactory::DeviceSyncClientFactory()
-    : BrowserContextKeyedServiceFactory(
-          "DeviceSyncClient",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("DeviceSyncClient") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
 

@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
@@ -29,9 +28,7 @@ FloatingWorkspaceService* FloatingWorkspaceServiceFactory::GetForProfile(
 }
 
 FloatingWorkspaceServiceFactory::FloatingWorkspaceServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "FloatingWorkspaceServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("FloatingWorkspaceServiceFactory") {
   DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }

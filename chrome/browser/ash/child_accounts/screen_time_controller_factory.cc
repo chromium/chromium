@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
@@ -25,9 +24,7 @@ ScreenTimeControllerFactory* ScreenTimeControllerFactory::GetInstance() {
 }
 
 ScreenTimeControllerFactory::ScreenTimeControllerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ScreenTimeControllerFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("ScreenTimeControllerFactory") {
   DependsOn(ChildStatusReportingServiceFactory::GetInstance());
 }
 

@@ -24,9 +24,8 @@
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_dialog.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -44,7 +43,7 @@ namespace {
 using SetupResult = CrostiniInstaller::SetupResult;
 constexpr char kCrostiniSetupSourceHistogram[] = "Crostini.SetupSource";
 
-class CrostiniInstallerFactory : public BrowserContextKeyedServiceFactory {
+class CrostiniInstallerFactory : public ProfileKeyedServiceFactory {
  public:
   static crostini::CrostiniInstaller* GetForProfile(Profile* profile) {
     return static_cast<crostini::CrostiniInstaller*>(
@@ -60,9 +59,7 @@ class CrostiniInstallerFactory : public BrowserContextKeyedServiceFactory {
   friend class base::NoDestructor<CrostiniInstallerFactory>;
 
   CrostiniInstallerFactory()
-      : BrowserContextKeyedServiceFactory(
-            "CrostiniInstallerService",
-            BrowserContextDependencyManager::GetInstance()) {
+      : ProfileKeyedServiceFactory("CrostiniInstallerService") {
     DependsOn(crostini::CrostiniManagerFactory::GetInstance());
     DependsOn(crostini::AnsibleManagementServiceFactory::GetInstance());
   }

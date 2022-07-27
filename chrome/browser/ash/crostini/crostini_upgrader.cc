@@ -16,9 +16,8 @@
 #include "chrome/browser/ash/crostini/crostini_manager_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
@@ -29,7 +28,7 @@ namespace crostini {
 
 namespace {
 
-class CrostiniUpgraderFactory : public BrowserContextKeyedServiceFactory {
+class CrostiniUpgraderFactory : public ProfileKeyedServiceFactory {
  public:
   static CrostiniUpgrader* GetForProfile(Profile* profile) {
     return static_cast<CrostiniUpgrader*>(
@@ -45,9 +44,7 @@ class CrostiniUpgraderFactory : public BrowserContextKeyedServiceFactory {
   friend class base::NoDestructor<CrostiniUpgraderFactory>;
 
   CrostiniUpgraderFactory()
-      : BrowserContextKeyedServiceFactory(
-            "CrostiniUpgraderService",
-            BrowserContextDependencyManager::GetInstance()) {
+      : ProfileKeyedServiceFactory("CrostiniUpgraderService") {
     DependsOn(CrostiniManagerFactory::GetInstance());
   }
 

@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace crostini {
 
@@ -26,9 +25,7 @@ AnsibleManagementServiceFactory::GetInstance() {
 }
 
 AnsibleManagementServiceFactory::AnsibleManagementServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AnsibleManagementService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("AnsibleManagementService") {}
 
 AnsibleManagementServiceFactory::~AnsibleManagementServiceFactory() = default;
 

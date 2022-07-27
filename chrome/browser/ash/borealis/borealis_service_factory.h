@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -16,7 +16,7 @@ class BorealisService;
 
 // Implementation of the factory used to access profile-keyed instances of the
 // features service.
-class BorealisServiceFactory : public BrowserContextKeyedServiceFactory {
+class BorealisServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static BorealisService* GetForProfile(Profile* profile);
 

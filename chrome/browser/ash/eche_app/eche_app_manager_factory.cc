@@ -37,7 +37,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -213,9 +212,7 @@ void EcheAppManagerFactory::LaunchEcheApp(
 }
 
 EcheAppManagerFactory::EcheAppManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "EcheAppManager",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("EcheAppManager") {
   DependsOn(phonehub::PhoneHubManagerFactory::GetInstance());
   DependsOn(device_sync::DeviceSyncClientFactory::GetInstance());
   DependsOn(multidevice_setup::MultiDeviceSetupClientFactory::GetInstance());

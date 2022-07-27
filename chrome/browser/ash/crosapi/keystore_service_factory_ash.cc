@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace crosapi {
 
@@ -42,9 +41,7 @@ KeystoreServiceFactoryAsh* KeystoreServiceFactoryAsh::GetInstance() {
 }
 
 KeystoreServiceFactoryAsh::KeystoreServiceFactoryAsh()
-    : BrowserContextKeyedServiceFactory(
-          "KeystoreServiceFactoryAsh",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("KeystoreServiceFactoryAsh") {
   DependsOn(ash::platform_keys::PlatformKeysServiceFactory::GetInstance());
   DependsOn(ash::platform_keys::KeyPermissionsServiceFactory::GetInstance());
 }

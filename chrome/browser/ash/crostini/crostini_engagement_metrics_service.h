@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_ASH_CROSTINI_CROSTINI_ENGAGEMENT_METRICS_SERVICE_H_
 
 #include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/guest_os/guest_os_engagement_metrics.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -18,7 +18,7 @@ namespace crostini {
 // per GuestOsEngagementMetrics.
 class CrostiniEngagementMetricsService : public KeyedService {
  public:
-  class Factory : public BrowserContextKeyedServiceFactory {
+  class Factory : public ProfileKeyedServiceFactory {
    public:
     static CrostiniEngagementMetricsService* GetForProfile(Profile* profile);
     static Factory* GetInstance();

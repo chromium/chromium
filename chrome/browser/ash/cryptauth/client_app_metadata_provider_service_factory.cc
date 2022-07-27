@@ -9,7 +9,6 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/network/network_handler.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
@@ -31,9 +30,7 @@ ClientAppMetadataProviderServiceFactory::GetInstance() {
 
 ClientAppMetadataProviderServiceFactory::
     ClientAppMetadataProviderServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ClientAppMetadataProviderService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("ClientAppMetadataProviderService") {
   DependsOn(instance_id::InstanceIDProfileServiceFactory::GetInstance());
 }
 

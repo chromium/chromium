@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_DEVICE_SYNC_DEVICE_SYNC_CLIENT_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -17,7 +17,7 @@ class DeviceSyncClient;
 
 // Singleton that owns all DeviceSyncClient instances and associates them with
 // Profiles.
-class DeviceSyncClientFactory : public BrowserContextKeyedServiceFactory {
+class DeviceSyncClientFactory : public ProfileKeyedServiceFactory {
  public:
   static DeviceSyncClient* GetForProfile(Profile* profile);
 

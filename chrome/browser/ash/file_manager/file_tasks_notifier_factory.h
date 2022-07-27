@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_FILE_TASKS_NOTIFIER_FACTORY_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_FILE_TASKS_NOTIFIER_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -15,7 +15,7 @@ namespace file_tasks {
 
 class FileTasksNotifier;
 
-class FileTasksNotifierFactory : public BrowserContextKeyedServiceFactory {
+class FileTasksNotifierFactory : public ProfileKeyedServiceFactory {
  public:
   FileTasksNotifierFactory();
 

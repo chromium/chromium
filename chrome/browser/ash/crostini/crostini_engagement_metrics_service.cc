@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace crostini {
 
@@ -28,9 +27,7 @@ CrostiniEngagementMetricsService::Factory::GetInstance() {
 }
 
 CrostiniEngagementMetricsService::Factory::Factory()
-    : BrowserContextKeyedServiceFactory(
-          "CrostiniEngagementMetricsService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("CrostiniEngagementMetricsService") {}
 
 CrostiniEngagementMetricsService::Factory::~Factory() = default;
 

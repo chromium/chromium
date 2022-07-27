@@ -22,16 +22,15 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace crostini {
 
-class CrostiniExportImportFactory : public BrowserContextKeyedServiceFactory {
+class CrostiniExportImportFactory : public ProfileKeyedServiceFactory {
  public:
   static CrostiniExportImport* GetForProfile(Profile* profile) {
     return static_cast<CrostiniExportImport*>(
@@ -47,9 +46,7 @@ class CrostiniExportImportFactory : public BrowserContextKeyedServiceFactory {
   friend class base::NoDestructor<CrostiniExportImportFactory>;
 
   CrostiniExportImportFactory()
-      : BrowserContextKeyedServiceFactory(
-            "CrostiniExportImportService",
-            BrowserContextDependencyManager::GetInstance()) {
+      : ProfileKeyedServiceFactory("CrostiniExportImportService") {
     DependsOn(guest_os::GuestOsSharePathFactory::GetInstance());
     DependsOn(CrostiniManagerFactory::GetInstance());
   }

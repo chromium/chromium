@@ -7,16 +7,12 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace file_manager {
 namespace file_tasks {
 
 FileTasksNotifierFactory ::FileTasksNotifierFactory()
-    : BrowserContextKeyedServiceFactory(
-          "FileTasksNotifier",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("FileTasksNotifier") {}
 
 FileTasksNotifierFactory* FileTasksNotifierFactory::GetInstance() {
   static base::NoDestructor<FileTasksNotifierFactory> instance;

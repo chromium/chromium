@@ -14,9 +14,8 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace crostini {
@@ -28,7 +27,7 @@ const char kPortProtocolKey[] = "protocol_type";
 const char kPortLabelKey[] = "label";
 const char kPortContainerIdKey[] = "container_id";
 
-class CrostiniPortForwarderFactory : public BrowserContextKeyedServiceFactory {
+class CrostiniPortForwarderFactory : public ProfileKeyedServiceFactory {
  public:
   static CrostiniPortForwarder* GetForProfile(Profile* profile) {
     return static_cast<CrostiniPortForwarder*>(
@@ -44,9 +43,7 @@ class CrostiniPortForwarderFactory : public BrowserContextKeyedServiceFactory {
   friend class base::NoDestructor<CrostiniPortForwarderFactory>;
 
   CrostiniPortForwarderFactory()
-      : BrowserContextKeyedServiceFactory(
-            "CrostiniPortForwarderService",
-            BrowserContextDependencyManager::GetInstance()) {}
+      : ProfileKeyedServiceFactory("CrostiniPortForwarderService") {}
 
   ~CrostiniPortForwarderFactory() override = default;
 

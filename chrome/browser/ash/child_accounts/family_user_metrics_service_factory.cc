@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/ash/child_accounts/family_user_metrics_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -29,9 +28,7 @@ FamilyUserMetricsServiceFactory::GetInstance() {
 }
 
 FamilyUserMetricsServiceFactory::FamilyUserMetricsServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "FamilyUserMetricsServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("FamilyUserMetricsServiceFactory") {
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
   DependsOn(ChildUserServiceFactory::GetInstance());
   DependsOn(SupervisedUserServiceFactory::GetInstance());

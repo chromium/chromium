@@ -8,7 +8,7 @@
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
@@ -83,7 +83,7 @@ class LaunchedAppInfo {
 };
 
 // Factory to create a single EcheAppManager.
-class EcheAppManagerFactory : public BrowserContextKeyedServiceFactory {
+class EcheAppManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static EcheAppManager* GetForProfile(Profile* profile);
   static EcheAppManagerFactory* GetInstance();

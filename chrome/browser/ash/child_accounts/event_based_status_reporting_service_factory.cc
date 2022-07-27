@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/child_accounts/event_based_status_reporting_service.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
@@ -30,9 +29,7 @@ EventBasedStatusReportingServiceFactory::GetInstance() {
 
 EventBasedStatusReportingServiceFactory::
     EventBasedStatusReportingServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "EventBasedStatusReportingServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("EventBasedStatusReportingServiceFactory") {
   DependsOn(ChildStatusReportingServiceFactory::GetInstance());
   DependsOn(ArcAppListPrefsFactory::GetInstance());
   DependsOn(ScreenTimeControllerFactory::GetInstance());

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_FAMILY_USER_METRICS_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -19,8 +19,7 @@ class FamilyUserMetricsService;
 // them with corresponding BrowserContexts. Listens for the BrowserContext's
 // destruction notification and cleans up the associated
 // FamilyUserMetricsService.
-class FamilyUserMetricsServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class FamilyUserMetricsServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static FamilyUserMetricsService* GetForBrowserContext(
       content::BrowserContext* context);

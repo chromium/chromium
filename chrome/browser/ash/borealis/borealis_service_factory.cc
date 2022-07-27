@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/borealis/borealis_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace borealis {
 BorealisService* BorealisServiceFactory::GetForProfile(Profile* profile) {
@@ -23,9 +22,7 @@ BorealisServiceFactory* BorealisServiceFactory::GetInstance() {
 
 // This service does not depend on any other services.
 BorealisServiceFactory::BorealisServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "BorealisService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("BorealisService") {}
 
 BorealisServiceFactory::~BorealisServiceFactory() = default;
 

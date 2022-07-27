@@ -16,14 +16,13 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace crostini {
 
 namespace {
 
-class CrostiniPackageServiceFactory : public BrowserContextKeyedServiceFactory {
+class CrostiniPackageServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static CrostiniPackageService* GetForProfile(Profile* profile) {
     return static_cast<CrostiniPackageService*>(
@@ -39,9 +38,7 @@ class CrostiniPackageServiceFactory : public BrowserContextKeyedServiceFactory {
   friend class base::NoDestructor<CrostiniPackageServiceFactory>;
 
   CrostiniPackageServiceFactory()
-      : BrowserContextKeyedServiceFactory(
-            "CrostiniPackageService",
-            BrowserContextDependencyManager::GetInstance()) {
+      : ProfileKeyedServiceFactory("CrostiniPackageService") {
     DependsOn(CrostiniManagerFactory::GetInstance());
   }
 
