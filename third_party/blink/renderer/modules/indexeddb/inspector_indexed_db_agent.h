@@ -63,7 +63,8 @@ class MODULES_EXPORT InspectorIndexedDBAgent final
   void requestDatabase(const String& security_origin,
                        const String& database_name,
                        std::unique_ptr<RequestDatabaseCallback>) override;
-  void requestData(const String& security_origin,
+  void requestData(protocol::Maybe<String> security_origin,
+                   protocol::Maybe<String> storage_key,
                    const String& database_name,
                    const String& object_store_name,
                    const String& index_name,

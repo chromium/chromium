@@ -808,7 +808,8 @@ void InspectorIndexedDBAgent::requestDatabase(
 }
 
 void InspectorIndexedDBAgent::requestData(
-    const String& security_origin,
+    protocol::Maybe<String> security_origin,
+    protocol::Maybe<String> storage_key,
     const String& database_name,
     const String& object_store_name,
     const String& index_name,
@@ -824,14 +825,16 @@ void InspectorIndexedDBAgent::requestData(
         Response::ServerError("Can not parse key range."));
     return;
   }
-
+  absl::variant<LocalFrame*, Response> frame_or_response = ResolveFrame(
+      std::move(security_origin), std::move(storage_key), inspected_frames_);
+  if (absl::holds_alternative<Response>(frame_or_response)) {
+    request_callback->sendFailure(absl::get<Response>(frame_or_response));
+  }
   scoped_refptr<DataLoader> data_loader = DataLoader::Create(
       v8_session_, std::move(request_callback), object_store_name, index_name,
       idb_key_range, skip_count, page_size);
 
-  data_loader->Start(
-      inspected_frames_->FrameWithSecurityOrigin(security_origin),
-      database_name);
+  data_loader->Start(absl::get<LocalFrame*>(frame_or_response), database_name);
 }
 
 class GetMetadata;
