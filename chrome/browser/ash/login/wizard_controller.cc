@@ -1207,7 +1207,7 @@ void WizardController::OnConsolidatedConsentScreenExit(
       break;
     case ConsolidatedConsentScreen::Result::BACK_DEMO:
       DCHECK(demo_setup_controller_);
-      ShowNetworkScreen();
+      ShowDemoModePreferencesScreen();
       break;
   }
 }
@@ -1403,6 +1403,7 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
       ShowEulaScreen();
       break;
     case NetworkScreen::Result::CONNECTED_DEMO:
+    case NetworkScreen::Result::NOT_APPLICABLE_CONNECTED_DEMO:
       DCHECK(demo_setup_controller_);
       demo_setup_controller_->set_demo_config(
           DemoSession::DemoModeConfig::kOnline);
