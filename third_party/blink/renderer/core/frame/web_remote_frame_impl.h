@@ -70,16 +70,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
       const LocalFrameToken& frame_token,
       WebFrame* opener,
       std::unique_ptr<blink::WebPolicyContainer> policy_container) override;
-  WebRemoteFrame* CreateRemoteChild(
-      mojom::blink::TreeScopeType,
-      const RemoteFrameToken& frame_token,
-      const base::UnguessableToken& devtools_frame_token,
-      WebFrame* opener,
-      CrossVariantMojoAssociatedRemote<
-          mojom::blink::RemoteFrameHostInterfaceBase> remote_frame_host,
-      CrossVariantMojoAssociatedReceiver<mojom::blink::RemoteFrameInterfaceBase>
-          receiver,
-      mojom::FrameReplicationStatePtr replicated_state) override;
   void SetReplicatedOrigin(
       const WebSecurityOrigin&,
       bool is_potentially_trustworthy_opaque_origin) override;
@@ -102,6 +92,16 @@ class CORE_EXPORT WebRemoteFrameImpl final
           remote_frame_host,
       mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver);
   RemoteFrame* GetFrame() const { return frame_.Get(); }
+
+  WebRemoteFrameImpl* CreateRemoteChild(
+      mojom::blink::TreeScopeType,
+      const RemoteFrameToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token,
+      WebFrame* opener,
+      mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+          remote_frame_host,
+      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
+      mojom::blink::FrameReplicationStatePtr replicated_state);
 
   static WebRemoteFrameImpl* FromFrame(RemoteFrame&);
 

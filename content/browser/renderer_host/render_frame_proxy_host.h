@@ -262,7 +262,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // Bind mojo endpoints of the Remote/RemoteMainFrame in blink and pass unbound
   // corresponding endpoints. The corresponding endpoints should be transferred
   // and bound in blink.
-  mojom::RemoteFrameInterfacesFromBrowserPtr
+  blink::mojom::RemoteFrameInterfacesFromBrowserPtr
   CreateAndBindRemoteFrameInterfaces();
   mojom::RemoteMainFrameInterfacesPtr CreateAndBindRemoteMainFrameInterfaces();
 

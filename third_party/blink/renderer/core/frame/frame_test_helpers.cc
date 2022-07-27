@@ -48,6 +48,7 @@
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
@@ -323,20 +324,21 @@ WebRemoteFrameImpl* CreateRemoteChild(
     WebRemoteFrame& parent,
     const WebString& name,
     scoped_refptr<SecurityOrigin> security_origin) {
-  mojom::FrameReplicationStatePtr replicated_state =
-      mojom::FrameReplicationState::New();
-  replicated_state->name = name.Utf8();
-  auto* frame = To<WebRemoteFrameImpl>(parent.CreateRemoteChild(
+  mojom::blink::FrameReplicationStatePtr replicated_state =
+      mojom::blink::FrameReplicationState::New();
+  replicated_state->name = name;
+  if (!security_origin)
+    security_origin = SecurityOrigin::CreateUniqueOpaque();
+  replicated_state->origin = std::move(security_origin);
+
+  auto* frame = To<WebRemoteFrameImpl>(parent).CreateRemoteChild(
       mojom::blink::TreeScopeType::kDocument, RemoteFrameToken(),
       /*devtools_frame_token=*/base::UnguessableToken(), /*opener=*/nullptr,
       CreateStubRemoteIfNeeded<mojom::blink::RemoteFrameHost>(
           mojo::NullAssociatedRemote()),
       mojo::AssociatedRemote<mojom::blink::RemoteFrame>()
           .BindNewEndpointAndPassDedicatedReceiver(),
-      std::move(replicated_state)));
-  if (!security_origin)
-    security_origin = SecurityOrigin::CreateUniqueOpaque();
-  frame->GetFrame()->SetReplicatedOrigin(std::move(security_origin), false);
+      std::move(replicated_state));
   return frame;
 }
 

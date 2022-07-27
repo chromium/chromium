@@ -263,8 +263,9 @@ blink::mojom::CommitNavigationParamsPtr DummyCommitNavigationParams() {
   return params;
 }
 
-mojom::RemoteFrameInterfacesFromBrowserPtr CreateStubRemoteFrameInterfaces() {
-  auto interfaces = mojom::RemoteFrameInterfacesFromBrowser::New();
+blink::mojom::RemoteFrameInterfacesFromBrowserPtr
+CreateStubRemoteFrameInterfaces() {
+  auto interfaces = blink::mojom::RemoteFrameInterfacesFromBrowser::New();
 
   mojo::AssociatedRemote<blink::mojom::RemoteFrame> frame;
   interfaces->frame_receiver = frame.BindNewEndpointAndPassDedicatedReceiver();

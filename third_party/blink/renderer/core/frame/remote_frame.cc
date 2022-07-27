@@ -11,6 +11,7 @@
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-blink.h"
@@ -1074,6 +1075,18 @@ void RemoteFrame::EnableAutoResize(const gfx::Size& min_size,
 void RemoteFrame::DisableAutoResize() {
   pending_visual_properties_.auto_resize_enabled = false;
   SynchronizeVisualProperties();
+}
+
+void RemoteFrame::CreateRemoteChild(
+    const RemoteFrameToken& token,
+    const absl::optional<FrameToken>& opener_frame_token,
+    mojom::blink::TreeScopeType tree_scope_type,
+    mojom::blink::FrameReplicationStatePtr replication_state,
+    const base::UnguessableToken& devtools_frame_token,
+    mojom::blink::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces) {
+  Client()->CreateRemoteChild(
+      token, opener_frame_token, tree_scope_type, std::move(replication_state),
+      devtools_frame_token, std::move(remote_frame_interfaces));
 }
 
 }  // namespace blink

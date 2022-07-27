@@ -826,7 +826,7 @@ class CONTENT_EXPORT RenderFrameImpl
       bool is_loading,
       blink::mojom::FrameReplicationStatePtr replicated_frame_state,
       const blink::RemoteFrameToken& frame_token,
-      mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
+      blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
       mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
       override;
   void Delete(mojom::FrameDeleteIntention intent) override;
@@ -834,7 +834,7 @@ class CONTENT_EXPORT RenderFrameImpl
       bool is_loading,
       blink::mojom::FrameReplicationStatePtr replicated_frame_state,
       const blink::RemoteFrameToken& frame_token,
-      mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
+      blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
       mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
       override;
   void BlockRequests() override;
@@ -1099,7 +1099,7 @@ class CONTENT_EXPORT RenderFrameImpl
       bool is_loading,
       blink::mojom::FrameReplicationStatePtr replicated_frame_state,
       const blink::RemoteFrameToken& frame_token,
-      mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
+      blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
       mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces);
 
   // Stores the WebLocalFrame we are associated with.  This is null from the

@@ -92,6 +92,14 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
       const cc::RenderFrameMetadata& metadata) override;
   void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
   void ChildProcessGone() override;
+  void CreateRemoteChild(
+      const blink::RemoteFrameToken& token,
+      const absl::optional<blink::FrameToken>& opener_frame_token,
+      blink::mojom::TreeScopeType tree_scope_type,
+      blink::mojom::FrameReplicationStatePtr replication_state,
+      const base::UnguessableToken& devtools_frame_token,
+      blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces)
+      override;
 
  private:
   mojo::AssociatedReceiver<blink::mojom::RemoteFrame> receiver_{this};

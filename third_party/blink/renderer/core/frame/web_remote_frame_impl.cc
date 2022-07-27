@@ -298,16 +298,15 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
   frame_->Tree().SetName(name);
 }
 
-WebRemoteFrame* WebRemoteFrameImpl::CreateRemoteChild(
+WebRemoteFrameImpl* WebRemoteFrameImpl::CreateRemoteChild(
     mojom::blink::TreeScopeType scope,
     const RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
     WebFrame* opener,
-    CrossVariantMojoAssociatedRemote<mojom::blink::RemoteFrameHostInterfaceBase>
+    mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
         remote_frame_host,
-    CrossVariantMojoAssociatedReceiver<mojom::blink::RemoteFrameInterfaceBase>
-        receiver,
-    mojom::FrameReplicationStatePtr replicated_state) {
+    mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
+    mojom::blink::FrameReplicationStatePtr replicated_state) {
   auto* child = MakeGarbageCollected<WebRemoteFrameImpl>(scope, frame_token);
   auto* owner = MakeGarbageCollected<RemoteFrameOwner>(
       replicated_state->frame_policy, WebFrameOwnerProperties());
@@ -320,7 +319,7 @@ WebRemoteFrame* WebRemoteFrameImpl::CreateRemoteChild(
 
   child->InitializeCoreFrame(*GetFrame()->GetPage(), owner, this, LastChild(),
                              FrameInsertType::kInsertInConstructor,
-                             WebString::FromUTF8(replicated_state->name),
+                             AtomicString(replicated_state->name),
                              window_agent_factory, devtools_frame_token,
                              std::move(remote_frame_host), std::move(receiver));
   child->SetReplicatedState(std::move(replicated_state));

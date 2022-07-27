@@ -49,6 +49,7 @@ import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/frame/reporting_observer.mojom";
 import "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom";
 import "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom";
+import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
 import "third_party/blink/public/mojom/frame/triggering_event_info.mojom";
 import "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom";
 import "third_party/blink/public/mojom/frame/user_activation_update_types.mojom";
@@ -159,6 +160,12 @@ const uint16 kMaxTitleChars = 4096; // 4 * 1024;
 struct RemoteFrameInterfacesFromRenderer {
   pending_associated_remote<blink.mojom.RemoteFrame> frame;
   pending_associated_receiver<blink.mojom.RemoteFrameHost> frame_host_receiver;
+};
+
+// Struct for passing RemoteFrame interfaces from browser.
+struct RemoteFrameInterfacesFromBrowser {
+  pending_associated_receiver<blink.mojom.RemoteFrame> frame_receiver;
+  pending_associated_remote<blink.mojom.RemoteFrameHost> frame_host;
 };
 
 // This struct holds parameters included in the OpenURL method sent by the
@@ -1248,6 +1255,32 @@ interface RemoteFrame {
   // Notifies the remote frame that the process rendering the child frame's
   // contents has terminated.
   ChildProcessGone();
+
+  // Tells the RemoteFrame to create a new RemoteFrame child. See
+  // content.mojom.AgentSchedulingGroup.CreateRemoteMainFrame for creation
+  // of main frames.
+  //
+  // `token`: The frame token. Used to map between RemoteFrame and
+  //     RenderFrameProxyHost.
+  // `opener_frame_token`: Frame token that identifies the opener frame if one
+  //     exists, or absl::nullopt otherwise.
+  // `tree_scope_type`: Whether the owner element (e.g. <iframe>, <object>, et
+  //     cetera) for this frame is in the document tree or the shadow tree.
+  // `devtools_frame_token`: Used for devtools instrumentation and
+  //    trace-ability. The token is shared across all frames (local or remotes)
+  //    representing the same logical frame tree node, and is used by Blink and
+  //    content to tag calls and requests for instrumentation purposes,
+  //    allowing them to be attributed to a context frame.
+  //
+  //    Must not be used to look up a RenderFrameHostImpl or
+  //    RenderFrameProxyHost in the browser process, as the token is shared,
+  //    making the mapping ambiguous and non-authoritative.
+  CreateRemoteChild(blink.mojom.RemoteFrameToken token,
+                   blink.mojom.FrameToken? opener_frame_token,
+                   blink.mojom.TreeScopeType tree_scope_type,
+                   blink.mojom.FrameReplicationState replication_state,
+                   mojo_base.mojom.UnguessableToken devtools_frame_token,
+                   RemoteFrameInterfacesFromBrowser remote_frame_interfaces);
 };
 
 // Implemented in Blink, this interface defines main-frame-specific methods that

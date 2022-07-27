@@ -67,17 +67,6 @@ class WebRemoteFrame : public WebFrame {
       WebFrame* opener,
       std::unique_ptr<WebPolicyContainer> policy_container) = 0;
 
-  virtual WebRemoteFrame* CreateRemoteChild(
-      mojom::TreeScopeType,
-      const RemoteFrameToken& frame_token,
-      const base::UnguessableToken& devtools_frame_token,
-      WebFrame* opener,
-      CrossVariantMojoAssociatedRemote<mojom::RemoteFrameHostInterfaceBase>
-          remote_frame_host,
-      CrossVariantMojoAssociatedReceiver<mojom::RemoteFrameInterfaceBase>
-          receiver,
-      mojom::FrameReplicationStatePtr replicated_state) = 0;
-
   // Returns the frame associated with the |frame_token|.
   BLINK_EXPORT static WebRemoteFrame* FromFrameToken(
       const RemoteFrameToken& frame_token);

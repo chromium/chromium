@@ -21,6 +21,15 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
   bool InShadowTree() const override;
   void Detached(FrameDetachType) override;
 
+  // RemoteFrameClient overrides:
+  void CreateRemoteChild(
+      const RemoteFrameToken& token,
+      const absl::optional<FrameToken>& opener_frame_token,
+      mojom::blink::TreeScopeType tree_scope_type,
+      mojom::blink::FrameReplicationStatePtr replication_state,
+      const base::UnguessableToken& devtools_frame_token,
+      mojom::blink::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces)
+      override;
   unsigned BackForwardLength() override;
 
   WebRemoteFrameImpl* GetWebFrame() const { return web_frame_; }

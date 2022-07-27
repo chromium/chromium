@@ -200,6 +200,14 @@ class CORE_EXPORT RemoteFrame final : public Frame,
       const cc::RenderFrameMetadata& metadata) override;
   void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
   void ChildProcessGone() override;
+  void CreateRemoteChild(
+      const RemoteFrameToken& token,
+      const absl::optional<FrameToken>& opener_frame_token,
+      mojom::blink::TreeScopeType tree_scope_type,
+      mojom::blink::FrameReplicationStatePtr replication_state,
+      const base::UnguessableToken& devtools_frame_token,
+      mojom::blink::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces)
+      override;
 
   // Called only when this frame has a local frame owner.
   gfx::Size GetMainFrameViewportSize() const override;

@@ -149,11 +149,9 @@ void RenderViewImpl::Initialize(
         std::move(params->main_frame->get_local_params()));
   } else {
     static_cast<mojom::AgentSchedulingGroup&>(agent_scheduling_group_)
-        .CreateFrameProxy(
+        .CreateRemoteMainFrame(
             params->main_frame->get_remote_params()->token,
-            params->opener_frame_token, routing_id_, absl::nullopt,
-            blink::mojom::TreeScopeType::
-                kDocument /* ignored for main frames */,
+            params->opener_frame_token, routing_id_,
             std::move(params->replication_state),
             params->devtools_main_frame_token,
             std::move(

@@ -4,6 +4,7 @@
 
 #include "content/public/test/fake_remote_frame.h"
 
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
 
 namespace content {
@@ -96,4 +97,14 @@ void FakeRemoteFrame::DidUpdateVisualProperties(
 void FakeRemoteFrame::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) {}
 
 void FakeRemoteFrame::ChildProcessGone() {}
+
+void FakeRemoteFrame::CreateRemoteChild(
+    const blink::RemoteFrameToken& token,
+    const absl::optional<blink::FrameToken>& opener_frame_token,
+    blink::mojom::TreeScopeType tree_scope_type,
+    blink::mojom::FrameReplicationStatePtr replication_state,
+    const base::UnguessableToken& devtools_frame_token,
+    blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces) {
+}
+
 }  // namespace content

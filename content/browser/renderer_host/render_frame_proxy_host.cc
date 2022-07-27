@@ -229,7 +229,12 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
   if (!GetProcess()->IsInitializedAndNotDead())
     return false;
 
-  absl::optional<blink::RemoteFrameToken> parent_frame_token;
+  absl::optional<blink::FrameToken> opener_frame_token;
+  if (frame_tree_node_->opener()) {
+    opener_frame_token =
+        frame_tree_node_->render_manager()->GetOpenerFrameToken(
+            site_instance_group());
+  }
   if (frame_tree_node_->parent()) {
     // It is safe to use GetRenderFrameProxyHost to get the parent proxy, since
     // new child frames always start out as local frames, so a new proxy should
@@ -247,24 +252,21 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
     if (!parent_proxy->is_render_frame_proxy_live())
       return false;
 
-    parent_frame_token = parent_proxy->GetFrameToken();
-  }
+    parent_proxy->GetAssociatedRemoteFrame()->CreateRemoteChild(
+        frame_token_, opener_frame_token, frame_tree_node_->tree_scope_type(),
+        frame_tree_node_->current_replication_state().Clone(),
+        frame_tree_node_->devtools_frame_token(),
+        CreateAndBindRemoteFrameInterfaces());
 
-  absl::optional<blink::FrameToken> opener_frame_token;
-  if (frame_tree_node_->opener()) {
-    opener_frame_token =
-        frame_tree_node_->render_manager()->GetOpenerFrameToken(
-            site_instance_group());
+  } else {
+    int view_routing_id = GetRenderViewHost()->GetRoutingID();
+    GetAgentSchedulingGroup().CreateRemoteMainFrame(
+        frame_token_, opener_frame_token, view_routing_id,
+        frame_tree_node_->current_replication_state().Clone(),
+        frame_tree_node_->devtools_frame_token(),
+        CreateAndBindRemoteFrameInterfaces(),
+        CreateAndBindRemoteMainFrameInterfaces());
   }
-
-  int view_routing_id = GetRenderViewHost()->GetRoutingID();
-  GetAgentSchedulingGroup().CreateFrameProxy(
-      frame_token_, opener_frame_token, view_routing_id, parent_frame_token,
-      frame_tree_node_->tree_scope_type(),
-      frame_tree_node_->current_replication_state().Clone(),
-      frame_tree_node_->devtools_frame_token(),
-      CreateAndBindRemoteFrameInterfaces(),
-      CreateAndBindRemoteMainFrameInterfaces());
 
   SetRenderFrameProxyCreated(true);
 
@@ -751,9 +753,9 @@ RenderFrameProxyHost::BindRemoteMainFrameReceiverForTesting() {
   return remote_main_frame_.BindNewEndpointAndPassDedicatedReceiver();
 }
 
-mojom::RemoteFrameInterfacesFromBrowserPtr
+blink::mojom::RemoteFrameInterfacesFromBrowserPtr
 RenderFrameProxyHost::CreateAndBindRemoteFrameInterfaces() {
-  auto params = mojom::RemoteFrameInterfacesFromBrowser::New();
+  auto params = blink::mojom::RemoteFrameInterfacesFromBrowser::New();
   BindRemoteFrameInterfaces(
       params->frame_receiver.InitWithNewEndpointAndPassRemote(),
       params->frame_host.InitWithNewEndpointAndPassReceiver());

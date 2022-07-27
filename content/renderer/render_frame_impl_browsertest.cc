@@ -130,7 +130,7 @@ class RenderFrameImplTest : public RenderViewTest {
     frame_replication_state->unique_name = "frame-uniqueName";
 
     auto remote_frame_interfaces =
-        mojom::RemoteFrameInterfacesFromBrowser::New();
+        blink::mojom::RemoteFrameInterfacesFromBrowser::New();
     mojo::AssociatedRemote<blink::mojom::RemoteFrame> frame;
     remote_frame_interfaces->frame_receiver =
         frame.BindNewEndpointAndPassDedicatedReceiver();

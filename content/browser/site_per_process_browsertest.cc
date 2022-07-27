@@ -2249,8 +2249,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, OriginReplication) {
   // origin for its two ancestors. The topmost parent origin should be
   // replicated as part of mojom::Renderer::CreateView, and the middle frame
   // (b.com's) origin should be replicated as part of
-  // mojom::Renderer::CreateFrameProxy sent for b.com's frame in c.com's
-  // process.
+  // blink::mojom::RemoteFrame::CreateRemoteChild sent for b.com's frame in
+  // c.com's process.
   EXPECT_EQ(ListValueOf(b_origin, a_origin),
             EvalJs(middle_child, "Array.from(location.ancestorOrigins);"));
 
@@ -3689,7 +3689,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, NavigateSubframeWithOpener) {
 // Check that if a subframe has an opener, that opener is preserved when a new
 // RenderFrameProxy is created for that subframe in another renderer process.
 // Similar to NavigateSubframeWithOpener, but this test verifies the subframe
-// opener plumbing for mojom::Renderer::CreateFrameProxy(), whereas
+// opener plumbing for blink::mojom::RemoteFrame::CreateRemoteChild(), whereas
 // NavigateSubframeWithOpener targets mojom::Renderer::CreateFrame().
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        NewRenderFrameProxyPreservesOpener) {
@@ -4276,81 +4276,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, NavigateAboutBlankAndDetach) {
   observer.Wait();
 
   // Make sure the a.com renderer does not crash and the frame is removed.
-  EXPECT_EQ(0, EvalJs(root, "frames.length;"));
-}
-
-// Test for https://crbug.com/568670.  In A-embed-B, simultaneously have B
-// create a new (local) child frame, and have A detach B's proxy.  The child
-// frame creation sends an IPC to create a new proxy in A's process, and if
-// that IPC arrives after the detach, the new frame's parent (a proxy) won't be
-// available, and this shouldn't cause RenderFrameProxy::CreateFrameProxy to
-// crash.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       RaceBetweenCreateChildFrameAndDetachParentProxy) {
-  GURL main_url(embedded_test_server()->GetURL(
-      "a.com", "/cross_site_iframe_factory.html?a(b)"));
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  WebContents* contents = shell()->web_contents();
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(contents)->GetPrimaryFrameTree().root();
-
-  // Simulate subframe B creating a new child frame in parallel to main frame A
-  // detaching subframe B.  We can't use ExecuteScript in both A and B to do
-  // this simultaneously, as that won't guarantee the timing that we want.
-  // Instead, tell A to detach B and then send a fake proxy creation IPC to A
-  // that would've come from create-child-frame code in B.  Prepare parameters
-  // for that IPC ahead of the detach, while B's FrameTreeNode still exists.
-  SiteInstanceGroup* site_instance_group_a =
-      root->current_frame_host()->GetSiteInstance()->group();
-  RenderProcessHost* process_a =
-      root->render_manager()->current_frame_host()->GetProcess();
-  AgentSchedulingGroupHost* agent_scheduling_group_a =
-      AgentSchedulingGroupHost::GetOrCreate(*site_instance_group_a, *process_a);
-  int view_routing_id = root->frame_tree()
-                            ->GetRenderViewHost(site_instance_group_a)
-                            ->GetRoutingID();
-  blink::RemoteFrameToken parent_frame_token =
-      root->child_at(0)->render_manager()->GetProxyToParent()->GetFrameToken();
-
-  // Tell main frame A to delete its subframe B.
-  FrameDeletedObserver observer(root->child_at(0)->current_frame_host());
-  EXPECT_TRUE(ExecJs(
-      root, "document.body.removeChild(document.querySelector('iframe'));"));
-
-  auto remote_frame_interfaces = mojom::RemoteFrameInterfacesFromBrowser::New();
-  mojo::AssociatedRemote<blink::mojom::RemoteFrame> frame;
-  remote_frame_interfaces->frame_receiver =
-      frame.BindNewEndpointAndPassReceiver();
-
-  mojo::AssociatedRemote<blink::mojom::RemoteFrameHost> frame_host;
-  std::ignore = frame_host.BindNewEndpointAndPassReceiver();
-  remote_frame_interfaces->frame_host = frame_host.Unbind();
-
-  auto remote_main_frame_interfaces = mojom::RemoteMainFrameInterfaces::New();
-  mojo::AssociatedRemote<blink::mojom::RemoteMainFrame> main_frame;
-  remote_main_frame_interfaces->main_frame =
-      main_frame.BindNewEndpointAndPassReceiver();
-
-  mojo::AssociatedRemote<blink::mojom::RemoteMainFrameHost> main_frame_host;
-  std::ignore = main_frame_host.BindNewEndpointAndPassReceiver();
-  remote_main_frame_interfaces->main_frame_host = main_frame_host.Unbind();
-
-  // Send the message to create a proxy for B's new child frame in A.  This
-  // used to crash, as `parent_frame_token` refers to a proxy that doesn't exist
-  // anymore.
-  agent_scheduling_group_a->CreateFrameProxy(
-      blink::RemoteFrameToken(), absl::nullopt, view_routing_id,
-      parent_frame_token, blink::mojom::TreeScopeType::kDocument,
-      blink::mojom::FrameReplicationState::New(),
-      base::UnguessableToken::Create(), std::move(remote_frame_interfaces),
-      std::move(remote_main_frame_interfaces));
-
-  // Ensure the subframe is detached in the browser process.
-  observer.Wait();
-  EXPECT_EQ(0U, root->child_count());
-
-  // Make sure process A did not crash.
   EXPECT_EQ(0, EvalJs(root, "frames.length;"));
 }
 
