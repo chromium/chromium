@@ -154,6 +154,7 @@ class TabletModeController;
 class MediaControllerImpl;
 class MessageCenterAshImpl;
 class MessageCenterController;
+class MicrophonePrivacySwitchController;
 class MouseCursorEventFilter;
 class MruWindowTracker;
 class MultiDeviceNotificationPresenter;
@@ -506,6 +507,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   MessageCenterController* message_center_controller() {
     return message_center_controller_.get();
+  }
+  MicrophonePrivacySwitchController* microphone_privacy_switch_controller() {
+    return microphone_privacy_switch_controller_.get();
   }
   MouseCursorEventFilter* mouse_cursor_filter() {
     return mouse_cursor_filter_.get();
@@ -976,6 +980,12 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<DockedMagnifierController> docked_magnifier_controller_;
 
   std::unique_ptr<chromeos::SnapController> snap_controller_;
+
+  // Privacy hub controllers.
+  // TODO(b/239400029): Move this to the unified privacy hub controller after it
+  // is created.
+  std::unique_ptr<MicrophonePrivacySwitchController>
+      microphone_privacy_switch_controller_;
 
   // |native_cursor_manager_| is owned by |cursor_manager_|, but we keep a
   // pointer to vend to test code.
