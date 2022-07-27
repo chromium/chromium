@@ -146,7 +146,7 @@ public class IncognitoReauthControllerTest {
         doReturn(false).when(mLayoutStateProviderMock).isLayoutVisible(LayoutType.TAB_SWITCHER);
         doReturn(mIncognitoReauthCoordinatorMock)
                 .when(mIncognitoReauthCoordinatorFactoryMock)
-                .createIncognitoReauthCoordinator(any(), /*showFullScreen=*/anyBoolean());
+                .createIncognitoReauthCoordinator(any(), /*showFullScreen=*/anyBoolean(), any());
         doReturn(true).when(mIncognitoReauthCoordinatorFactoryMock).getIsTabbedActivity();
         doNothing().when(mIncognitoReauthCoordinatorMock).show();
 

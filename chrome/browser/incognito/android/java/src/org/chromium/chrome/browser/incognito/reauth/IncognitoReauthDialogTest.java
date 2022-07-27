@@ -15,6 +15,7 @@ import static org.chromium.base.test.util.Batch.UNIT_TESTS;
 
 import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -45,19 +46,22 @@ public class IncognitoReauthDialogTest {
     private ModalDialogManager mModalDialogManagerMock;
     @Mock
     private View mIncognitoReauthViewMock;
+    @Mock
+    private OnBackPressedCallback mOnBackPressedCallbackMock;
 
     private IncognitoReauthDialog mIncognitoReauthDialog;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mIncognitoReauthDialog =
-                new IncognitoReauthDialog(mModalDialogManagerMock, mIncognitoReauthViewMock);
+        mIncognitoReauthDialog = new IncognitoReauthDialog(
+                mModalDialogManagerMock, mIncognitoReauthViewMock, mOnBackPressedCallbackMock);
     }
 
     @After
     public void tearDown() {
-        verifyNoMoreInteractions(mModalDialogManagerMock, mIncognitoReauthViewMock);
+        verifyNoMoreInteractions(
+                mModalDialogManagerMock, mIncognitoReauthViewMock, mOnBackPressedCallbackMock);
     }
 
     @Test

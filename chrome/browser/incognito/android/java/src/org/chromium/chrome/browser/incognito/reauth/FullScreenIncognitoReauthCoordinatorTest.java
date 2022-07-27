@@ -15,6 +15,7 @@ import static org.chromium.base.test.util.Batch.UNIT_TESTS;
 import android.content.Context;
 import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -60,6 +61,8 @@ public class FullScreenIncognitoReauthCoordinatorTest {
     @Mock
     private View mIncognitoReauthViewMock;
     @Mock
+    private OnBackPressedCallback mOnBackPressedCallbackMock;
+    @Mock
     private PropertyModel mPropertyModelMock;
     @Mock
     private PropertyModelChangeProcessor mPropertyModelChangeProcessorMock;
@@ -72,10 +75,10 @@ public class FullScreenIncognitoReauthCoordinatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mFullScreenIncognitoReauthCoordinator =
-                new FullScreenIncognitoReauthCoordinator(mContextMock, mIncognitoReauthManagerMock,
-                        mIncognitoReauthCallbackMock, mSeeOtherTabsRunnableMock,
-                        mModalDialogManagerMock, mIncognitoReauthMenuDelegateMock);
+        mFullScreenIncognitoReauthCoordinator = new FullScreenIncognitoReauthCoordinator(
+                mContextMock, mIncognitoReauthManagerMock, mIncognitoReauthCallbackMock,
+                mSeeOtherTabsRunnableMock, mModalDialogManagerMock,
+                mIncognitoReauthMenuDelegateMock, mOnBackPressedCallbackMock);
         // Allows to bypass assertion checks inside this class for testing.
         mFullScreenIncognitoReauthCoordinator.mIgnoreViewAndModelCreationForTesting = true;
         mFullScreenIncognitoReauthCoordinator.mIgnoreDialogCreationForTesting = true;

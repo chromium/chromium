@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.incognito.reauth;
 
 import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
@@ -40,10 +41,11 @@ class IncognitoReauthDialog {
      * @param modalDialogManager The {@link ModalDialogManager} which is used to fire the
      *                          dialog containing the Incognito re-auth view.
      * @param incognitoReauthView The underlying Incognito re-auth {@link View} to use as custom
-     *         view inside the dialog.
+     * @param backPressedCallback {@link OnBackPressedCallback} which would be called when a user
+     *         presses back while the fullscreen re-auth is shown.
      */
-    IncognitoReauthDialog(
-            @NonNull ModalDialogManager modalDialogManager, @NonNull View incognitoReauthView) {
+    IncognitoReauthDialog(@NonNull ModalDialogManager modalDialogManager,
+            @NonNull View incognitoReauthView, @NonNull OnBackPressedCallback backPressedCallback) {
         mModalDialogManager = modalDialogManager;
         mModalDialogPropertyModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -52,6 +54,8 @@ class IncognitoReauthDialog {
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
                         .with(ModalDialogProperties.FULLSCREEN_DIALOG, true)
                         .with(ModalDialogProperties.EXCEED_MAX_HEIGHT, true)
+                        .with(ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+                                backPressedCallback)
                         .build();
     }
 

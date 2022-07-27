@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.incognito.reauth;
 
 import android.content.Context;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
@@ -21,6 +22,11 @@ class FullScreenIncognitoReauthCoordinator extends IncognitoReauthCoordinatorBas
     private final @NonNull ModalDialogManager mModalDialogManager;
     /** The 3 dots menu delegate shown inside the full screen dialog. */
     private final @NonNull IncognitoReauthMenuDelegate mIncognitoReauthMenuDelegate;
+    /**
+     * The callback which would be fired when the user press back while the re-auth dialog is
+     * shown.
+     */
+    private final @NonNull OnBackPressedCallback mOnBackPressedCallback;
 
     /** The dialog which contains the logic to show the re-auth full-screen.  */
     private IncognitoReauthDialog mIncognitoReauthDialog;
@@ -42,14 +48,17 @@ class FullScreenIncognitoReauthCoordinator extends IncognitoReauthCoordinatorBas
      * @param modalDialogManager The {@link ModalDialogManager} which is used to fire the dialog
      *                          containing the Incognito re-auth view.
      * @param incognitoReauthMenuDelegate The {@link IncognitoReauthMenuDelegate} responsible for
-     *                                    setting up the 3 dots menu.
+     * @param backPressedCallback The {@link OnBackPressedCallback} which would be called when a
+     *         user presses back while the fullscreen re-auth is shown.
      */
     public FullScreenIncognitoReauthCoordinator(@NonNull Context context,
             @NonNull IncognitoReauthManager incognitoReauthManager,
             @NonNull IncognitoReauthCallback incognitoReauthCallback,
             @NonNull Runnable seeOtherTabsRunnable, @NonNull ModalDialogManager modalDialogManager,
-            @NonNull IncognitoReauthMenuDelegate incognitoReauthMenuDelegate) {
+            @NonNull IncognitoReauthMenuDelegate incognitoReauthMenuDelegate,
+            @NonNull OnBackPressedCallback backPressedCallback) {
         super(context, incognitoReauthManager, incognitoReauthCallback, seeOtherTabsRunnable);
+        mOnBackPressedCallback = backPressedCallback;
         mModalDialogManager = modalDialogManager;
         mIncognitoReauthMenuDelegate = incognitoReauthMenuDelegate;
     }
@@ -64,8 +73,8 @@ class FullScreenIncognitoReauthCoordinator extends IncognitoReauthCoordinatorBas
         // TODO(crbug.com/1227656): Find a cleaner way to test.
         if (!mIgnoreDialogCreationForTesting) {
             assert mIncognitoReauthDialog == null : "Incognito re-auth dialog already exists.";
-            mIncognitoReauthDialog =
-                    new IncognitoReauthDialog(mModalDialogManager, getIncognitoReauthView());
+            mIncognitoReauthDialog = new IncognitoReauthDialog(
+                    mModalDialogManager, getIncognitoReauthView(), mOnBackPressedCallback);
         }
 
         mIncognitoReauthDialog.showIncognitoReauthDialog();

@@ -140,6 +140,7 @@ robolectric_library("incognito_junit_tests") {
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",

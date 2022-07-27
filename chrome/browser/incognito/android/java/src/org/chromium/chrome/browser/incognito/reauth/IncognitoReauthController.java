@@ -105,8 +105,13 @@ public class IncognitoReauthController
     private final boolean mIsTabbedActivity;
 
     /**
-     * {@link OnBackPressedCallback} which would be added to the fullscreen dialog, to handle
-     * back-presses.
+     * {@link OnBackPressedCallback} which would be added to the "fullscreen" dialog, to handle
+     * back-presses. The back press handling for re-auth view shown inside tab switcher is
+     * controlled elsewhere.
+     *
+     * Note that {@link BackPressManager} doesn't support handling back presses done
+     * when a dialog is being shown. The integration of back press for app modal dialog is done
+     * via {@link ModalDialogProperties#APP_MODAL_DIALOG_BACK_PRESS_HANDLER}.
      */
     private final @NonNull OnBackPressedCallback mOnBackPressedInFullScreenReauthCallback =
             new OnBackPressedCallback(false) {
@@ -272,11 +277,10 @@ public class IncognitoReauthController
 
         boolean showFullScreen = !mIsTabbedActivity
                 || !mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER);
-        // TODO(crbug.com/1227656): Pass the |mOnBackPressedInFullScreenReauthCallback| dependency
-        // to the coordinator.
         mIncognitoReauthCoordinator =
                 mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(
-                        mIncognitoReauthCallback, showFullScreen);
+                        mIncognitoReauthCallback, showFullScreen,
+                        mOnBackPressedInFullScreenReauthCallback);
         mIncognitoReauthCoordinator.show();
         mOnBackPressedInFullScreenReauthCallback.setEnabled(showFullScreen);
     }

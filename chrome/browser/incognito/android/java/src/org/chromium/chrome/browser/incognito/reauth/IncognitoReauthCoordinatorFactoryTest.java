@@ -15,6 +15,7 @@ import static org.chromium.base.test.util.Batch.UNIT_TESTS;
 
 import android.content.Context;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -74,6 +75,8 @@ public class IncognitoReauthCoordinatorFactoryTest {
     private IncognitoReauthMenuDelegate mIncognitoReauthMenuDelegateMock;
     @Mock
     private IncognitoTabHost mIncognitoTabHostMock;
+    @Mock
+    private OnBackPressedCallback mOnBackPressedCallbackMock;
 
     private final boolean mIsTabbedActivity;
 
@@ -177,13 +180,15 @@ public class IncognitoReauthCoordinatorFactoryTest {
         if (mIsTabbedActivity) {
             IncognitoReauthCoordinator coordinator =
                     mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(
-                            mIncognitoReauthCallbackMock, /*showFullScreen=*/true);
+                            mIncognitoReauthCallbackMock, /*showFullScreen=*/true,
+                            mOnBackPressedCallbackMock);
             assertTrue("Wrong coordinator instance created!",
                     coordinator instanceof FullScreenIncognitoReauthCoordinator);
         } else {
             IncognitoReauthCoordinator coordinator =
                     mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(
-                            mIncognitoReauthCallbackMock, /*showFullScreen=*/true);
+                            mIncognitoReauthCallbackMock, /*showFullScreen=*/true,
+                            mOnBackPressedCallbackMock);
             assertTrue("Wrong coordinator instance created!",
                     coordinator instanceof FullScreenIncognitoReauthCoordinator);
         }
@@ -196,14 +201,16 @@ public class IncognitoReauthCoordinatorFactoryTest {
         if (mIsTabbedActivity) {
             IncognitoReauthCoordinator coordinator =
                     mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(
-                            mIncognitoReauthCallbackMock, /*showFullScreen=*/false);
+                            mIncognitoReauthCallbackMock, /*showFullScreen=*/false,
+                            mOnBackPressedCallbackMock);
             assertTrue("Wrong coordinator instance created!",
                     coordinator.getClass().isAssignableFrom(
                             TabSwitcherIncognitoReauthCoordinator.class));
         } else {
             IncognitoReauthCoordinator coordinator =
                     mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(
-                            mIncognitoReauthCallbackMock, /*showFullScreen=*/true);
+                            mIncognitoReauthCallbackMock, /*showFullScreen=*/true,
+                            mOnBackPressedCallbackMock);
             assertTrue("Wrong coordinator instance created!",
                     coordinator.getClass().isAssignableFrom(
                             FullScreenIncognitoReauthCoordinator.class));

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.incognito.reauth;
 
 import android.content.Context;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -185,15 +186,19 @@ public class IncognitoReauthCoordinatorFactory {
      * @param showFullScreen A boolean indicating whether to show a fullscreen or tab switcher
      *                      Incognito reauth.
      *
+     * @param backPressedCallback {@link OnBackPressedCallback} which would be called when a user
+     *         presses back while the fullscreen re-auth is shown.
+     *
      * @return {@link IncognitoReauthCoordinator} instance spliced on fullscreen/tab-switcher and
      * tabbedActivity/CCT.
      */
     IncognitoReauthCoordinator createIncognitoReauthCoordinator(
-            @NonNull IncognitoReauthCallback incognitoReauthCallback, boolean showFullScreen) {
+            @NonNull IncognitoReauthCallback incognitoReauthCallback, boolean showFullScreen,
+            @NonNull OnBackPressedCallback backPressedCallback) {
         return (showFullScreen)
                 ? new FullScreenIncognitoReauthCoordinator(mContext, mIncognitoReauthManager,
                         incognitoReauthCallback, getSeeOtherTabsRunnable(), mModalDialogManager,
-                        getIncognitoReauthMenuDelegate())
+                        getIncognitoReauthMenuDelegate(), backPressedCallback)
                 : new TabSwitcherIncognitoReauthCoordinator(mContext, mIncognitoReauthManager,
                         incognitoReauthCallback, getSeeOtherTabsRunnable(),
                         mTabSwitcherCustomViewManager, mIncognitoReauthTopToolbarDelegate);
