@@ -40,7 +40,12 @@ python tools\mb\mb.py gen -m chromium.fuzz -b "Libfuzzer Local Windows ASan" out
 ```
 
 *** note
-**Note:** You can also invoke [AFL] by using the `use_afl` GN argument, but we
+**Note:** The above invocations may set `use_remoteexec` or `use_rbe` to true.
+However, these args aren't compatible on local workstations yet. So if you run
+into reclient errors when building locally, remove both those args and set
+`use_goma` instead.
+
+You can also invoke [AFL] by using the `use_afl` GN argument, but we
 recommend libFuzzer for local development. Running libFuzzer locally doesn't
 require any special configuration and gives quick, meaningful output for speed,
 coverage, and other parameters.
