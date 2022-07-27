@@ -25,5 +25,5 @@ group("robolectric_runtime_jars") {
 # sync with the latest version in //third_party/android_sdk.
 android_system_java_prebuilt("robolectric_test_sdk_java") {
   jar_path =
-      "//third_party/robolectric/lib/android-all-12-robolectric-7732740.jar"
+      "//third_party/robolectric/lib/android-all-12.1-robolectric-8229987.jar"
 }
