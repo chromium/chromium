@@ -36,6 +36,27 @@ class PrivacyBudgetReidScoreEstimatorStandaloneTest : public ::testing::Test {
 };
 
 TEST_F(PrivacyBudgetReidScoreEstimatorStandaloneTest,
+       ReidEstimatorWrongParameters) {
+  auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
+      /*enabled=*/true,
+      /*expected_surface_count=*/0,
+      /*surface_budget=*/0,
+      /*blocks=*/"",
+      /*blocks_weights=*/"",
+      /*allowed_random_types=*/"",
+      /*reid_blocks=*/"2077075229;1122849309,2077075230;1122849310",
+      /*reid_blocks_salts_ranges=*/"1000000", /*Missing Salt!*/
+      /*reid_blocks_bits=*/"1,2",
+      /*reid_blocks_noise_probabilities=*/"0,0");
+
+  PrivacyBudgetReidScoreEstimator reid_storage(&settings, pref_service());
+  reid_storage.ResetPersistedState();
+  // Test passes if initializing the Reid estimator is skipped and does not
+  // crash.
+  reid_storage.Init();
+}
+
+TEST_F(PrivacyBudgetReidScoreEstimatorStandaloneTest,
        ReportReidFixedTokenRandomSalt) {
   auto settings = IdentifiabilityStudyGroupSettings::InitFrom(
       /*enabled=*/true,

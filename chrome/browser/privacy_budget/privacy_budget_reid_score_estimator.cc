@@ -124,7 +124,7 @@ PrivacyBudgetReidScoreEstimator::PrivacyBudgetReidScoreEstimator(
     : settings_(state_settings), pref_service_(pref_service) {}
 
 void PrivacyBudgetReidScoreEstimator::Init() {
-  if (!settings_->IsUsingReidScoreEstimator())
+  if (!settings_->enabled() || !settings_->IsUsingReidScoreEstimator())
     return;
 
   already_reported_reid_blocks_ =
