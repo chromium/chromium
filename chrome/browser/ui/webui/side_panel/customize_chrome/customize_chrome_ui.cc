@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/side_panel_customize_chrome_resources.h"
@@ -16,7 +17,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui) {
+    : ui::MojoBubbleWebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
 
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
@@ -34,3 +35,10 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
 CustomizeChromeUI::~CustomizeChromeUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(CustomizeChromeUI)
+
+void CustomizeChromeUI::BindInterface(
+    mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
+        receiver) {
+  customize_chrome_page_handler_ = std::make_unique<CustomizeChromePageHandler>(
+      std::move(receiver), profile_);
+}

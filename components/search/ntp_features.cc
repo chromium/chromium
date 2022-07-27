@@ -22,6 +22,11 @@ const base::Feature kConfirmSuggestionRemovals{
 const base::Feature kCacheOneGoogleBar{"CacheOneGoogleBar",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, Customize Chrome will be an option in the Unified Side Panel
+// when on the New Tab Page.
+const base::Feature kCustomizeChromeSidePanel{
+    "CustomizeChromeSidePanel", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the removal of the NTP background scrim and forced dark foreground
 // colors for a specific subset of Chrome Web Store themes (see
 // crbug.com/1329552). This is enabled by default to allow finch to disable this
