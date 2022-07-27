@@ -13498,7 +13498,6 @@ TEST_F(WebFrameSimTest, GetPageSizeType) {
 }
 
 TEST_F(WebFrameSimTest, PageOrientation) {
-  ScopedNamedPagesForTest named_pages_enabler(true);
   gfx::Size page_size(500, 500);
   WebView().MainFrameWidget()->Resize(page_size);
 

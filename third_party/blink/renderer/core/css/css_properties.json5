@@ -3716,7 +3716,6 @@
       field_template: "external",
       keywords: ["auto"],
       typedom_types: ["Keyword"],
-      runtime_flag: "NamedPages",
       computable: false,
     },
     {
@@ -3728,7 +3727,6 @@
       field_size: 2,
       default_value: "PageOrientation::kUpright",
       include_paths: ["third_party/blink/public/common/css/page_orientation.h"],
-      runtime_flag: "NamedPages",
       computable: false,
     },
     {

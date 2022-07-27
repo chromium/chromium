@@ -1501,11 +1501,6 @@
       name: "MouseSubframeNoImplicitCapture",
     },
     {
-      // Named pages for pagination (the "page" CSS property).
-      name: "NamedPages",
-      status: "stable",
-    },
-    {
       name: "NavigationApi",
       status: "stable",
     },

@@ -71,8 +71,6 @@ TEST_F(LayoutViewTest, DisplayNoneFrame) {
 }
 
 TEST_F(LayoutViewTest, NamedPages) {
-  ScopedNamedPagesForTest named_pages_enabler(true);
-
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
