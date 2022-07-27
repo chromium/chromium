@@ -292,40 +292,12 @@ struct less<raw_ref<T, Impl>> {
     return lhs < rhs;
   }
 
-  bool operator()(const raw_ref<const T, Impl>& lhs,
-                  const raw_ref<const T, Impl>& rhs) const {
+  bool operator()(T& lhs, const raw_ref<T, Impl>& rhs) const {
     Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }
 
-  bool operator()(const raw_ref<T, Impl>& lhs,
-                  const raw_ref<const T, Impl>& rhs) const {
-    Impl::IncrementLessCountForTest();
-    return lhs < rhs;
-  }
-
-  bool operator()(const raw_ref<const T, Impl>& lhs,
-                  const raw_ref<T, Impl>& rhs) const {
-    Impl::IncrementLessCountForTest();
-    return lhs < rhs;
-  }
-
-  bool operator()(const T& lhs, const raw_ref<const T, Impl>& rhs) const {
-    Impl::IncrementLessCountForTest();
-    return lhs < rhs;
-  }
-
-  bool operator()(const T& lhs, const raw_ref<T, Impl>& rhs) const {
-    Impl::IncrementLessCountForTest();
-    return lhs < rhs;
-  }
-
-  bool operator()(const raw_ref<const T, Impl>& lhs, const T& rhs) const {
-    Impl::IncrementLessCountForTest();
-    return lhs < rhs;
-  }
-
-  bool operator()(const raw_ref<T, Impl>& lhs, const T& rhs) const {
+  bool operator()(const raw_ref<T, Impl>& lhs, T& rhs) const {
     Impl::IncrementLessCountForTest();
     return lhs < rhs;
   }

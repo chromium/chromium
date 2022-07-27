@@ -739,24 +739,8 @@ TEST(RawRef, StdLess) {
     RawPtrCountingImpl::ClearCounters();
     auto r1 = CountingRawRef<const int>(i[0]);
     auto r2 = CountingRawRef<const int>(i[1]);
-    EXPECT_TRUE(std::less<CountingRawRef<int>>()(r1, r2));
-    EXPECT_FALSE(std::less<CountingRawRef<int>>()(r2, r1));
-    EXPECT_EQ(2, RawPtrCountingImpl::wrapped_ptr_less_cnt);
-  }
-  {
-    RawPtrCountingImpl::ClearCounters();
-    auto r1 = CountingRawRef<const int>(i[0]);
-    auto r2 = CountingRawRef<int>(i[1]);
-    EXPECT_TRUE(std::less<CountingRawRef<int>>()(r1, r2));
-    EXPECT_FALSE(std::less<CountingRawRef<int>>()(r2, r1));
-    EXPECT_EQ(2, RawPtrCountingImpl::wrapped_ptr_less_cnt);
-  }
-  {
-    RawPtrCountingImpl::ClearCounters();
-    auto r1 = CountingRawRef<int>(i[0]);
-    auto r2 = CountingRawRef<const int>(i[1]);
-    EXPECT_TRUE(std::less<CountingRawRef<int>>()(r1, r2));
-    EXPECT_FALSE(std::less<CountingRawRef<int>>()(r2, r1));
+    EXPECT_TRUE(std::less<CountingRawRef<const int>>()(r1, r2));
+    EXPECT_FALSE(std::less<CountingRawRef<const int>>()(r2, r1));
     EXPECT_EQ(2, RawPtrCountingImpl::wrapped_ptr_less_cnt);
   }
   {
@@ -779,24 +763,8 @@ TEST(RawRef, StdLess) {
     RawPtrCountingImpl::ClearCounters();
     auto r1 = CountingRawRef<const int>(i[0]);
     auto r2 = CountingRawRef<const int>(i[1]);
-    EXPECT_TRUE(std::less<CountingRawRef<int>>()(r1, i[1]));
-    EXPECT_FALSE(std::less<CountingRawRef<int>>()(r2, i[0]));
-    EXPECT_EQ(2, RawPtrCountingImpl::wrapped_ptr_less_cnt);
-  }
-  {
-    RawPtrCountingImpl::ClearCounters();
-    auto r1 = CountingRawRef<const int>(i[0]);
-    auto r2 = CountingRawRef<int>(i[1]);
-    EXPECT_TRUE(std::less<CountingRawRef<int>>()(r1, i[1]));
-    EXPECT_FALSE(std::less<CountingRawRef<int>>()(r2, i[0]));
-    EXPECT_EQ(2, RawPtrCountingImpl::wrapped_ptr_less_cnt);
-  }
-  {
-    RawPtrCountingImpl::ClearCounters();
-    auto r1 = CountingRawRef<int>(i[0]);
-    auto r2 = CountingRawRef<const int>(i[1]);
-    EXPECT_TRUE(std::less<CountingRawRef<int>>()(r1, i[1]));
-    EXPECT_FALSE(std::less<CountingRawRef<int>>()(r2, i[0]));
+    EXPECT_TRUE(std::less<CountingRawRef<const int>>()(r1, i[1]));
+    EXPECT_FALSE(std::less<CountingRawRef<const int>>()(r2, i[0]));
     EXPECT_EQ(2, RawPtrCountingImpl::wrapped_ptr_less_cnt);
   }
 }
