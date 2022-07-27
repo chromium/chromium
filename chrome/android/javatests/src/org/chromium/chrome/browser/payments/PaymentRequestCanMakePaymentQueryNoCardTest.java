@@ -27,6 +27,8 @@ import java.util.concurrent.TimeoutException;
 /**
  * A payment integration test for checking whether user can make a payment via either payment
  * app or a credit card. This user does not have a complete credit card on file.
+ *
+ * TODO(crbug.com/1209835): Check if these tests are still relevant post basic-card removal.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -42,20 +44,6 @@ public class PaymentRequestCanMakePaymentQueryNoCardTest implements MainActivity
         new AutofillTestHelper().setCreditCard(new CreditCard("", "https://example.com", true, true,
                 "" /* nameOnCard */, "4111111111111111", "1111", "12", "2050", "visa",
                 R.drawable.visa_card, "" /* billingAddressId */, "" /* serverId */));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
-    public void testNoBobPayFactory() throws TimeoutException {
-        mPaymentRequestTestRule.openPageAndClickBuyAndWait(
-                mPaymentRequestTestRule.getCanMakePaymentQueryResponded());
-        mPaymentRequestTestRule.expectResultContains(new String[] {"true"});
-
-        mPaymentRequestTestRule.clickNodeAndWait("hasEnrolledInstrument",
-                mPaymentRequestTestRule.getHasEnrolledInstrumentQueryResponded());
-        mPaymentRequestTestRule.expectResultContains(new String[] {"false"});
     }
 
     @Test

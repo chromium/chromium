@@ -368,8 +368,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/payments/PaymentRequestNoShippingTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/PaymentRequestNoUpdateWithTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/PaymentRequestPayerDetailChangeTest.java",
-  "javatests/src/org/chromium/chrome/browser/payments/PaymentRequestPaymentAppAndBasicCardWithModifiersTest.java",
-  "javatests/src/org/chromium/chrome/browser/payments/PaymentRequestPaymentAppAndCardsTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/PaymentRequestPaymentAppCanMakePaymentQueryTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/PaymentRequestPaymentAppTest.java",
   "javatests/src/org/chromium/chrome/browser/payments/PaymentRequestPaymentAppUiSkipPreloadTest.java",
