@@ -182,8 +182,9 @@ class POLICY_EXPORT UserPolicySigninServiceBase
 
   // Handler to call the policy registration callback that provides the DM
   // token.
-  void CallPolicyRegistrationCallback(std::unique_ptr<CloudPolicyClient> client,
-                                      PolicyRegistrationCallback callback);
+  void CallPolicyRegistrationCallbackForTemporaryClient(
+      std::unique_ptr<CloudPolicyClient> client,
+      PolicyRegistrationCallback callback);
 
   // Fetches an OAuth token to allow the cloud policy service to register with
   // the cloud policy server. |oauth_login_token| should contain an OAuth login
@@ -209,6 +210,10 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   // cloud policy client. When there is an instance of |registration_helper_|,
   // it means that registration is ongoing. There is no registration when null.
   std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
+  // A separate helper instance for a registration only client created via
+  // `RegisterForPolicyWithAccountId()`.
+  std::unique_ptr<CloudPolicyClientRegistrationHelper>
+      registration_helper_for_temporary_client_;
 
   base::WeakPtrFactory<UserPolicySigninServiceBase> weak_factory_{this};
 
