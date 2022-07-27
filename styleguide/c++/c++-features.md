@@ -1737,39 +1737,6 @@ version of `in_place` is used in Chromium. See the
 [discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZspmuJPpv6s/m/wYYTCiRwAAAJ).
 ***
 
-### FunctionRef <sup>[allowed]</sup>
-
-```c++
-absl::FunctionRef
-```
-
-**Description:** Type for holding a non-owning reference to an object of any
-invocable type.
-
-**Documentation:**
-[function_ref.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/functional/function_ref.h)
-
-**Notes:**
-*** promo
-- Unlike `base::OnceCallback` and `base::RepeatingCallback`, `absl::FunctionRef`
-  supports capturing lambdas.
-- Use when passing an invocable object to a function that synchronously calls
-  the invocable object, e.g. `ForEachFrame(absl::FunctionRef<void(Frame&)>)`.
-  This can often result in clearer code than code that is templated to accept
-  lambdas, e.g. with `template <typename Invocable> void
-  ForEachFrame(Invocable invocable)`, it is much less obvious what arguments
-  will be passed to `invocable`.
-- For now, `base::OnceCallback` and `base::RepeatingCallback` intentionally
-  disallow conversions to `absl::FunctionRef`, under the theory that the
-  callback should be a capturing lambda instead. Attempting to use this
-  conversion will trigger a `static_assert` requesting additional feedback for
-  use cases where this conversion would be valuable.
-- *Important:* `absl::FunctionRef` must not outlive the function call. Like
-  `base::StringPiece`, `absl::FunctionRef` is a *non-owning* reference. Using a
-  `absl::FunctionRef` as a class field is highly suspicious.
-- [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/JVN4E4IIYA0/m/V0EVUVLiBwAJ)
-***
-
 ## Abseil Banned Library Features {#absl-blocklist}
 
 The following Abseil library features are not allowed in the Chromium codebase.
@@ -1840,6 +1807,45 @@ absl::string_view
 *** promo
 Banned due to only working with 8-bit characters. Keep using
 `base::StringPiece` from `base/strings/`.
+***
+
+### FunctionRef <sup>[banned]</sup>
+
+```c++
+absl::FunctionRef
+```
+
+**Description:** Type for holding a non-owning reference to an object of any
+invocable type.
+
+**Documentation:**
+[function_ref.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/functional/function_ref.h)
+
+**Notes:**
+*** promo
+- `absl::FunctionRef` is banned due to allowing implicit conversions between
+  function signatures in potentially surprising ways. For example, a callable
+  with the signature `int()` will bind to `absl::FunctionRef<void()>`: the
+  return value from the callable will be silently discarded.
+- In Chromium, use `base::FunctionRef` instead.
+- Unlike `base::OnceCallback` and `base::RepeatingCallback`, `base::FunctionRef`
+  supports capturing lambdas.
+- Useful when passing an invocable object to a function that synchronously calls
+  the invocable object, e.g. `ForEachFrame(base::FunctionRef<void(Frame&)>)`.
+  This can often result in clearer code than code that is templated to accept
+  lambdas, e.g. with `template <typename Invocable> void
+  ForEachFrame(Invocable invocable)`, it is much less obvious what arguments
+  will be passed to `invocable`.
+- For now, `base::OnceCallback` and `base::RepeatingCallback` intentionally
+  disallow conversions to `base::FunctionRef`, under the theory that the
+  callback should be a capturing lambda instead. Attempting to use this
+  conversion will trigger a `static_assert` requesting additional feedback for
+  use cases where this conversion would be valuable.
+- *Important:* `base::FunctionRef` must not outlive the function call. Like
+  `base::StringPiece`, `base::FunctionRef` is a *non-owning* reference. Using a
+  `base::FunctionRef` as a return value or class field is dangerous and likely
+  to result in lifetime bugs.
+- [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/JVN4E4IIYA0/m/V0EVUVLiBwAJ)
 ***
 
 ## Abseil TBD Features {#absl-review}

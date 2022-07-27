@@ -22,7 +22,9 @@
 #include "base/memory/raw_scoped_refptr_mismatch_checker.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/types/always_false.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/functional/function_ref.h"
 
 #if BUILDFLAG(IS_APPLE) && !HAS_FEATURE(objc_arc)
 #include "base/mac/scoped_block.h"
@@ -74,6 +76,9 @@ struct BindUnwrapTraits;
 
 template <typename Functor, typename BoundArgsTuple, typename SFINAE = void>
 struct CallbackCancellationTraits;
+
+template <typename Signature>
+class FunctionRef;
 
 namespace internal {
 
@@ -1354,6 +1359,26 @@ template <template <typename> class CallbackT,
 RepeatingCallback<Signature> BindImpl(RepeatingCallback<Signature> callback) {
   CHECK(callback);
   return callback;
+}
+
+template <template <typename> class CallbackT, typename Signature>
+auto BindImpl(absl::FunctionRef<Signature>, ...) {
+  static_assert(
+      AlwaysFalse<Signature>,
+      "base::Bind{Once,Repeating} require strong ownership: non-owning "
+      "function references may not bound as the functor due to potential "
+      "lifetime issues.");
+  return nullptr;
+}
+
+template <template <typename> class CallbackT, typename Signature>
+auto BindImpl(FunctionRef<Signature>, ...) {
+  static_assert(
+      AlwaysFalse<Signature>,
+      "base::Bind{Once,Repeating} require strong ownership: non-owning "
+      "function references may not bound as the functor due to potential "
+      "lifetime issues.");
+  return nullptr;
 }
 
 }  // namespace internal

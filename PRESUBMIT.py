@@ -1049,6 +1049,24 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       False,
       (),
     ),
+    BanRule(
+      r'/\babsl::FunctionRef\b',
+      (
+        'absl::FunctionRef is banned. Use base::FunctionRef instead.',
+      ),
+      # Temporarily a warning due to pre-existing usage in the tree.
+      # TODO(https://crbug.com/1347676): Migrate usage to base::FunctionRef.
+      False,
+      [
+        # base::Bind{Once,Repeating} references absl::FunctionRef to disallow
+        # interoperability.
+        r'^base[\\/]bind_internal\.h',
+        # base::FunctionRef is implemented on top of absl::FunctionRef.
+        r'^base[\\/]functional[\\/]function_ref.*\..+',
+        # Not an error in third_party folders.
+        _THIRD_PARTY_EXCEPT_BLINK,
+      ],
+    ),
 )
 
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
