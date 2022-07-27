@@ -56,15 +56,10 @@ LocalStateValueWaiter::LocalStateValueWaiter(const std::string& pref,
 LocalStateValueWaiter::~LocalStateValueWaiter() {}
 
 bool LocalStateValueWaiter::ExpectedValueFound() {
-  const base::Value* pref_value =
-      pref_change_registrar_.prefs()->Get(pref_.c_str());
-  if (!pref_value) {
-    // Can't use ASSERT_* in non-void functions so this is the next best
-    // thing.
-    ADD_FAILURE() << "Pref " << pref_ << " not found";
-    return true;
-  }
-  return *pref_value == expected_value_;
+  const base::Value& pref_value =
+      pref_change_registrar_.prefs()->GetValue(pref_.c_str());
+
+  return pref_value == expected_value_;
 }
 
 void LocalStateValueWaiter::QuitLoopIfExpectedValueFound() {
@@ -93,15 +88,10 @@ DictionaryLocalStateValueWaiter::DictionaryLocalStateValueWaiter(
 DictionaryLocalStateValueWaiter::~DictionaryLocalStateValueWaiter() {}
 
 bool DictionaryLocalStateValueWaiter::ExpectedValueFound() {
-  const base::Value* pref =
-      pref_change_registrar_.prefs()->GetDictionary(pref_.c_str());
-  if (!pref) {
-    // Can't use ASSERT_* in non-void functions so this is the next best
-    // thing.
-    ADD_FAILURE() << "Pref " << pref_ << " not found";
-    return true;
-  }
-  const std::string* actual_value = pref->FindStringKey(key_);
+  const base::Value::Dict& pref =
+      pref_change_registrar_.prefs()->GetValueDict(pref_.c_str());
+
+  const std::string* actual_value = pref.FindString(key_);
   return actual_value && *actual_value == expected_value_.GetString();
 }
 
