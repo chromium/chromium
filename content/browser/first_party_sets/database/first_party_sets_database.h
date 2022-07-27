@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
@@ -75,6 +76,12 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // Gets the list of sites to clear for the `browser_context_id`.
   [[nodiscard]] std::vector<net::SchemefulSite> FetchSitesToClear(
       const std::string& browser_context_id);
+
+  // Gets all the sites and mapped to the value of `run_count_`, which
+  // represents the site was added into DB to be cleared in a certain browser
+  // run, for the `browser_context_id`.
+  [[nodiscard]] base::flat_map<net::SchemefulSite, int64_t>
+  FetchAllSitesToClearFilter(const std::string& browser_context_id);
 
  private:
   // Called at the start of each public operation, and initializes the database

@@ -176,6 +176,42 @@ std::vector<net::SchemefulSite> FirstPartySetsDatabase::FetchSitesToClear(
   return results;
 }
 
+base::flat_map<net::SchemefulSite, int64_t>
+FirstPartySetsDatabase::FetchAllSitesToClearFilter(
+    const std::string& browser_context_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!browser_context_id.empty());
+
+  if (!LazyInit())
+    return {};
+
+  base::flat_map<net::SchemefulSite, int64_t> results;
+  static constexpr char kSelectSql[] =
+      // clang-format off
+      "SELECT site,marked_at_run FROM browser_context_sites_to_clear "
+      "WHERE browser_context_id=?";
+  // clang-format on
+
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  statement.BindString(0, browser_context_id);
+
+  while (statement.Step()) {
+    absl::optional<net::SchemefulSite> site =
+        FirstPartySetParser::CanonicalizeRegisteredDomain(
+            statement.ColumnString(0), /*emit_errors=*/false);
+    // TODO(crbug/1314039): Invalid sites should be rare case but possible.
+    // Consider deleting them from DB.
+    if (site.has_value()) {
+      results.emplace(std::move(site.value()), statement.ColumnInt(1));
+    }
+  }
+
+  if (!statement.Succeeded())
+    return {};
+
+  return results;
+}
+
 bool FirstPartySetsDatabase::LazyInit() {
   // Early return in case of previous failure, to prevent an unbounded
   // number of re-attempts.

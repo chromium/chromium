@@ -460,4 +460,41 @@ TEST_F(FirstPartySetsDatabaseTest, FetchSitesToClear) {
   EXPECT_EQ(input, db()->FetchSitesToClear(browser_context_id));
 }
 
+TEST_F(FirstPartySetsDatabaseTest, FetchAllSitesToClearFilter) {
+  ASSERT_TRUE(
+      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
+
+  const std::string browser_context_id = "b0";
+  // Verify data in the pre-existing DB.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(db_path()));
+
+    const char kSelectSql[] =
+        "SELECT site, marked_at_run FROM browser_context_sites_to_clear "
+        "WHERE browser_context_id=?";
+    sql::Statement s(db.GetUniqueStatement(kSelectSql));
+    s.BindString(0, browser_context_id);
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ("https://example.test", s.ColumnString(0));
+    ASSERT_EQ(1, s.ColumnInt64(1));
+    ASSERT_FALSE(s.Step());
+  }
+
+  // Insert new sites to be cleared.
+  OpenDatabase();
+  EXPECT_TRUE(db()->InsertSitesToClear(
+      browser_context_id, {
+                              net::SchemefulSite(GURL("https://example1.test")),
+                              net::SchemefulSite(GURL("https://example2.test")),
+                          }));
+
+  base::flat_map<net::SchemefulSite, int64_t> result = {
+      {net::SchemefulSite(GURL("https://example.test")), 1},
+      {net::SchemefulSite(GURL("https://example1.test")), 2},
+      {net::SchemefulSite(GURL("https://example2.test")), 2}};
+
+  EXPECT_THAT(db()->FetchAllSitesToClearFilter(browser_context_id), result);
+}
+
 }  // namespace content
