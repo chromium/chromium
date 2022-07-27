@@ -457,7 +457,7 @@ void AppServiceProxyBase::LaunchAppWithUrl(const std::string& app_id,
   LaunchAppWithIntent(
       app_id, event_flags,
       std::make_unique<apps::Intent>(apps_util::kIntentActionView, url),
-      launch_source, std::move(window_info));
+      launch_source, std::move(window_info), base::DoNothing());
 }
 
 void AppServiceProxyBase::LaunchAppWithUrl(

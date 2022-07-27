@@ -2242,7 +2242,7 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
 
   proxy->LaunchAppWithUrl(
       /*app_id=*/"w", ui::EF_NONE, GURL("https://boo.com/a"),
-      apps::mojom::LaunchSource::kFromFileManager, nullptr);
+      LaunchSource::kFromFileManager, nullptr);
   VerifyAppsLaunchUkm("https://foo.com", GetWebAppTypeName(),
                       LaunchSource::kFromFileManager);
   VerifyAppLaunchPerAppTypeHistogram(1, GetWebAppTypeName());
