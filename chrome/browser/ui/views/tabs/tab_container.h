@@ -24,11 +24,19 @@ class TabStripLayoutHelper;
 
 // As a BrowserRootView::DropTarget, this can handle drag & drop sessions on
 // behalf of BrowserRootView.
+
+// This interface exists only for use by TabContainerImpl and
+// CompoundTabContainer as described in go/2-tabcontainers-1-pager. Reuse is
+// strongly discouraged outside of that context, as the interface will likely go
+// away after that project is completed.
 class TabContainer : public views::View, public BrowserRootView::DropTarget {
  public:
+  // This callback is used when calculating animation targets that may increase
+  // the width of the tabstrip.
   virtual void SetAvailableWidthCallback(
       base::RepeatingCallback<int()> available_width_callback) = 0;
 
+  // Handle model changes.
   virtual Tab* AddTab(std::unique_ptr<Tab> tab,
                       int model_index,
                       TabPinned pinned) = 0;
@@ -36,12 +44,17 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   virtual void RemoveTab(int index, bool was_active) = 0;
   virtual void SetTabPinned(int model_index, TabPinned pinned) = 0;
 
+  // `view` is no longer being dragged. This TabContainer takes ownership of it
+  // in the view hierarchy.
   virtual void StoppedDraggingView(TabSlotView* view) = 0;
 
+  // Scrolls so the tab at `model_index` is fully visible.
   virtual void ScrollTabToVisible(int model_index) = 0;
 
   // Animates and scrolls the tab container by an offset.
   virtual void ScrollTabContainerByOffset(int offset) = 0;
+
+  // Handle tab group model changes.
   virtual void OnGroupCreated(const tab_groups::TabGroupId& group) = 0;
   // Opens the editor bubble for the tab |group| as a result of an explicit user
   // action to create the |group|.
@@ -53,8 +66,11 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
 
   virtual int GetModelIndexOf(const TabSlotView* slot_view) const = 0;
 
+  // TODO (1346023): Move callers down into TabContainer so this
+  // encapsulation-breaking getter can be removed.
   virtual views::ViewModelT<Tab>* GetTabsViewModel() = 0;
 
+  // Returns the tab at `index` from the viewmodel.
   virtual Tab* GetTabAtModelIndex(int index) const = 0;
 
   virtual int GetTabCount() const = 0;
@@ -72,6 +88,7 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   // Called whenever a tab or group header animation has progressed.
   virtual void OnTabSlotAnimationProgressed(TabSlotView* view) = 0;
 
+  // Called whenever a tab close animation has completed. This kills the `tab`.
   virtual void OnTabCloseAnimationCompleted(Tab* tab) = 0;
 
   // Animates tabs and group views from where they are to where they should be.
@@ -111,13 +128,11 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
 
   virtual bool InTabClose() = 0;
 
-  // TODO (1295774): Move callers down into TabContainer so this
-  // encapsulation-breaking getter can be removed.
+  // TODO (1346023): Move callers down into TabContainer so these
+  // encapsulation-breaking getters can be removed.
   virtual TabStripLayoutHelper* GetLayoutHelper() const = 0;
-
   virtual std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>>&
   GetGroupViews() = 0;
-
   virtual views::BoundsAnimator& GetBoundsAnimator() = 0;
 
   // Views::View:

@@ -62,8 +62,6 @@ class TabContainerImpl : public TabContainer,
 
   void ScrollTabContainerByOffset(int offset) override;
   void OnGroupCreated(const tab_groups::TabGroupId& group) override;
-  // Opens the editor bubble for the tab |group| as a result of an explicit user
-  // action to create the |group|.
   void OnGroupEditorOpened(const tab_groups::TabGroupId& group) override;
   void OnGroupMoved(const tab_groups::TabGroupId& group) override;
   void OnGroupContentsChanged(const tab_groups::TabGroupId& group) override;
@@ -86,52 +84,26 @@ class TabContainerImpl : public TabContainer,
 
   bool IsRectInWindowCaption(const gfx::Rect& rect) override;
 
-  // Animation stuff. Will be public until fully moved down into TabContainer.
-
-  // Called whenever a tab or group header animation has progressed.
   void OnTabSlotAnimationProgressed(TabSlotView* view) override;
 
   void OnTabCloseAnimationCompleted(Tab* tab) override;
 
-  // Animates tabs and group views from where they are to where they should be.
-  // Callers that want to do fancier things can manipulate starting bounds
-  // before calling this and/or replace the animation for some tabs or group
-  // views after calling this.
   void StartBasicAnimation() override;
-
-  // Force recalculation of ideal bounds at the next layout. Used to cause tabs
-  // to animate to their ideal bounds after somebody other than TabContainer
-  // (cough TabDragController cough) moves tabs directly.
   void InvalidateIdealBounds() override;
-
-  // Returns true if any tabs are being animated, whether by |this| or by
-  // |drag_context_|.
   bool IsAnimating() const override;
-
-  // Stops any ongoing animations, leaving tabs where they are.
   void CancelAnimation() override;
-
-  // Stops any ongoing animations and forces a layout.
   void CompleteAnimationAndLayout() override;
 
-  // Returns the total width available for the TabContainer's use.
   int GetAvailableWidthForTabContainer() const override;
 
-  // See |in_tab_close_| for details on tab closing mode. |source| is the input
-  // method used to enter tab closing mode, which determines how it is exited
-  // due to user inactivity.
   void EnterTabClosingMode(absl::optional<int> override_width,
                            CloseTabSource source) override;
   void ExitTabClosingMode() override;
 
-  // Sets the visibility state of all tabs and group headers (if any) based on
-  // ShouldTabBeVisible().
   void SetTabSlotVisibility() override;
 
   bool InTabClose() override;
 
-  // TODO (1295774): Move callers down into TabContainer so this
-  // encapsulation-breaking getter can be removed.
   TabStripLayoutHelper* GetLayoutHelper() const override;
 
   std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>>&
