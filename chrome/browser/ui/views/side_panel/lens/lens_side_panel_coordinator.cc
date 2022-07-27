@@ -61,6 +61,11 @@ void LensSidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
       base::UserMetricsAction("LensUnifiedSidePanel.LensEntryHidden"));
 }
 
+bool LensSidePanelCoordinator::IsLaunchButtonEnabledForTesting() {
+  DCHECK(lens_side_panel_view_);
+  return lens_side_panel_view_->IsLaunchButtonEnabledForTesting();
+}
+
 void LensSidePanelCoordinator::RegisterEntryAndShow(
     const content::OpenURLParams& params) {
   base::RecordAction(base::UserMetricsAction("LensUnifiedSidePanel.LensQuery"));

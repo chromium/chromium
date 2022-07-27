@@ -36,6 +36,8 @@ class LensSidePanelCoordinator
 
   bool OpenResultsInNewTabForTesting();
 
+  bool IsLaunchButtonEnabledForTesting();
+
  private:
   friend class BrowserUserData<LensSidePanelCoordinator>;
 

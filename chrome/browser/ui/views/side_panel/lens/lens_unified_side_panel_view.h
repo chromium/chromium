@@ -45,6 +45,8 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
     return weak_factory_.GetWeakPtr();
   }
 
+  bool IsLaunchButtonEnabledForTesting();
+
  private:
   void CreateAndInstallFooter();
 

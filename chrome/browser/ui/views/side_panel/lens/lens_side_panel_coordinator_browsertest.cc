@@ -139,12 +139,8 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
     TemplateURLData data;
     data.SetShortName(kShortName);
     data.SetKeyword(data.short_name());
-    LOG(INFO) << "setURL: "
-              << embedded_test_server()->GetURL(kSearchURL).spec();
     data.SetURL(embedded_test_server()->GetURL(kSearchURL).spec());
-    LOG(INFO) << "image_url: " << GetImageSearchURL().spec();
     data.image_url = GetImageSearchURL().spec();
-    LOG(INFO) << "image search post params: " << kImageSearchPostParams;
     data.image_url_post_params = kImageSearchPostParams;
 
     TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
@@ -188,9 +184,32 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
   std::size_t query_start_pos = side_panel_content.find("?");
   EXPECT_EQ(expected_content.substr(0, query_start_pos),
             side_panel_content.substr(0, query_start_pos));
+  EXPECT_TRUE(GetLensSidePanelCoordinator()->IsLaunchButtonEnabledForTesting());
   // Match the query parameters, without the value of start_time.
   EXPECT_THAT(side_panel_content,
               testing::MatchesRegex(".*ep=ccm&s=csp&st=\\d+&p=somepayload"));
+}
+
+IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
+                       DisableOpenInNewTabForBadUrl) {
+  SetupUnifiedSidePanel();
+  EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
+
+  auto url = content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),
+                                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                    ui::PAGE_TRANSITION_LINK, false);
+  auto load_url_params = content::NavigationController::LoadURLParams(url);
+  lens::GetLensUnifiedSidePanelWebContentsForTesting(browser())
+      ->GetController()
+      .LoadURLWithParams(load_url_params);
+
+  // Wait for the side panel to open and finish loading web contents.
+  content::TestNavigationObserver nav_observer(
+      lens::GetLensUnifiedSidePanelWebContentsForTesting(browser()));
+  nav_observer.Wait();
+
+  EXPECT_FALSE(
+      GetLensSidePanelCoordinator()->IsLaunchButtonEnabledForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,

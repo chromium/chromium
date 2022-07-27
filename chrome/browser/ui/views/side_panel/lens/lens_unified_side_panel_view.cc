@@ -34,18 +34,21 @@
 
 namespace {
 
-// We need to create a new URL with the specified query parameters while
-// also keeping the payloard parameter in the original URL.
-GURL CreateURLForNewTab(const GURL& original_url) {
-  if (original_url.is_empty())
-    return GURL();
+bool IsUrlValid(const GURL& url) {
+  if (url.is_empty())
+    return false;
 
   std::string payload;
-  // Make sure the payload is present.
-  if (!net::GetValueForKeyInQuery(original_url, lens::kPayloadQueryParameter,
-                                  &payload)) {
+  // Make sure the payload is present
+  return net::GetValueForKeyInQuery(url, lens::kPayloadQueryParameter,
+                                    &payload);
+}
+
+// We need to create a new URL with the specified query parameters while
+// also keeping the payload parameter in the original URL.
+GURL CreateURLForNewTab(const GURL& original_url) {
+  if (!IsUrlValid(original_url))
     return GURL();
-  }
 
   // Append or replace query parameters related to entry point.
   return lens::AppendOrReplaceQueryParametersForLensRequest(
@@ -127,7 +130,17 @@ void LensUnifiedSidePanelView::LoadResultsInNewTab() {
 }
 
 void LensUnifiedSidePanelView::LoadProgressChanged(double progress) {
-  SetContentVisible(progress == 1.0);
+  bool is_content_visible = progress == 1.0;
+  SetContentVisible(is_content_visible);
+  if (is_content_visible) {
+    auto last_committed_url =
+        web_view_->GetWebContents()->GetLastCommittedURL();
+    launch_button_->SetEnabled(IsUrlValid(last_committed_url));
+  }
+}
+
+bool LensUnifiedSidePanelView::IsLaunchButtonEnabledForTesting() {
+  return launch_button_->GetEnabled();
 }
 
 bool LensUnifiedSidePanelView::HandleContextMenu(
