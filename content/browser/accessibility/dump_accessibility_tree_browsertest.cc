@@ -1897,6 +1897,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityEmbed) {
   RunHtmlTest(FILE_PATH_LITERAL("embed.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityEmbedImageError) {
+  RunHtmlTest(FILE_PATH_LITERAL("embed-image-error.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityFieldset) {
   RunHtmlTest(FILE_PATH_LITERAL("fieldset.html"));
 }
@@ -3015,6 +3020,19 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_AccessibilitySummary) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySvg) {
   RunHtmlTest(FILE_PATH_LITERAL("svg.html"));
+}
+
+// TODO: fails on android, the test hangs in WaitForAllFramesLoaded while
+// waiting for AccessibilityNotificationWaiter::WaitForNotification.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccessibilitySvgAsEmbedSource \
+  DISABLED_AccessibilitySvgAsEmbedSource
+#else
+#define MAYBE_AccessibilitySvgAsEmbedSource AccessibilitySvgAsEmbedSource
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilitySvgAsEmbedSource) {
+  RunHtmlTest(FILE_PATH_LITERAL("svg-as-embed-source.html"));
 }
 
 // TODO: fails on android, the test hangs in WaitForAllFramesLoaded while

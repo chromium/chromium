@@ -408,13 +408,13 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
     return true;
   }
 
-  // If the slot element's host is an <object> with any descendant nodes
+  // If the slot element's host is an <object>/<embed>with any descendant nodes
   // (including whitespace), LayoutTreeBuilderTraversal::FirstChild will
   // return a node. We should only treat that node as slot content if it is
   // being used as fallback content.
-  if (const HTMLObjectElement* object_element =
-          DynamicTo<HTMLObjectElement>(node->OwnerShadowHost())) {
-    return object_element->UseFallbackContent();
+  if (const HTMLPlugInElement* plugin_element =
+          DynamicTo<HTMLPlugInElement>(node->OwnerShadowHost())) {
+    return plugin_element->UseFallbackContent();
   }
 
   return LayoutTreeBuilderTraversal::FirstChild(*slot_element);

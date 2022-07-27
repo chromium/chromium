@@ -1377,8 +1377,11 @@ void AXObject::SerializeChildTreeID(ui::AXNodeData* node_data) {
   DCHECK_EQ(ChildCountIncludingIgnored(), 0)
       << "Children won't exist until the trees are stitched together in the "
          "browser process. A failure means that a child node was incorrectly "
-         "considered relevant by AXObjectCacheImpl. Element src = "
-      << GetAttribute(html_names::kSrcAttr);
+         "considered relevant by AXObjectCacheImpl."
+      << "\n* Parent: " << ToString(true)
+      << "\n* Frame owner: " << IsA<HTMLFrameOwnerElement>(GetNode())
+      << "\n* Element src: " << GetAttribute(html_names::kSrcAttr)
+      << "\n* First child: " << FirstChildIncludingIgnored()->ToString(true);
 
   ui::AXTreeID child_tree_id = ui::AXTreeID::FromToken(child_token.value());
   node_data->AddChildTreeId(child_tree_id);
