@@ -455,6 +455,23 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self initializeBrowserState:chromeBrowserState];
   self.appState.mainBrowserState = chromeBrowserState;
 
+  // Give tests a chance to prepare for testing.
+  tests_hook::SetUpTestsIfPresent();
+
+  // Force an obvious initialization of the AuthenticationService. This must
+  // be done before creation of the UI to ensure the service is initialised
+  // before use (it is a security issue, so accessing the service CHECKs if
+  // this is not the case). It is important to do this during background
+  // initialization when the app is cold started directly into the background
+  // because it is used by the DiscoverFeedService, which is started in the
+  // background to perform background refresh. There is no downside to doing
+  // this during background initialization when the app is launched into the
+  // foreground.
+  AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+      self.appState.mainBrowserState,
+      std::make_unique<MainControllerAuthenticationServiceDelegate>(
+          self.appState.mainBrowserState, self));
+
   // Initialize the provider UI global state.
   ios::provider::InitializeUI();
 
@@ -486,9 +503,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 // Returns YES iff there's a session restore available.
 - (BOOL)startUpBeforeFirstWindowCreatedAndPrepareForRestorationPostCrash:
     (BOOL)isPostCrashLaunch {
-  // Give tests a chance to prepare for testing.
-  tests_hook::SetUpTestsIfPresent();
-
   GetApplicationContext()->OnAppEnterForeground();
 
   // Although this duplicates some metrics_service startup logic also in
@@ -541,16 +555,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
     [self startLoggingBreadcrumbs];
   }
-
-  // Force an obvious initialization of the AuthenticationService. This must
-  // be done before creation of the UI to ensure the service is initialised
-  // before use (it is a security issue, so accessing the service CHECK if
-  // this is not the case).
-  DCHECK(self.appState.mainBrowserState);
-  AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-      self.appState.mainBrowserState,
-      std::make_unique<MainControllerAuthenticationServiceDelegate>(
-          self.appState.mainBrowserState, self));
 
   // Send "Chrome Opened" event to the feature_engagement::Tracker on cold
   // start.
