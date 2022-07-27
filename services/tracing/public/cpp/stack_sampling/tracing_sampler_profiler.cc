@@ -864,23 +864,23 @@ void TracingSamplerProfiler::StartTracing(
   profiler_ = std::make_unique<base::StackSamplingProfiler>(
       sampled_thread_token_, params, std::move(profile_builder),
       base::BindOnce(create_unwinders));
-  profiler_->Start();
-
 #elif ANDROID_CFI_UNWINDING_SUPPORTED
   auto* module_cache = profile_builder->GetModuleCache();
   profiler_ = std::make_unique<base::StackSamplingProfiler>(
       sampled_thread_token_, params, std::move(profile_builder),
       std::make_unique<StackSamplerAndroid>(sampled_thread_token_,
                                             module_cache));
-  profiler_->Start();
 #endif
 #else   // BUILDFLAG(IS_ANDROID)
   profiler_ = std::make_unique<base::StackSamplingProfiler>(
       sampled_thread_token_, params, std::move(profile_builder));
-  if (aux_unwinder_factory_)
-    profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());
-  profiler_->Start();
 #endif  // BUILDFLAG(IS_ANDROID)
+  if (profiler_ != nullptr) {
+    if (aux_unwinder_factory_) {
+      profiler_->AddAuxUnwinder(aux_unwinder_factory_.Run());
+    }
+    profiler_->Start();
+  }
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
   if (loader_lock_sampling_thread_)
