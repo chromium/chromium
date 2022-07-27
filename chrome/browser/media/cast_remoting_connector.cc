@@ -37,6 +37,17 @@ using media::mojom::RemotingStartFailReason;
 using media::mojom::RemotingStopReason;
 using media::mojom::RemotingSinkMetadata;
 
+bool MediaRemotingDialogCoordinator::Show(
+    PermissionCallback permission_callback) {
+  return false;
+}
+
+void MediaRemotingDialogCoordinator::Hide() {}
+
+bool MediaRemotingDialogCoordinator::IsShowing() const {
+  return false;
+}
+
 class CastRemotingConnector::RemotingBridge final
     : public media::mojom::Remoter {
  public:
@@ -144,25 +155,11 @@ CastRemotingConnector* CastRemotingConnector::Get(
         media_router::MediaRouterFactory::GetApiForBrowserContext(
             contents->GetBrowserContext()),
         user_prefs::UserPrefs::Get(contents->GetBrowserContext()),
-        sessions::SessionTabHelper::IdForTab(contents),
+        sessions::SessionTabHelper::IdForTab(contents)
 #if defined(TOOLKIT_VIEWS)
-        base::BindRepeating(
-            [](content::WebContents* contents,
-               PermissionResultCallback result_callback) {
-              media_router::MediaRemotingDialogView::GetPermission(
-                  contents, std::move(result_callback));
-              return media_router::MediaRemotingDialogView::IsShowing()
-                         ? base::BindOnce(
-                               &media_router::MediaRemotingDialogView::
-                                   HideDialog)
-                         : CancelPermissionRequestCallback();
-            },
+            ,
+        std::make_unique<media_router::MediaRemotingDialogCoordinatorViews>(
             contents)
-#else
-        base::BindRepeating([](PermissionResultCallback result_callback) {
-          std::move(result_callback).Run(true);
-          return CancelPermissionRequestCallback();
-        })
 #endif
     );
     contents->SetUserData(kUserDataKey, base::WrapUnique(connector));
@@ -189,13 +186,11 @@ CastRemotingConnector::CastRemotingConnector(
     media_router::MediaRouter* router,
     PrefService* pref_service,
     SessionID tab_id,
-    PermissionRequestCallback permission_request_callback)
+    std::unique_ptr<MediaRemotingDialogCoordinator> dialog_coordinator)
     : media_router_(router),
+      pref_service_(pref_service),
       tab_id_(tab_id),
-      permission_request_callback_(std::move(permission_request_callback)),
-      active_bridge_(nullptr),
-      pref_service_(pref_service) {
-  DCHECK(permission_request_callback_);
+      dialog_coordinator_(std::move(dialog_coordinator)) {
   StartObservingPref();
 }
 
@@ -301,24 +296,25 @@ void CastRemotingConnector::StartRemoting(RemotingBridge* bridge) {
 
   active_bridge_ = bridge;
 
-  if (remoting_allowed_.has_value()) {
-    StartRemotingIfPermitted();
-  } else {
-    PermissionResultCallback dialog_result_callback(base::BindOnce(
-        [](base::WeakPtr<CastRemotingConnector> connector, bool is_allowed) {
-          DCHECK_CURRENTLY_ON(BrowserThread::UI);
-          if (!connector)
-            return;
-          connector->permission_request_cancel_callback_.Reset();
-          connector->remoting_allowed_ = is_allowed;
-          connector->StartRemotingIfPermitted();
-        },
-        weak_factory_.GetWeakPtr()));
-
-    DCHECK(!permission_request_cancel_callback_);
-    permission_request_cancel_callback_ =
-        permission_request_callback_.Run(std::move(dialog_result_callback));
+  if (!remoting_allowed_.has_value()) {
+    if (!dialog_coordinator_) {
+      remoting_allowed_ = true;
+    } else if (dialog_coordinator_->Show(
+                   base::BindOnce(&CastRemotingConnector::OnDialogClosed,
+                                  weak_factory_.GetWeakPtr()))) {
+      return;
+    } else {
+      remoting_allowed_ = false;
+    }
   }
+
+  StartRemotingIfPermitted();
+}
+
+void CastRemotingConnector::OnDialogClosed(bool remoting_allowed) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  remoting_allowed_ = remoting_allowed;
+  StartRemotingIfPermitted();
 }
 
 void CastRemotingConnector::StartRemotingIfPermitted() {
@@ -379,8 +375,8 @@ void CastRemotingConnector::StopRemoting(RemotingBridge* bridge,
   // Cancel all outstanding callbacks related to the remoting session.
   weak_factory_.InvalidateWeakPtrs();
 
-  if (permission_request_cancel_callback_) {
-    std::move(permission_request_cancel_callback_).Run();
+  if (dialog_coordinator_ && dialog_coordinator_->IsShowing()) {
+    dialog_coordinator_->Hide();
     if (is_initiated_by_source && remoter_) {
       // The source requested remoting be stopped before the permission request
       // was resolved. This means the |remoter_| was never started, and remains
@@ -517,6 +513,11 @@ void CastRemotingConnector::StartObservingPref() {
       media_router::prefs::kMediaRouterMediaRemotingEnabled,
       base::BindRepeating(&CastRemotingConnector::OnPrefChanged,
                           base::Unretained(this)));
+  if (const PrefService::Preference* pref = pref_service_->FindPreference(
+          media_router::prefs::kMediaRouterMediaRemotingEnabled);
+      pref && !pref->IsDefaultValue()) {
+    remoting_allowed_ = pref->GetValue()->GetBool();
+  }
 #endif
 }
 

@@ -163,16 +163,9 @@ class CastRemotingConnectorTest : public ::testing::Test {
 
   void CreateConnector(bool remoting_allowed) {
     connector_.reset();  // Call dtor first if there is one created.
-    connector_.reset(new CastRemotingConnector(
-        &media_router_, &pref_service_, kRemotingTabId,
-        base::BindRepeating(
-            [](bool remoting_allowed,
-               CastRemotingConnector::PermissionResultCallback
-                   result_callback) {
-              std::move(result_callback).Run(remoting_allowed);
-              return CastRemotingConnector::CancelPermissionRequestCallback();
-            },
-            remoting_allowed)));
+    connector_.reset(new CastRemotingConnector(&media_router_, &pref_service_,
+                                               kRemotingTabId));
+    connector_->set_remoting_allowed_for_testing(remoting_allowed);
   }
 
   CastRemotingConnector* GetConnector() const { return connector_.get(); }
