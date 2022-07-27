@@ -279,7 +279,6 @@ static_library("browser") {
   deps = [
     ":affiliation",
     ":affiliation_proto",
-    ":csv",
     ":hash_password_manager",
     ":password_generator",
     ":password_hash_data",
@@ -296,6 +295,7 @@ static_library("browser") {
     "//components/keyed_service/core",
     "//components/os_crypt",
     "//components/password_manager/core/browser/form_parsing",
+    "//components/password_manager/core/browser/import:csv",
     "//components/password_manager/core/browser/leak_detection:leak_detection",
     "//components/password_manager/core/browser/leak_detection:leak_detection_interface_headers",
     "//components/password_manager/core/common",
@@ -350,13 +350,10 @@ static_library("browser") {
     sources += [
       "http_credentials_cleaner.cc",
       "http_credentials_cleaner.h",
-      "import/password_importer.cc",
-      "import/password_importer.h",
       "password_scripts_fetcher.h",
       "password_scripts_fetcher_impl.cc",
       "password_scripts_fetcher_impl.h",
     ]
-    deps += [ "//components/password_manager/services/csv_password:service" ]
   }
 
   if (!is_android && !is_ios) {
@@ -409,51 +406,6 @@ source_set("capabilities") {
       "//url",
     ]
   }
-}
-
-# TODO(crbug.com/974822): Ideally, all of the "import/" subdirectory would be
-# in a separate BUILD.gn file inside that subdirectory. However, this requires
-# the big "browser" target here to be split in multiple sub-targets to avoid
-# circular dependencies. For now, at least the files from "import" which can be
-# separated are made so, to limit the growth of this technical debt.
-static_library("csv") {
-  sources = [
-    "import/csv_field_parser.cc",
-    "import/csv_field_parser.h",
-    "import/csv_password.cc",
-    "import/csv_password.h",
-    "import/csv_password_iterator.cc",
-    "import/csv_password_iterator.h",
-    "import/csv_password_sequence.cc",
-    "import/csv_password_sequence.h",
-  ]
-  public_deps = [
-    ":password_form",
-    "//base",
-  ]
-
-  deps = [
-    ":affiliation",
-    "//components/password_manager/core/browser/form_parsing",
-    "//url",
-  ]
-}
-
-source_set("csv_unittests") {
-  testonly = true
-  sources = [
-    "import/csv_field_parser_unittest.cc",
-    "import/csv_password_iterator_unittest.cc",
-    "import/csv_password_sequence_unittest.cc",
-    "import/csv_password_unittest.cc",
-  ]
-  deps = [
-    ":csv",
-    "//base/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//url",
-  ]
 }
 
 # PasswordForm is an extremely common struct used by many sub-components and
@@ -780,7 +732,6 @@ source_set("unit_tests") {
     sources += [
       "capabilities_service_impl_unittest.cc",
       "http_credentials_cleaner_unittest.cc",
-      "import/password_importer_unittest.cc",
       "password_scripts_fetcher_impl_unittest.cc",
       "saved_passwords_capabilities_fetcher_unittest.cc",
     ]
@@ -802,8 +753,6 @@ source_set("unit_tests") {
     ":affiliation",
     ":affiliation_unittests",
     ":capabilities",
-    ":csv",
-    ":csv_unittests",
     ":hash_password_manager",
     ":password_generator",
     ":password_hash_data",
@@ -823,6 +772,8 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/form_parsing:form_parsing",
     "//components/password_manager/core/browser/form_parsing:unit_tests",
     "//components/password_manager/core/browser/form_parsing/fuzzer:unit_tests",
+    "//components/password_manager/core/browser/import:csv",
+    "//components/password_manager/core/browser/import:csv_unit_tests",
     "//components/password_manager/core/browser/leak_detection",
     "//components/password_manager/core/browser/leak_detection:leak_detection_interface_headers",
     "//components/password_manager/core/browser/leak_detection:test_support",
@@ -860,24 +811,14 @@ source_set("unit_tests") {
     deps += [
       "//components/autofill_assistant/browser/public",
       "//components/autofill_assistant/browser/public:unit_test_support",
+      "//components/password_manager/core/browser/import:importer",
+      "//components/password_manager/core/browser/import:importer_unit_tests",
     ]
   }
 
   if (is_android) {
     deps += [ "//components/password_manager/core/browser:unified_password_manager_proto" ]
   }
-}
-
-fuzzer_test("csv_reader_fuzzer") {
-  sources = [ "import/password_csv_reader_fuzzer.cc" ]
-  deps = [
-    ":browser",
-    ":csv",
-    "//base:i18n",
-    "//components/autofill/core/common:common",
-  ]
-  seed_corpus = "import/password_csv_reader_corpus"
-  dict = "import/password_csv_reader_fuzzer.dict"
 }
 
 if (use_libfuzzer) {

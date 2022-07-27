@@ -22,7 +22,8 @@ mojom("mojom") {
       ]
       traits_headers = [ "csv_password_parser_traits.h" ]
       traits_sources = [ "csv_password_parser_traits.cc" ]
-      traits_public_deps = [ "//components/password_manager/core/browser:csv" ]
+      traits_public_deps =
+          [ "//components/password_manager/core/browser/import:csv" ]
     },
   ]
 }

@@ -10,7 +10,7 @@ source_set("lib") {
 
   deps = [
     "//base",
-    "//components/password_manager/core/browser:csv",
+    "//components/password_manager/core/browser/import:csv",
     "//mojo/public/cpp/bindings",
   ]
 
