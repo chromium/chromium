@@ -1734,6 +1734,12 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
   ASSERT_NE(empty_guest_opener, empty_guest_embedder->GetPrimaryMainFrame());
 }
 
+IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
+                       Shim_TestNewWindowAttachToExisting) {
+  TestHelper("testNewWindowAttachToExisting", "web_view/shim",
+             NEEDS_TEST_SERVER);
+}
+
 IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindowNoDeadlock) {
   TestHelper("testNewWindowNoDeadlock", "web_view/shim", NEEDS_TEST_SERVER);
 }

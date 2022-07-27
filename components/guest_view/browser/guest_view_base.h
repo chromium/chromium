@@ -172,11 +172,6 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // Destroy this guest.
   void Destroy(bool also_delete);
 
-  // Indicates whether a guest should call destroy during DidDetach().
-  // TODO(wjmaclean): Delete this when browser plugin goes away;
-  // https://crbug.com/533069 .
-  virtual bool ShouldDestroyOnDetach() const;
-
   // Saves the attach state of the custom element hosting this GuestView.
   void SetAttachParams(const base::Value::Dict& params);
 

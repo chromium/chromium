@@ -133,38 +133,18 @@ void GuestViewManager::AttachGuest(int embedder_process_id,
     return;
 
   ElementInstanceKey key(embedder_process_id, element_instance_id);
-  auto it = instance_id_map_.find(key);
-  // If there is an existing guest attached to the element, then destroy the
-  // existing guest.
-  if (it != instance_id_map_.end()) {
-    int old_guest_instance_id = it->second;
-    if (old_guest_instance_id == guest_instance_id)
-      return;
 
-    auto* old_guest_view =
-        GuestViewBase::From(embedder_process_id, old_guest_instance_id);
-    old_guest_view->Destroy(true);
+  // If there is an existing guest attached to the element, then the embedder is
+  // misbehaving.
+  if (base::Contains(instance_id_map_, key)) {
+    bad_message::ReceivedBadMessage(embedder_process_id,
+                                    bad_message::GVM_INVALID_ATTACH);
+    return;
   }
+
   instance_id_map_[key] = guest_instance_id;
   reverse_instance_id_map_[guest_instance_id] = key;
   guest_view->SetAttachParams(attach_params);
-}
-
-void GuestViewManager::DetachGuest(GuestViewBase* guest) {
-  if (!guest->attached())
-    return;
-
-  auto reverse_it = reverse_instance_id_map_.find(guest->guest_instance_id());
-  if (reverse_it == reverse_instance_id_map_.end())
-    return;
-
-  const ElementInstanceKey& key = reverse_it->second;
-
-  auto it = instance_id_map_.find(key);
-  DCHECK(it != instance_id_map_.end());
-
-  reverse_instance_id_map_.erase(reverse_it);
-  instance_id_map_.erase(it);
 }
 
 bool GuestViewManager::IsOwnedByExtension(GuestViewBase* guest) {
@@ -203,26 +183,6 @@ content::WebContents* GuestViewManager::CreateGuestWithWebContentsParams(
       WebContents::Create(guest_create_params);
   guest->InitWithWebContents(base::Value::Dict(), guest_web_contents.get());
   return guest_web_contents.release();
-}
-
-content::WebContents* GuestViewManager::GetGuestByInstanceID(
-    int owner_process_id,
-    int element_instance_id) {
-  int guest_instance_id = GetGuestInstanceIDForElementID(owner_process_id,
-                                                         element_instance_id);
-  if (guest_instance_id == kInstanceIDNone)
-    return nullptr;
-
-  return GetGuestByInstanceID(guest_instance_id);
-}
-
-int GuestViewManager::GetGuestInstanceIDForElementID(int owner_process_id,
-                                                     int element_instance_id) {
-  auto iter = instance_id_map_.find(
-      ElementInstanceKey(owner_process_id, element_instance_id));
-  if (iter == instance_id_map_.end())
-    return kInstanceIDNone;
-  return iter->second;
 }
 
 SiteInstance* GuestViewManager::GetGuestSiteInstance(

@@ -24,6 +24,7 @@ enum BadMessageReason {
   GVM_EMBEDDER_FORBIDDEN_ACCESS_TO_GUEST = 0,
   GVM_INVALID_GUESTVIEW_TYPE = 1,
   GVMF_UNEXPECTED_MESSAGE_BEFORE_GVM_CREATION = 2,
+  GVM_INVALID_ATTACH = 3,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. GuestViewManager becomes GVM) plus a unique description of

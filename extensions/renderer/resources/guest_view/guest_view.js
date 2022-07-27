@@ -17,7 +17,6 @@ var ResizeEvent = CreateEvent('guestViewInternal.onResize');
 var ERROR_MSG_ALREADY_ATTACHED = 'The guest has already been attached.';
 var ERROR_MSG_ALREADY_CREATED = 'The guest has already been created.';
 var ERROR_MSG_INVALID_STATE = 'The guest is in an invalid state.';
-var ERROR_MSG_NOT_ATTACHED = 'The guest is not attached.';
 var ERROR_MSG_NOT_CREATED = 'The guest has not been created.';
 
 // Properties.
@@ -128,7 +127,6 @@ GuestViewImpl.prototype.checkState = function(action) {
     'attach': [ERROR_MSG_NOT_CREATED, null, ERROR_MSG_ALREADY_ATTACHED],
     'create': [null, ERROR_MSG_ALREADY_CREATED, ERROR_MSG_ALREADY_CREATED],
     'destroy': [null, null, null],
-    'detach': [ERROR_MSG_NOT_ATTACHED, ERROR_MSG_NOT_ATTACHED, null],
     'setSize': [ERROR_MSG_NOT_CREATED, null, null]
   };
 

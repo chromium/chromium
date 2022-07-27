@@ -413,10 +413,6 @@ const GURL& GuestViewBase::GetOwnerSiteURL() const {
       ->GetSiteURL();
 }
 
-bool GuestViewBase::ShouldDestroyOnDetach() const {
-  return false;
-}
-
 void GuestViewBase::Destroy(bool also_delete) {
   if (is_being_destroyed_)
     return;

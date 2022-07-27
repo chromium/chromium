@@ -97,7 +97,6 @@ GuestViewContainer.prototype.attachWindow = function() {
   var generatedId = IdGenerator.GetNextId();
   // Generate an instance id for the container.
   this.onInternalInstanceId(generatedId);
-  return true;
 };
 
 GuestViewContainer.prototype.makeGCOwnContainer = function(internalInstanceId) {

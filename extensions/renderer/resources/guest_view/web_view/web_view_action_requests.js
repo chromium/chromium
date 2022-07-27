@@ -193,10 +193,7 @@ NewWindow.prototype.getInterfaceObject = function() {
         webViewImpl.onAttach(this.event.partition);
       }
 
-      var attached = webViewImpl.attachWindow(this.event.windowId);
-      if (!attached) {
-        window.console.error(ERROR_MSG_NEWWINDOW_UNABLE_TO_ATTACH);
-      }
+      webViewImpl.attachWindow(this.event.windowId);
 
       if (this.guestInstanceId != this.webViewImpl.guest.getId()) {
         // If the opener is already gone, then its guestInstanceId will be
@@ -210,7 +207,7 @@ NewWindow.prototype.getInterfaceObject = function() {
       // up the state created for the new window if attaching fails.
       CrashIfInvalidInstanceId(this.guestInstanceId, 'NewWindow attach');
       WebViewInternal.setPermission(this.guestInstanceId, this.requestId,
-                                    attached ? 'allow' : 'deny');
+                                    'allow');
     }, this),
     discard: $Function.bind(function() {
       this.validateCall();

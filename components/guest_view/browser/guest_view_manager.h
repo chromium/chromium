@@ -71,17 +71,10 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
                            int guest_instance_id,
                            const base::Value::Dict& attach_params);
 
-  // Removes the association between |element_instance_id| and a guest instance
-  // ID if one exists.
-  void DetachGuest(GuestViewBase* guest);
-
   // Indicates whether the |guest| is owned by an extension or Chrome App.
   bool IsOwnedByExtension(GuestViewBase* guest);
 
   int GetNextInstanceID();
-  int GetGuestInstanceIDForElementID(
-      int owner_process_id,
-      int element_instance_id);
 
   using GuestViewCreateFunction = base::RepeatingCallback<GuestViewBase*(
       content::WebContents* owner_web_contents)>;
@@ -114,9 +107,6 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
 
   content::SiteInstance* GetGuestSiteInstance(
       const content::StoragePartitionConfig& storage_partition_config);
-
-  content::WebContents* GetGuestByInstanceID(int owner_process_id,
-                                             int element_instance_id);
 
   // BrowserPluginGuestManager implementation.
   void ForEachUnattachedGuest(

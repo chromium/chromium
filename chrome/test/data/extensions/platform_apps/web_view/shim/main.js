@@ -1782,6 +1782,32 @@ function testNewWindowNoReferrerLink() {
   document.body.appendChild(webview);
 }
 
+// Test that a webview guest can attach to a webview element with an existing
+// guest.
+function testNewWindowAttachToExisting() {
+  let openerWebview = document.createElement('webview');
+  openerWebview.src = embedder.windowOpenGuestURL;
+  let otherWebview = document.createElement('webview');
+  otherWebview.src = embedder.emptyGuestURL;
+
+  openerWebview.addEventListener('newwindow', function(e) {
+    e.preventDefault();
+
+    otherWebview.addEventListener('loadstop', () => {
+      embedder.test.succeed();
+    }, { once: true });
+
+    // Attach the new window to the existing webview.
+    e.window.attach(otherWebview);
+  }, { once: true });
+
+  otherWebview.addEventListener('loadstop', () => {
+    document.body.appendChild(openerWebview);
+  }, { once: true });
+
+  document.body.appendChild(otherWebview);
+}
+
 // This test verifies that the load event fires when the a new page is
 // loaded.
 // TODO(fsamuel): Add a test to verify that subframe loads within a guest
@@ -3510,6 +3536,7 @@ embedder.test.testList = {
   'testNewWindowTwoListeners': testNewWindowTwoListeners,
   'testNewWindowNoPreventDefault': testNewWindowNoPreventDefault,
   'testNewWindowNoReferrerLink': testNewWindowNoReferrerLink,
+  'testNewWindowAttachToExisting': testNewWindowAttachToExisting,
   'testContentLoadEvent': testContentLoadEvent,
   'testContentLoadEventWithDisplayNone': testContentLoadEventWithDisplayNone,
   'testDeclarativeWebRequestAPI': testDeclarativeWebRequestAPI,
