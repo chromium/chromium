@@ -46,7 +46,7 @@ KeyedService* ApkWebAppServiceFactory::BuildServiceInstanceFor(
   if (!arc::IsArcAllowedForProfile(profile))
     return nullptr;
 
-  return new ApkWebAppService(profile);
+  return new ApkWebAppService(profile, /*test_delegate=*/nullptr);
 }
 
 content::BrowserContext* ApkWebAppServiceFactory::GetBrowserContextToUse(
