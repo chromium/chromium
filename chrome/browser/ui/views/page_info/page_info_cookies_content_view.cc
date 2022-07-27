@@ -9,6 +9,7 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
     : presenter_(presenter) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
+  presenter_->InitializeUiState(this, base::DoNothing());
 }
 
 PageInfoCookiesContentView::~PageInfoCookiesContentView() = default;

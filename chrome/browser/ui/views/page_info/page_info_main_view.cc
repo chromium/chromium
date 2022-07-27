@@ -146,20 +146,29 @@ void PageInfoMainView::EnsureCookieInfo() {
 
     // Create the cookie button, leaving the secondary text blank since the
     // cookie count is not yet known.
-    cookie_button_ =
-        std::make_unique<PageInfoHoverButton>(
-            base::BindRepeating(
-                [](PageInfoMainView* view) {
-                  view->HandleMoreInfoRequest(view->cookie_button_);
-                },
-                this),
-            icon, IDS_PAGE_INFO_COOKIES, /*secondary_text=*/u"",
-            PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
-            tooltip, std::u16string(), PageInfoViewFactory::GetLaunchIcon())
-            .release();
+    if (base::FeatureList::IsEnabled(page_info::kPageInfoCookiesSubpage)) {
+      cookie_button_ = site_settings_view_->AddChildView(std::make_unique<
+                                                         PageInfoHoverButton>(
+          base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
+                              base::Unretained(navigation_handler_)),
+          icon, IDS_PAGE_INFO_COOKIES, std::u16string(),
+          PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE,
+          tooltip, std::u16string(),
+          PageInfoViewFactory::GetOpenSubpageIcon()));
+    } else {
+      cookie_button_ = site_settings_view_->AddChildView(std::make_unique<
+                                                         PageInfoHoverButton>(
+          base::BindRepeating(
+              [](PageInfoMainView* view) {
+                view->HandleMoreInfoRequest(view->cookie_button_);
+              },
+              this),
+          icon, IDS_PAGE_INFO_COOKIES, /*secondary_text=*/u"",
+          PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
+          tooltip, std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
+    }
     cookie_button_->SetProperty(views::kElementIdentifierKey,
                                 kCookieButtonElementId);
-    site_settings_view_->AddChildView(cookie_button_.get());
 
     if (base::FeatureList::IsEnabled(
             privacy_sandbox::kPrivacySandboxSettings3)) {
@@ -188,7 +197,8 @@ void PageInfoMainView::SetCookieInfo(const CookieInfoList& cookie_info_list) {
   PageInfoMainView::EnsureCookieInfo();
 
   // Update the text displaying the number of allowed cookies.
-  cookie_button_->SetTitleText(IDS_PAGE_INFO_COOKIES, num_cookies_text);
+  if (!base::FeatureList::IsEnabled(page_info::kPageInfoCookiesSubpage))
+    cookie_button_->SetTitleText(IDS_PAGE_INFO_COOKIES, num_cookies_text);
 
   PreferredSizeChanged();
 }
