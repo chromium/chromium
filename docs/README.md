@@ -16,9 +16,9 @@ below.**
 
 ### Guidelines
 
-*   See the [Chromium Documentation Guidelines](/documentation_guidelines.md)
+*   See the [Chromium Documentation Guidelines](documentation_guidelines.md)
     and the
-    [Chromium Documentation Best Practices](/documentation_best_practices.md).
+    [Chromium Documentation Best Practices](documentation_best_practices.md).
 *   Markdown documents must follow the
     [style guide](https://github.com/google/styleguide/tree/gh-pages/docguide).
 
@@ -41,12 +41,12 @@ This is only an estimate. The **gitiles** view may differ.
     e.g. https://chromium-review.googlesource.com/c/3362532/2/docs/README.md
 3.  You will see something like <br>
     Base
-    [browse](https://chromium.googlesource.com/chromium/src/+/ad44f6081ccc6b92479b12f1eb7e9482f474859d/docs/README.md)
+    [preview](https://chromium.googlesource.com/chromium/src/+/ad44f6081ccc6b92479b12f1eb7e9482f474859d/docs/README.md)
     -> Patchset 3
-    [browse](https://chromium.googlesource.com/chromium/src/+/refs/changes/32/3362532/3/docs/README.md)
+    [preview](https://chromium.googlesource.com/chromium/src/+/refs/changes/32/3362532/3/docs/README.md)
     | DOWNLOAD <br>
     at the top left of the page. Click on the second
-    "[browse](https://chromium.googlesource.com/chromium/src/+/refs/changes/32/3362532/3/docs/README.md)"
+    "[preview](https://chromium.googlesource.com/chromium/src/+/refs/changes/32/3362532/3/docs/README.md)"
     link to open the preview for the current patch set.
 
 This **gitiles** view is the authoritative view, exactly the same as will be
