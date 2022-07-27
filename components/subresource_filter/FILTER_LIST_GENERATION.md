@@ -112,7 +112,7 @@ It can be useful for development and testing to create a custom ruleset to activ
     ```
     ||mockad.glitch.me^
     ```
-    Will filter a subframe coming from `http(s)://mockad.glitch.me`.
+    Will filter a child frame coming from `http(s)://mockad.glitch.me`.
 2. Build tools needed to build the ruleset: `autoninja -C out/Release subresource_filter_tools`
 3. Run `./out/Release/ruleset_converter --input_format=filter-list --output_format=unindexed-ruleset --input_files=mock_easylist.txt --output_file=mock_easylist_unindexed`
 4. In `chrome://components` ensure "Subresource Filter Rules" has a non-0 version number or click "Check For Update". This ensures the path used in the following steps is created.

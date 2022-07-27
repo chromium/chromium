@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/browser/subframe_navigation_test_utils.h"
+#include "components/subresource_filter/content/browser/child_frame_navigation_test_utils.h"
 
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"

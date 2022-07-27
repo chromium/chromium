@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/browser/subframe_navigation_filtering_throttle.h"
+#include "components/subresource_filter/content/browser/child_frame_navigation_filtering_throttle.h"
 
 #include <memory>
 #include <sstream>
@@ -18,7 +18,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter_test_utils.h"
-#include "components/subresource_filter/content/browser/subframe_navigation_test_utils.h"
+#include "components/subresource_filter/content/browser/child_frame_navigation_test_utils.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_test_utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
@@ -46,18 +46,18 @@ const char kCnameAliasWasAdTaggedCountHistogram[] =
 const char kCnameAliasWasBlockedCountHistogram[] =
     "SubresourceFilter.CnameAlias.Browser.WasBlockedBasedOnAliasCount";
 
-class SubframeNavigationFilteringThrottleTest
+class ChildFrameNavigationFilteringThrottleTest
     : public content::RenderViewHostTestHarness,
       public content::WebContentsObserver {
  public:
-  SubframeNavigationFilteringThrottleTest() {}
+  ChildFrameNavigationFilteringThrottleTest() {}
 
-  SubframeNavigationFilteringThrottleTest(
-      const SubframeNavigationFilteringThrottleTest&) = delete;
-  SubframeNavigationFilteringThrottleTest& operator=(
-      const SubframeNavigationFilteringThrottleTest&) = delete;
+  ChildFrameNavigationFilteringThrottleTest(
+      const ChildFrameNavigationFilteringThrottleTest&) = delete;
+  ChildFrameNavigationFilteringThrottleTest& operator=(
+      const ChildFrameNavigationFilteringThrottleTest&) = delete;
 
-  ~SubframeNavigationFilteringThrottleTest() override {}
+  ~ChildFrameNavigationFilteringThrottleTest() override {}
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
@@ -84,7 +84,7 @@ class SubframeNavigationFilteringThrottleTest
     // The |parent_filter_| is the parent frame's filter. Do not register a
     // throttle if the parent is not activated with a valid filter.
     if (parent_filter_) {
-      auto throttle = std::make_unique<SubframeNavigationFilteringThrottle>(
+      auto throttle = std::make_unique<ChildFrameNavigationFilteringThrottle>(
           navigation_handle, parent_filter_.get());
       ASSERT_NE(nullptr, throttle->GetNameForLogging());
       navigation_handle->RegisterThrottleForTesting(std::move(throttle));
@@ -179,7 +179,7 @@ class SubframeNavigationFilteringThrottleTest
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
 };
 
-TEST_F(SubframeNavigationFilteringThrottleTest, FilterOnStart) {
+TEST_F(ChildFrameNavigationFilteringThrottleTest, FilterOnStart) {
   InitializeDocumentSubresourceFilter(GURL("https://example.test"));
   const GURL url("https://example.test/disallowed.html");
   CreateTestSubframeAndInitNavigation(url, main_rfh());
@@ -189,7 +189,7 @@ TEST_F(SubframeNavigationFilteringThrottleTest, FilterOnStart) {
       base::Contains(GetConsoleMessages(), GetFilterConsoleMessage(url)));
 }
 
-TEST_F(SubframeNavigationFilteringThrottleTest, FilterOnRedirect) {
+TEST_F(ChildFrameNavigationFilteringThrottleTest, FilterOnRedirect) {
   InitializeDocumentSubresourceFilter(GURL("https://example.test"));
   CreateTestSubframeAndInitNavigation(GURL("https://example.test/allowed.html"),
                                       main_rfh());
@@ -202,7 +202,7 @@ TEST_F(SubframeNavigationFilteringThrottleTest, FilterOnRedirect) {
                 GURL("https://example.test/disallowed.html")));
 }
 
-TEST_F(SubframeNavigationFilteringThrottleTest, DryRunOnStart) {
+TEST_F(ChildFrameNavigationFilteringThrottleTest, DryRunOnStart) {
   InitializeDocumentSubresourceFilter(GURL("https://example.test"),
                                       mojom::ActivationLevel::kDryRun);
   const GURL url("https://example.test/disallowed.html");
@@ -214,7 +214,7 @@ TEST_F(SubframeNavigationFilteringThrottleTest, DryRunOnStart) {
       base::Contains(GetConsoleMessages(), GetFilterConsoleMessage(url)));
 }
 
-TEST_F(SubframeNavigationFilteringThrottleTest, DryRunOnRedirect) {
+TEST_F(ChildFrameNavigationFilteringThrottleTest, DryRunOnRedirect) {
   InitializeDocumentSubresourceFilter(GURL("https://example.test"),
                                       mojom::ActivationLevel::kDryRun);
   CreateTestSubframeAndInitNavigation(GURL("https://example.test/allowed.html"),
@@ -228,7 +228,7 @@ TEST_F(SubframeNavigationFilteringThrottleTest, DryRunOnRedirect) {
                 GURL("https://example.test/disallowed.html")));
 }
 
-TEST_F(SubframeNavigationFilteringThrottleTest, FilterOnSecondRedirect) {
+TEST_F(ChildFrameNavigationFilteringThrottleTest, FilterOnSecondRedirect) {
   InitializeDocumentSubresourceFilter(GURL("https://example.test"));
   CreateTestSubframeAndInitNavigation(GURL("https://example.test/allowed.html"),
                                       main_rfh());
@@ -245,7 +245,7 @@ TEST_F(SubframeNavigationFilteringThrottleTest, FilterOnSecondRedirect) {
                 GURL("https://example.test/disallowed.html")));
 }
 
-TEST_F(SubframeNavigationFilteringThrottleTest, NeverFilterNonMatchingRule) {
+TEST_F(ChildFrameNavigationFilteringThrottleTest, NeverFilterNonMatchingRule) {
   InitializeDocumentSubresourceFilter(GURL("https://example.test"));
   CreateTestSubframeAndInitNavigation(GURL("https://example.test/allowed.html"),
                                       main_rfh());
@@ -260,7 +260,7 @@ TEST_F(SubframeNavigationFilteringThrottleTest, NeverFilterNonMatchingRule) {
             SimulateCommitAndGetResult(navigation_simulator()));
 }
 
-TEST_F(SubframeNavigationFilteringThrottleTest, FilterSubsubframe) {
+TEST_F(ChildFrameNavigationFilteringThrottleTest, FilterSubsubframe) {
   // Fake an activation of the subframe.
   content::RenderFrameHost* parent_subframe =
       content::RenderFrameHostTester::For(main_rfh())
@@ -278,7 +278,7 @@ TEST_F(SubframeNavigationFilteringThrottleTest, FilterSubsubframe) {
             SimulateStartAndGetResult(navigation_simulator()));
 }
 
-TEST_F(SubframeNavigationFilteringThrottleTest, DelayMetrics) {
+TEST_F(ChildFrameNavigationFilteringThrottleTest, DelayMetrics) {
   base::HistogramTester histogram_tester;
   InitializeDocumentSubresourceFilter(GURL("https://example.test"));
   CreateTestSubframeAndInitNavigation(GURL("https://example.test/allowed.html"),
@@ -315,7 +315,7 @@ TEST_F(SubframeNavigationFilteringThrottleTest, DelayMetrics) {
   histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 1);
 }
 
-TEST_F(SubframeNavigationFilteringThrottleTest, DelayMetricsDryRun) {
+TEST_F(ChildFrameNavigationFilteringThrottleTest, DelayMetricsDryRun) {
   base::HistogramTester histogram_tester;
   InitializeDocumentSubresourceFilter(GURL("https://example.test"),
                                       mojom::ActivationLevel::kDryRun);
@@ -352,15 +352,15 @@ TEST_F(SubframeNavigationFilteringThrottleTest, DelayMetricsDryRun) {
   histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 1);
 }
 
-class SubframeNavigationFilteringThrottleDnsAliasTest
-    : public SubframeNavigationFilteringThrottleTest {
+class ChildFrameNavigationFilteringThrottleDnsAliasTest
+    : public ChildFrameNavigationFilteringThrottleTest {
  public:
-  SubframeNavigationFilteringThrottleDnsAliasTest() {
+  ChildFrameNavigationFilteringThrottleDnsAliasTest() {
     feature_list_.InitAndEnableFeature(
         ::features::kSendCnameAliasesToSubresourceFilterFromBrowser);
   }
 
-  ~SubframeNavigationFilteringThrottleDnsAliasTest() override = default;
+  ~ChildFrameNavigationFilteringThrottleDnsAliasTest() override = default;
 
   void ExpectHistogramsMatching(CnameAliasMetricInfo info) {
     bool has_aliases = info.list_length > 0;
@@ -388,7 +388,7 @@ class SubframeNavigationFilteringThrottleDnsAliasTest
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(SubframeNavigationFilteringThrottleDnsAliasTest,
+TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest,
        FilterOnWillProcessResponse) {
   InitializeDocumentSubresourceFilterWithSubstringRules(
       GURL("https://example.test"), {"disallowed.com", ".bad-ad/some"});
@@ -415,7 +415,7 @@ TEST_F(SubframeNavigationFilteringThrottleDnsAliasTest,
   ExpectHistogramsMatching(info);
 }
 
-TEST_F(SubframeNavigationFilteringThrottleDnsAliasTest,
+TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest,
        DryRunOnWillProcessResponse) {
   InitializeDocumentSubresourceFilterWithSubstringRules(
       GURL("https://example.test"), {"disallowed.com", "bad", "blocked"},
@@ -443,7 +443,7 @@ TEST_F(SubframeNavigationFilteringThrottleDnsAliasTest,
   ExpectHistogramsMatching(info);
 }
 
-TEST_F(SubframeNavigationFilteringThrottleDnsAliasTest, EnabledNoAliases) {
+TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest, EnabledNoAliases) {
   InitializeDocumentSubresourceFilterWithSubstringRules(
       GURL("https://example.test"), {"disallowed.com"},
       mojom::ActivationLevel::kEnabled);

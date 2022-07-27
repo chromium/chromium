@@ -62,7 +62,7 @@ class SubresourceFilterObserverManager
       const mojom::ActivationState& activation_state);
 
   // Called in WillStartRequest or WillRedirectRequest stage from a
-  // SubframeNavigationFilteringThrottle.
+  // ChildFrameNavigationFilteringThrottle.
   void NotifyChildFrameNavigationEvaluated(
       content::NavigationHandle* navigation_handle,
       LoadPolicy load_policy);

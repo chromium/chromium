@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/browser/subframe_navigation_filtering_throttle.h"
+#include "components/subresource_filter/content/browser/child_frame_navigation_filtering_throttle.h"
 
 #include <sstream>
 
@@ -62,7 +62,7 @@ void LogCnameAliasMetrics(const CnameAliasMetricInfo& info) {
 
 }  // namespace
 
-SubframeNavigationFilteringThrottle::SubframeNavigationFilteringThrottle(
+ChildFrameNavigationFilteringThrottle::ChildFrameNavigationFilteringThrottle(
     content::NavigationHandle* handle,
     AsyncDocumentSubresourceFilter* parent_frame_filter)
     : content::NavigationThrottle(handle),
@@ -73,7 +73,8 @@ SubframeNavigationFilteringThrottle::SubframeNavigationFilteringThrottle(
   DCHECK(parent_frame_filter_);
 }
 
-SubframeNavigationFilteringThrottle::~SubframeNavigationFilteringThrottle() {
+ChildFrameNavigationFilteringThrottle::
+    ~ChildFrameNavigationFilteringThrottle() {
   switch (load_policy_) {
     case LoadPolicy::EXPLICITLY_ALLOW:
       [[fallthrough]];
@@ -99,17 +100,17 @@ SubframeNavigationFilteringThrottle::~SubframeNavigationFilteringThrottle() {
 }
 
 content::NavigationThrottle::ThrottleCheckResult
-SubframeNavigationFilteringThrottle::WillStartRequest() {
+ChildFrameNavigationFilteringThrottle::WillStartRequest() {
   return MaybeDeferToCalculateLoadPolicy();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
-SubframeNavigationFilteringThrottle::WillRedirectRequest() {
+ChildFrameNavigationFilteringThrottle::WillRedirectRequest() {
   return MaybeDeferToCalculateLoadPolicy();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
-SubframeNavigationFilteringThrottle::WillProcessResponse() {
+ChildFrameNavigationFilteringThrottle::WillProcessResponse() {
   DCHECK_NE(load_policy_, LoadPolicy::DISALLOW);
 
   if (alias_check_enabled_) {
@@ -139,7 +140,7 @@ SubframeNavigationFilteringThrottle::WillProcessResponse() {
     if (!alias_urls.empty()) {
       pending_load_policy_calculations_++;
       parent_frame_filter_->GetLoadPolicyForSubdocumentURLs(
-          alias_urls, base::BindOnce(&SubframeNavigationFilteringThrottle::
+          alias_urls, base::BindOnce(&ChildFrameNavigationFilteringThrottle::
                                          OnCalculatedLoadPoliciesFromAliasUrls,
                                      weak_ptr_factory_.GetWeakPtr()));
     }
@@ -162,11 +163,11 @@ SubframeNavigationFilteringThrottle::WillProcessResponse() {
   return PROCEED;
 }
 
-const char* SubframeNavigationFilteringThrottle::GetNameForLogging() {
-  return "SubframeNavigationFilteringThrottle";
+const char* ChildFrameNavigationFilteringThrottle::GetNameForLogging() {
+  return "ChildFrameNavigationFilteringThrottle";
 }
 
-void SubframeNavigationFilteringThrottle::HandleDisallowedLoad() {
+void ChildFrameNavigationFilteringThrottle::HandleDisallowedLoad() {
   if (parent_frame_filter_->activation_state().enable_logging) {
     std::string console_message = base::StringPrintf(
         kDisallowChildFrameConsoleMessageFormat,
@@ -186,7 +187,7 @@ void SubframeNavigationFilteringThrottle::HandleDisallowedLoad() {
 }
 
 content::NavigationThrottle::ThrottleCheckResult
-SubframeNavigationFilteringThrottle::MaybeDeferToCalculateLoadPolicy() {
+ChildFrameNavigationFilteringThrottle::MaybeDeferToCalculateLoadPolicy() {
   DCHECK_NE(load_policy_, LoadPolicy::DISALLOW);
   if (load_policy_ == LoadPolicy::WOULD_DISALLOW)
     return PROCEED;
@@ -195,7 +196,7 @@ SubframeNavigationFilteringThrottle::MaybeDeferToCalculateLoadPolicy() {
   parent_frame_filter_->GetLoadPolicyForSubdocument(
       navigation_handle()->GetURL(),
       base::BindOnce(
-          &SubframeNavigationFilteringThrottle::OnCalculatedLoadPolicy,
+          &ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy,
           weak_ptr_factory_.GetWeakPtr()));
 
   // If the embedder document has activation enabled, we calculate frame load
@@ -213,7 +214,7 @@ SubframeNavigationFilteringThrottle::MaybeDeferToCalculateLoadPolicy() {
   return PROCEED;
 }
 
-void SubframeNavigationFilteringThrottle::OnCalculatedLoadPolicy(
+void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy(
     LoadPolicy policy) {
   // TODO(https://crbug.com/1046806): Modify this call in cases where the new
   // |policy| matches an explicitly allowed rule, rather than using the most
@@ -244,8 +245,8 @@ void SubframeNavigationFilteringThrottle::OnCalculatedLoadPolicy(
   ResumeNavigation();
 }
 
-void SubframeNavigationFilteringThrottle::OnCalculatedLoadPoliciesFromAliasUrls(
-    std::vector<LoadPolicy> policies) {
+void ChildFrameNavigationFilteringThrottle::
+    OnCalculatedLoadPoliciesFromAliasUrls(std::vector<LoadPolicy> policies) {
   // We deferred to check aliases in WillProcessResponse.
   DCHECK(defer_stage_ == DeferStage::kWillProcessResponse);
   DCHECK(!policies.empty());
@@ -264,14 +265,14 @@ void SubframeNavigationFilteringThrottle::OnCalculatedLoadPoliciesFromAliasUrls(
   OnCalculatedLoadPolicy(most_restricive_alias_policy);
 }
 
-void SubframeNavigationFilteringThrottle::DeferStart(DeferStage stage) {
+void ChildFrameNavigationFilteringThrottle::DeferStart(DeferStage stage) {
   DCHECK(defer_stage_ == DeferStage::kNotDeferring);
   DCHECK(stage != DeferStage::kNotDeferring);
   defer_stage_ = stage;
   last_defer_timestamp_ = base::TimeTicks::Now();
 }
 
-void SubframeNavigationFilteringThrottle::NotifyLoadPolicy() const {
+void ChildFrameNavigationFilteringThrottle::NotifyLoadPolicy() const {
   auto* observer_manager = SubresourceFilterObserverManager::FromWebContents(
       navigation_handle()->GetWebContents());
   if (!observer_manager)
@@ -281,14 +282,14 @@ void SubframeNavigationFilteringThrottle::NotifyLoadPolicy() const {
                                                         load_policy_);
 }
 
-void SubframeNavigationFilteringThrottle::UpdateDeferInfo() {
+void ChildFrameNavigationFilteringThrottle::UpdateDeferInfo() {
   DCHECK(defer_stage_ != DeferStage::kNotDeferring);
   DCHECK(!last_defer_timestamp_.is_null());
   total_defer_time_ += base::TimeTicks::Now() - last_defer_timestamp_;
   defer_stage_ = DeferStage::kNotDeferring;
 }
 
-void SubframeNavigationFilteringThrottle::CancelNavigation() {
+void ChildFrameNavigationFilteringThrottle::CancelNavigation() {
   bool defer_stage_was_will_process_response =
       defer_stage_ == DeferStage::kWillProcessResponse;
 
@@ -302,7 +303,7 @@ void SubframeNavigationFilteringThrottle::CancelNavigation() {
     CancelDeferredNavigation(BLOCK_REQUEST_AND_COLLAPSE);
 }
 
-void SubframeNavigationFilteringThrottle::ResumeNavigation() {
+void ChildFrameNavigationFilteringThrottle::ResumeNavigation() {
   // There are no more pending load calculations. We can toggle back to not
   // being deferred.
   bool defer_stage_was_will_process_response =

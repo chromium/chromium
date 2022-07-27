@@ -639,7 +639,7 @@ void ContentSubresourceFilterThrottleManager::LogAction(
   UMA_HISTOGRAM_ENUMERATION("SubresourceFilter.Actions2", action);
 }
 
-std::unique_ptr<SubframeNavigationFilteringThrottle>
+std::unique_ptr<ChildFrameNavigationFilteringThrottle>
 ContentSubresourceFilterThrottleManager::
     MaybeCreateChildFrameNavigationFilteringThrottle(
         content::NavigationHandle* navigation_handle) {
@@ -647,9 +647,10 @@ ContentSubresourceFilterThrottleManager::
     return nullptr;
   AsyncDocumentSubresourceFilter* parent_filter =
       GetParentFrameFilter(navigation_handle);
-  return parent_filter ? std::make_unique<SubframeNavigationFilteringThrottle>(
-                             navigation_handle, parent_filter)
-                       : nullptr;
+  return parent_filter
+             ? std::make_unique<ChildFrameNavigationFilteringThrottle>(
+                   navigation_handle, parent_filter)
+             : nullptr;
 }
 
 std::unique_ptr<ActivationStateComputingNavigationThrottle>

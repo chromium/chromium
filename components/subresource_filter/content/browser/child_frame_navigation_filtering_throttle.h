@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBFRAME_NAVIGATION_FILTERING_THROTTLE_H_
-#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBFRAME_NAVIGATION_FILTERING_THROTTLE_H_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_CHILD_FRAME_NAVIGATION_FILTERING_THROTTLE_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_CHILD_FRAME_NAVIGATION_FILTERING_THROTTLE_H_
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -35,33 +35,33 @@ struct CnameAliasMetricInfo {
   int redundant_count = 0;
 };
 
-// NavigationThrottle responsible for filtering subframe and fenced frame
-// document loads, which are considered subresource loads of their parent frame,
-// hence are subject to subresource filtering using the parent frame's
-// AsyncDocumentSubresourceFilter.
+// NavigationThrottle responsible for filtering child frame (subframes and
+// fenced frame main frames) document loads, which are considered subresource
+// loads of their parent frame, hence are subject to subresource filtering using
+// the parent frame's AsyncDocumentSubresourceFilter.
 //
-// The throttle should only be instantiated for navigations occuring in
-// subframes owned by documents which already have filtering activated, and
+// The throttle should only be instantiated for navigations occuring in child
+// frames owned by documents which already have filtering activated, and
 // therefore an associated (Async)DocumentSubresourceFilter.
 //
 // TODO(https://crbug.com/984562): With AdTagging enabled, this throttle delays
-// almost all subframe navigations. This delay is necessary in blocking mode due
-// to logic related to BLOCK_REQUEST_AND_COLLAPSE. However, there may be room
-// for optimization during AdTagging, or migrating BLOCK_REQUEST_AND_COLLAPSE to
-// be allowed during WillProcessResponse.
-// TODO(bokan): Rename to ChildFrameNavigationFilteringThrottle.
-class SubframeNavigationFilteringThrottle : public content::NavigationThrottle {
+// almost all child frame navigations. This delay is necessary in blocking mode
+// due to logic related to BLOCK_REQUEST_AND_COLLAPSE. However, there may be
+// room for optimization during AdTagging, or migrating
+// BLOCK_REQUEST_AND_COLLAPSE to be allowed during WillProcessResponse.
+class ChildFrameNavigationFilteringThrottle
+    : public content::NavigationThrottle {
  public:
-  SubframeNavigationFilteringThrottle(
+  ChildFrameNavigationFilteringThrottle(
       content::NavigationHandle* handle,
       AsyncDocumentSubresourceFilter* parent_frame_filter);
 
-  SubframeNavigationFilteringThrottle(
-      const SubframeNavigationFilteringThrottle&) = delete;
-  SubframeNavigationFilteringThrottle& operator=(
-      const SubframeNavigationFilteringThrottle&) = delete;
+  ChildFrameNavigationFilteringThrottle(
+      const ChildFrameNavigationFilteringThrottle&) = delete;
+  ChildFrameNavigationFilteringThrottle& operator=(
+      const ChildFrameNavigationFilteringThrottle&) = delete;
 
-  ~SubframeNavigationFilteringThrottle() override;
+  ~ChildFrameNavigationFilteringThrottle() override;
 
   // content::NavigationThrottle:
   content::NavigationThrottle::ThrottleCheckResult WillStartRequest() override;
@@ -107,10 +107,10 @@ class SubframeNavigationFilteringThrottle : public content::NavigationThrottle {
   // Set to the least restrictive load policy by default.
   LoadPolicy load_policy_ = LoadPolicy::EXPLICITLY_ALLOW;
 
-  base::WeakPtrFactory<SubframeNavigationFilteringThrottle> weak_ptr_factory_{
+  base::WeakPtrFactory<ChildFrameNavigationFilteringThrottle> weak_ptr_factory_{
       this};
 };
 
 }  // namespace subresource_filter
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBFRAME_NAVIGATION_FILTERING_THROTTLE_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_CHILD_FRAME_NAVIGATION_FILTERING_THROTTLE_H_

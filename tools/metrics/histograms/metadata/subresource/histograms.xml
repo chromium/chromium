@@ -41,7 +41,7 @@ chromium-metrics-reviews@google.com.
     Records whether or not a given NavigationRequest has a nonempty vector of
     CNAME aliases. Only recorded if
     features::kSendCnameAliasesToSubresourceFilterFromBrowser is enabled.
-    Recorded in a method called in the SubframeNavigationFilteringThrottle's
+    Recorded in a method called in the ChildFrameNavigationFilteringThrottle's
     destructor.
   </summary>
 </histogram>
@@ -52,10 +52,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Counts the number of invalid CNAME aliases seen for a NavigationRequest by
-    the SubframeNavigationFilteringThrottle. Only recorded if
+    the ChildFrameNavigationFilteringThrottle. Only recorded if
     features::kSendCnameAliasesToSubresourceFilterFromBrowser is enabled and the
     request has a nonempty vector of CNAME aliases. Recorded in a method called
-    in the SubframeNavigationFilteringThrottle's destructor.
+    in the ChildFrameNavigationFilteringThrottle's destructor.
   </summary>
 </histogram>
 
@@ -65,10 +65,11 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records the lengths of each CNAME aliases vector passed to the
-    SubframeNavigationFilteringThrottle, not including empty alias vectors. Only
-    recorded if features::kSendCnameAliasesToSubresourceFilterFromBrowser is
-    enabled and the request has a nonempty vector of CNAME aliases. Recorded in
-    a method called in the SubframeNavigationFilteringThrottle's destructor.
+    ChildFrameNavigationFilteringThrottle, not including empty alias vectors.
+    Only recorded if features::kSendCnameAliasesToSubresourceFilterFromBrowser
+    is enabled and the request has a nonempty vector of CNAME aliases. Recorded
+    in a method called in the ChildFrameNavigationFilteringThrottle's
+    destructor.
   </summary>
 </histogram>
 
@@ -78,11 +79,11 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Counts the number of CNAME aliases seen by the
-    SubframeNavigationFilteringThrottle that match the host of the requested
+    ChildFrameNavigationFilteringThrottle that match the host of the requested
     URL. Only recorded if
     features::kSendCnameAliasesToSubresourceFilterFromBrowser is enabled and the
     request has a nonempty vector of CNAME aliases. Recorded in a method called
-    in the SubframeNavigationFilteringThrottle's destructor.
+    in the ChildFrameNavigationFilteringThrottle's destructor.
   </summary>
 </histogram>
 
@@ -96,7 +97,7 @@ chromium-metrics-reviews@google.com.
     which LoadPolicy::kWouldDisallow was returned due to an alias match. Only
     recorded if features::kSendCnameAliasesToSubresourceFilterFromBrowser is
     enabled and the request has a nonempty vector of CNAME aliases. Recorded in
-    a method called in the SubframeNavigationFilteringThrottle's destructor.
+    a method called in the ChildFrameNavigationFilteringThrottle's destructor.
   </summary>
 </histogram>
 
@@ -110,7 +111,7 @@ chromium-metrics-reviews@google.com.
     which LoadPolicy::kDisallow was returned due to an alias match. Only
     recorded if features::kSendCnameAliasesToSubresourceFilterFromBrowser is
     enabled and the request has a nonempty vector of CNAME aliases. Recorded in
-    a method called in the SubframeNavigationFilteringThrottle's destructor.
+    a method called in the ChildFrameNavigationFilteringThrottle's destructor.
   </summary>
 </histogram>
 
