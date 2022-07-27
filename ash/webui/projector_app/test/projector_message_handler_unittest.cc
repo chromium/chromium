@@ -22,6 +22,7 @@
 namespace {
 
 const char kTestUserEmail[] = "testuser1@gmail.com";
+const char kTestContainerFolderId[] = "test_container_id";
 
 const char kTestXhrUrl[] = "https://www.googleapis.com/drive/v3/files/fileID";
 const char kTestXhrUnsupportedUrl[] = "https://www.example.com";
@@ -419,9 +420,9 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetPendingScreencasts) {
   EXPECT_EQ(list.size(), 1u);
 
   const auto& screencast = list[0];
-  EXPECT_EQ(*(screencast.FindStringPath("name")), name);
-  EXPECT_EQ(*(screencast.FindDoublePath("createdTime")), 0);
-  EXPECT_EQ(*(screencast.FindBoolPath("uploadFailed")), false);
+  EXPECT_EQ(*screencast.FindStringPath("name"), name);
+  EXPECT_EQ(*screencast.FindDoublePath("createdTime"), 0);
+  EXPECT_EQ(*screencast.FindBoolPath("uploadFailed"), false);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, OnScreencastsStateChange) {
@@ -568,25 +569,24 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetScreencast) {
   base::ListValue list_args;
   list_args.Append(kGetScreencastCallback);
   base::ListValue args;
-  const std::string container_folder_id = "test_container_id";
-  args.Append(container_folder_id);
-
+  args.Append(kTestContainerFolderId);
   list_args.Append(std::move(args));
 
   web_ui().HandleReceivedMessage("getScreencast", &list_args);
 
+  // We expect that there was only one callback to the WebUI.
   EXPECT_EQ(web_ui().call_data().size(), 1u);
 
   const content::TestWebUI::CallData& call_data = FetchCallData(0);
   EXPECT_EQ(call_data.function_name(), kWebUIResponse);
   EXPECT_EQ(call_data.arg1()->GetString(), kGetScreencastCallback);
 
-  // Whether the callback was rejected or not.
+  // Expect the callback to be successful.
   EXPECT_TRUE(call_data.arg2()->GetBool());
   ASSERT_TRUE(call_data.arg3()->is_dict());
-  const base::Value::Dict& dict = std::move(call_data.arg3()->GetDict());
+  const base::Value::Dict& dict = call_data.arg3()->GetDict();
 
-  EXPECT_EQ(*dict.FindString("containerFolderId"), container_folder_id);
+  EXPECT_EQ(*dict.FindString("containerFolderId"), kTestContainerFolderId);
   // TODO(b/236857019) Updates the |name| value when getting screencast name by
   // using DriveFS service.
   EXPECT_EQ(*dict.FindString("name"), "name");

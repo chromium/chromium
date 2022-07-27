@@ -183,7 +183,7 @@ const CLIENT_DELEGATE = {
   /**
    * Gets information about the specified screencast from DriveFS.
    * @param {string} screencastId The Drive item id of container folder.
-   * @return {!Promise<projectorApp.Screencast>}
+   * @return {!Promise<!projectorApp.Screencast>}
    */
   getScreencast(screencastId) {
     return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(

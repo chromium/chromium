@@ -80,11 +80,10 @@ using PendingScreencastSet =
 // ProjectorApp.
 class ProjectorAppClient {
  public:
-  // The callback used by GetScreencast API, which involves multiple async
-  // steps.
+  // The callback used by the GetScreencast() API.
   using OnGetScreencastCallback =
-      base::OnceCallback<void(std::unique_ptr<ProjectorScreencast>,
-                              const std::string& errorMsg)>;
+      base::OnceCallback<void(std::unique_ptr<ProjectorScreencast> screencast,
+                              const std::string& error_message)>;
 
   // Interface for observing events on the ProjectorAppClient.
   class Observer : public base::CheckedObserver {

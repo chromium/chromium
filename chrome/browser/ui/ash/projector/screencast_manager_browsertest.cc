@@ -11,8 +11,9 @@
 #include "base/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/task_environment.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/drive/service/fake_drive_service.h"
+#include "content/public/test/browser_test.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,14 +22,16 @@ namespace ash {
 namespace {
 
 constexpr char kScreencastId[] = "screencastId";
+constexpr char kVideoFileId[] = "videoFileId";
+constexpr char kMetadataFileId[] = "metadataFileId";
 
 }  // namespace
 
-class ScreencastManagerTest : public testing::Test {
+class ScreencastManagerTest : public InProcessBrowserTest {
  public:
-  // testing::Test:
-  void SetUp() override {
-    testing::Test::SetUp();
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
 
     auto fake_drive_service = std::make_unique<drive::FakeDriveService>();
     drive_service_ = fake_drive_service.get();
@@ -78,25 +81,21 @@ class ScreencastManagerTest : public testing::Test {
 
   drive::FakeDriveService* drive_service() { return drive_service_; }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
-
  private:
   drive::FakeDriveService* drive_service_ = nullptr;
 
   ScreencastManager screencast_manager_;
 };
 
-TEST_F(ScreencastManagerTest, GetScreencastSuccess) {
+IN_PROC_BROWSER_TEST_F(ScreencastManagerTest, GetScreencastSuccess) {
   // Creates default screencast folder.
   AddDefaultScreencastFolder();
-  const std::string video_file_id = "videoFileId";
-  const std::string metadata_file_id = "metadataFileId";
 
   // Creates screencasts files.
-  AddFileToDefaultScreencastFolder(video_file_id, "video/webm",
-                                   "Screencast.webm", true);
-  AddFileToDefaultScreencastFolder(metadata_file_id, "text/plain",
-                                   "Screencast.projector", true);
+  AddFileToDefaultScreencastFolder(kVideoFileId, "video/webm",
+                                   "MyTestScreencast.webm", true);
+  AddFileToDefaultScreencastFolder(kMetadataFileId, "text/plain",
+                                   "MyTestScreencast.projector", true);
 
   base::RunLoop run_loop;
   screencast_manager().GetScreencast(
@@ -106,8 +105,8 @@ TEST_F(ScreencastManagerTest, GetScreencastSuccess) {
                       const std::string& error) {
             EXPECT_EQ(screencast->container_folder_id, kScreencastId);
             // Expects video file id and metadata file id are populated.
-            EXPECT_EQ(screencast->video.file_id, "videoFileId");
-            EXPECT_EQ(screencast->metadata_file_id, "metadataFileId");
+            EXPECT_EQ(screencast->video.file_id, kVideoFileId);
+            EXPECT_EQ(screencast->metadata_file_id, kMetadataFileId);
             EXPECT_TRUE(error.empty());
             // Quits the run loop.
             run_loop.Quit();
@@ -115,11 +114,12 @@ TEST_F(ScreencastManagerTest, GetScreencastSuccess) {
   run_loop.Run();
 }
 
-TEST_F(ScreencastManagerTest, GetScreencastInvalidScreencastError) {
+IN_PROC_BROWSER_TEST_F(ScreencastManagerTest,
+                       GetScreencastInvalidScreencastError) {
   AddDefaultScreencastFolder();
   // Creates invalid screencast without video file.
   AddFileToDefaultScreencastFolder("metadataFileId", "text/plain",
-                                   "Screencast.projector", true);
+                                   "MyTestScreencast.projector", true);
 
   base::RunLoop run_loop;
   screencast_manager().GetScreencast(
@@ -139,7 +139,7 @@ TEST_F(ScreencastManagerTest, GetScreencastInvalidScreencastError) {
   run_loop.Run();
 }
 
-TEST_F(ScreencastManagerTest, GetScreencastHttpError) {
+IN_PROC_BROWSER_TEST_F(ScreencastManagerTest, GetScreencastHttpError) {
   // Mocks offline.
   drive_service()->set_offline(true);
 

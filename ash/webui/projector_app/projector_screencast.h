@@ -30,7 +30,7 @@ struct ProjectorScreencast {
 
   base::Value ToValue() const;
 
-  // Only available for screencasts locate in DriveFs.
+  // Only available for screencasts located in DriveFs.
   std::string container_folder_id;
 
   std::string name;

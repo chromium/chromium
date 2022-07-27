@@ -243,10 +243,10 @@ projectorApp.NewScreencastPreconditionState.prototype.reasons;
 projectorApp.Video = function() {};
 
 /**
- * The local source url of screencast video.
+ * The source url of screencast video.
  * @type {string|undefined}
  */
-projectorApp.Video.prototype.srcURL;
+projectorApp.Video.prototype.srcUrl;
 
 /**
  * Structure for Screencast object.
@@ -272,8 +272,8 @@ projectorApp.Screencast.prototype.name;
 
 
 /**
- * The video object of screencast.
- * @type {projectorApp.Video}
+ * The screencast video object.
+ * @type {!projectorApp.Video}
  */
 projectorApp.Screencast.prototype.video;
 
@@ -390,7 +390,7 @@ projectorApp.ClientDelegate.prototype.openFeedbackDialog = function() {};
 /**
  * Gets information about the specified screencast from DriveFS.
  * @param {string} screencastId The Drive item id of container folder.
- * @return {!Promise<projectorApp.Screencast>}
+ * @return {!Promise<!projectorApp.Screencast>}
  */
 projectorApp.ClientDelegate.prototype.getScreencast = function(screencastId) {};
 

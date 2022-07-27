@@ -484,24 +484,26 @@ void ProjectorMessageHandler::GetPendingScreencasts(
 
 void ProjectorMessageHandler::GetScreencast(const base::Value::List& args) {
   AllowJavascript();
+  // Two arguments. The first is callback id, and the second is the list
+  // containing the screencast container folder id.
   DCHECK_EQ(args.size(), 2u);
-  const auto& func_args = args[1].GetList();
-  DCHECK_EQ(func_args.size(), 1u);
+  const auto& requested_item_ids = args[1].GetList();
+  DCHECK_EQ(requested_item_ids.size(), 1u);
 
-  // 1. TODO(b/236857019):Locates the local path of container folder local path
+  // 1. TODO(b/236857019): Locate the local path of container folder local path
   // by server side file id.
-  //  2. TODO(b/236857019): Locates the local path of media file for given
-  //  container folder path.
-  //  3. TODO(b/237089852) With the media file path, issues an open file request
-  //  to retrieve video url.
-  //  4. TODO(b/236857019): Populate the screencast info and return the promise
-  //  with it.
+  // 2. TODO(b/236857019): Locate the local path of media file for given
+  // container folder path.
+  // 3. TODO(b/237089852) With the media file path, issues an open file request
+  // to retrieve video url.
+  // 4. TODO(b/236857019): Populate the screencast info and return the promise
+  // with it.
   ProjectorScreencast screencast;
   // 5. TODO(b/236857019): Investigate load screencast outside DriveFS. Finds a
-  // way(maybe by checking the pattern) to distinguish whether args[1] is a
+  // way (maybe by checking the pattern) to distinguish whether args[1] is a
   // container folder id or path/blob uuid. Or add a separate API like
   // GetScreencastByPath?
-  screencast.container_folder_id = func_args[0].GetString();
+  screencast.container_folder_id = requested_item_ids[0].GetString();
   // Set the "name" with a random string for now.
   // TODO(b/236857019) Gets screencast name by using DriveFS service.
   screencast.name = "name";
