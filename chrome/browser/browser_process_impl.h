@@ -237,6 +237,7 @@ class BrowserProcessImpl : public BrowserProcess,
   void CreateStatusTray();
   void CreateBackgroundModeManager();
   void CreateGCMDriver();
+  void CreateNetworkTimeTracker();
 
   void ApplyDefaultBrowserPolicy();
 

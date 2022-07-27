@@ -904,12 +904,7 @@ WebRtcLogUploader* BrowserProcessImpl::webrtc_log_uploader() {
 }
 
 network_time::NetworkTimeTracker* BrowserProcessImpl::network_time_tracker() {
-  if (!network_time_tracker_) {
-    network_time_tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
-        base::WrapUnique(new base::DefaultClock()),
-        base::WrapUnique(new base::DefaultTickClock()), local_state(),
-        system_network_context_manager()->GetSharedURLLoaderFactory());
-  }
+  CreateNetworkTimeTracker();
   return network_time_tracker_.get();
 }
 
@@ -1185,10 +1180,7 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
   platform_part_->PreMainMessageLoopRun();
 
   if (base::FeatureList::IsEnabled(network_time::kNetworkTimeServiceQuerying)) {
-    network_time_tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
-        base::WrapUnique(new base::DefaultClock()),
-        base::WrapUnique(new base::DefaultTickClock()), local_state(),
-        system_network_context_manager()->GetSharedURLLoaderFactory());
+    CreateNetworkTimeTracker();
   }
 
   CreateNetworkQualityObserver();
@@ -1342,6 +1334,16 @@ void BrowserProcessImpl::CreateGCMDriver() {
       blocking_task_runner);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+void BrowserProcessImpl::CreateNetworkTimeTracker() {
+  if (network_time_tracker_) {
+    return;
+  }
+  network_time_tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
+      base::WrapUnique(new base::DefaultClock()),
+      base::WrapUnique(new base::DefaultTickClock()), local_state(),
+      system_network_context_manager()->GetSharedURLLoaderFactory());
+}
 
 void BrowserProcessImpl::ApplyDefaultBrowserPolicy() {
   if (local_state()->GetBoolean(prefs::kDefaultBrowserSettingEnabled)) {
