@@ -59,44 +59,6 @@ base::FilePath GetDefaultFilepathForPasswordFile(
 }
 #endif
 
-// A helper class for reading the passwords that have been imported.
-class PasswordImportConsumer {
- public:
-  explicit PasswordImportConsumer(
-      Profile* profile,
-      raw_ptr<password_manager::SavedPasswordsPresenter> presenter);
-
-  PasswordImportConsumer(const PasswordImportConsumer&) = delete;
-  PasswordImportConsumer& operator=(const PasswordImportConsumer&) = delete;
-
-  void ConsumePasswords(password_manager::mojom::CSVPasswordSequencePtr seq);
-
- private:
-  raw_ptr<Profile> profile_;
-  const raw_ptr<password_manager::SavedPasswordsPresenter> presenter_;
-  SEQUENCE_CHECKER(sequence_checker_);
-};
-
-PasswordImportConsumer::PasswordImportConsumer(
-    Profile* profile,
-    raw_ptr<password_manager::SavedPasswordsPresenter> presenter)
-    : profile_(profile), presenter_(presenter) {}
-
-void PasswordImportConsumer::ConsumePasswords(
-    password_manager::mojom::CSVPasswordSequencePtr seq) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!seq)
-    return;
-
-  for (const auto& pwd : seq->csv_passwords) {
-    presenter_->AddCredential(password_manager::CredentialUIEntry(pwd),
-                              password_manager::PasswordForm::Type::kImported);
-  }
-
-  UMA_HISTOGRAM_COUNTS_1M("PasswordManager.ImportedPasswordsPerUserInCSV",
-                          seq->csv_passwords.size());
-}
-
 }  // namespace
 
 PasswordManagerPorter::PasswordManagerPorter(
@@ -231,16 +193,27 @@ void PasswordManagerPorter::FileSelectionCanceled(void* params) {
   select_file_dialog_.reset();
 }
 
-void PasswordManagerPorter::ImportPasswordsFromPath(
-    const base::FilePath& path) {
-  // Set up a |PasswordImportConsumer| to process each password entry.
-  auto form_consumer =
-      std::make_unique<PasswordImportConsumer>(profile_, presenter_);
-  importer_->Import(path,
-                    base::BindOnce(&PasswordImportConsumer::ConsumePasswords,
-                                   std::move(form_consumer)));
-}
-
 void PasswordManagerPorter::ExportPasswordsToPath(const base::FilePath& path) {
   exporter_->SetDestination(path);
+}
+
+void PasswordManagerPorter::ImportPasswordsFromPath(
+    const base::FilePath& path) {
+  importer_->Import(path,
+                    base::BindOnce(&PasswordManagerPorter::ConsumePasswords,
+                                   weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PasswordManagerPorter::ConsumePasswords(
+    password_manager::mojom::CSVPasswordSequencePtr seq) {
+  if (!seq)
+    return;
+
+  for (const auto& pwd : seq->csv_passwords) {
+    presenter_->AddCredential(password_manager::CredentialUIEntry(pwd),
+                              password_manager::PasswordForm::Type::kImported);
+  }
+
+  UMA_HISTOGRAM_COUNTS_1M("PasswordManager.ImportedPasswordsPerUserInCSV",
+                          seq->csv_passwords.size());
 }

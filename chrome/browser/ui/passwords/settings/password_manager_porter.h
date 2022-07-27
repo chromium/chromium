@@ -84,6 +84,8 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
 
   void ExportPasswordsToPath(const base::FilePath& path);
 
+  void ConsumePasswords(password_manager::mojom::CSVPasswordSequencePtr seq);
+
   std::unique_ptr<password_manager::PasswordManagerExporter> exporter_;
   std::unique_ptr<password_manager::PasswordImporter> importer_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
@@ -94,6 +96,8 @@ class PasswordManagerPorter : public ui::SelectFileDialog::Listener {
   // PasswordManagerExporter instance for each export.
   const raw_ptr<password_manager::SavedPasswordsPresenter> presenter_;
   ProgressCallback on_export_progress_callback_;
+
+  base::WeakPtrFactory<PasswordManagerPorter> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_MANAGER_PORTER_H_
