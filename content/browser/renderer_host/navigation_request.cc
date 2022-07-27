@@ -5909,6 +5909,7 @@ void NavigationRequest::WillStartRequest() {
 
   if (IsSelfReferentialURL()) {
     SetState(CANCELING);
+    DVLOG(1) << "Cancelling self-referential request for " << GetURL();
     if (complete_callback_for_testing_ &&
         std::move(complete_callback_for_testing_)
             .Run(NavigationThrottle::CANCEL)) {
