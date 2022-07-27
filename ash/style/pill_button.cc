@@ -12,6 +12,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
 namespace ash {
@@ -22,6 +23,11 @@ constexpr int kPillButtonMinimumWidth = 56;
 constexpr int kIconSize = 20;
 constexpr int kIconPillButtonImageLabelSpacingDp = 8;
 constexpr int kPaddingReductionForIcon = 4;
+
+// Including the thickness and inset of the focus ring in order to keep 2px
+// padding between the focus ring and content of the button.
+constexpr int kFocusRingPadding = 2 + views::FocusRing::kDefaultHaloThickness +
+                                  views::FocusRing::kDefaultHaloInset;
 
 // Returns true it is a floating type of PillButton, which is a type of
 // PillButton without a background.
@@ -218,9 +224,16 @@ void PillButton::UpdateButtonHeight(int height) {
       vertical_spacing, left_padding, vertical_spacing, horizontal_spacing_)));
 
   if (rounded_highlight_path_) {
-    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                  height_ / 2.f);
+    if (type_ == Type::kIconlessProminent) {
+      views::InstallRoundRectHighlightPathGenerator(
+          this, gfx::Insets(-kFocusRingPadding),
+          height_ / 2.f + kFocusRingPadding);
+    } else {
+      views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                    height_ / 2.f);
+    }
   }
+
   if (!IsFloatingPillButton(type_)) {
     SetBackground(views::CreateRoundedRectBackground(
         GetDefaultBackgroundColor(type_), height_ / 2.f));
