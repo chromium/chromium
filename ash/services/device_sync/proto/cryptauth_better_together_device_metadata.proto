@@ -8,6 +8,12 @@ package cryptauthv2;
 
 option optimize_for = LITE_RUNTIME;
 
+//--------------------- ATTENTION ------------------------
+// If you chamge this file please change 
+// j/c/g/android/gms/auth_proximity/proto/cryptauth_better_together_feature_metadata.proto
+// as well.
+
+
 // A seed used to feed an EID BLE advertisement for some time period.
 // Next ID: 4
 message BeaconSeed {
