@@ -69719,6 +69719,18 @@ Called by update_net_trust_anchors.py.-->
   <int value="26" label="SIM_LOCKED"/>
 </enum>
 
+<enum name="NetworkServiceMemoryCacheBlockedByRequestHeaderReason">
+  <int value="0" label="IfUnmodifiedSince"/>
+  <int value="1" label="IfMatch"/>
+  <int value="2" label="IfRange"/>
+  <int value="3" label="IfModifiedSince"/>
+  <int value="4" label="IfNoneMatch"/>
+  <int value="5" label="CacheControlNoCache"/>
+  <int value="6" label="PragmaNoCache"/>
+  <int value="7" label="CacheControlMaxAgeZero"/>
+  <int value="8" label="Range"/>
+</enum>
+
 <enum name="NetworkServiceMemoryCacheEntryStatus">
   <int value="0" label="NotInCache"/>
   <int value="1" label="Stale"/>

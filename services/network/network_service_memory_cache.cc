@@ -47,9 +47,25 @@ namespace network {
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BlockedByRequestHeaderReason {
+  kIfUnmodifiedSince = 0,
+  kIfMatch = 1,
+  kIfRange = 2,
+  kIfModifiedSince = 3,
+  kIfNoneMatch = 4,
+  kCacheControlNoCache = 5,
+  kPragmaNoCache = 6,
+  kCacheControlMaxAgeZero = 7,
+  kRange = 8,
+  kMaxValue = kRange,
+};
+
 struct HeaderNameAndValue {
   const char* name;
   const char* value;
+  BlockedByRequestHeaderReason reason;
 };
 
 // Collected from kPassThroughHeaders, kValidationHeaders, kForceFetchHeaders,
@@ -57,16 +73,20 @@ struct HeaderNameAndValue {
 // TODO(https://crbug.com/1339708): It'd be worthwhile to remove the
 // duplication.
 constexpr HeaderNameAndValue kSpecialHeaders[] = {
-    {"if-unmodified-since", nullptr},
-    {"if-match", nullptr},
-    {"if-range", nullptr},
-    {"if-modified-since", nullptr},
-    {"if-none-match", nullptr},
-    {"cache-control", "no-cache"},
-    {"pragma", "no-cache"},
-    {"cache-control", "max-age=0"},
+    {"if-unmodified-since", nullptr,
+     BlockedByRequestHeaderReason::kIfUnmodifiedSince},
+    {"if-match", nullptr, BlockedByRequestHeaderReason::kIfMatch},
+    {"if-range", nullptr, BlockedByRequestHeaderReason::kIfRange},
+    {"if-modified-since", nullptr,
+     BlockedByRequestHeaderReason::kIfModifiedSince},
+    {"if-none-match", nullptr, BlockedByRequestHeaderReason::kIfNoneMatch},
+    {"cache-control", "no-cache",
+     BlockedByRequestHeaderReason::kCacheControlNoCache},
+    {"pragma", "no-cache", BlockedByRequestHeaderReason::kPragmaNoCache},
+    {"cache-control", "max-age=0",
+     BlockedByRequestHeaderReason::kCacheControlMaxAgeZero},
     // The in-memory cache doesn't support range requests.
-    {"range", nullptr},
+    {"range", nullptr, BlockedByRequestHeaderReason::kRange},
 };
 
 // TODO(https://crbug.com/1339708): Adjust these parameters based on stats.
@@ -198,22 +218,23 @@ bool VaryHasSupportedHeadersOnly(
   return true;
 }
 
-bool CheckSpecialRequestHeaders(const net::HttpRequestHeaders& headers) {
-  for (const auto& [name, value] : kSpecialHeaders) {
+absl::optional<BlockedByRequestHeaderReason> CheckSpecialRequestHeaders(
+    const net::HttpRequestHeaders& headers) {
+  for (const auto& [name, value, reason] : kSpecialHeaders) {
     std::string header_value;
     if (!headers.GetHeader(name, &header_value))
       continue;
     // `nullptr` means `header_value` doesn't matter.
     if (value == nullptr)
-      return false;
+      return reason;
     net::HttpUtil::ValuesIterator v(header_value.begin(), header_value.end(),
                                     ',');
     while (v.GetNext()) {
       if (base::EqualsCaseInsensitiveASCII(v.value_piece(), value))
-        return false;
+        return reason;
     }
   }
-  return true;
+  return absl::nullopt;
 }
 
 bool MatchVaryHeader(const ResourceRequest& resource_request,
@@ -348,8 +369,10 @@ NetworkServiceMemoryCache::MaybeCreateWriter(
   if (net::IsCertStatusError(url_request->ssl_info().cert_status))
     return nullptr;
 
-  if (!CheckSpecialRequestHeaders(url_request->extra_request_headers()))
+  if (CheckSpecialRequestHeaders(url_request->extra_request_headers())
+          .has_value()) {
     return nullptr;
+  }
 
   if (response->content_length > static_cast<int>(max_per_entry_bytes_))
     return nullptr;
@@ -449,11 +472,6 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
     return absl::nullopt;
   }
 
-  if (!CheckSpecialRequestHeaders(resource_request.headers)) {
-    RecordEntryStatus(EntryStatus::kBlockedByRequestHeaders);
-    return absl::nullopt;
-  }
-
   absl::optional<std::string> cache_key = GenerateCacheKeyForResourceRequest(
       resource_request, network_isolation_key);
   if (!cache_key.has_value())
@@ -462,6 +480,16 @@ absl::optional<std::string> NetworkServiceMemoryCache::CanServe(
   auto it = entries_.Peek(*cache_key);
   if (it == entries_.end()) {
     RecordEntryStatus(EntryStatus::kNotInCache);
+    return absl::nullopt;
+  }
+
+  absl::optional<BlockedByRequestHeaderReason> blocked_by_headers =
+      CheckSpecialRequestHeaders(resource_request.headers);
+  if (blocked_by_headers.has_value()) {
+    RecordEntryStatus(EntryStatus::kBlockedByRequestHeaders);
+    base::UmaHistogramEnumeration(
+        "NetworkService.MemoryCache.BlockedByRequestHeaderReason",
+        *blocked_by_headers);
     return absl::nullopt;
   }
 
