@@ -1129,6 +1129,10 @@ NSString* SerializedValue(const base::Value* value) {
   return base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI);
 }
 
++ (BOOL)isUseLensToSearchForImageEnabled {
+  return base::FeatureList::IsEnabled(kUseLensToSearchForImage);
+}
+
 + (BOOL)isThumbstripEnabledForWindowWithNumber:(int)windowNumber {
   return ShowThumbStripInTraitCollection(
       [self windowWithNumber:windowNumber].traitCollection);

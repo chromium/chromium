@@ -1272,6 +1272,11 @@ UIWindow* GetAnyKeyWindow() {
   return [ChromeEarlGreyAppInterface isNewOmniboxPopupEnabled];
 }
 
+// Returns whether the UseLensToSearchForImage feature is enabled;
+- (BOOL)isUseLensToSearchForImageEnabled {
+  return [ChromeEarlGreyAppInterface isUseLensToSearchForImageEnabled];
+}
+
 - (BOOL)isThumbstripEnabledForWindowWithNumber:(int)windowNumber {
   return [ChromeEarlGreyAppInterface
       isThumbstripEnabledForWindowWithNumber:windowNumber];
