@@ -120,8 +120,7 @@
     </cr-button>
 
     <div class="action-buttons"
-        hidden$="[[!shouldShowGaiaButtons_(enableGaiaActionButtons_,
-                                           currentView_)]]">
+        hidden$="[[!shouldShowGaiaButtons_(currentView_)]]">
       <gaia-action-buttons authenticator="[[authExtHost_]]"
           on-set-focus-to-webview="setFocusToWebview_">
       </gaia-action-buttons>
