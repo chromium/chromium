@@ -1157,9 +1157,7 @@ class OobeGuestButtonPolicy : public testing::WithParamInterface<bool>,
   }
 };
 
-// TODO(https://crbug.com/1308787): test is flaky.
-IN_PROC_BROWSER_TEST_P(OobeGuestButtonPolicy,
-                       DISABLED_VisibilityAfterEnrollment) {
+IN_PROC_BROWSER_TEST_P(OobeGuestButtonPolicy, VisibilityAfterEnrollment) {
   TriggerEnrollmentAndSignInSuccessfully();
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
   ConfirmAndWaitLoginScreen();
