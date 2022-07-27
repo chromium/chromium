@@ -2,32 +2,85 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/resources/tools/optimize_webui.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/css_to_wrapper.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
-import("./tab_search.gni")
 
 assert(is_linux || is_chromeos || is_win || is_mac || is_fuchsia)
 
+import("//chrome/browser/resources/tools/build_webui.gni")
+
 preprocess_folder = "preprocessed"
 
-if (optimize_webui) {
-  build_manifest = "build_manifest.json"
+build_webui("build") {
+  grd_prefix = "tab_search"
 
-  optimize_webui("build") {
-    host = "tab-search.top-chrome"
-    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
-    js_out_files = [ "tab_search.rollup.js" ]
-    js_module_in_files = [ "tab_search.js" ]
-    out_manifest = "$target_gen_dir/$build_manifest"
+  static_files = [
+    "alert_indicators/tab_audio_muting_rounded.svg",
+    "alert_indicators/tab_audio_rounded.svg",
+    "alert_indicators/tab_media_recording.svg",
+    "tab_search.html",
+  ]
 
-    excludes = [
+  web_component_files = [
+    "app.ts",
+    "infinite_list.ts",
+    "tab_search_group_item.ts",
+    "tab_search_item.ts",
+    "tab_search_search_field.ts",
+  ]
+
+  non_web_component_files = [
+    "bimap.ts",
+    "fuzzy_search.ts",
+    "tab_data.ts",
+    "tab_group_color_helper.ts",
+    "tab_search_api_proxy.ts",
+    "tab_search.ts",
+    "tab_search_utils.ts",
+    "title_item.ts",
+  ]
+
+  css_files = [ "tab_group_shared_vars.css" ]
+
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/tab_search:mojo_bindings_webui_js",
+    "//chrome/browser/ui/webui/tabs:mojo_bindings_webui_js",
+    "//components/tab_groups/public/mojom:mojo_bindings_webui_js",
+  ]
+  mojo_files = [
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_search/tab_search.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs/tabs.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/components/tab_groups/public/mojom/tab_group_types.mojom-webui.js",
+  ]
+
+  ts_composite = true
+  ts_definitions = [
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "$target_gen_dir/$preprocess_folder/fuse.d.ts",
+  ]
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/js/metrics_reporter:build_ts",
+    "//ui/webui/resources/mojo:library",
+  ]
+  ts_extra_deps = [
+    ":copy_fuse",
+    ":copy_fuse_dts",
+    ":copy_fuse_dts_tsc",
+  ]
+
+  extra_grdp_deps = [ ":build_fuse_grdp" ]
+  extra_grdp_files = [ "$target_gen_dir/fuse_resources.grdp" ]
+
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "tab-search.top-chrome"
+    optimize_webui_out_files = [ "tab_search.rollup.js" ]
+    optimize_webui_in_files = [ "tab_search.js" ]
+    optimize_webui_excludes = [
       "chrome://resources/js/cr.m.js",
       "chrome://resources/js/metrics_reporter/metrics_reporter.js",
       "chrome://resources/mojo/mojo/public/js/bindings.js",
@@ -36,11 +89,8 @@ if (optimize_webui) {
       "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
       "fuse.js",
     ]
-
-    deps = [
-      ":build_ts",
-      "../../../../ui/webui/resources:preprocess",
-    ]
+    optimize_webui_resource_paths_rewrites =
+        [ "tab_search.rollup.js|tab_search.js" ]
   }
 }
 
@@ -50,29 +100,7 @@ generate_grd("build_fuse_grdp") {
   input_files = [ "fuse.js" ]
   input_files_base_dir =
       rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
-  deps = [ ":copy_fuse_dts" ]
-}
-
-preprocess_if_expr("preprocess") {
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = ts_files
-}
-
-preprocess_if_expr("preprocess_tabs") {
-  deps = [ "//chrome/browser/ui/webui/tabs:mojo_bindings_webui_js" ]
-  in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs/"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [ "tabs.mojom-webui.js" ]
-}
-
-preprocess_if_expr("preprocess_generated") {
-  deps = [
-    ":css_wrapper_files",
-    ":html_wrapper_files",
-  ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = html_wrapper_files + css_wrapper_files
+  deps = [ ":copy_fuse" ]
 }
 
 copy("copy_fuse") {
@@ -90,97 +118,4 @@ copy("copy_fuse_dts") {
 copy("copy_fuse_dts_tsc") {
   sources = [ "//third_party/fusejs/dist/fuse.d.ts" ]
   outputs = [ "$target_gen_dir/tsc/{{source_file_part}}" ]
-}
-
-preprocess_if_expr("preprocess_mojo_tab_groups") {
-  deps = [ "//components/tab_groups/public/mojom:mojo_bindings_webui_js" ]
-  in_folder = "$root_gen_dir/mojom-webui/components/tab_groups/public/mojom/"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [ "tab_group_types.mojom-webui.js" ]
-}
-
-preprocess_if_expr("preprocess_mojo") {
-  deps = [ "//chrome/browser/ui/webui/tab_search:mojo_bindings_webui_js" ]
-  in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_search/"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [ "tab_search.mojom-webui.js" ]
-}
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/tab_search_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/tab_search_resources.h",
-    "grit/tab_search_resources_map.cc",
-    "grit/tab_search_resources_map.h",
-    "tab_search_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-css_to_wrapper("css_wrapper_files") {
-  in_files = css_files
-}
-
-html_to_wrapper("html_wrapper_files") {
-  in_files = html_files
-}
-
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/tsc"
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  in_files = ts_files + css_wrapper_files + html_wrapper_files + mojo_js_files
-  definitions = [
-    "//tools/typescript/definitions/metrics_private.d.ts",
-    "$target_gen_dir/$preprocess_folder/fuse.d.ts",
-  ]
-
-  deps = [
-    "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources:library",
-    "//ui/webui/resources/js/metrics_reporter:build_ts",
-    "//ui/webui/resources/mojo:library",
-  ]
-  extra_deps = [
-    ":copy_fuse",
-    ":copy_fuse_dts",
-    ":copy_fuse_dts_tsc",
-    ":preprocess",
-    ":preprocess_generated",
-    ":preprocess_mojo",
-    ":preprocess_mojo_tab_groups",
-    ":preprocess_tabs",
-  ]
-}
-
-generate_grd("build_grd") {
-  grd_prefix = "tab_search"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
-    "alert_indicators/tab_audio_muting_rounded.svg",
-    "alert_indicators/tab_audio_rounded.svg",
-    "alert_indicators/tab_media_recording.svg",
-    "tab_search.html",
-  ]
-  input_files_base_dir = rebase_path(".", "//")
-
-  deps = [ ":build_fuse_grdp" ]
-  grdp_files = [ "$target_gen_dir/fuse_resources.grdp" ]
-
-  if (optimize_webui) {
-    deps += [ ":build" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-    resource_path_rewrites = [ "tab_search.rollup.js|tab_search.js" ]
-  } else {
-    deps += [ ":build_ts" ]
-    manifest_files =
-        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  }
 }
