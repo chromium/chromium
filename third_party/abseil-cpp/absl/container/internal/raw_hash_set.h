@@ -693,7 +693,8 @@ struct GroupPortableImpl {
     // ctrl | ~(ctrl >> 7) will have the lowest bit set to zero for kEmpty and
     // kDeleted. We lower all other bits and count number of trailing zeros.
     constexpr uint64_t bits = 0x0101010101010101ULL;
-    return countr_zero((ctrl | ~(ctrl >> 7)) & bits) >> 3;
+    return static_cast<uint32_t>(countr_zero((ctrl | ~(ctrl >> 7)) & bits) >>
+                                 3);
   }
 
   void ConvertSpecialToEmptyAndFullToDeleted(ctrl_t* dst) const {

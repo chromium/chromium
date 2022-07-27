@@ -72,7 +72,7 @@
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
-namespace raw_logging_internal {
+namespace raw_log_internal {
 namespace {
 
 // TODO(gfalcon): We want raw-logging to work on as many platforms as possible.
@@ -244,6 +244,6 @@ void RegisterInternalLogFunction(InternalLogFunction func) {
   internal_log_function.Store(func);
 }
 
-}  // namespace raw_logging_internal
+}  // namespace raw_log_internal
 ABSL_NAMESPACE_END
 }  // namespace absl

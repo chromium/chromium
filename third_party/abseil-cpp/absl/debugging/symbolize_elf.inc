@@ -841,7 +841,7 @@ class FileDescriptor {
 
   ~FileDescriptor() {
     if (fd_ >= 0) {
-      NO_INTR(close(fd_));
+      close(fd_);
     }
   }
 
@@ -1118,7 +1118,7 @@ void Symbolizer::ClearAddrMap() {
     ObjFile *o = addr_map_.At(i);
     base_internal::LowLevelAlloc::Free(o->filename);
     if (o->fd >= 0) {
-      NO_INTR(close(o->fd));
+      close(o->fd);
     }
   }
   addr_map_.Clear();

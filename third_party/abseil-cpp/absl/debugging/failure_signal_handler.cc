@@ -218,7 +218,7 @@ static void InstallOneFailureHandler(FailureSignalData* data,
 #endif
 
 static void WriteToStderr(const char* data) {
-  absl::raw_logging_internal::AsyncSignalSafeWriteToStderr(data, strlen(data));
+  absl::raw_log_internal::AsyncSignalSafeWriteToStderr(data, strlen(data));
 }
 
 static void WriteSignalMessage(int signo, int cpu,

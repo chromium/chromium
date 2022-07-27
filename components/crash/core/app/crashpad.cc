@@ -198,7 +198,7 @@ bool InitializeCrashpadImpl(bool initial_client,
   // a public API in absl::.
   // Note: If this fails to compile because of an absl roll, this is fair to
   // remove if you file a crbug.com/new and assign it to pbos@.
-  absl::raw_logging_internal::RegisterAbortHook(&AbslAbortHook);
+  absl::raw_log_internal::RegisterAbortHook(&AbslAbortHook);
 
 #if BUILDFLAG(IS_APPLE)
   // On Mac, we only want the browser to initialize the database, but not the

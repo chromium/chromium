@@ -110,8 +110,8 @@ static void **NextStackFrame(void **old_frame_pointer, const void *uc) {
   }
 #endif
 
-  // aarch64 ABI requires stack pointer to be 16-byte-aligned.
-  if ((reinterpret_cast<uintptr_t>(new_frame_pointer) & 15) != 0)
+  // The frame pointer should be 8-byte aligned.
+  if ((reinterpret_cast<uintptr_t>(new_frame_pointer) & 7) != 0)
     return nullptr;
 
   // Check frame size.  In strict mode, we assume frames to be under
