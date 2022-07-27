@@ -32,6 +32,8 @@
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #import "ui/base/cocoa/appkit_utils.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
+#import "ui/base/cocoa/nsmenu_additions.h"
+#import "ui/base/cocoa/nsmenuitem_additions.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #import "ui/base/cocoa/touch_bar_util.h"
 #include "ui/base/ui_base_features.h"
@@ -1053,9 +1055,48 @@ void ExtractUnderlines(NSAttributedString* string,
                                withObject:theEvent];
     }
   } else {
-    // Sends key down events to input method first, then we can decide what
-    // should be done according to input method's feedback.
-    [self interpretKeyEvents:@[ theEvent ]];
+    // Previously, we would just send the event, shortcut or no, to
+    // -interpretKeyEvents: below. The problem is that certain keyboard
+    // shortcuts now use the Function/World key and in those cases the
+    // corresponding shortcut fires but the shortcut event also gets processed
+    // as if it were a key press. As a result, with the insertion point
+    // in a web text box, after typing something like "Function e" to invoke
+    // the Emoji palette, we would wind up in -insertText:replacementRange:.
+    // The logic there (_handlingKeyDown && replacementRange.location ==
+    // NSNotFound) would create an invisible placeholder for the character. This
+    // invisible placeholder would cause macOS to position the palette at the
+    // upper-left corner of the webcontents instead of at the insertion point.
+    //
+    // For these Function/World events, we want the AppKit to process them
+    // as it usually would (i.e. via performKeyEquivalent:). It would be simpler
+    // if we could pass all of these keyboard shortcut events along to
+    // performKeyEquivalent:, however web pages are allowed to hijack keyboard
+    // shortcuts and apparently that's done through interpretKeyEvents:.
+    // Applications are not allowed to create these system events (you get a
+    // warning if you try and the Function event modifier flag doesn't stick)
+    // so it's OK not to allow web pages to do so either.
+    //
+    // If the event's not a shortcut, send it along to the input method first.
+    // We can then decide what should be done according to the input method's
+    // feedback.
+    bool is_a_system_shortcut_event = false;
+    if (equiv) {
+      bool is_a_keyboard_shortcut_event =
+          [[NSApp mainMenu] cr_menuItemForKeyEquivalentEvent:theEvent] != nil;
+
+      const NSEventModifierFlags kSystemShortcutModifierFlag =
+          NSEventModifierFlagFunction;
+      is_a_system_shortcut_event =
+          is_a_keyboard_shortcut_event &&
+          (ui::cocoa::ModifierMaskForKeyEvent(theEvent) &
+           kSystemShortcutModifierFlag) != 0;
+    }
+
+    if (is_a_system_shortcut_event) {
+      [[NSApp mainMenu] performKeyEquivalent:theEvent];
+    } else {
+      [self interpretKeyEvents:@[ theEvent ]];
+    }
   }
 
   _handlingKeyDown = NO;
