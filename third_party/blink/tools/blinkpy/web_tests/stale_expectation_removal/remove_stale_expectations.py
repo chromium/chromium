@@ -18,7 +18,7 @@ from unexpected_passes_common import expectations as common_expectations
 from unexpected_passes_common import result_output
 
 
-def ParseArgs():
+def ParseArgs() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=(
         'Script for finding cases of stale expectations that can be '
         'removed/modified.'))
@@ -28,7 +28,7 @@ def ParseArgs():
     return args
 
 
-def main():
+def main() -> int:
     args = ParseArgs()
     # Set any custom data types.
     common_data_types.SetExpectationImplementation(

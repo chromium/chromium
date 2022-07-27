@@ -11,13 +11,13 @@ import six
 if six.PY3:
     import unittest.mock as mock
 
-from pyfakefs import fake_filesystem_unittest
+from pyfakefs import fake_filesystem_unittest, fake_filesystem
 
 from blinkpy.web_tests.stale_expectation_removal import constants
 from blinkpy.web_tests.stale_expectation_removal import expectations
 
 
-def CreateFile(fs, *args, **kwargs):
+def CreateFile(fs: fake_filesystem.FakeFilesystem, *args, **kwargs) -> None:
     # TODO(crbug.com/1156806): Remove this and just use fs.create_file() when
     # Catapult is updated to a newer version of pyfakefs that is compatible
     # with Chromium's version.
@@ -29,7 +29,7 @@ def CreateFile(fs, *args, **kwargs):
 
 @unittest.skip('Skipped due to crbug/1305104')
 class GetExpectationFilepathsUnittest(fake_filesystem_unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.setUpPyfakefs()
         self.instance = expectations.WebTestExpectations()
         CreateFile(
@@ -37,7 +37,7 @@ class GetExpectationFilepathsUnittest(fake_filesystem_unittest.TestCase):
             os.path.join(constants.WEB_TEST_ROOT_DIR, 'FlagExpectations',
                          'README.txt'))
 
-    def testRealFilesCanBeFound(self):
+    def testRealFilesCanBeFound(self) -> None:
         """Tests that real files are returned."""
         with fake_filesystem_unittest.Pause(self):
             filepaths = self.instance.GetExpectationFilepaths()
@@ -45,7 +45,7 @@ class GetExpectationFilepathsUnittest(fake_filesystem_unittest.TestCase):
             for f in filepaths:
                 self.assertTrue(os.path.exists(f))
 
-    def testTopLevelFiles(self):
+    def testTopLevelFiles(self) -> None:
         """Tests that top-level expectation files are properly returned."""
         with mock.patch.object(self.instance,
                                '_GetTopLevelExpectationFiles',
@@ -53,7 +53,7 @@ class GetExpectationFilepathsUnittest(fake_filesystem_unittest.TestCase):
             filepaths = self.instance.GetExpectationFilepaths()
         self.assertEqual(filepaths, ['/foo'])
 
-    def testFlagSpecificFiles(self):
+    def testFlagSpecificFiles(self) -> None:
         """Tests that flag-specific files are properly returned."""
         flag_filepath = os.path.join(constants.WEB_TEST_ROOT_DIR,
                                      'FlagExpectations', 'foo-flag')
@@ -64,7 +64,7 @@ class GetExpectationFilepathsUnittest(fake_filesystem_unittest.TestCase):
             filepaths = self.instance.GetExpectationFilepaths()
         self.assertEqual(filepaths, [flag_filepath])
 
-    def testAllExpectationFiles(self):
+    def testAllExpectationFiles(self) -> None:
         """Tests that both top level and flag-specific files are returned."""
         flag_filepath = os.path.join(constants.WEB_TEST_ROOT_DIR,
                                      'FlagExpectations', 'foo-flag')
@@ -78,11 +78,11 @@ class GetExpectationFilepathsUnittest(fake_filesystem_unittest.TestCase):
 
 @unittest.skip('Skipped due to crbug/1305104')
 class GetExpectationFileTagHeaderUnittest(fake_filesystem_unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.setUpPyfakefs()
         self.instance = expectations.WebTestExpectations()
 
-    def testRealContentsCanBeLoaded(self):
+    def testRealContentsCanBeLoaded(self) -> None:
         """Tests that some sort of valid content can be read from the file."""
         with fake_filesystem_unittest.Pause(self):
             header = self.instance._GetExpectationFileTagHeader(
@@ -90,7 +90,7 @@ class GetExpectationFileTagHeaderUnittest(fake_filesystem_unittest.TestCase):
         self.assertIn('tags', header)
         self.assertIn('results', header)
 
-    def testContentLoading(self):
+    def testContentLoading(self) -> None:
         """Tests that the header is properly loaded."""
         header_contents = """\
 

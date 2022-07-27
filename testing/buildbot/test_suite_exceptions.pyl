@@ -220,6 +220,11 @@
       },
     },
   },
+  'blink_pytype': {
+    'remove_from': [
+      'linux-code-coverage',
+    ],
+  },
   'blink_unittests': {
     'modifications': {
       'fuchsia-code-coverage': {

@@ -574,7 +574,7 @@ class BaseTestExpectationMap(BaseTypedMap):
     del pass_map
     return False
 
-  def FilterOutUnusedExpectations(self) -> Dict[str, Set[str]]:
+  def FilterOutUnusedExpectations(self) -> Dict[str, List[BaseExpectation]]:
     """Filters out any unused Expectations from stored data.
 
     An Expectation is considered unused if its corresponding dictionary is
@@ -582,8 +582,8 @@ class BaseTestExpectationMap(BaseTypedMap):
     empty dictionary, that test entry will also be removed.
 
     Returns:
-      A dict from expectation file name (str) to set of unused expectations
-      (str) from that file.
+      A dict from expectation file name (str) to list of unused
+      data_types.Expectation from that file.
     """
     logging.info('Filtering out unused expectations')
     unused = collections.defaultdict(list)

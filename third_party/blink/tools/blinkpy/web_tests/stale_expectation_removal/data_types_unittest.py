@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """Unittests for the web test stale expectation remover data types."""
 
+from typing import Dict
 import unittest
 
 from blinkpy.web_tests.stale_expectation_removal import data_types
@@ -15,7 +16,7 @@ PARTIAL_PASS = common_data_types.PARTIAL_PASS
 
 
 class WebTestExpectationUnittest(unittest.TestCase):
-    def testCompareWildcard(self):
+    def testCompareWildcard(self) -> None:
         """Tests that wildcard comparisons work as expected."""
         e = data_types.WebTestExpectation('test*', ['tag1'], 'Failure')
         self.assertTrue(e._CompareWildcard('testing123'))
@@ -27,7 +28,7 @@ class WebTestExpectationUnittest(unittest.TestCase):
         self.assertFalse(e._CompareWildcard('/virtual/some-identifier/test'))
         self.assertFalse(e._CompareWildcard('virtual/some/malformed/test'))
 
-    def testCompareNonWildcard(self):
+    def testCompareNonWildcard(self) -> None:
         """Tests that non-wildcard comparisons work as expected."""
         e = data_types.WebTestExpectation('test', ['tag1'], 'Failure')
         self.assertTrue(e._CompareNonWildcard('test'))
@@ -39,14 +40,14 @@ class WebTestExpectationUnittest(unittest.TestCase):
 
 
 class WebTestResultUnittest(unittest.TestCase):
-    def testSetDurationString(self):
+    def testSetDurationString(self) -> None:
         """Tests that strings are properly converted when setting durations."""
         result = data_types.WebTestResult('foo', ['debug'], 'Pass', 'step',
                                           'build_id')
-        result.SetDuration(str(1), str(2000))
+        result.SetDuration(str(1), str(2))
         self.assertTrue(result.is_slow_result)
 
-    def testSetDurationNotSlow(self):
+    def testSetDurationNotSlow(self) -> None:
         """Tests that setting a duration for a non-slow result works."""
         result = data_types.WebTestResult('foo', ['debug'], 'Pass', 'step',
                                           'build_id')
@@ -54,22 +55,22 @@ class WebTestResultUnittest(unittest.TestCase):
         result.SetDuration(30, 100000)
         self.assertFalse(result.is_slow_result)
 
-    def testSetDurationSlow(self):
+    def testSetDurationSlow(self) -> None:
         """Tests that setting a duration for a slow result works."""
         result = data_types.WebTestResult('foo', ['debug'], 'Pass', 'step',
                                           'build_id')
         # The cutoff should be 30% of the timeout.
-        result.SetDuration(30.01, 100000)
+        result.SetDuration(30.01, 100)
         self.assertTrue(result.is_slow_result)
 
-    def testSetDurationNotSlowSeconds(self):
+    def testSetDurationNotSlowSeconds(self) -> None:
         """Tests that setting a duration for non-slow in seconds works."""
         result = data_types.WebTestResult('foo', ['debug'], 'Pass', 'step',
                                           'build_id')
         result.SetDuration(30, 100)
         self.assertFalse(result.is_slow_result)
 
-    def testSetDurationSlowSeconds(self):
+    def testSetDurationSlowSeconds(self) -> None:
         """Tests that setting a duration for a slow result in seconds works."""
         result = data_types.WebTestResult('foo', ['debug'], 'Pass', 'step',
                                           'build_id')
@@ -78,13 +79,13 @@ class WebTestResultUnittest(unittest.TestCase):
 
 
 class WebTestBuildStatsUnittest(unittest.TestCase):
-    def CreateGenericBuildStats(self):
+    def CreateGenericBuildStats(self) -> data_types.WebTestBuildStats:
         stats = data_types.WebTestBuildStats()
         stats.AddPassedBuild()
         stats.AddFailedBuild('build_id')
         return stats
 
-    def testEquality(self):
+    def testEquality(self) -> None:
         s = self.CreateGenericBuildStats()
         other = self.CreateGenericBuildStats()
         self.assertEqual(s, other)
@@ -101,7 +102,7 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
         other.AddSlowBuild('other_slow_id')
         self.assertNotEqual(s, other)
 
-    def testProperties(self):
+    def testProperties(self) -> None:
         s = data_types.WebTestBuildStats()
         s.AddPassedBuild()
         self.assertTrue(s.never_slow)
@@ -110,18 +111,18 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
         self.assertFalse(s.never_slow)
         self.assertTrue(s.always_slow)
 
-    def testSlowBuildsAddedToFailureLinks(self):
+    def testSlowBuildsAddedToFailureLinks(self) -> None:
         s = self.CreateGenericBuildStats()
         self.assertEqual(s.failure_links,
                          set(['http://ci.chromium.org/b/build_id']))
 
-    def testGetStatsAsString(self):
+    def testGetStatsAsString(self) -> None:
         s = self.CreateGenericBuildStats()
         s.AddSlowBuild('slow_id')
         expected_str = '(1/2 passed) (1/2 slow)'
         self.assertEqual(s.GetStatsAsString(), expected_str)
 
-    def testNeverNeededExpectationSlowExpectation(self):
+    def testNeverNeededExpectationSlowExpectation(self) -> None:
         """Tests that special logic is used for Slow-only expectations."""
         expectation = data_types.WebTestExpectation('foo', ['debug'], 'Slow')
         stats = data_types.WebTestBuildStats()
@@ -131,7 +132,7 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
         stats.AddSlowBuild('build_id')
         self.assertFalse(stats.NeverNeededExpectation(expectation))
 
-    def testNeverNeededExpectationMixedSlowExpectation(self):
+    def testNeverNeededExpectationMixedSlowExpectation(self) -> None:
         """Tests that special logic is used for mixed Slow expectations."""
         expectation = data_types.WebTestExpectation('foo', ['debug'],
                                                     ['Slow', 'Failure'])
@@ -152,7 +153,7 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
         # Failed build, slow.
         self.assertFalse(stats.NeverNeededExpectation(expectation))
 
-    def testNeverNeededExpectationNoSlowExpectation(self):
+    def testNeverNeededExpectationNoSlowExpectation(self) -> None:
         """Tests that no special logic is used for non-Slow expectations."""
         expectation = data_types.WebTestExpectation('foo', ['debug'],
                                                     'Failure')
@@ -165,7 +166,7 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
         stats.AddFailedBuild('build_id')
         self.assertFalse(stats.NeverNeededExpectation(expectation))
 
-    def testAlwaysNeededExpectationSlowExpectation(self):
+    def testAlwaysNeededExpectationSlowExpectation(self) -> None:
         """Tests that special logic is used for Slow-only expectations."""
         expectation = data_types.WebTestExpectation('foo', ['debug'], 'Slow')
         stats = data_types.WebTestBuildStats()
@@ -175,7 +176,7 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
         stats.AddSlowBuild('build_id')
         self.assertTrue(stats.AlwaysNeededExpectation(expectation))
 
-    def testAlwaysNeededExpectationMixedSlowExpectations(self):
+    def testAlwaysNeededExpectationMixedSlowExpectations(self) -> None:
         """Tests that special logic is used for mixed Slow expectations."""
         expectation = data_types.WebTestExpectation('foo', ['debug'],
                                                     ['Slow', 'Failure'])
@@ -196,7 +197,7 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
         # Failed build, slow.
         self.assertTrue(stats.AlwaysNeededExpectation(expectation))
 
-    def testAlwaysNeededExpectationNoSlowExpectation(self):
+    def testAlwaysNeededExpectationNoSlowExpectation(self) -> None:
         """Tests that no special logic is used for non-Slow expectations."""
         expectation = data_types.WebTestExpectation('foo', ['debug'],
                                                     'Failure')
@@ -212,7 +213,7 @@ class WebTestBuildStatsUnittest(unittest.TestCase):
         self.assertFalse(stats.AlwaysNeededExpectation(expectation))
 
 
-def _CreateEmptyPassMap():
+def _CreateEmptyPassMap() -> Dict[int, common_data_types.BuilderStepMap]:
     return {
         FULL_PASS: common_data_types.BuilderStepMap(),
         NEVER_PASS: common_data_types.BuilderStepMap(),
@@ -222,12 +223,12 @@ def _CreateEmptyPassMap():
 
 class WebTestTestExpectationMapUnittest(unittest.TestCase):
 
-    def testAddSingleResult(self):
+    def testAddSingleResult(self) -> None:
         expectation_map = data_types.WebTestTestExpectationMap()
         result = data_types.WebTestResult('foo', ['debug'], 'Pass', 'step',
                                           'build_id')
         # Test adding a non-slow result.
-        result.SetDuration(1, 10000)
+        result.SetDuration(1, 10)
         stats = data_types.WebTestBuildStats()
         expectation_map._AddSingleResult(result, stats)
         expected_stats = data_types.WebTestBuildStats()
@@ -235,7 +236,7 @@ class WebTestTestExpectationMapUnittest(unittest.TestCase):
         self.assertEqual(stats, expected_stats)
 
         # Test adding a slow result.
-        result.SetDuration(1, 2000)
+        result.SetDuration(1, 2)
         stats = data_types.WebTestBuildStats()
         expectation_map._AddSingleResult(result, stats)
         expected_stats = data_types.WebTestBuildStats()
@@ -243,7 +244,7 @@ class WebTestTestExpectationMapUnittest(unittest.TestCase):
         expected_stats.AddSlowBuild('build_id')
         self.assertEqual(stats, expected_stats)
 
-    def testShouldTreatSemiStaleAsActiveOnlySanitizersPass(self):
+    def testShouldTreatSemiStaleAsActiveOnlySanitizersPass(self) -> None:
         """Tests behavior when only sanitizer bots fully pass."""
         expectation_map = data_types.WebTestTestExpectationMap()
 
@@ -267,7 +268,8 @@ class WebTestTestExpectationMapUnittest(unittest.TestCase):
         self.assertTrue(
             expectation_map._ShouldTreatSemiStaleAsActive(pass_map))
 
-    def testShouldTreatSemiStaleAsActiveOnlySanitizersPassNoOthers(self):
+    def testShouldTreatSemiStaleAsActiveOnlySanitizersPassNoOthers(self
+                                                                   ) -> None:
         """Tests behavior when sanitizers fully pass without other results."""
         expectation_map = data_types.WebTestTestExpectationMap()
 
@@ -279,7 +281,7 @@ class WebTestTestExpectationMapUnittest(unittest.TestCase):
         self.assertFalse(
             expectation_map._ShouldTreatSemiStaleAsActive(pass_map))
 
-    def testShouldTreatSemiStaleAsActiveOnlyOneSanitizerPasses(self):
+    def testShouldTreatSemiStaleAsActiveOnlyOneSanitizerPasses(self) -> None:
         """Tests behavior when one sanitizer passes but not the other."""
         expectation_map = data_types.WebTestTestExpectationMap()
 
@@ -299,7 +301,7 @@ class WebTestTestExpectationMapUnittest(unittest.TestCase):
         self.assertTrue(
             expectation_map._ShouldTreatSemiStaleAsActive(pass_map))
 
-    def testShouldTreatSemiStaleAsActiveOthersPass(self):
+    def testShouldTreatSemiStaleAsActiveOthersPass(self) -> None:
         """Tests behavior when other bots pass in addition to the sanitizers."""
         expectation_map = data_types.WebTestTestExpectationMap()
 

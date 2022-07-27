@@ -258,6 +258,11 @@
     "label": "//:blink_python_tests",
     "type": "generated_script",
   },
+  "blink_pytype": {
+    "label": "//third_party/blink/tools:blink_pytype",
+    "script": "//third_party/blink/tools/run_pytype.py",
+    "type": "script",
+  },
   "blink_tests": {
     "label": "//:blink_tests",
     "type": "additional_compile_target",

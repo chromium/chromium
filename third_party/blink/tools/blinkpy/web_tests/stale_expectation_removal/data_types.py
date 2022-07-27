@@ -4,6 +4,7 @@
 """Custom data types for the web test stale expectation remover."""
 
 import fnmatch
+from typing import Any, Dict, Union
 
 from unexpected_passes_common import data_types
 
@@ -22,7 +23,7 @@ class WebTestExpectation(data_types.BaseExpectation):
     of virtual tests falling back to non-virtual expectations.
     """
 
-    def _CompareWildcard(self, result_test_name):
+    def _CompareWildcard(self, result_test_name: str) -> bool:
         success = super(WebTestExpectation,
                         self)._CompareWildcard(result_test_name)
         if not success and result_test_name.startswith(VIRTUAL_PREFIX):
@@ -30,7 +31,7 @@ class WebTestExpectation(data_types.BaseExpectation):
             success = fnmatch.fnmatch(result_test_name, self.test)
         return success
 
-    def _CompareNonWildcard(self, result_test_name):
+    def _CompareNonWildcard(self, result_test_name: str) -> bool:
         success = super(WebTestExpectation,
                         self)._CompareNonWildcard(result_test_name)
         if not success and result_test_name.startswith(VIRTUAL_PREFIX):
@@ -50,14 +51,9 @@ class WebTestResult(data_types.BaseResult):
         self._duration = 0
         self.is_slow_result = False
 
-    def SetDuration(self, duration, timeout):
+    def SetDuration(self, duration: Union[float, str],
+                    timeout: Union[float, str]) -> None:
         self._duration = float(duration)
-        # Convert from milliseconds to seconds if necessary.
-        # TODO(crbug.com/1222827): Remove this conversion once all the old data
-        # in the tables has aged out.
-        timeout = float(timeout)
-        if timeout > 1000:
-            timeout /= 1000
         # According to //third_party/blink/web_tests/SlowTests, as tests is
         # considered slow if it is slower than ~30% of its timeout since test
         # times can vary by up to 3x.
@@ -75,26 +71,27 @@ class WebTestBuildStats(data_types.BaseBuildStats):
         self.slow_builds = 0
 
     @property
-    def always_slow(self):
+    def always_slow(self) -> bool:
         return self.slow_builds == self.total_builds
 
     @property
-    def never_slow(self):
+    def never_slow(self) -> bool:
         return self.slow_builds == 0
 
-    def AddSlowBuild(self, build_id):
+    def AddSlowBuild(self, build_id: str) -> None:
         # Don't increment total builds since the corresponding build should
         # already be added as a passed/failed build.
         self.slow_builds += 1
         build_link = data_types.BuildLinkFromBuildId(build_id)
         self.failure_links = frozenset([build_link]) | self.failure_links
 
-    def GetStatsAsString(self):
+    def GetStatsAsString(self) -> str:
         s = super(WebTestBuildStats, self).GetStatsAsString()
         s += ' (%d/%d slow)' % (self.slow_builds, self.total_builds)
         return s
 
-    def NeverNeededExpectation(self, expectation):
+    def NeverNeededExpectation(self,
+                               expectation: data_types.Expectation) -> bool:
         # If this is solely a slow expectation, ignore pass/fail and only
         # consider whether the test was slow or not.
         if set(['Slow']) == expectation.expected_results:
@@ -104,7 +101,8 @@ class WebTestBuildStats(data_types.BaseBuildStats):
             rv = rv and self.never_slow
         return rv
 
-    def AlwaysNeededExpectation(self, expectation):
+    def AlwaysNeededExpectation(self,
+                                expectation: data_types.Expectation) -> bool:
         # If this is solely a slow expectation, ignore pass/fail and only
         # consider whether the test was slow or not.
         if set(['Slow']) == expectation.expected_results:
@@ -115,7 +113,7 @@ class WebTestBuildStats(data_types.BaseBuildStats):
             rv = rv or self.always_slow
         return rv
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         return (super(WebTestBuildStats, self).__eq__(other)
                 and self.slow_builds == other.slow_builds)
 
@@ -126,12 +124,15 @@ class WebTestTestExpectationMap(data_types.BaseTestExpectationMap):
     Identical to the base implementation except it correctly handles adding
     slow results.
     """
-    def _AddSingleResult(self, result, stats):
+
+    def _AddSingleResult(self, result: WebTestResult,
+                         stats: data_types.BuildStats) -> None:
         super(WebTestTestExpectationMap, self)._AddSingleResult(result, stats)
         if result.is_slow_result:
             stats.AddSlowBuild(result.build_id)
 
-    def _ShouldTreatSemiStaleAsActive(self, pass_map):
+    def _ShouldTreatSemiStaleAsActive(
+            self, pass_map: Dict[int, data_types.BuilderStepMap]) -> bool:
         # The ASAN/MSAN builders pass in a runtime flag that causes the test
         # runner to only fail if a crash or a timeout occurs, i.e. a regular
         # failure is treated as a pass. As a result, the vast majority of
@@ -150,6 +151,6 @@ class WebTestTestExpectationMap(data_types.BaseTestExpectationMap):
         return only_passed_on_sanitizers and ran_elsewhere
 
 
-def _StripOffVirtualPrefix(test_name):
+def _StripOffVirtualPrefix(test_name: str) -> str:
     # Strip off the leading `virtual/virtual_identifier/`.
     return test_name.split('/', 2)[-1]

@@ -4841,6 +4841,11 @@
     },
 
     'pytype_tests': {
+      'blink_pytype': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
       'fuchsia_pytype': {
         'mixins': [
           'has_native_resultdb_integration',

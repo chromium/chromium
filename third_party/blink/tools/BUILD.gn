@@ -104,3 +104,16 @@ group("wpt_tests_mojo_bindings") {
     "//third_party/blink/public/mojom:mojom_platform_js_data_deps",
   ]
 }
+
+group("blink_pytype") {
+  testonly = true
+
+  data = [
+    "//third_party/blink/tools/run_pytype.py",
+
+    "//testing/unexpected_passes_common/",
+    "//third_party/blink/tools/blinkpy/web_tests/stale_expectation_removal/",
+  ]
+
+  data_deps = [ "//testing:pytype_dependencies" ]
+}

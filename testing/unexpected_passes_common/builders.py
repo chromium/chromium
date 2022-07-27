@@ -9,7 +9,7 @@ import json
 import logging
 import os
 import subprocess
-from typing import Any, Dict, Iterable, List, Set, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 
 import six
 
@@ -46,7 +46,7 @@ def ClearInstance() -> None:
 
 
 class Builders():
-  def __init__(self, suite: str, include_internal_builders: bool):
+  def __init__(self, suite: Optional[str], include_internal_builders: bool):
     """
     Args:
       suite: A string containing particular suite of interest if applicable,

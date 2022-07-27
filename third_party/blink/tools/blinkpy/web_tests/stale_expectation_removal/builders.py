@@ -3,25 +3,27 @@
 # found in the LICENSE file.
 """Web test-specific impl of the unexpected passes' builders module."""
 
+from typing import Any, Dict, Set
+
 from unexpected_passes_common import builders
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 
 
 class WebTestBuilders(builders.Builders):
-    def __init__(self, include_internal_builders):
+    def __init__(self, include_internal_builders: bool):
         super(WebTestBuilders, self).__init__(None, include_internal_builders)
         self._fake_ci_builders = None
         self._non_chromium_builders = None
 
-    def _BuilderRunsTestOfInterest(self, test_map):
+    def _BuilderRunsTestOfInterest(self, test_map: Dict[str, Any]) -> bool:
         tests = test_map.get('isolated_scripts', [])
         for t in tests:
             if t.get('isolate_name') in self.GetIsolateNames():
                 return True
         return False
 
-    def GetIsolateNames(self):
+    def GetIsolateNames(self) -> Set[str]:
         return {
             'blink_web_tests',
             # We would like to support the WebGPU tests, but they currently
@@ -32,7 +34,7 @@ class WebTestBuilders(builders.Builders):
             # 'webgpu_blink_web_tests',
         }
 
-    def GetFakeCiBuilders(self):
+    def GetFakeCiBuilders(self) -> builders.FakeBuildersDict:
         # Some of these are weird in that they're explicitly defined trybots
         # instead of a mirror of a CI bot.
         if self._fake_ci_builders is None:
@@ -88,7 +90,7 @@ class WebTestBuilders(builders.Builders):
                 self._fake_ci_builders[ci_entry] = try_entries
         return self._fake_ci_builders
 
-    def GetNonChromiumBuilders(self):
+    def GetNonChromiumBuilders(self) -> Set[data_types.BuilderEntry]:
         if self._non_chromium_builders is None:
             str_builders = {
                 'devtools_frontend_linux_blink_light_rel',

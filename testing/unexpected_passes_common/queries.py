@@ -60,12 +60,13 @@ QueryParameters = Dict[str, Dict[str, Any]]
 class BigQueryQuerier(object):
   """Class to handle all BigQuery queries for a script invocation."""
 
-  def __init__(self, suite: str, project: str, num_samples: int,
+  def __init__(self, suite: Optional[str], project: str, num_samples: int,
                large_query_mode: bool):
     """
     Args:
       suite: A string containing the name of the suite that is being queried
-          for.
+          for. Can be None if there is no differentiation between different
+          suites.
       project: A string containing the billing project to use for BigQuery.
       num_samples: An integer containing the number of builds to pull results
           from.
