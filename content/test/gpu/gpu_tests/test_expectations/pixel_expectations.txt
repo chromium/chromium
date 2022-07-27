@@ -331,9 +331,7 @@ crbug.com/1271184 [ linux display-server-wayland intel skia-renderer-gl ] Pixel_
 crbug.com/1215747 [ android android-pixel-4 skia-renderer-gl android-webview-instrumentation ] Pixel_OffscreenCanvasWebGLDefault [ RetryOnFailure ]
 crbug.com/1276605 [ android android-pixel-4 skia-renderer-gl android-webview-instrumentation ] Pixel_OffscreenCanvasTransferToImageBitmap [ RetryOnFailure ]
 
-# Pixel tests are flakily asserting in GPU process on SkiaRenderer/Vulkan
-crbug.com/1230743 [ linux skia-renderer-vulkan ] Pixel_* [ RetryOnFailure ]
-
+# Pixel tests failing to create SwapChains on SkiaRenderer/Vulkan
 crbug.com/1295079 [ linux skia-renderer-vulkan intel-0x5912 ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
 
 # WebGPU pixel tests flakily hang in the metal shader compiler on Mac.
