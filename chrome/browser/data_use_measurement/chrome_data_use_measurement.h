@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DATA_USE_MEASUREMENT_CHROME_DATA_USE_MEASUREMENT_H_
 
 #include "base/sequence_checker.h"
-#include "build/build_config.h"
 
 class ChromeDataUseMeasurement {
  public:
@@ -33,23 +32,6 @@ class ChromeDataUseMeasurement {
   // histogram DataUse.Services.{Dimensions} with, services as the buckets.
   // |app_state| indicates the app state which can be foreground, or background.
   void ReportDataUsage(TrafficDirection dir, int64_t message_size_bytes);
-
-#if BUILDFLAG(IS_ANDROID)
-  // Records the count of bytes received and sent by Chrome on the network as
-  // reported by the operating system.
-  void MaybeRecordNetworkBytesOS();
-
-  // Number of bytes received and sent by Chromium as reported by the operating
-  // system when it was last queried for traffic statistics. Set to 0 if the
-  // operating system was never queried.
-  int64_t rx_bytes_os_ = 0;
-  int64_t tx_bytes_os_ = 0;
-
-  // Number of bytes received and sent by Chromium as reported by the network
-  // delegate since the operating system was last queried for traffic
-  // statistics.
-  int64_t bytes_transferred_since_last_traffic_stats_query_ = 0;
-#endif
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
