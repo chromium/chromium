@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/focus_cycler.h"
+#include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
@@ -76,41 +77,67 @@ TEST_F(StatusAreaWidgetTest, Basics) {
   EXPECT_FALSE(status->virtual_keyboard_tray_for_testing()->GetVisible());
 }
 
-TEST_F(StatusAreaWidgetTest, HanldeOnLocaleChange) {
+// Tests that the IME menu shows up when adding a secondary display if the IME
+// menu was active.
+TEST_F(StatusAreaWidgetTest, MultiDisplayIME) {
+  // Typical flow to enable the IME menu is to rely on InputMethodManager
+  // observers (of which ImeMenuTray is one) getting notified upon activation of
+  // the ime menu. When a new display is added, the IME menu pod should check
+  // whether the menu is already active and set visibility.
+  Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
+
+  // Create a second display, the IME menu pod should be visible.
+  UpdateDisplay("500x400,500x400");
+  EXPECT_TRUE(StatusAreaWidgetTestHelper::GetSecondaryStatusAreaWidget()
+                  ->ime_menu_tray()
+                  ->GetVisible());
+}
+
+// Tests that the IME menu does not show up when adding a secondary display if
+// the IME menu was not active.
+TEST_F(StatusAreaWidgetTest, MultiDisplayIMENotActive) {
+  // Create a second display, the IME menu pod should not be visible.
+  UpdateDisplay("500x400,500x400");
+  EXPECT_FALSE(StatusAreaWidgetTestHelper::GetSecondaryStatusAreaWidget()
+                   ->ime_menu_tray()
+                   ->GetVisible());
+}
+
+TEST_F(StatusAreaWidgetTest, HandleOnLocaleChange) {
   base::i18n::SetRTLForTesting(false);
 
-  StatusAreaWidget* status_area_ =
+  StatusAreaWidget* status_area =
       StatusAreaWidgetTestHelper::GetStatusAreaWidget();
-  TrayBackgroundView* ime_menu_(status_area_->ime_menu_tray());
-  TrayBackgroundView* palette_(status_area_->palette_tray());
-  TrayBackgroundView* dictation_button_(status_area_->dictation_button_tray());
-  TrayBackgroundView* select_to_speak_(status_area_->select_to_speak_tray());
+  TrayBackgroundView* ime_menu = status_area->ime_menu_tray();
+  TrayBackgroundView* palette = status_area->palette_tray();
+  TrayBackgroundView* dictation_button = status_area->dictation_button_tray();
+  TrayBackgroundView* select_to_speak = status_area->select_to_speak_tray();
 
-  ime_menu_->SetVisiblePreferred(true);
-  palette_->SetVisiblePreferred(true);
-  dictation_button_->SetVisiblePreferred(true);
-  select_to_speak_->SetVisiblePreferred(true);
+  ime_menu->SetVisiblePreferred(true);
+  palette->SetVisiblePreferred(true);
+  dictation_button->SetVisiblePreferred(true);
+  select_to_speak->SetVisiblePreferred(true);
 
-  // From left to right: dictation_button_, select_to_speak_, ime_menu_,
-  // palette_.
-  EXPECT_GT(palette_->layer()->bounds().x(), ime_menu_->layer()->bounds().x());
-  EXPECT_GT(ime_menu_->layer()->bounds().x(),
-            select_to_speak_->layer()->bounds().x());
-  EXPECT_GT(select_to_speak_->layer()->bounds().x(),
-            dictation_button_->layer()->bounds().x());
+  // From left to right: `dictation_button`, `select_to_speak`, `ime_menu`,
+  // palette.
+  EXPECT_GT(palette->layer()->bounds().x(), ime_menu->layer()->bounds().x());
+  EXPECT_GT(ime_menu->layer()->bounds().x(),
+            select_to_speak->layer()->bounds().x());
+  EXPECT_GT(select_to_speak->layer()->bounds().x(),
+            dictation_button->layer()->bounds().x());
 
   // Switch to RTL mode.
   base::i18n::SetRTLForTesting(true);
   // Trigger the LocaleChangeObserver, which should cause a layout of the menu.
   ash::LocaleUpdateController::Get()->OnLocaleChanged();
 
-  // From left to right: palette_, ime_menu_, select_to_speak_,
+  // From left to right: palette, ime_menu_, select_to_speak,
   // dictation_button_.
-  EXPECT_LT(palette_->layer()->bounds().x(), ime_menu_->layer()->bounds().x());
-  EXPECT_LT(ime_menu_->layer()->bounds().x(),
-            select_to_speak_->layer()->bounds().x());
-  EXPECT_LT(select_to_speak_->layer()->bounds().x(),
-            dictation_button_->layer()->bounds().x());
+  EXPECT_LT(palette->layer()->bounds().x(), ime_menu->layer()->bounds().x());
+  EXPECT_LT(ime_menu->layer()->bounds().x(),
+            select_to_speak->layer()->bounds().x());
+  EXPECT_LT(select_to_speak->layer()->bounds().x(),
+            dictation_button->layer()->bounds().x());
 
   base::i18n::SetRTLForTesting(false);
 }
