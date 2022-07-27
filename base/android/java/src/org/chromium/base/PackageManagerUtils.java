@@ -68,6 +68,24 @@ public class PackageManagerUtils {
     }
 
     /**
+     * Check if the given Intent can be resolved by any Activities on the system.
+     *
+     * See {@link PackageManagerUtils#queryIntentActivities(Intent, int)}
+     */
+    public static boolean canResolveActivity(Intent intent, int flags) {
+        return !queryIntentActivities(intent, flags).isEmpty();
+    }
+
+    /**
+     * Check if the given Intent can be resolved by any Activities on the system.
+     *
+     * See {@link PackageManagerUtils#canResolveActivity(Intent, int)}
+     */
+    public static boolean canResolveActivity(Intent intent) {
+        return canResolveActivity(intent, 0);
+    }
+
+    /**
      * @return Intent to query a list of installed home launchers.
      */
     public static Intent getQueryInstalledHomeLaunchersIntent() {

@@ -781,8 +781,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
 
         // Check if the intent is resolved, i.e current WebView package has a developer UI that
         // responds to "com.android.webview.SHOW_DEV_UI" action.
-        List<ResolveInfo> intentResolveInfo = getPackageManager().queryIntentActivities(intent, 0);
-        if (intentResolveInfo.size() > 0) {
+        if (PackageManagerUtils.canResolveActivity(intent)) {
             startActivity(intent);
         } else {
             Log.e(TAG,

@@ -200,11 +200,10 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         searchIntent.putExtra(SearchManager.QUERY, query);
 
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            int resolvers =
-                    PackageManagerUtils
-                            .queryIntentActivities(searchIntent, PackageManager.GET_RESOLVED_FILTER)
-                            .size();
-            if (resolvers == 0) {
+            if (PackageManagerUtils.canResolveActivity(
+                        searchIntent, PackageManager.GET_RESOLVED_FILTER)) {
+                mActivity.startActivity(searchIntent);
+            } else {
                 // Phone doesn't have a WEB_SEARCH action handler, open Search Activity with
                 // the given query.
                 Intent searchActivityIntent = new Intent(Intent.ACTION_MAIN);
@@ -212,8 +211,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
                         ContextUtils.getApplicationContext(), SearchActivity.class);
                 searchActivityIntent.putExtra(SearchManager.QUERY, query);
                 mActivity.startActivity(searchActivityIntent);
-            } else {
-                mActivity.startActivity(searchIntent);
             }
         }
     }

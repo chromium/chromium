@@ -652,7 +652,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
      *         Context.startActivity will not throw ActivityNotFoundException.
      */
     public boolean canResolveActivity(Intent intent) {
-        return !PackageManagerUtils.queryIntentActivities(intent, 0).isEmpty();
+        return PackageManagerUtils.canResolveActivity(intent);
     }
 
     /**

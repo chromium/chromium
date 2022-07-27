@@ -636,9 +636,8 @@ public class OMADownloadHandler extends BroadcastReceiver {
                     && !type.equalsIgnoreCase(MimeUtils.OMA_DOWNLOAD_DESCRIPTOR_MIME)
                     && !type.equalsIgnoreCase(MimeUtils.OMA_DRM_RIGHTS_MIME)) {
                 intent.setDataAndType(uri, type);
-                if (!PackageManagerUtils
-                                .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-                                .isEmpty()) {
+                if (PackageManagerUtils.canResolveActivity(
+                            intent, PackageManager.MATCH_DEFAULT_ONLY)) {
                     return type;
                 }
             }

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.voice;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
 import android.speech.RecognizerIntent;
 
 import androidx.annotation.Nullable;
@@ -23,8 +22,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
-
-import java.util.List;
 
 /**
  * Utilities related to voice recognition.
@@ -131,9 +128,8 @@ public class VoiceRecognitionUtil {
     public static boolean isRecognitionIntentPresent(boolean useCachedValue) {
         ThreadUtils.assertOnUiThread();
         if (sHasRecognitionIntentHandler == null || !useCachedValue) {
-            List<ResolveInfo> activities = PackageManagerUtils.queryIntentActivities(
-                    new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0);
-            sHasRecognitionIntentHandler = !activities.isEmpty();
+            sHasRecognitionIntentHandler = PackageManagerUtils.canResolveActivity(
+                    new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH));
         }
 
         return sHasRecognitionIntentHandler;

@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.pm.ResolveInfo;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -29,7 +28,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -155,18 +153,13 @@ public class GSAState {
      */
     public boolean isGsaAvailable() {
         if (mGsaAvailable != null) return mGsaAvailable;
-        mGsaAvailable = false;
+
         Intent searchIntent = new Intent(SEARCH_INTENT_ACTION);
         searchIntent.setPackage(GSAState.SEARCH_INTENT_PACKAGE);
-        List<ResolveInfo> resolveInfo = PackageManagerUtils.queryIntentActivities(searchIntent, 0);
-        if (resolveInfo.size() == 0) {
-            mGsaAvailable = false;
-        } else if (!isPackageAboveVersion(SEARCH_INTENT_PACKAGE, GSA_VERSION_FOR_DOCUMENT)
-                || !isPackageAboveVersion(GMS_CORE_PACKAGE, GMS_CORE_VERSION)) {
-            mGsaAvailable = false;
-        } else {
-            mGsaAvailable = true;
-        }
+        mGsaAvailable = PackageManagerUtils.canResolveActivity(searchIntent)
+                && isPackageAboveVersion(SEARCH_INTENT_PACKAGE, GSA_VERSION_FOR_DOCUMENT)
+                && isPackageAboveVersion(GMS_CORE_PACKAGE, GMS_CORE_VERSION);
+
         return mGsaAvailable;
     }
 

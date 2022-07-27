@@ -9,14 +9,13 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
-import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.provider.Settings;
 
 import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.base.Log;
+import org.chromium.base.PackageManagerUtils;
 
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -145,12 +144,8 @@ public class WebViewPackageError {
             Log.e(TAG, "Could not find a valid WebView implementation");
             return false;
         }
-        Intent intent = buildWebViewDevUiIntent(systemWebViewPackage.packageName);
-        // Check if the intent is resolved, i.e current system WebView package has a developer
-        // UI that responds to "com.android.webview.SHOW_DEV_UI" action.
-        List<ResolveInfo> resolveInfo =
-                mContext.getPackageManager().queryIntentActivities(intent, 0);
-        return !resolveInfo.isEmpty();
+        return PackageManagerUtils.canResolveActivity(
+                buildWebViewDevUiIntent(systemWebViewPackage.packageName));
     }
 
     private void openCurrentWebViewProviderDevTools() {
