@@ -69,13 +69,6 @@ const char kEULAAutoAccept[] = "eulaAutoAccept";
 // automatically.
 const char kArcTosAutoAccept[] = "arcTosAutoAccept";
 
-// == Update screen:
-
-// Boolean value, indicating that all non-critical updates should be skipped.
-// This should be used only during rollback scenario, when Chrome version is
-// known not to have any critical issues.
-const char kUpdateSkipUpdate[] = "updateSkipNonCritical";
-
 // == Wizard controller:
 
 // String value, containing device requisition parameter.
@@ -116,8 +109,6 @@ constexpr struct {
     {kEULASendUsageStatistics, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_JS},
     {kEULAAutoAccept, ValueType::BOOLEAN, ConfigurationHandlerSide::HANDLER_JS},
-    {kUpdateSkipUpdate, ValueType::BOOLEAN,
-     ConfigurationHandlerSide::HANDLER_CPP},
     {kRestoreAfterRollback, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_CPP},
     {kDeviceRequisition, ValueType::STRING,

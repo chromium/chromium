@@ -128,12 +128,9 @@ bool UpdateScreen::MaybeSkip(WizardContext* context) {
     return true;
   }
 
-  const auto* skip_screen_key = context->configuration.FindKeyOfType(
-      configuration::kUpdateSkipUpdate, base::Value::Type::BOOLEAN);
-  const bool skip_screen = skip_screen_key && skip_screen_key->GetBool();
-
-  if (skip_screen) {
-    LOG(WARNING) << "Skip OOBE Update because of configuration.";
+  if (ash::IsRollbackFlow(*context)) {
+    LOG(WARNING)
+        << "Skip OOBE Update because enterprise rollback just happened.";
     exit_callback_.Run(VersionUpdater::Result::UPDATE_SKIPPED);
     return true;
   }
