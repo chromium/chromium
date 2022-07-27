@@ -297,10 +297,7 @@ class SigninHelperChromeOSTestWithArcAccountRestrictions
       public ::ash::AccountAppsAvailability::Observer {
  public:
   SigninHelperChromeOSTestWithArcAccountRestrictions() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kArcAccountRestrictions,
-                              chromeos::features::kLacrosSupport},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
   }
 
   ~SigninHelperChromeOSTestWithArcAccountRestrictions() override = default;
@@ -514,7 +511,7 @@ class SigninHelperChromeOSTestSecondaryGoogleAccountUsage
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kSecondaryGoogleAccountUsage,
                               chromeos::features::kLacrosSupport},
-        /*disabled_features=*/{chromeos::features::kArcAccountRestrictions});
+        /*disabled_features=*/{chromeos::features::kLacrosSupport});
   }
 
   ~SigninHelperChromeOSTestSecondaryGoogleAccountUsage() override = default;

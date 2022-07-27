@@ -52,7 +52,7 @@ TEST_F('InlineLoginBrowserTest', 'BackButton', function() {
 });
 
 GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
-// TODO(crbug.com/1275568): Merge this test suite with the test above after the
+// TODO(crbug.com/1347746): Merge this test suite with the test above after the
 // feature is launched.
 // eslint-disable-next-line no-var
 var InlineLoginBrowserTestWithArcAccountRestrictionsEnabled =
@@ -61,7 +61,6 @@ var InlineLoginBrowserTestWithArcAccountRestrictionsEnabled =
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kArcAccountRestrictions',
         'chromeos::features::kLacrosSupport',
       ],
     };
@@ -103,15 +102,6 @@ var InlineLoginWelcomePageBrowserTest = class extends InlineLoginBrowserTest {
   get suiteName() {
     return inline_login_welcome_page_test.suiteName;
   }
-
-  /** @override */
-  get featureList() {
-    return {
-      disabled: [
-        'chromeos::features::kArcAccountRestrictions',
-      ],
-    };
-  }
 };
 
 TEST_F('InlineLoginWelcomePageBrowserTest', 'Reauthentication', function() {
@@ -130,7 +120,7 @@ TEST_F('InlineLoginWelcomePageBrowserTest', 'GoBack', function() {
   this.runMochaTest(inline_login_welcome_page_test.TestNames.GoBack);
 });
 
-// TODO(crbug.com/1275568): Make this test the default one, and remove the test
+// TODO(crbug.com/1347746): Make this test the default one, and remove the test
 // suite above when the feature is enabled by default.
 // eslint-disable-next-line no-var
 var InlineLoginWelcomePageBrowserTestWithArcAccountRestrictionsEnabled =
@@ -139,7 +129,6 @@ var InlineLoginWelcomePageBrowserTestWithArcAccountRestrictionsEnabled =
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kArcAccountRestrictions',
         'chromeos::features::kLacrosSupport',
       ],
     };
@@ -201,7 +190,6 @@ var InlineLoginArcAccountPickerBrowserTest =
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kArcAccountRestrictions',
         'chromeos::features::kLacrosSupport',
       ],
     };

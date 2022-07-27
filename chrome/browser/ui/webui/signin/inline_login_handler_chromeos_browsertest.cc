@@ -374,10 +374,7 @@ class InlineLoginHandlerChromeOSTestWithArcRestrictions
     : public InlineLoginHandlerChromeOSTest {
  public:
   InlineLoginHandlerChromeOSTestWithArcRestrictions() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kArcAccountRestrictions,
-                              chromeos::features::kLacrosSupport},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
   }
 
   ~InlineLoginHandlerChromeOSTestWithArcRestrictions() override = default;

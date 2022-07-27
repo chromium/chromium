@@ -56,7 +56,7 @@ TEST_F(
     'OSSettingsDevicePageV3Test', 'All',
     () => mocha.grep('/^((?!arrow_key_arrangement_disabled).)*$/').run());
 
-// TODO(crbug.com/1275568): move this to the generic test lists below after the
+// TODO(crbug.com/1347746): move this to the generic test lists below after the
 // feature is launched.
 var OSSettingsPeoplePageAccountManagerV3Test =
     class extends OSSettingsV3BrowserTest {
@@ -69,7 +69,6 @@ var OSSettingsPeoplePageAccountManagerV3Test =
   get featureList() {
     return {
       disabled: [
-        'chromeos::features::kArcAccountRestrictions',
         'chromeos::features::kLacrosSupport',
       ],
     };
@@ -89,7 +88,6 @@ var OSSettingsPeoplePageAccountManagerWithArcAccountRestrictionsEnabledV3Test =
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kArcAccountRestrictions',
         'chromeos::features::kLacrosSupport',
       ],
     };

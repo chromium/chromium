@@ -4919,9 +4919,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFillOnAccountSelectDescription, kOsAll,
      FEATURE_VALUE_TYPE(password_manager::features::kFillOnAccountSelect)},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"arc-account-restrictions", flag_descriptions::kArcAccountRestrictionsName,
-     flag_descriptions::kArcAccountRestrictionsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kArcAccountRestrictions)},
     {"arc-custom-tabs-experiment",
      flag_descriptions::kArcCustomTabsExperimentName,
      flag_descriptions::kArcCustomTabsExperimentDescription, kOsCrOS,

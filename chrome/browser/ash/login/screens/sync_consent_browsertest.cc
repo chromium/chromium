@@ -422,8 +422,8 @@ class SyncConsentTestWithModesParams
   SyncConsentTestWithModesParams() {
     std::tie(is_minor_user_, is_arc_restricted_) = GetParam();
     if (is_arc_restricted_) {
-      scoped_feature_list_.InitWithFeatures(
-          {features::kArcAccountRestrictions, features::kLacrosSupport}, {});
+      scoped_feature_list_.InitAndEnableFeature(
+          chromeos::features::kLacrosSupport);
     }
   }
 

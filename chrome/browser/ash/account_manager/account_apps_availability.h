@@ -65,8 +65,7 @@ class AccountAppsAvailability
   AccountAppsAvailability(const AccountAppsAvailability&) = delete;
   AccountAppsAvailability& operator=(const AccountAppsAvailability&) = delete;
 
-  // Returns `true` if `kArcAccountRestrictions` and `kLacrosSupport` are
-  // enabled.
+  // Returns `true` if `kLacrosSupport` is enabled.
   static bool IsArcAccountRestrictionsEnabled();
 
   static void RegisterPrefs(PrefRegistrySimple* registry);

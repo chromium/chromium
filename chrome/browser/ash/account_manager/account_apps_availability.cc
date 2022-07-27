@@ -41,7 +41,10 @@ constexpr int kMaxNumAccountsInArcMetric =
 bool IsPrimaryGaiaAccount(const std::string& gaia_id) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(user);
+  // GetPrimaryUser may return nullptr in tests.
+  if (!user)
+    return false;
+
   return user->GetAccountId().GetAccountType() == AccountType::GOOGLE &&
          user->GetAccountId().GetGaiaId() == gaia_id;
 }
@@ -49,7 +52,10 @@ bool IsPrimaryGaiaAccount(const std::string& gaia_id) {
 bool IsActiveDirectoryUser() {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(user);
+  // GetPrimaryUser may return nullptr in tests.
+  if (!user)
+    return false;
+
   return user->GetType() == user_manager::USER_TYPE_ACTIVE_DIRECTORY;
 }
 
@@ -227,9 +233,7 @@ AccountAppsAvailability::~AccountAppsAvailability() = default;
 
 // static
 bool AccountAppsAvailability::IsArcAccountRestrictionsEnabled() {
-  return base::FeatureList::IsEnabled(
-             chromeos::features::kArcAccountRestrictions) &&
-         base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
+  return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
 }
 
 // static

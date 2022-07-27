@@ -1170,12 +1170,7 @@ TEST_F(WebAppRegistrarTest_TabStrip, TabbedAppAutoNewTabUrl) {
 
 class WebAppRegistrarAshTest : public WebAppTest, public WithCrosapiParam {
  public:
-  WebAppRegistrarAshTest() {
-    // Avoid crash during TestingProfile construction when Lacros support is
-    // enabled.
-    scoped_feature_list_.InitAndDisableFeature(
-        chromeos::features::kArcAccountRestrictions);
-  }
+  WebAppRegistrarAshTest() = default;
   ~WebAppRegistrarAshTest() override = default;
 
  private:

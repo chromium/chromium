@@ -2539,9 +2539,6 @@ extern const char kAppDiscoveryForOobeDescription[];
 extern const char kAppProvisioningStaticName[];
 extern const char kAppProvisioningStaticDescription[];
 
-extern const char kArcAccountRestrictionsName[];
-extern const char kArcAccountRestrictionsDescription[];
-
 extern const char kArcCustomTabsExperimentName[];
 extern const char kArcCustomTabsExperimentDescription[];
 

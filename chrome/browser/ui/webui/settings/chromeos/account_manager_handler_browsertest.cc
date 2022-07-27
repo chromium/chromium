@@ -427,10 +427,7 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
     : public AccountManagerUIHandlerTest {
  public:
   AccountManagerUIHandlerTestWithArcAccountRestrictions() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kArcAccountRestrictions,
-                              chromeos::features::kLacrosSupport},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
   }
 
   void SetUpOnMainThread() override {

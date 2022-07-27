@@ -70,7 +70,7 @@ TEST_F(
                             .ShowErrorScreenImmediatelyOnLoadAbort);
     });
 
-// TODO(crbug.com/1275568): Merge this test suite with the test above after the
+// TODO(crbug.com/1347746): Merge this test suite with the test above after the
 // feature is launched.
 // eslint-disable-next-line no-var
 var EduCoexistenceAppTestWithArcAccountRestrictionsEnabled =
@@ -79,7 +79,6 @@ var EduCoexistenceAppTestWithArcAccountRestrictionsEnabled =
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kArcAccountRestrictions',
         'chromeos::features::kLacrosSupport',
       ],
     };

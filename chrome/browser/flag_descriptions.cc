@@ -4434,10 +4434,6 @@ const char kAppProvisioningStaticDescription[] =
     "Enables pulling apps from a static server setup to enable new app serving "
     "possibilities. ";
 
-const char kArcAccountRestrictionsName[] = "Enable ARC account restrictions";
-const char kArcAccountRestrictionsDescription[] =
-    "ARC account restrictions feature for multi-profile account consistency";
-
 const char kArcCustomTabsExperimentName[] =
     "Enable Custom Tabs experiment for ARC";
 const char kArcCustomTabsExperimentDescription[] =
