@@ -448,7 +448,7 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
 
     // Wait for the guest contents of the PDF plugin is created.
     WebContents* guest_contents =
-        test_guest_view_manager_->WaitForSingleGuestCreated();
+        test_guest_view_manager_->DeprecatedWaitForSingleGuestCreated();
     TestMimeHandlerViewGuest* guest = static_cast<TestMimeHandlerViewGuest*>(
         extensions::MimeHandlerViewGuest::FromWebContents(guest_contents));
     ASSERT_TRUE(guest);

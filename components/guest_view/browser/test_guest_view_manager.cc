@@ -9,6 +9,21 @@
 
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test_utils.h"
+
+namespace {
+// Returns the current RFH owned by the FrameTreeNode, denoted by
+// |frame_tree_node_id|.
+content::RenderFrameHost* GetCurrentGuestMainRenderFrameHost(
+    int frame_tree_node_id) {
+  auto* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+  DCHECK(web_contents);
+  return web_contents->UnsafeFindFrameByFrameTreeNodeId(frame_tree_node_id);
+}
+}  // namespace
 
 namespace guest_view {
 
@@ -23,8 +38,7 @@ TestGuestViewManager::TestGuestViewManager(
       waiting_for_guests_created_(false),
       waiting_for_attach_(nullptr) {}
 
-TestGuestViewManager::~TestGuestViewManager() {
-}
+TestGuestViewManager::~TestGuestViewManager() = default;
 
 size_t TestGuestViewManager::GetNumGuestsActive() const {
   return guest_web_contents_by_instance_id_.size();
@@ -34,43 +48,76 @@ size_t TestGuestViewManager::GetNumRemovedInstanceIDs() const {
   return removed_instance_ids_.size();
 }
 
-content::WebContents* TestGuestViewManager::GetLastGuestCreated() {
-  content::WebContents* web_contents = nullptr;
-  for (int i = current_instance_id_; i >= 0; i--) {
-    web_contents = GetGuestByInstanceID(i);
-    if (web_contents) {
-      break;
+content::RenderFrameHost*
+TestGuestViewManager::GetLastGuestRenderFrameHostCreated() {
+  for (auto it = guest_view_watchers_.rbegin();
+       it != guest_view_watchers_.rend(); ++it) {
+    const auto& watcher = *it;
+    if (!watcher->IsDeleted()) {
+      return GetCurrentGuestMainRenderFrameHost(watcher->GetFrameTreeNodeId());
     }
   }
-  return web_contents;
+  return nullptr;
+}
+
+content::WebContents* TestGuestViewManager::DeprecatedGetLastGuestCreated() {
+  return content::WebContents::FromRenderFrameHost(
+      GetLastGuestRenderFrameHostCreated());
+}
+
+GuestViewBase* TestGuestViewManager::GetLastGuestViewCreated() {
+  auto* last_guest = DeprecatedGetLastGuestCreated();
+  return GuestViewBase::FromWebContents(last_guest);
 }
 
 void TestGuestViewManager::WaitForAllGuestsDeleted() {
   // Make sure that every guest that was created has been removed.
-  for (auto& watcher : guest_web_contents_watchers_)
+  for (auto& watcher : guest_view_watchers_) {
     watcher->Wait();
+  }
 }
 
 void TestGuestViewManager::WaitForLastGuestDeleted() {
   // Wait for the last guest that was created to be deleted.
-  guest_web_contents_watchers_.back()->Wait();
+  guest_view_watchers_.back()->Wait();
 }
 
-content::WebContents* TestGuestViewManager::WaitForSingleGuestCreated() {
+content::RenderFrameHost*
+TestGuestViewManager::WaitForSingleGuestRenderFrameHostCreated() {
   if (!GetNumGuestsActive()) {
     // Guests have been created and subsequently destroyed.
     if (num_guests_created() > 0)
       return nullptr;
     WaitForNumGuestsCreated(1u);
   }
-
-  return GetLastGuestCreated();
+  return GetLastGuestRenderFrameHostCreated();
 }
 
-content::WebContents* TestGuestViewManager::WaitForNextGuestCreated() {
-  created_message_loop_runner_ = new content::MessageLoopRunner();
-  created_message_loop_runner_->Run();
-  return GetLastGuestCreated();
+content::WebContents*
+TestGuestViewManager::DeprecatedWaitForSingleGuestCreated() {
+  return content::WebContents::FromRenderFrameHost(
+      WaitForSingleGuestRenderFrameHostCreated());
+}
+
+GuestViewBase* TestGuestViewManager::WaitForSingleGuestViewCreated() {
+  return GuestViewBase::FromWebContents(DeprecatedWaitForSingleGuestCreated());
+}
+
+content::RenderFrameHost*
+TestGuestViewManager::WaitForNextGuestRenderFrameHostCreated() {
+  created_run_loop_ = std::make_unique<base::RunLoop>();
+  created_run_loop_->Run();
+  return GetLastGuestRenderFrameHostCreated();
+}
+
+content::WebContents*
+TestGuestViewManager::DeprecatedWaitForNextGuestCreated() {
+  return content::WebContents::FromRenderFrameHost(
+      WaitForNextGuestRenderFrameHostCreated());
+}
+
+GuestViewBase* TestGuestViewManager::WaitForNextGuestViewCreated() {
+  return GuestViewBase::FromWebContents(DeprecatedWaitForNextGuestCreated());
 }
 
 void TestGuestViewManager::WaitForNumGuestsCreated(size_t count) {
@@ -80,26 +127,23 @@ void TestGuestViewManager::WaitForNumGuestsCreated(size_t count) {
   waiting_for_guests_created_ = true;
   expected_num_guests_created_ = count;
 
-  num_created_message_loop_runner_ = new content::MessageLoopRunner;
-  num_created_message_loop_runner_->Run();
+  num_created_run_loop_ = std::make_unique<base::RunLoop>();
+  num_created_run_loop_->Run();
 }
 
-void TestGuestViewManager::WaitUntilAttached(
-    content::WebContents* guest_web_contents) {
-  GuestViewBase* guest = GuestViewBase::FromWebContents(guest_web_contents);
-
-  if (guest->attached())
+void TestGuestViewManager::WaitUntilAttached(GuestViewBase* guest_view) {
+  if (guest_view->attached())
     return;
 
-  waiting_for_attach_ = guest;
+  waiting_for_attach_ = guest_view;
 
-  attached_message_loop_runner_ = new content::MessageLoopRunner;
-  attached_message_loop_runner_->Run();
+  attached_run_loop_ = std::make_unique<base::RunLoop>();
+  attached_run_loop_->Run();
 }
 
 void TestGuestViewManager::WaitForViewGarbageCollected() {
-  gc_message_loop_runner_ = new content::MessageLoopRunner;
-  gc_message_loop_runner_->Run();
+  gc_run_loop_ = std::make_unique<base::RunLoop>();
+  gc_run_loop_->Run();
 }
 
 void TestGuestViewManager::WaitForSingleViewGarbageCollected() {
@@ -111,12 +155,12 @@ void TestGuestViewManager::AddGuest(int guest_instance_id,
                                     content::WebContents* guest_web_contents) {
   GuestViewManager::AddGuest(guest_instance_id, guest_web_contents);
 
-  guest_web_contents_watchers_.push_back(
-      std::make_unique<content::WebContentsDestroyedWatcher>(
-          guest_web_contents));
+  guest_view_watchers_.push_back(
+      std::make_unique<content::FrameDeletedObserver>(
+          guest_web_contents->GetPrimaryMainFrame()));
 
-  if (created_message_loop_runner_)
-    created_message_loop_runner_->Quit();
+  if (created_run_loop_)
+    created_run_loop_->Quit();
 
   ++num_guests_created_;
   if (!waiting_for_guests_created_ &&
@@ -124,8 +168,8 @@ void TestGuestViewManager::AddGuest(int guest_instance_id,
     return;
   }
 
-  if (num_created_message_loop_runner_)
-    num_created_message_loop_runner_->Quit();
+  if (num_created_run_loop_)
+    num_created_run_loop_->Quit();
 }
 
 void TestGuestViewManager::AttachGuest(int embedder_process_id,
@@ -138,19 +182,30 @@ void TestGuestViewManager::AttachGuest(int embedder_process_id,
   if (waiting_for_attach_ &&
       (waiting_for_attach_ ==
        GuestViewBase::From(embedder_process_id, guest_instance_id))) {
-    attached_message_loop_runner_->Quit();
+    attached_run_loop_->Quit();
     waiting_for_attach_ = nullptr;
   }
 }
 
-void TestGuestViewManager::GetGuestWebContentsList(
+void TestGuestViewManager::DeprecatedGetGuestWebContentsList(
     std::vector<content::WebContents*>* guest_web_contents_list) {
-  for (auto& watcher : guest_web_contents_watchers_)
-    guest_web_contents_list->push_back(watcher->web_contents());
+  for (auto& watcher : guest_view_watchers_) {
+    if (!watcher->IsDeleted()) {
+      auto ftn_id = watcher->GetFrameTreeNodeId();
+      guest_web_contents_list->push_back(
+          content::WebContents::FromFrameTreeNodeId(ftn_id));
+    }
+  }
 }
 
-void TestGuestViewManager::RemoveGuest(int guest_instance_id) {
-  GuestViewManager::RemoveGuest(guest_instance_id);
+void TestGuestViewManager::GetGuestRenderFrameHostList(
+    std::vector<content::RenderFrameHost*>* guest_render_frame_host_list) {
+  for (auto& watcher : guest_view_watchers_) {
+    if (!watcher->IsDeleted()) {
+      guest_render_frame_host_list->push_back(
+          GetCurrentGuestMainRenderFrameHost(watcher->GetFrameTreeNodeId()));
+    }
+  }
 }
 
 void TestGuestViewManager::EmbedderProcessDestroyed(int embedder_process_id) {
@@ -162,8 +217,8 @@ void TestGuestViewManager::ViewGarbageCollected(int embedder_process_id,
                                                 int view_instance_id) {
   GuestViewManager::ViewGarbageCollected(embedder_process_id, view_instance_id);
   ++num_views_garbage_collected_;
-  if (gc_message_loop_runner_)
-    gc_message_loop_runner_->Quit();
+  if (gc_run_loop_)
+    gc_run_loop_->Quit();
 }
 
 // Test factory for creating test instances of GuestViewManager.
