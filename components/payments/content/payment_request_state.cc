@@ -24,7 +24,6 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/payments/content/autofill_payment_app.h"
-#include "components/payments/content/autofill_payment_app_factory.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_app_service.h"
@@ -438,24 +437,8 @@ void PaymentRequestState::SetAvailablePaymentAppForRetry() {
 void PaymentRequestState::AddAutofillPaymentApp(
     bool selected,
     const autofill::CreditCard& card) {
-  if (!base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard))
-    return;
-
-  auto app =
-      AutofillPaymentAppFactory::ConvertCardToPaymentAppIfSupportedNetwork(
-          card, weak_ptr_factory_.GetWeakPtr());
-  if (!app)
-    return;
-
-  available_apps_.push_back(std::move(app));
-  if (journey_logger_) {
-    journey_logger_->SetAvailableMethod(
-        JourneyLogger::PaymentMethodCategory::kBasicCard);
-  }
-
-  if (selected) {
-    SetSelectedApp(available_apps_.back()->AsWeakPtr());
-  }
+  // TODO(https://crbug.com/1209835): Remove this method.
+  return;
 }
 
 void PaymentRequestState::AddAutofillShippingProfile(

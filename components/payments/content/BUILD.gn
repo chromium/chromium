@@ -14,8 +14,6 @@ static_library("content") {
     "android_payment_app_factory.h",
     "autofill_payment_app.cc",
     "autofill_payment_app.h",
-    "autofill_payment_app_factory.cc",
-    "autofill_payment_app_factory.h",
     "can_make_payment_query_factory.cc",
     "can_make_payment_query_factory.h",
     "initialization_task.cc",

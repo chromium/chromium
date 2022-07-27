@@ -3,12 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "components/payments/core/journey_logger.h"
-#include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -133,26 +130,12 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, SkipWithUserGesture) {
   EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SELECTED_OTHER);
 }
 
-class PaymentHandlerJustInTimeInstallationTestWithParam
-    : public PaymentHandlerJustInTimeInstallationTest,
-      public ::testing::WithParamInterface<bool> {
- protected:
-  PaymentHandlerJustInTimeInstallationTestWithParam() {
-    scoped_feature_list_.InitWithFeatureState(
-        ::features::kPaymentRequestBasicCard, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(PaymentHandlerJustInTimeInstallationTestWithParam,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerJustInTimeInstallationTest,
                        MultiplePaymentMethods) {
   base::HistogramTester histogram_tester;
   ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
   content::ExecuteScriptAsync(GetActiveWebContents(), R"(
     testPaymentMethods([
-      {supportedMethods: 'basic-card'},
       {supportedMethods: 'https://harry.example.com/webpay'},
       {supportedMethods: 'https://kylepay.com/webpay'}
     ]);
@@ -167,74 +150,15 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerJustInTimeInstallationTestWithParam,
       histogram_tester.GetAllSamples("PaymentRequest.Events");
   ASSERT_EQ(1U, buckets.size());
 
-  // No cards were added to Autofill, so no basic-card payment instruments were
-  // available for the user to select.
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_AVAILABLE_METHOD_BASIC_CARD);
-
   // The merchant did not request https://google.com/pay or
   // https://android.com/pay payment methods and no payment apps were added to
   // Chrome with these payment method identifiers, so no Google payment
   // instruments were available for the user to select.
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_GOOGLE);
 
-  // - When the merchant requests basic-card and that feature is enabled
-  //   (GetParam() == true), then Chrome skips looking up JIT installable
-  //   payment handlers, so these "other" payment instruments are not available
-  //   for the user to select.
-  // - When the basic-card feature is disabled (GetParam() == false), then
-  //   Chrome looks up the JIT installable payment handlers, so these "other"
-  //   payment instruments are available for the user to select.
-  EXPECT_EQ(!GetParam(),
-            (buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER) > 0);
+  // Chrome looks up the JIT installable payment handlers, so these "other"
+  // payment instruments are available for the user to select.
+  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER);
 }
-
-IN_PROC_BROWSER_TEST_P(PaymentHandlerJustInTimeInstallationTestWithParam,
-                       HybridRequest_HasCompleteCreditCard) {
-  if (!GetParam())
-    return;
-
-  CreateAndAddCreditCardForProfile(CreateAndAddAutofillProfile());
-
-  base::HistogramTester histogram_tester;
-  ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
-
-  content::ExecuteScriptAsync(GetActiveWebContents(), R"(
-    testPaymentMethods([
-      {supportedMethods: 'basic-card'},
-      {supportedMethods: 'https://kylepay.com/webpay'}
-    ]);
-  )");
-  WaitForObservedEvent();
-
-  // Because there is a complete basic card, the request is expected to stop at
-  // the payment sheet waiting for user action.
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), "abort()"));
-
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-
-  // A card was added to Autofill, so a basic-card payment instrument is
-  // available for the user to select.
-  EXPECT_TRUE(buckets[0].min &
-              JourneyLogger::EVENT_AVAILABLE_METHOD_BASIC_CARD);
-
-  // The merchant did not request https://google.com/pay or
-  // https://android.com/pay payment methods and no payment apps were added to
-  // Chrome with these payment method identifiers, so no Google payment
-  // instruments were available for the user to select.
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_GOOGLE);
-
-  // Chrome skips looking up JIT installable payment handlers when merchant
-  // requests basic-card payment method, so the "other" payment handlers are not
-  // available for the user to select.
-  EXPECT_FALSE((buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER) >
-               0);
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PaymentHandlerJustInTimeInstallationTestWithParam,
-                         ::testing::Values(false, true));
 
 }  // namespace payments

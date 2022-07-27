@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/android_payment_app_factory.h"
-#include "components/payments/content/autofill_payment_app_factory.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/secure_payment_confirmation_app_factory.h"
 #include "components/payments/content/service_worker_payment_app_factory.h"
@@ -20,9 +19,6 @@
 namespace payments {
 
 PaymentAppService::PaymentAppService(content::BrowserContext* context) {
-  if (base::FeatureList::IsEnabled(::features::kPaymentRequestBasicCard)) {
-    factories_.emplace_back(std::make_unique<AutofillPaymentAppFactory>());
-  }
   if (base::FeatureList::IsEnabled(::features::kServiceWorkerPaymentApps)) {
     factories_.push_back(std::make_unique<ServiceWorkerPaymentAppFactory>());
   }
