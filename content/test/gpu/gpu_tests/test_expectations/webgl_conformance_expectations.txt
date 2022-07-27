@@ -566,8 +566,9 @@ crbug.com/352645 [ android android-webview-instrumentation angle-disabled ] conf
 # should be probably back to flaky once the bug is fixed. So uncomment below test once the bug is fixed.
 # crbug.com/834933 [ android android-chromium ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
 
-# This video test is flakey on many configurations.
+# These video tests are flakey on many configurations.
 crbug.com/1347077 [ android ] conformance/textures/misc/video-rotation.html [ Failure ]
+crbug.com/1347077 [ android ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
 
 # Nexus 5
 crbug.com/899754 [ android android-nexus-5 ] conformance/attribs/gl-disabled-vertex-attrib-update.html [ Failure ]
@@ -617,20 +618,17 @@ crbug.com/1270815 [ android android-nexus-5x ] conformance/textures/misc/texture
 # Flakily returning RGBA(0,0,0,0) for pixels in video related tests
 crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
 crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
-crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
 crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/video/* [ Failure ]
 
 # Android NVIDIA Shield TV
 crbug.com/1294071 [ android-pie android-shield-android-tv ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 # Flakily returning RGBA(0,0,0,0) for all pixels
-crbug.com/1295386 [ android android-shield-android-tv ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
 crbug.com/1295386 [ android android-shield-android-tv ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
 crbug.com/1295386 [ android android-shield-android-tv ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 
 # Pixel 4
 crbug.com/1175223 [ android android-pixel-4 angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1175226 [ android android-pixel-4 no-passthrough no-swiftshader-gl ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1187332 [ android android-pixel-4 ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
 crbug.com/1278904 [ android android-pixel-4 android-chromium ] conformance/textures/misc/texture-npot-video.html [ RetryOnFailure ]
 
 # Pixel 6
@@ -645,7 +643,6 @@ crbug.com/1286924 [ android android-pixel-6 passthrough ] conformance/textures/m
 crbug.com/1287249 [ android android-pixel-6 passthrough ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
 crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
 crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
-crbug.com/1287249 [ android android-pixel-6 no-passthrough ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/more/conformance/quickCheckAPI-A.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
