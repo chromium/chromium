@@ -149,9 +149,9 @@ class CC_EXPORT CompositorFrameReporter {
   };
 
   struct CC_EXPORT EventLatencyPredictions {
-    std::vector<base::TimeDelta> dispatch_latency_predictions;
-    base::TimeDelta transition_time;
-    base::TimeDelta total_event_duration;
+    std::vector<base::TimeDelta> dispatch_durations;
+    base::TimeDelta transition_duration;
+    base::TimeDelta total_duration;
     EventLatencyPredictions();
     explicit EventLatencyPredictions(const int num_dispatch_stages);
     EventLatencyPredictions(const EventLatencyPredictions&);

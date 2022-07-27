@@ -1023,9 +1023,9 @@ TEST_F(CompositorFrameReporterTest, EventLatencyDispatchPredictions) {
   base::TimeDelta expected_total2 = base::Microseconds(2039);
   CompositorFrameReporter::EventLatencyPredictions actual_predictions2 =
       CompositorFrameReporter::EventLatencyPredictions();
-  IntToTimeDeltaVector(actual_predictions2.dispatch_latency_predictions,
+  IntToTimeDeltaVector(actual_predictions2.dispatch_durations,
                        std::vector<int>{250, 300, 450, 200, 500});
-  actual_predictions2.transition_time = base::Microseconds(420);
+  actual_predictions2.transition_duration = base::Microseconds(420);
   pipeline_reporter_->CalculateEventLatencyPrediction(actual_predictions2);
 
   // Test with some previous stage predictions.
@@ -1036,24 +1036,24 @@ TEST_F(CompositorFrameReporterTest, EventLatencyDispatchPredictions) {
   base::TimeDelta expected_total3 = base::Microseconds(1995);
   CompositorFrameReporter::EventLatencyPredictions actual_predictions3 =
       CompositorFrameReporter::EventLatencyPredictions();
-  IntToTimeDeltaVector(actual_predictions3.dispatch_latency_predictions,
+  IntToTimeDeltaVector(actual_predictions3.dispatch_durations,
                        std::vector<int>{400, 500, 300, -1, -1});
-  actual_predictions3.transition_time = base::Microseconds(260);
+  actual_predictions3.transition_duration = base::Microseconds(260);
   pipeline_reporter_->CalculateEventLatencyPrediction(actual_predictions3);
 
   for (int i = 0; i < kNumDispatchStages; i++) {
     EXPECT_EQ(expected_predictions1[i],
-              actual_predictions1.dispatch_latency_predictions[i]);
-    EXPECT_EQ(expected_transition1, actual_predictions1.transition_time);
-    EXPECT_EQ(expected_total1, actual_predictions1.total_event_duration);
+              actual_predictions1.dispatch_durations[i]);
+    EXPECT_EQ(expected_transition1, actual_predictions1.transition_duration);
+    EXPECT_EQ(expected_total1, actual_predictions1.total_duration);
     EXPECT_EQ(expected_predictions2[i],
-              actual_predictions2.dispatch_latency_predictions[i]);
-    EXPECT_EQ(expected_transition2, actual_predictions2.transition_time);
-    EXPECT_EQ(expected_total2, actual_predictions2.total_event_duration);
+              actual_predictions2.dispatch_durations[i]);
+    EXPECT_EQ(expected_transition2, actual_predictions2.transition_duration);
+    EXPECT_EQ(expected_total2, actual_predictions2.total_duration);
     EXPECT_EQ(expected_predictions3[i],
-              actual_predictions3.dispatch_latency_predictions[i]);
-    EXPECT_EQ(expected_transition3, actual_predictions3.transition_time);
-    EXPECT_EQ(expected_total3, actual_predictions3.total_event_duration);
+              actual_predictions3.dispatch_durations[i]);
+    EXPECT_EQ(expected_transition3, actual_predictions3.transition_duration);
+    EXPECT_EQ(expected_total3, actual_predictions3.total_duration);
   }
 
   pipeline_reporter_ = nullptr;
@@ -1109,9 +1109,9 @@ TEST_F(CompositorFrameReporterTest,
   base::TimeDelta expected_total2 = base::Microseconds(2202);
   CompositorFrameReporter::EventLatencyPredictions actual_predictions2 =
       CompositorFrameReporter::EventLatencyPredictions();
-  IntToTimeDeltaVector(actual_predictions2.dispatch_latency_predictions,
+  IntToTimeDeltaVector(actual_predictions2.dispatch_durations,
                        std::vector<int>{200, 300, 400, 200, 500});
-  actual_predictions2.transition_time = base::Microseconds(380);
+  actual_predictions2.transition_duration = base::Microseconds(380);
   pipeline_reporter_->CalculateEventLatencyPrediction(actual_predictions2);
 
   // Test with some previous stage predictions.
@@ -1122,24 +1122,24 @@ TEST_F(CompositorFrameReporterTest,
   base::TimeDelta expected_total3 = base::Microseconds(2162);
   CompositorFrameReporter::EventLatencyPredictions actual_predictions3 =
       CompositorFrameReporter::EventLatencyPredictions();
-  IntToTimeDeltaVector(actual_predictions3.dispatch_latency_predictions,
+  IntToTimeDeltaVector(actual_predictions3.dispatch_durations,
                        std::vector<int>{400, 500, 760, -1, -1});
-  actual_predictions3.transition_time = base::Microseconds(500);
+  actual_predictions3.transition_duration = base::Microseconds(500);
   pipeline_reporter_->CalculateEventLatencyPrediction(actual_predictions3);
 
   for (int i = 0; i < kNumDispatchStages; i++) {
     EXPECT_EQ(expected_predictions1[i],
-              actual_predictions1.dispatch_latency_predictions[i]);
-    EXPECT_EQ(expected_transition1, actual_predictions1.transition_time);
-    EXPECT_EQ(expected_total1, actual_predictions1.total_event_duration);
+              actual_predictions1.dispatch_durations[i]);
+    EXPECT_EQ(expected_transition1, actual_predictions1.transition_duration);
+    EXPECT_EQ(expected_total1, actual_predictions1.total_duration);
     EXPECT_EQ(expected_predictions2[i],
-              actual_predictions2.dispatch_latency_predictions[i]);
-    EXPECT_EQ(expected_transition2, actual_predictions2.transition_time);
-    EXPECT_EQ(expected_total2, actual_predictions2.total_event_duration);
+              actual_predictions2.dispatch_durations[i]);
+    EXPECT_EQ(expected_transition2, actual_predictions2.transition_duration);
+    EXPECT_EQ(expected_total2, actual_predictions2.total_duration);
     EXPECT_EQ(expected_predictions3[i],
-              actual_predictions3.dispatch_latency_predictions[i]);
-    EXPECT_EQ(expected_transition3, actual_predictions3.transition_time);
-    EXPECT_EQ(expected_total3, actual_predictions3.total_event_duration);
+              actual_predictions3.dispatch_durations[i]);
+    EXPECT_EQ(expected_transition3, actual_predictions3.transition_duration);
+    EXPECT_EQ(expected_total3, actual_predictions3.total_duration);
   }
 
   pipeline_reporter_ = nullptr;

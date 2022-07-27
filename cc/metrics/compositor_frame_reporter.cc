@@ -558,9 +558,9 @@ CompositorFrameReporter::EventLatencyPredictions::EventLatencyPredictions() =
     default;
 CompositorFrameReporter::EventLatencyPredictions::EventLatencyPredictions(
     const int num_dispatch_stages)
-    : dispatch_latency_predictions(num_dispatch_stages, base::Microseconds(-1)),
-      transition_time(base::Microseconds(-1)),
-      total_event_duration(base::Microseconds(-1)) {}
+    : dispatch_durations(num_dispatch_stages, base::Microseconds(-1)),
+      transition_duration(base::Microseconds(-1)),
+      total_duration(base::Microseconds(-1)) {}
 CompositorFrameReporter::EventLatencyPredictions::~EventLatencyPredictions() =
     default;
 
@@ -1340,13 +1340,15 @@ void CompositorFrameReporter::CalculateEventLatencyPrediction(
 
   base::TimeTicks dispatch_end_time =
       event_metrics->GetDispatchStageTimestamp(last_valid_stage);
-  base::TimeDelta total_dispatch_latency =
+  base::TimeDelta total_dispatch_duration =
       dispatch_end_time - dispatch_start_time;
-  if (total_dispatch_latency.is_negative())
+  if (total_dispatch_duration.is_negative())
     return;
 
-  std::vector<base::TimeDelta> current_latencies(kNumDispatchStages,
-                                                 base::Microseconds(-1));
+  std::vector<base::TimeDelta> actual_dispatch_durations(
+      kNumDispatchStages, base::Microseconds(-1));
+
+  // Determine dispatch stage durations.
   base::TimeTicks previous_timetick = dispatch_start_time;
   for (auto stage = EventMetrics::DispatchStage::kGenerated;
        stage <= last_valid_stage;
@@ -1359,14 +1361,14 @@ void CompositorFrameReporter::CalculateEventLatencyPrediction(
       // previous_timetick.
       if (current_timetick > previous_timetick) {
         base::TimeDelta stage_duration = current_timetick - previous_timetick;
-        current_latencies[static_cast<int>(stage) - 1] = stage_duration;
+        actual_dispatch_durations[static_cast<int>(stage) - 1] = stage_duration;
         previous_timetick = current_timetick;
       }
     }
   }
 
   // Determine dispatch-to-compositor transition stage duration.
-  base::TimeDelta current_transition_time;
+  base::TimeDelta actual_transition_duration;
   auto stage_it = std::find_if(
       stage_history_.begin(), stage_history_.end(),
       [dispatch_end_time](const CompositorFrameReporter::StageData& stage) {
@@ -1374,35 +1376,35 @@ void CompositorFrameReporter::CalculateEventLatencyPrediction(
       });
   if (stage_it != stage_history_.end()) {
     if (dispatch_end_time < stage_it->start_time) {
-      current_transition_time = stage_it->start_time - dispatch_end_time;
+      actual_transition_duration = stage_it->start_time - dispatch_end_time;
     }
   }
 
   // Calculate new dispatch stage predictions.
-  base::TimeDelta total_predicted_duration = base::Microseconds(0);
+  base::TimeDelta predicted_total_duration = base::Microseconds(0);
   for (int i = 0; i < kNumDispatchStages; i++) {
-    if (current_latencies[i].is_positive()) {
-      event_latency_predictions.dispatch_latency_predictions[i] =
+    if (actual_dispatch_durations[i].is_positive()) {
+      event_latency_predictions.dispatch_durations[i] =
           CalculateWeightedAverage(
-              event_latency_predictions.dispatch_latency_predictions[i],
-              current_latencies[i]);
+              event_latency_predictions.dispatch_durations[i],
+              actual_dispatch_durations[i]);
     }
-    if (event_latency_predictions.dispatch_latency_predictions[i]
-            .is_positive()) {
-      total_predicted_duration +=
-          event_latency_predictions.dispatch_latency_predictions[i];
+    if (event_latency_predictions.dispatch_durations[i].is_positive()) {
+      predicted_total_duration +=
+          event_latency_predictions.dispatch_durations[i];
     }
   }
 
   // Calculate new dispatch-to-compositor transition stage predictions.
-  if (current_transition_time.is_positive()) {
-    event_latency_predictions.transition_time = CalculateWeightedAverage(
-        event_latency_predictions.transition_time, current_transition_time);
-    if (event_latency_predictions.transition_time.is_positive())
-      total_predicted_duration += event_latency_predictions.transition_time;
+  if (actual_transition_duration.is_positive()) {
+    event_latency_predictions.transition_duration =
+        CalculateWeightedAverage(event_latency_predictions.transition_duration,
+                                 actual_transition_duration);
+    if (event_latency_predictions.transition_duration.is_positive())
+      predicted_total_duration += event_latency_predictions.transition_duration;
   }
 
-  event_latency_predictions.total_event_duration = total_predicted_duration;
+  event_latency_predictions.total_duration = predicted_total_duration;
 }
 
 void CompositorFrameReporter::SetPartialUpdateDecider(
