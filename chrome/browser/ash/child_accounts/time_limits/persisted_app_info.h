@@ -8,12 +8,9 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace ash {
 namespace app_time {
@@ -24,7 +21,7 @@ class PersistedAppInfo {
       const base::Value* value,
       bool include_app_activity_array);
   static std::vector<PersistedAppInfo> PersistedAppInfosFromList(
-      const base::Value* value,
+      const base::Value::List& list,
       bool include_app_activity_array);
   static absl::optional<AppState> GetAppStateFromDict(const base::Value* value);
 

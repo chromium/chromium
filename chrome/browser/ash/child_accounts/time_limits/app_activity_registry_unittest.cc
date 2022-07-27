@@ -636,12 +636,12 @@ TEST_F(AppActivityRegistryTest, RestoredApplicationInformation) {
   EXPECT_EQ(registry().GetActiveTime(kApp1), active_time);
 
   // Now let's test that the app activity are stored appropriately.
-  const base::Value* value =
-      prefs()->GetList(prefs::kPerAppTimeLimitsAppActivities);
+  const base::Value::List& list =
+      prefs()->GetValueList(prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> app_infos =
       PersistedAppInfo::PersistedAppInfosFromList(
-          value,
+          list,
           /* include_app_activity_array */ true);
 
   // 3 applications. kApp1, kApp2 and Chrome browser.
@@ -678,12 +678,12 @@ TEST_F(AppActivityRegistryTest, RemoveUninstalledApplications) {
   registry().OnSuccessfullyReported(base::Time::Now());
 
   // Now let's test that the app activity are stored appropriately.
-  const base::Value* value =
-      prefs()->GetList(prefs::kPerAppTimeLimitsAppActivities);
+  const base::Value::List& list =
+      prefs()->GetValueList(prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> app_infos =
       PersistedAppInfo::PersistedAppInfosFromList(
-          value,
+          list,
           /* include_app_activity_array */ true);
 
   EXPECT_EQ(app_infos.size(), 3u);
@@ -695,12 +695,12 @@ TEST_F(AppActivityRegistryTest, RemoveUninstalledApplications) {
   registry().SaveAppActivity();
   registry().OnSuccessfullyReported(base::Time::Now());
 
-  const base::Value* new_value =
-      prefs()->GetList(prefs::kPerAppTimeLimitsAppActivities);
+  const base::Value::List& new_list =
+      prefs()->GetValueList(prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> final_app_infos =
       PersistedAppInfo::PersistedAppInfosFromList(
-          new_value,
+          new_list,
           /* include_app_activity_array */ false);
 
   // Two apps left. They are Chrome, and kApp2.
@@ -726,12 +726,12 @@ TEST_F(AppActivityRegistryTest, RemoveOldEntries) {
   ReInitializeRegistry();
 
   // Now let's test that the app activity are stored appropriately.
-  const base::Value* value =
-      prefs()->GetList(prefs::kPerAppTimeLimitsAppActivities);
+  const base::Value::List& list =
+      prefs()->GetValueList(prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> app_infos =
       PersistedAppInfo::PersistedAppInfosFromList(
-          value,
+          list,
           /* include_app_activity_array */ true);
 
   // The app activities have been cleared.

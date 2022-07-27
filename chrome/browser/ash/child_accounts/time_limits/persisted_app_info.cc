@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_policy_helpers.h"
 
 namespace ash {
@@ -139,15 +138,11 @@ absl::optional<PersistedAppInfo> PersistedAppInfo::PersistedAppInfoFromDict(
 
 // static
 std::vector<PersistedAppInfo> PersistedAppInfo::PersistedAppInfosFromList(
-    const base::Value* value,
+    const base::Value::List& list,
     bool include_app_activity_array) {
   std::vector<PersistedAppInfo> apps_info;
-  if (!value || !value->is_list())
-    return apps_info;
 
-  base::Value::ConstListView list_view = value->GetListDeprecated();
-
-  for (const auto& per_app_info : list_view) {
+  for (const auto& per_app_info : list) {
     absl::optional<PersistedAppInfo> info =
         PersistedAppInfoFromDict(&per_app_info, include_app_activity_array);
     if (!info.has_value())

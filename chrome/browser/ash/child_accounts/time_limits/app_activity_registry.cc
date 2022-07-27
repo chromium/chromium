@@ -419,13 +419,12 @@ AppActivityRegistry::GenerateAppActivityReport(
     return AppActivityReportInterface::ReportParams{timestamp, false};
   }
 
-  const base::Value* value =
-      pref_service_->GetList(prefs::kPerAppTimeLimitsAppActivities);
-  DCHECK(value);
+  const base::Value::List& list =
+      pref_service_->GetValueList(prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> applications_info =
       PersistedAppInfo::PersistedAppInfosFromList(
-          value,
+          list,
           /* include_app_activity_array */ true);
 
   const base::Time timestamp = base::Time::Now();
@@ -1068,13 +1067,12 @@ void AppActivityRegistry::InitializeRegistryFromPref() {
 }
 
 void AppActivityRegistry::InitializeAppActivities() {
-  const base::Value* value =
-      pref_service_->GetList(prefs::kPerAppTimeLimitsAppActivities);
-  DCHECK(value);
+  const base::Value::List& list =
+      pref_service_->GetValueList(prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> applications_info =
       PersistedAppInfo::PersistedAppInfosFromList(
-          value,
+          list,
           /* include_app_activity_array */ false);
 
   for (const auto& app_info : applications_info) {
