@@ -47,6 +47,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/shell.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/wm_event.h"
 #include "base/base64.h"
 #include "base/bind.h"
@@ -4934,6 +4935,10 @@ AutotestPrivateRemoveActiveDeskFunction::Run() {
     return RespondNow(OneArgument(base::Value(false)));
   }
 
+  // In overview, the desk removal animation does
+  // not apply, so we should not wait for it.
+  if (ash::Shell::Get()->overview_controller()->InOverviewSession())
+    return RespondNow(OneArgument(base::Value(true)));
   return RespondLater();
 }
 
