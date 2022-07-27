@@ -2704,6 +2704,8 @@ void SafeBrowsingUIHandler::GetReferringAppInfo(const base::Value::List& args) {
       WebUIInfoSingleton::GetInstance()->GetReferringAppInfo(
           web_ui()->GetWebContents());
   referring_app_value = SerializeReferringAppInfo(info);
+#else
+  referring_app_value = base::Value("Not supported on current platform.");
 #endif
   std::string referring_app_serialized;
   JSONStringValueSerializer serializer(&referring_app_serialized);
