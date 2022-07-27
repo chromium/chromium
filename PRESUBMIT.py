@@ -5892,11 +5892,8 @@ def CheckMPArchApiUsage(input_api, output_api):
         'IsInMainFrame',
     ]
     concerning_web_contents_methods = [
-        'ForEachFrame',
-        'GetAllFrames',
         'FromRenderFrameHost',
         'FromRenderViewHost',
-        'GetMainFrame',
         'GetRenderViewHost',
     ]
     concerning_rfh_methods = [
