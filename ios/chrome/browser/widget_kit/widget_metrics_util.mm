@@ -42,6 +42,23 @@ WidgetKitExtensionKind UMAKindForWidgetKind(NSString* kind) {
   if ([kind isEqualToString:@"QuickActionsWidget"]) {
     return WidgetKitExtensionKind::kQuickActions;
   }
+  if ([kind isEqualToString:@"LockscreenLauncherSearchWidget"]) {
+    // TODO(crbug.com/1347565): Add an enum for this case.
+    return WidgetKitExtensionKind::kObsolete;
+  }
+  if ([kind isEqualToString:@"LockscreenLauncherIncognitoWidget"]) {
+    // TODO(crbug.com/1347565): Add an enum for this case.
+    return WidgetKitExtensionKind::kObsolete;
+  }
+  if ([kind isEqualToString:@"LockscreenLauncherVoiceSearchWidget"]) {
+    // TODO(crbug.com/1347565): Add an enum for this case.
+    return WidgetKitExtensionKind::kObsolete;
+  }
+  if ([kind isEqualToString:@"LockscreenLauncherGameWidget"]) {
+    // TODO(crbug.com/1347565): Add an enum for this case.
+    return WidgetKitExtensionKind::kObsolete;
+  }
+
   NOTREACHED() << base::SysNSStringToUTF8(kind);
   return WidgetKitExtensionKind::kObsolete;
 }

@@ -19,6 +19,9 @@ declare_args() {
   # Enable iOS 14, WidgetKit extension.
   ios_enable_widget_kit_extension = true
 
+  # Enable iOS 16 lockscreen extensions.
+  ios_enable_lockscreen_extension = true
+
   # Enable share extension.
   ios_enable_share_extension = true
 

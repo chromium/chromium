@@ -41,5 +41,13 @@ struct ChromeWidgets: WidgetBundle {
     QuickActionsWidget()
     SearchWidget()
     DinoGameWidget()
+    #if IOS_ENABLE_LOCKSCREEN_EXTENSION
+      #if IOS_AVAILABLE_LOCKSCREEN_EXTENSION
+        LockscreenLauncherSearchWidget()
+        LockscreenLauncherIncognitoWidget()
+        LockscreenLauncherVoiceSearchWidget()
+        LockscreenLauncherGameWidget()
+      #endif
+    #endif
   }
 }

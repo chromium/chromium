@@ -4,6 +4,42 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
+imageset("lockscreen_chrome_logo") {
+  sources = [
+    "lockscreen_chrome_logo.imageset/Contents.json",
+    "lockscreen_chrome_logo.imageset/lockscreen_chrome_logo.png",
+    "lockscreen_chrome_logo.imageset/lockscreen_chrome_logo@2x.png",
+    "lockscreen_chrome_logo.imageset/lockscreen_chrome_logo@3x.png",
+  ]
+}
+
+imageset("lockscreen_game_logo") {
+  sources = [
+    "lockscreen_game_logo.imageset/Contents.json",
+    "lockscreen_game_logo.imageset/lockscreen_game_logo.png",
+    "lockscreen_game_logo.imageset/lockscreen_game_logo@2x.png",
+    "lockscreen_game_logo.imageset/lockscreen_game_logo@3x.png",
+  ]
+}
+
+imageset("lockscreen_incognito_logo") {
+  sources = [
+    "lockscreen_incognito_logo.imageset/Contents.json",
+    "lockscreen_incognito_logo.imageset/lockscreen_incognito_logo.png",
+    "lockscreen_incognito_logo.imageset/lockscreen_incognito_logo@2x.png",
+    "lockscreen_incognito_logo.imageset/lockscreen_incognito_logo@3x.png",
+  ]
+}
+
+imageset("lockscreen_voicesearch_logo") {
+  sources = [
+    "lockscreen_voicesearch_logo.imageset/Contents.json",
+    "lockscreen_voicesearch_logo.imageset/lockscreen_voicesearch_logo.png",
+    "lockscreen_voicesearch_logo.imageset/lockscreen_voicesearch_logo@2x.png",
+    "lockscreen_voicesearch_logo.imageset/lockscreen_voicesearch_logo@3x.png",
+  ]
+}
+
 imageset("widget_chrome_logo") {
   sources = [
     "widget_chrome_logo.imageset/Contents.json",

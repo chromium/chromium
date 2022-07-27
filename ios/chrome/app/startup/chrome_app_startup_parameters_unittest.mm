@@ -410,4 +410,67 @@ TEST_F(AppStartupParametersTest, ParseDinoWidgetKit) {
   histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 0, 1);
 }
 
+// Tests that the lockscreen launcher widget search url is handled correctly.
+TEST_F(AppStartupParametersTest, ParseLockscreenLauncherSearch) {
+  NSURL* url = [NSURL
+      URLWithString:@"chromewidgetkit://lockscreen-launcher-widget/search"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  std::string expected_url_string =
+      base::StringPrintf("%s://%s/", kChromeUIScheme, kChromeUINewTabHost);
+
+  EXPECT_EQ(params.externalURL.spec(), expected_url_string);
+  EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
+  EXPECT_FALSE(params.launchInIncognito);
+}
+
+// Tests that the lockscreen launcher widget incognito url is handled correctly.
+TEST_F(AppStartupParametersTest, ParseLockscreenLauncherIncognito) {
+  NSURL* url = [NSURL
+      URLWithString:@"chromewidgetkit://lockscreen-launcher-widget/incognito"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  std::string expected_url_string =
+      base::StringPrintf("%s://%s/", kChromeUIScheme, kChromeUINewTabHost);
+
+  EXPECT_EQ(params.externalURL.spec(), expected_url_string);
+  EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
+  EXPECT_TRUE(params.launchInIncognito);
+}
+
+// Tests that the lockscreen launcher widget voice search url is
+// handled correctly.
+TEST_F(AppStartupParametersTest, ParseLockscreenLauncherVoiceSearch) {
+  NSURL* url =
+      [NSURL URLWithString:
+                 @"chromewidgetkit://lockscreen-launcher-widget/voicesearch"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  std::string expected_url_string =
+      base::StringPrintf("%s://%s/", kChromeUIScheme, kChromeUINewTabHost);
+
+  EXPECT_EQ(params.externalURL.spec(), expected_url_string);
+  EXPECT_EQ(params.postOpeningAction, START_VOICE_SEARCH);
+}
+
+// Tests that the lockscreen launcher widget game url is handled correctly.
+TEST_F(AppStartupParametersTest, ParseLockscreenLauncherGame) {
+  NSURL* url = [NSURL
+      URLWithString:@"chromewidgetkit://lockscreen-launcher-widget/game"];
+  ChromeAppStartupParameters* params =
+      [ChromeAppStartupParameters newChromeAppStartupParametersWithURL:url
+                                                 fromSourceApplication:nil];
+
+  GURL expected_url =
+      GURL(base::StringPrintf("%s://%s", kChromeUIScheme, kChromeUIDinoHost));
+
+  EXPECT_EQ(params.externalURL, expected_url);
+}
+
 }  // namespace

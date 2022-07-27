@@ -21,4 +21,13 @@ struct WidgetConstants {
   struct DinoGameWidget {
     static let url = URL(string: "chromewidgetkit://dino-game-widget/game")!
   }
+  struct LockscreenLauncherWidget {
+    static let searchUrl =
+      URL(string: "chromewidgetkit://lockscreen-launcher-widget/search")!
+    static let incognitoUrl =
+      URL(string: "chromewidgetkit://lockscreen-launcher-widget/incognito")!
+    static let voiceSearchUrl =
+      URL(string: "chromewidgetkit://lockscreen-launcher-widget/voicesearch")!
+    static let gameUrl = URL(string: "chromewidgetkit://lockscreen-launcher-widget/game")!
+  }
 }
