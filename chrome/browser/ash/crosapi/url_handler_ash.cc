@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
 
+#include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
 #include "ash/webui/firmware_update_ui/url_constants.h"
@@ -139,6 +140,9 @@ bool UrlHandlerAsh::OpenUrlInternal(const GURL& url) {
   } else if (target_url == GURL(chrome::kOsUIFirmwareUpdaterAppURL)) {
     app_id = ash::SystemWebAppType::FIRMWARE_UPDATE;
     target_url = GURL(ash::kChromeUIFirmwareUpdateAppURL);
+  } else if (short_target_url == GURL(ash::kChromeUICameraAppURL)) {
+    app_id = ash::SystemWebAppType::CAMERA;
+    target_url = url;
   } else if (ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
                  target_url)) {
     app_id = ash::SystemWebAppType::OS_URL_HANDLER;

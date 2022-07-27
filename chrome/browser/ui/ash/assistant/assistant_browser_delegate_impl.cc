@@ -21,9 +21,11 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/assistant/assistant_setup.h"
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate_impl.h"
+#include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
+#include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_context.h"
@@ -154,13 +156,12 @@ void AssistantBrowserDelegateImpl::RequestNetworkConfig(
 }
 
 void AssistantBrowserDelegateImpl::OpenUrl(GURL url) {
-  // OS settings app is implemented in Ash, using `NewWindowDelegate::OpenUrl()`
-  // does not qualify for redirection in Lacros due to security limitations.
-  // Thus we need to explicitly send the request to Ash to launch the OS
-  // settings app.
   if (crosapi::browser_util::IsLacrosPrimaryBrowser() &&
-      base::StartsWith(url.spec(), chrome::kChromeUIOSSettingsURL,
-                       base::CompareCase::INSENSITIVE_ASCII)) {
+      ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
+          crosapi::gurl_os_handler_utils::SanitizeAshURL(url))) {
+    // Note that the unsanitized URL is passed to OpenUrl here, since OpenUrl
+    // internally does sanitization again if needed, but CanHandleUrl requires
+    // a sanitized URL to be passed in.
     crosapi::UrlHandlerAsh().OpenUrl(url);
   } else {
     // The new tab should be opened with a user activation since the user

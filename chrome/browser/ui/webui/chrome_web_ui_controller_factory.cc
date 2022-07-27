@@ -1564,6 +1564,7 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
       GURL(chrome::kChromeUIArcPowerControlURL),
       GURL(chrome::kChromeUIAssistantOptInURL),
       GURL(chrome::kChromeUIBluetoothPairingURL),
+      GURL(ash::kChromeUICameraAppURL),
       GURL(chrome::kOsUIComponentsURL),
       GURL(chrome::kChromeUICrashesUrl),
       GURL(chrome::kOsUICrashesURL),
