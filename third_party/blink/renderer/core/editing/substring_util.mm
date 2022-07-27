@@ -85,10 +85,8 @@ NSAttributedString* AttributedSubstringFromRange(LocalFrame* frame,
       continue;
 
     const Node& container = it.CurrentContainer();
-    LayoutObject* layout_object = container.GetLayoutObject();
+    const LayoutObject* layout_object = container.GetLayoutObject();
     DCHECK(layout_object);
-    if (!layout_object)
-      continue;
 
     // There are two ways that the size of text can be affected by the user. One
     // is the page scale factor, which is what the user changes by pinching on
@@ -100,12 +98,15 @@ NSAttributedString* AttributedSubstringFromRange(LocalFrame* frame,
     // scale factor must be multiplied in.
 
     const ComputedStyle* style = layout_object->Style();
-    const FontPlatformData font_platform_data =
-        style->GetFont().PrimaryFont()->PlatformData();
+    const SimpleFontData* primaryFont = style->GetFont().PrimaryFont();
+    const FontPlatformData& font_platform_data = primaryFont->PlatformData();
 
     const float page_scale_factor = frame->GetPage()->PageScaleFactor();
     const float device_scale_factor =
         frame->GetWidgetForLocalRoot()->DIPsToBlinkSpace(1.0f);
+
+    attrs[kCrBaselineOffset] =
+        @(primaryFont->GetFontMetrics().Descent() * page_scale_factor);
 
     NSFont* original_font = base::mac::CFToNSCast(font_platform_data.CtFont());
     const CGFloat desired_size =
@@ -136,10 +137,6 @@ NSAttributedString* AttributedSubstringFromRange(LocalFrame* frame,
                                       page_scale_factor / device_scale_factor];
     }
     attrs[NSFontAttributeName] = font;
-    if (original_font)
-      attrs[kCrBaselineOffset] = @(original_font.descender * page_scale_factor);
-    else
-      attrs[kCrBaselineOffset] = @(font.descender * page_scale_factor);
 
     if (style->VisitedDependentColor(GetCSSPropertyColor()).Alpha())
       attrs[NSForegroundColorAttributeName] =
@@ -177,7 +174,7 @@ gfx::Point GetBaselinePoint(LocalFrameView* frame_view,
     NSDictionary* attributes = [string attributesAtIndex:0
                                           effectiveRange:nullptr];
     if (NSNumber* descender = attributes[kCrBaselineOffset]) {
-      string_point.Offset(0, ceil(descender.doubleValue));
+      string_point.Offset(0, -ceil(descender.doubleValue));
     }
   }
   return string_point;
