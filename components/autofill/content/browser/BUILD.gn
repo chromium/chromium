@@ -81,9 +81,13 @@ source_set("test_support") {
     "content_autofill_router_test_api.h",
     "form_forest_test_api.cc",
     "form_forest_test_api.h",
+    "test_autofill_manager_injector.h",
   ]
 
-  public_deps = [ ":browser" ]
+  public_deps = [
+    ":browser",
+    "//content/public/browser",
+  ]
 
   deps = [ "//base" ]
 }

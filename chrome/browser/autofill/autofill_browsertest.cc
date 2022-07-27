@@ -34,6 +34,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -44,7 +45,6 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -112,43 +112,6 @@ class WindowedPersonalDataManagerObserver : public PersonalDataManagerObserver {
   bool alerted_;
   bool has_run_message_loop_;
   raw_ptr<Browser> browser_;
-};
-
-// Upon construction, and in response to ReadyToCommitNavigation, installs a
-// mock browser autofill manager of type |T|.
-template <typename T>
-class MockAutofillManagerInjector : public content::WebContentsObserver {
- public:
-  explicit MockAutofillManagerInjector(content::WebContents* web_contents)
-      : WebContentsObserver(web_contents) {
-    Inject(web_contents->GetPrimaryMainFrame());
-  }
-  ~MockAutofillManagerInjector() override = default;
-
-  T* GetForFrame(content::RenderFrameHost* rfh) {
-    ContentAutofillDriverFactory* driver_factory =
-        ContentAutofillDriverFactory::FromWebContents(web_contents());
-    return static_cast<T*>(
-        driver_factory->DriverForFrame(rfh)->autofill_manager());
-  }
-
- protected:
-  // content::WebContentsObserver:
-  void ReadyToCommitNavigation(
-      content::NavigationHandle* navigation_handle) override {
-    if (!navigation_handle->IsPrerenderedPageActivation() &&
-        !navigation_handle->IsSameDocument()) {
-      Inject(navigation_handle->GetRenderFrameHost());
-    }
-  }
-
-  void Inject(content::RenderFrameHost* rfh) {
-    ContentAutofillDriverFactory* driver_factory =
-        ContentAutofillDriverFactory::FromWebContents(web_contents());
-    AutofillClient* client = driver_factory->client();
-    ContentAutofillDriver* driver = driver_factory->DriverForFrame(rfh);
-    driver->set_autofill_manager(std::make_unique<T>(driver, client, rfh));
-  }
 };
 
 class AutofillTest : public InProcessBrowserTest {
@@ -797,16 +760,15 @@ class PrerenderAutofillTest : public InProcessBrowserTest {
  protected:
   class MockPrerenderBrowserAutofillManager : public BrowserAutofillManager {
    public:
-    MockPrerenderBrowserAutofillManager(AutofillDriver* driver,
-                                        AutofillClient* client,
-                                        content::RenderFrameHost* rfh)
+    MockPrerenderBrowserAutofillManager(ContentAutofillDriver* driver,
+                                        AutofillClient* client)
         : BrowserAutofillManager(driver,
                                  client,
                                  "en-US",
                                  EnableDownloadManager(false)) {
       // We need to set these expectations immediately to catch any premature
       // calls while prerendering.
-      if (rfh->GetLifecycleState() ==
+      if (driver->render_frame_host()->GetLifecycleState() ==
           content::RenderFrameHost::LifecycleState::kPrerendering) {
         EXPECT_CALL(*this, OnFormsSeen(_, _)).Times(0);
         EXPECT_CALL(*this, OnFocusOnFormFieldImpl(_, _, _)).Times(0);
@@ -867,8 +829,9 @@ class PrerenderAutofillTest : public InProcessBrowserTest {
 // that programmatic input on the prerendered page does not result in unexpected
 // messages prior to activation and that things work correctly post-activation.
 IN_PROC_BROWSER_TEST_F(PrerenderAutofillTest, DeferWhilePrerendering) {
-  MockAutofillManagerInjector<MockPrerenderBrowserAutofillManager> injector(
+  TestAutofillManagerInjector<MockPrerenderBrowserAutofillManager> injector(
       web_contents());
+
   GURL prerender_url =
       embedded_test_server()->GetURL("/autofill/prerendered.html");
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
@@ -908,9 +871,8 @@ class FormSubmissionDetectionTest
  protected:
   class MockFormSubmissionAutofillManager : public BrowserAutofillManager {
    public:
-    MockFormSubmissionAutofillManager(AutofillDriver* driver,
-                                      AutofillClient* client,
-                                      content::RenderFrameHost* rhf)
+    MockFormSubmissionAutofillManager(ContentAutofillDriver* driver,
+                                      AutofillClient* client)
         : BrowserAutofillManager(driver,
                                  client,
                                  "en-US",
@@ -1022,11 +984,11 @@ class FormSubmissionDetectionTest
 // Tests that user-triggered submission triggers a submission event in
 // BrowserAutofillManager.
 IN_PROC_BROWSER_TEST_P(FormSubmissionDetectionTest, Submission) {
-  MockAutofillManagerInjector<MockFormSubmissionAutofillManager> injector(
+  TestAutofillManagerInjector<MockFormSubmissionAutofillManager> injector(
       web_contents());
   base::RunLoop run_loop;
   EXPECT_CALL(
-      *injector.GetForFrame(web_contents()->GetPrimaryMainFrame()),
+      *injector.GetForPrimaryMainFrame(),
       OnFormSubmittedImpl(_, _, mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
       .WillRepeatedly(
@@ -1041,10 +1003,10 @@ IN_PROC_BROWSER_TEST_P(FormSubmissionDetectionTest, Submission) {
 // Tests that non-link-click, renderer-inititiated navigation triggers a
 // submission event in BrowserAutofillManager.
 IN_PROC_BROWSER_TEST_P(FormSubmissionDetectionTest, ProbableSubmission) {
-  MockAutofillManagerInjector<MockFormSubmissionAutofillManager> injector(
+  TestAutofillManagerInjector<MockFormSubmissionAutofillManager> injector(
       web_contents());
   base::RunLoop run_loop;
-  EXPECT_CALL(*injector.GetForFrame(web_contents()->GetPrimaryMainFrame()),
+  EXPECT_CALL(*injector.GetForPrimaryMainFrame(),
               OnFormSubmittedImpl(
                   _, _, mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
       .Times(1)

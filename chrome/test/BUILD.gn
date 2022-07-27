@@ -1264,6 +1264,7 @@ if (!is_android) {
       "//chrome/test/payments:test_support",
       "//components/accuracy_tips",
       "//components/autofill/content/browser:risk_proto",
+      "//components/autofill/content/browser:test_support",
       "//components/autofill/content/common/mojom",
       "//components/autofill/content/renderer:test_support",
       "//components/back_forward_cache",
