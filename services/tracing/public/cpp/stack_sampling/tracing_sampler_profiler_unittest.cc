@@ -4,13 +4,19 @@
 
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 
+#include <cstdint>
 #include <limits>
+#include <memory>
+#include <vector>
 
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/json/json_reader.h"
+#include "base/profiler/frame.h"
 #include "base/profiler/module_cache.h"
+#include "base/profiler/register_context.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
+#include "base/profiler/unwinder.h"
 #include "base/run_loop.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
@@ -39,6 +45,8 @@ namespace tracing {
 namespace {
 
 using base::trace_event::TraceLog;
+using ::testing::_;
+using ::testing::AtLeast;
 using ::testing::Invoke;
 using ::testing::Return;
 using PacketVector = TestProducerClient::PacketVector;
@@ -210,7 +218,7 @@ class TracingSampleProfilerTest
   }
 
   void ValidateReceivedEvents() {
-    if (TracingSamplerProfiler::IsStackUnwindingSupported()) {
+    if (TracingSamplerProfiler::IsStackUnwindingSupportedForTesting()) {
       EXPECT_GT(events_stack_received_count_, 0U);
     } else {
       EXPECT_EQ(events_stack_received_count_, 0U);
@@ -289,7 +297,7 @@ TEST_F(TracingSampleProfilerTest, TestStartupTracing) {
   WaitForEvents();
   EndTracing();
   base::RunLoop().RunUntilIdle();
-  if (TracingSamplerProfiler::IsStackUnwindingSupported()) {
+  if (TracingSamplerProfiler::IsStackUnwindingSupportedForTesting()) {
     uint32_t seq_id = FindProfilerSequenceId();
     auto& packets = GetFinalizedPackets();
     int64_t reference_ts = 0;
@@ -323,7 +331,7 @@ TEST_F(TracingSampleProfilerTest, JoinStartupTracing) {
   WaitForEvents();
   EndTracing();
   base::RunLoop().RunUntilIdle();
-  if (TracingSamplerProfiler::IsStackUnwindingSupported()) {
+  if (TracingSamplerProfiler::IsStackUnwindingSupportedForTesting()) {
     uint32_t seq_id = FindProfilerSequenceId();
     auto& packets = GetFinalizedPackets();
     int64_t reference_ts = 0;
@@ -356,6 +364,65 @@ TEST_F(TracingSampleProfilerTest, SamplingChildThread) {
   WaitForEvents();
   EndTracing();
   ValidateReceivedEvents();
+  sampled_thread.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&TracingSamplerProfiler::DeleteOnChildThreadForTesting));
+  base::RunLoop().RunUntilIdle();
+}
+
+namespace {
+
+class MockUnwinder : public base::Unwinder {
+ public:
+  MOCK_CONST_METHOD1(CanUnwindFrom, bool(const base::Frame& current_frame));
+  MOCK_CONST_METHOD3(TryUnwind,
+                     base::UnwindResult(base::RegisterContext* thread_context,
+                                        uintptr_t stack_top,
+                                        std::vector<base::Frame>* stack));
+};
+
+std::vector<std::unique_ptr<base::Unwinder>>
+MakeMockUnwinderWithExpectations() {
+  auto mock_unwinder = std::make_unique<MockUnwinder>();
+  EXPECT_CALL(*mock_unwinder, CanUnwindFrom(_))
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_unwinder, TryUnwind(_, _, _))
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(base::UnwindResult::kUnrecognizedFrame));
+
+  std::vector<std::unique_ptr<base::Unwinder>> mock_unwinders;
+  mock_unwinders.push_back(std::move(mock_unwinder));
+  return mock_unwinders;
+}
+
+}  // namespace
+
+TEST_F(TracingSampleProfilerTest, TraceMainThreadWithCustomUnwinder) {
+  BeginTrace();
+  auto profiler =
+      TracingSamplerProfiler::CreateOnMainThread(base::BindRepeating(
+          [] { return base::BindOnce(&MakeMockUnwinderWithExpectations); }));
+  base::RunLoop().RunUntilIdle();
+  WaitForEvents();
+  EndTracing();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(TracingSampleProfilerTest, TraceChildThreadWithCustomUnwinder) {
+  base::Thread sampled_thread("trace_child_thread_with_custom_unwinder");
+  sampled_thread.Start();
+  sampled_thread.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &TracingSamplerProfiler::CreateOnChildThreadWithCustomUnwinders,
+          base::BindRepeating([] {
+            return base::BindOnce(&MakeMockUnwinderWithExpectations);
+          })));
+  BeginTrace();
+  base::RunLoop().RunUntilIdle();
+  WaitForEvents();
+  EndTracing();
   sampled_thread.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&TracingSamplerProfiler::DeleteOnChildThreadForTesting));

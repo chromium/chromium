@@ -168,9 +168,15 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
     base::RepeatingClosure sample_callback_for_testing_;
   };
 
+  using CoreUnwindersCallback =
+      base::RepeatingCallback<base::StackSamplingProfiler::UnwindersFactory()>;
+
   // Creates sampling profiler on main thread. The profiler *must* be
-  // destroyed prior to process shutdown.
-  static std::unique_ptr<TracingSamplerProfiler> CreateOnMainThread();
+  // destroyed prior to process shutdown. `core_unwinders_factory_function` can
+  // be used to supply custom unwinders to be used during stack sampling.
+  static std::unique_ptr<TracingSamplerProfiler> CreateOnMainThread(
+      CoreUnwindersCallback core_unwinders_factory_function =
+          CoreUnwindersCallback());
 
   TracingSamplerProfiler(const TracingSamplerProfiler&) = delete;
   TracingSamplerProfiler& operator=(const TracingSamplerProfiler&) = delete;
@@ -179,6 +185,11 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   // stored in SequencedLocalStorageSlot and will be destroyed with the thread
   // task runner.
   static void CreateOnChildThread();
+
+  // Same as CreateOnChildThread above, but this can additionally accept a
+  // callback for supplying custom unwinder(s) to be used during stack sampling.
+  static void CreateOnChildThreadWithCustomUnwinders(
+      CoreUnwindersCallback core_unwinders_factory_function);
 
   // Registers the TracingSamplerProfiler as a Perfetto data source
   static void RegisterDataSource();
@@ -195,20 +206,13 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   static void StartTracingForTesting(tracing::PerfettoProducer* producer);
   static void StopTracingForTesting();
   static void ResetDataSourceForTesting();
-
   // Returns whether of not the sampler profiling is able to unwind the stack
-  // on this platform.
-  constexpr static bool IsStackUnwindingSupported() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) && defined(_WIN64) || \
-    ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
-    return true;
-#else
-    return false;
-#endif
-  }
+  // on this platform, ignoring any CoreUnwindersCallback provided.
+  static bool IsStackUnwindingSupportedForTesting();
 
   explicit TracingSamplerProfiler(
-      base::SamplingProfilerThreadToken sampled_thread_token);
+      base::SamplingProfilerThreadToken sampled_thread_token,
+      CoreUnwindersCallback core_unwinders_factory_function);
   virtual ~TracingSamplerProfiler();
 
   // Sets a callback to create auxiliary unwinders, for handling additional,
@@ -236,6 +240,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
  private:
   const base::SamplingProfilerThreadToken sampled_thread_token_;
 
+  CoreUnwindersCallback core_unwinders_factory_function_;
   base::RepeatingCallback<std::unique_ptr<base::Unwinder>()>
       aux_unwinder_factory_;
 

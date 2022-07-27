@@ -40,7 +40,6 @@
 #if ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
 #include <dlfcn.h>
 
-#include "base/android/reached_code_profiler.h"
 #include "base/debug/elf_reader.h"
 
 #if ANDROID_ARM64_UNWINDING_SUPPORTED
@@ -57,6 +56,10 @@
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
 #include "services/tracing/public/cpp/stack_sampling/loader_lock_sampling_thread_win.h"
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/reached_code_profiler.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using StreamingProfilePacketHandle =
     protozero::MessageHandle<perfetto::protos::pbzero::StreamingProfilePacket>;
@@ -387,6 +390,24 @@ struct FrameDetails {
 #endif
 };
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) && defined(_WIN64) || \
+    ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
+// Returns whether stack sampling is supported on the current platform.
+bool IsStackSamplingSupported() {
+#if BUILDFLAG(IS_ANDROID)
+  // The sampler profiler would conflict with the reached code profiler if they
+  // run at the same time because they use the same signal to suspend threads.
+  if (base::android::IsReachedCodeProfilerEnabled()) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  if (!base::StackSamplingProfiler::IsSupportedForCurrentPlatform()) {
+    return false;
+  }
+  return true;
+}
+#endif
+
 }  // namespace
 
 TracingSamplerProfiler::TracingProfileBuilder::BufferedSample::BufferedSample(
@@ -702,9 +723,11 @@ void TracingSamplerProfiler::StackProfileWriter::ResetEmittedState() {
 
 // static
 std::unique_ptr<TracingSamplerProfiler>
-TracingSamplerProfiler::CreateOnMainThread() {
+TracingSamplerProfiler::CreateOnMainThread(
+    CoreUnwindersCallback core_unwinders_factory_function) {
   auto profiler = std::make_unique<TracingSamplerProfiler>(
-      base::GetSamplingProfilerCurrentThreadToken());
+      base::GetSamplingProfilerCurrentThreadToken(),
+      std::move(core_unwinders_factory_function));
   // If running in single process mode, there may be multiple "main thread"
   // profilers created. In this case, we assume the first created one is the
   // browser one.
@@ -724,12 +747,19 @@ TracingSamplerProfiler::CreateOnMainThread() {
 
 // static
 void TracingSamplerProfiler::CreateOnChildThread() {
+  CreateOnChildThreadWithCustomUnwinders(CoreUnwindersCallback());
+}
+
+// static
+void TracingSamplerProfiler::CreateOnChildThreadWithCustomUnwinders(
+    CoreUnwindersCallback core_unwinders_factory_function) {
   base::SequenceLocalStorageSlot<TracingSamplerProfiler>& slot =
       GetSequenceLocalStorageProfilerSlot();
   if (slot)
     return;
 
-  slot.emplace(base::GetSamplingProfilerCurrentThreadToken());
+  slot.emplace(base::GetSamplingProfilerCurrentThreadToken(),
+               std::move(core_unwinders_factory_function));
 }
 
 // static
@@ -747,6 +777,16 @@ void TracingSamplerProfiler::RegisterDataSource() {
   TracingSamplerProfilerDataSource::Get()->RegisterDataSource();
   PerfettoTracedProcess::Get()->AddDataSource(
       TracingSamplerProfilerDataSource::Get());
+}
+
+// static
+bool TracingSamplerProfiler::IsStackUnwindingSupportedForTesting() {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) && defined(_WIN64) || \
+    ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
+  return IsStackSamplingSupported();
+#else
+  return false;
+#endif
 }
 
 void TracingSamplerProfiler::SetAuxUnwinderFactoryOnMainThread(
@@ -777,8 +817,11 @@ void TracingSamplerProfiler::StopTracingForTesting() {
 }
 
 TracingSamplerProfiler::TracingSamplerProfiler(
-    base::SamplingProfilerThreadToken sampled_thread_token)
-    : sampled_thread_token_(sampled_thread_token) {
+    base::SamplingProfilerThreadToken sampled_thread_token,
+    CoreUnwindersCallback core_unwinders_factory_function)
+    : sampled_thread_token_(sampled_thread_token),
+      core_unwinders_factory_function_(
+          std::move(core_unwinders_factory_function)) {
   DCHECK_NE(sampled_thread_token_.id, base::kInvalidThreadId);
   TracingSamplerProfilerDataSource::Get()->RegisterProfiler(this);
 }
@@ -824,20 +867,17 @@ void TracingSamplerProfiler::StartTracing(
     return;
   }
 
-#if ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
+#if BUILDFLAG(IS_ANDROID)
   // The sampler profiler would conflict with the reached code profiler if they
   // run at the same time because they use the same signal to suspend threads.
-  if (base::android::IsReachedCodeProfilerEnabled())
+  if (base::android::IsReachedCodeProfilerEnabled()) {
     return;
-#else   // ANDROID_ARM64_UNWINDING_SUPPORTED || ANDROID_CFI_UNWINDING_SUPPORTED
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
-  // On Android the sampling profiler is implemented by tracing service and is
-  // not yet supported by base::StackSamplingProfiler. So, only check this if
-  // service does not support unwinding in current platform.
-  if (!base::StackSamplingProfiler::IsSupportedForCurrentPlatform())
+  if (!base::StackSamplingProfiler::IsSupportedForCurrentPlatform()) {
     return;
-#endif  // !(ANDROID_ARM64_UNWINDING_SUPPORTED ||
-        // ANDROID_CFI_UNWINDING_SUPPORTED)
+  }
 
   base::StackSamplingProfiler::SamplingParams params;
   params.samples_per_profile = std::numeric_limits<int>::max();
@@ -853,24 +893,38 @@ void TracingSamplerProfiler::StartTracing(
       should_enable_filtering, sample_callback_for_testing_);
 
   profile_builder_ = profile_builder.get();
-  // Create and start the stack sampling profiler.
+  // There is a dichotomy between stack samplers for Android and other
+  // platforms. While Android explicitly needs a factory to provide "core"
+  // unwinders, other platforms explicitly check that no such factory is
+  // provided.
 #if BUILDFLAG(IS_ANDROID)
+  base::StackSamplingProfiler::UnwindersFactory core_unwinders_factory;
+  if (core_unwinders_factory_function_) {
+    core_unwinders_factory = core_unwinders_factory_function_.Run();
+  }
+  if (core_unwinders_factory) {
+    profiler_ = std::make_unique<base::StackSamplingProfiler>(
+        sampled_thread_token_, params, std::move(profile_builder),
+        std::move(core_unwinders_factory));
+  } else {
+    // TODO(b/231934478): Remove this unwinder fallback and else-block.
 #if ANDROID_ARM64_UNWINDING_SUPPORTED
-  const auto create_unwinders = []() {
-    std::vector<std::unique_ptr<base::Unwinder>> unwinders;
-    unwinders.push_back(std::make_unique<UnwinderArm64>());
-    return unwinders;
-  };
-  profiler_ = std::make_unique<base::StackSamplingProfiler>(
-      sampled_thread_token_, params, std::move(profile_builder),
-      base::BindOnce(create_unwinders));
+    const auto create_unwinders = []() {
+      std::vector<std::unique_ptr<base::Unwinder>> unwinders;
+      unwinders.push_back(std::make_unique<UnwinderArm64>());
+      return unwinders;
+    };
+    profiler_ = std::make_unique<base::StackSamplingProfiler>(
+        sampled_thread_token_, params, std::move(profile_builder),
+        base::BindOnce(create_unwinders));
 #elif ANDROID_CFI_UNWINDING_SUPPORTED
-  auto* module_cache = profile_builder->GetModuleCache();
-  profiler_ = std::make_unique<base::StackSamplingProfiler>(
-      sampled_thread_token_, params, std::move(profile_builder),
-      std::make_unique<StackSamplerAndroid>(sampled_thread_token_,
-                                            module_cache));
+    auto* module_cache = profile_builder->GetModuleCache();
+    profiler_ = std::make_unique<base::StackSamplingProfiler>(
+        sampled_thread_token_, params, std::move(profile_builder),
+        std::make_unique<StackSamplerAndroid>(sampled_thread_token_,
+                                              module_cache));
 #endif
+  }
 #else   // BUILDFLAG(IS_ANDROID)
   profiler_ = std::make_unique<base::StackSamplingProfiler>(
       sampled_thread_token_, params, std::move(profile_builder));

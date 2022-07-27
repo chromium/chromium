@@ -1160,7 +1160,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
       tracing::TracingSamplerProfiler::CreateOnMainThread();
 
   // There won't be any samples if stack unwinding isn't supported.
-  if (!tracing::TracingSamplerProfiler::IsStackUnwindingSupported()) {
+  if (!tracing::TracingSamplerProfiler::IsStackUnwindingSupportedForTesting()) {
     return;
   }
 
