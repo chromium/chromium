@@ -11,7 +11,7 @@
     "server": "npm run build && npm run server-no-build --",
     "server-no-build": "node src/.build/bidiServer/index.js",
     "build": "npm run prettier && npm run clean && npm run build-mapper && npm run build-server",
-    "prebuild-mapper": "utils/filter_protocol_commands.sh",
+    "prebuild-mapper": "utils/filter_protocol_commands.js",
     "build-mapper": "rollup --config src/bidiMapper/rollup.config.js",
     "build-server": "tsc -b src/tsconfig.json",
     "clean": "rimraf src/.build",

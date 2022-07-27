@@ -17,14 +17,6 @@ This is a Node.js project, so install dependencies as usual:
 npm install
 ```
 
-# Filtering
-
-`jq` is needed as a dependency to prune the devtools protocol domains to only the fields we care about, reducing the overall compiled mapper size.
-
-```sh
-npm run prebuild-mapper
-```
-
 # Starting the Server
 
 This will run the server on port 8080:

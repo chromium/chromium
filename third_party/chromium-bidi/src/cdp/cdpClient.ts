@@ -63,10 +63,10 @@ for (let domains of browserAndJsProtocolDomains) {
 
   // Add methods to our Domain for each available command.
   for (let command of domains.commands) {
-    Object.defineProperty(ThisDomain.prototype, command.name, {
+    Object.defineProperty(ThisDomain.prototype, command, {
       value: async function (params: object) {
         return await this._client.sendCommand(
-          `${domains.domain}.${command.name}`,
+          `${domains.domain}.${command}`,
           params
         );
       },
