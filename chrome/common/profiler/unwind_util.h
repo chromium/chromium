@@ -5,6 +5,8 @@
 #ifndef CHROME_COMMON_PROFILER_UNWIND_UTIL_H_
 #define CHROME_COMMON_PROFILER_UNWIND_UTIL_H_
 
+#include "base/profiler/stack_sampling_profiler.h"
+
 // A helper class to encapsulate some functionality related to stack unwinding.
 class UnwindPrerequisites {
  public:
@@ -23,5 +25,7 @@ class UnwindPrerequisites {
   // context?
   static bool Available();
 };
+
+base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory();
 
 #endif  // CHROME_COMMON_PROFILER_UNWIND_UTIL_H_
