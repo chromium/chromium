@@ -143,7 +143,7 @@ ContentExtensionBridge = class {
     }
 
     // Check again after a short while in case we get no response.
-    window.setTimeout(
+    setTimeout(
         () => this.tryToPingBackgroundPage_(),
         ContentExtensionBridge.TIME_BETWEEN_PINGS_MS);
   }

@@ -125,9 +125,9 @@ AX_TEST_F('ChromeVoxEditingTest', 'TextButNoSelectionChange', async function() {
           }
 
           input.value = 'text2';
-          window.clearInterval(timer);
+          clearInterval(timer);
         }
-        timer = window.setInterval(poll, 200);
+        timer = setInterval(poll, 200);
       </script>
     `);
   const input = root.find({role: RoleType.TEXT_FIELD});

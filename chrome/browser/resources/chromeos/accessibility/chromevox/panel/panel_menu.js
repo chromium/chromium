@@ -45,7 +45,7 @@ export class PanelMenu {
     this.items_ = [];
 
     /**
-     * The return value from window.setTimeout for a function to update the
+     * The return value from setTimeout for a function to update the
      * scroll bars after an item has been added to a menu. Used so that we
      * don't re-layout too many times.
      * @type {?number}
@@ -96,7 +96,7 @@ export class PanelMenu {
     // to avoid excessive layout, schedule this once per batch of adding
     // menu items rather than after each add.
     if (!this.updateScrollbarsTimeout_) {
-      this.updateScrollbarsTimeout_ = window.setTimeout(
+      this.updateScrollbarsTimeout_ = setTimeout(
           (function() {
             const menuBounds = this.menuElement.getBoundingClientRect();
             const maxHeight = window.innerHeight - menuBounds.top;
@@ -169,7 +169,7 @@ export class PanelMenu {
     this.menuBarItemElement.classList.remove('active');
     this.activeIndex_ = -1;
 
-    window.setTimeout(
+    setTimeout(
         (function() {
           this.menuContainerElement.style.visibility = 'hidden';
         }).bind(this),

@@ -297,7 +297,7 @@ export class ExtensionBridge {
     }
 
     // Check again after a short while in case we get no response.
-    window.setTimeout(
+    setTimeout(
         () => this.tryToPingBackgroundPage_(),
         ExtensionBridge.TIME_BETWEEN_PINGS_MS);
   }

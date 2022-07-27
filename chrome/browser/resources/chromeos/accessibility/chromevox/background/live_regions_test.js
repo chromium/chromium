@@ -145,7 +145,7 @@ AX_TEST_F('ChromeVoxLiveRegionsTest', 'LiveRegionThenFocus', async function() {
       <script>
         document.getElementById('go').addEventListener('click', function() {
           document.getElementById('live').textContent = 'Live';
-   window.setTimeout(function() {
+   setTimeout(function() {
             document.getElementById('focus').focus();
           }, 50);
         }, false);
@@ -185,7 +185,7 @@ AX_TEST_F('ChromeVoxLiveRegionsTest', 'FocusThenLiveRegion', async function() {
       <script>
         document.getElementById('go').addEventListener('click', function() {
           document.getElementById('focus').focus();
-   window.setTimeout(function() {
+   setTimeout(function() {
             document.getElementById('live').textContent = 'Live';
           }, 200);
         }, false);
@@ -217,7 +217,7 @@ AX_TEST_F(
       <script>
         document.getElementById('go').addEventListener('click', function() {
           document.getElementById('live1').textContent = 'Live1';
-          window.setTimeout(function() {
+          setTimeout(function() {
             document.getElementById('live2').textContent = 'Live2';
           }, 1000);
         }, false);
@@ -247,7 +247,7 @@ AX_TEST_F('ChromeVoxLiveRegionsTest', 'SilentOnNodeChange', async function() {
       }, 50);
     </script>
   `);
-  const focusAfterNodeChange = window.setTimeout.bind(window, function() {
+  const focusAfterNodeChange = setTimeout.bind(window, function() {
     root.firstChild.nextSibling.focus();
   }, 1000);
   mockFeedback.call(focusAfterNodeChange)

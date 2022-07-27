@@ -21,27 +21,27 @@ SwitchAccessAutoScanManagerTest = class extends SwitchAccessE2ETest {
     AutoScanManager.instance.primaryScanTime_ = 1000;
     // Use intervalCount and intervalDelay to check how many intervals are
     // currently running (should be no more than 1) and the current delay.
-    window.intervalCount = 0;
-    window.intervalDelay = UNDEFINED_INTERVAL_DELAY;
-    window.defaultSetInterval = window.setInterval;
-    window.defaultClearInterval = window.clearInterval;
+    globalThis.intervalCount = 0;
+    globalThis.intervalDelay = UNDEFINED_INTERVAL_DELAY;
+    globalThis.defaultSetInterval = setInterval;
+    globalThis.defaultClearInterval = clearInterval;
     this.defaultMoveForward =
         Navigator.byItem.moveForward.bind(Navigator.byItem);
     this.moveForwardCount = 0;
 
-    window.setInterval = function(func, delay) {
-      window.intervalCount++;
-      window.intervalDelay = delay;
+    setInterval = function(func, delay) {
+      globalThis.intervalCount++;
+      globalThis.intervalDelay = delay;
 
       // Override the delay for testing.
-      return window.defaultSetInterval(func, 0);
+      return globalThis.defaultSetInterval(func, 0);
     };
 
-    window.clearInterval = function(intervalId) {
+    clearInterval = function(intervalId) {
       if (intervalId) {
-        window.intervalCount--;
+        globalThis.intervalCount--;
       }
-      window.defaultClearInterval(intervalId);
+      globalThis.defaultClearInterval(intervalId);
     };
 
     Navigator.byItem.moveForward = () => {

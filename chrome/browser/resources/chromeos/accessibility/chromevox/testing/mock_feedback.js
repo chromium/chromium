@@ -453,7 +453,7 @@ MockFeedback = class {
         if (action.perform()) {
           this.pendingActions_.shift();
           if (this.logTimeoutId_) {
-            window.clearTimeout(this.logTimeoutId_);
+            clearTimeout(this.logTimeoutId_);
             this.logTimeoutId_ = 0;
           }
         } else {
@@ -471,7 +471,7 @@ MockFeedback = class {
         // seconds, log the pending state to ease debugging.
         if (!this.logTimeoutId_) {
           this.logTimeoutId_ =
-              window.setTimeout(this.logPendingState_.bind(this), 2000);
+              setTimeout(this.logPendingState_.bind(this), 2000);
         }
       }
     } catch (e) {

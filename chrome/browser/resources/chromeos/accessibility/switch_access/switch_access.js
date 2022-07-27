@@ -41,14 +41,14 @@ export class SwitchAccess {
 
           desktop.removeEventListener(
               chrome.automation.EventType.FOCUS, listener, false);
-          window.clearTimeout(callbackId);
+          clearTimeout(callbackId);
 
           SwitchAccess.finishInit_(desktop);
         };
 
         desktop.addEventListener(
             chrome.automation.EventType.FOCUS, listener, false);
-        callbackId = window.setTimeout(listener, 5000);
+        callbackId = setTimeout(listener, 5000);
       });
     });
   }

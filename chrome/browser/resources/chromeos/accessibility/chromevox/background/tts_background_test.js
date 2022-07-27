@@ -417,7 +417,7 @@ AX_TEST_F('ChromeVoxTtsBackgroundTest', 'PitchChanges', function() {
 AX_TEST_F('ChromeVoxTtsBackgroundTest', 'InterjectUtterances', function() {
   // Fake out setTimeout for our purposes.
   let lastSetTimeoutCallback;
-  window.setTimeout = (callback, delay) => {
+  setTimeout = (callback, delay) => {
     lastSetTimeoutCallback = callback;
   };
 
@@ -515,7 +515,7 @@ AX_TEST_F('ChromeVoxTtsBackgroundTest', 'InterjectUtterances', function() {
 AX_TEST_F('ChromeVoxTtsBackgroundTest', 'Mute', function() {
   // Fake out setTimeout for our purposes.
   let lastSetTimeoutCallback;
-  window.setTimeout = (callback, delay) => {
+  setTimeout = (callback, delay) => {
     lastSetTimeoutCallback = callback;
   };
 

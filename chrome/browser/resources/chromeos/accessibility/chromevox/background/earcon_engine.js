@@ -111,7 +111,7 @@ export class EarconEngine {
     this.progressTime_ = this.context_.currentTime;
 
     /**
-     * @type {?number} The window.setInterval ID for progress sounds.
+     * @type {?number} The setInterval ID for progress sounds.
      * @private
      */
     this.progressIntervalID_ = null;
@@ -812,7 +812,7 @@ export class EarconEngine {
     this.progressTime_ = this.context_.currentTime;
     this.generateProgressTickTocks_();
     this.progressIntervalID_ =
-        window.setInterval(this.generateProgressTickTocks_.bind(this), 1000);
+        setInterval(this.generateProgressTickTocks_.bind(this), 1000);
   }
 
   /**
@@ -831,7 +831,7 @@ export class EarconEngine {
     }
     this.progressSources_ = [];
 
-    window.clearInterval(this.progressIntervalID_);
+    clearInterval(this.progressIntervalID_);
     this.progressIntervalID_ = null;
   }
 

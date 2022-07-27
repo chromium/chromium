@@ -5,6 +5,7 @@
 // Maps some objects/functions within an ordinary web renderer to a v8 one.
 window = {};
 window.setTimeout = () => {};
+globalThis = window;
 goog = {};
 goog.provide = () => {};
 goog.require = () => {};

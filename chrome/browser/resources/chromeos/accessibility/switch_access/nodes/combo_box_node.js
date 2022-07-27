@@ -76,7 +76,7 @@ class ComboBoxNode extends BasicNode {
 
   onExpandedChanged() {
     // TODO: figure out why a short timeout is needed here.
-    window.setTimeout(() => {
+    setTimeout(() => {
       if (this.isGroup()) {
         Navigator.byItem.enterGroup();
       }

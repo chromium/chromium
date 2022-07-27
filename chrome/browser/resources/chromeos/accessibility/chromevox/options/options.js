@@ -455,7 +455,7 @@ export class OptionsPage {
    * @return {boolean} True if the default action should occur.
    */
   static eventListener(event) {
-    window.setTimeout(function() {
+    setTimeout(function() {
       const target = event.target;
       if (target.id === 'brailleWordWrap') {
         chrome.storage.local.set({brailleWordWrap: target.checked});
