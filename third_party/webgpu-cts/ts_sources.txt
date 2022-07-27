@@ -356,6 +356,7 @@ src/webgpu/shader/execution/expression/call/builtin/reflect.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/refract.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/reverseBits.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/round.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/saturate.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/select.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/sign.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/sin.spec.ts
