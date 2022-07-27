@@ -101,14 +101,11 @@ const CGFloat kOmniboxIconSize = 16;
   if (visibleSuggestions > 0) {
     // Groups visible suggestions by search vs url. Skip the first suggestion
     // because it's the omnibox content.
-    AutocompleteResult::GroupSuggestionsBySearchVsURL(
-        std::next(_currentResult.begin()),
-        std::next(_currentResult.begin(), visibleSuggestions));
+    [self groupCurrentSuggestionsFrom:1 to:visibleSuggestions];
   }
   // Groups hidden suggestions by search vs url.
-  AutocompleteResult::GroupSuggestionsBySearchVsURL(
-      std::next(_currentResult.begin(), visibleSuggestions),
-      _currentResult.end());
+  [self groupCurrentSuggestionsFrom:visibleSuggestions
+                                 to:_currentResult.size()];
 
   NSArray<id<AutocompleteSuggestion>>* matches = [self wrappedMatches];
 
@@ -118,27 +115,6 @@ const CGFloat kOmniboxIconSize = 16;
       preselectedMatchGroupIndex:0];
 
   [self loadModelImages];
-}
-
-- (NSArray<id<AutocompleteSuggestion>>*)wrappedMatches {
-  NSMutableArray<id<AutocompleteSuggestion>>* wrappedMatches =
-      [[NSMutableArray alloc] init];
-
-  size_t size = _currentResult.size();
-  for (size_t i = 0; i < size; i++) {
-    const AutocompleteMatch& match =
-        ((const AutocompleteResult&)_currentResult).match_at((NSUInteger)i);
-    AutocompleteMatchFormatter* formatter =
-        [AutocompleteMatchFormatter formatterWithMatch:match];
-    formatter.starred = _delegate->IsStarredMatch(match);
-    formatter.incognito = _incognito;
-    formatter.defaultSearchEngineIsGoogle = self.defaultSearchEngineIsGoogle;
-    formatter.pedalData = [self.pedalAnnotator pedalForMatch:match
-                                                   incognito:_incognito];
-    [wrappedMatches addObject:formatter];
-  }
-
-  return wrappedMatches;
 }
 
 #pragma mark - AutocompleteResultConsumerDelegate
@@ -263,6 +239,35 @@ const CGFloat kOmniboxIconSize = 16;
         if (attributes.faviconImage && !attributes.usesDefaultImage)
           completion(attributes.faviconImage);
       });
+}
+
+#pragma mark - Private methods
+
+- (NSArray<id<AutocompleteSuggestion>>*)wrappedMatches {
+  NSMutableArray<id<AutocompleteSuggestion>>* wrappedMatches =
+      [[NSMutableArray alloc] init];
+
+  size_t size = _currentResult.size();
+  for (size_t i = 0; i < size; i++) {
+    const AutocompleteMatch& match =
+        ((const AutocompleteResult&)_currentResult).match_at((NSUInteger)i);
+    AutocompleteMatchFormatter* formatter =
+        [AutocompleteMatchFormatter formatterWithMatch:match];
+    formatter.starred = _delegate->IsStarredMatch(match);
+    formatter.incognito = _incognito;
+    formatter.defaultSearchEngineIsGoogle = self.defaultSearchEngineIsGoogle;
+    formatter.pedalData = [self.pedalAnnotator pedalForMatch:match
+                                                   incognito:_incognito];
+    [wrappedMatches addObject:formatter];
+  }
+
+  return wrappedMatches;
+}
+
+- (void)groupCurrentSuggestionsFrom:(NSUInteger)begin to:(NSUInteger)end {
+  AutocompleteResult::GroupSuggestionsBySearchVsURL(
+      std::next(_currentResult.begin(), begin),
+      std::next(_currentResult.begin(), end));
 }
 
 @end

@@ -213,6 +213,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "omnibox_pedal_annotator_unittest.mm",
+    "omnibox_popup_mediator_unittest.mm",
     "omnibox_popup_row_cell_unittest.mm",
     "pedal_section_extractor_unittest.mm",
   ]
@@ -223,9 +224,11 @@ source_set("unit_tests") {
     ":popup_ui_protocols",
     "//base",
     "//base/test:test_support",
+    "//components/image_fetcher/core",
     "//components/omnibox/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/favicon",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
