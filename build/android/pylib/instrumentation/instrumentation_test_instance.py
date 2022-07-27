@@ -22,8 +22,6 @@ from pylib.symbols import deobfuscator
 from pylib.symbols import stack_symbolizer
 from pylib.utils import dexdump
 from pylib.utils import gold_utils
-from pylib.utils import instrumentation_tracing
-from pylib.utils import proguard
 from pylib.utils import shared_preference_utils
 from pylib.utils import test_filter
 
@@ -429,18 +427,6 @@ def FilterTests(tests, filter_str=None, annotations=None,
 
   return return_tests
 
-# TODO(yolandyan): remove this once the tests are converted to junit4
-def GetAllTestsFromJar(test_jar):
-  pickle_path = '%s-proguard.pickle' % test_jar
-  try:
-    tests = GetTestsFromPickle(pickle_path, os.path.getmtime(test_jar))
-  except TestListPickleException as e:
-    logging.info('Could not get tests from pickle: %s', e)
-    logging.info('Getting tests from JAR via proguard.')
-    tests = _GetTestsFromProguard(test_jar)
-    SaveTestsToPickle(pickle_path, tests)
-  return tests
-
 
 def GetAllTestsFromApk(test_apk):
   pickle_path = '%s-dexdump.pickle' % test_apk
@@ -453,6 +439,7 @@ def GetAllTestsFromApk(test_apk):
     SaveTestsToPickle(pickle_path, tests)
   return tests
 
+
 def GetTestsFromPickle(pickle_path, test_mtime):
   if not os.path.exists(pickle_path):
     raise TestListPickleException('%s does not exist.' % pickle_path)
@@ -464,39 +451,6 @@ def GetTestsFromPickle(pickle_path, test_mtime):
   if pickle_data['VERSION'] != _PICKLE_FORMAT_VERSION:
     raise TestListPickleException('PICKLE_FORMAT_VERSION has changed.')
   return pickle_data['TEST_METHODS']
-
-
-# TODO(yolandyan): remove this once the test listing from java runner lands
-@instrumentation_tracing.no_tracing
-def _GetTestsFromProguard(jar_path):
-  p = proguard.Dump(jar_path)
-  class_lookup = dict((c['class'], c) for c in p['classes'])
-
-  def is_test_class(c):
-    return c['class'].endswith('Test')
-
-  def is_test_method(m):
-    return m['method'].startswith('test')
-
-  def recursive_class_annotations(c):
-    s = c['superclass']
-    if s in class_lookup:
-      a = recursive_class_annotations(class_lookup[s])
-    else:
-      a = {}
-    a.update(c['annotations'])
-    return a
-
-  def stripped_test_class(c):
-    return {
-      'class': c['class'],
-      'annotations': recursive_class_annotations(c),
-      'methods': [m for m in c['methods'] if is_test_method(m)],
-      'superclass': c['superclass'],
-    }
-
-  return [stripped_test_class(c) for c in p['classes']
-          if is_test_class(c)]
 
 
 def _GetTestsFromDexdump(test_apk):
@@ -641,7 +595,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._test_apk = None
     self._test_apk_as_instant = False
     self._test_apk_incremental_install_json = None
-    self._test_jar = None
     self._test_package = None
     self._junit3_runner_class = None
     self._junit4_runner_class = None
@@ -759,17 +712,9 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._fake_modules = args.fake_modules
     self._additional_locales = args.additional_locales
 
-    self._test_jar = args.test_jar
     self._test_support_apk = apk_helper.ToHelper(os.path.join(
         constants.GetOutDirectory(), constants.SDK_BUILD_TEST_JAVALIB_DIR,
         '%sSupport.apk' % self._suite))
-
-    if not self._test_jar:
-      logging.warning('Test jar not specified. Test runner will not have '
-                      'Java annotation info available. May not handle test '
-                      'timeouts correctly.')
-    elif not os.path.exists(self._test_jar):
-      error_func('Unable to find test JAR: %s' % self._test_jar)
 
     self._test_package = self._test_apk.GetPackageName()
     all_instrumentations = self._test_apk.GetAllInstrumentations()
@@ -1082,10 +1027,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     return self._test_filter
 
   @property
-  def test_jar(self):
-    return self._test_jar
-
-  @property
   def test_launcher_batch_limit(self):
     return self._test_launcher_batch_limit
 
@@ -1149,10 +1090,12 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     return self._data_deps
 
   def GetTests(self):
-    if self.test_jar:
-      raw_tests = GetAllTestsFromJar(self.test_jar)
-    else:
-      raw_tests = GetAllTestsFromApk(self.test_apk.path)
+    if self._test_apk_incremental_install_json:
+      # Would likely just be a matter of calling GetAllTestsFromApk on all
+      # .dex files listed in the .json.
+      raise Exception('Support not implemented for incremental_install=true on '
+                      'tests that do not use //base\'s test runner.')
+    raw_tests = GetAllTestsFromApk(self.test_apk.path)
     return self.ProcessRawTests(raw_tests)
 
   def MaybeDeobfuscateLines(self, lines):

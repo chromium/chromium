@@ -824,12 +824,9 @@ template("test_runner_script") {
       if (_incremental_apk) {
         _test_apk = "@WrappedPath(@FileArg($_rebased_apk_build_config:deps_info:incremental_apk_path))"
       }
-      _rebased_test_jar = rebase_path(invoker.test_jar, root_build_dir)
       executable_args += [
         "--test-apk",
         _test_apk,
-        "--test-jar",
-        "@WrappedPath(${_rebased_test_jar})",
       ]
       if (defined(invoker.apk_under_test)) {
         if (_incremental_apk) {

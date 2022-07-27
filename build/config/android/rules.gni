@@ -3086,23 +3086,6 @@ if (enable_java_templates) {
       }
     }
 
-    # TODO(cjhopman): This is only ever needed to calculate the list of tests to
-    # run. See build/android/pylib/instrumentation/test_jar.py. We should be
-    # able to just do that calculation at build time instead.
-    if (defined(invoker.dist_ijar_path)) {
-      _dist_ijar_path = invoker.dist_ijar_path
-      dist_jar("${_template_name}_dist_ijar") {
-        build_config = _build_config
-        build_config_dep = ":$_build_config_target"
-        output = _dist_ijar_path
-        data = [ _dist_ijar_path ]
-        use_interface_jars = true
-
-        # This will use __header under-the-hood.
-        deps = [ ":$_java_target_name" ]
-      }
-    }
-
     if (_uses_static_library_synchronized_proguard) {
       _final_dex_target_dep = "${invoker.static_library_provider}__dexsplitter"
     } else if ((_is_bundle_module && _proguard_enabled) || _omit_dex) {
@@ -3660,7 +3643,6 @@ if (enable_java_templates) {
                                "data",
                                "data_deps",
                                "deps",
-                               "dist_ijar_path",
                                "enable_lint",
                                "enable_multidex",
                                "enable_native_mocks",
@@ -3877,7 +3859,6 @@ if (enable_java_templates) {
   #
   # Arguments:
   #   android_test_apk: The target containing the tests.
-  #   android_test_apk_name: The apk_name in android_test_apk
   #
   #   The following args are optional:
   #   apk_under_test: The target being tested.
@@ -3897,7 +3878,6 @@ if (enable_java_templates) {
   # Example
   #   instrumentation_test_runner("foo_test_for_bar") {
   #     android_test_apk: ":foo"
-  #     android_test_apk_name: "Foo"
   #     apk_under_test: ":bar"
   #   }
   template("instrumentation_test_runner") {
@@ -3929,17 +3909,10 @@ if (enable_java_templates) {
       test_name = invoker.target_name
       test_type = "instrumentation"
       apk_target = invoker.android_test_apk
-      test_jar = "$root_build_dir/test.lib.java/" +
-                 invoker.android_test_apk_name + ".jar"
       incremental_apk = !(defined(invoker.never_incremental) &&
                           invoker.never_incremental) && incremental_install
 
-      public_deps = [
-        apk_target,
-
-        # Required by test runner to enumerate test list.
-        "${apk_target}_dist_ijar",
-      ]
+      public_deps = [ apk_target ]
       if (defined(invoker.apk_under_test)) {
         public_deps += [ invoker.apk_under_test ]
       }
@@ -4043,7 +4016,6 @@ if (enable_java_templates) {
         data += [ "$_final_apk_path.mapping" ]
       }
 
-      dist_ijar_path = "$root_build_dir/test.lib.java/${invoker.apk_name}.jar"
       create_apk_script = false
 
       forward_variables_from(invoker,
@@ -4089,7 +4061,6 @@ if (enable_java_templates) {
                                "use_webview_provider",
                              ])
       android_test_apk = ":${_apk_target_name}"
-      android_test_apk_name = invoker.apk_name
       if (defined(invoker.proguard_enabled) && invoker.proguard_enabled) {
         proguard_mapping_path =
             "$root_build_dir/apks/${invoker.apk_name}.apk.mapping"

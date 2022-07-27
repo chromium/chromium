@@ -352,7 +352,6 @@ instrumentation_test_runner("weblayer_bundle_test") {
     "fr-CA",
   ]
   android_test_apk = ":weblayer_bundle_test_apk"
-  android_test_apk_name = "WebLayerBundleTest"
   additional_apks = [ "//net/android:net_test_support_apk" ]
   data = [ "//weblayer/test/data/" ]
   never_incremental = true

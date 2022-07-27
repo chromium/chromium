@@ -220,7 +220,6 @@ pylib/utils/instrumentation_tracing.py
 pylib/utils/local_utils.py
 pylib/utils/logdog_helper.py
 pylib/utils/logging_utils.py
-pylib/utils/proguard.py
 pylib/utils/repo_utils.py
 pylib/utils/shared_preference_utils.py
 pylib/utils/test_filter.py

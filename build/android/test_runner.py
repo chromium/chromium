@@ -575,9 +575,6 @@ def AddInstrumentationTestOptions(parser):
       help='Install the test apk as an instant app. '
       'Instant apps run in a more restrictive execution environment.')
   parser.add_argument(
-      '--test-jar',
-      help='Path of jar containing test java files.')
-  parser.add_argument(
       '--test-launcher-batch-limit',
       dest='test_launcher_batch_limit',
       type=int,

@@ -3465,7 +3465,6 @@ _common_smoke_test_args = [
 instrumentation_test_runner("chrome_public_smoke_test") {
   apk_under_test = ":chrome_public_apk"
   android_test_apk = ":chrome_smoke_test_apk"
-  android_test_apk_name = "ChromeSmokeTest"
   if (!is_java_debug) {
     proguard_mapping_path = "$root_build_dir/apks/ChromePublic.apk.mapping"
   }
@@ -3490,7 +3489,6 @@ instrumentation_test_runner("monochrome_public_smoke_test") {
     }
   }
   android_test_apk = ":chrome_smoke_test_apk"
-  android_test_apk_name = "ChromeSmokeTest"
   never_incremental = true
   extra_args = _common_smoke_test_args
 }
@@ -3539,7 +3537,6 @@ _bundle_smoke_test_extra_args = [
 instrumentation_test_runner("chrome_modern_public_bundle_smoke_test") {
   apk_under_test = ":chrome_modern_public_bundle_apks"
   android_test_apk = ":chrome_bundle_smoke_test_apk"
-  android_test_apk_name = "ChromeBundleSmokeTest"
   never_incremental = true
   modules = [ "test_dummy" ]
   if (!is_java_debug) {
@@ -3564,7 +3561,6 @@ instrumentation_test_runner("monochrome_public_bundle_smoke_test") {
     }
   }
   android_test_apk = ":chrome_bundle_smoke_test_apk"
-  android_test_apk_name = "ChromeBundleSmokeTest"
   never_incremental = true
   modules = [ "test_dummy" ]
   extra_args = _bundle_smoke_test_extra_args
@@ -3594,7 +3590,6 @@ if (defined(expected_static_initializer_count)) {
 
 instrumentation_test_runner("trichrome_chrome_bundle_smoke_test") {
   android_test_apk = ":chrome_bundle_smoke_test_apk"
-  android_test_apk_name = "ChromeBundleSmokeTest"
   never_incremental = true
   modules = [ "test_dummy" ]
   extra_args = _bundle_smoke_test_extra_args

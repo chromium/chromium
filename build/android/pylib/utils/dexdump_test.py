@@ -21,10 +21,13 @@ class DexdumpXMLParseTest(unittest.TestCase):
         '<package name="com.foo.bar">\n'
         'Class #1 annotations:\n'
         'Annotations on class\n'
-        ' VISIBILITY_RUNTIME Ldalvik/annotation/AppModeFull; value=...\n'
+        ' VISIBILITY_RUNTIME Ldalvik/annotation/AppModeFull; value=Alpha\n'
         'Annotations on method #512 \'example\'\n'
-        ' VISIBILITY_SYSTEM Ldalvik/annotation/Signature; value=...\n'
-        ' VISIBILITY_RUNTIME Ldalvik/annotation/Test; value=...\n'
+        ' VISIBILITY_SYSTEM Ldalvik/annotation/Signature; value=Bravo\n'
+        ' VISIBILITY_RUNTIME Ldalvik/annotation/Test;\n'
+        ' VISIBILITY_RUNTIME Ldalvik/annotation/Test2; value=Charlie\n'
+        ' VISIBILITY_RUNTIME Ldalvik/annotation/Test3; A=B x B={ C D }\n'
+        ' VISIBILITY_RUNTIME Ldalvik/annotation/Test4; A=B x B={ C D } C=D\n'
         '<class name="Class1" extends="java.lang.Object">\n'
         '</class>\n'
         '<class name="Class2" extends="java.lang.Object">\n'
@@ -36,10 +39,26 @@ class DexdumpXMLParseTest(unittest.TestCase):
     expected = {
         1:
         dexdump.Annotations(
-            classAnnotations={'AppModeFull': None},
-            methodsAnnotations={'example': {
-                'Test': None
+            classAnnotations={'AppModeFull': {
+                'value': 'Alpha'
             }},
+            methodsAnnotations={
+                'example': {
+                    'Test': None,
+                    'Test2': {
+                        'value': 'Charlie'
+                    },
+                    'Test3': {
+                        'A': 'B x',
+                        'B': ['C', 'D']
+                    },
+                    'Test4': {
+                        'A': 'B x',
+                        'B': ['C', 'D'],
+                        'C': 'D'
+                    },
+                }
+            },
         )
     }
 

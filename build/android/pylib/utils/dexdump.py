@@ -19,8 +19,26 @@ from util import build_utils
 
 DEXDUMP_PATH = os.path.join(constants.ANDROID_SDK_TOOLS, 'dexdump')
 
+
+# Annotations dict format:
+#   {
+#     'empty-annotation-class-name': None,
+#     'annotation-class-name': {
+#       'fieldA': 'primitive-value',
+#       'fieldB': [ 'array-item-1', 'array-item-2', ... ],
+#       'fieldC': {  # CURRENTLY UNSUPPORTED.
+#         /* Object value */
+#         'field': 'primitive-value',
+#         'field': [ 'array-item-1', 'array-item-2', ... ],
+#         'field': { /* Object value */ }
+#       }
+#     }
+#   }
 Annotations = namedtuple('Annotations',
                          ['classAnnotations', 'methodsAnnotations'])
+
+# Finds each space-separated "foo=..." (where ... can contain spaces).
+_ANNOTATION_VALUE_MATCHER = re.compile(r'\w+=.*?(?:$|(?= \w+=))')
 
 
 def Dump(apk_path):
@@ -77,6 +95,21 @@ def Dump(apk_path):
     shutil.rmtree(dexfile_dir)
 
 
+def _ParseAnnotationValues(values_str):
+  if not values_str:
+    return None
+  ret = {}
+  for key_value in _ANNOTATION_VALUE_MATCHER.findall(values_str):
+    key, value_str = key_value.split('=', 1)
+    # TODO: support for dicts if ever needed.
+    if value_str.startswith('{ ') and value_str.endswith(' }'):
+      value = value_str[2:-2].split()
+    else:
+      value = value_str
+    ret[key] = value
+  return ret
+
+
 def _ParseAnnotations(dexRaw: str) -> Dict[int, Annotations]:
   """ Parse XML strings and return a list of Annotations mapped to
   classes by index.
@@ -94,6 +127,9 @@ def _ParseAnnotations(dexRaw: str) -> Dict[int, Annotations]:
     VISIBILITY_RUNTIME Ldalvik/annotation/EnclosingClass; value=...
   Annotations on method #512 'example'
     VISIBILITY_SYSTEM Ldalvik/annotation/Signature; value=...
+    VISIBILITY_RUNTIME Landroidx/test/filters/SmallTest;
+    VISIBILITY_RUNTIME Lorg/chromium/base/test/util/Feature; value={ Cronet }
+    VISIBILITY_RUNTIME LFoo; key1={ A B } key2=4104 key3=null
   """
 
   # We want to find the lines matching the annotations header pattern
@@ -108,7 +144,7 @@ def _ParseAnnotations(dexRaw: str) -> Dict[int, Annotations]:
   methodMatcher = re.compile(u"(?<=')[^']*")
   # We want to match everything after the last slash until before the semi colon
   # Eg: Ldalvik/annotation/Signature; -> Signature
-  annotationMatcher = re.compile(u'[^/]*(?=;)')
+  annotationMatcher = re.compile(u'([^/]+); ?(.*)?')
 
   annotations = {}
   currentAnnotationsForClass = None
@@ -157,12 +193,13 @@ def _ParseAnnotations(dexRaw: str) -> Dict[int, Annotations]:
       # being used)
       elif currentAnnotationsBlock is not None and line.strip().startswith(
           'VISIBILITY_RUNTIME'):
-        annotation = annotationMatcher.findall(line)[0]
+        annotationName, annotationValuesStr = annotationMatcher.findall(line)[0]
+        annotationValues = _ParseAnnotationValues(annotationValuesStr)
 
         # Our instrumentation tests expect a mapping of "Annotation: Value"
         # We aren't using the value for anything and this would increase
         # the complexity of this parser so just mapping these to None
-        currentAnnotationsBlock.update({annotation: None})
+        currentAnnotationsBlock.update({annotationName: annotationValues})
 
       # Step 4
       # Empty lines indicate that the annotation descriptions are complete
