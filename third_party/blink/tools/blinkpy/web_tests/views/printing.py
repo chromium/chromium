@@ -263,6 +263,9 @@ class Printer(object):
         format_string = '[%d/%d] %s%s'
         status_line = format_string % (self.num_completed, self.num_tests,
                                        test_name, suffix)
+        if self._options.verbose:
+            return status_line
+
         if len(status_line) > self._meter.number_of_columns():
             overflow_columns = (
                 len(status_line) - self._meter.number_of_columns())
