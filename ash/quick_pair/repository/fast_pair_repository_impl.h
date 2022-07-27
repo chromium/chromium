@@ -125,8 +125,9 @@ class FastPairRepositoryImpl : public FastPairRepository {
                                 DeleteAssociatedDeviceCallback callback,
                                 bool success);
   void OnDeleteAssociatedDeviceByAccountKey(
+      const std::vector<uint8_t>& account_key,
       DeleteAssociatedDeviceByAccountKeyCallback callback,
-      bool success);
+      bool footprints_removal_success);
   void OnGetSavedDevices(
       GetSavedDevicesCallback callback,
       absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);

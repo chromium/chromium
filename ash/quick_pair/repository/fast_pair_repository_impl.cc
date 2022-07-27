@@ -400,14 +400,23 @@ void FastPairRepositoryImpl::DeleteAssociatedDeviceByAccountKey(
       base::HexEncode(account_key),
       base::BindOnce(
           &FastPairRepositoryImpl::OnDeleteAssociatedDeviceByAccountKey,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(account_key),
+          std::move(callback)));
 }
 
 void FastPairRepositoryImpl::OnDeleteAssociatedDeviceByAccountKey(
+    const std::vector<uint8_t>& account_key,
     DeleteAssociatedDeviceByAccountKeyCallback callback,
-    bool success) {
-  QP_LOG(INFO) << __func__ << ": success=" << success;
-  std::move(callback).Run(success);
+    bool footprints_removal_success) {
+  bool saved_device_registry_removal_success =
+      saved_device_registry_->DeleteAccountKey(account_key);
+
+  QP_LOG(INFO) << __func__ << ": Device removal: from Footprints: "
+               << footprints_removal_success << "; from SavedDeviceRegistry: "
+               << saved_device_registry_removal_success;
+
+  std::move(callback).Run(/*success=*/footprints_removal_success &&
+                          saved_device_registry_removal_success);
 }
 
 void FastPairRepositoryImpl::FetchDeviceImages(scoped_refptr<Device> device) {

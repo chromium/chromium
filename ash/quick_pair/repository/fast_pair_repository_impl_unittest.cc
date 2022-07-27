@@ -355,6 +355,8 @@ TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDeviceByAccountKey_Valid) {
   fast_pair_repository_->AssociateAccountKey(device, kAccountKey1);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
 
   base::MockCallback<base::OnceCallback<void(bool)>> callback;
   EXPECT_CALL(callback, Run(testing::Eq(true))).Times(1);
@@ -363,6 +365,8 @@ TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDeviceByAccountKey_Valid) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_FALSE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
 }
 
 TEST_F(FastPairRepositoryImplTest, FetchDeviceImages) {
