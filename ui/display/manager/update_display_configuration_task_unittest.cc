@@ -265,10 +265,15 @@ TEST_F(UpdateDisplayConfigurationTaskTest, SingleConfiguration) {
   EXPECT_TRUE(configuration_status_);
   EXPECT_EQ(MULTIPLE_DISPLAY_STATE_SINGLE, display_state_);
   EXPECT_EQ(chromeos::DISPLAY_POWER_ALL_ON, power_state_);
-  EXPECT_EQ(JoinActions(GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
+  EXPECT_EQ(JoinActions(kTestModesetStr,
+                        GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
                                        &small_mode_})
                             .c_str(),
-                        nullptr),
+                        kModesetOutcomeSuccess, kCommitModesetStr,
+                        GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
+                                       &small_mode_})
+                            .c_str(),
+                        kModesetOutcomeSuccess, nullptr),
             log_.GetActionsAndClear());
 }
 
@@ -290,14 +295,23 @@ TEST_F(UpdateDisplayConfigurationTaskTest, ExtendedConfiguration) {
   EXPECT_EQ(MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED, display_state_);
   EXPECT_EQ(chromeos::DISPLAY_POWER_ALL_ON, power_state_);
   EXPECT_EQ(
-      JoinActions(GetCrtcAction(
+      JoinActions(kTestModesetStr,
+                  GetCrtcAction(
                       {displays_[0]->display_id(), gfx::Point(), &small_mode_})
                       .c_str(),
                   GetCrtcAction({displays_[1]->display_id(),
                                  gfx::Point(0, small_mode_.size().height()),
                                  &big_mode_})
                       .c_str(),
-                  nullptr),
+                  kModesetOutcomeSuccess, kCommitModesetStr,
+                  GetCrtcAction(
+                      {displays_[0]->display_id(), gfx::Point(), &small_mode_})
+                      .c_str(),
+                  GetCrtcAction({displays_[1]->display_id(),
+                                 gfx::Point(0, small_mode_.size().height()),
+                                 &big_mode_})
+                      .c_str(),
+                  kModesetOutcomeSuccess, nullptr),
       log_.GetActionsAndClear());
 }
 
@@ -318,13 +332,21 @@ TEST_F(UpdateDisplayConfigurationTaskTest, MirrorConfiguration) {
   EXPECT_TRUE(configuration_status_);
   EXPECT_EQ(MULTIPLE_DISPLAY_STATE_MULTI_MIRROR, display_state_);
   EXPECT_EQ(chromeos::DISPLAY_POWER_ALL_ON, power_state_);
-  EXPECT_EQ(JoinActions(GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
+  EXPECT_EQ(JoinActions(kTestModesetStr,
+                        GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
                                        &small_mode_})
                             .c_str(),
                         GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
                                        &small_mode_})
                             .c_str(),
-                        nullptr),
+                        kModesetOutcomeSuccess, kCommitModesetStr,
+                        GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
+                                       &small_mode_})
+                            .c_str(),
+                        GetCrtcAction({displays_[1]->display_id(), gfx::Point(),
+                                       &small_mode_})
+                            .c_str(),
+                        kModesetOutcomeSuccess, nullptr),
             log_.GetActionsAndClear());
 }
 
@@ -366,6 +388,7 @@ TEST_F(UpdateDisplayConfigurationTaskTest, FailExtendedConfiguration) {
   EXPECT_EQ(
       JoinActions(
           // All displays will fail to modeset together. Initiate retry logic.
+          kTestModesetStr,
           GetCrtcAction(
               {displays_[0]->display_id(), gfx::Point(), &small_mode_})
               .c_str(),
@@ -373,33 +396,38 @@ TEST_F(UpdateDisplayConfigurationTaskTest, FailExtendedConfiguration) {
                          gfx::Point(0, small_mode_.size().height()),
                          &big_mode_})
               .c_str(),
+          kModesetOutcomeFailure,
           // We first attempt to modeset the internal display with all
           // other displays disabled, which will fail.
+          kTestModesetStr,
           GetCrtcAction(
               {displays_[0]->display_id(), gfx::Point(), &small_mode_})
               .c_str(),
           GetCrtcAction({displays_[1]->display_id(),
                          gfx::Point(0, small_mode_.size().height()), nullptr})
               .c_str(),
+          kModesetOutcomeFailure,
           // Since internal displays are restricted to their preferred mode,
           // there are no other modes to try. Disable the internal display when
           // we attempt to modeset displays that are connected to other
           // connectors. Regardless of what happens next, the configuration will
           // still fail completely. External display fail modeset, downgrade
           // once, and then fail completely.
+          kTestModesetStr,
           GetCrtcAction({displays_[0]->display_id(), gfx::Point(), nullptr})
               .c_str(),
           GetCrtcAction({displays_[1]->display_id(),
                          gfx::Point(0, small_mode_.size().height()),
                          &big_mode_})
               .c_str(),
+          kModesetOutcomeFailure, kTestModesetStr,
           GetCrtcAction({displays_[0]->display_id(), gfx::Point(), nullptr})
               .c_str(),
           GetCrtcAction({displays_[1]->display_id(),
                          gfx::Point(0, small_mode_.size().height()),
                          &small_mode_})
               .c_str(),
-          nullptr),
+          kModesetOutcomeFailure, nullptr),
       log_.GetActionsAndClear());
 }
 
@@ -420,10 +448,15 @@ TEST_F(UpdateDisplayConfigurationTaskTest, SingleChangePowerConfiguration) {
   EXPECT_TRUE(configuration_status_);
   EXPECT_EQ(MULTIPLE_DISPLAY_STATE_SINGLE, display_state_);
   EXPECT_EQ(chromeos::DISPLAY_POWER_ALL_ON, power_state_);
-  EXPECT_EQ(JoinActions(GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
+  EXPECT_EQ(JoinActions(kTestModesetStr,
+                        GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
                                        &small_mode_})
                             .c_str(),
-                        nullptr),
+                        kModesetOutcomeSuccess, kCommitModesetStr,
+                        GetCrtcAction({displays_[0]->display_id(), gfx::Point(),
+                                       &small_mode_})
+                            .c_str(),
+                        kModesetOutcomeSuccess, nullptr),
             log_.GetActionsAndClear());
 
   // Turn power off
@@ -440,11 +473,16 @@ TEST_F(UpdateDisplayConfigurationTaskTest, SingleChangePowerConfiguration) {
   EXPECT_TRUE(configuration_status_);
   EXPECT_EQ(MULTIPLE_DISPLAY_STATE_SINGLE, display_state_);
   EXPECT_EQ(chromeos::DISPLAY_POWER_ALL_OFF, power_state_);
-  EXPECT_EQ(JoinActions(GetCrtcAction(
-                            {displays_[0]->display_id(), gfx::Point(), nullptr})
-                            .c_str(),
-                        nullptr),
-            log_.GetActionsAndClear());
+  EXPECT_EQ(
+      JoinActions(
+          kTestModesetStr,
+          GetCrtcAction({displays_[0]->display_id(), gfx::Point(), nullptr})
+              .c_str(),
+          kModesetOutcomeSuccess, kCommitModesetStr,
+          GetCrtcAction({displays_[0]->display_id(), gfx::Point(), nullptr})
+              .c_str(),
+          kModesetOutcomeSuccess, nullptr),
+      log_.GetActionsAndClear());
 }
 
 TEST_F(UpdateDisplayConfigurationTaskTest, NoopSoftwareMirrorConfiguration) {
@@ -516,14 +554,23 @@ TEST_F(UpdateDisplayConfigurationTaskTest,
   EXPECT_TRUE(layout_manager_.GetSoftwareMirroringController()
                   ->SoftwareMirroringEnabled());
   EXPECT_EQ(
-      JoinActions(GetCrtcAction(
+      JoinActions(kTestModesetStr,
+                  GetCrtcAction(
                       {displays_[0]->display_id(), gfx::Point(), &small_mode_})
                       .c_str(),
                   GetCrtcAction({displays_[1]->display_id(),
                                  gfx::Point(0, small_mode_.size().height()),
                                  &big_mode_})
                       .c_str(),
-                  nullptr),
+                  kModesetOutcomeSuccess, kCommitModesetStr,
+                  GetCrtcAction(
+                      {displays_[0]->display_id(), gfx::Point(), &small_mode_})
+                      .c_str(),
+                  GetCrtcAction({displays_[1]->display_id(),
+                                 gfx::Point(0, small_mode_.size().height()),
+                                 &big_mode_})
+                      .c_str(),
+                  kModesetOutcomeSuccess, nullptr),
       log_.GetActionsAndClear());
 }
 
