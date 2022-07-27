@@ -289,7 +289,6 @@ def _OptimizeWithR8(options,
     # R8 OOMs with the default xmx=1G.
     cmd = build_utils.JavaCmd(options.warnings_as_errors, xmx='2G') + [
         '-Dcom.android.tools.r8.experimental.enablewhyareyounotinlining=1',
-        '-Dcom.android.tools.r8.disableHorizontalClassMerging=1',
     ]
     if options.dump_inputs:
       cmd += ['-Dcom.android.tools.r8.dumpinputtofile=r8inputs.zip']
