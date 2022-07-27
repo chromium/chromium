@@ -470,8 +470,6 @@ void LogClosedByClearAll(const std::string& notification_id) {
 }
 
 void LogNotificationAdded(const std::string& notification_id) {
-  // TODO(kradtke): refactor on CL to reuse `FindNotificationById`
-  // https://chromium-review.googlesource.com/c/chromium/src/+/3774436
   LogSystemNotificationAdded(notification_id);
 
   auto* notification =

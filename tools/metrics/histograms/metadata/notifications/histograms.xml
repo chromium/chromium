@@ -242,8 +242,7 @@ chromium-metrics-reviews@google.com.
         summary="Count of notifications displayed in the first minute since
                  login for a user"/>
     <variant name="NotificationAdded"
-        summary="A notification was created (regardless if it was shown or
-                 not)"/>
+        summary="A notification was created and it was shown"/>
     <variant name="Popup.ClickedActionButton"
         summary="User clicks on an action button of a popup notification"/>
     <variant name="Popup.ClickedBody"

@@ -3099,8 +3099,8 @@ chromium-metrics-reviews@google.com.
   <owner>leandre@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
-    Recorded the types of notification view added to the system. Emitted when
-    each notification is added.
+    Records the types of notification view added to the system. Emitted when
+    each notification is added and the notification is visible.
   </summary>
 </histogram>
 
