@@ -14,6 +14,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
 import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
+import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -25,9 +26,10 @@ import {FastPairSavedDevice} from './settings_fast_pair_constants.js';
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
  * @implements {WebUIListenerBehaviorInterface}
+ * @implements {FocusRowBehaviorInterface}
  */
-const SettingsSavedDevicesListItemElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+const SettingsSavedDevicesListItemElementBase = mixinBehaviors(
+    [I18nBehavior, WebUIListenerBehavior, FocusRowBehavior], PolymerElement);
 
 /** @polymer */
 class SettingsSavedDevicesListItemElement extends
@@ -49,7 +51,14 @@ class SettingsSavedDevicesListItemElement extends
         type: Object,
       },
 
+      /** The index of this item in its parent list, used for its a11y label. */
       itemIndex: Number,
+
+      /**
+       * The total number of elements in this item's parent list, used for its
+       * a11y label.
+       */
+      listSize: Number,
 
       /** @protected */
       shouldShowRemoveSavedDeviceDialog_: {
@@ -95,6 +104,27 @@ class SettingsSavedDevicesListItemElement extends
   /** @private */
   onCloseRemoveDeviceDialog_() {
     this.shouldShowRemoveSavedDeviceDialog_ = false;
+  }
+
+  /**
+   * @param {!FastPairSavedDevice} device
+   * @return {string}
+   * @private
+   */
+  getAriaLabel_(device) {
+    const deviceName = this.getDeviceName_(device);
+    return this.i18n(
+        'savedDeviceItemA11yLabel', this.itemIndex + 1, this.listSize,
+        deviceName);
+  }
+  /**
+   * @param {!FastPairSavedDevice} device
+   * @return {string}
+   * @private
+   */
+  getSubpageButtonA11yLabel_(device) {
+    const deviceName = this.getDeviceName_(device);
+    return this.i18n('savedDeviceItemButtonA11yLabel', deviceName);
   }
 }
 

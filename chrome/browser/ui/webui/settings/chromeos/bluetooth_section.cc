@@ -374,7 +374,13 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"bluetoothDeviceListNoConnectedDevices",
        IDS_BLUETOOTH_DEVICE_LIST_NO_CONNECTED_DEVICES},
       {"bluetoothEnabledA11YLabel", IDS_SETTINGS_BLUETOOTH_ENABLED_A11Y_LABEL},
-      {"bluetoothDisabledA11YLabel", IDS_SETTINGS_BLUETOOTH_DISABLED_A11Y_LABEL}
+      {"bluetoothDisabledA11YLabel",
+       IDS_SETTINGS_BLUETOOTH_DISABLED_A11Y_LABEL},
+
+      {"savedDeviceItemA11yLabel", IDS_SAVED_DEVICE_ITEM_A11Y_LABEL},
+
+      {"savedDeviceItemButtonA11yLabel",
+       IDS_SAVED_DEVICE_LIST_ITEM_BUTTON_A11Y_LABEL}
 
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

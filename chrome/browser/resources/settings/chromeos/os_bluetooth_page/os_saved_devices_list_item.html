@@ -15,7 +15,8 @@
       focus-row-control
       focus-type="rowWrapper"
       role="button"
-      selectable>
+      selectable
+      aria-label="[[getAriaLabel_(device, itemIndex, listSize)]]">
     <div class="image-wrapper">
       <img id="deviceImage" src="[[getImageSrc_(device)]]"
           alt="bud device image">
@@ -28,7 +29,8 @@
           focus-row-control
           focus-type="subpageButton"
           tabindex$="[[tabindex]]"
-          on-click="onMenuButtonTap_">
+          on-click="onMenuButtonTap_"
+          aria-label="[[getSubpageButtonA11yLabel_(device)]]">
       </cr-icon-button>
     </div>
   </div>

@@ -85,4 +85,41 @@ suite('OsSavedDevicesListTest', function() {
     await flushAsync();
     assertEquals(getListItems().length, 5);
   });
+  test('Device list has correct a11y labels', async function() {
+    const device0 = {name: 'dev0', imageUrl: '', accountKey: '0'};
+    const device1 = {name: 'dev1', imageUrl: '', accountKey: '1'};
+    const device2 = {name: 'dev2', imageUrl: '', accountKey: '2'};
+
+    const getListItems = () => {
+      return savedDevicesList.shadowRoot.querySelectorAll(
+          'os-settings-saved-devices-list-item');
+    };
+    assertEquals(savedDevicesList.devices_.length, 0);
+
+    savedDevicesList.devices_ = [device0, device1, device2];
+    await flushAsync();
+
+    assertEquals(savedDevicesList.devices_.length, 3);
+
+    const ironResizePromise = eventToPromise('iron-resize', savedDevicesList);
+
+    assertEquals(
+        getListItems()[0].shadowRoot.querySelector('.list-item').ariaLabel,
+        savedDevicesList.i18n('savedDeviceItemA11yLabel', 1, 3, 'dev0'));
+    assertEquals(
+        getListItems()[1].shadowRoot.querySelector('.list-item').ariaLabel,
+        savedDevicesList.i18n('savedDeviceItemA11yLabel', 2, 3, 'dev1'));
+    assertEquals(
+        getListItems()[2].shadowRoot.querySelector('.list-item').ariaLabel,
+        savedDevicesList.i18n('savedDeviceItemA11yLabel', 3, 3, 'dev2'));
+    assertEquals(
+        getListItems()[0].shadowRoot.querySelector('.icon-more-vert').ariaLabel,
+        savedDevicesList.i18n('savedDeviceItemButtonA11yLabel', 'dev0'));
+    assertEquals(
+        getListItems()[1].shadowRoot.querySelector('.icon-more-vert').ariaLabel,
+        savedDevicesList.i18n('savedDeviceItemButtonA11yLabel', 'dev1'));
+    assertEquals(
+        getListItems()[2].shadowRoot.querySelector('.icon-more-vert').ariaLabel,
+        savedDevicesList.i18n('savedDeviceItemButtonA11yLabel', 'dev2'));
+  });
 });

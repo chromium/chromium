@@ -12,6 +12,7 @@ import './os_saved_devices_list_item.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {CrScrollableBehavior, CrScrollableBehaviorInterface} from 'chrome://resources/cr_elements/cr_scrollable_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -23,9 +24,11 @@ import {FastPairSavedDevice} from './settings_fast_pair_constants.js';
  * @extends {PolymerElement}
  * @implements {CrScrollableBehaviorInterface}
  * @implements {WebUIListenerBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
  */
 const SettingsSavedDevicesListElementBase = mixinBehaviors(
-    [CrScrollableBehavior, WebUIListenerBehavior], PolymerElement);
+    [CrScrollableBehavior, WebUIListenerBehavior, I18nBehavior],
+    PolymerElement);
 
 /** @polymer */
 class SettingsSavedDevicesListElement extends

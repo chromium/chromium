@@ -13,9 +13,12 @@
       scroll-target="container" preserve-focus>
     <template>
       <os-settings-saved-devices-list-item
-          device="[[item]]"
-          tabindex="[[tabIndex]]"
-          item-index="[[index]]">
+        device="[[item]]"
+        tabindex$="[[tabIndex]]"
+        item-index="[[index]]"
+        last-focused="{{lastFocused_}}"
+        iron-list-tab-index="[[tabIndex]]"
+        list-size="[[devices_.length]]">
       </os-settings-saved-devices-list-item>
     </template>
   </iron-list>
