@@ -16,6 +16,9 @@
   #headerV2 {
     --header-width: 290px;
     --header-height: 140px;
+    /* Colors used in svg image file for split header border and box. */
+    --split-header-image-border-color-fill: var(--google-grey-200);
+    --split-header-image-box-color-fill: white;
     left: calc(50% - var(--header-width)/2);
     min-height: var(--header-height);
     position: relative;
@@ -72,11 +75,11 @@
   }
 
   #headerImagePrimary {
-    --color-fill: var(--primary-profile-color);
+    --split-header-image-theme-color-fill: var(--primary-profile-color);
   }
 
   #headerImageIntercepted {
-    --color-fill: var(--intercepted-profile-color);
+    --split-header-image-theme-color-fill: var(--intercepted-profile-color);
   }
 
   .avatar {
@@ -87,6 +90,10 @@
     height: var(--avatar-image-width);
     top: 43px;
     width: var(--avatar-image-width);
+  }
+
+  #headerV2 .avatar {
+    border-color: var(--split-header-image-box-color-fill);
   }
 
   .work-badge {
@@ -198,6 +205,12 @@
   @media (prefers-color-scheme: dark) {
     #interceptDialog [slot=footer] {
       background: rgb(50, 54, 57);  /* Custom color from Namrata. */
+    }
+
+    #headerV2 {
+      /* Colors used in svg image file for split header border and box. */
+      --split-header-image-border-color-fill: var(--google-grey-700);
+      --split-header-image-box-color-fill: var(--google-grey-800);
     }
 
     #headerV2 .work-badge {
