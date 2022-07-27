@@ -1318,18 +1318,6 @@
       'swarming_containment_auto',
     ],
     'machines': {
-      'android-angle-arm64-builder': {},
-      'android-angle-arm64-nexus5x': {
-        'os_type': 'android',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'marshmallow',
-          'bullhead',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_android_gtests',
-        },
-      },
       'android-angle-chromium-arm64-builder': {},
       'android-angle-chromium-arm64-nexus5x': {
         'browser_config': 'android-chromium',
@@ -1365,7 +1353,6 @@
           'gtest_tests': 'gpu_angle_ios_gtests',
         },
       },
-      'linux-angle-builder': {},
       'linux-angle-chromium-builder': {},
       'linux-angle-chromium-intel': {
         'os_type': 'linux',
@@ -1387,24 +1374,6 @@
         'test_suites': {
           'gtest_tests': 'gpu_common_gtests_passthrough',
           'gpu_telemetry_tests': 'gpu_angle_linux_telemetry_tests',
-        },
-      },
-      'linux-angle-intel': {
-        'os_type': 'linux',
-        'mixins': [
-          'linux_intel_uhd_630_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_linux_intel_gtests',
-        },
-      },
-      'linux-angle-nvidia': {
-        'os_type': 'linux',
-        'mixins': [
-          'linux_nvidia_gtx_1660_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_linux_nvidia_gtests',
         },
       },
       'mac-angle-chromium-amd': {
@@ -1436,7 +1405,6 @@
           'telemetry_gpu_integration_test',
         ],
       },
-      'win-angle-x64-builder': {},
       'win10-angle-chromium-x64-intel': {
         'os_type': 'win',
         'browser_config': 'release_x64',
@@ -1455,24 +1423,6 @@
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_angle_win_intel_nvidia_telemetry_tests',
-        },
-      },
-      'win10-angle-x64-intel': {
-        'os_type': 'win',
-        'mixins': [
-          'win10_intel_hd_630_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_win_intel_gtests',
-        },
-      },
-      'win10-angle-x64-nvidia': {
-        'os_type': 'win',
-        'mixins': [
-          'win10_nvidia_gtx_1660_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_win_nvidia_gtests',
         },
       },
     },

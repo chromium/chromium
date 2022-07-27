@@ -140,16 +140,13 @@
     },
 
     'chromium.angle': {
-      'android-angle-arm64-builder': 'angle_deqp_android_release_trybot_dcheck_always_on_arm64_reclient',
       'android-angle-chromium-arm64-builder': 'gpu_tests_android_release_bot_dcheck_always_on_arm64_fastbuild_reclient',
       'fuchsia-angle-builder': 'angle_deqp_release_bot_dcheck_always_on_fuchsia',
       'ios-angle-builder': 'angle_deqp_release_bot_dcheck_always_on_ios',
-      'linux-angle-builder': 'angle_deqp_release_trybot_reclient',
       'linux-angle-chromium-builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'mac-angle-chromium-builder': 'gpu_tests_release_trybot_minimal_symbols',
       'win-angle-chromium-x64-builder': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'win-angle-chromium-x86-builder': 'gpu_tests_release_bot_dcheck_always_on_x86_reclient',
-      'win-angle-x64-builder': 'angle_deqp_release_trybot_reclient',
     },
 
     'chromium.chromiumos': {
@@ -1027,18 +1024,14 @@
       'try-nougat-phone-tester': 'android_debug_trybot_arm64',
     },
 
-    # TODO(jmadill/ynovikov): Migrate these to angle waterfall. http://anglebug.com/4483
     'tryserver.chromium.angle': {
       'android-angle-chromium-try': 'gpu_tests_android_release_trybot_arm64_fastbuild',
-      'android-angle-try': 'angle_deqp_android_release_trybot_arm64',
       'fuchsia-angle-try': 'angle_deqp_release_trybot_fuchsia',
       'ios-angle-try-intel': 'angle_deqp_release_trybot_ios',
       'linux-angle-chromium-try': 'gpu_tests_release_trybot',
-      'linux-angle-try': 'angle_deqp_release_trybot',
       'mac-angle-chromium-try': 'gpu_tests_release_trybot',
       'win-angle-chromium-x64-try': 'gpu_tests_release_trybot',
       'win-angle-chromium-x86-try': 'gpu_tests_release_trybot_x86',
-      'win-angle-x64-try': 'angle_deqp_release_trybot',
     },
 
     'tryserver.chromium.chromiumos': {
@@ -1798,16 +1791,6 @@
 
     'android_without_codecs_release_trybot': [
       'android_without_codecs', 'release_trybot', 'strip_debug_info',
-    ],
-
-    'angle_deqp_android_release_trybot_arm64': [
-      'angle_deqp_tests', 'android_without_codecs',
-      'shared_release_trybot', 'arm64',
-    ],
-
-    'angle_deqp_android_release_trybot_dcheck_always_on_arm64_reclient': [
-      'angle_deqp_tests', 'android_without_codecs',
-      'shared_release_bot_dcheck_always_on_reclient', 'arm64',
     ],
 
     'angle_deqp_release_bot_dcheck_always_on_fuchsia': [

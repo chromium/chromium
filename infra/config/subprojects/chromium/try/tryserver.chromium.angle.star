@@ -30,22 +30,12 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-angle-try",
-    executable = "recipe:angle_chromium_trybot",
-)
-
-try_.builder(
     name = "fuchsia-angle-try",
     executable = "recipe:angle_chromium_trybot",
 )
 
 try_.builder(
     name = "linux-angle-chromium-try",
-    executable = "recipe:angle_chromium_trybot",
-)
-
-try_.builder(
-    name = "linux-angle-try",
     executable = "recipe:angle_chromium_trybot",
 )
 
@@ -64,12 +54,6 @@ try_.builder(
 
 try_.builder(
     name = "win-angle-chromium-x86-try",
-    os = os.WINDOWS_ANY,
-    executable = "recipe:angle_chromium_trybot",
-)
-
-try_.builder(
-    name = "win-angle-x64-try",
     os = os.WINDOWS_ANY,
     executable = "recipe:angle_chromium_trybot",
 )

@@ -116,15 +116,6 @@
   },
   'android_webview_unittests': {
   },
-  'angle_end2end_tests': {
-    'modifications': {
-      'win10-angle-x64-intel': {
-        'args': [
-          '--max-processes=1',
-        ],
-      },
-    },
-  },
   'angle_unittests': {
     'remove_from': [
       # On Android, these are already run on the main waterfall.
@@ -144,15 +135,6 @@
         'args': [
           # crbug.com/
           '--gtest_filter=-ConstructCompilerTest.DefaultParameters',
-        ],
-      },
-    },
-  },
-  'angle_white_box_tests': {
-    'modifications': {
-      'win10-angle-x64-intel': {
-        'args': [
-          '--max-processes=1',
         ],
       },
     },

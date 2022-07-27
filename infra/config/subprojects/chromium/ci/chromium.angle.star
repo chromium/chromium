@@ -38,23 +38,6 @@ consoles.console_view(
 )
 
 ci.gpu.linux_builder(
-    name = "android-angle-arm64-builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "Android|Builder|ANGLE",
-        short_name = "arm64",
-    ),
-)
-
-ci.thin_tester(
-    name = "android-angle-arm64-nexus5x",
-    console_view_entry = consoles.console_view_entry(
-        category = "Android|Nexus5X|ANGLE",
-        short_name = "arm64",
-    ),
-    triggered_by = ["android-angle-arm64-builder"],
-)
-
-ci.gpu.linux_builder(
     name = "android-angle-chromium-arm64-builder",
     console_view_entry = consoles.console_view_entry(
         category = "Android|Builder|Chromium",
@@ -79,32 +62,6 @@ ci.gpu.linux_builder(
     ),
     goma_backend = goma.backend.RBE_PROD,
     reclient_instance = None,
-)
-
-ci.gpu.linux_builder(
-    name = "linux-angle-builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux|Builder|ANGLE",
-        short_name = "x64",
-    ),
-)
-
-ci.thin_tester(
-    name = "linux-angle-intel",
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux|Intel|ANGLE",
-        short_name = "x64",
-    ),
-    triggered_by = ["linux-angle-builder"],
-)
-
-ci.thin_tester(
-    name = "linux-angle-nvidia",
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux|NVIDIA|ANGLE",
-        short_name = "x64",
-    ),
-    triggered_by = ["linux-angle-builder"],
 )
 
 ci.gpu.linux_builder(
@@ -215,31 +172,4 @@ ci.gpu.windows_builder(
         short_name = "x86",
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
-)
-
-ci.gpu.windows_builder(
-    name = "win-angle-x64-builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|Builder|ANGLE",
-        short_name = "x64",
-    ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
-)
-
-ci.thin_tester(
-    name = "win10-angle-x64-intel",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|Intel|ANGLE",
-        short_name = "x64",
-    ),
-    triggered_by = ["win-angle-x64-builder"],
-)
-
-ci.thin_tester(
-    name = "win10-angle-x64-nvidia",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|NVIDIA|ANGLE",
-        short_name = "x64",
-    ),
-    triggered_by = ["win-angle-x64-builder"],
 )
