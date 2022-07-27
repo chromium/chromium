@@ -203,6 +203,7 @@ branches.exec("//subprojects/findit/subproject.star")
 branches.exec("//subprojects/flakiness/subproject.star")
 branches.exec("//subprojects/goma/subproject.star")
 branches.exec("//subprojects/reclient/subproject.star")
+branches.exec("//subprojects/reviver/subproject.star")
 branches.exec("//subprojects/webrtc/subproject.star")
 
 exec("//generators/cq-usage.star")

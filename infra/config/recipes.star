@@ -222,6 +222,15 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:reviver/chromium/coordinator",
+)
+
+build_recipe(
+    name = "recipe:reviver/chromium/runner",
+    bootstrappable = POLYMORPHIC,
+)
+
+build_recipe(
     name = "recipe:swarming/deterministic_build",
 )
 
