@@ -54,6 +54,9 @@ const base::Feature kHistoryClustersInternalsPage{
 const base::Feature kHistoryClustersUseContinueOnShutdown{
     "HistoryClustersUseContinueOnShutdown", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kHistoryClustersKeywordFiltering{
+    "HistoryClustersKeywordFiltering", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace internal
 
 const base::Feature kJourneysSurveyForHistoryEntrypoint{

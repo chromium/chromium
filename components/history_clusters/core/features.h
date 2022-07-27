@@ -56,6 +56,9 @@ extern const base::Feature kHistoryClustersInternalsPage;
 // Enables use of task runner with trait CONTINUE_ON_SHUTDOWN.
 extern const base::Feature kHistoryClustersUseContinueOnShutdown;
 
+// Enables use of additional keyword filtering operations on clusters.
+extern const base::Feature kHistoryClustersKeywordFiltering;
+
 }  // namespace internal
 
 // The below features are NOT internal and NOT encapsulated in the Config class.

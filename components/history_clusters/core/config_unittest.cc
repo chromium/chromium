@@ -6,9 +6,12 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/history_clusters/core/features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history_clusters {
+
+using ::testing::ElementsAre;
 
 TEST(HistoryClustersConfigTest, LocaleOrLanguageAllowlistDefault) {
   base::test::ScopedFeatureList features;
@@ -77,6 +80,30 @@ TEST(HistoryClustersConfigTest, LocaleOrLanguageAllowlist) {
               IsApplicationLocaleSupportedByJourneys(test.locale))
         << test.locale;
   }
+}
+
+TEST(HistoryClustersConfigTest, ValidMidBlocklist) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{
+          internal::kHistoryClustersKeywordFiltering,
+          {{"JourneysMidBlocklist", {"/g/midstr1, /m/midstr2"}}},
+      }},
+      {});
+
+  EXPECT_THAT(JourneysMidBlocklist(), ElementsAre("/g/midstr1", "/m/midstr2"));
+}
+
+TEST(HistoryClustersConfigTest, EmptyMidBlocklist) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{
+          internal::kHistoryClustersKeywordFiltering,
+          {{"JourneysMidBlocklist", ""}},
+      }},
+      {});
+
+  EXPECT_EQ(JourneysMidBlocklist(), base::flat_set<std::string>());
 }
 
 }  // namespace history_clusters

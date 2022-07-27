@@ -290,6 +290,22 @@ void SetConfigForTesting(const Config& config) {
   GetConfigInternal() = config;
 }
 
+base::flat_set<std::string> JourneysMidBlocklist() {
+  const base::FeatureParam<std::string> kJourneysMidBlocklist{
+      &internal::kHistoryClustersKeywordFiltering, "JourneysMidBlocklist", ""};
+  std::string blocklist_string = kJourneysMidBlocklist.Get();
+  if (blocklist_string.empty())
+    return {};
+
+  auto blocklist = base::SplitString(blocklist_string, ",",
+                                     base::WhitespaceHandling::TRIM_WHITESPACE,
+                                     base::SplitResult::SPLIT_WANT_NONEMPTY);
+
+  return blocklist.empty()
+             ? base::flat_set<std::string>()
+             : base::flat_set<std::string>(blocklist.begin(), blocklist.end());
+}
+
 bool IsApplicationLocaleSupportedByJourneys(
     const std::string& application_locale) {
   // Application locale support should be checked only if the Journeys feature

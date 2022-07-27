@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 
 class PrefService;
@@ -280,6 +281,11 @@ struct Config {
   Config(const Config& other);
   ~Config();
 };
+
+// Returns the set of mids that should be blocked from being used by the
+// clustering backend, particularly for potential keywords used for omnibox
+// triggering.
+base::flat_set<std::string> JourneysMidBlocklist();
 
 // Returns true if |application_locale| is supported by Journeys.
 // This is a costly check: Should be called only if

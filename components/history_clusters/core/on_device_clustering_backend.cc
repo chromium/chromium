@@ -52,7 +52,8 @@ void RecordBatchUpdateProcessingTime(base::TimeDelta time_delta) {
 OnDeviceClusteringBackend::OnDeviceClusteringBackend(
     optimization_guide::EntityMetadataProvider* entity_metadata_provider,
     site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
-    optimization_guide::NewOptimizationGuideDecider* optimization_guide_decider)
+    optimization_guide::NewOptimizationGuideDecider* optimization_guide_decider,
+    base::flat_set<std::string> mid_blocklist)
     : entity_metadata_provider_(entity_metadata_provider),
       engagement_score_provider_(engagement_score_provider),
       user_visible_task_traits_(
@@ -76,7 +77,8 @@ OnDeviceClusteringBackend::OnDeviceClusteringBackend(
                   ? continue_on_shutdown_best_effort_task_traits_
                   : best_effort_task_traits_)),
       engagement_score_cache_last_refresh_timestamp_(base::TimeTicks::Now()),
-      engagement_score_cache_(GetConfig().engagement_score_cache_size) {
+      engagement_score_cache_(GetConfig().engagement_score_cache_size),
+      mid_blocklist_(mid_blocklist) {
   if (GetConfig().should_check_hosts_to_skip_clustering_for &&
       optimization_guide_decider) {
     optimization_guide_decider_ = optimization_guide_decider;
@@ -117,6 +119,10 @@ void OnDeviceClusteringBackend::GetClusters(
   for (const auto& visit : visits) {
     for (const auto& entity :
          visit.content_annotations.model_annotations.entities) {
+      // Remove entities that are on the keyword blocklist.
+      if (mid_blocklist_.find(entity.id) != mid_blocklist_.end()) {
+        continue;
+      }
       // Only put the entity IDs in if they exceed a certain threshold.
       if (entity.weight < GetConfig().entity_relevance_threshold) {
         continue;
