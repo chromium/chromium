@@ -1632,7 +1632,13 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   (*out)->key = key;
   (*out)->version_id = data.version_id();
   (*out)->is_active = data.is_active();
-  (*out)->has_fetch_handler = data.has_fetch_handler();
+  (*out)->fetch_handler_type =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
+  if (data.has_fetch_handler()) {
+    // TODO(crbug.com/1347319): implement other fetch_handler_type.
+    (*out)->fetch_handler_type =
+        blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+  }
   (*out)->last_update_check = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(data.last_update_check_time()));
   (*out)->resources_total_size_bytes = data.resources_total_size_bytes();
@@ -1775,7 +1781,9 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
   // prefix.
   data.set_version_id(registration.version_id);
   data.set_is_active(registration.is_active);
-  data.set_has_fetch_handler(registration.has_fetch_handler);
+  data.set_has_fetch_handler(
+      registration.fetch_handler_type !=
+      blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler);
   data.set_last_update_check_time(
       registration.last_update_check.ToDeltaSinceWindowsEpoch()
           .InMicroseconds());

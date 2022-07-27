@@ -79,7 +79,7 @@ void VerifyRegistrationData(const RegistrationData& expected,
   EXPECT_EQ(expected.update_via_cache, actual.update_via_cache);
   EXPECT_EQ(expected.version_id, actual.version_id);
   EXPECT_EQ(expected.is_active, actual.is_active);
-  EXPECT_EQ(expected.has_fetch_handler, actual.has_fetch_handler);
+  EXPECT_EQ(expected.fetch_handler_type, actual.fetch_handler_type);
   EXPECT_EQ(expected.last_update_check, actual.last_update_check);
   EXPECT_EQ(expected.used_features, actual.used_features);
   EXPECT_EQ(expected.resources_total_size_bytes,

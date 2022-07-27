@@ -393,8 +393,14 @@ void ServiceWorkerRegistry::StoreRegistration(
   data->script = version->script_url();
   data->script_type = version->script_type();
   data->update_via_cache = registration->update_via_cache();
-  data->has_fetch_handler = version->fetch_handler_existence() ==
-                            ServiceWorkerVersion::FetchHandlerExistence::EXISTS;
+  data->fetch_handler_type =
+      blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
+  if (version->fetch_handler_existence() ==
+      ServiceWorkerVersion::FetchHandlerExistence::EXISTS) {
+    // TODO(crbug.com/1347319): implement other fetch_handler_type.
+    data->fetch_handler_type =
+        blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+  }
   data->version_id = version->version_id();
   data->last_update_check = registration->last_update_check();
   data->is_active = (version == registration->active_version());
@@ -885,9 +891,10 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
         registration.get(), data.script, data.script_type, data.version_id,
         std::move(version_reference), context_->AsWeakPtr());
     version->set_fetch_handler_existence(
-        data.has_fetch_handler
-            ? ServiceWorkerVersion::FetchHandlerExistence::EXISTS
-            : ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST);
+        (data.fetch_handler_type ==
+         blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler)
+            ? ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST
+            : ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
     version->SetStatus(data.is_active ? ServiceWorkerVersion::ACTIVATED
                                       : ServiceWorkerVersion::INSTALLED);
     version->script_cache_map()->SetResources(resources);
@@ -1195,9 +1202,10 @@ void ServiceWorkerRegistry::DidGetAllRegistrations(
       info.active_version.script_response_time =
           registration_data->script_response_time;
       info.active_version.fetch_handler_existence =
-          registration_data->has_fetch_handler
-              ? ServiceWorkerVersion::FetchHandlerExistence::EXISTS
-              : ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST;
+          (registration_data->fetch_handler_type ==
+           blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler)
+              ? ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST
+              : ServiceWorkerVersion::FetchHandlerExistence::EXISTS;
       info.active_version.navigation_preload_state.enabled =
           registration_data->navigation_preload_state->enabled;
       info.active_version.navigation_preload_state.header =
@@ -1210,9 +1218,10 @@ void ServiceWorkerRegistry::DidGetAllRegistrations(
       info.waiting_version.script_response_time =
           registration_data->script_response_time;
       info.waiting_version.fetch_handler_existence =
-          registration_data->has_fetch_handler
-              ? ServiceWorkerVersion::FetchHandlerExistence::EXISTS
-              : ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST;
+          (registration_data->fetch_handler_type ==
+           blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler)
+              ? ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST
+              : ServiceWorkerVersion::FetchHandlerExistence::EXISTS;
       info.waiting_version.navigation_preload_state.enabled =
           registration_data->navigation_preload_state->enabled;
       info.waiting_version.navigation_preload_state.header =

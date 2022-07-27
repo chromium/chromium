@@ -10,6 +10,7 @@ import "third_party/blink/public/mojom/script/script_type.mojom";
 import "third_party/blink/public/mojom/service_worker/navigation_preload_state.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_database.mojom";
+import "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
@@ -53,7 +54,8 @@ struct ServiceWorkerRegistrationData {
       blink.mojom.ServiceWorkerUpdateViaCache.kImports;
   int64 version_id = blink.mojom.kInvalidServiceWorkerVersionId;
   bool is_active = false;
-  bool has_fetch_handler = false;
+  blink.mojom.ServiceWorkerFetchHandlerType fetch_handler_type =
+      blink.mojom.ServiceWorkerFetchHandlerType.kNoHandler;
   mojo_base.mojom.Time last_update_check;
   mojo_base.mojom.Time script_response_time;
   map<string, array<string>>? origin_trial_tokens;

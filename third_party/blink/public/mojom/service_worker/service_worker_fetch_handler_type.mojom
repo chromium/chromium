@@ -1,0 +1,12 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Indicates the service worker fetch handler can be skipped.
+// Experimental feature. Not followed by the spec.
+enum ServiceWorkerFetchHandlerType {
+  kNoHandler,
+  kNotSkippable,
+};
