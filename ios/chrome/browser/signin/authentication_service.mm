@@ -649,10 +649,9 @@ void AuthenticationService::OnAccessTokenRefreshFailed(
   // might still be accessible in SSO, and |OnIdentityListChanged| will handle
   // this when |identity| will actually disappear from SSO.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AuthenticationService::HandleForgottenIdentity,
-                     base::Unretained(this), identity, /*should_prompt=*/true,
-                     /*device_restore=*/false));
+      FROM_HERE, base::BindOnce(&AuthenticationService::HandleForgottenIdentity,
+                                GetWeakPtr(), identity, /*should_prompt=*/true,
+                                /*device_restore=*/false));
 }
 
 void AuthenticationService::HandleForgottenIdentity(
