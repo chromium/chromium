@@ -319,6 +319,9 @@ void BackendIO::ExecuteBackendOperation() {
       result_ = backend_->SyncOpenNextEntry(iterator_, &entry);
       out_entry_ = LeakEntryImpl(std::move(entry));
       out_entry_opened_ = true;
+      // `iterator_` is a proxied argument and not needed beyond this point. Set
+      // it to nullptr so as to not leave a dangling pointer around.
+      iterator_ = nullptr;
       break;
     }
     case OP_END_ENUMERATION:

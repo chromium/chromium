@@ -172,7 +172,7 @@ class BackendIO : public BackgroundIO {
   std::string key_;
   base::Time initial_time_;
   base::Time end_time_;
-  raw_ptr<Rankings::Iterator, DanglingUntriaged> iterator_ = nullptr;
+  raw_ptr<Rankings::Iterator> iterator_ = nullptr;
   std::unique_ptr<Rankings::Iterator> scoped_iterator_;
   raw_ptr<EntryImpl> entry_ = nullptr;
   int index_ = 0;
