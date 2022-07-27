@@ -10,6 +10,7 @@ source_set("profiler") {
     "process_type.h",
     "thread_profiler.h",
     "thread_profiler_configuration.h",
+    "unwind_util.h",
   ]
 
   sources = [
@@ -19,6 +20,7 @@ source_set("profiler") {
     "thread_profiler_configuration.cc",
     "thread_profiler_platform_configuration.cc",
     "thread_profiler_platform_configuration.h",
+    "unwind_util.cc",
   ]
 
   deps = [
@@ -53,6 +55,7 @@ source_set("unit_tests") {
     "process_type_unittest.cc",
     "thread_profiler_platform_configuration_unittest.cc",
     "thread_profiler_unittest.cc",
+    "unwind_util_unittest.cc",
   ]
 
   deps = [

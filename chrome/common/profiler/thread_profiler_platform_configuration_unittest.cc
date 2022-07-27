@@ -81,41 +81,6 @@ TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
 }
 
 MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
-                             GetRuntimeModuleState) {
-  using RuntimeModuleState =
-      ThreadProfilerPlatformConfiguration::RuntimeModuleState;
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(RuntimeModuleState::kModuleNotAvailable,
-            config()->GetRuntimeModuleState(version_info::Channel::UNKNOWN));
-  EXPECT_EQ(RuntimeModuleState::kModuleAbsentButAvailable,
-            config()->GetRuntimeModuleState(version_info::Channel::CANARY));
-  EXPECT_EQ(RuntimeModuleState::kModuleAbsentButAvailable,
-            config()->GetRuntimeModuleState(version_info::Channel::DEV));
-  EXPECT_EQ(RuntimeModuleState::kModuleNotAvailable,
-            config()->GetRuntimeModuleState(version_info::Channel::BETA));
-  EXPECT_EQ(RuntimeModuleState::kModuleNotAvailable,
-            config()->GetRuntimeModuleState(version_info::Channel::STABLE));
-
-  EXPECT_EQ(RuntimeModuleState::kModuleNotAvailable,
-            config()->GetRuntimeModuleState(version_info::Channel::UNKNOWN));
-#else
-  EXPECT_EQ(RuntimeModuleState::kModuleNotRequired,
-            config()->GetRuntimeModuleState(version_info::Channel::UNKNOWN));
-  EXPECT_EQ(RuntimeModuleState::kModuleNotRequired,
-            config()->GetRuntimeModuleState(version_info::Channel::CANARY));
-  EXPECT_EQ(RuntimeModuleState::kModuleNotRequired,
-            config()->GetRuntimeModuleState(version_info::Channel::DEV));
-  EXPECT_EQ(RuntimeModuleState::kModuleNotRequired,
-            config()->GetRuntimeModuleState(version_info::Channel::BETA));
-  EXPECT_EQ(RuntimeModuleState::kModuleNotRequired,
-            config()->GetRuntimeModuleState(version_info::Channel::STABLE));
-
-  EXPECT_EQ(RuntimeModuleState::kModuleNotRequired,
-            config()->GetRuntimeModuleState(version_info::Channel::UNKNOWN));
-#endif
-}
-
-MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                              GetEnableRates) {
   using RelativePopulations =
       ThreadProfilerPlatformConfiguration::RelativePopulations;

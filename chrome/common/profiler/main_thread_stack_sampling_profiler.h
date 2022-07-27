@@ -11,13 +11,13 @@
 
 class ThreadProfiler;
 
-// A wrapper class that begins profiling stack samples upon construction, and
-// ensures correct shutdown behavior on destruction. Should only be used on the
-// main thread of a process. Samples are collected for the thread of the current
-// process where this object is constructed, and only if profiling is enabled
-// for the thread. This data is used to understand startup performance behavior,
-// and the object should therefore be created as early during initialization as
-// possible.
+// A wrapper class that installs unwinder prerequisites and begins profiling
+// stack samples upon construction, and ensures correct shutdown behavior on
+// destruction. Should only be used on the main thread of a process. Samples are
+// collected for the thread of the current process where this object is
+// constructed, and only if profiling is enabled for the thread. This data is
+// used to understand startup performance behavior, and the object should
+// therefore be created as early during initialization as possible.
 class MainThreadStackSamplingProfiler {
  public:
   MainThreadStackSamplingProfiler();

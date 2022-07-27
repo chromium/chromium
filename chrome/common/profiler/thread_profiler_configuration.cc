@@ -14,6 +14,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler_platform_configuration.h"
+#include "chrome/common/profiler/unwind_util.h"
 #include "components/version_info/version_info.h"
 
 namespace {
@@ -197,18 +198,8 @@ ThreadProfilerConfiguration::GenerateBrowserProcessConfiguration(
   if (!platform_configuration.IsSupported(release_channel))
     return absl::nullopt;
 
-  using RuntimeModuleState =
-      ThreadProfilerPlatformConfiguration::RuntimeModuleState;
-  switch (platform_configuration.GetRuntimeModuleState(release_channel)) {
-    case RuntimeModuleState::kModuleAbsentButAvailable:
-      platform_configuration.RequestRuntimeModuleInstall();
-      [[fallthrough]];
-    case RuntimeModuleState::kModuleNotAvailable:
-      return kProfileDisabledModuleNotInstalled;
-
-    case RuntimeModuleState::kModuleNotRequired:
-    case RuntimeModuleState::kModulePresent:
-      break;
+  if (!UnwindPrerequisites::Available()) {
+    return kProfileDisabledModuleNotInstalled;
   }
 
   ThreadProfilerPlatformConfiguration::RelativePopulations

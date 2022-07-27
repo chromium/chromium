@@ -30,19 +30,6 @@
 // development/CQ builds.
 class ThreadProfilerPlatformConfiguration {
  public:
-  // State of the runtime module used by the profiler on the platform (if any).
-  // Android in particular requires use of a dynamic feature modules to provide
-  // the native unwinder.
-  enum class RuntimeModuleState {
-    // States that allow profiling.
-    kModuleNotRequired,  // No module is required.
-    kModulePresent,      // The module is present for use.
-
-    // States that don't allow profiling in this run of Chrome.
-    kModuleAbsentButAvailable,  // A module is not present but is installable.
-    kModuleNotAvailable,        // A module is necessary but not available.
-  };
-
   // The relative populations to use for enabling/disabling the profiler.
   // |enabled| + |experiment| is expected to equal 100. Profiling is to be
   // enabled with probability |enabled|/100. The fraction |experiment|/100 is to
@@ -62,16 +49,6 @@ class ThreadProfilerPlatformConfiguration {
   // True if the platform supports the StackSamplingProfiler and the profiler is
   // to be run for the released Chrome channel or development/CQ build.
   bool IsSupported(absl::optional<version_info::Channel> release_channel) const;
-
-  // Returns the current state of the runtime support module for the released
-  // Chrome channel or development/CQ build on the platform. Runtime module
-  // state is valid only if IsSupported().
-  virtual RuntimeModuleState GetRuntimeModuleState(
-      absl::optional<version_info::Channel> release_channel) const = 0;
-
-  // Request install of the runtime support module. May be invoked only if
-  // GetRuntimeModuleState() returns kModuleAbsentButAvailable.
-  virtual void RequestRuntimeModuleInstall() const {}
 
   // Returns the relative population disposition for the released Chrome channel
   // or development/CQ build on the platform. See the documentation on
