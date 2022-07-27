@@ -43,6 +43,7 @@ int check_stability(opus_int16 *A_Q12, int order) {
     int i;
     int j;
     int sum_a, sum_abs_a;
+    double y[SILK_MAX_ORDER_LPC] = {0};
     sum_a = sum_abs_a = 0;
     for( j = 0; j < order; j++ ) {
         sum_a += A_Q12[ j ];
@@ -57,7 +58,6 @@ int check_stability(opus_int16 *A_Q12, int order) {
     if( sum_abs_a < 4096 ) {
         return 1;
     }
-    double y[SILK_MAX_ORDER_LPC] = {0};
     y[0] = 1;
     for( i = 0; i < 10000; i++ ) {
         double sum = 0;

@@ -278,7 +278,8 @@ static int opus_decode_frame(OpusDecoder *st, const unsigned char *data,
       ec_dec_init(&dec,(unsigned char*)data,len);
    } else {
       audiosize = frame_size;
-      mode = st->prev_mode;
+      /* Run PLC using last used mode (CELT if we ended with CELT redundancy) */
+      mode = st->prev_redundancy ? MODE_CELT_ONLY : st->prev_mode;
       bandwidth = 0;
 
       if (mode == 0)
@@ -419,7 +420,7 @@ static int opus_decode_frame(OpusDecoder *st, const unsigned char *data,
 
    start_band = 0;
    if (!decode_fec && mode != MODE_CELT_ONLY && data != NULL
-    && ec_tell(&dec)+17+20*(st->mode == MODE_HYBRID) <= 8*len)
+    && ec_tell(&dec)+17+20*(mode == MODE_HYBRID) <= 8*len)
    {
       /* Check if we have a redundant 0-8 kHz band */
       if (mode == MODE_HYBRID)
@@ -499,6 +500,11 @@ static int opus_decode_frame(OpusDecoder *st, const unsigned char *data,
    /* 5 ms redundant frame for CELT->SILK*/
    if (redundancy && celt_to_silk)
    {
+      /* If the previous frame did not use CELT (the first redundancy frame in
+         a transition from SILK may have been lost) then the CELT decoder is
+         stale at this point and the redundancy audio is not useful, however
+         the final range is still needed (for testing), so the redundancy is
+         always decoded but the decoded audio may not be used */
       MUST_SUCCEED(celt_decoder_ctl(celt_dec, CELT_SET_START_BAND(0)));
       celt_decode_with_ec(celt_dec, data+len, redundancy_bytes,
                           redundant_audio, F5, NULL, 0);
@@ -561,7 +567,10 @@ static int opus_decode_frame(OpusDecoder *st, const unsigned char *data,
       smooth_fade(pcm+st->channels*(frame_size-F2_5), redundant_audio+st->channels*F2_5,
                   pcm+st->channels*(frame_size-F2_5), F2_5, st->channels, window, st->Fs);
    }
-   if (redundancy && celt_to_silk)
+   /* 5ms redundant frame for CELT->SILK; ignore if the previous frame did not
+      use CELT (the first redundancy frame in a transition from SILK may have
+      been lost) */
+   if (redundancy && celt_to_silk && (st->prev_mode != MODE_SILK_ONLY || st->prev_redundancy))
    {
       for (c=0;c<st->channels;c++)
       {

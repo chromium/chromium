@@ -1,6 +1,6 @@
 Name: opus
 URL: https://gitlab.xiph.org/xiph/opus
-Version: a8e6a77c
+Version: ab04fbb1
 License: BSD
 License File: src/COPYING
 Security Critical: yes

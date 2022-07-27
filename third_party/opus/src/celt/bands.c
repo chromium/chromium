@@ -1380,6 +1380,7 @@ static unsigned quant_band_stereo(struct band_ctx *ctx, celt_norm *X, celt_norm 
    return cm;
 }
 
+#ifndef DISABLE_UPDATE_DRAFT
 static void special_hybrid_folding(const CELTMode *m, celt_norm *norm, celt_norm *norm2, int start, int M, int dual_stereo)
 {
    int n1, n2;
@@ -1392,6 +1393,7 @@ static void special_hybrid_folding(const CELTMode *m, celt_norm *norm, celt_norm
    if (dual_stereo)
       OPUS_COPY(&norm2[n1], &norm2[2*n1 - n2], n2-n1);
 }
+#endif
 
 void quant_all_bands(int encode, const CELTMode *m, int start, int end,
       celt_norm *X_, celt_norm *Y_, unsigned char *collapse_masks,

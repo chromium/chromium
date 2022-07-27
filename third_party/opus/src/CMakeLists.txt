@@ -366,11 +366,23 @@ if(NOT OPUS_ENABLE_FLOAT_API)
 endif()
 
 if(NOT OPUS_DISABLE_INTRINSICS)
-  if((OPUS_X86_MAY_HAVE_SSE AND NOT OPUS_X86_PRESUME_SSE) OR
+  if(((OPUS_X86_MAY_HAVE_SSE AND NOT OPUS_X86_PRESUME_SSE) OR
      (OPUS_X86_MAY_HAVE_SSE2 AND NOT OPUS_X86_PRESUME_SSE2) OR
      (OPUS_X86_MAY_HAVE_SSE4_1 AND NOT OPUS_X86_PRESUME_SSE4_1) OR
-     (OPUS_X86_MAY_HAVE_AVX AND NOT OPUS_X86_PRESUME_AVX))
+     (OPUS_X86_MAY_HAVE_AVX AND NOT OPUS_X86_PRESUME_AVX)) AND
+      RUNTIME_CPU_CAPABILITY_DETECTION)
     target_compile_definitions(opus PRIVATE OPUS_HAVE_RTCD)
+    if(NOT MSVC)
+      if(CPU_INFO_BY_ASM_SUPPORTED)
+        target_compile_definitions(opus PRIVATE CPU_INFO_BY_ASM)
+      elseif(CPU_INFO_BY_C_SUPPORTED)
+        target_compile_definitions(opus PRIVATE CPU_INFO_BY_C)
+      else()
+        message(ERROR "Runtime cpu capability detection is enabled while CPU_INFO is not supported")
+      endif()
+    endif()
+    add_sources_group(opus celt ${celt_sources_x86_rtcd})
+    add_sources_group(opus silk ${silk_sources_x86_rtcd})
   endif()
 
   if(SSE1_SUPPORTED)
@@ -455,15 +467,13 @@ if(NOT OPUS_DISABLE_INTRINSICS)
     endif()
   endif()
 
-  if(CMAKE_SYSTEM_PROCESSOR MATCHES "(arm|aarch64)")
-    add_sources_group(opus celt ${celt_sources_arm})
-  endif()
-
   if(COMPILER_SUPPORT_NEON)
     if(OPUS_MAY_HAVE_NEON)
       if(RUNTIME_CPU_CAPABILITY_DETECTION)
         message(STATUS "OPUS_MAY_HAVE_NEON enabling runtime detection")
         target_compile_definitions(opus PRIVATE OPUS_HAVE_RTCD)
+        add_sources_group(opus celt ${celt_sources_arm_rtcd})
+        add_sources_group(opus silk ${silk_sources_arm_rtcd})
       else()
         message(ERROR "Runtime cpu capability detection needed for MAY_HAVE_NEON")
       endif()
@@ -565,6 +575,7 @@ if(OPUS_BUILD_PROGRAMS)
     target_include_directories(opus_custom_demo
                                PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(opus_custom_demo PRIVATE opus)
+    target_compile_definitions(opus_custom_demo PRIVATE OPUS_BUILD)
   endif()
 
   add_executable(opus_demo ${opus_demo_sources})
@@ -572,11 +583,16 @@ if(OPUS_BUILD_PROGRAMS)
   target_include_directories(opus_demo PRIVATE silk) # debug.h
   target_include_directories(opus_demo PRIVATE celt) # arch.h
   target_link_libraries(opus_demo PRIVATE opus ${OPUS_REQUIRED_LIBRARIES})
+  target_compile_definitions(opus_demo PRIVATE OPUS_BUILD)
 
   # compare
   add_executable(opus_compare ${opus_compare_sources})
   target_include_directories(opus_compare PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
   target_link_libraries(opus_compare PRIVATE opus ${OPUS_REQUIRED_LIBRARIES})
+  if(MSVC)
+    # move cosmetic warning to level 4 for opus_compare
+    target_compile_options(opus_compare PRIVATE /w44244)
+  endif()
 endif()
 
 if(BUILD_TESTING AND NOT BUILD_SHARED_LIBS)
@@ -587,6 +603,7 @@ if(BUILD_TESTING AND NOT BUILD_SHARED_LIBS)
   target_include_directories(test_opus_decode
                              PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
   target_link_libraries(test_opus_decode PRIVATE opus)
+  target_compile_definitions(test_opus_decode PRIVATE OPUS_BUILD)
   if(OPUS_FIXED_POINT)
     target_compile_definitions(test_opus_decode PRIVATE DISABLE_FLOAT_API)
   endif()
@@ -608,6 +625,7 @@ if(BUILD_TESTING AND NOT BUILD_SHARED_LIBS)
   target_include_directories(test_opus_api
                             PRIVATE ${CMAKE_CURRENT_BINARY_DIR} celt)
   target_link_libraries(test_opus_api PRIVATE opus)
+  target_compile_definitions(test_opus_api PRIVATE OPUS_BUILD)
   if(OPUS_FIXED_POINT)
     target_compile_definitions(test_opus_api PRIVATE DISABLE_FLOAT_API)
   endif()
@@ -620,6 +638,7 @@ if(BUILD_TESTING AND NOT BUILD_SHARED_LIBS)
   target_include_directories(test_opus_encode
                             PRIVATE ${CMAKE_CURRENT_BINARY_DIR} celt)
   target_link_libraries(test_opus_encode PRIVATE opus)
+  target_compile_definitions(test_opus_encode PRIVATE OPUS_BUILD)
   add_test(NAME test_opus_encode COMMAND ${CMAKE_COMMAND}
         -DTEST_EXECUTABLE=$<TARGET_FILE:test_opus_encode>
         -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
