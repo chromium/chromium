@@ -11,6 +11,8 @@
 
 #include <string>
 
+#include "base/strings/string_piece_forward.h"
+
 namespace device {
 
 class FakeDeviceInformationPairingWinrt
@@ -24,6 +26,9 @@ class FakeDeviceInformationPairingWinrt
   explicit FakeDeviceInformationPairingWinrt(std::string pin);
   explicit FakeDeviceInformationPairingWinrt(
       ABI::Windows::Devices::Enumeration::DevicePairingKinds pairing_kind);
+  explicit FakeDeviceInformationPairingWinrt(
+      ABI::Windows::Devices::Enumeration::DevicePairingKinds pairing_kind,
+      base::StringPiece display_pin);
 
   FakeDeviceInformationPairingWinrt(const FakeDeviceInformationPairingWinrt&) =
       delete;

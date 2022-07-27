@@ -46,7 +46,8 @@ class ChromeBluetoothDelegateImplClient
       content::RenderFrameHost* frame,
       const std::u16string& device_identifier,
       content::BluetoothDelegate::PairPromptCallback callback,
-      content::BluetoothDelegate::PairingKind pairing_kind) override;
+      content::BluetoothDelegate::PairingKind pairing_kind,
+      const absl::optional<std::u16string>& pin) override;
 };
 
 #endif  // CHROME_BROWSER_BLUETOOTH_CHROME_BLUETOOTH_DELEGATE_IMPL_CLIENT_H_

@@ -76,7 +76,8 @@ class BluetoothDelegateImpl : public content::BluetoothDelegate {
         content::RenderFrameHost* frame,
         const std::u16string& device_identifier,
         content::BluetoothDelegate::PairPromptCallback callback,
-        content::BluetoothDelegate::PairingKind pairng_kind) = 0;
+        content::BluetoothDelegate::PairingKind pairing_kind,
+        const absl::optional<std::u16string>& pin) = 0;
   };
 
   explicit BluetoothDelegateImpl(std::unique_ptr<Client> client);
@@ -97,7 +98,8 @@ class BluetoothDelegateImpl : public content::BluetoothDelegate {
   void ShowDevicePairPrompt(content::RenderFrameHost* frame,
                             const std::u16string& device_identifier,
                             PairPromptCallback callback,
-                            PairingKind pairing_kind) override;
+                            PairingKind pairing_kind,
+                            const absl::optional<std::u16string>& pin) override;
 
   blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
       content::RenderFrameHost* frame,

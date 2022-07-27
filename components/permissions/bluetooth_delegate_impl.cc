@@ -42,9 +42,10 @@ void BluetoothDelegateImpl::ShowDevicePairPrompt(
     RenderFrameHost* frame,
     const std::u16string& device_identifier,
     PairPromptCallback callback,
-    PairingKind pairing_kind) {
-  client_->ShowBluetoothDevicePairDialog(frame, device_identifier,
-                                         std::move(callback), pairing_kind);
+    PairingKind pairing_kind,
+    const absl::optional<std::u16string>& pin) {
+  client_->ShowBluetoothDevicePairDialog(
+      frame, device_identifier, std::move(callback), pairing_kind, pin);
 }
 
 WebBluetoothDeviceId BluetoothDelegateImpl::GetWebBluetoothDeviceId(

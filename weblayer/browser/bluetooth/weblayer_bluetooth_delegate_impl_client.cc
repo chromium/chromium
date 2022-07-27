@@ -63,7 +63,8 @@ void WebLayerBluetoothDelegateImplClient::ShowBluetoothDevicePairDialog(
     content::RenderFrameHost* frame,
     const std::u16string& device_identifier,
     content::BluetoothDelegate::PairPromptCallback callback,
-    content::BluetoothDelegate::PairingKind) {
+    content::BluetoothDelegate::PairingKind,
+    const absl::optional<std::u16string>& pin) {
   // Web Bluetooth is not supported for desktop in WebLayer and Android already
   // bonds on demand, so this should not be called on any platform.
   std::move(callback).Run(content::BluetoothDelegate::PairPromptResult(

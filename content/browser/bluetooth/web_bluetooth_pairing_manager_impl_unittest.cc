@@ -284,7 +284,8 @@ class BluetoothPairingManagerTest : public testing::Test,
   void PromptForBluetoothPairing(
       const std::u16string& device_identifier,
       BluetoothDelegate::PairPromptCallback callback,
-      BluetoothDelegate::PairingKind pairing_kind) override {
+      BluetoothDelegate::PairingKind pairing_kind,
+      const absl::optional<std::u16string>& pin) override {
     std::move(callback).Run(prompt_result_);
   }
 
@@ -979,6 +980,48 @@ TEST_F(BluetoothPairingManagerTest, PairConfirmPromptCancelled) {
   TestFuture<absl::optional<BluetoothDevice::ConnectErrorCode>> future;
   pair_callback_ = future.GetCallback();
   pairing_manager()->AuthorizePairing(&device);
+  EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, future.Get());
+}
+
+TEST_F(BluetoothPairingManagerTest, PairConfirmPinPromptSuccess) {
+  PairPromptResult result;
+  result.result_code = BluetoothDelegate::PairPromptStatus::kSuccess;
+  SetPromptResult(result);
+
+  MockBluetoothDevice device(/*adapter=*/nullptr,
+                             /*bluetooth_class=*/0,
+                             kValidTestData.device_name.c_str(),
+                             kValidTestData.device_address,
+                             /*initially_paired=*/false,
+                             /*connected=*/true);
+
+  EXPECT_CALL(device, GetAddress());
+  EXPECT_CALL(device, GetNameForDisplay());
+
+  TestFuture<absl::optional<BluetoothDevice::ConnectErrorCode>> future;
+  pair_callback_ = future.GetCallback();
+  pairing_manager()->ConfirmPasskey(&device, 123456);
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(BluetoothPairingManagerTest, PairConfirmPinPromptCancelled) {
+  PairPromptResult result;
+  result.result_code = BluetoothDelegate::PairPromptStatus::kCancelled;
+  SetPromptResult(result);
+
+  MockBluetoothDevice device(/*adapter=*/nullptr,
+                             /*bluetooth_class=*/0,
+                             kValidTestData.device_name.c_str(),
+                             kValidTestData.device_address,
+                             /*initially_paired=*/false,
+                             /*connected=*/true);
+
+  EXPECT_CALL(device, GetAddress());
+  EXPECT_CALL(device, GetNameForDisplay());
+
+  TestFuture<absl::optional<BluetoothDevice::ConnectErrorCode>> future;
+  pair_callback_ = future.GetCallback();
+  pairing_manager()->ConfirmPasskey(&device, 123456);
   EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, future.Get());
 }
 

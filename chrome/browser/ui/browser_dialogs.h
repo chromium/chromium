@@ -146,7 +146,7 @@ void ShowBluetoothDeviceCredentialsDialog(
 void ShowBluetoothDevicePairConfirmDialog(
     content::WebContents* web_contents,
     const std::u16string& device_identifier,
-    const absl::optional<std::u16string> pin,
+    const absl::optional<std::u16string>& pin,
     content::BluetoothDelegate::PairPromptCallback close_callback);
 #endif  // PAIR_BLUETOOTH_ON_DEMAND()
 

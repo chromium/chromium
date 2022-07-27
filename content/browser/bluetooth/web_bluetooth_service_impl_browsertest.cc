@@ -165,10 +165,12 @@ class TestBluetoothDelegate : public BluetoothDelegate {
     return std::move(prompt);
   }
 
-  void ShowDevicePairPrompt(content::RenderFrameHost* frame,
-                            const std::u16string& device_identifier,
-                            PairPromptCallback callback,
-                            PairingKind pairing_kind) override {
+  void ShowDevicePairPrompt(
+      content::RenderFrameHost* frame,
+      const std::u16string& device_identifier,
+      PairPromptCallback callback,
+      PairingKind pairing_kind,
+      const absl::optional<std::u16string>& pin) override {
     NOTREACHED();
   }
 

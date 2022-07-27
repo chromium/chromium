@@ -133,8 +133,8 @@ class FakeBluetoothLEDeviceWinrt
 
   void SimulateDevicePaired(bool is_paired);
   void SimulatePairingPinCode(std::string pin_code);
-  void SimulatePairingKind(
-      ABI::Windows::Devices::Enumeration::DevicePairingKinds pairing_kind);
+  void SimulateConfirmOnly();
+  void SimulateDisplayPin(base::StringPiece display_pin);
   absl::optional<BluetoothUUID> GetTargetGattService() const;
   void SimulateGattConnection();
   void SimulateGattConnectionError(

@@ -885,12 +885,19 @@ void BluetoothTestWinrt::SimulatePairingPinCode(BluetoothDevice* device,
   ble_device->SimulatePairingPinCode(std::move(pin_code));
 }
 
-void BluetoothTestWinrt::SimulatePairingKind(BluetoothDevice* device,
-                                             DevicePairingKinds pairing_kind) {
+void BluetoothTestWinrt::SimulateConfirmOnly(BluetoothDevice* device) {
   auto* const ble_device =
       static_cast<TestBluetoothDeviceWinrt*>(device)->ble_device();
   DCHECK(ble_device);
-  ble_device->SimulatePairingKind(pairing_kind);
+  ble_device->SimulateConfirmOnly();
+}
+
+void BluetoothTestWinrt::SimulateDisplayPin(BluetoothDevice* device,
+                                            base::StringPiece display_pin) {
+  auto* const ble_device =
+      static_cast<TestBluetoothDeviceWinrt*>(device)->ble_device();
+  DCHECK(ble_device);
+  ble_device->SimulateDisplayPin(display_pin);
 }
 
 void BluetoothTestWinrt::SimulateAdvertisementStarted(

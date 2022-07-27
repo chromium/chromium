@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_piece.h"
 #include "device/bluetooth/test/fake_device_information_pairing_winrt.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -35,6 +36,11 @@ class FakeDeviceInformationCustomPairingWinrt
   FakeDeviceInformationCustomPairingWinrt(
       Microsoft::WRL::ComPtr<FakeDeviceInformationPairingWinrt> pairing,
       ABI::Windows::Devices::Enumeration::DevicePairingKinds pairing_kind);
+
+  FakeDeviceInformationCustomPairingWinrt(
+      Microsoft::WRL::ComPtr<FakeDeviceInformationPairingWinrt> pairing,
+      ABI::Windows::Devices::Enumeration::DevicePairingKinds pairing_kind,
+      base::StringPiece display_pin);
 
   FakeDeviceInformationCustomPairingWinrt(
       const FakeDeviceInformationCustomPairingWinrt&) = delete;
@@ -83,6 +89,8 @@ class FakeDeviceInformationCustomPairingWinrt
     return pairing_kind_;
   };
 
+  const std::string& pin() const { return display_pin_; };
+
   void SetConfirmed() { confirmed_ = true; }
 
  private:
@@ -90,8 +98,11 @@ class FakeDeviceInformationCustomPairingWinrt
   const absl::optional<std::string> pin_;
   std::string accepted_pin_;
   bool confirmed_ = false;
+
   ABI::Windows::Devices::Enumeration::DevicePairingKinds pairing_kind_ =
       ABI::Windows::Devices::Enumeration::DevicePairingKinds_ProvidePin;
+
+  std::string display_pin_;
 
   base::OnceCallback<void(
       Microsoft::WRL::ComPtr<

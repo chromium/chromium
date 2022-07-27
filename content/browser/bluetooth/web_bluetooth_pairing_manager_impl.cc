@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager_delegate.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "content/public/browser/bluetooth_delegate.h"
@@ -264,7 +266,7 @@ void WebBluetoothPairingManagerImpl::RequestPinCode(BluetoothDevice* device) {
       device->GetNameForDisplay(),
       base::BindOnce(&WebBluetoothPairingManagerImpl::OnPinCodeResult,
                      weak_ptr_factory_.GetWeakPtr(), device_id),
-      BluetoothDelegate::PairingKind::kProvidePin);
+      BluetoothDelegate::PairingKind::kProvidePin, absl::nullopt);
 }
 
 void WebBluetoothPairingManagerImpl::OnPinCodeResult(
@@ -319,8 +321,19 @@ void WebBluetoothPairingManagerImpl::KeysEntered(BluetoothDevice* device,
 
 void WebBluetoothPairingManagerImpl::ConfirmPasskey(BluetoothDevice* device,
                                                     uint32_t passkey) {
-  device->CancelPairing();
-  NOTIMPLEMENTED();
+  blink::WebBluetoothDeviceId device_id =
+      pairing_manager_delegate_->GetWebBluetoothDeviceId(device->GetAddress());
+
+  // In HstringToUint32() we have validated original uint32_t passkey range from
+  // 0 to 999999 before conversion. So here we can safely always assume
+  // pin.size() == 6 after conversion
+  std::u16string pin = base::ASCIIToUTF16(base::StringPrintf("%06u", passkey));
+
+  pairing_manager_delegate_->PromptForBluetoothPairing(
+      device->GetNameForDisplay(),
+      base::BindOnce(&WebBluetoothPairingManagerImpl::OnPairConfirmResult,
+                     weak_ptr_factory_.GetWeakPtr(), device_id),
+      BluetoothDelegate::PairingKind::kConfirmPinMatch, pin);
 }
 
 void WebBluetoothPairingManagerImpl::AuthorizePairing(BluetoothDevice* device) {
@@ -330,7 +343,7 @@ void WebBluetoothPairingManagerImpl::AuthorizePairing(BluetoothDevice* device) {
       device->GetNameForDisplay(),
       base::BindOnce(&WebBluetoothPairingManagerImpl::OnPairConfirmResult,
                      weak_ptr_factory_.GetWeakPtr(), device_id),
-      BluetoothDelegate::PairingKind::kConfirmOnly);
+      BluetoothDelegate::PairingKind::kConfirmOnly, absl::nullopt);
 }
 
 }  // namespace content

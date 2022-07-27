@@ -23,6 +23,7 @@ namespace {
 using ABI::Windows::Devices::Enumeration::DeviceInformationCustomPairing;
 using ABI::Windows::Devices::Enumeration::DevicePairingKinds;
 using ABI::Windows::Devices::Enumeration::DevicePairingKinds_ConfirmOnly;
+using ABI::Windows::Devices::Enumeration::DevicePairingKinds_ConfirmPinMatch;
 using ABI::Windows::Devices::Enumeration::DevicePairingKinds_ProvidePin;
 using ABI::Windows::Devices::Enumeration::DevicePairingProtectionLevel;
 using ABI::Windows::Devices::Enumeration::DevicePairingRequestedEventArgs;
@@ -45,12 +46,22 @@ FakeDeviceInformationCustomPairingWinrt::
         std::string pin)
     : pairing_(std::move(pairing)), pin_(std::move(pin)) {}
 
-// This ctor used by ConfirmOnly (or ConfirmPinMatch in future) pairing kind
+// This ctor used by ConfirmOnly pairing kind
 FakeDeviceInformationCustomPairingWinrt::
     FakeDeviceInformationCustomPairingWinrt(
         Microsoft::WRL::ComPtr<FakeDeviceInformationPairingWinrt> pairing,
         DevicePairingKinds pairing_kind)
     : pairing_(std::move(pairing)), pairing_kind_(pairing_kind) {}
+
+// This ctor used by ConfirmPinMatch pairing kind
+FakeDeviceInformationCustomPairingWinrt::
+    FakeDeviceInformationCustomPairingWinrt(
+        Microsoft::WRL::ComPtr<FakeDeviceInformationPairingWinrt> pairing,
+        DevicePairingKinds pairing_kind,
+        base::StringPiece display_pin)
+    : pairing_(std::move(pairing)),
+      pairing_kind_(pairing_kind),
+      display_pin_(display_pin) {}
 
 FakeDeviceInformationCustomPairingWinrt::
     ~FakeDeviceInformationCustomPairingWinrt() = default;
@@ -115,6 +126,7 @@ void FakeDeviceInformationCustomPairingWinrt::Complete() {
       is_paired = pin_ == accepted_pin_;
       break;
     case DevicePairingKinds_ConfirmOnly:
+    case DevicePairingKinds_ConfirmPinMatch:
       is_paired = confirmed_;
       break;
     default:

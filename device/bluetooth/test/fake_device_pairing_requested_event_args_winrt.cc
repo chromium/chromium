@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/strings/string_piece.h"
 #include "base/win/scoped_hstring.h"
 
 namespace device {
@@ -68,7 +69,8 @@ HRESULT FakeDevicePairingRequestedEventArgsWinrt::get_PairingKind(
 }
 
 HRESULT FakeDevicePairingRequestedEventArgsWinrt::get_Pin(HSTRING* value) {
-  return E_NOTIMPL;
+  *value = base::win::ScopedHString::Create(custom_pairing_->pin()).release();
+  return S_OK;
 }
 
 HRESULT FakeDevicePairingRequestedEventArgsWinrt::Accept() {

@@ -193,12 +193,12 @@ class BluetoothTestWinrt
   void SimulateDevicePaired(BluetoothDevice* device, bool is_paired) override;
   void SimulatePairingPinCode(BluetoothDevice* device,
                               std::string pin_code) override;
-  // Currently only Win derived class has this function for create pairing_kind
-  // tests.  If in future we find that other platform need to test for
-  // pairing_kind we should promote this function as virtual
-  void SimulatePairingKind(
-      BluetoothDevice* device,
-      ABI::Windows::Devices::Enumeration::DevicePairingKinds pairing_kind);
+  // Currently only Win derived class has this function for create ConfirmOnly /
+  // DisplayPin tests.  If in future we find that other platform need to test
+  // for pairing_kind we should promote this function as virtual
+  void SimulateConfirmOnly(BluetoothDevice* device);
+  void SimulateDisplayPin(BluetoothDevice* device,
+                          base::StringPiece display_pin);
   void SimulateAdvertisementStarted(
       BluetoothAdvertisement* advertisement) override;
   void SimulateAdvertisementStopped(

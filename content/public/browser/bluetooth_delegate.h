@@ -110,10 +110,12 @@ class CONTENT_EXPORT BluetoothDelegate {
   // from this function, for example, if a credential prompt for the given
   // |frame| is already displayed.
   // |pairing_kind| is to determine which pairing kind of prompt to be created
-  virtual void ShowDevicePairPrompt(RenderFrameHost* frame,
-                                    const std::u16string& device_identifier,
-                                    PairPromptCallback callback,
-                                    PairingKind pairing_kind) = 0;
+  virtual void ShowDevicePairPrompt(
+      RenderFrameHost* frame,
+      const std::u16string& device_identifier,
+      PairPromptCallback callback,
+      PairingKind pairing_kind,
+      const absl::optional<std::u16string>& pin) = 0;
 
   // This should return the WebBluetoothDeviceId that corresponds to the device
   // with |device_address| in the current |frame|. If there is not a

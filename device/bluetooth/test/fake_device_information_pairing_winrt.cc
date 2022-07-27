@@ -38,6 +38,13 @@ FakeDeviceInformationPairingWinrt::FakeDeviceInformationPairingWinrt(
     : custom_(
           Make<FakeDeviceInformationCustomPairingWinrt>(this, pairing_kind)) {}
 
+FakeDeviceInformationPairingWinrt::FakeDeviceInformationPairingWinrt(
+    DevicePairingKinds pairing_kind,
+    base::StringPiece display_pin)
+    : custom_(Make<FakeDeviceInformationCustomPairingWinrt>(this,
+                                                            pairing_kind,
+                                                            display_pin)) {}
+
 FakeDeviceInformationPairingWinrt::~FakeDeviceInformationPairingWinrt() =
     default;
 
