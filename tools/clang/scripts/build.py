@@ -564,6 +564,15 @@ def main():
 
   global CLANG_REVISION, PACKAGE_VERSION, LLVM_BUILD_DIR
 
+  # TODO(crbug.com/1347737): Remove in next Clang roll.
+  if args.llvm_force_head_revision:
+    global RELEASE_VERSION
+    RELEASE_VERSION = '16.0.0'
+    old_lib_dir = os.path.join(LLVM_BUILD_DIR, 'lib', 'clang', '15.0.0')
+    if (os.path.isdir(old_lib_dir)):
+      print('Removing old lib dir: ', old_lib_dir)
+      RmTree(old_lib_dir)
+
   if (args.pgo or args.thinlto) and not args.bootstrap:
     print('--pgo/--thinlto requires --bootstrap')
     return 1
