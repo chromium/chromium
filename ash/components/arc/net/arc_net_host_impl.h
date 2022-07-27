@@ -102,13 +102,12 @@ class ArcNetHostImpl : public KeyedService,
   void DisconnectHostVpn() override;
 
   // Overridden from chromeos::NetworkStateHandlerObserver.
-  void ScanCompleted(const chromeos::DeviceState* /*unused*/) override;
+  void ScanCompleted(const ash::DeviceState* /*unused*/) override;
   void OnShuttingDown() override;
-  void NetworkConnectionStateChanged(
-      const chromeos::NetworkState* network) override;
+  void NetworkConnectionStateChanged(const ash::NetworkState* network) override;
   void NetworkListChanged() override;
   void DeviceListChanged() override;
-  void NetworkPropertiesUpdated(const chromeos::NetworkState* network) override;
+  void NetworkPropertiesUpdated(const ash::NetworkState* network) override;
 
   // Overridden from chromeos::NetworkConnectionObserver.
   void DisconnectRequested(const std::string& service_path) override;
@@ -118,7 +117,7 @@ class ArcNetHostImpl : public KeyedService,
   void OnConnectionClosed() override;
 
  private:
-  const chromeos::NetworkState* GetDefaultNetworkFromChrome();
+  const ash::NetworkState* GetDefaultNetworkFromChrome();
   void UpdateActiveNetworks(
       const std::vector<patchpanel::NetworkDevice>& devices);
   void DefaultNetworkSuccessCallback(const std::string& service_path,

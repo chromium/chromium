@@ -142,7 +142,7 @@ class NetworkIconTest : public AshTestBase {
     ASSERT_EQ(
         chromeos::NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
         helper().network_state_handler()->GetTechnologyState(
-            chromeos::NetworkTypePattern::Cellular()));
+            NetworkTypePattern::Cellular()));
   }
 
   NetworkStateTestHelper& helper() {

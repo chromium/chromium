@@ -289,9 +289,9 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
   }
 
   if (property_name == kPropertyHomeProvider) {
-    const chromeos::DeviceState* cellular_device =
+    const ash::DeviceState* cellular_device =
         NetworkHandler::Get()->network_state_handler()->GetDeviceStateByType(
-            chromeos::NetworkTypePattern::Cellular());
+            ash::NetworkTypePattern::Cellular());
     std::string home_provider_id;
     if (cellular_device) {
       if (!cellular_device->country_code().empty()) {

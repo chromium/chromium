@@ -55,9 +55,8 @@ class AuthPolicyCredentialsManager
   void Shutdown() override;
 
   // chromeos::NetworkStateHandlerObserver overrides.
-  void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
-  void NetworkConnectionStateChanged(
-      const chromeos::NetworkState* network) override;
+  void DefaultNetworkChanged(const NetworkState* network) override;
+  void NetworkConnectionStateChanged(const NetworkState* network) override;
   void OnShuttingDown() override;
 
   KerberosFilesHandler* GetKerberosFilesHandlerForTesting();
@@ -97,7 +96,7 @@ class AuthPolicyCredentialsManager
 
   // Call GetUserStatus if |network_state| is connected and the previous call
   // failed.
-  void GetUserStatusIfConnected(const chromeos::NetworkState* network_state);
+  void GetUserStatusIfConnected(const NetworkState* network_state);
 
   // Callback for 'UserKerberosFilesChanged' D-Bus signal sent by authpolicyd.
   void OnUserKerberosFilesChangedCallback(dbus::Signal* signal);

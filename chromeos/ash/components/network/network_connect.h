@@ -8,14 +8,14 @@
 #include <string>
 
 #include "base/component_export.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_type_pattern.h"
 
 namespace base {
 class Value;
 }
 
 namespace chromeos {
-
-class NetworkTypePattern;
 
 // NetworkConnect is a state machine designed to handle the complex UI flows
 // associated with connecting to a network (and related tasks). Any showing

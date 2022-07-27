@@ -29,8 +29,7 @@ class ShellNetworkController : public chromeos::NetworkStateHandlerObserver {
 
   // chromeos::NetworkStateHandlerObserver overrides:
   void NetworkListChanged() override;
-  void NetworkConnectionStateChanged(
-      const chromeos::NetworkState* state) override;
+  void NetworkConnectionStateChanged(const ash::NetworkState* state) override;
 
   // Control whether roaming is enabled for cellular network connections.
   void SetCellularAllowRoaming(bool allow_roaming);
@@ -49,7 +48,7 @@ class ShellNetworkController : public chromeos::NetworkStateHandlerObserver {
 
   // Returns the connected or connecting WiFi network or NULL if no network
   // matches that description.
-  const chromeos::NetworkState* GetActiveWiFiNetwork();
+  const ash::NetworkState* GetActiveWiFiNetwork();
 
   // Controls whether scanning is performed periodically.
   void SetScanningEnabled(bool enabled);

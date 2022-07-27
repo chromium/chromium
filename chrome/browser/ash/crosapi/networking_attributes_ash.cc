@@ -56,7 +56,7 @@ void NetworkingAttributesAsh::GetNetworkDetails(
     std::move(callback).Run(Result::NewErrorMessage(kErrorNetworkNotConnected));
     return;
   }
-  const chromeos::DeviceState* device =
+  const ash::DeviceState* device =
       network_state_handler->GetDeviceState(network->device_path());
   if (!device) {
     std::move(callback).Run(Result::NewErrorMessage(kErrorNetworkNotConnected));

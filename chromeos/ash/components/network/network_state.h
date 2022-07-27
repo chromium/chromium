@@ -18,16 +18,16 @@
 #include "components/onc/onc_constants.h"
 #include "url/gurl.h"
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-class MobileActivatorTest;
-}  // namespace ash
-
 namespace base {
 class Value;
 }  // namespace base
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace chromeos {
+class NetworkStateHandler;
+}
+
+namespace ash {
 
 class DeviceState;
 
@@ -246,8 +246,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   void SetGuid(const std::string& guid);
 
   // Helpers for returning mojo types.
-  network_config::mojom::ActivationStateType GetMojoActivationState() const;
-  network_config::mojom::SecurityType GetMojoSecurity() const;
+  chromeos::network_config::mojom::ActivationStateType GetMojoActivationState()
+      const;
+  chromeos::network_config::mojom::SecurityType GetMojoSecurity() const;
 
   // Helper for UMA stats. Corresponds to NetworkTechnology in enums.xml
   // which is also used by Shill metrics.
@@ -290,10 +291,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   constexpr static const int kSignalStrengthChangeThreshold = 5;
 
  private:
-  // TODO(https://crbug.com/1164001): remove namespace declaration for ash
-  // when moved to ash.
-  friend class ::ash::MobileActivatorTest;
-  friend class NetworkStateHandler;
+  friend class MobileActivatorTest;
+  friend class ::chromeos::NetworkStateHandler;
 
   // Updates |name_| from the 'WiFi.HexSSID' entry in |properties|, which must
   // be of type DICTIONARY, if the key exists, and validates |name_|. Returns
@@ -390,11 +389,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   bool is_chrome_captive_portal_ = false;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::NetworkState;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::NetworkState;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_STATE_H_

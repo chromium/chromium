@@ -1135,7 +1135,7 @@ TEST_F(ManagementUIHandlerTests, ProxyServerDisclosureDeviceOffline) {
   chromeos::NetworkStateHandler::NetworkStateList networks;
   chromeos::NetworkHandler::Get()
       ->network_state_handler()
-      ->GetNetworkListByType(chromeos::NetworkTypePattern::Default(),
+      ->GetNetworkListByType(ash::NetworkTypePattern::Default(),
                              true,   // configured_only
                              false,  // visible_only,
                              0,      // no limit to number of results

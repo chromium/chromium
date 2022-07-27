@@ -44,8 +44,8 @@ class MobileDataNotifications
   ~MobileDataNotifications() override;
 
   // NetworkStateHandlerObserver:
-  void ActiveNetworksChanged(const std::vector<const chromeos::NetworkState*>&
-                                 active_networks) override;
+  void ActiveNetworksChanged(
+      const std::vector<const ash::NetworkState*>& active_networks) override;
   void OnShuttingDown() override;
 
   // NetworkConnectionObserver:
@@ -71,7 +71,7 @@ class MobileDataNotifications
   //   from triggering the notification).
   // * First time notification is shown according to user prefs.
   void ShowOptionalMobileDataNotificationImpl(
-      const std::vector<const chromeos::NetworkState*>& active_networks);
+      const std::vector<const ash::NetworkState*>& active_networks);
 
   // Adds a delay before calling |ShowOptionalMobileDataNotification|. Delay is
   // introduced because in some cases we might be notified through an observer

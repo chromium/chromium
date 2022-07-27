@@ -68,7 +68,7 @@ class OsAndPoliciesUpdateChecker
   bool IsRunning() const;
 
   // chromeos::NetworkStateHandlerObserver overrides.
-  void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
+  void DefaultNetworkChanged(const ash::NetworkState* network) override;
 
  private:
   // Schedules update check by using |update_check_task_executor_|.

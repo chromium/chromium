@@ -11,7 +11,7 @@
 #include "chromeos/ash/components/network/managed_state.h"
 #include "chromeos/ash/components/network/network_util.h"
 
-namespace chromeos {
+namespace ash {
 
 // Simple class to provide device state information. Similar to NetworkState;
 // see network_state.h for usage guidelines.
@@ -141,11 +141,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) DeviceState : public ManagedState {
   base::Value ip_configs_{base::Value::Type::DICTIONARY};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash
-namespace ash {
-using ::chromeos::DeviceState;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::DeviceState;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_DEVICE_STATE_H_

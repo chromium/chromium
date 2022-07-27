@@ -10,6 +10,8 @@
 #include "base/component_export.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chromeos/ash/components/network/network_profile_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_state.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/proxy_config/proxy_prefs.h"
 
@@ -21,7 +23,6 @@ class Value;
 
 namespace chromeos {
 
-class NetworkState;
 class NetworkStateHandler;
 
 // This class provides an interface to the UI for getting a network proxy

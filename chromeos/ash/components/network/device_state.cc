@@ -13,7 +13,7 @@
 #include "chromeos/ash/components/network/shill_property_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 DeviceState::DeviceState(const std::string& path)
     : ManagedState(MANAGED_TYPE_DEVICE, path) {}
@@ -222,4 +222,4 @@ bool DeviceState::HasAPN(const std::string& access_point_name) const {
   return false;
 }
 
-}  // namespace chromeos
+}  // namespace ash

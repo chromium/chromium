@@ -13,6 +13,8 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/network/network_connection_observer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -24,7 +26,6 @@ class CellularESimProfileHandler;
 class CellularMetricsLoggerTest;
 class ESimFeatureUsageMetrics;
 class NetworkConnectionHandler;
-class NetworkState;
 
 // Cellular network SIM types.
 enum class SimType {

@@ -70,7 +70,7 @@ bool OsAndPoliciesUpdateChecker::IsRunning() const {
 }
 
 void OsAndPoliciesUpdateChecker::DefaultNetworkChanged(
-    const chromeos::NetworkState* network) {
+    const ash::NetworkState* network) {
   // If a network is found, it's okay to start an update check. Stop observing
   // for more network changes, any network flakiness will now be handled by
   // timeouts and retries.

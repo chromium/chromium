@@ -20,12 +20,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
+class NetworkState;
 class SystemTrayClient;
 }  // namespace ash
 
 namespace chromeos {
-
-class NetworkState;
 
 // This class provides user notifications in the following cases:
 // 1. ShowNetworkConnectError() gets called after any user initiated connect
@@ -83,10 +82,9 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
 
   // NetworkStateHandlerObserver
   void ActiveNetworksChanged(
-      const std::vector<const NetworkState*>& active_networks) override;
-  void NetworkPropertiesUpdated(const NetworkState* network) override;
-  void NetworkConnectionStateChanged(
-      const chromeos::NetworkState* network) override;
+      const std::vector<const ash::NetworkState*>& active_networks) override;
+  void NetworkPropertiesUpdated(const ash::NetworkState* network) override;
+  void NetworkConnectionStateChanged(const ash::NetworkState* network) override;
   void NetworkIdentifierTransitioned(const std::string& old_service_path,
                                      const std::string& new_service_path,
                                      const std::string& old_guid,
@@ -109,12 +107,12 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   void RemoveConnectNotification();
 
   // Returns true if the default network changed.
-  bool UpdateDefaultNetwork(const NetworkState* network);
+  bool UpdateDefaultNetwork(const ash::NetworkState* network);
 
   // Helper methods to update state and check for notifications.
-  void UpdateVpnConnectionState(const NetworkState* active_vpn);
+  void UpdateVpnConnectionState(const ash::NetworkState* active_vpn);
   void UpdateCellularOutOfCredits();
-  void UpdateCellularActivating(const NetworkState* cellular);
+  void UpdateCellularActivating(const ash::NetworkState* cellular);
 
   // Shows the network settings for |network_id|.
   void ShowNetworkSettings(const std::string& network_id);

@@ -90,7 +90,7 @@ class TetherNetworkDisconnectionHandlerTest : public testing::Test {
 
   void SetWiFiTechnologyStateEnabled(bool enabled) {
     helper_.network_state_handler()->SetTechnologyEnabled(
-        chromeos::NetworkTypePattern::WiFi(), enabled,
+        NetworkTypePattern::WiFi(), enabled,
         chromeos::network_handler::ErrorCallback());
     base::RunLoop().RunUntilIdle();
   }

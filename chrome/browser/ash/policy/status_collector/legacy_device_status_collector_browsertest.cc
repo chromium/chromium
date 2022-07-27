@@ -3934,7 +3934,7 @@ class LegacyDeviceStatusCollectorNetworkTest
     chromeos::NetworkStateHandler* network_state_handler =
         chromeos::NetworkHandler::Get()->network_state_handler();
     network_state_handler->GetNetworkListByType(
-        chromeos::NetworkTypePattern::Default(),
+        ash::NetworkTypePattern::Default(),
         true,   // configured_only
         false,  // visible_only,
         0,      // no limit to number of results

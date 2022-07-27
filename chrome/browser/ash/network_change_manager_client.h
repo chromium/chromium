@@ -50,8 +50,7 @@ class NetworkChangeManagerClient
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // NetworkStateHandlerObserver overrides.
-  void DefaultNetworkChanged(
-      const chromeos::NetworkState* default_network) override;
+  void DefaultNetworkChanged(const NetworkState* default_network) override;
 
   // Adds Lacros NetworkChangeObserver.
   void AddLacrosNetworkChangeObserver(
@@ -74,7 +73,7 @@ class NetworkChangeManagerClient
   // |dns_changed| is set to true if we must report a DNS config change.
   // |connection_subtype_changed| is set to true if we must report a connection
   // subtype change.
-  void UpdateState(const chromeos::NetworkState* default_network,
+  void UpdateState(const NetworkState* default_network,
                    bool* dns_changed,
                    bool* ip_address_changed,
                    bool* connection_type_changed,

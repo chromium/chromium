@@ -105,7 +105,7 @@ class TetherService
 
   // chromeos::NetworkStateHandlerObserver:
   void DeviceListChanged() override;
-  void DevicePropertiesUpdated(const chromeos::DeviceState* device) override;
+  void DevicePropertiesUpdated(const DeviceState* device) override;
 
   // Helper method called from NetworkStateHandlerObserver methods.
   void UpdateEnabledState();

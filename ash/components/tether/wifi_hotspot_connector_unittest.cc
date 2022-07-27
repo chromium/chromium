@@ -196,7 +196,7 @@ class WifiHotspotConnectorTest : public testing::Test {
     }
 
     // NetworkConnect:
-    void SetTechnologyEnabled(const chromeos::NetworkTypePattern& technology,
+    void SetTechnologyEnabled(const NetworkTypePattern& technology,
                               bool enabled_state) override {}
     void ShowMobileSetup(const std::string& network_id) override {}
     void ShowCarrierAccountDetail(const std::string& network_id) override {}

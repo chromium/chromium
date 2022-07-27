@@ -48,7 +48,12 @@ std::string GetStringFromDictionary(const base::Value& dict, const char* key) {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace network_config {
+namespace mojom = ::chromeos::network_config::mojom;
+}
 
 NetworkState::NetworkState(const std::string& path)
     : ManagedState(MANAGED_TYPE_NETWORK, path) {}
@@ -688,4 +693,4 @@ void NetworkState::SetVpnProvider(const std::string& id,
   vpn_provider_->type = type;
 }
 
-}  // namespace chromeos
+}  // namespace ash

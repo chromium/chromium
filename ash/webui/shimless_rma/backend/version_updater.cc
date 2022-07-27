@@ -31,8 +31,7 @@ void ReportUpdateFailure(const VersionUpdater::OsUpdateStatusCallback& callback,
 bool IsUpdateAllowed() {
   chromeos::NetworkStateHandler* network_state_handler =
       chromeos::NetworkHandler::Get()->network_state_handler();
-  const chromeos::NetworkState* network =
-      network_state_handler->DefaultNetwork();
+  const NetworkState* network = network_state_handler->DefaultNetwork();
   // Don't allow an update if device is currently offline or connected
   // to a network for which data is metered.
   if (!network || !network->IsConnectedState()) {

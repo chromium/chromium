@@ -8,11 +8,10 @@
 #include "base/component_export.h"
 #include "base/notreached.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector_strategy.h"
-// TODO(https://crbug.com/1164001): forward declare NetworkState when moved to
-// chrome/browser/ash/.
-#include "chromeos/ash/components/network/network_state.h"
 
 namespace ash {
+
+class NetworkState;
 
 // This is an interface for a chromeos portal detector that allows for
 // observation of captive portal state. It supports retries based on a portal

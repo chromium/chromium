@@ -64,7 +64,7 @@ void NetworkChangeManagerClient::SuspendDone(base::TimeDelta sleep_duration) {
 }
 
 void NetworkChangeManagerClient::DefaultNetworkChanged(
-    const chromeos::NetworkState* default_network) {
+    const NetworkState* default_network) {
   bool connection_type_changed = false;
   bool connection_subtype_changed = false;
   bool ip_address_changed = false;
@@ -118,7 +118,7 @@ void NetworkChangeManagerClient::ReconnectToNetworkChangeManager() {
 }
 
 void NetworkChangeManagerClient::UpdateState(
-    const chromeos::NetworkState* default_network,
+    const NetworkState* default_network,
     bool* dns_changed,
     bool* ip_address_changed,
     bool* connection_type_changed,

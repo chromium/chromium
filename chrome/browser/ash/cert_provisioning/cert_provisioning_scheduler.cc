@@ -636,7 +636,7 @@ void CertProvisioningSchedulerImpl::WaitForInternetConnection() {
 }
 
 void CertProvisioningSchedulerImpl::OnNetworkChange(
-    const chromeos::NetworkState* network) {
+    const NetworkState* network) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // If waiting for connection and some network becomes online, try to continue.
@@ -655,14 +655,14 @@ void CertProvisioningSchedulerImpl::OnNetworkChange(
 }
 
 void CertProvisioningSchedulerImpl::DefaultNetworkChanged(
-    const chromeos::NetworkState* network) {
+    const NetworkState* network) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   OnNetworkChange(network);
 }
 
 void CertProvisioningSchedulerImpl::NetworkConnectionStateChanged(
-    const chromeos::NetworkState* network) {
+    const NetworkState* network) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   OnNetworkChange(network);

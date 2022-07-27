@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/component_export.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_state.h"
 #include "components/onc/onc_constants.h"
 
 class PrefService;
@@ -15,7 +17,6 @@ class ProxyConfigDictionary;
 
 namespace chromeos {
 
-class NetworkState;
 class NetworkProfileHandler;
 
 namespace proxy_config {

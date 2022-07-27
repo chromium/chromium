@@ -964,8 +964,7 @@ TEST_F(NetworkListViewControllerTest,
   network_state_helper()->manager_test()->SetInteractiveDelay(
       kInteractiveDelay);
   network_state_handler()->SetTechnologyEnabled(
-      chromeos::NetworkTypePattern::Cellular(), /*enabled=*/false,
-      base::DoNothing());
+      NetworkTypePattern::Cellular(), /*enabled=*/false, base::DoNothing());
 
   base::RunLoop().RunUntilIdle();
 

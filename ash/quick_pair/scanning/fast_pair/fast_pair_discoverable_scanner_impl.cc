@@ -304,7 +304,7 @@ void FastPairDiscoverableScannerImpl::OnUtilityProcessStopped(
 }
 
 void FastPairDiscoverableScannerImpl::DefaultNetworkChanged(
-    const chromeos::NetworkState* network) {
+    const NetworkState* network) {
   // Only retry when we have an active connected network.
   if (!network || !network->IsConnectedState()) {
     return;

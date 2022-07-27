@@ -3756,18 +3756,18 @@ void CrostiniManager::OnPendingAppListUpdates(
 
 // TODO(danielng): Consider handling instant tethering.
 void CrostiniManager::ActiveNetworksChanged(
-    const std::vector<const chromeos::NetworkState*>& active_networks) {
+    const std::vector<const ash::NetworkState*>& active_networks) {
   chromeos::NetworkStateHandler::NetworkStateList active_physical_networks;
   chromeos::NetworkHandler::Get()
       ->network_state_handler()
-      ->GetActiveNetworkListByType(chromeos::NetworkTypePattern::Physical(),
+      ->GetActiveNetworkListByType(ash::NetworkTypePattern::Physical(),
                                    &active_physical_networks);
   if (active_physical_networks.empty())
     return;
-  const chromeos::NetworkState* network = active_physical_networks.at(0);
+  const ash::NetworkState* network = active_physical_networks.at(0);
   if (!network)
     return;
-  const chromeos::DeviceState* device =
+  const ash::DeviceState* device =
       chromeos::NetworkHandler::Get()->network_state_handler()->GetDeviceState(
           network->device_path());
   if (!device)

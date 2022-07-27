@@ -38,8 +38,7 @@ class ASH_EXPORT AutoConnectNotifier
   void ConnectToNetworkRequested(const std::string& service_path) override;
 
   // chromeos::NetworkStateHandlerObserver:
-  void NetworkConnectionStateChanged(
-      const chromeos::NetworkState* network) override;
+  void NetworkConnectionStateChanged(const NetworkState* network) override;
 
   // chromeos::AutoConnectHandler::Observer:
   void OnAutoConnectedInitiated(int auto_connect_reasons) override;
@@ -51,7 +50,7 @@ class ASH_EXPORT AutoConnectNotifier
   static const char kAutoConnectToastId[];
 
  private:
-  void DisplayToast(const chromeos::NetworkState* network);
+  void DisplayToast(const NetworkState* network);
 
   bool has_user_explicitly_requested_connection_ = false;
   std::string connected_network_guid_;

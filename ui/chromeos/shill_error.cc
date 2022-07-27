@@ -16,7 +16,7 @@ namespace ui {
 
 namespace {
 
-const chromeos::NetworkState* GetNetworkState(const std::string& network_id) {
+const ash::NetworkState* GetNetworkState(const std::string& network_id) {
   return chromeos::NetworkHandler::Get()
       ->network_state_handler()
       ->GetNetworkStateFromGuid(network_id);
@@ -77,7 +77,7 @@ std::u16string GetShillErrorString(const std::string& error,
         IDS_CHROMEOS_NETWORK_ERROR_CERT_AUTH_FAILED);
   }
   if (error == shill::kErrorEapAuthenticationFailed) {
-    const chromeos::NetworkState* network =
+    const ash::NetworkState* network =
         network_id.empty() ? nullptr : GetNetworkState(network_id);
     // TLS always requires a client certificate, so show a cert auth
     // failed message for TLS. Other EAP methods do not generally require

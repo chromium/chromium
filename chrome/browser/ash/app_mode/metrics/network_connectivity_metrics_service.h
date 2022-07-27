@@ -38,8 +38,7 @@ class NetworkConnectivityMetricsService
   explicit NetworkConnectivityMetricsService(PrefService* prefs);
 
   // chromeos::NetworkStateHandlerObserver:
-  void NetworkConnectionStateChanged(
-      const chromeos::NetworkState* network) override;
+  void NetworkConnectionStateChanged(const NetworkState* network) override;
 
   // Update a number of network connectivity drops for the current session.
   void LogNetworkDrops(int network_drops);

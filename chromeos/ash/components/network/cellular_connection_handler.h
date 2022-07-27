@@ -14,6 +14,8 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "dbus/object_path.h"
@@ -23,7 +25,6 @@ namespace chromeos {
 
 class CellularESimProfileHandler;
 class CellularInhibitor;
-class NetworkState;
 
 // Prepares cellular networks for connection. Before we can connect to a
 // cellular network, the network must be backed by Shill and must have its

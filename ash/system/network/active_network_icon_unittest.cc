@@ -264,7 +264,7 @@ TEST_F(ActiveNetworkIconTest, CellularScanning) {
   SetCellularUninitialized(true /* scanning */);
 
   ASSERT_TRUE(network_state_handler()->GetScanningByType(
-      chromeos::NetworkTypePattern::Cellular()));
+      NetworkTypePattern::Cellular()));
 
   bool animating;
   gfx::ImageSkia image = active_network_icon()->GetImage(

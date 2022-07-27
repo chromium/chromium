@@ -88,10 +88,10 @@ const chromeos::NetworkProfile* GetNetworkProfile() {
       chromeos::LoginState::Get()->primary_user_hash());
 }
 
-std::vector<const chromeos::NetworkState*> GetHostActiveNetworks() {
-  std::vector<const chromeos::NetworkState*> active_networks;
+std::vector<const ash::NetworkState*> GetHostActiveNetworks() {
+  std::vector<const ash::NetworkState*> active_networks;
   GetStateHandler()->GetActiveNetworkListByType(
-      chromeos::NetworkTypePattern::Default(), &active_networks);
+      ash::NetworkTypePattern::Default(), &active_networks);
   return active_networks;
 }
 
@@ -189,7 +189,7 @@ arc::mojom::ConnectionStateType TranslateConnectionState(
       (state == shill::kStateDisconnect) || (state == "")) {
     return arc::mojom::ConnectionStateType::NOT_CONNECTED;
   }
-  if (chromeos::NetworkState::StateIsPortalled(state))
+  if (ash::NetworkState::StateIsPortalled(state))
     return arc::mojom::ConnectionStateType::PORTAL;
 
   if (state == shill::kStateOnline)
@@ -202,7 +202,7 @@ arc::mojom::ConnectionStateType TranslateConnectionState(
   return arc::mojom::ConnectionStateType::NOT_CONNECTED;
 }
 
-bool IsActiveNetworkState(const chromeos::NetworkState* network) {
+bool IsActiveNetworkState(const ash::NetworkState* network) {
   if (!network)
     return false;
 
@@ -312,7 +312,7 @@ void AddIpConfiguration(arc::mojom::NetworkConfiguration* network,
 }
 
 arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
-    const chromeos::NetworkState* network_state,
+    const ash::NetworkState* network_state,
     const base::Value* shill_dict) {
   auto mojo = arc::mojom::NetworkConfiguration::New();
   // Initialize optional array fields to avoid null guards both here and in ARC.
@@ -384,14 +384,14 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
   return mojo;
 }
 
-const chromeos::NetworkState* GetShillBackedNetwork(
-    const chromeos::NetworkState* network) {
+const ash::NetworkState* GetShillBackedNetwork(
+    const ash::NetworkState* network) {
   if (!network)
     return nullptr;
 
   // Non-Tether networks are already backed by Shill.
   const std::string type = network->type();
-  if (type.empty() || !chromeos::NetworkTypePattern::Tether().MatchesType(type))
+  if (type.empty() || !ash::NetworkTypePattern::Tether().MatchesType(type))
     return network;
 
   // Tether networks which are not connected are also not backed by Shill.
@@ -429,7 +429,7 @@ std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
   }
 
   std::vector<arc::mojom::NetworkConfigurationPtr> networks;
-  for (const chromeos::NetworkState* state : network_states) {
+  for (const ash::NetworkState* state : network_states) {
     const std::string& network_path = state->path();
     // Never tell Android about its own VPN.
     if (network_path == arc_vpn_path)
@@ -617,7 +617,7 @@ void ArcNetHostImpl::OnConnectionReady() {
 
   // If the default network is an ARC VPN, that means Chrome is restarting
   // after a crash but shill still thinks a VPN is connected. Nuke it.
-  const chromeos::NetworkState* default_network =
+  const ash::NetworkState* default_network =
       GetShillBackedNetwork(GetStateHandler()->DefaultNetwork());
   if (default_network && default_network->type() == shill::kTypeVPN &&
       default_network->GetVpnProviderType() == shill::kProviderArcVpn) {
@@ -652,7 +652,7 @@ void ArcNetHostImpl::GetNetworks(mojom::GetNetworksRequestType type,
 
   // Otherwise retrieve list of configured or visible WiFi networks.
   bool configured_only = type == mojom::GetNetworksRequestType::CONFIGURED_ONLY;
-  chromeos::NetworkTypePattern network_pattern =
+  ash::NetworkTypePattern network_pattern =
       ash::onc::NetworkTypePatternFromOncType(onc::network_type::kWiFi);
 
   chromeos::NetworkStateHandler::NetworkStateList network_states;
@@ -673,7 +673,7 @@ void ArcNetHostImpl::GetActiveNetworks(
   // Retrieve list of currently active networks.
   chromeos::NetworkStateHandler::NetworkStateList network_states;
   GetStateHandler()->GetActiveNetworkListByType(
-      chromeos::NetworkTypePattern::Default(), &network_states);
+      ash::NetworkTypePattern::Default(), &network_states);
 
   std::vector<mojom::NetworkConfigurationPtr> networks =
       TranslateNetworkStates(arc_vpn_service_path_, network_states,
@@ -832,16 +832,16 @@ void ArcNetHostImpl::StartDisconnect(const std::string& guid,
 }
 
 void ArcNetHostImpl::GetWifiEnabledState(GetWifiEnabledStateCallback callback) {
-  bool is_enabled = GetStateHandler()->IsTechnologyEnabled(
-      chromeos::NetworkTypePattern::WiFi());
+  bool is_enabled =
+      GetStateHandler()->IsTechnologyEnabled(ash::NetworkTypePattern::WiFi());
   std::move(callback).Run(is_enabled);
 }
 
 void ArcNetHostImpl::SetWifiEnabledState(bool is_enabled,
                                          SetWifiEnabledStateCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  auto state = GetStateHandler()->GetTechnologyState(
-      chromeos::NetworkTypePattern::WiFi());
+  auto state =
+      GetStateHandler()->GetTechnologyState(ash::NetworkTypePattern::WiFi());
   // WiFi can't be enabled or disabled in these states.
   if ((state == chromeos::NetworkStateHandler::TECHNOLOGY_PROHIBITED) ||
       (state == chromeos::NetworkStateHandler::TECHNOLOGY_UNINITIALIZED) ||
@@ -853,16 +853,16 @@ void ArcNetHostImpl::SetWifiEnabledState(bool is_enabled,
 
   NET_LOG(USER) << __func__ << ":" << is_enabled;
   GetStateHandler()->SetTechnologyEnabled(
-      chromeos::NetworkTypePattern::WiFi(), is_enabled,
+      ash::NetworkTypePattern::WiFi(), is_enabled,
       chromeos::network_handler::ErrorCallback());
   std::move(callback).Run(true);
 }
 
 void ArcNetHostImpl::StartScan() {
-  GetStateHandler()->RequestScan(chromeos::NetworkTypePattern::WiFi());
+  GetStateHandler()->RequestScan(ash::NetworkTypePattern::WiFi());
 }
 
-void ArcNetHostImpl::ScanCompleted(const chromeos::DeviceState* /*unused*/) {
+void ArcNetHostImpl::ScanCompleted(const ash::DeviceState* /*unused*/) {
   auto* net_instance =
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->net(), ScanCompleted);
   if (!net_instance)
@@ -877,18 +877,18 @@ void ArcNetHostImpl::DeviceListChanged() {
   if (!net_instance)
     return;
 
-  bool is_enabled = GetStateHandler()->IsTechnologyEnabled(
-      chromeos::NetworkTypePattern::WiFi());
+  bool is_enabled =
+      GetStateHandler()->IsTechnologyEnabled(ash::NetworkTypePattern::WiFi());
   net_instance->WifiEnabledStateChanged(is_enabled);
 }
 
 std::string ArcNetHostImpl::LookupArcVpnServicePath() {
   chromeos::NetworkStateHandler::NetworkStateList state_list;
   GetStateHandler()->GetNetworkListByType(
-      chromeos::NetworkTypePattern::VPN(), true /* configured_only */,
+      ash::NetworkTypePattern::VPN(), true /* configured_only */,
       false /* visible_only */, kGetNetworksListLimit, &state_list);
 
-  for (const chromeos::NetworkState* state : state_list) {
+  for (const ash::NetworkState* state : state_list) {
     const auto* shill_backed_network = GetShillBackedNetwork(state);
     if (!shill_backed_network)
       continue;
@@ -1250,7 +1250,7 @@ void ArcNetHostImpl::SetAlwaysOnVpn(const std::string& vpn_package,
 }
 
 void ArcNetHostImpl::DisconnectHostVpn() {
-  const chromeos::NetworkState* default_network =
+  const ash::NetworkState* default_network =
       GetShillBackedNetwork(GetStateHandler()->DefaultNetwork());
   if (default_network && default_network->type() == shill::kTypeVPN &&
       default_network->GetVpnProviderType() != shill::kProviderArcVpn) {
@@ -1282,7 +1282,7 @@ void ArcNetHostImpl::DisconnectRequested(const std::string& service_path) {
 }
 
 void ArcNetHostImpl::NetworkConnectionStateChanged(
-    const chromeos::NetworkState* network) {
+    const ash::NetworkState* network) {
   const auto* shill_backed_network = GetShillBackedNetwork(network);
   if (!shill_backed_network)
     return;
@@ -1300,7 +1300,7 @@ void ArcNetHostImpl::NetworkConnectionStateChanged(
 }
 
 void ArcNetHostImpl::NetworkPropertiesUpdated(
-    const chromeos::NetworkState* network) {
+    const ash::NetworkState* network) {
   if (!IsActiveNetworkState(network))
     return;
 

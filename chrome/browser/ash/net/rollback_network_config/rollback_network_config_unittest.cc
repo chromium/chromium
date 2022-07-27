@@ -176,7 +176,7 @@ ShillServiceClient* shill_service_client() {
   return ShillServiceClient::Get();
 }
 
-const chromeos::NetworkState* GetNetworkState(const std::string& guid) {
+const ash::NetworkState* GetNetworkState(const std::string& guid) {
   return network_state_handler()->GetNetworkStateFromGuid(guid);
 }
 
@@ -185,7 +185,7 @@ std::string GetServicePath(const std::string& guid) {
 }
 
 bool NetworkExists(const std::string& guid) {
-  const chromeos::NetworkState* network_state =
+  const ash::NetworkState* network_state =
       network_state_handler()->GetNetworkStateFromGuid(guid);
   return network_state && network_state->IsInProfile();
 }
@@ -206,7 +206,7 @@ void SetPropertiesForExistingNetwork(const std::string& guid,
                                      const base::Value& config) {
   base::RunLoop run_loop;
   ASSERT_TRUE(NetworkExists(guid));
-  const chromeos::NetworkState* network_state =
+  const ash::NetworkState* network_state =
       network_state_handler()->GetNetworkStateFromGuid(guid);
   managed_network_configuration_handler()->SetProperties(
       network_state->path(), config,
@@ -277,7 +277,7 @@ std::string GetEapPassphrase(const std::string& guid) {
 }
 
 void RemoveNetwork(const std::string& guid) {
-  const chromeos::NetworkState* network_state =
+  const ash::NetworkState* network_state =
       network_state_handler()->GetNetworkStateFromGuid(guid);
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   base::Value result;

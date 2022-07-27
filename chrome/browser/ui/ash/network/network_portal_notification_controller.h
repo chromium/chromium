@@ -14,11 +14,11 @@
 
 namespace ash {
 class NetworkPortalWebDialog;
-}
+class NetworkState;
+}  // namespace ash
 
 namespace chromeos {
 
-class NetworkState;
 class NetworkPortalNotificationControllerTest;
 
 // Shows a message center notification when the networking stack detects a
@@ -71,11 +71,11 @@ class NetworkPortalNotificationController
   // has been detected. On click the captive portal login page is opened in the
   // browser.
   std::unique_ptr<message_center::Notification>
-  CreateDefaultCaptivePortalNotification(const NetworkState* network);
+  CreateDefaultCaptivePortalNotification(const ash::NetworkState* network);
 
   // NetworkPortalDetector::Observer:
   void OnPortalDetectionCompleted(
-      const NetworkState* network,
+      const ash::NetworkState* network,
       const NetworkPortalDetector::CaptivePortalStatus status) override;
   void OnShutdown() override;
 

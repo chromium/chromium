@@ -94,12 +94,11 @@ class NetworkingPrivateAsh
   // so that the behavior is consistent between networkingPrivate extensions
   // running in ash and lacros.
   void DeviceListChanged() override;
-  void DevicePropertiesUpdated(const chromeos::DeviceState* device) override;
+  void DevicePropertiesUpdated(const ash::DeviceState* device) override;
   void NetworkListChanged() override;
-  void NetworkPropertiesUpdated(const chromeos::NetworkState* network) override;
-  void PortalStateChanged(
-      const chromeos::NetworkState* default_network,
-      chromeos::NetworkState::PortalState portal_state) override;
+  void NetworkPropertiesUpdated(const ash::NetworkState* network) override;
+  void PortalStateChanged(const ash::NetworkState* default_network,
+                          ash::NetworkState::PortalState portal_state) override;
 
   // NetworkCertificateHandler::Observer overrides:
   void OnCertificatesChanged() override;

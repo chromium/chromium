@@ -447,7 +447,7 @@ class ProxyAuthLockscreenWebUiTest : public LockscreenWebUiTest {
         proxy_server_.host_port_pair().ToString(), "");
 
     ProxyConfigDictionary proxy_config_dict(std::move(proxy_config));
-    const chromeos::NetworkState* network =
+    const NetworkState* network =
         network_state_test_helper_->network_state_handler()->DefaultNetwork();
     ASSERT_TRUE(network);
     ASSERT_EQ(network->guid(),

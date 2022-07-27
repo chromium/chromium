@@ -5,13 +5,13 @@
 #ifndef CHROMEOS_COMPONENTS_SYNC_WIFI_NETWORK_TYPE_CONVERSIONS_H_
 #define CHROMEOS_COMPONENTS_SYNC_WIFI_NETWORK_TYPE_CONVERSIONS_H_
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/components/sync_wifi/network_identifier.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/sync/protocol/wifi_configuration_specifics.pb.h"
 
 namespace chromeos {
-
-class NetworkState;
 
 namespace sync_wifi {
 

@@ -266,14 +266,14 @@ bool HostScannerImpl::IsPotentialHotspotNotificationShowing() {
 }
 
 bool HostScannerImpl::CanAvailableHostNotificationBeShown() {
-  const chromeos::NetworkTypePattern network_type_pattern =
+  const NetworkTypePattern network_type_pattern =
       switches::ShouldTetherHostScansIgnoreWiredConnections()
-          ? chromeos::NetworkTypePattern::Wireless()
-          : chromeos::NetworkTypePattern::Default();
+          ? NetworkTypePattern::Wireless()
+          : NetworkTypePattern::Default();
   // Note: If a network is active (i.e., connecting or connected), it will be
   // returned at the front of the list, so using FirstNetworkByType() guarantees
   // that we will find an active network if there is one.
-  const chromeos::NetworkState* first_network =
+  const NetworkState* first_network =
       network_state_handler_->FirstNetworkByType(network_type_pattern);
   if (first_network && first_network->IsConnectingOrConnected()) {
     // If a network is connecting or connected, the notification should not be

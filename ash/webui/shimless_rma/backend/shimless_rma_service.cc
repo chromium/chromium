@@ -55,8 +55,7 @@ mojom::State RmadStateToMojo(rmad::RmadState::StateCase rmadState) {
 bool HaveAllowedNetworkConnection() {
   chromeos::NetworkStateHandler* network_state_handler =
       chromeos::NetworkHandler::Get()->network_state_handler();
-  const chromeos::NetworkState* network =
-      network_state_handler->DefaultNetwork();
+  const NetworkState* network = network_state_handler->DefaultNetwork();
   // TODO(gavindodd): Confirm that metered networks should be excluded. This
   // should only be true for cellular networks which are already blocked.
   const bool metered = network_state_handler->default_network_is_metered();

@@ -10,7 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 const char kTestCellularDevicePath[] = "cellular_path";
@@ -116,4 +116,4 @@ TEST_F(DeviceStateTest, SimSlotInfo_Wifi) {
   EXPECT_TRUE(GetWifiDevice()->GetSimSlotInfos().empty());
 }
 
-}  // namespace chromeos
+}  // namespace ash

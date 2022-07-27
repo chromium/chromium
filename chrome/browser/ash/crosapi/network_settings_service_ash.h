@@ -22,7 +22,7 @@ class PrefRegistrySimple;
 class Profile;
 class ProfileManager;
 
-namespace chromeos {
+namespace ash {
 class NetworkState;
 }
 
@@ -60,7 +60,7 @@ class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
 
  private:
   // NetworkStateHandlerObserver:
-  void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
+  void DefaultNetworkChanged(const ash::NetworkState* network) override;
 
   void SendProxyConfigToObservers();
 

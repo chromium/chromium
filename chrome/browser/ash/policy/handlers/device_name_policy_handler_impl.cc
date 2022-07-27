@@ -83,7 +83,7 @@ DeviceNamePolicyHandlerImpl::GetHostnameChosenByAdministrator() const {
 }
 
 void DeviceNamePolicyHandlerImpl::DefaultNetworkChanged(
-    const chromeos::NetworkState* network) {
+    const ash::NetworkState* network) {
   OnDeviceHostnamePropertyChanged();
 }
 
@@ -164,9 +164,9 @@ std::string DeviceNamePolicyHandlerImpl::GenerateHostname(
                                    ->browser_policy_connector_ash()
                                    ->GetDeviceAnnotatedLocation();
   std::string mac = "MAC_unknown";
-  const chromeos::NetworkState* network = handler_->DefaultNetwork();
+  const ash::NetworkState* network = handler_->DefaultNetwork();
   if (network) {
-    const chromeos::DeviceState* device =
+    const ash::DeviceState* device =
         handler_->GetDeviceState(network->device_path());
     if (device) {
       mac = device->mac_address();

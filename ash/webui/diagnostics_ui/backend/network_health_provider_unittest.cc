@@ -277,9 +277,9 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   void SetDeviceState(const std::string& type, bool enabled) {
-    chromeos::NetworkTypePattern pattern = type == shill::kTypeEthernet
-                                               ? NetworkTypePattern::Ethernet()
-                                               : NetworkTypePattern::WiFi();
+    NetworkTypePattern pattern = type == shill::kTypeEthernet
+                                     ? NetworkTypePattern::Ethernet()
+                                     : NetworkTypePattern::WiFi();
     NetworkHandler::Get()->network_state_handler()->SetTechnologyEnabled(
         pattern, enabled, network_handler::ErrorCallback());
     base::RunLoop().RunUntilIdle();

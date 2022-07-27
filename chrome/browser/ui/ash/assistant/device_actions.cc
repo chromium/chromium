@@ -31,9 +31,9 @@
 #include "components/user_manager/user_manager.h"
 #include "ui/display/types/display_constants.h"
 
+using ::ash::NetworkTypePattern;
 using chromeos::NetworkHandler;
 using chromeos::NetworkStateHandler;
-using chromeos::NetworkTypePattern;
 using chromeos::assistant::AndroidAppInfo;
 using chromeos::assistant::AppStatus;
 

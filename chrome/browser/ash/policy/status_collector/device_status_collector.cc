@@ -2390,13 +2390,13 @@ bool DeviceStatusCollector::GetNetworkStatus(
   // Walk the various networks and store their state in the status report.
   chromeos::NetworkStateHandler::NetworkStateList state_list;
   network_state_handler->GetNetworkListByType(
-      chromeos::NetworkTypePattern::Default(),
+      ash::NetworkTypePattern::Default(),
       true,   // configured_only
       false,  // visible_only
       0,      // no limit to number of results
       &state_list);
 
-  for (const chromeos::NetworkState* state : state_list) {
+  for (const ash::NetworkState* state : state_list) {
     // Determine the connection state and signal strength for |state|.
     em::NetworkState::ConnectionState connection_state_enum =
         em::NetworkState::UNKNOWN;

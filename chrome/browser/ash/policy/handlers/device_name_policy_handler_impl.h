@@ -49,7 +49,7 @@ class DeviceNamePolicyHandlerImpl
       chromeos::NetworkStateHandler* handler);
 
   // NetworkStateHandlerObserver overrides
-  void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
+  void DefaultNetworkChanged(const ash::NetworkState* network) override;
   void OnShuttingDown() override;
 
   void OnDeviceHostnamePropertyChanged();

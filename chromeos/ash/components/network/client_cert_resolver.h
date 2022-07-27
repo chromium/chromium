@@ -20,6 +20,8 @@
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/network/network_policy_observer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 
@@ -30,7 +32,6 @@ class Value;
 
 namespace chromeos {
 
-class NetworkState;
 class ManagedNetworkConfigurationHandler;
 
 namespace internal {

@@ -537,8 +537,8 @@ class CrostiniManager : public KeyedService,
       const vm_tools::cicerone::StartLxdProgressSignal& signal) override;
 
   // chromeos::NetworkStateHandlerObserver overrides:
-  void ActiveNetworksChanged(const std::vector<const chromeos::NetworkState*>&
-                                 active_networks) override;
+  void ActiveNetworksChanged(
+      const std::vector<const ash::NetworkState*>& active_networks) override;
   void OnShuttingDown() override;
 
   // chromeos::PowerManagerClient::Observer overrides:

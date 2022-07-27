@@ -302,9 +302,9 @@ class ArcSettingsServiceTest : public InProcessBrowserTest {
   void SetProxyConfigForNetworkService(const std::string& service_path,
                                        base::Value proxy_config) {
     ProxyConfigDictionary proxy_config_dict(std::move(proxy_config));
-    const chromeos::NetworkState* network = chromeos::NetworkHandler::Get()
-                                                ->network_state_handler()
-                                                ->GetNetworkState(service_path);
+    const ash::NetworkState* network = chromeos::NetworkHandler::Get()
+                                           ->network_state_handler()
+                                           ->GetNetworkState(service_path);
     ASSERT_TRUE(network);
     chromeos::proxy_config::SetProxyConfigForNetwork(proxy_config_dict,
                                                      *network);
@@ -604,9 +604,9 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest, TwoSourcesTest) {
   proxy_config.SetKey("mode",
                       base::Value(ProxyPrefs::kAutoDetectProxyModeName));
   ProxyConfigDictionary proxy_config_dict(std::move(proxy_config));
-  const chromeos::NetworkState* network = chromeos::NetworkHandler::Get()
-                                              ->network_state_handler()
-                                              ->DefaultNetwork();
+  const ash::NetworkState* network = chromeos::NetworkHandler::Get()
+                                         ->network_state_handler()
+                                         ->DefaultNetwork();
   ASSERT_TRUE(network);
   chromeos::proxy_config::SetProxyConfigForNetwork(proxy_config_dict, *network);
   RunUntilIdle();

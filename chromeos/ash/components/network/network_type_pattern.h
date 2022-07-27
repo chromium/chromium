@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 // Class to convert Shill network type names to explicit types and do pattern
 // matching for grouped types (e.g. Wireless). Grouped type matching is also
@@ -73,11 +73,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkTypePattern {
   int pattern_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash/components/.
-namespace ash {
-using ::chromeos::NetworkTypePattern;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::NetworkTypePattern;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_TYPE_PATTERN_H_

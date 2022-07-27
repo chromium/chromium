@@ -53,7 +53,7 @@ NetworkConnectivityMetricsService::~NetworkConnectivityMetricsService() {
 }
 
 void NetworkConnectivityMetricsService::NetworkConnectionStateChanged(
-    const chromeos::NetworkState* network) {
+    const NetworkState* network) {
   // If there is at least one connected network, the device is online.
   if (network_state_handler_->ConnectedNetworkByType(
           NetworkTypePattern::Default())) {

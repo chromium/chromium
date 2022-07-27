@@ -72,7 +72,7 @@ class FastPairDiscoverableScannerImpl
   void OnDeviceLost(device::BluetoothDevice* device) override;
 
   // chromeos::NetworkStateHandlerObserver:
-  void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
+  void DefaultNetworkChanged(const NetworkState* network) override;
 
  private:
   void OnModelIdRetrieved(const std::string& address,

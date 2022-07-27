@@ -453,7 +453,7 @@ class DriveIntegrationService::PreferenceWatcher
 
   // ash::NetworkPortalDetector::Observer
   void OnPortalDetectionCompleted(
-      const chromeos::NetworkState* network,
+      const ash::NetworkState* network,
       const ash::NetworkPortalDetector::CaptivePortalStatus status) override {
     last_portal_status_ = status;
 

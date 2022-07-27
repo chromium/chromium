@@ -7,10 +7,10 @@
 
 #include "chrome/browser/ui/ash/network/network_connect_delegate_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_state.h"
 
 namespace chromeos {
-
-class NetworkState;
 
 namespace cellular_setup {
 

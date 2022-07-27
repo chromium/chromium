@@ -154,7 +154,7 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   void TimezoneChanged(const icu::TimeZone& timezone) override;
 
   // NetworkStateHandlerObserver:
-  void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
+  void DefaultNetworkChanged(const ash::NetworkState* network) override;
 
   // Retrieves Chrome's state for the settings that need to be synced on the
   // initial Android boot and send it to Android. Called by ArcSettingsService.
@@ -343,7 +343,7 @@ void ArcSettingsServiceImpl::TimezoneChanged(const icu::TimeZone& timezone) {
 // - ONC policy changes;
 // - DHCP settings the WPAD URL via  option 252.
 void ArcSettingsServiceImpl::DefaultNetworkChanged(
-    const chromeos::NetworkState* network) {
+    const ash::NetworkState* network) {
   if (!network)
     return;
 

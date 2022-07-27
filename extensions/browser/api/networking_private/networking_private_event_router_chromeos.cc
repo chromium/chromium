@@ -21,9 +21,9 @@
 #include "extensions/common/api/networking_private.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-using chromeos::DeviceState;
+using ::ash::DeviceState;
+using ::ash::NetworkState;
 using chromeos::NetworkHandler;
-using chromeos::NetworkState;
 using chromeos::NetworkStateHandler;
 
 namespace extensions {
@@ -249,7 +249,7 @@ void NetworkingPrivateEventRouterImpl::DevicePropertiesUpdated(
 
   NetworkStateHandler::NetworkStateList cellular_networks;
   NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
-      chromeos::NetworkTypePattern::Cellular(), false /* configured_only */,
+      ash::NetworkTypePattern::Cellular(), false /* configured_only */,
       true /* visible_only */, -1 /* default limit */, &cellular_networks);
   for (const NetworkState* network : cellular_networks) {
     NetworkPropertiesUpdated(network);
@@ -260,7 +260,7 @@ void NetworkingPrivateEventRouterImpl::ScanCompleted(
     const DeviceState* device) {
   // We include the scanning state for Cellular networks, so notify the UI when
   // a scan completes.
-  if (chromeos::NetworkTypePattern::Wireless().MatchesType(device->type()))
+  if (ash::NetworkTypePattern::Wireless().MatchesType(device->type()))
     DevicePropertiesUpdated(device);
 }
 

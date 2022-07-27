@@ -137,11 +137,11 @@ std::string BuildRequest() {
 // Finds the IP address of the preferred interface of network type |type|
 // to bind the socket and inserts the address into |bind_address_list|. This
 // ChromeOS version can prioritize wifi and ethernet interfaces.
-void InsertBestBindAddressChromeOS(const chromeos::NetworkTypePattern& type,
+void InsertBestBindAddressChromeOS(const ash::NetworkTypePattern& type,
                                    net::IPAddressList* bind_address_list) {
-  const chromeos::NetworkState* state = chromeos::NetworkHandler::Get()
-                                            ->network_state_handler()
-                                            ->ConnectedNetworkByType(type);
+  const ash::NetworkState* state = chromeos::NetworkHandler::Get()
+                                       ->network_state_handler()
+                                       ->ConnectedNetworkByType(type);
   if (!state)
     return;
   std::string state_ip_address = state->GetIpAddress();
@@ -157,9 +157,9 @@ net::IPAddressList GetBestBindAddressOnUIThread() {
 
   net::IPAddressList bind_address_list;
   if (chromeos::NetworkHandler::IsInitialized()) {
-    InsertBestBindAddressChromeOS(chromeos::NetworkTypePattern::Ethernet(),
+    InsertBestBindAddressChromeOS(ash::NetworkTypePattern::Ethernet(),
                                   &bind_address_list);
-    InsertBestBindAddressChromeOS(chromeos::NetworkTypePattern::WiFi(),
+    InsertBestBindAddressChromeOS(ash::NetworkTypePattern::WiFi(),
                                   &bind_address_list);
   }
   return bind_address_list;

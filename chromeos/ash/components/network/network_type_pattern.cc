@@ -11,7 +11,7 @@
 #include "chromeos/ash/components/network/tether_constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -168,4 +168,4 @@ std::string NetworkTypePattern::ToDebugString() const {
 
 NetworkTypePattern::NetworkTypePattern(int pattern) : pattern_(pattern) {}
 
-}  // namespace chromeos
+}  // namespace ash

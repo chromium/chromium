@@ -182,7 +182,7 @@ class NetworkingAttributesAshTest : public testing::Test {
     service_client_run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(&observer);
 
-    const chromeos::DeviceState* device_state =
+    const ash::DeviceState* device_state =
         chromeos::NetworkHandler::Get()
             ->network_state_handler()
             ->GetDeviceState(kWifiDevicePath);

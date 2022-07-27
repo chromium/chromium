@@ -119,7 +119,7 @@ ash::UpdateSeverity GetUpdateSeverity(ash::UpdateType update_type,
   }
 }
 
-const chromeos::NetworkState* GetNetworkState(const std::string& network_id) {
+const ash::NetworkState* GetNetworkState(const std::string& network_id) {
   if (network_id.empty())
     return nullptr;
   return chromeos::NetworkHandler::Get()
@@ -132,7 +132,7 @@ bool ShouldOpenCellularSetupPsimFlowOnClick(const std::string& network_id) {
   // checking a networks activation state is |kActivationStateNotActivated|
   // ensures the current network is a phyical SIM network.
 
-  const chromeos::NetworkState* network_state = GetNetworkState(network_id);
+  const ash::NetworkState* network_state = GetNetworkState(network_id);
   return network_state && network_state->type() == shill::kTypeCellular &&
          network_state->activation_state() ==
              shill::kActivationStateNotActivated &&
@@ -564,7 +564,7 @@ void SystemTrayClientImpl::ShowNetworkConfigure(const std::string& network_id) {
     return;
 
   DCHECK(chromeos::NetworkHandler::IsInitialized());
-  const chromeos::NetworkState* network_state = GetNetworkState(network_id);
+  const ash::NetworkState* network_state = GetNetworkState(network_id);
   if (!network_state) {
     LOG(ERROR) << "Network not found: " << network_id;
     return;
@@ -658,7 +658,7 @@ void SystemTrayClientImpl::ShowNetworkSettingsHelper(
   }
 
   std::string page = chromeos::settings::mojom::kNetworkSectionPath;
-  const chromeos::NetworkState* network_state = GetNetworkState(network_id);
+  const ash::NetworkState* network_state = GetNetworkState(network_id);
   if (!network_id.empty() && network_state) {
     // TODO(khorimoto): Use a more general path name here. This path is named
     // kWifi*, but it's actually a generic page.

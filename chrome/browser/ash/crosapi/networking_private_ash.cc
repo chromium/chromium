@@ -16,8 +16,8 @@
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
+using ::ash::NetworkState;
 using chromeos::NetworkHandler;
-using chromeos::NetworkState;
 using chromeos::NetworkStateHandler;
 
 namespace crosapi {
@@ -439,7 +439,7 @@ void NetworkingPrivateAsh::DeviceListChanged() {
 }
 
 void NetworkingPrivateAsh::DevicePropertiesUpdated(
-    const chromeos::DeviceState* device) {
+    const ash::DeviceState* device) {
   // networkingPrivate uses a single event for device changes.
   DeviceListChanged();
 
@@ -449,9 +449,9 @@ void NetworkingPrivateAsh::DevicePropertiesUpdated(
 
   NetworkStateHandler::NetworkStateList cellular_networks;
   NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
-      chromeos::NetworkTypePattern::Cellular(), false /* configured_only */,
+      ash::NetworkTypePattern::Cellular(), false /* configured_only */,
       true /* visible_only */, -1 /* default limit */, &cellular_networks);
-  for (const chromeos::NetworkState* network : cellular_networks) {
+  for (const NetworkState* network : cellular_networks) {
     NetworkPropertiesUpdated(network);
   }
 }
@@ -473,7 +473,7 @@ void NetworkingPrivateAsh::NetworkListChanged() {
 }
 
 void NetworkingPrivateAsh::NetworkPropertiesUpdated(
-    const chromeos::NetworkState* network) {
+    const NetworkState* network) {
   for (auto& observer : observers_) {
     observer->OnNetworksChangedEvent(
         std::vector<std::string>(1, network->guid()));

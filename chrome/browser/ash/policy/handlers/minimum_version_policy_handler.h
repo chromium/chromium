@@ -146,7 +146,7 @@ class MinimumVersionPolicyHandler
   void OnUpdate(const BuildState* build_state) override;
 
   // NetworkStateHandlerObserver:
-  void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
+  void DefaultNetworkChanged(const ash::NetworkState* network) override;
   void OnShuttingDown() override;
 
   // UpdateEngineClient::Observer:

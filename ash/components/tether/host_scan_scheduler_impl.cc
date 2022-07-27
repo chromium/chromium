@@ -82,11 +82,11 @@ HostScanSchedulerImpl::~HostScanSchedulerImpl() {
 }
 
 void HostScanSchedulerImpl::AttemptScanIfOffline() {
-  const chromeos::NetworkTypePattern network_type_pattern =
+  const NetworkTypePattern network_type_pattern =
       switches::ShouldTetherHostScansIgnoreWiredConnections()
-          ? chromeos::NetworkTypePattern::Wireless()
-          : chromeos::NetworkTypePattern::Default();
-  const chromeos::NetworkState* first_network =
+          ? NetworkTypePattern::Wireless()
+          : NetworkTypePattern::Default();
+  const NetworkState* first_network =
       network_state_handler_->FirstNetworkByType(network_type_pattern);
   if (IsOnlineOrHasActiveTetherConnection(first_network)) {
     PA_LOG(VERBOSE) << "Skipping scan attempt because the device is already "

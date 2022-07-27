@@ -34,10 +34,10 @@ bool InstallEventLogCollectorBase::GetOnlineState() {
   chromeos::NetworkHandler::Get()
       ->network_state_handler()
       ->GetNetworkListByType(
-          chromeos::NetworkTypePattern::Default(), true /* configured_only */,
+          ash::NetworkTypePattern::Default(), true /* configured_only */,
           false /* visible_only */, 0 /* limit */, &network_state_list);
 
-  for (const chromeos::NetworkState* network_state : network_state_list) {
+  for (const ash::NetworkState* network_state : network_state_list) {
     if (network_state->connection_state() == shill::kStateOnline) {
       return true;
     }

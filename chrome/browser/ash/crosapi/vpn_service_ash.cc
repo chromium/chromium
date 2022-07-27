@@ -593,7 +593,7 @@ void VpnServiceAsh::NetworkListChanged() {
 
   auto* network_handler = chromeos::NetworkHandler::Get();
   network_handler->network_state_handler()->GetVisibleNetworkListByType(
-      chromeos::NetworkTypePattern::VPN(), &network_list);
+      ash::NetworkTypePattern::VPN(), &network_list);
 
   for (auto* network_state : network_list) {
     network_handler->network_configuration_handler()->GetShillProperties(

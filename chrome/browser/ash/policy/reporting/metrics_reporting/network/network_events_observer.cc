@@ -22,11 +22,11 @@
 namespace reporting {
 namespace {
 
-bool IsConnectedWifiNetwork(const ::chromeos::NetworkState* network_state) {
+bool IsConnectedWifiNetwork(const ash::NetworkState* network_state) {
   const auto network_type =
       ::ash::NetworkTypePattern::Primitive(network_state->type());
   return network_state->IsConnectedState() &&
-         network_type.Equals(::ash::NetworkTypePattern::WiFi());
+         network_type.Equals(ash::NetworkTypePattern::WiFi());
 }
 
 }  // namespace

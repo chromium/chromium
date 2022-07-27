@@ -53,7 +53,7 @@ PrefService* local_state() {
 MinimumVersionPolicyHandler::NetworkStatus GetCurrentNetworkStatus() {
   chromeos::NetworkStateHandler* network_state_handler =
       chromeos::NetworkHandler::Get()->network_state_handler();
-  const chromeos::NetworkState* current_network =
+  const ash::NetworkState* current_network =
       network_state_handler->DefaultNetwork();
   if (!current_network || !current_network->IsConnectedState())
     return MinimumVersionPolicyHandler::NetworkStatus::kOffline;
@@ -570,7 +570,7 @@ void MinimumVersionPolicyHandler::HideNotification() const {
 }
 
 void MinimumVersionPolicyHandler::DefaultNetworkChanged(
-    const chromeos::NetworkState* network) {
+    const ash::NetworkState* network) {
   // Close notification if network has switched to one that allows updates.
   const NetworkStatus status = GetCurrentNetworkStatus();
   if (status == NetworkStatus::kAllowed && notification_handler_) {

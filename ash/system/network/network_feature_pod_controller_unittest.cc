@@ -38,8 +38,6 @@
 namespace ash {
 namespace {
 
-using chromeos::NetworkTypePattern;
-
 const char* kStubCellularDevice = "/device/stub_cellular_device";
 
 // The GUIDs used for the different network types.

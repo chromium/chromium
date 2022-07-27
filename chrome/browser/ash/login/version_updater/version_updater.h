@@ -15,14 +15,14 @@
 #include "chrome/browser/ash/login/version_updater/update_time_estimator.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
-// TODO(https://crbug.com/1164001): move to forward declaration when migrated.
-#include "chromeos/ash/components/network/network_state.h"
 
 namespace base {
 class DefaultTickClock;
 }
 
 namespace ash {
+
+class NetworkState;
 
 // Tries to update system, interacting with UpdateEnglineClient and
 // NetworkPortalDetector. Uses callbacks - methods of `delegate_`, which may

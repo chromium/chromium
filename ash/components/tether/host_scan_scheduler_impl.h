@@ -17,8 +17,6 @@
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 namespace base {
@@ -30,6 +28,8 @@ class SessionManager;
 }  // namespace session_manager
 
 namespace ash {
+
+class NetworkTypePattern;
 
 namespace tether {
 

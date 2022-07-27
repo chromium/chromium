@@ -7,6 +7,8 @@
 
 #include <string>
 
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 
 namespace sync_pb {
@@ -14,8 +16,6 @@ class WifiConfigurationSpecifics;
 }
 
 namespace chromeos {
-
-class NetworkState;
 
 namespace sync_wifi {
 

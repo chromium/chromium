@@ -133,7 +133,7 @@ NetworkPortalNotificationController::~NetworkPortalNotificationController() {
 }
 
 void NetworkPortalNotificationController::OnPortalDetectionCompleted(
-    const NetworkState* network,
+    const ash::NetworkState* network,
     const NetworkPortalDetector::CaptivePortalStatus status) {
   if (!network ||
       status != NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL) {
@@ -200,7 +200,7 @@ void NetworkPortalNotificationController::OnDialogDestroyed(
 
 std::unique_ptr<message_center::Notification>
 NetworkPortalNotificationController::CreateDefaultCaptivePortalNotification(
-    const NetworkState* network) {
+    const ash::NetworkState* network) {
   auto delegate =
       base::MakeRefCounted<NetworkPortalNotificationControllerDelegate>(
           network->guid(), weak_factory_.GetWeakPtr());

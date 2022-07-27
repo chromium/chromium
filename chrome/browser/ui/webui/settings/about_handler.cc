@@ -480,8 +480,7 @@ void AboutHandler::HandleCheckInternetConnection(
 
   chromeos::NetworkStateHandler* network_state_handler =
       chromeos::NetworkHandler::Get()->network_state_handler();
-  const chromeos::NetworkState* network =
-      network_state_handler->DefaultNetwork();
+  const ash::NetworkState* network = network_state_handler->DefaultNetwork();
   ResolveJavascriptCallback(base::Value(callback_id),
                             base::Value(network && network->IsOnline()));
 }

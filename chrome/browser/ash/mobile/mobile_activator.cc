@@ -51,7 +51,7 @@ const int kOTASPRetryDelay = 40000;
 const int kMaxReconnectTime = 30000;
 
 // Returns true if the device follows the simple activation flow.
-bool IsSimpleActivationFlow(const chromeos::NetworkState* network) {
+bool IsSimpleActivationFlow(const NetworkState* network) {
   return (network->activation_type() == shill::kActivationTypeNonCellular ||
           network->activation_type() == shill::kActivationTypeOTA);
 }

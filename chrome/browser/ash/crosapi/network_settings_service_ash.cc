@@ -71,7 +71,7 @@ void NetworkSettingsServiceAsh::BindReceiver(
 }
 
 void NetworkSettingsServiceAsh::DefaultNetworkChanged(
-    const chromeos::NetworkState* network) {
+    const ash::NetworkState* network) {
   if (!network) {
     cached_wpad_url_ = GURL();
     return;
