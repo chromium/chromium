@@ -138,9 +138,6 @@ message CommitMessage {
 }
 
 message GetUpdatesMessage {
-  reserved 1;
-  reserved "from_timestamp";
-
   // Indicates the reason for the GetUpdatesMessage.
   // This was *mostly* deprecated in M29.  GetUpdatesOrigin is the new way to
   // encode the reason for the GetUpdates request, but some parts of the server
@@ -151,11 +148,6 @@ message GetUpdatesMessage {
 
   // Indicates whether related folders should be fetched.
   optional bool fetch_folders = 3 [default = true];
-
-  // Client-requested limit on the maximum number of updates to return at once.
-  // The server may opt to return fewer updates than this amount, but it should
-  // not return more.
-  optional int32 batch_size = 5;
 
   // Per-datatype progress marker.
   //
@@ -197,8 +189,12 @@ message GetUpdatesMessage {
   // Set of optional per-client datatype contexts.
   repeated DataTypeContext client_contexts = 11;
 
+  reserved 1;
+  reserved "from_timestamp";
   reserved 4;
   reserved "requested_types";
+  reserved 5;
+  reserved "batch_size";
 }
 
 // Message from a client asking the server to clear its data. This causes the

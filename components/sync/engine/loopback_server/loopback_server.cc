@@ -465,16 +465,13 @@ bool LoopbackServer::HandleGetUpdatesRequest(
     }
   }
 
-  int max_batch_size = max_get_updates_batch_size_;
-  if (get_updates.batch_size() > 0)
-    max_batch_size = std::min(max_batch_size, get_updates.batch_size());
-
-  if (static_cast<int>(wanted_entities.size()) > max_batch_size) {
-    response->set_changes_remaining(wanted_entities.size() - max_batch_size);
+  if (static_cast<int>(wanted_entities.size()) > max_get_updates_batch_size_) {
+    response->set_changes_remaining(wanted_entities.size() -
+                                    max_get_updates_batch_size_);
     std::partial_sort(wanted_entities.begin(),
-                      wanted_entities.begin() + max_batch_size,
+                      wanted_entities.begin() + max_get_updates_batch_size_,
                       wanted_entities.end(), SortByVersion);
-    wanted_entities.resize(max_batch_size);
+    wanted_entities.resize(max_get_updates_batch_size_);
   }
 
   bool send_encryption_keys_based_on_nigori = false;

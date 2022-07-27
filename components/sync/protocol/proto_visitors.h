@@ -544,7 +544,6 @@ VISIT_PROTO_FIELDS(const sync_pb::GetUpdatesCallerInfo& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::GetUpdatesMessage& proto) {
   VISIT(caller_info);
   VISIT(fetch_folders);
-  VISIT(batch_size);
   VISIT_REP(from_progress_marker);
   VISIT(streaming);
   VISIT(need_encryption_key);
