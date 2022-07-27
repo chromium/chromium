@@ -94,6 +94,10 @@ void UserCloudPolicyManager::SetPoliciesRequired(bool required) {
   RefreshPolicies();
 }
 
+bool UserCloudPolicyManager::ArePoliciesRequired() const {
+  return policies_required_;
+}
+
 void UserCloudPolicyManager::Connect(
     PrefService* local_state,
     std::unique_ptr<CloudPolicyClient> client) {

@@ -342,6 +342,7 @@ TEST_F(UserPolicySigninServiceTest, InitWhileSignedOut) {
 
   // UserCloudPolicyManager should not be initialized.
   ASSERT_FALSE(manager_->core()->service());
+  EXPECT_FALSE(manager_->ArePoliciesRequired());
 }
 
 // TODO(crbug.com/1312544): Extend the test coverage by merging tests from
@@ -373,6 +374,7 @@ TEST_F(UserPolicySigninServiceTest, InitRefreshTokenAvailableBeforeSignin) {
   // for the authenticated account id.
   EXPECT_EQ(mock_store_->signin_account_id(), test_account_id_);
   ASSERT_TRUE(IsRequestActive());
+  EXPECT_TRUE(manager_->ArePoliciesRequired());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -397,6 +399,7 @@ TEST_F(UserPolicySigninServiceSignedInTest, InitWhileSignedIn) {
   // Client registration should be in progress since we now have an oauth token.
   EXPECT_EQ(mock_store_->signin_account_id(), test_account_id_);
   ASSERT_TRUE(IsRequestActive());
+  EXPECT_TRUE(manager_->ArePoliciesRequired());
 }
 
 TEST_F(UserPolicySigninServiceSignedInTest, InitWhileSignedInOAuthError) {
@@ -421,6 +424,7 @@ TEST_F(UserPolicySigninServiceSignedInTest, InitWhileSignedInOAuthError) {
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       error);
   ASSERT_FALSE(IsRequestActive());
+  EXPECT_TRUE(manager_->ArePoliciesRequired());
 }
 
 TEST_F(UserPolicySigninServiceTest, SignInAfterInit) {
@@ -444,6 +448,7 @@ TEST_F(UserPolicySigninServiceTest, SignInAfterInit) {
 
   // Client registration should be in progress since we have an oauth token.
   ASSERT_TRUE(IsRequestActive());
+  EXPECT_TRUE(manager_->ArePoliciesRequired());
 }
 
 TEST_F(UserPolicySigninServiceTest, SignInWithNonEnterpriseUser) {
@@ -465,6 +470,7 @@ TEST_F(UserPolicySigninServiceTest, SignInWithNonEnterpriseUser) {
   // DMToken request active.
   ASSERT_TRUE(!manager_->core()->service());
   ASSERT_FALSE(IsRequestActive());
+  EXPECT_FALSE(manager_->ArePoliciesRequired());
 }
 
 TEST_F(UserPolicySigninServiceTest, UnregisteredClient) {
@@ -492,6 +498,7 @@ TEST_F(UserPolicySigninServiceTest, UnregisteredClient) {
 
   // Client registration should be in progress since we have an oauth token.
   ASSERT_TRUE(IsRequestActive());
+  EXPECT_TRUE(manager_->ArePoliciesRequired());
 }
 
 TEST_F(UserPolicySigninServiceTest, RegisteredClient) {

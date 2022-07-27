@@ -159,8 +159,10 @@ void UserPolicySigninServiceBase::InitializeForSignedInUser(
     scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory) {
   DCHECK(account_id.is_valid());
   UserCloudPolicyManager* manager = policy_manager();
-  if (!ShouldLoadPolicyForUser(account_id.GetUserEmail())) {
-    manager->SetPoliciesRequired(false);
+  bool should_load_policies =
+      ShouldLoadPolicyForUser(account_id.GetUserEmail());
+  manager->SetPoliciesRequired(should_load_policies);
+  if (!should_load_policies) {
     DVLOG(1) << "Policy load not enabled for user: "
              << account_id.GetUserEmail();
     return;

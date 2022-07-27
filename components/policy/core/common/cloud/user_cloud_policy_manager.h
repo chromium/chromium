@@ -65,6 +65,7 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
   // This might be set to false if the user profile is an unmanaged consumer
   // profile.
   void SetPoliciesRequired(bool required);
+  bool ArePoliciesRequired() const;
 
   // Initializes the cloud connection. |local_state| must stay valid until this
   // object is deleted or DisconnectAndRemovePolicy() gets called. Virtual for
