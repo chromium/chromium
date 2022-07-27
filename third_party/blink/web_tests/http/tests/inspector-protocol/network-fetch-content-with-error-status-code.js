@@ -2,6 +2,20 @@
   const {page, session, dp} = await testRunner.startBlank(
       `Test to make sure if an xhr is fetched with the response as a blob and cross origin devtools can get body.`);
 
+  const protocolMessages = [];
+  const originalDispatchMessage = DevToolsAPI.dispatchMessage;
+  DevToolsAPI.dispatchMessage = (message) => {
+    protocolMessages.push(message);
+    originalDispatchMessage(message);
+  };
+  window.onerror = (msg) => testRunner.log('onerror: ' + msg);
+  window.onunhandledrejection = (e) => testRunner.log('onunhandledrejection: ' + e.reason);
+  let errorForLog = new Error();
+  setTimeout(() => {
+    testRunner.log(protocolMessages);
+    testRunner.die('Timeout', errorForLog);
+  }, 28000);
+
   // This url should be cross origin.
   const url = 'https://127.0.0.1:8443/inspector-protocol/resources/cors-data.php';
 
@@ -33,6 +47,7 @@
   `);
   testRunner.log('Evaled fetch command in page');
   await gotAllEvents;
+  errorForLog = new Error();
 
   let getRequestEventParams;
   let optionsRequestEventParams;
@@ -113,6 +128,7 @@
     testRunner.log(`  Has extra info: ${optionsResponseExtra}`);
 
     const message = await dp.Network.getResponseBody({requestId: getRequestEventParams.requestId});
+    errorForLog = new Error();
     if (message.error) testRunner.log(message.error);
     testRunner.log('Response Body: ' + message.result.body);
     testRunner.completeTest();
