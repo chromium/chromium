@@ -662,7 +662,6 @@
       'mac-arm-builder-perf-pgo': 'official_goma_mac_arm_perf_pgo',
       'mac-builder-perf': 'official_goma_mac_perf',
       'mac-builder-perf-pgo': 'official_goma_mac_perf_pgo',
-      'mac-builder-perf-pinpoint': 'official_goma_mac_perf_pinpoint',
       'win64-builder-perf': 'official_goma_perf',
       'win64-builder-perf-pgo': 'official_goma_perf_pgo',
     },
@@ -1266,7 +1265,6 @@
       'Linux Builder Perf PGO': 'official_goma_linux_perf_pgo',
       'Mac Builder Perf': 'official_goma_mac_perf',
       'Mac Builder Perf PGO': 'official_goma_mac_perf_pgo',
-      'Mac Builder Perf Pinpoint': 'official_goma_mac_perf_pinpoint',
       'Mac arm Builder Perf': 'official_goma_mac_arm_perf',
       'Mac arm Builder Perf PGO': 'official_goma_mac_arm_perf_pgo',
       'Win x64 Builder Perf': 'official_goma_perf',
@@ -3224,11 +3222,11 @@
     ],
 
     'official_goma_mac_arm_perf': [
-      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'arm64', 'pgo_phase_0',
+      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'arm64', 'pgo_phase_0',
     ],
 
     'official_goma_mac_arm_perf_pgo': [
-      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'arm64',
+      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'arm64',
     ],
 
     'official_goma_mac_arm_pgo': [
@@ -3240,11 +3238,7 @@
     ],
 
     'official_goma_mac_perf_pgo': [
-      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols',
-    ],
-
-    'official_goma_mac_perf_pinpoint': [
-       'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'no_symbols', 'pgo_phase_0',
+      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols',
     ],
 
     'official_goma_mac_pgo': [

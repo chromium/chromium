@@ -140,19 +140,7 @@
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
       "is_official_build": true,
-      "symbol_level": 2,
-      "use_goma": true
-    }
-  },
-  "Mac Builder Perf Pinpoint": {
-    "gn_args": {
-      "chrome_pgo_phase": 0,
-      "enable_keystone_registration_framework": false,
-      "ignore_missing_widevine_signing_cert": true,
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "strip_absolute_paths_from_debug_symbols": true,
-      "symbol_level": 0,
+      "symbol_level": 1,
       "use_goma": true
     }
   },
@@ -164,7 +152,7 @@
       "is_chrome_branded": true,
       "is_official_build": true,
       "strip_absolute_paths_from_debug_symbols": true,
-      "symbol_level": 2,
+      "symbol_level": 1,
       "target_cpu": "arm64",
       "use_goma": true
     }
@@ -175,7 +163,7 @@
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
       "is_official_build": true,
-      "symbol_level": 2,
+      "symbol_level": 1,
       "target_cpu": "arm64",
       "use_goma": true
     }
