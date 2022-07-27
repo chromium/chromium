@@ -67,7 +67,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The page which is shown in the Phone Hub tray bubble when it is first
     opened. This is only emitted when we know the phone is connectable because
-    it has been discovered nearby in the past 10 minutes.
+    it has been discovered nearby in the past 2 minutes.
   </summary>
 </histogram>
 
