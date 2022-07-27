@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
 
+#include <math.h>
+
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/layout/text_decoration_offset_base.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
@@ -189,8 +191,8 @@ gfx::RectF ComputeWavyPatternRect(const WavyParams& params,
   // avoid messing with the vertical antialiasing.
   gfx::RectF stroke_rect = stroke_path.StrokeBoundingRect(stroke_data);
   DCHECK_LT(stroke_rect.y(), 0.f);
-  float top = -std::ceilf(std::fabsf(stroke_rect.y()));
-  float bottom = std::ceilf(stroke_rect.bottom());
+  float top = -ceilf(fabsf(stroke_rect.y()));
+  float bottom = ceilf(stroke_rect.bottom());
   return {0.f, top, 2.f * WavyStep(params), bottom - top};
 }
 
