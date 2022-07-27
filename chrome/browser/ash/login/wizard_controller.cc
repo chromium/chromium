@@ -1901,28 +1901,19 @@ void WizardController::OnDeviceDisabledChecked(bool device_disabled) {
   prescribed_enrollment_config_ =
       policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
 
-  bool configuration_forced_enrollment = false;
-  auto* start_enrollment_value = wizard_context_->configuration.FindKeyOfType(
-      configuration::kWizardAutoEnroll, base::Value::Type::BOOLEAN);
-  if (start_enrollment_value)
-    configuration_forced_enrollment = start_enrollment_value->GetBool();
-
   if (device_disabled) {
     demo_setup_controller_.reset();
     ShowDeviceDisabledScreen();
   } else if (demo_setup_controller_) {
     ShowDemoModeSetupScreen();
   } else if (wizard_context_->enrollment_triggered_early ||
-             prescribed_enrollment_config_.should_enroll() ||
-             configuration_forced_enrollment) {
+             prescribed_enrollment_config_.should_enroll()) {
     VLOG(1) << "StartEnrollment from OnDeviceDisabledChecked("
             << "device_disabled=" << device_disabled << ") "
             << "skip_update_enroll_after_eula_="
             << wizard_context_->enrollment_triggered_early
             << ", prescribed_enrollment_config_.should_enroll()="
-            << prescribed_enrollment_config_.should_enroll()
-            << ", configuration_forced_enrollment="
-            << configuration_forced_enrollment;
+            << prescribed_enrollment_config_.should_enroll();
     StartEnrollmentScreen(wizard_context_->enrollment_triggered_early);
   } else {
     PerformOOBECompletedActions();

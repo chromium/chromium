@@ -33,8 +33,6 @@ extern const char kArcTosAutoAccept[];
 
 extern const char kUpdateSkipUpdate[];
 
-extern const char kWizardAutoEnroll[];
-
 extern const char kRestoreAfterRollback[];
 extern const char kEnrollmentAssetId[];
 extern const char kEnrollmentLocation[];

@@ -78,10 +78,6 @@ const char kUpdateSkipUpdate[] = "updateSkipNonCritical";
 
 // == Wizard controller:
 
-// Boolean value, controls if WizardController should automatically start
-// enrollment at appropriate moment.
-const char kWizardAutoEnroll[] = "wizardAutoEnroll";
-
 // String value, containing device requisition parameter.
 const char kDeviceRequisition[] = "deviceRequisition";
 
@@ -121,8 +117,6 @@ constexpr struct {
      ConfigurationHandlerSide::HANDLER_JS},
     {kEULAAutoAccept, ValueType::BOOLEAN, ConfigurationHandlerSide::HANDLER_JS},
     {kUpdateSkipUpdate, ValueType::BOOLEAN,
-     ConfigurationHandlerSide::HANDLER_CPP},
-    {kWizardAutoEnroll, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_CPP},
     {kRestoreAfterRollback, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_CPP},

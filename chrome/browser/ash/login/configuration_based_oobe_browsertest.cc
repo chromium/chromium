@@ -201,12 +201,4 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestDeviceRequisition) {
             "some_requisition");
 }
 
-// Check that configuration allows to skip Update screen and get to Enrollment
-// screen.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationEnrollmentTest, TestSkipUpdate) {
-  LoadConfiguration();
-  OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
-}
-
 }  // namespace ash
