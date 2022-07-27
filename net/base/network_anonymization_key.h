@@ -26,17 +26,14 @@ namespace net {
 // will always be populated.
 
 // `frame_site` represents the SchemefulSite of the requestor frame. This will
-// be empty when the feature flag to enable double keyed NetworkAnonymizationKey
-// is enabled. TODO @brgoldstein create feature flag to enable double keyed
-// NetworkAnonymizationKeys.
+// be empty when kEnableDoubleKeyNetworkAnonymizationKey is enabled.
 
 //`is_cross_site` is an expiremental boolean that will be used with the
 //`top_frame_site` to create a partition key that separates the
-//`top_frame_site`s first party partition from
-// any cross-site iframes. This will be used only when the feature flag to
-// enable double keyed NetworkAnonymizationKey's is enabled and the feature flag
-// to enable cross-site subframe partitioning is enabled. TODO: brgoldstein add
-// these feature flags.
+//`top_frame_site`s first party partition from any cross-site iframes. This will
+// be used only when `kEnableCrossSiteFlagNetworkAnonymizationKey` is enabled.
+// When `kEnableCrossSiteFlagNetworkAnonymizationKey` is disabled,
+// `is_cross_site_` will be an empty optional.
 
 // The following show how the `is_cross_site` boolean is populated for the
 // innermost frame in the chain.
@@ -60,7 +57,7 @@ class NET_EXPORT NetworkAnonymizationKey {
   NetworkAnonymizationKey(
       const SchemefulSite& top_frame_site,
       const absl::optional<SchemefulSite>& frame_site,
-      bool is_cross_site = false,
+      const absl::optional<bool> is_cross_site = absl::nullopt,
       const absl::optional<base::UnguessableToken> nonce = absl::nullopt);
 
   // Construct an empty key.
@@ -124,17 +121,34 @@ class NET_EXPORT NetworkAnonymizationKey {
     return frame_site_;
   }
 
-  const absl::optional<bool>& GetIsCrossSite() const { return is_cross_site_; }
+  bool GetIsCrossSite() const;
 
   const absl::optional<base::UnguessableToken>& GetNonce() const {
     return nonce_;
   }
 
+  // Returns true if the NetworkAnonymizationKey has a triple keyed scheme. This
+  // means the values of the NetworkAnonymizationKey are as follows:
+  // `top_frame_site` -> the schemeful site of the top level page.
+  // `frame_site ` -> the schemeful site of the requestor frame
+  // `is_cross_site` -> nullopt
+  static bool IsFrameSiteEnabled();
+
   // Returns true if the NetworkAnonymizationKey has a double keyed scheme. This
   // means the values of the NetworkAnonymizationKey are as follows:
   // `top_frame_site` -> the schemeful site of the top level page.
   // `frame_site ` -> nullopt
-  static bool IsDoubleKeyingEnabled();
+  // `is_cross_site` -> nullopt
+  static bool IsDoubleKeySchemeEnabled();
+
+  // Returns true if the NetworkAnonymizationKey has a <double keyed +
+  // is_cross_site> scheme. This means the values of the NetworkAnonymizationKey
+  // are as follows:
+  // `top_frame_site` -> the schemeful site of the top level page.
+  // `frame_site ` -> nullopt
+  // `is_cross_site` -> a boolean indicating if the requestor frame site is
+  // cross site from the top level site.
+  static bool IsCrossSiteFlagSchemeEnabled();
 
  private:
   std::string GetSiteDebugString(

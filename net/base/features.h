@@ -238,10 +238,22 @@ NET_EXPORT extern const base::Feature
 NET_EXPORT extern const base::Feature
     kPartitionNelAndReportingByNetworkIsolationKey;
 
+// Creates a <double key + is_cross_site> NetworkAnonymizationKey which is used
+// to partition the network state. This double key will have the following
+// properties: `top_frame_site` -> the schemeful site of the top level page.
+// `frame_site ` -> nullopt
+// `is_cross_site` -> true if the `top_frame_site` is cross site when compared
+// to the frame site. The frame site will not be stored in this key so the value
+// of is_cross_site will be computed at key construction. This feature overrides
+// `kEnableDoubleKeyNetworkAnonymizationKey` if both are enabled.
+NET_EXPORT extern const base::Feature
+    kEnableCrossSiteFlagNetworkAnonymizationKey;
+
 // Creates a double keyed NetworkAnonymizationKey which is used to partition the
 // network state. This double key will have the following properties:
 // `top_frame_site` -> the schemeful site of the top level page.
 // `frame_site ` -> nullopt
+// `is_cross_site` -> nullopt
 NET_EXPORT extern const base::Feature kEnableDoubleKeyNetworkAnonymizationKey;
 
 // Enables limiting the size of Expect-CT table.

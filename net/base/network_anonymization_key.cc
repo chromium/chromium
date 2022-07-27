@@ -14,11 +14,12 @@ namespace net {
 NetworkAnonymizationKey::NetworkAnonymizationKey(
     const SchemefulSite& top_frame_site,
     const absl::optional<SchemefulSite>& frame_site,
-    bool is_cross_site,
+    const absl::optional<bool> is_cross_site,
     const absl::optional<base::UnguessableToken> nonce)
     : top_frame_site_(top_frame_site),
-      frame_site_(IsDoubleKeyingEnabled() ? absl::nullopt : frame_site),
-      is_cross_site_(is_cross_site),
+      frame_site_(!IsFrameSiteEnabled() ? absl::nullopt : frame_site),
+      is_cross_site_(IsCrossSiteFlagSchemeEnabled() ? is_cross_site
+                                                    : absl::nullopt),
       nonce_(nonce) {}
 
 NetworkAnonymizationKey::NetworkAnonymizationKey() = default;
@@ -37,8 +38,11 @@ NetworkAnonymizationKey& NetworkAnonymizationKey::operator=(
 std::string NetworkAnonymizationKey::ToDebugString() const {
   std::string str = GetSiteDebugString(top_frame_site_);
   str += " " + GetSiteDebugString(frame_site_);
-  std::string cross_site_str = is_cross_site_ ? "cross_site" : "same_site";
-  str += " " + cross_site_str;
+  std::string cross_site_str =
+      IsCrossSiteFlagSchemeEnabled()
+          ? (GetIsCrossSite() ? " cross_site" : " same_site")
+          : "";
+  str += cross_site_str;
 
   // Currently, if the NAK has a nonce it will be marked transient. For debug
   // purposes we will print the value but if called via
@@ -56,7 +60,8 @@ bool NetworkAnonymizationKey::IsEmpty() const {
 
 bool NetworkAnonymizationKey::IsFullyPopulated() const {
   return top_frame_site_.has_value() &&
-         (IsDoubleKeyingEnabled() || frame_site_.has_value());
+         (!IsFrameSiteEnabled() || frame_site_.has_value()) &&
+         (!IsCrossSiteFlagSchemeEnabled() || is_cross_site_.has_value());
 }
 
 bool NetworkAnonymizationKey::IsTransient() const {
@@ -64,13 +69,34 @@ bool NetworkAnonymizationKey::IsTransient() const {
     return true;
 
   return top_frame_site_->opaque() ||
-         (!IsDoubleKeyingEnabled() && frame_site_->opaque()) ||
-         nonce_.has_value();
+         (IsFrameSiteEnabled() && frame_site_->opaque()) || nonce_.has_value();
 }
 
-bool NetworkAnonymizationKey::IsDoubleKeyingEnabled() {
+bool NetworkAnonymizationKey::GetIsCrossSite() const {
+  DCHECK(IsCrossSiteFlagSchemeEnabled() && is_cross_site_.has_value());
+  return is_cross_site_.value();
+}
+
+bool NetworkAnonymizationKey::IsFrameSiteEnabled() {
+  return !base::FeatureList::IsEnabled(
+             net::features::kEnableDoubleKeyNetworkAnonymizationKey) &&
+         !base::FeatureList::IsEnabled(
+             net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
+}
+
+bool NetworkAnonymizationKey::IsDoubleKeySchemeEnabled() {
+  // There's no reason both of these will be enabled simultaneously but if
+  // someone manually enables both flags, double key with cross site flag scheme
+  // should take precedence.
   return base::FeatureList::IsEnabled(
-      net::features::kEnableDoubleKeyNetworkAnonymizationKey);
+             net::features::kEnableDoubleKeyNetworkAnonymizationKey) &&
+         !base::FeatureList::IsEnabled(
+             net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
+}
+
+bool NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled() {
+  return base::FeatureList::IsEnabled(
+      net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
 }
 
 std::string NetworkAnonymizationKey::GetSiteDebugString(
