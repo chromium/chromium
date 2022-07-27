@@ -107,6 +107,7 @@ struct DataSourceConfig {
   uint64 tracing_session_id;
   ChromeConfig chrome_config;
   string legacy_config;
+  string track_event_config_raw;
 };
 
 struct DataSourceRegistration {

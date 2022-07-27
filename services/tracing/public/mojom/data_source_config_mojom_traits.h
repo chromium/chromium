@@ -40,6 +40,10 @@ class StructTraits<tracing::mojom::DataSourceConfigDataView,
       const perfetto::DataSourceConfig& src) {
     return src.legacy_config();
   }
+  static const std::string& track_event_config_raw(
+      const perfetto::DataSourceConfig& src) {
+    return src.track_event_config_raw();
+  }
 
   static bool Read(tracing::mojom::DataSourceConfigDataView data,
                    perfetto::DataSourceConfig* out);
