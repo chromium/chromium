@@ -41,6 +41,7 @@ const base::Feature kTrendingQueriesModule{"TrendingQueriesModule",
 const char kTrendingQueriesHideShortcutsParam[] = "hide_shortcuts";
 const char kTrendingQueriesDisabledFeedParam[] = "disabled_feed_only";
 const char kTrendingQueriesSignedOutParam[] = "signed_out_only";
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
