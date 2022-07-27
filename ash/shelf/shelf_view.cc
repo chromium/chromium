@@ -92,9 +92,11 @@ using views::View;
 
 namespace ash {
 
-// The distance of the cursor from the outer rim of the shelf before it
-// separates.
-constexpr int kRipOffDistance = 48;
+// The rip off distance, where the shelf icon gets unpinned if dragged over this
+// distance from the outer edge of the shelf, depends on the shelf size. The
+// distance is calculated by multiplying the shelf size by
+// `kRipOffDistanceFactor`.
+constexpr float kRipOffDistanceFactor = 0.75f;
 
 // The rip off drag and drop proxy image should get scaled by this factor.
 constexpr float kDragAndDropProxyScale = 1.2f;
@@ -1511,10 +1513,14 @@ void ShelfView::PrepareForDrag(Pointer pointer, const ui::LocatedEvent& event) {
     gfx::Point screen_location = event.root_location();
     ::wm::ConvertPointToScreen(root_window, &screen_location);
 
+    // Scale up the icon only if the button is not considered as dragged and
+    // scaled up in ShelfAppButton.
+    float scale_factor = (drag_view_->state() & ShelfAppButton::STATE_DRAGGING)
+                             ? 1.0f
+                             : kDragAndDropProxyScale;
     drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
         root_window, drag_view_->GetImage(), screen_location, gfx::Vector2d(),
-        /*scale_factor=*/1.0f,
-        /*use_blurred_background=*/false);
+        scale_factor, /*use_blurred_background=*/false);
 
     if (pointer == MOUSE) {
       haptics_util::PlayHapticTouchpadEffect(
@@ -1654,7 +1660,7 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
         drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
             root_window, drag_view_->GetImage(), screen_location,
             /*cursor_offset_from_center=*/gfx::Vector2d(),
-            kDragAndDropProxyScale,
+            /*scale_factor=*/1.0f,
             /*use_blurred_background=*/false);
       }
 
@@ -1673,9 +1679,11 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
   }
 
   // Mark the item as dragged off the shelf if the drag distance exceeds
-  // |kRipOffDistance|.
+  // `rip_off_distance`.
+  int rip_off_distance =
+      ShelfConfig::Get()->shelf_size() * kRipOffDistanceFactor;
   int delta = CalculateShelfDistance(screen_location);
-  bool dragged_off_shelf = delta > kRipOffDistance;
+  bool dragged_off_shelf = delta > rip_off_distance;
 
   if (dragged_off_shelf) {
     if (!is_active_drag_and_drop_host_) {
@@ -1685,7 +1693,7 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
       const gfx::Vector2d cursor_offset_from_center = drag_origin_ - center;
       drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
           root_window, drag_view_->GetImage(), screen_location,
-          cursor_offset_from_center, kDragAndDropProxyScale,
+          cursor_offset_from_center, /*scale_factor=*/1.0f,
           /*use_blurred_background=*/false);
       delegate_->CancelScrollForItemDrag();
     }
