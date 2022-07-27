@@ -183,8 +183,14 @@ void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon,
 
   AppListModelUpdater* updater = model_updater();
   if (updater) {
-    updater->SetItemIconAndColor(id(), metadata_->icon, metadata_->icon_color);
-    updater->SetNotificationBadgeColor(id(), metadata_->badge_color);
+    // NOTE: `metadata_` could be reset during updating the icon and color
+    // through `updater`. Therefore, copy the id and the badge color.
+    const std::string id_copy = id();
+    const SkColor badge_color_copy = metadata_->badge_color;
+
+    updater->SetItemIconAndColor(id_copy, metadata_->icon,
+                                 metadata_->icon_color);
+    updater->SetNotificationBadgeColor(id_copy, badge_color_copy);
   }
 }
 

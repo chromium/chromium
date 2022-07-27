@@ -116,6 +116,9 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
 
   // AppListModelObserver:
   void OnAppListItemAdded(ash::AppListItem* item) override;
+  // NOTE: `OnAppListItemUpdated()` could reset the metadata of the chrome
+  // app list item that shares the id of `item`. Therefore, do not access any
+  // reference to the old metadata after calling this function.
   void OnAppListItemUpdated(ash::AppListItem* item) override;
   void OnAppListItemWillBeDeleted(ash::AppListItem* item) override;
 

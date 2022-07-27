@@ -61,6 +61,9 @@ class ASH_EXPORT AppListTestApi {
   // Returns the name displayed in the launcher for the provided app list item.
   std::u16string GetAppListItemViewName(const std::string& item_id);
 
+  // Returns the top level item view specified by `item_id`.
+  AppListItemView* GetTopLevelItemViewFromId(const std::string& item_id);
+
   // Returns ids of the items in top level app list view.
   std::vector<std::string> GetTopLevelViewIdList();
 

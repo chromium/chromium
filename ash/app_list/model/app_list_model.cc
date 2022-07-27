@@ -115,8 +115,6 @@ void AppListModel::SetItemMetadata(const std::string& id,
     // from chrome side is null. Do not alter `item` default icon in this case.
     data->icon = item->GetDefaultIcon();
     data->icon_color = item->GetDefaultIconColor();
-  } else if (data->icon_color != item->GetDefaultIconColor()) {
-    SetItemDefaultIconAndColor(item, data->icon, data->icon_color);
   }
 
   if (data->folder_id != item->folder_id())
@@ -399,15 +397,6 @@ void AppListModel::SetRootItemPosition(
   if (index_change)
     return;
 
-  for (auto& observer : observers_)
-    observer.OnAppListItemUpdated(item);
-}
-
-void AppListModel::SetItemDefaultIconAndColor(AppListItem* item,
-                                              const gfx::ImageSkia& icon,
-                                              const IconColor& icon_color) {
-  DCHECK(FindItem(item->id()));
-  item->SetDefaultIconAndColor(icon, icon_color);
   for (auto& observer : observers_)
     observer.OnAppListItemUpdated(item);
 }

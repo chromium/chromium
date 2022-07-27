@@ -365,18 +365,40 @@ void ChromeAppListModelUpdater::SetItemIconAndColor(
     const std::string& id,
     const gfx::ImageSkia& icon,
     const ash::IconColor& icon_color) {
+  if (icon.isNull())
+    return;
+
+  // TODO(https://crbug.com/1346386): it is awkward to check both `chrome_item`
+  // and `item`. Maybe remove one of them or both after investigation.
   ChromeAppListItem* chrome_item = FindItem(id);
   if (!chrome_item)
     return;
 
+  ash::AppListItem* item = model_.FindItem(id);
+  if (!item)
+    return;
+
   base::AutoReset auto_reset(&item_with_icon_update_, chrome_item->id());
 
-  std::unique_ptr<ash::AppListItemMetadata> data = chrome_item->CloneMetadata();
-  data->icon = icon;
-  data->icon_color = icon_color;
+  const bool color_change = (icon_color != item->GetDefaultIconColor());
+
+  // Two similar icons may generate the same extracted icon color value.
+  // Therefore, always update the app list item icon.
+  item->SetDefaultIconAndColor(icon, icon_color);
+
+  std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
   MaybeUpdatePositionWhenIconColorChange(data.get());
 
   model_.SetItemMetadata(id, std::move(data));
+
+  // Sync the icon color if the color changes. Note that the icon is not synced.
+  // Therefore, we only check whether the color changes here.
+  // NOTE: before the code change that introduces this code block, the item
+  // position updates before the icon color. Therefore, call
+  // `OnAppListItemUpdated()` after `AppListModel::SetItemMetadata` to keep this
+  // order.
+  if (color_change)
+    OnAppListItemUpdated(item);
 }
 
 void ChromeAppListModelUpdater::SetItemName(const std::string& id,
