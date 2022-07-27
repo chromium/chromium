@@ -699,10 +699,6 @@ experimental domain Audits
   type AttributionReportingIssueType extends string
     enum
       PermissionPolicyDisabled
-      # TODO(apaseltiner): Remove this once it is no longer referenced by the frontend.
-      AttributionSourceUntrustworthyOrigin
-      # TODO(apaseltiner): Remove this once it is no longer referenced by the frontend.
-      AttributionUntrustworthyOrigin
       UntrustworthyReportingOrigin
       InsecureContext
       # TODO(apaseltiner): Rename this to InvalidRegisterSourceHeader
@@ -714,8 +710,6 @@ experimental domain Audits
   type AttributionReportingIssueDetails extends object
     properties
       AttributionReportingIssueType violationType
-      # TODO(apaseltiner): Remove this once it is no longer referenced by the frontend.
-      optional AffectedFrame frame
       optional AffectedRequest request
       optional DOM.BackendNodeId violatingNodeId
       optional string invalidParameter
