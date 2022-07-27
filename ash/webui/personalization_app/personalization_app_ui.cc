@@ -44,7 +44,7 @@ bool IsAmbientModeAllowed() {
 }
 
 void AddResources(content::WebUIDataSource* source) {
-  source->AddResourcePath("", IDR_ASH_PERSONALIZATION_APP_TRUSTED_INDEX_HTML);
+  source->AddResourcePath("", IDR_ASH_PERSONALIZATION_APP_INDEX_HTML);
   source->AddResourcePaths(base::make_span(
       kAshPersonalizationAppResources, kAshPersonalizationAppResourcesSize));
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
@@ -54,7 +54,7 @@ void AddResources(content::WebUIDataSource* source) {
 
 #if !DCHECK_IS_ON()
   // Add a default path to avoid crashes when not debugging.
-  source->SetDefaultResource(IDR_ASH_PERSONALIZATION_APP_TRUSTED_INDEX_HTML);
+  source->SetDefaultResource(IDR_ASH_PERSONALIZATION_APP_INDEX_HTML);
 #endif  // !DCHECK_IS_ON()
 }
 

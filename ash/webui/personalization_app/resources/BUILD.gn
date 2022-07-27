@@ -24,89 +24,89 @@ non_web_component_files = [
   "common/constants.ts",
   "common/utils.ts",
 
-  "trusted/ambient/ambient_actions.ts",
-  "trusted/ambient/ambient_controller.ts",
-  "trusted/ambient/ambient_interface_provider.ts",
-  "trusted/ambient/ambient_observer.ts",
-  "trusted/ambient/ambient_reducers.ts",
-  "trusted/ambient/ambient_state.ts",
-  "trusted/keyboard_backlight/keyboard_backlight_actions.ts",
-  "trusted/keyboard_backlight/keyboard_backlight_controller.ts",
-  "trusted/keyboard_backlight/keyboard_backlight_interface_provider.ts",
-  "trusted/keyboard_backlight/keyboard_backlight_observer.ts",
-  "trusted/keyboard_backlight/keyboard_backlight_reducers.ts",
-  "trusted/keyboard_backlight/keyboard_backlight_state.ts",
-  "trusted/personalization_actions.ts",
-  "trusted/personalization_app.ts",
-  "trusted/personalization_metrics_logger.ts",
-  "trusted/personalization_reducers.ts",
-  "trusted/personalization_state.ts",
-  "trusted/personalization_store.ts",
-  "trusted/personalization_test_api.ts",
-  "trusted/theme/theme_actions.ts",
-  "trusted/theme/theme_controller.ts",
-  "trusted/theme/theme_interface_provider.ts",
-  "trusted/theme/theme_observer.ts",
-  "trusted/theme/theme_reducers.ts",
-  "trusted/theme/theme_state.ts",
-  "trusted/user/user_actions.ts",
-  "trusted/user/user_controller.ts",
-  "trusted/user/user_image_observer.ts",
-  "trusted/user/user_interface_provider.ts",
-  "trusted/user/user_reducers.ts",
-  "trusted/user/user_selectors.ts",
-  "trusted/user/user_state.ts",
-  "trusted/user/webcam_utils_proxy.ts",
-  "trusted/utils.ts",
-  "trusted/wallpaper/google_photos_metrics_logger.ts",
-  "trusted/wallpaper/wallpaper_actions.ts",
-  "trusted/wallpaper/wallpaper_controller.ts",
-  "trusted/wallpaper/wallpaper_interface_provider.ts",
-  "trusted/wallpaper/wallpaper_observer.ts",
-  "trusted/wallpaper/wallpaper_reducers.ts",
-  "trusted/wallpaper/wallpaper_state.ts",
-  "trusted/wallpaper/index.ts",
+  "js/ambient/ambient_actions.ts",
+  "js/ambient/ambient_controller.ts",
+  "js/ambient/ambient_interface_provider.ts",
+  "js/ambient/ambient_observer.ts",
+  "js/ambient/ambient_reducers.ts",
+  "js/ambient/ambient_state.ts",
+  "js/keyboard_backlight/keyboard_backlight_actions.ts",
+  "js/keyboard_backlight/keyboard_backlight_controller.ts",
+  "js/keyboard_backlight/keyboard_backlight_interface_provider.ts",
+  "js/keyboard_backlight/keyboard_backlight_observer.ts",
+  "js/keyboard_backlight/keyboard_backlight_reducers.ts",
+  "js/keyboard_backlight/keyboard_backlight_state.ts",
+  "js/personalization_actions.ts",
+  "js/personalization_app.ts",
+  "js/personalization_metrics_logger.ts",
+  "js/personalization_reducers.ts",
+  "js/personalization_state.ts",
+  "js/personalization_store.ts",
+  "js/personalization_test_api.ts",
+  "js/theme/theme_actions.ts",
+  "js/theme/theme_controller.ts",
+  "js/theme/theme_interface_provider.ts",
+  "js/theme/theme_observer.ts",
+  "js/theme/theme_reducers.ts",
+  "js/theme/theme_state.ts",
+  "js/user/user_actions.ts",
+  "js/user/user_controller.ts",
+  "js/user/user_image_observer.ts",
+  "js/user/user_interface_provider.ts",
+  "js/user/user_reducers.ts",
+  "js/user/user_selectors.ts",
+  "js/user/user_state.ts",
+  "js/user/webcam_utils_proxy.ts",
+  "js/utils.ts",
+  "js/wallpaper/google_photos_metrics_logger.ts",
+  "js/wallpaper/wallpaper_actions.ts",
+  "js/wallpaper/wallpaper_controller.ts",
+  "js/wallpaper/wallpaper_interface_provider.ts",
+  "js/wallpaper/wallpaper_observer.ts",
+  "js/wallpaper/wallpaper_reducers.ts",
+  "js/wallpaper/wallpaper_state.ts",
+  "js/wallpaper/index.ts",
 ]
 
 # Files holding a Polymer element definition AND have an equivalent .html file.
 web_component_files = [
-  "trusted/ambient/album_list_element.ts",
-  "trusted/ambient/albums_subpage_element.ts",
-  "trusted/ambient/art_album_dialog_element.ts",
-  "trusted/ambient/ambient_preview_element.ts",
-  "trusted/ambient/ambient_subpage_element.ts",
-  "trusted/ambient/ambient_weather_element.ts",
-  "trusted/ambient/animation_theme_item_element.ts",
-  "trusted/ambient/animation_theme_list_element.ts",
-  "trusted/ambient/toggle_row_element.ts",
-  "trusted/ambient/topic_source_item_element.ts",
-  "trusted/ambient/topic_source_list_element.ts",
-  "trusted/ambient/zero_state_element.ts",
-  "trusted/keyboard_backlight/keyboard_backlight_element.ts",
-  "trusted/personalization_main_element.ts",
-  "trusted/personalization_router_element.ts",
-  "trusted/personalization_theme_element.ts",
-  "trusted/personalization_toast_element.ts",
-  "trusted/personalization_breadcrumb_element.ts",
-  "trusted/user/avatar_camera_element.ts",
-  "trusted/user/avatar_list_element.ts",
-  "trusted/user/user_preview_element.ts",
-  "trusted/user/user_subpage_element.ts",
-  "trusted/wallpaper/collections_grid_element.ts",
-  "trusted/wallpaper/google_photos_albums_element.ts",
-  "trusted/wallpaper/google_photos_collection_element.ts",
-  "trusted/wallpaper/google_photos_photos_by_album_id_element.ts",
-  "trusted/wallpaper/google_photos_photos_element.ts",
-  "trusted/wallpaper/google_photos_zero_state_element.ts",
-  "trusted/wallpaper/local_images_element.ts",
-  "trusted/wallpaper/wallpaper_collections_element.ts",
-  "trusted/wallpaper/wallpaper_error_element.ts",
-  "trusted/wallpaper/wallpaper_fullscreen_element.ts",
-  "trusted/wallpaper/wallpaper_grid_item_element.ts",
-  "trusted/wallpaper/wallpaper_images_element.ts",
-  "trusted/wallpaper/wallpaper_preview_element.ts",
-  "trusted/wallpaper/wallpaper_selected_element.ts",
-  "trusted/wallpaper/wallpaper_subpage_element.ts",
+  "js/ambient/album_list_element.ts",
+  "js/ambient/albums_subpage_element.ts",
+  "js/ambient/art_album_dialog_element.ts",
+  "js/ambient/ambient_preview_element.ts",
+  "js/ambient/ambient_subpage_element.ts",
+  "js/ambient/ambient_weather_element.ts",
+  "js/ambient/animation_theme_item_element.ts",
+  "js/ambient/animation_theme_list_element.ts",
+  "js/ambient/toggle_row_element.ts",
+  "js/ambient/topic_source_item_element.ts",
+  "js/ambient/topic_source_list_element.ts",
+  "js/ambient/zero_state_element.ts",
+  "js/keyboard_backlight/keyboard_backlight_element.ts",
+  "js/personalization_main_element.ts",
+  "js/personalization_router_element.ts",
+  "js/personalization_theme_element.ts",
+  "js/personalization_toast_element.ts",
+  "js/personalization_breadcrumb_element.ts",
+  "js/user/avatar_camera_element.ts",
+  "js/user/avatar_list_element.ts",
+  "js/user/user_preview_element.ts",
+  "js/user/user_subpage_element.ts",
+  "js/wallpaper/collections_grid_element.ts",
+  "js/wallpaper/google_photos_albums_element.ts",
+  "js/wallpaper/google_photos_collection_element.ts",
+  "js/wallpaper/google_photos_photos_by_album_id_element.ts",
+  "js/wallpaper/google_photos_photos_element.ts",
+  "js/wallpaper/google_photos_zero_state_element.ts",
+  "js/wallpaper/local_images_element.ts",
+  "js/wallpaper/wallpaper_collections_element.ts",
+  "js/wallpaper/wallpaper_error_element.ts",
+  "js/wallpaper/wallpaper_fullscreen_element.ts",
+  "js/wallpaper/wallpaper_grid_item_element.ts",
+  "js/wallpaper/wallpaper_images_element.ts",
+  "js/wallpaper/wallpaper_preview_element.ts",
+  "js/wallpaper/wallpaper_selected_element.ts",
+  "js/wallpaper/wallpaper_subpage_element.ts",
 ]
 
 # Files that are passed as input to html_to_wrapper().
@@ -145,6 +145,8 @@ static_resource_files = [
   "hub_icon_256.png",
   "icon_192.png",
 
+  "index.html",
+
   "images/ambient_mode_disabled.svg",
   "images/ambient_mode_disabled_dark.svg",
   "images/feel_the_breeze.png",
@@ -156,8 +158,6 @@ static_resource_files = [
   "images/slideshow.png",
 
   "css/base.css",
-
-  "trusted/index.html",
 ]
 
 css_to_wrapper("css_wrapper_files") {
@@ -184,11 +184,10 @@ preprocess_if_expr("preprocess_generated") {
   in_files = html_wrapper_files + css_wrapper_files
 }
 
-copy("copy_mojo_to_trusted") {
+copy("copy_mojo_to_js") {
   deps = [ "../mojom:mojom_webui_js" ]
   sources = [ "$root_gen_dir/mojom-webui/ash/webui/personalization_app/mojom/personalization_app.mojom-webui.js" ]
-  outputs =
-      [ "$target_gen_dir/$preprocess_folder/trusted/{{source_file_part}}" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/js/{{source_file_part}}" ]
 }
 
 ts_library("build_ts") {
@@ -198,7 +197,7 @@ ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
 
   in_files = ts_files + css_wrapper_files + html_wrapper_files +
-             [ "trusted/personalization_app.mojom-webui.js" ]
+             [ "js/personalization_app.mojom-webui.js" ]
 
   definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
 
@@ -209,7 +208,7 @@ ts_library("build_ts") {
   ]
 
   extra_deps = [
-    ":copy_mojo_to_trusted",
+    ":copy_mojo_to_js",
     ":preprocess",
     ":preprocess_generated",
     "//ui/webui/resources:generate_definitions",
@@ -223,7 +222,7 @@ if (optimize_webui) {
     host = "personalization"
     input = rebase_path("$target_gen_dir/tsc", root_build_dir)
     js_out_files = [ "personalization_app.rollup.js" ]
-    js_module_in_files = [ "trusted/personalization_app.js" ]
+    js_module_in_files = [ "js/personalization_app.js" ]
     out_manifest = "$target_gen_dir/$build_manifest"
 
     deps = [
@@ -243,7 +242,7 @@ generate_grd("build_grd") {
     deps = [ ":build" ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
     resource_path_rewrites =
-        [ "personalization_app.rollup.js|trusted/personalization_app.js" ]
+        [ "personalization_app.rollup.js|js/personalization_app.js" ]
   } else {
     deps = [ ":build_ts" ]
     manifest_files =

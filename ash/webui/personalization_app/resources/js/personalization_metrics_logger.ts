@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
+
 import {Paths} from './personalization_router_element.js';
 
 // Numerical values are used for metrics; do not change or reuse values. These

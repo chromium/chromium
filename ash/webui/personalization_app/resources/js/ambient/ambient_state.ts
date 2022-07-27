@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+
 import {AmbientModeAlbum, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 
 /**

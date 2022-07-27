@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Utility functions to be used in trusted code.
+ * @fileoverview Utility functions to be used throughout personalization app.
  */
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -13,7 +13,8 @@ import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from '../common/constants.js';
-import {AmbientModeAlbum, CurrentWallpaper, GooglePhotosPhoto, TopicSource, WallpaperImage, WallpaperLayout, WallpaperType} from '../trusted/personalization_app.mojom-webui.js';
+
+import {AmbientModeAlbum, CurrentWallpaper, GooglePhotosPhoto, TopicSource, WallpaperImage, WallpaperLayout, WallpaperType} from './personalization_app.mojom-webui.js';
 
 
 export function isWallpaperImage(obj: any): obj is WallpaperImage {

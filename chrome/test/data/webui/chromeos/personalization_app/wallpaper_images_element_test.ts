@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {OnlineImageType, PersonalizationRouter, WallpaperImages} from 'chrome://personalization/trusted/personalization_app.js';
+import {OnlineImageType, PersonalizationRouter, WallpaperImages} from 'chrome://personalization/js/personalization_app.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 

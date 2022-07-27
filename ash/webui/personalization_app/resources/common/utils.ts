@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview Utility functions to be shared between trusted and untrusted
- * code.
+ * code. TODO(b:237323063) consolidate this with other utils file.
  */
 
 import {loadTimeData} from '//resources/js/load_time_data.m.js';

@@ -444,6 +444,7 @@ export class CollectionsGrid extends WithPersonalizationStore {
 
   /**
    * Not using I18nBehavior because of chrome-untrusted:// incompatibility.
+   * TODO(b:237323063) switch back to I18nBehavior.
    */
   private geti18n_(str: string): string {
     return loadTimeData.getString(str);

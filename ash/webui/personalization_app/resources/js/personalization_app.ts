@@ -42,7 +42,7 @@ import {PersonalizationStore} from './personalization_store.js';
 
 /**
  * With optimize_webui, the generated JS files are bundled into single file
- * `chrome://personalization/trusted/personalization_app.js`. These exports are
+ * `chrome://personalization/js/personalization_app.js`. These exports are
  * necessary so they can be imported in tests.
  */
 export {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol, kMaximumLocalImagePreviews} from '../common/constants.js';

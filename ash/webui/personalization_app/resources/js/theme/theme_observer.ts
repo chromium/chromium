@@ -4,6 +4,7 @@
 
 import {ThemeObserverInterface, ThemeObserverReceiver, ThemeProviderInterface} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
+
 import {setColorModeAutoScheduleEnabledAction, setDarkModeEnabledAction} from './theme_actions.js';
 import {getThemeProvider} from './theme_interface_provider.js';
 

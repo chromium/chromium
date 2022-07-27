@@ -5,8 +5,8 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {UserImage} from '../personalization_app.mojom-webui.js';
 
+import {UserImage} from '../personalization_app.mojom-webui.js';
 import {PersonalizationState} from '../personalization_state.js';
 
 /**

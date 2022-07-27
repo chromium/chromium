@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {AmbientObserver, AmbientPreview, Paths, PersonalizationRouter, TopicSource} from 'chrome://personalization/trusted/personalization_app.js';
+import {AmbientObserver, AmbientPreview, Paths, PersonalizationRouter, TopicSource} from 'chrome://personalization/js/personalization_app.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
