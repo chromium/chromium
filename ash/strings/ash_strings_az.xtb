@@ -14,6 +14,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1052916631016577720">Element ilə skanlama</translation>
 <translation id="1056775291175587022">Şəbəkə yoxdur</translation>
 <translation id="1056898198331236512">Xəbərdarlıq</translation>
+<translation id="1058009965971887428">Rəyi şikayət edin</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Əvəz edin</translation>
 <translation id="1073899992769346247">Batareyanı dəyişin və ya şarj edin</translation>
@@ -902,6 +903,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="6182592640011875895">Masanı açın</translation>
 <translation id="619279033188484792"><ph name="DEVICE_TYPE" /> cihazında telefonunuzun son fotolarına, media və bildirişlərinə baxın</translation>
 <translation id="619335566042889110">İndi tam şarj edin</translation>
+<translation id="6193431488227440296">Dev</translation>
 <translation id="6220928844947387476">İndi özünüzü və ekranınızı eyni vaxtda çəkə bilərsiniz</translation>
 <translation id="622484624075952240">Aşağı</translation>
 <translation id="6231419273573514727">Periferik cihaz performansı məhdud ola bilər</translation>
@@ -1171,6 +1173,7 @@ Yeni quraşdırma</translation>
 <translation id="7842569679327885685">Xəbərdarlıq: Eksperimental funksiya</translation>
 <translation id="7846634333498149051">Klaviatura</translation>
 <translation id="7848989271541991537">Buraya köçürüldü: Səhifə <ph name="PAGE_NUMBER" />, sıra <ph name="ROW_NUMBER" />, sütun <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">İcmala daxil olmaq üçün üç barmaq ilə yuxarı çəkin</translation>
 <translation id="7866482334467279021">aktiv</translation>
 <translation id="7868900307798234037">Barmaq izi ilə kiliddən çıxarma</translation>

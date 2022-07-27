@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">ଅଧା ଚଉଡ଼ାର କାଟାକାନା</translation>
 <translation id="1834290891154666894">ସବଜେକ୍ଟ ଅଲଟରନେଟିଭ୍ ନେମ୍ ସହ ମେଳ ହେଉଥିବା ଏଣ୍ଟ୍ରି ଅବୈଧ ଅଟେ</translation>
 <translation id="1838709767668011582">Google ସାଇଟ୍</translation>
-<translation id="1844692022597038441">ଏହି ଫାଇଲ୍‍ ଅଫ୍‍ଲାଇନ୍‌ରେ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="1853795129690976061">ଏହି ଫୋଲ୍ଡରକୁ Linux ସହିତ ସେୟାର୍ କରାଯାଇଛି</translation>
 <translation id="1864756863218646478">ଏହି ଫାଇଲ୍ ମିଳିଲା ନାହଁ।</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" /> ସଂଯୋଗ କରନ୍ତୁ</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">କାନାଡିଆନ୍ ବହୁଭାଷୀ</translation>
 <translation id="3236289833370040187"><ph name="DESTINATION_DOMAIN" />କୁ ମାଲିକାନା ସ୍ଥାନାନ୍ତର ହେବ।</translation>
 <translation id="3241720467332021590">ଇରିସ୍</translation>
-<translation id="3245321423178950146">ଅଜଣା କଳାକାର</translation>
 <translation id="3248185426436836442">ବାକି ଅଛି</translation>
 <translation id="3252266817569339921">ଫ୍ରେଞ୍ଚ</translation>
 <translation id="3253225298092156258">ଉପଲବ୍ଧ ନାହିଁ</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="3952872973865944257">ତେଲୁଗୁ ଫୋନେଟିକ୍</translation>
 <translation id="3958548648197196644">କିୱି</translation>
-<translation id="3966388904776714213">ଅଡିଓ ପ୍ଲେୟାର୍</translation>
 <translation id="3971140002794351170">ମୋବାଇଲ ପ୍ରୋଫାଇଲ୍, <ph name="NETWORK_COUNT" />ର <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> ନେଟୱାର୍କ ଡାଉନଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="3973925058222872294">ଇଂରାଜୀ (UK)</translation>
 <translation id="3975895378829046965">ବଙ୍ଗଳା ଫୋନେଟିକ୍</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">ସକ୍ରିୟ ହେଉଛି...</translation>
 <translation id="4092890906744441904">ଆଇରିଶ୍</translation>
 <translation id="4124935795427217608">ୟୁନିକର୍ନ</translation>
-<translation id="4158739975813877944">ପ୍ଲେ ତାଲିକା ଖୋଲନ୍ତୁ</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="4186579485882418952">ଅଫଲାଇନ୍ ମୋଡ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="4193154014135846272">Google ଡକ୍ୟୁମେଣ୍ଟ</translation>
@@ -612,7 +608,6 @@
 <translation id="6220423280121890987">ପଞ୍ଜାବୀ</translation>
 <translation id="6224240818060029162">ଡେନିସ୍</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ଫର୍ମାଟ୍ କରନ୍ତୁ</translation>
-<translation id="6227235786875481728">ଏହି ଫାଇଲ୍ ଚଲାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="6241349547798190358">ଡଚ୍ (ବେଲଜିୟମ୍)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="PHONE_NAME" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଫୋନ୍‌ ବ୍ୟାଟେରୀ <ph name="BATTERY_STATUS" />%, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6269630227984243955">ମଲୟ</translation>
@@ -759,7 +754,6 @@
 <translation id="751507702149411736">ବେଲାରଷୀୟ</translation>
 <translation id="7532029025027028521">ପାର୍ସି ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="7544830582642184299">ଆପଣଙ୍କର Google Driveରେ ଥିବା ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ Linux ଆପ୍ସକୁ ଅନୁମତି ଦିଅନ୍ତୁ। ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ଆପଣଙ୍କ ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ସହିତ ସିଙ୍କ୍ ହୋଇଯିବ।</translation>
-<translation id="7544853251252956727">ଅଦଳବଦଳ</translation>
 <translation id="7547009467130558110">ସ୍ନିକର୍</translation>
 <translation id="7547780573915868306">ଲିଥୁନିଆନ୍</translation>
 <translation id="7547811415869834682">ଡଚ୍</translation>
@@ -835,7 +829,6 @@
 <translation id="8045462269890919536">ରୋମାନିୟ</translation>
 <translation id="8049184478152619004">ବ୍ୟକ୍ତିଗତ ଅନବ୍ଲକ୍ କରିବା କୀ (PUK) ଲେଖନ୍ତୁ</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" />କୁ ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଉଛି...</translation>
-<translation id="8079530767338315840">ପୁନର୍ବାର କରନ୍ତୁ</translation>
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" />କୁ ଡାଉନଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="8106045200081704138">ମୋ ସହିତ ସେୟାର୍‌ କରାଯାଇଛି</translation>
 <translation id="8116072619078571545">ଥଣ୍ଡା ପାଣି</translation>
@@ -849,7 +842,6 @@
 <translation id="8175731104491895765">ଫରାସୀ (ବେଲଜିୟମ୍)</translation>
 <translation id="8179976553408161302">ପ୍ରବେଶ</translation>
 <translation id="8193175696669055101">ଡିଭାଇସ୍‍ର ମଡେଲ୍</translation>
-<translation id="8208580316430297579">କଳାକୃତି</translation>
 <translation id="8223479393428528563">ଅଫ୍‍ଲାଇନ୍‍‍ରେ ବ୍ୟବହାର କରିବା ପାଇଁ ଏହି ଫାଇଲ୍‍ଗୁଡ଼ିକୁ ସେଭ୍ କରିବାକୁ, ଅନ୍‍ଲାଇନ୍‍‍ରେ ଫେରି ଆସନ୍ତୁ, ଫାଇଲ୍‍ଗୁଡ଼ିକ ଉପରେ ଡାହାଣ-କ୍ଲିକ୍ କରନ୍ତୁ ଏବଂ <ph name="OFFLINE_CHECKBOX_NAME" /> ବିକଳ୍ପ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="8249296373107784235">ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8250690786522693009">ଲାଟିନ</translation>

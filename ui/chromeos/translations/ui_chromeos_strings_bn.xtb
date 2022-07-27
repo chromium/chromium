@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">হাফ উইডথ কাটাকানা</translation>
 <translation id="1834290891154666894">সাবজেক্টের অন্য নামের সাথে মিল থাকা এন্ট্রি ভুল</translation>
 <translation id="1838709767668011582">Google সাইট</translation>
-<translation id="1844692022597038441">এই ফাইলটি অফলাইনে উপলব্ধ নয়৷</translation>
 <translation id="1853795129690976061">এই ফোল্ডার Linux-এর সাথে শেয়ার করা হয়েছে</translation>
 <translation id="1864756863218646478">ফাইলটি পাওয়া যায়নি৷</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, কানেক্ট করুন</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">কানাডিয়ান বহুভাষিক</translation>
 <translation id="3236289833370040187">মালিকানা <ph name="DESTINATION_DOMAIN" /> এ স্থানান্তর করা হবে।</translation>
 <translation id="3241720467332021590">আইরিশ</translation>
-<translation id="3245321423178950146">অজানা শিল্পী</translation>
 <translation id="3248185426436836442">বাকি আছে</translation>
 <translation id="3252266817569339921">ফরাসী</translation>
 <translation id="3253225298092156258">উপলভ্য নয়</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">পেস্ট করুন</translation>
 <translation id="3952872973865944257">তেলুগু ফোনেটিক</translation>
 <translation id="3958548648197196644">কিউই</translation>
-<translation id="3966388904776714213">অডিও প্লেয়ার</translation>
 <translation id="3971140002794351170">মোবাইল প্রোফাইল ডাউনলোড করুন, <ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ইংরেজি (যুক্তরাজ্য)</translation>
 <translation id="3975895378829046965">বাংলা ফোনেটিক</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">সক্রিয় করা হচ্ছে...</translation>
 <translation id="4092890906744441904">আইরিশ</translation>
 <translation id="4124935795427217608">ইউনিকর্ন</translation>
-<translation id="4158739975813877944">প্লে তালিকা খুলুন</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> সরানো হয়েছে।</translation>
 <translation id="4186579485882418952">'অফলাইন মোড' চালু করুন</translation>
 <translation id="4193154014135846272">Google দস্তাবেজ</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">পাঞ্জাবি</translation>
 <translation id="6224240818060029162">ড্যানিশ</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ফরম্যাট করা</translation>
-<translation id="6227235786875481728">এই ফাইলটি চালানো যাবেনা৷</translation>
 <translation id="6241349547798190358">ডাচ (বেলজিয়াম)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="PHONE_NAME" /> সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" />%, কানেক্ট করুন</translation>
 <translation id="6269630227984243955">মালয়</translation>
@@ -764,7 +759,6 @@
 <translation id="751507702149411736">বেলারুশীয়</translation>
 <translation id="7532029025027028521">ফার্সি লিপ্যন্তর</translation>
 <translation id="7544830582642184299">Linux অ্যাপকে আপনার Google Drive-এ ফাইল অ্যাক্সেস করার অনুমতি দিন। পরিবর্তনগুলি আপনার অন্যান্য ডিভাইসের সাথে সিঙ্ক হয়ে যাবে।</translation>
-<translation id="7544853251252956727">শাফল করুন</translation>
 <translation id="7547009467130558110">স্নিকার</translation>
 <translation id="7547780573915868306">লিথুয়ানিয়ান</translation>
 <translation id="7547811415869834682">ডাচ</translation>
@@ -840,7 +834,6 @@
 <translation id="8045462269890919536">রোমানিয়</translation>
 <translation id="8049184478152619004">'পার্সোনাল আনব্লকিং কী' (PUK) লিখুন</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> এক্সট্র্যাক্ট করা হচ্ছে...</translation>
-<translation id="8079530767338315840">পুনরাবৃত্তি করুন</translation>
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" />, ডাউনলোড করুন</translation>
 <translation id="8106045200081704138">আমার সাথে শেয়ার করা</translation>
 <translation id="8116072619078571545">বরফ জল</translation>
@@ -854,7 +847,6 @@
 <translation id="8175731104491895765">ফরাসি (বেলজিয়াম)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">ডিভাইস মডেল</translation>
-<translation id="8208580316430297579">আর্টওয়ার্ক</translation>
 <translation id="8223479393428528563">অফলাইনে ব্যবহারের জন্য এই ফাইলগুলি সেভ করতে অনলাইনে ফিরে আসুন, ফাইলগুলিতে ডান-ক্লিক করুন এবং <ph name="OFFLINE_CHECKBOX_NAME" /> বিকল্পটি নির্বাচন করুন৷</translation>
 <translation id="8249296373107784235">বাতিল</translation>
 <translation id="8250690786522693009">ল্যাটিন</translation>

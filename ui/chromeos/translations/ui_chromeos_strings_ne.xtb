@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">आधा चौडाइ भएको काताकाना</translation>
 <translation id="1834290891154666894">विषयको वैकल्पिक नामसँग मिल्दोजुल्दो प्रविष्टि अवैध छ</translation>
 <translation id="1838709767668011582">Google को साइट</translation>
-<translation id="1844692022597038441">यो फाइल अफलाइन उपलब्ध छैन।</translation>
 <translation id="1853795129690976061">यो फोल्डर Linux सँग सेयर गरिएको छ</translation>
 <translation id="1864756863218646478">फाइल फेला पर्न सकेन।</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, जोड्नुहोस्</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">क्यानेडियन बहुभाषिय</translation>
 <translation id="3236289833370040187">स्वामित्वलाई <ph name="DESTINATION_DOMAIN" /> मा स्थानान्तरण गरिने छ।</translation>
 <translation id="3241720467332021590">आइरिस</translation>
-<translation id="3245321423178950146">अज्ञात कलाकार</translation>
 <translation id="3248185426436836442">सुरु भएको छैन</translation>
 <translation id="3252266817569339921">फ्रेन्च</translation>
 <translation id="3253225298092156258">उपलब्ध छैन</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">टाँस्नुहोस्</translation>
 <translation id="3952872973865944257">तेलगू फोनेटिक</translation>
 <translation id="3958548648197196644">कीवी</translation>
-<translation id="3966388904776714213">अडियो प्लेयर</translation>
 <translation id="3971140002794351170">मोबाइल प्रोफाइल डाउनलोड गर्नुहोस्, <ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">अङ्ग्रेजी (संयुक्त अधिराज्य)</translation>
 <translation id="3975895378829046965">बङ्गाली फोनेटिक</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">सक्रिय गरिँदै छ…</translation>
 <translation id="4092890906744441904">आइरिस</translation>
 <translation id="4124935795427217608">एक सिङे घोडा</translation>
-<translation id="4158739975813877944">प्ले सूची खोल्नुहोस्</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> सारियो।</translation>
 <translation id="4186579485882418952">अफलाइन चलाउने सुविधा अन गर्नुहोस्</translation>
 <translation id="4193154014135846272">Google कागजात</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">पञ्जाबी</translation>
 <translation id="6224240818060029162">डेनिस</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> फर्म्याट गर्नुहोस्</translation>
-<translation id="6227235786875481728">फाइल प्ले हुन सकेन।</translation>
 <translation id="6241349547798190358">डच (बेल्जियम)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, फोनको ब्याट्री <ph name="BATTERY_STATUS" />%, जोड्नुहोस्</translation>
 <translation id="6269630227984243955">मले</translation>
@@ -764,7 +759,6 @@
 <translation id="751507702149411736">बेलारूसियन</translation>
 <translation id="7532029025027028521">फारसी लिपि रूपान्तरण</translation>
 <translation id="7544830582642184299">Linux का एपलाई तपाईंको Google Drive मा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्। परिवर्तनहरू तपाईंका अन्य यन्त्रमा पनि सिंक हुने छन्।</translation>
-<translation id="7544853251252956727">मिसाउनुहोस्</translation>
 <translation id="7547009467130558110">स्निकर</translation>
 <translation id="7547780573915868306">लिथुआनियाली</translation>
 <translation id="7547811415869834682">डच</translation>
@@ -840,7 +834,6 @@
 <translation id="8045462269890919536">रोमेनियन</translation>
 <translation id="8049184478152619004">पर्सनल अनब्लकिङ की (PUK) हाल्नुहोस्</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> सम्बन्धी जानकारी सङ्कलन गरिँदै छ...</translation>
-<translation id="8079530767338315840">दोहोर्याउनुहोस्</translation>
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" /> डाउनलोड गर्नुहोस्</translation>
 <translation id="8106045200081704138">मसँग साझा गरिएको</translation>
 <translation id="8116072619078571545">बरफजस्तो चिसो पानी</translation>
@@ -854,7 +847,6 @@
 <translation id="8175731104491895765">फ्रान्सेली (बेल्जियम)</translation>
 <translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
 <translation id="8193175696669055101">यन्त्र मोडल</translation>
-<translation id="8208580316430297579">कलाकृति</translation>
 <translation id="8223479393428528563">अफलाइन प्रयोगको लागि यी फाइलहरू सुरक्षित गर्न, अनलाइनमा फिर्ता जानुहोस्, फाइलमा दायाँ क्लिक गर्नुहोस्, र <ph name="OFFLINE_CHECKBOX_NAME" /> विकल्प चयन गर्नुहोस्।</translation>
 <translation id="8249296373107784235">रद्द गर्नुहोस्</translation>
 <translation id="8250690786522693009">ल्याटिन</translation>

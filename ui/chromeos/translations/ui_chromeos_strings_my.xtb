@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">အကျယ်တစ်ဝက် ခတခန (ဂျပန်)</translation>
 <translation id="1834290891154666894">မှန်ကန်မှုမရှိသည့် အကြောင်းအရာ၏ အခြားအမည် ကိုက်ညီမှု ထည့်သွင်းခြင်း</translation>
 <translation id="1838709767668011582">Google ဆိုက်</translation>
-<translation id="1844692022597038441">ဒီဖိုင်ကို အော့ဖ်လိုင်း မရနိုင်ပါ။</translation>
 <translation id="1853795129690976061">ဤဖိုင်တွဲကို Linux အား မျှဝေထားသည်</translation>
 <translation id="1864756863218646478">ဖိုင်ကို မတွေ့နိုင်ပါ။</translation>
 <translation id="1884013283844450420">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ ချိတ်ဆက်ရန်</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">ကနေဒါ ဘာသာစကားများစွာ</translation>
 <translation id="3236289833370040187">ပိုင်ဆိုင်မှုကို <ph name="DESTINATION_DOMAIN" /> သို့ လွှဲပြောင်းပါမည်။</translation>
 <translation id="3241720467332021590">အိုင်ယာလန်</translation>
-<translation id="3245321423178950146">အမည်မသိရ အနုပညာရှင်</translation>
 <translation id="3248185426436836442">ဆိုင်းငံ့ထားသည်</translation>
 <translation id="3252266817569339921">ပြင်သစ်</translation>
 <translation id="3253225298092156258">မရနိုင်ပါ</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">ကူးဖြည့်ရန်</translation>
 <translation id="3952872973865944257">တယ်လူဂူ အသံထွက်</translation>
 <translation id="3958548648197196644">NOTHING</translation>
-<translation id="3966388904776714213">အသံဖွင့် ကိရိယာ</translation>
 <translation id="3971140002794351170">မိုဘိုင်းပရိုဖိုင် ဒေါင်းလုဒ်လုပ်ရန်၊ ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">အင်္ဂလိပ် (ယူကေ)</translation>
 <translation id="3975895378829046965">ဘင်္ဂါလီ အသံထွက်</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">စဖွင့်နေပါသည်…</translation>
 <translation id="4092890906744441904">အိုင်းရစ်ရှ်</translation>
 <translation id="4124935795427217608">သိင်္ဂဿမြင်း</translation>
-<translation id="4158739975813877944">သီချင်းစာရင်းကို ဖွင့်ပါ</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ကို ရွှေ့ထားသည်။</translation>
 <translation id="4186579485882418952">အော့ဖ်လိုင်းသုံးရန်</translation>
 <translation id="4193154014135846272">Google စာရွက်စာတမ်း</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">ပန်ချာပီ</translation>
 <translation id="6224240818060029162">ဒိန်းမတ်</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ဖော်မက်ချရန်</translation>
-<translation id="6227235786875481728">ဒီဖိုင်ကို ဖွင့် မရနိုင်ခဲ့ပါ။</translation>
 <translation id="6241349547798190358">ဒတ်ချ် (ဘယ်လ်ဂျီယံ)</translation>
 <translation id="6267547857941397424">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="PHONE_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ဖုန်းဘက်ထရီ <ph name="BATTERY_STATUS" />%၊ ချိတ်ဆက်ရန်</translation>
 <translation id="6269630227984243955">မလေး</translation>
@@ -633,6 +628,7 @@
 <translation id="6356685157277930264">ဖိုင်များ အကြံပြုချက်ဝင်းဒိုး</translation>
 <translation id="6358884629796491903">နဂါး</translation>
 <translation id="636254897931573416">မှန်ကန်မှုမရှိသည့် ဒိုမိန်းနောက်ဆက် ကိုက်ညီမှု တန်ဖိုး</translation>
+<translation id="6364301859968397756">အဖွဲ့အစည်းသိုလှောင်ခန်း ပြည့်ပြီ</translation>
 <translation id="6367976544441405720">ဗင်ကား</translation>
 <translation id="637062427944097960">ဒီဖိုင်ကို အခြား ဒက်စ်တော့မှာ ဖွင့်ထားသည်။  ၎င်းကို ကြည့်ရန် <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)သို့ သွားပါ။</translation>
 <translation id="6394388407447716302">ဖတ်ရန်အတွက်သာ</translation>
@@ -764,7 +760,6 @@
 <translation id="751507702149411736">ဘယ်လာရုရှမ်း</translation>
 <translation id="7532029025027028521">ပါရှား အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="7544830582642184299">သင်၏ Google Drive ရှိ ဖိုင်များကို Linux အက်ပ်များအား အသုံးပြုခွင့်ပေးမည်။ ပြောင်းလဲမှုများကို သင်၏အခြားစက်များနှင့် စင့်ခ်လုပ်သွားပါမည်။</translation>
-<translation id="7544853251252956727">ရောသမမွှေပါ</translation>
 <translation id="7547009467130558110">ပတ္တူဖိနပ်</translation>
 <translation id="7547780573915868306">လစ်သူဝေးနီးယား</translation>
 <translation id="7547811415869834682">ဒတ်ချ</translation>
@@ -840,7 +835,6 @@
 <translation id="8045462269890919536">ရောမ</translation>
 <translation id="8049184478152619004">ပင်နံပါတ် ပြန်ဖွင့်သည့် ကုဒ် (PUK) ထည့်ပါ</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> ထုတ်ယူနေသည်…</translation>
-<translation id="8079530767338315840">ထပ်ဖွင့်ပါ</translation>
 <translation id="8087576439476816834">ဒေါင်းလုဒ်လုပ်ရန်၊ <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ကျွန်ုပ်အား မျှဝေထား</translation>
 <translation id="8116072619078571545">ရေခဲရေ</translation>
@@ -854,7 +848,6 @@
 <translation id="8175731104491895765">ပြင်သစ် (ဘယ်လ်ဂျီယမ်)</translation>
 <translation id="8179976553408161302">အင်တာ</translation>
 <translation id="8193175696669055101">ကိရိယာ မော်ဒယ်လ်</translation>
-<translation id="8208580316430297579">ပုံ</translation>
 <translation id="8223479393428528563">အင်တာနက်ပေါ်တွင်မရှိသည့်အခါ အသုံးပြုရန်အတွက် ဤဖိုင်များအား သိမ်းရန်  အွန်လိုင်းပေါ်ပြန်လာပြီး ဖိုင်များအား ညာဘက်ကလစ်ခေါက်ပြီး <ph name="OFFLINE_CHECKBOX_NAME" /> ရွေးချယ်စရာအား ရွေးချယ်ပါ။</translation>
 <translation id="8249296373107784235">မလုပ်တော့ပါ</translation>
 <translation id="8250690786522693009">လက်တင်</translation>

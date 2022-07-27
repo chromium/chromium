@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">Zgodovina</translation>
 <translation id="1645954272419197032">Potrdite podatke o napravi</translation>
 <translation id="1662989795263954667">Ustavljeno – zmanjkalo je črnila</translation>
+<translation id="1664796644829245314">Predogled datoteke <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Vgrajeno omrežje VPN</translation>
 <translation id="1672499492233627739">Vir videa spletne kamere</translation>
 <translation id="1676557873873341166">Snemanje videoposnetka</translation>
@@ -118,6 +119,7 @@
 <translation id="1851218745569890714">Videokonference</translation>
 <translation id="1852934301711881861">Namesti ChromeOS Flex</translation>
 <translation id="1856388568474281774">Puščica dol</translation>
+<translation id="1858620243986915808">Priloži posnetek zaslona</translation>
 <translation id="1871569928317311284">Izklop temne teme</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">Izklop temnega načina</translation>
@@ -798,6 +800,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7978412674231730200">Zasebni ključ</translation>
 <translation id="7982789257301363584">Omrežje</translation>
 <translation id="7994702968232966508">Način EAP</translation>
+<translation id="8018928621986160031">Shranjeno v »<ph name="FILE_LOCATION" />«</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Omogoči način samodejne barve</translation>

@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Poollaiusega katakana</translation>
 <translation id="1834290891154666894">Sobimatu teema alternatiivse nime vaste sisestus</translation>
 <translation id="1838709767668011582">Google'i sait</translation>
-<translation id="1844692022597038441">Fail ei ole võrguühenduseta saadaval.</translation>
 <translation id="1853795129690976061">Seda kausta jagatakse Linuxiga</translation>
 <translation id="1864756863218646478">Faili ei leitud.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, ühenda</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Kanada mitmekeelne</translation>
 <translation id="3236289833370040187">Omandiline kuuluvus kantakse üle domeenile <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">iiri keel</translation>
-<translation id="3245321423178950146">Tundmatu esitaja</translation>
 <translation id="3248185426436836442">Ootel</translation>
 <translation id="3252266817569339921">prantsuse keel</translation>
 <translation id="3253225298092156258">Pole saadaval</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Kleebi</translation>
 <translation id="3952872973865944257">telugu, foneetiline</translation>
 <translation id="3958548648197196644">Kiivi</translation>
-<translation id="3966388904776714213">Heliesitaja</translation>
 <translation id="3971140002794351170">Mobiiliprofiili allalaadimine, võrk <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">inglise (Ühendkuningriik)</translation>
 <translation id="3975895378829046965">bengali, foneetiline</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Aktiveerimine ...</translation>
 <translation id="4092890906744441904">iiri</translation>
 <translation id="4124935795427217608">Ükssarvik</translation>
-<translation id="4158739975813877944">Ava esitusloend</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> on teisaldatud.</translation>
 <translation id="4186579485882418952">Luba võrguühenduseta</translation>
 <translation id="4193154014135846272">Google'i dokument</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">pandžabi</translation>
 <translation id="6224240818060029162">taani</translation>
 <translation id="6224253798271602650">Ketta <ph name="DRIVE_NAME" /> vormindamine</translation>
-<translation id="6227235786875481728">Faili ei saanud esitada.</translation>
 <translation id="6241349547798190358">hollandi (Belgia)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="PHONE_NAME" />, <ph name="SIGNAL_STRENGTH" />, signaalitugevus: <ph name="BATTERY_STATUS" />%, telefoni aku: %, ühenda</translation>
 <translation id="6269630227984243955">malai</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">valgevene keel</translation>
 <translation id="7532029025027028521">pärsia (transliteratsioon)</translation>
 <translation id="7544830582642184299">Andke Linuxi rakendustele luba pääseda juurde teie Google Drive'is olevatele failidele. Muudatused sünkroonitakse muude seadmetega.</translation>
-<translation id="7544853251252956727">Esita juhuslikus järjekorras</translation>
 <translation id="7547009467130558110">Botas</translation>
 <translation id="7547780573915868306">leedu</translation>
 <translation id="7547811415869834682">hollandi keel</translation>
@@ -841,7 +835,6 @@
 <translation id="8045462269890919536">rumeenia keel</translation>
 <translation id="8049184478152619004">Sisestage personaalne avamisvõti (PUK)</translation>
 <translation id="807187749540895545">Faili <ph name="FILE_NAME" /> ekstraktimine …</translation>
-<translation id="8079530767338315840">Korda</translation>
 <translation id="8087576439476816834">Allalaadimine, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Minuga jagatud</translation>
 <translation id="8116072619078571545">Jäävesi</translation>
@@ -855,7 +848,6 @@
 <translation id="8175731104491895765">prantsuse (Belgia)</translation>
 <translation id="8179976553408161302">Sisestusklahv</translation>
 <translation id="8193175696669055101">Seadme mudel</translation>
-<translation id="8208580316430297579">Kujundus</translation>
 <translation id="8223479393428528563">Kui soovite salvestada need failid võrguühenduseta kasutamiseks, minge uuesti veebi, paremklõpsake failidel ja tehke valik <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Katkesta</translation>
 <translation id="8250690786522693009">Ladina</translation>

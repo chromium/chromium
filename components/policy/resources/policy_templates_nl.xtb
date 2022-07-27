@@ -4725,13 +4725,6 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
       Voer Chrome-apps in op basis van ID, zoals pjkljhegncpnkpknbcohdijeoejaedia; Android-apps op basis van pakketnaam, zoals com.google.android.gm; en web-apps op basis van de URL die wordt gebruikt in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, zoals https://google.com/maps.
 
       Als je het beleid niet instelt, kunnen gebruikers de lijst met vastgezette apps in de Launcher wijzigen.</translation>
-<translation id="6183409603139321084"><ph name="PRODUCT_OS_NAME" /> kan proberen het gebruikersnaamveld op een SAML IdP-pagina automatisch in te vullen tijdens online verificatie op het inlogscherm en het vergrendelscherm.
-
-      Het gebruikt het e-mailadres van de gebruiker dat is gekoppeld aan het <ph name="PRODUCT_OS_NAME" />-profiel. Zet deze instelling dus uit als gebruikers waarschijnlijk verschillende e-mailadressen gebruiken op een SAML IdP-pagina.
-
-      De tekenreeks die via dit beleid wordt ontvangen, wordt gebruikt als URL-parameternaam op een IdP-pagina met het e-mailadres van de gebruiker als waarde.
-
-      De serverzijde wordt verwacht verantwoordelijk te zijn voor de toewijzing tussen identiteitsproviders en de URL-parameters die ze ondersteunen.</translation>
 <translation id="6190367314942602985">Gegevens over de identiteit van gebruikers rapporteren</translation>
 <translation id="6191963383731098056">Met dit beleid kunnen beheerders de kleur voor het thema van <ph name="PRODUCT_NAME" /> instellen. Je moet een geldige hexadecimale kleur opgeven in de vorm van een tekenreeks met de indeling #RRGGBB.
 

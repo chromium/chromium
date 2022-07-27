@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">កាតាកាណា​ពាក់កណ្ដាល​ទទឹង</translation>
 <translation id="1834290891154666894">ការបញ្ចូល​ភាពត្រូវគ្នា​នៃឈ្មោះជំនួស​នៃប្រធានបទ​មិនត្រឹមត្រូវ</translation>
 <translation id="1838709767668011582">គេហទំព័រ Google</translation>
-<translation id="1844692022597038441">ឯកសារនេះមិនមាននៅក្រៅបណ្តាញទេ។</translation>
 <translation id="1853795129690976061">ថតនេះ​ត្រូវបានចែករំលែក​ជាមួយ Linux</translation>
 <translation id="1864756863218646478">ឯកសារមិនត្រូវបានរកឃើញទេ។</translation>
 <translation id="1884013283844450420">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ភ្ជាប់</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">ពហុភាសាកាណាដា</translation>
 <translation id="3236289833370040187">កម្មសិទ្ធិនឹងត្រូវបានផ្ទេរទៅ <ph name="DESTINATION_DOMAIN" /> ។</translation>
 <translation id="3241720467332021590">អៀឡង់</translation>
-<translation id="3245321423178950146">សិល្បករដែលមិនស្គាល់</translation>
 <translation id="3248185426436836442">កំពុងរង់ចាំ</translation>
 <translation id="3252266817569339921">ភាសាបារាំង</translation>
 <translation id="3253225298092156258">មិនមានទេ</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">បិទភ្ជាប់</translation>
 <translation id="3952872973865944257">សូរសព្ទ​ជាភាសា​តេលូហ្គូ</translation>
 <translation id="3958548648197196644">គីវី</translation>
-<translation id="3966388904776714213">កម្មវិធីចាក់ចម្រៀង</translation>
 <translation id="3971140002794351170">ទាញយក​កម្រងព័ត៌មាន​ឧបករណ៍​ចល័ត បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ភាសា​អង់គ្លេស (ចក្រភព​អង់គ្លេស)</translation>
 <translation id="3975895378829046965">សូរសព្ទជា​ភាសា​បេងហ្គាល់</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">កំពុង​បើក​ដំណើរការ...</translation>
 <translation id="4092890906744441904">ភាសា​អៀរឡង់</translation>
 <translation id="4124935795427217608">សេះមាន​ស្នែង</translation>
-<translation id="4158739975813877944">បើកបញ្ជីចាក់</translation>
 <translation id="4159731583141908892">បានផ្លាស់ទី <ph name="FILE_NAME" />។</translation>
 <translation id="4186579485882418952">បើកឯកសារគ្មានអ៊ីនធឺណិត</translation>
 <translation id="4193154014135846272">ឯកសារ Google</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">ភាសាពុនចាប៊ី</translation>
 <translation id="6224240818060029162">ភាសា​ដាណឺម៉ាក</translation>
 <translation id="6224253798271602650">សម្អាត <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">ឯកសារនោះមិនអាចលេងបានទេ។</translation>
 <translation id="6241349547798190358">ភាសា​ហូឡង់ (បែលហ្ស៊ិក)</translation>
 <translation id="6267547857941397424">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, កម្លាំង​រលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, ថ្មទូរសព្ទ <ph name="BATTERY_STATUS" />%, ភ្ជាប់</translation>
 <translation id="6269630227984243955">ភាសា​ម៉ាឡេ</translation>
@@ -764,7 +759,6 @@
 <translation id="751507702149411736">ភាសាបេឡារុស្ស</translation>
 <translation id="7532029025027028521">ការ​សរសេរ​តាម​សូរសព្ទជាភាសាពែក្ស</translation>
 <translation id="7544830582642184299">ផ្ដល់ការអនុញ្ញាតឱ្យកម្មវិធី Linux ចូលប្រើ​ឯកសារ​នៅក្នុង Google ថាស​របស់អ្នក។ ការផ្លាស់ប្ដូរនឹង​ធ្វើសមកាលកម្ម​ទៅឧបករណ៍​ផ្សេងទៀត​របស់អ្នក។</translation>
-<translation id="7544853251252956727">ច្របល់</translation>
 <translation id="7547009467130558110">ស្បែកជើងប៉ាតា</translation>
 <translation id="7547780573915868306">ភាសា​លីទុយអានី</translation>
 <translation id="7547811415869834682">ភាសាហូឡង់</translation>
@@ -840,7 +834,6 @@
 <translation id="8045462269890919536">ភាសារូម៉ានី</translation>
 <translation id="8049184478152619004">បញ្ចូលកូដឈប់​ទប់ស្កាត់ផ្ទាល់ខ្លួន (PUK)</translation>
 <translation id="807187749540895545">កំពុងស្រង់ <ph name="FILE_NAME" />...</translation>
-<translation id="8079530767338315840">ចាក់ឡើងវិញ</translation>
 <translation id="8087576439476816834">ទាញយក, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">បានចែករំលែកជាមួយខ្ញុំ</translation>
 <translation id="8116072619078571545">ទឹកកក</translation>
@@ -854,7 +847,6 @@
 <translation id="8175731104491895765">ភាសា​បារាំង (បែលហ្ស៊ិក)</translation>
 <translation id="8179976553408161302">បញ្ចូល</translation>
 <translation id="8193175696669055101">គំរូឧបករណ៍</translation>
-<translation id="8208580316430297579">រូប​ផូស្ទ័រ</translation>
 <translation id="8223479393428528563">ដើម្បីរក្សាទុកឯកសារទាំងនេះសម្រាប់ការប្រើនៅក្រៅបណ្តាញ ភ្ជាប់ទៅអ៊ីនធឺណិត ហើយចុចកណ្តុរខាងស្តាំលើឯកសារ ហើយជ្រើសរើសជម្រើស <ph name="OFFLINE_CHECKBOX_NAME" />។</translation>
 <translation id="8249296373107784235">បោះបង់</translation>
 <translation id="8250690786522693009">ឡាតាំង</translation>

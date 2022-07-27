@@ -2831,6 +2831,11 @@
 <translation id="408076456549153854">ブラウザのログインを有効にする</translation>
 <translation id="4081127242481747676">センサーの設定</translation>
 <translation id="4082498585300984671">Click-to-Call 機能を有効にする</translation>
+<translation id="4082809879536562387">保留中のアップデートを適用するため <ph name="PRODUCT_OS_NAME" /> デバイスの再起動が必要であることを最初に通知してから、<ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> ポリシーで指定された期間の終了時点までの期間をミリ秒単位で設定します。
+
+      このポリシーを設定しない場合、<ph name="PRODUCT_OS_NAME" /> デバイスではデフォルトの 259200000 ミリ秒（3 日）が使用されます。
+
+      ロールバックや他の <ph name="PRODUCT_OS_NAME" /> アップデートでデバイスの Powerwash が実行される場合、このポリシーの値に関係なく、アップデートが利用可能になったときは直ちにユーザーに通知されます。</translation>
 <translation id="4086150283035515220">このポリシーを有効に設定した場合、ユーザーはダウンロードの前に各ファイルの保存先を尋ねられます。このポリシーを無効に設定した場合、ダウンロードは直ちに開始され、ユーザーはファイルの保存先を尋ねられません。
 
       このポリシーを未設定のままにした場合、ユーザーはこの設定を変更できます。</translation>
@@ -4534,13 +4539,6 @@
 <translation id="6181618732396778048">どのサイトにもファイルとディレクトリへの書き込みアクセスの要求を許可しない</translation>
 <translation id="6181783961196084973">アプリのアクティビティを収集するかどうかの切り替え値です。true に設定した場合、ユーザーによるアプリのアクティビティ レポートがサーバーに送信され、お子様と保護者の <ph name="PRODUCT_NAME" /> アプリに表示されます。false に設定した場合、アプリごとの利用時間の上限は引き続き有効ですが、レポートデータはサーバーに送信されず、<ph name="PRODUCT_NAME" /> にも表示されません。</translation>
 <translation id="6183327369896253878">このポリシーを設定した場合、<ph name="PRODUCT_OS_NAME" /> でランチャーバーに表示されるアプリケーション ID が固定され、ユーザーが変更できなくなります。Chrome アプリの場合は ID（「pjkljhegncpnkpknbcohdijeoejaedia」など）、Android アプリの場合はパッケージ名（「com.google.android.gm」など）、ウェブアプリの場合は <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> で使用する URL（「https://google.com/maps」など）を指定します。このポリシーが未設定の場合、ユーザーはランチャーの固定アプリのリストを変更できます。</translation>
-<translation id="6183409603139321084"><ph name="PRODUCT_OS_NAME" /> で、ログイン画面とロック画面でのオンライン認証中に、SAML IdP ページへのユーザー名の自動入力の試行を許可します。
-
-      ユーザーの <ph name="PRODUCT_OS_NAME" /> プロファイルに関連付けられたメールアドレスが使用されるため、SAML IdP ページで別のメールアドレスを使用する場合は、この設定を無効にする必要があります。
-
-      このポリシーで受け取った文字列は IdP ページで URL パラメータ名として使用され、ユーザーのメールアドレスが値として設定されます。
-
-      ID プロバイダとサポートされる URL パラメータのマッピングは、サーバー側で処理することが想定されています。</translation>
 <translation id="6190367314942602985">ユーザー識別情報に関するレポートを作成</translation>
 <translation id="6191963383731098056">このポリシーにより、管理者は <ph name="PRODUCT_NAME" /> のテーマの色を設定できます。入力する文字列は「#RRGGBB」の形式に沿った有効な 16 進数色コードである必要があります。
 

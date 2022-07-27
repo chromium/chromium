@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Katakana de meia largura</translation>
 <translation id="1834290891154666894">Entrada da correspondência do nome alternativo do assunto inválida</translation>
 <translation id="1838709767668011582">Site Google</translation>
-<translation id="1844692022597038441">Este ficheiro não está disponível offline.</translation>
 <translation id="1853795129690976061">Esta pasta é partilhada com o Linux.</translation>
 <translation id="1864756863218646478">Não foi possível encontrar o ficheiro.</translation>
 <translation id="1884013283844450420">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ligar</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Canadiano multilingue</translation>
 <translation id="3236289833370040187">A propriedade será transferida para <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Irlandês</translation>
-<translation id="3245321423178950146">Artista Desconhecido</translation>
 <translation id="3248185426436836442">Pendente</translation>
 <translation id="3252266817569339921">Francês</translation>
 <translation id="3253225298092156258">Não disponível</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Colar</translation>
 <translation id="3952872973865944257">Fonética de telugu</translation>
 <translation id="3958548648197196644">Quivi</translation>
-<translation id="3966388904776714213">Leitor de Áudio</translation>
 <translation id="3971140002794351170">Transferir perfil móvel, rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Inglês (RU)</translation>
 <translation id="3975895378829046965">Fonética de bengali</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">A activar...</translation>
 <translation id="4092890906744441904">Irlandês</translation>
 <translation id="4124935795427217608">Unicórnio</translation>
-<translation id="4158739975813877944">Abrir playlist</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> movido.</translation>
 <translation id="4186579485882418952">Ativar modo offline</translation>
 <translation id="4193154014135846272">Documento do Google</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Dinamarquês</translation>
 <translation id="6224253798271602650">Formate <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Não foi possível reproduzir este ficheiro.</translation>
 <translation id="6241349547798190358">Neerlandês (Bélgica)</translation>
 <translation id="6267547857941397424">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, bateria do telemóvel: <ph name="BATTERY_STATUS" />%, ligar</translation>
 <translation id="6269630227984243955">Malaio</translation>
@@ -634,6 +629,7 @@
 <translation id="6356685157277930264">Janela de comentários dos ficheiros</translation>
 <translation id="6358884629796491903">Dragão</translation>
 <translation id="636254897931573416">Valor da correspondência do sufixo do domínio inválido</translation>
+<translation id="6364301859968397756">Armazenamento da organização cheio</translation>
 <translation id="6367976544441405720">Carrinha</translation>
 <translation id="637062427944097960">Este ficheiro foi aberto num ambiente de trabalho diferente. Mova para <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para ver.</translation>
 <translation id="6394388407447716302">Só de leitura</translation>
@@ -765,7 +761,6 @@
 <translation id="751507702149411736">Bielorrusso</translation>
 <translation id="7532029025027028521">Transliteração de persa</translation>
 <translation id="7544830582642184299">Conceda autorização às apps Linux para aceder a ficheiros no seu Google Drive. As alterações serão sincronizadas com os seus outros dispositivos.</translation>
-<translation id="7544853251252956727">Aleatório</translation>
 <translation id="7547009467130558110">Sapatilha</translation>
 <translation id="7547780573915868306">Lituano</translation>
 <translation id="7547811415869834682">Holandês</translation>
@@ -841,7 +836,6 @@
 <translation id="8045462269890919536">Romeno</translation>
 <translation id="8049184478152619004">Introduza a chave de desbloqueio pessoal (PUK)</translation>
 <translation id="807187749540895545">A extrair <ph name="FILE_NAME" />…</translation>
-<translation id="8079530767338315840">Repetir</translation>
 <translation id="8087576439476816834">Transferir, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Partilhado comigo</translation>
 <translation id="8116072619078571545">Água gelada</translation>
@@ -855,7 +849,6 @@
 <translation id="8175731104491895765">Francês (Bélgica)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Modelo do dispositivo</translation>
-<translation id="8208580316430297579">Ilustrações</translation>
 <translation id="8223479393428528563">Para guardar estes ficheiros para utilização offline, ligue-se novamente à Internet, clique com o botão direito do rato nos ficheiros e selecione a opção <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Abortar</translation>
 <translation id="8250690786522693009">Latin</translation>

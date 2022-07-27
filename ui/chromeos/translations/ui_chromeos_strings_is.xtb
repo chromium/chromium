@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Katakana í hálfri breidd</translation>
 <translation id="1834290891154666894">Ógild samsvörunarfærsla fyrir auknefni viðfangs</translation>
 <translation id="1838709767668011582">Google vefsvæði</translation>
-<translation id="1844692022597038441">Þessi skrá er ekki tiltæk án nettengingar.</translation>
 <translation id="1853795129690976061">Þessari möppu er deilt með Linux</translation>
 <translation id="1864756863218646478">Skráin fannst ekki.</translation>
 <translation id="1884013283844450420">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, tengjast</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Kanadískt fjöltyngt</translation>
 <translation id="3236289833370040187">Eignarhald verður flutt á <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Írska</translation>
-<translation id="3245321423178950146">Óþekktur flytjandi</translation>
 <translation id="3248185426436836442">Í bið</translation>
 <translation id="3252266817569339921">Franskt</translation>
 <translation id="3253225298092156258">Ekki tiltækt</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Líma</translation>
 <translation id="3952872973865944257">Telugu hljóðritun</translation>
 <translation id="3958548648197196644">Loðber</translation>
-<translation id="3966388904776714213">Hljóðspilari</translation>
 <translation id="3971140002794351170">Sækja snjallprófíl, netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Enska (bresk)</translation>
 <translation id="3975895378829046965">Bengalska hljóðritun</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Virkjar...</translation>
 <translation id="4092890906744441904">Írska</translation>
 <translation id="4124935795427217608">Einhyrningur</translation>
-<translation id="4158739975813877944">Opna spilunarlista</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> flutt.</translation>
 <translation id="4186579485882418952">Virkja ónettengdan aðgang</translation>
 <translation id="4193154014135846272">Google skjal</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">Púnjabí</translation>
 <translation id="6224240818060029162">Danska</translation>
 <translation id="6224253798271602650">Forsníða <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Ekki tókst að spila þessa skrá.</translation>
 <translation id="6241349547798190358">Hollenska (Belgía)</translation>
 <translation id="6267547857941397424">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, <ph name="BATTERY_STATUS" />% hleðsla á rafhlöðu símans, tengjast</translation>
 <translation id="6269630227984243955">Malajíska</translation>
@@ -764,7 +759,6 @@
 <translation id="751507702149411736">Hvítrússneskt</translation>
 <translation id="7532029025027028521">Persneska umritun</translation>
 <translation id="7544830582642184299">Veita Linux-forritum aðgang að skránum þínum á Google Drive. Breytingar samstillast við önnur tæki.</translation>
-<translation id="7544853251252956727">Stokka</translation>
 <translation id="7547009467130558110">Strigaskór</translation>
 <translation id="7547780573915868306">Litháíska</translation>
 <translation id="7547811415869834682">Hollenskt</translation>
@@ -840,7 +834,6 @@
 <translation id="8045462269890919536">Rúmenskt</translation>
 <translation id="8049184478152619004">Sláðu inn PUK-númer</translation>
 <translation id="807187749540895545">Dregur út <ph name="FILE_NAME" />...</translation>
-<translation id="8079530767338315840">Endurtaka</translation>
 <translation id="8087576439476816834">Sækja, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Deilt með mér</translation>
 <translation id="8116072619078571545">Klakavatn</translation>
@@ -854,7 +847,6 @@
 <translation id="8175731104491895765">Franska (Belgía)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Gerð tækis</translation>
-<translation id="8208580316430297579">Listaverk</translation>
 <translation id="8223479393428528563">Til að vista þessar skrár fyrir notkun án nettengingar skaltu tengjast netinu aftur, hægrismella á skrárnar og velja kostinn <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Hætta</translation>
 <translation id="8250690786522693009">Latneskt</translation>

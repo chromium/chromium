@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">կիսալայն կատականա</translation>
 <translation id="1834290891154666894">Սուբյեկտի այլընտրանքային անվան հետ համընկնման սխալ գրառում</translation>
 <translation id="1838709767668011582">Google site</translation>
-<translation id="1844692022597038441">Այս ֆայլը մատչելի չէ անցանց ռեժիմում:</translation>
 <translation id="1853795129690976061">Այս պանակը հասանելի է Լինուքսին</translation>
 <translation id="1864756863218646478">Ֆայլը չգտնվեց:</translation>
 <translation id="1884013283844450420">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, կապակցում</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Կանադական բազմալեզու</translation>
 <translation id="3236289833370040187">Սեփականության իրավունքը կփոխանցվի <ph name="DESTINATION_DOMAIN" /> տիրույթին։</translation>
 <translation id="3241720467332021590">Իռլանդերեն</translation>
-<translation id="3245321423178950146">Անհայտ կատարող</translation>
 <translation id="3248185426436836442">Ընթացքում է</translation>
 <translation id="3252266817569339921">Ֆրանսիական</translation>
 <translation id="3253225298092156258">Հասանելի չէ</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Տեղադրել</translation>
 <translation id="3952872973865944257">տելուգու (հնչյունային)</translation>
 <translation id="3958548648197196644">Կիվի</translation>
-<translation id="3966388904776714213">Ձայնային նվագարկիչ</translation>
 <translation id="3971140002794351170">Ներբեռնել բջջային պրոֆիլը, ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">անգլերեն (ՄԹ)</translation>
 <translation id="3975895378829046965">բանգլա (հնչյունային)</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Ակտիվացվում է…</translation>
 <translation id="4092890906744441904">իռլանդերեն</translation>
 <translation id="4124935795427217608">Միաեղջյուր</translation>
-<translation id="4158739975813877944">Բացել երգացանկը</translation>
 <translation id="4159731583141908892">Տեղափոխվեց <ph name="FILE_NAME" /> տարր։</translation>
 <translation id="4186579485882418952">Միացնել անցանց ռեժիմը</translation>
 <translation id="4193154014135846272">Google փաստաթուղթ</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">փենջաբերեն</translation>
 <translation id="6224240818060029162">դանիերեն</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />. ֆորմատավորել</translation>
-<translation id="6227235786875481728">Չհաջողվեց նվագարկել այս ֆայլը:</translation>
 <translation id="6241349547798190358">հոլանդերեն (Բելգիա)</translation>
 <translation id="6267547857941397424">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="PHONE_NAME" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" />%, կապակցում</translation>
 <translation id="6269630227984243955">մալայերեն</translation>
@@ -764,7 +759,6 @@
 <translation id="751507702149411736">Բելառուսական</translation>
 <translation id="7532029025027028521">պարսկերեն (տառադարձություն)</translation>
 <translation id="7544830582642184299">Հասանելի դարձրեք ձեր Google Drive-ի ֆայլերը Լինուքսին։ Փոփոխությունները կհամաժամացվեն ձեր մյուս սարքերի հետ։</translation>
-<translation id="7544853251252956727">Խառնել</translation>
 <translation id="7547009467130558110">Սպորտային կոշիկ</translation>
 <translation id="7547780573915868306">լիտվերեն</translation>
 <translation id="7547811415869834682">Հոլանդական</translation>
@@ -840,7 +834,6 @@
 <translation id="8045462269890919536">Ռումինական</translation>
 <translation id="8049184478152619004">Մուտքագրեք անձնական ապակողպման բանալին (PUK)</translation>
 <translation id="807187749540895545">Ֆայլը (<ph name="FILE_NAME" />) արտահանվում է…</translation>
-<translation id="8079530767338315840">Կրկնել</translation>
 <translation id="8087576439476816834">Ներբեռնել, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Ինձ հասանելի</translation>
 <translation id="8116072619078571545">Սառույցով ջուր</translation>
@@ -854,7 +847,6 @@
 <translation id="8175731104491895765">ֆրանսերեն (Բելգիա)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Սարքի մոդելը</translation>
-<translation id="8208580316430297579">Արվեստի գործ</translation>
 <translation id="8223479393428528563">Այս ֆայլերը անցանց ռեժիմում օգտագործելու համար, նորից կապակցվեք համացանցին, ֆայլերի վրա աջ սեղմումով ընտրեք <ph name="OFFLINE_CHECKBOX_NAME" /> ընտրանքը:</translation>
 <translation id="8249296373107784235">Ընդհատել</translation>
 <translation id="8250690786522693009">լատիներեն</translation>

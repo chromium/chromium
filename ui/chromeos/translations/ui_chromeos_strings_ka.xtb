@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">ნახევარი სიგანის კატაკანა</translation>
 <translation id="1834290891154666894">სუბიექტის ალტერნატიული სახელის დამთხვევის მნიშვნელობა არასწორია</translation>
 <translation id="1838709767668011582">Google-ის საიტი</translation>
-<translation id="1844692022597038441">ეს ფაილი არ არის ხელმისაწვდომი ოფლაინში.</translation>
 <translation id="1853795129690976061">ეს საქაღალდე გაზიარებულია Linux-თან</translation>
 <translation id="1864756863218646478">ფაილი ვერ მოიძებნა.</translation>
 <translation id="1884013283844450420">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, დაკავშირება</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">კანადის მრავალენოვანი</translation>
 <translation id="3236289833370040187">მფლობელი გახდება <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">ირლანდიური</translation>
-<translation id="3245321423178950146">უცნობი შემსრულებელი</translation>
 <translation id="3248185426436836442">მომლოდინე</translation>
 <translation id="3252266817569339921">ფრანგული</translation>
 <translation id="3253225298092156258">მიუწვდომელია</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">ჩასმა</translation>
 <translation id="3952872973865944257">ტელუგუ ფონეტიკური</translation>
 <translation id="3958548648197196644">კივი</translation>
-<translation id="3966388904776714213">აუდიო დამკვრელი</translation>
 <translation id="3971140002794351170">მობილური პროფილის ჩამოტვირთვა, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ინგლისური (გაერთიანებული სამეფო)</translation>
 <translation id="3975895378829046965">ბენგალური ფონეტიკური</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">მიმდინარეობს გააქტიურება...</translation>
 <translation id="4092890906744441904">ირლანდიური</translation>
 <translation id="4124935795427217608">ზღაპრული მარტორქა</translation>
-<translation id="4158739975813877944">დასაკრავი სიის გახსნა</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> გადატანილია.</translation>
 <translation id="4186579485882418952">ხაზგარეშე რეჟიმის ჩართვა</translation>
 <translation id="4193154014135846272">Google დოკუმენტი</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">პენჯაბური</translation>
 <translation id="6224240818060029162">დანიური</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />-ის დაფორმატება</translation>
-<translation id="6227235786875481728">ამ ფაილის დაკვრა ვერ მოხერხდა.</translation>
 <translation id="6241349547798190358">ნიდერლანდური (ბელგია)</translation>
 <translation id="6267547857941397424">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="PHONE_NAME" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, ტელეფონის ბატარეა: <ph name="BATTERY_STATUS" />%, დაკავშირება</translation>
 <translation id="6269630227984243955">მალაიური</translation>
@@ -764,7 +759,6 @@
 <translation id="751507702149411736">ბელორუსული</translation>
 <translation id="7532029025027028521">სპარსული ტრანსლიტერაცია</translation>
 <translation id="7544830582642184299">მიეცით Linux აპებს თქვენს Google Drive-ში არსებულ ფაილებზე წვდომის ნებართვა. ცვლილებები სინქრონიზებული იქნება თქვენს სხვა მოწყობილობებთან.</translation>
-<translation id="7544853251252956727">არეულად დაკვრა</translation>
 <translation id="7547009467130558110">ბოტასი</translation>
 <translation id="7547780573915868306">ლიეტუვური</translation>
 <translation id="7547811415869834682">ჰოლანდიური</translation>
@@ -840,7 +834,6 @@
 <translation id="8045462269890919536">რუმინული</translation>
 <translation id="8049184478152619004">შეიყვანეთ განბლოკვის პერსონალური გასაღები (PUK)</translation>
 <translation id="807187749540895545">მიმდინარეობს „<ph name="FILE_NAME" />“-ის ამოღება...</translation>
-<translation id="8079530767338315840">გამეორება</translation>
 <translation id="8087576439476816834">ჩამოტვირთვა, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ჩემთვის გაზიარებული</translation>
 <translation id="8116072619078571545">გაყინული წყალი</translation>
@@ -854,7 +847,6 @@
 <translation id="8175731104491895765">ფრანგული (ბელგია)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">მოწყობილობის მოდელი</translation>
-<translation id="8208580316430297579">ხელოვნების ნიმუშები</translation>
 <translation id="8223479393428528563">ამ ფაილების ქსელგარე გამოყენებისათვის, დაბრუნდით ქსელში, ფაილზე გმარჯვენა ღილაკზე დააჭირეთ და მონიშნეთ <ph name="OFFLINE_CHECKBOX_NAME" /> ვარიანტი.</translation>
 <translation id="8249296373107784235">შეწყვეტა</translation>
 <translation id="8250690786522693009">ლათინური</translation>

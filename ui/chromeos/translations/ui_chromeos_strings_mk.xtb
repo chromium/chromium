@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">катакана со половина ширина</translation>
 <translation id="1834290891154666894">Неважечки запис за совпаѓање на алтернативното име на субјектот</translation>
 <translation id="1838709767668011582">Сајт на Google</translation>
-<translation id="1844692022597038441">Датотеката не е достапна локално.</translation>
 <translation id="1853795129690976061">Папкава е споделена со Linux</translation>
 <translation id="1864756863218646478">Не може да се најде датотеката.</translation>
 <translation id="1884013283844450420">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, поврзи</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Канадски - повеќејазична</translation>
 <translation id="3236289833370040187">Сопственоста ќе се пренесе на <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">ирски</translation>
-<translation id="3245321423178950146">Непознат уметник</translation>
 <translation id="3248185426436836442">Чека на ред</translation>
 <translation id="3252266817569339921">француски</translation>
 <translation id="3253225298092156258">Не е достапна</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Залепи</translation>
 <translation id="3952872973865944257">фонетски телугу</translation>
 <translation id="3958548648197196644">Киви</translation>
-<translation id="3966388904776714213">Аудиоплеер</translation>
 <translation id="3971140002794351170">Преземи го профилот на мобилниот уред, мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">англиски (ОК)</translation>
 <translation id="3975895378829046965">фонетски бангла</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Се активира…</translation>
 <translation id="4092890906744441904">ирски</translation>
 <translation id="4124935795427217608">Еднорог</translation>
-<translation id="4158739975813877944">Отвори ја плејлистата</translation>
 <translation id="4159731583141908892">Преместено: <ph name="FILE_NAME" />.</translation>
 <translation id="4186579485882418952">Овозможи офлајн</translation>
 <translation id="4193154014135846272">Документ на Google</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">пенџапски</translation>
 <translation id="6224240818060029162">дански</translation>
 <translation id="6224253798271602650">Форматирање на <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Датотеката не може да се репродуцира.</translation>
 <translation id="6241349547798190358">холандски (Белгија)</translation>
 <translation id="6267547857941397424">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, батерија на телефонот: <ph name="BATTERY_STATUS" /> %, поврзи</translation>
 <translation id="6269630227984243955">малајски</translation>
@@ -633,6 +628,7 @@
 <translation id="6356685157277930264">Прозорец со информации за датотеките</translation>
 <translation id="6358884629796491903">Змеј</translation>
 <translation id="636254897931573416">Неважечка вредност за совпаѓање на суфиксот на доменот</translation>
+<translation id="6364301859968397756">Капацитетот на организацијата е полн</translation>
 <translation id="6367976544441405720">Комбе</translation>
 <translation id="637062427944097960">Оваа датотека се отвори на друг десктоп. Поместете ја на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) за да се прикаже.</translation>
 <translation id="6394388407447716302">Само за читање</translation>
@@ -764,7 +760,6 @@
 <translation id="751507702149411736">белоруска</translation>
 <translation id="7532029025027028521">транслитерација на персиски</translation>
 <translation id="7544830582642184299">Дајте им дозвола на апликациите на Linux да пристапуваат до датотеките во вашиот Google Drive. Промените ќе се синхронизираат со другите уреди.</translation>
-<translation id="7544853251252956727">Измешај</translation>
 <translation id="7547009467130558110">Патика</translation>
 <translation id="7547780573915868306">литвански</translation>
 <translation id="7547811415869834682">Холандски</translation>
@@ -840,7 +835,6 @@
 <translation id="8045462269890919536">романски</translation>
 <translation id="8049184478152619004">Внесете личен клуч за одблокирање (PUK)</translation>
 <translation id="807187749540895545">Се извлекува <ph name="FILE_NAME" />…</translation>
-<translation id="8079530767338315840">Повтори</translation>
 <translation id="8087576439476816834">Преземање, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Споделено со мене</translation>
 <translation id="8116072619078571545">Вода со мраз</translation>
@@ -854,7 +848,6 @@
 <translation id="8175731104491895765">француски (Белгија)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Модел на уред</translation>
-<translation id="8208580316430297579">Илустрации</translation>
 <translation id="8223479393428528563">За да ги зачувате овие датотеки за локална употреба, вклучете се повторно, десен клик на датотеките и изберете ја опцијата <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Прекини</translation>
 <translation id="8250690786522693009">латиница</translation>

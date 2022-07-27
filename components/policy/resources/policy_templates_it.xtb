@@ -4784,13 +4784,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Specifica le app di Chrome tramite il relativo ID, come pjkljhegncpnkpknbcohdijeoejaedia, le app Android tramite il relativo nome del pacchetto, come com.google.android.gm, e le app web tramite l'URL utilizzato in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, come https://google.com/maps.
 
       Se il criterio non è configurato, gli utenti possono modificare l'elenco di app bloccate in Avvio app.</translation>
-<translation id="6183409603139321084"><ph name="PRODUCT_OS_NAME" /> può provare a compilare automaticamente il campo del nome utente nella pagina dell'IdP SAML durante l'autenticazione online nella schermata di accesso e nella schermata di blocco.
-
-      Utilizzerà l'email dell'utente assegnata al suo profilo <ph name="PRODUCT_OS_NAME" />, pertanto questa impostazione deve essere disabilitata se si prevede che gli utenti utilizzino email diverse nella pagina dell'IdP SAML.
-
-      La stringa ricevuta tramite questo criterio verrà utilizzata come nome del parametro URL nella pagina dell'IdP con l'email dell'utente come valore.
-
-      Il lato server dovrebbe essere responsabile della mappatura tra i provider di identità e i parametri URL che supportano.</translation>
 <translation id="6190367314942602985">Segnala informazioni di identificazione degli utenti</translation>
 <translation id="6191963383731098056">Questo criterio consente agli amministratori di configurare il colore del tema di <ph name="PRODUCT_NAME" />. La stringa di input deve essere una stringa di colore esadecimale valido corrispondente al formato "#RRGGBB".
 

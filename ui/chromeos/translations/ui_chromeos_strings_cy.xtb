@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Katakana hanner lled</translation>
 <translation id="1834290891154666894">Cofnod cyfateb enw amgen pwnc annilys</translation>
 <translation id="1838709767668011582">Gwefan Google</translation>
-<translation id="1844692022597038441">Nid yw'r ffeil hon ar gael all-lein.</translation>
 <translation id="1853795129690976061">Rhennir y ffolder hon â Linux</translation>
 <translation id="1864756863218646478">Ni ellid dod o hyd i'r ffeil.</translation>
 <translation id="1884013283844450420">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Cysylltu</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Amlieithog Canada</translation>
 <translation id="3236289833370040187">Trosglwyddir perchnogaeth i <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Gwyddeleg</translation>
-<translation id="3245321423178950146">Artist Anhysbys</translation>
 <translation id="3248185426436836442">Ar y gweill</translation>
 <translation id="3252266817569339921">Ffrangeg</translation>
 <translation id="3253225298092156258">Nid yw ar gael</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Gludo</translation>
 <translation id="3952872973865944257">Seinegol Telwgw</translation>
 <translation id="3958548648197196644">Ciwi</translation>
-<translation id="3966388904776714213">Chwaraewr Sain</translation>
 <translation id="3971140002794351170">Lawrlwytho proffil dyfais symudol, Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Saesneg (DU)</translation>
 <translation id="3975895378829046965">Seinegol Bangala</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Wrthi'n gweithredu...</translation>
 <translation id="4092890906744441904">Gwyddeleg</translation>
 <translation id="4124935795427217608">Uncorn</translation>
-<translation id="4158739975813877944">Agor rhestr chwarae</translation>
 <translation id="4159731583141908892">Symudwyd <ph name="FILE_NAME" />.</translation>
 <translation id="4186579485882418952">Galluogi All-lein</translation>
 <translation id="4193154014135846272">Dogfen Google</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">Pwnjabi</translation>
 <translation id="6224240818060029162">Daneg</translation>
 <translation id="6224253798271602650">Fformat <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Ni ellid chwarae'r ffeil hon.</translation>
 <translation id="6241349547798190358">Iseldireg (Gwlad Belg)</translation>
 <translation id="6267547857941397424">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Cryfder y Signal <ph name="SIGNAL_STRENGTH" />%, Batri'r Ffôn <ph name="BATTERY_STATUS" />%, Cysylltu</translation>
 <translation id="6269630227984243955">Maleieg</translation>
@@ -764,7 +759,6 @@
 <translation id="751507702149411736">Belarwsiyn</translation>
 <translation id="7532029025027028521">Trawslythrennu Perseg</translation>
 <translation id="7544830582642184299">Rhowch ganiatâd i apiau Linux gael mynediad at ffeiliau yn eich Google Drive. Bydd newidiadau yn cysoni â'ch dyfeisiau eraill.</translation>
-<translation id="7544853251252956727">Hapdrefnu</translation>
 <translation id="7547009467130558110">Esgid ymarfer</translation>
 <translation id="7547780573915868306">Lithwaneg</translation>
 <translation id="7547811415869834682">Iseldireg</translation>
@@ -840,7 +834,6 @@
 <translation id="8045462269890919536">Rwmaneg</translation>
 <translation id="8049184478152619004">Rhowch Allwedd Ddadrwystro Bersonol (PUK)</translation>
 <translation id="807187749540895545">Wrthi'n echdynnu <ph name="FILE_NAME" />...</translation>
-<translation id="8079530767338315840">Ailadrodd</translation>
 <translation id="8087576439476816834">Lawrlwytho, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Rhannwyd â fi</translation>
 <translation id="8116072619078571545">Dŵr iâ</translation>
@@ -854,7 +847,6 @@
 <translation id="8175731104491895765">Ffrangeg (Gwlad Belg)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model y ddyfais</translation>
-<translation id="8208580316430297579">Celfwaith</translation>
 <translation id="8223479393428528563">I gadw'r ffeiliau hyn i'w defnyddio all-lein, ewch yn ôl ar-lein, de-gliciwch y ffeiliau, a dewiswch yr opsiwn <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Terfynu</translation>
 <translation id="8250690786522693009">Lladin</translation>

@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">ຄາຕາຄານະເຄິ່ງຄວາມກວ້າງ</translation>
 <translation id="1834290891154666894">ຂໍ້ມູນການຈັບຄູ່ຊື່ສຳຮອງຫົວຂໍ້ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="1838709767668011582">ເວັບໄຊ Google</translation>
-<translation id="1844692022597038441">ໄຟລ໌ນີ້ບໍ່​ມີ​ໃຫ້​ແບບອອຟລາຍນ໌.</translation>
 <translation id="1853795129690976061">ມີການແບ່ງປັນໂຟນເດີນີ້ກັບ Linux</translation>
 <translation id="1864756863218646478">ບໍ່​ສາ​ມາດພົບໄຟລ​໌ໄດ້​.</translation>
 <translation id="1884013283844450420">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ເຊື່ອມຕໍ່</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">ການາດາຫຼາຍພາສາ</translation>
 <translation id="3236289833370040187">ກຳມະສິດຈະຖືກໂອນໃຫ້ <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">ພາສາໄອແລນ</translation>
-<translation id="3245321423178950146">ສິລະປິນທີ່ບໍ່​ຮູ້ຈັກ</translation>
 <translation id="3248185426436836442">ກຳລັງລໍຖ້າ</translation>
 <translation id="3252266817569339921">ພາສາຝຣັ່ງ</translation>
 <translation id="3253225298092156258">ບໍ່ມີຂໍ້ມູນ</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">ແປະໃສ່</translation>
 <translation id="3952872973865944257">ການອອກສຽງພາສາເຕລູກູ</translation>
 <translation id="3958548648197196644">Kiwi</translation>
-<translation id="3966388904776714213">ເຄື່ອງຫຼິ້ນສຽງ</translation>
 <translation id="3971140002794351170">ດາວໂຫຼດໂປຣໄຟລ໌ມືຖື, ເຄືອຂ່າຍ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ພາສາອັງກິດ (ສະຫະລາດຊະອານາຈັກ)</translation>
 <translation id="3975895378829046965">ການອອກສຽງພາສາບັງກລາ</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">ກຳລັງເປີດນຳໃຊ້...</translation>
 <translation id="4092890906744441904">ພາສາໄອຣິຊ</translation>
 <translation id="4124935795427217608">ຢູນິຄອນ</translation>
-<translation id="4158739975813877944">ເປີດລາຍການຫຼິ້ນ</translation>
 <translation id="4159731583141908892">ຍ້າຍ <ph name="FILE_NAME" /> ແລ້ວ.</translation>
 <translation id="4186579485882418952">ເປີດການນຳໃຊ້ອອບລາຍ</translation>
 <translation id="4193154014135846272">ເອ​ກະ​ສານ​ Google</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">ພາສາປັນຈາບີ</translation>
 <translation id="6224240818060029162">ພາສາແດນນິດ</translation>
 <translation id="6224253798271602650">ຟໍແມັດ <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">ບໍ່​ສາ​ມາດຫຼິ້ນໄຟລ​໌​ນີ້​ໄດ້.</translation>
 <translation id="6241349547798190358">ພາສາດັຈ (ເບວຢຽມ)</translation>
 <translation id="6267547857941397424">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, ສັນຍານຄວາມແຮງ <ph name="SIGNAL_STRENGTH" />%, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" />%, ເຊື່ອມຕໍ່</translation>
 <translation id="6269630227984243955">ມາເລ</translation>
@@ -764,7 +759,6 @@
 <translation id="751507702149411736">ພາສາ​ເບ​ລາຣຸສ</translation>
 <translation id="7532029025027028521">ການແປທັບສັບພາສາເປີຊຽນ</translation>
 <translation id="7544830582642184299">ອະນຸຍາດໃຫ້ແອັບ Linux ເຂົ້າເຖິງໄຟລ໌ຕ່າງໆໃນ Google Drive ຂອງທ່ານ. ການປ່ຽນແປງຈະຊິ້ງຂໍ້ມູນກັບອຸປະກອນອື່ນຂອງທ່ານ.</translation>
-<translation id="7544853251252956727">ສັບປ່ຽນ</translation>
 <translation id="7547009467130558110">ເກີບສະນີກເກີ</translation>
 <translation id="7547780573915868306">ພາສາລິທົວນຽນ</translation>
 <translation id="7547811415869834682">ພາສາດັຊ</translation>
@@ -840,7 +834,6 @@
 <translation id="8045462269890919536">ພາສາໂຣມານີ</translation>
 <translation id="8049184478152619004">ລະບຸ Personal Unblocking Key (PUK)</translation>
 <translation id="807187749540895545">ກຳລັງແຕກໄຟລ໌ <ph name="FILE_NAME" />...</translation>
-<translation id="8079530767338315840">ຫຼິ້ນຊໍ້າ</translation>
 <translation id="8087576439476816834">ດາວໂຫຼດ, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ແຊຣ໌ກັບຂ້ອຍ</translation>
 <translation id="8116072619078571545">ນໍ້າກ້ອນ</translation>
@@ -854,7 +847,6 @@
 <translation id="8175731104491895765">ພາສາຝຣັ່ງ (ເບວຢຽມ)</translation>
 <translation id="8179976553408161302">ປ້ອນເຂົ້າ</translation>
 <translation id="8193175696669055101">ລຸ້ນອຸປະກອນ</translation>
-<translation id="8208580316430297579">ຮູບປົກ</translation>
 <translation id="8223479393428528563">ເພື່ອ​ບັນ​ທຶກ​ໄຟ​ລ໌​ເຫຼົ່າ​ນີ້​ໄວ້​ໃຊ້​ອອ​ຟ​ລາຍ​ນ໌, ກັບ​ຄືນ​ໄປ​ອອນ​ລາຍ​ນ໌, ຄ​ລິກ​ເບື້ອງ​ຂວາ​ໃສ່​ໄຟ​ລ໌, ແລະ​ເລືອກ​ທາງ​ເລືອກ <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">ຍົກເລີກ</translation>
 <translation id="8250690786522693009">ລາຕິນ</translation>

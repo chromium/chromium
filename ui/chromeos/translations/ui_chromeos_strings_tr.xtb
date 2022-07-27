@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Yarı genişlikte katakana</translation>
 <translation id="1834290891154666894">Alternatif konu adı eşleşme girişi geçersiz</translation>
 <translation id="1838709767668011582">Google sitesi</translation>
-<translation id="1844692022597038441">Bu dosya çevrimdışı kullanılamıyor.</translation>
 <translation id="1853795129690976061">Bu klasör Linux ile paylaşılıyor.</translation>
 <translation id="1864756863218646478">Dosya bulunamadı.</translation>
 <translation id="1884013283844450420">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Bağlan</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Çok Dilli Kanada</translation>
 <translation id="3236289833370040187">Sahiplik <ph name="DESTINATION_DOMAIN" /> alanına aktarılacak.</translation>
 <translation id="3241720467332021590">İrlanda dili</translation>
-<translation id="3245321423178950146">Bilinmeyen Sanatçı</translation>
 <translation id="3248185426436836442">Beklemede</translation>
 <translation id="3252266817569339921">Fransızca</translation>
 <translation id="3253225298092156258">Kullanılamaz</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Yapıştır</translation>
 <translation id="3952872973865944257">Telugu Fonetik</translation>
 <translation id="3958548648197196644">Kivi</translation>
-<translation id="3966388904776714213">Ses Çalar</translation>
 <translation id="3971140002794351170">Mobil profili indir, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> ağı</translation>
 <translation id="3973925058222872294">İngilizce (BK)</translation>
 <translation id="3975895378829046965">Bengalce Fonetik</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Etkinleştiriliyor...</translation>
 <translation id="4092890906744441904">İrlandaca</translation>
 <translation id="4124935795427217608">Tek boynuzlu at</translation>
-<translation id="4158739975813877944">Şarkı listesini aç</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> öğe taşındı.</translation>
 <translation id="4186579485882418952">Offline'ı etkinleştir</translation>
 <translation id="4193154014135846272">Google dokümanı</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">Pencapça</translation>
 <translation id="6224240818060029162">Danca</translation>
 <translation id="6224253798271602650">Biçimlendir: <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Bu dosya oynatılamadı.</translation>
 <translation id="6241349547798190358">Felemenkçe (Belçika)</translation>
 <translation id="6267547857941397424">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, %<ph name="BATTERY_STATUS" /> Telefon Pili, Bağlan</translation>
 <translation id="6269630227984243955">Malayca</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">Beyaz Rusça</translation>
 <translation id="7532029025027028521">Farsça Harf Çevirisi</translation>
 <translation id="7544830582642184299">Linux uygulamalarının Google Drive'ınızdaki dosyalara erişmesine izin verin. Değişiklikler, diğer cihazlarınızla senkronize edilecektir.</translation>
-<translation id="7544853251252956727">Karıştır</translation>
 <translation id="7547009467130558110">Spor ayakkabı</translation>
 <translation id="7547780573915868306">Litvanca</translation>
 <translation id="7547811415869834682">Felemenkçe</translation>
@@ -841,7 +835,6 @@
 <translation id="8045462269890919536">Rumence</translation>
 <translation id="8049184478152619004">Kişisel Engelleme Kaldırma Anahtarını (PUK) girin</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> çıkarılıyor...</translation>
-<translation id="8079530767338315840">Tekrarla</translation>
 <translation id="8087576439476816834">İndir, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Benimle paylaşılanlar</translation>
 <translation id="8116072619078571545">Buzlu su</translation>
@@ -855,7 +848,6 @@
 <translation id="8175731104491895765">Fransızca (Belçika)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Cihaz modeli</translation>
-<translation id="8208580316430297579">Poster</translation>
 <translation id="8223479393428528563">Bu dosyaları çevrimdışı kullanım için kaydetmek üzere tekrar çevrimiçi olun, dosyaları sağ tıklayın ve <ph name="OFFLINE_CHECKBOX_NAME" /> seçeneğini belirleyin.</translation>
 <translation id="8249296373107784235">İptal Et</translation>
 <translation id="8250690786522693009">Latince</translation>

@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Half width katakana</translation>
 <translation id="1834290891154666894">Invalid na entry ng pagtugma ng alternatibong pangalan</translation>
 <translation id="1838709767668011582">Site ng Google</translation>
-<translation id="1844692022597038441">Hindi available offline ang file na ito.</translation>
 <translation id="1853795129690976061">Nakabahagi ang folder na ito sa Linux</translation>
 <translation id="1864756863218646478">Hindi mahanap ang file.</translation>
 <translation id="1884013283844450420">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kumonekta</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Canadian Multilingual</translation>
 <translation id="3236289833370040187">Ililipat ang pagmamay-ari sa <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Irish</translation>
-<translation id="3245321423178950146">Hindi Kilalang Artist</translation>
 <translation id="3248185426436836442">Nakabinbin</translation>
 <translation id="3252266817569339921">Pranses</translation>
 <translation id="3253225298092156258">Hindi available</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">I-paste</translation>
 <translation id="3952872973865944257">Telugu Phonetic</translation>
 <translation id="3958548648197196644">Kiwi</translation>
-<translation id="3966388904776714213">Audio Player</translation>
 <translation id="3971140002794351170">I-download ang mobile profile, Network <ph name="NETWORK_INDEX" /> ng <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">English (UK)</translation>
 <translation id="3975895378829046965">Bangla Phonetic</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Ina-activate...</translation>
 <translation id="4092890906744441904">Irish</translation>
 <translation id="4124935795427217608">Unicorn</translation>
-<translation id="4158739975813877944">Buksan ang play list</translation>
 <translation id="4159731583141908892">Inilipat ang <ph name="FILE_NAME" />.</translation>
 <translation id="4186579485882418952">I-enable ang Offline</translation>
 <translation id="4193154014135846272">Dokumento ng Google</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Danish</translation>
 <translation id="6224253798271602650">I-format ang <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Hindi ma-play ang file na ito.</translation>
 <translation id="6241349547798190358">Dutch (Belgium)</translation>
 <translation id="6267547857941397424">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Baterya ng Telepono <ph name="BATTERY_STATUS" />%, Kumonekta</translation>
 <translation id="6269630227984243955">Malay</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">Belarusian</translation>
 <translation id="7532029025027028521">Persian Transliteration</translation>
 <translation id="7544830582642184299">Bigyan ang mga Linux app ng pahintulot na ma-access ang mga file sa iyong Google Drive. Masi-sync sa iba mo pang device ang mga pagbabago.</translation>
-<translation id="7544853251252956727">I-shuffle</translation>
 <translation id="7547009467130558110">Sneaker</translation>
 <translation id="7547780573915868306">Lithuanian</translation>
 <translation id="7547811415869834682">Dutch</translation>
@@ -841,7 +835,6 @@
 <translation id="8045462269890919536">Romanian</translation>
 <translation id="8049184478152619004">Ilagay ang Personal Unblocking Key (PUK)</translation>
 <translation id="807187749540895545">Ine-extract ang <ph name="FILE_NAME" />...</translation>
-<translation id="8079530767338315840">Ulitin</translation>
 <translation id="8087576439476816834">I-download, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Ibinahagi sa akin</translation>
 <translation id="8116072619078571545">Tubig na may yelo</translation>
@@ -855,7 +848,6 @@
 <translation id="8175731104491895765">French (Belgium)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Modelo ng device</translation>
-<translation id="8208580316430297579">Artwork</translation>
 <translation id="8223479393428528563">Upang i-save ang mga file na ito para sa offline na paggamit, mag-online muli, i-right click ang mga file at piliin ang opsyong <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">I-abort</translation>
 <translation id="8250690786522693009">Latin</translation>

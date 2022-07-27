@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Katakana separuh lebar</translation>
 <translation id="1834290891154666894">Entri padanan nama alternatif subjek tidak sah</translation>
 <translation id="1838709767668011582">Tapak Google</translation>
-<translation id="1844692022597038441">Fail ini tidak boleh didapati di luar talian.</translation>
 <translation id="1853795129690976061">Folder ini dikongsi dengan Linux</translation>
 <translation id="1864756863218646478">Fail tidak dapat dijumpai.</translation>
 <translation id="1884013283844450420">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Sambung</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Berbilang bahasa Kanada</translation>
 <translation id="3236289833370040187">Pemilikan akan dipindahkan ke <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Bahasa Ireland</translation>
-<translation id="3245321423178950146">Artis Tidak Dikenali</translation>
 <translation id="3248185426436836442">Belum selesai</translation>
 <translation id="3252266817569339921">Bahasa Perancis</translation>
 <translation id="3253225298092156258">Tidak tersedia</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Tampal</translation>
 <translation id="3952872973865944257">Fonetik Telugu</translation>
 <translation id="3958548648197196644">Kiwi</translation>
-<translation id="3966388904776714213">Pemain Audio</translation>
 <translation id="3971140002794351170">Muat turun profil mudah alih, Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Inggeris (UK)</translation>
 <translation id="3975895378829046965">Fonetik Bangla</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Mengaktifkan...</translation>
 <translation id="4092890906744441904">Ireland</translation>
 <translation id="4124935795427217608">Unikorn</translation>
-<translation id="4158739975813877944">Buka senarai main</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> dialihkan.</translation>
 <translation id="4186579485882418952">Dayakan Luar Talian</translation>
 <translation id="4193154014135846272">Dokumen Google</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Denmark</translation>
 <translation id="6224253798271602650">Formatkan <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Fail ini tidak dapat dimainkan.</translation>
 <translation id="6241349547798190358">Belanda (Belgium)</translation>
 <translation id="6267547857941397424">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Bateri Telefon <ph name="BATTERY_STATUS" />%, Sambung</translation>
 <translation id="6269630227984243955">Bahasa Melayu</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">Bahasa Belarus</translation>
 <translation id="7532029025027028521">Alih Huruf Parsi</translation>
 <translation id="7544830582642184299">Beri Linux kebenaran apl untuk mengakses fail dalam Google Drive anda. Perubahan akan disegerakkan ke peranti anda yang lain.</translation>
-<translation id="7544853251252956727">Rombak</translation>
 <translation id="7547009467130558110">Kasut sniker</translation>
 <translation id="7547780573915868306">Lithuania</translation>
 <translation id="7547811415869834682">Bahasa Belanda</translation>
@@ -841,7 +835,6 @@
 <translation id="8045462269890919536">Bahasa Romania</translation>
 <translation id="8049184478152619004">Masukkan Kunci Penyahsekat Peribadi (PUK)</translation>
 <translation id="807187749540895545">Mengekstrak <ph name="FILE_NAME" />...</translation>
-<translation id="8079530767338315840">Ulang</translation>
 <translation id="8087576439476816834">Muat turun, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Dikongsi dengan saya</translation>
 <translation id="8116072619078571545">Air ais</translation>
@@ -855,7 +848,6 @@
 <translation id="8175731104491895765">Perancis (Belgium)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model peranti</translation>
-<translation id="8208580316430297579">Kerja seni</translation>
 <translation id="8223479393428528563">Bagi menyimpan fail-fail ini untuk kegunaan diluar talian, sila kembali ke dalam talian, klik kanan fail dan pilih pilihan <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Henti paksa</translation>
 <translation id="8250690786522693009">Bahasa Latin</translation>

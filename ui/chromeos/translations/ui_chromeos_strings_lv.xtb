@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Pusplatuma katakana</translation>
 <translation id="1834290891154666894">Nederīgs subjekta alternatīvā nosaukuma atbilstības ieraksts.</translation>
 <translation id="1838709767668011582">Google vietne</translation>
-<translation id="1844692022597038441">Šis fails nav pieejams bezsaistē.</translation>
 <translation id="1853795129690976061">Šī mape ir kopīgota ar Linux</translation>
 <translation id="1864756863218646478">Failu nevarēja atrast.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, savienojums</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Kanādas vairākvalodu</translation>
 <translation id="3236289833370040187">Īpašumtiesības tiks nodotas domēnam <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Īru valoda</translation>
-<translation id="3245321423178950146">Nezināms izpildītājs</translation>
 <translation id="3248185426436836442">Gaida</translation>
 <translation id="3252266817569339921">Franču valoda</translation>
 <translation id="3253225298092156258">Nav pieejams</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Ielīmēt</translation>
 <translation id="3952872973865944257">Telugu, fonētiskā</translation>
 <translation id="3958548648197196644">Kivi</translation>
-<translation id="3966388904776714213">Audio atskaņotājs</translation>
 <translation id="3971140002794351170">Lejupielādēt mobilo sakaru profilu, tīkls numur <ph name="NETWORK_INDEX" />, tīklu skaits ir <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Angļu (Apvienotā Karaliste)</translation>
 <translation id="3975895378829046965">Bengāļu, fonētiskā</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Notiek aktivizācija...</translation>
 <translation id="4092890906744441904">Īru</translation>
 <translation id="4124935795427217608">Vienradzis</translation>
-<translation id="4158739975813877944">Atvērt atskaņošanas sarakstu</translation>
 <translation id="4159731583141908892">Pārvietots vienums: <ph name="FILE_NAME" />.</translation>
 <translation id="4186579485882418952">Iespējot piekļuvi bezsaistē</translation>
 <translation id="4193154014135846272">Google dokuments</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">Pandžabu</translation>
 <translation id="6224240818060029162">Dāņu</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> formatēšana</translation>
-<translation id="6227235786875481728">Šo failu nevarēja demonstrēt.</translation>
 <translation id="6241349547798190358">Holandiešu (Beļģija)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, tālruņa akumulatora statuss: <ph name="BATTERY_STATUS" />%, savienojums</translation>
 <translation id="6269630227984243955">Malajiešu</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">Baltkrievu valoda</translation>
 <translation id="7532029025027028521">Persiešu, transliterācija</translation>
 <translation id="7544830582642184299">Linux lietotnes saņems atļauju piekļūt failiem jūsu Google diskā. Izmaiņas tiks sinhronizētas ar citām jūsu ierīcēm.</translation>
-<translation id="7544853251252956727">Sajaukt</translation>
 <translation id="7547009467130558110">Sporta kurpe</translation>
 <translation id="7547780573915868306">Lietuviešu</translation>
 <translation id="7547811415869834682">Holandiešu valoda</translation>
@@ -841,7 +835,6 @@
 <translation id="8045462269890919536">Rumāņu valoda</translation>
 <translation id="8049184478152619004">Ievadiet personīgo atbloķēšanas atslēgu (PUK)</translation>
 <translation id="807187749540895545">Notiek faila “<ph name="FILE_NAME" />” izvilkšana...</translation>
-<translation id="8079530767338315840">Atkārtot</translation>
 <translation id="8087576439476816834">Lejupielādēt, profils <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Kopīgots ar mani</translation>
 <translation id="8116072619078571545">Ūdens ar ledu</translation>
@@ -855,7 +848,6 @@
 <translation id="8175731104491895765">Franču (Beļģija)</translation>
 <translation id="8179976553408161302">Ievadīt</translation>
 <translation id="8193175696669055101">Ierīces modelis</translation>
-<translation id="8208580316430297579">Mākslas darbs</translation>
 <translation id="8223479393428528563">Lai saglabātu šos failus izmantošanai bezsaistē, aktivizējiet tiešsaistes režīmu, ar peles labo pogu noklikšķiniet uz failiem un atlasiet opciju <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Priekšlaikus pārtraukt</translation>
 <translation id="8250690786522693009">latīņu</translation>

@@ -1003,6 +1003,7 @@
 <translation id="3676592649209844519">စက်ပစ္စည်း ID-</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; ကို ဆိုလိုပါသလား။</translation>
 <translation id="3678029195006412963">တောင်းဆိုမှုကို လက်မှတ်ထိုး၍မရပါ</translation>
+<translation id="3678342917559046352">မမှန်ကန်သောနောက်ဆက်တွဲ- တန်ဖိုးသည် အောက်ပါဖောင်များထဲမှ တစ်ခုဖြစ်ရမည်- &lt;extension_id&gt; သို့မဟုတ် &lt;extension_id&gt;၊&lt;update_url&gt;။</translation>
 <translation id="3678529606614285348">စာမျက်နှာကို ရုပ်ဖျက်ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန် (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">လက်မှတ် အချက်အလက်များ</translation>
 <translation id="3701427423622901115">ပြင်ဆင်သတ်မှတ်မှုကို အသိအမှတ်ပြုထားသည်။</translation>
@@ -1343,6 +1344,7 @@
 <translation id="464342062220857295">ရှာဖွေရေး ဝန်ဆောင်မှုများ</translation>
 <translation id="4644670975240021822">ပြောင်းပြန်အစဉ်ဖြင့် မှောက်ထားရန်</translation>
 <translation id="4646534391647090355">ထိုနေရာသို့ ယခုသွားရန်</translation>
+<translation id="4648262692072505866">ဟက်ရှ်ကုဒ်က SHA-256 ဖော်မက်ဖြစ်ရမည်။</translation>
 <translation id="4652266463001779298">ခွင့်ပြုမထားပါ</translation>
 <translation id="4653167719759882810">ပေါင်းစည်းမှုနှင့် ရှာမှီးရရှိမှုများ</translation>
 <translation id="4658638640878098064">ညာဘက်ထိပ်တွင် ချုပ်စက်ဖြင့် ချုပ်ရန်</translation>
@@ -1452,6 +1454,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Tab ကိုနှိပ်ပြီးနောက် Enter နှိပ်၍ ရှာဖွေပါ</translation>
 <translation id="4930153903256238152">သိုလှောင်နိုင်မှု မြင့်သည်</translation>
+<translation id="4936134414789135531">ထည့်သွင်းထားသော <ph name="VALUE_NAME" /> ကို ရှာမတွေ့ပါ။</translation>
 <translation id="4936675324097895694">ငွေကြေးဆိုင်ရာ</translation>
 <translation id="4940163644868678279">Chrome ရှိ ရုပ်ဖျက်မုဒ်</translation>
 <translation id="4943872375798546930">ရလဒ်မရှိပါ</translation>
@@ -1569,6 +1572,7 @@
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">ဗန်း ၁၃</translation>
 <translation id="5216942107514965959">ယနေ့ နောက်ဆုံး ဝင်ကြည့်ထားသည်</translation>
+<translation id="5217759126664161410">မမှန်ကန်သော ပရိုတိုကောဖော်မက်။</translation>
 <translation id="5222812217790122047">အီးမေးလ် လိုအပ်သည်</translation>
 <translation id="5228404122310299359">ပါတီပွဲနှင့် ပွဲတော်ပစ္စည်းများ</translation>
 <translation id="5229588705416009823">လူအုပ် အဖွဲ့လိုက်ကစားရသော ဂိမ်းများ</translation>
@@ -1641,6 +1645,7 @@
 <translation id="5398772614898833570">ကြော်ငြာများကို ပိတ်လိုက်ပါပြီ</translation>
 <translation id="5400836586163650660">မီးခိုး</translation>
 <translation id="540969355065856584">ဤဆာဗာသည် <ph name="DOMAIN" /> ဖြစ်ကြောင်း သက်သေမပြနိုင်ပါ; ၎င်း၏လုံခြုံရေး အသိမှတ်ပြုလက်မှတ်သည် ယခုအချိန်တွင် တရားမဝင်ပါ။ ဖွဲ့စည်းမှု အမှားကြောင့် သို့မဟုတ် တိုက်ခိုက်လိုသူက သင်၏ချိတ်ဆက်မှုကို ကြားဖြတ်ယူနေ၍ ထိုသို့ဖြစ်လာနိုင်ခဲ့ပါသည်။</translation>
+<translation id="5412040515238827314">ပုံစံမမှန်ပါ- ပုံစံစာရင်း ဖြစ်ရမည်။</translation>
 <translation id="5412236728747081950">နောက်ထပ်သက်ဆိုင်ရာ ကြော်ငြာများ ပြရန် Chrome မှ သင့်စိတ်ဝင်စားမှုများကို ဤဝဘ်ဆိုက်က ရယူပါသည်</translation>
 <translation id="541416427766103491">စီထည့်သည့်ပုံး ၄</translation>
 <translation id="5421136146218899937">ဘရောင်ဇာ ဒေတာကို ရှင်းရန်...</translation>
@@ -1759,6 +1764,7 @@
 <translation id="5754400531489347219">အိမ်မွေးနှင့် အခြားတိရစ္ဆာန်များ</translation>
 <translation id="5759751709240058861">သင့်ကင်မရာ သုံးရန်နှင့် ရွှေ့ရန်</translation>
 <translation id="5763042198335101085">မှန်ကန်သော အီးမေးလ်လိပ်စာကို ထည့်ပါ</translation>
+<translation id="5764725887548570807">မမှန်ကန်သော မူရင်းဖော်မက်။</translation>
 <translation id="5765072501007116331">ပစ္စည်းပို့ခြင်းနည်းလမ်းများနှင့် သတ်မှတ်ချက်များကို ကြည့်ရန် လိပ်စာရွေးပါ</translation>
 <translation id="57689295674415555">ပကတိအသွင်ကတ် နံပါတ် ဖြည့်မထားဘူးလား။</translation>
 <translation id="5776313857861697733">ဦးစားပေး</translation>
@@ -1883,10 +1889,12 @@
 <translation id="6107012941649240045">...အား ထုတ်ပေးခဲ့သည်</translation>
 <translation id="610911394827799129">သင်၏ Google အကောင့်က ဖွင့်ကြည့်ထားသော မှတ်တမ်းသည် <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> တွင် အခြားပုံစံများဖြင့် ရှိနေနိုင်ပါသည်</translation>
 <translation id="6116338172782435947">ကလစ်ဘုတ်သို့ မိတ္တူကူးထားသည့် စာသားနှင့် ပုံများအား ကြည့်ရန်</translation>
+<translation id="6118782133429281336">မူရင်းစာရင်း အလွတ်ဖြစ်နေသည်။</translation>
 <translation id="6120179357481664955">သင့် UPI ID ကို မှတ်မိပါသလား။</translation>
 <translation id="6124432979022149706">Chrome လုပ်ငန်းသုံး ချိတ်ဆက်သည့်ကိရိယာများ</translation>
 <translation id="6127379762771434464">အကြောင်းအရာကို ဖယ်ရှားလိုက်ပါပြီ</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome ရှိ ရုပ်ဖျက်မုဒ်အကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">ဖိုင်နောက်ဆက်တွဲ အလွတ်ဖြစ်နေသည် (သို့) ပုံစံပျက်နေသည်။</translation>
 <translation id="6146055958333702838">သင်အသုံးပြုနေသည့် ရောက်တာများ၊ မိုဒမ်းများ၊ သို့မဟုတ် အခြားကွန်ယက်စက်ပစ္စည်းများနှင့် ကြိုးများကို စစ်ဆေးပါ။</translation>
 <translation id="614940544461990577">စမ်းကြည့်ပါ −</translation>
 <translation id="6150036310511284407">ဘယ်ဘက်တွင် သုံးချက်ဖောက်ရန်</translation>
@@ -2059,6 +2067,7 @@
 <translation id="666259744093848177">(x86_64 ဘာသာပြန်ထားသည်)</translation>
 <translation id="6663846344464066639">ချီထားသည့် လက်များ</translation>
 <translation id="6665553082534466207">ညာဘက်တွင် သုံးချက်ဖောက်ရန်</translation>
+<translation id="6668389483194953109">စာရွက်အရွယ်အစား အမည်ကို “စိတ်ကြိုက်” ဟု တွေ့သော်လည်း “custom_size” သတ်မှတ်ချက် အလွတ်ဖြစ်နေသည် (သို့) ပုံစံမမှန်ပါ။</translation>
 <translation id="6671697161687535275">Chromium ထဲမှ ပုံစံအကြံပြုချက်ကို ဖယ်ရှားရမလား။</translation>
 <translation id="6683717648675961851">အလုပ်အကိုင် စာရင်းများ</translation>
 <translation id="6685834062052613830">ထွက်ပြီး စနစ်ထည့်သွင်းမှု ပြီးမြောက်စေပါ</translation>
@@ -2072,6 +2081,7 @@
 <translation id="6696588630955820014">ဤတဘ်ကိုမျှဝေရန် ခလုတ်၊ လင့်ခ်ကို မျှဝေခြင်း၊ QR ကုဒ် ပြုလုပ်ခြင်း၊ ကာစ်လုပ်ခြင်းစသည်တို့ဖြင့် ဤတဘ်ကိုမျှဝေရန် Enter နှိပ်ပါ</translation>
 <translation id="6698381487523150993">ဖန်တီးခဲ့:</translation>
 <translation id="6702919718839027939">တင်ပြရန်</translation>
+<translation id="6704458454638854812">“custom_size” သတ်မှတ်ချက်ထည့်ထားသည်၊ အမည်သည် “စိတ်ကြိုက်” ဖြစ်ရမည်။</translation>
 <translation id="6709133671862442373">သတင်းများ</translation>
 <translation id="6709888928011386878">တေးဂီတ တူရိယာများ</translation>
 <translation id="6710213216561001401">အရင်</translation>

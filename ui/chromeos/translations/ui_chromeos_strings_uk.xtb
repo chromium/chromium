@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Катакана половинної ширини</translation>
 <translation id="1834290891154666894">Недійсний запис збігу з альтернативною назвою суб’єкта</translation>
 <translation id="1838709767668011582">Сайт Google</translation>
-<translation id="1844692022597038441">Цей файл не доступний в режимі офлайн.</translation>
 <translation id="1853795129690976061">Linux має доступ до цієї папки</translation>
 <translation id="1864756863218646478">Файл неможливо знайти.</translation>
 <translation id="1884013283844450420">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />. Підключитися</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Канадська (багатомовна)</translation>
 <translation id="3236289833370040187">Право власності буде передано в домен <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Ірландська</translation>
-<translation id="3245321423178950146">Невідомий виконавець</translation>
 <translation id="3248185426436836442">Очікування</translation>
 <translation id="3252266817569339921">Французька</translation>
 <translation id="3253225298092156258">Недоступно</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Вставити</translation>
 <translation id="3952872973865944257">Телугу, фонетична розкладка</translation>
 <translation id="3958548648197196644">Ківі</translation>
-<translation id="3966388904776714213">Аудіопрогравач</translation>
 <translation id="3971140002794351170">Завантажити мобільний профіль, мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />", <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Англійська (Велика Британія)</translation>
 <translation id="3975895378829046965">Бенгальська, фонетична розкладка</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Активація...</translation>
 <translation id="4092890906744441904">Ірландська</translation>
 <translation id="4124935795427217608">Єдиноріг</translation>
-<translation id="4158739975813877944">Відкрити список відтворення</translation>
 <translation id="4159731583141908892">Файл "<ph name="FILE_NAME" />" переміщено.</translation>
 <translation id="4186579485882418952">Увімкнути режим офлайн</translation>
 <translation id="4193154014135846272">Документ Google</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">Панджабі</translation>
 <translation id="6224240818060029162">Данська</translation>
 <translation id="6224253798271602650">Форматувати (<ph name="DRIVE_NAME" />)</translation>
-<translation id="6227235786875481728">Неможливо відтворити цей файл.</translation>
 <translation id="6241349547798190358">Нідерландська (Бельгія)</translation>
 <translation id="6267547857941397424">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" />%. Підключитися</translation>
 <translation id="6269630227984243955">Малайська</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">Білоруська</translation>
 <translation id="7532029025027028521">Перська, транслітерація</translation>
 <translation id="7544830582642184299">Надайте додаткам Linux доступ до файлів на Google Диску. Зміни буде синхронізовано на інших ваших пристроях.</translation>
-<translation id="7544853251252956727">Перемішати</translation>
 <translation id="7547009467130558110">Кросівка</translation>
 <translation id="7547780573915868306">Литовська</translation>
 <translation id="7547811415869834682">Нідерландська</translation>
@@ -841,7 +835,6 @@
 <translation id="8045462269890919536">Румунська</translation>
 <translation id="8049184478152619004">Введіть PUK-код</translation>
 <translation id="807187749540895545">Видобування файлу "<ph name="FILE_NAME" />"…</translation>
-<translation id="8079530767338315840">Повторити</translation>
 <translation id="8087576439476816834">Завантажити профіль <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Відкриті для мене</translation>
 <translation id="8116072619078571545">Крижана вода</translation>
@@ -855,7 +848,6 @@
 <translation id="8175731104491895765">Французька (Бельгія)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Модель пристрою</translation>
-<translation id="8208580316430297579">Твір мистецтва</translation>
 <translation id="8223479393428528563">Щоб зберегти ці файли для використання в режимі офлайн, під’єднайте пристрій до Інтернету, натисніть файли правою кнопкою миші та виберіть опцію <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Скасувати</translation>
 <translation id="8250690786522693009">Латиниця</translation>

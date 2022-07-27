@@ -4706,13 +4706,6 @@
       請透過應用程式 ID 來指定 Chrome 應用程式 (例如 pjkljhegncpnkpknbcohdijeoejaedia)；透過應用程式套件名稱來指定 Android 應用程式 (例如 com.google.android.gm)；透過 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 中使用的應用程式網址來指定網頁應用程式 (例如 https://google.com/maps)。
 
       如果不設定這項政策，使用者將可變更啟動器中的固定應用程式清單。</translation>
-<translation id="6183409603139321084">進行登入畫面和螢幕鎖定畫面線上驗證時，<ph name="PRODUCT_OS_NAME" /> 可嘗試在 SAML IdP 頁面的使用者名稱欄位自動填入內容。
-
-      系統會使用與 <ph name="PRODUCT_OS_NAME" /> 設定檔相關聯的電子郵件地址，因此如果使用者要在 SAML IdP 頁面使用其他電子郵件地址，應停用這項設定。
-
-      透過這項政策接收的字串將做為 IdP 頁面的網址參數名稱，而使用者的電子郵件地址會是參數的值。
-
-      伺服器端將負責對應識別資訊提供者及支援的網址參數。</translation>
 <translation id="6190367314942602985">回報使用者身分識別資訊</translation>
 <translation id="6191963383731098056">管理員可以透過這項政策設定 <ph name="PRODUCT_NAME" /> 主題的顏色。輸入的字串應為有效的十六進位顏色字串，格式為「#RRGGBB」。
 
@@ -5071,6 +5064,15 @@
 
       如果不設定這項政策，系統將不會強制執行 PIN 碼長度上限。</translation>
 <translation id="6553143066970470539">螢幕亮度百分比</translation>
+<translation id="6555557921186817432">在套用 <ph name="PRODUCT_OS_NAME" /> 更新後排定自動重新啟動。
+
+      如果將這項政策設為 True，系統就會在套用 <ph name="PRODUCT_OS_NAME" /> 更新後排定自動重新啟動。裝置必須重新啟動，才能完成更新程序。系統會排定立即重新啟動，但如果使用者正在使用裝置，重新啟動時間最多可能會延遲 24 小時。
+
+      如果將這項政策設為 False，系統就不會排定在套用 <ph name="PRODUCT_OS_NAME" /> 更新後重新啟動，更新程序要等到使用者下次重新啟動裝置才會完成。
+
+      如果你設定了這項政策後，使用者就無法變更或覆寫。
+
+      注意：目前只有在裝置顯示登入畫面或正在進行資訊站應用程式工作階段時，才能啟用自動重新啟動。</translation>
 <translation id="6559057113164934677">不允許任何網站使用攝影機和麥克風</translation>
 <translation id="6559221564468029245">如果將這項政策設為啟用或不設定，系統在音訊播放期間不會將使用者狀態視為閒置。這麼做可防止系統因達到閒置逾時限制，而採取閒置因應動作。不過，即使有音訊活動，系統在達到螢幕調暗、螢幕關閉和螢幕鎖定的逾時限制後，仍會觸發這些動作。
 

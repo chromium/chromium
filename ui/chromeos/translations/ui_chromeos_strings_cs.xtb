@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Katakana poloviční šířky</translation>
 <translation id="1834290891154666894">Neplatný záznam shody alternativních názvů subjektu</translation>
 <translation id="1838709767668011582">Web Google</translation>
-<translation id="1844692022597038441">Tento soubor není k dispozici v režimu offline.</translation>
 <translation id="1853795129690976061">Tato složka je sdílena s Linuxem</translation>
 <translation id="1864756863218646478">Soubor se nepodařilo nalézt.</translation>
 <translation id="1884013283844450420">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, připojit</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Kanadská vícejazyčná klávesnice</translation>
 <translation id="3236289833370040187">Vlastnictví bude převedeno na <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">irština</translation>
-<translation id="3245321423178950146">Neznámý interpret</translation>
 <translation id="3248185426436836442">Nevyřízeno</translation>
 <translation id="3252266817569339921">francouzština</translation>
 <translation id="3253225298092156258">Nedostupné</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Vložit</translation>
 <translation id="3952872973865944257">telugština (fonetická)</translation>
 <translation id="3958548648197196644">Kiwi</translation>
-<translation id="3966388904776714213">Zvukový přehrávač</translation>
 <translation id="3971140002794351170">Stáhněte si mobilní profil, síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">angličtina (Velká Británie)</translation>
 <translation id="3975895378829046965">bengálština (fonetická)</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Aktivace...</translation>
 <translation id="4092890906744441904">irština</translation>
 <translation id="4124935795427217608">Jednorožec</translation>
-<translation id="4158739975813877944">Otevřít seznam přehrávání</translation>
 <translation id="4159731583141908892">Přesunutá položka: <ph name="FILE_NAME" />.</translation>
 <translation id="4186579485882418952">Povolit režim offline</translation>
 <translation id="4193154014135846272">Dokument Google</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">pandžábština</translation>
 <translation id="6224240818060029162">dánština</translation>
 <translation id="6224253798271602650">Formátovat jednotku <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Soubor nelze přehrát.</translation>
 <translation id="6241349547798190358">nizozemština (Belgie)</translation>
 <translation id="6267547857941397424">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, baterie telefonu: <ph name="BATTERY_STATUS" /> %, připojit</translation>
 <translation id="6269630227984243955">malajština</translation>
@@ -764,7 +759,6 @@
 <translation id="751507702149411736">běloruština</translation>
 <translation id="7532029025027028521">perština (přepis)</translation>
 <translation id="7544830582642184299">Udělujete linuxovým aplikacím oprávnění přistupovat k souborům na vašem Disku Google. Změny se synchronizují do vašich ostatních zařízení.</translation>
-<translation id="7544853251252956727">Přehrávat náhodně</translation>
 <translation id="7547009467130558110">Teniska</translation>
 <translation id="7547780573915868306">litevština</translation>
 <translation id="7547811415869834682">holandština</translation>
@@ -840,7 +834,6 @@
 <translation id="8045462269890919536">rumunština</translation>
 <translation id="8049184478152619004">Zadejte kód PUK</translation>
 <translation id="807187749540895545">Rozbalování souboru <ph name="FILE_NAME" />…</translation>
-<translation id="8079530767338315840">Opakovat</translation>
 <translation id="8087576439476816834">Stáhnout, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Sdíleno se mnou</translation>
 <translation id="8116072619078571545">Ledová voda</translation>
@@ -854,7 +847,6 @@
 <translation id="8175731104491895765">francouzština (Belgie)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model zařízení</translation>
-<translation id="8208580316430297579">Umělecké dílo</translation>
 <translation id="8223479393428528563">Chcete-li tyto soubory uložit pro používání offline, vraťte se zpět online, klikněte na ně pravým tlačítkem a vyberte možnost <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Zrušit</translation>
 <translation id="8250690786522693009">Latinka</translation>

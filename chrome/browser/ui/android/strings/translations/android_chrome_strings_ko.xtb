@@ -78,6 +78,7 @@
 <translation id="1344653310988386453">하이라이트 링크 포함</translation>
 <translation id="1347468774581902829">활동 관리</translation>
 <translation id="1360432990279830238">로그아웃하고 동기화를 사용 중지하시겠습니까?</translation>
+<translation id="1366525380420346469">켜졌을 때</translation>
 <translation id="1373696734384179344">선택한 콘텐츠를 다운로드할 공간이 부족합니다.</translation>
 <translation id="1376578503827013741">계산 중...</translation>
 <translation id="1382912999714108023">최신 정보가 표시되지 않나요? 은행에 문의하여 업데이트하세요.</translation>
@@ -513,6 +514,7 @@
 <translation id="3810973564298564668">관리</translation>
 <translation id="3819178904835489326">다운로드 <ph name="NUMBER_OF_DOWNLOADS" />개 삭제됨</translation>
 <translation id="3819183753496523827">오프라인 상태입니다. 인터넷 연결을 확인한 후 다시 시도해 보세요.</translation>
+<translation id="3830886834687455630">비밀번호를 확인하려면 Google Play 서비스를 업데이트하세요.</translation>
 <translation id="3845098929839618392">시크릿 탭에서 열기</translation>
 <translation id="3856096718352044181">유효한 제공업체인지 확인하거나 나중에 다시 시도하세요.</translation>
 <translation id="3858860766373142691">이름</translation>
@@ -733,6 +735,7 @@
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5032430150487044192">QR 코드를 만들 수 없음</translation>
 <translation id="5039804452771397117">허용</translation>
+<translation id="504456571576643789">고려사항</translation>
 <translation id="5054455334322721892">로그인할 경우 <ph name="BEGIN_LINK1" />다른 활동 형식<ph name="END_LINK1" />이 Google 계정에 저장될 수 있습니다. 이러한 데이터는 언제든지 삭제할 수 있습니다.</translation>
 <translation id="5061533557687621530">날씨를 확인하려면 마이크를 탭하고 "오늘 날씨 어때?"라고 말하세요.</translation>
 <translation id="506254248375231072">탭 없음</translation>
@@ -888,7 +891,6 @@
 <translation id="5906513782029855931">사이트의 URL을 알려 주시면 Google 어시스턴트가 작업을 도와드릴 수 있습니다. Chrome 설정에서 어시스턴트를 사용 중지하실 수 있습니다.</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5919204609460789179"><ph name="PRODUCT_NAME" />을(를) 업데이트하여 동기화를 시작합니다.</translation>
-<translation id="593625682991400408">무료 체험 기간 동안 Chrome에서는 스팸, 사기 및 사이트 간 공유를 제한하는 방법을 탐색합니다. 또한 Chrome은 사이트에서 광고를 표시하는 데 사용할 수 있는 <ph name="BEGIN_LINK" />관심분야를 예측<ph name="END_LINK" />합니다. 설정에서 관심분야를 관리할 수 있습니다.</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> 추가</translation>
 <translation id="5942872142862698679">검색할 때 Google 사용</translation>
 <translation id="5945035219773565305">현재 추천: <ph name="RECOMMENDATION" /></translation>
@@ -1216,6 +1218,7 @@
 <translation id="7641339528570811325">인터넷 사용 기록 삭제...</translation>
 <translation id="7646772052135772216">비밀번호 동기화가 작동하지 않음</translation>
 <translation id="7655900163790317559">블루투스 켜는 중…</translation>
+<translation id="7656862631699126784">시크릿 모드 탭 잠금 사용 설정</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7663313374500954251">이 브라우저는 <ph name="PARENT_NAME" />님이 관리합니다.</translation>
 <translation id="7665369617277396874">계정 추가</translation>
@@ -1518,6 +1521,7 @@
 <translation id="9159716826369098114">탭 <ph name="TAB_COUNT" />개의 탭 그룹을 새 백그라운드 탭 그룹으로 복원합니다.</translation>
 <translation id="9169507124922466868">탐색 기록이 절반 높이로 열림</translation>
 <translation id="9187955620966010988">반응 조정됨</translation>
+<translation id="9190276265094487094">동기화된 모든 기기에 방문 기록이 유지되므로 전에 하던 작업을 이어서 할 수 있습니다.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1분 전에 확인됨}other{#분 전에 확인됨}}</translation>
 <translation id="9204836675896933765">파일 1개가 남았습니다.</translation>
 <translation id="9205933215779845960">페이지를 찾을 수 없습니다. 철자를 확인하거나 <ph name="SEARCH_ENGINE" />에서 검색해 보세요.</translation>

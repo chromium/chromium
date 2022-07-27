@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Fonti ya Katakana kwa nusu upana</translation>
 <translation id="1834290891154666894">Jina mbadala la kichwa linalolingana si sahihi</translation>
 <translation id="1838709767668011582">Tovuti ya Google</translation>
-<translation id="1844692022597038441">Faili hii haipatikani nje ya mtandao.</translation>
 <translation id="1853795129690976061">Umeshiriki folda hii na Linux</translation>
 <translation id="1864756863218646478">Faili haikupatikana.</translation>
 <translation id="1884013283844450420">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Unganisha</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Lugha nyingi za Kanada</translation>
 <translation id="3236289833370040187">Umiliki utahamishiwa kwenye <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Kiairish</translation>
-<translation id="3245321423178950146">Msanii Asiyejulikana</translation>
 <translation id="3248185426436836442">Zinasubiri kushughulikiwa</translation>
 <translation id="3252266817569339921">Kifaransa</translation>
 <translation id="3253225298092156258">Haipatikani</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Bandika</translation>
 <translation id="3952872973865944257">Fonetiki ya Kitelugu</translation>
 <translation id="3958548648197196644">Kiwi</translation>
-<translation id="3966388904776714213">Kichezaji cha Sauti</translation>
 <translation id="3971140002794351170">Pakua maelezo ya eSIM ya vifaa vya mkononi, Mtandao <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Kiingereza (Uingereza)</translation>
 <translation id="3975895378829046965">Fonetiki ya Kibangla</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Inawashwa...</translation>
 <translation id="4092890906744441904">Kiayalandi</translation>
 <translation id="4124935795427217608">Farasi mwenye pembe</translation>
-<translation id="4158739975813877944">Fungua orodha ya kucheza</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> imehamishwa.</translation>
 <translation id="4186579485882418952">Washa hali ya Nje ya Mtandao</translation>
 <translation id="4193154014135846272">Hati za Google</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">Kipunjabi</translation>
 <translation id="6224240818060029162">Kidenmaki</translation>
 <translation id="6224253798271602650">Badilisha muundo <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Faili hii isingeweza kuchezwa.</translation>
 <translation id="6241349547798190358">Kiholanzi (Ubelgiji)</translation>
 <translation id="6267547857941397424">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Betri ya Simu <ph name="BATTERY_STATUS" />%, Unganisha</translation>
 <translation id="6269630227984243955">Kimalei</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">Kibelarusi</translation>
 <translation id="7532029025027028521">Unukuzi wa mfumo wa kuandika Kiajemi</translation>
 <translation id="7544830582642184299">Ruhusu programu za Linux zifikie faili katika Hifadhi yako ya Google. Mabadiliko yatasawazishwa kwenye vifaa vyako vingine.</translation>
-<translation id="7544853251252956727">Changanya</translation>
 <translation id="7547009467130558110">Raba</translation>
 <translation id="7547780573915868306">Kilitwania</translation>
 <translation id="7547811415869834682">Kiholanzi</translation>
@@ -841,7 +835,6 @@
 <translation id="8045462269890919536">Kiromania</translation>
 <translation id="8049184478152619004">Weka Nambari Binafsi ya Kufungua (PUK)</translation>
 <translation id="807187749540895545">Inatoa <ph name="FILE_NAME" /> ...</translation>
-<translation id="8079530767338315840">Rudia</translation>
 <translation id="8087576439476816834">Pakua, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Zilizoshirikiwa na mimi</translation>
 <translation id="8116072619078571545">Maji ya barafu</translation>
@@ -855,7 +848,6 @@
 <translation id="8175731104491895765">Kifaransa (Ubelgiji)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Muundo wa kifaa</translation>
-<translation id="8208580316430297579">Kazi ya sanaa</translation>
 <translation id="8223479393428528563">Ili kuhifadhi faili hizi kwa matumizi ya nje ya mtandao, rudi mtandaoni, bofya faili kulia, na uchague chaguo la <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Ghairi</translation>
 <translation id="8250690786522693009">Kilatini</translation>

@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Zabalera erdiko katakana</translation>
 <translation id="1834290891154666894">Gaiaren ordezko izenaren bat-etortzearen sarrera ez da zuzena</translation>
 <translation id="1838709767668011582">Google-ko webgunea</translation>
-<translation id="1844692022597038441">Fitxategia ez dago erabilgarri konexiorik gabe.</translation>
 <translation id="1853795129690976061">Karpeta hau Linux-ekin partekatuta dago</translation>
 <translation id="1864756863218646478">Ezin izan da aurkitu fitxategia.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" />. Konektatu.</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Kanadar eleanitza</translation>
 <translation id="3236289833370040187"><ph name="DESTINATION_DOMAIN" /> domeinuari transferituko zaio jabetza.</translation>
 <translation id="3241720467332021590">Irlandarra</translation>
-<translation id="3245321423178950146">Artista ezezaguna</translation>
 <translation id="3248185426436836442">Zain</translation>
 <translation id="3252266817569339921">Frantsesa</translation>
 <translation id="3253225298092156258">Ez dago erabilgarri</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Itsatsi</translation>
 <translation id="3952872973865944257">Teluguar fonetikoa</translation>
 <translation id="3958548648197196644">Kiwia</translation>
-<translation id="3966388904776714213">Audio erreproduzigailua</translation>
 <translation id="3971140002794351170">Deskargatu mugikorreko profila, <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" /> sare, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Ingelesa (Erresuma Batua)</translation>
 <translation id="3975895378829046965">Bengalar fonetikoa</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Aktibatzen…</translation>
 <translation id="4092890906744441904">Irlandarra</translation>
 <translation id="4124935795427217608">Adarbakarra</translation>
-<translation id="4158739975813877944">Ireki erreprodukzio-zerrenda</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> mugitu da.</translation>
 <translation id="4186579485882418952">Gaitu konexiorik gabe erabiltzeko luzapena</translation>
 <translation id="4193154014135846272">Google dokumentua</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">Punjabtarra</translation>
 <translation id="6224240818060029162">Daniarra</translation>
 <translation id="6224253798271602650">Formateatu <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Ezin izan da fitxategia erreproduzitu.</translation>
 <translation id="6241349547798190358">Nederlandarra (Belgika)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: % <ph name="BATTERY_STATUS" />. Konektatu.</translation>
 <translation id="6269630227984243955">Malaysiarra</translation>
@@ -764,7 +759,6 @@
 <translation id="751507702149411736">Bielorrusiarra</translation>
 <translation id="7532029025027028521">Persieraren transliterazioa</translation>
 <translation id="7544830582642184299">Eman Google Drive-ko fitxategiak atzitzeko baimena Linux-eko aplikazioei. Aldaketak beste gailuekin sinkronizatuko dira.</translation>
-<translation id="7544853251252956727">Ausazko erreprodukzioa</translation>
 <translation id="7547009467130558110">Kirol-oinetakoa</translation>
 <translation id="7547780573915868306">Lituaniarra</translation>
 <translation id="7547811415869834682">Nederlandarra</translation>
@@ -840,7 +834,6 @@
 <translation id="8045462269890919536">Errumaniarra</translation>
 <translation id="8049184478152619004">Idatzi desblokeatzeko gako pertsonala (PUKa)</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> ateratzen…</translation>
-<translation id="8079530767338315840">Errepikatu</translation>
 <translation id="8087576439476816834">Deskargatu, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Nirekin partekatutakoak</translation>
 <translation id="8116072619078571545">Ura izotzarekin</translation>
@@ -854,7 +847,6 @@
 <translation id="8175731104491895765">Frantsesa (Belgika)</translation>
 <translation id="8179976553408161302">Sartu</translation>
 <translation id="8193175696669055101">Gailuaren modeloa</translation>
-<translation id="8208580316430297579">Azala</translation>
 <translation id="8223479393428528563">Fitxategi horiek gordetzeko eta konexiorik gabe erabili ahal izateko, konekta zaitez berriro, egin klik eskuineko botoiarekin fitxategien gainean eta hautatu <ph name="OFFLINE_CHECKBOX_NAME" /> aukera.</translation>
 <translation id="8249296373107784235">Utzi bertan behera</translation>
 <translation id="8250690786522693009">Latindarra</translation>

@@ -3881,6 +3881,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4689421377817139245">Synchronizujte tuto záložku do svého iPhonu</translation>
 <translation id="4690091457710545971">&lt;Čtyři soubory vygenerované firmwarem Wi-Fi od společnosti Intel: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. První tři jsou binární soubory s výpisy z registru a společnost Intel o nich prohlašuje, že neobsahují žádné informace umožňující identifikaci osob ani zařízení. Poslední soubor obsahuje trasovací informace z firmwaru Intel. Byly z něj odstraněny všechny informace umožňující identifikaci osob nebo zařízení, ale je příliš velký na to, aby jej zde bylo možné zobrazit. Tyto soubory byly vygenerovány v reakci na nedávné problémy se sítí Wi-Fi ve vašem zařízení a budou poskytnuty společnosti Intel, aby tyto problémy mohla odstranit.&gt;</translation>
 <translation id="4691791363716065510">Dokud nezavřete všechny karty webu <ph name="ORIGIN" />, bude moci číst soubor <ph name="FILENAME" /></translation>
+<translation id="4692342362587775867">Oznámení z tohoto webu mohou být rušivá</translation>
 <translation id="4692623383562244444">Vyhledávače</translation>
 <translation id="4692736633446859167">Dříve jste zakázali všechna rozšíření na webu <ph name="SITE" /> Pokud sem tento web přidáte, ostatní rozšíření mohou také žádat o oprávnění číst a měnit vaše data na webu <ph name="SITE" />.</translation>
 <translation id="4693155481716051732">Suši</translation>

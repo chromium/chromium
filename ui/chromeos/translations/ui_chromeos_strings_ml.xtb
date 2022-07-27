@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">പകുതി വീതിയുള്ള ഖട്ടക്കാന</translation>
 <translation id="1834290891154666894">സബ്ജക്റ്റ് ഓൾട്ടർനേറ്റീവ് നെയിം പൊരുത്തത്തിന്റെ എൻട്രി അസാധുവാണ്</translation>
 <translation id="1838709767668011582">Google സൈറ്റ്</translation>
-<translation id="1844692022597038441">ഈ ഫയൽ ഓഫ്‌ലൈനിൽ ലഭ്യമാകില്ല.</translation>
 <translation id="1853795129690976061">Linux-മായി ഈ ഫോൾഡർ പങ്കിട്ടു</translation>
 <translation id="1864756863218646478">ഫയൽ കണ്ടെത്താൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, കണക്‌റ്റ് ചെയ്യുക</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">കനേഡിയൻ മൾട്ടിലിംഗ്വൽ</translation>
 <translation id="3236289833370040187">ഉടമസ്ഥാവകാശം <ph name="DESTINATION_DOMAIN" /> എന്നതിലേക്ക് കൈമാറ്റം ചെയ്യുന്നതാണ്.</translation>
 <translation id="3241720467332021590">ഐറിഷ്</translation>
-<translation id="3245321423178950146">അറിയപ്പെടാത്ത കലാകാരൻ</translation>
 <translation id="3248185426436836442">തീര്‍‌ച്ചപ്പെടുത്തിയിട്ടില്ല</translation>
 <translation id="3252266817569339921">ഫ്രഞ്ച്</translation>
 <translation id="3253225298092156258">ലഭ്യമല്ല</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">ഒട്ടിക്കുക</translation>
 <translation id="3952872973865944257">തെലുങ്ക് ഉച്ചാരണശബ്‌ദം</translation>
 <translation id="3958548648197196644">കിവി</translation>
-<translation id="3966388904776714213">ഓഡിയോ പ്ലേയർ</translation>
 <translation id="3971140002794351170">മൊബൈൽ പ്രൊഫൈൽ ഡൗൺലോഡ് ചെയ്യുക, <ph name="NETWORK_COUNT" /> എണ്ണത്തിൽ <ph name="NETWORK_INDEX" />-ാമത്തെ നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ഇംഗ്ലീഷ് (യുകെ)</translation>
 <translation id="3975895378829046965">ബംഗ്ലാ ഉച്ചാരണ ശബ്‌ദം</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">സജീവമാക്കുന്നു...</translation>
 <translation id="4092890906744441904">ഐറിഷ്</translation>
 <translation id="4124935795427217608">യൂണികോൺ</translation>
-<translation id="4158739975813877944">പ്ലേ ലിസ്‌റ്റ് തുറക്കുക</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> നീക്കി.</translation>
 <translation id="4186579485882418952">ഓഫ്‌ലൈൻ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="4193154014135846272">Google പ്രമാണം</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">പഞ്ചാബി</translation>
 <translation id="6224240818060029162">ഡാനിഷ്</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ഫോർമാറ്റ് ചെയ്യുക</translation>
-<translation id="6227235786875481728">ഈ ഫയൽ പ്ലേ ചെയ്യാൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="6241349547798190358">ഡച്ച് (ബെൽജിയം)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="PHONE_NAME" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, ഫോൺ ബാറ്ററി <ph name="BATTERY_STATUS" />%, കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="6269630227984243955">മലെയ്</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">ബെലാറുഷ്യൻ</translation>
 <translation id="7532029025027028521">പേർഷ്യൻ ലിപ്യന്തരണം</translation>
 <translation id="7544830582642184299">നിങ്ങളുടെ Google Drive-ലെ ഫയലുകൾ ആക്‌സസ് ചെയ്യാൻ Linux ആപ്പുകൾക്ക് അനുമതി നൽകുക. മാറ്റങ്ങൾ, നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിലേക്ക് സമന്വയിപ്പിക്കും.</translation>
-<translation id="7544853251252956727">ഷഫിൾ ചെയ്യുക</translation>
 <translation id="7547009467130558110">സ്‌നീക്കർ</translation>
 <translation id="7547780573915868306">ലിത്വാനിയൻ</translation>
 <translation id="7547811415869834682">ഡച്ച്</translation>
@@ -841,7 +835,6 @@
 <translation id="8045462269890919536">റുമാനിയന്‍</translation>
 <translation id="8049184478152619004">പേഴ്‌സണൽ അൺബ്ലോക്കിംഗ് കീ (PUK) നൽകുക</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> എക്‌സ്‌ട്രാക്റ്റ് ചെയ്യുന്നു...</translation>
-<translation id="8079530767338315840">ആവർത്തിക്കുക</translation>
 <translation id="8087576439476816834">ഡൗൺലോഡ് ചെയ്യുക, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ഞാനുമായി പങ്കിട്ടവ</translation>
 <translation id="8116072619078571545">ഐസ് വെള്ളം</translation>
@@ -855,7 +848,6 @@
 <translation id="8175731104491895765">ഫ്രഞ്ച് (ബെൽജിയം)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">ഉപകരണ മോഡൽ</translation>
-<translation id="8208580316430297579">കലാസൃഷ്‌ടി</translation>
 <translation id="8223479393428528563">ഓഫ്‌ലൈൻ ഉപയോഗത്തിനായി ഈ ഫയലുകൾ സംരക്ഷിക്കാൻ, ഓൺലൈനിൽ തിരികെ വന്ന് ഫയലുകൾ റൈറ്റ് ക്ലിക്ക് ചെയ്‌ത്, <ph name="OFFLINE_CHECKBOX_NAME" /> ഓപ്‌ഷൻ തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="8249296373107784235">ഉപേക്ഷിക്കുക</translation>
 <translation id="8250690786522693009">ലാറ്റിന്‍‌</translation>

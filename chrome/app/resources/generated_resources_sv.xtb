@@ -3896,6 +3896,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4689421377817139245">Synkronisera det här bokmärket med din iPhone</translation>
 <translation id="4690091457710545971">&lt;Fyra filer som genererats av Intels Wi-Fi-firmware: csr.lst, fh_regs.lst, radio_reg.lst och monitor.lst.sysmon. De tre första är binärfiler med registerdumpar, och Intel intygar att de inte innehåller några personliga uppgifter eller uppgifter som kan identifiera en enhet. Den sista filen är en körningsspårning från Intels firmware. Alla personliga uppgifter eller uppgifter som kan identifiera en enhet har tagits bort från den, men filen är för stor att visa här. Filerna genererades på grund av problem med Wi-Fi på enheten nyligen och delas med Intel så att de kan hjälpa till med felsökningen.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> har läsbehörighet till <ph name="FILENAME" /> tills du stänger alla flikar för den här webbplatsen</translation>
+<translation id="4692342362587775867">Aviseringar från den här webbplatsen kan vara störande</translation>
 <translation id="4692623383562244444">Sökmotorer</translation>
 <translation id="4692736633446859167">Du har tidigare valt att inte tillåta tillägg på <ph name="SITE" />. Om du lägger till webbplatsen här kan andra tillägg också begära åtkomst till att läsa och ändra din webbplatsdata på <ph name="SITE" />.</translation>
 <translation id="4693155481716051732">Sushi</translation>

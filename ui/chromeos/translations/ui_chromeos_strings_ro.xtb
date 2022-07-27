@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Katakana pe jumătate de lățime</translation>
 <translation id="1834290891154666894">intrare nevalidă a potrivirii numelui alternativ al subiectului</translation>
 <translation id="1838709767668011582">Site Google</translation>
-<translation id="1844692022597038441">Acest fișier nu este disponibil offline.</translation>
 <translation id="1853795129690976061">Linux are acces la acest dosar</translation>
 <translation id="1864756863218646478">Fișierul nu a putut fi găsit.</translation>
 <translation id="1884013283844450420">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, conectează-te</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Canadiană multilingvă</translation>
 <translation id="3236289833370040187">Calitatea de proprietar va fi transferată către <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Irlandeză</translation>
-<translation id="3245321423178950146">Artist necunoscut</translation>
 <translation id="3248185426436836442">În așteptare</translation>
 <translation id="3252266817569339921">Franceză</translation>
 <translation id="3253225298092156258">Indisponibilă</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Inserează</translation>
 <translation id="3952872973865944257">Telugu fonetică</translation>
 <translation id="3958548648197196644">Kiwi</translation>
-<translation id="3966388904776714213">Player audio</translation>
 <translation id="3971140002794351170">Descarcă profilul mobil, Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Engleză (Regatul Unit)</translation>
 <translation id="3975895378829046965">Bengaleză fonetică</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Activare...</translation>
 <translation id="4092890906744441904">Irlandeză</translation>
 <translation id="4124935795427217608">Unicorn</translation>
-<translation id="4158739975813877944">Deschide playlistul</translation>
 <translation id="4159731583141908892">Mutate: <ph name="FILE_NAME" />.</translation>
 <translation id="4186579485882418952">Activează funcția offline</translation>
 <translation id="4193154014135846272">Document Google</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Daneză</translation>
 <translation id="6224253798271602650">Formatează <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Acest fișier nu a putut fi redat.</translation>
 <translation id="6241349547798190358">Neerlandeză (Belgia)</translation>
 <translation id="6267547857941397424">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, bateria telefonului: <ph name="BATTERY_STATUS" /> %, conectează-te</translation>
 <translation id="6269630227984243955">Malaieză</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">Belarusă</translation>
 <translation id="7532029025027028521">Persană, transliterație</translation>
 <translation id="7544830582642184299">Acordă aplicațiilor Linux permisiunea de a accesa fișiere din Google Drive. Modificările se vor sincroniza cu celelalte dispozitive care îți aparțin.</translation>
-<translation id="7544853251252956727">Redă aleatoriu</translation>
 <translation id="7547009467130558110">Adidas</translation>
 <translation id="7547780573915868306">Lituaniană</translation>
 <translation id="7547811415869834682">Neerlandeză</translation>
@@ -841,7 +835,6 @@
 <translation id="8045462269890919536">Română</translation>
 <translation id="8049184478152619004">Introdu cheia personală de deblocare (PUK)</translation>
 <translation id="807187749540895545">Se extrage <ph name="FILE_NAME" />...</translation>
-<translation id="8079530767338315840">Repetă</translation>
 <translation id="8087576439476816834">Descarcă, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Cu acces permis pentru mine</translation>
 <translation id="8116072619078571545">Apă cu gheață</translation>
@@ -855,7 +848,6 @@
 <translation id="8175731104491895765">Franceză (Belgia)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Modelul dispozitivului</translation>
-<translation id="8208580316430297579">Grafică</translation>
 <translation id="8223479393428528563">Pentru a salva aceste fișiere pentru utilizare offline, revino online, dă clic dreapta pe fișiere și selectează opțiunea <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Abandonați</translation>
 <translation id="8250690786522693009">Latină</translation>

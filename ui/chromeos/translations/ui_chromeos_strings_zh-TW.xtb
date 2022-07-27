@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">半形片假名</translation>
 <translation id="1834290891154666894">主體替代名稱比對項目無效</translation>
 <translation id="1838709767668011582">Google 網站</translation>
-<translation id="1844692022597038441">這個檔案無法離線瀏覽。</translation>
 <translation id="1853795129690976061">已與 Linux 共用這個資料夾</translation>
 <translation id="1864756863218646478">找不到檔案。</translation>
 <translation id="1884013283844450420">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，連線</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">加拿大文 (多語言)</translation>
 <translation id="3236289833370040187">擁有權將轉移至 <ph name="DESTINATION_DOMAIN" />。</translation>
 <translation id="3241720467332021590">愛爾蘭文</translation>
-<translation id="3245321423178950146">演出者不明</translation>
 <translation id="3248185426436836442">待處理</translation>
 <translation id="3252266817569339921">法文</translation>
 <translation id="3253225298092156258">無法使用</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">貼上</translation>
 <translation id="3952872973865944257">泰盧固文 (拼音)</translation>
 <translation id="3958548648197196644">奇異果</translation>
-<translation id="3966388904776714213">音訊播放器</translation>
 <translation id="3971140002794351170">下載行動裝置設定檔，<ph name="NETWORK_COUNT" /> 個網路中的第 <ph name="NETWORK_INDEX" /> 個，名稱為 <ph name="NETWORK_NAME" />，供應商為 <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">英文 (英國)</translation>
 <translation id="3975895378829046965">孟加拉文 (拼音)</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">啟用中...</translation>
 <translation id="4092890906744441904">愛爾蘭文</translation>
 <translation id="4124935795427217608">獨角獸</translation>
-<translation id="4158739975813877944">開啟播放清單</translation>
 <translation id="4159731583141908892">已移動 <ph name="FILE_NAME" />。</translation>
 <translation id="4186579485882418952">啟用文件離線版</translation>
 <translation id="4193154014135846272">Google 文件</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">旁遮普文</translation>
 <translation id="6224240818060029162">丹麥文</translation>
 <translation id="6224253798271602650">將「<ph name="DRIVE_NAME" />」格式化</translation>
-<translation id="6227235786875481728">無法播放這個檔案。</translation>
 <translation id="6241349547798190358">荷蘭文 (比利時)</translation>
 <translation id="6267547857941397424">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="PHONE_NAME" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，手機電量：<ph name="BATTERY_STATUS" />%，連線</translation>
 <translation id="6269630227984243955">馬來文</translation>
@@ -634,6 +629,7 @@
 <translation id="6356685157277930264">檔案狀態視窗</translation>
 <translation id="6358884629796491903">龍</translation>
 <translation id="636254897931573416">網域字尾比對值無效</translation>
+<translation id="6364301859968397756">機構儲存空間已滿</translation>
 <translation id="6367976544441405720">廂型車</translation>
 <translation id="637062427944097960">這個檔案已在其他電腦上開啟。前往 <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) 查看。</translation>
 <translation id="6394388407447716302">唯讀</translation>
@@ -765,7 +761,6 @@
 <translation id="751507702149411736">白俄羅斯語</translation>
 <translation id="7532029025027028521">波斯文 (音譯)</translation>
 <translation id="7544830582642184299">授權 Linux 應用程式存取你的 Google 雲端硬碟檔案。系統會將變更內容同步至你的其他裝置。</translation>
-<translation id="7544853251252956727">隨機播放</translation>
 <translation id="7547009467130558110">運動鞋</translation>
 <translation id="7547780573915868306">立陶宛文</translation>
 <translation id="7547811415869834682">荷蘭文</translation>
@@ -841,7 +836,6 @@
 <translation id="8045462269890919536">羅馬尼亞文</translation>
 <translation id="8049184478152619004">輸入個人解鎖金鑰 (PUK)</translation>
 <translation id="807187749540895545">正在擷取 <ph name="FILE_NAME" />…</translation>
-<translation id="8079530767338315840">重複播放</translation>
 <translation id="8087576439476816834">下載，設定檔名稱：<ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">與我共用的項目</translation>
 <translation id="8116072619078571545">冰水</translation>
@@ -855,7 +849,6 @@
 <translation id="8175731104491895765">法文 (比利時)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">裝置型號</translation>
-<translation id="8208580316430297579">圖檔</translation>
 <translation id="8223479393428528563">如要儲存這些檔案以供離線使用，請重新上網，在檔案上按一下滑鼠右鍵，然後選取 [<ph name="OFFLINE_CHECKBOX_NAME" />] 選項。</translation>
 <translation id="8249296373107784235">取消</translation>
 <translation id="8250690786522693009">拉丁文</translation>

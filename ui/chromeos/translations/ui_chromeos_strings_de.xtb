@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Katakana mit halber Breite</translation>
 <translation id="1834290891154666894">Ungültige Übereinstimmung für den alternativen Betreffnamen</translation>
 <translation id="1838709767668011582">Google Sites-Website</translation>
-<translation id="1844692022597038441">Diese Datei ist offline nicht verfügbar.</translation>
 <translation id="1853795129690976061">Dieser Ordner wird für Linux freigegeben</translation>
 <translation id="1864756863218646478">Die Datei wurde nicht gefunden.</translation>
 <translation id="1884013283844450420">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Verbinden</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Kanadisch – mehrsprachig</translation>
 <translation id="3236289833370040187">Die Eigentümerschaft geht auf <ph name="DESTINATION_DOMAIN" /> über.</translation>
 <translation id="3241720467332021590">Irisch</translation>
-<translation id="3245321423178950146">Unbekannter Künstler</translation>
 <translation id="3248185426436836442">Ausstehend</translation>
 <translation id="3252266817569339921">Französisch</translation>
 <translation id="3253225298092156258">Nicht verfügbar</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Einfügen</translation>
 <translation id="3952872973865944257">Telugu (phonetisch)</translation>
 <translation id="3958548648197196644">Kiwi</translation>
-<translation id="3966388904776714213">Audio-Player</translation>
 <translation id="3971140002794351170">Mobiles Profil herunterladen, Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Englisch (Vereinigtes Königreich)</translation>
 <translation id="3975895378829046965">Bengalisch (phonetisch)</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Wird aktiviert...</translation>
 <translation id="4092890906744441904">Irisch</translation>
 <translation id="4124935795427217608">Einhorn</translation>
-<translation id="4158739975813877944">Wiedergabeliste öffnen</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verschoben.</translation>
 <translation id="4186579485882418952">Offline-Modus aktivieren</translation>
 <translation id="4193154014135846272">Google-Dokument</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Dänisch</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> formatieren</translation>
-<translation id="6227235786875481728">Diese Datei kann nicht wiedergegeben werden.</translation>
 <translation id="6241349547798190358">Niederländisch (Belgien)</translation>
 <translation id="6267547857941397424">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Smartphone-Akku bei <ph name="BATTERY_STATUS" /> %, Verbinden</translation>
 <translation id="6269630227984243955">Malaiisch</translation>
@@ -634,6 +629,7 @@
 <translation id="6356685157277930264">Feedbackfenster für "Meine Dateien"</translation>
 <translation id="6358884629796491903">Drache</translation>
 <translation id="636254897931573416">Ungültige Übereinstimmung für das Domain-Suffix</translation>
+<translation id="6364301859968397756">Speicher der Organisation voll</translation>
 <translation id="6367976544441405720">Transporter</translation>
 <translation id="637062427944097960">Diese Datei wurde auf einem anderen Desktop geöffnet. Wechsle zu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), um die Datei anzusehen.</translation>
 <translation id="6394388407447716302">Schreibgeschützt</translation>
@@ -765,7 +761,6 @@
 <translation id="751507702149411736">Belarussisch</translation>
 <translation id="7532029025027028521">Persisch (Transliteration)</translation>
 <translation id="7544830582642184299">Du gibst Linux-Apps die Berechtigung, auf Dateien in Google Drive zuzugreifen. Änderungen werden mit deinen anderen Geräten synchronisiert.</translation>
-<translation id="7544853251252956727">Zufallsmix</translation>
 <translation id="7547009467130558110">Turnschuh</translation>
 <translation id="7547780573915868306">Litauisch</translation>
 <translation id="7547811415869834682">Niederländisch</translation>
@@ -841,7 +836,6 @@
 <translation id="8045462269890919536">Rumänisch</translation>
 <translation id="8049184478152619004">PIN-Entsperrschlüssel (PUK) eingeben</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> wird extrahiert...</translation>
-<translation id="8079530767338315840">Wiederholen</translation>
 <translation id="8087576439476816834">Herunterladen, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Für mich freigegeben</translation>
 <translation id="8116072619078571545">Wasser mit Eis</translation>
@@ -855,7 +849,6 @@
 <translation id="8175731104491895765">Französisch (Belgien)</translation>
 <translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8193175696669055101">Gerätemodell</translation>
-<translation id="8208580316430297579">Artwork</translation>
 <translation id="8223479393428528563">Wenn du diese Dateien zur Offline-Nutzung speichern möchtest, gehe online, klicke mit der rechten Maustaste auf die Dateien und wähle die Option „<ph name="OFFLINE_CHECKBOX_NAME" />“ aus.</translation>
 <translation id="8249296373107784235">Abbrechen</translation>
 <translation id="8250690786522693009">Latein</translation>

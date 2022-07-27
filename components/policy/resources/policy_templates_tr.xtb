@@ -4759,13 +4759,6 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Chrome uygulamalarını kimliklerine göre (ör. pjkljhegncpnkpknbcohdijeoejaedia); Android uygulamalarını paket adlarına göre (ör. com.google.android.gm); web uygulamalarını <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> öğesinde kullanılan URL'lerine göre (ör. https://google.com/maps) belirtir.
 
       Ayarlanmadan bırakılması, kullanıcıların başlatıcıdaki sabitlenmiş uygulamalar listesini değiştirmesine izin verir.</translation>
-<translation id="6183409603139321084"><ph name="PRODUCT_OS_NAME" />, oturum açma ve kilit ekranında online kimlik doğrulama yapılırken SAML IdP sayfasındaki kullanıcı adı alanını otomatik olarak doldurmayı deneyebilir.
-
-      Kullanıcının <ph name="PRODUCT_OS_NAME" /> profiliyle ilişkilendirilmiş e-posta adresi kullanılır. Bu nedenle, SAML IdP sayfasında farklı e-posta adresleri kullanmayı düşünenler için bu ayar devre dışı bırakılmalıdır.
-
-      Bu politika aracılığıyla alınan dize, kullanıcının e-posta adresinin değer olarak belirtildiği IdP sayfasında bir URL parametresi adı olarak kullanılır.
-
-      Sunucu tarafının, Kimlik Sağlayıcılar ile destekledikleri URL parametreleri arasındaki eşlemeden sorumlu olması beklenir.</translation>
 <translation id="6190367314942602985">Kullanıcı Kimlik bilgilerini bildir</translation>
 <translation id="6191963383731098056">Bu politika, yöneticilere <ph name="PRODUCT_NAME" /> temasının rengini yapılandırma imkanı tanır. Giriş dizesi, "#RRGGBB" biçimine uygun geçerli bir onaltılık renk dizesi olmalıdır.
 

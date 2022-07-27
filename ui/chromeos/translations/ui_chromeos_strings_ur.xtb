@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">نصف چوڑائی کٹاکانا</translation>
 <translation id="1834290891154666894">موضوع کے متبادل نام سے مماثل اندراج غلط ہے</translation>
 <translation id="1838709767668011582">‏Google سائٹ</translation>
-<translation id="1844692022597038441">یہ فائل آف لائن دستیاب نہیں ہے۔</translation>
 <translation id="1853795129690976061">‏اس فولڈر کا اشتراک Linux کے ساتھ کر دیا گیا ہے</translation>
 <translation id="1864756863218646478">فائل تلاش نہیں کی جا سکی۔</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، منسلک کریں</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">کینیڈین کثیر لسانی</translation>
 <translation id="3236289833370040187">ملکیت <ph name="DESTINATION_DOMAIN" /> کو منتقل کر دی جائے گی۔</translation>
 <translation id="3241720467332021590">آئيرِش</translation>
-<translation id="3245321423178950146">نامعلوم فنکار</translation>
 <translation id="3248185426436836442">زیر التوا</translation>
 <translation id="3252266817569339921">فرانسيسی</translation>
 <translation id="3253225298092156258">دستیاب نہیں ہے</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">پیسٹ کریں</translation>
 <translation id="3952872973865944257">تیلگو فونیٹک</translation>
 <translation id="3958548648197196644">کیوی</translation>
-<translation id="3966388904776714213">آڈیو پلیئر</translation>
 <translation id="3971140002794351170">موبائل پروفائل ڈاؤن لوڈ کریں، نیٹ ورک <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">انگریزی (برطانیہ)</translation>
 <translation id="3975895378829046965">بنگالی فونیٹک</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">فعال ہو رہا ہے…</translation>
 <translation id="4092890906744441904">آئرش</translation>
 <translation id="4124935795427217608">یونیکارن</translation>
-<translation id="4158739975813877944">پلے لسٹ کھولیں</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> منتقل ہو گیا۔</translation>
 <translation id="4186579485882418952">آف لائن فعال کریں</translation>
 <translation id="4193154014135846272">‏Google دستاویز</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">پنجابی</translation>
 <translation id="6224240818060029162">ڈينش</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> کو فارمیٹ کریں</translation>
-<translation id="6227235786875481728">یہ فائل نہیں چلائی جا سکی۔</translation>
 <translation id="6241349547798190358">ڈچ (بیلجیم)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="PHONE_NAME" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، فون کی بیٹری <ph name="BATTERY_STATUS" />%، منسلک کریں</translation>
 <translation id="6269630227984243955">مالے</translation>
@@ -764,7 +759,6 @@
 <translation id="751507702149411736">بيلاروسی</translation>
 <translation id="7532029025027028521">فارسی نقل حرفی</translation>
 <translation id="7544830582642184299">‏Linux ایپس کو اپنے Google Drive میں فائلز تک رسائی کرنے کی اجازت دیں۔ آپ کے دیگر آلات پر تبدیلیوں کی مطابقت پذیری کی جائے گی۔</translation>
-<translation id="7544853251252956727">شفل کریں</translation>
 <translation id="7547009467130558110">اسنیکر</translation>
 <translation id="7547780573915868306">لتھوانیائی</translation>
 <translation id="7547811415869834682">ڈچ</translation>
@@ -840,7 +834,6 @@
 <translation id="8045462269890919536">رومنی</translation>
 <translation id="8049184478152619004">‏غیر مسدود کرنے کی ذاتی کلید درج کریں (PUK)</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> کو اخذ کیا جا رہا ہے…</translation>
-<translation id="8079530767338315840">دہرائیں</translation>
 <translation id="8087576439476816834">ڈاؤن لوڈ کریں، <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">میرے ساتھ اشتراک کردہ</translation>
 <translation id="8116072619078571545">برف کا پانی</translation>
@@ -854,7 +847,6 @@
 <translation id="8175731104491895765">فرانسیسی (بیلجیم)</translation>
 <translation id="8179976553408161302">انٹر</translation>
 <translation id="8193175696669055101">آلے کا ماڈل</translation>
-<translation id="8208580316430297579">فنی شاہکار</translation>
 <translation id="8223479393428528563">آف لائن استعمال کیلئے یہ فائلیں محفوظ کرنے کیلئے، پھر سے آن لائن ہو جائیں، فائلوں پر دایاں کلک کریں اور <ph name="OFFLINE_CHECKBOX_NAME" /> اختیار منتخب کریں۔</translation>
 <translation id="8249296373107784235">منسوخ کریں</translation>
 <translation id="8250690786522693009">لاطينی</translation>

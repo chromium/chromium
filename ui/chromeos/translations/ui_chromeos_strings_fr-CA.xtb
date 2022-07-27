@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Katakana demi-chasse</translation>
 <translation id="1834290891154666894">Entrée de correspondance de nom alternatif de sujet incorrect</translation>
 <translation id="1838709767668011582">Site Google</translation>
-<translation id="1844692022597038441">Ce fichier n'est pas accessible hors connexion.</translation>
 <translation id="1853795129690976061">Ce dossier est partagé avec Linux.</translation>
 <translation id="1864756863218646478">Fichier introuvable.</translation>
 <translation id="1884013283844450420">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, connexion</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Canadien multilingue</translation>
 <translation id="3236289833370040187">La propriété sera transférée à <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Irlandais</translation>
-<translation id="3245321423178950146">Artiste inconnu</translation>
 <translation id="3248185426436836442">En attente</translation>
 <translation id="3252266817569339921">Français</translation>
 <translation id="3253225298092156258">Non accessible</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Coller</translation>
 <translation id="3952872973865944257">Télougou (phonétique)</translation>
 <translation id="3958548648197196644">Kiwi</translation>
-<translation id="3966388904776714213">Lecteur audio</translation>
 <translation id="3971140002794351170">Télécharger le profil cellulaire, réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Anglais (R.-U.)</translation>
 <translation id="3975895378829046965">Bangla (phonétique)</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Activation en cours…</translation>
 <translation id="4092890906744441904">Irlandais</translation>
 <translation id="4124935795427217608">Licorne</translation>
-<translation id="4158739975813877944">Ouvrir la liste de lecture</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> déplacé.</translation>
 <translation id="4186579485882418952">Activer le mode hors ligne</translation>
 <translation id="4193154014135846272">Document Google</translation>
@@ -619,7 +615,6 @@
 <translation id="6220423280121890987">Panjabi</translation>
 <translation id="6224240818060029162">Danois</translation>
 <translation id="6224253798271602650">Formater <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Impossible de lire ce fichier.</translation>
 <translation id="6241349547798190358">Néerlandais (Belgique)</translation>
 <translation id="6267547857941397424">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, pile du téléphone : <ph name="BATTERY_STATUS" /> %, connexion</translation>
 <translation id="6269630227984243955">Malais</translation>
@@ -766,7 +761,6 @@
 <translation id="751507702149411736">Biélorusse</translation>
 <translation id="7532029025027028521">Perse (translittération)</translation>
 <translation id="7544830582642184299">Autoriser les applications Linux à accéder à vos fichiers sur Google Disque. Les modifications seront synchronisées sur vos autres appareils.</translation>
-<translation id="7544853251252956727">Aléatoire</translation>
 <translation id="7547009467130558110">Espadrille</translation>
 <translation id="7547780573915868306">Lituanien</translation>
 <translation id="7547811415869834682">Hollandais</translation>
@@ -842,7 +836,6 @@
 <translation id="8045462269890919536">Roumain</translation>
 <translation id="8049184478152619004">Entrer la clé personnelle de déblocage</translation>
 <translation id="807187749540895545">Extraction de <ph name="FILE_NAME" /> en cours…</translation>
-<translation id="8079530767338315840">Répéter</translation>
 <translation id="8087576439476816834">Téléchargement : <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Partagés avec moi</translation>
 <translation id="8116072619078571545">Eau glacée</translation>
@@ -856,7 +849,6 @@
 <translation id="8175731104491895765">Français (Belgique)</translation>
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8193175696669055101">Modèle de l'appareil</translation>
-<translation id="8208580316430297579">Œuvre d'art</translation>
 <translation id="8223479393428528563">Pour enregistrer ces fichiers et les utiliser hors connexion, reconnectez-vous, cliquez avec le bouton droit sur les fichiers, et sélectionnez l’option <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Interrompre</translation>
 <translation id="8250690786522693009">Latin</translation>

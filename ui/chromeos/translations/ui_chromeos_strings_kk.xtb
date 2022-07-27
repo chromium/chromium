@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Жарты енді катакана</translation>
 <translation id="1834290891154666894">Енгізілген балама атау тақырыбы сәйкестігі жарамсыз.</translation>
 <translation id="1838709767668011582">Google сайты</translation>
-<translation id="1844692022597038441">Бұл файл желіден тыс қолжетімді емес.</translation>
 <translation id="1853795129690976061">Бұл қалта Linux арқылы бөлісілді.</translation>
 <translation id="1864756863218646478">Файлды табу мүмкін емес.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, қоcылу</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Канадалық көп тілді</translation>
 <translation id="3236289833370040187">Иелік <ph name="DESTINATION_DOMAIN" /> доменіне өтеді.</translation>
 <translation id="3241720467332021590">ирландша</translation>
-<translation id="3245321423178950146">Белгісіз орындаушы</translation>
 <translation id="3248185426436836442">Кезекте тұр</translation>
 <translation id="3252266817569339921">француз</translation>
 <translation id="3253225298092156258">Қолжетімді емес</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Қою</translation>
 <translation id="3952872973865944257">Телугу (фонетикалық)</translation>
 <translation id="3958548648197196644">Киви</translation>
-<translation id="3966388904776714213">Аудио ойнатқышы</translation>
 <translation id="3971140002794351170">Мобильдік профильді жүктеп алу, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_PROVIDER_NAME" /> провайдерінің <ph name="NETWORK_NAME" /> желісі</translation>
 <translation id="3973925058222872294">Ағылшын (БK)</translation>
 <translation id="3975895378829046965">Бенгал (фонетикалық)</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Іске қосылуда...</translation>
 <translation id="4092890906744441904">Ирланд</translation>
 <translation id="4124935795427217608">Пырақ</translation>
-<translation id="4158739975813877944">Ойнату тізімін ашу</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> жылжытылды.</translation>
 <translation id="4186579485882418952">Офлайн режимде қолдану мүмкіндігін қосу</translation>
 <translation id="4193154014135846272">Google құжаты</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">Панджаб</translation>
 <translation id="6224240818060029162">Дат</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> жадын форматтау</translation>
-<translation id="6227235786875481728">Бқұл файлды ойнату мүмкін болмады.</translation>
 <translation id="6241349547798190358">Нидерланд (Бельгия)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="PHONE_NAME" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, телефон батареясы: <ph name="BATTERY_STATUS" />%, қосылу</translation>
 <translation id="6269630227984243955">Малай</translation>
@@ -764,7 +759,6 @@
 <translation id="751507702149411736">беларус</translation>
 <translation id="7532029025027028521">Парсы (транслитерация)</translation>
 <translation id="7544830582642184299">Linux қолданбаларына Google Drive дискісіндегі файлдарды пайдалануға рұқсат беріңіз. Өзгертулер барлық құрылғыда болады.</translation>
-<translation id="7544853251252956727">Кездейсоқ</translation>
 <translation id="7547009467130558110">Кроссовка</translation>
 <translation id="7547780573915868306">Литва</translation>
 <translation id="7547811415869834682">голланд</translation>
@@ -840,7 +834,6 @@
 <translation id="8045462269890919536">румын</translation>
 <translation id="8049184478152619004">Жеке бөгеуден шығару кодын (PUK коды) енгізіңіз</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> алынып жатыр…</translation>
-<translation id="8079530767338315840">Қайталау</translation>
 <translation id="8087576439476816834">Жүктеп алу: <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Маған қолжетімді</translation>
 <translation id="8116072619078571545">Мұзды су</translation>
@@ -854,7 +847,6 @@
 <translation id="8175731104491895765">Француз (Бельгия)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Құрылғы үлгісі</translation>
-<translation id="8208580316430297579">Өнер туындысы</translation>
 <translation id="8223479393428528563">Бұл файлдарды желіден тыс сақтау үшін желіге қайта қосылып, файлдарды тінтуірдің оң жағымен басыңыз және <ph name="OFFLINE_CHECKBOX_NAME" /> опциясын таңдаңыз.</translation>
 <translation id="8249296373107784235">Доғару</translation>
 <translation id="8250690786522693009">Латын</translation>

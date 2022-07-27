@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">คาตาคานะแบบครึ่งความกว้าง</translation>
 <translation id="1834290891154666894">รายการจับคู่ชื่อสำรองของหัวเรื่องไม่ถูกต้อง</translation>
 <translation id="1838709767668011582">เว็บไซต์ Google</translation>
-<translation id="1844692022597038441">ไฟล์นี้ไม่สามารถใช้งานแบบออฟไลน์ได้</translation>
 <translation id="1853795129690976061">โฟลเดอร์นี้แชร์กับ Linux อยู่</translation>
 <translation id="1864756863218646478">ไม่พบไฟล์</translation>
 <translation id="1884013283844450420">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, เชื่อมต่อ</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">แคนาดาแบบหลายภาษา</translation>
 <translation id="3236289833370040187">ระบบจะโอนการเป็นเจ้าของไปยัง <ph name="DESTINATION_DOMAIN" /></translation>
 <translation id="3241720467332021590">ไอริช</translation>
-<translation id="3245321423178950146">ไม่ทราบศิลปิน</translation>
 <translation id="3248185426436836442">รอดำเนินการ</translation>
 <translation id="3252266817569339921">ฝรั่งเศส</translation>
 <translation id="3253225298092156258">ไม่มีข้อมูล</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">วาง</translation>
 <translation id="3952872973865944257">เตลูกู (ตามการออกเสียง)</translation>
 <translation id="3958548648197196644">กีวี</translation>
-<translation id="3966388904776714213">โปรแกรมเล่นเสียง</translation>
 <translation id="3971140002794351170">ดาวน์โหลดโปรไฟล์อุปกรณ์เคลื่อนที่, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">อังกฤษ (สหราชอาณาจักร)</translation>
 <translation id="3975895378829046965">บังกลา (ตามการออกเสียง)</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">กำลังเปิดการใช้งาน...</translation>
 <translation id="4092890906744441904">ไอร์แลนด์</translation>
 <translation id="4124935795427217608">ยูนิคอร์น</translation>
-<translation id="4158739975813877944">เปิดเพลย์ลิสต์</translation>
 <translation id="4159731583141908892">ย้าย <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="4186579485882418952">เปิดใช้แบบออฟไลน์</translation>
 <translation id="4193154014135846272">เอกสารของ Google</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">ปัญจาบ</translation>
 <translation id="6224240818060029162">เดนมาร์ก</translation>
 <translation id="6224253798271602650">ฟอร์แมต <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">ไม่สามารถเล่นไฟล์นี้</translation>
 <translation id="6241349547798190358">ดัตช์ (เบลเยียม)</translation>
 <translation id="6267547857941397424">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" />%, เชื่อมต่อ</translation>
 <translation id="6269630227984243955">มาเลย์</translation>
@@ -766,7 +761,6 @@
 <translation id="751507702149411736">เบลารุส</translation>
 <translation id="7532029025027028521">เปอร์เซีย (การทับศัพท์)</translation>
 <translation id="7544830582642184299">ให้สิทธิ์แอป Linux เข้าถึงไฟล์ใน Google ไดรฟ์ การเปลี่ยนแปลงจะซิงค์กับอุปกรณ์อื่นๆ ของคุณ</translation>
-<translation id="7544853251252956727">สุ่มเพลง</translation>
 <translation id="7547009467130558110">รองเท้าผ้าใบ</translation>
 <translation id="7547780573915868306">ลิทัวเนีย</translation>
 <translation id="7547811415869834682">ดัตช์</translation>
@@ -842,7 +836,6 @@
 <translation id="8045462269890919536">โรมาเนีย</translation>
 <translation id="8049184478152619004">ป้อนคีย์การเลิกบล็อกส่วนตัว (PUK)</translation>
 <translation id="807187749540895545">กำลังแตกข้อมูลของ <ph name="FILE_NAME" />...</translation>
-<translation id="8079530767338315840">เล่นซ้ำ</translation>
 <translation id="8087576439476816834">ดาวน์โหลด <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ที่แชร์กับฉัน</translation>
 <translation id="8116072619078571545">น้ำเย็น</translation>
@@ -856,7 +849,6 @@
 <translation id="8175731104491895765">ฝรั่งเศส (เบลเยียม)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">รุ่นอุปกรณ์</translation>
-<translation id="8208580316430297579">งานศิลปะ</translation>
 <translation id="8223479393428528563">หากต้องการบันทึกไฟล์เหล่านี้เพื่อใช้งานแบบออฟไลน์ ให้คลิกขวาที่ไฟล์ และเลือกตัวเลือก <ph name="OFFLINE_CHECKBOX_NAME" /></translation>
 <translation id="8249296373107784235">ล้มเลิก</translation>
 <translation id="8250690786522693009">ภาษาละติน</translation>

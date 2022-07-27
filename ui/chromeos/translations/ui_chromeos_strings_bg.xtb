@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">катакана с половин ширина</translation>
 <translation id="1834290891154666894">Невалиден запис в списъка със съответствия на алтернативното име на субекта</translation>
 <translation id="1838709767668011582">Сайт в Google</translation>
-<translation id="1844692022597038441">Този файл не е налице офлайн.</translation>
 <translation id="1853795129690976061">Тази папка е споделена с Linux</translation>
 <translation id="1864756863218646478">Файлът не можа да бъде намерен.</translation>
 <translation id="1884013283844450420">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, свързване</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Канадска многоезична клавиатура</translation>
 <translation id="3236289833370040187">Собствеността ще бъде прехвърлена на <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">ирландски</translation>
-<translation id="3245321423178950146">Неизвестен изпълнител</translation>
 <translation id="3248185426436836442">Чака</translation>
 <translation id="3252266817569339921">френски</translation>
 <translation id="3253225298092156258">Няма достъп</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Поставяне</translation>
 <translation id="3952872973865944257">Телугу (фонетична клавиатура)</translation>
 <translation id="3958548648197196644">Киви</translation>
-<translation id="3966388904776714213">Аудиоплейър</translation>
 <translation id="3971140002794351170">Изтегляне на мобилния потребителски профил, мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Английски (ОК)</translation>
 <translation id="3975895378829046965">Бенгалски (фонетична клавиатура)</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Активира се...</translation>
 <translation id="4092890906744441904">Ирландски</translation>
 <translation id="4124935795427217608">Еднорог</translation>
-<translation id="4158739975813877944">Отваряне на плейлиста</translation>
 <translation id="4159731583141908892">Преместихте „<ph name="FILE_NAME" />“.</translation>
 <translation id="4186579485882418952">Активиране на офлайн достъпа</translation>
 <translation id="4193154014135846272">Документ в Google</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">Пенджаби</translation>
 <translation id="6224240818060029162">Датски</translation>
 <translation id="6224253798271602650">Форматиране на <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Този файл не можа да бъде възпроизведен.</translation>
 <translation id="6241349547798190358">Нидерландски (Белгия)</translation>
 <translation id="6267547857941397424">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, батерия на телефона <ph name="BATTERY_STATUS" />%, свързване</translation>
 <translation id="6269630227984243955">Малайски</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">белоруски</translation>
 <translation id="7532029025027028521">Персийски (транслитерация)</translation>
 <translation id="7544830582642184299">Даване на приложенията за Linux на достъп до файловете в профила ви в Google Диск. Промените ще се синхронизират с другите ви устройства.</translation>
-<translation id="7544853251252956727">Разбъркване</translation>
 <translation id="7547009467130558110">Маратонка</translation>
 <translation id="7547780573915868306">Литовски</translation>
 <translation id="7547811415869834682">нидерландски</translation>
@@ -841,7 +835,6 @@
 <translation id="8045462269890919536">румънски</translation>
 <translation id="8049184478152619004">Въведете PUK кода</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> се извлича...</translation>
-<translation id="8079530767338315840">Повтаряне</translation>
 <translation id="8087576439476816834">Изтегляне на <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Споделени с мен</translation>
 <translation id="8116072619078571545">Вода с лед</translation>
@@ -855,7 +848,6 @@
 <translation id="8175731104491895765">Френски (Белгия)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Модел на устройството</translation>
-<translation id="8208580316430297579">Художествено произведение</translation>
 <translation id="8223479393428528563">За да запазите тези файлове за използване офлайн, върнете се онлайн, кликнете с десния бутон на мишката върху тях и изберете опцията „<ph name="OFFLINE_CHECKBOX_NAME" />“.</translation>
 <translation id="8249296373107784235">Прекратяване</translation>
 <translation id="8250690786522693009">латиница</translation>

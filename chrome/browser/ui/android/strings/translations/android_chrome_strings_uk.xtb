@@ -78,6 +78,7 @@
 <translation id="1344653310988386453">Включити посилання на виділений текст</translation>
 <translation id="1347468774581902829">Керувати діями</translation>
 <translation id="1360432990279830238">Вийти й вимкнути синхронізацію?</translation>
+<translation id="1366525380420346469">Коли функцію ввімкнено</translation>
 <translation id="1373696734384179344">Недостатньо пам’яті, щоб завантажити вибраний вміст.</translation>
 <translation id="1376578503827013741">Обчислення…</translation>
 <translation id="1382912999714108023">Не відображається актуальна інформація? Попросіть представника банку оновити її.</translation>
@@ -513,6 +514,7 @@
 <translation id="3810973564298564668">Керувати</translation>
 <translation id="3819178904835489326">Видалено завантажених файлів: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3819183753496523827">Ви не в мережі. Перевірте інтернет-з’єднання й повторіть спробу.</translation>
+<translation id="3830886834687455630">Щоб перевірити паролі, оновіть сервіси Google Play</translation>
 <translation id="3845098929839618392">Відкрити в анонімній вкладці</translation>
 <translation id="3856096718352044181">Підтвердьте, що цей постачальник активний, або повторіть спробу пізніше</translation>
 <translation id="3858860766373142691">Назва</translation>
@@ -733,6 +735,7 @@
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5032430150487044192">Не вдається створити QR-код</translation>
 <translation id="5039804452771397117">Дозволити</translation>
+<translation id="504456571576643789">Що варто врахувати</translation>
 <translation id="5054455334322721892">Коли ви входите в обліковий запис Google, у ньому можуть зберігатися <ph name="BEGIN_LINK1" />дані про інші дії<ph name="END_LINK1" />. Ви можете будь-коли видалити їх.</translation>
 <translation id="5061533557687621530">Щоб дізнатися погоду, торкніться значка мікрофона й скажіть "Яка сьогодні погода?"</translation>
 <translation id="506254248375231072">Немає вкладок</translation>
@@ -888,7 +891,6 @@
 <translation id="5906513782029855931">Якщо ви вкажете URL-адреси сайтів, Google Асистент допоможе вам виконати завдання. Ви можете вимкнути Асистента в налаштуваннях Chrome.</translation>
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="5919204609460789179">Оновіть <ph name="PRODUCT_NAME" />, щоб почати синхронізацію</translation>
-<translation id="593625682991400408">Під час пробних періодів Chrome досліджує способи протидіяти спаму й шахрайству, а також обмежити обмін даними між сайтами. Chrome також <ph name="BEGIN_LINK" />визначає ваші інтереси<ph name="END_LINK" />, які можуть використовувати інші сайти для показу оголошень. Ви можете керувати своїми інтересами в налаштуваннях.</translation>
 <translation id="5938820472109305350">Додати інтерес "<ph name="INTEREST" />"</translation>
 <translation id="5942872142862698679">Пошук за допомогою Google</translation>
 <translation id="5945035219773565305">Поточна рекомендація: <ph name="RECOMMENDATION" /></translation>
@@ -975,6 +977,7 @@
 <translation id="6394791151443660613">Пошук: <ph name="SEARCH_QUERY" /></translation>
 <translation id="6395288395575013217">ПОСИЛАННЯ</translation>
 <translation id="6397616442223433927">З'єднання відновлено</translation>
+<translation id="6401458660421980302">Щоб надіслати цю вкладку на інший пристрій, увійдіть на ньому в Chrome</translation>
 <translation id="6402652558933147609">Помилка <ph name="ERROR_CODE" /> на сторінці <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Редагувати закладку</translation>
 <translation id="6406506848690869874">Синхронізація</translation>
@@ -1026,6 +1029,7 @@
 <translation id="6600954340915313787">Скопійовано в Chrome</translation>
 <translation id="661266467055912436">Покращує захист усіх користувачів в Інтернеті.</translation>
 <translation id="6618554661997243500">Щоб переглянути підібрані для вас сайти й новини, натисніть кнопку домашньої сторінки</translation>
+<translation id="6621391692573306628">Щоб надіслати цю вкладку на інший пристрій, увійдіть у Chrome на обох пристроях</translation>
 <translation id="6627583120233659107">Редагувати папку</translation>
 <translation id="6633067410344541938">Розблокувати анонімний режим</translation>
 <translation id="6636623428211296678">Перейдіть до інших налаштувань нижче або завершіть перевірку</translation>
@@ -1214,6 +1218,7 @@
 <translation id="7641339528570811325">Очистити історію…</translation>
 <translation id="7646772052135772216">Синхронізація паролів не працює</translation>
 <translation id="7655900163790317559">Увімкнення Bluetooth…</translation>
+<translation id="7656862631699126784">Увімкнути функцію блокування анонімних вкладок</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7663313374500954251">Цим веб-переглядачем керує <ph name="PARENT_NAME" />.</translation>
 <translation id="7665369617277396874">Додати обліковий запис</translation>
@@ -1516,6 +1521,7 @@
 <translation id="9159716826369098114">Відновити групу вкладок (<ph name="TAB_COUNT" />) як нову фонову групу вкладок.</translation>
 <translation id="9169507124922466868">Історію навігації відкрито на половину висоти</translation>
 <translation id="9187955620966010988">Реакцію відкориговано</translation>
+<translation id="9190276265094487094">Історія зберігатиметься на всіх синхронізованих пристроях, щоб ви могли продовжувати робити те, на чому зупинилися</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Перевірено 1 хвилину тому}one{Перевірено # хвилину тому}few{Перевірено # хвилини тому}many{Перевірено # хвилин тому}other{Перевірено # хвилини тому}}</translation>
 <translation id="9204836675896933765">Залишився 1 файл</translation>
 <translation id="9205933215779845960">Не вдається знайти цю сторінку. Перевірте написання або спробуйте шукати в <ph name="SEARCH_ENGINE" />.</translation>

@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">أحرف كاتاكانا بوضع نصف العرض</translation>
 <translation id="1834290891154666894">إدخال غير صالح لمطابقة الاسم البديل الخاص بالموضوع</translation>
 <translation id="1838709767668011582">‏موقع Google</translation>
-<translation id="1844692022597038441">هذا الملف غير متاح بلا إنترنت.</translation>
 <translation id="1853795129690976061">‏تمّت مشاركة هذا المجلد مع نظام التشغيل Linux.</translation>
 <translation id="1864756863218646478">تعذر العثور على الملف.</translation>
 <translation id="1884013283844450420">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، الاتصال</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">كندي متعدد اللغات</translation>
 <translation id="3236289833370040187">سيتم نقل الملكية إلى <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">الأيرلندية</translation>
-<translation id="3245321423178950146">فنان غير معروف</translation>
 <translation id="3248185426436836442">معلَّق</translation>
 <translation id="3252266817569339921">الفرنسية</translation>
 <translation id="3253225298092156258">غير متاح</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">لصق</translation>
 <translation id="3952872973865944257">التيلوغوية الصوتية</translation>
 <translation id="3958548648197196644">كيوي</translation>
-<translation id="3966388904776714213">‏مشغل Audio player</translation>
 <translation id="3971140002794351170">‏تنزيل الملف الشخصي لشريحة eSIM على الجهاز الجوّال، الشبكة رقم <ph name="NETWORK_INDEX" /> من أصل <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">الإنجليزية (المملكة المتحدة)</translation>
 <translation id="3975895378829046965">البنغالية الصوتية</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">تفعيل...</translation>
 <translation id="4092890906744441904">الأيرلندية</translation>
 <translation id="4124935795427217608">أحادي القرن</translation>
-<translation id="4158739975813877944">فتح قائمة التشغيل</translation>
 <translation id="4159731583141908892">تم نقل <ph name="FILE_NAME" />.</translation>
 <translation id="4186579485882418952">‏تفعيل "مستندات Google بلا إنترنت"</translation>
 <translation id="4193154014135846272">‏مستند Google</translation>
@@ -619,7 +615,6 @@
 <translation id="6220423280121890987">البنجابية</translation>
 <translation id="6224240818060029162">الدانمركية</translation>
 <translation id="6224253798271602650">تنسيق <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">يتعذر تشغيل هذا الملف.</translation>
 <translation id="6241349547798190358">الهولندية (بلجيكا)</translation>
 <translation id="6267547857941397424">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الهاتف <ph name="PHONE_NAME" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، بطارية الهاتف <ph name="BATTERY_STATUS" />%، الاتصال</translation>
 <translation id="6269630227984243955">الملايوية</translation>
@@ -766,7 +761,6 @@
 <translation id="751507702149411736">البيلاروسية</translation>
 <translation id="7532029025027028521">تحويل صوتي إلى اللغة الفارسية</translation>
 <translation id="7544830582642184299">‏يمكنك منح التطبيقات التي تعمل بنظام التشغيل Linux الإذن للوصول إلى الملفات في Google Drive. وستتمّ مزامنة التغييرات مع الأجهزة الأخرى.</translation>
-<translation id="7544853251252956727">ترتيب عشوائي</translation>
 <translation id="7547009467130558110">حذاء رياضي</translation>
 <translation id="7547780573915868306">الليتوانية</translation>
 <translation id="7547811415869834682">الهولندية</translation>
@@ -842,7 +836,6 @@
 <translation id="8045462269890919536">الرومانية</translation>
 <translation id="8049184478152619004">‏إدخال مفتاح إزالة حظر رقم التعريف الشخصي (PUK)</translation>
 <translation id="807187749540895545">جارٍ استخراج <ph name="FILE_NAME" />...</translation>
-<translation id="8079530767338315840">تكرار</translation>
 <translation id="8087576439476816834">تنزيل <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">تمت مشاركتها معي</translation>
 <translation id="8116072619078571545">ماء مثلج</translation>
@@ -856,7 +849,6 @@
 <translation id="8175731104491895765">الفرنسية (بلجيكا)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">طراز الجهاز</translation>
-<translation id="8208580316430297579">عمل فني</translation>
 <translation id="8223479393428528563">لحفظ هذه الملفات بلا اتصال، عليك العودة للاتصال انقر بزر الماوس الأيمن على الملفات، وحدد خيار <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">إلغاء</translation>
 <translation id="8250690786522693009">اللاتينية</translation>

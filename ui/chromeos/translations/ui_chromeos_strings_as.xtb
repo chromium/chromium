@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">অৰ্ধ প্ৰস্থৰ কাটাকনা</translation>
 <translation id="1834290891154666894">বিষয়ৰ বিকল্প নামৰ সৈতে মিলা প্ৰবিষ্টি অমান্য</translation>
 <translation id="1838709767668011582">Googleৰ ছাইট</translation>
-<translation id="1844692022597038441">এই ফাইলটো অফলাইনত নাই।</translation>
 <translation id="1853795129690976061">এই ফ’ল্ডাৰটো Linuxৰ সৈতে শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="1864756863218646478">ফাইলটো বিচাৰি পোৱা নগ’ল।</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, সংযোগ কৰক</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">কানাডিয়ান বহুভাষিক</translation>
 <translation id="3236289833370040187"><ph name="DESTINATION_DOMAIN" />লৈ গৰাকীস্বত্ব স্থানান্তৰ কৰা হ’ব।</translation>
 <translation id="3241720467332021590">আইৰিশ্ব</translation>
-<translation id="3245321423178950146">অজ্ঞাত শিল্পী</translation>
 <translation id="3248185426436836442">বিবেচনাধীন</translation>
 <translation id="3252266817569339921">ফৰাচী</translation>
 <translation id="3253225298092156258">উপলব্ধ নহয়</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">পেষ্ট কৰক</translation>
 <translation id="3952872973865944257">তেলুগু ফ’নেটিক</translation>
 <translation id="3958548648197196644">কিৱি</translation>
-<translation id="3966388904776714213">অডিঅ’ প্লেয়াৰ</translation>
 <translation id="3971140002794351170">ম’বাইলৰ প্ৰ’ফাইল ডাউনল’ড কৰক, <ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰৰটো, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ইংৰাজী (যুক্তৰাজ্য)</translation>
 <translation id="3975895378829046965">বাংলা ফ’নেটিক</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">সক্ৰিয় কৰি থকা হৈছে...</translation>
 <translation id="4092890906744441904">আইৰিশ্ব</translation>
 <translation id="4124935795427217608">এশিঙিয়া ঘোঁৰা</translation>
-<translation id="4158739975813877944">প্লে’লিষ্ট খোলক</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> স্থানান্তৰ কৰা হ’ল।</translation>
 <translation id="4186579485882418952">অফলাইনত সক্ষম কৰক</translation>
 <translation id="4193154014135846272">Google নথি</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">পাঞ্জাবী</translation>
 <translation id="6224240818060029162">ডেনিশ্ব</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ফর্মেট কৰক</translation>
-<translation id="6227235786875481728">এই ফাইলটো প্লে’ কৰিব পৰা নগ’ল।</translation>
 <translation id="6241349547798190358">ডাট্‌চ (বেলজিয়াম)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, ফ’নৰ বেটাৰী <ph name="BATTERY_STATUS" />%, সংযোগ কৰক</translation>
 <translation id="6269630227984243955">মালয়</translation>
@@ -764,7 +759,6 @@
 <translation id="751507702149411736">বেলাৰ’ছিয়ান</translation>
 <translation id="7532029025027028521">পাৰ্ছিয়ান লিপ্যন্তৰণ</translation>
 <translation id="7544830582642184299">Linuxৰ এপ্‌সমূহ আপোনাৰ Google Driveত থকা ফাইল এক্সেছ কৰিবলৈ অনুমতি দিয়ক। সালসলনিসমূহ আপোনাৰ অন্য ডিভাইচৰ সৈতে ছিংক হ’ব।</translation>
-<translation id="7544853251252956727">সানমিহলি কৰক</translation>
 <translation id="7547009467130558110">স্নীকাৰ</translation>
 <translation id="7547780573915868306">লিথুৱানিয়ান</translation>
 <translation id="7547811415869834682">ডাচ্চ</translation>
@@ -840,7 +834,6 @@
 <translation id="8045462269890919536">ৰোমানিয়ান</translation>
 <translation id="8049184478152619004">অৱৰোধৰ পৰা আঁতৰোৱাৰ ব্যক্তিগত কীটো (PUK) দিয়ক</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> আহৰণ কৰি থকা হৈছে...</translation>
-<translation id="8079530767338315840">পুনৰাই প্ল’ কৰক</translation>
 <translation id="8087576439476816834">ডাউনল’ড কৰক, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">মোৰ লগত শ্বেয়াৰ কৰা ফাইল</translation>
 <translation id="8116072619078571545">বৰফৰ সৈতে পানী</translation>
@@ -854,7 +847,6 @@
 <translation id="8175731104491895765">ফৰাচী (বেলজিয়াম)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">ডিভাইচৰ মডেল</translation>
-<translation id="8208580316430297579">শিল্পকৰ্ম</translation>
 <translation id="8223479393428528563">এই ফাইলবোৰ অফলাইন অৱস্থাত ব্যৱহাৰ কৰাৰ বাবে ছেভ কৰিবলৈ অনলাইন হওক আৰু তাৰপিছত ফাইলত সোঁফালে ক্লিক কৰি <ph name="OFFLINE_CHECKBOX_NAME" /> বিকল্পটো বাছনি কৰক।</translation>
 <translation id="8249296373107784235">নিষ্ফল কৰক</translation>
 <translation id="8250690786522693009">লেটিন</translation>

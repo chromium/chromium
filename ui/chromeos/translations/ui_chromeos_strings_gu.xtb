@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">અર્ધ પહોળાઈવાળા કાટાકાના</translation>
 <translation id="1834290891154666894">વિષયના વૈકલ્પિક નામના મેળની અમાન્ય એન્ટ્રી</translation>
 <translation id="1838709767668011582">Google સાઇટ</translation>
-<translation id="1844692022597038441">આ ફાઇલ ઑફલાઇન ઉપલબ્ધ નથી.</translation>
 <translation id="1853795129690976061">આ ફોલ્ડર Linux સાથે શેર થાય છે</translation>
 <translation id="1864756863218646478">ફાઇલ શોધી શકાઈ નથી.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, કનેક્ટ કરો</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">કેનેડિયન બહુભાષીય</translation>
 <translation id="3236289833370040187">માલિકીને <ph name="DESTINATION_DOMAIN" />માં સ્થાનાંતરિત કરવામાં આવશે.</translation>
 <translation id="3241720467332021590">આઇરિશ</translation>
-<translation id="3245321423178950146">અજ્ઞાત કલાકાર</translation>
 <translation id="3248185426436836442">બાકી</translation>
 <translation id="3252266817569339921">ફ્રેન્ચ</translation>
 <translation id="3253225298092156258">ઉપલબ્ધ નથી</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">પેસ્ટ કરો</translation>
 <translation id="3952872973865944257">તેલુગુ ફોનેટિક</translation>
 <translation id="3958548648197196644">કિવી</translation>
-<translation id="3966388904776714213">ઑડિયો પ્લેયર</translation>
 <translation id="3971140002794351170"><ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />ના નેટવર્ક <ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> મોબાઇલ પ્રોફાઇલ ડાઉનલોડ કરો</translation>
 <translation id="3973925058222872294">અંગ્રેજી (યુકે)</translation>
 <translation id="3975895378829046965">બંગાળી ફોનેટિક</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">સક્રિય કરી રહ્યું છે</translation>
 <translation id="4092890906744441904">આઇરિશ</translation>
 <translation id="4124935795427217608">યુનિકોર્ન - એક કાલ્પનિક પાંખવાળો ઘોડો</translation>
-<translation id="4158739975813877944">પ્લે લિસ્ટ ખોલો</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ખસેડી.</translation>
 <translation id="4186579485882418952">ઑફલાઇન સુવિધા ચાલુ કરો</translation>
 <translation id="4193154014135846272">Google દસ્તાવેજ</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">પંજાબી</translation>
 <translation id="6224240818060029162">ડેનિશ</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />ને ફોર્મેટ કરો</translation>
-<translation id="6227235786875481728">આ ફાઇલ ચલાવી શકાઈ નથી.</translation>
 <translation id="6241349547798190358">ડચ (બેલ્જિયમ)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="PHONE_NAME" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, ફોનની બૅટરી <ph name="BATTERY_STATUS" />%, કનેક્ટ કરો</translation>
 <translation id="6269630227984243955">મલય</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">બેલારુશિયન</translation>
 <translation id="7532029025027028521">ફારસી લિપ્યંતર</translation>
 <translation id="7544830582642184299">Linux ઍપને તમારી Google Driveમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો. ફેરફારો તમારા બીજા ડિવાઇસ સાથે સિંક થશે.</translation>
-<translation id="7544853251252956727">શફલ કરો</translation>
 <translation id="7547009467130558110">સ્નીકર</translation>
 <translation id="7547780573915868306">લિથુએનિયન</translation>
 <translation id="7547811415869834682">ડચ</translation>
@@ -839,7 +833,6 @@
 <translation id="8045462269890919536">રોમાનિયન</translation>
 <translation id="8049184478152619004">પર્સનલ અનબ્લૉકિંગ કી (PUK) દાખલ કરો</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" />ને એક્સટ્રેક્ટ કરી રહ્યાં છીએ...</translation>
-<translation id="8079530767338315840">પુનરાવર્તન કરો</translation>
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" /> ડાઉનલોડ કરો</translation>
 <translation id="8106045200081704138">મારી સાથે શેર કરેલા</translation>
 <translation id="8116072619078571545">બરફનું પાણી</translation>
@@ -853,7 +846,6 @@
 <translation id="8175731104491895765">ફ્રેન્ચ (બેલ્જિયમ)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">ઉપકરણ મૉડેલ</translation>
-<translation id="8208580316430297579">આર્ટવર્ક</translation>
 <translation id="8223479393428528563">ઑફલાઇન ઉપયોગ કરવા માટે આ ફાઇલો સાચવવા, પાછા ઑફલાઇન થાઓ, ફાઇલો પર રાઇટ-ક્લિક કરો અને <ph name="OFFLINE_CHECKBOX_NAME" /> વિકલ્પ પસંદ કરો.</translation>
 <translation id="8249296373107784235">છોડો</translation>
 <translation id="8250690786522693009">લેટિન</translation>

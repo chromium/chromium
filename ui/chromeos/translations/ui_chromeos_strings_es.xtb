@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Katakana de ancho medio</translation>
 <translation id="1834290891154666894">Entrada de la coincidencia del nombre alternativo del sujeto no válida</translation>
 <translation id="1838709767668011582">Sitio de Google</translation>
-<translation id="1844692022597038441">Este archivo no está disponible sin conexión.</translation>
 <translation id="1853795129690976061">Esta carpeta se comparte con Linux</translation>
 <translation id="1864756863218646478">No se ha podido encontrar el archivo.</translation>
 <translation id="1884013283844450420">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, conectar</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Canadiense multilingüe</translation>
 <translation id="3236289833370040187">La propiedad se transferirá a <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Irlandés</translation>
-<translation id="3245321423178950146">Artista desconocido</translation>
 <translation id="3248185426436836442">Pendiente</translation>
 <translation id="3252266817569339921">Francés</translation>
 <translation id="3253225298092156258">No disponible</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3952872973865944257">Telugu (fonético)</translation>
 <translation id="3958548648197196644">Kiwi</translation>
-<translation id="3966388904776714213">Reproductor de audio</translation>
 <translation id="3971140002794351170">Descargar perfil móvil, red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Inglés (Reino Unido)</translation>
 <translation id="3975895378829046965">Bengalí (fonético)</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Activando...</translation>
 <translation id="4092890906744441904">Irlandés</translation>
 <translation id="4124935795427217608">Unicornio</translation>
-<translation id="4158739975813877944">Abrir lista de reproducción</translation>
 <translation id="4159731583141908892">Se ha movido <ph name="FILE_NAME" />.</translation>
 <translation id="4186579485882418952">Habilitar el modo sin conexión</translation>
 <translation id="4193154014135846272">Documento de Google</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">Panyabí</translation>
 <translation id="6224240818060029162">Danés</translation>
 <translation id="6224253798271602650">Formatear <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Este archivo no se puede reproducir.</translation>
 <translation id="6241349547798190358">Neerlandés (Bélgica)</translation>
 <translation id="6267547857941397424">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, batería del teléfono: <ph name="BATTERY_STATUS" /> %, conectar</translation>
 <translation id="6269630227984243955">Malayo</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">Bielorruso</translation>
 <translation id="7532029025027028521">Persa (transliteración)</translation>
 <translation id="7544830582642184299">Permite que las aplicaciones de Linux accedan a tus archivos de Google Drive. Los cambios se sincronizarán con tus otros dispositivos.</translation>
-<translation id="7544853251252956727">Aleatorio</translation>
 <translation id="7547009467130558110">Zapatilla</translation>
 <translation id="7547780573915868306">Lituano</translation>
 <translation id="7547811415869834682">neerlandés</translation>
@@ -841,7 +835,6 @@
 <translation id="8045462269890919536">Rumano</translation>
 <translation id="8049184478152619004">Escribe el código PUK</translation>
 <translation id="807187749540895545">Extrayendo <ph name="FILE_NAME" />...</translation>
-<translation id="8079530767338315840">Repetir</translation>
 <translation id="8087576439476816834">Descargar, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Compartido conmigo</translation>
 <translation id="8116072619078571545">Agua helada</translation>
@@ -855,7 +848,6 @@
 <translation id="8175731104491895765">Francés (Bélgica)</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8193175696669055101">Modelo de dispositivo</translation>
-<translation id="8208580316430297579">Obra de arte</translation>
 <translation id="8223479393428528563">Para guardar estos archivos y poder usarlos sin conexión, vuelve a conectarte a Internet, haz clic con el botón derecho en los archivos y selecciona la opción <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Anular</translation>
 <translation id="8250690786522693009">Latin</translation>

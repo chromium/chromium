@@ -27,6 +27,7 @@
 <translation id="1111021433905331574">您可在“设置”&gt;“<ph name="APP_TITLE" />”部分中更改键盘背光的颜色</translation>
 <translation id="112308213915226829">自动隐藏任务栏</translation>
 <translation id="1142002900084379065">近期照片</translation>
+<translation id="114451698114044150">自动缩放已开启。</translation>
 <translation id="1148499908455722006">打开“<ph name="USER_NAME" />”的信息对话框</translation>
 <translation id="1150989369772528668">日历</translation>
 <translation id="1153356358378277386">已配对的设备</translation>
@@ -336,7 +337,7 @@
 <translation id="2981684127883932071">显示了建议</translation>
 <translation id="2985148236010982088">查看所有应用</translation>
 <translation id="2992327365391326550">设备的麦克风按钮已关闭。</translation>
-<translation id="2995447421581609334">显示投射设备。</translation>
+<translation id="2995447421581609334">显示投放设备。</translation>
 <translation id="2996462380875591307">已启用停靠的放大镜。再按一次 Ctrl+搜索键+D 组合键即可将其停用。</translation>
 <translation id="3000461861112256445">单声道音频</translation>
 <translation id="3009178788565917040">输出</translation>
@@ -395,7 +396,7 @@
 <translation id="3340978935015468852">设置</translation>
 <translation id="3341303451326249809">已截取屏幕</translation>
 <translation id="334252345105450327">截屏</translation>
-<translation id="3351879221545518001">您目前正在投射屏幕。</translation>
+<translation id="3351879221545518001">您目前正在投放屏幕。</translation>
 <translation id="3364721542077212959">触控笔工具</translation>
 <translation id="3365977133351922112">您的手机太远了，请移近些。</translation>
 <translation id="3368922792935385530">已连接</translation>
@@ -449,6 +450,7 @@
 <translation id="3593039967545720377">您只需按“<ph name="SHORTCUT_KEY_NAME" /> + V”打开剪贴板，便可访问剪贴板历史记录。首先，请复制一项内容。</translation>
 <translation id="3593646411856133110">向上滑动并按住屏幕可查看已打开的应用</translation>
 <translation id="3595596368722241419">电池已充满</translation>
+<translation id="3600061223661453002">关闭</translation>
 <translation id="3604801046548457007">已创建桌面“<ph name="DESK_TITILE" />”</translation>
 <translation id="3606978283550408104">已连接盲文显示屏。</translation>
 <translation id="3615926715408477684">如果您启用移动流量，蓝牙亦会随之开启</translation>
@@ -581,7 +583,7 @@
 <translation id="4338109981321384717">放大镜</translation>
 <translation id="4351433414020964307">智能助理正在加载中…</translation>
 <translation id="4356930093361201197">高对比度模式</translation>
-<translation id="4371348193907997655">投射设置</translation>
+<translation id="4371348193907997655">投放设置</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">正在连接…</translation>
 <translation id="4379531060876907730">这些是您的触控笔工具</translation>
@@ -630,7 +632,7 @@
 <translation id="4578196883126898996">您设备的麦克风处于关闭状态。请使用相应按钮开启它。</translation>
 <translation id="4578906031062871102">已打开“设置”菜单</translation>
 <translation id="4581047786858252841">麦克风已开启</translation>
-<translation id="4585337515783392668">停止投射至不明接收器</translation>
+<translation id="4585337515783392668">停止投放至不明接收器</translation>
 <translation id="4587299710837179226">麦克风已关闭</translation>
 <translation id="4596144739579517758">深色主题已关闭</translation>
 <translation id="4611292653554630842">登录</translation>
@@ -692,7 +694,7 @@
 <translation id="495046168593986294">向上滚动</translation>
 <translation id="4952936045814352993">当闹钟提示音处于停用状态时，无法使用“定位手机”功能</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> 要求您回滚 <ph name="DEVICE_TYPE" />。您的设备将会重置，并且所有数据都会被删除。</translation>
-<translation id="4961318399572185831">投射屏幕</translation>
+<translation id="4961318399572185831">投放屏幕</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> 小时 <ph name="MINUTES" /> 分 <ph name="SECONDS" /> 秒</translation>
 <translation id="4975771730019223894">应用通知数量标志</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />：
@@ -719,7 +721,7 @@
 <translation id="5150070631291639005">隐私设置</translation>
 <translation id="5155897006997040331">朗读速度</translation>
 <translation id="5166007464919321363">将桌面另存为模板</translation>
-<translation id="5168181903108465623">有可用的投射设备</translation>
+<translation id="5168181903108465623">有可用的投放设备</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5176318573511391780">录制部分屏幕</translation>
 <translation id="5198413532174090167"><ph name="DATE" />，<ph name="NUMBER" /> 个事件</translation>
@@ -781,7 +783,7 @@
 <translation id="5532994612895037630">点按任意位置即可录制整个屏幕</translation>
 <translation id="5536723544185013515">“最近用过的应用”：若要访问最近用过的所有应用，请使用向左键或向右键导航</translation>
 <translation id="553675580533261935">退出会话</translation>
-<translation id="5537725057119320332">投射</translation>
+<translation id="5537725057119320332">投放</translation>
 <translation id="554893713779400387">开启/关闭语音输入</translation>
 <translation id="5560420195677022218">在 <ph name="DEVICE_TYPE" /> 上查看手机中的应用</translation>
 <translation id="556042886152191864">按钮</translation>
@@ -830,7 +832,7 @@
 <translation id="5790085346892983794">成功</translation>
 <translation id="5805809050170488595">点击即可激活“<ph name="NETWORK_NAME" />”</translation>
 <translation id="5825969630400862129">设置已连接的设备</translation>
-<translation id="5837036133683224804">停止将“<ph name="ROUTE_TITLE" />”投射至“<ph name="RECEIVER_NAME" />”</translation>
+<translation id="5837036133683224804">停止将“<ph name="ROUTE_TITLE" />”投放至“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="584525477304726060">按住即可最大化</translation>
 <translation id="5856638668464565213">尚未启用“<ph name="NETWORK_NAME" />”。</translation>
 <translation id="5860033963881614850">关闭</translation>
@@ -925,7 +927,7 @@
 <translation id="642644398083277086">清除所有通知</translation>
 <translation id="643147933154517414">大功告成</translation>
 <translation id="6431865393913628856">屏幕录制</translation>
-<translation id="6445835306623867477">正在将“<ph name="ROUTE_TITLE" />”投射至“<ph name="RECEIVER_NAME" />”</translation>
+<translation id="6445835306623867477">正在将“<ph name="ROUTE_TITLE" />”投放至“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="6447111710783417522"><ph name="DATE" />，<ph name="NUMBER" /> 个事件</translation>
 <translation id="6449483711453944360">尚不支持 Linux 应用和无痕式窗口</translation>
 <translation id="6452181791372256707">拒绝</translation>
@@ -937,7 +939,7 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> 要求您在截止日期之前更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="649452524636452238">智能卡 PIN 码</translation>
 <translation id="6495400115277918834">已启动“画中画”模式，按 Alt+Shift+V 可聚焦</translation>
-<translation id="6501401484702599040">正在将屏幕投射到“<ph name="RECEIVER_NAME" />”</translation>
+<translation id="6501401484702599040">正在将屏幕投放到“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="6515727200518652613">相机连接已中断，正在尝试重新连接。</translation>
 <translation id="6520517963145875092">选择一个窗口即可截图</translation>
 <translation id="652139407789908527">在此次更新期间，您的屏幕变为空白的时间会比平时长（可长达 1 分钟）。在更新过程中，请不要按电源按钮。</translation>
@@ -945,7 +947,7 @@
 <translation id="65320610082834431">表情符号</translation>
 <translation id="6537924328260219877">信号强度为 <ph name="SIGNAL_STRENGTH" />，剩余电量为 <ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">正在扫描要下载的文件“<ph name="FILENAME" />”</translation>
-<translation id="6542521951477560771">正在投射到<ph name="RECEIVER_NAME" /></translation>
+<translation id="6542521951477560771">正在投放到<ph name="RECEIVER_NAME" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 新安装</translation>
 <translation id="6559976592393364813">询问您的管理员</translation>
@@ -967,6 +969,7 @@
 <translation id="6637729079642709226">更改时间</translation>
 <translation id="6641720045729354415">开启/关闭“实时字幕”功能。<ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">撤消按名称排序</translation>
+<translation id="6649641931981131786">调整摄像头，使自己位于屏幕中央。</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 想确认您的身份</translation>
 <translation id="6650933572246256093">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。请在该设备上输入以下配对密钥：<ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">密码</translation>
@@ -1008,6 +1011,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{还差 1 位数字}other{还差 # 位数字}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> 已暂停下载</translation>
 <translation id="6878400149835617132">快捷方式已关闭</translation>
+<translation id="6878709625737492815">自动缩放已关闭。</translation>
 <translation id="6884665277231944629">返回到今天</translation>
 <translation id="6886172995547742638">这可能会导致您的 <ph name="DEVICE_TYPE" /> 性能低下。请使用已获认证的不低于 <ph name="PREFERRED_MINIMUM_POWER" />W 的 USB-C 型电源适配器。</translation>
 <translation id="688631446150864480">按向下键即可切换窗口</translation>
@@ -1084,6 +1088,7 @@
 <translation id="7378203170292176219">拖动鼠标指针即可选择要录制的区域</translation>
 <translation id="7378594059915113390">媒体控件</translation>
 <translation id="7378889811480108604">省电模式已关闭</translation>
+<translation id="7382680553121047388">开启</translation>
 <translation id="7384028040782072252">若要将您的应用重新排序，请右键点击任意位置</translation>
 <translation id="7392563512730092880">日后您随时可从“设置”中进行设置。</translation>
 <translation id="7405710164030118432">要解锁此设备，请输入您的 Family Link 家长访问码</translation>
@@ -1168,6 +1173,7 @@
 <translation id="7868900307798234037">正在使用指纹解锁</translation>
 <translation id="7872195908557044066">您的管理员正在重置您的 eSIM 卡。请稍等几分钟。</translation>
 <translation id="7872786842639831132">关闭</translation>
+<translation id="7875280185395705476">自动缩放</translation>
 <translation id="7875575368831396199">您的 <ph name="DEVICE_TYPE" /> 上的蓝牙似乎未开启。请开启蓝牙以便使用 Phone Hub。</translation>
 <translation id="7877557217297072640">{0,plural, =0{请立即将设备回滚到上一个版本}=1{请在 1 秒内将设备回滚到上一个版本}other{请在 # 秒内将设备回滚到上一个版本}}</translation>
 <translation id="7886169021410746335">调整隐私设置</translation>
@@ -1207,7 +1213,7 @@
 <translation id="8054466585765276473">正在计算续航时间。</translation>
 <translation id="8061464966246066292">高对比度</translation>
 <translation id="8083540854303889870">已保存供日后使用</translation>
-<translation id="8098591350844501178">停止将屏幕投射到“<ph name="RECEIVER_NAME" />”</translation>
+<translation id="8098591350844501178">停止将屏幕投放到“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="8113423164597455979">开启，所有应用</translation>
 <translation id="8120151603115102514">您的手机未设置锁屏。若要解锁 Chromebook，请输入密码。</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
@@ -1288,6 +1294,7 @@
 <translation id="856298576161209842"><ph name="MANAGER" /> 建议您更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8563862697512465947">通知设置</translation>
 <translation id="857201607579416096">菜单已移至屏幕的右下角。</translation>
+<translation id="8576288697319745668">开启/关闭自动缩放功能。<ph name="STATE_TEXT" /></translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">按名称或颜色将您的应用排序</translation>
 <translation id="8614517853887502247">由于窥探保护功能已开启，因此系统隐藏了<ph name="APP_1_TITLE" />和<ph name="APP_2_TITLE" />通知</translation>
@@ -1391,7 +1398,7 @@
 <translation id="9179259655489829027">借助此功能，您无需使用密码即可快速访问任何已登录的用户。请仅对您信任的帐号使用此功能。</translation>
 <translation id="9180906851711123156">按 Ctrl+W 即可关闭</translation>
 <translation id="9183456764293710005">全屏放大镜</translation>
-<translation id="9193626018745640770">正在投射至不明接收器</translation>
+<translation id="9193626018745640770">正在投放至不明接收器</translation>
 <translation id="9194617393863864469">登录其他用户帐号…</translation>
 <translation id="9198992156681343238">“<ph name="DISPLAY_NAME" />”的分辨率已改为 <ph name="RESOLUTION" />。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
 <translation id="9201044636667689546">将“<ph name="NAME" />”连接到此 Chromebook</translation>

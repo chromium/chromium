@@ -2982,6 +2982,11 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="408076456549153854">Aktifkan login browser</translation>
 <translation id="4081127242481747676">Setelan sensor</translation>
 <translation id="4082498585300984671">Mengaktifkan Fitur Click to Call</translation>
+<translation id="4082809879536562387">Memungkinkan Anda menyetel jangka waktu, dalam milidetik, antara notifikasi pertama yang memberi tahu bahwa perangkat <ph name="PRODUCT_OS_NAME" /> harus dimulai ulang untuk menerapkan update tertunda dan akhir dari jangka waktu yang ditentukan oleh kebijakan <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />.
+
+      Jika tidak disetel, jangka waktu default selama 259200000 milidetik (tiga hari) akan digunakan untuk perangkat <ph name="PRODUCT_OS_NAME" />.
+
+      Untuk rollback dan update <ph name="PRODUCT_OS_NAME" /> lainnya yang akan melakukan powerwash perangkat, pengguna akan langsung diberi tahu saat update tersedia, apa pun nilai kebijakan ini.</translation>
 <translation id="4086150283035515220">Jika kebijakan disetel ke Aktif, pengguna akan ditanyai lokasi penyimpanan file sebelum mendownload. Jika kebijakan disetel ke Nonaktif, download akan dimulai secara otomatis dan pengguna tidak akan ditanyai lokasi penyimpanan file.
 
       Jika kebijakan tidak disetel, pengguna akan dapat mengubah setelan ini.</translation>
@@ -4812,13 +4817,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Tentukan aplikasi Chrome berdasarkan ID, seperti pjkljhegncpnkpknbcohdijeoejaedia; aplikasi Android berdasarkan nama paket, seperti com.google.android.gm; dan aplikasi web berdasarkan URL yang digunakan di <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, seperti https://google.com/maps.
 
       Jika tidak ditetapkan, pengguna akan diizinkan mengubah daftar aplikasi yang dipasangi pin di peluncur.</translation>
-<translation id="6183409603139321084"><ph name="PRODUCT_OS_NAME" /> dapat mencoba mengisi otomatis kolom nama pengguna di halaman IdP SAML selama proses autentikasi online di layar login dan layar kunci.
-
-      Setelan ini akan menggunakan email pengguna yang dikaitkan dengan profil <ph name="PRODUCT_OS_NAME" /> mereka, sehingga setelan ini harus dinonaktifkan jika pengguna diperkirakan akan menggunakan email yang berbeda di halaman IdP SAML.
-
-      String yang diterima melalui kebijakan ini akan digunakan sebagai nama parameter URL di halaman IdP dengan email pengguna sebagai nilai.
-
-      Sisi server diharapkan bertanggung jawab atas pemetaan antara Penyedia Identitas dan parameter URL yang didukung Penyedia Identitas tersebut.</translation>
 <translation id="6190367314942602985">Laporkan informasi Identifikasi Pengguna</translation>
 <translation id="6191963383731098056">Kebijakan ini memungkinkan admin mengonfigurasi warna tema <ph name="PRODUCT_NAME" />. String input harus berupa string warna hex valid yang sesuai dengan format "#RRGGBB".
 

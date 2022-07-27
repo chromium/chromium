@@ -1003,6 +1003,7 @@
 <translation id="3676592649209844519">ID на уред:</translation>
 <translation id="3677008721441257057">Дали мислевте на &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Барањето не може да се потпише</translation>
+<translation id="3678342917559046352">Неважечка екстензија: се очекува вредноста да биде една од следниве форми: &lt;extension_id&gt; или &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Отворете ја страницата во нов инкогнито прозорец (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Информации за сертификат</translation>
 <translation id="3701427423622901115">Ресетирањето е потврдено.</translation>
@@ -1342,6 +1343,7 @@
 <translation id="464342062220857295">Функции за пребарување</translation>
 <translation id="4644670975240021822">Обратен редослед со лицето надолу</translation>
 <translation id="4646534391647090355">Однеси ме таму сега</translation>
+<translation id="4648262692072505866">Хашот мора да биде формат SHA-256.</translation>
 <translation id="4652266463001779298">Не е дозволено</translation>
 <translation id="4653167719759882810">Спојувања и аквизиции</translation>
 <translation id="4658638640878098064">Спојување горе лево</translation>
@@ -1451,6 +1453,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да пребарувате</translation>
 <translation id="4930153903256238152">Голем капацитет</translation>
+<translation id="4936134414789135531">Не може да се најде вметнатата <ph name="VALUE_NAME" />.</translation>
 <translation id="4936675324097895694">Финансии</translation>
 <translation id="4940163644868678279">„Инкогнито“ во Chrome</translation>
 <translation id="4943872375798546930">Нема резултати</translation>
@@ -1568,6 +1571,7 @@
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Фиока 13</translation>
 <translation id="5216942107514965959">Последно посетено денес</translation>
+<translation id="5217759126664161410">Неважечки формат на протокол.</translation>
 <translation id="5222812217790122047">Потребна е е-пошта</translation>
 <translation id="5228404122310299359">Забавни и празнични производи</translation>
 <translation id="5229588705416009823">Масивни мултиплеер игри</translation>
@@ -1640,6 +1644,7 @@
 <translation id="5398772614898833570">Рекламите се блокирани</translation>
 <translation id="5400836586163650660">Сива</translation>
 <translation id="540969355065856584">Серверот не може да докаже дека е <ph name="DOMAIN" />; неговиот безбедносен сертификат не е важечки во моментов. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
+<translation id="5412040515238827314">Неважечки формат: се очекува список со шеми.</translation>
 <translation id="5412236728747081950">Сајтов ги добива вашите интереси од Chrome за да ви прикажува порелевантни реклами</translation>
 <translation id="541416427766103491">Фиока за складирање 4</translation>
 <translation id="5421136146218899937">Исчисти податоци од прелистување…</translation>
@@ -1758,6 +1763,7 @@
 <translation id="5754400531489347219">Миленичиња и животни</translation>
 <translation id="5759751709240058861">да ја користи и движи камерата</translation>
 <translation id="5763042198335101085">Внесете важечка адреса на е-пошта</translation>
+<translation id="5764725887548570807">Неважечки формат на потекло.</translation>
 <translation id="5765072501007116331">За да ги видите методите и условите за доставување, изберете адреса</translation>
 <translation id="57689295674415555">Не е пополнет бројот на виртуелна картичка?</translation>
 <translation id="5776313857861697733">Приоритет</translation>
@@ -1882,10 +1888,12 @@
 <translation id="6107012941649240045">Издадено на</translation>
 <translation id="610911394827799129">Вашата сметка на Google можеби има други видови историја на прелистување на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">гледа текст и слики копирани на привремената меморија</translation>
+<translation id="6118782133429281336">Списокот со потекло е празен.</translation>
 <translation id="6120179357481664955">Да се запомни ID за UPI?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">Ставката е отстранета</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Дознајте повеќе за „Инкогнито“ во Chrome<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">Наставката на датотека е празна или неправилно формирана.</translation>
 <translation id="6146055958333702838">Проверете ги каблите и рестартирајте ги рутерите, модемите или другите мрежни
         уреди што ги користите.</translation>
 <translation id="614940544461990577">Обидете се:</translation>
@@ -2059,6 +2067,7 @@
 <translation id="666259744093848177">(x86_64 преведен)</translation>
 <translation id="6663846344464066639">Преклопени дланки</translation>
 <translation id="6665553082534466207">Три дупки десно</translation>
+<translation id="6668389483194953109">Откриено е име за големина на хартија „custom“, но својството „custom_size“ е празно или неважечко.</translation>
 <translation id="6671697161687535275">Да се отстранат предлозите за формулари од Chromium?</translation>
 <translation id="6683717648675961851">Огласи за работа</translation>
 <translation id="6685834062052613830">Одјавете се и завршете го поставувањето</translation>
@@ -2072,6 +2081,7 @@
 <translation id="6696588630955820014">Копче „Споделете ја картичкава“, притиснете Enter за да ја споделите картичкава со споделување линк, создавање QR-код, емитување и друго</translation>
 <translation id="6698381487523150993">Создадено:</translation>
 <translation id="6702919718839027939">Презентација</translation>
+<translation id="6704458454638854812">Својството „custom_size“ е поставено, се очекува името да е „custom“.</translation>
 <translation id="6709133671862442373">Вести</translation>
 <translation id="6709888928011386878">Музички инструменти</translation>
 <translation id="6710213216561001401">Претходно</translation>

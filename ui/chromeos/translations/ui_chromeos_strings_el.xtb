@@ -105,7 +105,6 @@
 <translation id="1832073788765803750">Κατακάνα μισού πλάτους</translation>
 <translation id="1834290891154666894">Μη έγκυρη εισαγωγή αντιστοιχίας εναλλακτικού ονόματος υποκειμένου</translation>
 <translation id="1838709767668011582">Ιστότοπος Google</translation>
-<translation id="1844692022597038441">Αυτό το αρχείο δεν είναι διαθέσιμο εκτός σύνδεσης.</translation>
 <translation id="1853795129690976061">Αυτός ο φάκελος χρησιμοποιείται από κοινού με το Linux.</translation>
 <translation id="1864756863218646478">Δεν ήταν δυνατή η εύρεση του αρχείου.</translation>
 <translation id="1884013283844450420">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Σύνδεση</translation>
@@ -259,7 +258,6 @@
 <translation id="3224239078034945833">Πολύγλωσσο Καναδά</translation>
 <translation id="3236289833370040187">Η ιδιοκτησία θα μεταφερθεί στον τομέα <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Ιρλανδικά</translation>
-<translation id="3245321423178950146">Άγνωστος καλλιτέχνης</translation>
 <translation id="3248185426436836442">Σε εκκρεμότητα</translation>
 <translation id="3252266817569339921">Γαλλικά
 </translation>
@@ -351,7 +349,6 @@
 <translation id="3943857333388298514">Επικόλληση</translation>
 <translation id="3952872973865944257">Φωνητική εισαγωγή Τελούγκου</translation>
 <translation id="3958548648197196644">Ακτινίδιο</translation>
-<translation id="3966388904776714213">Πρόγραμμα αναπαραγωγής ήχου</translation>
 <translation id="3971140002794351170">Λήψη προφίλ κινητού, Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Αγγλικά (ΗΒ)</translation>
 <translation id="3975895378829046965">Φωνητική εισαγωγή Βεγγαλικών</translation>
@@ -361,7 +358,6 @@
 <translation id="4057991113334098539">Ενεργοποίηση...</translation>
 <translation id="4092890906744441904">Ιρλανδικά</translation>
 <translation id="4124935795427217608">Μονόκερος</translation>
-<translation id="4158739975813877944">Άνοιγμα playlist</translation>
 <translation id="4159731583141908892">Το αρχείο <ph name="FILE_NAME" /> μετακινήθηκε.</translation>
 <translation id="4186579485882418952">Ενεργοποίηση πρόσβασης εκτός σύνδεσης</translation>
 <translation id="4193154014135846272">Έγγραφο Google</translation>
@@ -631,7 +627,6 @@
 <translation id="6220423280121890987">Παντζάμπι</translation>
 <translation id="6224240818060029162">Δανικά</translation>
 <translation id="6224253798271602650">Διαμόρφωση <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Δεν ήταν δυνατή η αναπαραγωγή αυτού του αρχείου.</translation>
 <translation id="6241349547798190358">Ολλανδικά (Βέλγιο)</translation>
 <translation id="6267547857941397424">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" />%, Σύνδεση</translation>
 <translation id="6269630227984243955">Μαλαισιανά</translation>
@@ -781,7 +776,6 @@
 </translation>
 <translation id="7532029025027028521">Μεταγραφή σε Περσικά</translation>
 <translation id="7544830582642184299">Δώστε στις εφαρμογές Linux άδεια πρόσβασης σε αρχεία στο Google Drive σας. Οι αλλαγές θα συγχρονιστούν με τις άλλες συσκευές σας.</translation>
-<translation id="7544853251252956727">Τυχαία αναπαραγωγή</translation>
 <translation id="7547009467130558110">Αθλητικό παπούτσι</translation>
 <translation id="7547780573915868306">Λιθουανικά</translation>
 <translation id="7547811415869834682">Ολλανδικά
@@ -859,7 +853,6 @@
 </translation>
 <translation id="8049184478152619004">Εισαγάγετε το προσωπικό κλειδί ξεκλειδώματος (PUK)</translation>
 <translation id="807187749540895545">Εξαγωγή <ph name="FILE_NAME" />…</translation>
-<translation id="8079530767338315840">Επανάληψη</translation>
 <translation id="8087576439476816834">Λήψη του προφίλ <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Κοινόχρηστο με εμένα</translation>
 <translation id="8116072619078571545">Παγωμένο νερό</translation>
@@ -873,7 +866,6 @@
 <translation id="8175731104491895765">Γαλλικά (Βέλγιο)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Μοντέλο της συσκευής</translation>
-<translation id="8208580316430297579">Έργα τέχνης</translation>
 <translation id="8223479393428528563">Για να αποθηκεύσετε αυτά τα αρχεία για χρήση εκτός σύνδεσης, συνδεθείτε ξανά στο διαδίκτυο, κάντε δεξί κλικ στα αρχεία και ενεργοποιήστε την επιλογή <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Ματαίωση</translation>
 <translation id="8250690786522693009">Λατινικά</translation>

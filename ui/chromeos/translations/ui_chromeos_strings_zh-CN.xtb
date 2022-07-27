@@ -90,7 +90,7 @@
 <translation id="1742316578210444689">希伯来语音译</translation>
 <translation id="1747761757048858544">荷兰语（荷兰）</translation>
 <translation id="174937106936716857">文件总数</translation>
-<translation id="1755345808328621801">此文件适用于运行 Windows 软件的 PC，不适用于运行 Chrome 操作系统的设备。请在 Chrome 网上应用店中搜索合适的替代应用。</translation>
+<translation id="1755345808328621801">此文件适用于运行 Windows 软件的 PC，不适用于运行 Chrome 操作系统的设备。请在 Chrome 应用商店中搜索合适的替代应用。</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1773212559869067373">身份验证证书遭到本地拒绝</translation>
 <translation id="1775381402323441512">视频信息</translation>
@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">半角片假名</translation>
 <translation id="1834290891154666894">主题备用名称的匹配条目无效</translation>
 <translation id="1838709767668011582">Google 网站</translation>
-<translation id="1844692022597038441">此文件无法在离线模式下播放。</translation>
 <translation id="1853795129690976061">已与 Linux 共享此文件夹</translation>
 <translation id="1864756863218646478">找不到该文件。</translation>
 <translation id="1884013283844450420">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，连接</translation>
@@ -154,7 +153,7 @@
 <translation id="2304820083631266885">星球</translation>
 <translation id="2305020378527873881">已移除 <ph name="VOLUME_NAME" />。</translation>
 <translation id="2307462900900812319">配置网络</translation>
-<translation id="2325650632570794183">不支持此文件类型。请访问 Chrome 网上应用店，找到能打开此文件类型的应用。</translation>
+<translation id="2325650632570794183">不支持此文件类型。请访问 Chrome 应用商店，找到能打开此文件类型的应用。</translation>
 <translation id="2326539130272988168">保加利亚语</translation>
 <translation id="2352947182261340447">可用的本地存储空间不足。</translation>
 <translation id="23721837607121582">下载移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”</translation>
@@ -226,7 +225,7 @@
 <translation id="2949781154072577687">正在将“<ph name="DRIVE_NAME" />”格式化…</translation>
 <translation id="2951236788251446349">海蜇</translation>
 <translation id="2958458230122209142">您的 <ph name="TOTAL_SPACE" /> 个人存储空间还剩 <ph name="REMAINING_PERCENTAGE" />%。</translation>
-<translation id="2977940621473452797">此文件适用于运行 Macintosh 软件的计算机，不适用于运行 Chrome 操作系统的设备。请在 Chrome 网上应用店中搜索合适的替代应用。</translation>
+<translation id="2977940621473452797">此文件适用于运行 Macintosh 软件的计算机，不适用于运行 Chrome 操作系统的设备。请在 Chrome 应用商店中搜索合适的替代应用。</translation>
 <translation id="2984337792991268709">今天<ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994320653639462337">正在恢复 <ph name="COUNT" /> 项内容…</translation>
 <translation id="2994669386200004489">无法备份 <ph name="FILE_NAME" /></translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">加拿大多语言</translation>
 <translation id="3236289833370040187">所有权将被转移到 <ph name="DESTINATION_DOMAIN" />。</translation>
 <translation id="3241720467332021590">爱尔兰语</translation>
-<translation id="3245321423178950146">未知艺术家</translation>
 <translation id="3248185426436836442">待处理</translation>
 <translation id="3252266817569339921">法语</translation>
 <translation id="3253225298092156258">无法选择</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">粘贴</translation>
 <translation id="3952872973865944257">泰卢固语注音</translation>
 <translation id="3958548648197196644">猕猴桃</translation>
-<translation id="3966388904776714213">音频播放器</translation>
 <translation id="3971140002794351170">下载移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”，网络服务提供商为“<ph name="NETWORK_PROVIDER_NAME" />”</translation>
 <translation id="3973925058222872294">英语（英国）</translation>
 <translation id="3975895378829046965">孟加拉语注音</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">正在激活...</translation>
 <translation id="4092890906744441904">爱尔兰语</translation>
 <translation id="4124935795427217608">独角兽</translation>
-<translation id="4158739975813877944">打开播放列表</translation>
 <translation id="4159731583141908892">已移动 <ph name="FILE_NAME" />。</translation>
 <translation id="4186579485882418952">启用离线功能</translation>
 <translation id="4193154014135846272">Google 文档</translation>
@@ -613,7 +609,6 @@
 <translation id="6220423280121890987">旁遮普语</translation>
 <translation id="6224240818060029162">丹麦语</translation>
 <translation id="6224253798271602650">将“<ph name="DRIVE_NAME" />”格式化</translation>
-<translation id="6227235786875481728">此文件无法播放。</translation>
 <translation id="6241349547798190358">荷兰语（比利时）</translation>
 <translation id="6267547857941397424">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="PHONE_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，剩余电量为 <ph name="BATTERY_STATUS" />%，连接</translation>
 <translation id="6269630227984243955">马来语</translation>
@@ -760,7 +755,6 @@
 <translation id="751507702149411736">白俄罗斯语</translation>
 <translation id="7532029025027028521">波斯语音译</translation>
 <translation id="7544830582642184299">授权 Linux 应用访问您 Google 云端硬盘中的文件。相关更改会同步到您的其他设备。</translation>
-<translation id="7544853251252956727">随机播放</translation>
 <translation id="7547009467130558110">运动鞋</translation>
 <translation id="7547780573915868306">立陶宛语</translation>
 <translation id="7547811415869834682">荷兰语</translation>
@@ -836,7 +830,6 @@
 <translation id="8045462269890919536">罗马尼亚语</translation>
 <translation id="8049184478152619004">输入个人解锁密钥 (PUK)</translation>
 <translation id="807187749540895545">正在提取 <ph name="FILE_NAME" />…</translation>
-<translation id="8079530767338315840">重复播放</translation>
 <translation id="8087576439476816834">下载，<ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">与我共享</translation>
 <translation id="8116072619078571545">冰水</translation>
@@ -850,7 +843,6 @@
 <translation id="8175731104491895765">法语（比利时）</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">设备型号</translation>
-<translation id="8208580316430297579">图片</translation>
 <translation id="8223479393428528563">要保存这些文件以供离线使用，请恢复联网状态，右键点击文件，然后选择<ph name="OFFLINE_CHECKBOX_NAME" />选项。</translation>
 <translation id="8249296373107784235">取消</translation>
 <translation id="8250690786522693009">拉丁文</translation>

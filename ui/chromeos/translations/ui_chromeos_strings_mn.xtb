@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Хагас өргөнтэй катакана</translation>
 <translation id="1834290891154666894">Субъектийн хоёрдогч нэрийн тохирлын оруулга буруу байна</translation>
 <translation id="1838709767668011582">Google сайт</translation>
-<translation id="1844692022597038441">Энэ файл нь боломжит оффлайн хэлбэртэй биш байна.</translation>
 <translation id="1853795129690976061">Энэ фолдерыг Linux-тай хуваалцсан байна</translation>
 <translation id="1864756863218646478">Файл олдсонгүй.</translation>
 <translation id="1884013283844450420">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, холбогдох</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Canadian Multilingual</translation>
 <translation id="3236289833370040187">Эзэмшигчийг <ph name="DESTINATION_DOMAIN" />-д шилжүүлнэ.</translation>
 <translation id="3241720467332021590">Ирланд хэл</translation>
-<translation id="3245321423178950146">Дуучны нэр мэдэгдэхгүй байна</translation>
 <translation id="3248185426436836442">Хүлээгдэж буй</translation>
 <translation id="3252266817569339921">Франц</translation>
 <translation id="3253225298092156258">Боломжгүй байна</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Хуулан буулгах</translation>
 <translation id="3952872973865944257">Тэлүгү авиа зүй</translation>
 <translation id="3958548648197196644">Киви</translation>
-<translation id="3966388904776714213">Аудио тоглуулагч</translation>
 <translation id="3971140002794351170">Мобайл профайл татах, <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" /> сүлжээ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Англи (UK)</translation>
 <translation id="3975895378829046965">Бенгал авиа зүй</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Идэвхжүүлж байна...</translation>
 <translation id="4092890906744441904">Ирланд</translation>
 <translation id="4124935795427217608">Ганц эвэртэй морь</translation>
-<translation id="4158739975813877944">Тоглуулах жагсаалтыг нээх</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" />-г зөөсөн.</translation>
 <translation id="4186579485882418952">Офлайн горимыг идэвхжүүлэх</translation>
 <translation id="4193154014135846272">Google баримт бичиг</translation>
@@ -615,7 +611,6 @@
 <translation id="6220423280121890987">Пaнжаб</translation>
 <translation id="6224240818060029162">Дани</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />-г форматлах</translation>
-<translation id="6227235786875481728">Энэ файлыг тоглуулж чадсангүй.</translation>
 <translation id="6241349547798190358">Голланд (Бельги)</translation>
 <translation id="6267547857941397424">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, утасны батарей <ph name="BATTERY_STATUS" />%, холбогдох</translation>
 <translation id="6269630227984243955">Малай</translation>
@@ -763,7 +758,6 @@
 <translation id="751507702149411736">Беларус</translation>
 <translation id="7532029025027028521">Перс галиг</translation>
 <translation id="7544830582642184299">Linux-н аппуудад Google Драйвынхаа файлуудад хандах зөвшөөрөл өгнө үү. Өөрчлөлтүүдийг таны бусад төхөөрөмжид синк хийнэ.</translation>
-<translation id="7544853251252956727">Тохиолдлоор тоглуулах</translation>
 <translation id="7547009467130558110">Пүүз</translation>
 <translation id="7547780573915868306">Литва</translation>
 <translation id="7547811415869834682">Голланд</translation>
@@ -839,7 +833,6 @@
 <translation id="8045462269890919536">Румын</translation>
 <translation id="8049184478152619004">Хувийн блокоос гаргах түлхүүр (PUK)-ийг оруулна уу</translation>
 <translation id="807187749540895545">Гаргаж байна <ph name="FILE_NAME" />...</translation>
-<translation id="8079530767338315840">Давтах</translation>
 <translation id="8087576439476816834">Татах, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Надтай хуваалцсан</translation>
 <translation id="8116072619078571545">Мөстэй ус</translation>
@@ -853,7 +846,6 @@
 <translation id="8175731104491895765">Франц (Бельги)</translation>
 <translation id="8179976553408161302">Нэвтрэх</translation>
 <translation id="8193175696669055101">Төхөөрөмжийн загвар:</translation>
-<translation id="8208580316430297579">Урлагийн бүтээл</translation>
 <translation id="8223479393428528563">Эдгээр файлыг интернетэд холбогдоогүй байхдаа ашиглахаар хадгалахын тулд интернетэд холбогдсоныхоо дараагаар холбогдох файл дээр очин хулганын баруун талд даран <ph name="OFFLINE_CHECKBOX_NAME" /> сонголтыг сонгоно уу.</translation>
 <translation id="8249296373107784235">Цуцлах</translation>
 <translation id="8250690786522693009">Латин цагаан толгойгоор</translation>

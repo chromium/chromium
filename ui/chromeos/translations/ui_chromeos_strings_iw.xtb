@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">קטאקאנה בחצי רוחב</translation>
 <translation id="1834290891154666894">הרשומה של התאמת שמות הנושאים החלופיים לא תקינה</translation>
 <translation id="1838709767668011582">‏אתר שנוצר באמצעות Google Sites</translation>
-<translation id="1844692022597038441">קובץ זו אינו זמין במצב אופליין.</translation>
 <translation id="1853795129690976061">‏התיקייה הזו משותפת עם Linux</translation>
 <translation id="1864756863218646478">הקובץ לא נמצא.</translation>
 <translation id="1884013283844450420">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />, התחברות</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">קנדית – מרובת-שפות</translation>
 <translation id="3236289833370040187">הבעלות תועבר אל <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">אירית</translation>
-<translation id="3245321423178950146">אמן לא ידוע</translation>
 <translation id="3248185426436836442">בהמתנה</translation>
 <translation id="3252266817569339921">צרפתית</translation>
 <translation id="3253225298092156258">רשת לא זמינה</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">הדבקה</translation>
 <translation id="3952872973865944257">טלוגו פונטית</translation>
 <translation id="3958548648197196644">קיווי</translation>
-<translation id="3966388904776714213">נגן אודיו</translation>
 <translation id="3971140002794351170">הורדה של פרופיל נייד, רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">אנגלית (בריטניה)</translation>
 <translation id="3975895378829046965">בנגלית פונטית</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">מפעיל...</translation>
 <translation id="4092890906744441904">אירית</translation>
 <translation id="4124935795427217608">חד-קרן</translation>
-<translation id="4158739975813877944">פתיחת פלייליסט</translation>
 <translation id="4159731583141908892">ההעברה של <ph name="FILE_NAME" /> הסתיימה.</translation>
 <translation id="4186579485882418952">הפעלת מצב אופליין</translation>
 <translation id="4193154014135846272">‏מסמך Google</translation>
@@ -619,7 +615,6 @@
 <translation id="6220423280121890987">פונג'בית</translation>
 <translation id="6224240818060029162">דנית</translation>
 <translation id="6224253798271602650">פירמוט של <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">לא ניתן להפעיל קובץ זה.</translation>
 <translation id="6241349547798190358">הולנדית (בלגיה)</translation>
 <translation id="6267547857941397424">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="PHONE_NAME" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, סוללת הטלפון: ‎<ph name="BATTERY_STATUS" />%‎, התחברות</translation>
 <translation id="6269630227984243955">מלאית</translation>
@@ -766,7 +761,6 @@
 <translation id="751507702149411736">ביילורוסית</translation>
 <translation id="7532029025027028521">תעתיק פרסית</translation>
 <translation id="7544830582642184299">‏הענקת הרשאת גישה לאפליקציות Linux לקבצים ב-Google Drive. השינויים יסתנכרנו עם המכשירים האחרים שלך.</translation>
-<translation id="7544853251252956727">ערבוב</translation>
 <translation id="7547009467130558110">נעל ספורט</translation>
 <translation id="7547780573915868306">ליטאית</translation>
 <translation id="7547811415869834682">הולנדית</translation>
@@ -842,7 +836,6 @@
 <translation id="8045462269890919536">רומנית</translation>
 <translation id="8049184478152619004">‏יש להזין מפתח אישי לביטול חסימה (PUK)</translation>
 <translation id="807187749540895545">מתבצע חילוץ של הקובץ <ph name="FILE_NAME" />…</translation>
-<translation id="8079530767338315840">חזרה</translation>
 <translation id="8087576439476816834">הורדה, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">בשיתוף איתי</translation>
 <translation id="8116072619078571545">מים עם קרח</translation>
@@ -856,7 +849,6 @@
 <translation id="8175731104491895765">צרפתית (בלגיה)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">דגם מכשיר</translation>
-<translation id="8208580316430297579">עטיפת האלבום</translation>
 <translation id="8223479393428528563">כדי לשמור קבצים אלה לשימוש אופליין, יש לחזור למצב אונליין, ללחוץ לחיצה ימנית על הקבצים ולבחור את האפשרות <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">ביטול</translation>
 <translation id="8250690786522693009">לטינית</translation>

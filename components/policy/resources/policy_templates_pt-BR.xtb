@@ -4796,13 +4796,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Especifique apps do Chrome pelos IDs deles (como pjkljhegncpnkpknbcohdijeoejaedia), apps Android pelos nomes de pacote deles (como com.google.android.gm) e apps da Web pelo URL usado em <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (como https://google.com/maps).
 
       Se a política não for definida, os usuários poderão mudar a lista de apps fixados no acesso rápido.</translation>
-<translation id="6183409603139321084">O <ph name="PRODUCT_OS_NAME" /> pode tentar preencher automaticamente o campo de nome de usuário na página do IdP SAML durante a autenticação on-line na tela de login e na tela de bloqueio.
-
-      Ele vai usar o e-mail do usuário associado ao perfil do <ph name="PRODUCT_OS_NAME" />. Por isso, essa configuração precisará ser desativada se os usuários tiverem que usar e-mails diferentes na página do IdP SAML.
-
-      A string recebida por essa política vai ser usada como o nome de um parâmetro de URL na página do IdP, com o e-mail do usuário como um valor.
-
-      O esperado é que o lado do servidor seja responsável pelo mapeamento entre os provedores de identidade e os parâmetros de URL com suporte.</translation>
 <translation id="6190367314942602985">Reportar informações de identificação do usuário</translation>
 <translation id="6191963383731098056">Esta política permite que os administradores configurem a cor do tema do <ph name="PRODUCT_NAME" />. Para isso, a string de entrada precisa ser de uma cor hexadecimal válida compatível com o formato "#RRGGBB".
 
@@ -5178,6 +5171,15 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Se a política não for definida, não haverá tamanho máximo aplicado.</translation>
 <translation id="6553143066970470539">Porcentagem de brilho da tela</translation>
+<translation id="6555557921186817432">Programar uma reinicialização automática após a atualização do <ph name="PRODUCT_OS_NAME" /> ser aplicada.
+
+      Se esta política for definida como verdadeira, uma reinicialização automática vai ser programada quando uma atualização do <ph name="PRODUCT_OS_NAME" /> for aplicada e a reinicialização for necessária para concluir o processo. A reinicialização é programada imediatamente, mas poderá ocorrer um atraso de até 24 horas no dispositivo se ele estiver sendo usado pelo usuário.
+
+      Quando esta política for definida como falsa, nenhuma reinicialização automática vai ser programada após a atualização do <ph name="PRODUCT_OS_NAME" />. O processo de atualização vai ser concluído na próxima vez que o usuário reiniciar o dispositivo.
+
+      Se você definir esta política, ela não vai poder ser mudada nem substituída pelos usuários.
+
+      Observação: no momento, as reinicializações automáticas são ativadas apenas enquanto a tela de login está sendo mostrada ou uma sessão de aplicativo de quiosque está em andamento.</translation>
 <translation id="6559057113164934677">Não permitir que nenhum site acesse minha câmera e meu microfone</translation>
 <translation id="6559221564468029245">Se a política for definida como "Ativada" ou não for definida, o usuário não será considerado inativo quando o dispositivo estiver tocando áudio. Isso impede que o tempo limite de inatividade seja atingido e que as ações correspondentes sejam realizadas. No entanto, o escurecimento, o desligamento e o bloqueio de tela ainda serão realizados após os limites de tempo configurados, independentemente da atividade de áudio.
 

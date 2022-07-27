@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Katakana op halve breedte</translation>
 <translation id="1834290891154666894">Ongeldige invoer voor overeenkomst voor alternatieve naam van onderwerp</translation>
 <translation id="1838709767668011582">Google-site</translation>
-<translation id="1844692022597038441">Dit bestand is offline niet beschikbaar.</translation>
 <translation id="1853795129690976061">Deze map wordt gedeeld met Linux</translation>
 <translation id="1864756863218646478">Het bestand kan niet worden gevonden.</translation>
 <translation id="1884013283844450420">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, verbinden</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Canadees meertalig</translation>
 <translation id="3236289833370040187">Eigendom wordt overgedragen aan <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Iers</translation>
-<translation id="3245321423178950146">Onbekende artiest</translation>
 <translation id="3248185426436836442">In behandeling</translation>
 <translation id="3252266817569339921">Frans</translation>
 <translation id="3253225298092156258">Niet beschikbaar</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Plak</translation>
 <translation id="3952872973865944257">Telugu (fonetisch)</translation>
 <translation id="3958548648197196644">Kiwi</translation>
-<translation id="3966388904776714213">Audiospeler</translation>
 <translation id="3971140002794351170">Mobiel profiel downloaden, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Engels (VK)</translation>
 <translation id="3975895378829046965">Bangla (fonetisch)</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Wordt geactiveerd...</translation>
 <translation id="4092890906744441904">Iers</translation>
 <translation id="4124935795427217608">Eenhoorn</translation>
-<translation id="4158739975813877944">Playlist openen</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verplaatst.</translation>
 <translation id="4186579485882418952">Offline aanzetten</translation>
 <translation id="4193154014135846272">Google-document</translation>
@@ -619,7 +615,6 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Deens</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> formatteren</translation>
-<translation id="6227235786875481728">Dit bestand kan niet worden afgespeeld.</translation>
 <translation id="6241349547798190358">Nederlands (België)</translation>
 <translation id="6267547857941397424">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, telefoonbatterij <ph name="BATTERY_STATUS" />%, verbinden</translation>
 <translation id="6269630227984243955">Maleis</translation>
@@ -767,7 +762,6 @@
 <translation id="751507702149411736">Wit-Russisch</translation>
 <translation id="7532029025027028521">Perzisch (transliteratie)</translation>
 <translation id="7544830582642184299">Linux-apps toegang geven tot bestanden in je Google Drive. Wijzigingen worden gesynchroniseerd met je andere apparaten.</translation>
-<translation id="7544853251252956727">Shuffle</translation>
 <translation id="7547009467130558110">Sneaker</translation>
 <translation id="7547780573915868306">Litouws</translation>
 <translation id="7547811415869834682">Nederlands</translation>
@@ -843,7 +837,6 @@
 <translation id="8045462269890919536">Roemeens</translation>
 <translation id="8049184478152619004">Geef de pukcode op</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> uitpakken...</translation>
-<translation id="8079530767338315840">Herhalen</translation>
 <translation id="8087576439476816834">Downloaden, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Gedeeld met mij</translation>
 <translation id="8116072619078571545">IJswater</translation>
@@ -857,7 +850,6 @@
 <translation id="8175731104491895765">Frans (België)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Apparaatmodel</translation>
-<translation id="8208580316430297579">Kunst</translation>
 <translation id="8223479393428528563">Als je deze bestanden wilt opslaan voor offline gebruik, ga je weer online, klik je met de rechtermuisknop op de bestanden en selecteer je de optie <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Annuleren</translation>
 <translation id="8250690786522693009">Latijn</translation>

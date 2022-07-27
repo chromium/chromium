@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Katakana – halv bredde</translation>
 <translation id="1834290891154666894">Ugyldig oppføring i listen over samsvarende alternative emnenavn</translation>
 <translation id="1838709767668011582">Google-nettsted</translation>
-<translation id="1844692022597038441">Denne filen er ikke tilgjengelig utenfor Internett.</translation>
 <translation id="1853795129690976061">Denne mappen deles med Linux</translation>
 <translation id="1864756863218646478">Kunne ikke finne filen.</translation>
 <translation id="1884013283844450420">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – koble til</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Flerspråklig canadisk</translation>
 <translation id="3236289833370040187">Eierskapet overføres til <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Irsk</translation>
-<translation id="3245321423178950146">Ukjent artist</translation>
 <translation id="3248185426436836442">Venter</translation>
 <translation id="3252266817569339921">Fransk</translation>
 <translation id="3253225298092156258">Ikke tilgjengelig</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Lim inn</translation>
 <translation id="3952872973865944257">Telugu, fonetisk</translation>
 <translation id="3958548648197196644">Kiwi</translation>
-<translation id="3966388904776714213">Audio Player</translation>
 <translation id="3971140002794351170">Last ned mobilprofilen, nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Engelsk (Storbritannia)</translation>
 <translation id="3975895378829046965">Bengali, fonetisk</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Aktiverer ...</translation>
 <translation id="4092890906744441904">Irsk</translation>
 <translation id="4124935795427217608">Enhjørning</translation>
-<translation id="4158739975813877944">Åpne spillelisteen</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> er flyttet.</translation>
 <translation id="4186579485882418952">Gjør tilgjengelig uten nett</translation>
 <translation id="4193154014135846272">Google-dokument</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">Panjabi</translation>
 <translation id="6224240818060029162">Dansk</translation>
 <translation id="6224253798271602650">Formatér <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Denne filen kan ikke spilles av.</translation>
 <translation id="6241349547798190358">Nederlandsk (Belgia)</translation>
 <translation id="6267547857941397424">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="PHONE_NAME" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – telefonbatterinivå <ph name="BATTERY_STATUS" /> % – koble til</translation>
 <translation id="6269630227984243955">Malayisk</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">Hviterussisk</translation>
 <translation id="7532029025027028521">Persisk, translitterasjon</translation>
 <translation id="7544830582642184299">Gi Linux-apper tilgang til filer på Google Disk. Endringer synkroniseres med de andre enhetene dine.</translation>
-<translation id="7544853251252956727">Spill i tilfeldig rekkefølge</translation>
 <translation id="7547009467130558110">Snøresko</translation>
 <translation id="7547780573915868306">Litauisk</translation>
 <translation id="7547811415869834682">Nederlandsk</translation>
@@ -841,7 +835,6 @@
 <translation id="8045462269890919536">Rumensk</translation>
 <translation id="8049184478152619004">Skriv inn PUK-kode</translation>
 <translation id="807187749540895545">Pakker ut <ph name="FILE_NAME" /> …</translation>
-<translation id="8079530767338315840">Gjenta</translation>
 <translation id="8087576439476816834">Last ned, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Delt med meg</translation>
 <translation id="8116072619078571545">Isvann</translation>
@@ -855,7 +848,6 @@
 <translation id="8175731104491895765">Fransk (Belgia)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Enhetsmodell</translation>
-<translation id="8208580316430297579">Albumforside</translation>
 <translation id="8223479393428528563">For å lagre disse filene for bruk utenfor Internett, går du på nettet, høyreklikker på filene og velger <ph name="OFFLINE_CHECKBOX_NAME" />-alternativet.</translation>
 <translation id="8249296373107784235">Avbryt</translation>
 <translation id="8250690786522693009">Latin</translation>

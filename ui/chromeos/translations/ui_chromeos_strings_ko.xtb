@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">반각 가타카나</translation>
 <translation id="1834290891154666894">잘못된 제목 보조 이름 일치 항목</translation>
 <translation id="1838709767668011582">Google 사이트</translation>
-<translation id="1844692022597038441">이 파일은 오프라인에서 사용할 수 없습니다.</translation>
 <translation id="1853795129690976061">Linux와 공유된 폴더입니다.</translation>
 <translation id="1864756863218646478">파일을 찾지 못했습니다.</translation>
 <translation id="1884013283844450420">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, 연결</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">캐나다 다국어</translation>
 <translation id="3236289833370040187">소유권이 <ph name="DESTINATION_DOMAIN" />(으)로 이전됩니다.</translation>
 <translation id="3241720467332021590">아일랜드어</translation>
-<translation id="3245321423178950146">알 수 없는 아티스트</translation>
 <translation id="3248185426436836442">대기 중</translation>
 <translation id="3252266817569339921">프랑스어</translation>
 <translation id="3253225298092156258">사용할 수 없음</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">붙여넣기</translation>
 <translation id="3952872973865944257">텔루구어(표음)</translation>
 <translation id="3958548648197196644">키위</translation>
-<translation id="3966388904776714213">오디오 플레이어</translation>
 <translation id="3971140002794351170">모바일 프로필 다운로드, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">영어(영국)</translation>
 <translation id="3975895378829046965">벵골어(표음)</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">활성화 중...</translation>
 <translation id="4092890906744441904">아일랜드어</translation>
 <translation id="4124935795427217608">유니콘</translation>
-<translation id="4158739975813877944">재생목록 열기</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> 항목을 이동했습니다.</translation>
 <translation id="4186579485882418952">오프라인 사용 설정</translation>
 <translation id="4193154014135846272">Google Docs</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">펀자브어</translation>
 <translation id="6224240818060029162">덴마크어</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> 포맷</translation>
-<translation id="6227235786875481728">이 파일은 재생할 수 없습니다.</translation>
 <translation id="6241349547798190358">네덜란드어(벨기에)</translation>
 <translation id="6267547857941397424">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 휴대전화 배터리 <ph name="BATTERY_STATUS" />%, 연결</translation>
 <translation id="6269630227984243955">말레이어</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">벨로루시어</translation>
 <translation id="7532029025027028521">페르시아어(음역)</translation>
 <translation id="7544830582642184299">Linux 앱이 Google Drive의 파일에 액세스하도록 허용합니다. 변경사항은 다른 기기에 동기화됩니다.</translation>
-<translation id="7544853251252956727">셔플</translation>
 <translation id="7547009467130558110">운동화</translation>
 <translation id="7547780573915868306">리투아니아어</translation>
 <translation id="7547811415869834682">네덜란드어</translation>
@@ -841,7 +835,6 @@
 <translation id="8045462269890919536">루마니아어</translation>
 <translation id="8049184478152619004">PUK(Personal Unblocking Key) 입력</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> 추출 중…</translation>
-<translation id="8079530767338315840">반복</translation>
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" />, 다운로드</translation>
 <translation id="8106045200081704138">공유 문서함</translation>
 <translation id="8116072619078571545">얼음물</translation>
@@ -855,7 +848,6 @@
 <translation id="8175731104491895765">프랑스어(벨기에)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">기기 모델</translation>
-<translation id="8208580316430297579">아트워크</translation>
 <translation id="8223479393428528563">오프라인 사용 목적으로 이 파일을 저장하려면 온라인으로 돌아가서 마우스 오른쪽 버튼으로 파일을 클릭한 다음 <ph name="OFFLINE_CHECKBOX_NAME" /> 옵션을 선택하세요.</translation>
 <translation id="8249296373107784235">중단</translation>
 <translation id="8250690786522693009">라틴어</translation>

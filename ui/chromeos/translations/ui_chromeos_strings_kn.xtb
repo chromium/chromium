@@ -100,7 +100,6 @@
 <translation id="1832073788765803750">ಅರ್ಧ ಅಗಲ ಕಟಕಾನಾ</translation>
 <translation id="1834290891154666894">ಅಮಾನ್ಯವಾದ ವಿಷಯದ ಪರ್ಯಾಯ ಹೆಸರಿನ ಹೊಂದಾಣಿಕೆಯ ನಮೂದು</translation>
 <translation id="1838709767668011582">Google ಸೈಟ್</translation>
-<translation id="1844692022597038441">ಈ ಫೈಲ್ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="1853795129690976061">ಈ ಫೋಲ್ಡರ್ ಅನ್ನು Linux ಮೂಲಕ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="1864756863218646478">ಫೈಲ್ ಅನ್ನು ಕಂಡುಹಿಡಿಯಲಾಗಲಿಲ್ಲ.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, ಕನೆಕ್ಟ್</translation>
@@ -251,7 +250,6 @@
 <translation id="3224239078034945833">ಕೆನಡಾದ ಬಹುಭಾಷಾ</translation>
 <translation id="3236289833370040187"><ph name="DESTINATION_DOMAIN" /> ಗೆ ಮಾಲೀಕತ್ವವನ್ನು ವರ್ಗಾಯಿಸಲಾಗವುದು.</translation>
 <translation id="3241720467332021590">ಐರಿಷ್</translation>
-<translation id="3245321423178950146">ಅಪರಿಚಿತ ಕಲಾವಿದ</translation>
 <translation id="3248185426436836442">ಬಾಕಿ ಉಳಿದಿರುವುದು</translation>
 <translation id="3252266817569339921">ಫ್ರೆಂಚ್</translation>
 <translation id="3253225298092156258">ಲಭ್ಯವಿಲ್ಲ</translation>
@@ -339,7 +337,6 @@
 <translation id="3943857333388298514">ಅಂಟಿಸು</translation>
 <translation id="3952872973865944257">ತೆಲುಗು ಫೋನೆಟಿಕ್</translation>
 <translation id="3958548648197196644">ಕಿವಿ</translation>
-<translation id="3966388904776714213">ಆಡಿಯೋ ಪ್ಲೇಯರ್</translation>
 <translation id="3971140002794351170">ಮೊಬೈಲ್ ಪ್ರೊಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ, ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ಇಂಗ್ಲಿಷ್ (ಯುಕೆ)</translation>
 <translation id="3975895378829046965">ಬಾಂಗ್ಲಾ ಫೋನೆಟಿಕ್</translation>
@@ -349,7 +346,6 @@
 <translation id="4057991113334098539">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4092890906744441904">ಐರಿಷ್</translation>
 <translation id="4124935795427217608">ಯುನಿಕಾರ್ನ್</translation>
-<translation id="4158739975813877944">ಪ್ಲೇಪಟ್ಟಿ ತೆರೆಯಿರಿ</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ಐಟಂಗಳನ್ನು ಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="4186579485882418952">ಆಫ್‌ಲೈನ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4193154014135846272">Google ಡಾಕ್ಯುಮೆಂಟ್‌</translation>
@@ -614,7 +610,6 @@
 <translation id="6220423280121890987">ಪಂಜಾಬಿ</translation>
 <translation id="6224240818060029162">ಡ್ಯಾನಿಶ್</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ಅನ್ನು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡಿ</translation>
-<translation id="6227235786875481728">ಈ ಫೈಲ್ ಅನ್ನು ಪ್ರದರ್ಶಿಸಲಾಗಿಲ್ಲ.</translation>
 <translation id="6241349547798190358">ಡಚ್ (ಬೆಲ್ಜಿಯಂ)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="PHONE_NAME" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_STATUS" />%, ಕನೆಕ್ಟ್</translation>
 <translation id="6269630227984243955">ಮಲೈ</translation>
@@ -757,7 +752,6 @@
 <translation id="751507702149411736">ಬೆಲರೂಸಿಯನ್</translation>
 <translation id="7532029025027028521">ಪರ್ಶಿಯನ್ ಲಿಪ್ಯಂತರಣ</translation>
 <translation id="7544830582642184299">ನಿಮ್ಮ Google ಡ್ರೈವ್‌ನಲ್ಲಿರುವ ಫೈಲ್‌ಗಳಿಗೆ ಪ್ರವೇಶಿಸಲು, Linux ಆ್ಯಪ್‌ಗಳಿಗೆ ಅನುಮತಿ ನೀಡಿ. ಈ ಬದಲಾವಣೆಗಳು, ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳೊಂದಿಗೆ ಸಿಂಕ್ ಆಗುತ್ತವೆ.</translation>
-<translation id="7544853251252956727">ಶಫಲ್ ಮಾಡಿ</translation>
 <translation id="7547009467130558110">ಸ್ನೀಕರ್</translation>
 <translation id="7547780573915868306">ಲಿಥುವಾನಿಯನ್</translation>
 <translation id="7547811415869834682">ಡಚ್</translation>
@@ -829,7 +823,6 @@
 <translation id="8045462269890919536">ರೊಮೇನಿಯನ್</translation>
 <translation id="8049184478152619004">ಪರ್ಸನಲ್ ಅನ್‌ಬ್ಲಾಕಿಂಗ್ ಕೀ ಅನ್ನು ನಮೂದಿಸಿ (PUK)</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> ಬೇರ್ಪಡಿಸಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="8079530767338315840">ಪುನರಾವರ್ತಿಸು</translation>
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" /> ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="8106045200081704138">ನನ್ನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದ್ದು</translation>
 <translation id="8116072619078571545">ಮಂಜುಗಡ್ಡೆ ನೀರು</translation>
@@ -843,7 +836,6 @@
 <translation id="8175731104491895765">ಫ್ರೆಂಚ್ (ಬೆಲ್ಜಿಯಂ)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">ಸಾಧನ ಮಾದರಿ</translation>
-<translation id="8208580316430297579">ಕಲಾಕೃತಿ</translation>
 <translation id="8223479393428528563">ಆಫ್‌‌ಲೈನ್ ಬಳಕೆಗಾಗಿ ಈ ಫೈಲ್ ಗಳನ್ನು ಉಳಿಸಲು, ಆನ್‌ಲೈನ್‌ಗೆ ಹಿಂತಿರುಗಲು, ಫೈಲ್‌ಗಳ ಮೇಲೆ ಬಲ ಕ್ಲಿಕ್ ಮಾಡಿ, ಮತ್ತು <ph name="OFFLINE_CHECKBOX_NAME" /> ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿ.</translation>
 <translation id="8249296373107784235">ನಿಷ್ಫಲಗೊಳಿಸು</translation>
 <translation id="8250690786522693009">ಲ್ಯಾಟಿನ್</translation>

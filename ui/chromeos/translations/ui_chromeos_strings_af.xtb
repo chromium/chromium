@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Halfbreedte-Katakana</translation>
 <translation id="1834290891154666894">Ongeldige passinginskrywing vir onderwerp se alternatiewe naam</translation>
 <translation id="1838709767668011582">Google-werf</translation>
-<translation id="1844692022597038441">Hierdie lêer is nie vanlyn beskikbaar nie.</translation>
 <translation id="1853795129690976061">Hierdie vouer word met Linux gedeel</translation>
 <translation id="1864756863218646478">Die lêer kon nie gevind word nie.</translation>
 <translation id="1884013283844450420">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, koppel</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Kanadese veeltalige</translation>
 <translation id="3236289833370040187">Eienaarskap sal na <ph name="DESTINATION_DOMAIN" /> oorgedra word.</translation>
 <translation id="3241720467332021590">Iers</translation>
-<translation id="3245321423178950146">Onbekende kunstenaar</translation>
 <translation id="3248185426436836442">Hangend</translation>
 <translation id="3252266817569339921">Frans</translation>
 <translation id="3253225298092156258">Nie beskikbaar nie</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Plak</translation>
 <translation id="3952872973865944257">Teloegoe-foneties</translation>
 <translation id="3958548648197196644">Kiwi</translation>
-<translation id="3966388904776714213">Oudiospeler</translation>
 <translation id="3971140002794351170">Laai mobiele profiel af, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Engels (VK)</translation>
 <translation id="3975895378829046965">Bangla-foneties</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Aktiveer tans …</translation>
 <translation id="4092890906744441904">Iers</translation>
 <translation id="4124935795427217608">Eenhoring</translation>
-<translation id="4158739975813877944">Maak speellys oop</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> is geskuif.</translation>
 <translation id="4186579485882418952">Aktiveer vanlyn</translation>
 <translation id="4193154014135846272">Google-dokument</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">Pandjabi</translation>
 <translation id="6224240818060029162">Deens</translation>
 <translation id="6224253798271602650">Formateer <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Hierdie lêer kan nie gespeel word nie.</translation>
 <translation id="6241349547798190358">Nederlands (België)</translation>
 <translation id="6267547857941397424">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, foonbattery <ph name="BATTERY_STATUS" />%, koppel</translation>
 <translation id="6269630227984243955">Maleis</translation>
@@ -633,6 +628,7 @@
 <translation id="6356685157277930264">Lêersterugvoervenster</translation>
 <translation id="6358884629796491903">Draak</translation>
 <translation id="636254897931573416">Ongeldige passingwaarde vir domein-agtervoegsel</translation>
+<translation id="6364301859968397756">Organisasie se berging is vol</translation>
 <translation id="6367976544441405720">Afleweringvoertuig</translation>
 <translation id="637062427944097960">Hierdie lêer het op 'n ander werkskerm oopgemaak. Beweeg na <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om dit te bekyk.</translation>
 <translation id="6394388407447716302">Leesalleen</translation>
@@ -764,7 +760,6 @@
 <translation id="751507702149411736">Wit Russies</translation>
 <translation id="7532029025027028521">Persiese transliterasie</translation>
 <translation id="7544830582642184299">Gee Linux-programme toegang tot lêers in jou Google Drive. Veranderinge sal met jou ander toestelle gesinkroniseer word.</translation>
-<translation id="7544853251252956727">Skommel</translation>
 <translation id="7547009467130558110">Tekkie</translation>
 <translation id="7547780573915868306">Litaus</translation>
 <translation id="7547811415869834682">Nederlands</translation>
@@ -840,7 +835,6 @@
 <translation id="8045462269890919536">Roemeens</translation>
 <translation id="8049184478152619004">Voer persoonlike deblokkeringsleutel (PUK) in</translation>
 <translation id="807187749540895545">Onttrek tans <ph name="FILE_NAME" /> …</translation>
-<translation id="8079530767338315840">Herhaal</translation>
 <translation id="8087576439476816834">Laai af, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Met my gedeel</translation>
 <translation id="8116072619078571545">Yswater</translation>
@@ -854,7 +848,6 @@
 <translation id="8175731104491895765">Frans (België)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Toestelmodel</translation>
-<translation id="8208580316430297579">Kunswerk</translation>
 <translation id="8223479393428528563">Om hierdie lêers te stoor om vanlyn te gebruik, gaan weer aanlyn, regsklik die lêers, en kies die <ph name="OFFLINE_CHECKBOX_NAME" />-opsie.</translation>
 <translation id="8249296373107784235">Staak</translation>
 <translation id="8250690786522693009">Latyns</translation>

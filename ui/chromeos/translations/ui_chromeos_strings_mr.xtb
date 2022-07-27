@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">हाफ वाइड कातकाना</translation>
 <translation id="1834290891154666894">विषयाच्या पर्यायी नावाच्या जुळणीची एंट्री चुकीची आहे</translation>
 <translation id="1838709767668011582">Google साइट</translation>
-<translation id="1844692022597038441">ही फाइल ऑफलाइन उपलब्ध नाही.</translation>
 <translation id="1853795129690976061">हे नेटवर्क Linux सोबत शेअर केलेले आहे</translation>
 <translation id="1864756863218646478">फाइल आढळू शकली नाही.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, कनेक्ट करा</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">कॅनडियन बहुभाषी</translation>
 <translation id="3236289833370040187">मालकी <ph name="DESTINATION_DOMAIN" /> कडे हस्तांतरित केली जाईल.</translation>
 <translation id="3241720467332021590">आयरिश</translation>
-<translation id="3245321423178950146">अज्ञात कलाकार</translation>
 <translation id="3248185426436836442">प्रलंबित</translation>
 <translation id="3252266817569339921">फ्रेंच</translation>
 <translation id="3253225298092156258">उपलब्ध नाही</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">पेस्ट करा</translation>
 <translation id="3952872973865944257">तेलुगु फोनेटिक</translation>
 <translation id="3958548648197196644">किवी</translation>
-<translation id="3966388904776714213">ऑडिओ प्लेयर</translation>
 <translation id="3971140002794351170">मोबाइल प्रोफाइल डाउनलोड करा, <ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">इंग्रजी (यूके)</translation>
 <translation id="3975895378829046965">बंगाली फोनेटिक</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">सक्रिय करीत आहे...</translation>
 <translation id="4092890906744441904">आयरिश</translation>
 <translation id="4124935795427217608">युनिकॉर्न</translation>
-<translation id="4158739975813877944">प्लेलिस्ट उघडा</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> हलवला.</translation>
 <translation id="4186579485882418952">ऑफलाइन हे एक्स्टेंशन सुरू करा</translation>
 <translation id="4193154014135846272">Google दस्तऐवज</translation>
@@ -618,7 +614,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6220423280121890987">पंजाबी</translation>
 <translation id="6224240818060029162">डॅनिश</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> फॉरमॅट करा</translation>
-<translation id="6227235786875481728">ही फाइल प्ले केली जाणे शक्य झाले नाही.</translation>
 <translation id="6241349547798190358">डच (बेल्जियम)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, फोन बॅटरी <ph name="BATTERY_STATUS" />%, कनेक्ट करा</translation>
 <translation id="6269630227984243955">मलय</translation>
@@ -765,7 +760,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="751507702149411736">बेलारुशियन</translation>
 <translation id="7532029025027028521">पर्शियन लिप्यंतरण</translation>
 <translation id="7544830582642184299">Linux ॲप्सना तुमच्या Google Drive मधील फाइल ॲक्सेस करण्याची परवानगी द्या. बदल तुमच्या इतर डिव्हाइसवर सिंक होतील.</translation>
-<translation id="7544853251252956727">शफल करा</translation>
 <translation id="7547009467130558110">स्नीकर</translation>
 <translation id="7547780573915868306">लिथुआनियन</translation>
 <translation id="7547811415869834682">डच</translation>
@@ -841,7 +835,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8045462269890919536">रोमानियन</translation>
 <translation id="8049184478152619004">वैयक्तिक अनब्लॉक करण्याची की (PUK) एंटर करा</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> काढत आहे...</translation>
-<translation id="8079530767338315840">पुनरावृत्ती करा</translation>
 <translation id="8087576439476816834">डाउनलोड करा, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">माझ्याशी शेअर केलेले</translation>
 <translation id="8116072619078571545">बर्फाचे पाणी</translation>
@@ -855,7 +848,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8175731104491895765">फ्रेंच (बेल्जियम)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">डिव्हाइस मॉडेल</translation>
-<translation id="8208580316430297579">कलाकृती</translation>
 <translation id="8223479393428528563">ऑफलाइन वापराकरिता या फाइल सेव्ह करण्यासाठी, परत ऑनलाइन व्‍हा, फाइलंवर राइट-क्लिक करा आणि <ph name="OFFLINE_CHECKBOX_NAME" /> पर्याय निवडा.</translation>
 <translation id="8249296373107784235">रद्द करा</translation>
 <translation id="8250690786522693009">लॅटिन</translation>

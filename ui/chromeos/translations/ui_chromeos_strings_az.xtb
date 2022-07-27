@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Yarım enli katakana</translation>
 <translation id="1834290891154666894">Subyektin alternativ adının uyğunluğu yanlış daxil edilib</translation>
 <translation id="1838709767668011582">Google site</translation>
-<translation id="1844692022597038441">Bu fayl oflayn olaraq əlçatan deyil.</translation>
 <translation id="1853795129690976061">Bu qovluq Linux ilə paylaşılır</translation>
 <translation id="1864756863218646478">Fayl tapılmadı.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, Qoşulun</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Çoxdilli Kanada</translation>
 <translation id="3236289833370040187">Sahiblik <ph name="DESTINATION_DOMAIN" /> domeninə ötürüləcək.</translation>
 <translation id="3241720467332021590">İrland</translation>
-<translation id="3245321423178950146">Naməlum Müğənni</translation>
 <translation id="3248185426436836442">Gözləmədə</translation>
 <translation id="3252266817569339921">Fransız</translation>
 <translation id="3253225298092156258">Əlçatan deyil</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Yapışdırın.</translation>
 <translation id="3952872973865944257">Teluqu (Fonetik)</translation>
 <translation id="3958548648197196644">Kivi</translation>
-<translation id="3966388904776714213">Audio Oxuducu</translation>
 <translation id="3971140002794351170">Mobil profili endirin, Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">İngilis (BK)</translation>
 <translation id="3975895378829046965">Banqla Fonetikası</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Aktiv edilir...</translation>
 <translation id="4092890906744441904">İrland</translation>
 <translation id="4124935795427217608">Tək buynuzlu at</translation>
-<translation id="4158739975813877944">Oxunma siyahısını açın</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> köçürülüb.</translation>
 <translation id="4186579485882418952">Oflayn rejimi aktiv edin</translation>
 <translation id="4193154014135846272">Google sənəd</translation>
@@ -617,7 +613,6 @@
 <translation id="6220423280121890987">Pəncab</translation>
 <translation id="6224240818060029162">Danimarka</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> cihazını format edin</translation>
-<translation id="6227235786875481728">Bu fayl oynadıla bilmədi.</translation>
 <translation id="6241349547798190358">Holland dili (Belçika)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="PHONE_NAME" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Telefonun Batareyası <ph name="BATTERY_STATUS" />%, Qoşulun</translation>
 <translation id="6269630227984243955">Malay</translation>
@@ -633,6 +628,7 @@
 <translation id="6356685157277930264">Fayllar üçün rəy pəncərəsi</translation>
 <translation id="6358884629796491903">Əjdaha</translation>
 <translation id="636254897931573416">Domen sonluğunun uyğunluğu dəyəri yanlışdır</translation>
+<translation id="6364301859968397756">Təşkilatın yaddaşı doludur</translation>
 <translation id="6367976544441405720">Furqon</translation>
 <translation id="637062427944097960">Bu fayl başqa masaüstündə açıldı. Ona baxmaq üçün <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) köçürün.</translation>
 <translation id="6394388407447716302">Yalnız oxunan</translation>
@@ -764,7 +760,6 @@
 <translation id="751507702149411736">Belarusca</translation>
 <translation id="7532029025027028521">Fars dilində Transliterasiya</translation>
 <translation id="7544830582642184299">Linux tətbiqlərinə Google Diskinizdəki fayllara giriş icazəsi verin. Dəyişikliklər digər cihazlara sinxronizasiya ediləcək.</translation>
-<translation id="7544853251252956727">Qarışdırın</translation>
 <translation id="7547009467130558110">İdman ayaqqabısı</translation>
 <translation id="7547780573915868306">Litva</translation>
 <translation id="7547811415869834682">Holland</translation>
@@ -838,7 +833,6 @@
 <translation id="8045462269890919536">Rumın</translation>
 <translation id="8049184478152619004">Şəxsi Blokdan Çıxarma Açarını (PUK) daxil edin</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> çıxarılır...</translation>
-<translation id="8079530767338315840">Təkrarlayın</translation>
 <translation id="8087576439476816834">Endirin: <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Mənimlə Paylaşılan</translation>
 <translation id="8116072619078571545">Buzlu su</translation>
@@ -852,7 +846,6 @@
 <translation id="8175731104491895765">Fransız dili (Belçika)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Cihaz modeli</translation>
-<translation id="8208580316430297579">Sənət əsəri</translation>
 <translation id="8223479393428528563">Bu faylları oflayn istifadəyə saxlamaq üçün onlayn olun, faylları sağ klikləyin və <ph name="OFFLINE_CHECKBOX_NAME" /> seçimini edin.</translation>
 <translation id="8249296373107784235">Dayandırın</translation>
 <translation id="8250690786522693009">Latın</translation>

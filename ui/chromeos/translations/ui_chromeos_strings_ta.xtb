@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">அரை அகலக் கட்டகானா எழுத்து</translation>
 <translation id="1834290891154666894">சான்றிதழின் மாற்றுப் பெயர் பொருத்தம் தவறாக உள்ளது</translation>
 <translation id="1838709767668011582">Google தளம்</translation>
-<translation id="1844692022597038441">இந்த ஃபைல் ஆஃப்லைனில் கிடைக்காது.</translation>
 <translation id="1853795129690976061">இந்த ஃபோல்டரானது Linux உடன் பகிரப்பட்டுள்ளது</translation>
 <translation id="1864756863218646478">ஃபைலைக் கண்டறிய முடியவில்லை.</translation>
 <translation id="1884013283844450420">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, இணை</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">கனடியன் பன்மொழி</translation>
 <translation id="3236289833370040187"><ph name="DESTINATION_DOMAIN" />க்கு உரிமை மாற்றப்படும்.</translation>
 <translation id="3241720467332021590">ஐரிஷ்</translation>
-<translation id="3245321423178950146">அறியாத கலைஞர்</translation>
 <translation id="3248185426436836442">நிலுவையிலுள்ளது</translation>
 <translation id="3252266817569339921">பிரெஞ்ச்</translation>
 <translation id="3253225298092156258">இணைப்பு கிடைக்கவில்லை</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">ஒட்டு</translation>
 <translation id="3952872973865944257">தெலுங்கு ஒலிப்புமுறை</translation>
 <translation id="3958548648197196644">கிவி</translation>
-<translation id="3966388904776714213">ஆடியோ பிளேயர்</translation>
 <translation id="3971140002794351170">இந்த மொபைல் சுயவிவரத்தைப் பதிவிறக்கும்: நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ஆங்கிலம் (யுகே)</translation>
 <translation id="3975895378829046965">வங்காளம் ஒலிப்புமுறை</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">செயலாக்குகிறது...</translation>
 <translation id="4092890906744441904">ஐரிஷ்</translation>
 <translation id="4124935795427217608">கொம்புக் குதிரை</translation>
-<translation id="4158739975813877944">இயக்கப் பட்டியலைத் திற</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> நகர்த்தப்பட்டது.</translation>
 <translation id="4186579485882418952">இயக்கு</translation>
 <translation id="4193154014135846272">Google ஆவணம்</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">பஞ்சாபி</translation>
 <translation id="6224240818060029162">டேனிஷ்</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> சாதனத்தை ஃபார்மேட் செய்</translation>
-<translation id="6227235786875481728">இந்த ஃபைலை இயக்க முடியாது.</translation>
 <translation id="6241349547798190358">டச்சு (பெல்ஜியம்)</translation>
 <translation id="6267547857941397424">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, மொபைல் பேட்டரி: <ph name="BATTERY_STATUS" />%, இணை</translation>
 <translation id="6269630227984243955">மலாய்</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">பெலாரஷ்யன்</translation>
 <translation id="7532029025027028521">பாரசீக ஒலிபெயர்ப்பு</translation>
 <translation id="7544830582642184299">உங்கள் Google Driveவில் உள்ள கோப்புகளை அணுகுவதற்கான அனுமதியை Linux ஆப்ஸுக்கு வழங்கவும். மாற்றங்கள் உங்களின் பிற சாதனங்களுடன் ஒத்திசைக்கப்படும்.</translation>
-<translation id="7544853251252956727">கலை</translation>
 <translation id="7547009467130558110">ஸ்னீக்கர்</translation>
 <translation id="7547780573915868306">லிதுவேனியன்</translation>
 <translation id="7547811415869834682">டச்சு</translation>
@@ -841,7 +835,6 @@
 <translation id="8045462269890919536">ரோமானியன்</translation>
 <translation id="8049184478152619004">தடுப்பை நீக்குவதற்கான தனிப்பட்ட குறியீட்டை (Personal Unblocking Key - PUK) உள்ளிடவும்</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" />ஐப் பிரித்தெடுக்கிறது...</translation>
-<translation id="8079530767338315840">மீண்டும் இயக்கு</translation>
 <translation id="8087576439476816834">பதிவிறக்கும், <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">என்னுடன் பகிர்ந்தவை</translation>
 <translation id="8116072619078571545">குளிர்ந்த நீர்</translation>
@@ -855,7 +848,6 @@
 <translation id="8175731104491895765">ஃபிரெஞ்சு (பெல்ஜியம்)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">சாதனத்தின் மாடல்</translation>
-<translation id="8208580316430297579">கலைப்பணி</translation>
 <translation id="8223479393428528563">இந்த ஃபைல்களை ஆஃப்லைனில் பயன்படுத்துவதற்காகச் சேமிக்க, ஆன்லைனிற்கு சென்று, ஃபைல்களில் வலது-கிளிக் செய்து, <ph name="OFFLINE_CHECKBOX_NAME" /> விருப்பத்தைத் தேர்தெடுக்கவும்.</translation>
 <translation id="8249296373107784235">கைவிடு</translation>
 <translation id="8250690786522693009">லத்தீன்</translation>

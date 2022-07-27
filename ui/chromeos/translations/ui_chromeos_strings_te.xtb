@@ -76,7 +76,7 @@
 <translation id="164969095109328410">Chrome పరికరం</translation>
 <translation id="1661867754829461514">PIN లేదు</translation>
 <translation id="166439687370499867">షేర్ చేసిన నెట్‌వర్క్ కాన్ఫిగరేషన్‌లను మార్చడం అనుమతించబడదు</translation>
-<translation id="1665611772925418501">ఫైల్‌ను సవరించడం సాధ్యపడదు.</translation>
+<translation id="1665611772925418501">ఫైల్‌ను ఎడిట్ చేయడం సాధ్యపడదు.</translation>
 <translation id="1673103856845176271">భద్రతా కారణాల దృష్ట్యా ఫైల్‌ను యాక్సెస్‌ చేయడం సాధ్యపడదు.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1715848075824334077">బైకింగ్</translation>
@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">సగం వెడల్పు కటకానా</translation>
 <translation id="1834290891154666894">చెల్లని సబ్జెక్ట్ ప్రత్యామ్నాయ పేరుకు సంబంధించిన మ్యాచ్ ఎంటర్ చేయబడింది</translation>
 <translation id="1838709767668011582">Google సైట్</translation>
-<translation id="1844692022597038441">ఈ ఫైల్ ఆఫ్‌లైన్‌లో అందుబాటులో లేదు.</translation>
 <translation id="1853795129690976061">ఈ ఫోల్డర్ Linuxతో షేర్ చేయబడింది</translation>
 <translation id="1864756863218646478">ఫైల్‌ను కనుగొనబడలేదు.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, కనెక్ట్ చేయండి</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">కెనడియన్ బహుభాష</translation>
 <translation id="3236289833370040187">యాజమాన్యం <ph name="DESTINATION_DOMAIN" />కి బదిలీ చేయబడుతుంది.</translation>
 <translation id="3241720467332021590">ఐరిష్</translation>
-<translation id="3245321423178950146">తెలియని కళాకారుడు</translation>
 <translation id="3248185426436836442">పెండింగ్‌లో ఉంది</translation>
 <translation id="3252266817569339921">ఫ్రెంచ్</translation>
 <translation id="3253225298092156258">అందుబాటులో లేదు</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">పేస్ట్ చేయండి</translation>
 <translation id="3952872973865944257">తెలుగు ఫొనెటిక్</translation>
 <translation id="3958548648197196644">కివి</translation>
-<translation id="3966388904776714213">ఆడియో ప్లేయర్</translation>
 <translation id="3971140002794351170"><ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> నుండి <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="3973925058222872294">ఇంగ్లీష్ (UK)</translation>
 <translation id="3975895378829046965">బంగ్లా ఫొనెటిక్</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">సక్రియం చేస్తోంది...</translation>
 <translation id="4092890906744441904">ఐరిష్</translation>
 <translation id="4124935795427217608">యునికార్న్</translation>
-<translation id="4158739975813877944">ప్లే లిస్ట్‌ను తెరువు</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> తరలించబడింది.</translation>
 <translation id="4186579485882418952">ఆఫ్‌లైన్ మోడ్‌ను ఎనేబుల్ చేయి</translation>
 <translation id="4193154014135846272">Google డాక్యుమెంట్‌</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">పంజాబీ</translation>
 <translation id="6224240818060029162">డేనిష్</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />ను ఫార్మాట్ చేయండి</translation>
-<translation id="6227235786875481728">ఈ ఫైల్‌ని ప్లే చేయడం సాధ్యం కాలేదు.</translation>
 <translation id="6241349547798190358">డచ్ (బెల్జియం)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="PHONE_NAME" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" />%, కనెక్ట్ చేయండి</translation>
 <translation id="6269630227984243955">మలయ్</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">బెలారుషియన్</translation>
 <translation id="7532029025027028521">పర్షియన్ ట్రాన్స్‌లిటరేషన్</translation>
 <translation id="7544830582642184299">మీ Google Driveలో ఫైల్స్‌ను యాక్సెస్ చేయడానికి Linux యాప్‌లకు అనుమతి ఇవ్వండి. మార్పులు మీ ఇతర పరికరాలలో కూడా సింక్ చేయబడతాయి.</translation>
-<translation id="7544853251252956727">షఫుల్ చేయి</translation>
 <translation id="7547009467130558110">స్నీకర్</translation>
 <translation id="7547780573915868306">లిథువేనియన్</translation>
 <translation id="7547811415869834682">డచ్</translation>
@@ -841,7 +835,6 @@
 <translation id="8045462269890919536">రొమేనియన్</translation>
 <translation id="8049184478152619004">వ్యక్తిగత అన్‌బ్లాకింగ్ కీ(PUK)ని ఎంటర్ చేయండి</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" />ను సంగ్రహిస్తోంది…</translation>
-<translation id="8079530767338315840">రిపీట్‌ చేయి</translation>
 <translation id="8087576439476816834">డౌన్‌లోడ్ చేయి, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">నాతో షేర్ చేసినవి</translation>
 <translation id="8116072619078571545">చల్లటి నీరు</translation>
@@ -855,7 +848,6 @@
 <translation id="8175731104491895765">ఫ్రెంచ్ (బెల్జియం)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">పరికరం మోడల్</translation>
-<translation id="8208580316430297579">కళాకృతి</translation>
 <translation id="8223479393428528563">ఈ ఫైళ్లను ఆఫ్‌లైన్‌లో ఉపయోగించేందుకు వాటిని సేవ్ చేయడానికి, తిరిగి ఆన్‌లైన్‌లోకి వచ్చి, ఫైళ్లపై కుడి-క్లిక్ చేసి, ఆపై <ph name="OFFLINE_CHECKBOX_NAME" /> ఎంపికను ఎంచుకోండి.</translation>
 <translation id="8249296373107784235">రద్దుచేయి</translation>
 <translation id="8250690786522693009">లాటిన్</translation>

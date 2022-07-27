@@ -104,7 +104,6 @@
 <translation id="1832073788765803750">Chữ Katakana nửa chiều rộng</translation>
 <translation id="1834290891154666894">Mục nhập so khớp tên thay thế của tiêu đề không hợp lệ</translation>
 <translation id="1838709767668011582">Trang web Google</translation>
-<translation id="1844692022597038441">Tệp này không có khi ngoại tuyến.</translation>
 <translation id="1853795129690976061">Thư mục này được chia sẻ với Linux</translation>
 <translation id="1864756863218646478">Không thể tìm thấy tệp.</translation>
 <translation id="1884013283844450420">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kết nối</translation>
@@ -255,7 +254,6 @@
 <translation id="3224239078034945833">Đa ngôn ngữ tiếng Canada</translation>
 <translation id="3236289833370040187">Sẽ chuyển quyền sở hữu sang <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">Tiếng Ai-len</translation>
-<translation id="3245321423178950146">Nghệ sĩ không xác định</translation>
 <translation id="3248185426436836442">Đang chờ xử lý</translation>
 <translation id="3252266817569339921">Tiếng Pháp</translation>
 <translation id="3253225298092156258">Chưa có</translation>
@@ -343,7 +341,6 @@
 <translation id="3943857333388298514">Dán</translation>
 <translation id="3952872973865944257">Tiếng Telugu (phiên âm)</translation>
 <translation id="3958548648197196644">Kiwi</translation>
-<translation id="3966388904776714213">Trình phát âm thanh</translation>
 <translation id="3971140002794351170">Tải hồ sơ mạng di động xuống, Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Tiếng Anh (Anh)</translation>
 <translation id="3975895378829046965">Tiếng Bangla (phiên âm)</translation>
@@ -353,7 +350,6 @@
 <translation id="4057991113334098539">Đang kích hoạt...</translation>
 <translation id="4092890906744441904">Tiếng Ireland</translation>
 <translation id="4124935795427217608">Kỳ lân</translation>
-<translation id="4158739975813877944">Mở danh sách phát</translation>
 <translation id="4159731583141908892">Đã di chuyển <ph name="FILE_NAME" />.</translation>
 <translation id="4186579485882418952">Bật chế độ ngoại tuyến</translation>
 <translation id="4193154014135846272">Tài liệu Google</translation>
@@ -618,7 +614,6 @@
 <translation id="6220423280121890987">Tiếng Punjab</translation>
 <translation id="6224240818060029162">Tiếng Đan Mạch</translation>
 <translation id="6224253798271602650">Định dạng <ph name="DRIVE_NAME" /></translation>
-<translation id="6227235786875481728">Không thể phát tệp này.</translation>
 <translation id="6241349547798190358">Tiếng Hà Lan (Bỉ)</translation>
 <translation id="6267547857941397424">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Pin điện thoại <ph name="BATTERY_STATUS" />%, Kết nối</translation>
 <translation id="6269630227984243955">Tiếng Malay</translation>
@@ -765,7 +760,6 @@
 <translation id="751507702149411736">Tiếng Bê-la-rút</translation>
 <translation id="7532029025027028521">Tiếng Ba Tư (chuyển tự)</translation>
 <translation id="7544830582642184299">Cho phép các ứng dụng Linux truy cập vào tệp trên Google Drive. Các thay đổi sẽ đồng bộ hóa với những thiết bị khác mà bạn có.</translation>
-<translation id="7544853251252956727">Phát ngẫu nhiên</translation>
 <translation id="7547009467130558110">Giày sneaker</translation>
 <translation id="7547780573915868306">Tiếng Lithuania</translation>
 <translation id="7547811415869834682">Tiếng Hà Lan</translation>
@@ -841,7 +835,6 @@
 <translation id="8045462269890919536">Tiếng Rumani</translation>
 <translation id="8049184478152619004">Nhập khóa mở khóa cá nhân (PUK)</translation>
 <translation id="807187749540895545">Đang trích xuất <ph name="FILE_NAME" />...</translation>
-<translation id="8079530767338315840">Lặp lại</translation>
 <translation id="8087576439476816834">Tải xuống, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Được chia sẻ với tôi</translation>
 <translation id="8116072619078571545">Nước đá</translation>
@@ -855,7 +848,6 @@
 <translation id="8175731104491895765">Tiếng Pháp (Bỉ)</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Mẫu thiết bị</translation>
-<translation id="8208580316430297579">Tác phẩm nghệ thuật</translation>
 <translation id="8223479393428528563">Để lưu các tệp này để sử dụng ngoại tuyến, hãy trực tuyến trở lại, nhấp chuột phải vào tệp và chọn tùy chọn <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8249296373107784235">Hủy bỏ</translation>
 <translation id="8250690786522693009">Tiếng Latinh</translation>
