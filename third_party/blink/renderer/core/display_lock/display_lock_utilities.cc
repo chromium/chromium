@@ -832,18 +832,6 @@ bool DisplayLockUtilities::RevealHiddenUntilFoundAncestors(const Node& node) {
   return elements_to_reveal.size();
 }
 
-static bool CheckSelfIfInclusive(const Node* node, bool inclusive_check) {
-  if (inclusive_check) {
-    if (auto* element = DynamicTo<Element>(node)) {
-      if (auto* context = element->GetDisplayLockContext()) {
-        if (!context->ShouldPaintChildren())
-          return true;
-      }
-    }
-  }
-  return false;
-}
-
 bool DisplayLockUtilities::IsDisplayLockedPreventingPaint(
     const Node* node,
     bool inclusive_check) {
@@ -851,10 +839,8 @@ bool DisplayLockUtilities::IsDisplayLockedPreventingPaint(
   // result. Otherwise, fallback to get-element versions.
   if (memoizer_) {
     auto result = memoizer_->IsNodeLocked(node);
-    if (result) {
-      // The memoizer can only be used for non-inclusive checks.
-      return *result || CheckSelfIfInclusive(node, inclusive_check);
-    }
+    if (result)
+      return *result;
   } else {
     return inclusive_check
                ? DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
@@ -862,7 +848,7 @@ bool DisplayLockUtilities::IsDisplayLockedPreventingPaint(
                : DisplayLockUtilities::LockedAncestorPreventingPaint(*node);
   }
 
-  // Do some sanity checks that we can early out on.
+  // Do some sanity checks that we cwan early out on.
   if (!node->isConnected() ||
       node->GetDocument()
               .GetDisplayLockDocumentState()
@@ -874,8 +860,14 @@ bool DisplayLockUtilities::IsDisplayLockedPreventingPaint(
   // Handle the inclusive check -- that is, check the node itself. Note that
   // it's important not to memoize that since the memoization consists of
   // ancestor checks only.
-  if (CheckSelfIfInclusive(node, inclusive_check))
-    return true;
+  if (inclusive_check) {
+    if (auto* element = DynamicTo<Element>(node)) {
+      if (auto* context = element->GetDisplayLockContext()) {
+        if (!context->ShouldPaintChildren())
+          return true;
+      }
+    }
+  }
 
   // Walk up the ancestor chain, and consult with both the memoizer and check
   // directly if we're skipping paint. When we find a result (or finish the

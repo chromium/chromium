@@ -123,8 +123,6 @@ class CONTENT_EXPORT BlinkAXTreeSource
   // to enable tests to run.
   static void IgnoreProtocolChecksForTesting();
 
-  void AddImageAnnotations(blink::WebAXObject& src, ui::AXNodeData* dst) const;
-
  private:
   const blink::WebDocument& document() const {
     DCHECK(frozen_);
@@ -151,6 +149,8 @@ class CONTENT_EXPORT BlinkAXTreeSource
       ax::mojom::StringAttribute attribute,
       const std::string& value,
       uint32_t max_len = kMaxStringAttributeLength) const;
+
+  void AddImageAnnotations(blink::WebAXObject& src, ui::AXNodeData* dst) const;
 
   RenderFrameImpl* render_frame_;
 

@@ -1264,6 +1264,9 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     }
   }
 
+  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader))
+    SerializeScreenReaderAttributes(node_data);
+
   SerializeUnignoredAttributes(node_data, accessibility_mode);
 
   if (accessibility_mode.has_mode(ui::AXMode::kPDF)) {
@@ -1602,87 +1605,7 @@ void AXObject::SerializeNameAndDescriptionAttributes(
       node_data, ax::mojom::blink::StringAttribute::kPlaceholder, placeholder);
 }
 
-// Helper function that searches in the subtree of |obj| to a max
-// depth of |max_depth| for an image.
-//
-// Returns true on success, or false if it finds more than one image,
-// or any node with a name, or anything deeper than |max_depth|.
-static AXObject* SearchForExactlyOneInnerImage(AXObject* obj,
-                                               AXObject* inner_image,
-                                               int max_depth) {
-  // If it's the first image, set |inner_image|. If we already
-  // found an image, fail.
-  if (ui::IsImage(obj->RoleValue())) {
-    if (inner_image)
-      return nullptr;
-    inner_image = obj;
-  } else {
-    // If we found something else with a name, fail.
-    if (!ui::IsPlatformDocument(obj->RoleValue()) &&
-        !ui::IsLink(obj->RoleValue())) {
-      ax::mojom::blink::NameFrom name_from;
-      HeapVector<Member<AXObject>> name_objects;
-      String name = obj->GetName(name_from, &name_objects);
-
-      if (!name.StripWhiteSpace().IsEmpty())
-        return nullptr;
-    }
-  }
-
-  // Fail if we recursed to |max_depth| and there's more of a subtree.
-  if (max_depth == 0 && obj->ChildCountIncludingIgnored())
-    return nullptr;
-
-  // Don't count ignored nodes toward depth.
-  int next_depth = obj->AccessibilityIsIgnored() ? max_depth : max_depth - 1;
-
-  // Recurse.
-  for (int i = 0; i < obj->ChildCountIncludingIgnored(); i++) {
-    inner_image = SearchForExactlyOneInnerImage(obj->ChildAtIncludingIgnored(i),
-                                                inner_image, next_depth);
-    if (!inner_image)
-      return nullptr;
-  }
-
-  return inner_image;
-}
-
-// Return true if the subtree of |obj|, to a max depth of 3, contains
-// exactly one image. Return that image in |inner_image|.
-static AXObject* FindExactlyOneInnerImageInMaxDepthThree(
-    AXObject& obj,
-    AXObject* inner_image) {
-  return SearchForExactlyOneInnerImage(&obj, inner_image, /* max_depth = */ 3);
-}
-
-String AXObject::KeyboardShortcut() const {
-  const AtomicString& access_key = AccessKey();
-  if (access_key.IsNull())
-    return String();
-
-  DEFINE_STATIC_LOCAL(String, modifier_string, ([] {
-                        unsigned modifiers =
-                            KeyboardEventManager::kAccessKeyModifiers;
-                        // Follow the same order as Mozilla MSAA implementation:
-                        // Ctrl+Alt+Shift+Meta+key. MSDN states that keyboard
-                        // shortcut strings should not be localized and defines
-                        // the separator as "+".
-                        StringBuilder modifier_string_builder;
-                        if (modifiers & WebInputEvent::kControlKey)
-                          modifier_string_builder.Append("Ctrl+");
-                        if (modifiers & WebInputEvent::kAltKey)
-                          modifier_string_builder.Append("Alt+");
-                        if (modifiers & WebInputEvent::kShiftKey)
-                          modifier_string_builder.Append("Shift+");
-                        if (modifiers & WebInputEvent::kMetaKey)
-                          modifier_string_builder.Append("Win+");
-                        return modifier_string_builder.ToString();
-                      }()));
-
-  return String(modifier_string + access_key);
-}
-
-void AXObject::SerializeOtherScreenReaderAttributes(ui::AXNodeData* node_data) {
+void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) {
   String display_style;
   Node* node = GetNode();
   if (node && !node->IsDocumentNode()) {
@@ -1714,21 +1637,6 @@ void AXObject::SerializeOtherScreenReaderAttributes(ui::AXNodeData* node_data) {
         active_descendant->AXObjectID());
   }
 
-  if (ui::IsImage(node_data->role))
-    AXObjectCache().AddImageAnnotations(this, node_data);
-
-  // If a link or web area isn't otherwise labeled and contains exactly one
-  // image (searching only to a max depth of 2), and the link doesn't have
-  // accessible text from an attribute like aria-label, then annotate the
-  // link/web area with the image's annotation, too.
-  if ((ui::IsLink(node_data->role) ||
-       ui::IsPlatformDocument(node_data->role)) &&
-      node_data->GetNameFrom() != ax::mojom::blink::NameFrom::kAttribute) {
-    if (AXObject* inner_image =
-            FindExactlyOneInnerImageInMaxDepthThree(*this, nullptr))
-      AXObjectCache().AddImageAnnotations(inner_image, node_data);
-  }
-
   if (Node* node = GetNode()) {
     if (node->IsElementNode()) {
       Element* element = To<Element>(node);
@@ -1741,7 +1649,36 @@ void AXObject::SerializeOtherScreenReaderAttributes(ui::AXNodeData* node_data) {
       }
     }
   }
+}
 
+String AXObject::KeyboardShortcut() const {
+  const AtomicString& access_key = AccessKey();
+  if (access_key.IsNull())
+    return String();
+
+  DEFINE_STATIC_LOCAL(String, modifier_string, ());
+  if (modifier_string.IsNull()) {
+    unsigned modifiers = KeyboardEventManager::kAccessKeyModifiers;
+    // Follow the same order as Mozilla MSAA implementation:
+    // Ctrl+Alt+Shift+Meta+key. MSDN states that keyboard shortcut strings
+    // should not be localized and defines the separator as "+".
+    StringBuilder modifier_string_builder;
+    if (modifiers & WebInputEvent::kControlKey)
+      modifier_string_builder.Append("Ctrl+");
+    if (modifiers & WebInputEvent::kAltKey)
+      modifier_string_builder.Append("Alt+");
+    if (modifiers & WebInputEvent::kShiftKey)
+      modifier_string_builder.Append("Shift+");
+    if (modifiers & WebInputEvent::kMetaKey)
+      modifier_string_builder.Append("Win+");
+    modifier_string = modifier_string_builder.ToString();
+  }
+
+  return String(modifier_string + access_key);
+}
+
+void AXObject::SerializeOtherScreenReaderAttributes(
+    ui::AXNodeData* node_data) const {
   DCHECK_NE(node_data->role, ax::mojom::blink::Role::kUnknown);
   DCHECK_NE(node_data->role, ax::mojom::blink::Role::kNone);
 
