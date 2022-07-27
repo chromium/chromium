@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
 #include "chrome/browser/ui/tabs/pinned_tab_service_factory.h"
 #include "chrome/browser/ui/tabs/pinned_tab_test_utils.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/notification_service.h"
@@ -81,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, TabStripEmpty) {
   BrowserRemovalWaiter waiter(browser());
   tab_strip_model->SetTabPinned(0, false);
   EXPECT_TRUE(
-      tab_strip_model->CloseWebContentsAt(0, TabStripModel::CLOSE_NONE));
+      tab_strip_model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE));
   EXPECT_TRUE(tab_strip_model->empty());
   waiter.WaitForRemoval();
 

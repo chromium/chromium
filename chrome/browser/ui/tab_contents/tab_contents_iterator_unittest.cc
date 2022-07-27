@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -117,7 +118,7 @@ TEST_F(BrowserListTest, TabContentsIteratorVerifyBrowser) {
 
   // Close some tabs.
   browser2->tab_strip_model()->CloseAllTabs();
-  browser3->tab_strip_model()->CloseWebContentsAt(1, TabStripModel::CLOSE_NONE);
+  browser3->tab_strip_model()->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
 
   count = 0;
   for (auto iterator = all_tabs.begin(), end = all_tabs.end(); iterator != end;

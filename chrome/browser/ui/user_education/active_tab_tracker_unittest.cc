@@ -9,6 +9,7 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -54,8 +55,7 @@ class ActiveTabTrackerTest : public ::testing::Test {
   }
 
   void CloseTabAt(TabStripModel* model, int index) {
-    model->CloseWebContentsAt(index,
-                              TabStripModel::CloseTypes::CLOSE_USER_GESTURE);
+    model->CloseWebContentsAt(index, TabCloseTypes::CLOSE_USER_GESTURE);
   }
 
   Profile* profile() { return profile_.get(); }

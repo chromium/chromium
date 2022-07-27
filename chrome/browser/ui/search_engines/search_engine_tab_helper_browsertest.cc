@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -201,7 +202,7 @@ class SearchEngineTabHelperPrerenderingBrowserTest
         std::move(owned_web_contents), true);
     if (preexisting_tab) {
       browser()->tab_strip_model()->CloseWebContentsAt(
-          0, TabStripModel::CLOSE_NONE);
+          0, TabCloseTypes::CLOSE_NONE);
     }
   }
 

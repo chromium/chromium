@@ -79,6 +79,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -1434,7 +1435,7 @@ void ChromeShelfController::CloseWindowedAppsFromRemovedExtension(
   while (!browser_to_close.empty()) {
     TabStripModel* tab_strip = browser_to_close.back()->tab_strip_model();
     if (!tab_strip->empty())
-      tab_strip->CloseWebContentsAt(0, TabStripModel::CLOSE_NONE);
+      tab_strip->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
     browser_to_close.pop_back();
   }
 }

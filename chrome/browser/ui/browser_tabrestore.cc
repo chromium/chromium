@@ -17,6 +17,7 @@
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -293,7 +294,7 @@ WebContents* ReplaceRestoredTab(
   tab_strip->InsertWebContentsAt(
       insertion_index + 1, std::move(web_contents),
       TabStripModel::ADD_ACTIVE | TabStripModel::ADD_INHERIT_OPENER);
-  tab_strip->CloseWebContentsAt(insertion_index, TabStripModel::CLOSE_NONE);
+  tab_strip->CloseWebContentsAt(insertion_index, TabCloseTypes::CLOSE_NONE);
 
   LoadRestoredTabIfVisible(browser, raw_web_contents);
 

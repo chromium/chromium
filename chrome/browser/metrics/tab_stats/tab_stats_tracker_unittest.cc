@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -93,7 +94,7 @@ class TestTabStatsTracker : public TabStatsTracker {
     EXPECT_LE(tab_count, static_cast<size_t>(tab_strip_model->count()));
     for (size_t i = 0; i < tab_count; ++i) {
       tab_strip_model->CloseWebContentsAt(tab_strip_model->count() - 1,
-                                          TabStripModel::CLOSE_USER_GESTURE);
+                                          TabCloseTypes::CLOSE_USER_GESTURE);
     }
     return tab_stats_data_store()->tab_stats().total_tab_count;
   }

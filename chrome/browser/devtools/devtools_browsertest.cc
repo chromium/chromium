@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -390,7 +391,7 @@ class DevToolsBeforeUnloadTest: public DevToolsTest {
  public:
   void CloseInspectedTab() {
     browser()->tab_strip_model()->CloseWebContentsAt(0,
-        TabStripModel::CLOSE_NONE);
+                                                     TabCloseTypes::CLOSE_NONE);
   }
 
   void CloseDevToolsWindowAsync() {
@@ -2179,8 +2180,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsAgentHostTest, TestAgentHostReleased) {
   const std::string agent_id = agent_raw->GetId();
   ASSERT_EQ(agent_raw, DevToolsAgentHost::GetForId(agent_id).get())
       << "DevToolsAgentHost cannot be found by id";
-  browser()->tab_strip_model()->
-      CloseWebContentsAt(0, TabStripModel::CLOSE_NONE);
+  browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                   TabCloseTypes::CLOSE_NONE);
   ASSERT_FALSE(DevToolsAgentHost::GetForId(agent_id).get())
       << "DevToolsAgentHost is not released when the tab is closed";
 }

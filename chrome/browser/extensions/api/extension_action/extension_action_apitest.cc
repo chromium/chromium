@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -388,7 +389,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
   {
     content::WebContentsDestroyedWatcher destroyed_watcher(web_contents);
     tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(),
-                                        TabStripModel::CLOSE_NONE);
+                                        TabCloseTypes::CLOSE_NONE);
     destroyed_watcher.Wait();
   }
   // The title should have been cleared on tab removal as well.

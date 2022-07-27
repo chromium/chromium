@@ -13,6 +13,7 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/cocoa/tab_menu_bridge.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/testing_profile.h"
@@ -90,7 +91,7 @@ class TabMenuBridgeTest : public ::testing::Test {
   void RemoveModelTabNamed(const std::string& name) {
     int index = ModelIndexForTabNamed(name);
     DCHECK(index >= 0);
-    model()->CloseWebContentsAt(index, TabStripModel::CLOSE_NONE);
+    model()->CloseWebContentsAt(index, TabCloseTypes::CLOSE_NONE);
   }
 
   void RenameModelTabNamed(const std::string& old_name,

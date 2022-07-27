@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -107,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallFrictionDialogViewTest,
     content::WebContentsDestroyedWatcher tab_destroyed_watcher(
         tab_strip_model->GetWebContentsAt(tab1_idx));
     EXPECT_TRUE(tab_strip_model->CloseWebContentsAt(tab1_idx,
-                                                    TabStripModel::CLOSE_NONE));
+                                                    TabCloseTypes::CLOSE_NONE));
     tab_destroyed_watcher.Wait();
   }
 

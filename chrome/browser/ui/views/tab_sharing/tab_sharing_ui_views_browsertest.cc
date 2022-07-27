@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -441,7 +442,7 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, CloseTab) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   content::WebContentsDestroyedWatcher tab_2_destroyed_watcher(
       tab_strip_model->GetWebContentsAt(2));
-  tab_strip_model->CloseWebContentsAt(2, TabStripModel::CLOSE_NONE);
+  tab_strip_model->CloseWebContentsAt(2, TabCloseTypes::CLOSE_NONE);
   tab_2_destroyed_watcher.Wait();
   VerifyUi(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
 
@@ -449,7 +450,7 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, CloseTab) {
   // sharing is stopped, i.e. the UI is removed.
   content::WebContentsDestroyedWatcher tab_1_destroyed_watcher(
       tab_strip_model->GetWebContentsAt(1));
-  tab_strip_model->CloseWebContentsAt(1, TabStripModel::CLOSE_NONE);
+  tab_strip_model->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
   tab_1_destroyed_watcher.Wait();
   VerifyUi(browser(), /*capturing_tab=*/kNullTabIndex,
            /*captured_tab=*/kNullTabIndex, /*infobar_count=*/0);
@@ -502,7 +503,7 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
   // Close a tab different than the shared one and test that the UI has not
   // changed.
   TabStripModel* tab_strip_model = incognito_browser->tab_strip_model();
-  tab_strip_model->CloseWebContentsAt(2, TabStripModel::CLOSE_NONE);
+  tab_strip_model->CloseWebContentsAt(2, TabCloseTypes::CLOSE_NONE);
   VerifyUi(incognito_browser, /*capturing_tab=*/0, /*captured_tab=*/1);
   VerifyUi(browser(), /*capturing_tab=*/kNullTabIndex,
            /*captured_tab=*/kNullTabIndex, /*infobar_count=*/1,
@@ -511,7 +512,7 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
   // Close the shared tab in the incognito browser and test that the UI is
   // removed.
   incognito_browser->tab_strip_model()->CloseWebContentsAt(
-      1, TabStripModel::CLOSE_NONE);
+      1, TabCloseTypes::CLOSE_NONE);
   VerifyUi(incognito_browser, /*capturing_tab=*/kNullTabIndex,
            /*captured_tab=*/kNullTabIndex, /*infobar_count=*/0);
   VerifyUi(browser(), /*capturing_tab=*/kNullTabIndex,
@@ -737,7 +738,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, CloseTabs) {
   // Close shared tabs one by one and check that infobars are removed as well.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   while (tab_strip_model->count() > 1) {
-    tab_strip_model->CloseWebContentsAt(1, TabStripModel::CLOSE_NONE);
+    tab_strip_model->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
     for (int i = 0; i < tab_strip_model->count(); ++i)
       ASSERT_EQ(tab_strip_model->count() - 1u,
                 GetInfoBarManager(browser(), i)->infobar_count());

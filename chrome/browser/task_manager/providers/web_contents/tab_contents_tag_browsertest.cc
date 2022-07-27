@@ -13,6 +13,7 @@
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/generated_resources.h"
@@ -151,7 +152,7 @@ class TabContentsTagTest : public InProcessBrowserTest {
 
   void CloseTabAt(int index) {
     browser()->tab_strip_model()->CloseWebContentsAt(index,
-                                                     TabStripModel::CLOSE_NONE);
+                                                     TabCloseTypes::CLOSE_NONE);
   }
 
   std::u16string GetTestPageExpectedTitle(const TestPageData& page_data) const {

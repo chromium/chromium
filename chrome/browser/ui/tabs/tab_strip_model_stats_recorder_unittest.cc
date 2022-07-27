@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -69,8 +70,8 @@ TEST_F(TabStripModelStatsRecorderTest, BasicTabLifecycle) {
 
   // Close the inactive second tab.
   tabstrip.CloseWebContentsAt(tabstrip.GetIndexOfWebContents(raw_contents2),
-                              TabStripModel::CLOSE_USER_GESTURE |
-                                  TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
+                              TabCloseTypes::CLOSE_USER_GESTURE |
+                                  TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 
   tester.ExpectBucketCount(
       "Tabs.StateTransfer.Target_Inactive",

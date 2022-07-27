@@ -18,6 +18,7 @@
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -978,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   // destructor, it has to be destroyed before the tab.
   prompt_factory_.reset();
   ASSERT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
-      prompt_contents_index, TabStripModel::CloseTypes::CLOSE_USER_GESTURE));
+      prompt_contents_index, TabCloseTypes::CLOSE_USER_GESTURE));
   base::RunLoop().RunUntilIdle();
 
   VerifyResultState(

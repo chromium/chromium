@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -388,7 +389,7 @@ void AppShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
                                 : TabStripModel::kNoTab;
     if (index != TabStripModel::kNoTab) {
       if (should_close) {
-        tab_strip->CloseWebContentsAt(index, TabStripModel::CLOSE_USER_GESTURE);
+        tab_strip->CloseWebContentsAt(index, TabCloseTypes::CLOSE_USER_GESTURE);
       } else {
         tab_strip->ActivateTabAt(index);
         activate_browser(browser);
@@ -414,7 +415,7 @@ void AppShortcutShelfItemController::Close() {
       TabStripModel* tab_strip = browser->tab_strip_model();
       int index = tab_strip->GetIndexOfWebContents(item);
       DCHECK(index != TabStripModel::kNoTab);
-      tab_strip->CloseWebContentsAt(index, TabStripModel::CLOSE_NONE);
+      tab_strip->CloseWebContentsAt(index, TabCloseTypes::CLOSE_NONE);
     }
   }
 }

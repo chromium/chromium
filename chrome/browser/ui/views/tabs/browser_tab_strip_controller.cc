@@ -337,8 +337,8 @@ void BrowserTabStripController::CloseTab(int model_index) {
   hover_tab_selector_.CancelTabTransition();
 
   model_->CloseWebContentsAt(model_index,
-                             TabStripModel::CLOSE_USER_GESTURE |
-                             TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
+                             TabCloseTypes::CLOSE_USER_GESTURE |
+                                 TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 
   // Try to show reading list IPH if needed.
   if (tabstrip_->GetTabCount() >= 7) {

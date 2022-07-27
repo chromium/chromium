@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -100,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   // Tab two is closed while the dialog is up.
   int tab2_index = browser()->tab_strip_model()->GetIndexOfWebContents(tab2);
   browser()->tab_strip_model()->CloseWebContentsAt(tab2_index,
-                                                   TabStripModel::CLOSE_NONE);
+                                                   TabCloseTypes::CLOSE_NONE);
 
   // Try reloading tab one.
   tab1->GetController().Reload(content::ReloadType::NORMAL, false);
@@ -131,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   // The tab is closed while the dialog is up.
   int tab_index = browser()->tab_strip_model()->GetIndexOfWebContents(tab);
   browser()->tab_strip_model()->CloseWebContentsAt(tab_index,
-                                                   TabStripModel::CLOSE_NONE);
+                                                   TabCloseTypes::CLOSE_NONE);
 
   // No crash is good news.
 }

@@ -38,4 +38,18 @@ enum class TabMutedReason {
   CONTENT_SETTING_CHROME,  // Mute toggled on chrome:// URL.
 };
 
+// A BitField used to specify what should happen when the tab is closed.
+enum TabCloseTypes {
+  CLOSE_NONE = 0,
+
+  // Indicates the tab was closed by the user. If true,
+  // WebContents::SetClosedByUserGesture(true) is invoked.
+  CLOSE_USER_GESTURE = 1 << 0,
+
+  // If true the history is recorded so that the tab can be reopened later. You
+  // almost always want to set this.
+  CLOSE_CREATE_HISTORICAL_TAB = 1 << 1,
+
+};
+
 #endif  // CHROME_BROWSER_UI_TABS_TAB_ENUMS_H_

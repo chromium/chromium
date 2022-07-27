@@ -15,6 +15,7 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
@@ -546,7 +547,7 @@ TEST_F(TabSearchPageHandlerTest, TabsChanged) {
   // Close a tab in browser 1.
   ASSERT_FALSE(IsTimerRunning());
   browser1()->tab_strip_model()->CloseWebContentsAt(
-      0, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
+      0, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
   ASSERT_FALSE(IsTimerRunning());
 }
 
@@ -570,7 +571,7 @@ TEST_F(TabSearchPageHandlerTest, EventsDoNotPropagatedWhenWebUIIsHidden) {
 
   // Closing a tab would usually result in a call to TabsRemoved().
   browser1()->tab_strip_model()->CloseWebContentsAt(
-      0, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
+      0, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
 
 // Ensure that tab model changes in a browser with a different profile

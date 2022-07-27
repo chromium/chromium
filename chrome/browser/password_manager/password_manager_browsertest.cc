@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_handler_test_utils.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/chrome_paths.h"
@@ -4464,7 +4465,7 @@ class PasswordManagerPrerenderBrowserTest : public PasswordManagerBrowserTest {
         std::move(owned_web_contents), true);
     if (preexisting_tab) {
       browser()->tab_strip_model()->CloseWebContentsAt(
-          0, TabStripModel::CLOSE_NONE);
+          0, TabCloseTypes::CLOSE_NONE);
     }
   }
 

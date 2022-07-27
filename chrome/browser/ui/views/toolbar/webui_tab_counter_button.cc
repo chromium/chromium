@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -680,8 +681,8 @@ void WebUITabCounterButton::ExecuteCommand(int command_id, int event_flags) {
     case WEBUI_TAB_COUNTER_CXMENU_CLOSE_TAB: {
       tab_strip_model_->CloseWebContentsAt(
           tab_strip_model_->active_index(),
-          TabStripModel::CLOSE_USER_GESTURE |
-              TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
+          TabCloseTypes::CLOSE_USER_GESTURE |
+              TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
       break;
     }
     case WEBUI_TAB_COUNTER_CXMENU_NEW_TAB:

@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
@@ -175,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
 
     content::WebContentsDestroyedWatcher destroyed_watcher(web_contents);
     tab_strip->CloseWebContentsAt(tab_strip->active_index(),
-                                  TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
+                                  TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
     destroyed_watcher.Wait();
   }
   EXPECT_EQ(1, tab_strip->count());

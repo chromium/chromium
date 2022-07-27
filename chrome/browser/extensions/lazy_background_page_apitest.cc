@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -380,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, WaitForView) {
 
   // Close the new tab.
   browser()->tab_strip_model()->CloseWebContentsAt(
-      browser()->tab_strip_model()->active_index(), TabStripModel::CLOSE_NONE);
+      browser()->tab_strip_model()->active_index(), TabCloseTypes::CLOSE_NONE);
   host_helper.WaitForHostDestroyed();
 
   // Lazy Background Page has been shut down.
@@ -490,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, NaClInView) {
     host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
     browser()->tab_strip_model()->CloseWebContentsAt(
         browser()->tab_strip_model()->active_index(),
-        TabStripModel::CLOSE_NONE);
+        TabCloseTypes::CLOSE_NONE);
     host_helper.WaitForHostDestroyed();
   }
 

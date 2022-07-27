@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -228,7 +229,7 @@ void BrowserShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
         tab_strip->CloseAllTabs();
       } else if (tab_strip->ContainsIndex(tab_index)) {
         tab_strip->CloseWebContentsAt(tab_index,
-                                      TabStripModel::CLOSE_USER_GESTURE);
+                                      TabCloseTypes::CLOSE_USER_GESTURE);
       }
     } else {
       multi_user_util::MoveWindowToCurrentDesktop(

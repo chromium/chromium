@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -536,7 +537,7 @@ TEST_F(TabMetricsLoggerTest, CreateWindowFeaturesTestReplaceTab) {
             expected_metrics);
 
   // Close the replaced tab. This should update TabCount.
-  browser->tab_strip_model()->CloseWebContentsAt(1, TabStripModel::CLOSE_NONE);
+  browser->tab_strip_model()->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
   expected_metrics.tab_count--;
   EXPECT_EQ(TabMetricsLogger::CreateWindowFeatures(browser.get()),
             expected_metrics);

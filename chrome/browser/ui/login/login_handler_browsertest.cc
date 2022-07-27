@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_handler_test_utils.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -2422,7 +2423,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   // contents is destroyed but it passes the empty credential info and
   // triggers CancelAuth().
   browser()->tab_strip_model()->CloseWebContentsAt(1,
-                                                   TabStripModel::CLOSE_NONE);
+                                                   TabCloseTypes::CLOSE_NONE);
 
   // It has one tab left.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());

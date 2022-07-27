@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -277,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
   // Close in reverse order.
   int i = browser->tab_strip_model()->GetIndexOfWebContents(tab_app4);
   browser->tab_strip_model()->CloseWebContentsAt(
-      i, TabStripModel::CLOSE_USER_GESTURE);
+      i, TabCloseTypes::CLOSE_USER_GESTURE);
   EXPECT_EQ(2u, webcontents_to_ukm_key().size());
   EXPECT_FALSE(base::Contains(webcontents_to_ukm_key(), tab_app4));
   VerifyUrlInfo(GURL("https://c.example.org"), UrlContent::kFullUrl,
@@ -285,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
 
   i = browser->tab_strip_model()->GetIndexOfWebContents(tab_app3);
   browser->tab_strip_model()->CloseWebContentsAt(
-      i, TabStripModel::CLOSE_USER_GESTURE);
+      i, TabCloseTypes::CLOSE_USER_GESTURE);
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
   EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
                              window_to_web_contents()[window]));
@@ -475,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   // Close tabs.
   int i = browser1->tab_strip_model()->GetIndexOfWebContents(tab_app1);
   browser1->tab_strip_model()->CloseWebContentsAt(
-      i, TabStripModel::CLOSE_USER_GESTURE);
+      i, TabCloseTypes::CLOSE_USER_GESTURE);
   EXPECT_EQ(2u, window_to_web_contents().size());
   EXPECT_EQ(3u, webcontents_to_observer_map().size());
   EXPECT_EQ(window_to_web_contents()[window1]->GetVisibleURL(),
@@ -487,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
 
   i = browser2->tab_strip_model()->GetIndexOfWebContents(tab_app3);
   browser2->tab_strip_model()->CloseWebContentsAt(
-      i, TabStripModel::CLOSE_USER_GESTURE);
+      i, TabCloseTypes::CLOSE_USER_GESTURE);
   EXPECT_EQ(2u, window_to_web_contents().size());
   EXPECT_EQ(2u, webcontents_to_observer_map().size());
   EXPECT_EQ(window_to_web_contents()[window2]->GetVisibleURL(),
@@ -501,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
 
   i = browser2->tab_strip_model()->GetIndexOfWebContents(tab_app4);
   browser2->tab_strip_model()->CloseWebContentsAt(
-      i, TabStripModel::CLOSE_USER_GESTURE);
+      i, TabCloseTypes::CLOSE_USER_GESTURE);
   // Simulate the window's activated status is switched from `window2` to
   // `window1`.
   website_metrics()->OnWindowActivated(
@@ -520,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
 
   i = browser1->tab_strip_model()->GetIndexOfWebContents(tab_app2);
   browser1->tab_strip_model()->CloseWebContentsAt(
-      i, TabStripModel::CLOSE_USER_GESTURE);
+      i, TabCloseTypes::CLOSE_USER_GESTURE);
   VerifyUrlInfo(GURL("https://a.example.org"), UrlContent::kFullUrl,
                 /*is_activated=*/false, /*promotable=*/false);
   VerifyUrlInfo(GURL("https://b.example.org"), UrlContent::kFullUrl,

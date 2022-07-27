@@ -140,7 +140,7 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
   auto* tab_strip_model = optional_details->tab_strip_model;
   const int tab_index = optional_details->index;
   tab_strip_model->CloseWebContentsAt(
-      tab_index, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
+      tab_index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
   // Do not add code past this point.
 }
 

@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -449,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, DeleteHighlighted) {
   SendScrubEvent(browser(), 0);
   EXPECT_TRUE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
   browser()->tab_strip_model()->CloseWebContentsAt(0,
-                                                   TabStripModel::CLOSE_NONE);
+                                                   TabCloseTypes::CLOSE_NONE);
   EXPECT_FALSE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
 }
 
@@ -461,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(TabScrubberChromeOSTest, DeleteBeforeHighlighted) {
   SendScrubEvent(browser(), 1);
   EXPECT_TRUE(TabScrubberChromeOS::GetInstance()->IsActivationPending());
   browser()->tab_strip_model()->CloseWebContentsAt(0,
-                                                   TabStripModel::CLOSE_NONE);
+                                                   TabCloseTypes::CLOSE_NONE);
   EXPECT_EQ(0, TabScrubberChromeOS::GetInstance()->highlighted_tab());
 }
 

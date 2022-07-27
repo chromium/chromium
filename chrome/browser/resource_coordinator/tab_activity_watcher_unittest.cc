@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_ukm_test_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -849,7 +850,7 @@ TEST_F(ForegroundedOrClosedTest, MAYBE_SingleTab) {
                                                     TestUrls()[0]);
 
   // The tab is in the foreground, so it isn't logged as a background tab.
-  tab_strip_model->CloseWebContentsAt(0, TabStripModel::CLOSE_USER_GESTURE);
+  tab_strip_model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_USER_GESTURE);
   EXPECT_EQ(0, ukm_entry_checker_.NumNewEntriesRecorded(kEntryName));
 }
 

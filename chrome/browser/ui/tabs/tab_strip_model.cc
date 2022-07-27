@@ -722,7 +722,7 @@ void TabStripModel::CloseAllTabs() {
   closing_tabs.reserve(count());
   for (int i = count() - 1; i >= 0; --i)
     closing_tabs.push_back(GetWebContentsAt(i));
-  CloseTabs(closing_tabs, CLOSE_CREATE_HISTORICAL_TAB);
+  CloseTabs(closing_tabs, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
 
 void TabStripModel::CloseAllTabsInGroup(const tab_groups::TabGroupId& group) {
@@ -741,7 +741,7 @@ void TabStripModel::CloseAllTabsInGroup(const tab_groups::TabGroupId& group) {
   closing_tabs.reserve(tabs_in_group.length());
   for (uint32_t i = tabs_in_group.end(); i > tabs_in_group.start(); --i)
     closing_tabs.push_back(GetWebContentsAt(i - 1));
-  CloseTabs(closing_tabs, CLOSE_CREATE_HISTORICAL_TAB);
+  CloseTabs(closing_tabs, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
 
 bool TabStripModel::CloseWebContentsAt(int index, uint32_t close_types) {
@@ -1055,7 +1055,8 @@ void TabStripModel::CloseSelectedTabs() {
   const ui::ListSelectionModel::SelectedIndices& sel =
       selection_model_.selected_indices();
   CloseTabs(GetWebContentsesByIndices(std::vector<int>(sel.begin(), sel.end())),
-            CLOSE_CREATE_HISTORICAL_TAB | CLOSE_USER_GESTURE);
+            TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
+                TabCloseTypes::CLOSE_USER_GESTURE);
 }
 
 void TabStripModel::SelectNextTab(TabStripUserGestureDetails detail) {
@@ -1436,7 +1437,8 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
 
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseTab"));
       CloseTabs(GetWebContentsesByIndices(GetIndicesForCommand(context_index)),
-                CLOSE_CREATE_HISTORICAL_TAB | CLOSE_USER_GESTURE);
+                TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
+                    TabCloseTypes::CLOSE_USER_GESTURE);
       break;
     }
 
@@ -1446,7 +1448,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseOtherTabs"));
       CloseTabs(GetWebContentsesByIndices(
                     GetIndicesClosedByCommand(context_index, command_id)),
-                CLOSE_CREATE_HISTORICAL_TAB);
+                TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
       break;
     }
 
@@ -1456,7 +1458,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseTabsToRight"));
       CloseTabs(GetWebContentsesByIndices(
                     GetIndicesClosedByCommand(context_index, command_id)),
-                CLOSE_CREATE_HISTORICAL_TAB);
+                TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
       break;
     }
 
@@ -1944,7 +1946,7 @@ bool TabStripModel::CloseWebContentses(
     // call back to this if the close is allowed.
     if (!closing_contents->GetClosedByUserGesture()) {
       closing_contents->SetClosedByUserGesture(
-          close_types & TabStripModel::CLOSE_USER_GESTURE);
+          close_types & TabCloseTypes::CLOSE_USER_GESTURE);
     }
 
     if (RunUnloadListenerBeforeClosing(closing_contents)) {
@@ -1952,7 +1954,8 @@ bool TabStripModel::CloseWebContentses(
       continue;
     }
 
-    bool create_historical_tab = close_types & CLOSE_CREATE_HISTORICAL_TAB;
+    bool create_historical_tab =
+        close_types & TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB;
     auto dwc = DetachWebContentsImpl(
         original_indices[i], current_index, create_historical_tab,
         TabStripModelChange::RemoveReason::kDeleted);

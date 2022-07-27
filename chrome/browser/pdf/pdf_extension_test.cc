@@ -54,6 +54,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_features.h"
@@ -609,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
   EXPECT_EQ(2U, GetGuestViewManager()->GetNumGuestsActive());
   content::WebContentsDestroyedWatcher destroyed_watcher(guest_web_contents);
   ASSERT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
-      0, TabStripModel::CLOSE_USER_GESTURE));
+      0, TabCloseTypes::CLOSE_USER_GESTURE));
   destroyed_watcher.Wait();
   EXPECT_EQ(1U, GetGuestViewManager()->GetNumGuestsActive());
 

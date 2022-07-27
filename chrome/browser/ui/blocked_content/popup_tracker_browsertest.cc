@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -138,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   content::WebContentsDestroyedWatcher destroyed_watcher(
       browser()->tab_strip_model()->GetWebContentsAt(active_index));
   browser()->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   tester.ExpectTotalCount(kPopupFirstDocumentEngagement, 1);
@@ -184,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   int active_index = browser()->tab_strip_model()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
   browser()->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   tester.ExpectTotalCount(kPopupFirstDocumentEngagement, 1);
@@ -427,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPopupTrackerBrowserTest,
   int active_index = browser()->tab_strip_model()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
   browser()->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   auto* entry = ExpectAndGetEntry(first_url);
@@ -460,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPopupTrackerBrowserTest,
   int active_index = browser()->tab_strip_model()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
   browser()->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   auto* entry = ExpectAndGetEntry(first_url);
@@ -506,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPopupTrackerBrowserTest,
     int active_index = browser()->tab_strip_model()->active_index();
     content::WebContentsDestroyedWatcher destroyed_watcher(popup);
     browser()->tab_strip_model()->CloseWebContentsAt(
-        active_index, TabStripModel::CLOSE_USER_GESTURE);
+        active_index, TabCloseTypes::CLOSE_USER_GESTURE);
     destroyed_watcher.Wait();
   }
 
@@ -543,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, PopupInTab_IsWindowFalse) {
   int active_index = browser()->tab_strip_model()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
   browser()->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   auto* entry = ExpectAndGetEntry(first_url);
@@ -583,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   int active_index = created_browser->tab_strip_model()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
   created_browser->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   auto* entry = ExpectAndGetEntry(first_url);
@@ -623,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   int active_index = created_browser->tab_strip_model()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
   created_browser->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   auto* entry = ExpectAndGetEntry(first_url);
@@ -678,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   int active_index = created_browser->tab_strip_model()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
   created_browser->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   auto* entry = ExpectAndGetEntry(first_url);
@@ -722,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   int active_index = created_browser->tab_strip_model()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
   created_browser->tab_strip_model()->CloseWebContentsAt(
-      active_index, TabStripModel::CLOSE_USER_GESTURE);
+      active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
   auto* entry = ExpectAndGetEntry(first_url);

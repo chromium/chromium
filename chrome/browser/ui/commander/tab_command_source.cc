@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/commander/entity_match.h"
 #include "chrome/browser/ui/commander/fuzzy_finder.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
@@ -99,8 +100,8 @@ void CloseTabsToLeft(Browser* browser) {
     return;
   int left_selected = *(selection.selected_indices().cbegin());
   for (int i = left_selected - 1; i >= 0; --i) {
-    model->CloseWebContentsAt(i, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB |
-                                     TabStripModel::CLOSE_USER_GESTURE);
+    model->CloseWebContentsAt(i, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
+                                     TabCloseTypes::CLOSE_USER_GESTURE);
   }
 }
 
@@ -116,8 +117,8 @@ void CloseUnpinnedTabs(Browser* browser) {
   TabStripModel* model = browser->tab_strip_model();
   for (int i = model->count() - 1; i >= 0; --i) {
     if (!model->IsTabPinned(i))
-      model->CloseWebContentsAt(i, TabStripModel::CLOSE_CREATE_HISTORICAL_TAB |
-                                       TabStripModel::CLOSE_USER_GESTURE);
+      model->CloseWebContentsAt(i, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
+                                       TabCloseTypes::CLOSE_USER_GESTURE);
   }
 }
 

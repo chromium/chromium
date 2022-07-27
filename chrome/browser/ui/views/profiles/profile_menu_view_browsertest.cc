@@ -42,6 +42,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
@@ -305,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
   ASSERT_EQ(1, tab_strip->active_index());
 
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
-  tab_strip->CloseWebContentsAt(1, TabStripModel::CLOSE_NONE);
+  tab_strip->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(ProfileMenuCoordinator::FromBrowser(browser())->IsShowing());
 }
@@ -334,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
   auto widget_destroyed_observer =
       BubbleWidgetDestroyedObserver(profile_menu_view()->GetWidget());
-  tab_strip->CloseWebContentsAt(0, TabStripModel::CLOSE_NONE);
+  tab_strip->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
   base::RunLoop().RunUntilIdle();
 }
 
