@@ -42,6 +42,7 @@ BACKEND_VALIDATION_MULTIPLIER = 6
 HTML_FILENAME = os.path.join('webgpu-cts', 'test_page.html')
 
 JAVASCRIPT_DURATION = 'javascript_duration'
+MESSAGE_TYPE_TEST_FINISHED = 'TEST_FINISHED'
 
 # These are tests that, for whatever reason, don't like being run in parallel.
 SERIAL_TESTS = {}
@@ -281,11 +282,17 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                   'q': self._query,
                   'w': self._run_in_worker
               })), WebGpuCtsIntegrationTest.event_loop)
-      future = asyncio.run_coroutine_threadsafe(
-          asyncio.wait_for(WebGpuCtsIntegrationTest.websocket.recv(), timeout),
-          WebGpuCtsIntegrationTest.event_loop)
-      response = future.result()
-      response = json.loads(response)
+      # Loop until we receive a message saying that the test is finished. This
+      # currently has no practical effect, but it is an intermediate step to
+      # supporting a heartbeat mechanism. See crbug.com/1340602.
+      while True:
+        future = asyncio.run_coroutine_threadsafe(
+            asyncio.wait_for(WebGpuCtsIntegrationTest.websocket.recv(),
+                             timeout), WebGpuCtsIntegrationTest.event_loop)
+        response = future.result()
+        response = json.loads(response)
+        if response['type'] == MESSAGE_TYPE_TEST_FINISHED:
+          break
 
       status = response['s']
       logs_pieces = [response['l']]
