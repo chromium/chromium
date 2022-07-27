@@ -5,8 +5,7 @@
 #ifndef MEDIA_CDM_SUPPORTED_AUDIO_CODECS_H_
 #define MEDIA_CDM_SUPPORTED_AUDIO_CODECS_H_
 
-#include <vector>
-
+#include "base/containers/flat_set.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/media_export.h"
 
@@ -18,7 +17,7 @@ namespace media {
 // Note that this should only be used on desktop CDMs. On other platforms
 // (e.g. Android) we should query the system for (encrypted) audio codec
 // support.
-MEDIA_EXPORT const std::vector<AudioCodec> GetCdmSupportedAudioCodecs();
+MEDIA_EXPORT const base::flat_set<AudioCodec> GetCdmSupportedAudioCodecs();
 
 }  //  namespace media
 

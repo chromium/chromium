@@ -178,7 +178,7 @@ bool GetEncryptionSchemes(
 // Returns true and updates |audio_codecs| with the full set of audio
 // codecs that support decryption.
 bool GetAudioCodecs(const base::Value& manifest,
-                    std::vector<media::AudioCodec>* audio_codecs) {
+                    base::flat_set<media::AudioCodec>* audio_codecs) {
   DCHECK(manifest.is_dict());
   DCHECK(audio_codecs);
 

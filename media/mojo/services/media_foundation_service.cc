@@ -338,7 +338,7 @@ absl::optional<CdmCapability> GetCdmCapability(
                               {{kRobustnessQueryName, robustness}});
 
     if (IsTypeSupportedInternal(cdm_factory, key_system, is_hw_secure, type))
-      capability.audio_codecs.push_back(audio_codec);
+      capability.audio_codecs.emplace(audio_codec);
   }
 
   // Query encryption scheme.

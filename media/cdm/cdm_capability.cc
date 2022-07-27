@@ -32,7 +32,7 @@ bool operator==(const VideoCodecInfo& lhs, const VideoCodecInfo& rhs) {
 CdmCapability::CdmCapability() = default;
 
 CdmCapability::CdmCapability(
-    std::vector<AudioCodec> audio_codecs,
+    base::flat_set<AudioCodec> audio_codecs,
     VideoCodecMap video_codecs,
     base::flat_set<EncryptionScheme> encryption_schemes,
     base::flat_set<CdmSessionType> session_types)

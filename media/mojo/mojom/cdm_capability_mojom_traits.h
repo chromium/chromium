@@ -5,8 +5,6 @@
 #ifndef MEDIA_MOJO_MOJOM_CDM_CAPABILITY_MOJOM_TRAITS_H_
 #define MEDIA_MOJO_MOJOM_CDM_CAPABILITY_MOJOM_TRAITS_H_
 
-#include <vector>
-
 #include "base/containers/flat_set.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/content_decryption_module.h"
@@ -35,7 +33,7 @@ struct StructTraits<media::mojom::VideoCodecInfoDataView,
 
 template <>
 struct StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability> {
-  static const std::vector<media::AudioCodec>& audio_codecs(
+  static const base::flat_set<media::AudioCodec>& audio_codecs(
       const media::CdmCapability& input) {
     return input.audio_codecs;
   }

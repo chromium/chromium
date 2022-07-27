@@ -108,7 +108,7 @@ void CheckVideoCodecs(const media::CdmCapability::VideoCodecMap& actual,
   }
 }
 
-void CheckAudioCodecs(const std::vector<media::AudioCodec>& actual,
+void CheckAudioCodecs(const base::flat_set<media::AudioCodec>& actual,
                       const std::vector<media::AudioCodec>& expected) {
   EXPECT_EQ(actual, expected);
 }

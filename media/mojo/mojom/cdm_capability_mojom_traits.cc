@@ -43,10 +43,6 @@ bool StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability>::
   if (!input.ReadAudioCodecs(&audio_codecs))
     return false;
 
-  // Ensure that the AudioCodecs are unique.
-  if (!AreUnique(audio_codecs))
-    return false;
-
   media::CdmCapability::VideoCodecMap video_codecs;
   if (!input.ReadVideoCodecs(&video_codecs))
     return false;
@@ -59,8 +55,8 @@ bool StructTraits<media::mojom::CdmCapabilityDataView, media::CdmCapability>::
   if (!input.ReadSessionTypes(&session_types))
     return false;
 
-  // |encryption_schemes| and |session_types| are convert to a base::flat_map
-  // implicitly.
+  // |encryption_schemes|, |session_types| and |audio_codecs| are converted
+  // to a base::flat_map implicitly.
   *output = media::CdmCapability(
       std::move(audio_codecs), std::move(video_codecs),
       std::move(encryption_schemes), std::move(session_types));

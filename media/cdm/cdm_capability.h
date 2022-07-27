@@ -6,7 +6,6 @@
 #define MEDIA_CDM_CDM_CAPABILITY_H_
 
 #include <map>
-#include <vector>
 
 #include "base/containers/flat_set.h"
 #include "media/base/audio_codecs.h"
@@ -44,7 +43,7 @@ bool MEDIA_EXPORT operator==(const VideoCodecInfo& lhs,
 struct MEDIA_EXPORT CdmCapability {
   using VideoCodecMap = std::map<VideoCodec, VideoCodecInfo>;
   CdmCapability();
-  CdmCapability(std::vector<AudioCodec> audio_codecs,
+  CdmCapability(base::flat_set<AudioCodec> audio_codecs,
                 VideoCodecMap video_codecs,
                 base::flat_set<EncryptionScheme> encryption_schemes,
                 base::flat_set<CdmSessionType> session_types);
@@ -55,7 +54,7 @@ struct MEDIA_EXPORT CdmCapability {
   // codecs supported by the media pipeline using the CDM. This does not include
   // codec profiles, as in general Chromium doesn't handle audio codec profiles
   // separately.
-  std::vector<AudioCodec> audio_codecs;
+  base::flat_set<AudioCodec> audio_codecs;
 
   // Map of video codecs and a struct containing the associated profiles
   // supported by the CDM (e.g. vp8) and whether clear lead is supported.
