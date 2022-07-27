@@ -6750,11 +6750,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(autofill::features::kAutofillSaveAndFillVPA)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"context-menu-google-lens-chip",
-     flag_descriptions::kContextMenuGoogleLensChipName,
-     flag_descriptions::kContextMenuGoogleLensChipDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kContextMenuGoogleLensChip)},
-
     {"context-menu-search-with-google-lens",
      flag_descriptions::kContextMenuSearchWithGoogleLensName,
      flag_descriptions::kContextMenuSearchWithGoogleLensDescription, kOsAndroid,

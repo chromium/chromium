@@ -367,9 +367,6 @@ extern const char kConsolidatedSiteStorageControlsDescription[];
 extern const char kConsumerAutoUpdateToggleAllowedName[];
 extern const char kConsumerAutoUpdateToggleAllowedDescription[];
 
-extern const char kContextMenuGoogleLensChipName[];
-extern const char kContextMenuGoogleLensChipDescription[];
-
 extern const char kContextMenuSearchWithGoogleLensName[];
 extern const char kContextMenuSearchWithGoogleLensDescription[];
 

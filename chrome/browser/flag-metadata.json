@@ -999,11 +999,6 @@
     "expiry_milestone": 106
   },
   {
-    "name": "context-menu-google-lens-chip",
-    "owners": [ "yusuyoutube@google.com", "benwgold@google.com", "lens-chrome@google.com" ],
-    "expiry_milestone": 103
-  },
-  {
     "name": "context-menu-popup-style",
     "owners": [ "wenyufu", "clank-app-team@google.com" ],
     "expiry_milestone": 108
