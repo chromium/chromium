@@ -108,6 +108,7 @@ class TestResult(object):
         # These are set by the worker, not by the driver, so they are not passed to the constructor.
         self.worker_name = ''
         self.shard_name = ''
+        self.start_time = None  # Time in seconds since the epoch of test launched.
         self.total_run_time = 0  # The time taken to run the test plus any references, compute diffs, etc.
         self.test_number = None
         self.artifacts = Artifacts(self.results_directory,

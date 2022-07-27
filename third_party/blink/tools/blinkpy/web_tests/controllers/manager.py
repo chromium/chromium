@@ -211,6 +211,8 @@ class Manager(object):
             initial_results,
             all_retry_results,
             only_include_failing=True)
+        run_histories = test_run_results.test_run_histories(
+            self._port, self._expectations, initial_results, all_retry_results)
 
         exit_code = summarized_failing_results['num_regressions']
         if exit_code > exit_codes.MAX_FAILURES_EXIT_STATUS:
@@ -221,7 +223,7 @@ class Manager(object):
         if not self._options.dry_run:
             self._write_json_files(summarized_full_results,
                                    summarized_failing_results, initial_results,
-                                   running_all_tests)
+                                   running_all_tests, run_histories)
 
             self._upload_json_files()
 
@@ -612,7 +614,7 @@ class Manager(object):
 
     def _write_json_files(self, summarized_full_results,
                           summarized_failing_results, initial_results,
-                          running_all_tests):
+                          running_all_tests, run_histories):
         _log.debug("Writing JSON files in %s.", self._artifacts_directory)
 
         # FIXME: Upload stats.json to the server and delete times_ms.
@@ -671,6 +673,10 @@ class Manager(object):
             json_results_generator.write_json(self._filesystem,
                                               summarized_full_results,
                                               self._options.json_test_results)
+        if self._options.write_run_histories_to:
+            json_results_generator.write_json(
+                self._filesystem, run_histories,
+                self._options.write_run_histories_to)
 
         _log.debug('Finished writing JSON files.')
 

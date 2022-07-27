@@ -258,15 +258,17 @@ def parse_args(args):
                  'directory, or the flag-specific generic-platform directory if '
                  '--additional-driver-flag is specified. See --reset-results.'
                  )),
-            optparse.make_option(
-                '--driver-name',
-                type='string',
-                help='Alternative driver binary to use'),
+            optparse.make_option('--driver-name',
+                                 type='string',
+                                 help='Alternative driver binary to use'),
             optparse.make_option(
                 '--json-test-results',  # New name from json_results_generator
                 '--write-full-results-to',  # Old argument name
                 '--isolated-script-test-output',  # Isolated API
                 help='Path to write the JSON test results for *all* tests.'),
+            optparse.make_option(
+                '--write-run-histories-to',
+                help='Path to write the JSON test run histories.'),
             # FIXME(tansell): Remove this option if nobody is found who needs it.
             optparse.make_option(
                 '--json-failing-test-results',
@@ -291,16 +293,15 @@ def parse_args(args):
                  'If --additional-driver-flag is specified, reset the flag-specific baselines. '
                  'If --copy-baselines is specified, the copied baselines will be reset.'
                  )),
-            optparse.make_option(
-                '--results-directory', help='Location of test results'),
-            optparse.make_option(
-                '--smoke', action='store_true',
-                help='Run just the SmokeTests'),
-            optparse.make_option(
-                '--no-smoke',
-                dest='smoke',
-                action='store_false',
-                help='Do not run just the SmokeTests'),
+            optparse.make_option('--results-directory',
+                                 help='Location of test results'),
+            optparse.make_option('--smoke',
+                                 action='store_true',
+                                 help='Run just the SmokeTests'),
+            optparse.make_option('--no-smoke',
+                                 dest='smoke',
+                                 action='store_false',
+                                 help='Do not run just the SmokeTests'),
         ]))
 
     option_group_definitions.append((

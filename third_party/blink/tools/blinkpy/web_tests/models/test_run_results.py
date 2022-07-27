@@ -406,3 +406,85 @@ def summarize_results(port_obj,
                 path)
 
     return results
+
+
+def _worker_number(worker_name):
+    return int(worker_name.split('/')[1]) if worker_name else -1
+
+
+def _test_result_as_dict(result, **kwargs):
+    ret = {
+        'test_name': result.test_name,
+        'test_run_time': result.test_run_time,
+        'has_stderr': result.has_stderr,
+        'reftest_type': result.reftest_type[:],
+        'pid': result.pid,
+        'has_repaint_overlay': result.has_repaint_overlay,
+        'crash_site': result.crash_site,
+        'retry_attempt': result.retry_attempt,
+        'type': result.type,
+        'worker_name': result.worker_name,
+        'worker_number': _worker_number(result.worker_name),
+        'shard_name': result.shard_name,
+        'start_time': result.start_time,
+        'total_run_time': result.total_run_time,
+        'test_number': result.test_number,
+        **kwargs,
+    }
+    if result.failures:
+        failures = []
+        for failure in result.failures:
+            try:
+                failures.append({'message': failure.message()})
+            except NotImplementedError:
+                failures.append({'message': type(failure).__name__})
+        ret['failures'] = failures
+    if result.failure_reason:
+        ret['failure_reason'] = {
+            'primary_error_message':
+            result.failure_reason.primary_error_message
+        }
+    for artifact_name, artifacts in result.artifacts.artifacts.items():
+        artifact_dict = ret.setdefault('artifacts', {})
+        artifact_dict.setdefault(artifact_name, []).extend(artifacts)
+    return ret
+
+
+def test_run_histories(port_obj, expectations, initial_results,
+                       all_retry_results):
+    """Returns a dictionary containing a flattened list of all test runs, with
+    the following fields:
+        'version': a version indicator.
+        'run_histories': a list of TestResult joined with expectations info.
+        'random_order_seed': if order set to random and seed specified.
+
+    Comparing to `summarized_results` this method dumps all the running
+    histories for the tests (instead of `last_result`).
+    """
+    ret = {}
+    ret['version'] = 1
+    if port_obj.get_option('order') == 'random':
+        ret['random_order_seed'] = port_obj.get_option('seed')
+
+    run_histories = []
+    for test_run_results in [initial_results] + all_retry_results:
+        # all_results does not include SKIP, so we need results_by_name.
+        for test_name, result in test_run_results.results_by_name.items():
+            if result.type != ResultType.Skip:
+                continue
+            exp = expectations.get_expectations(test_name)
+            run_histories.append(
+                _test_result_as_dict(result,
+                                     expected_results=list(exp.results),
+                                     bugs=exp.reason))
+
+        # results_by_name only includes the last result, so we need all_results.
+        for result in test_run_results.all_results:
+            exp = expectations.get_expectations(result.test_name)
+            run_histories.append(
+                _test_result_as_dict(result,
+                                     expected_results=list(exp.results),
+                                     bugs=exp.reason))
+    ret['run_histories'] = run_histories
+
+    return ret

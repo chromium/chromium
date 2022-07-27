@@ -336,6 +336,7 @@ class Worker(object):
 
         result.shard_name = shard_name
         result.worker_name = self._name
+        result.start_time = start
         result.total_run_time = time.time() - start
         result.test_number = self._num_tests
         self._num_tests += 1
