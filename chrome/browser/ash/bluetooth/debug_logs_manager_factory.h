@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_BLUETOOTH_DEBUG_LOGS_MANAGER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -17,7 +17,7 @@ namespace bluetooth {
 class DebugLogsManager;
 
 // Factory for DebugLogsManager.
-class DebugLogsManagerFactory : public BrowserContextKeyedServiceFactory {
+class DebugLogsManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static DebugLogsManager* GetForProfile(Profile* profile);
   static DebugLogsManagerFactory* GetInstance();

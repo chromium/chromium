@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_EXTENSION_APPS_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -17,7 +17,7 @@ class StandaloneBrowserExtensionApps;
 // Singleton that owns all StandaloneBrowserExtensionApps publisher for
 // Chrome Apps and associates them with Profiles.
 class StandaloneBrowserExtensionAppsFactoryForApp
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static StandaloneBrowserExtensionApps* GetForProfile(Profile* profile);
 
@@ -39,14 +39,12 @@ class StandaloneBrowserExtensionAppsFactoryForApp
   // BrowserContextKeyedServiceFactory overrides.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 // Singleton that owns all StandaloneBrowserExtensionApps publisher for
 // Extensions and associates them with Profiles.
 class StandaloneBrowserExtensionAppsFactoryForExtension
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static StandaloneBrowserExtensionApps* GetForProfile(Profile* profile);
 
@@ -67,8 +65,6 @@ class StandaloneBrowserExtensionAppsFactoryForExtension
 
   // BrowserContextKeyedServiceFactory overrides.
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

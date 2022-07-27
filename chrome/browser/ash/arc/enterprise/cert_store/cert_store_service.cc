@@ -29,6 +29,7 @@
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/common/net/x509_certificate_model_nss.h"
 #include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "components/policy/core/common/policy_map.h"
@@ -49,7 +50,7 @@ namespace arc {
 namespace {
 
 // Singleton factory for CertStoreService.
-class CertStoreServiceFactory : public BrowserContextKeyedServiceFactory {
+class CertStoreServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static CertStoreService* GetForBrowserContext(
       content::BrowserContext* context) {
@@ -67,16 +68,10 @@ class CertStoreServiceFactory : public BrowserContextKeyedServiceFactory {
  private:
   friend base::DefaultSingletonTraits<CertStoreServiceFactory>;
   CertStoreServiceFactory()
-      : BrowserContextKeyedServiceFactory(
+      : ProfileKeyedServiceFactory(
             "CertStoreService",
-            BrowserContextDependencyManager::GetInstance()) {
+            ProfileSelections::BuildServicesForAllProfiles()) {
     DependsOn(NssServiceFactory::GetInstance());
-  }
-
-  // BrowserContextKeyedServiceFactory overrides:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override {
-    return context;
   }
 
   bool ServiceIsNULLWhileTesting() const override { return true; }

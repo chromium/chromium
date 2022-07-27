@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_RESTORE_APP_RESTORE_ARC_TASK_HANDLER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -15,8 +15,7 @@ namespace app_restore {
 
 class AppRestoreArcTaskHandler;
 
-class AppRestoreArcTaskHandlerFactory
-    : public BrowserContextKeyedServiceFactory {
+class AppRestoreArcTaskHandlerFactory : public ProfileKeyedServiceFactory {
  public:
   static AppRestoreArcTaskHandler* GetForProfile(Profile* profile);
 

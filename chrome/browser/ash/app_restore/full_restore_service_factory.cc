@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -50,9 +49,10 @@ FullRestoreService* FullRestoreServiceFactory::GetForProfile(Profile* profile) {
 }
 
 FullRestoreServiceFactory::FullRestoreServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "FullRestoreService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("FullRestoreService",
+                                 ProfileSelections::Builder()
+                                     .WithSystem(ProfileSelection::kNone)
+                                     .Build()) {
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
 }

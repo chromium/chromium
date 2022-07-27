@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_CROSAPI_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -16,7 +16,7 @@ class WebAppsCrosapi;
 
 // Singleton that owns all WebAppsCrosapi publisher and associates them with
 // Profiles.
-class WebAppsCrosapiFactory : public BrowserContextKeyedServiceFactory {
+class WebAppsCrosapiFactory : public ProfileKeyedServiceFactory {
  public:
   static WebAppsCrosapi* GetForProfile(Profile* profile);
 
@@ -34,8 +34,6 @@ class WebAppsCrosapiFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory overrides.
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

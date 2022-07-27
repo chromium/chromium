@@ -22,7 +22,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -48,9 +47,7 @@ class URLLoaderFactoryGetterImpl
 };
 
 ExploreSitesServiceFactory::ExploreSitesServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ExploreSitesService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("ExploreSitesService") {
   DependsOn(HistoryServiceFactory::GetInstance());
 }
 ExploreSitesServiceFactory::~ExploreSitesServiceFactory() = default;

@@ -20,7 +20,6 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
@@ -104,9 +103,7 @@ SearchPermissionsService::Factory::GetInstance() {
 }
 
 SearchPermissionsService::Factory::Factory()
-    : BrowserContextKeyedServiceFactory(
-          "SearchPermissionsService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("SearchPermissionsService") {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }

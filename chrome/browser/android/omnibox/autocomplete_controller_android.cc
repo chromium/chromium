@@ -32,7 +32,6 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -40,7 +39,6 @@
 #include "chrome/browser/ui/android/omnibox/jni_headers/AutocompleteController_jni.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/browser_ui/util/android/url_constants.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -480,16 +478,10 @@ AutocompleteControllerAndroid::Factory::GetInstance() {
   return base::Singleton<AutocompleteControllerAndroid::Factory>::get();
 }
 
-content::BrowserContext*
-AutocompleteControllerAndroid::Factory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
-}
-
 AutocompleteControllerAndroid::Factory::Factory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "AutocompleteControllerAndroid",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildServicesForAllProfiles()) {
   DependsOn(TemplateURLServiceFactory::GetInstance());
   DependsOn(ShortcutsBackendFactory::GetInstance());
 }

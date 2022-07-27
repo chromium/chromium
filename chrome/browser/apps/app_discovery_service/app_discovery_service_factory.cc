@@ -8,7 +8,6 @@
 
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace {
 static constexpr const char* kAppDiscoveryService = "AppDiscoveryService";
@@ -30,22 +29,20 @@ AppDiscoveryServiceFactory* AppDiscoveryServiceFactory::GetInstance() {
 }
 
 AppDiscoveryServiceFactory::AppDiscoveryServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           kAppDiscoveryService,
-          BrowserContextDependencyManager::GetInstance()) {}
+          // Service is available in all modes (kiosk, guest, incognito,
+          // all profile types, etc.).
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              .WithGuest(ProfileSelection::kOwnInstance)
+              .Build()) {}
 
 AppDiscoveryServiceFactory::~AppDiscoveryServiceFactory() = default;
 
 KeyedService* AppDiscoveryServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new AppDiscoveryService(Profile::FromBrowserContext(context));
-}
-
-content::BrowserContext* AppDiscoveryServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Service is available in all modes (kiosk, guest, incognito,
-  // all profile types, etc.).
-  return context;
 }
 
 }  // namespace apps

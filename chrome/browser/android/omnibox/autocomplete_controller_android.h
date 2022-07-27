@@ -10,7 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -95,14 +95,10 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
 
-  class Factory : public BrowserContextKeyedServiceFactory {
+  class Factory : public ProfileKeyedServiceFactory {
    public:
     static AutocompleteControllerAndroid* GetForProfile(Profile* profile);
     static Factory* GetInstance();
-
-   protected:
-    content::BrowserContext* GetBrowserContextToUse(
-        content::BrowserContext* context) const override;
 
    private:
     friend struct base::DefaultSingletonTraits<Factory>;

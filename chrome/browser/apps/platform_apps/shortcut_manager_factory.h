@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_PLATFORM_APPS_SHORTCUT_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_APPS_PLATFORM_APPS_SHORTCUT_MANAGER_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename Type>
@@ -20,7 +20,7 @@ class AppShortcutManager;
 // Profiles. Listens for the Profile's destruction notification and cleans up
 // the associated AppShortcutManager.
 // AppShortcutManagers should not exist in incognito profiles.
-class AppShortcutManagerFactory : public BrowserContextKeyedServiceFactory {
+class AppShortcutManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static AppShortcutManager* GetForProfile(Profile* profile);
 

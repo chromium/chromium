@@ -12,11 +12,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/authpolicy/kerberos_files_handler.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/ash/components/dbus/authpolicy/active_directory_info.pb.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/account_id/account_id.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -130,8 +130,7 @@ class AuthPolicyCredentialsManager
 
 // Singleton that owns all AuthPolicyCredentialsManagers and associates them
 // with BrowserContexts.
-class AuthPolicyCredentialsManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+class AuthPolicyCredentialsManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static AuthPolicyCredentialsManagerFactory* GetInstance();
 

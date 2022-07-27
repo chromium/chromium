@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_CONTROLLER_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -15,7 +15,7 @@ namespace captions {
 class LiveCaptionController;
 
 // Factory to get or create an instance of LiveCaptionController from a Profile.
-class LiveCaptionControllerFactory : public BrowserContextKeyedServiceFactory {
+class LiveCaptionControllerFactory : public ProfileKeyedServiceFactory {
  public:
   static LiveCaptionController* GetForProfile(Profile* profile);
 
@@ -30,8 +30,6 @@ class LiveCaptionControllerFactory : public BrowserContextKeyedServiceFactory {
   ~LiveCaptionControllerFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
 };

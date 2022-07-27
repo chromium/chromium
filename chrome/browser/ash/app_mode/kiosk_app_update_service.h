@@ -11,7 +11,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager_observer.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/update_observer.h"
 
@@ -75,7 +75,7 @@ class KioskAppUpdateService : public KeyedService,
 
 // Singleton that owns all KioskAppUpdateServices and associates them with
 // profiles.
-class KioskAppUpdateServiceFactory : public BrowserContextKeyedServiceFactory {
+class KioskAppUpdateServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the KioskAppUpdateService for |profile|, creating it if it is not
   // yet created.

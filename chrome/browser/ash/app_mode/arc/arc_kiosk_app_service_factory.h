@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_MODE_ARC_ARC_KIOSK_APP_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace ash {
 
@@ -15,7 +15,7 @@ class ArcKioskAppService;
 // Singleton that owns all ArcKioskAppServices and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
 // the associated ArcKioskAppService.
-class ArcKioskAppServiceFactory : public BrowserContextKeyedServiceFactory {
+class ArcKioskAppServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static ArcKioskAppService* GetForBrowserContext(
       content::BrowserContext* context);

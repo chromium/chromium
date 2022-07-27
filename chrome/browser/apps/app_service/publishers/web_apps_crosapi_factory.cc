@@ -7,9 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace apps {
 
@@ -34,9 +32,11 @@ void WebAppsCrosapiFactory::ShutDownForTesting(
 }
 
 WebAppsCrosapiFactory::WebAppsCrosapiFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "WebAppsCrosapi",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::Builder()
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
+              .Build()) {
   DependsOn(AppServiceProxyFactory::GetInstance());
 }
 
@@ -44,23 +44,6 @@ KeyedService* WebAppsCrosapiFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new WebAppsCrosapi(AppServiceProxyFactory::GetForProfile(
       Profile::FromBrowserContext(context)));
-}
-
-content::BrowserContext* WebAppsCrosapiFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  Profile* const profile = Profile::FromBrowserContext(context);
-  if (!profile) {
-    return nullptr;
-  }
-
-  // Use OTR profile for Guest Session.
-  if (profile->IsGuestSession()) {
-    return profile->IsOffTheRecord()
-               ? chrome::GetBrowserContextOwnInstanceInIncognito(context)
-               : nullptr;
-  }
-
-  return BrowserContextKeyedServiceFactory::GetBrowserContextToUse(context);
 }
 
 }  // namespace apps

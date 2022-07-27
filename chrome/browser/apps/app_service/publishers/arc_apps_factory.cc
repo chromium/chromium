@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace apps {
 
@@ -33,10 +32,7 @@ void ArcAppsFactory::ShutDownForTesting(content::BrowserContext* context) {
   factory->BrowserContextDestroyed(context);
 }
 
-ArcAppsFactory::ArcAppsFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ArcApps",
-          BrowserContextDependencyManager::GetInstance()) {
+ArcAppsFactory::ArcAppsFactory() : ProfileKeyedServiceFactory("ArcApps") {
   DependsOn(ArcAppListPrefsFactory::GetInstance());
   DependsOn(arc::ArcIntentHelperBridge::GetFactory());
   DependsOn(apps::AppServiceProxyFactory::GetInstance());

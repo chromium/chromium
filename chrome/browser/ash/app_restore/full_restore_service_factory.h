@@ -7,7 +7,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -17,7 +17,7 @@ namespace ash {
 namespace full_restore {
 
 // Singleton factory that builds and owns FullRestoreService.
-class FullRestoreServiceFactory : public BrowserContextKeyedServiceFactory {
+class FullRestoreServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static bool IsFullRestoreAvailableForProfile(const Profile* profile);
 

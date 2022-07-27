@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MANAGER_POLICY_CONTROLLER_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace ash {
 class AccountManagerPolicyController;
 
 class AccountManagerPolicyControllerFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   AccountManagerPolicyControllerFactory(
       const AccountManagerPolicyControllerFactory&) = delete;

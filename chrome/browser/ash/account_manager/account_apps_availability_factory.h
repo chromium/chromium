@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_APPS_AVAILABILITY_FACTORY_H_
 #define CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_APPS_AVAILABILITY_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 #include "base/no_destructor.h"
 
@@ -20,8 +20,7 @@ namespace ash {
 
 class AccountAppsAvailability;
 
-class AccountAppsAvailabilityFactory
-    : public BrowserContextKeyedServiceFactory {
+class AccountAppsAvailabilityFactory : public ProfileKeyedServiceFactory {
  public:
   static AccountAppsAvailabilityFactory* GetInstance();
   static AccountAppsAvailability* GetForProfile(Profile* profile);

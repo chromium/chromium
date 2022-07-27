@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
@@ -33,9 +32,7 @@ AccountManagerPolicyControllerFactory::GetInstance() {
 }
 
 AccountManagerPolicyControllerFactory::AccountManagerPolicyControllerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AccountManagerPolicyController",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("AccountManagerPolicyController") {}
 
 AccountManagerPolicyControllerFactory::
     ~AccountManagerPolicyControllerFactory() = default;

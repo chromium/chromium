@@ -6,15 +6,14 @@
 #define CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_LABELS_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 class AccessibilityLabelsService;
 
 // Factory to get or create an instance of AccessibilityLabelsService from
 // a Profile.
-class AccessibilityLabelsServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class AccessibilityLabelsServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static AccessibilityLabelsService* GetForProfile(Profile* profile);
 
@@ -32,8 +31,6 @@ class AccessibilityLabelsServiceFactory
   ~AccessibilityLabelsServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
 };

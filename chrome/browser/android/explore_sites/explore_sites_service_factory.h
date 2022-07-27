@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ANDROID_EXPLORE_SITES_EXPLORE_SITES_SERVICE_FACTORY_H_
 
 #include "chrome/browser/android/explore_sites/explore_sites_service.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -18,7 +18,7 @@ namespace explore_sites {
 class ExploreSitesService;
 
 // A factory to create one ExploreSitesServiceImpl per browser context.
-class ExploreSitesServiceFactory : public BrowserContextKeyedServiceFactory {
+class ExploreSitesServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static ExploreSitesServiceFactory* GetInstance();
   static ExploreSitesService* GetForBrowserContext(

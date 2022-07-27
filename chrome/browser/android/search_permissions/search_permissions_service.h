@@ -11,8 +11,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/origin.h"
 
@@ -53,7 +53,7 @@ class SearchPermissionsService : public KeyedService {
   };
 
   // Factory implementation will not create a service in incognito.
-  class Factory : public BrowserContextKeyedServiceFactory {
+  class Factory : public ProfileKeyedServiceFactory {
    public:
     static SearchPermissionsService* GetForBrowserContext(
         content::BrowserContext* context);

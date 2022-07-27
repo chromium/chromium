@@ -9,8 +9,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace ash {
@@ -57,9 +55,7 @@ DebugLogsManagerFactory* DebugLogsManagerFactory::GetInstance() {
 }
 
 DebugLogsManagerFactory::DebugLogsManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "DebugLogsManagerFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("DebugLogsManagerFactory") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ANDROID_READING_LIST_READING_LIST_NOTIFICATION_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class ReadingListNotificationService;
 
 // A factory to create the ReadingListManager singleton.
 class ReadingListNotificationServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static ReadingListNotificationServiceFactory* GetInstance();
   static ReadingListNotificationService* GetForBrowserContext(
@@ -32,8 +32,6 @@ class ReadingListNotificationServiceFactory
 
   // BrowserContextKeyedServiceFactory overrides.
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

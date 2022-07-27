@@ -16,7 +16,6 @@
 #include "components/accuracy_tips/accuracy_service.h"
 #include "components/accuracy_tips/accuracy_tip_interaction.h"
 #include "components/accuracy_tips/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -35,9 +34,7 @@ AccuracyServiceFactory* AccuracyServiceFactory::GetInstance() {
 }
 
 AccuracyServiceFactory::AccuracyServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AccuracyServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("AccuracyServiceFactory") {
   DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
 }
 

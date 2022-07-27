@@ -6,9 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/live_caption/live_caption_controller.h"
 
 namespace captions {
@@ -34,16 +32,11 @@ LiveCaptionControllerFactory* LiveCaptionControllerFactory::GetInstance() {
 }
 
 LiveCaptionControllerFactory::LiveCaptionControllerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "LiveCaptionController",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildServicesRedirectedToOriginal()) {}
 
 LiveCaptionControllerFactory::~LiveCaptionControllerFactory() = default;
-
-content::BrowserContext* LiveCaptionControllerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
-}
 
 KeyedService* LiveCaptionControllerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

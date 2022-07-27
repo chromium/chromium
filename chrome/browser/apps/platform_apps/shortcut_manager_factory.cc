@@ -7,7 +7,6 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 AppShortcutManager* AppShortcutManagerFactory::GetForProfile(Profile* profile) {
@@ -21,9 +20,7 @@ AppShortcutManagerFactory* AppShortcutManagerFactory::GetInstance() {
 }
 
 AppShortcutManagerFactory::AppShortcutManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AppShortcutManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("AppShortcutManager") {}
 
 AppShortcutManagerFactory::~AppShortcutManagerFactory() {}
 

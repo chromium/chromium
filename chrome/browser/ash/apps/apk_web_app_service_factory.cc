@@ -6,12 +6,10 @@
 
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
@@ -31,9 +29,9 @@ ApkWebAppServiceFactory* ApkWebAppServiceFactory::GetInstance() {
 }
 
 ApkWebAppServiceFactory::ApkWebAppServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ApkWebAppService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildServicesRedirectedToOriginal()) {
   DependsOn(ArcAppListPrefsFactory::GetInstance());
   DependsOn(web_app::WebAppProviderFactory::GetInstance());
 }
@@ -47,12 +45,6 @@ KeyedService* ApkWebAppServiceFactory::BuildServiceInstanceFor(
     return nullptr;
 
   return new ApkWebAppService(profile, /*test_delegate=*/nullptr);
-}
-
-content::BrowserContext* ApkWebAppServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Mirrors ArcAppListPrefs.
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 }  // namespace ash
