@@ -544,6 +544,92 @@ TEST_F(ServiceWorkerVersionTest, SetDevToolsAttached) {
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
 }
 
+// Tests that a worker containing external request with
+// ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout does not stop
+// if devtools is detached (after it is attached).
+//
+// Regression test for crbug.com/1152255#c144
+TEST_F(ServiceWorkerVersionTest, DevToolsAttachThenDetach) {
+  base::SimpleTestTickClock tick_clock;
+  SetTickClockForTesting(&tick_clock);
+  absl::optional<blink::ServiceWorkerStatusCode> status;
+
+  auto start_external_request_test =
+      [&](ServiceWorkerExternalRequestTimeoutType timeout_type,
+          bool expect_running) {
+        SCOPED_TRACE(testing::Message()
+                     << std::boolalpha << "expect_running: " << expect_running);
+        {
+          // Start worker.
+          base::RunLoop run_loop;
+          version_->StartWorker(
+              ServiceWorkerMetrics::EventType::UNKNOWN,
+              ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
+          ASSERT_EQ(EmbeddedWorkerStatus::STARTING, version_->running_status());
+
+          // Add an external request.
+          EXPECT_EQ(ServiceWorkerExternalRequestResult::kOk,
+                    version_->StartExternalRequest(base::GenerateGUID(),
+                                                   timeout_type));
+          run_loop.Run();
+          EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
+          EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
+        }
+
+        {
+          // Simulate DevTools is attached.
+          version_->SetDevToolsAttached(true);
+          EXPECT_TRUE(version_->timeout_timer_.IsRunning());
+          EXPECT_TRUE(version_->start_time_.is_null());
+          EXPECT_TRUE(version_->skip_recording_startup_time_);
+
+          // Simulate DevTools is detached.
+          version_->SetDevToolsAttached(false);
+          EXPECT_TRUE(version_->timeout_timer_.IsRunning());
+          EXPECT_TRUE(version_->skip_recording_startup_time_);
+
+          EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
+          EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version_->running_status());
+        }
+
+        // Now advance time to check worker's running state.
+        tick_clock.Advance(kTestTimeoutBeyondRequestTimeout);
+        version_->timeout_timer_.user_task().Run();
+        base::RunLoop().RunUntilIdle();
+
+        const bool worker_stopped_or_stopping =
+            version_->OnRequestTermination();
+
+        EXPECT_EQ(!expect_running, worker_stopped_or_stopping);
+        const bool worker_running =
+            version_->running_status() == EmbeddedWorkerStatus::RUNNING;
+        EXPECT_EQ(expect_running, worker_running);
+
+        // Ensure the worker is stopped, so that start_external_request_test()
+        // works next time.
+        {
+          bool has_stopped = false;
+          base::RunLoop run_loop;
+          version_->StopWorker(
+              VerifyCalled(&has_stopped, run_loop.QuitClosure()));
+          run_loop.Run();
+          EXPECT_TRUE(has_stopped);
+          EXPECT_EQ(EmbeddedWorkerStatus::STOPPED, version_->running_status());
+        }
+      };
+
+  // kDoesNotTimeout timeout external request would continue to keep the worker
+  // running.
+  start_external_request_test(
+      ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout,
+      true /* expect_running */);
+
+  // And ensure that kDefault timeout external request does not keep the worker
+  // running.
+  start_external_request_test(ServiceWorkerExternalRequestTimeoutType::kDefault,
+                              false /* expect_running */);
+}
+
 TEST_F(ServiceWorkerVersionTest, RequestTerminationWithDevToolsAttached) {
   auto* service_worker =
       helper_->AddNewPendingServiceWorker<FakeServiceWorker>(helper_.get());
