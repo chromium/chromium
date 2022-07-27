@@ -102,7 +102,7 @@ fn test() {
             name: "chromium".to_string(),
             version: Version::new(0, 1, 0),
             authors: Vec::new(),
-            edition: Default::default(),
+            edition: Edition("2021".to_string()),
             description: None,
         },
         workspace: None,
