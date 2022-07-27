@@ -95,7 +95,7 @@ struct Config {
   // `omnibox_action` is disabled.
   bool omnibox_action_on_navigation_intents = false;
 
-  // If `omnibox_action_on_navigation_intents` is enabled, this threshold
+  // If `omnibox_action_on_navigation_intents` is false, this threshold
   // helps determine when the user is intending to perform a navigation.
   int omnibox_action_navigation_intent_score_threshold = 1300;
 
