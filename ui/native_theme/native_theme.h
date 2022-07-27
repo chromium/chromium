@@ -113,6 +113,19 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kNumStates = kPressed + 1,
   };
 
+  // Enum used for kPageColors pref. Page Colors is a browser setting that can
+  // be used to simulate forced colors mode. This enum should match its React
+  // counterpart.
+  enum PageColors {
+    kOff = 0,
+    kDusk = 1,
+    kDesert = 2,
+    kBlack = 3,
+    kWhite = 4,
+    kHighContrast = 5,
+    kMaxValue = kHighContrast,
+  };
+
   // OS-level preferred color scheme. (Ex. high contrast or dark mode color
   // preference.)
   enum class PreferredColorScheme {
@@ -438,6 +451,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // colors, you probably shouldn't. Instead, use GetSystemColor().
   virtual bool ShouldUseDarkColors() const;
 
+  // Returns the user's current page colors.
+  virtual PageColors GetPageColors() const;
+
   // Returns the OS-level user preferred color scheme. See the comment for
   // CalculatePreferredColorScheme() for details on how preferred color scheme
   // is calculated.
@@ -463,6 +479,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
     should_use_dark_colors_ = should_use_dark_colors;
   }
   void set_forced_colors(bool forced_colors) { forced_colors_ = forced_colors; }
+  void set_page_colors(PageColors page_colors) { page_colors_ = page_colors; }
   void set_preferred_color_scheme(PreferredColorScheme preferred_color_scheme) {
     preferred_color_scheme_ = preferred_color_scheme;
   }
@@ -564,6 +581,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   bool should_use_dark_colors_ = false;
   const bool is_custom_system_theme_;
   bool forced_colors_ = false;
+  PageColors page_colors_ = PageColors::kOff;
   PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;
   PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;
 

@@ -145,6 +145,10 @@ NativeTheme::GetPlatformHighContrastColorScheme() const {
              : PlatformHighContrastColorScheme::kLight;
 }
 
+NativeTheme::PageColors NativeTheme::GetPageColors() const {
+  return page_colors_;
+}
+
 NativeTheme::PreferredColorScheme NativeTheme::GetPreferredColorScheme() const {
   return preferred_color_scheme_;
 }

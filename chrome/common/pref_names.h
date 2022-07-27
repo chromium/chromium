@@ -195,6 +195,7 @@ extern const char kAccessibilityFocusHighlightEnabled[];
 extern const char kLiveCaptionEnabled[];
 extern const char kLiveCaptionLanguageCode[];
 #endif
+extern const char kPageColors[];
 #if BUILDFLAG(IS_MAC)
 extern const char kConfirmToQuitEnabled[];
 extern const char kShowFullscreenToolbar[];

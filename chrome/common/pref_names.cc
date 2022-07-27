@@ -1302,6 +1302,10 @@ const char kAccessibilityFocusHighlightEnabled[] =
     "settings.a11y.focus_highlight";
 #endif
 
+// Pref indicating the page colors option the user wants. Page colors is an
+// accessibility feature that simulates forced colors mode at the browser level.
+const char kPageColors[] = "settings.a11y.page_colors";
+
 #if BUILDFLAG(IS_MAC)
 // Boolean that indicates whether the application should show the info bar
 // asking the user to set up automatic updates when Keystone promotion is
