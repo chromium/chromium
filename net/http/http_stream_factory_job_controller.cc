@@ -251,14 +251,16 @@ void HttpStreamFactory::JobController::OnRequestComplete() {
     dns_alpn_h3_job_.reset();
   } else {
     if (bound_job_->job_type() == MAIN) {
+      bound_job_ = nullptr;
       main_job_.reset();
     } else if (bound_job_->job_type() == ALTERNATIVE) {
+      bound_job_ = nullptr;
       alternative_job_.reset();
     } else {
       DCHECK(bound_job_->job_type() == DNS_ALPN_H3);
+      bound_job_ = nullptr;
       dns_alpn_h3_job_.reset();
     }
-    bound_job_ = nullptr;
   }
   MaybeNotifyFactoryOfCompletion();
 }
