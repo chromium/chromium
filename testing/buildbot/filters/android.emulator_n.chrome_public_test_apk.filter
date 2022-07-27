@@ -9,3 +9,9 @@
 
 # TODO(crbug/1345504)
 -org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
+
+# TODO(crbug/1347614)
+-org.chromium.chrome.browser.tasks.tab_management.TabSuggestionMessageCardTest.closeTabSuggestionReviewedAndAccepted
+
+# TODO(crbug/1347615)
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testProtectedContentAllowThenBlock

@@ -6,3 +6,6 @@
 
 # TODO(crbug.com/1338951)
 -WebRtcCaptureFromElementBrowserTest.VerifyCanvasWebGLCaptureColor
+
+# TODO(crbug.com/1347608)
+-SecurityExploitBrowserTest.PostMessageSourceOrigin
