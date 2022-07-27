@@ -690,13 +690,10 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     ASSERT_FALSE(IsBlocked(extension_id));
   }
 
-  const base::Value* GetExtensionPref(const std::string& extension_id) {
-    const base::Value* dict =
-        profile()->GetPrefs()->GetDictionary(pref_names::kExtensions);
-    if (!dict) {
-      return nullptr;
-    }
-    const base::Value* pref = dict->FindDictKey(extension_id);
+  const base::Value::Dict* GetExtensionPref(const std::string& extension_id) {
+    const base::Value::Dict& dict =
+        profile()->GetPrefs()->GetValueDict(pref_names::kExtensions);
+    const base::Value::Dict* pref = dict.FindDict(extension_id);
     if (!pref) {
       return nullptr;
     }
@@ -705,17 +702,17 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
 
   bool IsPrefExist(const std::string& extension_id,
                    const std::string& pref_path) {
-    const base::Value* pref = GetExtensionPref(extension_id);
-    return pref && pref->FindBoolPath(pref_path).has_value();
+    const base::Value::Dict* pref = GetExtensionPref(extension_id);
+    return pref && pref->FindBoolByDottedPath(pref_path).has_value();
   }
 
   bool DoesIntegerPrefExist(const std::string& extension_id,
                             const std::string& pref_path) {
-    const base::Value* pref = GetExtensionPref(extension_id);
+    const base::Value::Dict* pref = GetExtensionPref(extension_id);
     if (!pref) {
       return false;
     }
-    return pref->FindIntPath(pref_path).has_value();
+    return pref->FindIntByDottedPath(pref_path).has_value();
   }
 
   void SetPref(const std::string& extension_id,

@@ -257,13 +257,9 @@ void ExtensionServiceTestBase::
 }
 
 size_t ExtensionServiceTestBase::GetPrefKeyCount() {
-  const base::Value* dict =
-      profile()->GetPrefs()->GetDictionary(pref_names::kExtensions);
-  if (!dict) {
-    ADD_FAILURE();
-    return 0;
-  }
-  return dict->DictSize();
+  const base::Value::Dict& dict =
+      profile()->GetPrefs()->GetValueDict(pref_names::kExtensions);
+  return dict.size();
 }
 
 void ExtensionServiceTestBase::ValidatePrefKeyCount(size_t count) {
@@ -279,19 +275,15 @@ testing::AssertionResult ExtensionServiceTestBase::ValidateBooleanPref(
                                        expected_val ? "true" : "false");
 
   PrefService* prefs = profile()->GetPrefs();
-  const base::Value* dict = prefs->GetDictionary(pref_names::kExtensions);
-  if (!dict) {
-    return testing::AssertionFailure()
-        << "extension.settings does not exist " << msg;
-  }
+  const base::Value::Dict& dict = prefs->GetValueDict(pref_names::kExtensions);
 
-  const base::Value* pref = dict->FindDictKey(extension_id);
+  const base::Value::Dict* pref = dict.FindDict(extension_id);
   if (!pref) {
     return testing::AssertionFailure()
         << "extension pref does not exist " << msg;
   }
 
-  absl::optional<bool> val = pref->FindBoolPath(pref_path);
+  absl::optional<bool> val = pref->FindBoolByDottedPath(pref_path);
   if (!val.has_value()) {
     return testing::AssertionFailure()
         << pref_path << " pref not found " << msg;
@@ -312,11 +304,10 @@ void ExtensionServiceTestBase::ValidateIntegerPref(
       base::NumberToString(expected_val).c_str());
 
   PrefService* prefs = profile()->GetPrefs();
-  const base::Value* dict = prefs->GetDictionary(pref_names::kExtensions);
-  ASSERT_TRUE(dict) << msg;
-  const base::Value* pref = dict->FindDictKey(extension_id);
+  const base::Value::Dict& dict = prefs->GetValueDict(pref_names::kExtensions);
+  const base::Value::Dict* pref = dict.FindDict(extension_id);
   ASSERT_TRUE(pref) << msg;
-  EXPECT_EQ(expected_val, pref->FindIntPath(pref_path)) << msg;
+  EXPECT_EQ(expected_val, pref->FindIntByDottedPath(pref_path)) << msg;
 }
 
 void ExtensionServiceTestBase::ValidateStringPref(
@@ -327,13 +318,12 @@ void ExtensionServiceTestBase::ValidateStringPref(
                                        extension_id.c_str(), pref_path.c_str(),
                                        expected_val.c_str());
 
-  const base::Value* dict =
-      profile()->GetPrefs()->GetDictionary(pref_names::kExtensions);
-  ASSERT_TRUE(dict) << msg;
+  const base::Value::Dict& dict =
+      profile()->GetPrefs()->GetValueDict(pref_names::kExtensions);
   std::string manifest_path = extension_id + ".manifest";
-  const base::Value* pref = dict->FindDictPath(manifest_path);
+  const base::Value::Dict* pref = dict.FindDictByDottedPath(manifest_path);
   ASSERT_TRUE(pref) << msg;
-  const std::string* val = pref->FindStringPath(pref_path);
+  const std::string* val = pref->FindStringByDottedPath(pref_path);
   ASSERT_TRUE(val) << msg;
   EXPECT_EQ(expected_val, *val) << msg;
 }
