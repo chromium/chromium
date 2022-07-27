@@ -85,7 +85,6 @@ constexpr const char kUserActionReloadGaia[] = "reload-gaia";
 constexpr const char kUserActionCancelReset[] = "cancel-reset";
 constexpr const char kUserActionCancel[] = "cancel";
 constexpr const char kUserActionContinueAppLaunch[] = "continue-app-launch";
-constexpr const char kUserActionLaunchHelpApp[] = "launch-help-app";
 constexpr const char kUserActionOfflineLogin[] = "offline-login";
 
 ErrorScreen::ErrorScreen(base::WeakPtr<ErrorScreenView> view)
@@ -302,10 +301,6 @@ void ErrorScreen::OnUserAction(const base::Value::List& args) {
     OnOfflineLoginClicked();
   } else if (action_id == kUserActionContinueAppLaunch) {
     OnContinueAppLaunchButtonClicked();
-  } else if (action_id == kUserActionLaunchHelpApp) {
-    CHECK_EQ(args.size(), 2);
-    const int help_topic_id = args[1].GetInt();
-    LaunchHelpApp(help_topic_id);
   } else {
     BaseScreen::OnUserAction(args);
   }

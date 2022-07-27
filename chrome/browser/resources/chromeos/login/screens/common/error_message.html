@@ -79,10 +79,6 @@
           <span hidden="[[!isOneOf_(uiState_, 'ui-state-kiosk-mode')]]">
             [[i18nDynamic(locale, 'kioskOfflineMessageBody')]]
           </span>
-          <span id="auto-enrollment-offline-message-text"
-              hidden="[[!isOneOf_(uiState_,
-                  'ui-state-auto-enrollment-error')]]">
-          </span>
         </div>
         <div hidden="[[!isOneOf_(errorState_, 'portal')]]">
           <span id="captive-portal-message-text"
@@ -90,8 +86,7 @@
                   'ui-state-update',
                   'ui-state-signin',
                   'ui-state-supervised',
-                  'ui-state-kiosk-mode',
-                  'ui-state-auto-enrollment-error')]]">
+                  'ui-state-kiosk-mode')]]">
           </span>
         </div>
         <div hidden="[[!isOneOf_(errorState_,
@@ -102,15 +97,13 @@
                   'ui-state-update',
                   'ui-state-signin',
                   'ui-state-supervised',
-                  'ui-state-kiosk-mode',
-                  'ui-state-auto-enrollment-error')]]">
+                  'ui-state-kiosk-mode')]]">
           </span>
         </div>
         <div hidden="[[!isOneOf_(errorState_, 'proxy')]]">
           <span id="update-proxy-message-text"
               hidden="[[!isOneOf_(uiState_,
-                  'ui-state-update',
-                  'ui-state-auto-enrollment-error')]]">
+                  'ui-state-update')]]">
           </span>
           <span id="signin-proxy-message-text"
               hidden="[[!isOneOf_(uiState_,
@@ -119,6 +112,9 @@
                   'ui-state-kiosk-mode')]]">
           </span>
         </div>
+        <span hidden="[[!isOneOf_(uiState_,'ui-state-auto-enrollment-error')]]">
+          [[i18nDynamic(locale, 'autoEnrollmentOfflineMessageBody')]]
+        </span>
         <div id="localStateErrorText" hidden="[[!isOneOf_(uiState_,
             'ui-state-local-state-error')]]">
           [[i18nDynamic(locale, 'localStateErrorText0')]]

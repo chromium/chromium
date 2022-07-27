@@ -197,6 +197,9 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
   getDialogTitle_() {
     if (this.isOneOf_(this.uiState_, 'ui-state-rollback-error')) {
       return this.i18n('rollbackErrorTitle');
+    } else if (this.isOneOf_(this.uiState_, 'ui-state-auto-enrollment-error') &&
+        this.isOneOf_(this.errorState_, 'offline', 'portal', 'proxy')) {
+      return this.i18n('autoEnrollmentErrorMessageTitle');
     } else if (
         this.isOneOf_(this.uiState_, 'ui-state-local-state-error') ||
         this.isOneOf_(this.errorState_, 'proxy', 'auth-ext-timeout')) {
@@ -325,20 +328,6 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
    * Updates localized content of the screen that is not updated via template.
    */
   updateLocalizedContent() {
-    this.updateElementWithStringAndAnchorTag_(
-        'auto-enrollment-offline-message-text',
-        'autoEnrollmentOfflineMessageBody', {
-          substitutions: [
-            loadTimeData.getString('deviceType'),
-            '<b>' + this.currentNetworkName_ + '</b>',
-          ],
-        },
-        'auto-enrollment-learn-more');
-    this.shadowRoot.querySelector('#auto-enrollment-learn-more').onclick =
-        () => {
-          this.userActed(['launch-help-app', HELP_TOPIC_AUTO_ENROLLMENT]);
-        };
-
     this.updateElementWithStringAndAnchorTag_(
         'captive-portal-message-text', 'captivePortalMessage',
         {substitutions: ['<b>' + this.currentNetworkName_ + '</b>']},

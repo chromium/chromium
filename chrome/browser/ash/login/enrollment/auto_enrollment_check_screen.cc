@@ -141,8 +141,8 @@ void AutoEnrollmentCheckScreen::OnAutoEnrollmentCheckProgressed(
     SignalCompletion();
     return;
   }
-
   UpdateState();
+  
 }
 
 void AutoEnrollmentCheckScreen::UpdateState() {
@@ -242,6 +242,7 @@ void AutoEnrollmentCheckScreen::ShowErrorScreen(
       auto_enrollment_controller_->auto_enrollment_check_type() !=
       policy::AutoEnrollmentTypeChecker::CheckType::
           kForcedReEnrollmentExplicitlyRequired);
+
   error_screen_->SetErrorState(error_state,
                                network ? network->name() : std::string());
   connect_request_subscription_ = error_screen_->RegisterConnectRequestCallback(

@@ -190,6 +190,7 @@ AutoEnrollmentController::AutoEnrollmentController() {
 AutoEnrollmentController::~AutoEnrollmentController() {}
 
 void AutoEnrollmentController::Start() {
+  LOG(WARNING) << "Starting auto-enrollment controller.";
   switch (state_) {
     case policy::AUTO_ENROLLMENT_STATE_PENDING:
       // Abort re-start if the check is still running.
@@ -393,7 +394,17 @@ void AutoEnrollmentController::OnSystemClockSyncResult(
   LOG(WARNING) << "System clock "
                << (system_clock_synchronized ? "synchronized"
                                              : "failed to synchronize");
-  StartWithSystemClockSyncState();
+  // Only call StartWithSystemClockSyncState() to determine the auto-enrollment
+  // type if the system clock could synchronize successfully. Otherwise, return
+  // an AUTO_ENROLLMENT_STATE_CONNECTION_ERROR to show an error screen and not
+  // proceeding with the auto-enrollment checks until
+  // AutoEnrollmentController::Start() is called again by a network state
+  // change or network selection.
+  if (system_clock_sync_state_ == SystemClockSyncState::kSynchronized) {
+    StartWithSystemClockSyncState();
+  } else {
+    UpdateState(policy::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
+  }
 }
 
 void AutoEnrollmentController::StartClientForInitialEnrollment() {
