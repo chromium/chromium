@@ -802,7 +802,7 @@ class TabListMediator {
                 @Override
                 public void didMoveWithinGroup(
                         Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
-                    if (tabModelNewIndex == tabModelOldIndex) return;
+                    if (!mVisible || tabModelNewIndex == tabModelOldIndex) return;
 
                     int curPosition = mModel.indexFromId(movedTab.getId());
                     TabModel tabModel = mTabModelSelector.getCurrentModel();
@@ -820,6 +820,7 @@ class TabListMediator {
 
                 @Override
                 public void didMoveTabOutOfGroup(Tab movedTab, int prevFilterIndex) {
+                    if (!mVisible) return;
                     assert !(mActionsOnAllRelatedTabs && mTabGridDialogHandler != null);
                     TabGroupModelFilter filter =
                             (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
@@ -889,7 +890,7 @@ class TabListMediator {
 
                 @Override
                 public void didMergeTabToGroup(Tab movedTab, int selectedTabIdInGroup) {
-                    if (!mActionsOnAllRelatedTabs) return;
+                    if (!mVisible || !mActionsOnAllRelatedTabs) return;
 
                     // When merging Tab 1 to Tab 2 as a new group, or merging Tab 1 to an existing
                     // group 1, we can always find the current indexes of 1) Tab 1 and 2) Tab 2 or
@@ -945,7 +946,10 @@ class TabListMediator {
                 @Override
                 public void didMoveTabGroup(
                         Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
-                    if (!mActionsOnAllRelatedTabs || tabModelNewIndex == tabModelOldIndex) return;
+                    if (!mVisible || !mActionsOnAllRelatedTabs
+                            || tabModelNewIndex == tabModelOldIndex) {
+                        return;
+                    }
                     TabGroupModelFilter filter =
                             (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
                                     .getCurrentTabModelFilter();
@@ -955,8 +959,6 @@ class TabListMediator {
                     TabModel tabModel = mTabModelSelector.getCurrentModel();
                     int curPosition = mModel.indexFromId(currentGroupSelectedTab.getId());
                     if (curPosition == TabModel.INVALID_TAB_INDEX) {
-                        // Model is uninitialized if reordering from tab strip before opening GTS.
-                        if (mModel.size() == 0) return;
                         // Sync TabListModel with updated TabGroupModelFilter.
                         int indexToUpdate = mModel.indexOfNthTabCard(
                                 filter.indexOf(tabModel.getTabAt(tabModelOldIndex)));

@@ -158,6 +158,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private boolean mInReorderMode;
     private float mLastReorderX;
     private float mTabMarginWidth;
+    private float mStripStartMarginForReorder;
     private long mLastReorderScrollTime;
 
     // Tab switch efficiency
@@ -461,7 +462,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
             // Scroll to make the selected tab visible and nearby tabs visible.
             if (mModel.getTabAt(mModel.index()) != null) {
-                updateScrollOffsetLimits();
+                updateScrollOffsetLimits(true);
                 StripLayoutTab tab = findTabById(mModel.getTabAt(mModel.index()).getId());
                 float delta = calculateOffsetToMakeTabVisible(tab, true, true, true, true);
                 // During this resize, mMinScrollOffset will be changing, so the scroll effect
@@ -864,7 +865,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     RecordUserAction.record("MobileToolbarSlideTabs");
                     onStripScrollStart();
                 }
-                updateScrollOffsetPosition((int) (mScrollOffset + deltaX));
+                updateScrollOffsetPosition((int) (mScrollOffset + deltaX), true);
             }
         }
 
@@ -1064,7 +1065,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (tabExpandAnimators != null) tabStripAnimators.addAll(tabExpandAnimators);
 
         // 2. Calculate new mScrollOffset and idealX for tab offset animation.
-        updateScrollOffsetLimits();
+        updateScrollOffsetLimits(true);
         computeTabInitialPositions();
 
         // 3. Add tab drawX animators to reposition the tabs correctly.
@@ -1234,11 +1235,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
     }
 
-    private void updateScrollOffsetPosition(int pos) {
+    private void updateScrollOffsetPosition(int pos, boolean allowReorder) {
         int oldScrollOffset = mScrollOffset;
         mScrollOffset = MathUtils.clamp(pos, (int) mMinScrollOffset, 0);
 
-        if (mInReorderMode && mScroller.isFinished()) {
+        // We can reach this point while reordering tabs in #updateReorderPosition(). If that is the
+        // case, we don't want to trigger another reorder, as we're still handling it in the first
+        // call. This prevents the interacting tab from unexpectedly changing its apparent position.
+        if (mInReorderMode && mScroller.isFinished() && allowReorder) {
             int delta = MathUtils.flipSignIf(
                     oldScrollOffset - mScrollOffset, LocalizationUtils.isLayoutRtl());
             updateReorderPosition(delta);
@@ -1247,12 +1251,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     private void updateScrollOffset(long time) {
         if (mScroller.computeScrollOffset(time)) {
-            updateScrollOffsetPosition(mScroller.getCurrX());
+            updateScrollOffsetPosition(mScroller.getCurrX(), true);
             mUpdateHost.requestUpdate();
         }
     }
 
-    private void updateScrollOffsetLimits() {
+    private void updateScrollOffsetLimits(boolean allowReorder) {
         // 1. Compute the width of the available space for all tabs.
         float stripWidth = mWidth - mLeftMargin - mRightMargin;
 
@@ -1268,6 +1272,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             // doesn't need to be included in this calculation.
             tabsWidth = mStripTabs.length * (mCachedTabWidth - mTabOverlapWidth);
             if (mInReorderMode) {
+                tabsWidth += mStripStartMarginForReorder;
                 for (int i = 0; i < mStripTabs.length; i++) {
                     final StripLayoutTab tab = mStripTabs[i];
                     tabsWidth += tab.getTrailingMargin();
@@ -1283,7 +1288,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (mMinScrollOffset > -EPSILON) mMinScrollOffset = 0.f;
 
         // 5. Clamp mScrollOffset to make sure it's in the valid range.
-        updateScrollOffsetPosition(mScrollOffset);
+        updateScrollOffsetPosition(mScrollOffset, allowReorder);
     }
 
     private void computeAndUpdateTabOrders(boolean delayResize) {
@@ -1414,7 +1419,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         // 1. Update the scroll offset limits
-        updateScrollOffsetLimits();
+        updateScrollOffsetLimits(true);
 
         // 2. Calculate the ideal tab positions
         computeTabInitialPositions();
@@ -1448,9 +1453,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // no longer base lined at 0
         float tabPosition;
         if (!LocalizationUtils.isLayoutRtl()) {
-            tabPosition = mScrollOffset + mLeftMargin;
+            tabPosition = mScrollOffset + mLeftMargin + mStripStartMarginForReorder;
         } else {
-            tabPosition = mWidth - mCachedTabWidth - mScrollOffset - mRightMargin;
+            tabPosition = mWidth - mCachedTabWidth - mScrollOffset - mRightMargin
+                    - mStripStartMarginForReorder;
         }
 
         for (int i = 0; i < mStripTabs.length; i++) {
@@ -1704,7 +1710,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             mScroller.startScroll(
                     mScrollOffset, 0, (int) fastExpandDelta, 0, time, getExpandDuration());
         } else if (isTabGroupsEnabled()) {
-            computeAndUpdateTabGroupMargins(true);
+            computeAndUpdateTabGroupMargins(true, true);
         }
 
         // 6. Request an update.
@@ -1734,7 +1740,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mUpdateHost.requestUpdate();
     }
 
-    private void computeAndUpdateTabGroupMargins(boolean autoScroll) {
+    private void computeAndUpdateTabGroupMargins(boolean autoScroll, boolean allowReorder) {
         // 1.a. Calculate and set the trailing margins for each tab.
         //    TODO(crbug.com/1308812): Replace with equivalent animation.
         for (int i = 0; i < mStripTabs.length - 1; i++) {
@@ -1748,41 +1754,48 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             boolean areRelatedTabs = mTabGroupModelFilter.getRootId(currTab)
                     == mTabGroupModelFilter.getRootId(nextTab);
 
-            if (eitherTabInAGroup && !areRelatedTabs) {
-                mStripTabs[i].setTrailingMargin(mTabMarginWidth);
-            } else {
-                mStripTabs[i].setTrailingMargin(0f);
-            }
+            float trailingMargin = eitherTabInAGroup && !areRelatedTabs ? mTabMarginWidth : 0f;
+            mStripTabs[i].setTrailingMargin(trailingMargin);
         }
 
-        // 1.b. TODO(crbug.com/1330737): Set starting and trailing margin for tab strip.
+        // 1.b. Set starting and trailing margin for tab strip.
+        boolean firstTabIsInGroup =
+                mTabGroupModelFilter.hasOtherRelatedTabs(getTabById(mStripTabs[0].getId()));
+        boolean lastTabIsInGroup = mTabGroupModelFilter.hasOtherRelatedTabs(
+                getTabById(mStripTabs[mStripTabs.length - 1].getId()));
+        mStripStartMarginForReorder = firstTabIsInGroup ? mTabMarginWidth : 0f;
+        mStripTabs[mStripTabs.length - 1].setTrailingMargin(
+                lastTabIsInGroup ? mTabMarginWidth : 0f);
 
         // 2. Compute the new tab positions and adjust the scroll offset accordingly to prevent the
         //    interacting tab from shifting away from where the user long-pressed.
-        updateScrollOffsetForMargins(autoScroll);
+        updateScrollOffsetForMargins(autoScroll, allowReorder);
     }
 
     private void resetTabGroupMargins() {
-        // 1. Reset the trailing margins for each tab.
+        // 1.a. Reset the trailing margins for each tab.
         //    TODO(crbug.com/1308812): Replace with equivalent animation.
         for (int i = 0; i < mStripTabs.length; i++) {
             mStripTabs[i].setTrailingMargin(0f);
         }
+        // 1.b. Reset start margin for the tab strip.
+        mStripStartMarginForReorder = 0f;
 
         // 2. Compute the new tab positions and attempt to adjust the scroll offset accordingly to
         //    prevent the interacting tab from shifting away from where the user long-pressed.
-        updateScrollOffsetForMargins(true);
+        updateScrollOffsetForMargins(true, false);
     }
 
-    private void updateScrollOffsetForMargins(boolean autoScroll) {
+    private void updateScrollOffsetForMargins(boolean autoScroll, boolean allowReorder) {
         // TODO(crbug.com/1308812): Replace with equivalent animation.
         float oldIdealX = mInteractingTab.getIdealX();
         computeTabInitialPositions();
         if (autoScroll) {
             int scrollDelta = (int) (mInteractingTab.getIdealX() - oldIdealX);
             mScrollOffset -= MathUtils.flipSignIf(scrollDelta, LocalizationUtils.isLayoutRtl());
-            updateScrollOffsetLimits();
         }
+
+        updateScrollOffsetLimits(allowReorder);
     }
 
     private int maybeMoveOutOfGroup(float offset, int curIndex) {
@@ -1828,9 +1841,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         boolean tabGroupsEnabled = TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext);
         boolean isInGroup = tabGroupsEnabled
                 && mTabGroupModelFilter.hasOtherRelatedTabs(getTabById(mInteractingTab.getId()));
-        boolean approachingMargin = tabGroupsEnabled && towardEnd
-                ? mInteractingTab.getTrailingMargin() > 0f
-                : (!isFirstTab && mStripTabs[curIndex - 1].getTrailingMargin() > 0f);
+        boolean hasTrailingMargin = mInteractingTab.getTrailingMargin() > 0f;
+        boolean hasStartingMargin = !isFirstTab && mStripTabs[curIndex - 1].getTrailingMargin() > 0f
+                || (isFirstTab && mStripStartMarginForReorder > 0);
+        boolean approachingMargin =
+                tabGroupsEnabled && towardEnd ? hasTrailingMargin : hasStartingMargin;
 
         if (approachingMargin) {
             if (isInGroup) {
@@ -1871,7 +1886,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
             // 3.b. Re-compute tab group margins if necessary.
             float oldIdealX = mInteractingTab.getIdealX();
-            if (tabGroupsEnabled) computeAndUpdateTabGroupMargins(false);
+            float oldOffset = mScrollOffset;
+            if (tabGroupsEnabled) computeAndUpdateTabGroupMargins(false, false);
 
             // 3.c. Since we just moved the tab we're dragging, adjust its offset so it stays in
             // the same apparent position.
@@ -1880,6 +1896,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 // When the strip is scrolling, deltaX is already accounted for by idealX. This is
                 // because idealX uses the scroll offset which has already been adjusted by deltaX.
                 if (mLastReorderScrollTime != 0) offset -= deltaX;
+
+                // Tab group margins can affect minScrollOffset. When a dragged tab is near the
+                // strip's edge, the scrollOffset being clamped can affect the apparent position.
+                offset -= MathUtils.flipSignIf(
+                        (mScrollOffset - oldOffset), LocalizationUtils.isLayoutRtl());
             } else {
                 boolean shouldFlip = LocalizationUtils.isLayoutRtl() ? destIndex < curIndex
                                                                      : destIndex > curIndex;
@@ -1896,12 +1917,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // 4. Limit offset based on tab position.  First tab can't drag left, last tab can't drag
         // right.
         if (curIndex == 0) {
-            offset =
-                    LocalizationUtils.isLayoutRtl() ? Math.min(0.f, offset) : Math.max(0.f, offset);
+            offset = LocalizationUtils.isLayoutRtl()
+                    ? Math.min(mStripStartMarginForReorder, offset)
+                    : Math.max(-mStripStartMarginForReorder, offset);
         }
         if (curIndex == mStripTabs.length - 1) {
-            offset =
-                    LocalizationUtils.isLayoutRtl() ? Math.max(0.f, offset) : Math.min(0.f, offset);
+            offset = LocalizationUtils.isLayoutRtl()
+                    ? Math.max(-mStripTabs[curIndex].getTrailingMargin(), offset)
+                    : Math.min(mStripTabs[curIndex].getTrailingMargin(), offset);
         }
 
         // 5. Set the new offset.
@@ -1936,6 +1959,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                         mUpdateHost.getAnimationHandler(), slideTab, StripLayoutTab.X_OFFSET,
                         animationLength, 0f, ANIM_TAB_MOVE_MS);
                 slideAnimationList.add(animator);
+                // When the reorder is triggered by an autoscroll, the first frame will not show the
+                // sliding tabs with the correct offset. To fix this, we manually set the correct
+                // starting offset. See https://crbug.com/1342811.
+                slideTab.setOffsetX(animationLength);
             }
             AnimatorSet set = new AnimatorSet();
             set.playTogether(slideAnimationList);
@@ -1983,7 +2010,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (dragSpeedRatio != 0.f) {
             // 4.a. We're in a gutter.  Update the scroll offset.
             float dragSpeed = REORDER_EDGE_SCROLL_MAX_SPEED_DP * dragSpeedRatio;
-            updateScrollOffsetPosition((int) (mScrollOffset + dragSpeed * deltaSec));
+            updateScrollOffsetPosition((int) (mScrollOffset + dragSpeed * deltaSec), true);
 
             mUpdateHost.requestUpdate();
         } else {

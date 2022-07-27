@@ -922,7 +922,7 @@ public class StripLayoutHelperTest {
         assertEquals(EXPECTED_MARGIN, tabs[0].getTrailingMargin(), TAB_MARGIN_WIDTH, EPSILON);
         assertEquals(EXPECTED_NO_MARGIN, tabs[1].getTrailingMargin(), 0f, EPSILON);
         assertEquals(EXPECTED_NO_MARGIN, tabs[2].getTrailingMargin(), 0f, EPSILON);
-        assertEquals(EXPECTED_NO_MARGIN, tabs[3].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_MARGIN, tabs[3].getTrailingMargin(), TAB_MARGIN_WIDTH, EPSILON);
     }
 
     @Test
@@ -960,7 +960,7 @@ public class StripLayoutHelperTest {
         assertEquals(EXPECTED_MARGIN, tabs[1].getTrailingMargin(), TAB_MARGIN_WIDTH, EPSILON);
         assertEquals(EXPECTED_NO_MARGIN, tabs[2].getTrailingMargin(), 0f, EPSILON);
         assertEquals(EXPECTED_NO_MARGIN, tabs[3].getTrailingMargin(), 0f, EPSILON);
-        assertEquals(EXPECTED_NO_MARGIN, tabs[4].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_MARGIN, tabs[4].getTrailingMargin(), TAB_MARGIN_WIDTH, EPSILON);
     }
 
     @Test
@@ -980,7 +980,7 @@ public class StripLayoutHelperTest {
         assertEquals(EXPECTED_MARGIN, tabs[1].getTrailingMargin(), TAB_MARGIN_WIDTH, EPSILON);
         assertEquals(EXPECTED_NO_MARGIN, tabs[2].getTrailingMargin(), 0f, EPSILON);
         assertEquals(EXPECTED_NO_MARGIN, tabs[3].getTrailingMargin(), 0f, EPSILON);
-        assertEquals(EXPECTED_NO_MARGIN, tabs[4].getTrailingMargin(), 0f, EPSILON);
+        assertEquals(EXPECTED_MARGIN, tabs[4].getTrailingMargin(), TAB_MARGIN_WIDTH, EPSILON);
     }
 
     @Test
@@ -1008,7 +1008,6 @@ public class StripLayoutHelperTest {
     public void testTabGroupMargins_NoScrollOnReorder() {
         // Mock 1 tab to the right of 2 tab groups with 2 tabs each.
         initializeTest(false, false, 0, 5);
-        groupTabs(0, 2);
         groupTabs(2, 4);
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
         mStripLayoutHelper.setScrollOffsetForTesting(0);
@@ -1036,8 +1035,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setScrollOffsetForTesting(0);
 
         // Start reorder on rightmost tab. 2 margins to left of tab, so should scroll.
-        // Verify the scroll offset is 2 * (-marginWidth) = 2 * -95 = -190
-        int expectedOffset = -190;
+        // Verify the scroll offset is 2 * (-marginWidth) + startMargin = 2 * -95 + -95 = -285
+        int expectedOffset = -285;
         mStripLayoutHelper.startReorderModeAtIndexForTesting(4);
         assertEquals("There are margins left of the selected tab, so we should scroll",
                 expectedOffset, mStripLayoutHelper.getScrollOffset());
@@ -1080,7 +1079,7 @@ public class StripLayoutHelperTest {
         StripLayoutTab fourthTab = tabs[3];
         groupTabs(1, 4);
 
-        // Start reorder on fourth tab. Drag right over the tab group.
+        // Start reorder on fourth tab. Drag right out of the tab group.
         // 60 > marginWidth * flipThreshold = 95 * 0.53 = 51
         mStripLayoutHelper.startReorderModeAtIndexForTesting(3);
         float dragDistance = 60f;
@@ -1090,6 +1089,50 @@ public class StripLayoutHelperTest {
         // Verify fourth tab was dragged out of group, but not reordered.
         assertEquals("Fourth tab should not have moved.", fourthTab, tabs[3]);
         verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(fourthTab.getId(), true);
+    }
+
+    @Test
+    @Feature("Tab Groups on Tab Strip")
+    public void testReorder_DragOutOfGroup_StartOfStrip() {
+        // Mock a tab group with 3 tabs with 2 tabs to the right.
+        initializeTest(false, false, 0, 5);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();
+        StripLayoutTab firstTab = tabs[0];
+        groupTabs(0, 3);
+
+        // Start reorder on first tab. Drag left out of the tab group.
+        // -60 < -(marginWidth * flipThreshold) = -(95 * 0.53) = -51
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
+        float dragDistance = -60f;
+        float startX = mStripLayoutHelper.getLastReorderX();
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance, 0f, 0f, 0f);
+
+        // Verify first tab was dragged out of group, but not reordered.
+        assertEquals("First tab should not have moved.", firstTab, tabs[0]);
+        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(firstTab.getId(), false);
+    }
+
+    @Test
+    @Feature("Tab Groups on Tab Strip")
+    public void testReorder_DragOutOfGroup_EndOfStrip() {
+        // Mock a tab group with 3 tabs with 2 tabs to the left.
+        initializeTest(false, false, 0, 5);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();
+        StripLayoutTab fifthTab = tabs[4];
+        groupTabs(2, 5);
+
+        // Start reorder on fifth tab. Drag right out of the tab group.
+        // 60 > marginWidth * flipThreshold = 95 * 0.53 = 51
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(4);
+        float dragDistance = 60f;
+        float startX = mStripLayoutHelper.getLastReorderX();
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance, 0f, 0f, 0f);
+
+        // Verify fifth tab was dragged out of group, but not reordered.
+        assertEquals("Fifth tab should not have moved.", fifthTab, tabs[4]);
+        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(fifthTab.getId(), true);
     }
 
     @Test
