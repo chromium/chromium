@@ -73,7 +73,6 @@
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
@@ -3156,6 +3155,12 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     DCHECK(result) << "shared_quad_state->mask_filter_info.Transform() failed.";
   }
 
+  // Reset |quad_to_target_transform|, so the quad will be rendered at the
+  // origin (0,0) without all transforms (translation, scaling, rotation, etc)
+  // and then we will use OS compositor to do those transforms.
+  base::AutoReset<gfx::Transform> auto_reset_transform(
+      &shared_quad_state->quad_to_target_transform, gfx::Transform());
+
   const auto& viewport_size = current_frame()->device_viewport_size;
   auto projection_matrix = gfx::OrthoProjectionMatrix(
       /*left=*/0, /*right=*/viewport_size.width(), /*bottom=*/0,
@@ -3166,23 +3171,14 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 
   gfx::Transform target_to_device = window_matrix * projection_matrix;
 
-  DrawQuadParams params;
-  DrawRPDQParams rpdq_params{gfx::RectF()};
-  {
-    // Reset |quad_to_target_transform|, so the quad will be rendered at the
-    // origin (0,0) without all transforms (translation, scaling, rotation, etc)
-    // and then we will use OS compositor to do those transforms.
-    base::AutoReset<gfx::Transform> auto_reset_transform(
-        &shared_quad_state->quad_to_target_transform, gfx::Transform());
-    // Use nullptr scissor, so we can always render the whole render pass in an
-    // overlay backing.
-    // TODO(penghuang): reusing overlay backing from previous frame to avoid
-    // reproducing the overlay backing if the render pass content quad
-    // properties and content are not changed.
-    params = CalculateDrawQuadParams(target_to_device, /*scissor_rect=*/nullptr,
-                                     quad, /*draw_region=*/nullptr);
-    rpdq_params = CalculateRPDQParams(quad, &params);
-  }
+  // Use nullptr scissor, so we can always render the whole render pass in an
+  // overlay backing.
+  // TODO(penghuang): reusing overlay backing from previous frame to avoid
+  // reproducing the overlay backing if the render pass content quad properties
+  // and content are not changed.
+  DrawQuadParams params = CalculateDrawQuadParams(
+      target_to_device, /*scissor=*/nullptr, quad, /*draw_region=*/nullptr);
+  DrawRPDQParams rpdq_params = CalculateRPDQParams(quad, &params);
 
   const auto& filter_bounds = rpdq_params.filter_bounds;
 
@@ -3327,17 +3323,9 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 
   EndPaint(/*failed=*/false);
 
-#if BUILDFLAG(IS_APPLE)
   // Adjust |bounds_rect| to contain the whole buffer and at the right location.
   overlay->bounds_rect.set_origin(gfx::PointF(filter_bounds.origin()));
   overlay->bounds_rect.set_size(gfx::SizeF(buffer_size));
-#else   // defined(USE_OZONE)
-  // Adjust |display_rect| to be include the whole buffer, and transformed.
-  overlay->display_rect =
-      gfx::RectF(gfx::PointF(filter_bounds.origin()), gfx::SizeF(buffer_size));
-  quad->shared_quad_state->quad_to_target_transform.TransformRect(
-      &overlay->display_rect);
-#endif  // BUILDFLAG(IS_APPLE)
 }
 #endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 
