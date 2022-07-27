@@ -60,6 +60,7 @@
 #include "components/sync/base/pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/translate_util.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #include "ios/chrome/browser/chrome_switches.h"
 #include "ios/chrome/browser/crash_report/features.h"
@@ -338,8 +339,8 @@ const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
      std::size(kStartSurfaceOneHourHideShortcutsReturnToRecentTab), nullptr},
 };
 
+#if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 // Feed Background Refresh Feature Params
-
 const FeatureEntry::FeatureParam kOneHourIntervalOnce[] = {
     {kEnableServerDrivenBackgroundRefreshSchedule, "false"},
     {kEnableRecurringBackgroundRefreshSchedule, "false"},
@@ -366,7 +367,6 @@ const FeatureEntry::FeatureParam kServerDrivenRecurring[] = {
     {kBackgroundRefreshIntervalInSeconds, /* 60*60= */ "3600"}};
 
 // Feed Background Refresh Feature Variations
-
 const FeatureEntry::FeatureVariation kFeedBackgroundRefreshVariations[] = {
     {"1hr Interval Once", kOneHourIntervalOnce, std::size(kOneHourIntervalOnce),
      nullptr},
@@ -381,6 +381,7 @@ const FeatureEntry::FeatureVariation kFeedBackgroundRefreshVariations[] = {
     {"Server Driven Recurring", kServerDrivenRecurring,
      std::size(kServerDrivenRecurring), nullptr},
 };
+#endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 
 const FeatureEntry::FeatureParam kFREDefaultBrowserPromoDefaultDelay[] = {
     {kFREDefaultBrowserPromoParam, kFREDefaultBrowserPromoDefaultDelayParam}};
@@ -1122,12 +1123,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableRemadeDownstreamMetrics)},
-    {"feed-background-refresh-ios",
-     flag_descriptions::kFeedBackgroundRefreshName,
-     flag_descriptions::kFeedBackgroundRefreshDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableFeedBackgroundRefresh,
-                                    kFeedBackgroundRefreshVariations,
-                                    "FeedBackgroundRefresh")},
     {"autofill-parse-vcn-card-on-file-standalone-cvc-fields",
      flag_descriptions::kAutofillParseVcnCardOnFileStandaloneCvcFieldsName,
      flag_descriptions::
@@ -1135,6 +1130,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillParseVcnCardOnFileStandaloneCvcFields)},
+#if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
+    {"feed-background-refresh-ios",
+     flag_descriptions::kFeedBackgroundRefreshName,
+     flag_descriptions::kFeedBackgroundRefreshDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableFeedBackgroundRefresh,
+                                    kFeedBackgroundRefreshVariations,
+                                    "FeedBackgroundRefresh")},
+#endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

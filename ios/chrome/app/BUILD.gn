@@ -4,6 +4,7 @@
 
 import("//build/apple/compile_entitlements.gni")
 import("//build/apple/tweak_info_plist.gni")
+import("//build/buildflag_header.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//build/ios/extension_bundle_data.gni")
@@ -11,6 +12,11 @@ import("//ios/build/chrome_build.gni")
 import("//ios/build/config.gni")
 import("//ios/chrome/features.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
+
+buildflag_header("buildflags") {
+  header = "background_mode_buildflags.h"
+  flags = [ "IOS_BACKGROUND_MODE_ENABLED=$ios_enable_background_mode" ]
+}
 
 source_set("app") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -265,6 +271,7 @@ source_set("feed_app_agent") {
     "feed_app_agent.mm",
   ]
   deps = [
+    ":buildflags",
     "//base",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",
