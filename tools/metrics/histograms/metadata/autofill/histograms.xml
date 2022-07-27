@@ -2536,7 +2536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.NewProfileEditedComplementedCountry"
-    enum="AutofillSettingsVisibleTypes" expires_after="2022-08-01">
+    enum="AutofillSettingsVisibleTypes" expires_after="2022-09-15">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -2572,7 +2572,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.ProfileImport.NewProfileWithComplementedCountryDecision"
-    enum="AutofillProfileImportDecision" expires_after="2022-12-04">
+    enum="AutofillProfileImportDecision" expires_after="2022-09-15">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -2715,7 +2715,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.UpdateProfileEditedComplementedCountry"
-    enum="AutofillSettingsVisibleTypes" expires_after="2022-08-01">
+    enum="AutofillSettingsVisibleTypes" expires_after="2022-09-15">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -2806,7 +2806,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.ProfileImport.UpdateProfileWithComplementedCountryDecision"
-    enum="AutofillProfileImportDecision" expires_after="2022-08-01">
+    enum="AutofillProfileImportDecision" expires_after="2022-09-15">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
