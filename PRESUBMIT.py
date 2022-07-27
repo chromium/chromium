@@ -1054,9 +1054,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       (
         'absl::FunctionRef is banned. Use base::FunctionRef instead.',
       ),
-      # Temporarily a warning due to pre-existing usage in the tree.
-      # TODO(https://crbug.com/1347676): Migrate usage to base::FunctionRef.
-      False,
+      True,
       [
         # base::Bind{Once,Repeating} references absl::FunctionRef to disallow
         # interoperability.
