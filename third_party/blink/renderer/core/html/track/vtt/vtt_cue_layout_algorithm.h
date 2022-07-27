@@ -17,6 +17,7 @@ namespace blink {
 
 class LayoutBox;
 class VTTCueBox;
+struct PhysicalSize;
 
 // VttCueLayoutAlgorithm is responsible to do step 10 of
 // https://w3c.github.io/webvtt/#apply-webvtt-cue-settings .
@@ -38,6 +39,7 @@ class VttCueLayoutAlgorithm {
 
   // Helpers for AdjustPositionWithSnapToLines():
 
+  static PhysicalSize FirstInlineBoxSize(const LayoutBox& cue_box);
   LayoutUnit ComputeInitialPositionAdjustment(LayoutUnit max_dimension);
   static gfx::Rect CueBoundingBox(const LayoutBox& cue_box);
   bool IsOutside(const gfx::Rect& title_area) const;

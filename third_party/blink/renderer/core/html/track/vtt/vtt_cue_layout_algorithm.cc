@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue_box.h"
+#include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_vtt_cue.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 
@@ -31,6 +32,31 @@ void VttCueLayoutAlgorithm::Layout() {
     // ↪ If cue’s WebVTT cue snap-to-lines flag is false
     AdjustPositionWithoutSnapToLines();
   }
+}
+
+// static
+PhysicalSize VttCueLayoutAlgorithm::FirstInlineBoxSize(
+    const LayoutBox& cue_box) {
+  if (!cue_box.IsLayoutNGObject()) {
+    if (auto* first_inline = DynamicTo<LayoutInline>(cue_box.SlowFirstChild()))
+      return PhysicalSize(first_inline->FirstLineBox()->Size());
+    return {};
+  }
+
+  NGInlineCursor cursor(To<LayoutBlockFlow>(cue_box));
+  cursor.MoveToFirstLine();
+  if (cursor.IsNull())
+    return {};
+  // We refer to the block size of a kBox item for VTTCueBackgroundBox rather
+  // than the block size of a line box. The kBox item is taller than the line
+  // box due to paddings.
+  cursor.MoveToNext();
+  if (cursor.IsNull())
+    return {};
+  const NGFragmentItem& first_item = *cursor.CurrentItem();
+  DCHECK(first_item.GetLayoutObject());
+  DCHECK(IsA<VTTCueBackgroundBox>(first_item.GetLayoutObject()->GetNode()));
+  return first_item.Size();
 }
 
 LayoutUnit VttCueLayoutAlgorithm::ComputeInitialPositionAdjustment(
@@ -126,20 +152,9 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
   // 9. If there are no line boxes in boxes, skip the remainder of these
   // substeps for cue. The cue is ignored.
   const LayoutBox& cue_box = *cue_.GetLayoutBox();
-  NGInlineCursor cursor(To<LayoutBlockFlow>(cue_box));
-  cursor.MoveToFirstLine();
-  if (cursor.IsNull()) {
+  PhysicalSize line_size = FirstInlineBoxSize(cue_box);
+  if (line_size.IsEmpty())
     return;
-  }
-  // We refer to the block size of a kBox item for VTTCueBackgroundBox rather
-  // than the block size of a line box. The kBox item is taller than the line
-  // box due to paddings.
-  cursor.MoveToNext();
-  if (cursor.IsNull())
-    return;
-  const NGFragmentItem& first_item = *cursor.CurrentItem();
-  DCHECK(first_item.GetLayoutObject());
-  DCHECK(IsA<VTTCueBackgroundBox>(first_item.GetLayoutObject()->GetNode()));
 
   const bool is_horizontal = cue_box.IsHorizontalWritingMode();
   const LayoutBlock& container = *cue_box.ContainingBlock();
@@ -171,7 +186,7 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
 
   // 2. Horizontal: Let step be the height of the first line box in boxes.
   //    Vertical: Let step be the width of the first line box in boxes.
-  step_ = is_horizontal ? first_item.Size().height : first_item.Size().width;
+  step_ = is_horizontal ? line_size.height : line_size.width;
 
   // 3. If step is zero, then jump to the step labeled done positioning below.
   if (step_ == LayoutUnit())
