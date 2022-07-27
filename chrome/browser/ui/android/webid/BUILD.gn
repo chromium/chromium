@@ -13,6 +13,8 @@ android_library("public_java") {
     "//url:gurl_java",
   ]
 
+  srcjar_deps = [ ":java_enums_srcjar" ]
+
   sources = [
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionComponent.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/Account.java",
@@ -28,4 +30,8 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/ClientIdMetadata.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/IdentityProviderMetadata.java",
   ]
+}
+
+java_cpp_enum("java_enums_srcjar") {
+  sources = [ "//content/public/browser/identity_request_dialog_controller.h" ]
 }

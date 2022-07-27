@@ -65,9 +65,9 @@ void IdentityRequestDialogController::ShowAccountsDialog(
     const IdentityProviderMetadata& idp_metadata,
     const ClientIdData& client_id_data,
     IdentityRequestAccount::SignInMode sign_in_mode,
-    AccountSelectionCallback on_selected) {
-  std::move(on_selected)
-      .Run(/*account_id=*/"", /*is_sign_in=*/false, /*should_embargo=*/false);
+    AccountSelectionCallback on_selected,
+    DismissCallback dismiss_callback) {
+  std::move(dismiss_callback).Run(DismissReason::OTHER);
 }
 
 }  // namespace content

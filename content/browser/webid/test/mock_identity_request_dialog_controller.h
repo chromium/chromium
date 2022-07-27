@@ -24,14 +24,15 @@ class MockIdentityRequestDialogController
   MockIdentityRequestDialogController& operator=(
       const MockIdentityRequestDialogController&) = delete;
 
-  MOCK_METHOD7(ShowAccountsDialog,
+  MOCK_METHOD8(ShowAccountsDialog,
                void(WebContents*,
                     const GURL&,
                     base::span<const content::IdentityRequestAccount> accounts,
                     const IdentityProviderMetadata&,
                     const ClientIdData&,
                     IdentityRequestAccount::SignInMode,
-                    AccountSelectionCallback));
+                    AccountSelectionCallback,
+                    DismissCallback));
   MOCK_METHOD0(DestructorCalled, void());
 };
 

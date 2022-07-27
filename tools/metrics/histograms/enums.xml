@@ -41015,6 +41015,13 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="Feature is accessible to user. Recorded periodically."/>
 </enum>
 
+<enum name="FedCmCancelReason">
+  <int value="0" label="Other"/>
+  <int value="1" label="Close button"/>
+  <int value="2" label="Swipe"/>
+  <int value="3" label="Virtual keyboard shown"/>
+</enum>
+
 <enum name="FedCmCspStatus">
   <int value="0" label="Success"/>
   <int value="1" label="FailedPathButPassedOrigin"/>

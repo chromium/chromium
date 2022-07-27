@@ -27,6 +27,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -77,7 +78,7 @@ class AccountSelectionMediator {
                 @Override
                 public void keyboardVisibilityChanged(boolean isShowing) {
                     if (isShowing) {
-                        onDismissed(/*shouldEmbargo=*/false);
+                        onDismissed(IdentityRequestDialogDismissReason.VIRTUAL_KEYBOARD_SHOWN);
                     }
                 }
             };
@@ -106,10 +107,11 @@ class AccountSelectionMediator {
 
                 if (mWasDismissed) return;
 
-                // Dismissing the FedCM bottom sheet via {@link StateChangeReason#SWIPE} is more
-                // intentional than other methods such as {@link StateChangeReason#OMNIBOX_FOCUS}.
-                onDismissed(/*shouldEmbargo=*/(
-                        reason == BottomSheetController.StateChangeReason.SWIPE));
+                @IdentityRequestDialogDismissReason
+                int dismissReason = (reason == BottomSheetController.StateChangeReason.SWIPE)
+                        ? IdentityRequestDialogDismissReason.SWIPE
+                        : IdentityRequestDialogDismissReason.OTHER;
+                onDismissed(dismissReason);
             }
         };
     }
@@ -130,7 +132,7 @@ class AccountSelectionMediator {
     private PropertyModel createHeaderItem(HeaderType headerType, String rpForDisplay,
             String idpForDisplay, IdentityProviderMetadata idpMetadata) {
         Runnable closeOnClickRunnable = () -> {
-            onDismissed(/*shouldEmbargo=*/true);
+            onDismissed(IdentityRequestDialogDismissReason.CLOSE_BUTTON);
 
             RecordHistogram.recordBooleanHistogram(
                     "Blink.FedCm.CloseVerifySheet.Android", mHeaderType == HeaderType.VERIFY);
@@ -273,7 +275,7 @@ class AccountSelectionMediator {
             KeyboardVisibilityDelegate.getInstance().addKeyboardVisibilityListener(
                     mKeyboardVisibilityListener);
         } else {
-            onDismissed(/*shouldEmbargo=*/false);
+            onDismissed(IdentityRequestDialogDismissReason.OTHER);
         }
     }
 
@@ -329,9 +331,9 @@ class AccountSelectionMediator {
         updateBackPressBehavior();
     }
 
-    void onDismissed(boolean shouldEmbargo) {
+    void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {
         hideContent();
-        mDelegate.onDismissed(shouldEmbargo);
+        mDelegate.onDismissed(dismissReason);
     }
 
     void onAutoSignInCancelled() {

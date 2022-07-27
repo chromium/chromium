@@ -68,6 +68,13 @@ void FedCmMetrics::RecordCancelOnDialogTime(base::TimeDelta duration) {
   UMA_HISTOGRAM_MEDIUM_TIMES("Blink.FedCm.Timing.CancelOnDialog", duration);
 }
 
+void FedCmMetrics::RecordCancelReason(
+    IdentityRequestDialogController::DismissReason dismiss_reason) {
+  UMA_HISTOGRAM_ENUMERATION(
+      "Blink.FedCm.CancelReason", dismiss_reason,
+      IdentityRequestDialogController::DismissReason::COUNT);
+}
+
 void FedCmMetrics::RecordTokenResponseAndTurnaroundTime(
     base::TimeDelta token_response_time,
     base::TimeDelta turnaround_time) {

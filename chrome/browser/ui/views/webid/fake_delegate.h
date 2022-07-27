@@ -18,7 +18,8 @@ class FakeDelegate : public AccountSelectionView::Delegate {
 
   void OnAccountSelected(const Account& account) override {}
 
-  void OnDismiss(bool should_embargo) override {}
+  void OnDismiss(content::IdentityRequestDialogController::DismissReason
+                     dismiss_reason) override {}
 
   // AccountSelectionView::Delegate
   gfx::NativeView GetNativeView() override;

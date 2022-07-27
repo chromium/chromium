@@ -28,7 +28,8 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
                           const IdentityProviderMetadata& idp_metadata,
                           const ClientIdData& client_id_data,
                           IdentityRequestAccount::SignInMode sign_in_mode,
-                          AccountSelectionCallback on_selected) override;
+                          AccountSelectionCallback on_selected,
+                          DismissCallback dismmiss_callback) override;
 
  private:
   absl::optional<std::string> selected_account_;

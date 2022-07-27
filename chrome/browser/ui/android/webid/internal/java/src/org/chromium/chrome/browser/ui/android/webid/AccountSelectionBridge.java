@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -91,9 +92,9 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @Override
-    public void onDismissed(boolean shouldEmbargo) {
+    public void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {
         if (mNativeView != 0) {
-            AccountSelectionBridgeJni.get().onDismiss(mNativeView, shouldEmbargo);
+            AccountSelectionBridgeJni.get().onDismiss(mNativeView, dismissReason);
         }
     }
 
@@ -122,7 +123,8 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     interface Natives {
         void onAccountSelected(long nativeAccountSelectionViewAndroid, String[] accountFields,
                 GURL accountPictureUrl, boolean isSignedIn);
-        void onDismiss(long nativeAccountSelectionViewAndroid, boolean shouldEmbargo);
+        void onDismiss(long nativeAccountSelectionViewAndroid,
+                @IdentityRequestDialogDismissReason int dismissReason);
         void onAutoSignInCancelled(long nativeAccountSelectionViewAndroid);
     }
 }

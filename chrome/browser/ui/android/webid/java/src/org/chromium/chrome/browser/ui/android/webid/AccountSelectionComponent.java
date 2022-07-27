@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.android.webid;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
+import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public interface AccountSelectionComponent {
          * Called when the user dismisses the AccountSelectionComponent. Not called if a suggestion
          * was selected.
          */
-        void onDismissed(boolean shouldEmbargo);
+        void onDismissed(@IdentityRequestDialogDismissReason int dismissReason);
 
         /**
          * Called when the user cancels auto sign in.

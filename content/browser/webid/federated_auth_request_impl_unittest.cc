@@ -49,13 +49,13 @@ using blink::mojom::RequestTokenStatus;
 using AccountList = content::IdpNetworkRequestManager::AccountList;
 using ApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
+using DismissReason = content::IdentityRequestDialogController::DismissReason;
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using TokenStatus = content::FedCmRequestIdTokenStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
-using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using SignInStateMatchStatus = content::FedCmSignInStateMatchStatus;
 using ::testing::_;
 using ::testing::Invoke;
@@ -690,7 +690,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         // e.g. for sign up flow, multiple accounts, user opt-out etc. In this
         // case, it's up to the test to expect this mock function call.
         EXPECT_CALL(*mock_dialog_controller_,
-                    ShowAccountsDialog(_, _, _, _, _, _, _))
+                    ShowAccountsDialog(_, _, _, _, _, _, _, _))
             .WillOnce(Invoke(
                 [&](content::WebContents* rp_web_contents,
                     const GURL& idp_signin_url,
@@ -698,18 +698,19 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                     const IdentityProviderMetadata& idp_metadata,
                     const ClientIdData& client_id_data, SignInMode sign_in_mode,
                     IdentityRequestDialogController::AccountSelectionCallback
-                        on_selected) {
+                        on_selected,
+                    IdentityRequestDialogController::DismissCallback
+                        dismiss_callback) {
                   displayed_accounts_ =
                       AccountList(accounts.begin(), accounts.end());
                   std::move(on_selected)
                       .Run(accounts[0].id,
-                           accounts[0].login_state == LoginState::kSignIn,
-                           /*should_embargo=*/false);
+                           accounts[0].login_state == LoginState::kSignIn);
                 }));
       }
     } else {
       EXPECT_CALL(*mock_dialog_controller_,
-                  ShowAccountsDialog(_, _, _, _, _, _, _))
+                  ShowAccountsDialog(_, _, _, _, _, _, _, _))
           .Times(0);
     }
   }
@@ -1188,19 +1189,19 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
       .WillOnce(Return(true));
 
   EXPECT_CALL(*mock_dialog_controller(),
-              ShowAccountsDialog(_, _, _, _, _, _, _))
+              ShowAccountsDialog(_, _, _, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents, const GURL& idp_signin_url,
               base::span<const content::IdentityRequestAccount> accounts,
               const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
-                  on_selected) {
+                  on_selected,
+              IdentityRequestDialogController::DismissCallback
+                  dismiss_callback) {
             EXPECT_EQ(sign_in_mode, SignInMode::kAuto);
             displayed_accounts = AccountList(accounts.begin(), accounts.end());
-            std::move(on_selected)
-                .Run(accounts[0].id, /*is_sign_in=*/true,
-                     /*should_embargo=*/false);
+            std::move(on_selected).Run(accounts[0].id, /*is_sign_in=*/true);
           }));
 
   ASSERT_EQ(kConfigurationValid.accounts.size(), 1u);
@@ -1220,19 +1221,19 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
 
   AccountList displayed_accounts;
   EXPECT_CALL(*mock_dialog_controller(),
-              ShowAccountsDialog(_, _, _, _, _, _, _))
+              ShowAccountsDialog(_, _, _, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents, const GURL& idp_signin_url,
               base::span<const content::IdentityRequestAccount> accounts,
               const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
-                  on_selected) {
+                  on_selected,
+              IdentityRequestDialogController::DismissCallback
+                  dismiss_callback) {
             EXPECT_EQ(sign_in_mode, SignInMode::kExplicit);
             displayed_accounts = AccountList(accounts.begin(), accounts.end());
-            std::move(on_selected)
-                .Run(accounts[0].id, /*is_sign_in=*/true,
-                     /*should_embargo=*/false);
+            std::move(on_selected).Run(accounts[0].id, /*is_sign_in=*/true);
           }));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
@@ -1262,20 +1263,20 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
       .WillOnce(Return(true));
 
   EXPECT_CALL(*mock_dialog_controller(),
-              ShowAccountsDialog(_, _, _, _, _, _, _))
+              ShowAccountsDialog(_, _, _, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents, const GURL& idp_signin_url,
               base::span<const content::IdentityRequestAccount> accounts,
               const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
-                  on_selected) {
+                  on_selected,
+              IdentityRequestDialogController::DismissCallback
+                  dismiss_callback) {
             // Auto sign in replaced by explicit sign in if screen reader is on.
             EXPECT_EQ(sign_in_mode, SignInMode::kExplicit);
             displayed_accounts = AccountList(accounts.begin(), accounts.end());
-            std::move(on_selected)
-                .Run(accounts[0].id, /*is_sign_in=*/true,
-                     /*should_embargo=*/false);
+            std::move(on_selected).Run(accounts[0].id, /*is_sign_in=*/true);
           }));
 
   EXPECT_EQ(kConfigurationValid.accounts.size(), 1u);
@@ -1326,25 +1327,25 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   CheckAllFedCmSessionIDs();
 }
 
-// Test that request fails if UI is dismissed without an account being selected.
-TEST_F(BasicFederatedAuthRequestImplTest,
-       MetricsForUIDismissedWithoutSelectingAccount) {
+// Test that request fails if account picker is explicitly dismissed.
+TEST_F(BasicFederatedAuthRequestImplTest, MetricsForUIExplicitlyDismissed) {
   base::HistogramTester histogram_tester_;
 
   AccountList displayed_accounts;
   EXPECT_CALL(*mock_dialog_controller(),
-              ShowAccountsDialog(_, _, _, _, _, _, _))
+              ShowAccountsDialog(_, _, _, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents, const GURL& idp_signin_url,
               base::span<const content::IdentityRequestAccount> accounts,
               const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
-                  on_selected) {
+                  on_selected,
+              IdentityRequestDialogController::DismissCallback
+                  dismiss_callback) {
             displayed_accounts = AccountList(accounts.begin(), accounts.end());
             // Pretends that the user did not select any account.
-            std::move(on_selected)
-                .Run("", /*is_sign_in=*/false, /*should_embargo=*/false);
+            std::move(dismiss_callback).Run(DismissReason::CLOSE_BUTTON);
           }));
 
   base::RunLoop ukm_loop;
@@ -1394,14 +1395,16 @@ TEST_F(BasicFederatedAuthRequestImplTest, UIIsIgnored) {
 
   AccountList displayed_accounts;
   EXPECT_CALL(*mock_dialog_controller(),
-              ShowAccountsDialog(_, _, _, _, _, _, _))
+              ShowAccountsDialog(_, _, _, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents, const GURL& idp_signin_url,
               base::span<const content::IdentityRequestAccount> accounts,
               const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
-                  on_selected) {
+                  on_selected,
+              IdentityRequestDialogController::DismissCallback
+                  dismiss_callback) {
             displayed_accounts = AccountList(accounts.begin(), accounts.end());
             // Pretends that the user ignored the UI by not selecting an
             // account.
@@ -1686,18 +1689,18 @@ TEST_F(BasicFederatedAuthRequestImplTest, RequestEmbargo) {
   configuration.customized_dialog = true;
 
   EXPECT_CALL(*mock_dialog_controller(),
-              ShowAccountsDialog(_, _, _, _, _, _, _))
+              ShowAccountsDialog(_, _, _, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents, const GURL& idp_signin_url,
               base::span<const content::IdentityRequestAccount> accounts,
               const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
-                  on_selected) {
+                  on_selected,
+              IdentityRequestDialogController::DismissCallback
+                  dismiss_callback) {
             displayed_accounts_ = AccountList(accounts.begin(), accounts.end());
-            std::move(on_selected)
-                .Run("", /*is_sign_in=*/false,
-                     /*should_embargo=*/true);
+            std::move(dismiss_callback).Run(DismissReason::CLOSE_BUTTON);
           }));
 
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -1784,22 +1787,22 @@ TEST_F(BasicFederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
   base::HistogramTester histogram_tester_;
 
   EXPECT_CALL(*mock_dialog_controller(),
-              ShowAccountsDialog(_, _, _, _, _, _, _))
+              ShowAccountsDialog(_, _, _, _, _, _, _, _))
       .WillOnce(Invoke(
           [&](content::WebContents* rp_web_contents, const GURL& idp_signin_url,
               base::span<const content::IdentityRequestAccount> accounts,
               const IdentityProviderMetadata& idp_metadata,
               const ClientIdData& client_id_data, SignInMode sign_in_mode,
               IdentityRequestDialogController::AccountSelectionCallback
-                  on_selected) {
+                  on_selected,
+              IdentityRequestDialogController::DismissCallback
+                  dismiss_callback) {
             // Disable FedCM API
             test_api_permission_delegate_->permission_override_ =
                 std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
                                ApiPermissionStatus::BLOCKED_SETTINGS);
 
-            std::move(on_selected)
-                .Run(/*account_id=*/"", /*is_sign_in=*/false,
-                     /*should_embargo=*/false);
+            std::move(on_selected).Run(accounts[0].id, /*is_sign_in=*/false);
           }));
 
   base::RunLoop ukm_loop;

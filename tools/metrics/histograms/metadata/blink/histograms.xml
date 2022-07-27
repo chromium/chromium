@@ -864,6 +864,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.CancelReason" enum="FedCmCancelReason"
+    expires_after="M110">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>fedcm-core@google.com</owner>
+  <summary>
+    Records the reason that the FedCM dialog was closed (ex user clicked the
+    dialog close button). Recorded when the FedCM dialog is closed without the
+    user selecting an account. This includes instances where the close action is
+    less intentional such as the virtual keyboard showing trigerring the dialog
+    close.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.CloseVerifySheet.Android" enum="Boolean"
     expires_after="M110">
   <owner>yigu@chromium.org</owner>
@@ -935,8 +948,11 @@ chromium-metrics-reviews@google.com.
   <owner>fedcm-core@google.com</owner>
   <summary>
     Records the time from when the accounts dialog is shown to when the user
-    closes the dialog without selecting any account. Only records a sample when
-    the user sees and closes the dialog.
+    explicitly closes the dialog without selecting any account. Only records a
+    sample when the user sees and *explicitly* closes the dialog. For instance,
+    the accounts dialog being closed as a result of the user focusing a
+    different part of the browser UI does not count as explicitly closing the
+    dialog.
   </summary>
 </histogram>
 

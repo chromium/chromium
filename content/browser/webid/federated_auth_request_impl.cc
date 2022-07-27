@@ -734,6 +734,8 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
           rp_web_contents, provider_, accounts, idp_metadata, data,
           is_auto_sign_in ? SignInMode::kAuto : SignInMode::kExplicit,
           base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                          weak_ptr_factory_.GetWeakPtr()));
       return;
     }
@@ -744,8 +746,9 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
 }
 
 void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
-                                                 bool is_sign_in,
-                                                 bool should_embargo) {
+                                                 bool is_sign_in) {
+  DCHECK(!account_id.empty());
+
   // Check if the user has disabled the FedCM API after the FedCM UI is
   // displayed. This ensures that requests are not wrongfully sent to IDPs when
   // settings are changed while an existing FedCM UI is displayed. Ideally, we
@@ -757,25 +760,6 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
 
     CompleteRequest(FederatedAuthRequestResult::kErrorDisabledInSettings, "",
                     /*should_call_callback=*/false);
-    return;
-  }
-
-  // This could happen if user didn't select any accounts.
-  if (account_id.empty()) {
-    base::TimeTicks dismiss_dialog_time = base::TimeTicks::Now();
-    fedcm_metrics_->RecordCancelOnDialogTime(dismiss_dialog_time -
-                                             show_accounts_dialog_time_);
-    fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kNotSelectAccount);
-
-    if (should_embargo && GetApiPermissionContext()) {
-      GetApiPermissionContext()->RecordDismissAndEmbargo(origin());
-    }
-
-    // Reject the promise immediately if the UI is dismissed without selecting
-    // an account. Meanwhile, we fuzz the rejection time for other failures to
-    // make it indistinguishable.
-    CompleteRequest(FederatedAuthRequestResult::kError, "",
-                    /*should_call_callback=*/true);
     return;
   }
 
@@ -796,6 +780,40 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
                                       is_sign_in),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FederatedAuthRequestImpl::OnDialogDismissed(
+    IdentityRequestDialogController::DismissReason dismiss_reason) {
+  // Clicking the close button and swiping away the account chooser are more
+  // intentional than other ways of dismissing the account chooser such as
+  // the virtual keyboard showing on Android.
+  bool should_embargo = false;
+  switch (dismiss_reason) {
+    case IdentityRequestDialogController::DismissReason::CLOSE_BUTTON:
+    case IdentityRequestDialogController::DismissReason::SWIPE:
+      should_embargo = true;
+      break;
+    default:
+      break;
+  }
+
+  if (should_embargo) {
+    base::TimeTicks dismiss_dialog_time = base::TimeTicks::Now();
+    fedcm_metrics_->RecordCancelOnDialogTime(dismiss_dialog_time -
+                                             show_accounts_dialog_time_);
+  }
+  fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kNotSelectAccount);
+  fedcm_metrics_->RecordCancelReason(dismiss_reason);
+
+  if (should_embargo && GetApiPermissionContext()) {
+    GetApiPermissionContext()->RecordDismissAndEmbargo(origin());
+  }
+
+  // Reject the promise immediately if the UI is dismissed without selecting
+  // an account. Meanwhile, we fuzz the rejection time for other failures to
+  // make it indistinguishable.
+  CompleteRequest(FederatedAuthRequestResult::kError, "",
+                  /*should_call_callback=*/true);
 }
 
 void FederatedAuthRequestImpl::OnTokenResponseReceived(
