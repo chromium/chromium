@@ -121,6 +121,22 @@ bool WaitUntilInputFieldHasText(content::WebContents* web_content,
   return EvalJs(web_content, script).ExtractBool();
 }
 
+// Sets the contents of the input field with ID `element_id` to be `text`, with
+// the text selection at `selection`.
+bool SetInputFieldText(content::WebContents* web_content,
+                       base::StringPiece element_id,
+                       base::StringPiece text,
+                       const gfx::Range& selection) {
+  const std::string script = content::JsReplace(
+      R"(elem = document.getElementById($1);
+        elem.value = $2;
+        elem.selectionStart = $3;
+        elem.selectionEnd = $4;)",
+      element_id, text, static_cast<int>(selection.start()),
+      static_cast<int>(selection.end()));
+  return ExecJs(web_content, script);
+}
+
 using InputMethodLacrosBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
@@ -157,6 +173,55 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
 
   EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
                                          "hello", gfx::Range(5)));
+}
+
+IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+                       CommitTextReplacesCompositionText) {
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kSetCompositionMinVersion,
+           InputMethodTestInterface::MethodMinVersions::kCommitTextMinVersion});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  ASSERT_TRUE(SetInputFieldText(GetActiveWebContents(browser()), id, "hello ",
+                                gfx::Range(6)));
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+  input_method_async_waiter.SetComposition("world", 5);
+  ASSERT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "hello world", gfx::Range(11)));
+
+  input_method_async_waiter.CommitText("abc");
+
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "hello abc", gfx::Range(9)));
+}
+
+IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+                       CommitTextReplacesSelection) {
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::kCommitTextMinVersion});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  ASSERT_TRUE(SetInputFieldText(GetActiveWebContents(browser()), id, "hello",
+                                gfx::Range(1, 3)));
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+
+  input_method_async_waiter.CommitText("abc");
+
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "habclo", gfx::Range(4)));
 }
 
 IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
