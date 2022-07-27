@@ -2268,6 +2268,12 @@ extern const char kAllowAllSitesToInitiateMirroringDescription[];
 extern const char kBlockMigratedDefaultChromeAppSyncName[];
 extern const char kBlockMigratedDefaultChromeAppSyncDescription[];
 
+extern const char kCopyLinkToTextName[];
+extern const char kCopyLinkToTextDescription[];
+
+extern const char kDesktopPartialTranslateName[];
+extern const char kDesktopPartialTranslateDescription[];
+
 extern const char kEnableAccessibilityLiveCaptionName[];
 extern const char kEnableAccessibilityLiveCaptionDescription[];
 
@@ -2276,9 +2282,6 @@ extern const char kEnableUserCloudSigninRestrictionPolicyDescription[];
 
 extern const char kEnableWebHidOnExtensionServiceWorkerName[];
 extern const char kEnableWebHidOnExtensionServiceWorkerDescription[];
-
-extern const char kCopyLinkToTextName[];
-extern const char kCopyLinkToTextDescription[];
 
 extern const char kGlobalMediaControlsCastStartStopName[];
 extern const char kGlobalMediaControlsCastStartStopDescription[];

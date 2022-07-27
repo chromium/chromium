@@ -9022,6 +9022,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillParseVcnCardOnFileStandaloneCvcFields)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"desktop-partial-translate",
+     flag_descriptions::kDesktopPartialTranslateName,
+     flag_descriptions::kDesktopPartialTranslateDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(translate::kDesktopPartialTranslate)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
