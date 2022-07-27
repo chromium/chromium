@@ -257,10 +257,11 @@ void AlsaPcmOutputStream::Close() {
 
   // Shutdown the audio device.
   if (playback_handle_) {
-    if (alsa_util::CloseDevice(wrapper_, playback_handle_) < 0) {
+    int res =
+        alsa_util::CloseDevice(wrapper_, playback_handle_.ExtractAsDangling());
+    if (res < 0) {
       LOG(WARNING) << "Unable to close audio device. Leaking handle.";
     }
-    playback_handle_ = nullptr;
 
     // Release the buffer.
     buffer_.reset();
