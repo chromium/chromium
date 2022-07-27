@@ -41,7 +41,8 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:contentDescription="@string/DefaultSearchProviderSuggestURLDesc"
-            android:src="@drawable/ic_expand_less_black_24dp"/>
+            android:src="@drawable/ic_expand_less_black_24dp"
+            app:tint="@color/default_icon_color_tint_list"/>
     </RelativeLayout>
 
     <org.chromium.chrome.browser.search_resumption.SearchResumptionTileContainerView
