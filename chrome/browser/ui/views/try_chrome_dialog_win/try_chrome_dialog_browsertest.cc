@@ -114,6 +114,7 @@ class TryChromeDialogBrowserTestBase : public InProcessBrowserTest {
   // content:BrowserTestBase:
   void SetUpOnMainThread() override {
     dialog_ = base::WrapUnique(new TryChromeDialog(group_, &delegate_));
+    dialog_->BypassTaskbarIconSearchForTesting();
   }
   void TearDownInProcessBrowserTestFixture() override { dialog_.reset(); }
 
