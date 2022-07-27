@@ -5,14 +5,16 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_OPEN_TAB_RESULT_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_OPEN_TAB_RESULT_H_
 
+#include <string>
+
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "components/omnibox/browser/autocomplete_match.h"
+#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
-class FaviconCache;
 class Profile;
 
 namespace ash::string_matching {
@@ -22,13 +24,14 @@ class TokenizedString;
 namespace app_list {
 
 // Open tab search results. This is produced by the OmniboxProvider.
-class OpenTabResult : public ChromeSearchResult, public ash::ColorModeObserver {
+class OpenTabResult : public ChromeSearchResult,
+                      public ash::ColorModeObserver,
+                      public crosapi::mojom::SearchResultConsumer {
  public:
   OpenTabResult(Profile* profile,
                 AppListControllerDelegate* list_controller,
-                FaviconCache* favicon_cache,
-                const ash::string_matching::TokenizedString& query,
-                const AutocompleteMatch& match);
+                crosapi::mojom::SearchResultPtr search_result,
+                const ash::string_matching::TokenizedString& query);
   ~OpenTabResult() override;
 
   OpenTabResult(const OpenTabResult&) = delete;
@@ -46,13 +49,18 @@ class OpenTabResult : public ChromeSearchResult, public ash::ColorModeObserver {
   void UpdateIcon();
   // Creates a generic backup icon: used when rich icons are not available.
   void SetGenericIcon();
-  void OnFaviconFetched(const gfx::Image& icon);
 
-  Profile* profile_;
-  AppListControllerDelegate* list_controller_;
-  FaviconCache* favicon_cache_;
-  AutocompleteMatch match_;
-  absl::optional<std::string> drive_id_;
+  // crosapi::mojom::SearchResultConsumer:
+  void OnFaviconReceived(const gfx::ImageSkia& icon) override;
+
+  // Handle used to receive a fetched favicon over mojo.
+  const mojo::Receiver<crosapi::mojom::SearchResultConsumer> consumer_receiver_;
+
+  Profile* const profile_;
+  AppListControllerDelegate* const list_controller_;
+  const crosapi::mojom::SearchResultPtr search_result_;
+  const absl::optional<std::string> drive_id_;
+  const std::u16string description_;
   // Whether this open tab result uses a generic backup icon.
   bool uses_generic_icon_ = false;
 

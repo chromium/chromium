@@ -196,9 +196,6 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
 
     if (!is_zero_state_input_ && IsAnswer(match) &&
         !ShouldFilterAnswer(match, last_query_)) {
-      // TODO(1228587): update the rest of the result types to accept a crosapi
-      //                SearchResultPtr so that they can also be used from
-      //                Lacros.
       new_results.emplace_back(std::make_unique<OmniboxAnswerResult>(
           profile_, list_controller_,
           crosapi::CreateAnswerResult(match, controller_.get(), last_query_,
@@ -207,8 +204,11 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
     } else if (match.type == AutocompleteMatchType::OPEN_TAB) {
       DCHECK(last_tokenized_query_.has_value());
       new_results.emplace_back(std::make_unique<OpenTabResult>(
-          profile_, list_controller_, &favicon_cache_,
-          last_tokenized_query_.value(), match));
+          profile_, list_controller_,
+          crosapi::CreateResult(
+              match, controller_.get(), &favicon_cache_,
+              BookmarkModelFactory::GetForBrowserContext(profile_), input_),
+          last_tokenized_query_.value()));
     } else {
       // We can use an unretained pointer here since we own both the
       // autocomplete controller (which lives for the entirety of our lifetime)

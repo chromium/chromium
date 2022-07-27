@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/common/search_result_util.h"
@@ -18,9 +19,7 @@
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/ash/components/string_matching/tokenized_string_match.h"
-#include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/autocomplete_match_type.h"
-#include "components/omnibox/browser/favicon_cache.h"
+#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -34,6 +33,7 @@ namespace {
 
 using ::ash::string_matching::TokenizedString;
 using ::ash::string_matching::TokenizedStringMatch;
+using CrosApiSearchResult = ::crosapi::mojom::SearchResult;
 
 constexpr char kOpenTabScheme[] = "opentab://";
 
@@ -45,29 +45,29 @@ constexpr char16_t kA11yDelimiter[] = u", ";
 
 OpenTabResult::OpenTabResult(Profile* profile,
                              AppListControllerDelegate* list_controller,
-                             FaviconCache* favicon_cache,
-                             const TokenizedString& query,
-                             const AutocompleteMatch& match)
-    : profile_(profile),
+                             crosapi::mojom::SearchResultPtr search_result,
+                             const TokenizedString& query)
+    : consumer_receiver_(this, std::move(search_result->receiver)),
+      profile_(profile),
       list_controller_(list_controller),
-      favicon_cache_(favicon_cache),
-      match_(match),
-      drive_id_(GetDriveId(match.destination_url)) {
-  DCHECK(match_.destination_url.is_valid());
+      search_result_(std::move(search_result)),
+      drive_id_(GetDriveId(*search_result_->destination_url)),
+      description_(search_result_->description.value_or(u"")) {
+  DCHECK(search_result_->destination_url->is_valid());
 
   // TODO(crbug.com/1293702): This may not be unique. Once we have a mechanism
   // for opening a specific tab, add that info too to ensure uniqueness.
-  set_id(kOpenTabScheme + match.destination_url.spec());
+  set_id(kOpenTabScheme + search_result_->destination_url->spec());
 
   SetDisplayType(DisplayType::kList);
   SetResultType(ResultType::kOpenTab);
   SetMetricsType(ash::OPEN_TAB);
   SetCategory(Category::kWeb);
 
-  // Ignore `match_.relevance` and manually calculate a relevance score for this
-  // result.
+  // Ignore `search_result_->relevance` and manually calculate a relevance
+  // score for this result.
   TokenizedStringMatch string_match;
-  TokenizedString title(match_.description);
+  TokenizedString title(description_);
   set_relevance(string_match.Calculate(query, title));
 
   UpdateText();
@@ -83,7 +83,9 @@ OpenTabResult::~OpenTabResult() {
 
 void OpenTabResult::Open(int event_flags) {
   list_controller_->OpenURL(
-      profile_, match_.destination_url, match_.transition,
+      profile_, *search_result_->destination_url,
+      crosapi::PageTransitionToUiPageTransition(
+          search_result_->page_transition),
       ui::DispositionFromEventFlags(event_flags,
                                     WindowOpenDisposition::SWITCH_TO_TAB));
 }
@@ -98,11 +100,11 @@ void OpenTabResult::OnColorModeChanged(bool dark_mode_enabled) {
 }
 
 void OpenTabResult::UpdateText() {
-  // URL results from the Omnibox have the page title stored in
-  // `match.description`.
-  SetTitle(match_.description);
+  // URL results from the Omnibox have the page title stored in the description.
+  SetTitle(description_);
 
-  std::u16string url = base::UTF8ToUTF16(match_.destination_url.spec());
+  const std::u16string url =
+      base::UTF8ToUTF16(search_result_->destination_url->spec());
   SetDetailsTextVector(
       {CreateStringTextItem(url).SetTextTags({Tag(Tag::URL, 0, url.length())}),
        CreateStringTextItem(l10n_util::GetStringFUTF16(
@@ -111,21 +113,17 @@ void OpenTabResult::UpdateText() {
                ash::SearchResultTextItem::OverflowBehavior::kNoElide)});
 
   SetAccessibleName(base::JoinString(
-      {match_.description, url,
+      {description_, url,
        l10n_util::GetStringFUTF16(IDS_APP_LIST_OPEN_TAB_HINT, u"")},
       kA11yDelimiter));
 }
 
 void OpenTabResult::UpdateIcon() {
-  // Use the favicon if it is in cache.
-  if (favicon_cache_) {
-    const auto icon = favicon_cache_->GetFaviconForPageUrl(
-        match_.destination_url, base::BindOnce(&OpenTabResult::OnFaviconFetched,
-                                               weak_factory_.GetWeakPtr()));
-    if (!icon.IsEmpty()) {
-      SetIcon(IconInfo(icon.AsImageSkia(), kFaviconDimension));
-      return;
-    }
+  // Use the favicon if it was in the cache.
+  if (search_result_->omnibox_type ==
+      CrosApiSearchResult::OmniboxType::kFavicon) {
+    SetIcon(IconInfo(search_result_->cached_favicon, kFaviconDimension));
+    return;
   }
 
   // Otherwise, fall back to using a generic icon.
@@ -141,10 +139,10 @@ void OpenTabResult::SetGenericIcon() {
                kSystemIconDimension));
 }
 
-void OpenTabResult::OnFaviconFetched(const gfx::Image& icon) {
+void OpenTabResult::OnFaviconReceived(const gfx::ImageSkia& icon) {
   // By contract, this is never called with an empty `icon`.
-  DCHECK(!icon.IsEmpty());
-  SetIcon(IconInfo(icon.AsImageSkia(), kFaviconDimension));
+  DCHECK(!icon.isNull());
+  SetIcon(IconInfo(icon, kFaviconDimension));
 }
 
 }  // namespace app_list

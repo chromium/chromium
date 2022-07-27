@@ -7,8 +7,10 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/ui/app_list/search/common/search_result_util.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -37,8 +39,12 @@ class OpenTabResultTest : public testing::Test {
     match.destination_url = GURL(url);
     match.relevance = 1000;
     TokenizedString tokenized_query(query, TokenizedString::Mode::kCamelCase);
-    return std::make_unique<OpenTabResult>(nullptr, nullptr, nullptr,
-                                           tokenized_query, match);
+    return std::make_unique<OpenTabResult>(
+        /*profile=*/nullptr, /*list_controller=*/nullptr,
+        crosapi::CreateResult(match, /*controller=*/nullptr,
+                              /*favicon_cache=*/nullptr,
+                              /*bookmark_model=*/nullptr, AutocompleteInput()),
+        tokenized_query);
   }
 };
 
