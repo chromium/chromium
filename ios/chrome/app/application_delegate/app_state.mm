@@ -14,6 +14,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#import "base/notreached.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/metrics/metrics_service.h"
@@ -324,6 +325,11 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     // foregrounding the app. `initStage` will be greater than InitStageStart if
     // the initialization was already started.
     if (self.initStage == InitStageStart) {
+      // TODO(crbug.com/1346512): Remove this code path after some time in
+      // canary. This is meant to be easy to revert. Initialization is always
+      // started at application:didFinishLaunchingWithOptions: and transitions
+      // past InitStageStart before returning to the runloop.
+      NOTREACHED();
       [self queueTransitionToFirstInitStage];
     }
     // TODO(crbug.com/1197330): This function should only be called once
@@ -475,8 +481,12 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   [self queueTransitionToFirstInitStage];
 
-  // Won't yet initialize the UI at this point when scene startup is supported
-  // in which case `stateBackground` is true.
+  // `stateBackground` is wrongly always YES, even in regular foreground
+  // launches. This variable is a legacy before we started supporting
+  // multi-scene.
+  // TODO(crbug.com/1346512): Remove this code path after some time in
+  // canary. This is meant to be easy to revert.
+  DCHECK(stateBackground);
   if (!stateBackground) {
     [self initializeUIPreSafeMode];
   }

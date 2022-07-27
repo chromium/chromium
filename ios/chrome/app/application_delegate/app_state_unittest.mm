@@ -548,7 +548,9 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForegroundSafeMode) {
 
   // Action.
   BOOL result = [appState requiresHandlingAfterLaunchWithOptions:launchOptions
-                                                 stateBackground:NO];
+                                                 stateBackground:YES];
+
+  [appState queueTransitionToNextInitStage];
 
   // Start the safe mode by transitioning the scene to foreground again after
   // #requiresHandlingAfterLaunchWithOptions which starts the safe mode.
@@ -600,7 +602,9 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForeground) {
 
   // Action.
   BOOL result = [appState requiresHandlingAfterLaunchWithOptions:launchOptions
-                                                 stateBackground:NO];
+                                                 stateBackground:YES];
+
+  [appState queueTransitionToNextInitStage];
 
   // Test.
   EXPECT_TRUE(result);
@@ -786,6 +790,10 @@ TEST_F(AppStateTest, applicationWillEnterForegroundFromBackground) {
   [[getStartupInformationMock() stub] setIsFirstRun:YES];
   [[[getStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
 
+  // Simulate finishing the initialization before going to background.
+  [getAppStateWithMock() queueTransitionToFirstInitStage];
+  [getAppStateWithMock() queueTransitionToNextInitStage];
+
   // Actions.
   [getAppStateWithMock() applicationWillEnterForeground:application
                                         metricsMediator:metricsMediator
@@ -829,8 +837,8 @@ TEST_F(AppStateTest, applicationDidEnterBackgroundIncognito) {
   NSDictionary* launchOptions = @{};
   id browserLauncherMock = getBrowserLauncherMock();
   [[browserLauncherMock expect] setLaunchOptions:launchOptions];
-  [appState requiresHandlingAfterLaunchWithOptions:launchOptions
-                                   stateBackground:NO];
+  [appState queueTransitionToFirstInitStage];
+  [appState queueTransitionToNextInitStage];
 
   // Action.
   [appState applicationDidEnterBackground:application

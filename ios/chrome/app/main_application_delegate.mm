@@ -102,6 +102,10 @@ const int kMainIntentCheckDelay = 1;
           forKey:metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey];
   BOOL inBackground =
       [application applicationState] == UIApplicationStateBackground;
+  // `inBackground` is wrongly always YES, even in regular foreground launches.
+  // TODO(crbug.com/1346512): Remove this code path after some time in
+  // canary. This is meant to be easy to revert.
+  DCHECK(inBackground);
   BOOL requiresHandling =
       [_appState requiresHandlingAfterLaunchWithOptions:launchOptions
                                         stateBackground:inBackground];
