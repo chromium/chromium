@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.fuzz builder group."""
 
-load("//lib/builders.star", "goma", "os", "xcode")
-load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
+load("//lib/builders.star", "goma", "os", "reclient", "xcode")
+load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
@@ -12,8 +12,8 @@ ci.defaults.set(
     cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
     notifies = ["chromesec-lkgr-failures"],
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
@@ -141,7 +141,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 6,
     ),
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -259,7 +259,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 7,
     ),
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -273,7 +273,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 6,
     ),
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -286,7 +286,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -314,7 +314,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -327,7 +327,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     execution_timeout = 4 * time.hour,
 )
 
@@ -341,7 +341,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -357,7 +357,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -394,7 +394,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -407,7 +407,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -420,7 +420,7 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 1,
     ),
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.builder(
@@ -462,5 +462,5 @@ ci.builder(
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 3,
     ),
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )

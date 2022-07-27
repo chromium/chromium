@@ -135,6 +135,22 @@ goma = struct(
     ),
 )
 
+reclient = struct(
+    instance = struct(
+        DEFAULT_TRUSTED = "rbe-chromium-trusted",
+        TEST_TRUSTED = "rbe-chromium-trusted-test",
+        DEFAULT_UNTRUSTED = "rbe-chromium-untrusted",
+        TEST_UNTRUSTED = "rbe-chromium-untrusted-test",
+    ),
+    jobs = struct(
+        DEFAULT = 250,
+        LOW_JOBS_FOR_CI = 80,
+        HIGH_JOBS_FOR_CI = 500,
+        LOW_JOBS_FOR_CQ = 80,
+        HIGH_JOBS_FOR_CQ = 500,
+    ),
+)
+
 def _rotation(name):
     return branches.value({branches.MAIN: [name]})
 

@@ -3,16 +3,16 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.angle builder group."""
 
-load("//lib/builders.star", "goma", "sheriff_rotations", "xcode")
-load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
+load("//lib/builders.star", "goma", "reclient", "sheriff_rotations", "xcode")
+load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
     builder_group = "chromium.angle",
     executable = "recipe:angle_chromium",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
     pool = ci.gpu.POOL,
     properties = {
         "perf_dashboard_machine_group": "ChromiumANGLE",
@@ -187,7 +187,7 @@ ci.gpu.windows_builder(
         category = "Windows|Builder|Chromium",
         short_name = "x64",
     ),
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.thin_tester(
@@ -214,7 +214,7 @@ ci.gpu.windows_builder(
         category = "Windows|Builder|Chromium",
         short_name = "x86",
     ),
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.gpu.windows_builder(
@@ -223,7 +223,7 @@ ci.gpu.windows_builder(
         category = "Windows|Builder|ANGLE",
         short_name = "x64",
     ),
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.thin_tester(

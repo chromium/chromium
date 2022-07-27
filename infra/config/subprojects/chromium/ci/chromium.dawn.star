@@ -5,16 +5,16 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma")
-load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
+load("//lib/builders.star", "goma", "reclient")
+load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
     builder_group = "chromium.dawn",
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     pool = ci.gpu.POOL,
     service_account = ci.gpu.SERVICE_ACCOUNT,
     thin_tester_cores = 2,
@@ -343,7 +343,7 @@ ci.gpu.windows_builder(
         category = "ToT|Windows|ASAN",
         short_name = "x64",
     ),
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
     # Serially executed tests + ASAN = more than the default timeout needed in
     # order to prevent build timeouts.
     execution_timeout = 6 * time.hour,
@@ -355,7 +355,7 @@ ci.gpu.windows_builder(
         category = "ToT|Windows|Builder",
         short_name = "x64",
     ),
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.gpu.windows_builder(
@@ -382,7 +382,7 @@ ci.gpu.windows_builder(
         short_name = "x64",
     ),
     cq_mirrors_console_view = "mirrors",
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
 # Note that the Win testers are all thin Linux VMs, triggering jobs on the
@@ -467,7 +467,7 @@ ci.gpu.windows_builder(
         category = "ToT|Windows|Builder",
         short_name = "x86",
     ),
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.gpu.windows_builder(
@@ -494,7 +494,7 @@ ci.gpu.windows_builder(
         short_name = "x86",
     ),
     cq_mirrors_console_view = "mirrors",
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
 # Note that the Win testers are all thin Linux VMs, triggering jobs on the
