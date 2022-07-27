@@ -121,6 +121,8 @@ cr.define('cr.login', function() {
   const SAML_REDIRECTION_PATH = 'samlredirect';
   const BLANK_PAGE_URL = 'about:blank';
 
+  const GAIA_DONE_ELAPSED_TIME = 'ChromeOS.Gaia.Done.ElapsedTime';
+
   // Metric names for messages we get from Gaia.
   const GAIA_MESSAGE_SAML_USER_INFO = 'ChromeOS.Gaia.Message.Saml.UserInfo';
   const GAIA_MESSAGE_GAIA_USER_INFO = 'ChromeOS.Gaia.Message.Gaia.UserInfo';
@@ -443,6 +445,7 @@ cr.define('cr.login', function() {
       this.closeViewReceived_ = false;
       /** @private {string|null} */
       this.urlParameterToAutofillSAMLUsername_ = null;
+      this.gaiaStartTime = null;
 
       window.addEventListener(
           'message', e => this.onMessageFromWebview_(e), false);
@@ -1074,11 +1077,13 @@ cr.define('cr.login', function() {
           !this.waitApiPasswordConfirm_;
 
       if (gaiaDone) {
+        this.maybeRecordGaiaElapsedTime_();
         this.maybeClearGaiaTimeout_();
       } else if (this.gaiaDoneTimer_) {
         // Early out if `gaiaDoneTimer_` is running.
         return;
       } else {
+        this.gaiaStartTime = Date.now();
         // Start `gaiaDoneTimer_` if Gaia is not yet done.
         this.gaiaDoneTimer_ = window.setTimeout(
             () => this.onGaiaDoneTimeout_(), GAIA_DONE_WAIT_TIMEOUT_MS);
@@ -1444,6 +1449,20 @@ cr.define('cr.login', function() {
 
       this.maybeClearGaiaTimeout_();
       this.maybeCompleteAuth_();
+    }
+
+    /**
+     * @private
+     */
+    maybeRecordGaiaElapsedTime_() {
+      if (!this.gaiaStartTime) {
+        return;
+      }
+      chrome.send('metricsHandler:recordTime', [
+        GAIA_DONE_ELAPSED_TIME,
+        Date.now() - this.gaiaStartTime,
+      ]);
+      this.gaiaStartTime = null;
     }
 
     /**
