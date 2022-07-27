@@ -779,8 +779,8 @@ void EventRouter::RemoveFilterFromEvent(const std::string& event_name,
       !filtered_events->GetListWithoutPathExpansion(event_name, &filter_list)) {
     return;
   }
-  filter_list->EraseListIter(
-      base::ranges::find(filter_list->GetListDeprecated(), *filter));
+  filter_list->GetList().erase(
+      base::ranges::find(filter_list->GetList(), *filter));
 }
 
 const DictionaryValue* EventRouter::GetFilteredEvents(

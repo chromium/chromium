@@ -199,31 +199,30 @@ enum UpdateBehavior {
 
 // Updates the entry (if any) for |override_url| in |overrides_list| according
 // to |behavior|. Returns true if anything changed.
-bool UpdateOverridesList(base::Value* overrides_list,
+bool UpdateOverridesList(base::Value::List& overrides_list,
                          const std::string& override_url,
                          UpdateBehavior behavior) {
-  auto iter = std::find_if(overrides_list->GetListDeprecated().begin(),
-                           overrides_list->GetListDeprecated().end(),
+  auto iter = std::find_if(overrides_list.begin(), overrides_list.end(),
                            [&override_url](const base::Value& value) {
                              if (!value.is_dict())
                                return false;
                              const std::string* entry =
-                                 value.FindStringKey(kEntry);
+                                 value.GetDict().FindString(kEntry);
                              return entry && *entry == override_url;
                            });
-  if (iter != overrides_list->GetListDeprecated().end()) {
+  if (iter != overrides_list.end()) {
     switch (behavior) {
       case UPDATE_DEACTIVATE: {
         // See comment about CHECK(success) in ForEachOverrideList.
         if (iter->is_dict()) {
-          iter->SetBoolKey(kActive, false);
+          iter->GetDict().Set(kActive, false);
           break;
         }
         // Else fall through and erase the broken pref.
         [[fallthrough]];
       }
       case UPDATE_REMOVE:
-        overrides_list->EraseListIter(iter);
+        overrides_list.erase(iter);
         break;
     }
     return true;
@@ -239,16 +238,16 @@ void UpdateOverridesLists(Profile* profile,
     return;
   PrefService* prefs = profile->GetPrefs();
   DictionaryPrefUpdate update(prefs, ExtensionWebUI::kExtensionURLOverrides);
-  base::Value* all_overrides = update.Get();
+  base::Value::Dict& all_overrides = update->GetDict();
   for (const auto& page_override_pair : overrides) {
-    base::Value* page_overrides =
-        all_overrides->FindListKey(page_override_pair.first);
+    base::Value::List* page_overrides =
+        all_overrides.FindList(page_override_pair.first);
     // If it's being unregistered, it should already be in the list.
     if (!page_overrides) {
       NOTREACHED();
       continue;
     }
-    if (UpdateOverridesList(page_overrides, page_override_pair.second.spec(),
+    if (UpdateOverridesList(*page_overrides, page_override_pair.second.spec(),
                             behavior)) {
       // This is the active override, so we need to find all existing
       // tabs for this override and get them to reload the original URL.

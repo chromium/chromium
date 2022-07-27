@@ -103,7 +103,7 @@ std::unique_ptr<base::ListValue> GetUsersList(
   // asynchronous and sequential. Before previous write comes back, cached
   // list is stale and should not be used for appending. See
   // http://crbug.com/127215
-  base::Value email_list(base::Value::Type::LIST);
+  base::Value::List email_list;
 
   UsersPrivateDelegate* delegate =
       UsersPrivateDelegateFactory::GetForBrowserContext(browser_context);
@@ -112,7 +112,7 @@ std::unique_ptr<base::ListValue> GetUsersList(
   std::unique_ptr<api::settings_private::PrefObject> users_pref_object =
       prefs_util->GetPref(ash::kAccountsPrefUsers);
   if (users_pref_object->value && users_pref_object->value->is_list()) {
-    email_list = users_pref_object->value->Clone();
+    email_list = users_pref_object->value->GetList().Clone();
   }
 
   const user_manager::UserManager* user_manager =
@@ -121,38 +121,34 @@ std::unique_ptr<base::ListValue> GetUsersList(
   // Remove all supervised users. On the next step only supervised users
   // present on the device will be added back. Thus not present SU are
   // removed. No need to remove usual users as they can simply login back.
-  base::Value::ListView email_list_view = email_list.GetListDeprecated();
-  for (size_t i = 0; i < email_list_view.size(); ++i) {
-    const std::string* email = email_list_view[i].GetIfString();
-    if (email && user_manager->IsDeprecatedSupervisedAccountId(
-                     AccountId::FromUserEmail(*email))) {
-      email_list.EraseListIter(email_list_view.begin() + i);
-      --i;
-    }
-  }
+  email_list.EraseIf([user_manager](const base::Value& email_value) {
+    const std::string* email = email_value.GetIfString();
+    return email && user_manager->IsDeprecatedSupervisedAccountId(
+                        AccountId::FromUserEmail(*email));
+  });
 
   const user_manager::UserList& users = user_manager->GetUsers();
   for (const auto* user : users) {
     base::Value email_value(user->GetAccountId().GetUserEmail());
-    if (!base::Contains(email_list_view, email_value))
+    if (!base::Contains(email_list, email_value))
       email_list.Append(std::move(email_value));
   }
 
-  if (ash::OwnerSettingsServiceAsh* service =
-          ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
-              browser_context)) {
-    service->Set(ash::kAccountsPrefUsers, email_list);
-  }
-
   // Now populate the list of User objects for returning to the JS.
-  for (size_t i = 0; i < email_list_view.size(); ++i) {
-    const std::string* maybe_email = email_list_view[i].GetIfString();
+  for (const base::Value& email_value : email_list) {
+    const std::string* maybe_email = email_value.GetIfString();
     std::string email = maybe_email ? *maybe_email : std::string();
     AccountId account_id = AccountId::FromUserEmail(email);
     const user_manager::User* user = user_manager->FindUser(account_id);
     user_list->Append(base::Value::FromUniquePtrValue(
         (user ? CreateApiUser(email, *user) : CreateUnknownApiUser(email))
             .ToValue()));
+  }
+
+  if (ash::OwnerSettingsServiceAsh* service =
+          ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
+              browser_context)) {
+    service->Set(ash::kAccountsPrefUsers, base::Value(std::move(email_list)));
   }
 
   return user_list;

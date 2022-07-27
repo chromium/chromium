@@ -389,7 +389,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
     // If we try uninstall the extension itself, the uninstall should succeed
     // (even though we auto-cancel any dialog), because the dialog is never
     // shown.
-    uninstall_args.EraseListIter(uninstall_args.GetListDeprecated().begin());
+    uninstall_args.GetList().erase(uninstall_args.GetList().begin());
     function = new ManagementUninstallSelfFunction();
     function->set_extension(extension);
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));

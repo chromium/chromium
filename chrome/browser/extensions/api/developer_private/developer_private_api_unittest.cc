@@ -545,10 +545,9 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
   // Try to pack a final time when omitting (an existing) pem file. We should
   // get an error.
   base::DeleteFile(crx_path);
-  EXPECT_TRUE(pack_args.EraseListIter(pack_args.GetListDeprecated().begin() +
-                                      1u));  // Remove the pem key argument.
-  EXPECT_TRUE(pack_args.EraseListIter(pack_args.GetListDeprecated().begin() +
-                                      1u));  // Remove the flags argument.
+  // Remove the pem key and flags arguments.
+  pack_args.GetList().erase(pack_args.GetList().begin() + 1,
+                            pack_args.GetList().begin() + 3);
   EXPECT_TRUE(TestPackExtensionFunction(
       pack_args, api::developer_private::PACK_STATUS_ERROR, 0));
 }

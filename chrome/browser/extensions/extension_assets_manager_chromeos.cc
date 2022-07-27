@@ -515,10 +515,10 @@ bool ExtensionAssetsManagerChromeOS::CleanUpExtension(
       NOTREACHED();
       return false;
     }
+    base::Value::List& users_list = users->GetList();
 
-    size_t num_users = users->GetListDeprecated().size();
-    for (size_t i = 0; i < num_users; i++) {
-      const std::string* user_id = users->GetListDeprecated()[i].GetIfString();
+    for (auto iter = users_list.begin(); iter != users_list.end();) {
+      const std::string* user_id = iter->GetIfString();
       if (!user_id) {
         NOTREACHED();
         return false;
@@ -548,18 +548,17 @@ bool ExtensionAssetsManagerChromeOS::CleanUpExtension(
       }
 
       if (not_used) {
-        users->EraseListIter(users->GetListDeprecated().begin() + i);
-
-        i--;
-        num_users--;
+        iter = users_list.erase(iter);
+      } else {
+        ++iter;
       }
     }
 
-    if (num_users) {
+    if (users_list.empty()) {
+      extension_info->RemoveKey(*it);
+    } else {
       live_extension_paths->insert(
           std::make_pair(id, base::FilePath(*shared_path)));
-    } else {
-      extension_info->RemoveKey(*it);
     }
   }
 
