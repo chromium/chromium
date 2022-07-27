@@ -18,6 +18,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/protocol/local_trusted_vault.pb.h"
+#include "components/sync/trusted_vault/degraded_recoverability_scheduler.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -36,7 +37,8 @@ namespace syncer {
 // dedicated sequence (using thread pool). Can be constructed on any thread/
 // sequence.
 class StandaloneTrustedVaultBackend
-    : public base::RefCountedThreadSafe<StandaloneTrustedVaultBackend> {
+    : public base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>,
+      public DegradedRecoverabilityScheduler::Delegate {
  public:
   using FetchKeysCallback = base::OnceCallback<void(
       const std::vector<std::vector<uint8_t>>& vault_keys)>;
@@ -63,6 +65,12 @@ class StandaloneTrustedVaultBackend
       delete;
   StandaloneTrustedVaultBackend& operator=(
       const StandaloneTrustedVaultBackend& other) = delete;
+
+  // TrustedVaultDegradedRecoverabilityScheduler::Delegate implementation.
+  void WriteDegradedRecoverabilityState(
+      const sync_pb::LocalTrustedVaultDegradedRecoverabilityState&
+          degraded_recoverability_state) override;
+  void OnDegradedRecoverabilityChanged(bool value) override;
 
   // Restores state saved in |file_path_|, should be called before using the
   // object.
@@ -130,7 +138,7 @@ class StandaloneTrustedVaultBackend
   GetDownloadKeysStatusForUMAFromResponse(
       TrustedVaultDownloadKeysStatus response_status);
 
-  ~StandaloneTrustedVaultBackend();
+  ~StandaloneTrustedVaultBackend() override;
 
   // Finds the per-user vault in |data_| for |gaia_id|. Returns null if not
   // found.

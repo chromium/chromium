@@ -203,6 +203,23 @@ StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
 
 StandaloneTrustedVaultBackend::~StandaloneTrustedVaultBackend() = default;
 
+void StandaloneTrustedVaultBackend::WriteDegradedRecoverabilityState(
+    const sync_pb::LocalTrustedVaultDegradedRecoverabilityState&
+        degraded_recoverability_state) {
+  DCHECK(primary_account_.has_value());
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault =
+      FindUserVault(primary_account_->gaia);
+  *per_user_vault->mutable_degraded_recoverability_state() =
+      degraded_recoverability_state;
+  WriteToDisk(data_, file_path_);
+}
+
+void StandaloneTrustedVaultBackend::OnDegradedRecoverabilityChanged(
+    bool value) {
+  // TODO(crbug.com/1247990): To be implemented.
+  NOTIMPLEMENTED();
+}
+
 void StandaloneTrustedVaultBackend::ReadDataFromDisk() {
   data_ = ReadEncryptedFile(file_path_);
   if (data_.user_size() == 0) {

@@ -45,6 +45,15 @@ using testing::Ne;
 using testing::NotNull;
 using testing::SaveArg;
 
+MATCHER_P(DegradedRecoverabilityStateEq, expected_state, "") {
+  const sync_pb::LocalTrustedVaultDegradedRecoverabilityState& given_state =
+      arg;
+  return given_state.is_recoverability_degraded() ==
+             expected_state.is_recoverability_degraded() &&
+         given_state.last_refresh_time_millis_since_unix_epoch() ==
+             expected_state.last_refresh_time_millis_since_unix_epoch();
+}
+
 MATCHER_P(KeyMaterialEq, expected, "") {
   const std::string& key_material = arg.key_material();
   const std::vector<uint8_t> key_material_as_bytes(key_material.begin(),
@@ -237,6 +246,30 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   base::SimpleTestClock clock_;
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
 };
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldWriteDegradedRecoverabilityState) {
+  backend()->SetPrimaryAccount(MakeAccountInfoWithGaiaId("user"),
+                               /*has_persistent_auth_error=*/false);
+  sync_pb::LocalTrustedVaultDegradedRecoverabilityState
+      degraded_recoverability_state;
+  degraded_recoverability_state.set_is_recoverability_degraded(true);
+  degraded_recoverability_state.set_last_refresh_time_millis_since_unix_epoch(
+      123);
+  backend()->WriteDegradedRecoverabilityState(degraded_recoverability_state);
+
+  // Read the file from disk.
+  std::string ciphertext;
+  std::string decrypted_content;
+  sync_pb::LocalTrustedVault proto;
+  EXPECT_TRUE(base::ReadFileToString(file_path(), &ciphertext));
+  EXPECT_THAT(ciphertext, Ne(""));
+  EXPECT_TRUE(OSCrypt::DecryptString(ciphertext, &decrypted_content));
+  EXPECT_TRUE(proto.ParseFromString(decrypted_content));
+  ASSERT_THAT(proto.user_size(), Eq(1));
+  EXPECT_THAT(proto.user(0).degraded_recoverability_state(),
+              DegradedRecoverabilityStateEq(degraded_recoverability_state));
+}
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchEmptyKeys) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");

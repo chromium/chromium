@@ -27,6 +27,15 @@ message LocalDeviceRegistrationInfo {
   optional int32 device_registered_version = 3;
 }
 
+message LocalTrustedVaultDegradedRecoverabilityState {
+  // Indicates whether the recoverability is degraded.
+  optional bool is_recoverability_degraded = 1;
+
+  // The time (in milliseconds since UNIX epoch) at which last refreshing
+  // request was sent.
+  optional int64 last_refresh_time_millis_since_unix_epoch = 2;
+}
+
 message LocalTrustedVaultPerUser {
   // User identifier.
   optional bytes gaia_id = 1;
@@ -53,6 +62,11 @@ message LocalTrustedVaultPerUser {
   // Whether keys relevant for the user should be deleted when account becomes
   // non-primary.
   optional bool should_delete_keys_when_non_primary = 7;
+
+  // The state of the degraded recoverability, indicates whether the
+  // recoverability is degraded and when was the last refreshing time.
+  optional LocalTrustedVaultDegradedRecoverabilityState
+      degraded_recoverability_state = 8;
 }
 
 message LocalTrustedVault {
