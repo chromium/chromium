@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "chrome/browser/ui/lens/lens_side_panel_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/lens/lens_side_panel_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -17,30 +18,6 @@
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/webview/webview.h"
-
-namespace {
-
-GURL CreateURLForNewTab(const GURL& original_url) {
-  // We need to create a new URL with the specified |query_parameters| while
-  // also keeping the payloard parameter in the original URL.
-  if (original_url.is_empty())
-    return GURL();
-
-  std::string payload;
-  // Make sure the payload is present.
-  if (!net::GetValueForKeyInQuery(original_url, lens::kPayloadQueryParameter,
-                                  &payload))
-    return GURL();
-
-  GURL modified_url;
-  // Append or replace query parameters related to entry point.
-  modified_url = lens::AppendOrReplaceQueryParametersForLensRequest(
-      original_url, lens::EntryPoint::CHROME_OPEN_NEW_TAB_SIDE_PANEL,
-      /*use_side_panel=*/false);
-  return modified_url;
-}
-
-}  // namespace
 
 namespace lens {
 
@@ -124,7 +101,7 @@ void LensSidePanelController::LoadResultsInNewTab() {
     // Open the latest URL visible on the side panel. This accounts for when the
     // user uploads an image to Lens via drag and drop. This also allows any
     // region selection changes to transfer to the new tab.
-    GURL url = CreateURLForNewTab(
+    GURL url = lens::CreateURLForNewTab(
         side_panel_view_->GetWebContents()->GetLastCommittedURL());
     // If there is no payload parameter, we will have an empty URL. This means
     // we should return on empty and not close the side panel.
@@ -173,11 +150,8 @@ void LensSidePanelController::CloseButtonClicked() {
 }
 
 void LensSidePanelController::LoadProgressChanged(double progress) {
-  if(progress == 1.0) {
-    side_panel_view_->SetContentVisible(true);
-  } else {
-    side_panel_view_->SetContentVisible(false);
-  }
+  bool is_content_visible = progress == 1.0;
+  side_panel_view_->SetContentVisible(is_content_visible);
 }
 
 }  // namespace lens

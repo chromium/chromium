@@ -10,14 +10,39 @@
 #include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "components/lens/lens_entrypoints.h"
+#include "components/lens/lens_features.h"
 #include "content/public/browser/navigation_handle.h"
+#include "net/base/url_util.h"
 #include "ui/views/widget/widget.h"
 
 namespace lens {
 
+bool IsValidLensResultUrl(const GURL& url) {
+  if (url.is_empty())
+    return false;
+
+  std::string payload;
+  // Make sure the payload is present
+  return net::GetValueForKeyInQuery(url, lens::kPayloadQueryParameter,
+                                    &payload);
+}
+
+// We need to create a new URL with the specified query parameters while
+// also keeping the payload parameter in the original URL.
+GURL CreateURLForNewTab(const GURL& original_url) {
+  if (!IsValidLensResultUrl(original_url))
+    return GURL();
+
+  // Append or replace query parameters related to entry point.
+  return lens::AppendOrReplaceQueryParametersForLensRequest(
+      original_url, lens::EntryPoint::CHROME_OPEN_NEW_TAB_SIDE_PANEL,
+      /*is_side_panel_request=*/false);
+}
+
 void OpenLensSidePanel(Browser* browser,
                        const content::OpenURLParams& url_params) {
-  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+  if (base::FeatureList::IsEnabled(::features::kUnifiedSidePanel)) {
     LensSidePanelCoordinator::GetOrCreateForBrowser(browser)
         ->RegisterEntryAndShow(url_params);
   } else {

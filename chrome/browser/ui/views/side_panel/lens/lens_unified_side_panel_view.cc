@@ -11,16 +11,15 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/lens/lens_side_panel_helper.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
-#include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_provider.h"
@@ -33,29 +32,6 @@
 #include "ui/views/layout/layout_provider.h"
 
 namespace {
-
-bool IsUrlValid(const GURL& url) {
-  if (url.is_empty())
-    return false;
-
-  std::string payload;
-  // Make sure the payload is present
-  return net::GetValueForKeyInQuery(url, lens::kPayloadQueryParameter,
-                                    &payload);
-}
-
-// We need to create a new URL with the specified query parameters while
-// also keeping the payload parameter in the original URL.
-GURL CreateURLForNewTab(const GURL& original_url) {
-  if (!IsUrlValid(original_url))
-    return GURL();
-
-  // Append or replace query parameters related to entry point.
-  return lens::AppendOrReplaceQueryParametersForLensRequest(
-      original_url, lens::EntryPoint::CHROME_OPEN_NEW_TAB_SIDE_PANEL,
-      /*is_side_panel_request=*/false);
-}
-
 std::unique_ptr<views::WebView> CreateWebView(
     views::View* host,
     content::BrowserContext* browser_context) {
@@ -113,8 +89,8 @@ content::WebContents* LensUnifiedSidePanelView::GetWebContents() {
 }
 
 void LensUnifiedSidePanelView::LoadResultsInNewTab() {
-  const GURL url =
-      CreateURLForNewTab(web_view_->GetWebContents()->GetLastCommittedURL());
+  const GURL url = lens::CreateURLForNewTab(
+      web_view_->GetWebContents()->GetLastCommittedURL());
   // If there is no payload parameter, we will have an empty URL. This means
   // we should return on empty and not close the side panel.
   if (url.is_empty())
@@ -135,7 +111,7 @@ void LensUnifiedSidePanelView::LoadProgressChanged(double progress) {
   if (is_content_visible) {
     auto last_committed_url =
         web_view_->GetWebContents()->GetLastCommittedURL();
-    launch_button_->SetEnabled(IsUrlValid(last_committed_url));
+    launch_button_->SetEnabled(lens::IsValidLensResultUrl(last_committed_url));
   }
 }
 

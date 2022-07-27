@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/lens/lens_side_panel_helper.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
@@ -184,9 +185,15 @@ void LensSidePanelView::CreateAndInstallHeader(
   AddChildView(std::move(header));
 }
 
+void LensSidePanelView::UpdateLaunchButtonState() {
+  auto last_committed_url = web_view_->GetWebContents()->GetLastCommittedURL();
+  launch_button_->SetEnabled(lens::IsValidLensResultUrl(last_committed_url));
+}
+
 void LensSidePanelView::SetContentVisible(bool visible) {
   web_view_->SetVisible(visible);
   loading_indicator_web_view_->SetVisible(!visible);
+  LensSidePanelView::UpdateLaunchButtonState();
 }
 
 LensSidePanelView::~LensSidePanelView() = default;

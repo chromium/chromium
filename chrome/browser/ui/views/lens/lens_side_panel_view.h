@@ -42,6 +42,10 @@ class LensSidePanelView : public views::FlexLayoutView {
   void CreateAndInstallHeader(base::RepeatingClosure close_callback,
                               base::RepeatingClosure launch_callback);
 
+  // Validates side panel URL and updates enabled/disabled
+  // state of the launch button.
+  void UpdateLaunchButtonState();
+
   raw_ptr<views::ImageView> branding_;
   raw_ptr<views::Separator> separator_;
   raw_ptr<views::WebView> loading_indicator_web_view_;
