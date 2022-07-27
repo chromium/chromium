@@ -27,14 +27,12 @@ const char kOffsetKey[] = "offset";
 const char kDisplayPlacementDisplayIdKey[] = "display_id";
 const char kDisplayPlacementParentDisplayIdKey[] = "parent_display_id";
 
-bool AddLegacyValuesFromValue(const base::Value& value, DisplayLayout* layout) {
-  if (!value.is_dict())
-    return false;
-
-  absl::optional<int> optional_offset = value.FindIntKey(kOffsetKey);
+bool AddLegacyValuesFromValue(const base::Value::Dict& dict,
+                              DisplayLayout* layout) {
+  absl::optional<int> optional_offset = dict.FindInt(kOffsetKey);
   if (optional_offset) {
     DisplayPlacement::Position position;
-    const std::string* position_str = value.FindStringKey(kPositionKey);
+    const std::string* position_str = dict.FindString(kPositionKey);
     if (!position_str)
       return false;
     DisplayPlacement::StringToPosition(*position_str, &position);
@@ -45,11 +43,11 @@ bool AddLegacyValuesFromValue(const base::Value& value, DisplayLayout* layout) {
 
 // Returns true if
 //     The key is missing - output is left unchanged
-//     The key matches the type - output is updated to the value.
-bool UpdateFromDict(const base::Value& value,
+//     The key matches the type - output is updated to the dict.
+bool UpdateFromDict(const base::Value::Dict& dict,
                     const std::string& field_name,
                     bool* output) {
-  const base::Value* field = value.FindKey(field_name);
+  const base::Value* field = dict.Find(field_name);
   if (!field) {
     LOG(WARNING) << "Missing field: " << field_name;
     return true;
@@ -65,11 +63,11 @@ bool UpdateFromDict(const base::Value& value,
 
 // Returns true if
 //     The key is missing - output is left unchanged
-//     The key matches the type - output is updated to the value.
-bool UpdateFromDict(const base::Value& value,
+//     The key matches the type - output is updated to the dict.
+bool UpdateFromDict(const base::Value::Dict& dict,
                     const std::string& field_name,
                     int* output) {
-  const base::Value* field = value.FindKey(field_name);
+  const base::Value* field = dict.Find(field_name);
   if (!field) {
     LOG(WARNING) << "Missing field: " << field_name;
     return true;
@@ -85,11 +83,11 @@ bool UpdateFromDict(const base::Value& value,
 
 // Returns true if
 //     The key is missing - output is left unchanged
-//     The key matches the type - output is updated to the value.
-bool UpdateFromDict(const base::Value& value,
+//     The key matches the type - output is updated to the dict.
+bool UpdateFromDict(const base::Value::Dict& dict,
                     const std::string& field_name,
                     DisplayPlacement::Position* output) {
-  const base::Value* field = value.FindKey(field_name);
+  const base::Value* field = dict.Find(field_name);
   if (!field) {
     LOG(WARNING) << "Missing field: " << field_name;
     return true;
@@ -106,11 +104,11 @@ bool UpdateFromDict(const base::Value& value,
 
 // Returns true if
 //     The key is missing - output is left unchanged
-//     The key matches the type - output is updated to the value.
-bool UpdateFromDict(const base::Value& value,
+//     The key matches the type - output is updated to the dict.
+bool UpdateFromDict(const base::Value::Dict& dict,
                     const std::string& field_name,
                     int64_t* output) {
-  const base::Value* field = value.FindKey(field_name);
+  const base::Value* field = dict.Find(field_name);
   if (!field) {
     LOG(WARNING) << "Missing field: " << field_name;
     return true;
@@ -126,11 +124,11 @@ bool UpdateFromDict(const base::Value& value,
 
 // Returns true if
 //     The key is missing - output is left unchanged
-//     The key matches the type - output is updated to the value.
-bool UpdateFromDict(const base::Value& value,
+//     The key matches the type - output is updated to the dict.
+bool UpdateFromDict(const base::Value::Dict& dict,
                     const std::string& field_name,
                     std::vector<DisplayPlacement>* output) {
-  const base::Value* field = value.FindKey(field_name);
+  const base::Value* field = dict.Find(field_name);
   if (!field) {
     LOG(WARNING) << "Missing field: " << field_name;
     return true;
@@ -147,11 +145,12 @@ bool UpdateFromDict(const base::Value& value,
       return false;
 
     DisplayPlacement item;
-    if (!UpdateFromDict(list_item, kOffsetKey, &item.offset) ||
-        !UpdateFromDict(list_item, kPositionKey, &item.position) ||
-        !UpdateFromDict(list_item, kDisplayPlacementDisplayIdKey,
+    if (!UpdateFromDict(list_item.GetDict(), kOffsetKey, &item.offset) ||
+        !UpdateFromDict(list_item.GetDict(), kPositionKey, &item.position) ||
+        !UpdateFromDict(list_item.GetDict(), kDisplayPlacementDisplayIdKey,
                         &item.display_id) ||
-        !UpdateFromDict(list_item, kDisplayPlacementParentDisplayIdKey,
+        !UpdateFromDict(list_item.GetDict(),
+                        kDisplayPlacementParentDisplayIdKey,
                         &item.parent_display_id)) {
       return false;
     }
@@ -164,21 +163,25 @@ bool UpdateFromDict(const base::Value& value,
 }  // namespace
 
 bool JsonToDisplayLayout(const base::Value& value, DisplayLayout* layout) {
-  layout->placement_list.clear();
   if (!value.is_dict())
     return false;
+  return JsonToDisplayLayout(value.GetDict(), layout);
+}
 
-  if (!UpdateFromDict(value, kDefaultUnifiedKey, &layout->default_unified) ||
-      !UpdateFromDict(value, kPrimaryIdKey, &layout->primary_id)) {
+bool JsonToDisplayLayout(const base::Value::Dict& dict, DisplayLayout* layout) {
+  layout->placement_list.clear();
+
+  if (!UpdateFromDict(dict, kDefaultUnifiedKey, &layout->default_unified) ||
+      !UpdateFromDict(dict, kPrimaryIdKey, &layout->primary_id)) {
     return false;
   }
 
-  UpdateFromDict(value, kDisplayPlacementKey, &layout->placement_list);
+  UpdateFromDict(dict, kDisplayPlacementKey, &layout->placement_list);
   if (layout->placement_list.size() != 0u)
     return true;
 
   // For compatibility with old format.
-  return AddLegacyValuesFromValue(value, layout);
+  return AddLegacyValuesFromValue(dict, layout);
 }
 
 bool DisplayLayoutToJson(const DisplayLayout& layout, base::Value* value) {
