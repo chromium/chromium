@@ -16,11 +16,8 @@ package metrics;
 //
 // See $kernel/tools/perf/design.txt for more details.
 
-// Please do not modify this protobuf directly, except to mirror the upstream
-// version found here:
-// https://github.com/google/perf_data_converter/blob/master/src/quipper/perf_data.proto
-// with some fields omitted for privacy reasons. Because it is a read-only copy
-// of the upstream protobuf, "Next tag:" comments are also absent.
+// This is a read-only copy of the upstream protobuf; "Next tag:" comments are
+// absent.
 message PerfDataProto {
   // Perf event attribute. Stores the event description.
   // This data structure is defined in the linux kernel:
@@ -227,6 +224,35 @@ message PerfDataProto {
     optional SampleInfo sample_info = 8;
   }
 
+  // The kernel collects the number of events it couldn't send in a stretch and
+  // when possible sends this number in a PERF_RECORD_LOST event, which is
+  // stored in LostEvent.
+  message LostEvent {
+    // ID of the event which has been lost.  This should be an id found in a
+    // PerfFileAttr.
+    optional uint64 id = 1;
+
+    // Number of events that were lost.
+    optional uint64 lost = 2;
+
+    // Info about the perf sample containing this event.
+    optional SampleInfo sample_info = 3;
+  }
+
+  message ThrottleEvent {
+    // Time of throttle event, in nanoseconds since system startup.
+    optional uint64 time_ns = 1;
+
+    // Event ID.
+    optional uint64 id = 2;
+
+    // Stream ID.
+    optional uint64 stream_id = 3;
+
+    // Info about the perf sample containing this event.
+    optional SampleInfo sample_info = 4;
+  }
+
   message BranchStackEntry {
     // Branch source address.
     optional uint64 from_ip = 1;
@@ -281,6 +307,8 @@ message PerfDataProto {
     // The raw size of the event in bytes.
     optional uint32 raw_size = 10;
 
+    // Not added from original: field 18.
+
     // Sample callchain info.
     repeated uint64 callchain = 11;
 
@@ -301,6 +329,8 @@ message PerfDataProto {
     // Flag fields:
     // http://lxr.free-electrons.com/source/include/uapi/linux/perf_event.h#L209
     optional uint64 transaction = 17;
+
+    // Not added from original: fields 19-25.
   }
 
   // ForkEvent is used for both FORK and EXIT events, which have the same data
@@ -336,19 +366,21 @@ message PerfDataProto {
 
   message PerfEvent {
     optional EventHeader header = 1;
+    oneof event_type {
+      MMapEvent mmap_event = 2;
+      SampleEvent sample_event = 3;
+      CommEvent comm_event = 4;
+      // FORK and EXIT events are structurally identical. They only differ by
+      // the event type. But using two distinct fields allows us to
+      // differentiate between them without having to check the event type under
+      // |header|.
+      ForkEvent fork_event = 5;
+      ForkEvent exit_event = 9;
+      LostEvent lost_event = 6;
+      ThrottleEvent throttle_event = 7;
 
-    optional MMapEvent mmap_event = 2;
-    optional SampleEvent sample_event = 3;
-    optional CommEvent comm_event = 4;
-    // FORK and EXIT events are structurally identical. They only differ by the
-    // event type. But using two distinct fields makes things easier.
-    optional ForkEvent fork_event = 5;
-    optional ForkEvent exit_event = 9;
-
-    // Not added from original: optional LostEvent lost_event = 6;
-    // Not added from original: optional ThrottleEvent throttle_event = 7;
-    // Not added from original: optional ReadEvent read_event = 8;
-
+      // Not added from original: fields 8, 11-24.
+    }
     // Time after boot in nanoseconds corresponding to the event.
     optional uint64 timestamp = 10;
   }
@@ -382,12 +414,14 @@ message PerfDataProto {
     optional uint32 pid = 2;
 
     // Build id.  Should always contain kBuildIDArraySize bytes of data.
-    // perf_reader.h in Chrome OS defines kBuildIDArraySize = 20.
+    // perf_reader.h defines kBuildIDArraySize = 20.
     optional bytes build_id_hash = 3;
 
     // Filename Md5sum prefix.
     // The filename was field 4 and has been intentionally left out.
     optional uint64 filename_md5_prefix = 5;
+
+    // Not added from original: field 6.
   }
 
   message PerfPMUMappingsMetadata {
