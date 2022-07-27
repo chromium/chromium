@@ -210,6 +210,7 @@ let kRTCOutboundRtpStreamStats = new RTCStats(kRTCSentRtpStreamStats, {
   framesPerSecond: 'number',
   framesSent: 'number',
   hugeFramesSent: 'number',
+  active: 'boolean',
 });
 addRTCStatsToAllowlist(
     Presence.MANDATORY, 'outbound-rtp', kRTCOutboundRtpStreamStats);
