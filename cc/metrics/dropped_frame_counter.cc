@@ -391,7 +391,6 @@ void DroppedFrameCounter::ReportFrames() {
     if (sliding_window_max_percent_dropped_After_5_sec_.has_value())
       smoothness_data.worst_smoothness_after5sec =
           sliding_window_max_percent_dropped_After_5_sec_.value();
-    smoothness_data.time_max_delta = time_max_delta_;
     ukm_smoothness_data_->Write(smoothness_data);
   }
 }
@@ -447,7 +446,6 @@ void DroppedFrameCounter::Reset() {
   sliding_window_histogram_[SmoothnessStrategy::kCompositorFocusedStrategy]
       .Clear();
   ring_buffer_.Clear();
-  time_max_delta_ = {};
   last_reported_metrics_ = {};
 }
 
@@ -569,10 +567,9 @@ void DroppedFrameCounter::PopSlidingWindow() {
   sliding_window_histogram_[SmoothnessStrategy::kScrollFocusedStrategy]
       .AddPercentDroppedFrame(percent_dropped_frame_scroll, count);
 
-  if (percent_dropped_frame > sliding_window_max_percent_dropped_) {
-    time_max_delta_ = newest_args.frame_time - time_fcp_received_;
+  if (percent_dropped_frame > sliding_window_max_percent_dropped_)
     sliding_window_max_percent_dropped_ = percent_dropped_frame;
-  }
+
   sliding_window_current_percent_dropped_ = percent_dropped_frame;
 
   latest_sliding_window_start_ = last_timestamp;

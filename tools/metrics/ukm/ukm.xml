@@ -8632,6 +8632,9 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="TimingSinceFCPWorstCase">
+    <obsolete>
+      Removed July 2022 along with UMA metric, which are no longer needed.
+    </obsolete>
     <summary>
       The Time From FCP when the worst case happened
     </summary>

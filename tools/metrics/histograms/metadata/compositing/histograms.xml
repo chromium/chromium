@@ -1424,23 +1424,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Graphics.Smoothness.PerSession.TimeMaxPercentDroppedFrames_1sWindow"
-    units="ms" expires_after="2021-11-18">
-  <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Tracks the time since First Contentful Paint when the sliding window with
-    the max percent of dropped frames occurs, up to 25 seconds. The metric is
-    reported once per page-load when the page closes.
-
-    PercentDroppedFrames is measured by tracking the number of frames which were
-    not displayed on screen out of the total number of frames expected to be
-    produced and displayed. In other words, the lower this number is, the
-    smoother experience.
-  </summary>
-</histogram>
-
 <histogram name="Graphics.Smoothness.Stale" units="ms"
     expires_after="2022-12-18">
   <owner>jonross@chromium.org</owner>
