@@ -93,7 +93,7 @@
 <translation id="5466621249238537318">请选择一个或多个文件。</translation>
 <translation id="5468998798572797635">退出全屏模式</translation>
 <translation id="5516235301412634559">0.75</translation>
-<translation id="5537725057119320332">投射</translation>
+<translation id="5537725057119320332">投放</translation>
 <translation id="5546461542133609677">取消静音</translation>
 <translation id="5630795885300617244">在左侧或右侧点按两次即可跳过 10 秒</translation>
 <translation id="5677946354068040947">更多选项</translation>
@@ -102,7 +102,7 @@
 <translation id="5787939484346677755">已展开，有可用的自动补全选项。</translation>
 <translation id="5860033963881614850">关闭</translation>
 <translation id="588258955323874662">全屏</translation>
-<translation id="5888666972993069672">现正投射至“<ph name="DEVICE_FRIENDLY_NAME" />”</translation>
+<translation id="5888666972993069672">现正投放至“<ph name="DEVICE_FRIENDLY_NAME" />”</translation>
 <translation id="5916664084637901428">启用</translation>
 <translation id="5939518447894949180">重置</translation>
 <translation id="5966707198760109579">周</translation>
@@ -168,7 +168,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">自动换行</translation>
 <translation id="8750798805984357768">请从这些选项中选择一个。</translation>
-<translation id="8845239796550121995">现在正投射到您的电视上</translation>
+<translation id="8845239796550121995">现在正投放到您的电视上</translation>
 <translation id="8875657656876809964">视频播放出错</translation>
 <translation id="8889402386540077796">色调</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
