@@ -89,7 +89,6 @@ std::u16string ReduceInputTextForMatching(const std::u16string& input) {
   // Long inputs are not fuzzy matched; doing so could be costly, and the
   // length of input itself is a signal that it may not have been typed but
   // simply pasted or edited in place.
-  // TODO(orinj): Consider tracking trie depth for use as maximum here.
   if (input.length() > kMaximumFuzzyMatchInputLength) {
     return std::u16string();
   }
@@ -197,9 +196,6 @@ std::unique_ptr<Correction> Correction::GetApplicableCorrection() {
     DCHECK(!next || next->kind != Kind::KEEP);
     return next ? std::make_unique<Correction>(*next) : nullptr;
   } else {
-    // TODO(orinj): Consider a shared ownership model or preallocated pool to
-    //  eliminate lots of copy allocations. For now this is kept simple with
-    //  direct ownership of the full correction chain.
     return std::make_unique<Correction>(*this);
   }
 }
@@ -309,7 +305,6 @@ bool Node::FindCorrections(const std::u16string& text,
 
     // Backtracking data to enable text correction (from end of string back
     // to beginning, i.e. correction chains are applied in reverse).
-    // TODO(orinj): This should be optimized in final algorithm; stop copying.
     Correction correction;
 
     // std::priority_queue keeps the greatest element on top, so we want this
@@ -346,9 +341,6 @@ bool Node::FindCorrections(const std::u16string& text,
     pq.pop();
     DVLOG(1) << i << "(" << step.distance << "," << step.index << ","
              << step.length << "," << step.correction << ")";
-    // TODO(orinj): Enforce a tolerance schedule with index versus distance;
-    //  this would allow more errors for longer inputs and prevents searching
-    //  through long corrections near start of input.
     // Strictly greater should not be possible for this comparison.
     if (step.index >= text.length()) {
       if (step.distance == 0) {
@@ -585,7 +577,6 @@ size_t HistoryFuzzyProvider::EstimateMemoryUsage() const {
 HistoryFuzzyProvider::~HistoryFuzzyProvider() = default;
 
 void HistoryFuzzyProvider::DoAutocomplete() {
-  // TODO(orinj): This schedule may want some measurement and tinkering.
   constexpr fuzzy::ToleranceSchedule kToleranceSchedule = {
       .start_index = 1,
       .step_length = 4,
@@ -685,8 +676,12 @@ int HistoryFuzzyProvider::AddConvertedMatches(const ACMatches& matches) {
   // Update match in place. Note, `match.provider` will be reassigned after
   // `DoAutocomplete` because source sub-provider must be kept for metrics.
   AutocompleteMatch& match = matches_.back();
-  match.inline_autocompletion.clear();
+
+  // It's important that fuzzy matches do not try to become default and inline
+  // autocomplete because the input/match-data mismatch can cause problems
+  // with user interaction and omnibox text editing; see crbug/1347440.
   match.allowed_to_be_default_match = false;
+  match.inline_autocompletion.clear();
 
   // Apply relevance penalty; all corrections are equal and we only apply this
   // to the most relevant result, so edit distance isn't needed.
@@ -697,9 +692,6 @@ int HistoryFuzzyProvider::AddConvertedMatches(const ACMatches& matches) {
   // HQP result that was bumped down to ~770. Using 95/100 lets this
   // result compete in the navsuggest range.
   match.relevance = match.relevance * 95 / 100;
-  match.contents_class.clear();
-  match.contents_class.push_back(
-      {0, AutocompleteMatch::ACMatchClassification::DIM});
 
   return 1;
 }

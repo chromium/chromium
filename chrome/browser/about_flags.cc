@@ -5170,7 +5170,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"omnibox-fuzzy-url-suggestions",
      flag_descriptions::kOmniboxFuzzyUrlSuggestionsName,
-     flag_descriptions::kOmniboxFuzzyUrlSuggestionsDescription, kOsDesktop,
+     flag_descriptions::kOmniboxFuzzyUrlSuggestionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxFuzzyUrlSuggestions)},
 
     {"omnibox-zero-suggest-prefetching",
