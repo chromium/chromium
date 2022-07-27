@@ -8,11 +8,10 @@ import("//tools/polymer/polymer.gni")
 
 assert(is_chromeos, "Only ChromeOS components belong here.")
 
-group("closure_compile") {
-  deps = [
-    # Targets for auto-generated Polymer3/JS Modules
-    "cr_picture:closure_compile_module",
-  ]
+if (is_chromeos_ash) {
+  group("closure_compile") {
+    deps = [ "cr_picture:closure_compile_module" ]
+  }
 }
 
 group("polymer3_elements") {
