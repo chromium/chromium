@@ -157,9 +157,16 @@ void MultitaskMenu::OnWidgetDestroying(views::Widget* widget) {
 void MultitaskMenu::ShowBubble() {
   DCHECK(parent_window());
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(this);
+
+  // This gets reset to the platform default when we call `CreateBubble()`,
+  // which for Lacros is false.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  set_adjust_if_offscreen(true);
+  SizeToContents();
+#endif
+
   bubble_widget_->Show();
   bubble_widget_observer_.Observe(bubble_widget_.get());
-  bubble_widget_->Activate();
 }
 
 void MultitaskMenu::HideBubble() {

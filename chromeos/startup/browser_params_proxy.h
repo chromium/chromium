@@ -116,6 +116,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   crosapi::mojom::BrowserInitParams::LacrosSelection LacrosSelection() const;
 
+  bool IsFloatWindowEnabled() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

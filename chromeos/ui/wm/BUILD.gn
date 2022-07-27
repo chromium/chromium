@@ -33,6 +33,7 @@ source_set("wm") {
   if (is_chromeos_lacros) {
     sources += [ "desks/lacros/desks_helper.cc" ]
     deps += [
+      "//chromeos/startup:startup",
       "//ui/platform_window:platform_window",
       "//ui/views:views",
     ]

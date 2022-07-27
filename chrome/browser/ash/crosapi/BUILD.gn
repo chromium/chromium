@@ -285,6 +285,7 @@ source_set("crosapi") {
     "//chromeos/startup",
     "//chromeos/startup:constants",
     "//chromeos/system",
+    "//chromeos/ui/wm:wm",
     "//components/arc",
     "//components/crash/core/app",
     "//components/exo",

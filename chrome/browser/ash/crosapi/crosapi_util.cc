@@ -112,6 +112,7 @@
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/startup/startup.h"
 #include "chromeos/system/statistics_provider.h"
+#include "chromeos/ui/wm/features.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -565,6 +566,8 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   params->do_not_mux_extension_app_ids = !apps::ShouldMuxExtensionIds();
   params->enable_lacros_tts_support =
       tts_crosapi_util::ShouldEnableLacrosTtsSupport();
+  params->enable_float_window =
+      base::FeatureList::IsEnabled(chromeos::wm::features::kFloatWindow);
 
   return params;
 }

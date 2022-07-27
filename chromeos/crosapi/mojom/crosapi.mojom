@@ -858,8 +858,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known after
 // the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 51
-// Next id: 51
+// Next version: 52
+// Next id: 52
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1179,6 +1179,11 @@ struct BrowserInitParams {
   // either rootfs or stateful.
   [MinVersion=50]
   LacrosSelection lacros_selection@50;
+
+  // When this flag is set to true, Lacros float window support including the
+  // multitask menu will be enabled.
+  [MinVersion=51]
+  bool enable_float_window@51;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

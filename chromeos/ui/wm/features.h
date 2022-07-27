@@ -8,17 +8,15 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 
-namespace chromeos {
-namespace wm {
-namespace features {
+namespace chromeos::wm::features {
 
 COMPONENT_EXPORT(CHROMEOS_UI_WM)
 extern const base::Feature kFloatWindow;
 
+// Checks if the float feature is enabled. On ash, this checks the feature flag.
+// On lacros, this checks the lacros service.
 COMPONENT_EXPORT(CHROMEOS_UI_WM) bool IsFloatWindowEnabled();
 
-}  // namespace features
-}  // namespace wm
-}  // namespace chromeos
+}  // namespace chromeos::wm::features
 
 #endif  // CHROMEOS_UI_WM_FEATURES_H_

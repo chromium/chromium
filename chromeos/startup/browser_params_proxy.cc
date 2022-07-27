@@ -230,4 +230,8 @@ BrowserParamsProxy::LacrosSelection() const {
   return BrowserInitParams::Get()->lacros_selection;
 };
 
+bool BrowserParamsProxy::IsFloatWindowEnabled() const {
+  return BrowserInitParams::Get()->enable_float_window;
+}
+
 }  // namespace chromeos
