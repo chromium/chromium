@@ -39,6 +39,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "sql/database_memory_dump_provider.h"
@@ -277,6 +278,26 @@ void Database::StatementRef::Close(bool forced) {
 static_assert(DatabaseOptions::kDefaultPageSize == SQLITE_DEFAULT_PAGE_SIZE,
               "DatabaseOptions::kDefaultPageSize must match the value "
               "configured into SQLite");
+
+DatabaseDiagnostics::DatabaseDiagnostics() = default;
+DatabaseDiagnostics::~DatabaseDiagnostics() = default;
+
+void DatabaseDiagnostics::WriteIntoTrace(
+    perfetto::TracedProto<TraceProto> context) const {
+  context->set_reported_sqlite_error_code(reported_sqlite_error_code);
+  context->set_error_code(error_code);
+  context->set_last_errno(last_errno);
+  context->set_sql_statement(sql_statement);
+  context->set_version(version);
+  for (const auto& sql : schema_sql_rows) {
+    context->add_schema_sql_rows(sql);
+  }
+  for (const auto& name : schema_other_row_names) {
+    context->add_schema_other_row_names(name);
+  }
+  context->set_has_valid_header(has_valid_header);
+  context->set_has_valid_schema(has_valid_schema);
+}
 
 // DatabaseOptions::explicit_locking needs to be set to false for historical
 // reasons.
@@ -524,7 +545,8 @@ base::FilePath Database::DbPath() const {
 }
 
 std::string Database::CollectErrorInfo(int sqlite_error_code,
-                                       Statement* stmt) const {
+                                       Statement* stmt,
+                                       DatabaseDiagnostics* diagnostics) const {
   TRACE_EVENT0("sql", "Database::CollectErrorInfo");
 
   DCHECK_NE(sqlite_error_code, SQLITE_OK)
@@ -540,8 +562,12 @@ std::string Database::CollectErrorInfo(int sqlite_error_code,
   std::string debug_info;
 
   // The error message from the failed operation.
-  base::StringAppendF(&debug_info, "db error: %d/%s\n", GetErrorCode(),
+  int error_code = GetErrorCode();
+  base::StringAppendF(&debug_info, "db error: %d/%s\n", error_code,
                       GetErrorMessage());
+  if (diagnostics) {
+    diagnostics->error_code = error_code;
+  }
 
   // TODO(shess): |error| and |GetErrorCode()| should always be the same, but
   // reading code does not entirely convince me.  Remove if they turn out to be
@@ -552,9 +578,17 @@ std::string Database::CollectErrorInfo(int sqlite_error_code,
 // System error information.  Interpretation of Windows errors is different
 // from posix.
 #if BUILDFLAG(IS_WIN)
-  base::StringAppendF(&debug_info, "LastError: %d\n", GetLastErrno());
+  int last_errno = GetLastErrno();
+  base::StringAppendF(&debug_info, "LastError: %d\n", last_errno);
+  if (diagnostics) {
+    diagnostics->last_errno = last_errno;
+  }
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  base::StringAppendF(&debug_info, "errno: %d\n", GetLastErrno());
+  int last_errno = GetLastErrno();
+  base::StringAppendF(&debug_info, "errno: %d\n", last_errno);
+  if (diagnostics) {
+    diagnostics->last_errno = last_errno;
+  }
 #else
   NOTREACHED();  // Add appropriate log info.
 #endif
@@ -562,6 +596,9 @@ std::string Database::CollectErrorInfo(int sqlite_error_code,
   if (stmt) {
     std::string sql_string = stmt->GetSQLStatement();
     base::StringAppendF(&debug_info, "statement: %s\n", sql_string.c_str());
+    if (diagnostics) {
+      diagnostics->sql_statement = sql_string;
+    }
   } else {
     base::StringAppendF(&debug_info, "statement: NULL\n");
   }
@@ -580,8 +617,11 @@ std::string Database::CollectErrorInfo(int sqlite_error_code,
     if (rc == SQLITE_OK) {
       rc = sqlite3_step(sqlite_statement);
       if (rc == SQLITE_ROW) {
-        base::StringAppendF(&debug_info, "version: %d\n",
-                            sqlite3_column_int(sqlite_statement, 0));
+        int version = sqlite3_column_int(sqlite_statement, 0);
+        base::StringAppendF(&debug_info, "version: %d\n", version);
+        if (diagnostics) {
+          diagnostics->version = version;
+        }
       } else if (rc == SQLITE_DONE) {
         debug_info += "version: none\n";
       } else {
@@ -592,28 +632,51 @@ std::string Database::CollectErrorInfo(int sqlite_error_code,
       base::StringAppendF(&debug_info, "version: prepare error %d\n", rc);
     }
 
+    // Get all the SQL from sqlite_schema.
     debug_info += "schema:\n";
-
-    // sqlite_schema has columns:
-    //   type - "index" or "table".
-    //   name - name of created element.
-    //   tbl_name - name of element, or target table in case of index.
-    //   rootpage - root page of the element in database file.
-    //   sql - SQL to create the element.
-    // In general, the |sql| column is sufficient to derive the other columns.
-    // |rootpage| is not interesting for debugging, without the contents of the
-    // database.  The COALESCE is because certain automatic elements will have a
-    // |name| but no |sql|,
     static constexpr char kSchemaSql[] =
-        "SELECT COALESCE(sql,name) FROM sqlite_schema";
+        "SELECT sql FROM sqlite_schema WHERE sql IS NOT NULL ORDER BY ROWID";
     rc = sqlite3_prepare_v3(db_, kSchemaSql, sizeof(kSchemaSql),
                             SQLITE_PREPARE_NO_VTAB, &sqlite_statement,
                             /* pzTail= */ nullptr);
     if (rc == SQLITE_OK) {
       while ((rc = sqlite3_step(sqlite_statement)) == SQLITE_ROW) {
-        base::StringAppendF(&debug_info, "%s\n",
+        std::string text;
+        base::StringAppendF(&text, "%s",
                             sqlite3_column_text(sqlite_statement, 0));
+        debug_info += text + "\n";
+        if (diagnostics) {
+          diagnostics->schema_sql_rows.push_back(text);
+        }
       }
+
+      if (rc != SQLITE_DONE)
+        base::StringAppendF(&debug_info, "error %d\n", rc);
+      sqlite3_finalize(sqlite_statement);
+    } else {
+      base::StringAppendF(&debug_info, "prepare error %d\n", rc);
+    }
+
+    // Automatically generated indices have a NULL 'sql' column. For those rows,
+    // we log the name column instead.
+    debug_info += "schema rows with only name:\n";
+    static constexpr char kSchemaOtherRowNamesSql[] =
+        "SELECT name FROM sqlite_schema WHERE sql IS NULL ORDER BY ROWID";
+    rc = sqlite3_prepare_v3(db_, kSchemaOtherRowNamesSql,
+                            sizeof(kSchemaOtherRowNamesSql),
+                            SQLITE_PREPARE_NO_VTAB, &sqlite_statement,
+                            /* pzTail= */ nullptr);
+    if (rc == SQLITE_OK) {
+      while ((rc = sqlite3_step(sqlite_statement)) == SQLITE_ROW) {
+        std::string text;
+        base::StringAppendF(&text, "%s",
+                            sqlite3_column_text(sqlite_statement, 0));
+        debug_info += text + "\n";
+        if (diagnostics) {
+          diagnostics->schema_other_row_names.push_back(text);
+        }
+      }
+
       if (rc != SQLITE_DONE)
         base::StringAppendF(&debug_info, "error %d\n", rc);
       sqlite3_finalize(sqlite_statement);
@@ -2049,7 +2112,8 @@ void Database::OnSqliteError(SqliteErrorCode sqlite_error_code,
 }
 
 std::string Database::GetDiagnosticInfo(int sqlite_error_code,
-                                        Statement* statement) {
+                                        Statement* statement,
+                                        DatabaseDiagnostics* diagnostics) {
   DCHECK_NE(sqlite_error_code, SQLITE_OK)
       << __func__ << " received non-error result code";
   DCHECK_NE(sqlite_error_code, SQLITE_DONE)
@@ -2061,21 +2125,25 @@ std::string Database::GetDiagnosticInfo(int sqlite_error_code,
   ErrorCallback original_callback = std::move(error_callback_);
   error_callback_.Reset();
 
+  if (diagnostics) {
+    diagnostics->reported_sqlite_error_code = sqlite_error_code;
+  }
+
   // Trim extended error codes.
   const int primary_error_code = sqlite_error_code & 0xff;
 
   // CollectCorruptionInfo() is implemented in terms of sql::Database,
   // TODO(shess): Rewrite IntegrityCheckHelper() in terms of raw SQLite.
-  std::string result = (primary_error_code == SQLITE_CORRUPT)
-                           ? CollectCorruptionInfo()
-                           : CollectErrorInfo(sqlite_error_code, statement);
+  std::string result =
+      (primary_error_code == SQLITE_CORRUPT)
+          ? CollectCorruptionInfo()
+          : CollectErrorInfo(sqlite_error_code, statement, diagnostics);
 
   // The following queries must be executed after CollectErrorInfo() above, so
   // if they result in their own errors, they don't interfere with
   // CollectErrorInfo().
   const bool has_valid_header = Execute("PRAGMA auto_vacuum");
-  const bool select_sqlite_schema_result =
-      Execute("SELECT COUNT(*) FROM sqlite_schema");
+  const bool has_valid_schema = Execute("SELECT COUNT(*) FROM sqlite_schema");
 
   // Restore the original error callback.
   error_callback_ = std::move(original_callback);
@@ -2083,7 +2151,11 @@ std::string Database::GetDiagnosticInfo(int sqlite_error_code,
   base::StringAppendF(&result, "Has valid header: %s\n",
                       (has_valid_header ? "Yes" : "No"));
   base::StringAppendF(&result, "Has valid schema: %s\n",
-                      (select_sqlite_schema_result ? "Yes" : "No"));
+                      (has_valid_schema ? "Yes" : "No"));
+  if (diagnostics) {
+    diagnostics->has_valid_header = has_valid_header;
+    diagnostics->has_valid_schema = has_valid_schema;
+  }
 
   return result;
 }

@@ -37,6 +37,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
 #include "components/favicon/core/favicon_backend.h"
 #include "components/history/core/browser/download_constants.h"
@@ -60,6 +62,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "sql/error_delegate_util.h"
 #include "sql/sqlite_result_code.h"
+#include "sql/sqlite_result_code_values.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -2658,11 +2661,22 @@ void HistoryBackend::URLsNoLongerBookmarked(const std::set<GURL>& urls) {
 }
 
 void HistoryBackend::DatabaseErrorCallback(int error, sql::Statement* stmt) {
-  // TODO(tommycli): `error` == SQLITE_ERROR is usually caused by a statement
-  // that doesn't match the schema. We need to add some logging to learn which
-  // is the problematic statement to have a hope of diagnosing this error.
-  if (!scheduled_kill_db_ && sql::IsErrorCatastrophic(error)) {
-    sql::UmaHistogramSqliteResult("History.DatabaseSqliteError", error);
+  // TODO(https://crbug.com/1321483): Remove this top block after we've debugged
+  // the problematic SQL statement, and have restored considering SQLITE_ERROR
+  // as catastrophic.
+  constexpr char kHistoryDatabaseSqliteErrorUma[] =
+      "History.DatabaseSqliteError";
+  if (sql::ToSqliteResultCode(error) == sql::SqliteResultCode::kError) {
+    sql::DatabaseDiagnostics diagnostics;
+    db_diagnostics_ = db_->GetDiagnosticInfo(error, stmt, &diagnostics);
+    TRACE_EVENT_INSTANT(
+        "history", "HistoryBackend::DatabaseErrorCallback",
+        perfetto::protos::pbzero::ChromeTrackEvent::kSqlDiagnostics,
+        diagnostics);
+
+    // Record UMA at the end because we want to use PREEMPTIVE_TRACING_MODE.
+    sql::UmaHistogramSqliteResult(kHistoryDatabaseSqliteErrorUma, error);
+  } else if (!scheduled_kill_db_ && sql::IsErrorCatastrophic(error)) {
     scheduled_kill_db_ = true;
 
     db_diagnostics_ = db_->GetDiagnosticInfo(error, stmt);
@@ -2676,6 +2690,8 @@ void HistoryBackend::DatabaseErrorCallback(int error, sql::Statement* stmt) {
     // (then it can be cleared immediately).
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&HistoryBackend::KillHistoryDatabase, this));
+
+    sql::UmaHistogramSqliteResult(kHistoryDatabaseSqliteErrorUma, error);
   }
 }
 

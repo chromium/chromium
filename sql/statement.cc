@@ -583,11 +583,17 @@ std::string Statement::GetSQLStatement() {
   // acceptable because this method should only be invoked for logging details
   // about SQLite errors.
   //
-  // It may be tempting to consider using sqlite3_expanded_sql() here. We
-  // currently prefer sqlite3_sql() because the returned SQL string matches the
-  // source code (making it easy to search for), and because we don't need to
-  // worry about SQL statements that work with large data, such as BLOBS storing
-  // images.
+  // We use sqlite3_sql() instead of sqlite3_expanded_sql() because:
+  //  - The returned SQL string matches the source code, making it easy to
+  //    search.
+  //  - This works with SQL statements that work with large data, such as BLOBS
+  //    storing images.
+  //  - The returned string is free of bound values, so it does not contain any
+  //    PII that would raise privacy concerns around logging.
+  //
+  // Do not change this to use sqlite3_expanded_sql(). If that need ever arises
+  // in the future, make a new function instead listing the above caveats.
+  //
   // See https://www.sqlite.org/c3ref/expanded_sql.html for more details on the
   // difference between sqlite3_sql() and sqlite3_expanded_sql().
   return sqlite3_sql(ref_->stmt());

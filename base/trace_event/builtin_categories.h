@@ -94,6 +94,8 @@
   X("gpu.angle")                                                         \
   X("gpu.capture")                                                       \
   X("headless")                                                          \
+  /* Traces for //components/history. */                                 \
+  X("history")                                                           \
   X("hwoverlays")                                                        \
   X("identity")                                                          \
   X("ime")                                                               \

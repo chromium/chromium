@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "components/sync/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -412,9 +413,11 @@ bool HistoryDatabase::Raze() {
   return db_.Raze();
 }
 
-std::string HistoryDatabase::GetDiagnosticInfo(int extended_error,
-                                               sql::Statement* statement) {
-  return db_.GetDiagnosticInfo(extended_error, statement);
+std::string HistoryDatabase::GetDiagnosticInfo(
+    int extended_error,
+    sql::Statement* statement,
+    sql::DatabaseDiagnostics* diagnostics) {
+  return db_.GetDiagnosticInfo(extended_error, statement, diagnostics);
 }
 
 bool HistoryDatabase::SetSegmentID(VisitID visit_id, SegmentID segment_id) {

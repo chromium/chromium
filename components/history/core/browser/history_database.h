@@ -138,7 +138,11 @@ class HistoryDatabase : public DownloadDatabase,
   // Razes the database. Returns true if successful.
   bool Raze();
 
-  std::string GetDiagnosticInfo(int extended_error, sql::Statement* statement);
+  // A simple passthrough to `sql::Database::GetDiagnosticInfo()`.
+  std::string GetDiagnosticInfo(
+      int extended_error,
+      sql::Statement* statement,
+      sql::DatabaseDiagnostics* diagnostics = nullptr);
 
   // Visit table functions ----------------------------------------------------
 

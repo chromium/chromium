@@ -199,8 +199,9 @@ class COMPONENT_EXPORT(SQL) Statement {
 
   // Diagnostics --------------------------------------------------------------
 
-  // Returns the original text of a SQL statement. Intended for logging in case
-  // of failures.
+  // Returns the original text of a SQL statement WITHOUT any bound values.
+  // Intended for logging in case of failures. Note that DOES NOT return any
+  // bound values, because that would cause a privacy / PII issue for logging.
   std::string GetSQLStatement();
 
  private:
