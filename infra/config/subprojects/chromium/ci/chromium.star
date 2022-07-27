@@ -5,9 +5,9 @@
 
 load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os", "sheriff_rotations")
+load("//lib/builders.star", "goma", "os", "reclient", "sheriff_rotations")
 load("//lib/branches.star", "branches")
-load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
+load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
@@ -72,8 +72,8 @@ ci.builder(
     execution_timeout = 4 * time.hour,
     tree_closing = True,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -118,8 +118,8 @@ ci.builder(
     },
     tree_closing = True,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -135,8 +135,8 @@ ci.builder(
     # needs longer time to complete.
     execution_timeout = 7 * time.hour,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     sheriff_rotations = args.ignore_default(None),
 )
 
@@ -250,8 +250,8 @@ ci.builder(
     },
     tree_closing = True,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -281,8 +281,8 @@ ci.builder(
     cores = 8,
     tree_closing = True,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -323,8 +323,8 @@ ci.builder(
     },
     tree_closing = True,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -338,8 +338,8 @@ ci.builder(
     cores = 32,
     execution_timeout = 7 * time.hour,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     sheriff_rotations = args.ignore_default(None),
 )
 
@@ -507,8 +507,8 @@ ci.builder(
     os = os.WINDOWS_DEFAULT,
     sheriff_rotations = args.ignore_default(None),
     goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -546,8 +546,8 @@ ci.builder(
     },
     tree_closing = True,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -588,8 +588,8 @@ ci.builder(
     os = os.WINDOWS_DEFAULT,
     sheriff_rotations = args.ignore_default(None),
     goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -627,8 +627,8 @@ ci.builder(
     },
     tree_closing = True,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(

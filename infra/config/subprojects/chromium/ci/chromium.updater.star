@@ -5,8 +5,8 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "cpu", "goma", "os")
-load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
+load("//lib/builders.star", "cpu", "goma", "os", "reclient")
+load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
@@ -329,8 +329,8 @@ ci.builder(
     ),
     os = os.WINDOWS_DEFAULT,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -342,8 +342,8 @@ ci.builder(
     ),
     os = os.WINDOWS_DEFAULT,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -369,8 +369,8 @@ ci.builder(
     ),
     os = os.WINDOWS_DEFAULT,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -382,8 +382,8 @@ ci.builder(
     ),
     os = os.WINDOWS_DEFAULT,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.thin_tester(

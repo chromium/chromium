@@ -6,8 +6,8 @@
 load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "sheriff_rotations")
-load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
+load("//lib/builders.star", "goma", "reclient", "sheriff_rotations")
+load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
@@ -15,8 +15,8 @@ ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     pool = ci.gpu.POOL,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     sheriff_rotations = sheriff_rotations.CHROMIUM_GPU,
     tree_closing = True,
@@ -166,7 +166,7 @@ ci.gpu.windows_builder(
         category = "Windows",
     ),
     cq_mirrors_console_view = "mirrors",
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.gpu.windows_builder(
@@ -176,7 +176,7 @@ ci.gpu.windows_builder(
     ),
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.thin_tester(
