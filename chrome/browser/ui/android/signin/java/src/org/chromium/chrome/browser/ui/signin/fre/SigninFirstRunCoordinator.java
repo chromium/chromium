@@ -28,8 +28,11 @@ public class SigninFirstRunCoordinator {
         /** Notifies when the user clicked the "add account" button. */
         void addAccount();
 
-        /** Notifies when the user accepts the terms of service. */
-        void acceptTermsOfService();
+        /**
+         * Notifies when the user accepts the terms of service.
+         * @param allowCrashUpload Whether the user has opted into uploading crash reports and UMA.
+         * */
+        void acceptTermsOfService(boolean allowCrashUpload);
 
         /** Called when the interaction with the page is over and the next page should be shown. */
         void advanceToNextPage();
@@ -45,11 +48,6 @@ public class SigninFirstRunCoordinator {
          * @param url Resource id for the URL of the web page.
          */
         void showInfoPage(@StringRes int url);
-
-        /**
-         * Opens a dialog to get consent for recording UMA data.
-         */
-        void openUmaDialog();
     }
 
     private final SigninFirstRunMediator mMediator;
@@ -120,9 +118,5 @@ public class SigninFirstRunCoordinator {
 
     public void onAccountSelected(String accountName) {
         mMediator.onAccountSelected(accountName);
-    }
-
-    public boolean isMetricsReportingDisabledByPolicy() {
-        return mMediator.isMetricsReportingDisabledByPolicy();
     }
 }

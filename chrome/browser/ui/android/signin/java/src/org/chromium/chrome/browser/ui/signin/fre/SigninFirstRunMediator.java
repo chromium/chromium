@@ -41,7 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache.Observer,
-                                        AccountPickerCoordinator.Listener {
+                                        AccountPickerCoordinator.Listener,
+                                        FreUMADialogCoordinator.Listener {
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
     private final AccountManagerFacade mAccountManagerFacade;
@@ -52,6 +53,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     private AccountPickerDialogCoordinator mDialogCoordinator;
     private @Nullable String mSelectedAccountName;
     private @Nullable String mDefaultAccountName;
+    private boolean mAllowCrashUpload;
 
     SigninFirstRunMediator(Context context, ModalDialogManager modalDialogManager,
             Delegate delegate, PrivacyPreferencesManager privacyPreferencesManager) {
@@ -87,6 +89,8 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     }
 
     void onNativeAndPolicyLoaded(boolean hasPolicies) {
+        mAllowCrashUpload = !isMetricsReportingDisabledByPolicy();
+
         mModel.set(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED, true);
         mModel.set(SigninFirstRunProperties.FRE_POLICY, hasPolicies ? new FrePolicy() : null);
         final boolean isSigninSupported = ExternalAuthUtils.getInstance().canUseGooglePlayServices()
@@ -132,7 +136,17 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
         mDelegate.addAccount();
     }
 
-    protected boolean isMetricsReportingDisabledByPolicy() {
+    /** Implements {@link FreUMADialogCoordinator.Listener} */
+    @Override
+    public void onAllowCrashUploadChecked(boolean allowCrashUpload) {
+        mAllowCrashUpload = allowCrashUpload;
+    }
+
+    private void openUmaDialog() {
+        new FreUMADialogCoordinator(mContext, mModalDialogManager, this, mAllowCrashUpload);
+    }
+
+    private boolean isMetricsReportingDisabledByPolicy() {
         @Nullable
         FrePolicy frePolicy = mModel.get(SigninFirstRunProperties.FRE_POLICY);
         return frePolicy != null && frePolicy.metricsReportingDisabledByPolicy;
@@ -153,7 +167,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     private void onContinueAsClicked() {
         if (isContinueOrDismissClicked()) return;
         if (!mModel.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)) {
-            mDelegate.acceptTermsOfService();
+            mDelegate.acceptTermsOfService(mAllowCrashUpload);
             mDelegate.advanceToNextPage();
             return;
         }
@@ -164,7 +178,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
 
         // In all other cases, the button text is "Continue as ...", so mark ToS as accepted.
         // This is needed to get metrics/crash reports from the sign-in flow itself.
-        mDelegate.acceptTermsOfService();
+        mDelegate.acceptTermsOfService(mAllowCrashUpload);
         if (mModel.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
             // Don't perform the sign-in here, as it will be handled by SigninChecker.
             mDelegate.advanceToNextPage();
@@ -218,7 +232,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
         assert mModel.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED)
             : "The dismiss button shouldn't be visible before the native is not initialized!";
         mDelegate.recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
-        mDelegate.acceptTermsOfService();
+        mDelegate.acceptTermsOfService(mAllowCrashUpload);
         if (IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
@@ -308,7 +322,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
         if (!isMetricsReportingDisabled) {
             footerString += " " + mContext.getString(R.string.signin_fre_footer_metrics_reporting);
             final NoUnderlineClickableSpan clickableUMADialogSpan =
-                    new NoUnderlineClickableSpan(mContext, view -> mDelegate.openUmaDialog());
+                    new NoUnderlineClickableSpan(mContext, view -> openUmaDialog());
             spans.add(
                     new SpanApplier.SpanInfo("<UMA_LINK>", "</UMA_LINK>", clickableUMADialogSpan));
         }

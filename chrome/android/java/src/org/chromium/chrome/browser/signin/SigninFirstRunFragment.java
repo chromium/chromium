@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.firstrun.SkipTosDialogPolicyListener;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
-import org.chromium.chrome.browser.ui.signin.fre.FreUMADialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunCoordinator;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunView;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -46,9 +45,8 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * This fragment handles the sign-in without sync consent during the FRE.
  */
-public class SigninFirstRunFragment extends Fragment implements FirstRunFragment,
-                                                                SigninFirstRunCoordinator.Delegate,
-                                                                FreUMADialogCoordinator.Listener {
+public class SigninFirstRunFragment
+        extends Fragment implements FirstRunFragment, SigninFirstRunCoordinator.Delegate {
     @VisibleForTesting
     static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
@@ -75,7 +73,6 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     private @LoadPoint int mSlowestLoadPoint;
     private boolean mExitFirstRunCalled;
     private boolean mNativePolicyAndChildStatusLoaded;
-    private boolean mAllowCrashUpload;
 
     public SigninFirstRunFragment() {}
 
@@ -123,7 +120,6 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mAllowCrashUpload = false;
         mFragmentView = new FrameLayout(getActivity());
         mFragmentView.addView(inflateFragmentView(inflater, getResources().getConfiguration()));
 
@@ -176,8 +172,8 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
     @Override
-    public void acceptTermsOfService() {
-        getPageDelegate().acceptTermsOfService(mAllowCrashUpload);
+    public void acceptTermsOfService(boolean allowCrashUpload) {
+        getPageDelegate().acceptTermsOfService(allowCrashUpload);
     }
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
@@ -196,18 +192,6 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     @Override
     public void showInfoPage(@StringRes int url) {
         getPageDelegate().showInfoPage(url);
-    }
-
-    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
-    @Override
-    public void openUmaDialog() {
-        new FreUMADialogCoordinator(requireContext(), mModalDialogManager, this, mAllowCrashUpload);
-    }
-
-    /** Implements {@link FreUMADialogCoordinator.Listener} */
-    @Override
-    public void onAllowCrashUploadChecked(boolean allowCrashUpload) {
-        mAllowCrashUpload = allowCrashUpload;
     }
 
     @MainThread
@@ -256,7 +240,6 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
                 && getPageDelegate().getPolicyLoadListener().get() != null
                 && !mNativePolicyAndChildStatusLoaded) {
             mNativePolicyAndChildStatusLoaded = true;
-            mAllowCrashUpload = !mSigninFirstRunCoordinator.isMetricsReportingDisabledByPolicy();
             mSigninFirstRunCoordinator.onNativePolicyAndChildStatusLoaded(
                     getPageDelegate().getPolicyLoadListener().get());
             getPageDelegate().recordNativePolicyAndChildStatusLoadedHistogram();
