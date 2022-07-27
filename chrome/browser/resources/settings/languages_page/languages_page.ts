@@ -11,7 +11,7 @@
  import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
  import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
  import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
- import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
  import 'chrome://resources/cr_elements/icons.m.js';
  import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
  import 'chrome://resources/cr_elements/shared_style_css.m.js';
@@ -32,7 +32,7 @@
 
  import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
  import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
- import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+ import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
  import {assert} from 'chrome://resources/js/assert_ts.js';
  import {isWindows} from 'chrome://resources/js/cr.m.js';
  import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';

@@ -172,7 +172,7 @@ checked_in_dts_files = [
   "cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.d.ts",
   "cr_elements/cr_icon_button/cr_icon_button.m.d.ts",
   "cr_elements/cr_input/cr_input.m.d.ts",
-  "cr_elements/cr_lazy_render/cr_lazy_render.m.d.ts",
+  "cr_elements/cr_lazy_render/cr_lazy_render.d.ts",
   "cr_elements/cr_lottie/cr_lottie.m.d.ts",
   "cr_elements/cr_radio_button/cr_card_radio_button.m.d.ts",
   "cr_elements/cr_radio_button/cr_radio_button_behavior.m.d.ts",

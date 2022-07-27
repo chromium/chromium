@@ -7,7 +7,7 @@
  * 'settings-reset-page' is the settings page containing reset
  * settings.
  */
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_shared.css.js';
 import './reset_profile_dialog.js';
@@ -17,7 +17,7 @@ import '../incompatible_applications_page/incompatible_applications_page.js';
 
 // </if>
 
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

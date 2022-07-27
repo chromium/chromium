@@ -16,8 +16,12 @@
  *   this.$.menu.get().show();
  */
 
+import {html, Polymer, TemplateInstanceBase, templatize} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 Polymer({
   is: 'cr-lazy-render',
+
+  _template: html`{__html_template__}`,
 
   /** @private {?Element} */
   child_: null,
@@ -48,7 +52,7 @@ Polymer({
   render_() {
     const template =
         /** @type {!HTMLTemplateElement} */ (this.getContentChildren()[0]);
-    const TemplateClass = Polymer.Templatize.templatize(template, this, {
+    const TemplateClass = templatize(template, this, {
       mutableData: false,
       forwardHostProp: this._forwardHostPropV2,
     });
@@ -70,4 +74,3 @@ Polymer({
     }
   },
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');
