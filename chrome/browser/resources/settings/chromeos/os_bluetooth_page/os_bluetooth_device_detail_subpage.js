@@ -21,6 +21,7 @@ import {getBatteryPercentage, getDeviceName, hasAnyDetailedBatteryInfo, hasDefau
 import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {AudioOutputCapability, BluetoothSystemProperties, DeviceConnectionState, DeviceType, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -44,9 +45,16 @@ const PageState = {
  * @implements {RouteObserverBehaviorInterface}
  * @implements {RouteOriginBehaviorInterface}
  * @implements {I18nBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
  */
 const SettingsBluetoothDeviceDetailSubpageElementBase = mixinBehaviors(
-    [RouteObserverBehavior, RouteOriginBehavior, I18nBehavior], PolymerElement);
+    [
+      RouteObserverBehavior,
+      RouteOriginBehavior,
+      I18nBehavior,
+      WebUIListenerBehavior,
+    ],
+    PolymerElement);
 
 /** @polymer */
 class SettingsBluetoothDeviceDetailSubpageElement extends
@@ -104,6 +112,12 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
         type: Object,
         value: PageState.DISCONNECTED,
       },
+
+      /** @protected */
+      shouldShowForgetDeviceDialog_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -123,6 +137,9 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   /** @override */
   ready() {
     super.ready();
+
+    this.addEventListener(
+        'forget-bluetooth-device', this.forgetDeviceConfirmed_);
 
     this.addFocusConfig(routes.POINTERS, '#changeMouseSettings');
     this.addFocusConfig(routes.KEYBOARD, '#changeKeyboardSettings');
@@ -569,15 +586,6 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   }
 
   /**
-   * @param {!Event} event
-   * @private
-   */
-  onForgetBtnClick_(event) {
-    event.stopPropagation();
-    getBluetoothConfig().forget(this.deviceId_);
-  }
-
-  /**
    * @return {boolean}
    * @private
    */
@@ -630,6 +638,21 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   getForgetA11yLabel_() {
     return this.i18n(
         'bluetoothDeviceDetailForgetA11yLabel', this.getDeviceName_());
+  }
+
+  /** @private */
+  onForgetButtonClicked_() {
+    this.shouldShowForgetDeviceDialog_ = true;
+  }
+
+  /** @private */
+  onCloseForgetDeviceDialog_() {
+    this.shouldShowForgetDeviceDialog_ = false;
+  }
+
+  /** @private */
+  forgetDeviceConfirmed_() {
+    getBluetoothConfig().forget(this.deviceId_);
   }
 }
 

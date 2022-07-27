@@ -2261,6 +2261,18 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_TITLE" desc="Bluetooth saved devices subpage > Remove device dialog: Title for dialog that removes the device.">
     Remove device
   </message>
+  <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_CANCEL" desc="Bluetooth device details page > Forget device dialog: Label for button that cancels forgetting the device.">
+    Cancel
+  </message>
+  <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_FORGET" desc="Bluetooth device details page > Forget device dialog: Label for button that forgets the device.">
+    Forget
+  </message>
+  <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_LABEL" desc="Bluetooth device details page > Forget device dialog: Label for dialog that forgets the device.">
+    <ph name="DEVICE">$1<ex>Beats</ex></ph> will be removed from <ph name="PRIMARY_EMAIL">$2<ex>john@google.com</ex></ph> and unpaired with this Chromebook.
+  </message>
+  <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_TITLE" desc="Bluetooth device details page > Forget device dialog: Title for dialog that forgets the device.">
+    Forget device
+  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE" desc="Title of the settings dialog for adding or pairing Bluetooth a device.">
     Connect to Bluetooth device
   </message>

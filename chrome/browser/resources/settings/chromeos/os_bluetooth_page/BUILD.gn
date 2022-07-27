@@ -113,6 +113,7 @@ js_library("os_bluetooth_true_wireless_images") {
 js_library("os_bluetooth_device_detail_subpage") {
   deps = [
     ":os_bluetooth_change_device_name_dialog",
+    ":os_bluetooth_forget_device_dialog",
     ":os_bluetooth_true_wireless_images",
     "..:os_route",
     "..:route_observer_behavior",
@@ -172,6 +173,13 @@ js_library("os_remove_saved_device_dialog") {
   ]
 }
 
+js_library("os_bluetooth_forget_device_dialog") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+  ]
+}
+
 js_library("settings_fast_pair_constants") {
 }
 
@@ -208,6 +216,7 @@ html_to_js("web_components") {
   js_files = [
     "os_paired_bluetooth_list_item.js",
     "os_remove_saved_device_dialog.js",
+    "os_bluetooth_forget_device_dialog.js",
     "os_paired_bluetooth_list.js",
     "os_saved_devices_list_item.js",
     "os_saved_devices_list.js",

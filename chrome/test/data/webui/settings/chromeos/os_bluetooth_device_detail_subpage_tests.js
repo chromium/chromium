@@ -826,6 +826,9 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     // Forget device.
     getBluetoothForgetBtn().click();
     await flushAsync();
+    bluetoothDeviceDetailPage.$$('#forgetDeviceDialog').$$('#forget').click();
+
+    await flushAsync();
     bluetoothConfig.completeForget(/*success=*/ true);
     await windowPopstatePromise;
 
