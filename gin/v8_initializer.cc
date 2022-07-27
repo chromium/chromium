@@ -304,6 +304,12 @@ void SetFlags(IsolateHolder::ScriptMode mode,
     }
   }
 
+  if (base::FeatureList::IsEnabled(features::kV8FlushBytecode)) {
+    if (int old_age = features::kV8FlushBytecodeOldAge.Get()) {
+      SetV8FlagsFormatted("--bytecode-old-age=%i", old_age);
+    }
+  }
+
   if (base::FeatureList::IsEnabled(features::kV8ScriptAblation)) {
     if (int delay = features::kV8ScriptDelayMs.Get()) {
       SetV8FlagsFormatted("--script-delay=%i", delay);
