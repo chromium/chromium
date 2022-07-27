@@ -148,6 +148,12 @@ const ONLINE_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
       return;
     }
 
+    if (details && details.error == 'net::ERR_ABORTED') {
+      // Retry triggers net::ERR_ABORTED, so ignore it.
+      // TODO(crbug.com/1327977): Load an embedded offline copy as a fallback.
+      return;
+    }
+
     if (this.reloadRequested_) {
       this.loadWithFallbackTimer();
     } else {
