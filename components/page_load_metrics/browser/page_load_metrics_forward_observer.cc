@@ -178,9 +178,6 @@ void PageLoadMetricsForwardObserver::OnDomContentLoadedEventStart(
 void PageLoadMetricsForwardObserver::OnLoadEventStart(
     const mojom::PageLoadTiming& timing) {}
 
-void PageLoadMetricsForwardObserver::OnFirstLayout(
-    const mojom::PageLoadTiming& timing) {}
-
 void PageLoadMetricsForwardObserver::OnParseStart(
     const mojom::PageLoadTiming& timing) {}
 

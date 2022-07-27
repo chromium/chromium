@@ -187,7 +187,6 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   void OnDomContentLoadedEventStart(
       const mojom::PageLoadTiming& timing) override {}
   void OnLoadEventStart(const mojom::PageLoadTiming& timing) override {}
-  void OnFirstLayout(const mojom::PageLoadTiming& timing) override {}
   void OnParseStart(const mojom::PageLoadTiming& timing) override {}
   void OnParseStop(const mojom::PageLoadTiming& timing) override {}
   void OnFirstPaintInPage(const mojom::PageLoadTiming& timing) override {}
