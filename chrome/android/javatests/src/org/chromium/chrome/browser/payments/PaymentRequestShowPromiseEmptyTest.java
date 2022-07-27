@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.payments.PaymentFeatureList;
 
 import java.util.concurrent.TimeoutException;
 
@@ -45,32 +44,6 @@ public class PaymentRequestShowPromiseEmptyTest implements MainActivityStartCall
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @CommandLineFlags.Add({"enable-features=" + PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD})
-    public void testResolveWithEmptyDictionary_WithBasicCard() throws TimeoutException {
-        mRule.addPaymentAppFactory("basic-card", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        mRule.triggerUIAndWait(mRule.getReadyToPay());
-
-        Assert.assertEquals("USD $3.00", mRule.getOrderSummaryTotal());
-
-        mRule.clickInOrderSummaryAndWait(mRule.getReadyToPay());
-
-        Assert.assertEquals(2, mRule.getNumberOfLineItems());
-        Assert.assertEquals("$1.00", mRule.getLineItemAmount(0));
-        Assert.assertEquals("$1.00", mRule.getLineItemAmount(1));
-
-        mRule.clickInShippingAddressAndWait(R.id.payments_section, mRule.getReadyToPay());
-
-        Assert.assertEquals(null, mRule.getShippingAddressDescriptionLabel());
-
-        mRule.clickAndWait(R.id.button_primary, mRule.getDismissed());
-
-        mRule.expectResultContains(new String[] {"3.00", "shipping-option-identifier"});
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    @CommandLineFlags.Add({"disable-features=" + PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD})
     public void testResolveWithEmptyDictionary() throws TimeoutException {
         mRule.addPaymentAppFactory(
                 "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);

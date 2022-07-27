@@ -18,11 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityUtils;
-import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
@@ -113,20 +109,6 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
                 new SupportedDelegations(shippingAddress, payerName, payerPhone, payerEmail));
     }
 
-    /**
-     * Adds a credit cart to ensure that autofill app is available.
-     */
-    public void addCreditCard() throws TimeoutException {
-        AutofillTestHelper helper = new AutofillTestHelper();
-        String billingAddressId = helper.setProfile(
-                new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
-                        "John Smith", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                        "US", "310-310-6000", "john.smith@gmail.com", "en-US"));
-        helper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
-                "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
-                billingAddressId, "" /* serverId */));
-    }
-
     @Test
     @MediumTest
     @Feature({"Payments"})
@@ -152,26 +134,6 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
-    public void testDoNotCallCanMakePayment_WithBasicCardEnabled() throws TimeoutException {
-        // Add a credit card to force showing payment sheet UI.
-        addCreditCard();
-        String[] supportedMethodNames = {"basic-card"};
-        installMockServiceWorkerPaymentApp("https://bobpay.com", supportedMethodNames, true, true);
-
-        // Sets setCanMakePaymentForTesting(false) to return false for CanMakePayment since there is
-        // no real sw payment app, so if CanMakePayment is called then no payment apps will be
-        // available, otherwise CanMakePayment is not called.
-        PaymentAppServiceBridge.setCanMakePaymentForTesting(false);
-
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
-        Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfPaymentApps());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    @CommandLineFlags.Add({"disable-features=PaymentRequestBasicCard"})
     public void testDoNotCallCanMakePayment() throws TimeoutException {
         String[] supportedMethodNames1 = {"https://bobpay.com"};
         installMockServiceWorkerPaymentApp("https://bobpay.com", supportedMethodNames1, true, true);

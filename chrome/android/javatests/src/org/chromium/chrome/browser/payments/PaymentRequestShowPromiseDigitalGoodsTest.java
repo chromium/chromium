@@ -6,14 +6,12 @@ package org.chromium.chrome.browser.payments;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppSpeed;
@@ -39,24 +37,6 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
-    public void testDigitalGoodsFastApp_WithBasicCardEnabled() throws TimeoutException {
-        mRule.addPaymentAppFactory("basic-card", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        mRule.openPage();
-        mRule.executeJavaScriptAndWaitForResult("create('basic-card');");
-        mRule.triggerUIAndWait(mRule.getReadyToPay());
-
-        Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
-
-        mRule.clickAndWait(R.id.button_primary, mRule.getDismissed());
-
-        mRule.expectResultContains(new String[] {"\"total\":\"1.00\""});
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    @CommandLineFlags.Add({"disable-features=PaymentRequestBasicCard"})
     public void testDigitalGoodsFastApp() throws TimeoutException {
         mRule.addPaymentAppFactory(
                 "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -70,25 +50,6 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
-    public void testDigitalGoodsSlowApp_WithBasicCardEnabled() throws TimeoutException {
-        mRule.addPaymentAppFactory(
-                "basic-card", AppPresence.HAVE_APPS, FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
-        mRule.openPage();
-        mRule.executeJavaScriptAndWaitForResult("create('basic-card');");
-        mRule.triggerUIAndWait(mRule.getReadyToPay());
-
-        Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
-
-        mRule.clickAndWait(R.id.button_primary, mRule.getDismissed());
-
-        mRule.expectResultContains(new String[] {"\"total\":\"1.00\""});
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    @CommandLineFlags.Add({"disable-features=PaymentRequestBasicCard"})
     public void testDigitalGoodsSlowApp() throws TimeoutException {
         mRule.addPaymentAppFactory("https://bobpay.com", AppPresence.HAVE_APPS,
                 FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
@@ -102,22 +63,6 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
-    public void testSkipUIFastApp_WithBasicCardEnabled() throws TimeoutException {
-        mRule.addPaymentAppFactory("basic-card", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        mRule.openPage();
-        mRule.executeJavaScriptAndWaitForResult("create('basic-card');");
-        mRule.enableSkipUIForBasicCard();
-
-        mRule.openPageAndClickNodeAndWait("buy", mRule.getDismissed());
-
-        mRule.expectResultContains(new String[] {"\"total\":\"1.00\""});
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    @CommandLineFlags.Add({"disable-features=PaymentRequestBasicCard"})
     public void testSkipUIFastApp() throws TimeoutException {
         mRule.addPaymentAppFactory(
                 "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -133,23 +78,6 @@ public class PaymentRequestShowPromiseDigitalGoodsTest implements MainActivitySt
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
-    public void testSkipUISlowApp_WithBasicCardEnabled() throws TimeoutException {
-        mRule.addPaymentAppFactory(
-                "basic-card", AppPresence.HAVE_APPS, FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
-        mRule.openPage();
-        mRule.executeJavaScriptAndWaitForResult("create('basic-card');");
-        mRule.enableSkipUIForBasicCard();
-
-        mRule.openPageAndClickNodeAndWait("buy", mRule.getDismissed());
-
-        mRule.expectResultContains(new String[] {"\"total\":\"1.00\""});
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
-    @CommandLineFlags.Add({"disable-features=PaymentRequestBasicCard"})
     public void testSkipUISlowApp() throws TimeoutException {
         mRule.addPaymentAppFactory("https://bobpay.com", AppPresence.HAVE_APPS,
                 FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
