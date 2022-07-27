@@ -28,6 +28,8 @@ extern const char kIosBookmarkFolderDefault[];
 extern const char kIosBookmarkPromoAlreadySeen[];
 extern const char kIosBookmarkSigninPromoDisplayedCount[];
 extern const char kIosDiscoverFeedLastRefreshTime[];
+extern const char kIosPromosManagerActivePromos[];
+extern const char kIosPromosManagerImpressionHistory[];
 extern const char kIosSettingsPromoAlreadySeen[];
 extern const char kIosSettingsSigninPromoDisplayedCount[];
 extern const char kIosNtpFeedTopPromoAlreadySeen[];

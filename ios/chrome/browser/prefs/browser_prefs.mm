@@ -204,6 +204,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kInvalidatorSavedInvalidations);
   registry->RegisterStringPref(kInvalidatorInvalidationState, std::string());
   registry->RegisterStringPref(kInvalidatorClientId, std::string());
+  registry->RegisterListPref(prefs::kIosPromosManagerActivePromos);
+  registry->RegisterDictionaryPref(prefs::kIosPromosManagerImpressionHistory);
 
   registry->RegisterBooleanPref(enterprise_reporting::kCloudReportingEnabled,
                                 false);

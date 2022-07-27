@@ -89,6 +89,13 @@ const char kIosBookmarkSigninPromoDisplayedCount[] =
 const char kIosDiscoverFeedLastRefreshTime[] =
     "ios.discover_feed.last_refresh_time";
 
+// List preference maintaining the list of active promo campaigns.
+const char kIosPromosManagerActivePromos[] = "ios.promos_manager.active_promos";
+
+// Dictionary preference containing the promo impression history.
+const char kIosPromosManagerImpressionHistory[] =
+    "ios.promos_manager.impression_history";
+
 // Preference that hold a boolean indicating if the user has already dismissed
 // the sign-in promo in settings view.
 const char kIosSettingsPromoAlreadySeen[] = "ios.settings.promo_already_seen";
