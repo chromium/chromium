@@ -600,10 +600,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSpellCheckServiceEnabled,
     spellcheck::prefs::kSpellCheckUseSpellingService,
     base::Value::Type::BOOLEAN },
-#endif  // BUILDFLAG(ENABLE_SPELLCHECK)
   { key::kSpellcheckEnabled,
     spellcheck::prefs::kSpellCheckEnable,
     base::Value::Type::BOOLEAN },
+#endif  // BUILDFLAG(ENABLE_SPELLCHECK)
   { key::kSuppressUnsupportedOSWarning,
     prefs::kSuppressUnsupportedOSWarning,
     base::Value::Type::BOOLEAN },
