@@ -4034,6 +4034,7 @@
       'absl_hardening_tests': {},
       'boringssl_crypto_tests': {},
       'boringssl_ssl_tests': {},
+      'crashpad_tests': {},
       'crypto_unittests': {},
       'google_apis_unittests': {},
       'ios_components_unittests': {},
@@ -4048,11 +4049,6 @@
       'services_unittests': {},
       'sql_unittests': {},
       'url_unittests': {},
-    },
-
-    # TODO(crbug.com/1288850): Move this into ios_common_tests when green.
-    'ios_crash_unittests': {
-      'crashpad_tests': {},
     },
 
     'ios_crash_xcuitests': {
@@ -7015,12 +7011,6 @@
           'SIM_IPHONE_6S_14_5',
         ],
       },
-      'ios_crash_unittests': {
-        'variants': [
-          'SIM_IPHONE_6S_15_5',
-          'SIM_IPHONE_6S_14_5',
-        ],
-      },
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
@@ -7070,12 +7060,6 @@
           'SIM_IPHONE_6S_14_5',
         ],
       },
-      'ios_crash_unittests': {
-        'variants': [
-          'SIM_IPHONE_6S_15_5',
-          'SIM_IPHONE_6S_14_5',
-        ],
-      },
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
@@ -7118,11 +7102,6 @@
           'SIM_IPHONE_X_16_0',
         ],
       },
-      'ios_crash_unittests': {
-        'variants': [
-          'SIM_IPHONE_X_16_0',
-        ],
-      },
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
@@ -7161,11 +7140,6 @@
           'SIM_IPHONE_8_16_0',
           'SIM_IPHONE_6S_15_5',
           'SIM_IPHONE_6S_14_4',
-        ],
-      },
-      'ios_crash_unittests': {
-        'variants': [
-          'SIM_IPHONE_8_16_0',
         ],
       },
       'ios_crash_xcuitests': {
@@ -7216,12 +7190,6 @@
 
     'ios_asan_tests': {
       'ios_common_tests': {
-        'variants': [
-          'SIM_IPHONE_X_15_2',
-          'SIM_IPAD_AIR_2_15_2',
-        ]
-      },
-      'ios_crash_unittests': {
         'variants': [
           'SIM_IPHONE_X_15_2',
           'SIM_IPAD_AIR_2_15_2',
@@ -7287,12 +7255,6 @@
 
     'ios_m1_simulator_tests': {
       'ios_common_tests': {
-        'variants': [
-          # Latest beta iOS version Sims
-          'SIM_IPHONE_6S_14_5',
-        ],
-      },
-      'ios_crash_unittests': {
         'variants': [
           # Latest beta iOS version Sims
           'SIM_IPHONE_6S_14_5',
