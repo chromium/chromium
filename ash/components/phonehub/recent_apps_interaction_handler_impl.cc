@@ -14,6 +14,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -220,8 +221,9 @@ void RecentAppsInteractionHandlerImpl::SetStreamableApps(
                                           ICON_STYLE_MONOCHROME_SMALL_ICON,
                                   app.user_id()),
         base::Time::FromDoubleT(0));
+    std::string key = app.package_name() + base::NumberToString(app.user_id());
     decoding_data_list->emplace_back(
-        IconDecoder::DecodingData(str_hash(app.package_name()), app.icon()));
+        IconDecoder::DecodingData(str_hash(key), app.icon()));
   }
 
   icon_decoder_->BatchDecode(
@@ -239,7 +241,9 @@ void RecentAppsInteractionHandlerImpl::IconsDecoded(
       continue;
     // find the associated app metadata
     for (auto& app_metadata : recent_app_metadata_list_) {
-      if (decoding_data.id == str_hash(app_metadata.first.package_name)) {
+      std::string key = app_metadata.first.package_name +
+                        base::NumberToString(app_metadata.first.user_id);
+      if (decoding_data.id == str_hash(key)) {
         app_metadata.first.icon = decoding_data.result;
         continue;
       }
