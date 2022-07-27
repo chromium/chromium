@@ -56,6 +56,19 @@ class SyncConfirmationUI : public SigninWebDialogUI {
                          const std::string& name,
                          int ids);
 
+  // Adds a string resource with the given GRD |ids| and |parameter| as the
+  // placeholder to the WebUI data |source| named as |name|. Also stores a
+  // reverse mapping from the localized version of the string to the |ids| in
+  // order to later pass it to SyncConfirmationHandler.
+  void AddStringResourceWithPlaceholder(content::WebUIDataSource* source,
+                                        const std::string& name,
+                                        int ids,
+                                        const std::u16string& parameter);
+
+  // Adds a mapping from the localized version of a string |localized_string| to
+  // its given GRD |ids| in order to later pass it to SyncConfirmationHandler.
+  void AddLocalizedStringToIdsMap(const std::string& localized_string, int ids);
+
   // For consent auditing.
   std::unordered_map<std::string, int> js_localized_string_to_ids_map_;
 

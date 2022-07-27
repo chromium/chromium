@@ -97,7 +97,6 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   title_id = IDS_SYNC_CONFIRMATION_TITLE_LACROS_NON_FORCED;
 #endif
-  AddStringResource(source, "syncConfirmationTitle", title_id);
   AddStringResource(source, "syncConfirmationSyncInfoDesc",
                     IDS_SYNC_CONFIRMATION_SYNC_INFO_DESC);
   AddStringResource(source, "syncConfirmationSettingsInfo",
@@ -121,9 +120,19 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
   source->AddString("accountPictureUrl",
                     profiles::GetPlaceholderAvatarIconUrl());
   switch (style) {
-    case SyncConfirmationStyle::kSigninInterceptModal:
+    case SyncConfirmationStyle::kSigninInterceptModal: {
       DCHECK(base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept));
-      // TODO(https://crbug.com/1282157): Add dynamic welcome title.
+      ProfileAttributesEntry* entry =
+          g_browser_process->profile_manager()
+              ->GetProfileAttributesStorage()
+              .GetProfileAttributesWithPath(profile_->GetPath());
+      DCHECK(entry);
+      std::u16string gaia_name = entry->GetGAIANameToDisplay();
+      if (gaia_name.empty())
+        gaia_name = entry->GetLocalProfileName();
+      AddStringResourceWithPlaceholder(
+          source, "syncConfirmationTitle",
+          IDS_SYNC_CONFIRMATION_WELCOME_TITLE_SIGNIN_INTERCEPT, gaia_name);
       AddStringResource(source, "syncConfirmationSyncInfoTitle",
                         IDS_SYNC_CONFIRMATION_SYNC_INFO_SIGNIN_INTERCEPT);
       AddStringResource(source, "syncConfirmationConfirmLabel",
@@ -139,7 +148,9 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
           "images/sync_confirmation_signin_intercept_illustration_dark.svg",
           IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_SIGNIN_INTERCEPT_ILLUSTRATION_DARK_SVG);
       break;
+    }
     case SyncConfirmationStyle::kDefaultModal:
+      AddStringResource(source, "syncConfirmationTitle", title_id);
       AddStringResource(source, "syncConfirmationSyncInfoTitle", info_title_id);
       AddStringResource(source, "syncConfirmationConfirmLabel",
                         confirm_label_id);
@@ -155,6 +166,7 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
           IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_SYNC_CONFIRMATION_ILLUSTRATION_DARK_SVG);
       break;
     case SyncConfirmationStyle::kWindow:
+      AddStringResource(source, "syncConfirmationTitle", title_id);
       AddStringResource(source, "syncConfirmationSyncInfoTitle", info_title_id);
       AddStringResource(source, "syncConfirmationConfirmLabel",
                         confirm_label_id);
@@ -196,16 +208,29 @@ void SyncConfirmationUI::AddStringResource(content::WebUIDataSource* source,
                                            const std::string& name,
                                            int ids) {
   source->AddLocalizedString(name, ids);
+  AddLocalizedStringToIdsMap(l10n_util::GetStringUTF8(ids), ids);
+}
 
+void SyncConfirmationUI::AddStringResourceWithPlaceholder(
+    content::WebUIDataSource* source,
+    const std::string& name,
+    int ids,
+    const std::u16string& parameter) {
+  std::string localized_string = l10n_util::GetStringFUTF8(ids, parameter);
+  source->AddString(name, localized_string);
+  AddLocalizedStringToIdsMap(localized_string, ids);
+}
+
+void SyncConfirmationUI::AddLocalizedStringToIdsMap(
+    const std::string& localized_string,
+    int ids) {
   // When the strings are passed to the HTML, the Unicode NBSP symbol (\u00A0)
   // will be automatically replaced with "&nbsp;". This change must be mirrored
   // in the string-to-ids map. Note that "\u00A0" is actually two characters,
   // so we must use base::ReplaceSubstrings* rather than base::ReplaceChars.
   // TODO(msramek): Find a more elegant solution.
-  std::string sanitized_string =
-      base::UTF16ToUTF8(l10n_util::GetStringUTF16(ids));
+  std::string sanitized_string = localized_string;
   base::ReplaceSubstringsAfterOffset(&sanitized_string, 0, "\u00A0" /* NBSP */,
                                      "&nbsp;");
-
   js_localized_string_to_ids_map_[sanitized_string] = ids;
 }

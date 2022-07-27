@@ -64,15 +64,6 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
         },
       },
 
-      syncConfirmationWelcomeTitle_: {
-        type: String,
-        value() {
-          return loadTimeData.valueExists('syncConfirmationWelcomeTitle') ?
-              loadTimeData.getString('syncConfirmationWelcomeTitle') :
-              '';
-        },
-      },
-
       showEnterpriseBadge_: {
         type: Boolean,
         value: false,
@@ -84,7 +75,6 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   private anyButtonClicked_: boolean;
   private isModalDialog_: boolean;
   private isSigninInterceptFre_: boolean;
-  private syncConfirmationWelcomeTitle_: string;
   private showEnterpriseBadge_: boolean;
   private syncConfirmationBrowserProxy_: SyncConfirmationBrowserProxy =
       SyncConfirmationBrowserProxyImpl.getInstance();
