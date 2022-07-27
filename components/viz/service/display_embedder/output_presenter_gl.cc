@@ -273,11 +273,11 @@ bool OutputPresenterGL::Reshape(
     const gfx::ColorSpace& color_space,
     float device_scale_factor,
     gfx::OverlayTransform transform) {
-  gfx::Size size = gfx::SkISizeToSize(characterization.dimensions());
+  const gfx::Size size = gfx::SkISizeToSize(characterization.dimensions());
   image_format_ = SkColorTypeToResourceFormat(characterization.colorType());
-  return gl_surface_->Resize(
-      size, device_scale_factor, color_space,
-      !!AlphaBitsForSkColorType(characterization.colorType()));
+  const bool has_alpha =
+      !SkAlphaTypeIsOpaque(characterization.imageInfo().alphaType());
+  return gl_surface_->Resize(size, device_scale_factor, color_space, has_alpha);
 }
 
 std::vector<std::unique_ptr<OutputPresenter::Image>>

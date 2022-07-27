@@ -289,6 +289,8 @@ void SkiaOutputSurfaceImpl::RecreateRootRecorder() {
 void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!params.size.IsEmpty());
+  DCHECK(params.alpha_type == kPremul_SkAlphaType ||
+         params.alpha_type == kOpaque_SkAlphaType);
 
   // SetDrawRectangle() will need to be called at the new size.
   has_set_draw_rectangle_for_frame_ = false;
@@ -318,8 +320,9 @@ void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
   auto sk_color_space =
       params.color_space.ToSkColorSpace(params.sdr_white_level);
   characterization_ = CreateSkSurfaceCharacterization(
-      params.size, color_type, /*mipmap=*/false, std::move(sk_color_space),
-      /*is_root_render_pass=*/true, /*is_overlay=*/false);
+      params.size, color_type, params.alpha_type, /*mipmap=*/false,
+      std::move(sk_color_space), /*is_root_render_pass=*/true,
+      /*is_overlay=*/false);
 
   // impl_on_gpu_ is released on the GPU thread by a posted task from
   // SkiaOutputSurfaceImpl::dtor. So it is safe to use base::Unretained.
@@ -586,8 +589,9 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   SkColorType color_type =
       ResourceFormatToClosestSkColorType(/*gpu_compositing=*/true, format);
   SkSurfaceCharacterization characterization = CreateSkSurfaceCharacterization(
-      surface_size, color_type, mipmap, std::move(color_space),
-      /*is_root_render_pass=*/false, /*is_overlay=*/is_overlay);
+      surface_size, color_type, kPremul_SkAlphaType, mipmap,
+      std::move(color_space), /*is_root_render_pass=*/false,
+      /*is_overlay=*/is_overlay);
   if (!characterization.isValid())
     return nullptr;
 
@@ -617,9 +621,10 @@ SkCanvas* SkiaOutputSurfaceImpl::RecordOverdrawForCurrentPaint() {
 
   SkSurfaceCharacterization characterization = CreateSkSurfaceCharacterization(
       gfx::Size(characterization_.width(), characterization_.height()),
-      characterization_.colorType(),
+      characterization_.colorType(), characterization_.imageInfo().alphaType(),
       /*mipmap=*/false, characterization_.refColorSpace(),
-      /*is_root_render_pass=*/false, /*is_overlay=*/false);
+      /*is_root_render_pass=*/false,
+      /*is_overlay=*/false);
   if (characterization.isValid()) {
     overdraw_surface_recorder_.emplace(characterization);
     overdraw_canvas_.emplace((overdraw_surface_recorder_->getCanvas()));
@@ -881,6 +886,7 @@ SkSurfaceCharacterization
 SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
     const gfx::Size& surface_size,
     SkColorType color_type,
+    SkAlphaType alpha_type,
     bool mipmap,
     sk_sp<SkColorSpace> color_space,
     bool is_root_render_pass,
@@ -913,9 +919,9 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
         capabilities_.output_surface_origin == gfx::SurfaceOrigin::kBottomLeft
             ? kBottomLeft_GrSurfaceOrigin
             : kTopLeft_GrSurfaceOrigin;
-    auto image_info = SkImageInfo::Make(
-        surface_size.width(), surface_size.height(), color_type,
-        kPremul_SkAlphaType, std::move(color_space));
+    auto image_info =
+        SkImageInfo::Make(surface_size.width(), surface_size.height(),
+                          color_type, alpha_type, std::move(color_space));
     DCHECK((capabilities_.uses_default_gl_framebuffer &&
             dependency_->gr_context_type() == gpu::GrContextType::kGL) ||
            !capabilities_.uses_default_gl_framebuffer);
@@ -973,7 +979,7 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
 #endif
   auto image_info =
       SkImageInfo::Make(surface_size.width(), surface_size.height(), color_type,
-                        kPremul_SkAlphaType, std::move(color_space));
+                        alpha_type, std::move(color_space));
 
   auto characterization = gr_context_thread_safe_->createCharacterization(
       cache_max_resource_bytes, image_info, backend_format, sample_count,

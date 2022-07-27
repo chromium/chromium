@@ -105,7 +105,7 @@ _SWAP_CHAIN_GET_FRAME_STATISTICS_MEDIA_FAILED = -1
 _GET_STATISTICS_EVENT_NAME = 'GetFrameStatisticsMedia'
 _SWAP_CHAIN_PRESENT_EVENT_NAME = 'SwapChain::Present'
 _PRESENT_TO_SWAP_CHAIN_EVENT_NAME = 'SwapChainPresenter::PresentToSwapChain'
-_PRESENT_MAIN_SWAP_CHAIN_EVENT_NAME =\
+_PRESENT_ROOT_SWAP_CHAIN_EVENT_NAME =\
     'DirectCompositionChildSurfaceWin::PresentSwapChain'
 
 _SUPPORTED_WIN_AMD_GPUS_WITH_NV12_ROTATED_OVERLAYS = [0x7340]
@@ -184,14 +184,14 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               success_eval_func='CheckOverlayMode',
               other_args=p.other_args)
       ])
-    for p in namespace.ForceFullDamagePages('SwapChainTraceTest'):
+    for p in namespace.RootSwapChainPages('SwapChainTraceTest'):
       yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
           _TraceTestArguments(
               browser_args=p.browser_args,
               category='gpu',
               test_harness_script=basic_test_harness_script,
               finish_js_condition='domAutomationController._finished',
-              success_eval_func='CheckMainSwapChainPath',
+              success_eval_func='CheckRootSwapChainPath',
               other_args=p.other_args)
       ])
     for p in namespace.WebGPUCanvasCapturePages('WebGPUTraceTest'):
@@ -514,7 +514,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           'Overlay not expected but found: matching %s events were found' %
           _PRESENT_TO_SWAP_CHAIN_EVENT_NAME)
 
-  def _EvaluateSuccess_CheckMainSwapChainPath(self, category: str,
+  def _EvaluateSuccess_CheckRootSwapChainPath(self, category: str,
                                               event_iterator: typing.Iterator,
                                               other_args: dict) -> None:
     """Verified that Chrome's main swap chain is presented with full damage."""
@@ -527,6 +527,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     assert overlay_bot_config.get('direct_composition', False)
 
     expect_full_damage = other_args and other_args.get('full_damage', False)
+    expect_has_alpha = other_args and other_args.get('has_alpha', False)
 
     partial_damage_encountered = False
     full_damage_encountered = False
@@ -534,23 +535,30 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     for event in event_iterator:
       if event.category != category:
         continue
-      if event.name != _PRESENT_MAIN_SWAP_CHAIN_EVENT_NAME:
+      if event.name != _PRESENT_ROOT_SWAP_CHAIN_EVENT_NAME:
         continue
       dirty_rect = event.args.get('dirty_rect', None)
-      if dirty_rect is None:
-        continue
-      if dirty_rect == 'full_damage':
-        full_damage_encountered = True
-      else:
-        partial_damage_encountered = True
+      if dirty_rect is not None:
+        if dirty_rect == 'full_damage':
+          full_damage_encountered = True
+        else:
+          partial_damage_encountered = True
+
+      got_has_alpha = event.args.get('has_alpha', None)
+      if got_has_alpha is not None and expect_has_alpha != got_has_alpha:
+        self.fail(
+            'Expected events with name %s with has_alpha expected %s, got %s' %
+            (_PRESENT_ROOT_SWAP_CHAIN_EVENT_NAME, expect_has_alpha,
+             got_has_alpha))
 
     # Today Chrome either run with full damage or partial damage, but not both.
     # This may change in the future.
     if (expect_full_damage != full_damage_encountered
         or expect_full_damage == partial_damage_encountered):
       self.fail('Expected events with name %s of %s, got others' %
-                (_PRESENT_MAIN_SWAP_CHAIN_EVENT_NAME,
+                (_PRESENT_ROOT_SWAP_CHAIN_EVENT_NAME,
                  'full damage' if expect_full_damage else 'partial damage'))
+
 
   def _EvaluateSuccess_CheckWebGPUCanvasCapture(self, category: str,
                                                 event_iterator: typing.Iterator,

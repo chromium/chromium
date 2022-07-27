@@ -107,7 +107,6 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
 
   uint64_t backbuffer_estimated_size_ = 0;
 
-  int alpha_bits_ = 0;
   gfx::Size size_;
   SkColorType color_type_;
   gfx::ColorSpace color_space_;

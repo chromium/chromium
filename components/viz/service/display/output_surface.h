@@ -203,13 +203,16 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     float device_scale_factor = 1.f;
     gfx::ColorSpace color_space;
     float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel;
-    gfx::BufferFormat format = gfx::BufferFormat::RGBX_8888;
+    // TODO(sunnyps): Change to SkColorType.
+    gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
+    SkAlphaType alpha_type = kPremul_SkAlphaType;
 
     bool operator==(const ReshapeParams& other) const {
       return size == other.size &&
              device_scale_factor == other.device_scale_factor &&
              color_space == other.color_space &&
-             sdr_white_level == other.sdr_white_level;
+             sdr_white_level == other.sdr_white_level &&
+             format == other.format && alpha_type == other.alpha_type;
     }
     bool operator!=(const ReshapeParams& other) const {
       return !(*this == other);
