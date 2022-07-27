@@ -292,30 +292,30 @@ class ProxyResolverFactoryForPacResult : public ProxyResolverFactory {
 base::Value NetLogProxyConfigChangedParams(
     const absl::optional<ProxyConfigWithAnnotation>* old_config,
     const ProxyConfigWithAnnotation* new_config) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   // The "old_config" is optional -- the first notification will not have
   // any "previous" configuration.
   if (old_config->has_value())
-    dict.SetKey("old_config", (*old_config)->value().ToValue());
-  dict.SetKey("new_config", new_config->value().ToValue());
-  return dict;
+    dict.Set("old_config", (*old_config)->value().ToValue());
+  dict.Set("new_config", new_config->value().ToValue());
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogBadProxyListParams(const ProxyRetryInfoMap* retry_info) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   base::Value list(base::Value::Type::LIST);
 
   for (const auto& retry_info_pair : *retry_info)
     list.Append(retry_info_pair.first);
-  dict.SetKey("bad_proxy_list", std::move(list));
-  return dict;
+  dict.Set("bad_proxy_list", std::move(list));
+  return base::Value(std::move(dict));
 }
 
 // Returns NetLog parameters on a successful proxy resolution.
 base::Value NetLogFinishedResolvingProxyParams(const ProxyInfo* result) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("pac_string", result->ToPacString());
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("pac_string", result->ToPacString());
+  return base::Value(std::move(dict));
 }
 
 // Returns a sanitized copy of |url| which is safe to pass on to a PAC script.
@@ -1327,12 +1327,11 @@ base::Value::Dict ConfiguredProxyResolutionService::GetProxyNetLogValues() {
       const std::string& proxy_uri = it.first;
       const ProxyRetryInfo& retry_info = it.second;
 
-      base::Value dict(base::Value::Type::DICTIONARY);
-      dict.SetStringKey("proxy_uri", proxy_uri);
-      dict.SetStringKey("bad_until",
-                        NetLog::TickCountToString(retry_info.bad_until));
+      base::Value::Dict dict;
+      dict.Set("proxy_uri", proxy_uri);
+      dict.Set("bad_until", NetLog::TickCountToString(retry_info.bad_until));
 
-      list.Append(std::move(dict));
+      list.Append(base::Value(std::move(dict)));
     }
 
     net_info_dict.Set(kNetInfoBadProxies, std::move(list));

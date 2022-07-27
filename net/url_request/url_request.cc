@@ -283,37 +283,37 @@ LoadStateWithParam URLRequest::GetLoadState() const {
 }
 
 base::Value URLRequest::GetStateAsValue() const {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("url", original_url().possibly_invalid_spec());
+  base::Value::Dict dict;
+  dict.Set("url", original_url().possibly_invalid_spec());
 
   if (url_chain_.size() > 1) {
     base::Value list(base::Value::Type::LIST);
     for (const GURL& url : url_chain_) {
       list.Append(url.possibly_invalid_spec());
     }
-    dict.SetKey("url_chain", std::move(list));
+    dict.Set("url_chain", std::move(list));
   }
 
-  dict.SetIntKey("load_flags", load_flags_);
+  dict.Set("load_flags", load_flags_);
 
   LoadStateWithParam load_state = GetLoadState();
-  dict.SetIntKey("load_state", load_state.state);
+  dict.Set("load_state", load_state.state);
   if (!load_state.param.empty())
-    dict.SetStringKey("load_state_param", load_state.param);
+    dict.Set("load_state_param", load_state.param);
   if (!blocked_by_.empty())
-    dict.SetStringKey("delegate_blocked_by", blocked_by_);
+    dict.Set("delegate_blocked_by", blocked_by_);
 
-  dict.SetStringKey("method", method_);
-  dict.SetStringKey("network_isolation_key",
-                    isolation_info_.network_isolation_key().ToDebugString());
-  dict.SetBoolKey("has_upload", has_upload());
-  dict.SetBoolKey("is_pending", is_pending_);
+  dict.Set("method", method_);
+  dict.Set("network_isolation_key",
+           isolation_info_.network_isolation_key().ToDebugString());
+  dict.Set("has_upload", has_upload());
+  dict.Set("is_pending", is_pending_);
 
-  dict.SetIntKey("traffic_annotation", traffic_annotation_.unique_id_hash_code);
+  dict.Set("traffic_annotation", traffic_annotation_.unique_id_hash_code);
 
   if (status_ != OK)
-    dict.SetIntKey("net_error", status_);
-  return dict;
+    dict.Set("net_error", status_);
+  return base::Value(std::move(dict));
 }
 
 void URLRequest::LogBlockedBy(const char* blocked_by) {

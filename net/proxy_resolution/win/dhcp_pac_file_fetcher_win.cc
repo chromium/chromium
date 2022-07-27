@@ -201,54 +201,55 @@ class TaskRunnerWithCap : public base::TaskRunner {
 };
 
 base::Value NetLogGetAdaptersDoneParams(DhcpAdapterNamesLoggingInfo* info) {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value::Dict result;
 
   // Add information on each of the adapters enumerated (including those that
   // were subsequently skipped).
-  base::Value adapters_value(base::Value::Type::LIST);
+  base::Value::List adapters_list;
   for (IP_ADAPTER_ADDRESSES* adapter = info->adapters.get(); adapter;
        adapter = adapter->Next) {
-    base::Value adapter_value(base::Value::Type::DICTIONARY);
+    base::Value::Dict adapter_value;
 
-    adapter_value.SetStringKey("AdapterName", adapter->AdapterName);
-    adapter_value.SetIntKey("IfType", adapter->IfType);
-    adapter_value.SetIntKey("Flags", adapter->Flags);
-    adapter_value.SetIntKey("OperStatus", adapter->OperStatus);
-    adapter_value.SetIntKey("TunnelType", adapter->TunnelType);
+    adapter_value.Set("AdapterName", adapter->AdapterName);
+    adapter_value.Set("IfType", static_cast<int>(adapter->IfType));
+    adapter_value.Set("Flags", static_cast<int>(adapter->Flags));
+    adapter_value.Set("OperStatus", static_cast<int>(adapter->OperStatus));
+    adapter_value.Set("TunnelType", static_cast<int>(adapter->TunnelType));
 
     // "skipped" means the adapter was not ultimately chosen as a candidate for
     // testing WPAD.
     bool skipped = !IsDhcpCapableAdapter(adapter);
-    adapter_value.SetKey("skipped", base::Value(skipped));
+    adapter_value.Set("skipped", base::Value(skipped));
 
-    adapters_value.Append(std::move(adapter_value));
+    adapters_list.Append(std::move(adapter_value));
   }
-  result.SetKey("adapters", std::move(adapters_value));
+  result.Set("adapters", std::move(adapters_list));
 
-  result.SetIntKey(
-      "origin_to_worker_thread_hop_dt",
-      (info->worker_thread_start_time - info->origin_thread_start_time)
-          .InMilliseconds());
-  result.SetIntKey("worker_to_origin_thread_hop_dt",
-                   (info->origin_thread_end_time - info->worker_thread_end_time)
-                       .InMilliseconds());
-  result.SetIntKey("worker_dt", (info->worker_thread_end_time -
-                                 info->worker_thread_start_time)
-                                    .InMilliseconds());
+  result.Set("origin_to_worker_thread_hop_dt",
+             static_cast<int>((info->worker_thread_start_time -
+                               info->origin_thread_start_time)
+                                  .InMilliseconds()));
+  result.Set("worker_to_origin_thread_hop_dt",
+             static_cast<int>(
+                 (info->origin_thread_end_time - info->worker_thread_end_time)
+                     .InMilliseconds()));
+  result.Set("worker_dt", static_cast<int>((info->worker_thread_end_time -
+                                            info->worker_thread_start_time)
+                                               .InMilliseconds()));
 
   if (info->error != ERROR_SUCCESS)
-    result.SetIntKey("error", info->error);
+    result.Set("error", static_cast<int>(info->error));
 
-  return result;
+  return base::Value(std::move(result));
 }
 
 base::Value NetLogFetcherDoneParams(int fetcher_index, int net_error) {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value::Dict result;
 
-  result.SetIntKey("fetcher_index", fetcher_index);
-  result.SetIntKey("net_error", net_error);
+  result.Set("fetcher_index", fetcher_index);
+  result.Set("net_error", net_error);
 
-  return result;
+  return base::Value(std::move(result));
 }
 
 }  // namespace

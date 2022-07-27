@@ -24,15 +24,14 @@ base::Value NetworkQualityChangedNetLogParams(
     base::TimeDelta transport_rtt,
     int32_t downstream_throughput_kbps,
     EffectiveConnectionType effective_connection_type) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  base::Value::Dict& dict = value.GetDict();
-  dict.Set("http_rtt_ms", static_cast<int>(http_rtt.InMilliseconds()));
-  dict.Set("transport_rtt_ms",
-           static_cast<int>(transport_rtt.InMilliseconds()));
-  dict.Set("downstream_throughput_kbps", downstream_throughput_kbps);
-  dict.Set("effective_connection_type",
-           GetNameForEffectiveConnectionType(effective_connection_type));
-  return value;
+  base::Value::Dict value;
+  value.Set("http_rtt_ms", static_cast<int>(http_rtt.InMilliseconds()));
+  value.Set("transport_rtt_ms",
+            static_cast<int>(transport_rtt.InMilliseconds()));
+  value.Set("downstream_throughput_kbps", downstream_throughput_kbps);
+  value.Set("effective_connection_type",
+            GetNameForEffectiveConnectionType(effective_connection_type));
+  return base::Value(std::move(value));
 }
 
 bool MetricChangedMeaningfully(int32_t past_value, int32_t current_value) {

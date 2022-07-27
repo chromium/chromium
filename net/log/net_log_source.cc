@@ -56,11 +56,6 @@ void NetLogSource::AddToEventParameters(base::Value::Dict& event_params) const {
   event_params.Set("source_dependency", std::move(dict));
 }
 
-void NetLogSource::AddToEventParameters(base::Value* event_params) const {
-  DCHECK(event_params->is_dict());
-  AddToEventParameters(event_params->GetDict());
-}
-
 base::Value NetLogSource::ToEventParameters() const {
   return SourceEventParametersCallback(*this);
 }

@@ -20,20 +20,20 @@ namespace {
 
 base::Value NetLogSimpleEntryConstructionParams(
     const disk_cache::SimpleEntryImpl* entry) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("entry_hash",
-                    base::StringPrintf("%#016" PRIx64, entry->entry_hash()));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("entry_hash",
+           base::StringPrintf("%#016" PRIx64, entry->entry_hash()));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogSimpleEntryCreationParams(
     const disk_cache::SimpleEntryImpl* entry,
     int net_error) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("net_error", net_error);
+  base::Value::Dict dict;
+  dict.Set("net_error", net_error);
   if (net_error == net::OK)
-    dict.SetStringKey("key", entry->key());
-  return dict;
+    dict.Set("key", entry->key());
+  return base::Value(std::move(dict));
 }
 
 }  // namespace

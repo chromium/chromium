@@ -30,9 +30,9 @@ namespace net {
 namespace {
 
 base::Value JobResultParams(bool trial_success) {
-  base::Value results(base::Value::Type::DICTIONARY);
-  results.GetDict().Set("trial_success", trial_success);
-  return results;
+  base::Value::Dict results;
+  results.Set("trial_success", trial_success);
+  return base::Value(std::move(results));
 }
 
 }  // namespace

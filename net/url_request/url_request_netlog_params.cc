@@ -20,11 +20,11 @@ base::Value NetLogURLRequestConstructorParams(
     const GURL& url,
     RequestPriority priority,
     NetworkTrafficAnnotationTag traffic_annotation) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("url", url.possibly_invalid_spec());
-  dict.SetStringKey("priority", RequestPriorityToString(priority));
-  dict.SetIntKey("traffic_annotation", traffic_annotation.unique_id_hash_code);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("url", url.possibly_invalid_spec());
+  dict.Set("priority", RequestPriorityToString(priority));
+  dict.Set("traffic_annotation", traffic_annotation.unique_id_hash_code);
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogURLRequestStartParams(
@@ -35,12 +35,12 @@ base::Value NetLogURLRequestStartParams(
     const SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& initiator,
     int64_t upload_id) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("url", url.possibly_invalid_spec());
-  dict.SetStringKey("method", method);
-  dict.SetIntKey("load_flags", load_flags);
-  dict.SetStringKey("network_isolation_key",
-                    isolation_info.network_isolation_key().ToDebugString());
+  base::Value::Dict dict;
+  dict.Set("url", url.possibly_invalid_spec());
+  dict.Set("method", method);
+  dict.Set("load_flags", load_flags);
+  dict.Set("network_isolation_key",
+           isolation_info.network_isolation_key().ToDebugString());
   std::string request_type;
   switch (isolation_info.request_type()) {
     case IsolationInfo::RequestType::kMainFrame:
@@ -53,13 +53,13 @@ base::Value NetLogURLRequestStartParams(
       request_type = "other";
       break;
   }
-  dict.SetStringKey("request_type", request_type);
-  dict.SetStringKey("site_for_cookies", site_for_cookies.ToDebugString());
-  dict.SetStringKey("initiator", initiator.has_value() ? initiator->Serialize()
-                                                       : "not an origin");
+  dict.Set("request_type", request_type);
+  dict.Set("site_for_cookies", site_for_cookies.ToDebugString());
+  dict.Set("initiator",
+           initiator.has_value() ? initiator->Serialize() : "not an origin");
   if (upload_id > -1)
-    dict.SetStringKey("upload_id", base::NumberToString(upload_id));
-  return dict;
+    dict.Set("upload_id", base::NumberToString(upload_id));
+  return base::Value(std::move(dict));
 }
 
 }  // namespace net

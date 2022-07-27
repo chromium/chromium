@@ -162,10 +162,10 @@ bool ValidateConnection(const HttpResponseHeaders* headers,
 }
 
 base::Value NetLogFailureParam(int net_error, const std::string& message) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("net_error", net_error);
-  dict.SetStringKey("message", message);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("net_error", net_error);
+  dict.Set("message", message);
+  return base::Value(std::move(dict));
 }
 
 }  // namespace

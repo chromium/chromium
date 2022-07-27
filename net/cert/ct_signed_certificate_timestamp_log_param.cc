@@ -73,11 +73,11 @@ base::Value SCTListToPrintableValues(
 
 base::Value NetLogSignedCertificateTimestampParams(
     const SignedCertificateTimestampAndStatusList* scts) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
 
-  dict.GetDict().Set("scts", SCTListToPrintableValues(*scts));
+  dict.Set("scts", SCTListToPrintableValues(*scts));
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogRawSignedCertificateTimestampParams(

@@ -40,9 +40,9 @@ namespace {
 
 // Callback for TYPE_URL_REQUEST_FILTERS_SET net-internals event.
 base::Value SourceStreamSetParams(SourceStream* source_stream) {
-  base::Value event_params(base::Value::Type::DICTIONARY);
-  event_params.SetStringKey("filters", source_stream->Description());
-  return event_params;
+  base::Value::Dict event_params;
+  event_params.Set("filters", source_stream->Description());
+  return base::Value(std::move(event_params));
 }
 
 }  // namespace

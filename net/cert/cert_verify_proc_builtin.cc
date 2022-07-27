@@ -58,19 +58,19 @@ const void* kResultDebugDataKey = &kResultDebugDataKey;
 
 base::Value NetLogCertParams(const CRYPTO_BUFFER* cert_handle,
                              const CertErrors& errors) {
-  base::Value results(base::Value::Type::DICTIONARY);
+  base::Value::Dict results;
 
   std::string pem_encoded;
   if (X509Certificate::GetPEMEncodedFromDER(
           x509_util::CryptoBufferAsStringPiece(cert_handle), &pem_encoded)) {
-    results.GetDict().Set("certificate", pem_encoded);
+    results.Set("certificate", pem_encoded);
   }
 
   std::string errors_string = errors.ToDebugString();
   if (!errors_string.empty())
-    results.GetDict().Set("errors", errors_string);
+    results.Set("errors", errors_string);
 
-  return results;
+  return base::Value(std::move(results));
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -833,12 +833,12 @@ int CertVerifyProcBuiltin::VerifyInternal(
     verification_type = cur_attempt.verification_type;
     net_log.BeginEvent(
         NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT, [&] {
-          base::Value results(base::Value::Type::DICTIONARY);
+          base::Value::Dict results;
           if (verification_type == VerificationType::kEV)
-            results.GetDict().Set("is_ev_attempt", true);
-          results.GetDict().Set("digest_policy",
-                                static_cast<int>(cur_attempt.digest_policy));
-          return results;
+            results.Set("is_ev_attempt", true);
+          results.Set("digest_policy",
+                      static_cast<int>(cur_attempt.digest_policy));
+          return base::Value(std::move(results));
         });
 
     // If a previous attempt used up most/all of the deadline, extend the

@@ -108,18 +108,18 @@ base::Value CookieInclusionStatusNetLogParams(
     const std::string& cookie_path,
     const net::CookieInclusionStatus& status,
     net::NetLogCaptureMode capture_mode) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("operation", operation);
-  dict.SetStringKey("status", status.GetDebugString());
+  base::Value::Dict dict;
+  dict.Set("operation", operation);
+  dict.Set("status", status.GetDebugString());
   if (net::NetLogCaptureIncludesSensitive(capture_mode)) {
     if (!cookie_name.empty())
-      dict.SetStringKey("name", cookie_name);
+      dict.Set("name", cookie_name);
     if (!cookie_domain.empty())
-      dict.SetStringKey("domain", cookie_domain);
+      dict.Set("domain", cookie_domain);
     if (!cookie_path.empty())
-      dict.SetStringKey("path", cookie_path);
+      dict.Set("path", cookie_path);
   }
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 // Records details about the most-specific trust anchor in |spki_hashes|,

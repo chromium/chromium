@@ -709,9 +709,7 @@ void HttpServerPropertiesManager::WriteToPrefs(
   std::set<std::pair<std::string, NetworkIsolationKey>>
       persisted_canonical_suffix_set;
   const base::Time now = base::Time::Now();
-  base::Value http_server_properties_value(base::Value::Type::DICTIONARY);
-  base::Value::Dict& http_server_properties_dict =
-      http_server_properties_value.GetDict();
+  base::Value::Dict http_server_properties_dict;
 
   // Convert |server_info_map| to a list Value and add it to
   // |http_server_properties_dict|.
@@ -768,11 +766,12 @@ void HttpServerPropertiesManager::WriteToPrefs(
       broken_alternative_service_list, kMaxBrokenAlternativeServicesToPersist,
       recently_broken_alternative_services, http_server_properties_dict);
 
-  pref_delegate_->SetServerProperties(http_server_properties_value,
-                                      std::move(callback));
+  pref_delegate_->SetServerProperties(
+      base::Value(http_server_properties_dict.Clone()), std::move(callback));
 
-  net_log_.AddEvent(NetLogEventType::HTTP_SERVER_PROPERTIES_UPDATE_PREFS,
-                    [&] { return http_server_properties_value.Clone(); });
+  net_log_.AddEvent(NetLogEventType::HTTP_SERVER_PROPERTIES_UPDATE_PREFS, [&] {
+    return base::Value(std::move(http_server_properties_dict));
+  });
 }
 
 void HttpServerPropertiesManager::SaveAlternativeServiceToServerPrefs(
