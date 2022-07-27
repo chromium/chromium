@@ -1501,6 +1501,12 @@
           'shards': 2,
         },
       },
+      # https://crbug.com/1344223
+      'Mac10.13 Tests': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
       'android-11-x86-rel': {
         'args': [
           # TODO(crbug.com/1192348): Fix the test failure
