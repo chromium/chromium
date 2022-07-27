@@ -267,7 +267,7 @@ class InputMethodAshTest : public ImeKeyEventDispatcher,
   void SetCompositionText(const CompositionText& composition) override {
     composition_text_ = composition;
   }
-  uint32_t ConfirmCompositionText(bool keep_selection) override {
+  size_t ConfirmCompositionText(bool keep_selection) override {
     // TODO(b/134473433) Modify this function so that when keep_selection is
     // true, the selection is not changed when text committed
     if (keep_selection) {

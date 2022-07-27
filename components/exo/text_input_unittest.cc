@@ -451,9 +451,9 @@ TEST_F(TextInputTest, CommitCompositionText) {
   SetCompositionText(u"composition");
 
   EXPECT_CALL(*delegate(), Commit(std::u16string(u"composition"))).Times(1);
-  const uint32_t composition_text_length =
+  const size_t composition_text_length =
       text_input()->ConfirmCompositionText(/*keep_selection=*/false);
-  EXPECT_EQ(composition_text_length, static_cast<uint32_t>(11));
+  EXPECT_EQ(composition_text_length, 11u);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
   // Second call should be the empty commit string.

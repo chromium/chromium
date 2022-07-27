@@ -3058,10 +3058,10 @@ TEST_F(TextfieldTest, CommitComposingTextTest) {
   ui::CompositionText composition;
   composition.text = u"abc123";
   textfield_->SetCompositionText(composition);
-  uint32_t composed_text_length =
+  size_t composed_text_length =
       textfield_->ConfirmCompositionText(/* keep_selection */ false);
 
-  EXPECT_EQ(composed_text_length, static_cast<uint32_t>(6));
+  EXPECT_EQ(composed_text_length, 6u);
 }
 
 TEST_F(TextfieldTest, CommitEmptyComposingTextTest) {
@@ -3069,10 +3069,10 @@ TEST_F(TextfieldTest, CommitEmptyComposingTextTest) {
   ui::CompositionText composition;
   composition.text = u"";
   textfield_->SetCompositionText(composition);
-  uint32_t composed_text_length =
+  size_t composed_text_length =
       textfield_->ConfirmCompositionText(/* keep_selection */ false);
 
-  EXPECT_EQ(composed_text_length, static_cast<uint32_t>(0));
+  EXPECT_EQ(composed_text_length, 0u);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

@@ -36,7 +36,7 @@ class FakeTextInputClient : public TextInputClient {
 
   // TextInputClient:
   void SetCompositionText(const CompositionText& composition) override;
-  uint32_t ConfirmCompositionText(bool keep_selection) override;
+  size_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
   void InsertText(
       const std::u16string& text,

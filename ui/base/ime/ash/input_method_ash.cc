@@ -504,7 +504,7 @@ void InputMethodAsh::ConfirmCompositionText(bool reset_engine,
     composition_changed_ = false;
   }
   if (client && client->HasCompositionText()) {
-    const uint32_t characters_committed =
+    const size_t characters_committed =
         client->ConfirmCompositionText(keep_selection);
     typing_session_manager_.CommitCharacters(characters_committed);
   }

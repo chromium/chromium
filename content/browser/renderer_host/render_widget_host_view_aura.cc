@@ -1238,7 +1238,7 @@ void RenderWidgetHostViewAura::SetCompositionText(
   has_composition_text_ = !composition.text.empty();
 }
 
-uint32_t RenderWidgetHostViewAura::ConfirmCompositionText(bool keep_selection) {
+size_t RenderWidgetHostViewAura::ConfirmCompositionText(bool keep_selection) {
   if (text_input_manager_ && text_input_manager_->GetActiveWidget() &&
       has_composition_text_) {
     text_input_manager_->GetActiveWidget()->ImeFinishComposingText(
@@ -1247,7 +1247,7 @@ uint32_t RenderWidgetHostViewAura::ConfirmCompositionText(bool keep_selection) {
   has_composition_text_ = false;
   // TODO(crbug/1109604): Return the number of characters committed by this
   // function.
-  return UINT32_MAX;
+  return std::numeric_limits<size_t>::max();
 }
 
 void RenderWidgetHostViewAura::ClearCompositionText() {

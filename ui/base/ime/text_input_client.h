@@ -79,8 +79,8 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
   // otherwise, set it to be after the newly committed text.
   // If text was committed, return the number of characters committed.
   // If we do not know what the number of characters committed is, return
-  // UINT32_MAX.
-  virtual uint32_t ConfirmCompositionText(bool keep_selection) = 0;
+  // std::numeric_limits<size_t>::max().
+  virtual size_t ConfirmCompositionText(bool keep_selection) = 0;
 
   // Removes current composition text.
   virtual void ClearCompositionText() = 0;

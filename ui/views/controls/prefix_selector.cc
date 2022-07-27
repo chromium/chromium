@@ -5,6 +5,7 @@
 #include "ui/views/controls/prefix_selector.h"
 
 #include <algorithm>
+#include <limits>
 
 #include "base/i18n/case_conversion.h"
 #include "base/time/default_tick_clock.h"
@@ -43,8 +44,8 @@ bool PrefixSelector::ShouldContinueSelection() const {
 void PrefixSelector::SetCompositionText(
     const ui::CompositionText& composition) {}
 
-uint32_t PrefixSelector::ConfirmCompositionText(bool keep_selection) {
-  return UINT32_MAX;
+size_t PrefixSelector::ConfirmCompositionText(bool keep_selection) {
+  return std::numeric_limits<size_t>::max();
 }
 
 void PrefixSelector::ClearCompositionText() {}

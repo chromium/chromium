@@ -434,7 +434,7 @@ void ArcImeService::SetCompositionText(const ui::CompositionText& composition) {
   ime_bridge_->SendSetCompositionText(composition);
 }
 
-uint32_t ArcImeService::ConfirmCompositionText(bool keep_selection) {
+size_t ArcImeService::ConfirmCompositionText(bool keep_selection) {
   if (!keep_selection) {
     InvalidateSurroundingTextAndSelectionRange();
   }
@@ -442,7 +442,7 @@ uint32_t ArcImeService::ConfirmCompositionText(bool keep_selection) {
   // Note: SendConfirmCompositonText() will commit the text and
   // keep the selection unchanged
   ime_bridge_->SendConfirmCompositionText();
-  return UINT32_MAX;
+  return std::numeric_limits<size_t>::max();
 }
 
 void ArcImeService::ClearCompositionText() {
