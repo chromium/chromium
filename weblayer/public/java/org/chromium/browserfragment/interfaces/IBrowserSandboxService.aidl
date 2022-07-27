@@ -4,10 +4,12 @@
 
 package org.chromium.browserfragment.interfaces;
 
+import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegate;
 import org.chromium.browserfragment.interfaces.IBrowserSandboxCallback;
 
 interface IBrowserSandboxService {
-    // TODO(rayankans): Move this to a more appropriate interface once more of the browserfragment
-    // library is defined.
-    void attachViewHierarchy(in IBinder hostToken, in IBrowserSandboxCallback callback) = 1;
+    void initializeBrowserProcess(in IBrowserSandboxCallback callback) = 1;
+
+    // TODO(rayankans): Pass fragment creation params (profile name, persistence ID, etc.)
+    IBrowserFragmentDelegate createFragmentDelegate() = 2;
 }

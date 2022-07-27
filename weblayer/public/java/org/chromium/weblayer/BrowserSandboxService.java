@@ -11,10 +11,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
-import android.view.SurfaceControlViewHost;
-import android.view.WindowManager;
-import android.webkit.WebView;
 
+import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegate;
 import org.chromium.browserfragment.interfaces.IBrowserSandboxCallback;
 import org.chromium.browserfragment.interfaces.IBrowserSandboxService;
 
@@ -26,27 +24,28 @@ public class BrowserSandboxService extends Service {
     private final Context mContext = this;
 
     private final IBrowserSandboxService.Stub mBinder = new IBrowserSandboxService.Stub() {
+        private WebLayer mWebLayer;
+
         @Override
-        public void attachViewHierarchy(IBinder hostToken, IBrowserSandboxCallback callback) {
+        public void initializeBrowserProcess(IBrowserSandboxCallback callback) {
             new Handler(Looper.getMainLooper()).post(() -> {
-                // TODO(rayankans): Attach ContentViewRenderView instead of a WebView after
-                // WebLayer/BrowserProcess have been initialized.
-                WebView webView = new WebView(mContext);
-
-                WindowManager window =
-                        (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-                SurfaceControlViewHost host =
-                        new SurfaceControlViewHost(mContext, window.getDefaultDisplay(), hostToken);
-
-                // TODO(rayankans): Use actual dimensions from the host app.
-                host.setView(webView, window.getDefaultDisplay().getWidth(),
-                        window.getDefaultDisplay().getHeight());
-                try {
-                    callback.onSurfacePackageReady(host.getSurfacePackage());
-                } catch (RemoteException e) {
-                }
-                webView.loadUrl("https://google.com");
+                WebLayer.loadAsync(mContext, (webLayer) -> onWebLayerReady(webLayer, callback));
             });
+        }
+
+        private void onWebLayerReady(WebLayer webLayer, IBrowserSandboxCallback callback) {
+            mWebLayer = webLayer;
+            try {
+                callback.onBrowserProcessInitialized();
+            } catch (RemoteException e) {
+            }
+        }
+
+        @Override
+        public IBrowserFragmentDelegate createFragmentDelegate() {
+            assert mWebLayer != null;
+
+            return new BrowserFragmentDelegate(mContext, mWebLayer);
         }
     };
 

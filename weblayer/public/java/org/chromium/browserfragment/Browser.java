@@ -10,9 +10,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.view.SurfaceControlViewHost.SurfacePackage;
-import android.view.SurfaceView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.concurrent.futures.CallbackToFutureAdapter;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -32,20 +32,21 @@ public class Browser {
             "org.chromium.weblayer.intent.action.BROWSERSANDBOX";
 
     private IBrowserSandboxService mBrowserSandboxService;
-    private SurfaceView mSurfaceView;
-
-    private final IBrowserSandboxCallback mBrowserSandboxCallback =
-            new IBrowserSandboxCallback.Stub() {
-                @Override
-                public void onSurfacePackageReady(SurfacePackage surfacePackage) {
-                    mSurfaceView.setChildSurfacePackage(surfacePackage);
-                }
-            };
+    private CallbackToFutureAdapter.Completer<Browser> mCompleter;
 
     private static class ConnectionSetup implements ServiceConnection {
         private CallbackToFutureAdapter.Completer<Browser> mCompleter;
-        private Browser mBrowser;
+        private IBrowserSandboxService mBrowserSandboxService;
         private Context mContext;
+
+        private final IBrowserSandboxCallback mBrowserSandboxCallback =
+                new IBrowserSandboxCallback.Stub() {
+                    @Override
+                    public void onBrowserProcessInitialized() {
+                        mCompleter.set(new Browser(mBrowserSandboxService));
+                        mCompleter = null;
+                    }
+                };
 
         ConnectionSetup(Context context, CallbackToFutureAdapter.Completer<Browser> completer) {
             mContext = context;
@@ -54,14 +55,13 @@ public class Browser {
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            IBrowserSandboxService browserSandboxService =
-                    IBrowserSandboxService.Stub.asInterface(service);
-
-            // TODO(rayankans): Initialize the browser process in the Browser Sandbox before
-            // resolving the promise.
-            mBrowser = new Browser(browserSandboxService);
-            mCompleter.set(mBrowser);
-            mCompleter = null;
+            mBrowserSandboxService = IBrowserSandboxService.Stub.asInterface(service);
+            try {
+                mBrowserSandboxService.initializeBrowserProcess(mBrowserSandboxCallback);
+            } catch (RemoteException e) {
+                mCompleter.setException(e);
+                mCompleter = null;
+            }
         }
 
         // TODO(rayankans): Actually handle failure / disconnection events.
@@ -73,7 +73,13 @@ public class Browser {
         mBrowserSandboxService = service;
     }
 
-    public static ListenableFuture<Browser> create(Context context) {
+    /**
+     * Asynchronously creates a handle to the browsing sandbox after initializing the
+     * browser process.
+     * @param context The application context.
+     */
+    @NonNull
+    public static ListenableFuture<Browser> create(@NonNull Context context) {
         return CallbackToFutureAdapter.getFuture(completer -> {
             ConnectionSetup connectionSetup = new ConnectionSetup(context, completer);
 
@@ -87,13 +93,15 @@ public class Browser {
         });
     }
 
-    public void attachViewHierarchy(SurfaceView surfaceView) {
-        mSurfaceView = surfaceView;
-        mSurfaceView.setZOrderOnTop(true);
+    /**
+     * Creates a new BrowserFragment for displaying web content.
+     */
+    @Nullable
+    public BrowserFragment createFragment() {
         try {
-            mBrowserSandboxService.attachViewHierarchy(
-                    mSurfaceView.getHostToken(), mBrowserSandboxCallback);
+            return new BrowserFragment(this, mBrowserSandboxService.createFragmentDelegate());
         } catch (RemoteException e) {
+            return null;
         }
     }
 }

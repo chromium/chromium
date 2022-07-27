@@ -46,6 +46,8 @@ public final class BrowserFragment extends RemoteFragment {
     // Nonnull between onCreate() and onDestroy().
     private Browser mBrowser;
 
+    private boolean mIgnoreViewModel;
+
     /**
      * This constructor is for the system FragmentManager only. Please use
      * {@link WebLayer#createBrowserFragment}.
@@ -74,7 +76,7 @@ public final class BrowserFragment extends RemoteFragment {
             throw new RuntimeException("BrowserFragment was created without arguments.");
         }
         // If there is saved state, then it should be used and this method should not be called.
-        assert !(new ViewModelProvider(this)).get(BrowserViewModel.class).hasSavedState();
+        assert !getViewModel().hasSavedState();
         try {
             mWebLayer = WebLayer.loadSync(appContext);
         } catch (Exception e) {
@@ -96,7 +98,7 @@ public final class BrowserFragment extends RemoteFragment {
     @Override
     public void onAttach(Context context) {
         ThreadCheck.ensureOnUiThread();
-        BrowserViewModel browserViewModel = new ViewModelProvider(this).get(BrowserViewModel.class);
+        BrowserViewModel browserViewModel = getViewModel();
         if (browserViewModel.hasSavedState()) {
             configureFromViewModel(browserViewModel);
         }
@@ -116,7 +118,7 @@ public final class BrowserFragment extends RemoteFragment {
             throw new APICallException(e);
         }
         if (useViewModel()) {
-            saveToViewModel(new ViewModelProvider(this).get(BrowserViewModel.class));
+            saveToViewModel(getViewModel());
         }
     }
 
@@ -163,8 +165,21 @@ public final class BrowserFragment extends RemoteFragment {
     }
 
     private boolean useViewModel() {
+        if (mIgnoreViewModel) {
+            return false;
+        }
         Bundle args = getArguments();
         return args == null ? false : args.getBoolean(BrowserFragmentArgs.USE_VIEW_MODEL, false);
+    }
+
+    private BrowserViewModel getViewModel() {
+        return mIgnoreViewModel ? new BrowserViewModel()
+                                : new ViewModelProvider(this).get(BrowserViewModel.class);
+    }
+
+    // TODO(rayankans): Remove ViewModel from this class.
+    void ignoreViewModel() {
+        mIgnoreViewModel = true;
     }
 
     /**

@@ -177,6 +177,8 @@ process_version("client_version") {
 android_aidl("browserfragment_aidl") {
   import_include = [ "." ]
   sources = [
+    "org/chromium/browserfragment/interfaces/IBrowserFragmentDelegate.aidl",
+    "org/chromium/browserfragment/interfaces/IBrowserFragmentDelegateClient.aidl",
     "org/chromium/browserfragment/interfaces/IBrowserSandboxCallback.aidl",
     "org/chromium/browserfragment/interfaces/IBrowserSandboxService.aidl",
   ]
@@ -188,13 +190,19 @@ android_library("browserfragment_interfaces_java") {
 }
 
 android_library("browserfragment_java") {
-  sources = [ "org/chromium/browserfragment/Browser.java" ]
+  sources = [
+    "org/chromium/browserfragment/Browser.java",
+    "org/chromium/browserfragment/BrowserFragment.java",
+  ]
 
   resources_package = "org.chromium.browserfragment"
   deps = [
     ":browserfragment_interfaces_java",
     "//third_party/android_deps:com_google_guava_listenablefuture_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
   ]
 
   proguard_configs = [ "proguard.flags" ]
@@ -203,6 +211,7 @@ android_library("browserfragment_java") {
 android_library("browserfragment_sandbox_java") {
   sources = [
     # Additional weblayer public files that are for the sandbox.
+    "org/chromium/weblayer/BrowserFragmentDelegate.java",
     "org/chromium/weblayer/BrowserSandboxService.java",
   ]
   resources_package = "org.chromium.weblayer"

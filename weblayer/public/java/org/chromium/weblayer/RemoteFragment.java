@@ -471,7 +471,11 @@ abstract class RemoteFragment extends Fragment {
     }
 
     private void superOnCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        // TODO(rayankans): Remove calls into the base Fragment class.
+        try {
+            super.onCreate(savedInstanceState);
+        } catch (NullPointerException e) {
+        }
     }
 
     private void superOnAttach(Context context) {

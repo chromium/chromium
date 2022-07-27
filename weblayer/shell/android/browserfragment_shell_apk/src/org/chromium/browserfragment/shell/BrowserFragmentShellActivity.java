@@ -6,7 +6,6 @@ package org.chromium.browserfragment.shell;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.SurfaceView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +14,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.browserfragment.Browser;
+import org.chromium.browserfragment.BrowserFragment;
 
 /**
  * Activity for managing the Demo Shell.
@@ -43,7 +43,12 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
     }
 
     private void onBrowserReady(Browser browser) {
-        // TODO(rayankans): Abstract this away within a Fragment in the browserfragment library.
-        browser.attachViewHierarchy((SurfaceView) findViewById(R.id.surfaceView));
+        BrowserFragment fragment = browser.createFragment();
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .add(R.id.fragment_container_view, fragment)
+                .commit();
     }
 }
