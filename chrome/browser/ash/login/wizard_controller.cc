@@ -698,7 +698,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnFingerprintSetupScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<GestureNavigationScreen>(
-      oobe_ui->GetView<GestureNavigationScreenHandler>(),
+      oobe_ui->GetView<GestureNavigationScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnGestureNavigationScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<MarketingOptInScreen>(

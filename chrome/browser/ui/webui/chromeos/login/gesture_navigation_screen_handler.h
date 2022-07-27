@@ -5,24 +5,21 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_GESTURE_NAVIGATION_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_GESTURE_NAVIGATION_SCREEN_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-
-namespace ash {
-class GestureNavigationScreen;
-}
 
 namespace chromeos {
 
 // Interface between gesture navigation screen and its representation.
-class GestureNavigationScreenView {
+class GestureNavigationScreenView
+    : public base::SupportsWeakPtr<GestureNavigationScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"gesture-navigation"};
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "gesture-navigation", "GestureNavigationScreen"};
 
-  virtual ~GestureNavigationScreenView() {}
+  virtual ~GestureNavigationScreenView() = default;
 
-  virtual void Bind(ash::GestureNavigationScreen* screen) = 0;
   virtual void Show() = 0;
-  virtual void Hide() = 0;
 };
 
 // WebUI implementation of GestureNavigationScreenView.
@@ -40,25 +37,11 @@ class GestureNavigationScreenHandler : public GestureNavigationScreenView,
       const GestureNavigationScreenHandler&) = delete;
 
   // GestureNavigationScreenView:
-  void Bind(ash::GestureNavigationScreen* screen) override;
   void Show() override;
-  void Hide() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
-  void RegisterMessages() override;
-
- private:
-  // Called when the currently shown page for the gesture navigation screen is
-  // changed.
-  void HandleGesturePageChange(const std::string& new_page);
-
-  ash::GestureNavigationScreen* screen_ = nullptr;
-
-  // If true, InitializeDeprecated() will call Show().
-  bool show_on_init_ = false;
 };
 
 }  // namespace chromeos

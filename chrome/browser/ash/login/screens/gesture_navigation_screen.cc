@@ -18,6 +18,7 @@ namespace ash {
 namespace {
 
 constexpr const char kUserActionExitPressed[] = "exit";
+constexpr const char kUserActionGesturePageChange[] = "gesture-page-change";
 
 // The name used for each page on the gesture navigation screen.
 constexpr const char kGestureIntroPage[] = "gestureIntro";
@@ -38,20 +39,16 @@ std::string GestureNavigationScreen::GetResultString(Result result) {
 }
 
 GestureNavigationScreen::GestureNavigationScreen(
-    GestureNavigationScreenView* view,
+    base::WeakPtr<GestureNavigationScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(GestureNavigationScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  view_->Bind(this);
 }
 
-GestureNavigationScreen::~GestureNavigationScreen() {
-  if (view_)
-    view_->Bind(nullptr);
-}
+GestureNavigationScreen::~GestureNavigationScreen() = default;
 
 void GestureNavigationScreen::GesturePageChange(const std::string& new_page) {
   page_times_[current_page_] += base::TimeTicks::Now() - start_time_;
@@ -88,16 +85,15 @@ void GestureNavigationScreen::ShowImpl() {
   // metrics.
   current_page_ = kGestureIntroPage;
   start_time_ = base::TimeTicks::Now();
-
-  view_->Show();
+  if (view_) {
+    view_->Show();
+  }
 }
 
-void GestureNavigationScreen::HideImpl() {
-  view_->Hide();
-}
+void GestureNavigationScreen::HideImpl() {}
 
-void GestureNavigationScreen::OnUserActionDeprecated(
-    const std::string& action_id) {
+void GestureNavigationScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionExitPressed) {
     // Make sure the user does not see a notification about the new gestures
     // since they have already gone through this gesture education screen.
@@ -107,9 +103,15 @@ void GestureNavigationScreen::OnUserActionDeprecated(
     RecordPageShownTimeMetrics();
     was_shown_ = true;
     exit_callback_.Run(Result::NEXT);
-  } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    return;
   }
+  if (action_id == kUserActionGesturePageChange) {
+    CHECK_EQ(args.size(), 2);
+    const std::string& new_page = args[1].GetString();
+    GesturePageChange(new_page);
+    return;
+  }
+  BaseScreen::OnUserAction(args);
 }
 
 void GestureNavigationScreen::RecordPageShownTimeMetrics() {

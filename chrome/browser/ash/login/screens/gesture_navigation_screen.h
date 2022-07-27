@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -24,7 +25,7 @@ class GestureNavigationScreen : public BaseScreen {
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  GestureNavigationScreen(GestureNavigationScreenView* view,
+  GestureNavigationScreen(base::WeakPtr<GestureNavigationScreenView> view,
                           const ScreenExitCallback& exit_callback);
   ~GestureNavigationScreen() override;
 
@@ -52,13 +53,13 @@ class GestureNavigationScreen : public BaseScreen {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
  private:
   // Record metrics for the elapsed time that each page was shown for.
   void RecordPageShownTimeMetrics();
 
-  GestureNavigationScreenView* view_;
+  base::WeakPtr<GestureNavigationScreenView> view_;
   ScreenExitCallback exit_callback_;
 
   // Used to keep track of the current elapsed time that each page has been

@@ -10,31 +10,14 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId GestureNavigationScreenView::kScreenId;
-
 GestureNavigationScreenHandler::GestureNavigationScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated(
-      "login.GestureNavigationScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
 GestureNavigationScreenHandler::~GestureNavigationScreenHandler() = default;
 
 void GestureNavigationScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
-
   ShowInWebUI();
 }
-
-void GestureNavigationScreenHandler::Bind(GestureNavigationScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen);
-}
-
-void GestureNavigationScreenHandler::Hide() {}
 
 void GestureNavigationScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -60,24 +43,6 @@ void GestureNavigationScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_GESTURE_NAVIGATION_OVERVIEW_TITLE);
   builder->Add("gestureNavigationOverviewDescription",
                IDS_OOBE_GESTURE_NAVIGATION_OVERVIEW_DESCRIPTION);
-}
-
-void GestureNavigationScreenHandler::InitializeDeprecated() {
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
-}
-
-void GestureNavigationScreenHandler::RegisterMessages() {
-  AddCallback("handleGesturePageChange",
-              &GestureNavigationScreenHandler::HandleGesturePageChange);
-  BaseScreenHandler::RegisterMessages();
-}
-
-void GestureNavigationScreenHandler::HandleGesturePageChange(
-    const std::string& new_page) {
-  screen_->GesturePageChange(new_page);
 }
 
 }  // namespace chromeos
