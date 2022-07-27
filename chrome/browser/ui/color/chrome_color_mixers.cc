@@ -41,6 +41,8 @@ bool ChromeColorProviderUtilsCallbacks::ColorIdName(
   return false;
 }
 
+// Note that this second include is not redundant. The second inclusion of the
+// .inc file serves to undefine the macros the first inclusion defined.
 #include "ui/color/color_id_map_macros.inc"
 
 }  // namespace
