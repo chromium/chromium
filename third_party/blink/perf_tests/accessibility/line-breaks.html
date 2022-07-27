@@ -22,18 +22,18 @@ function runTest() {
         PerfTestRunner.addRunTestStartMarker();
         startTime = PerfTestRunner.now();
 
-        // Fill the paragraph with 1000 lines of text with <br> elements
+        // Fill the paragraph with 200 lines of text with <br> elements
         // in-between.
         var testElement = document.getElementById('testElement');
         var html = '';
-        for (var i = 0; i < 333; i++) {
+        for (var i = 0; i < 200; i++) {
             html += randomString() + ' ' + randomString() + '<br>';
         }
         testElement.innerHTML = html;
 
         // Wait to allow the asynchronous accessibility code that's
         // covered by traceEventsToMeasure to have a chance to run.
-        setTimeout(runTest, 1500);
+        setTimeout(runTest, 2000);
     }
 }
 
