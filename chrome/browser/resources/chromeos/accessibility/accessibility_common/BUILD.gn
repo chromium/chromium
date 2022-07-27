@@ -9,6 +9,7 @@ import(
 import(
     "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
 import("//chrome/test/base/js2gtest.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
