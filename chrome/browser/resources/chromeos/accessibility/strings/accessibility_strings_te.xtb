@@ -64,7 +64,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="1331702245475014624"><ph name="TOTAL" />లో <ph name="INDEX" /></translation>
 <translation id="1334095593597963605">అక్షరం మరియు పదం అనుకరణ</translation>
 <translation id="1334570596456017464">సబ్‌స్క్రిప్ట్</translation>
-<translation id="133801305381959373">సవరించగల వచన ఫీల్డ్ ఏదీ తర్వాత లేదు</translation>
+<translation id="133801305381959373">ఎడిట్ చేయగల వచన ఫీల్డ్ ఏదీ తర్వాత లేదు</translation>
 <translation id="1342835525016946179">కథనం</translation>
 <translation id="1346059596910821859">చిట్కా</translation>
 <translation id="1354356357730355833">కాపీ చేయి</translation>
@@ -148,7 +148,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="1914424852593176649"><ph name="FONT_SIZE" /> పరిమాణం</translation>
 <translation id="1914635379910604678"><ph name="DOT" /> కీల కలయిక</translation>
 <translation id="1923956950274750765">మధ్యస్థ ఊదా రంగు</translation>
-<translation id="1928932365747995741">మునుపటి సవరించగల వచన ఫీల్డ్ లేదు</translation>
+<translation id="1928932365747995741">మునుపటి ఎడిట్ చేయగల వచన ఫీల్డ్ లేదు</translation>
 <translation id="1964135212174907577">తరువాత ఆబ్జెక్ట్</translation>
 <translation id="1966649499058910679">ప్రతి పదాన్ని చదివినప్పుడు దానిని హైలైట్ చేయి</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -163,7 +163,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="2086961585857038472">తరువాత పదం</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">en</translation>
-<translation id="2091933974477985526">మునుపటి సవరించగల వచన ప్రదేశం</translation>
+<translation id="2091933974477985526">మునుపటి ఎడిట్ చేయగల వచన ప్రదేశం</translation>
 <translation id="2100350898815792233">అన్ని విరామచిహ్నాలు</translation>
 <translation id="2110480898214777136">పేజీ, డైలాగ్ లేదా ఇతర కంటైనర్‌లో ప్రారంభం నుండి ముగింపు వరకు లేదా ముగింపు నుండి ప్రారంభం వరకు సర్దుబాటు చేయండి</translation>
 <translation id="2119965627982867824">spnbtn</translation>
@@ -243,7 +243,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="2651441758640020174">లిస్ట్ నుండి మీకు ఇష్టమైన సీజన్‌ను ఎంచుకోవడానికి ట్రై చేయండి.</translation>
 <translation id="2654172656519784359">ఒక పదం ముందుకు జరుపు</translation>
 <translation id="2661530546602071611">గమనిక</translation>
-<translation id="2673280813984708147">సవరిస్తున్నారు</translation>
+<translation id="2673280813984708147">ఎడిట్ చేస్తున్నారు</translation>
 <translation id="267442004702508783">రిఫ్రెష్ చేస్తుంది</translation>
 <translation id="2675533876313964202">చార్ట్రూస్ మద్యం రంగు</translation>
 <translation id="2684412629217766642">ChromeVox ట్యుటోరియల్‌ను మూసివేస్తుంది</translation>
@@ -354,7 +354,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3260949043575829030">ఇలాంటి మునుపటి అంశం</translation>
 <translation id="3270069636408109001">తర్వాత టేబుల్ లేదు</translation>
 <translation id="3273791280096244679">లేబుల్‌ను సేవ్ చేయి</translation>
-<translation id="3283583562490372694">ఎంపికను తీసివేసారు</translation>
+<translation id="3283583562490372694">ఎంపికను తీసివేశారు</translation>
 <translation id="3286372614333682499">పోర్ట్రెయిట్‌లో ఉంది</translation>
 <translation id="3286390186030710347">స్లయిడర్</translation>
 <translation id="3300348286427369683">రిచ్ టెక్స్ట్ మద్దతు. ChromeVox ఇప్పుడు దాటవేత ఆదేశాలు, బ్రెయిలీ కర్సర్ రూటింగ్, ఎంపిక మరియు మరిన్నింటితో సహా రిచ్ టెక్స్ట్ ఫీల్డ్‌లకు మద్దతిస్తుంది.</translation>
@@ -394,7 +394,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3505359110822747654">ChromeVox మెనూలను కుదించండి</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{హంసపాదు గుర్తు}other{# హంసపాదు గుర్తులు}}</translation>
 <translation id="3518600448524470129">{COUNT,plural, =1{తెలుపు రంగు బుల్లెట్}other{# తెలుపు రంగు బుల్లెట్‌లు}}</translation>
-<translation id="352577523970648069">సవరించగల వచన ఫీల్డ్</translation>
+<translation id="352577523970648069">ఎడిట్ చేయగల వచన ఫీల్డ్</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" />ని కత్తిరించండి.</translation>
 <translation id="3564729643041517261">ప్రస్తుత ప్రదర్శన శైలి పక్కపక్కకు ఉంది</translation>
@@ -770,7 +770,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="6187190722927752226">సముద్ర నీలం</translation>
 <translation id="6197361807490522975">ముదురు నీలి రంగు</translation>
 <translation id="6236061028292614533">తరువాత శీర్షిక</translation>
-<translation id="6254901459154107917">తరువాత సవరించగల వచన ప్రదేశం</translation>
+<translation id="6254901459154107917">తరువాత ఎడిట్ చేయగల వచన ప్రదేశం</translation>
 <translation id="6259464875943891919"><ph name="TYPE" /> నుండి నిష్క్రమించారు.</translation>
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">ఆవశ్యకమైన కీలు: సెర్చ్</translation>
