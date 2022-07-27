@@ -241,7 +241,6 @@ generate_definitions_js_files = [
   "js/event_tracker.m.js",
   "js/load_time_data.m.js",
   "js/plural_string_proxy.js",
-  "js/search_highlight_utils.js",
   "js/icon.js",
   "js/util.m.js",
 ]
@@ -342,6 +341,7 @@ ts_library("library") {
       "cr_components/managed_footnote/managed_footnote.ts",
       "js/i18n_mixin.ts",
       "js/list_property_update_mixin.ts",
+      "js/search_highlight_utils.ts",
       "js/web_ui_listener_mixin.ts",
     ]
   }

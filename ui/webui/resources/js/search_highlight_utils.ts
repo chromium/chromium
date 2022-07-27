@@ -2,37 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 
-/** @type {string} */
-const WRAPPER_CSS_CLASS = 'search-highlight-wrapper';
+const WRAPPER_CSS_CLASS: string = 'search-highlight-wrapper';
 
-/** @type {string} */
-const ORIGINAL_CONTENT_CSS_CLASS = 'search-highlight-original-content';
+const ORIGINAL_CONTENT_CSS_CLASS: string = 'search-highlight-original-content';
 
-/** @type {string} */
-const HIT_CSS_CLASS = 'search-highlight-hit';
+const HIT_CSS_CLASS: string = 'search-highlight-hit';
 
-/** @type {string} */
-const SEARCH_BUBBLE_CSS_CLASS = 'search-bubble';
+const SEARCH_BUBBLE_CSS_CLASS: string = 'search-bubble';
 
-/** @typedef {{start: number, length: number}} */
-export let Range;
+export interface Range {
+  start: number;
+  length: number;
+}
 
 /**
  * Replaces the the highlight wrappers given in |wrappers| with the original
  * search nodes.
- * @param {!Array<!Node>} wrappers
  */
-export function removeHighlights(wrappers) {
+export function removeHighlights(wrappers: HTMLElement[]) {
   for (const wrapper of wrappers) {
     // If wrapper is already removed, do nothing.
     if (!wrapper.parentElement) {
       continue;
     }
 
-    const textNode =
-        wrapper.querySelector(`.${ORIGINAL_CONTENT_CSS_CLASS}`).firstChild;
+    const originalContent =
+        wrapper.querySelector(`.${ORIGINAL_CONTENT_CSS_CLASS}`);
+    assert(originalContent);
+    const textNode = originalContent.firstChild;
+    assert(textNode);
     wrapper.parentElement.replaceChild(textNode, wrapper);
   }
 }
@@ -42,28 +42,29 @@ export function removeHighlights(wrappers) {
  * highlights (yellow rectangles) with the original search node. Searches only
  * within the same shadowRoot and assumes that only one highlight wrapper
  * exists under |node|.
- * @param {!Node} node
  */
-export function findAndRemoveHighlights(node) {
-  const wrappers = Array.from(node.querySelectorAll(`.${WRAPPER_CSS_CLASS}`));
+export function findAndRemoveHighlights(node: Node) {
+  const wrappers =
+      Array.from((node as HTMLElement)
+                     .querySelectorAll<HTMLElement>(`.${WRAPPER_CSS_CLASS}`));
   assert(wrappers.length === 1);
   removeHighlights(wrappers);
 }
 
 /**
  * Applies the highlight UI (yellow rectangle) around all matches in |node|.
- * @param {!Node} node The text node to be highlighted. |node| ends up
+ * @param node The text node to be highlighted. |node| ends up
  *     being hidden.
- * @param {!Array<!Range>} ranges
- * @return {!HTMLElement} The new highlight wrapper.
+ * @return The new highlight wrapper.
  */
-export function highlight(node, ranges) {
+export function highlight(node: Node, ranges: Range[]): HTMLElement {
   assert(ranges.length > 0);
 
-  const wrapper = /** @type {!HTMLElement} */ (document.createElement('span'));
+  const wrapper = document.createElement('span');
   wrapper.classList.add(WRAPPER_CSS_CLASS);
   // Use existing node as placeholder to determine where to insert the
   // replacement content.
+  assert(node.parentNode);
   node.parentNode.replaceChild(wrapper, node);
 
   // Keep the existing node around for when the highlights are removed. The
@@ -75,22 +76,22 @@ export function highlight(node, ranges) {
   span.appendChild(node);
   wrapper.appendChild(span);
 
-  const text = node.textContent;
-  /** @type {!Array<string>} */ const tokens = [];
+  const text = node.textContent!;
+  const tokens: string[] = [];
   for (let i = 0; i < ranges.length; ++i) {
-    const range = ranges[i];
-    const prev = ranges[i - 1] || {start: 0, length: 0};
+    const range = ranges[i]!;
+    const prev = ranges[i - 1]! || {start: 0, length: 0};
     const start = prev.start + prev.length;
     const length = range.start - start;
     tokens.push(text.substr(start, length));
     tokens.push(text.substr(range.start, range.length));
   }
-  const last = ranges.slice(-1)[0];
+  const last = ranges.slice(-1)[0]!;
   tokens.push(text.substr(last.start + last.length));
 
   for (let i = 0; i < tokens.length; ++i) {
     if (i % 2 === 0) {
-      wrapper.appendChild(document.createTextNode(tokens[i]));
+      wrapper.appendChild(document.createTextNode(tokens[i]!));
     } else {
       const hitSpan = document.createElement('span');
       hitSpan.classList.add(HIT_CSS_CLASS);
@@ -99,7 +100,7 @@ export function highlight(node, ranges) {
           'var(--search-highlight-hit-background-color, #ffeb3b)';
       // Defaults to the color associated with --google-grey-900.
       hitSpan.style.color = 'var(--search-highlight-hit-color, #202124)';
-      hitSpan.textContent = tokens[i];
+      hitSpan.textContent = tokens[i]!;
       wrapper.appendChild(hitSpan);
     }
   }
@@ -109,30 +110,32 @@ export function highlight(node, ranges) {
 /**
  * Creates an empty search bubble (styled HTML element without text).
  * |node| should already be visible or the bubble will render incorrectly.
- * @param {!Node} node The node to be highlighted.
- * @param {boolean=} horizontallyCenter Whether or not to horizontally center
+ * @param node The node to be highlighted.
+ * @param horizontallyCenter Whether or not to horizontally center
  *     the shown search bubble (if any) based on |node|'s left and width.
- * @return {!HTMLElement} The search bubble that was added, or null if no new
+ * @return The search bubble that was added, or null if no new
  *     bubble was added.
  */
-export function createEmptySearchBubble(node, horizontallyCenter) {
+export function createEmptySearchBubble(
+    node: Node, horizontallyCenter?: boolean): HTMLElement {
   let anchor = node;
   if (node.nodeName === 'SELECT') {
-    anchor = node.parentNode;
+    anchor = node.parentNode!;
   }
   if (anchor instanceof ShadowRoot) {
-    anchor = anchor.host.parentNode;
+    anchor = anchor.host.parentNode!;
   }
 
-  let searchBubble = /** @type {?HTMLElement} */ (
-      anchor.querySelector(`.${SEARCH_BUBBLE_CSS_CLASS}`));
+  let searchBubble =
+      (anchor as HTMLElement)
+          .querySelector<HTMLElement>(`.${SEARCH_BUBBLE_CSS_CLASS}`);
   // If the node has already been highlighted, there is no need to do
   // anything.
   if (searchBubble) {
     return searchBubble;
   }
 
-  searchBubble = /** @type {!HTMLElement} */ (document.createElement('div'));
+  searchBubble = document.createElement('div');
   searchBubble.classList.add(SEARCH_BUBBLE_CSS_CLASS);
   const innards = document.createElement('div');
   innards.classList.add('search-bubble-innards');
@@ -141,14 +144,16 @@ export function createEmptySearchBubble(node, horizontallyCenter) {
   anchor.appendChild(searchBubble);
 
   const updatePosition = function() {
-    assert(typeof node.offsetTop === 'number');
-    searchBubble.style.top = node.offsetTop +
+    const nodeEl = node as HTMLElement;
+    assert(searchBubble);
+    assert(typeof nodeEl.offsetTop === 'number');
+    searchBubble.style.top = nodeEl.offsetTop +
         (innards.classList.contains('above') ? -searchBubble.offsetHeight :
-                                               node.offsetHeight) +
+                                               nodeEl.offsetHeight) +
         'px';
     if (horizontallyCenter) {
-      const width = node.offsetWidth - searchBubble.offsetWidth;
-      searchBubble.style.left = node.offsetLeft + width / 2 + 'px';
+      const width = nodeEl.offsetWidth - searchBubble.offsetWidth;
+      searchBubble.style.left = nodeEl.offsetLeft + width / 2 + 'px';
     }
   };
   updatePosition();
@@ -163,10 +168,6 @@ export function createEmptySearchBubble(node, horizontallyCenter) {
   return searchBubble;
 }
 
-/**
- * @param {string} text
- * @return {string}
- */
-export function stripDiacritics(text) {
+export function stripDiacritics(text: string): string {
   return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }

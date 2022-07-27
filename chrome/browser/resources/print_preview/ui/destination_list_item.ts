@@ -47,7 +47,7 @@ export class PrintPreviewDestinationListItemElement extends PolymerElement {
   private destinationIcon_: string;
   private searchHint_: string;
 
-  private highlights_: Node[] = [];
+  private highlights_: HTMLElement[] = [];
 
   private onDestinationPropertiesChange_() {
     this.title = this.destination.displayName;

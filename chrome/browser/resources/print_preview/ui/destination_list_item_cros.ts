@@ -101,7 +101,7 @@ export class PrintPreviewDestinationListItemElement extends
   private isDestinationCrosLocal_: boolean;
   private configurationStatus_: DestinationConfigStatus;
 
-  private highlights_: Node[] = [];
+  private highlights_: HTMLElement[] = [];
 
   private onDestinationPropertiesChange_() {
     this.title = this.destination.displayName;

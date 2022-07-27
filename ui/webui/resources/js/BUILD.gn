@@ -51,6 +51,7 @@ preprocess_if_expr("preprocess_src_ts") {
     "custom_element.ts",
     "i18n_mixin.ts",
     "list_property_update_mixin.ts",
+    "search_highlight_utils.ts",
     "web_ui_listener_mixin.ts",
   ]
 }
@@ -68,7 +69,6 @@ preprocess_if_expr("preprocess_src") {
     "load_time_data.m.js",
     "plural_string_proxy.js",
     "static_types.js",
-    "search_highlight_utils.js",
     "test_loader.js",
     "test_loader_util.js",
 
@@ -281,10 +281,8 @@ js_modulizer("modulize_local") {
     ]
   }
 
-  namespace_rewrites = [
-    "cr.search_highlight_utils.Range|Range",
-    "Polymer.ArraySplice.calculateSplices|calculateSplices",
-  ]
+  namespace_rewrites =
+      [ "Polymer.ArraySplice.calculateSplices|calculateSplices" ]
 }
 
 js_unmodulizer("unmodulize") {
@@ -312,7 +310,6 @@ js_type_check("js_resources_modules") {
     ":parse_html_subset.m",
     ":plural_string_proxy",
     ":promise_resolver.m",
-    ":search_highlight_utils",
     ":static_types",
     ":util.m",
     ":web_ui_listener_behavior.m",
@@ -412,10 +409,6 @@ js_library("promise_resolver.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/js/promise_resolver.m.js" ]
   deps = [ ":assert.m" ]
   extra_deps = [ ":modulize_local" ]
-}
-
-js_library("search_highlight_utils") {
-  deps = [ ":assert.m" ]
 }
 
 js_library("static_types") {
