@@ -2555,7 +2555,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             };
 
             mOptionalButton = new OptionalButtonCoordinator(optionalButton, userEducationHelper,
-                    /* transitionRoot= */ this, isAnimationAllowedPredicate);
+                    /* transitionRoot= */ mToolbarButtonsContainer, isAnimationAllowedPredicate);
 
             // Set the button's background to the same color as the URL bar background. This color
             // is only used when showing dynamic actions.
