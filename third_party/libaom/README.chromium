@@ -30,7 +30,7 @@ Please follow these steps to update libaom source code:
      ./cmake_update.sh
 
    This will also update this file with the new revision.
-   Update 'Branch' in this file if necessary.
+   Update 'Version' and 'CPEPrefix' in this file if necessary.
 
 3. Amend the commit created by the first step:
 

@@ -31,7 +31,7 @@ Please follow these steps to update libvpx source code:
      cd third_party/libvpx
      ./generate_gni.sh
 
-   Update 'Branch' in this file if necessary.
+   Update 'Version' and 'CPEPrefix' in this file if necessary.
 
 3. Amend the commit created by the first step:
 
