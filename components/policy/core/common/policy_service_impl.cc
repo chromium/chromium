@@ -107,17 +107,25 @@ bool IsUserCloudMergingAllowed(const PolicyMap& policies) {
 
 void AddPolicyMessages(PolicyMap& policies) {
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
-  // Add warning to inform users that this policy is ignored when the user is
-  // unaffiliated.
+  // Add warning to inform users that these policies are ignored when the user
+  // is unaffiliated.
+  if (policies.IsUserAffiliated())
+    return;
+
   auto* cloud_user_precedence_entry =
       policies.GetMutable(key::kCloudUserPolicyOverridesCloudMachinePolicy);
   if (cloud_user_precedence_entry &&
       cloud_user_precedence_entry->value(base::Value::Type::BOOLEAN) &&
       cloud_user_precedence_entry->value(base::Value::Type::BOOLEAN)
-          ->GetBool() &&
-      !policies.IsUserAffiliated()) {
+          ->GetBool()) {
     cloud_user_precedence_entry->AddMessage(PolicyMap::MessageType::kError,
                                             IDS_POLICY_IGNORED_UNAFFILIATED);
+  }
+
+  if (IsUserCloudMergingAllowed(policies)) {
+    policies.GetMutable(key::kCloudUserPolicyMerge)
+        ->AddMessage(PolicyMap::MessageType::kError,
+                     IDS_POLICY_IGNORED_UNAFFILIATED);
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 }

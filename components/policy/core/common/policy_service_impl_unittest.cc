@@ -1957,6 +1957,9 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_Unaffiliated) {
                       policy_bundle_1->Get(chrome_namespace)
                           .Get(key::kCloudUserPolicyMerge)
                           ->DeepCopy());
+  expected_chrome.GetMutable(key::kCloudUserPolicyMerge)
+      ->AddMessage(PolicyMap::MessageType::kError,
+                   IDS_POLICY_IGNORED_UNAFFILIATED);
 
   provider0_.UpdatePolicy(std::move(policy_bundle_1));
   provider1_.UpdatePolicy(std::move(policy_bundle_2));
@@ -2217,6 +2220,9 @@ TEST_F(PolicyServiceTest, PlatformUserListPolicyMerge_Unaffiliated) {
                       policy_bundle_1->Get(chrome_namespace)
                           .Get(key::kCloudUserPolicyMerge)
                           ->DeepCopy());
+  expected_chrome.GetMutable(key::kCloudUserPolicyMerge)
+      ->AddMessage(PolicyMap::MessageType::kError,
+                   IDS_POLICY_IGNORED_UNAFFILIATED);
 
   provider0_.UpdatePolicy(std::move(policy_bundle_1));
   provider1_.UpdatePolicy(std::move(policy_bundle_2));
@@ -2263,6 +2269,7 @@ TEST_F(PolicyServiceTest, PolicyMessages) {
   std::vector<std::pair<std::string, base::Value>> policies;
   policies.emplace_back(key::kCloudUserPolicyOverridesCloudMachinePolicy,
                         base::Value(true));
+  policies.emplace_back(key::kCloudUserPolicyMerge, base::Value(true));
   auto policy_bundle =
       CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
                    std::move(policies), chrome_namespace);
@@ -2271,10 +2278,16 @@ TEST_F(PolicyServiceTest, PolicyMessages) {
   expected_chrome.Set(key::kCloudUserPolicyOverridesCloudMachinePolicy,
                       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                       POLICY_SOURCE_PLATFORM, base::Value(true), nullptr);
+  expected_chrome.Set(key::kCloudUserPolicyMerge, POLICY_LEVEL_MANDATORY,
+                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+                      base::Value(true), nullptr);
   expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
-  // An error message should appear because the user is unaffiliated.
+  // Error messages should appear because the user is unaffiliated.
   expected_chrome.GetMutable(key::kCloudUserPolicyOverridesCloudMachinePolicy)
+      ->AddMessage(PolicyMap::MessageType::kError,
+                   IDS_POLICY_IGNORED_UNAFFILIATED);
+  expected_chrome.GetMutable(key::kCloudUserPolicyMerge)
       ->AddMessage(PolicyMap::MessageType::kError,
                    IDS_POLICY_IGNORED_UNAFFILIATED);
 
