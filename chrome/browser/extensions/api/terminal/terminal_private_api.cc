@@ -690,9 +690,9 @@ TerminalPrivateGetOSInfoFunction::~TerminalPrivateGetOSInfoFunction() = default;
 
 ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
   base::DictionaryValue info;
-  info.SetBoolKey("alternative_renderer",
+  info.SetBoolKey("alternative_emulator",
                   base::FeatureList::IsEnabled(
-                      chromeos::features::kTerminalAlternativeRenderer));
+                      chromeos::features::kTerminalAlternativeEmulator));
   info.SetBoolKey(
       "multi_profile",
       base::FeatureList::IsEnabled(chromeos::features::kTerminalMultiProfile));

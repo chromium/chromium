@@ -3272,8 +3272,8 @@ extern const char kSystemTransliterationPhysicalTypingDescription[];
 extern const char kQuickSettingsNetworkRevampName[];
 extern const char kQuickSettingsNetworkRevampDescription[];
 
-extern const char kTerminalAlternativeRendererName[];
-extern const char kTerminalAlternativeRendererDescription[];
+extern const char kTerminalAlternativeEmulatorName[];
+extern const char kTerminalAlternativeEmulatorDescription[];
 
 extern const char kTerminalDevName[];
 extern const char kTerminalDevDescription[];

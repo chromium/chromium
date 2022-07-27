@@ -6103,7 +6103,7 @@
     "expiry_milestone":120
   },
   {
-    "name": "terminal-alternative-renderer",
+    "name": "terminal-alternative-emulator",
     "owners": [ "lxj", "joelhockey", "//chrome/browser/ash/guest_os/OWNERS" ],
     "expiry_milestone": 120
   },

@@ -58027,6 +58027,7 @@ from previous Chrome versions.
   <int value="-528149352" label="WebRtcUseEchoCanceller3:enabled"/>
   <int value="-527990339" label="ForceEnableFaceAe:enabled"/>
   <int value="-527050466" label="NavigationRequestPreconnect:disabled"/>
+  <int value="-526737102" label="TerminalAlternativeEmulator:disabled"/>
   <int value="-526236814" label="WebAssemblyTiering:enabled"/>
   <int value="-523155003" label="PhoneHubCameraRoll:disabled"/>
   <int value="-523030434" label="EnableBackgroundBlur:enabled"/>
@@ -59723,6 +59724,7 @@ from previous Chrome versions.
   <int value="581118445" label="enable-eol-notification"/>
   <int value="581355159" label="ContentSuggestionsCategoryRanker:disabled"/>
   <int value="582187448" label="DontPrefetchLibraries:enabled"/>
+  <int value="583059655" label="TerminalAlternativeEmulator:enabled"/>
   <int value="584509342" label="TerminalTmuxIntegration:enabled"/>
   <int value="584541349" label="ContextualSearchSingleActions:disabled"/>
   <int value="584661108"

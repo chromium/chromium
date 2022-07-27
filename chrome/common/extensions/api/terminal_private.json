@@ -238,8 +238,8 @@
               "name": "info",
               "type": "object",
               "properties": {
-                "alternative_renderer": {
-                  "description": "True if alternative renderer flag is enabled.",
+                "alternative_emulator": {
+                  "description": "True if alternative emulator flag is enabled.",
                   "type": "boolean"
                 },
                 "multi_profile": {

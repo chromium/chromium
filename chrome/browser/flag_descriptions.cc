@@ -5713,10 +5713,10 @@ const char kQuickSettingsNetworkRevampDescription[] =
     "Enables the Quick Settings Network revamp, which updates Network Quick "
     "Settings UI and related infrastructure. See https://crbug.com/1169479.";
 
-const char kTerminalAlternativeRendererName[] = "Terminal alternative renderer";
-const char kTerminalAlternativeRendererDescription[] =
-    "Enable the alternative renderer for the Terminal app. You will also get "
-    "an option in Terminal settings to change the default renderer.";
+const char kTerminalAlternativeEmulatorName[] = "Terminal alternative emulator";
+const char kTerminalAlternativeEmulatorDescription[] =
+    "Enable the alternative emulator for the Terminal app. You will also get "
+    "an option in Terminal settings to change the default emulator.";
 
 const char kTerminalDevName[] = "Terminal dev";
 const char kTerminalDevDescription[] =
