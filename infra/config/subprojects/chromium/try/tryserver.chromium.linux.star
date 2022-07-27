@@ -243,7 +243,7 @@ try_.orchestrator_builder(
     tryjob = try_.job(),
     experiments = {
         "remove_src_checkout_experiment": 100,
-        "enable_weetbix_queries": 20,
+        "enable_weetbix_queries": 100,
     },
     use_orchestrator_pool = True,
 )
