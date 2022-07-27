@@ -55,6 +55,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.HPS.SnoopingProtection.FlakeyDetection"
+    enum="BooleanPresent" expires_after="2023-05-31">
+  <owner>charleszhao@chromium.org</owner>
+  <owner>evanbenn@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <owner>chromeos-hps-swe@google.com</owner>
+  <summary>
+    Records when a potentially-flakey negative signal appears for snooping
+    protection. We may also log flakey positive signals in future.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.HPS.SnoopingProtection.{Result}.Duration" units="ms"
     expires_after="2023-05-31">
   <owner>martis@chromium.org</owner>

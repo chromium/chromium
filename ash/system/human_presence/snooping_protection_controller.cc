@@ -92,7 +92,7 @@ SnoopingProtectionController::~SnoopingProtectionController() {
 
   // We want to log current presence/absence duration since we'll not get
   // another event anymore.
-  LogPresenceWindow(!state_.present);
+  LogPresenceWindow(state_.present);
 }
 
 // static
@@ -157,8 +157,6 @@ void SnoopingProtectionController::OnHpsNotifyChanged(
     const hps::HpsResultProto& result) {
   const bool present = result.value() == hps::HpsResult::POSITIVE;
 
-  LogPresenceWindow(present);
-
   State new_state = state_;
   new_state.present = present;
 
@@ -189,7 +187,7 @@ void SnoopingProtectionController::OnShutdown() {
   // present/absent duration will not be logged, because the duration will be
   // incorrect.
   // This has to be done before UpdateSnooperStatus below.
-  LogPresenceWindow(!state_.present);
+  LogPresenceWindow(state_.present);
   last_presence_report_time_ = base::TimeTicks();
 
   State new_state = state_;
@@ -228,6 +226,12 @@ void SnoopingProtectionController::UpdateSnooperStatus(const State& new_state) {
   clean_state.within_pos_window =
       new_state.within_pos_window && detection_active;
 
+  // If the present state changes to false while within_pos_window, we would
+  // have got a flakey disappearing of the eyecon without pos_window.
+  if (clean_state.within_pos_window && !clean_state.present) {
+    base::UmaHistogramBoolean("ChromeOS.HPS.SnoopingProtection.FlakeyDetection",
+                              false);
+  }
   const bool was_present = SnooperPresent();
   state_ = clean_state;
   const bool is_present = SnooperPresent();
@@ -235,6 +239,7 @@ void SnoopingProtectionController::UpdateSnooperStatus(const State& new_state) {
   if (was_present == is_present)
     return;
 
+  LogPresenceWindow(was_present);
   for (auto& observer : observers_)
     observer.OnSnoopingStatusChanged(is_present);
 }
@@ -356,7 +361,7 @@ void SnoopingProtectionController::OnMinWindowExpired() {
   UpdateSnooperStatus(new_state);
 }
 
-void SnoopingProtectionController::LogPresenceWindow(bool is_present) {
+void SnoopingProtectionController::LogPresenceWindow(bool was_present) {
   const auto now = base::TimeTicks::Now();
 
   // Set last_presence_report_time_ and return if it is the first time reported.
@@ -365,14 +370,10 @@ void SnoopingProtectionController::LogPresenceWindow(bool is_present) {
     return;
   }
 
-  // No log if present state is not changed.
-  if (state_.present == is_present)
-    return;
-
   const auto time_since_last_report = now - last_presence_report_time_;
   last_presence_report_time_ = now;
 
-  if (state_.present) {
+  if (was_present) {
     base::UmaHistogramCustomTimes(
         "ChromeOS.HPS.SnoopingProtection.Positive.Duration",
         time_since_last_report, kSnoopingProtectionDurationMin,
