@@ -118,6 +118,13 @@ public class PiiEliderTest {
     }
 
     @Test
+    public void testDontElideAndroidPermission() {
+        String original = "java.lang.SecurityException: get package info: "
+                + "Neither user 1210041 nor current process has android.permission.READ_LOGS";
+        assertEquals(original, PiiElider.elideUrl(original));
+    }
+
+    @Test
     public void testElideIp() {
         String original = "traceroute 127.0.0.1";
         String expected = "traceroute 1.2.3.4";

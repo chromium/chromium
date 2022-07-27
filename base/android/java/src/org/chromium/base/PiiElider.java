@@ -88,19 +88,9 @@ public class PiiElider {
     private static final String[] APP_NAMESPACE =
             new String[] {"org.chromium.", "com.google.", "com.chrome."};
 
-    private static final String[] SYSTEM_NAMESPACE = new String[] {"android.accessibilityservice",
-            "android.accounts", "android.animation", "android.annotation", "android.app",
-            "android.appwidget", "android.bluetooth", "android.content", "android.database",
-            "android.databinding", "android.drm", "android.gesture", "android.graphics",
-            "android.hardware", "android.inputmethodservice", "android.location", "android.media",
-            "android.mtp", "android.net", "android.nfc", "android.opengl", "android.os",
-            "android.preference", "android.print", "android.printservice", "android.provider",
-            "android.renderscript", "android.sax", "android.security", "android.service",
-            "android.speech", "android.support", "android.system", "android.telecom",
-            "android.telephony", "android.test", "android.text", "android.transition",
-            "android.util", "android.view", "android.webkit", "android.widget", "com.android.",
-            "dalvik.", "java.", "javax.", "org.apache.", "org.json.", "org.w3c.dom.", "org.xml.",
-            "org.xmlpull."};
+    private static final String[] SYSTEM_NAMESPACE =
+            new String[] {"android.", "com.android.", "dalvik.", "java.", "javax.", "org.apache.",
+                    "org.json.", "org.w3c.dom.", "org.xml.", "org.xmlpull."};
 
     /**
      * Elides any emails in the specified {@link String} with
