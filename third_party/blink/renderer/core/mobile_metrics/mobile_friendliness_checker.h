@@ -48,7 +48,7 @@ class CORE_EXPORT MobileFriendlinessChecker
     double small_font_area = 0;
     double total_text_area = 0;
     double content_beyond_viewport_area = 0;
-    int TextContentsOutsideViewportPercentage(int viewport_area) const;
+    int TextContentsOutsideViewportPercentage(double viewport_area) const;
     int SmallTextRatio() const;
   };
 

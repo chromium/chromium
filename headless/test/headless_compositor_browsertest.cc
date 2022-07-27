@@ -170,5 +170,7 @@ HEADLESS_COMPOSITOR_TEST(ScreenshotDeviceScaleFactor,
                          "emulation/screenshot-device-scale-factor.js")
 HEADLESS_COMPOSITOR_TEST(VirtualTimeIntersectionObserverWithViewport,
                          "emulation/intersection-observer-with-viewport.js")
+HEADLESS_COMPOSITOR_TEST(VeryLargeViewportCrash,
+                         "emulation/very-large-viewport-crash.js")
 
 }  // namespace headless

@@ -512,7 +512,9 @@ void MobileFriendlinessChecker::DidFinishLifecycleUpdate(
       .small_text_ratio = area_sizes_.SmallTextRatio(),
       .text_content_outside_viewport_percentage =
           area_sizes_.TextContentsOutsideViewportPercentage(
-              frame_view_->GetPage()->GetVisualViewport().Size().GetArea()),
+              // Use SizeF when computing the area to avoid integer overflow.
+              gfx::SizeF(frame_view_->GetPage()->GetVisualViewport().Size())
+                  .GetArea()),
       .bad_tap_targets_ratio = ComputeBadTapTargetsRatio()});
 
   last_evaluated_ = base::TimeTicks::Now();
@@ -560,7 +562,7 @@ int MobileFriendlinessChecker::AreaSizes::SmallTextRatio() const {
 }
 
 int MobileFriendlinessChecker::AreaSizes::TextContentsOutsideViewportPercentage(
-    int viewport_area) const {
+    double viewport_area) const {
   return std::ceil(content_beyond_viewport_area * 100 / viewport_area);
 }
 
