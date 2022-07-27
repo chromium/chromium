@@ -236,6 +236,13 @@ void PageInfoBubbleView::OpenAdPersonalizationPage() {
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER));
 }
 
+void PageInfoBubbleView::OpenCookiesPage() {
+  presenter_->RecordPageInfoAction(
+      PageInfo::PageInfoAction::PAGE_INFO_COOKIES_PAGE_OPENED);
+  page_container_->SwitchToPage(view_factory_->CreateCookiesPageView());
+  AnnouncePageOpened(l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES));
+}
+
 void PageInfoBubbleView::CloseBubble() {
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);

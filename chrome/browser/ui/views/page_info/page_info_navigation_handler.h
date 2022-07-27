@@ -24,6 +24,7 @@ class PageInfoNavigationHandler {
   virtual void OpenAboutThisSitePage(
       const page_info::proto::SiteInfo& info) = 0;
   virtual void OpenAdPersonalizationPage() = 0;
+  virtual void OpenCookiesPage() = 0;
   virtual void CloseBubble() = 0;
 };
 

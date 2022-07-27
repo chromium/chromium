@@ -548,6 +548,9 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
       base::RecordAction(
           base::UserMetricsAction("PageInfo.AboutThisSite.MoreAboutClicked"));
       break;
+    case PAGE_INFO_COOKIES_PAGE_OPENED:
+      // TODO(crbug.com/1346305) Add recording action.
+      break;
   }
 }
 

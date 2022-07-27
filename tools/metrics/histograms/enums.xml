@@ -101374,6 +101374,7 @@ Called by update_scheduler_enums.py.-->
   <int value="30" label="Ad personalization page opened"/>
   <int value="31" label="Ad personalization settings opened"/>
   <int value="32" label="AboutThisSite 'more about' link opened"/>
+  <int value="33" label="Cookies subpage opened"/>
 </enum>
 
 <enum name="WebSiteSettingsAllSitesAction">
