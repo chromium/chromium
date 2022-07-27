@@ -119,11 +119,16 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
         mContext = context;
     }
 
+    @SuppressWarnings("WrongViewCast") // Android lint gets confused: https://crbug.com/1315709
+    private void assignScrim() {
+        mScrim = findViewById(R.id.scrim);
+    }
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        assignScrim();
         mIconView = findViewById(R.id.bitmap_view);
-        mScrim = findViewById(R.id.scrim);
         mSelectedView = findViewById(R.id.selected);
         mUnselectedView = findViewById(R.id.unselected);
         mSpecialTile = findViewById(R.id.special_tile);
