@@ -13,24 +13,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/launcher/test_launcher.h"
-#include "third_party/libxml/chromium/libxml_utils.h"
 #include "third_party/libxml/chromium/xml_reader.h"
 
 namespace base {
-
-namespace {
-
-// This is used for the xml parser to report errors. This assumes the context
-// is a pointer to a std::string where the error message should be appended.
-static void XmlErrorFunc(void *context, const char *message, ...) {
-  va_list args;
-  va_start(args, message);
-  std::string* error = static_cast<std::string*>(context);
-  StringAppendV(error, message, args);
-  va_end(args);
-}
-
-}  // namespace
 
 struct Link {
   // The name of the test case.
@@ -51,10 +36,6 @@ bool ProcessGTestOutput(const base::FilePath& output_file,
   std::string xml_contents;
   if (!ReadFileToString(output_file, &xml_contents))
     return false;
-
-  // Silence XML errors - otherwise they go to stderr.
-  std::string xml_errors;
-  ScopedXmlErrorFunc error_func(&xml_errors, &XmlErrorFunc);
 
   XmlReader xml_reader;
   if (!xml_reader.Load(xml_contents))
