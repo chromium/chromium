@@ -271,7 +271,6 @@ source_set("feed_app_agent") {
     "feed_app_agent.mm",
   ]
   deps = [
-    ":buildflags",
     "//base",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:observing_app_state_agent",

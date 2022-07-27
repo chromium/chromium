@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/metrics/field_trial_params.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/system_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -49,6 +50,9 @@ bool IsWebChannelsEnabled() {
 }
 
 bool IsFeedBackgroundRefreshEnabled() {
+#if !BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
+  return false;
+#endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
   static bool feedBackgroundRefreshEnabled =
       [[NSUserDefaults standardUserDefaults]
           boolForKey:kEnableFeedBackgroundRefreshForNextColdStart];
@@ -64,7 +68,7 @@ void SaveFeedBackgroundRefreshEnabledForNextColdStart() {
 
 bool IsFollowingFeedBackgroundRefreshEnabled() {
   if (experimental_flags::IsForceBackgroundRefreshForFollowingFeedEnabled()) {
-    return YES;
+    return true;
   }
   return base::GetFieldTrialParamByFeatureAsBool(
       kEnableFeedBackgroundRefresh, kEnableFollowingFeedBackgroundRefresh,

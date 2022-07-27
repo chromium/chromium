@@ -44,6 +44,8 @@ bool IsWebChannelsEnabled();
 
 // Whether feed background refresh is enabled. Returns the value in
 // NSUserDefaults set by `SaveFeedBackgroundRefreshEnabledForNextColdStart()`.
+// This function always returns false if the `IOS_BACKGROUND_MODE_ENABLED`
+// buildflag is not defined.
 bool IsFeedBackgroundRefreshEnabled();
 
 // Saves the current value for feature `kEnableFeedBackgroundRefresh`. This call
