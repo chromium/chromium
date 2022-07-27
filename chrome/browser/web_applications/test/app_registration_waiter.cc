@@ -16,8 +16,10 @@ AppRegistrationWaiter::AppRegistrationWaiter(Profile* profile,
   apps::AppRegistryCache& cache =
       apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
   Observe(&cache);
-  if (cache.ForOneApp(app_id, [](const apps::AppUpdate&) {}))
-    run_loop_.Quit();
+  cache.ForOneApp(app_id, [this](const apps::AppUpdate& update) {
+    if (update.Readiness() == readiness_)
+      run_loop_.Quit();
+  });
 }
 AppRegistrationWaiter::~AppRegistrationWaiter() = default;
 
