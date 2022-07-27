@@ -12,12 +12,7 @@ namespace features {
 const base::Feature kEnableRemovingAllThirdPartyCookies{
     "EnableRemovingAllThirdPartyCookies", base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if BUILDFLAG(IS_ANDROID)
-const base::Feature kEnableBrowsingDataLifetimeManager{
-    "BrowsingDataLifetimeManager", base::FEATURE_DISABLED_BY_DEFAULT};
-#else
 const base::Feature kEnableBrowsingDataLifetimeManager{
     "BrowsingDataLifetimeManager", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
 }  // namespace features
 }  // namespace browsing_data
