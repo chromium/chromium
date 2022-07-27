@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
+#include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_service.pb.h"
 #include "chromeos/ash/components/network/network_connection_observer.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
@@ -40,6 +41,7 @@ class ArcNetHostImpl : public KeyedService,
                        public ConnectionObserver<mojom::NetInstance>,
                        public chromeos::NetworkConnectionObserver,
                        public chromeos::NetworkStateHandlerObserver,
+                       public ash::PatchPanelClient::Observer,
                        public mojom::NetHost {
  public:
   // Returns singleton instance for the given BrowserContext,
@@ -214,6 +216,9 @@ class ArcNetHostImpl : public KeyedService,
   // Callback for chromeos::NetworkHandler::GetShillProperties
   void ReceiveShillProperties(const std::string& service_path,
                               absl::optional<base::Value> shill_properties);
+
+  // PatchPanelClient::Observer implementation:
+  void NetworkConfigurationChanged() override;
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 

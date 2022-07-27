@@ -625,6 +625,9 @@ void ArcNetHostImpl::OnConnectionReady() {
         default_network->path(), base::BindOnce(&ArcVpnSuccessCallback),
         base::BindOnce(&ArcVpnErrorCallback, "disconnecting stale ARC VPN"));
   }
+
+  // Listen on network configuration changes.
+  ash::PatchPanelClient::Get()->AddObserver(this);
 }
 
 void ArcNetHostImpl::OnConnectionClosed() {
@@ -638,6 +641,12 @@ void ArcNetHostImpl::OnConnectionClosed() {
   GetStateHandler()->RemoveObserver(this, FROM_HERE);
   GetNetworkConnectionHandler()->RemoveObserver(this);
   observing_network_state_ = false;
+}
+
+void ArcNetHostImpl::NetworkConfigurationChanged() {
+  // Get patchpanel devices and update active networks.
+  ash::PatchPanelClient::Get()->GetDevices(base::BindOnce(
+      &ArcNetHostImpl::UpdateActiveNetworks, weak_factory_.GetWeakPtr()));
 }
 
 void ArcNetHostImpl::GetNetworks(mojom::GetNetworksRequestType type,
