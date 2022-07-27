@@ -41,7 +41,8 @@ CASE 1, original layer tree:
     {
       "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600]
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -99,7 +100,8 @@ CASE 2, scrolling y by 10 pixels, both the "container" and "inner" should scroll
     {
       "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600]
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -166,7 +168,8 @@ CASE 3, scrolling y further so that "inner" no longer overlaps the fixed-pos lay
     {
       "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600]
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [

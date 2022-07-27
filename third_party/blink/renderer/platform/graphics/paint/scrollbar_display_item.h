@@ -68,6 +68,8 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
                      const TransformPaintPropertyNode* scroll_translation,
                      CompositorElementId element_id);
 
+  bool IsOpaque() const;
+
  private:
   friend class DisplayItem;
   bool EqualsForUnderInvalidationImpl(const ScrollbarDisplayItem&) const;

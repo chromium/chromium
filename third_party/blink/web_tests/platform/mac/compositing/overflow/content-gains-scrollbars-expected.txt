@@ -23,6 +23,7 @@
       "name": "VerticalScrollbar",
       "position": [85, 0],
       "bounds": [15, 100],
+      "contentsOpaque": true,
       "transform": 1
     },
     {
@@ -49,6 +50,7 @@
       "name": "HorizontalScrollbar",
       "position": [0, 85],
       "bounds": [100, 15],
+      "contentsOpaque": true,
       "transform": 2
     },
     {
@@ -75,12 +77,14 @@
       "name": "HorizontalScrollbar",
       "position": [0, 85],
       "bounds": [85, 15],
+      "contentsOpaque": true,
       "transform": 3
     },
     {
       "name": "VerticalScrollbar",
       "position": [85, 0],
       "bounds": [15, 85],
+      "contentsOpaque": true,
       "transform": 3
     },
     {

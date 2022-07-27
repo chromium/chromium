@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunker.h"
 
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
 
 namespace blink {
 
@@ -133,12 +134,11 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItemClient& client,
     ProcessBackgroundColorCandidate(chunk.id, client, item_color, item_area);
   }
 
-  if (item.IsDrawing()) {
-    const DrawingDisplayItem& drawing = To<DrawingDisplayItem>(item);
+  if (const auto* drawing = DynamicTo<DrawingDisplayItem>(item)) {
     chunk.rect_known_to_be_opaque = gfx::MaximumCoveredRect(
-        chunk.rect_known_to_be_opaque, drawing.RectKnownToBeOpaque());
+        chunk.rect_known_to_be_opaque, drawing->RectKnownToBeOpaque());
     if (chunk.text_known_to_be_on_opaque_background) {
-      if (const auto* paint_record = drawing.GetPaintRecord().get()) {
+      if (const auto* paint_record = drawing->GetPaintRecord().get()) {
         if (paint_record->has_draw_text_ops()) {
           chunk.has_text = true;
           chunk.text_known_to_be_on_opaque_background =
@@ -150,6 +150,9 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItemClient& client,
       // we see any text.
       DCHECK(chunk.has_text);
     }
+  } else if (const auto* scrollbar = DynamicTo<ScrollbarDisplayItem>(item)) {
+    if (scrollbar->IsOpaque())
+      chunk.rect_known_to_be_opaque = item.VisualRect();
   }
 
   chunk.raster_effect_outset =

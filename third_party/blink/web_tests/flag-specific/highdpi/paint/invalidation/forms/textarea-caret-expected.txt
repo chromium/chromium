@@ -41,6 +41,7 @@
       "name": "HorizontalScrollbar",
       "position": [1, 30],
       "bounds": [246, 22],
+      "contentsOpaque": true,
       "transform": 1
     },
     {

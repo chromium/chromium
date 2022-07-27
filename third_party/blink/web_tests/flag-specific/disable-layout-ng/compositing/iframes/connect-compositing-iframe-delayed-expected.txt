@@ -19,6 +19,7 @@ When the parent document becomes composited, the layer trees should get connecte
       "name": "VerticalScrollbar",
       "position": [285, 0],
       "bounds": [15, 150],
+      "contentsOpaque": true,
       "transform": 1
     },
     {

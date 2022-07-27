@@ -32,6 +32,7 @@
       "name": "VerticalScrollbar",
       "position": [186, 1],
       "bounds": [15, 185],
+      "contentsOpaque": true,
       "transform": 1
     }
   ],

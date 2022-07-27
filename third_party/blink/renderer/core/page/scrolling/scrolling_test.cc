@@ -1566,11 +1566,10 @@ TEST_P(ScrollingTest, setupScrollbarLayerShouldSetScrollLayerOpaque)
   auto* horizontal_scrollbar_layer = ScrollbarLayerForScrollNode(
       scroll_node, cc::ScrollbarOrientation::HORIZONTAL);
   ASSERT_TRUE(horizontal_scrollbar_layer);
-  // TODO(crbug.com/1029620): CAP needs more accurate contents_opaque.
-  //   EXPECT_EQ(!frame_view->LayoutViewport()
-  //                  ->HorizontalScrollbar()
-  //                  ->IsOverlayScrollbar(),
-  //             horizontal_scrollbar_layer->contents_opaque());
+  EXPECT_EQ(!frame_view->LayoutViewport()
+                 ->HorizontalScrollbar()
+                 ->IsOverlayScrollbar(),
+            horizontal_scrollbar_layer->contents_opaque());
 
   EXPECT_FALSE(ScrollbarLayerForScrollNode(scroll_node,
                                            cc::ScrollbarOrientation::VERTICAL));

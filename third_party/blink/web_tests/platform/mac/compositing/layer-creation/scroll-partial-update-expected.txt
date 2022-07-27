@@ -36,6 +36,7 @@ scroll me
       "name": "VerticalScrollbar",
       "position": [185, 0],
       "bounds": [15, 200],
+      "contentsOpaque": true,
       "transform": 2
     }
   ],

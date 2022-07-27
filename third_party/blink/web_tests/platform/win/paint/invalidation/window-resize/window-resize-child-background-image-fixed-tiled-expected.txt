@@ -12,12 +12,14 @@
     {
       "name": "HorizontalScrollbar",
       "position": [0, 235],
-      "bounds": [585, 15]
+      "bounds": [585, 15],
+      "contentsOpaque": true
     },
     {
       "name": "VerticalScrollbar",
       "position": [585, 0],
-      "bounds": [15, 235]
+      "bounds": [15, 235],
+      "contentsOpaque": true
     },
     {
       "name": "Scroll corner of LayoutView #document",
@@ -44,12 +46,14 @@
     {
       "name": "HorizontalScrollbar",
       "position": [0, 235],
-      "bounds": [385, 15]
+      "bounds": [385, 15],
+      "contentsOpaque": true
     },
     {
       "name": "VerticalScrollbar",
       "position": [385, 0],
-      "bounds": [15, 235]
+      "bounds": [15, 235],
+      "contentsOpaque": true
     },
     {
       "name": "Scroll corner of LayoutView #document",
@@ -76,12 +80,14 @@
     {
       "name": "HorizontalScrollbar",
       "position": [0, 585],
-      "bounds": [385, 15]
+      "bounds": [385, 15],
+      "contentsOpaque": true
     },
     {
       "name": "VerticalScrollbar",
       "position": [385, 0],
-      "bounds": [15, 585]
+      "bounds": [15, 585],
+      "contentsOpaque": true
     },
     {
       "name": "Scroll corner of LayoutView #document",
@@ -108,12 +114,14 @@
     {
       "name": "HorizontalScrollbar",
       "position": [0, 585],
-      "bounds": [785, 15]
+      "bounds": [785, 15],
+      "contentsOpaque": true
     },
     {
       "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 585]
+      "bounds": [15, 585],
+      "contentsOpaque": true
     },
     {
       "name": "Scroll corner of LayoutView #document",

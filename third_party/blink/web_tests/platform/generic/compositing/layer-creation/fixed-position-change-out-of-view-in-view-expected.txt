@@ -10,7 +10,8 @@ Layer tree when the fixed elements are out-of-view (should have just a root laye
     {
       "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600]
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ]
 }
@@ -41,7 +42,8 @@ Layer tree when the fixed elements are in-view (both fixed elements should have 
     {
       "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600]
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -78,7 +80,8 @@ Layer tree when the fixed elements are out-of-view again (should have just a roo
     {
       "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600]
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ]
 }

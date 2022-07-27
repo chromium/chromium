@@ -33,6 +33,7 @@ Even though the fixed-position element's container is nonscrollable, it should s
       "name": "VerticalScrollbar",
       "position": [286, 1],
       "bounds": [15, 285],
+      "contentsOpaque": true,
       "transform": 1
     },
     {

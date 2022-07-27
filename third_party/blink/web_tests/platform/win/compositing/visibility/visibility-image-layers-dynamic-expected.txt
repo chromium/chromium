@@ -23,7 +23,8 @@ Initial
     {
       "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600]
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -63,7 +64,7 @@ After step 1
   "layers": [
     {
       "name": "Scrolling background of LayoutView #document",
-      "bounds": [785, 1574],
+      "bounds": [785, 1590],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
@@ -89,7 +90,8 @@ After step 1
     {
       "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600]
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -139,7 +141,7 @@ After step 2
   "layers": [
     {
       "name": "Scrolling background of LayoutView #document",
-      "bounds": [785, 2777],
+      "bounds": [785, 2809],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
@@ -178,7 +180,8 @@ After step 2
     {
       "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600]
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [

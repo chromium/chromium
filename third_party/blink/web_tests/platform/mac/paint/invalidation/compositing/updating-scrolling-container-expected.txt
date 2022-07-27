@@ -26,12 +26,14 @@
       "name": "HorizontalScrollbar",
       "position": [5, 190],
       "bounds": [185, 15],
+      "contentsOpaque": true,
       "transform": 1
     },
     {
       "name": "VerticalScrollbar",
       "position": [190, 5],
       "bounds": [15, 185],
+      "contentsOpaque": true,
       "transform": 1
     },
     {

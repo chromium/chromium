@@ -26,7 +26,8 @@ CASE 1, original layer tree:
     {
       "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600]
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ]
 }
@@ -59,7 +60,8 @@ CASE 2, scrolling y to 80, the "container" element should remain positioned with
     {
       "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600]
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
