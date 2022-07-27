@@ -332,6 +332,8 @@ class HidDetectionScreen extends HidDetectionScreenBase {
 
   setContinueButtonEnabled(enabled) {
     this.continueButtonEnabled = enabled;
+    Polymer.RenderStatus.afterNextRender(
+        this, () => this.$['hid-continue-button'].focus());
   }
 }
 
