@@ -183,6 +183,8 @@ void OnFirstRunHasExited(ResumeTaskCallback original_intent_callback,
   }
 
   bool proceed = status == ProfilePicker::FirstRunExitStatus::kCompleted;
+  LOG_IF(ERROR, !proceed) << "Not proceeding FirstRun: "
+                          << static_cast<int>(status);
   std::move(original_intent_callback).Run(proceed);
 
   if (proceed && post_first_run_callback)

@@ -82,6 +82,7 @@ std::string GetCompressedHistograms() {
 void MaybeProceedWithProfile(base::OnceCallback<void(Profile*)> callback,
                              Profile* profile,
                              bool proceed) {
+  LOG_IF(ERROR, !proceed) << "Not proceeding after LacrosFirstRun";
   std::move(callback).Run(proceed ? profile : nullptr);
 }
 
@@ -93,6 +94,7 @@ void OnMainProfileLoaded(base::OnceCallback<void(Profile*)>& callback,
   DCHECK(callback);
   switch (status) {
     case Profile::CREATE_STATUS_LOCAL_FAIL:
+      LOG(ERROR) << "Profile creation failed.";
       // Profile creation failed, show the profile picker instead.
       ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
           ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
