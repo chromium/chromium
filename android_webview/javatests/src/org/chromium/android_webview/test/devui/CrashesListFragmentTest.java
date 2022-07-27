@@ -85,6 +85,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -1116,12 +1117,15 @@ public class CrashesListFragmentTest {
 
         // CrashesListFragment -> FlagsFragment (Not shown)
         onView(withId(R.id.navigation_flags_ui)).perform(click());
+        ViewUtils.waitForView(withId(R.id.fragment_flags));
         onView(withId(R.id.main_error_view)).check(matches(not(isDisplayed())));
         // FlagsFragment -> HomeFragment (Not shown)
         onView(withId(R.id.navigation_home)).perform(click());
+        ViewUtils.waitForView(withId(R.id.fragment_home));
         onView(withId(R.id.main_error_view)).check(matches(not(isDisplayed())));
         // HomeFragment -> CrashesListFragment (shown again)
         onView(withId(R.id.navigation_crash_ui)).perform(click());
+        ViewUtils.waitForView(withId(R.id.fragment_crashes_list));
         onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
         onView(withId(R.id.error_text))
                 .check(matches(
