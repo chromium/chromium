@@ -420,6 +420,11 @@ void BrowserAccessibilityManagerMac::FireNativeMacNotification(
   DCHECK(mac_notification);
   BrowserAccessibilityCocoa* native_node = node->GetNativeViewAccessible();
   DCHECK(native_node);
+  // TODO(accessibility) We should look into why background tabs return null for
+  // GetWindow. Is it safe to fire notifications when there is no window? We've
+  // had trouble in the past with "Chrome is not responding" lockups in AppKit
+  // with VoiceOver, when firing events in detached documents.
+  // DCHECK(GetWindow());
   NSAccessibilityPostNotification(native_node, mac_notification);
 }
 

@@ -1658,13 +1658,12 @@ bool content::IsNSRange(id value) {
   if (![self instanceActive])
     return nil;
 
-  BrowserAccessibilityManagerMac* manager =
+  BrowserAccessibilityManagerMac* root_manager =
       _owner->manager()->GetRootManager()->ToBrowserAccessibilityManagerMac();
-  CHECK(manager) << "There should always be a root manager whenever an object "
-                    "is instanceActive.";
-  CHECK(manager->GetParentView());
-  DCHECK(manager->GetWindow());
-  return manager->GetWindow();
+  CHECK(root_manager) << "There should always be a root manager whenever an "
+                         "object is instanceActive.";
+  CHECK(root_manager->GetParentView());
+  return root_manager->GetWindow();  // Can be null for inactive tabs.
 }
 
 - (void)getTreeItemDescendantNodeIds:(std::vector<int32_t>*)tree_item_ids {
