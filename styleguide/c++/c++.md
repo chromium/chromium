@@ -274,8 +274,8 @@ Some important notes about this header:
   * There is no `(c)` after `Copyright`.
   * `$YEAR` should be set to the current year at the time a file is created, and
     not changed thereafter.
-  * For files specific to Chromium OS, replace the word Chromium with the phrase
-    Chromium OS.
+  * For files specific to ChromiumOS, replace the word Chromium with the phrase
+    ChromiumOS.
   * If the style changes, don't bother to update existing files to comply with
     the new style. For the same reason, don't just blindly copy an existing
     file's header when creating a new file, since the existing file may use an
