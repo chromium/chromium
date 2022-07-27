@@ -18,6 +18,7 @@ import static org.robolectric.Shadows.shadowOf;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
@@ -403,6 +404,34 @@ public class HistoryClustersCoordinatorTest {
         assertTrue(mOpenUrlIntent.hasExtra(INCOGNITO_EXTRA));
         assertTrue(mOpenUrlIntent.getBooleanExtra(NEW_TAB_EXTRA, false));
         assertFalse(mOpenUrlIntent.getBooleanExtra(INCOGNITO_EXTRA, true));
+    }
+
+    @Test
+    public void testEndButtonAccessibility() {
+        mHistoryClustersCoordinator.inflateActivityView();
+        mHistoryClustersCoordinator.setInitialQuery(QueryState.forQuery("dogs", ""));
+        fulfillPromise(mPromise, mClusterResult);
+
+        RecyclerView recyclerView = mHistoryClustersCoordinator.getRecyclerViewFortesting();
+        recyclerView.measure(0, 0);
+        recyclerView.layout(0, 0, 600, 1000);
+
+        RecyclerView.ViewHolder viewHolder = recyclerView.findViewHolderForAdapterPosition(0);
+        assertTrue(viewHolder.itemView instanceof HistoryClusterView);
+        View endButton = viewHolder.itemView.findViewById(R.id.end_button);
+        assertEquals(endButton.getImportantForAccessibility(), View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+
+        viewHolder = recyclerView.findViewHolderForAdapterPosition(1);
+        assertTrue(viewHolder.itemView instanceof HistoryClustersItemView);
+        endButton = viewHolder.itemView.findViewById(R.id.end_button);
+        assertEquals(endButton.getContentDescription(),
+                mActivity.getString(R.string.accessibility_list_remove_button, mVisit1.getTitle()));
+
+        viewHolder = recyclerView.findViewHolderForAdapterPosition(2);
+        assertTrue(viewHolder.itemView instanceof HistoryClustersItemView);
+        endButton = viewHolder.itemView.findViewById(R.id.end_button);
+        assertEquals(endButton.getContentDescription(),
+                mActivity.getString(R.string.accessibility_list_remove_button, mVisit2.getTitle()));
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {

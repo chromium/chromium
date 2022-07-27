@@ -13,6 +13,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
 
 class HistoryClustersItemView extends SelectableItemView<ClusterVisit> {
     /**
@@ -45,6 +46,8 @@ class HistoryClustersItemView extends SelectableItemView<ClusterVisit> {
 
     void setTitleText(CharSequence text) {
         mTitleView.setText(text);
+        SelectableListUtils.setContentDescriptionContext(getContext(), mEndButtonView,
+                text.toString(), SelectableListUtils.ContentDescriptionSource.REMOVE_BUTTON);
     }
 
     void setHostText(CharSequence text) {
