@@ -38,12 +38,10 @@
       </os-settings-bluetooth-device-detail-subpage>
     </settings-subpage>
   </template>
-  <div route-path="/bluetoothSavedDevices">
-    <settings-subpage>
-      <os-settings-bluetooth-saved-devices-subpage>
-      </os-settings-bluetooth-saved-devices-subpage>
-    </settings-subpage>
-  </div>
+  <settings-subpage route-path="/bluetoothSavedDevices">
+    <os-settings-bluetooth-saved-devices-subpage>
+    </os-settings-bluetooth-saved-devices-subpage>
+  </settings-subpage>
 </settings-animated-pages>
 
 <template is="dom-if" if="[[shouldShowPairingDialog_]]" restamp>
