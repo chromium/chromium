@@ -581,8 +581,7 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest, DownloadFile) {
             notification()->title());
   EXPECT_EQ(download_item()->GetFileNameToReportUser().LossyDisplayName(),
             notification()->message());
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_BASE_FORMAT,
-            notification()->type());
+  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification()->type());
 
   // Confirms that there is only one notification.
   ASSERT_EQ(1u, GetDownloadNotifications().size());
@@ -760,8 +759,7 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest, InterruptDownload) {
                 l10n_util::GetStringUTF16(
                     IDS_DOWNLOAD_INTERRUPTED_DESCRIPTION_NETWORK_ERROR))),
             std::string::npos);
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_BASE_FORMAT,
-            notification()->type());
+  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification()->type());
 }
 
 IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
@@ -928,9 +926,9 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
             GetNotification(notification_id2)->priority());
 
   // Confirms the types of download notifications are correct.
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_BASE_FORMAT,
+  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE,
             GetNotification(notification_id1)->type());
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_BASE_FORMAT,
+  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE,
             GetNotification(notification_id2)->type());
 }
 
@@ -1066,8 +1064,7 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
             notification()->title());
   EXPECT_EQ(download_item()->GetFileNameToReportUser().LossyDisplayName(),
             notification()->message());
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_BASE_FORMAT,
-            notification()->type());
+  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification()->type());
 
   // Try to open the downloaded item by clicking the notification.
   EXPECT_TRUE(incognito_display_service_->GetNotification(notification_id()));
@@ -1154,10 +1151,10 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   // Confirms the types of download notifications are correct.
   incognito_notification =
       incognito_display_service_->GetNotification(notification_id1);
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_BASE_FORMAT,
+  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE,
             incognito_notification->type());
   normal_notification = display_service_->GetNotification(notification_id2);
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_BASE_FORMAT,
+  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE,
             normal_notification->type());
 
   chrome::CloseWindow(incognito_browser());
@@ -1413,14 +1410,13 @@ IN_PROC_BROWSER_TEST_P(MultiProfileDownloadNotificationTest,
   }
 
   // Confirms the types of download notifications are correct.
-  EXPECT_EQ(message_center::NOTIFICATION_TYPE_BASE_FORMAT,
+  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE,
             display_service1_->GetNotification(notification_id_user1)->type());
   auto notifications2 = display_service2_->GetDisplayedNotificationsForType(
       NotificationHandler::Type::TRANSIENT);
   EXPECT_EQ(2u, notifications2.size());
   for (const auto& notification : notifications2) {
-    EXPECT_EQ(message_center::NOTIFICATION_TYPE_BASE_FORMAT,
-              notification.type());
+    EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

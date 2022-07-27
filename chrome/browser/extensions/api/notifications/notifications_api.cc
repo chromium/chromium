@@ -533,7 +533,7 @@ NotificationsApiFunction::MapApiTemplateTypeToType(
   switch (type) {
     case api::notifications::TEMPLATE_TYPE_NONE:
     case api::notifications::TEMPLATE_TYPE_BASIC:
-      return message_center::NOTIFICATION_TYPE_BASE_FORMAT;
+      return message_center::NOTIFICATION_TYPE_SIMPLE;
     case api::notifications::TEMPLATE_TYPE_IMAGE:
       return message_center::NOTIFICATION_TYPE_IMAGE;
     case api::notifications::TEMPLATE_TYPE_LIST:
@@ -543,7 +543,7 @@ NotificationsApiFunction::MapApiTemplateTypeToType(
     default:
       // Gracefully handle newer application code that is running on an older
       // runtime that doesn't recognize the requested template.
-      return message_center::NOTIFICATION_TYPE_BASE_FORMAT;
+      return message_center::NOTIFICATION_TYPE_SIMPLE;
   }
 }
 

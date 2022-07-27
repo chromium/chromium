@@ -26,8 +26,7 @@ namespace {
 crosapi::mojom::NotificationType ToMojo(message_center::NotificationType type) {
   switch (type) {
     case message_center::NOTIFICATION_TYPE_SIMPLE:
-    case message_center::NOTIFICATION_TYPE_BASE_FORMAT:
-      // TYPE_BASE_FORMAT is displayed the same as TYPE_SIMPLE.
+    case message_center::DEPRECATED_NOTIFICATION_TYPE_BASE_FORMAT:
       return crosapi::mojom::NotificationType::kSimple;
     case message_center::NOTIFICATION_TYPE_IMAGE:
       return crosapi::mojom::NotificationType::kImage;

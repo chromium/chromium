@@ -74,7 +74,7 @@ void AddNotification(const std::string& notification_id,
 
   message_center::MessageCenter::Get()->AddNotification(
       std::make_unique<message_center::Notification>(
-          message_center::NOTIFICATION_TYPE_BASE_FORMAT, notification_id,
+          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
           u"test-title", u"test-message", /*icon=*/ui::ImageModel(),
           /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
           notifier_id, message_center::RichNotificationData(),

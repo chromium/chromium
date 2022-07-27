@@ -115,7 +115,7 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
       bool show_snooze_button = false,
       bool has_message = true,
       message_center::NotificationType notification_type =
-          message_center::NOTIFICATION_TYPE_BASE_FORMAT) {
+          message_center::NOTIFICATION_TYPE_SIMPLE) {
     message_center::RichNotificationData data;
     data.settings_button_handler =
         message_center::SettingsButtonHandler::INLINE;
@@ -149,7 +149,7 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
     notifier_id.type = message_center::NotifierType::WEB_PAGE;
 
     std::unique_ptr<Notification> notification = std::make_unique<Notification>(
-        message_center::NOTIFICATION_TYPE_BASE_FORMAT,
+        message_center::NOTIFICATION_TYPE_SIMPLE,
         base::NumberToString(current_id_++), u"title", u"message",
         ui::ImageModel::FromImage(CreateTestImage(80, 80)), u"display source",
         GURL(u"http://test-url.com"), notifier_id,

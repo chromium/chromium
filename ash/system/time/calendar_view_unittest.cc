@@ -1838,10 +1838,9 @@ class CalendarViewWithMessageCenterTest : public AshTestBase {
   void AddNotification() {
     message_center::MessageCenter::Get()->AddNotification(
         std::make_unique<message_center::Notification>(
-            message_center::NOTIFICATION_TYPE_BASE_FORMAT,
-            "test_notification_id", u"test title", u"test message",
-            ui::ImageModel(), std::u16string(), GURL(),
-            message_center::NotifierId(),
+            message_center::NOTIFICATION_TYPE_SIMPLE, "test_notification_id",
+            u"test title", u"test message", ui::ImageModel(), std::u16string(),
+            GURL(), message_center::NotifierId(),
             message_center::RichNotificationData(),
             new message_center::NotificationDelegate()));
   }

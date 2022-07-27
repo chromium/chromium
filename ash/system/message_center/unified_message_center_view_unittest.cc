@@ -119,7 +119,7 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
     message_center::RichNotificationData data;
     data.pinned = pinned;
     MessageCenter::Get()->AddNotification(std::make_unique<Notification>(
-        message_center::NOTIFICATION_TYPE_BASE_FORMAT, id, u"test title",
+        message_center::NOTIFICATION_TYPE_SIMPLE, id, u"test title",
         u"test message", ui::ImageModel(),
         std::u16string() /* display_source */, GURL(),
         message_center::NotifierId(), data,

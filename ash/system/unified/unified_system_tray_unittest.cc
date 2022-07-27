@@ -54,7 +54,7 @@ class UnifiedSystemTrayTest : public AshTestBase {
     const std::string id = base::NumberToString(id_++);
     MessageCenter::Get()->AddNotification(
         std::make_unique<message_center::Notification>(
-            message_center::NOTIFICATION_TYPE_BASE_FORMAT, id, u"test title",
+            message_center::NOTIFICATION_TYPE_SIMPLE, id, u"test title",
             u"test message", ui::ImageModel(),
             std::u16string() /* display_source */, GURL(),
             message_center::NotifierId(),

@@ -41,7 +41,7 @@ std::unique_ptr<message_center::MessageView> MessageViewFactory::Create(
     const message_center::Notification& notification,
     bool shown_in_popup) {
   switch (notification.type()) {
-    case message_center::NOTIFICATION_TYPE_BASE_FORMAT:
+    case message_center::DEPRECATED_NOTIFICATION_TYPE_BASE_FORMAT:
     case message_center::NOTIFICATION_TYPE_IMAGE:
     case message_center::NOTIFICATION_TYPE_MULTIPLE:
     case message_center::NOTIFICATION_TYPE_SIMPLE:

@@ -63,7 +63,7 @@ class TrayEventFilterTest : public AshTestBase {
   std::string AddNotification() {
     std::string notification_id = base::NumberToString(notification_id_++);
     MessageCenter::Get()->AddNotification(std::make_unique<Notification>(
-        message_center::NOTIFICATION_TYPE_BASE_FORMAT, notification_id,
+        message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
         u"test title", u"test message", ui::ImageModel(),
         std::u16string() /* display_source */, GURL(),
         message_center::NotifierId(), message_center::RichNotificationData(),

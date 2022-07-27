@@ -279,9 +279,8 @@ bool IsTestMode(content::BrowserContext* context) {
 std::string ConvertToString(message_center::NotificationType type) {
   switch (type) {
     case message_center::NOTIFICATION_TYPE_SIMPLE:
+    case message_center::DEPRECATED_NOTIFICATION_TYPE_BASE_FORMAT:
       return "simple";
-    case message_center::NOTIFICATION_TYPE_BASE_FORMAT:
-      return "base_format";
     case message_center::NOTIFICATION_TYPE_IMAGE:
       return "image";
     case message_center::NOTIFICATION_TYPE_MULTIPLE:

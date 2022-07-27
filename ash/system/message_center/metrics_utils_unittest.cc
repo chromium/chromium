@@ -134,7 +134,7 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
     notifier_id.profile_id = "a@b.com";
     notifier_id.type = message_center::NotifierType::WEB_PAGE;
     return std::make_unique<Notification>(
-        message_center::NOTIFICATION_TYPE_BASE_FORMAT,
+        message_center::NOTIFICATION_TYPE_SIMPLE,
         base::NumberToString(current_id_++), u"title", u"message",
         ui::ImageModel(), u"display source", GURL(u"http://test-url.com"),
         notifier_id, data,
@@ -148,7 +148,7 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
         "id" + base::NumberToString(static_cast<int>(catalog_name));
     message_center::RichNotificationData data;
     return std::make_unique<Notification>(
-        message_center::NOTIFICATION_TYPE_BASE_FORMAT, id, u"title", u"message",
+        message_center::NOTIFICATION_TYPE_SIMPLE, id, u"title", u"message",
         ui::ImageModel(), u"display source", GURL(u"http://test-url.com"),
         message_center::NotifierId(
             message_center::NotifierType::SYSTEM_COMPONENT, id, catalog_name),

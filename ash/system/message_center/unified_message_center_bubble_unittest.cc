@@ -69,7 +69,7 @@ class UnifiedMessageCenterBubbleTest
   std::string AddNotification() {
     std::string id = base::NumberToString(id_++);
     MessageCenter::Get()->AddNotification(std::make_unique<Notification>(
-        message_center::NOTIFICATION_TYPE_BASE_FORMAT, id, u"test title",
+        message_center::NOTIFICATION_TYPE_SIMPLE, id, u"test title",
         u"test message", ui::ImageModel(), std::u16string(), GURL(),
         message_center::NotifierId(), message_center::RichNotificationData(),
         new message_center::NotificationDelegate()));
