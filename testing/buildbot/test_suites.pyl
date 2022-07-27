@@ -4295,7 +4295,6 @@
         'swarming': {
           'expiration': 36000,
           'hard_timeout': 10800,
-          'ignore_task_failure': False,
           'io_timeout': 3600,
           'shards': 10
         },

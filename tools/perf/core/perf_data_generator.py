@@ -1903,7 +1903,6 @@ def generate_performance_test(tester_config, test, builder_name):
       # allow for other overhead. If the overall builder times out then we
       # don't get data even from the passing shards.
       'hard_timeout': int(6 * 60 * 60),  # 6 hours timeout for full suite
-      'ignore_task_failure': False,
       # 5.5 hour timeout. Note that this is effectively the timeout for a
       # benchmarking subprocess to run since we intentionally do not stream
       # subprocess output to the task stdout.
