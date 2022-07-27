@@ -27,6 +27,7 @@ class ClientCertResolver;
 class ConnectionInfoMetricsLogger;
 class ESimPolicyLoginMetricsLogger;
 class GeolocationHandler;
+class HiddenNetworkHandler;
 class ManagedCellularPrefHandler;
 class ManagedNetworkConfigurationHandler;
 class ManagedNetworkConfigurationHandlerImpl;
@@ -103,6 +104,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   CellularESimUninstallHandler* cellular_esim_uninstall_handler();
   CellularInhibitor* cellular_inhibitor();
   CellularPolicyHandler* cellular_policy_handler();
+  HiddenNetworkHandler* hidden_network_handler();
   NetworkStateHandler* network_state_handler();
   NetworkDeviceHandler* network_device_handler();
   NetworkProfileHandler* network_profile_handler();
@@ -146,6 +148,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   std::unique_ptr<ManagedCellularPrefHandler> managed_cellular_pref_handler_;
   std::unique_ptr<CellularMetricsLogger> cellular_metrics_logger_;
   std::unique_ptr<ConnectionInfoMetricsLogger> connection_info_metrics_logger_;
+  std::unique_ptr<HiddenNetworkHandler> hidden_network_handler_;
   std::unique_ptr<ESimPolicyLoginMetricsLogger>
       esim_policy_login_metrics_logger_;
   std::unique_ptr<VpnNetworkMetricsHelper> vpn_network_metrics_helper_;
