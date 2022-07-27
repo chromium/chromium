@@ -112,6 +112,7 @@ TEST_F(StartupBrowserPolicyUnitTest, EditBookmarksEnabled) {
   EXPECT_FALSE(welcome::CanShowGoogleAppModuleForTesting(*policy_map));
 }
 
+#if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(StartupBrowserPolicyUnitTest, DefaultBrowserSettingEnabled) {
   EXPECT_TRUE(welcome::CanShowSetDefaultModuleForTesting(policy::PolicyMap()));
 
@@ -122,6 +123,7 @@ TEST_F(StartupBrowserPolicyUnitTest, DefaultBrowserSettingEnabled) {
   policy_map = MakePolicy(policy::key::kDefaultBrowserSettingEnabled, false);
   EXPECT_FALSE(welcome::CanShowSetDefaultModuleForTesting(*policy_map));
 }
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 TEST_F(StartupBrowserPolicyUnitTest, BrowserSignin) {
   EXPECT_TRUE(welcome::CanShowSigninModuleForTesting(policy::PolicyMap()));

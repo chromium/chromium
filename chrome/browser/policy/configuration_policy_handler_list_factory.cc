@@ -318,9 +318,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAutoOpenAllowedForURLs,
     prefs::kDownloadAllowedURLsForOpenByPolicy,
     base::Value::Type::LIST },
-  { key::kAutoplayAllowed,
-    prefs::kAutoplayAllowed,
-    base::Value::Type::BOOLEAN },
   { key::kAutoplayAllowlist,
     prefs::kAutoplayAllowlist,
     base::Value::Type::LIST },
@@ -719,16 +716,14 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDefaultGeolocationSetting,
     prefs::kManagedDefaultGeolocationSetting,
     base::Value::Type::INTEGER },
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) \
-    || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   { key::kRequireOnlineRevocationChecksForLocalAnchors,
     prefs::kCertRevocationCheckingRequiredLocalAnchors,
     base::Value::Type::BOOLEAN },
   { key::kFullscreenAllowed,
     prefs::kFullscreenAllowed,
     base::Value::Type::BOOLEAN },
-#endif  // #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-        // || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+#endif  // #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   { key::kAuthSchemes,
     prefs::kAuthSchemes,
     base::Value::Type::STRING },
@@ -1374,11 +1369,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWindowOcclusionEnabled,
     policy::policy_prefs::kNativeWindowOcclusionEnabled,
     base::Value::Type::BOOLEAN },
-#else  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
   { key::kNtlmV2Enabled,
     prefs::kNtlmV2Enabled,
     base::Value::Type::BOOLEAN },
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   { key::kThirdPartyBlockingEnabled,
@@ -1406,7 +1402,15 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kRoamingProfileSupportEnabled,
     syncer::prefs::kEnableLocalSyncBackend,
     base::Value::Type::BOOLEAN },
+  { key::kDesktopSharingHubEnabled,
+    prefs::kDesktopSharingHubEnabled,
+    base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  { key::kAutoplayAllowed,
+    prefs::kAutoplayAllowed,
+    base::Value::Type::BOOLEAN },
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // First run import.
   { key::kImportBookmarks,
@@ -1536,9 +1540,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSigninInterceptionEnabled,
     prefs::kSigninInterceptionEnabled,
     base::Value::Type::BOOLEAN },
-  { key::kDesktopSharingHubEnabled,
-    prefs::kDesktopSharingHubEnabled,
-    base::Value::Type::BOOLEAN },
 #endif // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1589,11 +1590,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(ENABLE_EXTENSIONS)
   { key::kFullscreenAllowed,
     extensions::pref_names::kAppFullscreenAllowed,
     base::Value::Type::BOOLEAN },
-#endif  // !BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   { key::kSecurityKeyPermitAttestation,
@@ -1641,8 +1642,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) \
-    || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA))
+#if BUILDFLAG(ENABLE_EXTENSIONS) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
   { key::kChromeAppsEnabled,
     extensions::pref_names::kChromeAppsEnabled,
     base::Value::Type::BOOLEAN },

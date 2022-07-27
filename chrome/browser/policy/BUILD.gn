@@ -252,10 +252,11 @@ source_set("policy_specific_browser_tests") {
   }
 
   if (!is_android && !is_chromeos) {
-    sources += [
-      "policy_startup_browsertest.cc",
-      "test/network_time_policy_browsertest.cc",
-    ]
+    sources += [ "test/network_time_policy_browsertest.cc" ]
+
+    if (!is_fuchsia) {
+      sources += [ "policy_startup_browsertest.cc" ]
+    }
   }
 
   if (!is_chromeos) {
@@ -406,7 +407,7 @@ source_set("browser_tests") {
     ]
   }
 
-  if (!is_android && !is_mac) {
+  if (is_win || is_linux || is_chromeos) {
     sources += [ "test/full_screen_allowed_policy_browsertest.cc" ]
   }
 
