@@ -8,7 +8,7 @@ import tempfile
 import unittest
 
 import mock
-from core.results_processor import profiling_util
+from contrib.power import profiling_util
 
 
 class MockPopen(object):
@@ -75,21 +75,21 @@ class ProfilingUtilTests(unittest.TestCase):
                      stdout='Outputting to {}'.format(
                          self._profile_source_dir).encode('utf-8'))
 
-  @mock.patch('core.results_processor.profiling_util.logging.warning')
+  @mock.patch('contrib.power.profiling_util.logging.warning')
   def testSymbolizeTraceWithoutBinaryPath(self, mock_warning):
     os.environ.pop('PERFETTO_BINARY_PATH', None)
     profiling_util.SymbolizeTrace(self._trace_path)
     mock_warning.assert_called()
 
-  @mock.patch('core.results_processor.profiling_util.logging.error')
-  @mock.patch('core.results_processor.profiling_util.subprocess.Popen')
+  @mock.patch('contrib.power.profiling_util.logging.error')
+  @mock.patch('contrib.power.profiling_util.subprocess.Popen')
   def testSymbolizeTraceWithTraceconvError(self, mock_popen, mock_error):
     mock_popen.return_value = MockPopen(
         return_code=-1, stderr='placeholder_error'.encode('utf-8'))
     profiling_util.SymbolizeTrace(self._trace_path)
     mock_error.assert_called()
 
-  @mock.patch('core.results_processor.profiling_util.subprocess.Popen')
+  @mock.patch('contrib.power.profiling_util.subprocess.Popen')
   def testSymbolizeTraceWithTraceconvSuccess(self, mock_popen):
     mock_popen.return_value = MockPopen(
         return_code=0, stdout='placeholder_symbols'.encode('utf-8'))
@@ -98,16 +98,16 @@ class ProfilingUtilTests(unittest.TestCase):
       self.assertEqual(trace_file.read(),
                        'placeholder_traceplaceholder_symbols')
 
-  @mock.patch('core.results_processor.profiling_util.logging.error')
-  @mock.patch('core.results_processor.profiling_util.subprocess.Popen')
+  @mock.patch('contrib.power.profiling_util.logging.error')
+  @mock.patch('contrib.power.profiling_util.subprocess.Popen')
   def testGenerateProfilesWithTraceconvError(self, mock_popen, mock_error):
     mock_popen.return_value = MockPopen(
         return_code=-1, stderr='placeholder_error'.encode('utf-8'))
     profiling_util.GenerateProfiles(self._trace_path)
     mock_error.assert_called()
 
-  @mock.patch('core.results_processor.profiling_util.logging.error')
-  @mock.patch('core.results_processor.profiling_util.subprocess.Popen')
+  @mock.patch('contrib.power.profiling_util.logging.error')
+  @mock.patch('contrib.power.profiling_util.subprocess.Popen')
   def testGenerateProfilesWithInvalidTraceconvOutput(self, mock_popen,
                                                      mock_error):
     mock_popen.return_value = MockPopen(
@@ -115,7 +115,7 @@ class ProfilingUtilTests(unittest.TestCase):
     profiling_util.GenerateProfiles(self._trace_path)
     mock_error.assert_called()
 
-  @mock.patch('core.results_processor.profiling_util.subprocess.Popen')
+  @mock.patch('contrib.power.profiling_util.subprocess.Popen')
   def testGenerateProfilesWithTraceconvSuccess(self, mock_popen):
     mock_popen.side_effect = self.writePlaceholderProfile
     profiling_util.GenerateProfiles(self._trace_path)
