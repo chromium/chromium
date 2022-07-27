@@ -162,6 +162,14 @@ bool PolicyService::GetProxyServer(PolicyStatus<std::string>* policy_status,
       policy_status, proxy_server);
 }
 
+bool PolicyService::GetForceInstallApps(
+    PolicyStatus<std::vector<std::string>>* policy_status,
+    std::vector<std::string>* force_install_apps) const {
+  return QueryPolicy(
+      base::BindRepeating(&PolicyManagerInterface::GetForceInstallApps),
+      policy_status, force_install_apps);
+}
+
 template <typename T>
 bool PolicyService::QueryPolicy(
     const base::RepeatingCallback<bool(const PolicyManagerInterface*, T*)>&

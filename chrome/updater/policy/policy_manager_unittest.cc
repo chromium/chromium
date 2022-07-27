@@ -7,14 +7,17 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/strings/strcat.h"
 #include "base/values.h"
+#include "chrome/updater/updater_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
 
 constexpr char kTestAppID[] = "{D07D2B56-F583-4631-9E8E-9942F63765BE}";
+constexpr char kTestAppIDForceInstall[] = "AppIDForceInstall";
 
 class PolicyManagerTests : public ::testing::Test {};
 
@@ -76,6 +79,9 @@ TEST_F(PolicyManagerTests, NoPolicySet) {
       kTestAppID, &is_rollback_allowed));
   EXPECT_FALSE(policy_manager->IsRollbackToTargetVersionAllowed(
       "non-exist-app", &is_rollback_allowed));
+
+  std::vector<std::string> force_install_apps;
+  EXPECT_FALSE(policy_manager->GetForceInstallApps(&force_install_apps));
 }
 
 TEST_F(PolicyManagerTests, PolicyRead) {
@@ -101,6 +107,8 @@ TEST_F(PolicyManagerTests, PolicyRead) {
   policies.Set(base::StrCat({"TargetVersionPrefix", kTestAppID}), "55.55.");
   policies.Set(base::StrCat({"TargetChannel", kTestAppID}), "beta");
   policies.Set(base::StrCat({"RollbackToTargetVersion", kTestAppID}), 1);
+  policies.Set(base::StrCat({"Install", kTestAppIDForceInstall}),
+               kPolicyForceInstallUser);
 
   auto policy_manager = std::make_unique<PolicyManager>(std::move(policies));
 
@@ -175,6 +183,15 @@ TEST_F(PolicyManagerTests, PolicyRead) {
   EXPECT_TRUE(is_rollback_allowed);
   EXPECT_FALSE(policy_manager->IsRollbackToTargetVersionAllowed(
       "non-exist-app", &is_rollback_allowed));
+
+  std::vector<std::string> force_install_apps;
+
+  EXPECT_EQ(policy_manager->GetForceInstallApps(&force_install_apps),
+            GetUpdaterScope() == UpdaterScope::kUser);
+  if (GetUpdaterScope() == UpdaterScope::kUser) {
+    ASSERT_EQ(force_install_apps.size(), 1U);
+    EXPECT_EQ(force_install_apps[0], kTestAppIDForceInstall);
+  }
 }
 
 TEST_F(PolicyManagerTests, WrongPolicyValueType) {

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "chrome/updater/constants.h"
 
@@ -109,6 +110,11 @@ class PolicyManagerInterface {
   // Returns a channel, for example {stable|beta|dev}.
   virtual bool GetTargetChannel(const std::string& app_id,
                                 std::string* channel) const = 0;
+
+  // Returns a list of apps that need to be downloaded and installed by the
+  // updater.
+  virtual bool GetForceInstallApps(
+      std::vector<std::string>* force_install_apps) const = 0;
 };
 
 std::unique_ptr<PolicyManagerInterface> GetDefaultValuesPolicyManager();

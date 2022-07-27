@@ -5,6 +5,7 @@
 #include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
 
 #include <string>
+#include <vector>
 
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
@@ -53,6 +54,8 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
   bool GetProxyServer(std::string* proxy_server) const override;
   bool GetTargetChannel(const std::string& app_id,
                         std::string* channel) const override;
+  bool GetForceInstallApps(
+      std::vector<std::string>* force_install_apps) const override;
 
  private:
   base::scoped_nsobject<CRUManagedPreferencePolicyManager> impl_;
@@ -192,6 +195,11 @@ bool ManagedPreferencePolicyManager::GetTargetChannel(
     return true;
   }
 
+  return false;
+}
+
+bool ManagedPreferencePolicyManager::GetForceInstallApps(
+    std::vector<std::string>* /* force_install_apps */) const {
   return false;
 }
 

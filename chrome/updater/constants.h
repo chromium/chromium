@@ -350,6 +350,8 @@ constexpr int kPolicyEnabled = 1;
 constexpr int kPolicyEnabledMachineOnly = 4;
 constexpr int kPolicyManualUpdatesOnly = 2;
 constexpr int kPolicyAutomaticUpdatesOnly = 3;
+constexpr int kPolicyForceInstallMachine = 5;
+constexpr int kPolicyForceInstallUser = 6;
 
 constexpr bool kInstallPolicyDefault = kPolicyEnabled;
 constexpr bool kUpdatePolicyDefault = kPolicyEnabled;

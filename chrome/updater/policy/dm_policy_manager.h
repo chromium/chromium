@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/policy/manager.h"
@@ -51,6 +52,8 @@ class DMPolicyManager : public PolicyManagerInterface {
                         std::string* channel) const override;
   bool IsRollbackToTargetVersionAllowed(const std::string& app_id,
                                         bool* rollback_allowed) const override;
+  bool GetForceInstallApps(
+      std::vector<std::string>* force_install_apps) const override;
 
  private:
   const ::wireless_android_enterprise_devicemanagement::ApplicationSettings*

@@ -106,6 +106,9 @@ class PolicyService : public base::RefCounted<PolicyService> {
                       std::string* proxy_pac_url) const;
   bool GetProxyServer(PolicyStatus<std::string>* policy_status,
                       std::string* proxy_server) const;
+  bool GetForceInstallApps(
+      PolicyStatus<std::vector<std::string>>* policy_status,
+      std::vector<std::string>* force_install_apps) const;
 
   // Creates an instance that takes a snapshot of policies from all providers.
   static scoped_refptr<PolicyService> Create(

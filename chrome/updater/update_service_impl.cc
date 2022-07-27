@@ -299,6 +299,10 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
   new_tasks.push_back(base::BindOnce(&UpdateUsageStatsTask::Run,
                                      base::MakeRefCounted<UpdateUsageStatsTask>(
                                          GetUpdaterScope(), persisted_data_)));
+
+  // TODO(crbug.com/1347562): download and install applications based on the
+  // force installs policy.
+
   new_tasks.push_back(
       base::BindOnce(&CheckForUpdatesTask::Run,
                      base::MakeRefCounted<CheckForUpdatesTask>(

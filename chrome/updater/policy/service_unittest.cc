@@ -99,6 +99,10 @@ class FakePolicyManager : public PolicyManagerInterface {
   void SetChannel(const std::string& app_id, std::string channel) {
     channels_[app_id] = std::move(channel);
   }
+  bool GetForceInstallApps(
+      std::vector<std::string>* /* force_install_apps */) const override {
+    return false;
+  }
 
  private:
   bool has_active_device_policies_;

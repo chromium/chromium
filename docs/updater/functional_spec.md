@@ -887,3 +887,16 @@ directory.
 ### Tagging Tools
 TODO(crbug.com/1035895): Document tagging tools.
 
+## Updater for the enterprise
+
+TODO(crbug.com/1347910): Document updater for the enterprise.
+
+### Deploying enterprise applications via updater policy
+
+For each application that needs to be deployed via the updater, the policy for
+that application can be set to either `Force installs (system wide)` or `Force
+installs (per user)`.
+
+The updater is then expected to download and install the application on all
+machines where the policy is deployed, and where the application is not already
+installed.

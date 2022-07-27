@@ -4,10 +4,14 @@
 
 #include "chrome/updater/policy/policy_manager.h"
 
+#include <algorithm>
 #include <string>
+#include <vector>
 
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/updater/policy/manager.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 
@@ -52,7 +56,30 @@ const char kRollbackToTargetVersion[] = "RollbackToTargetVersion";
 }  // namespace
 
 PolicyManager::PolicyManager(base::Value::Dict policies)
-    : policies_(std::move(policies)) {}
+    : policies_(std::move(policies)) {
+  std::for_each(std::begin(policies_), std::end(policies_),
+                [&](const auto& policy) {
+                  const std::string policy_name = policy.first;
+                  const size_t install_app_prefix_length =
+                      std::string(kInstallAppPrefix).length();
+                  if (policy_name.length() <= install_app_prefix_length ||
+                      !base::StartsWith(policy_name, kInstallAppPrefix) ||
+                      base::StartsWith(policy_name, kInstallAppsDefault) ||
+                      !policy.second.is_int()) {
+                    return;
+                  }
+
+                  if (policy.second.GetInt() !=
+                      (GetUpdaterScope() == UpdaterScope::kSystem
+                           ? kPolicyForceInstallMachine
+                           : kPolicyForceInstallUser)) {
+                    return;
+                  }
+
+                  force_install_apps_.push_back(
+                      policy_name.substr(install_app_prefix_length));
+                });
+}
 
 PolicyManager::~PolicyManager() = default;
 
@@ -151,6 +178,15 @@ bool PolicyManager::GetProxyPacUrl(std::string* proxy_pac_url) const {
 
 bool PolicyManager::GetProxyServer(std::string* proxy_server) const {
   return GetStringPolicy(kProxyServer, proxy_server);
+}
+
+bool PolicyManager::GetForceInstallApps(
+    std::vector<std::string>* force_install_apps) const {
+  if (force_install_apps_.empty())
+    return false;
+
+  *force_install_apps = force_install_apps_;
+  return true;
 }
 
 bool PolicyManager::GetIntPolicy(const std::string& key, int* value) const {

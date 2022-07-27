@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_POLICY_POLICY_MANAGER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/values.h"
 #include "chrome/updater/policy/manager.h"
@@ -52,11 +53,15 @@ class PolicyManager : public PolicyManagerInterface {
   bool GetProxyPacUrl(std::string* proxy_pac_url) const override;
   bool GetProxyServer(std::string* proxy_server) const override;
 
+  bool GetForceInstallApps(
+      std::vector<std::string>* force_install_apps) const override;
+
  private:
   bool GetIntPolicy(const std::string& key, int* value) const;
   bool GetStringPolicy(const std::string& key, std::string* value) const;
 
   const base::Value::Dict policies_;
+  std::vector<std::string> force_install_apps_;
 };
 
 }  // namespace updater

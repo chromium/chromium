@@ -4,6 +4,9 @@
 
 #include "chrome/updater/policy/manager.h"
 
+#include <string>
+#include <vector>
+
 #include "chrome/updater/constants.h"
 
 namespace updater {
@@ -82,6 +85,8 @@ class DefaultValuesPolicyManager : public PolicyManagerInterface {
   bool GetProxyServer(std::string* proxy_server) const override;
   bool GetTargetChannel(const std::string& app_id,
                         std::string* channel) const override;
+  bool GetForceInstallApps(
+      std::vector<std::string>* force_install_apps) const override;
 };
 
 DefaultValuesPolicyManager::DefaultValuesPolicyManager() = default;
@@ -160,6 +165,11 @@ bool DefaultValuesPolicyManager::GetProxyServer(
 
 bool DefaultValuesPolicyManager::GetTargetChannel(const std::string& app_id,
                                                   std::string* channel) const {
+  return false;
+}
+
+bool DefaultValuesPolicyManager::GetForceInstallApps(
+    std::vector<std::string>* /* force_install_apps */) const {
   return false;
 }
 

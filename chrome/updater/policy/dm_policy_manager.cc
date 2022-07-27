@@ -5,6 +5,8 @@
 #include "chrome/updater/policy/dm_policy_manager.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/enterprise_util.h"
 #include "base/notreached.h"
@@ -232,6 +234,12 @@ bool DMPolicyManager::IsRollbackToTargetVersionAllowed(
                        ::wireless_android_enterprise_devicemanagement::
                            ROLLBACK_TO_TARGET_VERSION_ENABLED);
   return true;
+}
+
+// TODO(crbug.com/1347562): implement retrieving the force installs apps.
+bool DMPolicyManager::GetForceInstallApps(
+    std::vector<std::string>* /* force_install_apps */) const {
+  return false;
 }
 
 std::unique_ptr<PolicyManagerInterface> CreateDMPolicyManager() {
