@@ -17,6 +17,67 @@ config("web_engine_implementation") {
   defines = [ "WEB_ENGINE_IMPLEMENTATION" ]
 }
 
+_disallowed_extensions_deps = [
+  # Although `enable_extensions` is true for Fuchsia, extensions code should
+  # not be linked into WebEngine because it cannot be used and this would
+  # unnecessarily increase the package size.
+  # Exclude everything except "//extensions/buildflags/*", which is allowed,
+  # and //extensions/common:common_constants and
+  # //extensions/common:constants_impl", which are dependencies.
+  # //extensions:extensions is addressed below.
+  "//extensions:extensions_resources",
+  "//extensions/browser/*",
+  "//extensions/common:common",
+  "//extensions/common:core_api_provider",
+  "//extensions/common:export",
+  "//extensions/common:mojom",
+  "//extensions/renderer/*",
+  "//extensions/strings/*",
+]
+
+# //extensions:extensions is used by common_constants in component builds.
+if (!is_component_build) {
+  _disallowed_extensions_deps += [ "//extensions:*" ]
+}
+
+# Although `enable_pdf` is true for Fuchsia, PDF code should not be linked
+# into WebEngine because it does not have the necessary infrastructure and
+# this would unnecessarily increase the package size.
+_disallowed_pdf_deps = [
+  "//components/pdf/*",
+  "//components/plugins/*",
+  "//pdf/*",
+]
+
+# Ppapi code should not be included as enable_ppapi is false.
+# Exclude everything except "//ppapi/buildflags/*", which is allowed.
+_disallowed_ppapi_deps = [
+  "//ppapi:*",
+  "//ppapi/c/*",
+  "//ppapi/cpp/*",
+  "//ppapi/host/*",
+  "//ppapi/lib/*",
+  "//ppapi/native_client/*",
+  "//ppapi/proxy/*",
+  "//ppapi/shared_impl/*",
+  "//ppapi/thunk/*",
+]
+
+# Although `enable_printing` is true for Fuchsia, no code should be linked.
+# "//printing:metafile" is used by //third_party/blink/renderer/core and
+# uses "//printing/common/*".
+# "//printing/mojom/*" is allowed because Blink public APIs use its types.
+_disallowed_printing_deps = [
+  "//printing:printing",
+  "//printing:printing_base",
+  "//printing/backend/*",
+]
+
+# TODO(crbug.com/1311822): Replace the uses of this in each target with a group
+# that depends on those targets once this is correctly supported.
+_disallowed_deps = _disallowed_extensions_deps + _disallowed_pdf_deps +
+                   _disallowed_ppapi_deps + _disallowed_printing_deps
+
 source_set("web_engine_export_from_implementation") {
   public = [ "web_engine_export.h" ]
   public_configs = [ ":web_engine_implementation" ]
@@ -83,6 +144,8 @@ foreach(locale, locales_with_pseudolocales) {
 }
 
 component("web_engine_core") {
+  assert_no_deps = _disallowed_deps
+
   deps = [
     ":context_provider",
     ":fidl",
@@ -165,56 +228,6 @@ component("web_engine_core") {
     "//ui/wm",
     "//ui/wm/public",
   ]
-
-  assert_no_deps = [
-    # Although `enable_extensions` is true for Fuchsia, extensions code should
-    # not be linked into WebEngine because it cannot be used and this would
-    # unnecessarily increase the package size.
-    # Exclude everything except "//extensions/buildflags/*", which is allowed,
-    # and //extensions/common:common_constants and
-    # //extensions/common:constants_impl", which are a dependencies.
-    # //extensions:extensions is addressed below.
-    "//extensions:extensions_resources",
-    "//extensions/browser/*",
-    "//extensions/common:common",
-    "//extensions/common:core_api_provider",
-    "//extensions/common:export",
-    "//extensions/common:mojom",
-    "//extensions/renderer/*",
-    "//extensions/strings/*",
-
-    # Although `enable_pdf` is true for Fuchsia, PDF code should not be linked
-    # into WebEngine because it does not have the necessary infrastructure and
-    # this would unnecessarily increase the package size.
-    "//components/pdf/*",
-    "//components/plugins/*",
-    "//pdf/*",
-
-    # Pepper code should not be included as enable_ppapi is false.
-    # Exclude everything except "//ppapi/buildflags/*", which is allowed.
-    "//ppapi:*",
-    "//ppapi/c/*",
-    "//ppapi/cpp/*",
-    "//ppapi/host/*",
-    "//ppapi/lib/*",
-    "//ppapi/native_client/*",
-    "//ppapi/proxy/*",
-    "//ppapi/shared_impl/*",
-    "//ppapi/thunk/*",
-
-    # Although `enable_printing` is true for Fuchsia, no code should be linked.
-    # "//printing:metafile" is used by //third_party/blink/renderer/core and
-    # uses "//printing/common/*".
-    # "//printing/mojom/*" is allowed because Blink public APIs use its types.
-    "//printing:printing",
-    "//printing:printing_base",
-    "//printing/backend/*",
-  ]
-
-  # //extensions:extensions is used by common_constants in component builds.
-  if (!is_component_build) {
-    assert_no_deps += [ "//extensions:*" ]
-  }
 
   # Technically the PAK files are only data dependencies, but specifying them
   # as |data_deps| causes metadata (.info) files to also be pulled-in to the
@@ -320,6 +333,7 @@ component("web_engine_core") {
 }
 
 source_set("context_provider") {
+  assert_no_deps = _disallowed_deps
   sources = [
     "context_provider_impl.cc",
     "context_provider_impl.h",
@@ -355,6 +369,7 @@ source_set("switches") {
 }
 
 executable("web_engine_exe") {
+  assert_no_deps = _disallowed_deps
   deps = [
     ":context_provider",
     ":switches",
