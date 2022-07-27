@@ -747,12 +747,11 @@ union DEPRECATE_SystemResult {
   ProbeError error;
 };
 
-// System probe result. Can either be populated with the SystemInfoV2 or an
-// error retrieving the information.
-// TODO(b/190459636): Rename it to SystemResult.
-union SystemResultV2 {
-  // Valid SystemInfoV2.
-  SystemInfoV2 system_info_v2;
+// System probe result. Can either be populated with the SystemInfo or an error
+// retrieving the information.
+union SystemResult {
+  // Valid SystemInfo.
+  SystemInfo system_info;
   // The error that occurred attempting to retrieve SystemInfo.
   ProbeError error;
 };
@@ -793,10 +792,9 @@ struct DEPRECATE_SystemInfo {
 };
 
 // System Information.
-// TODO(b/190459636): Rename it to SystemInfo after migration.
 //
 // NextMinVersion: 1, NextIndex: 3
-struct SystemInfoV2 {
+struct SystemInfo {
   // The info related to the OS.
   OsInfo os_info@0;
   // The info from the VPD cache.
@@ -1630,7 +1628,7 @@ struct TelemetryInfo {
   BusResult? bus_result@13;
   // Information about the system. Only present when kSystem was included in the
   // categories input to ProbeTelemetryInfo.
-  SystemResultV2? system_result_v2@14;
+  SystemResult? system_result@14;
   // Information about the tpm. Only present when kTpm was included in
   // the categories input to ProbeTelemetryInfo.
   TpmResult? tpm_result@15;

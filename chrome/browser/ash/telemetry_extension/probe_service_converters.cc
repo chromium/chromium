@@ -321,21 +321,21 @@ health::mojom::OsVersionPtr UncheckedConvertPtr(
 }
 
 std::pair<health::mojom::CachedVpdInfoPtr, health::mojom::SystemInfoPtr>
-UncheckedConvertPairPtr(cros_healthd::mojom::SystemInfoV2Ptr input) {
+UncheckedConvertPairPtr(cros_healthd::mojom::SystemInfoPtr input) {
   return std::make_pair(ConvertProbePtr(std::move(input->vpd_info)),
                         ConvertProbePtr(std::move(input->os_info)));
 }
 
 std::pair<health::mojom::CachedVpdResultPtr, health::mojom::SystemResultPtr>
-UncheckedConvertPairPtr(cros_healthd::mojom::SystemResultV2Ptr input) {
+UncheckedConvertPairPtr(cros_healthd::mojom::SystemResultPtr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::SystemResultV2::Tag::kSystemInfoV2: {
-      auto output = ConvertProbePairPtr(std::move(input->get_system_info_v2()));
+    case cros_healthd::mojom::SystemResult::Tag::kSystemInfo: {
+      auto output = ConvertProbePairPtr(std::move(input->get_system_info()));
       return std::make_pair(
           health::mojom::CachedVpdResult::NewVpdInfo(std::move(output.first)),
           health::mojom::SystemResult::NewSystemInfo(std::move(output.second)));
     }
-    case cros_healthd::mojom::SystemResultV2::Tag::kError: {
+    case cros_healthd::mojom::SystemResult::Tag::kError: {
       auto system_error = ConvertProbePtr(std::move(input->get_error()));
       return std::make_pair(
           health::mojom::CachedVpdResult::NewError(system_error.Clone()),
@@ -347,7 +347,7 @@ UncheckedConvertPairPtr(cros_healthd::mojom::SystemResultV2Ptr input) {
 health::mojom::TelemetryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TelemetryInfoPtr input) {
   auto system_result_output =
-      ConvertProbePairPtr(std::move(input->system_result_v2));
+      ConvertProbePairPtr(std::move(input->system_result));
 
   return health::mojom::TelemetryInfo::New(
       ConvertProbePtr(std::move(input->battery_result)),

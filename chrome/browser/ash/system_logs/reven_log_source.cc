@@ -100,12 +100,12 @@ void PopulateMemoryInfo(std::string* log, const TelemetryInfoPtr& info) {
 }
 
 void PopulateSystemInfo(std::string* log, const TelemetryInfoPtr& info) {
-  if (info->system_result_v2.is_null() || info->system_result_v2->is_error()) {
-    DVLOG(1) << "SystemResult2 not found in croshealthd response";
+  if (info->system_result.is_null() || info->system_result->is_error()) {
+    DVLOG(1) << "SystemResult not found in croshealthd response";
     return;
   }
   healthd::DmiInfoPtr& dmi_info =
-      info->system_result_v2->get_system_info_v2()->dmi_info;
+      info->system_result->get_system_info()->dmi_info;
 
   if (!dmi_info.is_null()) {
     AddLogEntry(log, "product_vendor", dmi_info->sys_vendor.value_or(""));
@@ -118,8 +118,7 @@ void PopulateSystemInfo(std::string* log, const TelemetryInfoPtr& info) {
     AddIndentedLogEntry(log, "bios_version",
                         dmi_info->bios_version.value_or(""));
   }
-  healthd::OsInfoPtr& os_info =
-      info->system_result_v2->get_system_info_v2()->os_info;
+  healthd::OsInfoPtr& os_info = info->system_result->get_system_info()->os_info;
   if (!os_info.is_null()) {
     AddIndentedLogEntry(
         log, "secureboot",

@@ -709,7 +709,7 @@ TEST(ProbeServiceConverters, PairCachedVpdInfoPtrSystemInfoPtr) {
   constexpr char kSerialNumber[] = "5CD9132880";
   constexpr char kModelName[] = "XX ModelName 007 XY";
 
-  auto input = cros_healthd::mojom::SystemInfoV2::New();
+  auto input = cros_healthd::mojom::SystemInfo::New();
   {
     auto vpd_info = cros_healthd::mojom::VpdInfo::New();
     vpd_info->activate_date = kFirstPowerDate;
@@ -746,7 +746,7 @@ TEST(ProbeServiceConverters, PairCachedVpdResultPtrSystemResultPtrInfo) {
   constexpr char kSerialNumber[] = "5CD9132880";
   constexpr char kModelName[] = "XX ModelName 007 XY";
 
-  cros_healthd::mojom::SystemResultV2Ptr input;
+  cros_healthd::mojom::SystemResultPtr input;
   {
     auto vpd_info = cros_healthd::mojom::VpdInfo::New();
     vpd_info->activate_date = kFirstPowerDate;
@@ -759,12 +759,12 @@ TEST(ProbeServiceConverters, PairCachedVpdResultPtrSystemResultPtrInfo) {
     os_info->os_version = cros_healthd::mojom::OsVersion::New(
         kReleaseMilestone, kBuildNumber, kPatchNumber, kReleaseChannel);
 
-    auto system_info_v2 = cros_healthd::mojom::SystemInfoV2::New();
-    system_info_v2->os_info = std::move(os_info);
-    system_info_v2->vpd_info = std::move(vpd_info);
+    auto system_info = cros_healthd::mojom::SystemInfo::New();
+    system_info->os_info = std::move(os_info);
+    system_info->vpd_info = std::move(vpd_info);
 
-    input = cros_healthd::mojom::SystemResultV2::NewSystemInfoV2(
-        std::move(system_info_v2));
+    input = cros_healthd::mojom::SystemResult::NewSystemInfo(
+        std::move(system_info));
   }
   const auto output = ConvertProbePairPtr(std::move(input));
   ASSERT_TRUE(output.first);
@@ -774,8 +774,8 @@ TEST(ProbeServiceConverters, PairCachedVpdResultPtrSystemResultPtrInfo) {
 }
 
 TEST(ProbeServiceConverters, PairCachedVpdResultPtrSystemResultPtrError) {
-  const auto output = ConvertProbePairPtr(
-      cros_healthd::mojom::SystemResultV2::NewError(nullptr));
+  const auto output =
+      ConvertProbePairPtr(cros_healthd::mojom::SystemResult::NewError(nullptr));
   ASSERT_TRUE(output.first);
   ASSERT_TRUE(output.first->is_error());
   ASSERT_TRUE(output.second);
@@ -805,12 +805,11 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
             cros_healthd::mojom::StatefulPartitionInfo::New());
     input->bluetooth_result =
         cros_healthd::mojom::BluetoothResult::NewBluetoothAdapterInfo({});
-    input->system_result_v2 =
-        cros_healthd::mojom::SystemResultV2::NewSystemInfoV2(
-            cros_healthd::mojom::SystemInfoV2::New(
-                cros_healthd::mojom::OsInfo::New(),
-                cros_healthd::mojom::VpdInfo::New(),
-                cros_healthd::mojom::DmiInfo::New()));
+    input->system_result = cros_healthd::mojom::SystemResult::NewSystemInfo(
+        cros_healthd::mojom::SystemInfo::New(
+            cros_healthd::mojom::OsInfo::New(),
+            cros_healthd::mojom::VpdInfo::New(),
+            cros_healthd::mojom::DmiInfo::New()));
   }
 
   EXPECT_EQ(

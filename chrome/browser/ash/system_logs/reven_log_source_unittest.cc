@@ -70,19 +70,19 @@ void SetMemoryInfoWithProbeError(healthd::TelemetryInfoPtr& telemetry_info) {
       healthd::MemoryResult::NewError(std::move(probe_error));
 }
 
-void SetSystemInfoV2(healthd::TelemetryInfoPtr& telemetry_info,
-                     healthd::OsInfoPtr os_info,
-                     healthd::DmiInfoPtr dmi_info) {
-  auto system_info2 = healthd::SystemInfoV2::New();
+void SetSystemInfo(healthd::TelemetryInfoPtr& telemetry_info,
+                   healthd::OsInfoPtr os_info,
+                   healthd::DmiInfoPtr dmi_info) {
+  auto system_info = healthd::SystemInfo::New();
   if (os_info) {
-    system_info2->os_info = std::move(os_info);
+    system_info->os_info = std::move(os_info);
   }
 
   if (dmi_info) {
-    system_info2->dmi_info = std::move(dmi_info);
+    system_info->dmi_info = std::move(dmi_info);
   }
-  telemetry_info->system_result_v2 =
-      healthd::SystemResultV2::NewSystemInfoV2(std::move(system_info2));
+  telemetry_info->system_result =
+      healthd::SystemResult::NewSystemInfo(std::move(system_info));
 }
 
 healthd::OsInfoPtr CreateOsInfo(healthd::BootMode boot_mode) {
@@ -339,7 +339,7 @@ class RevenLogSourceTest : public ::testing::Test {
     auto info = healthd::TelemetryInfo::New();
     auto os_info = CreateOsInfo(boot_mode);
     auto dmi_info = CreateDmiInfo();
-    SetSystemInfoV2(info, std::move(os_info), std::move(dmi_info));
+    SetSystemInfo(info, std::move(os_info), std::move(dmi_info));
     ash::cros_healthd::FakeCrosHealthd::Get()
         ->SetProbeTelemetryInfoResponseForTesting(info);
 
@@ -445,7 +445,7 @@ TEST_F(RevenLogSourceTest, FetchDmiInfoWithValues) {
   auto info = healthd::TelemetryInfo::New();
   auto os_info = CreateOsInfo(healthd::BootMode::kUnknown);
   auto dmi_info = CreateDmiInfo();
-  SetSystemInfoV2(info, std::move(os_info), std::move(dmi_info));
+  SetSystemInfo(info, std::move(os_info), std::move(dmi_info));
   ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 
@@ -468,7 +468,7 @@ TEST_F(RevenLogSourceTest, FetchDmiInfoWithoutValues) {
   auto info = healthd::TelemetryInfo::New();
   auto os_info = CreateOsInfo(healthd::BootMode::kCrosEfi);
   auto dmi_info = healthd::DmiInfo::New();
-  SetSystemInfoV2(info, std::move(os_info), std::move(dmi_info));
+  SetSystemInfo(info, std::move(os_info), std::move(dmi_info));
   ash::cros_healthd::FakeCrosHealthd::Get()
       ->SetProbeTelemetryInfoResponseForTesting(info);
 

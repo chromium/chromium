@@ -27,9 +27,9 @@ using ::chromeos::cros_healthd::mojom::NonInteractiveRoutineUpdatePtr;
 using ::chromeos::cros_healthd::mojom::RoutineUpdate;
 using ::chromeos::cros_healthd::mojom::RoutineUpdateUnion;
 using ::chromeos::cros_healthd::mojom::RoutineUpdateUnionPtr;
-using ::chromeos::cros_healthd::mojom::SystemInfoV2;
-using ::chromeos::cros_healthd::mojom::SystemResultV2;
-using ::chromeos::cros_healthd::mojom::SystemResultV2Ptr;
+using ::chromeos::cros_healthd::mojom::SystemInfo;
+using ::chromeos::cros_healthd::mojom::SystemResult;
+using ::chromeos::cros_healthd::mojom::SystemResultPtr;
 using ::chromeos::cros_healthd::mojom::TelemetryInfo;
 
 template <typename TResult, typename TTag>
@@ -84,14 +84,14 @@ const MemoryInfo* GetMemoryInfo(const TelemetryInfo& info) {
   return memory_result->get_memory_info().get();
 }
 
-const SystemInfoV2* GetSystemInfo(const TelemetryInfo& info) {
-  const SystemResultV2Ptr& system_result = info.system_result_v2;
-  if (!CheckResponse(system_result, SystemResultV2::Tag::kSystemInfoV2,
-                     "system info v2")) {
+const SystemInfo* GetSystemInfo(const TelemetryInfo& info) {
+  const SystemResultPtr& system_result = info.system_result;
+  if (!CheckResponse(system_result, SystemResult::Tag::kSystemInfo,
+                     "system info")) {
     return nullptr;
   }
 
-  return system_result->get_system_info_v2().get();
+  return system_result->get_system_info().get();
 }
 
 const NonInteractiveRoutineUpdate* GetNonInteractiveRoutineUpdate(

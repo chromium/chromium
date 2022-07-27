@@ -37,11 +37,11 @@ namespace healthd_mojom = ::chromeos::cros_healthd::mojom;
 void SetProbeTelemetryInfoResponse(healthd_mojom::BatteryInfoPtr battery_info,
                                    healthd_mojom::CpuInfoPtr cpu_info,
                                    healthd_mojom::MemoryInfoPtr memory_info,
-                                   healthd_mojom::SystemInfoV2Ptr system_info) {
+                                   healthd_mojom::SystemInfoPtr system_info) {
   auto info = healthd_mojom::TelemetryInfo::New();
   if (system_info) {
-    info->system_result_v2 =
-        healthd_mojom::SystemResultV2::NewSystemInfoV2(std::move(system_info));
+    info->system_result =
+        healthd_mojom::SystemResult::NewSystemInfo(std::move(system_info));
   }
   if (battery_info) {
     info->battery_result =
@@ -76,7 +76,7 @@ void SetCrosHealthdSystemInfoResponse(const std::string& board_name,
   os_info->marketing_name = marketing_name;
   os_info->os_version = healthd_mojom::OsVersion::New(
       milestone_version, build_number, patch_number, "unittest-channel");
-  auto system_info = healthd_mojom::SystemInfoV2::New();
+  auto system_info = healthd_mojom::SystemInfo::New();
   system_info->os_info = std::move(os_info);
 
   // Battery info

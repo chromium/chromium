@@ -1232,23 +1232,23 @@ class DeviceStatusCollectorState : public StatusCollectorState {
       }
     }
 
-    // Process SystemResultV2.
-    const auto& system_result_v2 = probe_result->system_result_v2;
-    if (!system_result_v2.is_null()) {
-      switch (system_result_v2->which()) {
-        case cros_healthd::SystemResultV2::Tag::kError: {
-          LOG(ERROR) << "cros_healthd: Error getting system info v2: "
-                     << system_result_v2->get_error()->msg;
+    // Process SystemResult.
+    const auto& system_result = probe_result->system_result;
+    if (!system_result.is_null()) {
+      switch (system_result->which()) {
+        case cros_healthd::SystemResult::Tag::kError: {
+          LOG(ERROR) << "cros_healthd: Error getting system info: "
+                     << system_result->get_error()->msg;
           break;
         }
 
-        case cros_healthd::SystemResultV2::Tag::kSystemInfoV2: {
-          const auto& system_info_v2 = system_result_v2->get_system_info_v2();
+        case cros_healthd::SystemResult::Tag::kSystemInfo: {
+          const auto& system_info = system_result->get_system_info();
 
           em::SystemStatus* const system_status_out =
               response_params_.device_status->mutable_system_status();
-          if (report_vpd_info && !system_info_v2->vpd_info.is_null()) {
-            const auto& vpd_info = system_info_v2->vpd_info;
+          if (report_vpd_info && !system_info->vpd_info.is_null()) {
+            const auto& vpd_info = system_info->vpd_info;
             if (vpd_info->activate_date.has_value()) {
               system_status_out->set_first_power_date(
                   vpd_info->activate_date.value());
@@ -1271,8 +1271,8 @@ class DeviceStatusCollectorState : public StatusCollectorState {
             }
           }
           if (report_system_info) {
-            if (!system_info_v2->dmi_info.is_null()) {
-              const auto& dmi_info = system_info_v2->dmi_info;
+            if (!system_info->dmi_info.is_null()) {
+              const auto& dmi_info = system_info->dmi_info;
               if (dmi_info->bios_version.has_value()) {
                 system_status_out->set_bios_version(
                     dmi_info->bios_version.value());
@@ -1293,8 +1293,8 @@ class DeviceStatusCollectorState : public StatusCollectorState {
                 SetDeviceStatusReported();
               }
             }
-            if (!system_info_v2->os_info.is_null()) {
-              const auto& os_info = system_info_v2->os_info;
+            if (!system_info->os_info.is_null()) {
+              const auto& os_info = system_info->os_info;
               if (os_info->marketing_name.has_value()) {
                 system_status_out->set_marketing_name(
                     os_info->marketing_name.value());
@@ -1309,8 +1309,8 @@ class DeviceStatusCollectorState : public StatusCollectorState {
           em::BootInfo* const boot_info_out =
               response_params_.device_status->mutable_boot_info();
           if (report_system_info) {
-            if (!system_info_v2->dmi_info.is_null()) {
-              const auto& dmi_info = system_info_v2->dmi_info;
+            if (!system_info->dmi_info.is_null()) {
+              const auto& dmi_info = system_info->dmi_info;
               if (dmi_info->bios_version.has_value()) {
                 smbios_info_out->set_bios_version(
                     dmi_info->bios_version.value());
@@ -1327,8 +1327,8 @@ class DeviceStatusCollectorState : public StatusCollectorState {
                     dmi_info->product_version.value());
               }
             }
-            if (!system_info_v2->os_info.is_null()) {
-              const auto& os_info = system_info_v2->os_info;
+            if (!system_info->os_info.is_null()) {
+              const auto& os_info = system_info->os_info;
               boot_info_out->set_boot_method(
                   static_cast<em::BootInfo::BootMethod>(os_info->boot_mode));
             }

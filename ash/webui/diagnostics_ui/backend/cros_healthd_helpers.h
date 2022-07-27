@@ -26,9 +26,9 @@ const chromeos::cros_healthd::mojom::CpuInfo* GetCpuInfo(
 const chromeos::cros_healthd::mojom::MemoryInfo* GetMemoryInfo(
     const chromeos::cros_healthd::mojom::TelemetryInfo& info);
 
-// Extracts SystemInfoV2 from |info|. Logs and returns a nullptr if SystemInfoV2
+// Extracts SystemInfo from |info|. Logs and returns a nullptr if SystemInfo
 // in not present.
-const chromeos::cros_healthd::mojom::SystemInfoV2* GetSystemInfo(
+const chromeos::cros_healthd::mojom::SystemInfo* GetSystemInfo(
     const chromeos::cros_healthd::mojom::TelemetryInfo& info);
 
 const chromeos::cros_healthd::mojom::NonInteractiveRoutineUpdate*

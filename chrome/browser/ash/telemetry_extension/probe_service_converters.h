@@ -114,10 +114,10 @@ health::mojom::OsVersionPtr UncheckedConvertPtr(
     cros_healthd::mojom::OsVersionPtr);
 
 std::pair<health::mojom::CachedVpdInfoPtr, health::mojom::SystemInfoPtr>
-UncheckedConvertPairPtr(cros_healthd::mojom::SystemInfoV2Ptr input);
+UncheckedConvertPairPtr(cros_healthd::mojom::SystemInfoPtr input);
 
 std::pair<health::mojom::CachedVpdResultPtr, health::mojom::SystemResultPtr>
-UncheckedConvertPairPtr(cros_healthd::mojom::SystemResultV2Ptr input);
+UncheckedConvertPairPtr(cros_healthd::mojom::SystemResultPtr input);
 
 health::mojom::TelemetryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TelemetryInfoPtr input);

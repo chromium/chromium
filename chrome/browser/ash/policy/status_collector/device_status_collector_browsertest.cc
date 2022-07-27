@@ -563,9 +563,9 @@ cros_healthd::NonRemovableBlockDeviceResultPtr CreateBlockDeviceResult() {
       std::move(storage_vector));
 }
 
-cros_healthd::SystemResultV2Ptr CreateSystemResultV2() {
-  return cros_healthd::SystemResultV2::NewSystemInfoV2(
-      cros_healthd::SystemInfoV2::New(
+cros_healthd::SystemResultPtr CreateSystemResult() {
+  return cros_healthd::SystemResult::NewSystemInfo(
+      cros_healthd::SystemInfo::New(
           cros_healthd::OsInfo::New(
               kFakeOsInfoProductName, kFakeOsInfoMarketingName,
               cros_healthd::OsVersion::New(
@@ -745,8 +745,8 @@ cros_healthd::BusResultPtr CreateBusResult() {
 void SetFakeCrosHealthdData() {
   auto telemetry_info = cros_healthd::TelemetryInfo::New();
   cros_healthd::TelemetryInfo fake_info;
-  // Always gather system V2.
-  telemetry_info->system_result_v2 = CreateSystemResultV2();
+  // Always gather system result.
+  telemetry_info->system_result = CreateSystemResult();
   if (SettingEnabled(ash::kReportDevicePowerStatus))
     telemetry_info->battery_result = CreateBatteryResult();
   if (SettingEnabled(ash::kReportDeviceStorageStatus))
@@ -3605,7 +3605,7 @@ TEST_F(DeviceStatusCollectorTest, TestPartialCrosHealthdInfo) {
   EXPECT_FALSE(device_status_.has_memory_info());
   EXPECT_FALSE(device_status_.has_timezone_info());
   EXPECT_FALSE(device_status_.has_system_status());
-  // Some smbios info from SystemResult V2 is always reported by default.
+  // Some smbios info from SystemResult is always reported by default.
   EXPECT_TRUE(device_status_.has_smbios_info());
   EXPECT_FALSE(device_status_.has_boot_info());
   EXPECT_FALSE(device_status_.has_storage_status());
@@ -3642,8 +3642,8 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdVpdAndSystemInfo) {
   ASSERT_FALSE(device_status_.system_status().has_chassis_type());
   ASSERT_FALSE(device_status_.system_status().has_product_name());
 
-  // Verify the system info v2 is not populated excluding vendor, product name,
-  // and product version.
+  // Verify the system info is not populated excluding vendor, product name and
+  // product version.
   ASSERT_TRUE(device_status_.has_smbios_info());
   EXPECT_TRUE(device_status_.smbios_info().has_sys_vendor());
   EXPECT_TRUE(device_status_.smbios_info().has_product_name());
@@ -3678,7 +3678,7 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdVpdAndSystemInfo) {
   EXPECT_EQ(device_status_.system_status().product_name(),
             kFakeOsInfoProductName);
 
-  // Verify system info V2 exists too.
+  // Verify smbios info and boot info exist.
   ASSERT_TRUE(device_status_.has_smbios_info());
   EXPECT_EQ(device_status_.smbios_info().product_name(),
             kFakeDmiInfoProductName);
