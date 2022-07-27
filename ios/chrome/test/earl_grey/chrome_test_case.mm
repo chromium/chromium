@@ -40,19 +40,6 @@ bool gIsMockAuthenticationDisabled = false;
 // YES the test is for startup.
 bool gStartupTest = false;
 
-// Suffix used to disable kRestoreSessionFromCache. Tests with this suffix will
-// still use native restore via kSynthesizedRestoreSession.
-NSString* const kDisableCacheRestoreSuffix = @"WithCacheRestoreDisabled";
-
-// Suffix used to disable kRestoreSessionFromCache and
-// kSynthesizedRestoreSession. Tests with this suffix will fall back to using
-// legacy restore.
-NSString* const kDisableSynthesizedRestoreSuffix =
-    @"WithSynthesizedRestoreDisabled";
-
-NSArray<NSString*>* const kRestoreFallbackTests =
-    @[ @"VisibleURLTestCase", @"RestoreTestCase" ];
-
 NSString* const kFlakyEarlGreyTestTargetSuffix =
     @"_flaky_eg2tests_module-Runner";
 NSString* const kMultitaskingEarlGreyTestTargetName =
@@ -164,13 +151,6 @@ void ResetAuthentication() {
 // Returns a NSArray of test names in this class for multitasking test suite.
 + (NSArray*)multitaskingTestNames;
 
-// kRestoreFallbackTests test a lot of ios/web session restore logic. iOS 15
-// supports a more efficient session restore flow, but there are plenty of
-// edge case reasons for a session restore to fall back to legacy restore.
-// To ensure each test below ios/web restore path, duplicate each test with a
-// version that runs with variations of kRestoreSessionFromCacheenabled and
-// kSynthesizedRestoreSession enabled and disabled.
-+ (NSArray*)restoreFallbackTestNames;
 @end
 
 @implementation ChromeTestCase
@@ -186,31 +166,9 @@ void ResetAuthentication() {
   } else if ([targetName isEqualToString:kMultitaskingEarlGreyTestTargetName]) {
     // Only run white listed tests for the multitasking test suite.
     return [self multitaskingTestNames];
-  } else if ([kRestoreFallbackTests containsObject:NSStringFromClass(self)]) {
-    return [self restoreFallbackTestNames];
   } else {
     return [super testInvocations];
   }
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  if ([kRestoreFallbackTests containsObject:NSStringFromClass(self.class)]) {
-    if ([self.name containsString:kDisableCacheRestoreSuffix]) {
-      config.features_disabled.push_back(web::kRestoreSessionFromCache);
-      config.features_enabled.push_back(
-          web::features::kSynthesizedRestoreSession);
-    } else if ([self.name containsString:kDisableSynthesizedRestoreSuffix]) {
-      config.features_disabled.push_back(
-          web::features::kSynthesizedRestoreSession);
-      config.features_disabled.push_back(web::kRestoreSessionFromCache);
-    } else {
-      config.features_enabled.push_back(
-          web::features::kSynthesizedRestoreSession);
-      config.features_enabled.push_back(web::kRestoreSessionFromCache);
-    }
-  }
-  return config;
 }
 
 + (void)setUpForTestCase {
@@ -409,40 +367,6 @@ void ResetAuthentication() {
   }
   free(methods);
   return flakyTestNames;
-}
-
-+ (NSArray*)restoreFallbackTestNames {
-  NSMutableArray* testInvocations = [[super testInvocations] mutableCopy];
-  if (@available(iOS 15, *)) {
-    unsigned int count = 0;
-    Method* methods = class_copyMethodList(self, &count);
-    for (unsigned i = 0; i < count; i++) {
-      SEL selector = method_getName(methods[i]);
-      NSString* name = NSStringFromSelector(selector);
-      if ([name hasPrefix:@"test"]) {
-        // Add variant selector to test invocations.
-        for (NSString* suffix in @[
-               kDisableSynthesizedRestoreSuffix, kDisableCacheRestoreSuffix
-             ]) {
-          SEL variant_selector =
-              NSSelectorFromString([name stringByAppendingString:suffix]);
-          NSInvocation* invocation = [NSInvocation
-              invocationWithMethodSignature:
-                  [self instanceMethodSignatureForSelector:selector]];
-          [invocation setSelector:variant_selector];
-          [testInvocations addObject:invocation];
-
-          // Link method to disabled selector.
-          Method instanceMethod = class_getInstanceMethod(self, selector);
-          const char* typeEncoding = method_getTypeEncoding(instanceMethod);
-          class_addMethod(self, variant_selector,
-                          method_getImplementation(instanceMethod),
-                          typeEncoding);
-        }
-      }
-    }
-  }
-  return [testInvocations copy];
 }
 
 + (NSArray*)multitaskingTestNames {

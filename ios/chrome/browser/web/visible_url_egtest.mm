@@ -4,15 +4,16 @@
 
 #import <objc/runtime.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/compiler_specific.h"
-#include "base/ios/ios_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/version_info/version_info.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "base/compiler_specific.h"
+#import "base/ios/ios_util.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/version_info/version_info.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -20,10 +21,10 @@
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/common/features.h"
-#include "ios/web/public/test/http_server/html_response_provider.h"
+#import "ios/web/public/test/http_server/html_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
-#include "url/gurl.h"
+#import "ios/web/public/test/http_server/http_server_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -100,7 +101,7 @@ class PausableResponseProvider : public HtmlResponseProvider {
 
 // Test case for back forward and delta navigations focused on making sure that
 // omnibox visible URL always represents the current page.
-@interface VisibleURLTestCase : WebHttpServerChromeTestCase {
+@interface VisibleURLWithCachedRestoreTestCase : WebHttpServerChromeTestCase {
   PausableResponseProvider* _responseProvider;
   GURL _testURL1;
   GURL _testURL2;
@@ -119,7 +120,7 @@ class PausableResponseProvider : public HtmlResponseProvider {
 
 @end
 
-@implementation VisibleURLTestCase
+@implementation VisibleURLWithCachedRestoreTestCase
 
 - (void)setUp {
   [super setUp];
@@ -477,6 +478,45 @@ class PausableResponseProvider : public HtmlResponseProvider {
                   block:^{
                     return self->_responseProvider->last_request_url() == URL;
                   }] waitWithTimeout:10];
+}
+
+@end
+
+// Test using synthesized restore.
+@interface VisibleURLWithWithSynthesizedRestoreTestCase
+    : VisibleURLWithCachedRestoreTestCase
+@end
+
+@implementation VisibleURLWithWithSynthesizedRestoreTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_disabled.push_back(web::kRestoreSessionFromCache);
+  return config;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
+}
+
+@end
+
+// Test using legacy restore.
+@interface VisibleURLWithWithLegacyRestoreTestCase
+    : VisibleURLWithCachedRestoreTestCase
+@end
+
+@implementation VisibleURLWithWithLegacyRestoreTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_disabled.push_back(web::features::kSynthesizedRestoreSession);
+  config.features_disabled.push_back(web::kRestoreSessionFromCache);
+  return config;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
 }
 
 @end

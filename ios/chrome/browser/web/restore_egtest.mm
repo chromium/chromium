@@ -4,21 +4,22 @@
 
 #import <objc/runtime.h>
 
-#include "base/bind.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/bind.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
+#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#include "ios/net/url_test_util.h"
+#import "ios/net/url_test_util.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/common/features.h"
-#include "net/test/embedded_test_server/default_handlers.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
+#import "net/test/embedded_test_server/default_handlers.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -103,7 +104,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 }
 
 // Integration tests for restoring session history.
-@interface RestoreTestCase : ChromeTestCase {
+@interface RestoreWithCacheTestCase : ChromeTestCase {
   // Use a second test server to ensure different origin navigations.
   std::unique_ptr<net::EmbeddedTestServer> _secondTestServer;
 }
@@ -135,7 +136,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 
 @end
 
-@implementation RestoreTestCase
+@implementation RestoreWithCacheTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
@@ -359,6 +360,43 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
   [self triggerRestore];
   [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
       assertWithMatcher:grey_notNil()];
+}
+
+@end
+
+// Test using synthesize restore.
+@interface RestoreWithSynthesizedTestCase : RestoreWithCacheTestCase
+@end
+
+@implementation RestoreWithSynthesizedTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_disabled.push_back(web::kRestoreSessionFromCache);
+  return config;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
+}
+
+@end
+
+// Test using synthesize restore.
+@interface RestoreWithLegacyTestCase : RestoreWithCacheTestCase
+@end
+
+@implementation RestoreWithLegacyTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_disabled.push_back(web::features::kSynthesizedRestoreSession);
+  config.features_disabled.push_back(web::kRestoreSessionFromCache);
+  return config;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
 }
 
 @end
