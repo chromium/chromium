@@ -50,6 +50,11 @@ extern const base::Feature kPageInfoHistoryDesktop;
 extern const base::Feature kPageInfoHideSiteSettings;
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+// Enables Cookies Subpage. For implementation phase.
+extern const base::Feature kPageInfoCookiesSubpage;
+#endif
+
 }  // namespace page_info
 
 #endif  // COMPONENTS_PAGE_INFO_CORE_FEATURES_H_

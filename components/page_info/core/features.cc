@@ -49,6 +49,9 @@ const base::Feature kPageInfoHistoryDesktop{"PageInfoHistoryDesktop",
 
 const base::Feature kPageInfoHideSiteSettings{
     "PageInfoHideSiteSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kPageInfoCookiesSubpage{"PageInfoCookiesSubpage",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 }  // namespace page_info

@@ -33,4 +33,7 @@ const base::Feature kOverridePrivacySandboxSettingsLocalTesting{
 const base::Feature kDisablePrivacySandboxPrompts{
     "DisablePrivacySandboxPrompts", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPrivacySandboxFirstPartySetsUI{
+    "PrivacySandboxFirstPartySetsUI", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace privacy_sandbox
