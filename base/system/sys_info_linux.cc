@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <sstream>
 
@@ -65,7 +66,7 @@ uint64_t SysInfo::AmountOfAvailablePhysicalMemory(
   // The fallback logic (when there is no MemAvailable) would be more precise
   // if we had info about zones watermarks (/proc/zoneinfo).
   int res_kb = info.available != 0
-                   ? info.available - info.active_file
+                   ? std::max(info.available - info.active_file, 0)
                    : info.free + info.reclaimable + info.inactive_file;
   return checked_cast<uint64_t>(res_kb) * 1024;
 }
