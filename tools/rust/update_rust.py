@@ -27,7 +27,7 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
                  'scripts'))
 
-RUST_REVISION = 'f342bea9'
+RUST_REVISION = 'db8086eb'
 RUST_SUB_REVISION = 1
 
 # Trunk on 2022-07-14.
@@ -38,20 +38,20 @@ RUST_SUB_REVISION = 1
 CRUBIT_REVISION = 'd9b0ad4c09b46328dcc7a5ec28ce86cca56e0389'
 CRUBIT_SUB_REVISION = 1
 
-# If not None, use a Rust package build with an older LLVM version than
+# If not None, use a Rust package built with an older LLVM version than
 # specified in tools/clang/scripts/update.py. This is a fallback for when an
 # LLVM update breaks the Rust build.
 #
-# This should almost always be None. When a breakage happens the fallback
-# should be temporary. Once fixed, the Rust revision above should be updated and
-# FALLBACK_CLANG_VERSION should be reset to None.
-FALLBACK_CLANG_VERSION = 'llvmorg-15-init-15652-g89a99ec9-5'
+# This should almost always be None. When a breakage happens the fallback should
+# be temporary. Once fixed, the applicable revision(s) above should be updated
+# and FALLBACK_CLANG_VERSION should be reset to None.
+FALLBACK_CLANG_VERSION = None
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
 STAGE0_JSON_SHA256 = (
-    '6dc57c3a21867514f82b16cc3c9adc81c537fd5eab7dcfd9e5e4c0f77e4b0a5f')
+    'fd23038d8e54263d0284b513c5b242d2fabc70103e6afdbfb3cb27da889d6e21')
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))

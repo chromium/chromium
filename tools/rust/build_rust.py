@@ -92,6 +92,9 @@ EXCLUDED_TESTS = [
     'src/test/ui/numeric/numeric-cast.rs',
     # Temporarily disabled due to https://github.com/rust-lang/rust/issues/96497
     'src/test/codegen/issue-96497-slice-size-nowrap.rs',
+    # TODO(crbug.com/1347563): Re-enable when fixed.
+    'src/test/codegen/sanitizer-cfi-emit-type-checks.rs',
+    'src/test/codegen/sanitizer-cfi-emit-type-metadata-itanium-cxx-abi.rs',
 ]
 
 
