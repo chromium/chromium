@@ -54,6 +54,7 @@
 #include "chrome/common/crash_keys.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/profiler/process_type.h"
+#include "chrome/common/profiler/unwind_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/gpu/chrome_content_gpu_client.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
@@ -886,8 +887,11 @@ absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
   content::Profiling::ProcessStarted();
 
   // Setup tracing sampler profiler as early as possible at startup if needed.
+  // We pass in CreateCoreUnwindersFactory here since it lives in the chrome/
+  // layer while TracingSamplerProfiler is outside of chrome/.
   tracing_sampler_profiler_ =
-      tracing::TracingSamplerProfiler::CreateOnMainThread();
+      tracing::TracingSamplerProfiler::CreateOnMainThread(
+          base::BindRepeating(&CreateCoreUnwindersFactory));
 
 #if BUILDFLAG(IS_WIN)
   v8_crashpad_support::SetUp();
