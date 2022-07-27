@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FWUPD_FWUPD_DEVICE_H_
-#define CHROMEOS_DBUS_FWUPD_FWUPD_DEVICE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_FWUPD_DEVICE_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_FWUPD_DEVICE_H_
 
 #include <string>
 
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 // Structure to hold FwupdDevice data received from fwupd.
-struct COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdDevice {
+struct COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdDevice {
   FwupdDevice();
   FwupdDevice(const std::string& id, const std::string& device_name);
   FwupdDevice(const FwupdDevice& other);
@@ -25,6 +25,6 @@ struct COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdDevice {
 
 using FwupdDeviceList = std::vector<FwupdDevice>;
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_FWUPD_FWUPD_DEVICE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_FWUPD_DEVICE_H_

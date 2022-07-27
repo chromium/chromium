@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/fwupd/fwupd_properties.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
 
-#include "chromeos/dbus/fwupd/dbus_constants.h"
+#include "chromeos/ash/components/dbus/fwupd/dbus_constants.h"
 #include "dbus/object_proxy.h"
 #include "dbus/property.h"
 
-namespace chromeos {
+namespace ash {
 
 FwupdProperties::FwupdProperties(dbus::ObjectProxy* object_proxy,
                                  const PropertyChangedCallback& callback)
@@ -19,4 +19,4 @@ FwupdProperties::FwupdProperties(dbus::ObjectProxy* object_proxy,
 
 FwupdProperties::~FwupdProperties() = default;
 
-}  // namespace chromeos
+}  // namespace ash

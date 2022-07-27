@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/dbus/fwupd/fwupd_client.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 #include "content/public/browser/device_service.h"
 
 namespace ash {

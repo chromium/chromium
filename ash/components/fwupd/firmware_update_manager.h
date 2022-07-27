@@ -19,10 +19,10 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromeos/dbus/fwupd/fwupd_client.h"
-#include "chromeos/dbus/fwupd/fwupd_device.h"
-#include "chromeos/dbus/fwupd/fwupd_properties.h"
-#include "chromeos/dbus/fwupd/fwupd_update.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_device.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_update.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -36,7 +36,7 @@ class SimpleURLLoader;
 namespace ash {
 // FirmwareUpdateManager contains all logic that runs the firmware update SWA.
 class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
-    : public chromeos::FwupdClient::Observer,
+    : public FwupdClient::Observer,
       public firmware_update::mojom::UpdateProvider,
       public firmware_update::mojom::InstallController {
  public:
@@ -87,17 +87,16 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // FwupdClient::Observer:
   // When the fwupd DBus client gets a response with devices from fwupd,
   // it calls this function and passes the response.
-  void OnDeviceListResponse(chromeos::FwupdDeviceList* devices) override;
+  void OnDeviceListResponse(FwupdDeviceList* devices) override;
 
   // When the fwupd DBus client gets a response with updates from fwupd,
   // it calls this function and passes the response.
   void OnUpdateListResponse(const std::string& device_id,
-                            chromeos::FwupdUpdateList* updates) override;
+                            FwupdUpdateList* updates) override;
   void OnInstallResponse(bool success) override;
   // TODO(jimmyxgong): Implement this function to send property updates via
   // mojo.
-  void OnPropertiesChangedResponse(
-      chromeos::FwupdProperties* properties) override;
+  void OnPropertiesChangedResponse(FwupdProperties* properties) override;
 
   // Query all updates for all devices.
   void RequestAllUpdates();
@@ -133,13 +132,13 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
 
   // Callback handler after fetching the file descriptor.
   void OnGetFileDescriptor(const std::string& device_id,
-                           chromeos::FirmwareInstallOptions options,
+                           FirmwareInstallOptions options,
                            base::OnceCallback<void()> callback,
                            base::ScopedFD file_descriptor);
 
   // Query the fwupd DBus client to install an update for a certain device.
   void InstallUpdate(const std::string& device_id,
-                     chromeos::FirmwareInstallOptions options,
+                     FirmwareInstallOptions options,
                      base::OnceCallback<void()> callback,
                      base::File patch_file);
 
@@ -198,7 +197,7 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
 
   // Map of a device ID to `FwupdDevice` which is waiting for the list
   // of updates.
-  base::flat_map<std::string, chromeos::FwupdDevice> devices_pending_update_;
+  base::flat_map<std::string, FwupdDevice> devices_pending_update_;
 
   // Set of device IDs with critical updates that we've already shown a
   // notification for.

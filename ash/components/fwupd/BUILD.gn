@@ -14,7 +14,7 @@ component("fwupd") {
     "//ash/public/mojom",
     "//ash/webui/firmware_update_ui/mojom",
     "//base:base",
-    "//chromeos/dbus/fwupd",
+    "//chromeos/ash/components/dbus/fwupd",
     "//crypto",
     "//dbus",
   ]
@@ -39,7 +39,7 @@ source_set("unit_tests") {
     "//ash/public/mojom",
     "//ash/webui/firmware_update_ui/mojom",
     "//base/test:test_support",
-    "//chromeos/dbus/fwupd",
+    "//chromeos/ash/components/dbus/fwupd",
     "//dbus:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",

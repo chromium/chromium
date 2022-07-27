@@ -1067,8 +1067,8 @@
     },
     'firmware_update': {
       'filepath': 'ash/components/fwupd/|' \
-                  'chromeos/dbus/fwupd/|' \
-                  'ash/webui/firmware_update_ui/'
+                  'ash/webui/firmware_update_ui/' \
+                  'chromeos/ash/components/dbus/fwupd/|'
     },
     'freetype_update': {
       'filepath': 'third_party/freetype/README.chromium',

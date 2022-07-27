@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/fwupd/fwupd_device.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_device.h"
 
-namespace chromeos {
+namespace ash {
 
 FwupdDevice::FwupdDevice() = default;
 
@@ -15,4 +15,4 @@ FwupdDevice::FwupdDevice(const FwupdDevice& other) = default;
 FwupdDevice& FwupdDevice::operator=(const FwupdDevice& other) = default;
 FwupdDevice::~FwupdDevice() = default;
 
-}  // namespace chromeos
+}  // namespace ash

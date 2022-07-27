@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/fwupd/fwupd_update.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_update.h"
 
 #include "base/files/file_path.h"
 
-namespace chromeos {
+namespace ash {
 
 FwupdUpdate::FwupdUpdate() = default;
 
@@ -25,4 +25,4 @@ FwupdUpdate::FwupdUpdate(FwupdUpdate&& other) = default;
 FwupdUpdate& FwupdUpdate::operator=(FwupdUpdate&& other) = default;
 FwupdUpdate::~FwupdUpdate() = default;
 
-}  // namespace chromeos
+}  // namespace ash

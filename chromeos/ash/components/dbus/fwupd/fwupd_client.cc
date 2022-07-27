@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/fwupd/fwupd_client.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 
 #include <memory>
 #include <utility>
@@ -11,15 +11,15 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/values.h"
-#include "chromeos/dbus/fwupd/dbus_constants.h"
-#include "chromeos/dbus/fwupd/fake_fwupd_client.h"
-#include "chromeos/dbus/fwupd/fwupd_properties.h"
+#include "chromeos/ash/components/dbus/fwupd/dbus_constants.h"
+#include "chromeos/ash/components/dbus/fwupd/fake_fwupd_client.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -457,4 +457,4 @@ void FwupdClient::Shutdown() {
   delete g_instance;
 }
 
-}  // namespace chromeos
+}  // namespace ash

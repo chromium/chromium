@@ -24,7 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chromeos/dbus/fwupd/fwupd_client.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 #include "crypto/sha2.h"
 #include "dbus/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -156,7 +156,7 @@ bool CreateDirIfNotExists(const base::FilePath& path) {
 }
 
 firmware_update::mojom::FirmwareUpdatePtr CreateUpdate(
-    const chromeos::FwupdUpdate& update_details,
+    const FwupdUpdate& update_details,
     const std::string& device_id,
     const std::string& device_name) {
   auto update = firmware_update::mojom::FirmwareUpdate::New();
@@ -254,8 +254,8 @@ FirmwareUpdateManager::FirmwareUpdateManager()
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
-  DCHECK(chromeos::FwupdClient::Get());
-  chromeos::FwupdClient::Get()->AddObserver(this);
+  DCHECK(FwupdClient::Get());
+  FwupdClient::Get()->AddObserver(this);
 
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;
@@ -263,7 +263,7 @@ FirmwareUpdateManager::FirmwareUpdateManager()
 
 FirmwareUpdateManager::~FirmwareUpdateManager() {
   DCHECK_EQ(this, g_instance);
-  chromeos::FwupdClient::Get()->RemoveObserver(this);
+  FwupdClient::Get()->RemoveObserver(this);
   g_instance = nullptr;
 }
 
@@ -370,11 +370,11 @@ void FirmwareUpdateManager::RequestAllUpdates() {
 }
 
 void FirmwareUpdateManager::RequestDevices() {
-  chromeos::FwupdClient::Get()->RequestDevices();
+  FwupdClient::Get()->RequestDevices();
 }
 
 void FirmwareUpdateManager::RequestUpdates(const std::string& device_id) {
-  chromeos::FwupdClient::Get()->RequestUpdates(device_id);
+  FwupdClient::Get()->RequestUpdates(device_id);
 }
 
 // TODO(jimmyxgong): Currently only looks for the local cache for the update
@@ -538,7 +538,7 @@ void FirmwareUpdateManager::OnUrlDownloadedToFile(
 
 void FirmwareUpdateManager::OnGetFileDescriptor(
     const std::string& device_id,
-    chromeos::FirmwareInstallOptions options,
+    FirmwareInstallOptions options,
     base::OnceCallback<void()> callback,
     base::ScopedFD file_descriptor) {
   if (!file_descriptor.is_valid()) {
@@ -568,25 +568,23 @@ void FirmwareUpdateManager::OnGetFileDescriptor(
                      std::move(options), std::move(callback)));
 }
 
-void FirmwareUpdateManager::InstallUpdate(
-    const std::string& device_id,
-    chromeos::FirmwareInstallOptions options,
-    base::OnceCallback<void()> callback,
-    base::File patch_file) {
+void FirmwareUpdateManager::InstallUpdate(const std::string& device_id,
+                                          FirmwareInstallOptions options,
+                                          base::OnceCallback<void()> callback,
+                                          base::File patch_file) {
   if (!patch_file.IsValid()) {
     inflight_update_.reset();
     std::move(callback).Run();
     return;
   }
 
-  chromeos::FwupdClient::Get()->InstallUpdate(
+  FwupdClient::Get()->InstallUpdate(
       device_id, base::ScopedFD(patch_file.TakePlatformFile()), options);
 
   std::move(callback).Run();
 }
 
-void FirmwareUpdateManager::OnDeviceListResponse(
-    chromeos::FwupdDeviceList* devices) {
+void FirmwareUpdateManager::OnDeviceListResponse(FwupdDeviceList* devices) {
   DCHECK(devices);
   DCHECK(!HasPendingUpdates());
   // Clear all cached updates prior to fetching the new update list.
@@ -617,9 +615,8 @@ void FirmwareUpdateManager::ShowNotificationIfRequired() {
   }
 }
 
-void FirmwareUpdateManager::OnUpdateListResponse(
-    const std::string& device_id,
-    chromeos::FwupdUpdateList* updates) {
+void FirmwareUpdateManager::OnUpdateListResponse(const std::string& device_id,
+                                                 FwupdUpdateList* updates) {
   DCHECK(updates);
   DCHECK(base::Contains(devices_pending_update_, device_id));
 
@@ -690,7 +687,7 @@ void FirmwareUpdateManager::BindInterface(
 }
 
 void FirmwareUpdateManager::OnPropertiesChangedResponse(
-    chromeos::FwupdProperties* properties) {
+    FwupdProperties* properties) {
   if (!properties || !update_progress_observer_.is_bound()) {
     return;
   }

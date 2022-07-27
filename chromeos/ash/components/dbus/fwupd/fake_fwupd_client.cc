@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/fwupd/fake_fwupd_client.h"
+#include "chromeos/ash/components/dbus/fwupd/fake_fwupd_client.h"
 
-#include "chromeos/dbus/fwupd/fwupd_device.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_device.h"
 
 #include <string>
 
@@ -14,7 +14,7 @@ const char kFakeDeviceIdForTesting[] = "0123";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 FakeFwupdClient::FakeFwupdClient() = default;
 FakeFwupdClient::~FakeFwupdClient() = default;
@@ -52,4 +52,4 @@ void FakeFwupdClient::InstallUpdate(const std::string& device_id,
     observer.OnInstallResponse(install_success_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FWUPD_FWUPD_CLIENT_H_
-#define CHROMEOS_DBUS_FWUPD_FWUPD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_FWUPD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_FWUPD_CLIENT_H_
 
 #include <map>
 #include <memory>
@@ -12,16 +12,16 @@
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/observer_list.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_device.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_update.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/fwupd/fwupd_device.h"
-#include "chromeos/dbus/fwupd/fwupd_properties.h"
-#include "chromeos/dbus/fwupd/fwupd_update.h"
 
-namespace chromeos {
+namespace ash {
 using FirmwareInstallOptions = std::map<std::string, bool>;
 
 // FwupdClient is used for handling signals from the fwupd daemon.
-class COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdClient : public DBusClient {
+class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient : public DBusClient {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -83,6 +83,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdClient : public DBusClient {
 
   base::ObserverList<Observer> observers_;
 };
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_FWUPD_FWUPD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_FWUPD_CLIENT_H_

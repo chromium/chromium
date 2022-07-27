@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FWUPD_DBUS_CONSTANTS_H_
-#define CHROMEOS_DBUS_FWUPD_DBUS_CONSTANTS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_DBUS_CONSTANTS_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_DBUS_CONSTANTS_H_
 
-namespace chromeos {
+namespace ash {
 
 const char kFwupdServiceName[] = "org.freedesktop.fwupd";
 const char kFwupdServicePath[] = "/";
@@ -15,6 +15,6 @@ const char kFwupdGetUpgradesMethodName[] = "GetUpgrades";
 const char kFwupdGetDevicesMethodName[] = "GetDevices";
 const char kFwupdInstallMethodName[] = "Install";
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_FWUPD_DBUS_CONSTANTS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_DBUS_CONSTANTS_H_

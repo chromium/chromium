@@ -25,7 +25,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/fwupd/fwupd_client.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 #include "components/user_manager/user_type.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -39,7 +39,6 @@
 #include "ui/message_center/fake_message_center.h"
 #include "ui/message_center/message_center.h"
 
-using chromeos::FwupdClient;
 using message_center::MessageCenter;
 using message_center::Notification;
 using ::testing::_;

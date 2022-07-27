@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/fwupd/fwupd_client.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/fwupd/fwupd_properties.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -48,27 +48,26 @@ void RunResponseOrErrorCallback(
   std::move(callback).Run(response.get(), error_response.get());
 }
 
-class MockObserver : public chromeos::FwupdClient::Observer {
+class MockObserver : public ash::FwupdClient::Observer {
  public:
   MOCK_METHOD(void,
               OnDeviceListResponse,
-              (chromeos::FwupdDeviceList * devices),
+              (ash::FwupdDeviceList * devices),
               (override));
   MOCK_METHOD(void,
               OnUpdateListResponse,
-              (const std::string& device_id,
-               chromeos::FwupdUpdateList* updates),
+              (const std::string& device_id, ash::FwupdUpdateList* updates),
               (override));
   MOCK_METHOD(void, OnInstallResponse, (bool success), (override));
   MOCK_METHOD(void,
               OnPropertiesChangedResponse,
-              (chromeos::FwupdProperties * properties),
+              (ash::FwupdProperties * properties),
               (override));
 };
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 class FwupdClientTest : public testing::Test {
  public:
@@ -91,7 +90,7 @@ class FwupdClientTest : public testing::Test {
     EXPECT_CALL(*proxy_, DoConnectToSignal(_, _, _, _))
         .WillRepeatedly(Invoke(this, &FwupdClientTest::ConnectToSignal));
 
-    expected_properties_ = std::make_unique<chromeos::FwupdProperties>(
+    expected_properties_ = std::make_unique<FwupdProperties>(
         bus_->GetObjectProxy(kFwupdServiceName, fwupd_service_path),
         base::DoNothing());
 
@@ -280,7 +279,7 @@ class FwupdClientTest : public testing::Test {
 
   scoped_refptr<dbus::MockObjectProxy> proxy_;
   FwupdClient* fwupd_client_ = nullptr;
-  std::unique_ptr<chromeos::FwupdProperties> expected_properties_;
+  std::unique_ptr<FwupdProperties> expected_properties_;
 
  private:
   // Handles calls to |proxy_|'s ConnectToSignal() method.
@@ -673,4 +672,4 @@ TEST_F(FwupdClientTest, NoDescription) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace chromeos
+}  // namespace ash

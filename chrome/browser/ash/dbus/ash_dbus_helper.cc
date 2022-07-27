@@ -38,6 +38,7 @@
 #include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
 #include "chromeos/ash/components/dbus/federated/federated_client.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox_reverse_client.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 #include "chromeos/ash/components/dbus/gnubby/gnubby_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
 #include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
@@ -78,7 +79,6 @@
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
-#include "chromeos/dbus/fwupd/fwupd_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
@@ -164,7 +164,7 @@ void InitializeDBus() {
   InitializeDBusClient<EasyUnlockClient>(bus);
   InitializeDBusClient<FederatedClient>(bus);
   InitializeDBusClient<FuseBoxReverseClient>(bus);
-  InitializeDBusClient<chromeos::FwupdClient>(bus);
+  InitializeDBusClient<FwupdClient>(bus);
   InitializeDBusClient<GnubbyClient>(bus);
   hermes_clients::Initialize(bus);
 #if BUILDFLAG(ENABLE_HIBERNATE)
@@ -298,7 +298,7 @@ void ShutdownDBus() {
 #endif
   hermes_clients::Shutdown();
   GnubbyClient::Shutdown();
-  chromeos::FwupdClient::Shutdown();
+  FwupdClient::Shutdown();
   FuseBoxReverseClient::Shutdown();
   FederatedClient::Shutdown();
   EasyUnlockClient::Shutdown();

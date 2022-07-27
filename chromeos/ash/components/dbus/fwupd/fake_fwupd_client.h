@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FWUPD_FAKE_FWUPD_CLIENT_H_
-#define CHROMEOS_DBUS_FWUPD_FAKE_FWUPD_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_FAKE_FWUPD_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_FAKE_FWUPD_CLIENT_H_
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "chromeos/dbus/fwupd/fwupd_client.h"
+#include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 
-namespace chromeos {
+namespace ash {
 
-class COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FakeFwupdClient
-    : public FwupdClient {
+class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FakeFwupdClient : public FwupdClient {
  public:
   FakeFwupdClient();
   FakeFwupdClient(const FakeFwupdClient&) = delete;
@@ -31,6 +30,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FakeFwupdClient
   bool install_success_ = false;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_FWUPD_FAKE_FWUPD_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_FAKE_FWUPD_CLIENT_H_

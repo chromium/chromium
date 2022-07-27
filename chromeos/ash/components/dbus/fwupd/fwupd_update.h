@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FWUPD_FWUPD_UPDATE_H_
-#define CHROMEOS_DBUS_FWUPD_FWUPD_UPDATE_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_FWUPD_UPDATE_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_FWUPD_UPDATE_H_
 
 #include <string>
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 
-namespace chromeos {
+namespace ash {
 
 // Structure to hold update details received from fwupd.
-struct COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdUpdate {
+struct COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdUpdate {
   FwupdUpdate();
   FwupdUpdate(const std::string& version,
               const std::string& description,
@@ -33,6 +33,6 @@ struct COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdUpdate {
 
 using FwupdUpdateList = std::vector<FwupdUpdate>;
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_FWUPD_FWUPD_UPDATE_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_FWUPD_UPDATE_H_
