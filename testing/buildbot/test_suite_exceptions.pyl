@@ -3312,6 +3312,13 @@
       'Mac12 Tests': {
         'ci_only': True,
       },
+      'android-nougat-x86-rel': {
+        'args': [
+          # For whatever reason, automatic browser selection on this bot chooses
+          # webview instead of the full browser, so explicitly specify it here.
+          '--browser=android-chromium',
+        ],
+      },
       'chromeos-amd64-generic-rel': {
         'swarming': {
           'quickrun_shards': 24,

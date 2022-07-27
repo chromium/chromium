@@ -7521,7 +7521,8 @@
       {
         "args": [
           "--extra-browser-args=--enable-crashpad",
-          "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android24.textpb",
+          "--browser=android-chromium"
         ],
         "isolate_name": "telemetry_perf_unittests_android_chrome",
         "isolate_profile_data": true,

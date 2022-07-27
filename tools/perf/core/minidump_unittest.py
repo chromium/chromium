@@ -65,7 +65,6 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   @decorators.Disabled(
       'chromeos-local',
       'win7',  # https://crbug.com/1084931
-      'android-nougat',  # Flaky: https://crbug.com/1342706
   )
   def testSymbolizeMinidump(self):
     # Wait for the browser to restart fully before crashing
@@ -111,7 +110,6 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   @decorators.Disabled(
       'chromeos-local',
       'win7',  # https://crbug.com/1084931
-      'android-nougat',  # Flaky: https://crbug.com/1342706
   )
   def testMultipleCrashMinidumps(self):
     # Wait for the browser to restart fully before crashing
@@ -204,7 +202,6 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   @decorators.Disabled(
       'chromeos-local',
       'win7',  # https://crbug.com/1084931
-      'android-nougat',  # Flaky: https://crbug.com/1342706
   )
   def testMinidumpFromRendererHang(self):
     """Tests that renderer hangs result in minidumps.
@@ -226,7 +223,7 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
       # The timeout provided is the same one used for crashing the processes, so
       # don't make it too short.
       self._browser.tabs[-1].EvaluateJavaScript('var cat = "dog";', timeout=10)
-    except exceptions.AppCrashException as e:
+    except (exceptions.AppCrashException, exceptions.TimeoutException) as e:
       self.assertTrue(e.is_valid_dump)
       # We should get one minidump from the GPU process (gl::Crash()) and one
       # minidump from the renderer process (base::debug::BreakDebugger()).
