@@ -78,6 +78,7 @@ AutocompleteMatch OpenTabProvider::CreateOpenTabMatch(
                           /*deletable=*/false, AutocompleteMatchType::OPEN_TAB);
 
   match.destination_url = url;
+  match.fill_into_edit = base::UTF8ToUTF16(url.spec());
 
   // Setting this ensures that the result deduplication doesn't prioritize
   // another default match over an open tab result.
