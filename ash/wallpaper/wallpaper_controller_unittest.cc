@@ -4373,20 +4373,28 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
 
   SimulateUserLogin(account_id_1);
 
-  WallpaperInfo info = {kFakeGooglePhotosPhotoId, WALLPAPER_LAYOUT_CENTER,
-                        WallpaperType::kOnceGooglePhotos,
-                        DayBeforeYesterdayish()};
-  controller_->SetUserWallpaperInfo(account_id_1, info);
+  GooglePhotosWallpaperParams params(account_id_1, kFakeGooglePhotosPhotoId,
+                                     /*daily_refresh_enabled=*/false,
+                                     WallpaperLayout::WALLPAPER_LAYOUT_STRETCH,
+                                     /*preview_mode=*/false,
+                                     /*dedup_key=*/absl::nullopt);
+  controller_->SetGooglePhotosWallpaper(params, base::DoNothing());
+  task_environment()->RunUntilIdle();
 
   Time run_time =
       controller_->GetUpdateWallpaperTimerForTesting().desired_run_time();
   base::TimeDelta delay = run_time - Time::Now();
 
-  base::TimeDelta one_day = base::Days(1);
-  // Leave a little wiggle room, as well as account for the hour fuzzing that
-  // we do.
-  EXPECT_GE(delay, one_day - base::Minutes(1));
-  EXPECT_LE(delay, one_day + base::Minutes(61));
+  // If the feature is disabled, setting a GooglePhotos wallpaper is a nop.
+  if (GooglePhotosEnabled()) {
+    base::TimeDelta one_day = base::Days(1);
+    // Leave a little wiggle room, as well as account for the hour fuzzing that
+    // we do.
+    EXPECT_GE(delay, one_day - base::Minutes(1));
+    EXPECT_LE(delay, one_day + base::Minutes(61));
+  } else {
+    EXPECT_FALSE(controller_->GetUpdateWallpaperTimerForTesting().IsRunning());
+  }
 
   client_.set_fetch_google_photos_photo_fails(true);
 
