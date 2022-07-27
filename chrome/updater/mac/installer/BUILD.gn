@@ -19,7 +19,6 @@ zip("updater_zip") {
     "$root_build_dir/${updater_product_full_name}.app/Contents/PkgInfo",
   ]
   deps = [ "//chrome/updater/mac:updater_bundle" ]
-  build_stamp = true
 }
 
 executable("metainstaller") {
