@@ -3360,7 +3360,6 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Win11 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/trigger-data-sanitization.sub.https.html?source-type=navigation [ Failure Timeout ]
-crbug.com/626703 external/wpt/css/cssom/caretPositionFromPoint-with-transformation.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/key-scrolling.https.html [ Failure Timeout ]
 crbug.com/626703 virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/trigger-registration.sub.https.html?method=xhr [ Pass Timeout ]
 crbug.com/626703 virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/trigger-registration.sub.https.html?method=xhr&eligible=trigger [ Pass Timeout ]
@@ -4398,6 +4397,9 @@ crbug.com/764489 editing/execCommand/format-block-multiple-paragraphs-in-pre.htm
 
 # Previous/NextWordPosition crossing editing boundaries.
 crbug.com/900060 editing/selection/mixed-editability-8.html [ Failure ]
+
+# WPT for the missing caretPositionFromPoint implementation
+crbug.com/388976 external/wpt/css/cssom/caretPositionFromPoint-with-transformation.html [ Timeout ]
 
 # Sheriff failure 2017-09-18
 crbug.com/766404 [ Mac ] plugins/keyboard-events.html [ Failure Pass ]
