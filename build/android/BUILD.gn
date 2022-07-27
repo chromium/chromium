@@ -90,10 +90,14 @@ if (enable_java_templates) {
   }
 }
 
+# TODO(go/turn-down-test-results): Remove once we turn down
+# test-results.appspot.com
 python_library("test_result_presentations_py") {
   pydeps_file = "pylib/results/presentation/test_results_presentation.pydeps"
   data = [
     "//build/android/pylib/results/presentation/template",
+    "//build/android/pylib/results/presentation/javascript/main_html.js",
+    "//third_party/catapult/third_party/gsutil/",
     "//third_party/jinja2/debug.py",
     "//third_party/six",
   ]
