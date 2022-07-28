@@ -13,8 +13,6 @@ import re
 import os
 import pathlib
 
-USE_PYTHON3 = True
-
 INFOBAR_DELEGATE_H = 'components/infobars/core/infobar_delegate.h'
 INFOBAR_ANDROID_FOLDERS = (
     'chrome/browser/ui/android/infobars',
