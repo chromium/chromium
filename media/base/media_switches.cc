@@ -791,7 +791,7 @@ const base::Feature kUsePooledSharedImageVideoProvider{
 // Historically we hardcoded sRGB for color space. This flags controls if we
 // pass real color space to VideoFrame/SharedImages.
 const base::Feature kUseRealColorSpaceForAndroidVideo{
-    "UseRealColorSpaceForAndroidVideo", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UseRealColorSpaceForAndroidVideo", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

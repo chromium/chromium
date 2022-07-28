@@ -140,7 +140,7 @@ const base::Feature kWebViewNewInvalidateHeuristic{
 // color space support in surface control. This controls if we want to use real
 // color space in DisplayCompositor.
 const base::Feature kUseRealVideoColorSpaceForDisplay{
-    "UseRealVideoColorSpaceForDisplay", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UseRealVideoColorSpaceForDisplay", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // Used by CC to throttle frame production of older surfaces. Used by the
