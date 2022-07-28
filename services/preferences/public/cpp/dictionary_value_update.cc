@@ -21,7 +21,9 @@ DictionaryValueUpdate::DictionaryValueUpdate(UpdateCallback report_update,
                                              std::vector<std::string> path)
     : report_update_(std::move(report_update)),
       value_(value),
-      path_(std::move(path)) {}
+      path_(std::move(path)) {
+  DCHECK(value_);
+}
 
 DictionaryValueUpdate::~DictionaryValueUpdate() = default;
 
@@ -165,7 +167,7 @@ bool DictionaryValueUpdate::GetString(base::StringPiece path,
 bool DictionaryValueUpdate::GetDictionary(
     base::StringPiece path,
     const base::DictionaryValue** out_value) const {
-  return AsConstDictionary()->GetDictionary(path, out_value);
+  return base::as_const(value_)->GetDictionary(path, out_value);
 }
 
 bool DictionaryValueUpdate::GetDictionary(
@@ -182,7 +184,7 @@ bool DictionaryValueUpdate::GetDictionary(
 
 bool DictionaryValueUpdate::GetList(base::StringPiece path,
                                     const base::ListValue** out_value) const {
-  return AsConstDictionary()->GetList(path, out_value);
+  return base::as_const(value_)->GetList(path, out_value);
 }
 
 bool DictionaryValueUpdate::GetList(base::StringPiece path,
@@ -337,13 +339,13 @@ bool DictionaryValueUpdate::RemovePath(
   return true;
 }
 
-base::DictionaryValue* DictionaryValueUpdate::AsDictionary() {
+base::Value::Dict* DictionaryValueUpdate::AsDict() {
   RecordSplitPath(std::vector<base::StringPiece>());
-  return value_;
+  return &value_->GetDict();
 }
 
-const base::DictionaryValue* DictionaryValueUpdate::AsConstDictionary() const {
-  return value_;
+const base::Value::Dict* DictionaryValueUpdate::AsConstDict() const {
+  return &value_->GetDict();
 }
 
 void DictionaryValueUpdate::RecordKey(base::StringPiece key) {

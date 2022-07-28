@@ -141,8 +141,8 @@ class DictionaryValueUpdate {
   bool RemovePath(base::StringPiece path,
                   std::unique_ptr<base::Value>* out_value);
 
-  base::DictionaryValue* AsDictionary();
-  const base::DictionaryValue* AsConstDictionary() const;
+  base::Value::Dict* AsDict();
+  const base::Value::Dict* AsConstDict() const;
 
  private:
   void RecordPath(base::StringPiece path);

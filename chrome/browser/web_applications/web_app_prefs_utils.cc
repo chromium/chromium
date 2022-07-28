@@ -79,9 +79,7 @@ void RemoveEmptyWebAppPrefs(PrefService* pref_service) {
                                            prefs::kWebAppsPreferences);
 
   std::vector<AppId> apps_to_remove;
-  for (auto item : update.Get()->AsDictionary()->DictItems()) {
-    const AppId& app_id = item.first;
-    const base::Value& dict = item.second;
+  for (const auto [app_id, dict] : *update.Get()->AsDict()) {
     if (dict.is_dict() && dict.DictEmpty())
       apps_to_remove.push_back(app_id);
   }

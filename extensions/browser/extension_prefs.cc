@@ -1640,11 +1640,8 @@ bool ExtensionPrefs::FinishDelayedInstallInfo(
       kPrefInstallTime, base::NumberToString(install_time.ToInternalValue()));
 
   // Commit the delayed install data.
-  for (base::DictionaryValue::Iterator it(
-           *pending_install_dict->AsConstDictionary());
-       !it.IsAtEnd(); it.Advance()) {
-    extension_dict->Set(it.key(),
-                        std::make_unique<base::Value>(it.value().Clone()));
+  for (const auto [key, value] : *pending_install_dict->AsConstDict()) {
+    extension_dict->Set(key, std::make_unique<base::Value>(value.Clone()));
   }
   FinishExtensionInfoPrefs(extension_id, install_time, needs_sort_ordinal,
                            suggested_page_ordinal, extension_dict.get());
@@ -1811,10 +1808,9 @@ void ExtensionPrefs::ClearLastLaunchTimes() {
   // Collect all the keys to remove the last launched preference from.
   prefs::ScopedDictionaryPrefUpdate update(prefs_, pref_names::kExtensions);
   auto update_dict = update.Get();
-  for (base::DictionaryValue::Iterator i(*update_dict->AsConstDictionary());
-       !i.IsAtEnd(); i.Advance()) {
+  for (const auto [key, value] : *update_dict->AsConstDict()) {
     std::unique_ptr<prefs::DictionaryValueUpdate> extension_dict;
-    if (!update_dict->GetDictionary(i.key(), &extension_dict))
+    if (!update_dict->GetDictionary(key, &extension_dict))
       continue;
 
     if (extension_dict->HasKey(kPrefLastLaunchTime))
