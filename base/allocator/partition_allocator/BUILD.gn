@@ -277,8 +277,6 @@ target(partition_alloc_target_type, "partition_alloc") {
     ":debugging_buildflags",
     ":logging_buildflags",
     ":partition_alloc_buildflags",
-    "//build:branding_buildflags",
-    "//build/config/compiler:compiler_buildflags",
   ]
 
   configs += [
@@ -407,8 +405,6 @@ group("buildflags") {
     ":partition_alloc_buildflags",
   ]
 }
-
 # TODO(crbug.com/1151236): After making partition_alloc a standalone library,
 # move test code here. i.e. test("partition_alloc_tests") { ... } and
 # test("partition_alloc_perftests").
-

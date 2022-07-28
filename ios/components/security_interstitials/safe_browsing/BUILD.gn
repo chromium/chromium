@@ -27,6 +27,7 @@ source_set("safe_browsing") {
 
   deps = [
     "//base",
+    "//build:branding_buildflags",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/prefs",
