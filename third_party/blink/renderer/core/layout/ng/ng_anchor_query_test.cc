@@ -61,6 +61,110 @@ std::ostream& operator<<(std::ostream& os, const AnchorTestData& value) {
   return os << value.name << ": " << value.rect;
 }
 
+TEST_F(NGAnchorQueryTest, AnchorNameAdd) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    html, body {
+      margin: 0;
+      width: 800px;
+    }
+    #div1 {
+      width: 50px;
+      height: 20px;
+    }
+    .after #div1 {
+      anchor-name: --div1a;
+    }
+    </style>
+    <div id="container">
+      <div id="div1"></div>
+    </div>
+  )HTML");
+  Element* container = GetElementById("container");
+  const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
+  EXPECT_FALSE(anchor_query);
+
+  // Add the "after" class and test anchors are updated accordingly.
+  container->classList().Add("after");
+  UpdateAllLifecyclePhasesForTest();
+  anchor_query = AnchorQuery(*container);
+  ASSERT_NE(anchor_query, nullptr);
+  EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
+              testing::ElementsAre(
+                  AnchorTestData{"--div1a", PhysicalRect(0, 0, 50, 20)}));
+}
+
+TEST_F(NGAnchorQueryTest, AnchorNameChange) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    html, body {
+      margin: 0;
+      width: 800px;
+    }
+    #div1 {
+      anchor-name: --div1;
+      width: 50px;
+      height: 20px;
+    }
+    .after #div1 {
+      anchor-name: --div1a;
+    }
+    </style>
+    <div id="container">
+      <div id="div1"></div>
+    </div>
+  )HTML");
+  Element* container = GetElementById("container");
+  const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
+  ASSERT_NE(anchor_query, nullptr);
+  EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
+              testing::ElementsAre(
+                  AnchorTestData{"--div1", PhysicalRect(0, 0, 50, 20)}));
+
+  // Add the "after" class and test anchors are updated accordingly.
+  container->classList().Add("after");
+  UpdateAllLifecyclePhasesForTest();
+  anchor_query = AnchorQuery(*container);
+  ASSERT_NE(anchor_query, nullptr);
+  EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
+              testing::ElementsAre(
+                  AnchorTestData{"--div1a", PhysicalRect(0, 0, 50, 20)}));
+}
+
+TEST_F(NGAnchorQueryTest, AnchorNameRemove) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    html, body {
+      margin: 0;
+      width: 800px;
+    }
+    #div1 {
+      anchor-name: --div1;
+      width: 50px;
+      height: 20px;
+    }
+    .after #div1 {
+      anchor-name: none;
+    }
+    </style>
+    <div id="container">
+      <div id="div1"></div>
+    </div>
+  )HTML");
+  Element* container = GetElementById("container");
+  const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(*container);
+  ASSERT_NE(anchor_query, nullptr);
+  EXPECT_THAT(AnchorTestData::ToList(*anchor_query),
+              testing::ElementsAre(
+                  AnchorTestData{"--div1", PhysicalRect(0, 0, 50, 20)}));
+
+  // Add the "after" class and test anchors are updated accordingly.
+  container->classList().Add("after");
+  UpdateAllLifecyclePhasesForTest();
+  anchor_query = AnchorQuery(*container);
+  EXPECT_FALSE(anchor_query);
+}
+
 TEST_F(NGAnchorQueryTest, BlockFlow) {
   SetBodyInnerHTML(R"HTML(
     <style>
