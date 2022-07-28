@@ -2992,6 +2992,10 @@ std::u16string BrowserView::GetAccessibleTabLabel(bool include_app_name,
     }
   }
 
+  // Tab is pinned.
+  if (tabstrip_->IsTabPinned(tabstrip_->tab_at(index)))
+    title = l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_PINNED_FORMAT, title);
+
   // Tab has crashed.
   if (tabstrip_->IsTabCrashed(index))
     return l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_CRASHED_FORMAT, title);
