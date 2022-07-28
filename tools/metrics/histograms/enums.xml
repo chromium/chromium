@@ -11904,6 +11904,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Consistent"/>
 </enum>
 
+<enum name="BooleanContained">
+  <int value="0" label="Not contained"/>
+  <int value="1" label="Contained"/>
+</enum>
+
 <enum name="BooleanContainedMeCard">
   <int value="0" label="Did not contain me card."/>
   <int value="1" label="Contained me card."/>

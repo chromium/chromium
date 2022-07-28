@@ -387,6 +387,15 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest, MultipleClusters) {
       "History.Clusters.Backend.NumKeywordsPerCluster.Min", 0, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.NumKeywordsPerCluster.Max", 0, 1);
+
+  // This is coming from the Journeys page so expect that the per-cluster
+  // metrics are not collected.
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.Backend.ClusterContainsSearch", 0);
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.Backend.NumKeywordsPerCluster", 0);
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.Backend.NumVisitsPerCluster", 0);
 }
 
 TEST_F(OnDeviceClusteringWithoutContentBackendTest,
@@ -415,7 +424,7 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
   visits.push_back(visit3);
 
   std::vector<history::Cluster> result_clusters =
-      ClusterVisits(ClusteringRequestSource::kJourneysPage, visits);
+      ClusterVisits(ClusteringRequestSource::kKeywordCacheGeneration, visits);
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
               ElementsAre(ElementsAre(testing::VisitResult(3, 1.0)),
                           ElementsAre(testing::VisitResult(2, 1.0),
@@ -428,6 +437,19 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
       "History.Clusters.Backend.NumKeywordsPerCluster.Min", 0, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.NumKeywordsPerCluster.Max", 0, 1);
+
+  // This is coming from the keyword cache generation so expect that the
+  // per-cluster metrics are collected.
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.ClusterContainsSearch", false, 2);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.NumKeywordsPerCluster", 0, 2);
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.Backend.NumVisitsPerCluster", 2);
+  histogram_tester.ExpectBucketCount(
+      "History.Clusters.Backend.NumVisitsPerCluster", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "History.Clusters.Backend.NumVisitsPerCluster", 2, 1);
 }
 
 class OnDeviceClusteringWithContentBackendTest
