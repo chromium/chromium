@@ -32,6 +32,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
@@ -58,6 +59,7 @@ const test::UIPath kUsageStats = {"oobe-eula-md", "usageStats"};
 const test::UIPath kAdditionalTermsLink = {"oobe-eula-md", "additionalTerms"};
 const test::UIPath kAdditionalTermsDialog = {"oobe-eula-md", "additionalToS"};
 const test::UIPath kLearnMoreLink = {"oobe-eula-md", "learnMore"};
+const test::UIPath kBackButton = {"oobe-eula-md", "backButton"};
 
 const char kRemoraRequisition[] = "remora";
 
@@ -340,6 +342,12 @@ IN_PROC_BROWSER_TEST_F(EulaTest, SkippedEula) {
   EXPECT_FALSE(g_browser_process->local_state()->GetBoolean(
       metrics::prefs::kMetricsReportingEnabled));
   EXPECT_FALSE(GetGoogleCollectStatsConsent());
+}
+
+IN_PROC_BROWSER_TEST_F(EulaTest, ClickBack) {
+  ShowEulaScreen();
+  test::OobeJS().ClickOnPath(kBackButton);
+  OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
 }
 
 }  // namespace

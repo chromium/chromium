@@ -1448,6 +1448,11 @@ void WizardController::OnEulaScreenExit(EulaScreen::Result result) {
       OnEulaAccepted(false /*usage_statistics_reporting_enabled*/);
       break;
     case EulaScreen::Result::BACK:
+      DCHECK(!demo_setup_controller_);
+      ShowNetworkScreen();
+      break;
+    case EulaScreen::Result::BACK_DEMO_MODE:
+      DCHECK(demo_setup_controller_);
       ShowDemoModePreferencesScreen();
       break;
   }

@@ -993,11 +993,11 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest, ControlFlowEulaDeclined) {
   mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED_REGULAR);
 
   CheckCurrentScreen(EulaView::kScreenId);
-  EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
   mock_eula_screen_->ExitScreen(EulaScreen::Result::BACK);
 
-  CheckCurrentScreen(MockDemoPreferencesScreenView::kScreenId);
+  CheckCurrentScreen(NetworkScreenView::kScreenId);
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
@@ -2770,7 +2770,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupTest, EulaBackPressed) {
   EXPECT_CALL(*mock_eula_screen_, HideImpl()).Times(1);
   EXPECT_CALL(*mock_demo_preferences_screen_, ShowImpl()).Times(1);
 
-  mock_eula_screen_->ExitScreen(EulaScreen::Result::BACK);
+  mock_eula_screen_->ExitScreen(EulaScreen::Result::BACK_DEMO_MODE);
 
   CheckCurrentScreen(DemoPreferencesScreenView::kScreenId);
   EXPECT_TRUE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
