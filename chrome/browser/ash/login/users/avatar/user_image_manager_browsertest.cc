@@ -222,30 +222,18 @@ class UserImageManagerTestBase : public LoginManagerTest,
   void ExpectUserImageInfo(const AccountId& account_id,
                            int image_index,
                            const base::FilePath& image_path) {
-    const base::Value* images_pref =
-        local_state_->GetDictionary(UserImageManagerImpl::kUserImageProperties);
-    ASSERT_TRUE(images_pref);
-    const base::Value* image_properties =
-        images_pref->FindDictKey(account_id.GetUserEmail());
+    const base::Value::Dict& images_pref =
+        local_state_->GetValueDict(UserImageManagerImpl::kUserImageProperties);
+    const base::Value::Dict* image_properties =
+        images_pref.FindDict(account_id.GetUserEmail());
     ASSERT_TRUE(image_properties);
     absl::optional<int> actual_image_index =
-        image_properties->FindIntKey(UserImageManagerImpl::kImageIndexNodeName);
-    const std::string* actual_image_path = image_properties->FindStringKey(
-        UserImageManagerImpl::kImagePathNodeName);
+        image_properties->FindInt(UserImageManagerImpl::kImageIndexNodeName);
+    const std::string* actual_image_path =
+        image_properties->FindString(UserImageManagerImpl::kImagePathNodeName);
     ASSERT_TRUE(actual_image_index.has_value() && actual_image_path);
     EXPECT_EQ(image_index, actual_image_index.value());
     EXPECT_EQ(image_path.value(), *actual_image_path);
-  }
-
-  // Verifies that there is no image info for `account_id` in dictionary
-  // `images_pref`.
-  void ExpectNoUserImageInfo(const base::DictionaryValue* images_pref,
-                             const AccountId& account_id) {
-    ASSERT_TRUE(images_pref);
-    const base::DictionaryValue* image_properties = NULL;
-    images_pref->GetDictionaryWithoutPathExpansion(account_id.GetUserEmail(),
-                                                   &image_properties);
-    ASSERT_FALSE(image_properties);
   }
 
   // Returns the image path for user `account_id` with specified `extension`.
