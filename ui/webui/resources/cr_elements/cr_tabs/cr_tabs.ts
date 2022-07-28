@@ -75,7 +75,6 @@ export class CrTabsElement extends PolymerElement {
 
     this.setAttribute('role', 'tablist');
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
-    this.addEventListener('mousedown', this.onMouseDown_);
   }
 
   private getAriaSelected_(index: number): string {
@@ -126,12 +125,7 @@ export class CrTabsElement extends PolymerElement {
     this.updateIndicator_(newIndicator, newTabRect, leftmostEdge, fullWidth);
   }
 
-  private onMouseDown_() {
-    this.classList.remove('keyboard-focus');
-  }
-
   private onKeyDown_(e: KeyboardEvent) {
-    this.classList.add('keyboard-focus');
     const count = this.tabNames.length;
     let newSelection;
     if (e.key === 'Home') {
